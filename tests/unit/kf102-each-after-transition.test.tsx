@@ -22,11 +22,16 @@ import { afterEach, describe, expect, it } from 'vitest';
 
 import { each, mount, signal, toElement } from '../../src/index.js';
 
-interface Q { phase: 'question'; opts: { text: string }[] }
+interface Q {
+  phase: 'question';
+  opts: { text: string }[];
+}
 type S = { phase: 'loading' } | Q | null;
 
 describe('KF-102: each() introduced via re-render with trailing siblings', () => {
-  afterEach(() => { document.body.innerHTML = ''; });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   it('null → loading → question renders every option in the right order', () => {
     const state = signal<S>(null);
@@ -38,22 +43,33 @@ describe('KF-102: each() introduced via re-render with trailing siblings', () =>
       if (s.phase === 'loading') return <div>loading</div>;
       return (
         <div>
-          {each(s.opts, (opt, i) => (
-            <button data-key={String(i)}>{opt.text}</button>
-          ), (_o, i) => String(i))}
+          {each(
+            s.opts,
+            (opt, i) => (
+              <button data-key={String(i)}>{opt.text}</button>
+            ),
+            (_o, i) => String(i),
+          )}
           <button className="skip">Skip</button>
         </div>
       );
     });
     state.value = { phase: 'loading' };
-    state.value = { phase: 'question', opts: [{ text: 'Hello' }, { text: 'Goodbye' }] };
+    state.value = {
+      phase: 'question',
+      opts: [{ text: 'Hello' }, { text: 'Goodbye' }],
+    };
     const buttons = Array.from(host.querySelectorAll('button[data-key]'));
     expect(buttons.length).toBe(2);
     expect(buttons[0].textContent).toBe('Hello');
     expect(buttons[1].textContent).toBe('Goodbye');
     // Items must come BEFORE the skip button, matching JSX order.
     const all = Array.from(host.querySelectorAll('button'));
-    expect(all.map((b) => b.className || b.textContent)).toEqual(['Hello', 'Goodbye', 'skip']);
+    expect(all.map((b) => b.className || b.textContent)).toEqual([
+      'Hello',
+      'Goodbye',
+      'skip',
+    ]);
   });
 
   it('null → question (skipping loading) renders every option in the right order', () => {
@@ -66,14 +82,21 @@ describe('KF-102: each() introduced via re-render with trailing siblings', () =>
       if (s.phase === 'loading') return <div>loading</div>;
       return (
         <div>
-          {each(s.opts, (opt, i) => (
-            <button data-key={String(i)}>{opt.text}</button>
-          ), (_o, i) => String(i))}
+          {each(
+            s.opts,
+            (opt, i) => (
+              <button data-key={String(i)}>{opt.text}</button>
+            ),
+            (_o, i) => String(i),
+          )}
           <button className="skip">Skip</button>
         </div>
       );
     });
-    state.value = { phase: 'question', opts: [{ text: 'Hello' }, { text: 'Goodbye' }] };
+    state.value = {
+      phase: 'question',
+      opts: [{ text: 'Hello' }, { text: 'Goodbye' }],
+    };
     const buttons = Array.from(host.querySelectorAll('button[data-key]'));
     expect(buttons.length).toBe(2);
     expect(buttons[0].textContent).toBe('Hello');
@@ -81,7 +104,10 @@ describe('KF-102: each() introduced via re-render with trailing siblings', () =>
   });
 
   it('control: each() present from the first paint also keeps right order', () => {
-    const state = signal<S>({ phase: 'question', opts: [{ text: 'Hello' }, { text: 'Goodbye' }] });
+    const state = signal<S>({
+      phase: 'question',
+      opts: [{ text: 'Hello' }, { text: 'Goodbye' }],
+    });
     const host = toElement(<div />) as HTMLElement;
     document.body.appendChild(host);
     mount(host, () => {
@@ -90,15 +116,23 @@ describe('KF-102: each() introduced via re-render with trailing siblings', () =>
       if (s.phase === 'loading') return <div>loading</div>;
       return (
         <div>
-          {each(s.opts, (opt, i) => (
-            <button data-key={String(i)}>{opt.text}</button>
-          ), (_o, i) => String(i))}
+          {each(
+            s.opts,
+            (opt, i) => (
+              <button data-key={String(i)}>{opt.text}</button>
+            ),
+            (_o, i) => String(i),
+          )}
           <button className="skip">Skip</button>
         </div>
       );
     });
     const all = Array.from(host.querySelectorAll('button'));
-    expect(all.map((b) => b.className || b.textContent)).toEqual(['Hello', 'Goodbye', 'skip']);
+    expect(all.map((b) => b.className || b.textContent)).toEqual([
+      'Hello',
+      'Goodbye',
+      'skip',
+    ]);
   });
 
   it('non-list sibling around the each() reconciles correctly across renders', () => {
@@ -107,7 +141,11 @@ describe('KF-102: each() introduced via re-render with trailing siblings', () =>
     // into a `listParents` set that made the diff skip its entire children
     // subtree — so a sibling button's text/class would freeze after the
     // first render.
-    interface State { phase: 'question'; opts: { text: string }[]; skipLabel: string }
+    interface State {
+      phase: 'question';
+      opts: { text: string }[];
+      skipLabel: string;
+    }
     const state = signal<State>({
       phase: 'question',
       opts: [{ text: 'A' }, { text: 'B' }],
@@ -117,9 +155,13 @@ describe('KF-102: each() introduced via re-render with trailing siblings', () =>
     document.body.appendChild(host);
     mount(host, () => (
       <div>
-        {each(state.value.opts, (opt, i) => (
-          <button data-key={String(i)}>{opt.text}</button>
-        ), (_o, i) => String(i))}
+        {each(
+          state.value.opts,
+          (opt, i) => (
+            <button data-key={String(i)}>{opt.text}</button>
+          ),
+          (_o, i) => String(i),
+        )}
         <button className="skip">{state.value.skipLabel}</button>
       </div>
     ));
@@ -140,39 +182,57 @@ describe('KF-102: each() introduced via re-render with trailing siblings', () =>
   });
 
   it('a new sibling appearing around the each() lands at the right JSX position', () => {
-    interface State { showHeader: boolean; opts: { text: string }[] }
-    const state = signal<State>({ showHeader: false, opts: [{ text: 'A' }, { text: 'B' }] });
+    interface State {
+      showHeader: boolean;
+      opts: { text: string }[];
+    }
+    const state = signal<State>({
+      showHeader: false,
+      opts: [{ text: 'A' }, { text: 'B' }],
+    });
     const host = toElement(<div />) as HTMLElement;
     document.body.appendChild(host);
     mount(host, () => (
       <div>
         {state.value.showHeader ? <h1>Header</h1> : null}
-        {each(state.value.opts, (opt, i) => (
-          <button data-key={String(i)}>{opt.text}</button>
-        ), (_o, i) => String(i))}
+        {each(
+          state.value.opts,
+          (opt, i) => (
+            <button data-key={String(i)}>{opt.text}</button>
+          ),
+          (_o, i) => String(i),
+        )}
         <footer>tail</footer>
       </div>
     ));
     expect(host.querySelector('h1')).toBe(null);
     state.value = { showHeader: true, opts: [{ text: 'A' }, { text: 'B' }] };
     const wrapper = host.firstElementChild!;
-    const childTags = Array.from(wrapper.children).map((c) => c.tagName.toLowerCase() + (c.textContent ?? ''));
+    const childTags = Array.from(wrapper.children).map(
+      (c) => c.tagName.toLowerCase() + (c.textContent ?? ''),
+    );
     expect(childTags).toEqual(['h1Header', 'buttonA', 'buttonB', 'footertail']);
   });
 
   it('the list disappearing from the segment removes its items + binding', () => {
-    interface State { showList: boolean }
+    interface State {
+      showList: boolean;
+    }
     const state = signal<State>({ showList: true });
     const host = toElement(<div />) as HTMLElement;
     document.body.appendChild(host);
     const opts = [{ text: 'A' }, { text: 'B' }];
     mount(host, () => (
       <div>
-        {state.value.showList
-          ? each(opts, (opt, i) => (
-              <button data-key={String(i)}>{opt.text}</button>
-            ), (_o, i) => String(i))
-          : <span>no list</span>}
+        {state.value.showList ? (
+          each(
+            opts,
+            (opt, i) => <button data-key={String(i)}>{opt.text}</button>,
+            (_o, i) => String(i),
+          )
+        ) : (
+          <span>no list</span>
+        )}
       </div>
     ));
     expect(host.querySelectorAll('button[data-key]').length).toBe(2);
@@ -193,16 +253,28 @@ describe('KF-102: each() introduced via re-render with trailing siblings', () =>
       if (s.phase === 'loading') return <div>loading</div>;
       return (
         <div>
-          {each(s.opts, (opt, i) => (
-            <button data-key={String(i)}>{opt.text}</button>
-          ), (_o, i) => String(i))}
+          {each(
+            s.opts,
+            (opt, i) => (
+              <button data-key={String(i)}>{opt.text}</button>
+            ),
+            (_o, i) => String(i),
+          )}
           <button className="skip">Skip</button>
         </div>
       );
     });
     state.value = { phase: 'question', opts: [{ text: 'A' }, { text: 'B' }] };
-    state.value = { phase: 'question', opts: [{ text: 'A' }, { text: 'B' }, { text: 'C' }] };
+    state.value = {
+      phase: 'question',
+      opts: [{ text: 'A' }, { text: 'B' }, { text: 'C' }],
+    };
     const all = Array.from(host.querySelectorAll('button'));
-    expect(all.map((b) => b.className || b.textContent)).toEqual(['A', 'B', 'C', 'skip']);
+    expect(all.map((b) => b.className || b.textContent)).toEqual([
+      'A',
+      'B',
+      'C',
+      'skip',
+    ]);
   });
 });

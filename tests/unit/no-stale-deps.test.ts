@@ -50,7 +50,9 @@ describe('no stale references to removed deps', () => {
   });
 
   it('package.json keywords does not include morphdom', () => {
-    const pkg = JSON.parse(readFileSync(join(REPO_ROOT, 'package.json'), 'utf8')) as {
+    const pkg = JSON.parse(
+      readFileSync(join(REPO_ROOT, 'package.json'), 'utf8'),
+    ) as {
       keywords?: string[];
       dependencies?: Record<string, string>;
     };

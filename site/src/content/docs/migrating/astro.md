@@ -10,6 +10,7 @@ You're using (or considering) Astro. You're reading this because you want a tiny
 ## 1. Where each tool fits
 
 **Astro** owns:
+
 - Routing (file-based, build-time).
 - Page rendering (static or server-rendered HTML).
 - Markdown / MDX content.
@@ -17,6 +18,7 @@ You're using (or considering) Astro. You're reading this because you want a tiny
 - The shell of every page.
 
 **Kerf** owns:
+
 - Interactive islands inside Astro pages — anything that needs to update without a full page nav.
 - Reactive state, event handling, and DOM morphing within those islands.
 
@@ -38,20 +40,20 @@ npm install kerfjs
   "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "kerfjs"
-  }
+    "jsxImportSource": "kerfjs",
+  },
 }
 ```
 
 ```js
 // astro.config.mjs — make sure Vite's JSX is wired the same way
-import { defineConfig } from 'astro/config';
+import { defineConfig } from "astro/config";
 
 export default defineConfig({
   vite: {
     esbuild: {
-      jsx: 'automatic',
-      jsxImportSource: 'kerfjs',
+      jsx: "automatic",
+      jsxImportSource: "kerfjs",
     },
   },
 });
@@ -66,7 +68,7 @@ A typical Astro page that uses kerf has three pieces:
 ```astro
 ---
 // src/pages/cart.astro — Astro frontmatter (server-side)
-const initialItems = await fetch('/api/cart').then((r) => r.json());
+const initialItems = await fetch("/api/cart").then((r) => r.json());
 ---
 
 <!-- 1. Server-rendered HTML shell with the initial state inlined -->
@@ -78,12 +80,12 @@ const initialItems = await fetch('/api/cart').then((r) => r.json());
 
 <!-- 2. Client-side mount script -->
 <script>
-  import { signal, mount, each, delegate, attr } from 'kerfjs';
+  import { signal, mount, each, delegate, attr } from "kerfjs";
 
-  const REMOVE = attr('data-action', 'remove');
-  const ITEM = { id: attr('data-id') } as const;
+  const REMOVE = attr("data-action", "remove");
+  const ITEM = { id: attr("data-id") } as const;
 
-  const root = document.getElementById('cart')!;
+  const root = document.getElementById("cart")!;
   const initial = JSON.parse(root.dataset.initial!);
   const items = signal<{ id: string; name: string; price: number }[]>(initial);
 
@@ -96,17 +98,21 @@ const initialItems = await fetch('/api/cart').then((r) => r.json());
           (it) => (
             <li data-key={it.id}>
               {it.name} — ${it.price}
-              <button {...REMOVE.attrs} {...ITEM.id(it.id)}>×</button>
+              <button {...REMOVE.attrs} {...ITEM.id(it.id)}>
+                ×
+              </button>
             </li>
           ),
           (it) => it.id,
         )}
       </ul>
-      <p class="total">Total: ${items.value.reduce((s, it) => s + it.price, 0)}</p>
+      <p class="total">
+        Total: ${items.value.reduce((s, it) => s + it.price, 0)}
+      </p>
     </div>
   ));
 
-  delegate(root, 'click', REMOVE.selector, (_e, btn) => {
+  delegate(root, "click", REMOVE.selector, (_e, btn) => {
     const id = (btn as HTMLElement).dataset.id;
     items.value = items.value.filter((it) => it.id !== id);
   });
@@ -123,13 +129,13 @@ What's happening:
 
 Astro's official integrations (`@astrojs/react`, `@astrojs/preact`, `@astrojs/vue`, `@astrojs/svelte`, `@astrojs/solid`) ship the corresponding framework runtime as part of the island bundle. Kerf-as-island is not an official integration — you wire it via `<script>` tags as above, which is also the way Astro recommends for any "I just want some client JS" use case.
 
-| | Astro + React island | Astro + kerf island |
-| --- | --- | --- |
-| Per-island runtime cost | ~45 KB (react + react-dom) | ~12 KB |
-| Component model | React (hooks, lifecycle) | plain functions returning JSX, signals for state |
-| Hydration strategy | `client:load` / `client:idle` / `client:visible` directives | `<script>` runs on parse; you call `mount()` whenever you want |
-| Server-side rendering of the island | yes, automatic | yes, via `SafeHtml.toString()` if you want to SSR the initial HTML yourself |
-| Cross-island state sharing | React Context + a state lib | a module-level `defineStore` imported from multiple islands |
+|                                     | Astro + React island                                        | Astro + kerf island                                                         |
+| ----------------------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Per-island runtime cost             | ~45 KB (react + react-dom)                                  | ~12 KB                                                                      |
+| Component model                     | React (hooks, lifecycle)                                    | plain functions returning JSX, signals for state                            |
+| Hydration strategy                  | `client:load` / `client:idle` / `client:visible` directives | `<script>` runs on parse; you call `mount()` whenever you want              |
+| Server-side rendering of the island | yes, automatic                                              | yes, via `SafeHtml.toString()` if you want to SSR the initial HTML yourself |
+| Cross-island state sharing          | React Context + a state lib                                 | a module-level `defineStore` imported from multiple islands                 |
 
 The biggest practical difference: Astro's `client:*` directives are an opt-in lazy-hydration system. With the `<script>` approach, your kerf code runs as soon as the script tag is reached. If you want lazy hydration of a kerf island, use `<script type="module">` with `defer` or use a small `IntersectionObserver` to gate the `mount()` call.
 
@@ -137,15 +143,20 @@ The biggest practical difference: Astro's `client:*` directives are an opt-in la
 
 ```ts
 // src/state/cart.ts
-import { defineStore } from 'kerfjs';
+import { defineStore } from "kerfjs";
 
-export interface CartItem { id: string; name: string; price: number }
+export interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+}
 
 export const cart = defineStore({
   initial: () => ({ items: [] as CartItem[] }),
   actions: (set, get) => ({
     add: (item: CartItem) => set({ items: [...get().items, item] }),
-    remove: (id: string) => set({ items: get().items.filter((it) => it.id !== id) }),
+    remove: (id: string) =>
+      set({ items: get().items.filter((it) => it.id !== id) }),
   }),
 });
 ```
@@ -166,7 +177,7 @@ This is meaningfully simpler than React's Context model for cross-island state. 
 
 **`data-morph-skip` interacts with Astro's HTML emission.** Astro emits the HTML for the page; if you mark a server-rendered element with `data-morph-skip`, it stays untouched across kerf re-renders. For third-party widgets that Astro doesn't know about, use the same `data-morph-skip` pattern you would in any kerf app.
 
-## 7. When *not* to use kerf with Astro
+## 7. When _not_ to use kerf with Astro
 
 - **You want the official framework integration's lazy-hydration directives.** `client:visible` is genuinely useful for large React islands. Kerf islands are small enough that hydration timing matters less, but if you want the official directive, use an official integration.
 - **You need the SSR-of-the-island pre-rendering Astro does for React/Vue/Solid.** Kerf can produce HTML strings from JSX server-side, but the official integrations handle a lot of edge cases (suspense boundaries, async-component loading) that kerf doesn't.

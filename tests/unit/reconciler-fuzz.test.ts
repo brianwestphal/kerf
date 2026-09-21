@@ -58,7 +58,9 @@ import { generateSpec, makeWorld, type TreeSpec } from './fuzz/model.js';
 import { generateMutations, type Mutation } from './fuzz/mutations.js';
 import { Rng } from './fuzz/rng.js';
 
-const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+const env = (
+  globalThis as { process: { env: Record<string, string | undefined> } }
+).process.env;
 const RUNS = Number(env.KERF_FUZZ_RUNS ?? 200);
 const BASE_SEED = Number(env.KERF_FUZZ_SEED ?? 20_260_724);
 const MUTATIONS_PER_CASE = 12;
@@ -83,7 +85,10 @@ function signatureOf(message: string): string {
   // Drop the "after <mutation>:" prefix — the invariant that broke is the
   // finding; which mutation happened to trip it is incidental.
   const first = message.split('\n')[0].replace(/^after .*?: /, '');
-  return first.replace(/\[[^\]]*\]/g, '[…]').replace(/\d+/g, '#').replace(/"[^"]*"/g, '"…"');
+  return first
+    .replace(/\[[^\]]*\]/g, '[…]')
+    .replace(/\d+/g, '#')
+    .replace(/"[^"]*"/g, '"…"');
 }
 
 function caseForSeed(seed: number): { spec: TreeSpec; mutations: Mutation[] } {
@@ -91,7 +96,10 @@ function caseForSeed(seed: number): { spec: TreeSpec; mutations: Mutation[] } {
   const spec = generateSpec(rng);
   // Mutations are generated against a throwaway world so their indices are
   // valid at the point they run; `runCase` then replays them on a fresh one.
-  return { spec, mutations: generateMutations(rng, makeWorld(spec), MUTATIONS_PER_CASE) };
+  return {
+    spec,
+    mutations: generateMutations(rng, makeWorld(spec), MUTATIONS_PER_CASE),
+  };
 }
 
 function report(failures: readonly SeedFailure[], runs: number): string {
@@ -102,12 +110,14 @@ function report(failures: readonly SeedFailure[], runs: number): string {
     else bucket.push(f);
   }
   const lines = [
-    `${failures.length}/${runs} fuzz seeds failed outside the quarantine, `
-    + `${bySignature.size} distinct failure signature(s):`,
+    `${failures.length}/${runs} fuzz seeds failed outside the quarantine, ` +
+      `${bySignature.size} distinct failure signature(s):`,
     '',
   ];
   for (const [signature, seeds] of bySignature) {
-    lines.push(`  × ${signature}  (${seeds.length} seed(s), first ${seeds[0].seed})`);
+    lines.push(
+      `  × ${signature}  (${seeds.length} seed(s), first ${seeds[0].seed})`,
+    );
   }
   lines.push('');
   for (const [, seeds] of Array.from(bySignature).slice(0, MAX_REPORTS)) {
@@ -118,18 +128,24 @@ function report(failures: readonly SeedFailure[], runs: number): string {
 }
 
 describe('reconciler fuzz', () => {
-  afterEach(() => { document.body.innerHTML = ''; });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
-  it('random trees and mutation sequences hold every reconciler invariant', () => {
-    const failures: SeedFailure[] = [];
-    for (let i = 0; i < RUNS; i++) {
-      const seed = BASE_SEED + i;
-      const { spec, mutations } = caseForSeed(seed);
-      const failure = runCase(spec, mutations);
-      if (failure !== null) failures.push({ seed, signature: signatureOf(failure.message) });
-    }
-    if (failures.length > 0) expect.fail(report(failures, RUNS));
-    // Scaled so a `KERF_FUZZ_RUNS=5000` soak doesn't trip vitest's default 5s.
-  }, Math.max(30_000, RUNS * 40));
-
+  it(
+    'random trees and mutation sequences hold every reconciler invariant',
+    () => {
+      const failures: SeedFailure[] = [];
+      for (let i = 0; i < RUNS; i++) {
+        const seed = BASE_SEED + i;
+        const { spec, mutations } = caseForSeed(seed);
+        const failure = runCase(spec, mutations);
+        if (failure !== null)
+          failures.push({ seed, signature: signatureOf(failure.message) });
+      }
+      if (failures.length > 0) expect.fail(report(failures, RUNS));
+      // Scaled so a `KERF_FUZZ_RUNS=5000` soak doesn't trip vitest's default 5s.
+    },
+    Math.max(30_000, RUNS * 40),
+  );
 });

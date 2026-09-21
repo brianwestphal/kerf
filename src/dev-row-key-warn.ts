@@ -30,11 +30,11 @@ export function maybeWarnMissingRowKey(
   binding.warnedMissingKey = true;
   if (rowEl.id !== '' || rowEl.hasAttribute('data-key')) return;
   console.warn(
-    'kerf each(): the first row has no `id` or `data-key` attribute. '
-    + 'Without one, rows match positionally — an insert/remove at the head shifts every row\'s '
-    + 'identity, so focused inputs jump to the wrong row, mid-edit textareas swap content with their neighbor, '
-    + 'and any per-row state silently follows the wrong item. '
-    + 'Add `data-key={item.id}` (or set `id`) to the top-level element returned by the row render. '
-    + `Row HTML: ${JSON.stringify(truncateRowHtml(rowHtml))}`,
+    'kerf each(): the first row has no `id` or `data-key` attribute. ' +
+      "Without one, rows match positionally — an insert/remove at the head shifts every row's " +
+      'identity, so focused inputs jump to the wrong row, mid-edit textareas swap content with their neighbor, ' +
+      'and any per-row state silently follows the wrong item. ' +
+      'Add `data-key={item.id}` (or set `id`) to the top-level element returned by the row render. ' +
+      `Row HTML: ${JSON.stringify(truncateRowHtml(rowHtml))}`,
   );
 }

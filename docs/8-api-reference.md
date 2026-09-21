@@ -23,19 +23,23 @@ Run `fn`, deferring effect re-runs until `fn` returns. Multiple writes inside `f
 ### `Signal<T>` (type)
 
 ```ts
-interface Signal<T> { value: T }
+interface Signal<T> {
+  value: T;
+}
 ```
 
 ### `ReadonlySignal<T>` (type)
 
 ```ts
-interface ReadonlySignal<T> { readonly value: T }
+interface ReadonlySignal<T> {
+  readonly value: T;
+}
 ```
 
 ### `arraySignal<T>(initial?: readonly T[]): ArraySignal<T>` — `kerfjs/array-signal` subpath
 
 ```ts
-import { arraySignal } from 'kerfjs/array-signal';
+import { arraySignal } from "kerfjs/array-signal";
 
 const rows = arraySignal<{ id: number; label: string }>([]);
 ```
@@ -44,13 +48,13 @@ Granular collection signal. Lives in its own subpath — `import { arraySignal }
 
 ```ts
 class ArraySignal<T> {
-  readonly value: readonly T[];                            // tracking read
-  update(index: number, fn: (item: T) => T): void;        // → 1 update patch
-  insert(index: number, item: T): void;                   // → 1 insert patch
-  push(item: T): void;                                    // sugar for insert(length, item)
-  remove(index: number): T;                               // → 1 remove patch (returns removed item)
-  move(from: number, to: number): void;                   // → 1 move patch (no-op if from === to)
-  replace(items: readonly T[]): void;                     // → 1 replace patch (forces snapshot reconcile)
+  readonly value: readonly T[]; // tracking read
+  update(index: number, fn: (item: T) => T): void; // → 1 update patch
+  insert(index: number, item: T): void; // → 1 insert patch
+  push(item: T): void; // sugar for insert(length, item)
+  remove(index: number): T; // → 1 remove patch (returns removed item)
+  move(from: number, to: number): void; // → 1 move patch (no-op if from === to)
+  replace(items: readonly T[]): void; // → 1 replace patch (forces snapshot reconcile)
 }
 ```
 
@@ -62,11 +66,11 @@ The mutator events are surfaced as the **`ArrayPatch<T>`** type — a tagged-uni
 
 ```ts
 type ArrayPatch<T> =
-  | { type: 'update'; index: number; item: T }
-  | { type: 'insert'; index: number; item: T }
-  | { type: 'remove'; index: number }
-  | { type: 'move'; from: number; to: number }
-  | { type: 'replace'; items: readonly T[] };
+  | { type: "update"; index: number; item: T }
+  | { type: "insert"; index: number; item: T }
+  | { type: "remove"; index: number }
+  | { type: "move"; from: number; to: number }
+  | { type: "replace"; items: readonly T[] };
 ```
 
 Most consumers never touch `ArrayPatch` directly — `each(...)` consumes the queue internally. Export the type when you want to observe patches from outside `each()` (e.g. logging, persistence layers, custom reconcilers).
@@ -78,7 +82,8 @@ Most consumers never touch `ArrayPatch` directly — `each(...)` consumes the qu
 ```ts
 defineStore({
   initial: () => TState,
-  actions: (set: (next: TState) => void, get: () => Readonly<TState>) => TActions,
+  actions: (set: (next: TState) => void, get: () => Readonly<TState>) =>
+    TActions,
 });
 ```
 
@@ -105,7 +110,7 @@ interface Store<TState, TActions> {
 Empties the global store registry. Used by unit tests to isolate cases. Imported via the `kerfjs/testing` subpath, **not** the main `kerfjs` entry, so production builds don't pull it in:
 
 ```ts
-import { clearStoreRegistry } from 'kerfjs/testing';
+import { clearStoreRegistry } from "kerfjs/testing";
 ```
 
 ### `kerfjs/dev` subpath — install the development diagnostics
@@ -115,8 +120,8 @@ subpath is the development signal; omitting it is production. Gate the import
 with your own build's dev flag, in your own code:
 
 ```js
-if (import.meta.env.DEV) await import('kerfjs/dev');                   // Vite
-if (process.env.NODE_ENV !== 'production') await import('kerfjs/dev'); // webpack / Node
+if (import.meta.env.DEV) await import("kerfjs/dev"); // Vite
+if (process.env.NODE_ENV !== "production") await import("kerfjs/dev"); // webpack / Node
 ```
 
 That condition folds to `false` in your production build, so the statement is
@@ -127,7 +132,7 @@ omits it from the production page.
 
 Installing enables: the whole `KERF_DEV_WARN_*` warning family (each still
 requires its own switch — see `enableWarnings()` below), the structural list-invariant checks, the read-only
-`defineStore` `get()` snapshot, and the *throwing* form of the dangerous-URL
+`defineStore` `get()` snapshot, and the _throwing_ form of the dangerous-URL
 screen (production warns and drops instead).
 
 #### `enableWarnings(options: DevWarningOptions): void`
@@ -137,8 +142,12 @@ which are ON, so importing the entry never floods the console:
 
 ```js
 if (import.meta.env.DEV) {
-  const dev = await import('kerfjs/dev');
-  dev.enableWarnings({ staleBinding: true, narrowSet: true, invariants: 'throw' });
+  const dev = await import("kerfjs/dev");
+  dev.enableWarnings({
+    staleBinding: true,
+    narrowSet: true,
+    invariants: "throw",
+  });
 }
 ```
 
@@ -185,7 +194,7 @@ type MountResult = SafeHtml | string | number | boolean | null | undefined;
 
 Bind `render()` to `rootEl`'s children. Wraps `effect()` with kerf's segment-aware diff. Returns a disposer.
 
-If `rootEl` belongs to an *inert* document (no browsing context — e.g. a `DOMParser` result, a `<template>.content` child, or `document.implementation.createHTMLDocument()` output), `mount()` adopts it into the live `document` first, so its first-render `innerHTML` write is safe on every engine (some engines mis-parse `innerHTML` on inert-document elements under rapid bursts). Roots that are already in the live document — the normal case — are untouched, and a live element in another realm (e.g. an iframe) is left in place. `toElement()` output is already adopted, so this only matters for hand-rolled roots.
+If `rootEl` belongs to an _inert_ document (no browsing context — e.g. a `DOMParser` result, a `<template>.content` child, or `document.implementation.createHTMLDocument()` output), `mount()` adopts it into the live `document` first, so its first-render `innerHTML` write is safe on every engine (some engines mis-parse `innerHTML` on inert-document elements under rapid bursts). Roots that are already in the live document — the normal case — are untouched, and a live element in another realm (e.g. an iframe) is left in place. `toElement()` output is already adopted, so this only matters for hand-rolled roots.
 
 `MountResult` is wide enough that consumers can write `() => cond ? <jsx/> : null` and `() => cond && <jsx/>` without a sentinel — matching the React / Solid convention. `null` / `undefined` / `false` / `true` coerce to "render nothing" (empty string); numbers stringify; everything else falls through `String(...)`. See `docs/4-render.md` §4.1 (step 2 of the render pipeline) for the rationale and the equivalent fallback patterns. The `MountResult` type alias is exported from the main barrel for consumers that want to annotate their render functions explicitly.
 
@@ -209,11 +218,11 @@ Lists rendered with `each(...)` go through a separate keyed reconciler that oper
 One-shot in-place reconciliation primitive — the same algorithm `mount()` uses internally, exported for consumers that have an already-populated element they need to reconcile against a freshly-built template. Unlike `mount()`, `morph()` doesn't wrap an `effect()` and doesn't bulk-write `innerHTML` first: it runs once per call against the live tree as-is. When it mutates a `checked` / `value` / `selected` attribute it syncs the matching DOM property too, so controlled form state holds up after user interaction (the dirty-state flags would otherwise detach the visible state from the attribute). Ordinary live attributes that the template omits are removed. The attribute-removal exceptions are user-agent-owned `open` on `<details>` / `<dialog>` and an element whose own attribute diff is skipped by `data-morph-skip`; `data-morph-skip-children` and `data-morph-preserve` do not by themselves protect a matched element's attributes.
 
 ```ts
-import { morph, raw } from 'kerfjs';
+import { morph, raw } from "kerfjs";
 
-morph(liveCard, freshlyBuiltCardEl);         // Element template
+morph(liveCard, freshlyBuiltCardEl); // Element template
 morph(liveCard, '<article class="card">…</article>'); // raw HTML string
-morph(liveCard, raw(htmlFromServer));        // SafeHtml
+morph(liveCard, raw(htmlFromServer)); // SafeHtml
 ```
 
 When `template` is a string or `SafeHtml`, kerf creates a transient element by cloning `liveRoot`'s shell (so the parsed children land inside an element with the same tag, which keeps `innerHTML` parsing rules consistent) and assigns the stringified template to its `innerHTML`. The transient is discarded after the reconciliation.
@@ -253,20 +262,26 @@ Keyed list iteration with per-item memoization, routed through `mount()`'s nativ
 
 `cacheKey` is a passive comparator (not a reactive subscription): kerf calls it once per item per mount-effect run and compares the returned value against the previous run's. Use it when external state, not the item itself, drives what the row should render (e.g. a "currently selected" id flips a CSS class). Distinct from `data-key` on the rendered element, which is the DOM-reconciliation identity that morph uses — `cacheKey` controls when the cached HTML is invalidated; `data-key` controls how a row maps to its existing live DOM node. (Renamed from `key` for clarity; positional callers — the canonical form — are unaffected.)
 
-`render` receives `(item, index)`. The `index` is the row's position at render time; it is **not** part of the memo key (only item identity, `cacheKey`, and content version are). So a row that keeps its identity while its position changes — a reorder, or an insert/remove/move ahead of it — keeps the HTML it rendered at its old index, and any use of `index` in the output (a `{index + 1}.` prefix, zebra striping, an "N of M" label) goes stale on the moved rows. When the output depends on the index, fold it into the memo key so displaced rows re-render: `each(items, render, { cacheKey: (_, i) => i })` (add a `key` if the list needs one). The opt-in `KERF_DEV_WARN_STALE_INDEX=1` surfaces the hazard at runtime. (One edge this workaround doesn't cover — an `arraySignal` batch whose fresh inserts displace *each other* — is noted in [`docs/4-render.md`](4-render.md) §4.2; for index-labeled rows with multi-insert batches, prefer immutable `signal<T[]>` updates.)
+`render` receives `(item, index)`. The `index` is the row's position at render time; it is **not** part of the memo key (only item identity, `cacheKey`, and content version are). So a row that keeps its identity while its position changes — a reorder, or an insert/remove/move ahead of it — keeps the HTML it rendered at its old index, and any use of `index` in the output (a `{index + 1}.` prefix, zebra striping, an "N of M" label) goes stale on the moved rows. When the output depends on the index, fold it into the memo key so displaced rows re-render: `each(items, render, { cacheKey: (_, i) => i })` (add a `key` if the list needs one). The opt-in `KERF_DEV_WARN_STALE_INDEX=1` surfaces the hazard at runtime. (One edge this workaround doesn't cover — an `arraySignal` batch whose fresh inserts displace _each other_ — is noted in [`docs/4-render.md`](4-render.md) §4.2; for index-labeled rows with multi-insert batches, prefer immutable `signal<T[]>` updates.)
 
-`key` gives the list a **stable identity**. Without one, a list is identified by its call order — "the n-th `each()` in this render" — so any render that changes how many `each()` calls run *before* it reassigns its identity, and kerf rebuilds the list from scratch: rows lose their DOM nodes, and with them focus, scroll position and in-progress IME composition. The common trigger is a conditional list rendered above another list. Give a key to any list that can be preceded by one:
+`key` gives the list a **stable identity**. Without one, a list is identified by its call order — "the n-th `each()` in this render" — so any render that changes how many `each()` calls run _before_ it reassigns its identity, and kerf rebuilds the list from scratch: rows lose their DOM nodes, and with them focus, scroll position and in-progress IME composition. The common trigger is a conditional list rendered above another list. Give a key to any list that can be preceded by one:
 
 ```tsx
-{showFilters.value ? <ul>{each(filters.value, renderFilter, { key: 'filters' })}</ul> : ''}
-<ul>{each(results.value, renderResult, { key: 'results' })}</ul>
+{
+  showFilters.value ? (
+    <ul>{each(filters.value, renderFilter, { key: "filters" })}</ul>
+  ) : (
+    ""
+  );
+}
+<ul>{each(results.value, renderResult, { key: "results" })}</ul>;
 ```
 
-A keyed list does not occupy a call-order slot, so keying just the *conditional* list is usually enough — its unkeyed siblings stop shifting too. Keys must be unique within a mount; two lists claiming the same key throw. When `kerfjs/dev` is installed, kerf warns once per list when it detects an identity shift and names the fix.
+A keyed list does not occupy a call-order slot, so keying just the _conditional_ list is usually enough — its unkeyed siblings stop shifting too. Keys must be unique within a mount; two lists claiming the same key throw. When `kerfjs/dev` is installed, kerf warns once per list when it detects an identity shift and names the fix.
 
 A key must be a non-empty string of letters, digits, or `_ . : / -` and may not contain `--` — kerf writes it into the list's marker comment in the DOM, so anything that could terminate a comment is rejected with an error rather than corrupting the mount.
 
-**`each()` does not nest.** A row's HTML is flattened to a string, so an `each()` called inside a row render never binds — it would render as inert static markup. Render an inner collection with plain `.map()` (it re-renders with its row), or restructure to a flat list. A *keyed* nested `each()` throws and says so.
+**`each()` does not nest.** A row's HTML is flattened to a string, so an `each()` called inside a row render never binds — it would render as inert static markup. Render an inner collection with plain `.map()` (it re-renders with its row), or restructure to a flat list. A _keyed_ nested `each()` throws and says so.
 
 If a descendant of a moved row holds focus, the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards — so focus and caret position survive both the state-preserving `moveBefore()` path and the `insertBefore()` fallback used by engines without it. See `docs/4-render.md` §4.4.
 
@@ -293,7 +308,7 @@ Same shape, but installs on the capture phase. Selector matching is `closest()`-
 
 ```ts
 interface DelegateOptions {
-  match?: 'closest' | 'direct';
+  match?: "closest" | "direct";
 }
 ```
 
@@ -338,24 +353,27 @@ const ITEM = { id: attr('data-id') } as const;
 <li {...ITEM.id(String(item.id))}>…</li>
 ```
 
-The attribute name is validated and CSS-escaped at creation; the factory result carries the raw value (escaped later by the JSX attribute renderer when spread). In the *static* form, both the name (CSS identifier) and value (double-quoted CSS string) are CSS-escaped into `.selector` at creation — SSR-safe, no `CSS.escape` dependency. Both forms throw on an empty attribute name.
+The attribute name is validated and CSS-escaped at creation; the factory result carries the raw value (escaped later by the JSX attribute renderer when spread). In the _static_ form, both the name (CSS identifier) and value (double-quoted CSS string) are CSS-escaped into `.selector` at creation — SSR-safe, no `CSS.escape` dependency. Both forms throw on an empty attribute name.
 
 For ad-hoc compound selectors, concatenate `.selector` strings:
 
 ```ts
-delegate(root, 'click',
-  ACTIONS.toggle.selector + attr('data-id', id).selector,
-  handler);
+delegate(
+  root,
+  "click",
+  ACTIONS.toggle.selector + attr("data-id", id).selector,
+  handler,
+);
 ```
 
 ### `AttrSpec<N, V>` (type)
 
 ```ts
 interface AttrSpec<N extends string = string, V extends string = string> {
-  readonly name: N;             // raw attribute name
-  readonly value: V;            // raw attribute value
-  readonly selector: string;    // pre-computed '[name="value"]' selector string
-  readonly attrs: { readonly [K in N]: V };  // spreadable JSX object
+  readonly name: N; // raw attribute name
+  readonly value: V; // raw attribute value
+  readonly selector: string; // pre-computed '[name="value"]' selector string
+  readonly attrs: { readonly [K in N]: V }; // spreadable JSX object
 }
 ```
 
@@ -364,7 +382,7 @@ interface AttrSpec<N extends string = string, V extends string = string> {
 Both `delegate()` and `delegateCapture()` accept an optional element-type generic that narrows the `target` argument in the handler, avoiding casts:
 
 ```ts
-delegate<HTMLButtonElement>(root, 'click', 'button[data-action]', (e, btn) => {
+delegate<HTMLButtonElement>(root, "click", "button[data-action]", (e, btn) => {
   // btn is HTMLButtonElement — no cast needed
   btn.disabled = true;
 });
@@ -375,7 +393,7 @@ The default is `Element` (untyped call sites are unaffected).
 ### `action<V extends string>(value: V): AttrSpec<'data-action', V>` — `kerfjs/actions` subpath
 
 ```ts
-import { action, delegateActions } from 'kerfjs/actions';
+import { action, delegateActions } from "kerfjs/actions";
 ```
 
 `action('select-file')` is a thin specialization of `attr('data-action', 'select-file')` — it returns the same [`AttrSpec`](#attrspec-n-v-type). Spread its `.attrs` in JSX and use its `.value` as the handler-table key, so the action name lives in exactly one place and can't drift between the markup and the dispatcher. Lives in its own subpath so apps that don't use it pay nothing.
@@ -383,12 +401,12 @@ import { action, delegateActions } from 'kerfjs/actions';
 ### `delegateActions<E extends Element = Element>(root, eventType, table, options?): () => void`
 
 ```ts
-const A = { select: action('select'), remove: action('remove') };
+const A = { select: action("select"), remove: action("remove") };
 
 // JSX:  <button {...A.select.attrs} data-id={id}>…</button>
-const dispose = delegateActions(root, 'click', {
-  [A.select.value]: (_e, el) => select(el.getAttribute('data-id')),
-  [A.remove.value]: (_e, el) => remove(el.getAttribute('data-id')),
+const dispose = delegateActions(root, "click", {
+  [A.select.value]: (_e, el) => select(el.getAttribute("data-id")),
+  [A.remove.value]: (_e, el) => remove(el.getAttribute("data-id")),
 });
 ```
 
@@ -402,8 +420,8 @@ Wires a whole table of `data-action` handlers with ONE delegated listener (built
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "kerfjs"
-  }
+    "jsxImportSource": "kerfjs",
+  },
 }
 ```
 
@@ -433,7 +451,7 @@ Wrap a pre-escaped HTML string, bypassing kerf's auto-escaping. Useful for icons
 
 - **Interpolating dynamic text or attributes?** Plain JSX already escapes it (`<p>{value}</p>`, `class={sig}`) — you don't need `raw()`.
 - **Composing markup?** Build a `SafeHtml` the normal way — a JSX expression, the `html` tagged template (`kerfjs/html`), `each()`, or a component function returning JSX. All produce trusted `SafeHtml` without hand-writing an HTML string.
-- **A genuinely trusted, pre-escaped *dynamic* value** (server output, config, a hard-coded string) is the one legitimate use. The `kerfjs/no-raw-with-dynamic-arg` lint rule flags a `raw()` whose argument is **not** a literal — because unsanitized user input is the canonical XSS mistake. Acknowledge a call you've reviewed with an explicit `// eslint-disable-next-line kerfjs/no-raw-with-dynamic-arg`. That override is the single sanctioned way to say "this is trusted," and it leaves a searchable audit trail. (The rule ships at `warn` in `configs.recommended`, so an un-acknowledged dynamic `raw()` is a nudge, not a hard failure — but the disable comment is how you signal intent.)
+- **A genuinely trusted, pre-escaped _dynamic_ value** (server output, config, a hard-coded string) is the one legitimate use. The `kerfjs/no-raw-with-dynamic-arg` lint rule flags a `raw()` whose argument is **not** a literal — because unsanitized user input is the canonical XSS mistake. Acknowledge a call you've reviewed with an explicit `// eslint-disable-next-line kerfjs/no-raw-with-dynamic-arg`. That override is the single sanctioned way to say "this is trusted," and it leaves a searchable audit trail. (The rule ships at `warn` in `configs.recommended`, so an un-acknowledged dynamic `raw()` is a nudge, not a hard failure — but the disable comment is how you signal intent.)
 
 `raw()` is **not** a sanitizer — it does no escaping. For user-controlled input, sanitize first (`raw(DOMPurify.sanitize(marked(userMarkdown)))`) or, better, render it through escaping JSX instead.
 
@@ -444,12 +462,17 @@ JSX `<>...</>` — concatenates children without a wrapper tag. Available from b
 ### `` html`…` `` — `kerfjs/html` subpath
 
 ```ts
-import { html, type HtmlValue } from 'kerfjs/html';
+import { html, type HtmlValue } from "kerfjs/html";
 
 function html(strings: TemplateStringsArray, ...values: HtmlValue[]): SafeHtml;
 
 type HtmlValue =
-  | SafeHtml | string | number | boolean | null | undefined
+  | SafeHtml
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
   | ReadonlySignal<unknown>
   | readonly HtmlValue[];
 ```
@@ -457,8 +480,10 @@ type HtmlValue =
 Tagged-template authoring path — the same `SafeHtml` output and the **same runtime semantics** as JSX, with no JSX transform required. Made for CDN / importmap consumers ("no build step" taken literally); it lives at its own subpath so JSX-only apps don't ship it.
 
 ```js
-html`<div class="${cls}">Count: ${count}</div>`
-html`<ul>${each(items.value, (i) => html`<li id="${i.id}">${i.label}</li>`)}</ul>`
+html`<div class="${cls}">Count: ${count}</div>`;
+html`<ul>
+  ${each(items.value, (i) => html`<li id="${i.id}">${i.label}</li>`)}
+</ul>`;
 ```
 
 Text/child holes follow the JSX child rules (escaping, number stringify, boolean/nullish → nothing, arrays, `SafeHtml`/`each()` passthrough, signal → fine-grained text binding, DOM nodes throw). Attribute holes follow the JSX attribute rules (boolean attributes, `SafeHtml` bypass, dangerous-URL screening, `on*`/malformed-name rejection, signal → fine-grained attribute binding). Two differences: attribute names are emitted **verbatim** (write `class`, not `className` — no camelCase aliasing), and holes are only legal in text positions or as a **complete** attribute value (`attr=${v}` / `attr="${v}"`); tag-name holes, attribute-name holes, partial values (`class="a ${b}"`), and holes inside comments throw. Static template parts pass through verbatim (same trust model as JSX tags/attrs). The static parts are parsed once per call site and cached by template-strings identity. See `docs/6-jsx-runtime.md` §6.11.
@@ -468,12 +493,12 @@ Text/child holes follow the JSX child rules (escaping, number stringify, boolean
 Per-tag intrinsic-element interfaces live in `src/jsx-types.ts` and are aliased into the JSX namespace by `src/jsx-runtime.ts`. To add tags for custom elements / web components, declaration-merge into the `kerfjs/jsx-runtime` JSX namespace:
 
 ```ts
-import type { KerfCustomElement } from 'kerfjs/jsx-runtime';
+import type { KerfCustomElement } from "kerfjs/jsx-runtime";
 
-declare module 'kerfjs/jsx-runtime' {
+declare module "kerfjs/jsx-runtime" {
   namespace JSX {
     interface IntrinsicElements {
-      'my-element': KerfCustomElement & { foo?: string };
+      "my-element": KerfCustomElement & { foo?: string };
     }
   }
 }
@@ -481,11 +506,11 @@ declare module 'kerfjs/jsx-runtime' {
 
 `IntrinsicElements` is exported as an `interface` (not a `type` alias) precisely to make this pattern work — type aliases can't be merged. `KerfCustomElement`, `KerfBaseAttrs`, `AttrLike`, `AttrValue`, and `DataAriaAttrs` are all re-exported from `kerfjs/jsx-runtime` so apps can compose attribute types without reaching into the internal `kerfjs/jsx-types` path.
 
-Attribute names, value sets, and per-element membership come from the WHATWG HTML Living Standard and SVG 2 — not from another framework's table, which models a *property* surface rather than the content attributes kerf actually emits. Coverage is focused rather than exhaustive; the deliberate departures (lowercase aliases, `contentEditable="inherit"`, the `@deprecated` presentational attributes) are enumerated in `src/jsx-types.ts`'s header. The rule that follows from it — `boolean` means *boolean attribute*, and HTML's enumerated attributes take strings — is documented in [`docs/6-jsx-runtime.md`](6-jsx-runtime.md) §6.4.
+Attribute names, value sets, and per-element membership come from the WHATWG HTML Living Standard and SVG 2 — not from another framework's table, which models a _property_ surface rather than the content attributes kerf actually emits. Coverage is focused rather than exhaustive; the deliberate departures (lowercase aliases, `contentEditable="inherit"`, the `@deprecated` presentational attributes) are enumerated in `src/jsx-types.ts`'s header. The rule that follows from it — `boolean` means _boolean attribute_, and HTML's enumerated attributes take strings — is documented in [`docs/6-jsx-runtime.md`](6-jsx-runtime.md) §6.4.
 
 ### Fine-grained signal bindings
 
-`AttrValue` / `AttrLike` (attribute values) and the JSX child type accept a `ReadonlySignal<unknown>` in addition to the usual `string | number | boolean | null | undefined | SafeHtml`. Passing a `signal`/`computed` *itself* into a JSX attribute (`class={someSignal}`) or text hole (`{someSignal}`) inside a `mount()` binds that hole fine-grained — the node updates on signal change without re-running `render()` or walking the reconciler. `ReadonlySignal` is used (covariant) so both `signal(...)` and `computed(...)` of any `T` are accepted. Outside a `mount()` (SSR / `.toString()`) the signal snapshots its current value. Full semantics, the "use `computed()` not a bare closure" rule, and the row-mutation staleness limitation are in [`docs/2-reactivity.md`](2-reactivity.md) §2.9.
+`AttrValue` / `AttrLike` (attribute values) and the JSX child type accept a `ReadonlySignal<unknown>` in addition to the usual `string | number | boolean | null | undefined | SafeHtml`. Passing a `signal`/`computed` _itself_ into a JSX attribute (`class={someSignal}`) or text hole (`{someSignal}`) inside a `mount()` binds that hole fine-grained — the node updates on signal change without re-running `render()` or walking the reconciler. `ReadonlySignal` is used (covariant) so both `signal(...)` and `computed(...)` of any `T` are accepted. Outside a `mount()` (SSR / `.toString()`) the signal snapshots its current value. Full semantics, the "use `computed()` not a bare closure" rule, and the row-mutation staleness limitation are in [`docs/2-reactivity.md`](2-reactivity.md) §2.9.
 
 ### Dangerous URL filter
 
@@ -510,25 +535,25 @@ The returned node is always adopted into the live `document` (`node.ownerDocumen
 
 ## 8.7 Conventions used by `mount`
 
-| Attribute | Effect |
-| --- | --- |
-| `id="..."` | Used as a diff key. Highest priority. |
-| `data-key="..."` | Used as a diff key. Lower priority than `id`. |
-| `data-morph-skip` (any value, even empty) | Element AND subtree preserved as-is on every re-render. No attribute morphing on the element itself. |
-| `data-morph-skip-children` (any value, even empty) | Attributes on the element morph normally; the subtree is left as-is. For client-hydrated slots whose host state classes still need to flow through. |
-| `data-morph-preserve` (any value, even empty) | The element is skipped by the diff's trailing-removal pass — survives across renders even when the new template doesn't emit it. For imperatively-injected nodes (autoplay video, tooltip overlays, analytics pixels). Does NOT block a keyed-match move. |
+| Attribute                                          | Effect                                                                                                                                                                                                                                                    |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id="..."`                                         | Used as a diff key. Highest priority.                                                                                                                                                                                                                     |
+| `data-key="..."`                                   | Used as a diff key. Lower priority than `id`.                                                                                                                                                                                                             |
+| `data-morph-skip` (any value, even empty)          | Element AND subtree preserved as-is on every re-render. No attribute morphing on the element itself.                                                                                                                                                      |
+| `data-morph-skip-children` (any value, even empty) | Attributes on the element morph normally; the subtree is left as-is. For client-hydrated slots whose host state classes still need to flow through.                                                                                                       |
+| `data-morph-preserve` (any value, even empty)      | The element is skipped by the diff's trailing-removal pass — survives across renders even when the new template doesn't emit it. For imperatively-injected nodes (autoplay video, tooltip overlays, analytics pixels). Does NOT block a keyed-match move. |
 
-| Element kind | Behavior when focused during a morph |
-| --- | --- |
-| `<input type="text" \| "search" \| "url" \| "email" \| "tel" \| "password" \| "">` | Live `.value` + `selectionStart`/`selectionEnd` copied to the morph target; morph proceeds (attribute updates apply). |
-| `<textarea>` | Same as text-entry inputs. |
-| `[contenteditable]` | Entire subtree skipped on this morph (same mechanism as `data-morph-skip`). User's edit + caret + multi-range selection preserved verbatim; attribute updates deferred until the next render after blur. See `docs/4-render.md` §4.4. |
-| Anything else (`<button>`, `<a>`, `<div tabindex>`, non-text inputs…) | Morph proceeds normally — no special handling. |
+| Element kind                                                                       | Behavior when focused during a morph                                                                                                                                                                                                  |
+| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<input type="text" \| "search" \| "url" \| "email" \| "tel" \| "password" \| "">` | Live `.value` + `selectionStart`/`selectionEnd` copied to the morph target; morph proceeds (attribute updates apply).                                                                                                                 |
+| `<textarea>`                                                                       | Same as text-entry inputs.                                                                                                                                                                                                            |
+| `[contenteditable]`                                                                | Entire subtree skipped on this morph (same mechanism as `data-morph-skip`). User's edit + caret + multi-range selection preserved verbatim; attribute updates deferred until the next render after blur. See `docs/4-render.md` §4.4. |
+| Anything else (`<button>`, `<a>`, `<div tabindex>`, non-text inputs…)              | Morph proceeds normally — no special handling.                                                                                                                                                                                        |
 
-| User-agent-owned attribute | Effect |
-| --- | --- |
-| `<details>` `open` | The morph never removes `open` from a live `<details>` — the user agent toggles it on summary click and the diff treats it as user-owned. Trade-off: controlled-style `<details open={false}>` won't auto-collapse a previously-opened details element; drive `.open` imperatively if you need controlled behavior. See `docs/4-render.md` §4.4.1. |
-| `<dialog>` `open` | Same as `<details>`. The browser sets `open=""` when `.show()` / `.showModal()` is called; the morph leaves it alone. |
+| User-agent-owned attribute | Effect                                                                                                                                                                                                                                                                                                                                             |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `<details>` `open`         | The morph never removes `open` from a live `<details>` — the user agent toggles it on summary click and the diff treats it as user-owned. Trade-off: controlled-style `<details open={false}>` won't auto-collapse a previously-opened details element; drive `.open` imperatively if you need controlled behavior. See `docs/4-render.md` §4.4.1. |
+| `<dialog>` `open`          | Same as `<details>`. The browser sets `open=""` when `.show()` / `.showModal()` is called; the morph leaves it alone.                                                                                                                                                                                                                              |
 
 ## 8.8 Overlays — `kerfjs/overlay` subpath
 
@@ -551,7 +576,7 @@ Options ([`OverlayOptions`](#overlay-types)): `dismiss` (`'escape' | 'backdrop' 
 ### `confirm(message, options?): Promise<boolean>`
 
 ```ts
-if (await confirm('Delete this file?', { danger: true })) remove();
+if (await confirm("Delete this file?", { danger: true })) remove();
 ```
 
 A promise-based `window.confirm` replacement (that global is a no-op in Tauri WKWebViews). Renders a two-button dialog on top of `overlay()` and resolves `true` for OK, `false` for Cancel or any dismissal. `message` + labels are auto-escaped through the JSX runtime. Options ([`ConfirmOptions`](#overlay-types)): `title`, `okText` (default `'OK'`), `cancelText` (default `'Cancel'`), `danger` (adds a `kerf-confirm--danger` class), plus `container` / `className`.
@@ -559,7 +584,7 @@ A promise-based `window.confirm` replacement (that global is a no-op in Tauri WK
 ### `prompt(message, options?): Promise<string | null>`
 
 ```ts
-const name = await prompt('Rename layer', { defaultValue: layer.name });
+const name = await prompt("Rename layer", { defaultValue: layer.name });
 if (name !== null) rename(name);
 ```
 
@@ -569,8 +594,13 @@ The symmetric sibling of `confirm()` — a promise-based `window.prompt` replace
 
 ```ts
 const creds = await form([
-  { name: 'host', label: 'Host', defaultValue: 'localhost' },
-  { name: 'token', label: 'API token', type: 'password', validate: (v) => v ? '' : 'required' },
+  { name: "host", label: "Host", defaultValue: "localhost" },
+  {
+    name: "token",
+    label: "API token",
+    type: "password",
+    validate: (v) => (v ? "" : "required"),
+  },
 ]);
 if (creds !== null) connect(creds.host, creds.token);
 ```
@@ -580,11 +610,15 @@ The two-or-three-input generalization of `prompt()`: renders one labeled input p
 ### `choice<R>(message, actions, options?): Promise<R | null>`
 
 ```ts
-const r = await choice('Unsaved changes', [
-  { value: 'save', label: 'Save Draft' },
-  { value: 'discard', label: 'Discard', className: 'btn-danger' },
-  { value: 'cancel', label: 'Keep Editing' },
-], { defaultValue: 'cancel' });
+const r = await choice(
+  "Unsaved changes",
+  [
+    { value: "save", label: "Save Draft" },
+    { value: "discard", label: "Discard", className: "btn-danger" },
+    { value: "cancel", label: "Keep Editing" },
+  ],
+  { defaultValue: "cancel" },
+);
 // r is 'save' | 'discard' | 'cancel' | null (Escape/backdrop)
 ```
 
@@ -596,12 +630,16 @@ The **N-way** sibling of `confirm()`: renders one button per [`ChoiceAction<R>`]
 
 ```tsx
 // confirm with your design system's buttons — { message, ok, cancel } are attribute bags
-await confirm('Delete this file?', {
+await confirm("Delete this file?", {
   render: ({ message, ok, cancel }) => (
     <div class="modal">
       <p>{message}</p>
-      <button {...cancel} class="btn btn-sm">No</button>
-      <button {...ok} class="btn btn-danger">Yes</button>
+      <button {...cancel} class="btn btn-sm">
+        No
+      </button>
+      <button {...ok} class="btn btn-danger">
+        Yes
+      </button>
     </div>
   ),
 });
@@ -621,8 +659,8 @@ An **anchored, non-modal** overlay: positions `content` relative to `anchor` (be
 ### `positionAnchored(el, anchor, options?): void` / `autoReposition(el, anchor, options?): () => void`
 
 ```ts
-positionAnchored(hintEl, badgeEl, { placement: 'top' });        // one-shot
-const stop = autoReposition(hintEl, badgeEl, { gap: 6 });       // stays glued; stop() to unbind
+positionAnchored(hintEl, badgeEl, { placement: "top" }); // one-shot
+const stop = autoReposition(hintEl, badgeEl, { gap: 6 }); // stays glued; stop() to unbind
 ```
 
 `popover()`'s placement core, exported for positioning your **own** element against an anchor with no overlay lifecycle (an inline hint, a floating label). `positionAnchored` sets `el.style` `position: fixed`, `margin: 0`, `left`, `top` — below the anchor by default, flipping above on overflow, aligned to a horizontal edge and clamped into view. `autoReposition` positions once, then re-runs on `scroll` (capture — catches inner scroll containers) and `resize`, returning a disposer that removes the listeners. Both take [`AnchorPositionOptions`](#overlay-types) (`placement`, `align`, `gap`).
@@ -630,7 +668,7 @@ const stop = autoReposition(hintEl, badgeEl, { gap: 6 });       // stays glued; 
 ### `tooltip(anchor, content, options?): () => void`
 
 ```ts
-const stop = tooltip(buttonEl, 'Delete this item'); // hover/focus tooltip, above by default
+const stop = tooltip(buttonEl, "Delete this item"); // hover/focus tooltip, above by default
 ```
 
 A hover/focus-triggered, non-modal, auto-hiding tooltip anchored to `anchor`. Shows after `delay` on `pointerenter`/`focus`, hides after `hideDelay` once both pointer and focus have left, and keeps itself positioned with `autoReposition` (`placement` defaults to `'top'`). Pointer and focus presence are tracked independently, so leaving one modality does not hide a tooltip that is still active through the other. No click-dismiss model — it follows the pointer/focus. `content` is a [`TooltipContent`](#overlay-types) (a string is auto-escaped, or pass `SafeHtml` / a render fn). Returns a disposer that removes the anchor listeners and hides any shown tooltip. Options ([`TooltipOptions`](#overlay-types), extends `AnchorPositionOptions`): `delay` (default `400`), `hideDelay` (default `100`), `role` (default `'tooltip'`), `container` / `className` (default `'kerf-tooltip'`).
@@ -638,9 +676,9 @@ A hover/focus-triggered, non-modal, auto-hiding tooltip anchored to `anchor`. Sh
 ### `toast(content, options?): ToastHandle`
 
 ```ts
-toast('Saved', { variant: 'success' });
-const { el, dismiss } = toast('Uploading…', { duration: 0 }); // sticky; dismiss() when done
-toast('Only the latest shows', { mode: 'replace' });          // collapse-to-latest
+toast("Saved", { variant: "success" });
+const { el, dismiss } = toast("Uploading…", { duration: 0 }); // sticky; dismiss() when done
+toast("Only the latest shows", { mode: "replace" }); // collapse-to-latest
 ```
 
 Shows a non-modal, auto-dismissing notification, stacked in a shared body-level region (lazily created, or `options.container`). `content` is a [`ToastContent`](#overlay-types): plain strings are escaped and rendered as text, while `SafeHtml` and render functions are the explicit trusted-markup paths. Returns a [`ToastHandle`](#overlay-types) `{ el, dismiss }` — `el` is the node (inspect it, wire an action button, or run your own entrance/exit transitions) and `dismiss()` removes it early (idempotent). `dismiss({ instant: true })` removes it **synchronously**, skipping the exit transition — for an action button that immediately shows a replacement toast in a single centered slot (no cross-fade); `mode: 'replace'` with `collapse: 'instant'` likewise cleans up a toast that is already mid-fade. Options ([`ToastOptions`](#overlay-types)): `duration` (ms; `0` = sticky; default `4000`), `mode` (`'stack'` default, or `'replace'` — dismiss the region's current toast(s) first for collapse-to-latest), `collapse` (how `'replace'` drops the prior toast(s): `'fade'` default = run their exit transition, good for a **stacking** region; `'instant'` = remove them synchronously, what a single **centered** slot wants so messages never cross-fade in the same spot), `variant` (`'info'` | `'success'` | `'warning'` → adds a `${className}--${variant}` accent class), `enterClass` (added on the next animation frame, so a CSS **entrance** transition runs), `exitClass` + `exitDuration` (CSS owns the **exit**: on dismiss the `enterClass` is REMOVED — so `exitClass` needn't out-specify it, and a symmetric single-class fade works by setting only `enterClass` + `exitDuration` — then the node is removed `exitDuration` ms later, delayed whenever `exitClass` is set OR `exitDuration > 0`), `className` (default `'kerf-toast'`), `role` (default `'status'`), `container`.
@@ -657,12 +695,12 @@ Optional subpath (`import { disposeScope, disposeSubtree, observeRemovals } from
 
 ```ts
 const s = disposeScope(card);
-s.mount(card, renderCard);            // mounts AND registers the disposer
+s.mount(card, renderCard); // mounts AND registers the disposer
 s.effect(() => sync(card));
-s.delegate(card, 'click', '.del', del);
-s.add(() => observer.disconnect());   // any () => void disposer
+s.delegate(card, "click", ".del", del);
+s.add(() => observer.disconnect()); // any () => void disposer
 // …later:
-s.dispose();                          // runs them all, best-effort, idempotent
+s.dispose(); // runs them all, best-effort, idempotent
 ```
 
 Returns the per-element [`Scope`](#scope-type). Calling `disposeScope(el)` again for the same element returns the **same** scope (so disparate code paths register into one place); after `dispose()`, a later call starts fresh. `Scope` has `add(dispose)` (register any disposer, returns it), the convenience wrappers `mount(el, render)` / `effect(fn)` / `delegate(root, type, selector, handler, options?)` (which call the kerf primitive **and** register its disposer), and `dispose()` (runs every registered disposer best-effort — a throwing one won't strand the rest — then resets; idempotent).
@@ -670,7 +708,7 @@ Returns the per-element [`Scope`](#scope-type). Calling `disposeScope(el)` again
 ### `disposeSubtree(root): void`
 
 ```ts
-disposeSubtree(feed);  // dispose every scope in feed, root included
+disposeSubtree(feed); // dispose every scope in feed, root included
 feed.remove();
 ```
 
@@ -698,7 +736,7 @@ Optional subpath (`import { resource } from 'kerfjs/async'`) that models async s
 const users = resource<User[]>();
 
 // Browser (client-side fetch):
-users.run(() => fetch('/api/users', { headers: auth() }).then((r) => r.json()));
+users.run(() => fetch("/api/users", { headers: auth() }).then((r) => r.json()));
 
 // SSR (Node 18+ global fetch — same primitive):
 await users.run(() => fetch(apiUrl).then((r) => r.json() as Promise<User[]>));
@@ -719,7 +757,10 @@ Returns a [`Resource<T, I>`](#resource-types). `resource.value` is a **tracking 
 **Paint dedup** (`value.revision`): a counter that bumps **only when `data` actually changes** — by `options.equals` (default `Object.is`). Compare it to the revision you last painted to skip a redundant re-render (a poll returning identical data leaves it untouched, so you don't wipe scroll / sort / hover). Pass a structural `equals` to dedup a fresh-but-equal object.
 
 ```ts
-const win = resource<Slice, string>({ cacheKey: (w) => w, equals: (a, b) => a.etag === b.etag });
+const win = resource<Slice, string>({
+  cacheKey: (w) => w,
+  equals: (a, b) => a.etag === b.etag,
+});
 win.run(tab, () => fetchSlice(tab)); // revisiting a loaded tab paints instantly, then revalidates
 effect(() => {
   if (win.value.revision === lastPainted) return; // identical data → keep the DOM
@@ -731,7 +772,9 @@ effect(() => {
 **Progress** is opt-in: your fetcher receives a `report(completed, total)` callback (a plain `() => Promise<T>` is assignable — ignore it if unused). Reports from a superseded run are dropped.
 
 ```ts
-upload.run((report) => putWithProgress(file, (sent, size) => report(sent, size)));
+upload.run((report) =>
+  putWithProgress(file, (sent, size) => report(sent, size)),
+);
 // upload.value.progress -> { completed, total } | undefined
 
 // input threading — recover the failed request in the error branch:
@@ -771,7 +814,7 @@ Binds a keyed list to `parent` (whose children `bindList` owns — by default it
   `bindList` renders the rows into an inner **sizer** element it creates inside `parent` and sets that sizer's `padding-top`/`padding-bottom` so `parent`'s `scrollHeight` stays honest — the padding lives on the sizer, not on `parent`, because padding counts toward `clientHeight` and would otherwise break the window math. It sizes each visible row to its `rowHeight` for you. `overscan` (default 3) renders extra rows above/below the viewport. Give `parent` a fixed height + `overflow: auto` in your CSS (the rows are `parent > sizer > row`).
 
   More `virtualize` options:
-  - **`mode`** (`'window'` | `'content-visibility'`, default `'window'`) — the virtualization **strategy**. `'window'` is the JS windowing described above (bounded DOM nodes; off-window rows removed). `'content-visibility'` instead keeps **every** row in the DOM and sets `content-visibility: auto` + `contain-intrinsic-size: 0 <rowHeight>px` on each, so a supporting engine (Chromium, Safari 18) skips the *layout/paint* of off-screen rows while all rows stay **findable** (find-in-page, the a11y tree, and anchor links all work). In this mode `rowHeight` is only the `contain-intrinsic-size` placeholder (no windowing math), `setHeight` / `observeRowHeights` are **no-ops** (the browser owns measurement), `minRows` is ignored (all rows already render), and no scroll listener / `ResizeObserver` is installed; `handle.container` / `containerClass` / `containerId` still work. On an engine without `content-visibility` the CSS is inert — all rows still render (correct, still findable), just without the skip optimization. **The `mode` choice is the app's, about list size:** `'content-visibility'` for medium lists where findability beats the node ceiling; `'window'` for very large (100k-row) lists. See [`docs/17-list-virtualization.md`](17-list-virtualization.md) §17.11.
+  - **`mode`** (`'window'` | `'content-visibility'`, default `'window'`) — the virtualization **strategy**. `'window'` is the JS windowing described above (bounded DOM nodes; off-window rows removed). `'content-visibility'` instead keeps **every** row in the DOM and sets `content-visibility: auto` + `contain-intrinsic-size: 0 <rowHeight>px` on each, so a supporting engine (Chromium, Safari 18) skips the _layout/paint_ of off-screen rows while all rows stay **findable** (find-in-page, the a11y tree, and anchor links all work). In this mode `rowHeight` is only the `contain-intrinsic-size` placeholder (no windowing math), `setHeight` / `observeRowHeights` are **no-ops** (the browser owns measurement), `minRows` is ignored (all rows already render), and no scroll listener / `ResizeObserver` is installed; `handle.container` / `containerClass` / `containerId` still work. On an engine without `content-visibility` the CSS is inert — all rows still render (correct, still findable), just without the skip optimization. **The `mode` choice is the app's, about list size:** `'content-visibility'` for medium lists where findability beats the node ceiling; `'window'` for very large (100k-row) lists. See [`docs/17-list-virtualization.md`](17-list-virtualization.md) §17.11.
   - **`minRows`** — render **every** row (no windowing, zero padding) while the list is shorter than `minRows`, and window only at or above it. The DOM structure (the inner sizer) is identical either way, so the **call site never branches** on list length. A fully-rendered short list is friendlier to find-in-page (Cmd+F), screen readers, and DOM-count assertions, which only see rows actually in the DOM. Crossing the threshold in either direction switches automatically. (No effect under `mode: 'content-visibility'`, which renders all rows regardless.)
   - **`containerClass`** / **`containerId`** — set on the inner sizer kerf creates, so it's reachable from CSS and test selectors without guessing at `parent.lastElementChild`.
   - **Resizing.** kerf re-windows on `parent`'s `scroll` **and**, where `ResizeObserver` exists, when `parent` itself resizes. So a list mounted before layout (a hidden tab, `clientHeight` 0) fills in once it's sized, and a container resized while open re-windows — neither needs a synthetic scroll. (Absent `ResizeObserver`, it's scroll-only, so ensure `parent` is laid out at mount.)
@@ -786,7 +829,11 @@ Options ([`BindListOptions<T>`](#list-types)): `key` (stable, unique per-row key
 The batteries-included measurement path for a `{ estimate }` virtualized list: installs **one** `ResizeObserver` over the current visible rows and forwards each row's `offsetHeight` to `handle.setHeight`, re-observing as the window shifts. Returns a disposer. It is deliberately **separate** from `bindList` (which never depends on `ResizeObserver`) — measure however you like and call `handle.setHeight` yourself instead. A no-op for a non-virtualized handle or where `ResizeObserver` is unavailable (SSR).
 
 ```ts
-const list = bindList(scrollEl, source, { key, render, virtualize: { rowHeight: { estimate: 64 } } });
+const list = bindList(scrollEl, source, {
+  key,
+  render,
+  virtualize: { rowHeight: { estimate: 64 } },
+});
 const stopMeasuring = observeRowHeights(list);
 ```
 
@@ -802,7 +849,7 @@ Optional subpath (`import { debounce, throttle, debouncedSignal } from 'kerfjs/t
 
 ```ts
 const save = debounce(() => persist(state), 300);
-input.addEventListener('input', save);
+input.addEventListener("input", save);
 // …on teardown: save.cancel();
 ```
 
@@ -812,7 +859,7 @@ Trailing-edge debounce: `fn` runs `ms` after calls **stop**, with the most recen
 
 ```ts
 const onScroll = throttle(() => measure(), 100);
-window.addEventListener('scroll', onScroll);
+window.addEventListener("scroll", onScroll);
 ```
 
 Leading-plus-trailing throttle: `fn` runs immediately on the first call, then **at most once per `ms`**; calls during a cooldown collapse to a single trailing call (with the latest arguments) at the window's end. Returns a [`Throttled<A>`](#timing-types) with the same `cancel()` / `flush()` shape. The cooldown is active while `fn` runs, including for the trailing invocation, so `fn` may call `cancel()` itself to reset the window immediately; a reentrant call stays throttled unless the callback first cancels.
@@ -820,7 +867,7 @@ Leading-plus-trailing throttle: `fn` runs immediately on the first call, then **
 ### `debouncedSignal<T>(source, ms): ReadonlySignal<T>`
 
 ```ts
-const query = signal('');
+const query = signal("");
 const debouncedQuery = debouncedSignal(query, 250); // trails query by 250ms
 // render / computed / effect off debouncedQuery.value — repaints only after typing settles
 ```
@@ -919,7 +966,7 @@ In history mode, `base` is stripped only on an exact match or at a following `/`
 - **`back()` / `forward()`** — `history.back()` / `history.forward()`.
 - **`match(pattern)`** → `ReadonlySignal<boolean>` — reactive active-check: true when `route.path` equals `pattern` or is nested under it (`match('/users')` is true on `/users/7`); `match('/')` is **exact**.
 - **`activeClass(pattern, className)`** → `ReadonlySignal<string>` — `className` while `match(pattern)` is active, else `''`; spread into a `class` hole.
-- **`outlet()`** → the routed view — call it inside a `mount()` render. It renders the matched component in a **keyed wrapper** (`data-key` = the matched route's *pattern*), so kerf's keyed morph **replaces the page wholesale on a route change** (fresh DOM) and **reconciles in place on a same-route param change** (preserving scroll / focus). No new machinery.
+- **`outlet()`** → the routed view — call it inside a `mount()` render. It renders the matched component in a **keyed wrapper** (`data-key` = the matched route's _pattern_), so kerf's keyed morph **replaces the page wholesale on a route change** (fresh DOM) and **reconciles in place on a same-route param change** (preserving scroll / focus). No new machinery.
 - **`dispose()`** — remove the popstate / link listeners (idempotent).
 
 **Route patterns** (tried in order, first match wins): static (`/about`), `:param` (`/users/:id` → `params.id`), a trailing `*rest` wildcard (`/files/*rest` → `params.rest`, the remaining segments joined by `/`; a bare `*` segment matches without capturing), and `*` as the catch-all fallback (list it last).

@@ -32,30 +32,43 @@ export function choice<R>(
   actions: ReadonlyArray<ChoiceAction<R>>,
   options: ChoiceOptions<R> = {},
 ): Promise<R | null> {
-  const { container, className = 'kerf-overlay', title, defaultValue, native = false, render } = options;
+  const {
+    container,
+    className = 'kerf-overlay',
+    title,
+    defaultValue,
+    native = false,
+    render,
+  } = options;
   const hasDefault = 'defaultValue' in options;
   const actionAttrs = actions.map((_, i) => ({ 'data-choice': String(i) }));
 
-  const body: OverlayContent = render !== undefined
-    ? render({ message, actions: actionAttrs })
-    : jsx('div', {
-      class: 'kerf-choice',
-      children: [
-        title !== undefined ? jsx('h2', { class: 'kerf-choice__title', children: title }) : '',
-        jsx('p', { class: 'kerf-choice__message', children: message }),
-        jsx('div', {
-          class: 'kerf-choice__actions',
-          children: actions.map((action, i) =>
-            jsx('button', {
-              type: 'button',
-              class: action.className !== undefined ? `kerf-choice__action ${action.className}` : 'kerf-choice__action',
-              ...actionAttrs[i],
-              children: action.label,
+  const body: OverlayContent =
+    render !== undefined
+      ? render({ message, actions: actionAttrs })
+      : jsx('div', {
+          class: 'kerf-choice',
+          children: [
+            title !== undefined
+              ? jsx('h2', { class: 'kerf-choice__title', children: title })
+              : '',
+            jsx('p', { class: 'kerf-choice__message', children: message }),
+            jsx('div', {
+              class: 'kerf-choice__actions',
+              children: actions.map((action, i) =>
+                jsx('button', {
+                  type: 'button',
+                  class:
+                    action.className !== undefined
+                      ? `kerf-choice__action ${action.className}`
+                      : 'kerf-choice__action',
+                  ...actionAttrs[i],
+                  children: action.label,
+                }),
+              ),
             }),
-          ),
-        }),
-      ],
-    });
+          ],
+        });
 
   let resolveChoice!: (result: R | null) => void;
   const result = new Promise<R | null>((resolve) => {

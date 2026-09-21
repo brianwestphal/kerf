@@ -25,7 +25,12 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
-const TEST_DIRS = ['tests/unit', 'tests/integration', 'tests/browser', 'tests/dist'];
+const TEST_DIRS = [
+  'tests/unit',
+  'tests/integration',
+  'tests/browser',
+  'tests/dist',
+];
 const DOC_PATH = 'docs/ai/code-summary.md';
 const TEST_FILE_RE = /\.(test|spec)\.tsx?$/;
 
@@ -74,9 +79,9 @@ function main() {
     console.error(`  - ${path}`);
   }
   console.error(
-    `\nAdd each test file's basename to the directory tree in ${DOC_PATH}\n`
-    + '(or to the surrounding prose, with a one-line description of what it covers).\n'
-    + 'See KF-109 for context.\n',
+    `\nAdd each test file's basename to the directory tree in ${DOC_PATH}\n` +
+      '(or to the surrounding prose, with a one-line description of what it covers).\n' +
+      'See KF-109 for context.\n',
   );
   process.exit(1);
 }

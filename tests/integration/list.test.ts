@@ -12,7 +12,10 @@ import { jsx } from '../../src/jsx-runtime.js';
 import { bindList } from '../../src/list.js';
 import { signal } from '../../src/reactive.js';
 
-interface Item { id: number; label: string }
+interface Item {
+  id: number;
+  label: string;
+}
 
 afterEach(() => {
   document.body.innerHTML = '';
@@ -43,7 +46,8 @@ describe('list — full pipeline', () => {
 
     delegate(parent, 'click', 'li', (_e, li) => {
       const span = li.querySelector('[data-id]');
-      if (span !== null) selectedId.value = Number(span.getAttribute('data-id'));
+      if (span !== null)
+        selectedId.value = Number(span.getAttribute('data-id'));
     });
 
     // Click row B → only B carries the selection class.
@@ -57,8 +61,14 @@ describe('list — full pipeline', () => {
     expect(parent.querySelector('.sel')?.textContent).toBe('c');
 
     // Remove the selected row structurally — bindList reconciles by key.
-    items.value = [{ id: 1, label: 'a' }, { id: 2, label: 'b' }];
-    expect(Array.from(parent.children).map((c) => c.textContent)).toEqual(['a', 'b']);
+    items.value = [
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ];
+    expect(Array.from(parent.children).map((c) => c.textContent)).toEqual([
+      'a',
+      'b',
+    ]);
     expect(parent.querySelectorAll('.sel').length).toBe(0);
 
     dispose();

@@ -74,7 +74,21 @@ const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const DIST = resolve(REPO_ROOT, 'dist');
 const API_DOC = resolve(REPO_ROOT, 'docs/8-api-reference.md');
 
-const ENTRY_DTS = ['index.d.ts', 'array-signal.d.ts', 'jsx-runtime.d.ts', 'testing.d.ts', 'html.d.ts', 'actions.d.ts', 'overlay.d.ts', 'scope.d.ts', 'async.d.ts', 'list.d.ts', 'timing.d.ts', 'remount.d.ts', 'attach.d.ts'];
+const ENTRY_DTS = [
+  'index.d.ts',
+  'array-signal.d.ts',
+  'jsx-runtime.d.ts',
+  'testing.d.ts',
+  'html.d.ts',
+  'actions.d.ts',
+  'overlay.d.ts',
+  'scope.d.ts',
+  'async.d.ts',
+  'list.d.ts',
+  'timing.d.ts',
+  'remount.d.ts',
+  'attach.d.ts',
+];
 
 // Internal function exports the JSX transform consumes but users never call by
 // hand, plus JSX sugar with no user-facing parameter signature. Presence of
@@ -101,7 +115,9 @@ function readDts(name) {
 /** Parse every `export { ... } from '...'?` specifier list in a .d.ts. */
 function parseExportStatements(src) {
   const specs = [];
-  for (const m of src.matchAll(/export\s*\{([^}]*)\}\s*(?:from\s*['"]([^'"]+)['"])?\s*;?/g)) {
+  for (const m of src.matchAll(
+    /export\s*\{([^}]*)\}\s*(?:from\s*['"]([^'"]+)['"])?\s*;?/g,
+  )) {
     const from = m[2] ?? null;
     for (const rawPiece of m[1].split(',')) {
       const piece = rawPiece.trim();
@@ -267,9 +283,16 @@ function splitTopLevel(s) {
 
 /** Parse one parameter declaration → { name, optional, type } or null. */
 function parseParam(seg) {
-  const m = /^(\.\.\.)?\s*([A-Za-z_$][\w$]*)\s*(\?)?\s*(?::\s*([\s\S]+))?$/.exec(seg.trim());
+  const m =
+    /^(\.\.\.)?\s*([A-Za-z_$][\w$]*)\s*(\?)?\s*(?::\s*([\s\S]+))?$/.exec(
+      seg.trim(),
+    );
   if (!m) return null;
-  return { name: m[2], optional: Boolean(m[3]), type: m[4] ? m[4].trim() : null };
+  return {
+    name: m[2],
+    optional: Boolean(m[3]),
+    type: m[4] ? m[4].trim() : null,
+  };
 }
 
 /** Normalize a type string: keep a space only between two word chars. */
@@ -336,7 +359,10 @@ function parseDocSignature(candidate, name) {
   let j = parenEnd;
   while (s[j] === ' ') j++;
   if (s[j] !== ':') return null; // require a return type — excludes call examples
-  const ret = s.slice(j + 1).replace(/;?\s*$/, '').trim();
+  const ret = s
+    .slice(j + 1)
+    .replace(/;?\s*$/, '')
+    .trim();
   if (ret === '') return null;
   const params = splitTopLevel(paramsRaw).map(parseParam);
   if (params.some((p) => p === null)) return null; // an arg wasn't a param decl
@@ -360,7 +386,12 @@ function overloadMismatchReason(dtsDecl, docSig) {
     if (cp[k].name !== dp[k].name) {
       return `param #${k + 1} name: doc \`${cp[k].name}\` vs .d.ts \`${dp[k].name}\``;
     }
-    if (cp[k].type && dp[k].type && !isComplexType(cp[k].type) && !isComplexType(dp[k].type)) {
+    if (
+      cp[k].type &&
+      dp[k].type &&
+      !isComplexType(cp[k].type) &&
+      !isComplexType(dp[k].type)
+    ) {
       if (normalizeType(cp[k].type) !== normalizeType(dp[k].type)) {
         return `param \`${cp[k].name}\` type: doc \`${cp[k].type}\` vs .d.ts \`${dp[k].type}\``;
       }
@@ -373,9 +404,11 @@ function overloadMismatchReason(dtsDecl, docSig) {
   // still compared.
   const retFragile = (t) => t.includes('{');
   if (
-    docSig.ret && dtsDecl.ret
-    && !retFragile(docSig.ret) && !retFragile(dtsDecl.ret)
-    && normalizeType(docSig.ret) !== normalizeType(dtsDecl.ret)
+    docSig.ret &&
+    dtsDecl.ret &&
+    !retFragile(docSig.ret) &&
+    !retFragile(dtsDecl.ret) &&
+    normalizeType(docSig.ret) !== normalizeType(dtsDecl.ret)
   ) {
     return `return type: doc \`${docSig.ret}\` vs .d.ts \`${dtsDecl.ret}\``;
   }
@@ -385,8 +418,8 @@ function overloadMismatchReason(dtsDecl, docSig) {
 function main() {
   if (!existsSync(resolve(DIST, 'index.d.ts'))) {
     console.error(
-      '[check-doc-api-signatures] dist/*.d.ts not found — run `npm run build` first '
-      + '(or use `npm run check:docs:api-signatures`, which builds).',
+      '[check-doc-api-signatures] dist/*.d.ts not found — run `npm run build` first ' +
+        '(or use `npm run check:docs:api-signatures`, which builds).',
     );
     process.exit(1);
   }
@@ -418,17 +451,23 @@ function main() {
       .filter((s) => s !== null);
 
     if (docSigs.length === 0) {
-      problems.push({ name, detail: 'no signature documented in docs/8-api-reference.md' });
+      problems.push({
+        name,
+        detail: 'no signature documented in docs/8-api-reference.md',
+      });
       continue;
     }
 
     for (const decl of decls) {
-      const anyMatch = docSigs.some((sig) => overloadMismatchReason(decl, sig) === null);
+      const anyMatch = docSigs.some(
+        (sig) => overloadMismatchReason(decl, sig) === null,
+      );
       if (!anyMatch) {
         // Report the closest doc signature's reason for a helpful message.
         const reason = overloadMismatchReason(decl, docSigs[0]);
-        const sig = `${name}(${decl.params.map((p) => p.name + (p.optional ? '?' : '')).join(', ')})`
-          + `: ${decl.ret ?? 'void'}`;
+        const sig =
+          `${name}(${decl.params.map((p) => p.name + (p.optional ? '?' : '')).join(', ')})` +
+          `: ${decl.ret ?? 'void'}`;
         problems.push({
           name,
           detail: `.d.ts overload \`${sig}\` not matched by any documented signature (${reason})`,
@@ -439,8 +478,8 @@ function main() {
 
   if (problems.length === 0) {
     console.log(
-      `[check-doc-api-signatures] OK — ${targets.size} public function exports match their `
-      + 'documented signatures.',
+      `[check-doc-api-signatures] OK — ${targets.size} public function exports match their ` +
+        'documented signatures.',
     );
     return;
   }
@@ -452,9 +491,9 @@ function main() {
     console.error(`  - ${name}: ${detail}`);
   }
   console.error(
-    '\nUpdate the signature shown in docs/8-api-reference.md (then run '
-    + '`node site/scripts/sync-docs.mjs`), or fix the export. See the matching rule '
-    + 'documented at the top of scripts/check-doc-api-signatures.mjs.',
+    '\nUpdate the signature shown in docs/8-api-reference.md (then run ' +
+      '`node site/scripts/sync-docs.mjs`), or fix the export. See the matching rule ' +
+      'documented at the top of scripts/check-doc-api-signatures.mjs.',
   );
   process.exit(1);
 }

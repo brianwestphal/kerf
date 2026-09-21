@@ -7,7 +7,10 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { batch, effect } from '../../src/reactive.js';
 import { defineStore, resetAllStores } from '../../src/store.js';
 import { clearStoreRegistry } from '../../src/testing.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
 beforeEach(() => {
   clearStoreRegistry();
@@ -72,7 +75,9 @@ describe('defineStore()', () => {
     });
 
     const log: number[] = [];
-    effect(() => { log.push(counter.state.value.count); });
+    effect(() => {
+      log.push(counter.state.value.count);
+    });
     expect(log).toEqual([0]);
     counter.actions.inc();
     expect(log).toEqual([0, 1]);
@@ -90,8 +95,12 @@ describe('defineStore()', () => {
 
     const consumerA: number[] = [];
     const consumerB: string[] = [];
-    effect(() => { consumerA.push(cart.state.value.items.length); });
-    effect(() => { consumerB.push(cart.state.value.items.join(',')); });
+    effect(() => {
+      consumerA.push(cart.state.value.items.length);
+    });
+    effect(() => {
+      consumerB.push(cart.state.value.items.join(','));
+    });
 
     cart.actions.add('apple');
     cart.actions.add('banana');
@@ -124,7 +133,9 @@ describe('resetAllStores()', () => {
   });
 
   it('is a no-op when the registry is empty', () => {
-    expect(() => { resetAllStores(); }).not.toThrow();
+    expect(() => {
+      resetAllStores();
+    }).not.toThrow();
   });
 });
 
@@ -145,7 +156,9 @@ describe('dev-mode read-only guard on get() snapshot', () => {
     const counter = defineStore({
       initial: () => ({ count: 0 }),
       actions: (_set, get) => ({
-        wronglyMutate: () => { (get() as { count: number }).count = 42; },
+        wronglyMutate: () => {
+          (get() as { count: number }).count = 42;
+        },
       }),
     });
     expect(() => counter.actions.wronglyMutate()).toThrow(READ_ONLY);
@@ -156,8 +169,12 @@ describe('dev-mode read-only guard on get() snapshot', () => {
     const store = defineStore({
       initial: () => ({ user: { name: 'ada', tags: ['a'] } }),
       actions: (_set, get) => ({
-        mutateNested: () => { (get() as { user: { name: string } }).user.name = 'grace'; },
-        mutateNestedArray: () => { (get() as { user: { tags: string[] } }).user.tags[0] = 'z'; },
+        mutateNested: () => {
+          (get() as { user: { name: string } }).user.name = 'grace';
+        },
+        mutateNestedArray: () => {
+          (get() as { user: { tags: string[] } }).user.tags[0] = 'z';
+        },
       }),
     });
     expect(() => store.actions.mutateNested()).toThrow(READ_ONLY);
@@ -170,8 +187,12 @@ describe('dev-mode read-only guard on get() snapshot', () => {
     const store = defineStore({
       initial: () => ({ a: 1, b: 2 }),
       actions: (_set, get) => ({
-        del: () => { delete (get() as { a?: number }).a; },
-        define: () => { Object.defineProperty(get(), 'c', { value: 3 }); },
+        del: () => {
+          delete (get() as { a?: number }).a;
+        },
+        define: () => {
+          Object.defineProperty(get(), 'c', { value: 3 });
+        },
       }),
     });
     expect(() => store.actions.del()).toThrow(READ_ONLY);
@@ -181,7 +202,11 @@ describe('dev-mode read-only guard on get() snapshot', () => {
 
   it('spread / JSON.stringify / Object.keys / array iteration all work through the proxy', () => {
     const store = defineStore({
-      initial: () => ({ count: 2, items: [{ id: 1 }, { id: 2 }], meta: { ok: true } }),
+      initial: () => ({
+        count: 2,
+        items: [{ id: 1 }, { id: 2 }],
+        meta: { ok: true },
+      }),
       actions: (_set, get) => ({
         probe: () => {
           const snap = get();
@@ -198,8 +223,16 @@ describe('dev-mode read-only guard on get() snapshot', () => {
       }),
     });
     const r = store.actions.probe();
-    expect(r.copy).toEqual({ count: 2, items: [{ id: 1 }, { id: 2 }], meta: { ok: true } });
-    expect(r.json).toEqual({ count: 2, items: [{ id: 1 }, { id: 2 }], meta: { ok: true } });
+    expect(r.copy).toEqual({
+      count: 2,
+      items: [{ id: 1 }, { id: 2 }],
+      meta: { ok: true },
+    });
+    expect(r.json).toEqual({
+      count: 2,
+      items: [{ id: 1 }, { id: 2 }],
+      meta: { ok: true },
+    });
     expect(r.keys).toEqual(['count', 'items', 'meta']);
     expect(r.ids).toEqual([1, 2]);
     expect(r.isObj).toBe(true);
@@ -231,7 +264,9 @@ describe('dev-mode read-only guard on get() snapshot', () => {
     expect(stored.count).toBe(1);
     // The stored top-level object and its nested value are the raw objects,
     // not proxies — mutating them outside an action succeeds (no traps).
-    expect(() => { (stored as { count: number }).count = 99; }).not.toThrow();
+    expect(() => {
+      (stored as { count: number }).count = 99;
+    }).not.toThrow();
     // Unchanged nested branch is carried forward by identity (structural sharing).
     expect(stored.nested).toBe(nestedBefore);
     // Restore for the effect-count invariant of other tests (harmless here).
@@ -250,14 +285,20 @@ describe('dev-mode read-only guard on get() snapshot', () => {
   it('does NOT collaterally freeze the live state object (external refs stay writable)', () => {
     const store = defineStore({
       initial: () => ({ count: 0, nested: { x: 1 } }),
-      actions: (_set, get) => ({ read: () => { void get(); } }),
+      actions: (_set, get) => ({
+        read: () => {
+          void get();
+        },
+      }),
     });
     const raw = store.state.value; // the actual stored reference
     store.actions.read(); // triggers get() → proxies, but must NOT freeze raw
     expect(Object.isFrozen(raw)).toBe(false);
     expect(Object.isFrozen(raw.nested)).toBe(false);
     // A legitimate external mutation of the live object still works in dev.
-    expect(() => { (raw as { count: number }).count = 5; }).not.toThrow();
+    expect(() => {
+      (raw as { count: number }).count = 5;
+    }).not.toThrow();
   });
 
   it('production shape (no kerfjs/dev installed) returns the raw object with no traps', () => {
@@ -265,8 +306,12 @@ describe('dev-mode read-only guard on get() snapshot', () => {
     const store = defineStore({
       initial: () => ({ count: 0, nested: { x: 1 } }),
       actions: (_set, get) => ({
-        mutate: () => { (get() as { count: number }).count = 42; },
-        mutateNested: () => { (get() as { nested: { x: number } }).nested.x = 9; },
+        mutate: () => {
+          (get() as { count: number }).count = 42;
+        },
+        mutateNested: () => {
+          (get() as { nested: { x: number } }).nested.x = 9;
+        },
       }),
     });
     // No proxy, no traps — mutations land silently (prod semantics).
@@ -293,7 +338,9 @@ describe('dev-mode freeze follows hook installation, not an ambient override', (
     const counter = defineStore({
       initial: () => ({ count: 0 }),
       actions: (_set, get) => ({
-        mutate: () => { (get() as { count: number }).count = 42; },
+        mutate: () => {
+          (get() as { count: number }).count = 42;
+        },
       }),
     });
     expect(() => counter.actions.mutate()).not.toThrow();
@@ -309,12 +356,16 @@ describe('dev-mode freeze follows hook installation, not an ambient override', (
       const counter = defineStore({
         initial: () => ({ count: 0 }),
         actions: (_set, get) => ({
-          mutate: () => { (get() as { count: number }).count = 42; },
+          mutate: () => {
+            (get() as { count: number }).count = 42;
+          },
         }),
       });
       // KF-341: the dev guard is now the deep read-only proxy (not
       // Object.freeze), so the override enables its rule-specific TypeError.
-      expect(() => counter.actions.mutate()).toThrow(/store state is read-only/);
+      expect(() => counter.actions.mutate()).toThrow(
+        /store state is read-only/,
+      );
     } finally {
       env.NODE_ENV = prevNodeEnv;
     }
@@ -331,14 +382,18 @@ describe('batch() inside an action', () => {
     const store = defineStore({
       initial: () => ({ a: 0, b: 0 }),
       actions: (set, get) => ({
-        bump: () => batch(() => {
-          set({ ...get(), a: get().a + 1 });
-          set({ ...get(), b: get().b + 1 });
-        }),
+        bump: () =>
+          batch(() => {
+            set({ ...get(), a: get().a + 1 });
+            set({ ...get(), b: get().b + 1 });
+          }),
       }),
     });
     let runs = 0;
-    effect(() => { void store.state.value; runs += 1; });
+    effect(() => {
+      void store.state.value;
+      runs += 1;
+    });
     expect(runs).toBe(1);
     store.actions.bump();
     expect(runs).toBe(2); // not 3 — both writes coalesced

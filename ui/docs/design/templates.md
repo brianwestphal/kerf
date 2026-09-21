@@ -104,7 +104,7 @@ starting point and:
    tokens and `layout.css`), and any of your own component CSS.
 3. Enumerate the presentation combinations in the per-component manifest.
 4. Capture each variant with `domotion capture <page.html> --selector <css>
-   --text-mode system-font -o <variant>.svg`, once per theme with
+--text-mode system-font -o <variant>.svg`, once per theme with
    `--color-scheme light` / `--color-scheme dark` (if your components theme with
    `light-dark()`), then write a light and a dark library file that each embed an
    inline copy of every variant (namespacing each copy's ids/font-family names so

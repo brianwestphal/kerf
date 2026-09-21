@@ -16,7 +16,14 @@ function deferred<T>() {
 describe('resource()', () => {
   it('starts idle', () => {
     const r = resource<number>();
-    expect(r.value).toEqual({ status: 'idle', data: undefined, error: undefined, progress: undefined, input: undefined, revision: 0 });
+    expect(r.value).toEqual({
+      status: 'idle',
+      data: undefined,
+      error: undefined,
+      progress: undefined,
+      input: undefined,
+      revision: 0,
+    });
   });
 
   it('run(): idle → running → completed with data, and resolves the data', async () => {
@@ -103,7 +110,11 @@ describe('resource()', () => {
 
     current.resolve('current');
     await expect(currentRun).resolves.toBe('current');
-    expect(r.value).toMatchObject({ status: 'completed', data: 'current', error: undefined });
+    expect(r.value).toMatchObject({
+      status: 'completed',
+      data: 'current',
+      error: undefined,
+    });
   });
 
   it('reset() returns to idle and invalidates an in-flight run', async () => {
@@ -114,7 +125,14 @@ describe('resource()', () => {
     expect(r.value.status).toBe('idle');
     d.resolve(9);
     await p;
-    expect(r.value).toEqual({ status: 'idle', data: undefined, error: undefined, progress: undefined, input: undefined, revision: 0 });
+    expect(r.value).toEqual({
+      status: 'idle',
+      data: undefined,
+      error: undefined,
+      progress: undefined,
+      input: undefined,
+      revision: 0,
+    });
   });
 
   it('progress: the fetcher can report while running; cleared on completion; a stale report is ignored', async () => {
@@ -129,7 +147,12 @@ describe('resource()', () => {
     expect(r.value.progress).toEqual({ completed: 1, total: 4 });
 
     // Supersede with a newer run, then fire the OLD report — it must be ignored.
-    void r.run(() => new Promise<string>(() => { /* never settles */ }));
+    void r.run(
+      () =>
+        new Promise<string>(() => {
+          /* never settles */
+        }),
+    );
     staleReport(3, 4);
     expect(r.value.progress).toBeUndefined();
 
@@ -140,7 +163,9 @@ describe('resource()', () => {
   it('value is a tracking read — effects re-run across the status transitions', async () => {
     const r = resource<number>();
     const seen: string[] = [];
-    const stop = effect(() => { seen.push(r.value.status); });
+    const stop = effect(() => {
+      seen.push(r.value.status);
+    });
     expect(seen).toEqual(['idle']);
     await r.run(() => Promise.resolve(1));
     expect(seen).toContain('running');

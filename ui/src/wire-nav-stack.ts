@@ -10,16 +10,23 @@ export interface WireNavStackOptions {
 const DEFAULT_DURATION = 200;
 
 function viewsOf(viewport: Element): HTMLElement[] {
-  return Array.from(viewport.querySelectorAll<HTMLElement>(':scope > .kui-nav-stack__view'));
+  return Array.from(
+    viewport.querySelectorAll<HTMLElement>(':scope > .kui-nav-stack__view'),
+  );
 }
 
 function topView(viewport: Element): HTMLElement | undefined {
-  const live = viewsOf(viewport).filter((view) => view.dataset.navExiting !== 'true');
+  const live = viewsOf(viewport).filter(
+    (view) => view.dataset.navExiting !== 'true',
+  );
   return live[live.length - 1];
 }
 
 function reducedMotion(view: Window): boolean {
-  return typeof view.matchMedia === 'function' && view.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return (
+    typeof view.matchMedia === 'function' &&
+    view.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
 }
 
 /**
@@ -28,14 +35,21 @@ function reducedMotion(view: Window): boolean {
  * changes; this helper slides the content and settles the chrome across each
  * change, and calls `onBack` when the back control is used. Returns a disposer.
  */
-export function wireNavStack(root: Element, options: WireNavStackOptions = {}): () => void {
-  const section = root.matches('[data-component="nav-stack"]') ? root : root.querySelector('[data-component="nav-stack"]');
+export function wireNavStack(
+  root: Element,
+  options: WireNavStackOptions = {},
+): () => void {
+  const section = root.matches('[data-component="nav-stack"]')
+    ? root
+    : root.querySelector('[data-component="nav-stack"]');
   const viewport = section?.querySelector('[data-nav-stack-viewport]');
   if (!(section instanceof HTMLElement) || !viewport) return () => {};
 
   const view = section.ownerDocument.defaultView ?? window;
   const duration = options.duration ?? DEFAULT_DURATION;
-  const disposeBack = delegate(section, 'click', '[data-nav-back]', () => options.onBack?.());
+  const disposeBack = delegate(section, 'click', '[data-nav-back]', () =>
+    options.onBack?.(),
+  );
 
   let activeKey = topView(viewport)?.dataset.navKey;
   const timers = new Set<number>();
@@ -61,14 +75,18 @@ export function wireNavStack(root: Element, options: WireNavStackOptions = {}): 
       if (animated) {
         // Force a reflow so the starting transform applies before we clear it.
         void el.offsetWidth;
-        view.requestAnimationFrame(() => el.classList.remove('kui-nav-stack__view--entering'));
+        view.requestAnimationFrame(() =>
+          el.classList.remove('kui-nav-stack__view--entering'),
+        );
       } else {
         el.classList.remove('kui-nav-stack__view--entering');
       }
     } else if (animated) {
       // Pop: the outgoing view is at rest; add the off-edge class on the next
       // frame so it slides OUT (translateX(0) → 100%), not in.
-      view.requestAnimationFrame(() => el.classList.add('kui-nav-stack__view--exiting'));
+      view.requestAnimationFrame(() =>
+        el.classList.add('kui-nav-stack__view--exiting'),
+      );
     } else {
       el.classList.add('kui-nav-stack__view--exiting');
     }
@@ -79,10 +97,19 @@ export function wireNavStack(root: Element, options: WireNavStackOptions = {}): 
     let added = false;
     for (const record of records) {
       record.removedNodes.forEach((node) => {
-        if (node instanceof HTMLElement && node.classList.contains('kui-nav-stack__view') && node.dataset.navExiting !== 'true') removed.push(node);
+        if (
+          node instanceof HTMLElement &&
+          node.classList.contains('kui-nav-stack__view') &&
+          node.dataset.navExiting !== 'true'
+        )
+          removed.push(node);
       });
       record.addedNodes.forEach((node) => {
-        if (node instanceof HTMLElement && node.classList.contains('kui-nav-stack__view')) added = true;
+        if (
+          node instanceof HTMLElement &&
+          node.classList.contains('kui-nav-stack__view')
+        )
+          added = true;
       });
     }
 

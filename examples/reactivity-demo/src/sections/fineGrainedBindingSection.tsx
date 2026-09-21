@@ -17,7 +17,10 @@ const ACTIONS = {
 } as const satisfies Record<string, AttrSpec<'data-action'>>;
 const SELECT = attr('data-select');
 
-interface Row { id: string; label: string }
+interface Row {
+  id: string;
+  label: string;
+}
 const ROWS: Row[] = [
   { id: 'r1', label: 'Reconcile' },
   { id: 'r2', label: 'Morph' },
@@ -29,7 +32,9 @@ const ROWS: Row[] = [
 export function mountFineGrainedBinding(root: HTMLElement): void {
   const selectedId = signal<string | null>(null);
   // Created once, bound to a text hole — updates fine-grained on selection.
-  const selectedLabel = computed(() => ROWS.find((r) => r.id === selectedId.value)?.label ?? '(none)');
+  const selectedLabel = computed(
+    () => ROWS.find((r) => r.id === selectedId.value)?.label ?? '(none)',
+  );
   const renderTicks = signal(0);
   let renderCount = 0;
 
@@ -38,7 +43,12 @@ export function mountFineGrainedBinding(root: HTMLElement): void {
     renderCount += 1;
     return (
       <div className="demo-card">
-        <h2>9. Fine-grained bindings <span className="demo-tag">signal in a hole • select-row, no re-render</span></h2>
+        <h2>
+          9. Fine-grained bindings{' '}
+          <span className="demo-tag">
+            signal in a hole • select-row, no re-render
+          </span>
+        </h2>
 
         <ul className="demo-keyed-list">
           {ROWS.map((row) => (
@@ -57,19 +67,31 @@ export function mountFineGrainedBinding(root: HTMLElement): void {
         </ul>
 
         <p className="demo-row demo-binding-status">
-          <span className="demo-note">Selected: <strong>{selectedLabel}</strong></span>
           <span className="demo-note">
-            <code>render()</code> calls: <output className="demo-render-count">{renderCount}</output> — stays put when you select
+            Selected: <strong>{selectedLabel}</strong>
           </span>
-          <button type="button" {...ACTIONS.rerender.attrs} className="demo-btn demo-btn-ghost">force re-render</button>
+          <span className="demo-note">
+            <code>render()</code> calls:{' '}
+            <output className="demo-render-count">{renderCount}</output> — stays
+            put when you select
+          </span>
+          <button
+            type="button"
+            {...ACTIONS.rerender.attrs}
+            className="demo-btn demo-btn-ghost"
+          >
+            force re-render
+          </button>
         </p>
 
         <p className="demo-note">
-          Each row's <code>class</code> is a <code>computed()</code> handed straight into the JSX hole
-          (not <code>.value</code>). Clicking a row flips <code>selectedId</code>; kerf updates only the two
-          affected rows' <code>class</code> attributes through their bound effects — the render function never
-          re-runs and the list is never reconciled. Hit <em>force re-render</em> to watch the counter tick when
-          render actually does run.
+          Each row's <code>class</code> is a <code>computed()</code> handed
+          straight into the JSX hole (not <code>.value</code>). Clicking a row
+          flips <code>selectedId</code>; kerf updates only the two affected
+          rows' <code>class</code> attributes through their bound effects — the
+          render function never re-runs and the list is never reconciled. Hit{' '}
+          <em>force re-render</em> to watch the counter tick when render
+          actually does run.
         </p>
       </div>
     );

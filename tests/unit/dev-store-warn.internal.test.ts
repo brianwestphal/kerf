@@ -16,13 +16,29 @@
  * public dist barrel.
  */
 
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
-import { _resetWarnContext, type NarrowSetWarnContext } from '../../src/dev-store-warn.js';
+import {
+  _resetWarnContext,
+  type NarrowSetWarnContext,
+} from '../../src/dev-store-warn.js';
 import { defineStore } from '../../src/store.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
-const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+const env = (
+  globalThis as { process: { env: Record<string, string | undefined> } }
+).process.env;
 
 let warnSpy: MockInstance<typeof console.warn>;
 
@@ -164,7 +180,7 @@ describe('dev-store-warn (KF-212, opt-in)', () => {
 
     it('does NOT warn when next has more keys than current', () => {
       const store = defineStore({
-        initial: () => ({ a: 1 } as { a: number; b?: number }),
+        initial: () => ({ a: 1 }) as { a: number; b?: number },
         actions: (set) => ({
           grow: () => set({ a: 2, b: 3 }),
         }),
@@ -221,7 +237,10 @@ describe('dev-store-warn (KF-212, opt-in)', () => {
     });
 
     it('skips null state', () => {
-      const store = defineStore<{ a: number } | null, { clear: () => void; restore: () => void }>({
+      const store = defineStore<
+        { a: number } | null,
+        { clear: () => void; restore: () => void }
+      >({
         initial: () => ({ a: 1 }),
         actions: (set) => ({
           clear: () => set(null),

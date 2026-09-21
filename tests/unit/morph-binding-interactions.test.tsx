@@ -25,9 +25,9 @@
  * shadowed the list container). Both fixes have shipped; every test in this
  * matrix now runs and asserts the corrected behavior.
  */
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { mount,signal,toElement } from '../../src/index.js';
+import { mount, signal, toElement } from '../../src/index.js';
 
 let root: HTMLElement;
 
@@ -36,7 +36,9 @@ beforeEach(() => {
   document.body.appendChild(root);
 });
 
-afterEach(() => { document.body.innerHTML = ''; });
+afterEach(() => {
+  document.body.innerHTML = '';
+});
 
 describe('KF-380 interaction matrix: morph × global bindings × conditional siblings', () => {
   it('a conditional sibling removed before a bound-hole element keeps identity, statics, and a live binding across toggle cycles', () => {

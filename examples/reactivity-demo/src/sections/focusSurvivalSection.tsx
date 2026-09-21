@@ -10,7 +10,7 @@
 import { attr, delegate, mount, signal, type AttrSpec } from 'kerfjs';
 
 const ACTIONS = {
-  setName:       attr('data-action', 'set-name'),
+  setName: attr('data-action', 'set-name'),
   toggleLetters: attr('data-action', 'toggle-letters'),
 } as const satisfies Record<string, AttrSpec<'data-action'>>;
 
@@ -19,11 +19,16 @@ export function mountFocusSurvival(root: HTMLElement): void {
   const tick = signal(0);
   const showLetters = signal(true);
 
-  setInterval(() => { tick.value += 1; }, 1000);
+  setInterval(() => {
+    tick.value += 1;
+  }, 1000);
 
   mount(root, () => (
     <div className="demo-card">
-      <h2>3. Focus / cursor preservation <span className="demo-tag">morphdom in action</span></h2>
+      <h2>
+        3. Focus / cursor preservation{' '}
+        <span className="demo-tag">morphdom in action</span>
+      </h2>
 
       <div className="demo-row">
         <label className="demo-label">
@@ -39,7 +44,11 @@ export function mountFocusSurvival(root: HTMLElement): void {
             spellcheck="false"
           />
         </label>
-        <button type="button" {...ACTIONS.toggleLetters.attrs} className="demo-btn demo-btn-ghost">
+        <button
+          type="button"
+          {...ACTIONS.toggleLetters.attrs}
+          className="demo-btn demo-btn-ghost"
+        >
           {showLetters.value ? 'hide' : 'show'} letter list
         </button>
       </div>
@@ -53,17 +62,19 @@ export function mountFocusSurvival(root: HTMLElement): void {
       {showLetters.value && name.value !== '' ? (
         <ul className="demo-letter-list">
           {name.value.split('').map((ch, i) => (
-            <li className="demo-letter" data-key={String(i)}>{ch}</li>
+            <li className="demo-letter" data-key={String(i)}>
+              {ch}
+            </li>
           ))}
         </ul>
       ) : null}
 
       <p className="demo-note">
-        The <code>tick</code> signal increments every second, forcing this
-        whole block to re-render. The input's <code>id</code> gives morphdom a
-        stable diff key, and the focus-preservation hook copies the live
-        value + selection range across the morph. Try: click into the input,
-        type slowly — the cursor never jumps.
+        The <code>tick</code> signal increments every second, forcing this whole
+        block to re-render. The input's <code>id</code> gives morphdom a stable
+        diff key, and the focus-preservation hook copies the live value +
+        selection range across the morph. Try: click into the input, type slowly
+        — the cursor never jumps.
       </p>
     </div>
   ));

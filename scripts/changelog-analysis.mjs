@@ -21,7 +21,10 @@
 import { execFileSync } from 'node:child_process';
 
 function git(args) {
-  return execFileSync('git', args, { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  return execFileSync('git', args, {
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024,
+  });
 }
 function gitOk(args) {
   try {
@@ -78,17 +81,23 @@ function latestProductionTag(head) {
 function classify(path) {
   if (/^src\/utils\//.test(path)) return { area: 'src/utils', product: true };
   if (/^src\//.test(path)) return { area: 'src (runtime)', product: true };
-  if (/^eslint-plugin\//.test(path)) return { area: 'eslint-plugin (pkg)', product: true };
-  if (/^create-kerf-component\//.test(path)) return { area: 'create-kerf-component (pkg)', product: true };
+  if (/^eslint-plugin\//.test(path))
+    return { area: 'eslint-plugin (pkg)', product: true };
+  if (/^create-kerf-component\//.test(path))
+    return { area: 'create-kerf-component (pkg)', product: true };
   if (/^tests\//.test(path)) return { area: 'tests', product: true };
   if (/^scripts\//.test(path)) return { area: 'scripts', product: true };
   if (/^bench\//.test(path)) return { area: 'bench (tooling)', product: true };
-  if (/^site\//.test(path)) return { area: 'site (docs website)', product: false };
-  if (/^examples\//.test(path)) return { area: 'examples (demos)', product: false };
+  if (/^site\//.test(path))
+    return { area: 'site (docs website)', product: false };
+  if (/^examples\//.test(path))
+    return { area: 'examples (demos)', product: false };
   if (/^docs\//.test(path)) return { area: 'docs', product: false };
-  if (/^ai\//.test(path)) return { area: 'ai bundle (generated)', product: false };
+  if (/^ai\//.test(path))
+    return { area: 'ai bundle (generated)', product: false };
   if (/^assets\//.test(path)) return { area: 'assets', product: false };
-  if (/^\.(claude|agents|cursor|hotsheet|husky)\//.test(path)) return { area: 'agent/skill scaffolding', product: false };
+  if (/^\.(claude|agents|cursor|hotsheet|husky)\//.test(path))
+    return { area: 'agent/skill scaffolding', product: false };
   if (/^\.github\//.test(path)) return { area: 'CI', product: false };
   return { area: 'other (README/config/root)', product: false };
 }
@@ -134,7 +143,11 @@ function main() {
     .filter(Boolean)
     .map((l) => {
       const [add, del, ...rest] = l.split('\t');
-      return { add: Number(add) || 0, del: Number(del) || 0, path: rest.join('\t') };
+      return {
+        add: Number(add) || 0,
+        del: Number(del) || 0,
+        path: rest.join('\t'),
+      };
     });
 
   const areas = new Map();
@@ -169,7 +182,9 @@ function main() {
   const removed = status.filter((s) => s.st === 'D').map((s) => s.path);
 
   // New product source files (candidate "genuinely new subsystems").
-  const newProduct = added.filter((p) => classify(p).product && /\.(ts|tsx|mjs|js)$/.test(p));
+  const newProduct = added.filter(
+    (p) => classify(p).product && /\.(ts|tsx|mjs|js)$/.test(p),
+  );
 
   // Public API export delta (src/index.ts barrel), if present.
   let apiDelta = null;
@@ -186,7 +201,9 @@ function main() {
   if (gitOk(['cat-file', '-e', `${head}:package.json`]) !== null) {
     const readExports = (ref) => {
       try {
-        return Object.keys(JSON.parse(git(['show', `${ref}:package.json`])).exports ?? {});
+        return Object.keys(
+          JSON.parse(git(['show', `${ref}:package.json`])).exports ?? {},
+        );
       } catch {
         return [];
       }
@@ -214,7 +231,8 @@ function main() {
     const h = readDeps(head);
     const changed = [];
     for (const k of new Set([...Object.keys(b), ...Object.keys(h)])) {
-      if (b[k] !== h[k]) changed.push(`${k}: ${b[k] ?? '(none)'} → ${h[k] ?? '(removed)'}`);
+      if (b[k] !== h[k])
+        changed.push(`${k}: ${b[k] ?? '(none)'} → ${h[k] ?? '(removed)'}`);
     }
     depDelta = changed;
   }
@@ -226,28 +244,51 @@ function main() {
   L.push(`Base tag (auto):   ${base}   [${baseInfo}]`);
   L.push(`Head:              ${head}   [${headInfo}]`);
   L.push(`Range:             ${range}   (${commitCount} commits)`);
-  L.push(`Next version:      ${args.next ?? '(NOT PROVIDED — the skill must ask the user)'}`);
-  if (args.next) L.push(`Suggested output:  docs/technical-changelog/${base}-v${String(args.next).replace(/^v/, '')}.md`);
+  L.push(
+    `Next version:      ${args.next ?? '(NOT PROVIDED — the skill must ask the user)'}`,
+  );
+  if (args.next)
+    L.push(
+      `Suggested output:  docs/technical-changelog/${base}-v${String(args.next).replace(/^v/, '')}.md`,
+    );
   if (newestProd && newestProd !== base) {
     L.push('');
-    L.push(`⚠️  A newer production tag exists (${newestProd}) but is not the base — confirm ${base} is intended.`);
+    L.push(
+      `⚠️  A newer production tag exists (${newestProd}) but is not the base — confirm ${base} is intended.`,
+    );
   }
   L.push('');
-  L.push('## Line delta by area  (raw total is misleading — split product vs not)');
+  L.push(
+    '## Line delta by area  (raw total is misleading — split product vs not)',
+  );
   L.push('');
-  L.push(`  ${pad('area', 30)} ${padL('files', 6)} ${padL('+add', 8)} ${padL('-del', 8)}  product`);
+  L.push(
+    `  ${pad('area', 30)} ${padL('files', 6)} ${padL('+add', 8)} ${padL('-del', 8)}  product`,
+  );
   const sorted = [...areas.entries()].sort((a, b) => b[1].add - a[1].add);
   for (const [area, a] of sorted) {
-    L.push(`  ${pad(area, 30)} ${padL(a.files, 6)} ${padL('+' + a.add, 8)} ${padL('-' + a.del, 8)}  ${a.product ? '✅' : '—'}`);
+    L.push(
+      `  ${pad(area, 30)} ${padL(a.files, 6)} ${padL('+' + a.add, 8)} ${padL('-' + a.del, 8)}  ${a.product ? '✅' : '—'}`,
+    );
   }
   L.push('');
-  L.push(`  TOTAL (raw):        +${totAdd} / -${totDel}   across ${numstat.length} files`);
-  L.push(`  PRODUCT CODE ONLY:  +${prodAdd} / -${prodDel}   (src + packages + tests + scripts + bench)`);
-  L.push(`  → In the report, lead with product-only; label docs/site/scaffolding separately.`);
+  L.push(
+    `  TOTAL (raw):        +${totAdd} / -${totDel}   across ${numstat.length} files`,
+  );
+  L.push(
+    `  PRODUCT CODE ONLY:  +${prodAdd} / -${prodDel}   (src + packages + tests + scripts + bench)`,
+  );
+  L.push(
+    `  → In the report, lead with product-only; label docs/site/scaffolding separately.`,
+  );
   L.push('');
-  L.push(`## Files: ${added.length} added, ${removed.length} removed, ${status.length - added.length - removed.length} modified`);
+  L.push(
+    `## Files: ${added.length} added, ${removed.length} removed, ${status.length - added.length - removed.length} modified`,
+  );
   L.push('');
-  L.push('New product source files (candidate NEW subsystems — verify absent at base):');
+  L.push(
+    'New product source files (candidate NEW subsystems — verify absent at base):',
+  );
   if (newProduct.length === 0) L.push('  (none)');
   for (const p of newProduct) L.push(`  A  ${p}`);
   if (removed.length > 0) {
@@ -257,28 +298,58 @@ function main() {
   }
   L.push('');
   L.push('## Public API barrel delta (src/index.ts)');
-  L.push(apiDelta ? apiDelta.split('\n').map((l) => '  ' + l).join('\n') : '  (no export-line changes detected)');
+  L.push(
+    apiDelta
+      ? apiDelta
+          .split('\n')
+          .map((l) => '  ' + l)
+          .join('\n')
+      : '  (no export-line changes detected)',
+  );
   L.push('');
   L.push('## Subpath exports delta (package.json "exports")');
   if (exportsDelta) {
-    L.push(`  added: ${exportsDelta.added.length ? exportsDelta.added.join(', ') : '(none)'}`);
-    L.push(`  removed: ${exportsDelta.removed.length ? exportsDelta.removed.join(', ') : '(none)'}`);
+    L.push(
+      `  added: ${exportsDelta.added.length ? exportsDelta.added.join(', ') : '(none)'}`,
+    );
+    L.push(
+      `  removed: ${exportsDelta.removed.length ? exportsDelta.removed.join(', ') : '(none)'}`,
+    );
   } else {
     L.push('  (package.json not found)');
   }
   L.push('');
   L.push('## Dependency changes (package.json)');
-  if (depDelta && depDelta.length > 0) for (const d of depDelta) L.push(`  ${d}`);
+  if (depDelta && depDelta.length > 0)
+    for (const d of depDelta) L.push(`  ${d}`);
   else L.push('  (none)');
   L.push('');
   L.push('## Next steps for the author (do NOT stop here)');
-  L.push('  1. For each area above, READ THE REAL DIFF: `git diff ' + range + ' -- <path>`.');
+  L.push(
+    '  1. For each area above, READ THE REAL DIFF: `git diff ' +
+      range +
+      ' -- <path>`.',
+  );
   L.push('  2. Verify each "new" claim against the base tree, e.g.');
-  L.push('       `git cat-file -e ' + base + ':<file>`  (absent → genuinely new)');
-  L.push('       `git show ' + base + ':<file> | grep -c <symbol>`  (0 → added in range)');
-  L.push('  3. Note what already shipped at ' + base + ' (baseline, NOT a change).');
-  L.push('  4. Measure, don\'t quote: bundle size, test count, coverage from a real build/run.');
-  L.push('  5. Write docs/technical-changelog/' + base + '-v<next>.md, grounded in the diff.');
+  L.push(
+    '       `git cat-file -e ' + base + ':<file>`  (absent → genuinely new)',
+  );
+  L.push(
+    '       `git show ' +
+      base +
+      ':<file> | grep -c <symbol>`  (0 → added in range)',
+  );
+  L.push(
+    '  3. Note what already shipped at ' + base + ' (baseline, NOT a change).',
+  );
+  L.push(
+    "  4. Measure, don't quote: bundle size, test count, coverage from a real build/run.",
+  );
+  L.push(
+    '  5. Write docs/technical-changelog/' +
+      base +
+      '-v<next>.md, grounded in the diff.',
+  );
   console.log(L.join('\n'));
 }
 

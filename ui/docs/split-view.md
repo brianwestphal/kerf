@@ -6,9 +6,9 @@ on compact ones. One of the opt-in app layouts (see
 [`../../docs/23-app-layouts.md`](../../docs/23-app-layouts.md)).
 
 ```ts
-import { SplitView } from '@kerfjs/ui/split-view';
-import { deviceClass } from '@kerfjs/ui/device-class';
-import '@kerfjs/ui/split-view.css';
+import { SplitView } from "@kerfjs/ui/split-view";
+import { deviceClass } from "@kerfjs/ui/device-class";
+import "@kerfjs/ui/split-view.css";
 // plus nav-stack.css when the compact path is reachable, and
 // wireResizableRegions / wireNavStack for the interactive behavior.
 ```

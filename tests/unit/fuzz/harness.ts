@@ -9,8 +9,17 @@
  * tree-plus-sequence shapes it reliably lands on a minimal case.
  */
 import { mount } from '../../../src/index.js';
-import { checkInvariants, rowIdentityMap, type ViolationClass } from './invariants.js';
-import { makeRender, makeWorld, type NodeSpec, type TreeSpec } from './model.js';
+import {
+  checkInvariants,
+  rowIdentityMap,
+  type ViolationClass,
+} from './invariants.js';
+import {
+  makeRender,
+  makeWorld,
+  type NodeSpec,
+  type TreeSpec,
+} from './model.js';
 import { applyMutation, describeMutation, type Mutation } from './mutations.js';
 
 export interface CaseFailure {
@@ -28,7 +37,8 @@ export interface CaseFailure {
   identityShift: boolean;
 }
 
-const IDENTITY_SHIFT_WARNING = 'is now a different list than it was last render';
+const IDENTITY_SHIFT_WARNING =
+  'is now a different list than it was last render';
 
 /**
  * Swallow console warnings for the duration of a case and report whether an
@@ -39,7 +49,11 @@ function withWarningCapture<T>(fn: (sawShift: () => boolean) => T): T {
   const original = console.warn;
   let shifted = false;
   console.warn = (...args: unknown[]): void => {
-    if (args.some((a) => typeof a === 'string' && a.includes(IDENTITY_SHIFT_WARNING))) {
+    if (
+      args.some(
+        (a) => typeof a === 'string' && a.includes(IDENTITY_SHIFT_WARNING),
+      )
+    ) {
       shifted = true;
     }
   };
@@ -56,8 +70,13 @@ const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
  * Mount the spec, walk the mutations, check the invariants after each.
  * Returns null when the case holds.
  */
-export function runCase(spec: TreeSpec, mutations: readonly Mutation[]): CaseFailure | null {
-  return withWarningCapture((sawShift) => runCaseInner(spec, mutations, sawShift));
+export function runCase(
+  spec: TreeSpec,
+  mutations: readonly Mutation[],
+): CaseFailure | null {
+  return withWarningCapture((sawShift) =>
+    runCaseInner(spec, mutations, sawShift),
+  );
 }
 
 function runCaseInner(
@@ -117,8 +136,9 @@ function runCaseInner(
               step: i,
               kind: 'content',
               identityShift: sawShift(),
-              message: `after ${describeMutation(mutations[i])}: row ${key} was rebuilt, but a`
-                + ' fine-grained signal write must not re-render a list',
+              message:
+                `after ${describeMutation(mutations[i])}: row ${key} was rebuilt, but a` +
+                ' fine-grained signal write must not re-render a list',
             };
           }
         }
@@ -136,11 +156,16 @@ function runCaseInner(
 // ---------------------------------------------------------------------------
 
 function childrenOf(node: NodeSpec): NodeSpec[] | null {
-  return node.kind === 'el' || node.kind === 'cond' || node.kind === 'svg' ? node.children : null;
+  return node.kind === 'el' || node.kind === 'cond' || node.kind === 'svg'
+    ? node.children
+    : null;
 }
 
 /** Every node position in the tree, deepest-last so removals stay valid. */
-function nodePaths(nodes: readonly NodeSpec[], prefix: number[] = []): number[][] {
+function nodePaths(
+  nodes: readonly NodeSpec[],
+  prefix: number[] = [],
+): number[][] {
   const out: number[][] = [];
   nodes.forEach((node, i) => {
     const path = [...prefix, i];
@@ -166,20 +191,31 @@ type Fails = (spec: TreeSpec, mutations: Mutation[]) => boolean;
  * shrinker happily reduces a severe failure into an unrelated milder one that
  * also happens to fail, and the report then describes the wrong bug.
  */
-function sameFinding(original: CaseFailure, candidate: CaseFailure | null): boolean {
-  return candidate !== null
-    && candidate.kind === original.kind
-    && candidate.identityShift === original.identityShift;
+function sameFinding(
+  original: CaseFailure,
+  candidate: CaseFailure | null,
+): boolean {
+  return (
+    candidate !== null &&
+    candidate.kind === original.kind &&
+    candidate.identityShift === original.identityShift
+  );
 }
 
 /** One greedy pass; returns true when it managed to make the case smaller. */
-function shrinkOnce(state: { spec: TreeSpec; mutations: Mutation[] }, fails: Fails): boolean {
+function shrinkOnce(
+  state: { spec: TreeSpec; mutations: Mutation[] },
+  fails: Fails,
+): boolean {
   let improved = false;
 
   // 1. Drop mutations, latest first — the tail is usually irrelevant.
   for (let i = state.mutations.length - 1; i >= 0; i--) {
     const candidate = state.mutations.filter((_, j) => j !== i);
-    if (fails(state.spec, candidate)) { state.mutations = candidate; improved = true; }
+    if (fails(state.spec, candidate)) {
+      state.mutations = candidate;
+      improved = true;
+    }
   }
 
   // 2. Unwrap a batch to a single member — "these two together" is a much
@@ -190,7 +226,11 @@ function shrinkOnce(state: { spec: TreeSpec; mutations: Mutation[] }, fails: Fai
     for (const sub of m.ms) {
       const candidate = state.mutations.slice();
       candidate[i] = sub;
-      if (fails(state.spec, candidate)) { state.mutations = candidate; improved = true; break; }
+      if (fails(state.spec, candidate)) {
+        state.mutations = candidate;
+        improved = true;
+        break;
+      }
     }
   }
 
@@ -198,7 +238,10 @@ function shrinkOnce(state: { spec: TreeSpec; mutations: Mutation[] }, fails: Fai
   for (const path of nodePaths(state.spec.root).reverse()) {
     const candidate = clone(state.spec);
     siblingsAt(candidate, path).splice(path[path.length - 1], 1);
-    if (fails(candidate, state.mutations)) { state.spec = candidate; improved = true; }
+    if (fails(candidate, state.mutations)) {
+      state.spec = candidate;
+      improved = true;
+    }
   }
 
   // 4. Shrink initial source contents.
@@ -221,10 +264,16 @@ export interface ShrunkCase {
   failure: CaseFailure;
 }
 
-export function shrinkCase(spec: TreeSpec, mutations: readonly Mutation[]): ShrunkCase {
+export function shrinkCase(
+  spec: TreeSpec,
+  mutations: readonly Mutation[],
+): ShrunkCase {
   const original = runCase(spec, mutations) as CaseFailure;
   const fails: Fails = (s, ms) => sameFinding(original, runCase(s, ms));
-  const state = { spec: clone(spec), mutations: clone(mutations) as Mutation[] };
+  const state = {
+    spec: clone(spec),
+    mutations: clone(mutations) as Mutation[],
+  };
   for (let round = 0; round < 6; round++) {
     if (!shrinkOnce(state, fails)) break;
   }
@@ -239,10 +288,13 @@ export function shrinkCase(spec: TreeSpec, mutations: readonly Mutation[]): Shru
 
 /** A paste-ready reproduction, so a fuzz failure becomes a regression test. */
 export function formatRepro(seed: number, shrunk: ShrunkCase): string {
-  const step = shrunk.failure.step === -1
-    ? 'the initial mount'
-    : `mutation #${shrunk.failure.step}`;
-  const shift = shrunk.failure.identityShift ? ', with a list-identity shift' : '';
+  const step =
+    shrunk.failure.step === -1
+      ? 'the initial mount'
+      : `mutation #${shrunk.failure.step}`;
+  const shift = shrunk.failure.identityShift
+    ? ', with a list-identity shift'
+    : '';
   return [
     `Reconciler fuzz failure (seed ${seed}) at ${step} [${shrunk.failure.kind}${shift}]:`,
     '',

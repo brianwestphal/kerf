@@ -132,7 +132,10 @@ for (const id of benchList) {
   for (const fw of fwList) {
     const v = row.byFramework[fw];
     if (v === undefined) continue;
-    if (v.mean < best) { best = v.mean; bestFw = fw; }
+    if (v.mean < best) {
+      best = v.mean;
+      bestFw = fw;
+    }
   }
   winners.set(id, { best, bestFw });
 }
@@ -140,7 +143,10 @@ for (const id of benchList) {
 // Build column widths.
 const benchHeader = 'benchmark';
 const unitHeader = 'unit';
-const longestBench = Math.max(benchHeader.length, ...benchList.map((b) => b.length));
+const longestBench = Math.max(
+  benchHeader.length,
+  ...benchList.map((b) => b.length),
+);
 const longestUnit = Math.max(unitHeader.length, 4);
 const fwWidths = {};
 for (const fw of fwList) fwWidths[fw] = fw.length;
@@ -151,9 +157,10 @@ for (const id of benchList) {
     const v = row.byFramework[fw];
     if (v === undefined) continue;
     const ratio = w.best > 0 ? v.mean / w.best : 1;
-    const text = fw === w.bestFw
-      ? `${fmt(v.mean, 2)} ±${fmt(v.stddev ?? 0, 2)} *`
-      : `${fmt(v.mean, 2)} ±${fmt(v.stddev ?? 0, 2)} (${fmt(ratio, 2)}×)`;
+    const text =
+      fw === w.bestFw
+        ? `${fmt(v.mean, 2)} ±${fmt(v.stddev ?? 0, 2)} *`
+        : `${fmt(v.mean, 2)} ±${fmt(v.stddev ?? 0, 2)} (${fmt(ratio, 2)}×)`;
     if (text.length > fwWidths[fw]) fwWidths[fw] = text.length;
   }
 }
@@ -181,10 +188,17 @@ for (const f of files) {
   const m = statSync(join(RESULTS_DIR, f)).mtimeMs;
   if (m > newestMtime) newestMtime = m;
 }
-const dateStr = newestMtime > 0 ? new Date(newestMtime).toISOString().slice(0, 10) : 'unknown';
+const dateStr =
+  newestMtime > 0
+    ? new Date(newestMtime).toISOString().slice(0, 10)
+    : 'unknown';
 
-console.log(`# js-framework-benchmark — local results (newest file: ${dateStr})`);
-console.log(`# ${fwList.length} framework(s); * = fastest in row; (N×) = ratio to fastest.`);
+console.log(
+  `# js-framework-benchmark — local results (newest file: ${dateStr})`,
+);
+console.log(
+  `# ${fwList.length} framework(s); * = fastest in row; (N×) = ratio to fastest.`,
+);
 console.log();
 console.log(header);
 console.log(sep);
@@ -197,14 +211,15 @@ for (const id of benchList) {
     const v = row.byFramework[fw];
     if (v === undefined) return pad('—', fwWidths[fw], true);
     const ratio = w.best > 0 ? v.mean / w.best : 1;
-    const text = fw === w.bestFw
-      ? `${fmt(v.mean, 2)} ±${fmt(v.stddev ?? 0, 2)} *`
-      : `${fmt(v.mean, 2)} ±${fmt(v.stddev ?? 0, 2)} (${fmt(ratio, 2)}×)`;
+    const text =
+      fw === w.bestFw
+        ? `${fmt(v.mean, 2)} ±${fmt(v.stddev ?? 0, 2)} *`
+        : `${fmt(v.mean, 2)} ±${fmt(v.stddev ?? 0, 2)} (${fmt(ratio, 2)}×)`;
     return pad(text, fwWidths[fw], true);
   });
-  console.log([
-    pad(id, longestBench, true),
-    pad(unit, longestUnit, true),
-    ...cells,
-  ].join('  '));
+  console.log(
+    [pad(id, longestBench, true), pad(unit, longestUnit, true), ...cells].join(
+      '  ',
+    ),
+  );
 }

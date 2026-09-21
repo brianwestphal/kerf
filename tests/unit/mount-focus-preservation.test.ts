@@ -1,4 +1,4 @@
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
@@ -18,12 +18,14 @@ afterEach(() => {
 describe('mount() — focus and selection preservation', () => {
   it('preserves cursor position in a focused text input across an attribute-changing re-render', () => {
     const cls = signal('a');
-    mount(root, () => jsx('div', {
-      children: [
-        jsx('span', { children: `cls:${cls.value}` }),
-        jsx('input', { id: 'q', type: 'text', className: cls.value }),
-      ],
-    }));
+    mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('span', { children: `cls:${cls.value}` }),
+          jsx('input', { id: 'q', type: 'text', className: cls.value }),
+        ],
+      }),
+    );
 
     const input = root.querySelector<HTMLInputElement>('#q')!;
     input.value = 'hello world';
@@ -43,12 +45,14 @@ describe('mount() — focus and selection preservation', () => {
 
   it('preserves selection range in a focused textarea across re-render', () => {
     const cls = signal('a');
-    mount(root, () => jsx('div', {
-      children: [
-        jsx('span', { children: cls.value }),
-        jsx('textarea', { id: 't', className: cls.value }),
-      ],
-    }));
+    mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('span', { children: cls.value }),
+          jsx('textarea', { id: 't', className: cls.value }),
+        ],
+      }),
+    );
 
     const ta = root.querySelector<HTMLTextAreaElement>('#t')!;
     ta.value = 'multi\nline\ntext';
@@ -66,12 +70,19 @@ describe('mount() — focus and selection preservation', () => {
 
   it('skips the morph entirely while a contenteditable is focused — user edit + element identity survive (KF-19)', () => {
     const cls = signal('a');
-    mount(root, () => jsx('div', {
-      children: [
-        jsx('span', { children: cls.value }),
-        jsx('div', { id: 'ce', contentEditable: 'true', className: cls.value, children: 'placeholder' }),
-      ],
-    }));
+    mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('span', { children: cls.value }),
+          jsx('div', {
+            id: 'ce',
+            contentEditable: 'true',
+            className: cls.value,
+            children: 'placeholder',
+          }),
+        ],
+      }),
+    );
 
     const ce = root.querySelector<HTMLDivElement>('#ce')!;
     ce.focus();
@@ -92,23 +103,31 @@ describe('mount() — focus and selection preservation', () => {
   });
 
   it('does not crash when setSelectionRange throws (e.g. an input type that rejects it)', () => {
-    const spy = vi.spyOn(HTMLInputElement.prototype, 'setSelectionRange').mockImplementation(() => {
-      throw new Error('selection unsupported on this input type');
-    });
+    const spy = vi
+      .spyOn(HTMLInputElement.prototype, 'setSelectionRange')
+      .mockImplementation(() => {
+        throw new Error('selection unsupported on this input type');
+      });
     const cls = signal('a');
-    mount(root, () => jsx('input', { id: 'q', type: 'text', className: cls.value }));
+    mount(root, () =>
+      jsx('input', { id: 'q', type: 'text', className: cls.value }),
+    );
     const input = root.querySelector<HTMLInputElement>('#q')!;
     input.value = 'abc';
     input.focus();
 
-    expect(() => { cls.value = 'b'; }).not.toThrow();
+    expect(() => {
+      cls.value = 'b';
+    }).not.toThrow();
     expect(root.querySelector<HTMLInputElement>('#q')!.value).toBe('abc');
     spy.mockRestore();
   });
 
   it('does not intercept morph for focused non-text elements (e.g. a button)', () => {
     const cls = signal('a');
-    mount(root, () => jsx('button', { id: 'b', className: cls.value, children: cls.value }));
+    mount(root, () =>
+      jsx('button', { id: 'b', className: cls.value, children: cls.value }),
+    );
     const btn = root.querySelector<HTMLButtonElement>('#b')!;
     btn.focus();
     expect(document.activeElement).toBe(btn);
@@ -120,7 +139,9 @@ describe('mount() — focus and selection preservation', () => {
   it('does NOT preserve selection logic for focused non-text-entry inputs (e.g. checkbox)', () => {
     const setSel = vi.spyOn(HTMLInputElement.prototype, 'setSelectionRange');
     const cls = signal('a');
-    mount(root, () => jsx('input', { id: 'cb', type: 'checkbox', className: cls.value }));
+    mount(root, () =>
+      jsx('input', { id: 'cb', type: 'checkbox', className: cls.value }),
+    );
 
     const cb = root.querySelector<HTMLInputElement>('#cb')!;
     cb.focus();
@@ -155,12 +176,14 @@ describe('mount() — focus and selection preservation', () => {
 
   it('focus is preserved on an input even when no other attributes change (isEqualNode short-circuits)', () => {
     const tick = signal(0);
-    mount(root, () => jsx('div', {
-      children: [
-        jsx('span', { children: `tick:${tick.value}` }),
-        jsx('input', { id: 'q', type: 'text' }),
-      ],
-    }));
+    mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('span', { children: `tick:${tick.value}` }),
+          jsx('input', { id: 'q', type: 'text' }),
+        ],
+      }),
+    );
 
     const input = root.querySelector<HTMLInputElement>('#q')!;
     input.value = 'x';
@@ -174,7 +197,9 @@ describe('mount() — focus and selection preservation', () => {
 
   it('a non-focused input does not get its value clobbered by morph', () => {
     const cls = signal('a');
-    mount(root, () => jsx('input', { id: 'q', type: 'text', className: cls.value }));
+    mount(root, () =>
+      jsx('input', { id: 'q', type: 'text', className: cls.value }),
+    );
 
     const input = root.querySelector<HTMLInputElement>('#q')!;
     input.value = 'set imperatively';

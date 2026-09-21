@@ -32,10 +32,17 @@ describe('KF-414: a granular update is not reverted by a later snapshot render',
     const dispose = mount(root, () => (
       <div>
         <p>{flag.value ? 'on' : 'off'}</p>
-        <ul>{each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
       </div>
     ));
-    rows.update(0, (r) => { r.label = 'two'; return r; }); // same ref, mutated
+    rows.update(0, (r) => {
+      r.label = 'two';
+      return r;
+    }); // same ref, mutated
     expect(root.querySelector('li')?.textContent).toBe('two');
     flag.value = true; // unrelated surrounds change → list routes to snapshot
     expect(root.querySelector('li')?.textContent).toBe('two');
@@ -48,7 +55,11 @@ describe('KF-414: a granular update is not reverted by a later snapshot render',
     const dispose = mount(root, () => (
       <div>
         <p>{flag.value ? 'on' : 'off'}</p>
-        <ul>{each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
       </div>
     ));
     rows.update(0, (r) => ({ ...r, label: 'two' }));
@@ -63,13 +74,18 @@ describe('KF-414: a granular update is not reverted by a later snapshot render',
     const dispose = mount(root, () => (
       <div>
         <p>{flag.value ? 'on' : 'off'}</p>
-        <ul>{each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
       </div>
     ));
     rows.push({ id: 2, label: 'two' });
     flag.value = true;
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent))
-      .toEqual(['one', 'two']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['one', 'two']);
     dispose();
   });
 
@@ -81,14 +97,23 @@ describe('KF-414: a granular update is not reverted by a later snapshot render',
     const dispose = mount(root, () => (
       <div>
         <p>{String(sel.value)}</p>
-        <ul>{each(
-          rows,
-          (r) => <li data-key={r.id} class={sel.value === r.id ? 'on' : ''}>{r.label}</li>,
-          (r) => `${r.label}:${sel.value === r.id}`,
-        )}</ul>
+        <ul>
+          {each(
+            rows,
+            (r) => (
+              <li data-key={r.id} class={sel.value === r.id ? 'on' : ''}>
+                {r.label}
+              </li>
+            ),
+            (r) => `${r.label}:${sel.value === r.id}`,
+          )}
+        </ul>
       </div>
     ));
-    rows.update(0, (r) => { r.label = 'two'; return r; });
+    rows.update(0, (r) => {
+      r.label = 'two';
+      return r;
+    });
     expect(root.querySelector('li')?.textContent).toBe('two');
     sel.value = 2; // selection flips off; snapshot render
     expect(root.querySelector('li')?.textContent).toBe('two');

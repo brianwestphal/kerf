@@ -17,9 +17,9 @@
  * The rest pin documented claims verified true by execution (the KF-383
  * lesson: run the claim, don't read the code).
  */
-import { beforeEach,describe,expect,it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-import { mount,signal } from '../../src/index.js';
+import { mount, signal } from '../../src/index.js';
 
 let root: HTMLElement;
 

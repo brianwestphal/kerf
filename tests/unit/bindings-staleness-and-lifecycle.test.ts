@@ -8,13 +8,13 @@
  * snapshot fallback, teardown, and survival across a coarse (morph) re-render.
  */
 
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
-import { computed,signal } from '../../src/reactive.js';
+import { computed, signal } from '../../src/reactive.js';
 
 let root: HTMLElement;
 
@@ -28,7 +28,10 @@ afterEach(() => {
 });
 
 describe('fine-grained bindings — staleness + transition matrix (KF-299)', () => {
-  interface Row { id: number; label: string }
+  interface Row {
+    id: number;
+    label: string;
+  }
 
   it('global hole: a re-created computed reading a stable source survives a fast-path re-render', () => {
     // The canonical pattern: `class={computed(() => cls.value)}`. `computed()`
@@ -40,7 +43,11 @@ describe('fine-grained bindings — staleness + transition matrix (KF-299)', () 
     const cls = signal('a');
     const render = vi.fn(() => {
       void trigger.value; // read so render re-runs on trigger change; not in the output
-      return jsx('div', { id: 'd', class: computed(() => cls.value), children: 'static' });
+      return jsx('div', {
+        id: 'd',
+        class: computed(() => cls.value),
+        children: 'static',
+      });
     });
     const dispose = mount(root, render);
     const d = root.querySelector('#d') as HTMLElement;
@@ -62,16 +69,28 @@ describe('fine-grained bindings — staleness + transition matrix (KF-299)', () 
     const rows = arraySignal<Row>([r1, r2, r3]);
     const selectedId = signal<number | null>(null);
     const render = vi.fn(() =>
-      jsx('table', { children: jsx('tbody', { children:
-        each(rows, (r) => jsx('tr', {
-          'data-key': r.id,
-          class: computed(() => (r.id === selectedId.value ? 'danger' : '')),
-          children: jsx('td', { children: r.label }),
-        }), (r) => r.id),
-      }) }),
+      jsx('table', {
+        children: jsx('tbody', {
+          children: each(
+            rows,
+            (r) =>
+              jsx('tr', {
+                'data-key': r.id,
+                class: computed(() =>
+                  r.id === selectedId.value ? 'danger' : '',
+                ),
+                children: jsx('td', { children: r.label }),
+              }),
+            (r) => r.id,
+          ),
+        }),
+      }),
     );
     const dispose = mount(root, render);
-    const classOf = (id: number) => (root.querySelector(`tr[data-key="${id}"]`) as HTMLElement)?.getAttribute('class');
+    const classOf = (id: number) =>
+      (root.querySelector(`tr[data-key="${id}"]`) as HTMLElement)?.getAttribute(
+        'class',
+      );
     const rendersAfterMount = render.mock.calls.length;
 
     // 1. first-render-inline → select (no reconcile, no re-render)
@@ -88,7 +107,9 @@ describe('fine-grained bindings — staleness + transition matrix (KF-299)', () 
 
     // 3. granular update (text fast path) on a non-selected row → its bound class survives
     rows.update(0, (r) => ({ ...r, label: 'a!' }));
-    expect((root.querySelector('tr[data-key="1"] td') as HTMLElement).textContent).toBe('a!');
+    expect(
+      (root.querySelector('tr[data-key="1"] td') as HTMLElement).textContent,
+    ).toBe('a!');
     expect(classOf(1)).toBe(''); // binding intact (row 1 not selected)
     selectedId.value = 1;
     expect(classOf(1)).toBe('danger');
@@ -111,7 +132,10 @@ describe('fine-grained bindings — staleness + transition matrix (KF-299)', () 
     // 6. replace([]) → snapshot path, all disposed → repopulate (snapshot rebuild) → select
     rows.replace([]);
     expect(root.querySelectorAll('tr')).toHaveLength(0);
-    rows.replace([{ id: 10, label: 'x' }, { id: 11, label: 'y' }]);
+    rows.replace([
+      { id: 10, label: 'x' },
+      { id: 11, label: 'y' },
+    ]);
     expect(root.querySelectorAll('tr')).toHaveLength(2);
     selectedId.value = 11;
     expect(classOf(11)).toBe('danger');
@@ -142,7 +166,12 @@ describe('fine-grained bindings — lifecycle', () => {
         id: 'wrap',
         children: show.value
           ? jsx('span', { id: 's', class: label, children: label })
-          : jsx('span', { id: 's', class: label, children: label, 'data-alt': 'y' }),
+          : jsx('span', {
+              id: 's',
+              class: label,
+              children: label,
+              'data-alt': 'y',
+            }),
       }),
     );
     const dispose = mount(root, render);

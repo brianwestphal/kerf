@@ -1,12 +1,12 @@
 # 12. AI-assistant configs (Claude Code skill + Cursor rules)
 
 The drop-in `kerf.claude-skill.md` and `kerf.cursorrules` from KF-128 told
-AI assistants in *downstream* projects how to write kerf code. KF-128
+AI assistants in _downstream_ projects how to write kerf code. KF-128
 shipped them as repo-root files: a consumer had to find them on GitHub
 and copy them by hand. That funnel loses most users — the maintainer's
 own `~/Documents/hotsheet` project ran a kerf-authoring audit (HS-8449)
 without ever loading the skill, because no copy had been installed — and
-once a file *is* copied it never resynchronises across kerfjs version
+once a file _is_ copied it never resynchronises across kerfjs version
 bumps. The drop-ins go stale silently.
 
 This doc is the canonical statement of how those configs ship now: the
@@ -62,7 +62,7 @@ tooling is `kerfjs/ai/manifest.json`, not `kerfjs/dist/ai/…`. Resolved
 from a downstream consumer's project root with:
 
 ```js
-require.resolve('kerfjs/ai/manifest.json', { paths: [cwd] })
+require.resolve("kerfjs/ai/manifest.json", { paths: [cwd] });
 ```
 
 ### 12.2.1 Source of truth at the repo root; mirror under `ai/`
@@ -104,7 +104,7 @@ pre-commit and CI.
       "dest": ".claude/skills/kerf-app/SKILL.md",
       "version": "1.0.0",
       "sha256": "…",
-      "history": { "0.9.0": "…", "1.0.0": "…" }
+      "history": { "0.9.0": "…", "1.0.0": "…" },
     },
     {
       "name": "cursorrules",
@@ -113,9 +113,9 @@ pre-commit and CI.
       "dest": ".cursorrules",
       "version": "1.0.0",
       "sha256": "…",
-      "history": { "0.9.0": "…", "1.0.0": "…" }
-    }
-  ]
+      "history": { "0.9.0": "…", "1.0.0": "…" },
+    },
+  ],
 }
 ```
 
@@ -139,7 +139,7 @@ timestamp; the git commit time is the actual provenance.
 - `files[].version` is the per-file semver; bumped by hand when the
   canonical content of that one file changes meaningfully (§12.3.2).
   This IS the staleness signal.
-- `files[].sha256` is the hash of the canonical *section* of the
+- `files[].sha256` is the hash of the canonical _section_ of the
   bundled file (everything above and including the marker). The eslint
   rule uses it as a defensive cross-check against version-bump-without-
   content-change mistakes; it does NOT hash the consumer's local copy.
@@ -397,20 +397,20 @@ existing CI is already running.
 
 ## 12.6 Where each piece lives
 
-| Surface | Bundling (KF-215) | ESLint rule (KF-216) |
-| --- | --- | --- |
-| Source of truth | `kerf.claude-skill.md` / `kerf.cursorrules` | — |
-| Canonical hash history | `scripts/ai-canonical-history.json` | read from each shipped manifest entry's `history` map |
-| Generated mirror | `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json` | — |
-| Sync script | `scripts/sync-ai-bundle.mjs` | — |
-| In-sync gate | `scripts/check-ai-bundle.mjs`, wired into `npm run check` | — |
-| Rule source | — | `eslint-plugin/lib/rules/ai-assistant-configs.js` |
-| Rule docs | — | `eslint-plugin/docs/rules/ai-assistant-configs.md` |
-| Rule tests | — | `eslint-plugin/tests/rules/ai-assistant-configs.test.js` |
-| Recommended config | — | `eslint-plugin/index.js` `recommendedRules` table |
-| Numbered doc | This file (§12) | This file (§12.4) |
-| AI usage guide | `docs/ai/usage-guide.md` install section | `docs/ai/usage-guide.md` companion-plugin section |
-| CLAUDE.md section | "Drop-in AI-tool config" | "Drop-in AI-tool config" |
+| Surface                | Bundling (KF-215)                                         | ESLint rule (KF-216)                                     |
+| ---------------------- | --------------------------------------------------------- | -------------------------------------------------------- |
+| Source of truth        | `kerf.claude-skill.md` / `kerf.cursorrules`               | —                                                        |
+| Canonical hash history | `scripts/ai-canonical-history.json`                       | read from each shipped manifest entry's `history` map    |
+| Generated mirror       | `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`     | —                                                        |
+| Sync script            | `scripts/sync-ai-bundle.mjs`                              | —                                                        |
+| In-sync gate           | `scripts/check-ai-bundle.mjs`, wired into `npm run check` | —                                                        |
+| Rule source            | —                                                         | `eslint-plugin/lib/rules/ai-assistant-configs.js`        |
+| Rule docs              | —                                                         | `eslint-plugin/docs/rules/ai-assistant-configs.md`       |
+| Rule tests             | —                                                         | `eslint-plugin/tests/rules/ai-assistant-configs.test.js` |
+| Recommended config     | —                                                         | `eslint-plugin/index.js` `recommendedRules` table        |
+| Numbered doc           | This file (§12)                                           | This file (§12.4)                                        |
+| AI usage guide         | `docs/ai/usage-guide.md` install section                  | `docs/ai/usage-guide.md` companion-plugin section        |
+| CLAUDE.md section      | "Drop-in AI-tool config"                                  | "Drop-in AI-tool config"                                 |
 
 ## 12.7 Adding a new bundled file
 

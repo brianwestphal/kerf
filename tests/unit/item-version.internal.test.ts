@@ -62,12 +62,15 @@ describe('item-version — the anyVersioned latch (transition walk)', () => {
     const a = { id: 'a' };
     const b = { id: 'b' };
 
-    bumpItemVersion(42);                       // latch stays down
+    bumpItemVersion(42); // latch stays down
     expect(itemVersion(a)).toBe(0);
 
-    bumpItemVersion(a);                        // latch flips
+    bumpItemVersion(a); // latch flips
     expect(itemVersion(a)).toBe(1);
-    expect(itemVersion(b), 'an unbumped item still reads 0 through the WeakMap').toBe(0);
+    expect(
+      itemVersion(b),
+      'an unbumped item still reads 0 through the WeakMap',
+    ).toBe(0);
   });
 
   it('repeated bumps increment that item only', async () => {

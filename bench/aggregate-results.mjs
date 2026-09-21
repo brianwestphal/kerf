@@ -19,7 +19,10 @@
 import { readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const RESULTS_DIR = new URL('./.bench-cache/js-framework-benchmark/webdriver-ts/results/', import.meta.url).pathname;
+const RESULTS_DIR = new URL(
+  './.bench-cache/js-framework-benchmark/webdriver-ts/results/',
+  import.meta.url,
+).pathname;
 // DEV-ONLY output path — the PUBLISHED bench/results.json comes from
 // import-krausest.mjs. See the header note (KF-291).
 const JSON_OUT = new URL('./results.local.json', import.meta.url).pathname;
@@ -79,7 +82,8 @@ function table(title, benchmarks, byFramework) {
   }
   // Sort by the first numeric column (lower is better).
   rows.sort((a, b) => {
-    const av = parseFloat(a[1]); const bv = parseFloat(b[1]);
+    const av = parseFloat(a[1]);
+    const bv = parseFloat(b[1]);
     if (Number.isNaN(av) && Number.isNaN(bv)) return 0;
     if (Number.isNaN(av)) return 1;
     if (Number.isNaN(bv)) return -1;
@@ -128,7 +132,13 @@ function buildJsonSnapshot(byFramework) {
   }
   // Stable sort by name, then version — consumers (PerfTable, etc.) can
   // re-sort by their own preferred axis.
-  frameworks.sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : a.version.localeCompare(b.version)));
+  frameworks.sort((a, b) =>
+    a.name < b.name
+      ? -1
+      : a.name > b.name
+        ? 1
+        : a.version.localeCompare(b.version),
+  );
   return {
     capturedAt: newestResultMtime(),
     scenarios,
@@ -137,14 +147,21 @@ function buildJsonSnapshot(byFramework) {
 }
 
 const byFramework = loadAll();
-console.log('# kerfjs vs reference frameworks — krausest js-framework-benchmark');
+console.log(
+  '# kerfjs vs reference frameworks — krausest js-framework-benchmark',
+);
 console.log('');
 console.log(`Frameworks measured: ${[...byFramework.keys()].join(', ')}`);
 console.log('');
-console.log('All numbers are medians across the iterations the benchmark ran (per `--count`). Lower is better. Sorted by the first column.');
+console.log(
+  'All numbers are medians across the iterations the benchmark ran (per `--count`). Lower is better. Sorted by the first column.',
+);
 console.log(table('CPU benchmarks (ms)', CPU_BENCHMARKS, byFramework));
 console.log(table('Memory benchmarks', MEM_BENCHMARKS, byFramework));
 console.log(table('Size + first-paint', SIZE_BENCHMARKS, byFramework));
 
-writeFileSync(JSON_OUT, JSON.stringify(buildJsonSnapshot(byFramework), null, 2) + '\n');
+writeFileSync(
+  JSON_OUT,
+  JSON.stringify(buildJsonSnapshot(byFramework), null, 2) + '\n',
+);
 console.error(`\n[aggregate-results] wrote ${JSON_OUT}`);

@@ -44,7 +44,10 @@ const entries = [
 ];
 
 export default defineConfig({
-  entry: entries.map((entry) => `src/${entry}.${entry === 'index' || entry === 'select-register' || entry === 'webawesome' || entry === 'device-class' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`),
+  entry: entries.map(
+    (entry) =>
+      `src/${entry}.${entry === 'index' || entry === 'select-register' || entry === 'webawesome' || entry === 'device-class' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
+  ),
   format: ['esm'],
   outDir: 'dist',
   target: 'es2022',

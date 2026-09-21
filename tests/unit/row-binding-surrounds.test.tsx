@@ -25,10 +25,10 @@
  * shadowed the list container). Both fixes have shipped; every test in this
  * matrix now runs and asserts the corrected behavior.
  */
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { computed,each,mount,signal,toElement } from '../../src/index.js';
+import { computed, each, mount, signal, toElement } from '../../src/index.js';
 
 let root: HTMLElement;
 
@@ -37,7 +37,9 @@ beforeEach(() => {
   document.body.appendChild(root);
 });
 
-afterEach(() => { document.body.innerHTML = ''; });
+afterEach(() => {
+  document.body.innerHTML = '';
+});
 
 describe('KF-380 interaction matrix: row-scoped bindings × surrounds morph', () => {
   it('row-scoped mixed-content holes stay live when a conditional sibling before the list toggles', () => {
@@ -47,14 +49,24 @@ describe('KF-380 interaction matrix: row-scoped bindings × surrounds morph', ()
     // and a granular update afterwards must still re-wire the changed row.
     const banner = signal(false);
     const unit = signal('ms');
-    const rows = arraySignal([{ id: 1, label: 'lat' }, { id: 2, label: 'p95' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'lat' },
+      { id: 2, label: 'p95' },
+    ]);
     const dispose = mount(root, () => (
       <div>
         {banner.value ? <div class="banner">warn</div> : ''}
-        <ul>{each(rows, (r) => <li data-key={String(r.id)}>{computed(() => r.label)} in {unit}</li>)}</ul>
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>
+              {computed(() => r.label)} in {unit}
+            </li>
+          ))}
+        </ul>
       </div>
     ));
-    const li = (i: number): HTMLElement => root.querySelectorAll('li')[i] as HTMLElement;
+    const li = (i: number): HTMLElement =>
+      root.querySelectorAll('li')[i] as HTMLElement;
     expect(li(0).textContent).toBe('lat in ms');
     banner.value = true; // surrounds morph with owned rows present
     expect(li(0).textContent).toBe('lat in ms');
@@ -81,12 +93,23 @@ describe('KF-380 interaction matrix: row-scoped bindings × surrounds morph', ()
     const render = vi.fn(() => (
       <div>
         {banner.value ? <div class="banner">warn</div> : ''}
-        <ul>{each(rows, (r) => <li data-key={String(r.id)} class={computed(() => (sel.value === r.id ? 'sel' : ''))}>{String(r.id)}</li>)}</ul>
+        <ul>
+          {each(rows, (r) => (
+            <li
+              data-key={String(r.id)}
+              class={computed(() => (sel.value === r.id ? 'sel' : ''))}
+            >
+              {String(r.id)}
+            </li>
+          ))}
+        </ul>
       </div>
     ));
     const dispose = mount(root, render);
     const selKeys = (): string[] =>
-      Array.from(root.querySelectorAll('li.sel')).map((el) => el.getAttribute('data-key') ?? '');
+      Array.from(root.querySelectorAll('li.sel')).map(
+        (el) => el.getAttribute('data-key') ?? '',
+      );
     sel.value = 2;
     expect(selKeys()).toEqual(['2']);
     banner.value = true; // morph over the surrounds; owned rows skipped

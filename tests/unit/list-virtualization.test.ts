@@ -1,9 +1,12 @@
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { bindList } from '../../src/list.js';
 import { signal } from '../../src/reactive.js';
 
-interface Item { id: number; label: string }
+interface Item {
+  id: number;
+  label: string;
+}
 
 let originalRequestAnimationFrame: typeof globalThis.requestAnimationFrame;
 let nextFrameId = 1;
@@ -13,7 +16,9 @@ beforeEach(() => {
   originalRequestAnimationFrame = globalThis.requestAnimationFrame;
   nextFrameId = 1;
   pendingFrames.clear();
-  globalThis.requestAnimationFrame = (callback: FrameRequestCallback): number => {
+  globalThis.requestAnimationFrame = (
+    callback: FrameRequestCallback,
+  ): number => {
     const id = nextFrameId++;
     pendingFrames.set(id, callback);
     return id;
@@ -93,7 +98,9 @@ describe('bindList() — virtualization', () => {
   it('coalesces rapid scrolls into one rAF and skips a rAF that fires after dispose', () => {
     const parent = host();
     withHeight(parent, 100);
-    const items = signal<Item[]>(Array.from({ length: 50 }, (_, i) => ({ id: i, label: `r${i}` })));
+    const items = signal<Item[]>(
+      Array.from({ length: 50 }, (_, i) => ({ id: i, label: `r${i}` })),
+    );
     const dispose = bindList(parent, items, {
       key: (i) => i.id,
       render: (i) => i.label,
@@ -112,13 +119,17 @@ describe('bindList() — virtualization', () => {
   it('dispose() removes the inner sizer and stops the scroll handler', () => {
     const parent = host();
     withHeight(parent, 100);
-    const items = signal<Item[]>(Array.from({ length: 50 }, (_, i) => ({ id: i, label: `r${i}` })));
+    const items = signal<Item[]>(
+      Array.from({ length: 50 }, (_, i) => ({ id: i, label: `r${i}` })),
+    );
     const dispose = bindList(parent, items, {
       key: (i) => i.id,
       render: (i) => i.label,
       virtualize: { rowHeight: 20 },
     });
-    expect((parent.firstElementChild as HTMLElement).style.paddingBottom).not.toBe('');
+    expect(
+      (parent.firstElementChild as HTMLElement).style.paddingBottom,
+    ).not.toBe('');
     dispose();
     expect(parent.children.length).toBe(0); // sizer + rows removed
   });
@@ -130,7 +141,8 @@ describe('bindList() — variable-height virtualization (declared heights, KF-50
 
   // Alternating 20 / 40 px rows → offsets [0,20,60,80,120,140,180,200,240,260,300].
   const altHeight = (_: Item, i: number): number => (i % 2 === 0 ? 20 : 40);
-  const tenItems = (): Item[] => Array.from({ length: 10 }, (_, i) => ({ id: i, label: `r${i}` }));
+  const tenItems = (): Item[] =>
+    Array.from({ length: 10 }, (_, i) => ({ id: i, label: `r${i}` }));
 
   it('windows via the prefix sum: correct visible slice, padding, and per-row heights', () => {
     const parent = host();
@@ -145,11 +157,18 @@ describe('bindList() — variable-height virtualization (declared heights, KF-50
 
     const sizer = parent.firstElementChild as HTMLElement;
     // scrollTop 0, viewport 100 → start 0, end = first offset >= 100 = index 4.
-    expect(Array.from(sizer.children).map((c) => c.textContent)).toEqual(['r0', 'r1', 'r2', 'r3']);
+    expect(Array.from(sizer.children).map((c) => c.textContent)).toEqual([
+      'r0',
+      'r1',
+      'r2',
+      'r3',
+    ]);
     expect(sizer.style.paddingTop).toBe('0px');
     expect(sizer.style.paddingBottom).toBe('180px'); // 300 total − offsets[4]=120
     // Each row is sized to its DECLARED height, not clamped to a constant.
-    const heights = Array.from(sizer.children).map((c) => (c as HTMLElement).style.height);
+    const heights = Array.from(sizer.children).map(
+      (c) => (c as HTMLElement).style.height,
+    );
     expect(heights).toEqual(['20px', '40px', '20px', '40px']);
     dispose();
   });
@@ -171,7 +190,12 @@ describe('bindList() — variable-height virtualization (declared heights, KF-50
 
     const sizer = parent.firstElementChild as HTMLElement;
     // start = greatest offset <= 60 = index 2; end = first offset >= 160 = index 6.
-    expect(Array.from(sizer.children).map((c) => c.textContent)).toEqual(['r2', 'r3', 'r4', 'r5']);
+    expect(Array.from(sizer.children).map((c) => c.textContent)).toEqual([
+      'r2',
+      'r3',
+      'r4',
+      'r5',
+    ]);
     expect(sizer.style.paddingTop).toBe('60px'); // offsets[2]
     expect(sizer.style.paddingBottom).toBe('120px'); // 300 − offsets[6]=180
     dispose();
@@ -190,7 +214,13 @@ describe('bindList() — variable-height virtualization (declared heights, KF-50
 
     const sizer = parent.firstElementChild as HTMLElement;
     // base window [0,4) → with overscan 1: start max(0,0-1)=0, end min(10,4+1)=5.
-    expect(Array.from(sizer.children).map((c) => c.textContent)).toEqual(['r0', 'r1', 'r2', 'r3', 'r4']);
+    expect(Array.from(sizer.children).map((c) => c.textContent)).toEqual([
+      'r0',
+      'r1',
+      'r2',
+      'r3',
+      'r4',
+    ]);
     expect(sizer.style.paddingBottom).toBe('160px'); // 300 − offsets[5]=140
     dispose();
   });
@@ -269,7 +299,9 @@ describe('bindList() — variable-height virtualization (declared heights, KF-50
     const parent = host();
     withHeight(parent, 100);
     parent.scrollTop = 0;
-    const items = signal<Item[]>(Array.from({ length: 100 }, (_, i) => ({ id: i, label: `r${i}` })));
+    const items = signal<Item[]>(
+      Array.from({ length: 100 }, (_, i) => ({ id: i, label: `r${i}` })),
+    );
     const dispose = bindList(parent, items, {
       key: (i) => i.id,
       render: (i) => i.label,

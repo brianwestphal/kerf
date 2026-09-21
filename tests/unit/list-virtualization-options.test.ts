@@ -1,9 +1,12 @@
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { bindList,observeRowHeights } from '../../src/list.js';
+import { bindList, observeRowHeights } from '../../src/list.js';
 import { signal } from '../../src/reactive.js';
 
-interface Item { id: number; label: string }
+interface Item {
+  id: number;
+  label: string;
+}
 
 let originalRequestAnimationFrame: typeof globalThis.requestAnimationFrame;
 let nextFrameId = 1;
@@ -13,7 +16,9 @@ beforeEach(() => {
   originalRequestAnimationFrame = globalThis.requestAnimationFrame;
   nextFrameId = 1;
   pendingFrames.clear();
-  globalThis.requestAnimationFrame = (callback: FrameRequestCallback): number => {
+  globalThis.requestAnimationFrame = (
+    callback: FrameRequestCallback,
+  ): number => {
     const id = nextFrameId++;
     pendingFrames.set(id, callback);
     return id;
@@ -39,12 +44,14 @@ function host(): HTMLElement {
   return el;
 }
 
-const texts = (parent: HTMLElement) => Array.from(parent.children).map((c) => c.textContent);
+const texts = (parent: HTMLElement) =>
+  Array.from(parent.children).map((c) => c.textContent);
 
 describe('bindList() — virtualize minRows / container / resize (KF-503)', () => {
   const withHeight = (el: HTMLElement, h: number) =>
     Object.defineProperty(el, 'clientHeight', { configurable: true, value: h });
-  const n = (count: number): Item[] => Array.from({ length: count }, (_, i) => ({ id: i, label: `r${i}` }));
+  const n = (count: number): Item[] =>
+    Array.from({ length: count }, (_, i) => ({ id: i, label: `r${i}` }));
 
   it('minRows: renders ALL rows (no windowing, zero padding) while below the threshold', () => {
     const parent = host();
@@ -94,12 +101,17 @@ describe('bindList() — virtualize minRows / container / resize (KF-503)', () =
     const dispose = bindList(parent, items, {
       key: (i) => i.id,
       render: (i) => i.label,
-      virtualize: { rowHeight: (_, i) => (i % 2 === 0 ? 20 : 40), overscan: 0, minRows: 10 },
+      virtualize: {
+        rowHeight: (_, i) => (i % 2 === 0 ? 20 : 40),
+        overscan: 0,
+        minRows: 10,
+      },
     });
     const sizer = parent.firstElementChild as HTMLElement;
     expect(sizer.children.length).toBe(4);
-    expect(Array.from(sizer.children).map((c) => (c as HTMLElement).style.height))
-      .toEqual(['20px', '40px', '20px', '40px']);
+    expect(
+      Array.from(sizer.children).map((c) => (c as HTMLElement).style.height),
+    ).toEqual(['20px', '40px', '20px', '40px']);
     dispose();
   });
 
@@ -110,7 +122,11 @@ describe('bindList() — virtualize minRows / container / resize (KF-503)', () =
     const list = bindList(parent, items, {
       key: (i) => i.id,
       render: (i) => i.label,
-      virtualize: { rowHeight: 20, containerClass: 'rows', containerId: 'ticket-rows' },
+      virtualize: {
+        rowHeight: 20,
+        containerClass: 'rows',
+        containerId: 'ticket-rows',
+      },
     });
     const sizer = parent.firstElementChild as HTMLElement;
     expect(sizer.className).toBe('rows');
@@ -122,7 +138,10 @@ describe('bindList() — virtualize minRows / container / resize (KF-503)', () =
   it('handle.container is undefined for a non-virtualized list', () => {
     const parent = host();
     const items = signal<Item[]>(n(3));
-    const list = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const list = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
     expect(list.container).toBeUndefined();
     list();
   });
@@ -132,11 +151,22 @@ describe('bindList() — virtualize minRows / container / resize (KF-503)', () =
       static instances: FakeRO[] = [];
       cb: () => void;
       observed = new Set<Element>();
-      constructor(cb: () => void) { this.cb = cb; FakeRO.instances.push(this); }
-      observe(el: Element): void { this.observed.add(el); }
-      unobserve(el: Element): void { this.observed.delete(el); }
-      disconnect(): void { this.observed.clear(); }
-      flush(): void { this.cb(); }
+      constructor(cb: () => void) {
+        this.cb = cb;
+        FakeRO.instances.push(this);
+      }
+      observe(el: Element): void {
+        this.observed.add(el);
+      }
+      unobserve(el: Element): void {
+        this.observed.delete(el);
+      }
+      disconnect(): void {
+        this.observed.clear();
+      }
+      flush(): void {
+        this.cb();
+      }
     }
     let originalRO: typeof globalThis.ResizeObserver | undefined;
     afterEach(() => {
@@ -164,7 +194,10 @@ describe('bindList() — virtualize minRows / container / resize (KF-503)', () =
       expect(sizer.children.length).toBe(2);
 
       // Layout settles: the parent gains height and the ResizeObserver fires.
-      Object.defineProperty(parent, 'clientHeight', { configurable: true, value: 100 });
+      Object.defineProperty(parent, 'clientHeight', {
+        configurable: true,
+        value: 100,
+      });
       FakeRO.instances[0].flush(); // the parent-resize observer (bindList's only RO here)
       expect(flushAnimationFrame()).toBe(1);
       expect(sizer.children.length).toBe(7); // ceil(100/20)+2
@@ -192,10 +225,13 @@ describe('bindList() — virtualize minRows / container / resize (KF-503)', () =
 describe('bindList() — content-visibility virtualization mode (KF-525)', () => {
   const withHeight = (el: HTMLElement, h: number) =>
     Object.defineProperty(el, 'clientHeight', { configurable: true, value: h });
-  const n = (count: number): Item[] => Array.from({ length: count }, (_, i) => ({ id: i, label: `r${i}` }));
-  const sizerOf = (parent: HTMLElement) => parent.firstElementChild as HTMLElement;
+  const n = (count: number): Item[] =>
+    Array.from({ length: count }, (_, i) => ({ id: i, label: `r${i}` }));
+  const sizerOf = (parent: HTMLElement) =>
+    parent.firstElementChild as HTMLElement;
   const cv = (el: Element) => (el as HTMLElement).style.contentVisibility;
-  const intrinsic = (el: Element) => (el as HTMLElement).style.containIntrinsicSize;
+  const intrinsic = (el: Element) =>
+    (el as HTMLElement).style.containIntrinsicSize;
 
   it('renders EVERY row into the inner container and sets the two CSS props per row (no padding)', () => {
     const parent = host();
@@ -228,11 +264,18 @@ describe('bindList() — content-visibility virtualization mode (KF-525)', () =>
     const dispose = bindList(parent, items, {
       key: (i) => i.id,
       render: (i) => i.label,
-      virtualize: { rowHeight: (_, i) => (i % 2 === 0 ? 20 : 40), mode: 'content-visibility' },
+      virtualize: {
+        rowHeight: (_, i) => (i % 2 === 0 ? 20 : 40),
+        mode: 'content-visibility',
+      },
     });
     const sizer = sizerOf(parent);
-    expect(Array.from(sizer.children).map(intrinsic))
-      .toEqual(['0 20px', '0 40px', '0 20px', '0 40px']);
+    expect(Array.from(sizer.children).map(intrinsic)).toEqual([
+      '0 20px',
+      '0 40px',
+      '0 20px',
+      '0 40px',
+    ]);
     dispose();
   });
 
@@ -243,10 +286,17 @@ describe('bindList() — content-visibility virtualization mode (KF-525)', () =>
     const dispose = bindList(parent, items, {
       key: (i) => i.id,
       render: (i) => i.label,
-      virtualize: { rowHeight: { estimate: (_, i) => (i === 1 ? 90 : 60) }, mode: 'content-visibility' },
+      virtualize: {
+        rowHeight: { estimate: (_, i) => (i === 1 ? 90 : 60) },
+        mode: 'content-visibility',
+      },
     });
     const sizer = sizerOf(parent);
-    expect(Array.from(sizer.children).map(intrinsic)).toEqual(['0 60px', '0 90px', '0 60px']);
+    expect(Array.from(sizer.children).map(intrinsic)).toEqual([
+      '0 60px',
+      '0 90px',
+      '0 60px',
+    ]);
     dispose();
   });
 
@@ -260,7 +310,11 @@ describe('bindList() — content-visibility virtualization mode (KF-525)', () =>
       virtualize: { rowHeight: { estimate: 64 }, mode: 'content-visibility' },
     });
     const sizer = sizerOf(parent);
-    expect(Array.from(sizer.children).map(intrinsic)).toEqual(['0 64px', '0 64px', '0 64px']);
+    expect(Array.from(sizer.children).map(intrinsic)).toEqual([
+      '0 64px',
+      '0 64px',
+      '0 64px',
+    ]);
     dispose();
   });
 
@@ -278,7 +332,9 @@ describe('bindList() — content-visibility virtualization mode (KF-525)', () =>
     list.setHeight(2, 200); // would move offsets in measured window mode
     expect(pendingFrames.size).toBe(0);
     // Every row keeps the estimate-derived placeholder; scrollTop is untouched.
-    expect(Array.from(sizer.children).map(intrinsic)).toEqual(Array(5).fill('0 50px'));
+    expect(Array.from(sizer.children).map(intrinsic)).toEqual(
+      Array(5).fill('0 50px'),
+    );
     expect(parent.scrollTop).toBe(0);
     list();
   });
@@ -287,10 +343,18 @@ describe('bindList() — content-visibility virtualization mode (KF-525)', () =>
     const created: unknown[] = [];
     const originalRO = globalThis.ResizeObserver;
     class FakeRO {
-      constructor(cb: () => void) { created.push(cb); }
-      observe(): void { /* noop */ }
-      unobserve(): void { /* noop */ }
-      disconnect(): void { /* noop */ }
+      constructor(cb: () => void) {
+        created.push(cb);
+      }
+      observe(): void {
+        /* noop */
+      }
+      unobserve(): void {
+        /* noop */
+      }
+      disconnect(): void {
+        /* noop */
+      }
     }
     (globalThis as { ResizeObserver: unknown }).ResizeObserver = FakeRO;
     try {
@@ -354,7 +418,12 @@ describe('bindList() — content-visibility virtualization mode (KF-525)', () =>
     const list = bindList(parent, items, {
       key: (i) => i.id,
       render: (i) => i.label,
-      virtualize: { rowHeight: 20, mode: 'content-visibility', containerClass: 'rows', containerId: 'cv-rows' },
+      virtualize: {
+        rowHeight: 20,
+        mode: 'content-visibility',
+        containerClass: 'rows',
+        containerId: 'cv-rows',
+      },
     });
     const sizer = sizerOf(parent);
     expect(list.container).toBe(sizer);

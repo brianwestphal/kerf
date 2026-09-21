@@ -3,6 +3,7 @@ name: glassbox
 description: Read the latest Glassbox code review and apply all feedback annotations
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash
 ---
+
 <!-- glassbox-skill-version: 1 -->
 
 Read `.glassbox/latest-review.md` and apply the feedback.

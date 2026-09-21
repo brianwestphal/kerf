@@ -38,10 +38,15 @@ const meta = {
 function create(context) {
   return {
     CallExpression(node) {
-      if (node.callee.type !== 'Identifier' || node.callee.name !== 'each') return;
+      if (node.callee.type !== 'Identifier' || node.callee.name !== 'each')
+        return;
       const cb = node.arguments[1];
       if (!cb) return;
-      if (cb.type !== 'ArrowFunctionExpression' && cb.type !== 'FunctionExpression') return;
+      if (
+        cb.type !== 'ArrowFunctionExpression' &&
+        cb.type !== 'FunctionExpression'
+      )
+        return;
       const root = findRootJSXFromBody(cb.body);
       if (!root) return;
       if (root.type === 'JSXFragment') {

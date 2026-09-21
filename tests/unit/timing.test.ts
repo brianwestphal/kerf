@@ -197,7 +197,9 @@ describe('debouncedSignal()', () => {
     const s = signal('x');
     const d = debouncedSignal(s, 100);
     const seen: string[] = [];
-    const stop = effect(() => { seen.push(d.value); });
+    const stop = effect(() => {
+      seen.push(d.value);
+    });
     expect(seen).toEqual(['x']); // initial
 
     s.value = 'y';

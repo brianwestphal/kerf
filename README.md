@@ -57,19 +57,21 @@ npm install kerfjs
 ```
 
 Write plain `.tsx` and build with your existing esbuild / Vite / tsup — no extra plugin. New here? Read the [5-minute orientation](https://github.com/brianwestphal/kerf/blob/main/docs/orientation.md), or open a [complete example](https://brianwestphal.github.io/kerf/examples/complete/).
+
 ## Why Kerf
 
 1. **~12 KB, one dependency.** ~12 KB minified + gzipped including `@preact/signals-core` (~13 KB with `arraySignal`). No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest benchmark](https://krausest.github.io/js-framework-benchmark/current.html) kerf sits in the same cluster as Vue, Lit, and vanjs; Solid's compiler leads the update-path benchmarks, which kerf doesn't try to match by design — no compiler.
 
-2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it *is* the DOM.
+2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it _is_ the DOM.
 
-3. **Values bind, structure re-renders.** Hand a signal *itself* into a JSX hole — `class={selectedId}` — and kerf binds that one node: on change, only that attribute updates, with no render re-run and no list reconcile. Moving selection between rows in a 10,000-row table touches at most the old and new row classes. ([more →](#fine-grained-updates-bind-a-signal-into-a-hole))
+3. **Values bind, structure re-renders.** Hand a signal _itself_ into a JSX hole — `class={selectedId}` — and kerf binds that one node: on change, only that attribute updates, with no render re-run and no list reconcile. Moving selection between rows in a 10,000-row table touches at most the old and new row classes. ([more →](#fine-grained-updates-bind-a-signal-into-a-hole))
 
 4. **Focus, selection, and listeners survive re-renders — even mid-list.** The reconciler morphs instead of rebuilding, so caret position, IME composition, scroll, and delegated listeners survive every update; keyed rows are patched in place rather than recreated.
 
 5. **Safe by default.** Text and attributes are HTML-escaped automatically, URL attributes are scheme-screened (`javascript:` dropped), and inline `on*` handlers are rejected outright — so untrusted data stays inert. `raw()` is the explicit, auditable opt-out.
 
 **Plus, nothing you don't ask for:** JSX typed against the HTML standard (not React's props) · a ~18-export API with no hooks, lifecycle, or per-instance state · **nine** tree-shakeable companion subpaths (`router`, `list`, `overlay`, `async`, …) that stay out of the core until imported · an [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) + opt-in dev warnings + `create-kerf-component` scaffold · plain TS/JSX/ESM that drops into esbuild / Vite / tsup — or **no** build at all via the `html` tagged template.
+
 ## When to use Kerf
 
 - **Hybrid desktop apps (Tauri / Electron)** — small bundle, predictable diff, debuggable runtime; ideal for the embedded webview.
@@ -84,7 +86,7 @@ Write plain `.tsx` and build with your existing esbuild / Vite / tsup — no ext
 - Need a full ecosystem (router + forms + data + SSR streaming) → **Next.js / Remix / SolidStart**.
 - Building a deeply componentised design-system app → **React / Solid / Svelte**.
 - Need React Native / cross-platform mobile → **React** (Kerf + Tauri/Electron also covers many of these cases).
-- Building a static site → **Astro** (we use it for *this* project's site).
+- Building a static site → **Astro** (we use it for _this_ project's site).
 - Already invested in a framework where switching cost outweighs the bundle size gain.
 
 ## Quick tour
@@ -144,7 +146,7 @@ delegate(root, 'click', REMOVE.selector, (_e, btn) => { /* … */ }); // in dele
 
 ### Fine-grained updates: bind a signal into a hole
 
-Inside a `mount()`, hand a signal *itself* (not its `.value`) into an attribute or text position and kerf wires that hole straight to the signal — the render function never re-runs and the list reconciler never walks:
+Inside a `mount()`, hand a signal _itself_ (not its `.value`) into an attribute or text position and kerf wires that hole straight to the signal — the render function never re-runs and the list reconciler never walks:
 
 ```ts
 const status = signal('idle');
@@ -160,7 +162,7 @@ status.value = 'saving';     // updates the class + the text node directly — n
 
 The headline use is external state driving a hot spot: a `selectedId` moving between rows inside a 10,000-row `each()` list updates at most the old and new row class attributes, with no reconcile. Works in static content and inside `each()` rows (a row's binding is torn down with the row); outside a `mount()` (SSR / `SafeHtml.toString()`) a bound signal just snapshots its current value.
 
-This is kerf's guiding idiom — *values bind, structure re-renders*: pass the signal itself wherever a hole is just a value, and read `.value` in the render function only where the JSX structure depends on it. A render that reads no `.value` runs exactly once; from then on every update is a direct write to the node it concerns. See [`docs/2-reactivity.md`](./docs/2-reactivity.md) §2.9.
+This is kerf's guiding idiom — _values bind, structure re-renders_: pass the signal itself wherever a hole is just a value, and read `.value` in the render function only where the JSX structure depends on it. A render that reads no `.value` runs exactly once; from then on every update is a direct write to the node it concerns. See [`docs/2-reactivity.md`](./docs/2-reactivity.md) §2.9.
 
 ### Long keyed lists: `arraySignal`
 
@@ -187,11 +189,11 @@ The class lives in its own subpath so apps that don't need it shed ~1 KB. Reads 
 `mount()` wraps `effect()` so the render re-runs on signal changes. Sometimes you have a freshly-built template and an already-populated element and you just want to reconcile them once — no subscription, no re-render loop. That's `morph`:
 
 ```ts
-import { morph, raw } from 'kerfjs';
+import { morph, raw } from "kerfjs";
 
-morph(liveCard, freshlyBuiltCardEl);                     // Element template
-morph(liveCard, '<article class="card">…</article>');    // raw HTML string
-morph(liveCard, raw(htmlFromServer));                    // SafeHtml
+morph(liveCard, freshlyBuiltCardEl); // Element template
+morph(liveCard, '<article class="card">…</article>'); // raw HTML string
+morph(liveCard, raw(htmlFromServer)); // SafeHtml
 ```
 
 Same algorithm `mount()` uses internally — `data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focused-input value + selection preservation, the `<details>` / `<dialog>` user-agent-owned `open` rule all carry over. Use it for SSR-fragment hydration, page-refresh diffs, third-party widget remounts. See [`docs/4-render.md`](./docs/4-render.md) §4.4.3.
@@ -202,14 +204,19 @@ Same algorithm `mount()` uses internally — `data-morph-skip`, `data-morph-skip
 
 ```html
 <script type="module">
-  import { signal, mount, each } from 'https://esm.sh/kerfjs@4';
-  import { html } from 'https://esm.sh/kerfjs@4/html';
+  import { signal, mount, each } from "https://esm.sh/kerfjs@4";
+  import { html } from "https://esm.sh/kerfjs@4/html";
 
-  const items = signal([{ id: 1, label: 'no build step' }]);
+  const items = signal([{ id: 1, label: "no build step" }]);
 
-  mount(document.getElementById('app'), () => html`
-    <ul>${each(items.value, (i) => html`<li id="${i.id}">${i.label}</li>`)}</ul>
-  `);
+  mount(
+    document.getElementById("app"),
+    () => html`
+      <ul>
+        ${each(items.value, (i) => html`<li id="${i.id}">${i.label}</li>`)}
+      </ul>
+    `,
+  );
 </script>
 ```
 
@@ -238,7 +245,7 @@ const list = bindList(scrollEl, messages, {
 observeRowHeights(list); // one ResizeObserver → kerf anchor-corrects scroll
 ```
 
-And a whole client-side router in one call — `kerfjs/router`, the "postcard router." A route table, a keyed `outlet()`, and automatic `<a href>` interception; the *core* stays router-free (this is opt-in):
+And a whole client-side router in one call — `kerfjs/router`, the "postcard router." A route table, a keyed `outlet()`, and automatic `<a href>` interception; the _core_ stays router-free (this is opt-in):
 
 ```ts
 import { createRouter } from 'kerfjs/router';
@@ -272,7 +279,7 @@ npm install --save-dev eslint-plugin-kerfjs
 
 ```js
 // eslint.config.js (flat config, ESLint v9+)
-import kerfjs from 'eslint-plugin-kerfjs';
+import kerfjs from "eslint-plugin-kerfjs";
 export default [kerfjs.configs.recommended];
 ```
 
@@ -301,9 +308,9 @@ See [`docs/13-component-packages.md`](./docs/13-component-packages.md) for the f
 
 ## Why "kerf"?
 
-A *kerf* is the narrow strip of material a saw blade removes when cutting — the smallest possible cut. The framework's job is the same: apply the smallest possible mutation to update your DOM.
+A _kerf_ is the narrow strip of material a saw blade removes when cutting — the smallest possible cut. The framework's job is the same: apply the smallest possible mutation to update your DOM.
 
-(And yes, ~~kerformance~~ → *performance* jokes were written. They were also rejected.)
+(And yes, ~~kerformance~~ → _performance_ jokes were written. They were also rejected.)
 
 ## Status
 

@@ -9,7 +9,15 @@
  * before asserting on the warn spy.
  */
 
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
 import { devHooks } from '../../src/dev-hooks.js';
 import { _resetWarnedForTests } from '../../src/dev-listener-warn.js';
@@ -18,9 +26,14 @@ import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
-const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+const env = (
+  globalThis as { process: { env: Record<string, string | undefined> } }
+).process.env;
 
 let root: HTMLElement;
 let warnSpy: MockInstance<typeof console.warn>;
@@ -49,7 +62,9 @@ async function flushMutationObserver(): Promise<void> {
 describe('dev-listener-warn (KF-174, opt-in)', () => {
   function renderList(items: { id: number }[]): unknown {
     return jsx('ul', {
-      children: each(items, (it) => jsx('li', { 'data-key': String(it.id), children: String(it.id) })),
+      children: each(items, (it) =>
+        jsx('li', { 'data-key': String(it.id), children: String(it.id) }),
+      ),
     });
   }
 
@@ -62,7 +77,9 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
     items.value = [{ id: 1 }];
     await flushMutationObserver();
     expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0][0]).toMatch(/inside a mount\(\)-managed tree was removed\/rebuilt/);
+    expect(warnSpy.mock.calls[0][0]).toMatch(
+      /inside a mount\(\)-managed tree was removed\/rebuilt/,
+    );
     expect(warnSpy.mock.calls[0][0]).toMatch(/delegate\(rootEl/);
   });
 
@@ -108,7 +125,14 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
 
   it('does NOT warn when a listener-bearing node survives the morph (no removal)', async () => {
     const cls = signal('a');
-    mount(root, () => jsx('div', { className: cls.value, children: jsx('span', { children: 'stable' }) }) as never);
+    mount(
+      root,
+      () =>
+        jsx('div', {
+          className: cls.value,
+          children: jsx('span', { children: 'stable' }),
+        }) as never,
+    );
     const span = root.querySelector('span') as HTMLElement;
     span.addEventListener('click', () => {});
     cls.value = 'b';
@@ -118,12 +142,18 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
 
   it('detects a marked descendant removed as part of a subtree removal', async () => {
     const items = signal([{ id: 1 }]);
-    mount(root, () => jsx('ul', {
-      children: each(items.value, (it) => jsx('li', {
-        'data-key': String(it.id),
-        children: jsx('span', { className: 'leaf', children: 'x' }),
-      })),
-    }) as never);
+    mount(
+      root,
+      () =>
+        jsx('ul', {
+          children: each(items.value, (it) =>
+            jsx('li', {
+              'data-key': String(it.id),
+              children: jsx('span', { className: 'leaf', children: 'x' }),
+            }),
+          ),
+        }) as never,
+    );
     const leaf = root.querySelector('.leaf') as HTMLElement;
     leaf.addEventListener('click', () => {});
     items.value = [{ id: 1 }];
@@ -137,12 +167,20 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
     // Pops <div>, finds no marker, pushes <span> (line 96 — inner-loop push).
     // Pops <span>, finds marker, returns true.
     const items = signal([{ id: 1 }]);
-    mount(root, () => jsx('ul', {
-      children: each(items.value, (it) => jsx('li', {
-        'data-key': String(it.id),
-        children: jsx('div', { children: jsx('span', { className: 'leaf', children: 'x' }) }),
-      })),
-    }) as never);
+    mount(
+      root,
+      () =>
+        jsx('ul', {
+          children: each(items.value, (it) =>
+            jsx('li', {
+              'data-key': String(it.id),
+              children: jsx('div', {
+                children: jsx('span', { className: 'leaf', children: 'x' }),
+              }),
+            }),
+          ),
+        }) as never,
+    );
     const leaf = root.querySelector('.leaf') as HTMLElement;
     leaf.addEventListener('click', () => {});
     items.value = [{ id: 1 }];
@@ -165,7 +203,11 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
     // false-branch by attaching a listener to document.
     mount(root, () => renderList([{ id: 1 }]) as never);
     document.addEventListener('click', () => {});
-    expect((document as unknown as Record<symbol, boolean>)[Symbol.for('kerfjs.devListener')]).toBeUndefined();
+    expect(
+      (document as unknown as Record<symbol, boolean>)[
+        Symbol.for('kerfjs.devListener')
+      ],
+    ).toBeUndefined();
   });
 
   it('disconnects the observer on dispose so post-dispose mutations do not warn', async () => {
@@ -205,7 +247,9 @@ describe('maybeWarnMissingRowKey (KF-173 helper, branch coverage)', () => {
       devHooks.missingRowKey?.(el, '<li>x</li>', binding);
       expect(warnSpy).not.toHaveBeenCalled();
       // The flag is untouched, so a later dev-shape call still evaluates.
-      expect((binding as { warnedMissingKey?: boolean }).warnedMissingKey).toBeUndefined();
+      expect(
+        (binding as { warnedMissingKey?: boolean }).warnedMissingKey,
+      ).toBeUndefined();
     } finally {
       restoreDevelopmentShape();
     }
@@ -220,7 +264,9 @@ describe('maybeWarnMissingRowKey (KF-173 helper, branch coverage)', () => {
     const binding = {};
     maybeWarnMissingRowKey(el, '<li>x</li>', binding);
     expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect((binding as { warnedMissingKey?: boolean }).warnedMissingKey).toBe(true);
+    expect((binding as { warnedMissingKey?: boolean }).warnedMissingKey).toBe(
+      true,
+    );
     // Second call short-circuits at the flag check.
     maybeWarnMissingRowKey(el, '<li>y</li>', binding);
     expect(warnSpy).toHaveBeenCalledTimes(1);
@@ -232,7 +278,9 @@ describe('maybeWarnMissingRowKey (KF-173 helper, branch coverage)', () => {
     const binding = {};
     maybeWarnMissingRowKey(el, '<li id="row-1">x</li>', binding);
     expect(warnSpy).not.toHaveBeenCalled();
-    expect((binding as { warnedMissingKey?: boolean }).warnedMissingKey).toBe(true);
+    expect((binding as { warnedMissingKey?: boolean }).warnedMissingKey).toBe(
+      true,
+    );
   });
 
   it('does not warn (but sets the flag) when the row has a data-key', () => {
@@ -241,6 +289,8 @@ describe('maybeWarnMissingRowKey (KF-173 helper, branch coverage)', () => {
     const binding = {};
     maybeWarnMissingRowKey(el, '<li data-key="1">x</li>', binding);
     expect(warnSpy).not.toHaveBeenCalled();
-    expect((binding as { warnedMissingKey?: boolean }).warnedMissingKey).toBe(true);
+    expect((binding as { warnedMissingKey?: boolean }).warnedMissingKey).toBe(
+      true,
+    );
   });
 });

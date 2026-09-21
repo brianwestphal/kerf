@@ -84,9 +84,9 @@ don't-load; microcopy = the tagline, headings-as-CTAs, "Why" bullets, install co
    - Otherwise spawn a **fresh general-purpose subagent** (`Agent`, NOT a fork —
      you want an independent view) with the verbatim lens on the same surface, and
      reconcile. Note in the writeup which second-opinion source you used.
-   Reconcile: keep findings both raise (high confidence), weigh disagreements on
-   merit (don't average — judge), and drop anything neither the evidence nor the
-   second reviewer supports.
+     Reconcile: keep findings both raise (high confidence), weigh disagreements on
+     merit (don't average — judge), and drop anything neither the evidence nor the
+     second reviewer supports.
 4. **Write the synthesis** in the exact format: **The Good · Critical Issues
    (ranked) · Actionable Recommendations**. Where the two reviews disagreed, say so.
 5. **File Hot Sheet tickets** for the critical issues and the actionable
@@ -96,7 +96,7 @@ don't-load; microcopy = the tagline, headings-as-CTAs, "Why" bullets, install co
    **If a fix is a judgment/taste/brand call you're unsure about, file the ticket
    and add a `FEEDBACK NEEDED:` note asking the maintainer before implementing.**
 6. **Don't implement in this pass** unless the maintainer said to — this skill
-   produces the review + tickets. (When later asked to *apply* a specific
+   produces the review + tickets. (When later asked to _apply_ a specific
    recommendation, do it under its ticket and re-review the result.)
 
 ## Hard rules

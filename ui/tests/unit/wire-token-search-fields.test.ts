@@ -1,8 +1,11 @@
-import { mount, type Signal,signal } from 'kerfjs';
+import { mount, type Signal, signal } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { TokenSearchField } from '../../src/token-search-field.js';
-import { type TokenSearchCollapsibleOptions, wireTokenSearchFields } from '../../src/wire-token-search-fields.js';
+import {
+  type TokenSearchCollapsibleOptions,
+  wireTokenSearchFields,
+} from '../../src/wire-token-search-fields.js';
 
 function focusAt(editor: HTMLElement, node: Node, offset: number) {
   const selection = document.getSelection()!;
@@ -14,7 +17,10 @@ function focusAt(editor: HTMLElement, node: Node, offset: number) {
   editor.focus();
 }
 
-function inputEvent(type: 'beforeinput' | 'input', inputType = 'deleteContentForward') {
+function inputEvent(
+  type: 'beforeinput' | 'input',
+  inputType = 'deleteContentForward',
+) {
   return new InputEvent(type, { bubbles: true, inputType });
 }
 
@@ -26,11 +32,18 @@ describe('wireTokenSearchFields', () => {
 
   it('submits Enter without inserting a contenteditable line break', () => {
     const root = document.createElement('div');
-    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"></div></div>';
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
     const onSubmit = vi.fn();
     const stop = wireTokenSearchFields(root, { onSubmit });
-    const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+    const event = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      bubbles: true,
+      cancelable: true,
+    });
 
     editor.dispatchEvent(event);
 
@@ -41,14 +54,36 @@ describe('wireTokenSearchFields', () => {
 
   it('ignores composition, other keys, and disabled fields', () => {
     const root = document.createElement('div');
-    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="true"><div data-token-search-editor="tickets" contenteditable="false"></div></div>';
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="true"><div data-token-search-editor="tickets" contenteditable="false"></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
     const onSubmit = vi.fn();
     const stop = wireTokenSearchFields(root, { onSubmit });
 
-    editor.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true, cancelable: true }));
-    editor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
-    editor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true, isComposing: true }));
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'a',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true,
+        isComposing: true,
+      }),
+    );
 
     expect(onSubmit).not.toHaveBeenCalled();
     stop();
@@ -57,9 +92,14 @@ describe('wireTokenSearchFields', () => {
   it('restores the text-relative caret when controlled rendering replaces an editor after token deletion', async () => {
     const root = document.createElement('div');
     document.body.append(root);
-    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>NOT </span><span data-component="token-search-token" data-token-value="tag:client" contenteditable="false">tag:client</span><span data-token-search-text> AND parser</span></div></div>';
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
-    const firstText = editor.querySelector('[data-token-search-text]')!.firstChild!;
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>NOT </span><span data-component="token-search-token" data-token-value="tag:client" contenteditable="false">tag:client</span><span data-token-search-text> AND parser</span></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    const firstText = editor.querySelector(
+      '[data-token-search-text]',
+    )!.firstChild!;
     const selection = document.getSelection()!;
     focusAt(editor, firstText, 4);
     const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
@@ -67,10 +107,13 @@ describe('wireTokenSearchFields', () => {
     editor.dispatchEvent(inputEvent('beforeinput'));
     editor.querySelector('[data-component="token-search-token"]')!.remove();
     editor.dispatchEvent(inputEvent('input'));
-    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>NOT  AND parser</span></div></div>';
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>NOT  AND parser</span></div></div>';
     await new Promise((resolve) => window.requestAnimationFrame(resolve));
 
-    const replacement = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const replacement = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
     expect(document.activeElement).toBe(replacement);
     expect(selection.anchorNode?.textContent).toBe('NOT  AND parser');
     expect(selection.anchorOffset).toBe(4);
@@ -80,8 +123,11 @@ describe('wireTokenSearchFields', () => {
   it('strips the bogus <br> a delete-to-empty leaves and restores the canonical empty text span', () => {
     const root = document.createElement('div');
     document.body.append(root);
-    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>hello</span></div></div>';
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>hello</span></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
     const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
 
     // Simulate what a contenteditable host does on select-all + Delete: the text
@@ -97,15 +143,20 @@ describe('wireTokenSearchFields', () => {
     expect((editor.textContent ?? '').replaceAll('​', '')).toBe('');
     // The caret is placed inside the restored span so typing resumes cleanly.
     const selection = document.getSelection()!;
-    expect(span.contains(selection.anchorNode) || selection.anchorNode === span).toBe(true);
+    expect(
+      span.contains(selection.anchorNode) || selection.anchorNode === span,
+    ).toBe(true);
     stop();
   });
 
   it('clears an atomic chip left behind by a select-all deletion', () => {
     const root = document.createElement('div');
     document.body.append(root);
-    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before </span><span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><span data-token-search-text> after</span></div></div>';
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before </span><span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><span data-token-search-text> after</span></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
     const onEdit = vi.fn();
     const stop = wireTokenSearchFields(root, { onEdit });
     const selection = document.getSelection()!;
@@ -118,12 +169,17 @@ describe('wireTokenSearchFields', () => {
     editor.dispatchEvent(inputEvent('beforeinput'));
     // Some engines only remove part of a contenteditable selection containing
     // contenteditable=false chips. Preserve that failure shape for regression.
-    editor.innerHTML = '<span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><br>';
+    editor.innerHTML =
+      '<span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><br>';
     editor.dispatchEvent(inputEvent('input'));
 
-    expect(editor.querySelectorAll('[data-component="token-search-token"]')).toHaveLength(0);
+    expect(
+      editor.querySelectorAll('[data-component="token-search-token"]'),
+    ).toHaveLength(0);
     expect(editor.querySelectorAll('br')).toHaveLength(0);
-    expect(editor.firstElementChild!.matches('[data-token-search-text]')).toBe(true);
+    expect(editor.firstElementChild!.matches('[data-token-search-text]')).toBe(
+      true,
+    );
     expect(editor.textContent).toBe('');
     expect(onEdit).toHaveBeenCalledOnce();
     stop();
@@ -132,23 +188,33 @@ describe('wireTokenSearchFields', () => {
   it('drops a stray <br> around surviving chips without wiping the field', () => {
     const root = document.createElement('div');
     document.body.append(root);
-    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>a</span><span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><br></div></div>';
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>a</span><span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><br></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
     const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
 
     editor.dispatchEvent(inputEvent('input', 'deleteContentForward'));
 
     expect(editor.querySelectorAll('br')).toHaveLength(0);
-    expect(editor.querySelectorAll('[data-component="token-search-token"]')).toHaveLength(1);
-    expect(editor.querySelector('[data-token-search-text]')!.textContent).toBe('a');
+    expect(
+      editor.querySelectorAll('[data-component="token-search-token"]'),
+    ).toHaveLength(1);
+    expect(editor.querySelector('[data-token-search-text]')!.textContent).toBe(
+      'a',
+    );
     stop();
   });
 
   it('removes a stray <br> but keeps surviving text when the field is not empty', () => {
     const root = document.createElement('div');
     document.body.append(root);
-    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>hi</span><br></div></div>';
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>hi</span><br></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
     editor.focus();
     const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
 
@@ -156,15 +222,20 @@ describe('wireTokenSearchFields', () => {
 
     expect(editor.querySelectorAll('br')).toHaveLength(0);
     // Non-empty text is preserved — no canonical-span rebuild.
-    expect(editor.querySelector('[data-token-search-text]')!.textContent).toBe('hi');
+    expect(editor.querySelector('[data-token-search-text]')!.textContent).toBe(
+      'hi',
+    );
     stop();
   });
 
   it('normalizes a delete-to-empty editor without moving the caret when it is not focused', () => {
     const root = document.createElement('div');
     document.body.append(root);
-    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><br></div></div><button type="button">Elsewhere</button>';
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><br></div></div><button type="button">Elsewhere</button>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
     const elsewhere = root.querySelector('button')!;
     elsewhere.focus();
     const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
@@ -174,7 +245,9 @@ describe('wireTokenSearchFields', () => {
     // The bogus <br> is stripped and the canonical span restored, but focus/caret
     // stay with the other element.
     expect(editor.querySelectorAll('br')).toHaveLength(0);
-    expect(editor.firstElementChild!.matches('[data-token-search-text]')).toBe(true);
+    expect(editor.firstElementChild!.matches('[data-token-search-text]')).toBe(
+      true,
+    );
     expect(document.activeElement).toBe(elsewhere);
     stop();
   });
@@ -182,8 +255,11 @@ describe('wireTokenSearchFields', () => {
   it('leaves a non-delete input untouched even if it carries a <br>', () => {
     const root = document.createElement('div');
     document.body.append(root);
-    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><br></div></div>';
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><br></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
     const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
 
     editor.dispatchEvent(inputEvent('input', 'insertText'));
@@ -196,8 +272,11 @@ describe('wireTokenSearchFields', () => {
   it('does not steal focus when deletion is not controlled or focus moves elsewhere', async () => {
     const root = document.createElement('div');
     document.body.append(root);
-    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before</span><span data-component="token-search-token" contenteditable="false">token</span></div></div><button type="button">Elsewhere</button>';
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before</span><span data-component="token-search-token" contenteditable="false">token</span></div></div><button type="button">Elsewhere</button>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
     const text = editor.querySelector('[data-token-search-text]')!.firstChild!;
     const elsewhere = root.querySelector('button')!;
     const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
@@ -220,8 +299,11 @@ describe('wireTokenSearchFields', () => {
   it('ignores unrelated input and missing deletion context', async () => {
     const root = document.createElement('div');
     document.body.append(root);
-    root.innerHTML = '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before</span><span data-component="token-search-token" contenteditable="false">token</span></div></div>';
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before</span><span data-component="token-search-token" contenteditable="false">token</span></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
     const text = editor.querySelector('[data-token-search-text]')!.firstChild!;
     const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
 
@@ -241,10 +323,15 @@ describe('wireTokenSearchFields', () => {
   it('ignores events and selections that cannot describe an enabled editor deletion', () => {
     const root = document.createElement('div');
     document.body.append(root);
-    root.innerHTML = '<span>Outside</span><div data-component="token-search-field" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>query</span></div></div>';
+    root.innerHTML =
+      '<span>Outside</span><div data-component="token-search-field" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>query</span></div></div>';
     const outside = root.querySelector('span')!;
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
-    const editorText = editor.querySelector('[data-token-search-text]')!.firstChild!;
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    const editorText = editor.querySelector(
+      '[data-token-search-text]',
+    )!.firstChild!;
     const stop = wireTokenSearchFields(root, { onSubmit: vi.fn() });
 
     outside.firstChild!.dispatchEvent(inputEvent('input'));
@@ -259,7 +346,9 @@ describe('wireTokenSearchFields', () => {
     editor.dispatchEvent(inputEvent('beforeinput'));
     focusAt(editor, editorText, 2);
     editor.dispatchEvent(inputEvent('beforeinput'));
-    editor.closest<HTMLElement>('[data-component="token-search-field"]')!.dataset.disabled = 'true';
+    editor.closest<HTMLElement>(
+      '[data-component="token-search-field"]',
+    )!.dataset.disabled = 'true';
     editor.dispatchEvent(inputEvent('beforeinput'));
 
     expect(document.activeElement).toBe(editor);
@@ -267,12 +356,17 @@ describe('wireTokenSearchFields', () => {
   });
 });
 
-const raf = () => new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
-const micro = () => new Promise<void>((resolve) => window.queueMicrotask(() => resolve()));
+const raf = () =>
+  new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()));
+const micro = () =>
+  new Promise<void>((resolve) => window.queueMicrotask(() => resolve()));
 
 function focusoutEvent(relatedTarget: EventTarget | null): FocusEvent {
   const event = new FocusEvent('focusout', { bubbles: true });
-  Object.defineProperty(event, 'relatedTarget', { value: relatedTarget, configurable: true });
+  Object.defineProperty(event, 'relatedTarget', {
+    value: relatedTarget,
+    configurable: true,
+  });
   return event;
 }
 
@@ -312,7 +406,9 @@ function mountCollapsibleField(boundTo?: Signal<boolean>): MountedField {
 
 function wireCollapsible(
   field: MountedField,
-  collapsible: boolean | TokenSearchCollapsibleOptions = { signals: { find: field.expandedSignal } },
+  collapsible: boolean | TokenSearchCollapsibleOptions = {
+    signals: { find: field.expandedSignal },
+  },
   onSubmit?: (submission: { id: string; editor: HTMLElement }) => void,
 ) {
   return wireTokenSearchFields(field.root, { onSubmit, collapsible });
@@ -343,7 +439,13 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     const editor = field.editor()!;
     editor.focus();
 
-    editor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Escape',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
 
     expect(field.expandedSignal.value).toBe(false);
     await raf();
@@ -356,7 +458,11 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     const handle = wireCollapsible(field);
     const editor = field.editor()!;
     editor.textContent = 'priority';
-    const event = new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true });
+    const event = new KeyboardEvent('keydown', {
+      key: 'Escape',
+      bubbles: true,
+      cancelable: true,
+    });
 
     editor.dispatchEvent(event);
 
@@ -425,7 +531,10 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     const button = document.createElement('button');
     field.editor()!.closest('.kui-token-search')!.append(button);
 
-    const event = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
+    const event = new MouseEvent('mousedown', {
+      bubbles: true,
+      cancelable: true,
+    });
     button.dispatchEvent(event);
 
     expect(event.defaultPrevented).toBe(true);
@@ -469,7 +578,10 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
 
   it('expands without focusing when focus is not managed', async () => {
     const field = mountCollapsibleField(signal(false));
-    const handle = wireCollapsible(field, { signals: { find: field.expandedSignal }, manageFocus: false });
+    const handle = wireCollapsible(field, {
+      signals: { find: field.expandedSignal },
+      manageFocus: false,
+    });
 
     field.trigger()!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
 
@@ -503,10 +615,19 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
 
   it('opt-out: disabling expandOnActivate leaves Escape-collapse intact', () => {
     const field = mountCollapsibleField(signal(true));
-    const handle = wireCollapsible(field, { signals: { find: field.expandedSignal }, expandOnActivate: false });
+    const handle = wireCollapsible(field, {
+      signals: { find: field.expandedSignal },
+      expandOnActivate: false,
+    });
     const editor = field.editor()!;
 
-    editor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Escape',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
     expect(field.expandedSignal.value).toBe(false);
     handle();
   });
@@ -522,7 +643,13 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     const outside = document.createElement('button');
     document.body.append(outside);
 
-    editor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Escape',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
     outside.focus();
     editor.dispatchEvent(focusoutEvent(outside));
     await micro();
@@ -531,7 +658,10 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     // With collapse disabled, no mousedown guard is installed either.
     const button = document.createElement('button');
     editor.closest('.kui-token-search')!.append(button);
-    const press = new MouseEvent('mousedown', { bubbles: true, cancelable: true });
+    const press = new MouseEvent('mousedown', {
+      bubbles: true,
+      cancelable: true,
+    });
     button.dispatchEvent(press);
     expect(press.defaultPrevented).toBe(false);
     handle();
@@ -540,15 +670,29 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
   it('submits Enter when a handler is given and no-ops safely without one', () => {
     const field = mountCollapsibleField(signal(true));
     const onSubmit = vi.fn();
-    const handle = wireCollapsible(field, { signals: { find: field.expandedSignal } }, onSubmit);
+    const handle = wireCollapsible(
+      field,
+      { signals: { find: field.expandedSignal } },
+      onSubmit,
+    );
     const editor = field.editor()!;
 
-    editor.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'Enter',
+        bubbles: true,
+        cancelable: true,
+      }),
+    );
     expect(onSubmit).toHaveBeenCalledWith({ id: 'find', editor });
     handle();
 
     const bare = wireTokenSearchFields(field.root);
-    const event = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+    const event = new KeyboardEvent('keydown', {
+      key: 'Enter',
+      bubbles: true,
+      cancelable: true,
+    });
     expect(() => editor.dispatchEvent(event)).not.toThrow();
     expect(event.defaultPrevented).toBe(true);
     bare.dispose();
@@ -576,7 +720,9 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     const handle = wireTokenSearchFields(root);
 
     expect(() =>
-      root.querySelector<HTMLElement>('.kui-token-search__expand')!.dispatchEvent(new MouseEvent('click', { bubbles: true })),
+      root
+        .querySelector<HTMLElement>('.kui-token-search__expand')!
+        .dispatchEvent(new MouseEvent('click', { bubbles: true })),
     ).not.toThrow();
     handle();
   });
@@ -597,9 +743,13 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
         expandLabel: 'Open find',
       }),
     );
-    const handle = wireTokenSearchFields(root, { collapsible: { signals: { find: open } } });
+    const handle = wireTokenSearchFields(root, {
+      collapsible: { signals: { find: open } },
+    });
 
-    root.querySelector<HTMLElement>('.kui-token-search__expand')!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    root
+      .querySelector<HTMLElement>('.kui-token-search__expand')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     await raf();
     expect(open.value).toBe(false);
     handle();
@@ -650,7 +800,13 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
 });
 
 /** A field rendered with a leading text run, one atomic chip, and a trailing run. */
-function tokenedField(): { root: HTMLElement; editor: HTMLElement; chip: HTMLElement; lead: Text; tail: Text } {
+function tokenedField(): {
+  root: HTMLElement;
+  editor: HTMLElement;
+  chip: HTMLElement;
+  lead: Text;
+  tail: Text;
+} {
   const root = document.createElement('div');
   root.innerHTML =
     '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false">' +
@@ -666,7 +822,9 @@ function tokenedField(): { root: HTMLElement; editor: HTMLElement; chip: HTMLEle
   return {
     root,
     editor,
-    chip: editor.querySelector<HTMLElement>('[data-component="token-search-token"]')!,
+    chip: editor.querySelector<HTMLElement>(
+      '[data-component="token-search-token"]',
+    )!,
     lead: spans[0].firstChild as Text,
     tail: spans[1].firstChild as Text,
   };
@@ -690,11 +848,17 @@ describe('wireTokenSearchFields — onEdit callback', () => {
     const typed = inputEvent('input', 'insertText');
     editor.dispatchEvent(typed);
     // onEdit exposes the originating InputEvent so a caller can read inputType/data.
-    expect(onEdit).toHaveBeenCalledWith({ id: 'tickets', editor, event: typed });
+    expect(onEdit).toHaveBeenCalledWith({
+      id: 'tickets',
+      editor,
+      event: typed,
+    });
     expect(onEdit.mock.calls[0][0].event.inputType).toBe('insertText');
 
     onEdit.mockClear();
-    root.querySelector<HTMLElement>('[data-component="token-search-field"]')!.dataset.disabled = 'true';
+    root.querySelector<HTMLElement>(
+      '[data-component="token-search-field"]',
+    )!.dataset.disabled = 'true';
     editor.dispatchEvent(inputEvent('input', 'insertText'));
     expect(onEdit).not.toHaveBeenCalled();
 
@@ -732,7 +896,12 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
     const back = keydown('Backspace');
     editor.dispatchEvent(back);
     expect(back.defaultPrevented).toBe(true);
-    expect(onRemoveToken).toHaveBeenCalledWith({ id: 'tickets', value: 'tag:client', editor, direction: 'backward' });
+    expect(onRemoveToken).toHaveBeenCalledWith({
+      id: 'tickets',
+      value: 'tag:client',
+      editor,
+      direction: 'backward',
+    });
 
     // Caret at the end of the leading run — immediately before the chip.
     onRemoveToken.mockClear();
@@ -740,7 +909,12 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
     const del = keydown('Delete');
     editor.dispatchEvent(del);
     expect(del.defaultPrevented).toBe(true);
-    expect(onRemoveToken).toHaveBeenCalledWith({ id: 'tickets', value: 'tag:client', editor, direction: 'forward' });
+    expect(onRemoveToken).toHaveBeenCalledWith({
+      id: 'tickets',
+      value: 'tag:client',
+      editor,
+      direction: 'forward',
+    });
     handle();
   });
 
@@ -793,7 +967,11 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
     const before = document.createRange();
     before.setStart(editor, 0);
     before.setEnd(range.startContainer, range.startOffset);
-    expect(before.cloneContents().querySelector('[data-component="token-search-token"]')).not.toBeNull();
+    expect(
+      before
+        .cloneContents()
+        .querySelector('[data-component="token-search-token"]'),
+    ).not.toBeNull();
     expect(chip.dataset.tokenValue).toBe('tag:client');
     handle();
   });
@@ -812,7 +990,13 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
   it('respects per-behavior opt-out within keyboard', () => {
     const { root, editor, tail, lead } = tokenedField();
     const onRemoveToken = vi.fn();
-    const handle = wireTokenSearchFields(root, { keyboard: { removeAdjacentToken: false, moveCaretPastToken: false, onRemoveToken } });
+    const handle = wireTokenSearchFields(root, {
+      keyboard: {
+        removeAdjacentToken: false,
+        moveCaretPastToken: false,
+        onRemoveToken,
+      },
+    });
 
     focusAt(editor, tail, 0);
     const back = keydown('Backspace');
@@ -847,14 +1031,24 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
     // Caret directly in the editor, just after the chip (child index 2 = trailing run).
     focusAt(editor, editor, 2);
     editor.dispatchEvent(keydown('Backspace'));
-    expect(onRemoveToken).toHaveBeenLastCalledWith({ id: 'tickets', value: chip.dataset.tokenValue, editor, direction: 'backward' });
+    expect(onRemoveToken).toHaveBeenLastCalledWith({
+      id: 'tickets',
+      value: chip.dataset.tokenValue,
+      editor,
+      direction: 'backward',
+    });
 
     // Caret at the end of the leading run element (no child at that offset) — the chip is the next block.
     onRemoveToken.mockClear();
     const lead = editor.querySelector('[data-token-search-text]')!;
     focusAt(editor, lead, lead.childNodes.length);
     editor.dispatchEvent(keydown('Delete'));
-    expect(onRemoveToken).toHaveBeenLastCalledWith({ id: 'tickets', value: chip.dataset.tokenValue, editor, direction: 'forward' });
+    expect(onRemoveToken).toHaveBeenLastCalledWith({
+      id: 'tickets',
+      value: chip.dataset.tokenValue,
+      editor,
+      direction: 'forward',
+    });
     handle();
   });
 
@@ -882,14 +1076,22 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
       '<span data-token-search-text> soon</span>' +
       '</div></div>';
     document.body.append(root);
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
-    const tail = editor.querySelectorAll('[data-token-search-text]')[1].firstChild as Text;
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    const tail = editor.querySelectorAll('[data-token-search-text]')[1]
+      .firstChild as Text;
     const onRemoveToken = vi.fn();
     const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
 
     focusAt(editor, tail, 0);
     editor.dispatchEvent(keydown('Backspace'));
-    expect(onRemoveToken).toHaveBeenCalledWith({ id: 'tickets', value: 'tag:client', editor, direction: 'backward' });
+    expect(onRemoveToken).toHaveBeenCalledWith({
+      id: 'tickets',
+      value: 'tag:client',
+      editor,
+      direction: 'backward',
+    });
     handle();
   });
 
@@ -904,14 +1106,21 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
       '<span data-token-search-text> soon</span>' +
       '</div></div>';
     document.body.append(root);
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
     const onRemoveToken = vi.fn();
     const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
 
     // Caret directly in the editor just after the blank span (child index 3 back → the blank span).
     focusAt(editor, editor, 3);
     editor.dispatchEvent(keydown('Backspace'));
-    expect(onRemoveToken).toHaveBeenCalledWith({ id: 'tickets', value: 'tag:client', editor, direction: 'backward' });
+    expect(onRemoveToken).toHaveBeenCalledWith({
+      id: 'tickets',
+      value: 'tag:client',
+      editor,
+      direction: 'backward',
+    });
     handle();
   });
 
@@ -926,15 +1135,23 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
       '<span data-token-search-text> soon</span>' +
       '</div></div>';
     document.body.append(root);
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
-    const lead = editor.querySelector('[data-token-search-text]')!.firstChild as Text;
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    const lead = editor.querySelector('[data-token-search-text]')!
+      .firstChild as Text;
     const onRemoveToken = vi.fn();
     const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
 
     // Caret at the end of the leading run; a blank spacer sits before the chip.
     focusAt(editor, lead, lead.length);
     editor.dispatchEvent(keydown('Delete'));
-    expect(onRemoveToken).toHaveBeenCalledWith({ id: 'tickets', value: 'tag:client', editor, direction: 'forward' });
+    expect(onRemoveToken).toHaveBeenCalledWith({
+      id: 'tickets',
+      value: 'tag:client',
+      editor,
+      direction: 'forward',
+    });
     handle();
   });
 
@@ -947,14 +1164,22 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
       '<span data-token-search-text> soon</span>' +
       '</div></div>';
     document.body.append(root);
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
-    const tail = editor.querySelector('[data-token-search-text]')!.firstChild as Text;
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    const tail = editor.querySelector('[data-token-search-text]')!
+      .firstChild as Text;
     const onRemoveToken = vi.fn();
     const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
 
     focusAt(editor, tail, 0);
     editor.dispatchEvent(keydown('Backspace'));
-    expect(onRemoveToken).toHaveBeenCalledWith({ id: 'tickets', value: '', editor, direction: 'backward' });
+    expect(onRemoveToken).toHaveBeenCalledWith({
+      id: 'tickets',
+      value: '',
+      editor,
+      direction: 'backward',
+    });
     handle();
   });
 
@@ -967,8 +1192,11 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
       'AND<span data-token-search-text> soon</span>' +
       '</div></div>';
     document.body.append(root);
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
-    const tail = editor.querySelector('[data-token-search-text]')!.firstChild as Text;
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    const tail = editor.querySelector('[data-token-search-text]')!
+      .firstChild as Text;
     const onRemoveToken = vi.fn();
     const handle = wireTokenSearchFields(root, { keyboard: { onRemoveToken } });
 
@@ -989,8 +1217,11 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
       '<span data-component="token-search-token" data-token-value="tag:client" contenteditable="false"><button type="button">tag:client</button></span>' +
       '</div></div>';
     document.body.append(root);
-    const editor = root.querySelector<HTMLElement>('[data-token-search-editor]')!;
-    const lead = editor.querySelector('[data-token-search-text]')!.firstChild as Text;
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    const lead = editor.querySelector('[data-token-search-text]')!
+      .firstChild as Text;
     const handle = wireTokenSearchFields(root, { keyboard: true });
 
     focusAt(editor, lead, lead.length);

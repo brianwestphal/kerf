@@ -29,18 +29,59 @@ interface Row {
 }
 
 const ADJECTIVES = [
-  'pretty', 'large', 'big', 'small', 'tall', 'short', 'long', 'handsome',
-  'plain', 'quaint', 'clean', 'elegant', 'easy', 'angry', 'crazy', 'helpful',
-  'mushy', 'odd', 'unsightly', 'adorable', 'important', 'inexpensive',
-  'cheap', 'expensive', 'fancy',
+  'pretty',
+  'large',
+  'big',
+  'small',
+  'tall',
+  'short',
+  'long',
+  'handsome',
+  'plain',
+  'quaint',
+  'clean',
+  'elegant',
+  'easy',
+  'angry',
+  'crazy',
+  'helpful',
+  'mushy',
+  'odd',
+  'unsightly',
+  'adorable',
+  'important',
+  'inexpensive',
+  'cheap',
+  'expensive',
+  'fancy',
 ];
 const COLOURS = [
-  'red', 'yellow', 'blue', 'green', 'pink', 'brown', 'purple', 'brown',
-  'white', 'black', 'orange',
+  'red',
+  'yellow',
+  'blue',
+  'green',
+  'pink',
+  'brown',
+  'purple',
+  'brown',
+  'white',
+  'black',
+  'orange',
 ];
 const NOUNS = [
-  'table', 'chair', 'house', 'bbq', 'desk', 'car', 'pony', 'cookie',
-  'sandwich', 'burger', 'pizza', 'mouse', 'keyboard',
+  'table',
+  'chair',
+  'house',
+  'bbq',
+  'desk',
+  'car',
+  'pony',
+  'cookie',
+  'sandwich',
+  'burger',
+  'pizza',
+  'mouse',
+  'keyboard',
 ];
 
 let nextId = 1;
@@ -69,26 +110,64 @@ mount(root, () => (
   <div className="container">
     <div className="jumbotron">
       <div className="row">
-        <div className="col-md-6"><h1>kerfjs-keyed</h1></div>
+        <div className="col-md-6">
+          <h1>kerfjs-keyed</h1>
+        </div>
         <div className="col-md-6">
           <div className="row">
             <div className="col-sm-6 smallpad">
-              <button type="button" className="btn btn-primary btn-block" id="run">Create 1,000 rows</button>
+              <button
+                type="button"
+                className="btn btn-primary btn-block"
+                id="run"
+              >
+                Create 1,000 rows
+              </button>
             </div>
             <div className="col-sm-6 smallpad">
-              <button type="button" className="btn btn-primary btn-block" id="runlots">Create 10,000 rows</button>
+              <button
+                type="button"
+                className="btn btn-primary btn-block"
+                id="runlots"
+              >
+                Create 10,000 rows
+              </button>
             </div>
             <div className="col-sm-6 smallpad">
-              <button type="button" className="btn btn-primary btn-block" id="add">Append 1,000 rows</button>
+              <button
+                type="button"
+                className="btn btn-primary btn-block"
+                id="add"
+              >
+                Append 1,000 rows
+              </button>
             </div>
             <div className="col-sm-6 smallpad">
-              <button type="button" className="btn btn-primary btn-block" id="update">Update every 10th row</button>
+              <button
+                type="button"
+                className="btn btn-primary btn-block"
+                id="update"
+              >
+                Update every 10th row
+              </button>
             </div>
             <div className="col-sm-6 smallpad">
-              <button type="button" className="btn btn-primary btn-block" id="clear">Clear</button>
+              <button
+                type="button"
+                className="btn btn-primary btn-block"
+                id="clear"
+              >
+                Clear
+              </button>
             </div>
             <div className="col-sm-6 smallpad">
-              <button type="button" className="btn btn-primary btn-block" id="swaprows">Swap Rows</button>
+              <button
+                type="button"
+                className="btn btn-primary btn-block"
+                id="swaprows"
+              >
+                Swap Rows
+              </button>
             </div>
           </div>
         </div>
@@ -99,10 +178,26 @@ mount(root, () => (
         {each(
           rows,
           (row) => (
-            <tr data-key={row.id} className={computed(() => (row.id === selectedId.value ? 'danger' : ''))}>
+            <tr
+              data-key={row.id}
+              className={computed(() =>
+                row.id === selectedId.value ? 'danger' : '',
+              )}
+            >
               <td className="col-md-1">{String(row.id)}</td>
-              <td className="col-md-4"><a className="lbl" data-id={String(row.id)}>{row.label}</a></td>
-              <td className="col-md-1"><a className="remove" data-id={String(row.id)}><span className="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>
+              <td className="col-md-4">
+                <a className="lbl" data-id={String(row.id)}>
+                  {row.label}
+                </a>
+              </td>
+              <td className="col-md-1">
+                <a className="remove" data-id={String(row.id)}>
+                  <span
+                    className="glyphicon glyphicon-remove"
+                    aria-hidden="true"
+                  ></span>
+                </a>
+              </td>
               <td className="col-md-6"></td>
             </tr>
           ),
@@ -111,7 +206,10 @@ mount(root, () => (
         )}
       </tbody>
     </table>
-    <span className="preloadicon glyphicon glyphicon-remove" aria-hidden="true"></span>
+    <span
+      className="preloadicon glyphicon glyphicon-remove"
+      aria-hidden="true"
+    ></span>
   </div>
 ));
 
@@ -159,7 +257,7 @@ delegate(root, 'click', '#swaprows', () => {
   // Two granular moves, batched into a single re-render.
   batch(() => {
     rows.move(998, 1);
-    rows.move(2, 998);  // after the first move, the original row at 1 is now at index 2
+    rows.move(2, 998); // after the first move, the original row at 1 is now at index 2
   });
 });
 delegate(root, 'click', 'a.lbl', (_e, el) => {

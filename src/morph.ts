@@ -48,7 +48,11 @@
  * runtime dependency. Original copyright preserved in `LICENSE`.
  */
 
-import { boundTextNodeOf, ROW_TEXT_PREFIX, TEXT_MARKER_PREFIX } from './bindings.js';
+import {
+  boundTextNodeOf,
+  ROW_TEXT_PREFIX,
+  TEXT_MARKER_PREFIX,
+} from './bindings.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { LIST_MARKER_PREFIX } from './segment.js';
@@ -95,8 +99,8 @@ export function morph(
 ): void {
   if (liveRoot == null) {
     throw new Error(
-      'morph: liveRoot is null/undefined — pass the live element, e.g. morph(document.getElementById("app")!, template). '
-      + 'A common cause is a typo in the id or selector that returns null at runtime even though the TypeScript types say Element.',
+      'morph: liveRoot is null/undefined — pass the live element, e.g. morph(document.getElementById("app")!, template). ' +
+        'A common cause is a typo in the id or selector that returns null at runtime even though the TypeScript types say Element.',
     );
   }
   const templateEl: Element = isElementNode(template)
@@ -137,11 +141,15 @@ export function _morphElement(
 }
 
 function isElementNode(t: Element | SafeHtml | string): t is Element {
-  return typeof t === 'object' && t !== null
-    && (t as Node).nodeType === ELEMENT_NODE;
+  return (
+    typeof t === 'object' && t !== null && (t as Node).nodeType === ELEMENT_NODE
+  );
 }
 
-function parseTemplate(liveRoot: Element, template: SafeHtml | string): Element {
+function parseTemplate(
+  liveRoot: Element,
+  template: SafeHtml | string,
+): Element {
   const el = liveRoot.cloneNode(false) as Element;
   el.innerHTML = String(template);
   return el;
@@ -171,12 +179,18 @@ function protectionTag(node: Node): string {
   // reach here with an element, so `dataset` is always present — no non-element
   // guard, which would be an unreachable branch.
   const { dataset } = node as HTMLElement;
-  return (dataset.morphSkip !== undefined ? 's' : '')
-    + (dataset.morphSkipChildren !== undefined ? 'c' : '')
-    + (dataset.morphPreserve !== undefined ? 'p' : '');
+  return (
+    (dataset.morphSkip !== undefined ? 's' : '') +
+    (dataset.morphSkipChildren !== undefined ? 'c' : '') +
+    (dataset.morphPreserve !== undefined ? 'p' : '')
+  );
 }
 
-const MARKER_PREFIXES = [LIST_MARKER_PREFIX, TEXT_MARKER_PREFIX, ROW_TEXT_PREFIX];
+const MARKER_PREFIXES = [
+  LIST_MARKER_PREFIX,
+  TEXT_MARKER_PREFIX,
+  ROW_TEXT_PREFIX,
+];
 
 /** True when `node` is a kerf anchor comment (list marker or binding marker). */
 function isMarker(node: Node): boolean {
@@ -219,17 +233,25 @@ function markersPairable(a: Node, b: Node): boolean {
  * Advance past any owned (list-reconciler-managed) element. Owned items
  * stay put across morphs — they're invisible to the morph's child cursor.
  */
-function skipOwned(node: Node | null, ownedItems: ReadonlySet<Element>): Node | null {
-  while (node !== null && node.nodeType === ELEMENT_NODE
-      && ownedItems.has(node as Element)) {
+function skipOwned(
+  node: Node | null,
+  ownedItems: ReadonlySet<Element>,
+): Node | null {
+  while (
+    node !== null &&
+    node.nodeType === ELEMENT_NODE &&
+    ownedItems.has(node as Element)
+  ) {
     node = node.nextSibling;
   }
   return node;
 }
 
 function isListMarker(node: Node): boolean {
-  return node.nodeType === COMMENT_NODE
-    && (node as Comment).data.startsWith(LIST_MARKER_PREFIX);
+  return (
+    node.nodeType === COMMENT_NODE &&
+    (node as Comment).data.startsWith(LIST_MARKER_PREFIX)
+  );
 }
 
 /**
@@ -244,7 +266,10 @@ function isListMarker(node: Node): boolean {
  * The scan stops at the next list's marker so a sibling `each()` in the same
  * parent is never absorbed into this one's region.
  */
-function afterListRegion(marker: Comment, ownedItems: ReadonlySet<Element>): Node | null {
+function afterListRegion(
+  marker: Comment,
+  ownedItems: ReadonlySet<Element>,
+): Node | null {
   let last: Node = marker;
   for (let r: Node | null = marker.nextSibling; r !== null; r = r.nextSibling) {
     if (isListMarker(r)) break;
@@ -305,14 +330,17 @@ function morphChildren(
     //      alive inside it: a skipped widget swallows the element and gets
     //      duplicated, a preserved child ends up under a foreign host, a bound
     //      hole's text leaks. Those rules are each right; the pairing was not.
-    if (matched === null && fromChild !== null
-        && fromChild.nodeType === toChild.nodeType
-        && markersPairable(fromChild, toChild)
-        && (toChild.nodeType !== ELEMENT_NODE
-            || ((fromChild as Element).tagName === (toChild as Element).tagName
-                && getNodeKey(fromChild) === undefined
-                && toKey === undefined
-                && protectionTag(fromChild) === protectionTag(toChild)))) {
+    if (
+      matched === null &&
+      fromChild !== null &&
+      fromChild.nodeType === toChild.nodeType &&
+      markersPairable(fromChild, toChild) &&
+      (toChild.nodeType !== ELEMENT_NODE ||
+        ((fromChild as Element).tagName === (toChild as Element).tagName &&
+          getNodeKey(fromChild) === undefined &&
+          toKey === undefined &&
+          protectionTag(fromChild) === protectionTag(toChild)))
+    ) {
       matched = fromChild;
       // KF-385: a matched list marker carries its whole row region, so the
       // cursor must land AFTER the last row — not merely after the contiguous
@@ -357,10 +385,18 @@ function morphChildren(
     //    Keyed template elements are excluded for the same reason as step 2:
     //    step 1 already searched every live child for that key, so moving up an
     //    unkeyed stranger would repurpose a node that is something else.
-    if (matched === null && toChild.nodeType === ELEMENT_NODE && fromChild !== null
-        && toKey === undefined) {
+    if (
+      matched === null &&
+      toChild.nodeType === ELEMENT_NODE &&
+      fromChild !== null &&
+      toKey === undefined
+    ) {
       const toTag = (toChild as Element).tagName;
-      for (let scan: Node | null = fromChild.nextSibling; scan !== null; scan = scan.nextSibling) {
+      for (
+        let scan: Node | null = fromChild.nextSibling;
+        scan !== null;
+        scan = scan.nextSibling
+      ) {
         if (scan.nodeType !== ELEMENT_NODE) continue;
         const el = scan as Element;
         if (ownedItems.has(el)) continue;
@@ -385,12 +421,23 @@ function morphChildren(
     //    travels WITH its whole row region: moving it alone would let a later
     //    template sibling (a trailing <button>, say) match ahead of the rows
     //    and wedge itself between the anchor and the rows it anchors.
-    if (matched === null && fromChild !== null
-        && toChild.nodeType === COMMENT_NODE
-        && (toChild as Comment).data.startsWith(LIST_MARKER_PREFIX)) {
+    if (
+      matched === null &&
+      fromChild !== null &&
+      toChild.nodeType === COMMENT_NODE &&
+      (toChild as Comment).data.startsWith(LIST_MARKER_PREFIX)
+    ) {
       const wantData = (toChild as Comment).data;
-      for (let scan: Node | null = fromChild.nextSibling; scan !== null; scan = scan.nextSibling) {
-        if (scan.nodeType !== COMMENT_NODE || (scan as Comment).data !== wantData) continue;
+      for (
+        let scan: Node | null = fromChild.nextSibling;
+        scan !== null;
+        scan = scan.nextSibling
+      ) {
+        if (
+          scan.nodeType !== COMMENT_NODE ||
+          (scan as Comment).data !== wantData
+        )
+          continue;
         // The run is the marker through its LAST owned row — interlopers in
         // between travel along (KF-385). Stopping at the first non-owned node
         // instead would truncate the run to the bare marker the moment anything
@@ -400,7 +447,11 @@ function morphChildren(
         // consumer put them, relative to the list.
         const regionEnd = afterListRegion(scan as Comment, ownedItems);
         const run: Node[] = [];
-        for (let r: Node | null = scan; r !== null && r !== regionEnd; r = r.nextSibling) {
+        for (
+          let r: Node | null = scan;
+          r !== null && r !== regionEnd;
+          r = r.nextSibling
+        ) {
           run.push(r);
         }
         // Some engines (older Safari, happy-dom) blur a focused descendant on
@@ -441,8 +492,10 @@ function morphChildren(
     const next = fromChild.nextSibling;
     if (fromChild.nodeType === ELEMENT_NODE) {
       const el = fromChild as Element;
-      if (!ownedItems.has(el)
-          && (el as HTMLElement).dataset.morphPreserve === undefined) {
+      if (
+        !ownedItems.has(el) &&
+        (el as HTMLElement).dataset.morphPreserve === undefined
+      ) {
         fromParent.removeChild(fromChild);
       }
     } else {
@@ -501,9 +554,10 @@ function morphElement(
   // in-progress edit (same exception as the input `value` sync), and an
   // unchanged template leaves a dirty textarea untouched (uncontrolled
   // usage preserved).
-  const syncTextareaValue = fromEl.tagName === 'TEXTAREA'
-    && fromEl !== document.activeElement
-    && fromEl.textContent !== toEl.textContent;
+  const syncTextareaValue =
+    fromEl.tagName === 'TEXTAREA' &&
+    fromEl !== document.activeElement &&
+    fromEl.textContent !== toEl.textContent;
   // 5. Recurse into children. List items inside `fromEl` (if any) are
   //    skipped via `ownedItems` inside morphChildren — list reconciler
   //    owns them — but non-list siblings are still morphed.
@@ -565,7 +619,10 @@ function morphAttributes(fromEl: Element, toEl: Element): void {
     const name = attr.localName;
     if (ns !== null) {
       if (!toEl.hasAttributeNS(ns, name)) fromEl.removeAttributeNS(ns, name);
-    } else if (!toEl.hasAttribute(name) && !isUserAgentOwnedAttr(fromTag, name)) {
+    } else if (
+      !toEl.hasAttribute(name) &&
+      !isUserAgentOwnedAttr(fromTag, name)
+    ) {
       fromEl.removeAttribute(name);
       // KF-335: removed checked/value/selected attr → property follows (see
       // the set-side comment above).
@@ -578,8 +635,15 @@ function isTextInputOrTextarea(el: Element): boolean {
   if (el.tagName === 'TEXTAREA') return true;
   if (el.tagName === 'INPUT') {
     const type = (el as HTMLInputElement).type;
-    return type === 'text' || type === 'search' || type === 'url' || type === 'email'
-      || type === 'tel' || type === 'password' || type === '';
+    return (
+      type === 'text' ||
+      type === 'search' ||
+      type === 'url' ||
+      type === 'email' ||
+      type === 'tel' ||
+      type === 'password' ||
+      type === ''
+    );
   }
   return false;
 }
@@ -590,7 +654,10 @@ function preserveTextEntryState(fromEl: Element, toEl: Element): void {
     const toInput = toEl as HTMLInputElement;
     toInput.value = fromInput.value;
     try {
-      toInput.setSelectionRange(fromInput.selectionStart, fromInput.selectionEnd);
+      toInput.setSelectionRange(
+        fromInput.selectionStart,
+        fromInput.selectionEnd,
+      );
     } catch {
       // Some input types (number, range, color, …) reject selection APIs.
     }

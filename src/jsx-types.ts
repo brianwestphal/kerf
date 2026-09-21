@@ -159,11 +159,18 @@ import type { ReadonlySignal } from './reactive.js';
  * KF-294 fine-grained attribute binding: handed a signal, the runtime updates
  * that attribute directly on change instead of re-running the render.
  */
-export type AttrValue = string | number | boolean | null | undefined | SafeHtml
+export type AttrValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | SafeHtml
   | ReadonlySignal<unknown>;
 
 /** A typed-narrowing helper: `AttrLike<'a'|'b'>` accepts the literals plus the runtime fall-throughs. */
-export type AttrLike<T = string> = T | SafeHtml | null | undefined | ReadonlySignal<unknown>;
+export type AttrLike<T = string> =
+  T | SafeHtml | null | undefined | ReadonlySignal<unknown>;
 
 /**
  * An HTML **enumerated** attribute whose keywords are the literal strings
@@ -190,7 +197,9 @@ type EnumeratedBool = AttrLike<'true' | 'false'>;
  * `plaintext-only`, and `inherit`, which is NOT a spec keyword (it reaches the
  * inherit state only via the invalid-value default; kept for React parity).
  */
-type ContentEditableValue = AttrLike<'true' | 'false' | 'inherit' | 'plaintext-only'>;
+type ContentEditableValue = AttrLike<
+  'true' | 'false' | 'inherit' | 'plaintext-only'
+>;
 
 /** Resource-loading priority hint: `<img>` / `<link>` / `<script>`. */
 type FetchPriority = AttrLike<'high' | 'low' | 'auto'>;
@@ -269,7 +278,9 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
    * enumerated value set.
    */
   contenteditable?: ContentEditableValue;
-  inputMode?: AttrLike<'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search'>;
+  inputMode?: AttrLike<
+    'none' | 'text' | 'tel' | 'url' | 'email' | 'numeric' | 'decimal' | 'search'
+  >;
   /**
    * Enumerated, NOT boolean — write `spellCheck="false"` to turn spellchecking
    * off. `spellCheck={false}` would omit the attribute, which means *inherit
@@ -289,7 +300,9 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
   role?: AttrLike;
   slot?: AttrLike;
   is?: AttrLike;
-  autoCapitalize?: AttrLike<'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters'>;
+  autoCapitalize?: AttrLike<
+    'off' | 'none' | 'on' | 'sentences' | 'words' | 'characters'
+  >;
   autoFocus?: AttrLike<boolean>;
   /**
    * KF-191 — lowercase HTML form accepted alongside `autoFocus`.
@@ -320,7 +333,9 @@ export interface KerfBaseAttrs extends DataAriaAttrs {
   part?: AttrLike;
   /** All-lowercase in HTML (`exportparts`) — there is no camelCase form to alias. */
   exportparts?: AttrLike;
-  enterKeyHint?: AttrLike<'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send'>;
+  enterKeyHint?: AttrLike<
+    'enter' | 'done' | 'go' | 'next' | 'previous' | 'search' | 'send'
+  >;
   /**
    * Enumerated, NOT boolean — write `translate="yes"` / `translate="no"`.
    * `translate={false}` would omit the attribute, which means *inherit*, not
@@ -410,7 +425,30 @@ export interface HTMLImgAttrs extends KerfBaseAttrs {
 }
 
 export interface HTMLInputAttrs extends KerfBaseAttrs {
-  type?: AttrLike<'text' | 'password' | 'email' | 'number' | 'tel' | 'url' | 'search' | 'date' | 'datetime-local' | 'time' | 'month' | 'week' | 'color' | 'checkbox' | 'radio' | 'file' | 'hidden' | 'submit' | 'reset' | 'button' | 'image' | 'range'>;
+  type?: AttrLike<
+    | 'text'
+    | 'password'
+    | 'email'
+    | 'number'
+    | 'tel'
+    | 'url'
+    | 'search'
+    | 'date'
+    | 'datetime-local'
+    | 'time'
+    | 'month'
+    | 'week'
+    | 'color'
+    | 'checkbox'
+    | 'radio'
+    | 'file'
+    | 'hidden'
+    | 'submit'
+    | 'reset'
+    | 'button'
+    | 'image'
+    | 'range'
+  >;
   name?: AttrLike;
   value?: AttrLike;
   defaultValue?: AttrLike;
@@ -488,8 +526,12 @@ export interface HTMLButtonAttrs extends KerfBaseAttrs {
    * arm below is part of the design, not a workaround.
    */
   command?: AttrLike<
-    | 'show-modal' | 'close' | 'request-close'
-    | 'toggle-popover' | 'show-popover' | 'hide-popover'
+    | 'show-modal'
+    | 'close'
+    | 'request-close'
+    | 'toggle-popover'
+    | 'show-popover'
+    | 'hide-popover'
     | `--${string}`
   >;
   commandFor?: AttrLike;
@@ -688,7 +730,9 @@ export interface HTMLSourceAttrs extends KerfBaseAttrs {
 
 export interface HTMLTrackAttrs extends KerfBaseAttrs {
   src?: AttrLike;
-  kind?: AttrLike<'subtitles' | 'captions' | 'descriptions' | 'chapters' | 'metadata'>;
+  kind?: AttrLike<
+    'subtitles' | 'captions' | 'descriptions' | 'chapters' | 'metadata'
+  >;
   srcLang?: AttrLike;
   label?: AttrLike;
   default?: AttrLike<boolean>;
@@ -736,8 +780,12 @@ export interface HTMLBaseAttrs extends KerfBaseAttrs {
   target?: AttrLike;
 }
 
-export interface HTMLBlockquoteAttrs extends KerfBaseAttrs { cite?: AttrLike }
-export interface HTMLQAttrs extends KerfBaseAttrs { cite?: AttrLike }
+export interface HTMLBlockquoteAttrs extends KerfBaseAttrs {
+  cite?: AttrLike;
+}
+export interface HTMLQAttrs extends KerfBaseAttrs {
+  cite?: AttrLike;
+}
 
 /**
  * SVG attribute set — focused on the elements `toElement`'s SVG path supports
@@ -964,8 +1012,19 @@ export interface KerfBuiltinIntrinsicElements {
   source: HTMLSourceAttrs;
   track: HTMLTrackAttrs;
   iframe: HTMLIframeAttrs;
-  embed: KerfBaseAttrs & { src?: AttrLike; type?: AttrLike; width?: AttrLike<number | string>; height?: AttrLike<number | string> };
-  object: KerfBaseAttrs & { data?: AttrLike; type?: AttrLike; name?: AttrLike; width?: AttrLike<number | string>; height?: AttrLike<number | string> };
+  embed: KerfBaseAttrs & {
+    src?: AttrLike;
+    type?: AttrLike;
+    width?: AttrLike<number | string>;
+    height?: AttrLike<number | string>;
+  };
+  object: KerfBaseAttrs & {
+    data?: AttrLike;
+    type?: AttrLike;
+    name?: AttrLike;
+    width?: AttrLike<number | string>;
+    height?: AttrLike<number | string>;
+  };
   audio: HTMLMediaAttrs;
   video: HTMLVideoAttrs;
   canvas: HTMLCanvasAttrs;
@@ -980,10 +1039,19 @@ export interface KerfBuiltinIntrinsicElements {
   option: HTMLOptionAttrs;
   textarea: HTMLTextareaAttrs;
   label: HTMLLabelAttrs;
-  fieldset: KerfBaseAttrs & { name?: AttrLike; form?: AttrLike; disabled?: AttrLike<boolean> };
+  fieldset: KerfBaseAttrs & {
+    name?: AttrLike;
+    form?: AttrLike;
+    disabled?: AttrLike<boolean>;
+  };
   legend: KerfBaseAttrs;
   datalist: KerfBaseAttrs;
-  output: KerfBaseAttrs & { name?: AttrLike; form?: AttrLike; htmlFor?: AttrLike; for?: AttrLike };
+  output: KerfBaseAttrs & {
+    name?: AttrLike;
+    form?: AttrLike;
+    htmlFor?: AttrLike;
+    for?: AttrLike;
+  };
   progress: HTMLProgressAttrs;
   meter: HTMLMeterAttrs;
   // Tables
@@ -1036,5 +1104,9 @@ export interface KerfBuiltinIntrinsicElements {
   marker: SVGCommonAttrs;
   linearGradient: SVGCommonAttrs;
   radialGradient: SVGCommonAttrs;
-  stop: SVGCommonAttrs & { offset?: AttrLike<number | string>; stopColor?: AttrLike; stopOpacity?: AttrLike<number | string> };
+  stop: SVGCommonAttrs & {
+    offset?: AttrLike<number | string>;
+    stopColor?: AttrLike;
+    stopOpacity?: AttrLike<number | string>;
+  };
 }

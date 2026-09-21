@@ -7,8 +7,8 @@ Prefer `attr('name', 'value').selector` over a literal `[name="value"]` selector
 ## ❌ Discouraged
 
 ```tsx
-<button data-action="toggle">Toggle</button>
-delegate(root, 'click', '[data-action="toggle"]', handler);
+<button data-action="toggle">Toggle</button>;
+delegate(root, "click", '[data-action="toggle"]', handler);
 ```
 
 The JSX attribute and the selector string are two independent literals; renaming the action key in JSX leaves the delegate selector unchanged, and the handler silently stops firing.
@@ -16,14 +16,14 @@ The JSX attribute and the selector string are two independent literals; renaming
 ## ✅ Recommended
 
 ```tsx
-import { attr, delegate, type AttrSpec } from 'kerfjs';
+import { attr, delegate, type AttrSpec } from "kerfjs";
 
 const ACTIONS = {
-  toggle: attr('data-action', 'toggle'),
-} as const satisfies Record<string, AttrSpec<'data-action'>>;
+  toggle: attr("data-action", "toggle"),
+} as const satisfies Record<string, AttrSpec<"data-action">>;
 
-<button {...ACTIONS.toggle.attrs}>Toggle</button>
-delegate(root, 'click', ACTIONS.toggle.selector, handler);
+<button {...ACTIONS.toggle.attrs}>Toggle</button>;
+delegate(root, "click", ACTIONS.toggle.selector, handler);
 ```
 
 Rename `'toggle'` to `'on'` in the `ACTIONS` map and both the rendered attribute and the delegate selector update — no string-grep migration required.

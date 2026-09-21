@@ -33,15 +33,21 @@ interface KerfGlobals {
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
-  await page.waitForFunction(() => (window as unknown as KerfGlobals).kerfReady === true);
+  await page.waitForFunction(
+    () => (window as unknown as KerfGlobals).kerfReady === true,
+  );
 });
 
-test('toElement() HTML-string <script> is inert (never executes)', async ({ page }) => {
+test('toElement() HTML-string <script> is inert (never executes)', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const w = window as unknown as KerfGlobals;
     w.__htmlXss = false;
     w.__controlRan = false;
-    const el = w.kerf.toElement('<div><script>window.__htmlXss = true</script></div>');
+    const el = w.kerf.toElement(
+      '<div><script>window.__htmlXss = true</script></div>',
+    );
     document.body.appendChild(el);
     // A positive control instead of a delay. Proving a script did NOT run is
     // the one thing you cannot poll for, and a fixed sleep only ever proves
@@ -55,12 +61,16 @@ test('toElement() HTML-string <script> is inert (never executes)', async ({ page
     document.body.appendChild(control);
     return { inert: w.__htmlXss, control: w.__controlRan };
   });
-  expect(result.control, 'control script must execute, or the assertion below proves nothing')
-    .toBe(true);
+  expect(
+    result.control,
+    'control script must execute, or the assertion below proves nothing',
+  ).toBe(true);
   expect(result.inert).toBe(false);
 });
 
-test('toElement() does NOT strip a <script> from SVG input (trusted-input surface)', async ({ page }) => {
+test('toElement() does NOT strip a <script> from SVG input (trusted-input surface)', async ({
+  page,
+}) => {
   const hasScript = await page.evaluate(() => {
     const w = window as unknown as KerfGlobals;
     const svg = w.kerf.toElement(
@@ -73,14 +83,18 @@ test('toElement() does NOT strip a <script> from SVG input (trusted-input surfac
   expect(hasScript).toBe(true);
 });
 
-test('<iframe srcdoc={string}> re-parses its value as a document and executes', async ({ page }) => {
+test('<iframe srcdoc={string}> re-parses its value as a document and executes', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     const w = window as unknown as KerfGlobals;
     w.__srcdocRan = false;
     // renderAttr escapes the value (well-formed attribute), but the iframe
     // decodes it once and runs it as a document — the KF-313 footgun.
     const iframe = w.kerf.toElement(
-      w.jsxRuntime.jsx('iframe', { srcDoc: '<script>parent.__srcdocRan = true</script>' }),
+      w.jsxRuntime.jsx('iframe', {
+        srcDoc: '<script>parent.__srcdocRan = true</script>',
+      }),
     );
     document.body.appendChild(iframe);
   });
@@ -89,7 +103,9 @@ test('<iframe srcdoc={string}> re-parses its value as a document and executes', 
   // a fixed delay makes a loaded machine (three engines in parallel, say) fail
   // a passing behavior. Polling costs latency there instead of a red build.
   await expect
-    .poll(() => page.evaluate(() => (window as unknown as KerfGlobals).__srcdocRan))
+    .poll(() =>
+      page.evaluate(() => (window as unknown as KerfGlobals).__srcdocRan),
+    )
     .toBe(true);
 });
 
@@ -99,16 +115,24 @@ test('<iframe srcdoc={string}> re-parses its value as a document and executes', 
  * unmakes the anchor. These pin why the `javascript:` no-op carve-out matters,
  * in engines that decide it for real.
  */
-test('a javascript: no-op href survives, and the anchor stays a real link', async ({ page }) => {
+test('a javascript: no-op href survives, and the anchor stays a real link', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const w = window as unknown as KerfGlobals;
     const root = document.getElementById('root')!;
     root.innerHTML = '';
     const kept = w.kerf.toElement(
-      w.jsxRuntime.jsx('a', { href: 'javascript:void(0)', children: 'placeholder' }),
+      w.jsxRuntime.jsx('a', {
+        href: 'javascript:void(0)',
+        children: 'placeholder',
+      }),
     );
     const dropped = w.kerf.toElement(
-      w.jsxRuntime.jsx('a', { href: 'javascript:alert(1)', children: 'blocked' }),
+      w.jsxRuntime.jsx('a', {
+        href: 'javascript:alert(1)',
+        children: 'blocked',
+      }),
     );
     root.append(kept, dropped);
 
@@ -137,7 +161,9 @@ test('a javascript: no-op href survives, and the anchor stays a real link', asyn
   expect(result.droppedFocused).toBe(false);
 });
 
-test('mixed-case URL attribute names cannot bypass static or bound screening', async ({ page }) => {
+test('mixed-case URL attribute names cannot bypass static or bound screening', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const w = window as unknown as KerfGlobals;
     const attrs = ['href', 'src', 'xlink:href', 'formaction', 'action', 'data'];
@@ -154,16 +180,20 @@ test('mixed-case URL attribute names cannot bypass static or bound screening', a
     const root = document.getElementById('root')!;
     root.innerHTML = '';
     const url = w.kerf.signal('/safe');
-    const dispose = w.kerf.mount(root, () => w.jsxRuntime.jsx('div', {
-      HREF: url,
-      Src: url,
-      'XLINK:HREF': url,
-      FormAction: url,
-      ACTION: url,
-      DaTa: url,
-    }));
+    const dispose = w.kerf.mount(root, () =>
+      w.jsxRuntime.jsx('div', {
+        HREF: url,
+        Src: url,
+        'XLINK:HREF': url,
+        FormAction: url,
+        ACTION: url,
+        DaTa: url,
+      }),
+    );
     const boundEl = root.firstElementChild!;
-    const safeBound = attrs.every((name) => boundEl.getAttribute(name) === '/safe');
+    const safeBound = attrs.every(
+      (name) => boundEl.getAttribute(name) === '/safe',
+    );
     url.value = 'javascript:alert(1)';
     const result = {
       staticDropped: attrs.every((name) => !staticEl.hasAttribute(name)),

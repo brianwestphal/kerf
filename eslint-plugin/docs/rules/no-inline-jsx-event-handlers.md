@@ -40,8 +40,8 @@ delegate(rootEl, 'submit', ACTIONS.submit.selector,  submit);
 String literals still work for ad-hoc fixed selectors:
 
 ```tsx
-<button data-action="save">Save</button>
-delegate(rootEl, 'click', '[data-action="save"]', save);
+<button data-action="save">Save</button>;
+delegate(rootEl, "click", '[data-action="save"]', save);
 ```
 
 ## Why this rule is AST-only

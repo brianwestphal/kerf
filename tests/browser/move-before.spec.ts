@@ -17,7 +17,9 @@ import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
-  await page.waitForFunction(() => (window as unknown as { kerfReady: boolean }).kerfReady === true);
+  await page.waitForFunction(
+    () => (window as unknown as { kerfReady: boolean }).kerfReady === true,
+  );
   // Three keyed rows, each an <li> holding an animated bar + an <input>. The
   // animation is long (100s) so it can't finish during the test; its
   // `currentTime` is the clock we watch across the reorder.
@@ -26,8 +28,9 @@ test.beforeEach(async ({ page }) => {
     const { jsx } = (window as any).jsxRuntime;
 
     const style = document.createElement('style');
-    style.textContent = '@keyframes kf-move-test { from { opacity: 1 } to { opacity: 0 } }'
-      + ' .bar { animation: kf-move-test 100s linear }';
+    style.textContent =
+      '@keyframes kf-move-test { from { opacity: 1 } to { opacity: 0 } }' +
+      ' .bar { animation: kf-move-test 100s linear }';
     document.head.appendChild(style);
 
     const root = document.createElement('div');
@@ -60,7 +63,9 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test('a keyed reorder preserves focus + caret in the moved row (all engines)', async ({ page }) => {
+test('a keyed reorder preserves focus + caret in the moved row (all engines)', async ({
+  page,
+}) => {
   const input = page.locator('li[data-key="b"] .inp');
   await input.click();
   await input.pressSequentially('typed');
@@ -74,16 +79,27 @@ test('a keyed reorder preserves focus + caret in the moved row (all engines)', a
 
   const live = page.locator('li[data-key="b"] .inp');
   expect(await live.inputValue()).toBe('typed');
-  expect(await live.evaluate((el: HTMLInputElement) => el.selectionStart)).toBe(1);
-  expect(await live.evaluate((el: HTMLInputElement) => el.selectionEnd)).toBe(3);
+  expect(await live.evaluate((el: HTMLInputElement) => el.selectionStart)).toBe(
+    1,
+  );
+  expect(await live.evaluate((el: HTMLInputElement) => el.selectionEnd)).toBe(
+    3,
+  );
   expect(await live.evaluate((el) => document.activeElement === el)).toBe(true);
 });
 
-test('where moveBefore is supported, a running CSS animation survives the reorder without restarting', async ({ page }) => {
+test('where moveBefore is supported, a running CSS animation survives the reorder without restarting', async ({
+  page,
+}) => {
   const supportsMoveBefore = await page.evaluate(
-    () => typeof (Element.prototype as { moveBefore?: unknown }).moveBefore === 'function',
+    () =>
+      typeof (Element.prototype as { moveBefore?: unknown }).moveBefore ===
+      'function',
   );
-  test.skip(!supportsMoveBefore, 'engine has no Node.prototype.moveBefore — insertBefore fallback restarts animations by design');
+  test.skip(
+    !supportsMoveBefore,
+    'engine has no Node.prototype.moveBefore — insertBefore fallback restarts animations by design',
+  );
 
   // Let the animation run so its clock is well past zero.
   await page.waitForTimeout(300);
@@ -91,7 +107,10 @@ test('where moveBefore is supported, a running CSS animation survives the reorde
   const before = await page.evaluate(() => {
     const bar = document.querySelector('li[data-key="b"] .bar') as HTMLElement;
     const anim = bar.getAnimations()[0];
-    return { currentTime: Number(anim.currentTime), startTime: Number(anim.startTime) };
+    return {
+      currentTime: Number(anim.currentTime),
+      startTime: Number(anim.startTime),
+    };
   });
   expect(before.currentTime).toBeGreaterThan(0);
 
@@ -105,7 +124,10 @@ test('where moveBefore is supported, a running CSS animation survives the reorde
   const after = await page.evaluate(() => {
     const bar = document.querySelector('li[data-key="b"] .bar') as HTMLElement;
     const anim = bar.getAnimations()[0];
-    return { currentTime: Number(anim.currentTime), startTime: Number(anim.startTime) };
+    return {
+      currentTime: Number(anim.currentTime),
+      startTime: Number(anim.startTime),
+    };
   });
 
   // The animation did NOT restart: its clock is at or beyond where it was, and

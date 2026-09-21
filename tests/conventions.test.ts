@@ -24,7 +24,9 @@ import { parseRowTemplate } from '../src/utils/row-contract.js';
 
 /** Runtime (value) exports only — type-only exports are erased and never appear here. */
 const runtimeKeys = (ns: object): string[] =>
-  Object.keys(ns).filter((k) => k !== '__esModule').sort();
+  Object.keys(ns)
+    .filter((k) => k !== '__esModule')
+    .sort();
 
 describe('public export surface (KF-286)', () => {
   it('the kerfjs barrel exports exactly the documented runtime surface', () => {
@@ -69,7 +71,13 @@ describe('public export surface (KF-286)', () => {
   });
 
   it('no entry point ships a default export (kerf is named-exports only)', () => {
-    for (const ns of [barrel, jsxRuntime, arraySignalSubpath, testingSubpath, htmlSubpath]) {
+    for (const ns of [
+      barrel,
+      jsxRuntime,
+      arraySignalSubpath,
+      testingSubpath,
+      htmlSubpath,
+    ]) {
       expect('default' in ns).toBe(false);
     }
   });

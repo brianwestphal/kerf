@@ -19,7 +19,9 @@ export default async function globalSetup() {
 
   if (process.env.KERF_SKIP_CONSUMER_BUILD !== '1') {
     const buildScript = resolve(here, '../dist/consumer-app/build.mjs');
-    const result = spawnSync(process.execPath, [buildScript], { stdio: 'inherit' });
+    const result = spawnSync(process.execPath, [buildScript], {
+      stdio: 'inherit',
+    });
     if (result.status !== 0) {
       throw new Error('consumer-app build failed; aborting Playwright run');
     }
@@ -27,7 +29,9 @@ export default async function globalSetup() {
 
   if (process.env.KERF_SKIP_EXAMPLE_APPS_BUILD !== '1') {
     const buildScript = resolve(here, '../dist/example-apps/build.mjs');
-    const result = spawnSync(process.execPath, [buildScript], { stdio: 'inherit' });
+    const result = spawnSync(process.execPath, [buildScript], {
+      stdio: 'inherit',
+    });
     if (result.status !== 0) {
       throw new Error('example-apps build failed; aborting Playwright run');
     }

@@ -17,12 +17,22 @@
         --user: linear-gradient(135deg, #6f7bff, #b96bff);
         --bot: #1a2142;
       }
-      * { box-sizing: border-box; }
-      html, body { height: 100%; }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        height: 100%;
+      }
       body {
         margin: 0;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-        background: radial-gradient(1200px 800px at 20% -10%, #1a2247 0%, var(--bg) 60%);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        background: radial-gradient(
+          1200px 800px at 20% -10%,
+          #1a2247 0%,
+          var(--bg) 60%
+        );
         color: var(--text);
         display: flex;
         align-items: stretch;
@@ -44,19 +54,53 @@
         justify-content: space-between;
         padding: 1rem 1.25rem;
         border-bottom: 1px solid var(--border);
-        background: linear-gradient(180deg, rgba(111,123,255,0.08), transparent);
+        background: linear-gradient(
+          180deg,
+          rgba(111, 123, 255, 0.08),
+          transparent
+        );
       }
-      .brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 600; }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 600;
+      }
       .logo {
-        width: 28px; height: 28px; border-radius: 8px;
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
         background: var(--user);
-        display: grid; place-items: center;
-        font-size: 0.85rem; font-weight: 800; color: white;
+        display: grid;
+        place-items: center;
+        font-size: 0.85rem;
+        font-weight: 800;
+        color: white;
       }
-      .status { font-size: 0.78rem; color: var(--text-dim); display: flex; align-items: center; gap: 0.4rem; }
-      .dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 8px #34d399; }
-      .dot.busy { background: #fbbf24; box-shadow: 0 0 8px #fbbf24; animation: pulse 1.2s infinite; }
-      @keyframes pulse { 50% { opacity: 0.4; } }
+      .status {
+        font-size: 0.78rem;
+        color: var(--text-dim);
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 8px #34d399;
+      }
+      .dot.busy {
+        background: #fbbf24;
+        box-shadow: 0 0 8px #fbbf24;
+        animation: pulse 1.2s infinite;
+      }
+      @keyframes pulse {
+        50% {
+          opacity: 0.4;
+        }
+      }
 
       .messages {
         overflow-y: auto;
@@ -66,9 +110,16 @@
         gap: 0.75rem;
         scroll-behavior: smooth;
       }
-      .msg { display: flex; max-width: 85%; }
-      .msg.user { align-self: flex-end; }
-      .msg.bot { align-self: flex-start; }
+      .msg {
+        display: flex;
+        max-width: 85%;
+      }
+      .msg.user {
+        align-self: flex-end;
+      }
+      .msg.bot {
+        align-self: flex-start;
+      }
       .bubble {
         padding: 0.7rem 0.95rem;
         border-radius: 14px;
@@ -90,14 +141,19 @@
       }
       .caret {
         display: inline-block;
-        width: 7px; height: 1em;
+        width: 7px;
+        height: 1em;
         background: var(--accent);
         margin-left: 2px;
         vertical-align: -2px;
         animation: blink 1s infinite;
         border-radius: 1px;
       }
-      @keyframes blink { 50% { opacity: 0; } }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
 
       .chips {
         display: flex;
@@ -113,9 +169,14 @@
         border-radius: 999px;
         font-size: 0.78rem;
         cursor: pointer;
-        transition: color 120ms, border-color 120ms;
+        transition:
+          color 120ms,
+          border-color 120ms;
       }
-      .chip:hover { color: var(--text); border-color: var(--accent); }
+      .chip:hover {
+        color: var(--text);
+        border-color: var(--accent);
+      }
 
       .composer {
         display: grid;
@@ -137,7 +198,10 @@
         font: inherit;
         outline: none;
       }
-      .composer textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(111,123,255,0.2); }
+      .composer textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(111, 123, 255, 0.2);
+      }
       .composer button {
         background: var(--user);
         border: 0;
@@ -148,7 +212,10 @@
         cursor: pointer;
         min-width: 80px;
       }
-      .composer button:disabled { opacity: 0.55; cursor: not-allowed; }
+      .composer button:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
 
       .copy {
         margin-top: 0.25rem;
@@ -159,8 +226,12 @@
         padding: 0;
         cursor: pointer;
       }
-      .copy:hover { color: var(--accent); }
-      .msg.user .meta { text-align: right; }
+      .copy:hover {
+        color: var(--accent);
+      }
+      .msg.user .meta {
+        text-align: right;
+      }
     </style>
   </head>
   <body>

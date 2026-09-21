@@ -96,7 +96,9 @@ export interface ResourceOptions<T, I = void> {
  * a `report(completed, total)` callback for optional progress — ignore it if you
  * don't need progress (a plain `() => Promise<T>` is assignable here).
  */
-export type ResourceFetcher<T> = (report: (completed: number, total: number) => void) => Promise<T>;
+export type ResourceFetcher<T> = (
+  report: (completed: number, total: number) => void,
+) => Promise<T>;
 
 /**
  * An async-state container. Its `value` is a tracking read; drive UI off
@@ -134,7 +136,9 @@ export interface Resource<T, I = void> {
 }
 
 /** Create an async-state {@link Resource}. No per-instance framework state — it's a closure over a signal. */
-export function resource<T, I = void>(options: ResourceOptions<T, I> = {}): Resource<T, I> {
+export function resource<T, I = void>(
+  options: ResourceOptions<T, I> = {},
+): Resource<T, I> {
   const { cacheKey, equals } = options;
   const eq: (a: T, b: T) => boolean = equals ?? Object.is;
   const cache = new Map<string, T>(); // per-key SWR cache (GC-tied to the resource)
@@ -144,7 +148,9 @@ export function resource<T, I = void>(options: ResourceOptions<T, I> = {}): Reso
   let lastData: T | undefined;
   const changed = (next: T | undefined): boolean =>
     // undefined transitions are handled by reference; two defined values by `eq`.
-    lastData === undefined || next === undefined ? lastData !== next : !eq(lastData, next);
+    lastData === undefined || next === undefined
+      ? lastData !== next
+      : !eq(lastData, next);
   const commit = (next: T | undefined): number => {
     if (changed(next)) {
       revision++;
@@ -172,14 +178,21 @@ export function resource<T, I = void>(options: ResourceOptions<T, I> = {}): Reso
     // A fetcher is always a function, so `maybeFetcher === undefined` uniquely
     // identifies the one-arg call — even when the input value is itself undefined.
     const fetcher = (maybeFetcher ?? inputOrFetcher) as ResourceFetcher<T>;
-    const input = (maybeFetcher === undefined ? undefined : inputOrFetcher) as I | undefined;
-    const key = cacheKey !== undefined && maybeFetcher !== undefined ? cacheKey(input as I) : undefined;
+    const input = (maybeFetcher === undefined ? undefined : inputOrFetcher) as
+      I | undefined;
+    const key =
+      cacheKey !== undefined && maybeFetcher !== undefined
+        ? cacheKey(input as I)
+        : undefined;
 
     // What `data` shows while running: the cached slice for this key (per-key
     // SWR), or the previous run's data (single-slot SWR) when no cacheKey.
-    const runningData = cacheKey !== undefined
-      ? (key !== undefined ? cache.get(key) : undefined)
-      : state.value.data;
+    const runningData =
+      cacheKey !== undefined
+        ? key !== undefined
+          ? cache.get(key)
+          : undefined
+        : state.value.data;
 
     const gen = ++generation;
     state.value = {
@@ -200,7 +213,13 @@ export function resource<T, I = void>(options: ResourceOptions<T, I> = {}): Reso
     const fail = (error: unknown): undefined => {
       if (gen === generation) {
         // Keep `data` (and thus `revision`) on failure — stale-while-error.
-        state.value = { ...state.value, status: 'failed', error, progress: undefined, input };
+        state.value = {
+          ...state.value,
+          status: 'failed',
+          error,
+          progress: undefined,
+          input,
+        };
       }
       return undefined;
     };
@@ -212,23 +231,20 @@ export function resource<T, I = void>(options: ResourceOptions<T, I> = {}): Reso
       return Promise.resolve(fail(error));
     }
 
-    return pending.then(
-      (data) => {
-        if (gen === generation) {
-          if (key !== undefined) cache.set(key, data);
-          state.value = {
-            status: 'completed',
-            data,
-            error: undefined,
-            progress: undefined,
-            input,
-            revision: commit(data),
-          };
-        }
-        return data;
-      },
-      fail,
-    );
+    return pending.then((data) => {
+      if (gen === generation) {
+        if (key !== undefined) cache.set(key, data);
+        state.value = {
+          status: 'completed',
+          data,
+          error: undefined,
+          progress: undefined,
+          input,
+          revision: commit(data),
+        };
+      }
+      return data;
+    }, fail);
   }
 
   function reset(): void {

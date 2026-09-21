@@ -12,7 +12,7 @@ set -u
 cd /Users/westphal/Documents/kerf
 
 LOG=/Users/westphal/Documents/kerf/bench/.official-run.log
-exec >>"$LOG" 2>&1
+exec >> "$LOG" 2>&1
 
 echo
 echo "===== Official run scheduled for 17:00 PT 2026-05-16 ====="
@@ -56,4 +56,4 @@ echo "Results: /Users/westphal/Documents/kerf/bench/results.md"
 echo "JSON:    /Users/westphal/Documents/kerf/bench/results.json"
 
 # Surface completion via a desktop notification (best-effort; ignored on failure).
-/usr/bin/osascript -e 'display notification "Official krausest bench run complete. See bench/results.md." with title "kerf bench" sound name "Glass"' 2>/dev/null || true
+/usr/bin/osascript -e 'display notification "Official krausest bench run complete. See bench/results.md." with title "kerf bench" sound name "Glass"' 2> /dev/null || true

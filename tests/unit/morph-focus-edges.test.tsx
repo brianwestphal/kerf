@@ -17,10 +17,18 @@
  *
  * Every regression test asserts the shipped behavior (never `.skip`).
  */
-import { afterEach,beforeEach,describe,expect,it,type MockInstance,vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { each,mount,signal } from '../../src/index.js';
+import { each, mount, signal } from '../../src/index.js';
 
 let root: HTMLElement;
 let warnSpy: MockInstance<typeof console.warn>;
@@ -77,7 +85,9 @@ describe('KF-393: whole-morph focus capture/restore edges', () => {
     const dispose = mount(root, () => (
       <div>
         <p>{String(n.value)}</p>
-        <div data-morph-skip id="widget"><input id="wi" /></div>
+        <div data-morph-skip id="widget">
+          <input id="wi" />
+        </div>
       </div>
     ));
     const wi = root.querySelector('#wi') as HTMLInputElement;
@@ -98,9 +108,19 @@ describe('KF-393: whole-morph focus capture/restore edges', () => {
     // that is covered by the reconciler suites.)
     const rows = arraySignal([{ id: 'a', big: false }]);
     const dispose = mount(root, () => (
-      <div>{each(rows, (r) => r.big
-        ? <section data-key={r.id}><input /></section>
-        : <article data-key={r.id}><input /></article>)}</div>
+      <div>
+        {each(rows, (r) =>
+          r.big ? (
+            <section data-key={r.id}>
+              <input />
+            </section>
+          ) : (
+            <article data-key={r.id}>
+              <input />
+            </article>
+          ),
+        )}
+      </div>
     ));
     (root.querySelector('input') as HTMLInputElement).focus();
     rows.update(0, (r) => ({ ...r, big: true }));

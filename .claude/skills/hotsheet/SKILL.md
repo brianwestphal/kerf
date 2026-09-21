@@ -95,6 +95,7 @@ create follow-ups first for independently describable gaps, exhaust safe alterna
 and continue other independent Up Next work before stopping.
 
 Notes:
+
 - The CLI (`hotsheet-cli …`) and `hotsheet_*` MCP tools use the same engine and work
   without a server.
 - Confirm HS2 generation before using connected MCP: `hotsheet-store.json` (directly

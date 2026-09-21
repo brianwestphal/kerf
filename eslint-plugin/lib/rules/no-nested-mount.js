@@ -34,7 +34,8 @@ function create(context) {
       let p = node.parent;
       while (p) {
         if (
-          (p.type === 'ArrowFunctionExpression' || p.type === 'FunctionExpression') &&
+          (p.type === 'ArrowFunctionExpression' ||
+            p.type === 'FunctionExpression') &&
           isMountCall(p.parent) &&
           p.parent.arguments.includes(p)
         ) {

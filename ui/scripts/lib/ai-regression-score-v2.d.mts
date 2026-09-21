@@ -1,4 +1,7 @@
-import type { AiRegressionScore, AiRegressionScoreOptions } from './ai-regression-score.mjs';
+import type {
+  AiRegressionScore,
+  AiRegressionScoreOptions,
+} from './ai-regression-score.mjs';
 
 export function scoreAiRegressionV2(
   caseDefinition: Record<string, any>,

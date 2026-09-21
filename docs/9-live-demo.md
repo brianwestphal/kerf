@@ -90,19 +90,19 @@ GitHub Pages source must be set to **GitHub Actions** in repo settings (`Setting
 ## 9.5 Constraints and non-goals
 
 - **Two front-end bundles, one build pipeline and origin.** The site at `/kerf/` and the demo at `/kerf/demo/` use different frameworks and emit separate bundles, but they are build-coupled: both consume the root package's prebuilt `dist/`, and `site:build` builds the demo and complete apps before Astro assembles one artifact. A failure in any part stops the shared deployment.
-- **No redirect from the old `/kerf/` root.** Before this layout, `/kerf/` *was* the demo. After, `/kerf/` is the Starlight home and the demo continues to deploy at `/kerf/demo/`. The demo is **fully supported and the canonical "play with kerf" URL** — README.md links to it directly, and the build pipeline rebuilds it on every push to `main`. The Starlight site nav was deliberately reshaped (KF-49) to surface inline single-concept examples next to their docs, but the nine-section reactivity demo at `/kerf/demo/` remains the right link to send a colleague who wants to explore the framework outside the docs context. Anyone with a stale bookmark for the old `/kerf/` (root demo URL) lands on the marketing site instead — if preserving those inbound links matters, add a `site/public/_redirects` (or equivalent) in a follow-up.
+- **No redirect from the old `/kerf/` root.** Before this layout, `/kerf/` _was_ the demo. After, `/kerf/` is the Starlight home and the demo continues to deploy at `/kerf/demo/`. The demo is **fully supported and the canonical "play with kerf" URL** — README.md links to it directly, and the build pipeline rebuilds it on every push to `main`. The Starlight site nav was deliberately reshaped (KF-49) to surface inline single-concept examples next to their docs, but the nine-section reactivity demo at `/kerf/demo/` remains the right link to send a colleague who wants to explore the framework outside the docs context. Anyone with a stale bookmark for the old `/kerf/` (root demo URL) lands on the marketing site instead — if preserving those inbound links matters, add a `site/public/_redirects` (or equivalent) in a follow-up.
 - **No server-side rendering.** `SafeHtml.toString()` works server-side, but both deploys are pure client-side mounts.
 - **Tied to the package homepage.** The `homepage` field in `package.json` points at the Pages site (`https://brianwestphal.github.io/kerf/`) — npm uses `homepage` as the package's project landing page, and the docs site is the front door; the GitHub repo remains the canonical source of truth.
 
 ## 9.6 Local preview
 
 ```bash
-npm run build           # required first — site / demo / complete apps all consume kerfjs file:..
-npm run site:dev        # builds the site, then serves the production output at
-                        # http://localhost:4321/kerf/ via `astro preview`
-                        # — search and other build-only behavior work locally.
-npm run site:dev:hmr    # `astro dev` instead — fast HMR for editing content,
-                        # but search and Pagefind index are disabled.
+npm run build    # required first — site / demo / complete apps all consume kerfjs file:..
+npm run site:dev # builds the site, then serves the production output at
+# http://localhost:4321/kerf/ via `astro preview`
+# — search and other build-only behavior work locally.
+npm run site:dev:hmr # `astro dev` instead — fast HMR for editing content,
+# but search and Pagefind index are disabled.
 ```
 
 Both scripts run the no-op `sync-docs` inventory pass plus `build-examples`, `build-icons`, and `gen-llms-txt` (via `prebuild` for `site:dev`, `predev:hmr` for `site:dev:hmr`), so `/kerf/`, `/kerf/demo/`, and `/kerf/run/<name>/` all resolve from one local server.

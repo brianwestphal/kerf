@@ -17,8 +17,14 @@ export const rectFn = (rect: Partial<DOMRect>) => () =>
   }) as DOMRect;
 
 export function setViewport(width: number, height: number): void {
-  Object.defineProperty(window, 'innerWidth', { value: width, configurable: true });
-  Object.defineProperty(window, 'innerHeight', { value: height, configurable: true });
+  Object.defineProperty(window, 'innerWidth', {
+    value: width,
+    configurable: true,
+  });
+  Object.defineProperty(window, 'innerHeight', {
+    value: height,
+    configurable: true,
+  });
 }
 
 export function anchorAt(rect: Partial<DOMRect>): HTMLElement {

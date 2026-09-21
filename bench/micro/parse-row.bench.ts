@@ -17,12 +17,13 @@ import { bench, describe } from 'vitest';
 
 import { parseRowTemplate } from '../../src/utils/row-contract.js';
 
-const KRAUSEST_ROW_HTML = '<tr data-key="1" class="">'
-  + '<td class="col-md-1">1</td>'
-  + '<td class="col-md-4"><a class="lbl" data-id="1">pretty red house</a></td>'
-  + '<td class="col-md-1"><a class="remove" data-id="1"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>'
-  + '<td class="col-md-6"></td>'
-  + '</tr>';
+const KRAUSEST_ROW_HTML =
+  '<tr data-key="1" class="">' +
+  '<td class="col-md-1">1</td>' +
+  '<td class="col-md-4"><a class="lbl" data-id="1">pretty red house</a></td>' +
+  '<td class="col-md-1"><a class="remove" data-id="1"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>' +
+  '<td class="col-md-6"></td>' +
+  '</tr>';
 
 describe('parse-row: parseRowTemplate cost for a krausest-shaped row', () => {
   bench('parseRowTemplate (single row)', () => {

@@ -4,11 +4,11 @@
  * path.
  */
 
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import type { ArraySignal } from '../../src/array-signal.js';
 import { arraySignal } from '../../src/array-signal.js';
-import { batch,each,mount,signal } from '../../src/index.js';
+import { batch, each, mount, signal } from '../../src/index.js';
 import { jsx } from '../../src/jsx-runtime.js';
 
 describe('arraySignal — each() granular integration via mount()', () => {
@@ -24,9 +24,13 @@ describe('arraySignal — each() granular integration via mount()', () => {
   });
 
   function renderRows(rows: ArraySignal<{ id: number; label: string }>): void {
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', { 'data-key': String(r.id), children: r.label })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', { 'data-key': String(r.id), children: r.label }),
+        ),
+      }),
+    );
   }
 
   it('arraySignal value reads inside the mount closure trigger re-renders for non-granular consumers', () => {
@@ -56,27 +60,33 @@ describe('arraySignal — each() granular integration via mount()', () => {
     rows: ArraySignal<{ id: number; label: string }>,
     selectedId: { value: number },
   ): void {
-    mount(root, () => jsx('ul', {
-      children: each(
-        rows,
-        (r) => jsx('li', {
-          'data-key': String(r.id),
-          className: r.id === selectedId.value ? 'sel' : '',
-          children: r.label,
-        }),
-        (r) => r.id === selectedId.value,
-      ),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(
+          rows,
+          (r) =>
+            jsx('li', {
+              'data-key': String(r.id),
+              className: r.id === selectedId.value ? 'sel' : '',
+              children: r.label,
+            }),
+          (r) => r.id === selectedId.value,
+        ),
+      }),
+    );
   }
 
   it('select-row keeps working after a granular remove (cacheKey signal stays tracked)', () => {
     const rows = arraySignal([
-      { id: 1, label: 'a' }, { id: 2, label: 'b' },
-      { id: 3, label: 'c' }, { id: 4, label: 'd' },
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+      { id: 3, label: 'c' },
+      { id: 4, label: 'd' },
     ]);
     const selectedId = signal(-1);
     selectableRows(rows, selectedId);
-    const cls = (id: number) => root.querySelector(`li[data-key="${id}"]`)?.className;
+    const cls = (id: number) =>
+      root.querySelector(`li[data-key="${id}"]`)?.className;
 
     selectedId.value = 2;
     expect(cls(2)).toBe('sel');
@@ -94,12 +104,15 @@ describe('arraySignal — each() granular integration via mount()', () => {
 
   it('a selection flip batched with a granular remove falls back to the snapshot path', () => {
     const rows = arraySignal([
-      { id: 1, label: 'a' }, { id: 2, label: 'b' },
-      { id: 3, label: 'c' }, { id: 4, label: 'd' },
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+      { id: 3, label: 'c' },
+      { id: 4, label: 'd' },
     ]);
     const selectedId = signal(-1);
     selectableRows(rows, selectedId);
-    const cls = (id: number) => root.querySelector(`li[data-key="${id}"]`)?.className;
+    const cls = (id: number) =>
+      root.querySelector(`li[data-key="${id}"]`)?.className;
 
     selectedId.value = 2;
     expect(cls(2)).toBe('sel');
@@ -130,11 +143,15 @@ describe('arraySignal — each() granular integration via mount()', () => {
     renderRows(rows);
     const count = () => root.querySelectorAll('li').length;
 
-    batch(() => { rows.replace(build(3)); });
+    batch(() => {
+      rows.replace(build(3));
+    });
     expect(count()).toBe(3);
 
     // Clear empties the binding (count recorded as 0).
-    batch(() => { rows.replace([]); });
+    batch(() => {
+      rows.replace([]);
+    });
     expect(count()).toBe(0);
 
     // First append after clear must show the rows — not nothing.

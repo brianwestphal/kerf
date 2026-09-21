@@ -29,8 +29,8 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid, Code } from '@astrojs/starlight/components';
-import PerfTable from '../../components/PerfTable.astro';
+import { Card, CardGrid, Code } from "@astrojs/starlight/components";
+import PerfTable from "../../components/PerfTable.astro";
 
 ## Where to go next
 
@@ -39,7 +39,8 @@ import PerfTable from '../../components/PerfTable.astro';
     [Overview, render pipeline, events, JSX runtime →](/kerf/docs/overview/)
   </Card>
   <Card title="Browse examples" icon="puzzle">
-    [Nine basics + complete apps with source side-by-side →](/kerf/examples/basics/)
+    [Nine basics + complete apps with source side-by-side
+    →](/kerf/examples/basics/)
   </Card>
   <Card title="API reference" icon="seti:default">
     [Every export — `signal`, `mount`, `each`, and the rest →](/kerf/api/)
@@ -56,6 +57,7 @@ import PerfTable from '../../components/PerfTable.astro';
 const count = signal(0);
 
 mount(document.getElementById('app')!, () => (
+
   <div>
     <button data-action="inc">+</button>
     <span>{count.value}</span>
@@ -74,19 +76,26 @@ Official numbers from the [krausest js-framework-benchmark](https://krausest.git
 
 <CardGrid>
   <Card title="Small bundle" icon="approve-check">
-    ~11 KB minified + gzipped including signals. The one runtime dependency is `@preact/signals-core`. No virtual DOM, no scheduler, no concurrent-mode machinery to ship.
+    ~11 KB minified + gzipped including signals. The one runtime dependency is
+    `@preact/signals-core`. No virtual DOM, no scheduler, no concurrent-mode
+    machinery to ship.
   </Card>
   <Card title="No virtual DOM, no compiler" icon="seti:javascript">
-    JSX renders to HTML strings; a small reconciler patches the live DOM in place. DevTools shows the real DOM because it *is* the DOM. Standard `tsconfig.json` + Vite / esbuild / tsup — no plugin chain.
+    JSX renders to HTML strings; a small reconciler patches the live DOM in
+    place. DevTools shows the real DOM because it *is* the DOM. Standard
+    `tsconfig.json` + Vite / esbuild / tsup — no plugin chain.
   </Card>
   <Card title="Focus, selection, listeners survive re-renders" icon="puzzle">
-    The reconciler morphs instead of rebuilding. Caret position, selection range, and delegated listeners survive every re-render.
+    The reconciler morphs instead of rebuilding. Caret position, selection
+    range, and delegated listeners survive every re-render.
   </Card>
   <Card title="Small public API" icon="seti:html">
-    ~16 exports total. No hooks, no lifecycle, no per-instance state. Components are plain functions returning JSX.
+    ~16 exports total. No hooks, no lifecycle, no per-instance state. Components
+    are plain functions returning JSX.
   </Card>
   <Card title="Plain TS, plain JSX, plain ESM" icon="setting">
-    Drops into anything that already builds JSX. No custom file extensions, no DSL, no required compiler plugin.
+    Drops into anything that already builds JSX. No custom file extensions, no
+    DSL, no required compiler plugin.
   </Card>
 </CardGrid>
 
@@ -105,9 +114,9 @@ Official numbers from the [krausest js-framework-benchmark](https://krausest.git
 
 ## Why "kerf"?
 
-A *kerf* is the narrow strip a saw blade removes when cutting — the smallest possible cut. The framework's job is the same: apply the smallest possible mutation to update your DOM.
+A _kerf_ is the narrow strip a saw blade removes when cutting — the smallest possible cut. The framework's job is the same: apply the smallest possible mutation to update your DOM.
 
-(And yes, ~~kerformance~~ → *performance* jokes were written. They were also rejected.)
+(And yes, ~~kerformance~~ → _performance_ jokes were written. They were also rejected.)
 
 ## Sponsor
 

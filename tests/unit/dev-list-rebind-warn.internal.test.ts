@@ -10,16 +10,32 @@
  * production-shape (hooks uninstalled) paths through the real mount pipeline.
  */
 
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
-import { _resetWarnedForTests, maybeWarnListRebind } from '../../src/dev-list-rebind-warn.js';
+import {
+  _resetWarnedForTests,
+  maybeWarnListRebind,
+} from '../../src/dev-list-rebind-warn.js';
 import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
-const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+const env = (
+  globalThis as { process: { env: Record<string, string | undefined> } }
+).process.env;
 
 let root: HTMLElement;
 let warnSpy: MockInstance<typeof console.warn>;
@@ -46,22 +62,27 @@ const items = [{ id: 'a' }, { id: 'b' }];
  */
 function mountTagSwap(): { wide: ReturnType<typeof signal<boolean>> } {
   const wide = signal(false);
-  mount(root, () =>
-    jsx('div', {
-      children: wide.value
-        ? jsx('section', {
-            children: jsx('ul', {
-              children: each(items, (it) =>
-                jsx('li', { 'data-key': it.id, children: it.id })),
+  mount(
+    root,
+    () =>
+      jsx('div', {
+        children: wide.value
+          ? jsx('section', {
+              children: jsx('ul', {
+                children: each(items, (it) =>
+                  jsx('li', { 'data-key': it.id, children: it.id }),
+                ),
+              }),
+            })
+          : jsx('article', {
+              children: jsx('ul', {
+                children: each(items, (it) =>
+                  jsx('li', { 'data-key': it.id, children: it.id }),
+                ),
+              }),
             }),
-          })
-        : jsx('article', {
-            children: jsx('ul', {
-              children: each(items, (it) =>
-                jsx('li', { 'data-key': it.id, children: it.id })),
-            }),
-          }),
-    }) as never);
+      }) as never,
+  );
   return { wide };
 }
 
@@ -82,7 +103,9 @@ describe('dev-list-rebind-warn (KERF_DEV_WARN_LIST_REBIND=1)', () => {
     expect(root.querySelectorAll('li').length).toBe(2);
     expect(warnSpy).toHaveBeenCalledTimes(1);
     const msg = warnSpy.mock.calls[0][0] as string;
-    expect(msg).toMatch(/each\(\) list '.+' had its container \(<ul>\) rebuilt/);
+    expect(msg).toMatch(
+      /each\(\) list '.+' had its container \(<ul>\) rebuilt/,
+    );
     expect(msg).toMatch(/rows were re-created from scratch/);
     expect(msg).toMatch(/KERF_DEV_WARN_LIST_REBIND=0/);
   });

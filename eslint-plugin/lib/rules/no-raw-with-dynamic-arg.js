@@ -22,13 +22,13 @@ const meta = {
   type: 'problem',
   docs: {
     description:
-      "Disallow `raw()` with dynamic arguments; `raw()` bypasses HTML escaping and passing dynamic values is an XSS vector.",
+      'Disallow `raw()` with dynamic arguments; `raw()` bypasses HTML escaping and passing dynamic values is an XSS vector.',
     url: 'https://github.com/brianwestphal/kerf/blob/main/eslint-plugin/docs/rules/no-raw-with-dynamic-arg.md',
   },
   schema: [],
   messages: {
     dynamic:
-      "`raw()` bypasses HTML auto-escaping. Passing a dynamic value is an XSS risk unless the input has been sanitized. Sanitize first (`DOMPurify.sanitize(...)`) then pass to `raw()`, or add `// eslint-disable-next-line kerfjs/no-raw-with-dynamic-arg` to mark a call as intentionally safe.",
+      '`raw()` bypasses HTML auto-escaping. Passing a dynamic value is an XSS risk unless the input has been sanitized. Sanitize first (`DOMPurify.sanitize(...)`) then pass to `raw()`, or add `// eslint-disable-next-line kerfjs/no-raw-with-dynamic-arg` to mark a call as intentionally safe.',
   },
 };
 
@@ -47,10 +47,11 @@ function create(context) {
       const callee = node.callee;
       if (!callee) return;
       // Match bare `raw(...)` and `kerfjs.raw(...)` / `kerf.raw(...)` shapes.
-      const isRaw = (callee.type === 'Identifier' && callee.name === 'raw')
-        || (callee.type === 'MemberExpression'
-            && callee.property.type === 'Identifier'
-            && callee.property.name === 'raw');
+      const isRaw =
+        (callee.type === 'Identifier' && callee.name === 'raw') ||
+        (callee.type === 'MemberExpression' &&
+          callee.property.type === 'Identifier' &&
+          callee.property.name === 'raw');
       if (!isRaw) return;
       if (node.arguments.length === 0) return;
       const arg = node.arguments[0];

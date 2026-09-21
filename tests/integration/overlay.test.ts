@@ -73,7 +73,9 @@ describe('overlay — full pipeline', () => {
     });
 
     (app.querySelector('.rename') as HTMLElement).click();
-    const input = document.querySelector('.kerf-prompt__input') as HTMLInputElement;
+    const input = document.querySelector(
+      '.kerf-prompt__input',
+    ) as HTMLInputElement;
     input.value = 'diagram';
     (document.querySelector('[data-prompt="ok"]') as HTMLElement).click();
     await Promise.resolve();
@@ -96,7 +98,8 @@ describe('overlay — full pipeline', () => {
       if (rec !== null) conn.value = `${rec.host}:${rec.port}`;
     });
 
-    (document.querySelector('[data-field="host"]') as HTMLInputElement).value = 'db';
+    (document.querySelector('[data-field="host"]') as HTMLInputElement).value =
+      'db';
     (document.querySelector('[data-form="ok"]') as HTMLElement).click();
     await Promise.resolve();
     await Promise.resolve();
@@ -105,7 +108,10 @@ describe('overlay — full pipeline', () => {
 
   it('overlay content mounted reactively updates while open, and is disposed on close', () => {
     const msg = signal('loading…');
-    const h = overlay(() => jsx('p', { class: 'status', children: msg.value }), { trap: false, dismiss: false });
+    const h = overlay(
+      () => jsx('p', { class: 'status', children: msg.value }),
+      { trap: false, dismiss: false },
+    );
     expect(document.querySelector('.status')?.textContent).toBe('loading…');
     msg.value = 'ready';
     expect(document.querySelector('.status')?.textContent).toBe('ready');

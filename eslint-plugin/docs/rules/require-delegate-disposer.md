@@ -2,7 +2,7 @@
 
 Require capturing the disposer returned by `delegate()` and `delegateCapture()`.
 
-Both helpers install a single listener on the root element and return a `() => void` disposer — the *only* way to remove the listener once it's attached. Discarding the return value is safe in exactly one case: the registration is genuinely page-lifetime (root is `document.body` or another never-torn-down element, attached once at startup, never re-registered). In every other case the listener closure pins `rootEl`, `handler`, and everything the handler closes over (stores, signals, app state) — so an undisposed delegate on a transient root leaks both the listener and the app graph it references, and re-mount cycles stack listeners linearly. `mount()`'s own disposer does NOT remove delegates for you.
+Both helpers install a single listener on the root element and return a `() => void` disposer — the _only_ way to remove the listener once it's attached. Discarding the return value is safe in exactly one case: the registration is genuinely page-lifetime (root is `document.body` or another never-torn-down element, attached once at startup, never re-registered). In every other case the listener closure pins `rootEl`, `handler`, and everything the handler closes over (stores, signals, app state) — so an undisposed delegate on a transient root leaks both the listener and the app graph it references, and re-mount cycles stack listeners linearly. `mount()`'s own disposer does NOT remove delegates for you.
 
 See [kerf docs §5.3 — Disposers](https://brianwestphal.github.io/kerf/docs/5-event-delegation/#53-disposers) for the full rationale.
 
@@ -49,8 +49,8 @@ Or collect into a disposer array:
 ```ts
 const disposers: Array<() => void> = [];
 disposers.push(mount(host, render));
-disposers.push(delegate(host, 'click', '[data-action]', onAction));
-disposers.push(delegate(host, 'keydown', '[data-edit]', onEdit));
+disposers.push(delegate(host, "click", "[data-action]", onAction));
+disposers.push(delegate(host, "keydown", "[data-edit]", onEdit));
 
 function teardown() {
   for (const off of disposers) off();
@@ -64,13 +64,18 @@ If the registration is attached once at module load and the root never tears dow
 
 ```ts
 // 1. The `void` operator as an explicit-discard sigil.
-void delegate(document.body, 'click', ACTIONS.inc.selector, () => count.value++);
+void delegate(
+  document.body,
+  "click",
+  ACTIONS.inc.selector,
+  () => count.value++,
+);
 ```
 
 ```ts
 // 2. Standard eslint-disable for one-off cases.
 // eslint-disable-next-line kerfjs/require-delegate-disposer
-delegate(document.body, 'click', ACTIONS.inc.selector, () => count.value++);
+delegate(document.body, "click", ACTIONS.inc.selector, () => count.value++);
 ```
 
 `void` is the lower-friction option when the file has many page-lifetime registrations clustered together; eslint-disable carries the rule name with it, which makes it easier to grep for.

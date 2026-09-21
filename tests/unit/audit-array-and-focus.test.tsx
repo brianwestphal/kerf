@@ -20,31 +20,42 @@
  * Plus assorted contract pins (effect throwing, nested batch, diamond
  * computed) that the audit flagged.
  */
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import {
-batch,
-each,
-mount,
-signal
-} from '../../src/index.js';
+import { batch, each, mount, signal } from '../../src/index.js';
 
 describe('Audit gap coverage', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   describe('arraySignal contracts', () => {
     it('granular update after a replace() patch rebuilds via snapshot fallback', () => {
-      const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+      const rows = arraySignal([
+        { id: 1, label: 'a' },
+        { id: 2, label: 'b' },
+      ]);
       mount(root, () => (
-        <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.label}</li>)}</ul>
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>{r.label}</li>
+          ))}
+        </ul>
       ));
       expect(root.querySelectorAll('li').length).toBe(2);
       // replace() forces snapshot; immediately follow with granular updates.
       batch(() => {
-        rows.replace([{ id: 10, label: 'X' }, { id: 20, label: 'Y' }, { id: 30, label: 'Z' }]);
+        rows.replace([
+          { id: 10, label: 'X' },
+          { id: 20, label: 'Y' },
+          { id: 30, label: 'Z' },
+        ]);
       });
       const lis = root.querySelectorAll('li');
       expect(lis.length).toBe(3);
@@ -58,11 +69,22 @@ describe('Audit gap coverage', () => {
     });
 
     it('two each() callsites bound to the same arraySignal both render correctly', () => {
-      const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+      const rows = arraySignal([
+        { id: 1, label: 'a' },
+        { id: 2, label: 'b' },
+      ]);
       mount(root, () => (
         <div>
-          <ul className="A">{each(rows, (r) => <li data-key={String(r.id)}>A:{r.label}</li>)}</ul>
-          <ul className="B">{each(rows, (r) => <li data-key={String(r.id)}>B:{r.label}</li>)}</ul>
+          <ul className="A">
+            {each(rows, (r) => (
+              <li data-key={String(r.id)}>A:{r.label}</li>
+            ))}
+          </ul>
+          <ul className="B">
+            {each(rows, (r) => (
+              <li data-key={String(r.id)}>B:{r.label}</li>
+            ))}
+          </ul>
         </div>
       ));
       expect(root.querySelector('.A')!.querySelectorAll('li').length).toBe(2);
@@ -81,13 +103,20 @@ describe('Audit gap coverage', () => {
   describe('focus survival', () => {
     it('focus on an external input survives a re-render that introduces each()', () => {
       const showList = signal(false);
-      const items = [{ id: 1, label: 'a' }, { id: 2, label: 'b' }];
+      const items = [
+        { id: 1, label: 'a' },
+        { id: 2, label: 'b' },
+      ];
       mount(root, () => (
         <div>
           <input id="search" type="text" />
-          {showList.value
-            ? <ul>{each(items, (it) => <li data-key={String(it.id)}>{it.label}</li>)}</ul>
-            : null}
+          {showList.value ? (
+            <ul>
+              {each(items, (it) => (
+                <li data-key={String(it.id)}>{it.label}</li>
+              ))}
+            </ul>
+          ) : null}
         </div>
       ));
       const input = root.querySelector('input')!;
@@ -108,9 +137,13 @@ describe('Audit gap coverage', () => {
       const showSkip = signal(true);
       mount(root, () => (
         <div>
-          {showSkip.value
-            ? <div data-morph-skip className="skip-host"><span>placeholder</span></div>
-            : <p>removed</p>}
+          {showSkip.value ? (
+            <div data-morph-skip className="skip-host">
+              <span>placeholder</span>
+            </div>
+          ) : (
+            <p>removed</p>
+          )}
         </div>
       ));
       const firstHost = root.querySelector('.skip-host')!;
@@ -130,6 +163,4 @@ describe('Audit gap coverage', () => {
       expect(secondHost.querySelector('span')!.textContent).toBe('placeholder');
     });
   });
-
-
 });

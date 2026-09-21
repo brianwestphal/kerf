@@ -8,12 +8,23 @@
  * never triggers it, an ordinary render never triggers it, and the production
  * shape with hooks uninstalled is silent.
  */
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { each } from '../../src/each.js';
 import { mount, signal } from '../../src/index.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
 let root: HTMLElement;
 let warnSpy: MockInstance<typeof console.warn>;
@@ -37,20 +48,36 @@ function shiftingTree(keyed: boolean) {
   const opts = keyed ? { key: 'b' } : undefined;
   const dispose = mount(root, () => (
     <div>
-      {cond.value
-        ? <ul data-key="ca">{each(a, (r) => <li data-key={r.id}>{r.id}</li>)}</ul>
-        : ''}
-      <ul data-key="cb">{each(b, (r) => <li data-key={r.id}>{r.id}</li>, opts)}</ul>
+      {cond.value ? (
+        <ul data-key="ca">
+          {each(a, (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ))}
+        </ul>
+      ) : (
+        ''
+      )}
+      <ul data-key="cb">
+        {each(
+          b,
+          (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ),
+          opts,
+        )}
+      </ul>
     </div>
   ));
   return { cond, a, b, dispose };
 }
 
 const shiftWarnings = (): string[] =>
-  warnSpy.mock.calls.map((c) => String(c[0])).filter((m) => m.includes('is now a different list'));
+  warnSpy.mock.calls
+    .map((c) => String(c[0]))
+    .filter((m) => m.includes('is now a different list'));
 
 describe('dev-list-key-warn (always-on identity-shift warning)', () => {
-  it('warns when an unkeyed list\'s id is taken over by another list', () => {
+  it("warns when an unkeyed list's id is taken over by another list", () => {
     const { cond, b, dispose } = shiftingTree(false);
     // A granular op after the shift is what routes through the detection point.
     cond.value = false;
@@ -87,7 +114,11 @@ describe('dev-list-key-warn (always-on identity-shift warning)', () => {
   it('an ordinary list with no shifting never triggers it', () => {
     const rows = arraySignal([{ id: 'r1' }]);
     const dispose = mount(root, () => (
-      <ul data-key="cl">{each(rows, (r) => <li data-key={r.id}>{r.id}</li>)}</ul>
+      <ul data-key="cl">
+        {each(rows, (r) => (
+          <li data-key={r.id}>{r.id}</li>
+        ))}
+      </ul>
     ));
     rows.push({ id: 'r2' });
     rows.update(0, (r) => ({ ...r }));

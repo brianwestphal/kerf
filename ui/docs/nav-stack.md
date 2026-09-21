@@ -8,9 +8,9 @@ a `NavStack` with one entry**. It is one of the opt-in app layouts (see
 Import the component and its companion stylesheet:
 
 ```ts
-import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
-import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
-import '@kerfjs/ui/nav-stack.css';
+import { NavStack, type NavStackView } from "@kerfjs/ui/nav-stack";
+import { wireNavStack } from "@kerfjs/ui/wire-nav-stack";
+import "@kerfjs/ui/nav-stack.css";
 ```
 
 ## State lives in the app
@@ -20,16 +20,25 @@ stack as a `signal<NavStackView[]>`, `NavStack({ views })` renders it, and
 `wireNavStack` animates the transitions.
 
 ```tsx
-const views = signal<NavStackView[]>([{ key: 'inbox', title: 'Inbox', content: <InboxView /> }]);
+const views = signal<NavStackView[]>([
+  { key: "inbox", title: "Inbox", content: <InboxView /> },
+]);
 
 // render inside mount():
 <NavStack id="mail" label="Mail" views={views.value} />;
 
 // once, after first render:
-const dispose = wireNavStack(root, { onBack: () => { views.value = views.value.slice(0, -1); } });
+const dispose = wireNavStack(root, {
+  onBack: () => {
+    views.value = views.value.slice(0, -1);
+  },
+});
 
 // push / pop by editing the signal:
-views.value = [...views.value, { key: id, title: 'Message', content: <MessageView id={id} /> }];
+views.value = [
+  ...views.value,
+  { key: id, title: "Message", content: <MessageView id={id} /> },
+];
 ```
 
 `NavStack` renders every entry stacked, the last one active and the rest kept

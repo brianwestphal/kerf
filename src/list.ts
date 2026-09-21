@@ -43,7 +43,9 @@ import { createListVirtualizationController } from './list-virtualization-contro
 import type { MountResult } from './mount.js';
 import { effect } from './reactive.js';
 
-const NOOP = (): void => { /* intentional no-op */ };
+const NOOP = (): void => {
+  /* intentional no-op */
+};
 
 /** A row's stable key. */
 export type ListKey = string | number;
@@ -210,18 +212,22 @@ export interface BindListOptions<T> {
 }
 
 /** Reject a keyed snapshot before reconciliation can alias two rows in the DOM. */
-function assertUniqueListKeys<T>(items: readonly T[], key: (item: T) => ListKey): void {
-  const firstIndex = new Map<ListKey,number>();
+function assertUniqueListKeys<T>(
+  items: readonly T[],
+  key: (item: T) => ListKey,
+): void {
+  const firstIndex = new Map<ListKey, number>();
   for (let index = 0; index < items.length; index++) {
     const rowKey = key(items[index]);
     const first = firstIndex.get(rowKey);
     if (first !== undefined) {
-      const displayed = typeof rowKey === 'string' ? JSON.stringify(rowKey) : String(rowKey);
+      const displayed =
+        typeof rowKey === 'string' ? JSON.stringify(rowKey) : String(rowKey);
       throw new Error(
         `bindList: duplicate key ${displayed} at indices ${first} and ${index} — every row key must be unique.`,
       );
     }
-    firstIndex.set(rowKey,index);
+    firstIndex.set(rowKey, index);
   }
 }
 
@@ -236,7 +242,7 @@ export function bindList<T>(
   source: ListSource<T>,
   options: BindListOptions<T>,
 ): BindListHandle {
-  const { key,render,tag = 'div',virtualize,before } = options;
+  const { key, render, tag = 'div', virtualize, before } = options;
   let firstRender = true;
   let forceSnapshot = false;
 
@@ -244,22 +250,39 @@ export function bindList<T>(
     [ARRAY_SIGNAL_BRAND]?: boolean;
     _consumePatches?: () => ArrayPatch<T>[];
   };
-  const granularEligible = virtualize === undefined && patchSource[ARRAY_SIGNAL_BRAND] === true;
+  const granularEligible =
+    virtualize === undefined && patchSource[ARRAY_SIGNAL_BRAND] === true;
 
-  const container = virtualize === undefined ? parent : document.createElement('div');
+  const container =
+    virtualize === undefined ? parent : document.createElement('div');
   if (virtualize !== undefined) {
-    if (virtualize.containerClass !== undefined) container.className = virtualize.containerClass;
-    if (virtualize.containerId !== undefined) container.id = virtualize.containerId;
+    if (virtualize.containerClass !== undefined)
+      container.className = virtualize.containerClass;
+    if (virtualize.containerId !== undefined)
+      container.id = virtualize.containerId;
   }
   const endAnchor = (): Node | null => {
     if (virtualize !== undefined || before === undefined) return null;
     return (typeof before === 'function' ? before() : before) ?? null;
   };
 
-  const rows = createListRowController({ container,key,render,tag,endAnchor });
-  const virtualization = virtualize === undefined
-    ? undefined
-    : createListVirtualizationController({ parent,container,virtualize,key,rows });
+  const rows = createListRowController({
+    container,
+    key,
+    render,
+    tag,
+    endAnchor,
+  });
+  const virtualization =
+    virtualize === undefined
+      ? undefined
+      : createListVirtualizationController({
+          parent,
+          container,
+          virtualize,
+          key,
+          rows,
+        });
 
   const renderItems = (items: readonly T[]): void => {
     if (virtualization !== undefined) {
@@ -269,10 +292,10 @@ export function bindList<T>(
     if (granularEligible) {
       const patches = patchSource._consumePatches!();
       if (
-        !firstRender
-        && !forceSnapshot
-        && patches.length > 0
-        && !patches.some((patch) => patch.type === 'replace')
+        !firstRender &&
+        !forceSnapshot &&
+        patches.length > 0 &&
+        !patches.some((patch) => patch.type === 'replace')
       ) {
         try {
           rows.applyPatches(patches);
@@ -291,7 +314,7 @@ export function bindList<T>(
   const stopEffect = effect(() => {
     const items = source.value;
     try {
-      assertUniqueListKeys(items,key);
+      assertUniqueListKeys(items, key);
     } catch (error) {
       if (granularEligible) {
         patchSource._consumePatches!();
@@ -322,8 +345,9 @@ export function bindList<T>(
   if (virtualization !== undefined) {
     handle.container = container;
     if (!virtualization.contentVisibility) {
-      VIRTUAL_INTERNALS.set(handle,{
-        visibleRows: () => rows.order.map((row) => ({ key: key(row.item),el: row.el })),
+      VIRTUAL_INTERNALS.set(handle, {
+        visibleRows: () =>
+          rows.order.map((row) => ({ key: key(row.item), el: row.el })),
         onRender: virtualization.onRender,
       });
     }
@@ -367,7 +391,8 @@ export function observeRowHeights(handle: BindListHandle): () => void {
   const observer = new RO((entries) => {
     for (const entry of entries) {
       const k = keyByEl.get(entry.target);
-      if (k !== undefined) handle.setHeight(k, (entry.target as HTMLElement).offsetHeight);
+      if (k !== undefined)
+        handle.setHeight(k, (entry.target as HTMLElement).offsetHeight);
     }
   });
 

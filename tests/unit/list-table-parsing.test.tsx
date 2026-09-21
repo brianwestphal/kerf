@@ -17,10 +17,10 @@
  * The rest pin documented claims verified true by execution (the KF-383
  * lesson: run the claim, don't read the code).
  */
-import { beforeEach,describe,expect,it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { each,mount } from '../../src/index.js';
+import { each, mount } from '../../src/index.js';
 
 let root: HTMLElement;
 
@@ -40,9 +40,17 @@ describe('KF-387 seam: each() rows × table parsing', () => {
     // element's TAG against the row's own top-level tag and rejects the
     // shape with an actionable error naming both tags.
     const rows = [{ id: 'r1' }, { id: 'r2' }];
-    expect(() => mount(root, () => (
-      <table>{each(rows, (r) => <tr data-key={r.id}><td>{r.id}</td></tr>)}</table>
-    ))).toThrow(/parser wrapped the rows in <tbody>/);
+    expect(() =>
+      mount(root, () => (
+        <table>
+          {each(rows, (r) => (
+            <tr data-key={r.id}>
+              <td>{r.id}</td>
+            </tr>
+          ))}
+        </table>
+      )),
+    ).toThrow(/parser wrapped the rows in <tbody>/);
   });
 
   it('each() of tr rows inside an explicit tbody binds and reconciles cleanly', () => {
@@ -50,11 +58,21 @@ describe('KF-387 seam: each() rows × table parsing', () => {
     // counterpart of the KF-391 defect above.
     const rows = arraySignal([{ id: 'r1', t: 'one' }]);
     const dispose = mount(root, () => (
-      <table><tbody>{each(rows, (r) => <tr data-key={r.id}><td>{r.t}</td></tr>)}</tbody></table>
+      <table>
+        <tbody>
+          {each(rows, (r) => (
+            <tr data-key={r.id}>
+              <td>{r.t}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     ));
     rows.push({ id: 'r2', t: 'two' });
     rows.update(0, (r) => ({ ...r, t: 'ONE' }));
-    const texts = Array.from(root.querySelectorAll('tbody tr')).map((tr) => tr.textContent);
+    const texts = Array.from(root.querySelectorAll('tbody tr')).map(
+      (tr) => tr.textContent,
+    );
     expect(texts).toEqual(['ONE', 'two']);
     expect(root.querySelectorAll('tr').length).toBe(2);
     dispose();

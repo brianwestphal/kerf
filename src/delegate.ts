@@ -79,8 +79,8 @@ function assertValidSelector(selector: string, fn: string): void {
     document.createElement('div').matches(selector);
   } catch {
     throw new Error(
-      `${fn}: invalid selector "${selector}". `
-      + 'Pass a valid CSS selector (e.g. \'[data-action="add"]\', \'.btn\', \'input\').',
+      `${fn}: invalid selector "${selector}". ` +
+        "Pass a valid CSS selector (e.g. '[data-action=\"add\"]', '.btn', 'input').",
     );
   }
 }
@@ -100,9 +100,12 @@ function makeListener<T extends Element>(
   return (event: Event): void => {
     const target = event.target;
     if (!(target instanceof Element)) return;
-    const matched = match === 'direct'
-      ? (target.matches(selector) ? target : null)
-      : target.closest(selector);
+    const matched =
+      match === 'direct'
+        ? target.matches(selector)
+          ? target
+          : null
+        : target.closest(selector);
     if (matched !== null && rootEl.contains(matched)) {
       handler(event, matched as T);
     }
@@ -139,7 +142,12 @@ export function delegate<T extends Element = Element>(
 ): () => void {
   assertValidSelector(selector, 'delegate');
   devHooks.delegateInEffect?.('delegate');
-  const listener = makeListener(rootEl, selector, handler, options?.match ?? 'closest');
+  const listener = makeListener(
+    rootEl,
+    selector,
+    handler,
+    options?.match ?? 'closest',
+  );
   const capture = NON_BUBBLING.has(type);
   rootEl.addEventListener(type, listener, capture);
   return () => {
@@ -177,7 +185,12 @@ export function delegateCapture<T extends Element = Element>(
 ): () => void {
   assertValidSelector(selector, 'delegateCapture');
   devHooks.delegateInEffect?.('delegateCapture');
-  const listener = makeListener(rootEl, selector, handler, options?.match ?? 'closest');
+  const listener = makeListener(
+    rootEl,
+    selector,
+    handler,
+    options?.match ?? 'closest',
+  );
   rootEl.addEventListener(type, listener, true);
   return () => {
     rootEl.removeEventListener(type, listener, true);

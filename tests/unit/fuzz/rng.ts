@@ -11,7 +11,7 @@ export class Rng {
 
   constructor(seed: number) {
     // A zero state is a fixed point for xorshift, so map it to something else.
-    this.state = (seed >>> 0) || 0x9e3779b9;
+    this.state = seed >>> 0 || 0x9e3779b9;
   }
 
   /** Uniform float in [0, 1). */

@@ -46,7 +46,11 @@ import { type Binding, captureRowBindings } from './bindings.js';
 import { devHooks } from './dev-hooks.js';
 import { itemVersion } from './item-version.js';
 import type { SafeHtml } from './jsx-runtime.js';
-import { granularListSafeHtml, isSafeHtml, listSafeHtml } from './jsx-runtime.js';
+import {
+  granularListSafeHtml,
+  isSafeHtml,
+  listSafeHtml,
+} from './jsx-runtime.js';
 import { decideListPath, deriveListRenderState } from './list-render-state.js';
 import type { ArrayPatchInternal } from './segment.js';
 
@@ -60,10 +64,14 @@ import type { ArrayPatchInternal } from './segment.js';
  */
 const ARRAY_SIGNAL_BRAND = Symbol.for('kerfjs.ArraySignal');
 
-function isArraySignal<T extends object>(value: unknown): value is ArraySignal<T> {
-  return typeof value === 'object'
-    && value !== null
-    && (value as Record<symbol, unknown>)[ARRAY_SIGNAL_BRAND] === true;
+function isArraySignal<T extends object>(
+  value: unknown,
+): value is ArraySignal<T> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    (value as Record<symbol, unknown>)[ARRAY_SIGNAL_BRAND] === true
+  );
 }
 
 interface CacheEntry {
@@ -275,10 +283,10 @@ const VALID_KEY = /^[A-Za-z0-9_.:/-]+$/;
 function assertValidKey(key: string): void {
   if (typeof key !== 'string' || !VALID_KEY.test(key) || key.includes('--')) {
     throw new Error(
-      `each(): invalid list key ${JSON.stringify(key)}. A key must be a non-empty string of `
-      + 'letters, digits, or _ . : / - (and may not contain "--"), because kerf writes it into '
-      + 'the list\'s marker comment in the DOM. Use a short stable identifier, e.g. '
-      + '{ key: \'results\' }.',
+      `each(): invalid list key ${JSON.stringify(key)}. A key must be a non-empty string of ` +
+        'letters, digits, or _ . : / - (and may not contain "--"), because kerf writes it into ' +
+        "the list's marker comment in the DOM. Use a short stable identifier, e.g. " +
+        "{ key: 'results' }.",
     );
   }
 }
@@ -294,17 +302,17 @@ function claimKey(ctx: RenderContext, key: string): string {
     // advice (a per-row key) silences the error and lands the author in that
     // silent degradation instead, which is worse.
     throw new Error(
-      `each(): list key ${JSON.stringify(key)} was used by an each() inside a row render. `
-      + 'A nested each() is not reconciled — the row is flattened to HTML, so the inner list '
-      + 'never binds and would render as static markup. Render the inner collection with '
-      + 'plain .map() (it re-renders with its row), or restructure to a flat list.',
+      `each(): list key ${JSON.stringify(key)} was used by an each() inside a row render. ` +
+        'A nested each() is not reconciled — the row is flattened to HTML, so the inner list ' +
+        'never binds and would render as static markup. Render the inner collection with ' +
+        'plain .map() (it re-renders with its row), or restructure to a flat list.',
     );
   }
   if (ctx.keysThisRender.has(key)) {
     throw new Error(
-      `each(): duplicate list key ${JSON.stringify(key)}. Every keyed each() in a mount must `
-      + 'have its own key — two lists sharing one would share the same cache, binding and DOM '
-      + 'anchor. Give each list a distinct key.',
+      `each(): duplicate list key ${JSON.stringify(key)}. Every keyed each() in a mount must ` +
+        'have its own key — two lists sharing one would share the same cache, binding and DOM ' +
+        'anchor. Give each list a distinct key.',
     );
   }
   ctx.keysThisRender.add(key);
@@ -340,7 +348,7 @@ export function each<T extends object>(
     return eachGranular(items, render, cacheKey, listKey);
   }
   const snapshotItems: readonly T[] = isArraySignal<T>(items)
-    ? items.value as readonly T[]
+    ? (items.value as readonly T[])
     : items;
   return eachSnapshot(snapshotItems, render, cacheKey, listKey);
 }
@@ -356,7 +364,10 @@ function eachSnapshot<T extends object>(
     // A keyed list takes its identity from the key and does NOT consume a
     // call-order slot — so keying a conditional list also stops it shifting
     // its unkeyed siblings when it appears or disappears.
-    id = listKey !== undefined ? claimKey(context, listKey) : String(context.counter++);
+    id =
+      listKey !== undefined
+        ? claimKey(context, listKey)
+        : String(context.counter++);
   } else {
     id = 'orphan';
   }
@@ -372,11 +383,14 @@ function eachSnapshot<T extends object>(
  * too: they are valid WeakMap keys, but not valid `each()` rows, and admitting
  * them here without also supporting them as rows is the disagreement KF-426 fixed.
  */
-function assertObjectItem(item: unknown, index: number): asserts item is object {
+function assertObjectItem(
+  item: unknown,
+  index: number,
+): asserts item is object {
   if (typeof item !== 'object' || item === null) {
     throw new Error(
-      `each(): items must be objects (the per-item HTML cache is a WeakMap), got ${item === null ? 'null' : typeof item} at index ${index}. `
-      + 'Wrap primitives if you need to iterate them, e.g. items.map(v => ({ v })).',
+      `each(): items must be objects (the per-item HTML cache is a WeakMap), got ${item === null ? 'null' : typeof item} at index ${index}. ` +
+        'Wrap primitives if you need to iterate them, e.g. items.map(v => ({ v })).',
     );
   }
 }
@@ -445,7 +459,8 @@ function eachGranular<T extends object>(
   const ctx = context as RenderContext;
   // Keyed lists are identified by their key and skip the call-order counter
   // (see eachSnapshot for why that also helps unkeyed siblings).
-  const id = listKey !== undefined ? claimKey(ctx, listKey) : String(ctx.counter++);
+  const id =
+    listKey !== undefined ? claimKey(ctx, listKey) : String(ctx.counter++);
   // KF-336: dispatch through the reified state machine (`list-render-state.ts`
   // holds the transition table). The state derives from the count `mount()`
   // recorded after this list's last successful reconcile; the patch queue is
@@ -482,8 +497,11 @@ function eachGranular<T extends object>(
   const decision = sourceReused
     ? { path: 'snapshot' as const }
     : decideListPath(
-      deriveListRenderState(previousBindingCount), patches, snapshot.length, previousBindingCount,
-    );
+        deriveListRenderState(previousBindingCount),
+        patches,
+        snapshot.length,
+        previousBindingCount,
+      );
   if (decision.path === 'snapshot') {
     return eachSnapshotById(snapshot, render, cacheKey, id, sig);
   }
@@ -508,9 +526,10 @@ function eachGranular<T extends object>(
   // it DOES catch a fresh insert displaced by a later same-batch insert, whose
   // patch-time index the granular path can't retroactively fix (KF-425). The
   // O(rows) replay runs only in dev under the opt-in for an index-reading list.
-  const staleIndexShift = render.length >= 2
-    && devHooks.staleIndexEnabled?.() === true
-    && _hasGranularIndexShift(previousBindingCount as number, patches);
+  const staleIndexShift =
+    render.length >= 2 &&
+    devHooks.staleIndexEnabled?.() === true &&
+    _hasGranularIndexShift(previousBindingCount as number, patches);
 
   // The granular path applies arraySignal patches but never evaluates
   // `cacheKey` (or `render`) for the rows the patches don't touch. That has
@@ -561,11 +580,16 @@ function eachGranular<T extends object>(
   // KF-294: capture each insert/update row's fine-grained bindings (signals
   // in row attrs/text) so the granular reconciler can wire them to the fresh
   // row node and dispose them on removal — same lifecycle as the snapshot path.
-  const renderRow = (item: object, index: number): { html: string; bindings: Binding[] } =>
-    captureRowBindings(() => inRowScope(() => {
-      const out = render(item as T, index);
-      return isSafeHtml(out) ? out.toString() : out;
-    }));
+  const renderRow = (
+    item: object,
+    index: number,
+  ): { html: string; bindings: Binding[] } =>
+    captureRowBindings(() =>
+      inRowScope(() => {
+        const out = render(item as T, index);
+        return isSafeHtml(out) ? out.toString() : out;
+      }),
+    );
   const internalPatches = new Array<ArrayPatchInternal>(patches.length);
   // KF-414: the per-item HTML memo. The granular path renders fresh HTML for
   // each insert/update below; it must write that back into the memo too, or a
@@ -590,7 +614,11 @@ function eachGranular<T extends object>(
         assertObjectItem(p.item, p.index);
         const { html, bindings } = renderRow(p.item as object, p.index);
         internalPatches[i] = {
-          type: p.type, index: p.index, item: p.item as object, html, bindings,
+          type: p.type,
+          index: p.index,
+          item: p.item as object,
+          html,
+          bindings,
         };
         cache?.set(p.item as object, {
           cacheKey: cacheKey ? cacheKey(p.item as T, p.index) : undefined,
@@ -640,16 +668,21 @@ function eachSnapshotById<T extends object>(
     }
     cache = c;
   }
-  const segItems = new Array<{ ref: object; cacheKey: unknown; html: string; bindings: Binding[] }>(items.length);
+  const segItems = new Array<{
+    ref: object;
+    cacheKey: unknown;
+    html: string;
+    bindings: Binding[];
+  }>(items.length);
   const seen = new Set<object>();
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     assertObjectItem(item, i);
     if (seen.has(item)) {
       throw new Error(
-        `each(): the same object reference appears at multiple indices in items (first seen earlier, again at index ${i}). `
-        + 'The per-item HTML cache is keyed on object identity, so duplicate references break the keyed reconciler and can leak DOM nodes on re-render. '
-        + 'Use a fresh object per row (e.g. items.map(o => ({ ...o })) before passing to each()).',
+        `each(): the same object reference appears at multiple indices in items (first seen earlier, again at index ${i}). ` +
+          'The per-item HTML cache is keyed on object identity, so duplicate references break the keyed reconciler and can leak DOM nodes on re-render. ' +
+          'Use a fresh object per row (e.g. items.map(o => ({ ...o })) before passing to each()).',
       );
     }
     seen.add(item);
@@ -660,12 +693,20 @@ function eachSnapshotById<T extends object>(
     const cached = cache !== null ? cache.get(item) : undefined;
     // KF-418: the version guard is what makes a same-ref update visible here —
     // same identity, same cacheKey, but a bumped version misses the cache.
-    if (cached !== undefined && cached.cacheKey === k && cached.version === version) {
+    if (
+      cached !== undefined &&
+      cached.cacheKey === k &&
+      cached.version === version
+    ) {
       html = cached.html;
       bindings = cached.bindings;
       // KF-421: this row's HTML was memoized at `cached.index`; serving it at a
       // different `i` means its `index` argument is stale. Opt-in dev warning.
-      if (cached.index !== i && render.length >= 2 && devHooks.staleIndexEnabled?.() === true) {
+      if (
+        cached.index !== i &&
+        render.length >= 2 &&
+        devHooks.staleIndexEnabled?.() === true
+      ) {
         devHooks.staleIndex?.(id);
       }
     } else {
@@ -673,13 +714,16 @@ function eachSnapshotById<T extends object>(
       // / text). The snapshot reconciler wires them to the row node on create
       // and disposes on remove, so a bound signal updates the row without a
       // render re-run. Cached by row identity alongside the html.
-      const captured = captureRowBindings(() => inRowScope(() => {
-        const out = render(item, i);
-        return isSafeHtml(out) ? out.toString() : out;
-      }));
+      const captured = captureRowBindings(() =>
+        inRowScope(() => {
+          const out = render(item, i);
+          return isSafeHtml(out) ? out.toString() : out;
+        }),
+      );
       html = captured.html;
       bindings = captured.bindings;
-      if (cache !== null) cache.set(item, { cacheKey: k, html, bindings, version, index: i });
+      if (cache !== null)
+        cache.set(item, { cacheKey: k, html, bindings, version, index: i });
     }
     segItems[i] = { ref: item, cacheKey: k, html, bindings };
   }

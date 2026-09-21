@@ -21,7 +21,12 @@
  */
 import { jsx, type SafeHtml } from './jsx-runtime.js';
 import { mount, type MountResult } from './mount.js';
-import { type AnchorPositionOptions, autoReposition, type PopoverPlacement, positionAnchored } from './overlay-position.js';
+import {
+  type AnchorPositionOptions,
+  autoReposition,
+  type PopoverPlacement,
+  positionAnchored,
+} from './overlay-position.js';
 
 /** A user-initiated dismissal trigger. */
 export type DismissTrigger = 'escape' | 'backdrop' | 'outside';
@@ -89,14 +94,14 @@ export interface OverlayHandle {
 }
 
 const FOCUSABLE =
-  'a[href],area[href],button:not([disabled]),input:not([disabled]),'
-  + 'select:not([disabled]),textarea:not([disabled]),iframe,'
-  + '[tabindex]:not([tabindex="-1"]),[contenteditable="true"]';
+  'a[href],area[href],button:not([disabled]),input:not([disabled]),' +
+  'select:not([disabled]),textarea:not([disabled]),iframe,' +
+  '[tabindex]:not([tabindex="-1"]),[contenteditable="true"]';
 
 function focusable(root: Element): HTMLElement[] {
-  const items = Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-    (el) => !el.hasAttribute('hidden') && el.tabIndex >= 0,
-  );
+  const items = Array.from(
+    root.querySelectorAll<HTMLElement>(FOCUSABLE),
+  ).filter((el) => !el.hasAttribute('hidden') && el.tabIndex >= 0);
   // WebKit on macOS follows the system's keyboard-navigation preference and
   // may omit implicitly tabbable controls from sequential focus navigation.
   // A focus trap promises stable traversal through every eligible control, so
@@ -109,12 +114,16 @@ function focusable(root: Element): HTMLElement[] {
 // non-modal → the Popover API. Each is independent — an engine may ship one
 // without the other — and both fall back to the plain `<div>` where absent.
 function supportsDialog(): boolean {
-  return typeof HTMLDialogElement !== 'undefined'
-    && typeof HTMLDialogElement.prototype.showModal === 'function';
+  return (
+    typeof HTMLDialogElement !== 'undefined' &&
+    typeof HTMLDialogElement.prototype.showModal === 'function'
+  );
 }
 function supportsPopover(): boolean {
-  return typeof HTMLElement !== 'undefined'
-    && typeof HTMLElement.prototype.showPopover === 'function';
+  return (
+    typeof HTMLElement !== 'undefined' &&
+    typeof HTMLElement.prototype.showPopover === 'function'
+  );
 }
 
 const FALLBACK_OVERLAY_STACK = Symbol('kerf.fallbackOverlayStack');
@@ -124,7 +133,7 @@ type FallbackOverlayDocument = Document & {
 
 function fallbackOverlayStack(wrapper: HTMLElement): HTMLElement[] {
   const document = wrapper.ownerDocument as FallbackOverlayDocument;
-  return document[FALLBACK_OVERLAY_STACK] ??= [];
+  return (document[FALLBACK_OVERLAY_STACK] ??= []);
 }
 
 /**
@@ -133,7 +142,10 @@ function fallbackOverlayStack(wrapper: HTMLElement): HTMLElement[] {
  * handle. Concurrent fallback overlays dismiss from the top down. See
  * {@link OverlayOptions}.
  */
-export function overlay(content: OverlayContent, options: OverlayOptions = {}): OverlayHandle {
+export function overlay(
+  content: OverlayContent,
+  options: OverlayOptions = {},
+): OverlayHandle {
   const {
     container = document.body,
     className = 'kerf-overlay',
@@ -157,7 +169,9 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
   const useDialog = native && trap && supportsDialog();
   const usePopover = native && !trap && supportsPopover();
 
-  const wrapper: HTMLElement = useDialog ? document.createElement('dialog') : document.createElement('div');
+  const wrapper: HTMLElement = useDialog
+    ? document.createElement('dialog')
+    : document.createElement('div');
   wrapper.className = className;
   if (usePopover) wrapper.setAttribute('popover', 'manual');
   // `<dialog>.showModal()` conveys modality natively (role + inert), so the ARIA
@@ -171,9 +185,13 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
   const fallbackStack = fallback ? fallbackOverlayStack(wrapper) : undefined;
 
   const isTopmostFallback = (): boolean =>
-    fallbackStack === undefined || fallbackStack[fallbackStack.length - 1] === wrapper;
+    fallbackStack === undefined ||
+    fallbackStack[fallbackStack.length - 1] === wrapper;
 
-  const disposeMount = mount(wrapper, typeof content === 'function' ? content : () => content);
+  const disposeMount = mount(
+    wrapper,
+    typeof content === 'function' ? content : () => content,
+  );
   fallbackStack?.push(wrapper);
 
   // Enter the top layer after the content is mounted + connected. `showModal()`
@@ -217,7 +235,8 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
       else (wrapper as HTMLElement & { hidePopover(): void }).hidePopover();
     }
     wrapper.remove();
-    if (restoreTo instanceof HTMLElement && restoreTo.isConnected) restoreTo.focus();
+    if (restoreTo instanceof HTMLElement && restoreTo.isConnected)
+      restoreTo.focus();
     resultBox.resolve?.(value);
   }
 
@@ -265,7 +284,9 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
       }
     };
     document.addEventListener('keydown', onKeydown, true);
-    removers.push(() => document.removeEventListener('keydown', onKeydown, true));
+    removers.push(() =>
+      document.removeEventListener('keydown', onKeydown, true),
+    );
   }
 
   if (triggers.includes('backdrop')) {
@@ -278,9 +299,12 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
   }
 
   if (triggers.includes('outside')) {
-    const ignore = outsideIgnore === undefined
-      ? []
-      : Array.isArray(outsideIgnore) ? outsideIgnore : [outsideIgnore];
+    const ignore =
+      outsideIgnore === undefined
+        ? []
+        : Array.isArray(outsideIgnore)
+          ? outsideIgnore
+          : [outsideIgnore];
     // Capture phase: the click that opened this overlay already passed
     // document's capture phase, so this never fires for that opening click.
     const onDocClick = (event: Event): void => {
@@ -292,7 +316,9 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
       userDismiss();
     };
     document.addEventListener('click', onDocClick, true);
-    removers.push(() => document.removeEventListener('click', onDocClick, true));
+    removers.push(() =>
+      document.removeEventListener('click', onDocClick, true),
+    );
   }
 
   if (initialFocus !== false) {
@@ -317,7 +343,12 @@ export function overlay(content: OverlayContent, options: OverlayOptions = {}): 
 // stand alone (any element, no overlay lifecycle). Re-exported here so the
 // `kerfjs/overlay` surface is unchanged; `popover()` / `tooltip()` below build on
 // `autoReposition` (imported above).
-export { type AnchorPositionOptions, autoReposition, type PopoverPlacement, positionAnchored };
+export {
+  type AnchorPositionOptions,
+  autoReposition,
+  type PopoverPlacement,
+  positionAnchored,
+};
 
 /** Options for {@link popover}. */
 export interface PopoverOptions {
@@ -379,9 +410,12 @@ export function popover(
     native = false,
   } = options;
 
-  const extraIgnore = outsideIgnore === undefined
-    ? []
-    : Array.isArray(outsideIgnore) ? [...outsideIgnore] : [outsideIgnore];
+  const extraIgnore =
+    outsideIgnore === undefined
+      ? []
+      : Array.isArray(outsideIgnore)
+        ? [...outsideIgnore]
+        : [outsideIgnore];
 
   const handle = overlay(content, {
     container,
@@ -395,7 +429,11 @@ export function popover(
   });
 
   // Position + keep it glued while open; drop the listeners on close.
-  const stopReposition = autoReposition(handle.el, anchor, { placement, align, gap });
+  const stopReposition = autoReposition(handle.el, anchor, {
+    placement,
+    align,
+    gap,
+  });
   void handle.result.then(stopReposition);
 
   return handle;
@@ -428,7 +466,11 @@ export interface TooltipOptions extends AnchorPositionOptions {
  * it follows the pointer/focus. Returns a disposer that removes the anchor
  * listeners and hides any shown tooltip. Structural only (kerf ships no CSS).
  */
-export function tooltip(anchor: Element, content: TooltipContent, options: TooltipOptions = {}): () => void {
+export function tooltip(
+  anchor: Element,
+  content: TooltipContent,
+  options: TooltipOptions = {},
+): () => void {
   const {
     container,
     className = 'kerf-tooltip',
@@ -441,18 +483,29 @@ export function tooltip(anchor: Element, content: TooltipContent, options: Toolt
     native = false,
   } = options;
 
-  const body: OverlayContent = typeof content === 'function'
-    ? content
-    : typeof content === 'string'
-      ? jsx('span', { class: `${className}__text`, children: content })
-      : content;
+  const body: OverlayContent =
+    typeof content === 'function'
+      ? content
+      : typeof content === 'string'
+        ? jsx('span', { class: `${className}__text`, children: content })
+        : content;
 
-  const timers: { show?: ReturnType<typeof setTimeout>; hide?: ReturnType<typeof setTimeout> } = {};
+  const timers: {
+    show?: ReturnType<typeof setTimeout>;
+    hide?: ReturnType<typeof setTimeout>;
+  } = {};
   let current: { handle: OverlayHandle; stop: () => void } | undefined;
   let presence = 0;
 
   function show(): void {
-    const handle = overlay(body, { container, className, dismiss: false, trap: false, initialFocus: false, native });
+    const handle = overlay(body, {
+      container,
+      className,
+      dismiss: false,
+      trap: false,
+      initialFocus: false,
+      native,
+    });
     handle.el.setAttribute('role', role);
     const stop = autoReposition(handle.el, anchor, { placement, align, gap });
     current = { handle, stop };

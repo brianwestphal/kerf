@@ -14,7 +14,12 @@
  * `data-morph-preserve` islands sitting next to all of it.
  */
 import { ArraySignal, arraySignal } from '../../../src/array-signal.js';
-import { each, type SafeHtml, type Signal, signal } from '../../../src/index.js';
+import {
+  each,
+  type SafeHtml,
+  type Signal,
+  signal,
+} from '../../../src/index.js';
 import { Fragment, jsx } from '../../../src/jsx-runtime.js';
 import type { Rng } from './rng.js';
 
@@ -49,13 +54,13 @@ export type NodeSpec =
   | { kind: 'cond'; cond: number; children: NodeSpec[] }
   | { kind: 'svg'; children: NodeSpec[] }
   | {
-    kind: 'el';
-    tag: string;
-    dataKey: string | null;
-    special: 'skip' | 'preserve' | null;
-    boundAttr: { sig: number; id: number } | null;
-    children: NodeSpec[];
-  };
+      kind: 'el';
+      tag: string;
+      dataKey: string | null;
+      special: 'skip' | 'preserve' | null;
+      boundAttr: { sig: number; id: number } | null;
+      children: NodeSpec[];
+    };
 
 export interface TreeSpec {
   sigCount: number;
@@ -104,14 +109,24 @@ function isStatic(nodes: readonly NodeSpec[]): boolean {
   });
 }
 
-function genChildren(ctx: GenCtx, depth: number, inSvg: boolean, inCond: boolean): NodeSpec[] {
+function genChildren(
+  ctx: GenCtx,
+  depth: number,
+  inSvg: boolean,
+  inCond: boolean,
+): NodeSpec[] {
   const count = ctx.rng.range(0, depth <= 0 ? 2 : 4);
   const out: NodeSpec[] = [];
   for (let i = 0; i < count; i++) out.push(genNode(ctx, depth, inSvg, inCond));
   return out;
 }
 
-function genNode(ctx: GenCtx, depth: number, inSvg: boolean, inCond: boolean): NodeSpec {
+function genNode(
+  ctx: GenCtx,
+  depth: number,
+  inSvg: boolean,
+  inCond: boolean,
+): NodeSpec {
   const { rng } = ctx;
   // Place a pending list as soon as we're allowed to — an unplaced list would
   // make the spec describe a tree that renders nothing.
@@ -136,14 +151,15 @@ function genNode(ctx: GenCtx, depth: number, inSvg: boolean, inCond: boolean): N
       children: genChildren(ctx, depth - 1, inSvg, true),
     };
   }
-  if (roll < 0.60 && !inSvg && depth >= 2) {
+  if (roll < 0.6 && !inSvg && depth >= 2) {
     return { kind: 'svg', children: genChildren(ctx, depth - 1, true, inCond) };
   }
 
   const children = genChildren(ctx, depth - 1, inSvg, inCond);
-  const boundAttr = !inSvg && ctx.spec.sigCount > 0 && rng.bool(0.25)
-    ? { sig: rng.int(ctx.spec.sigCount), id: ctx.holeId++ }
-    : null;
+  const boundAttr =
+    !inSvg && ctx.spec.sigCount > 0 && rng.bool(0.25)
+      ? { sig: rng.int(ctx.spec.sigCount), id: ctx.holeId++ }
+      : null;
   // `skip` only, and never inside a conditional.
   //
   // `data-morph-skip` marks a subtree the template DOES emit but the diff
@@ -157,9 +173,10 @@ function genNode(ctx: GenCtx, depth: number, inSvg: boolean, inCond: boolean): N
   //
   // Excluded inside a conditional either way, since both opt-outs let an
   // element outlive a branch that stops emitting it.
-  const special = !inCond && boundAttr === null && isStatic(children) && rng.bool(0.15)
-    ? 'skip' as const
-    : null;
+  const special =
+    !inCond && boundAttr === null && isStatic(children) && rng.bool(0.15)
+      ? ('skip' as const)
+      : null;
   return {
     kind: 'el',
     tag: inSvg ? rng.pick(SVG_TAGS) : rng.pick(HTML_TAGS),
@@ -178,7 +195,7 @@ export function generateSpec(rng: Rng): TreeSpec {
     sigCount: rng.range(1, 3),
     condCount: rng.range(1, 3),
     sources: Array.from({ length: sourceCount }, (_, s) => ({
-      kind: rng.bool(0.6) ? 'granular' as const : 'plain' as const,
+      kind: rng.bool(0.6) ? ('granular' as const) : ('plain' as const),
       ids: Array.from({ length: rng.range(0, 4) }, (_, i) => `s${s}i${i}`),
     })),
     // More lists than sources on purpose: two `each()` calls over one source is
@@ -196,7 +213,12 @@ export function generateSpec(rng: Rng): TreeSpec {
     });
   }
 
-  const ctx: GenCtx = { rng, spec, holeId: 0, pending: spec.lists.map((_, i) => i) };
+  const ctx: GenCtx = {
+    rng,
+    spec,
+    holeId: 0,
+    pending: spec.lists.map((_, i) => i),
+  };
   spec.root = genChildren(ctx, 4, false, false);
   // Anything the random walk didn't find room for goes at the top level.
   while (ctx.pending.length > 0) {
@@ -214,9 +236,11 @@ export function makeWorld(spec: TreeSpec): World {
     spec,
     sigs: Array.from({ length: spec.sigCount }, (_, i) => signal(`v${i}`)),
     conds: Array.from({ length: spec.condCount }, () => signal(true)),
-    sources: spec.sources.map((s) => (s.kind === 'granular'
-      ? arraySignal(makeItems(s.ids))
-      : signal(makeItems(s.ids)))),
+    sources: spec.sources.map((s) =>
+      s.kind === 'granular'
+        ? arraySignal(makeItems(s.ids))
+        : signal(makeItems(s.ids)),
+    ),
   };
 }
 
@@ -232,20 +256,27 @@ function renderList(world: World, listIndex: number): SafeHtml {
   const src = world.sources[list.source];
   const rowSig = list.rowSig === null ? null : world.sigs[list.rowSig];
   const items = src instanceof ArraySignal ? src : src.value;
-  const render = (item: Item): SafeHtml => jsx(list.rowTag, {
-    'data-list': String(listIndex),
-    // Row keys are namespaced by list: `data-key` is documented to be unique
-    // among siblings, and two lists over one source rendering into one parent
-    // would otherwise collide by construction rather than by defect.
-    'data-key': `L${listIndex}_${item.id}`,
-    children: rowSig === null
-      ? item.t
-      : [item.t, jsx(list.rowTag === 'g' ? 'text' : 'span', {
-        'data-rowhole': String(listIndex),
-        children: rowSig,
-      })],
-  });
-  return list.key === null ? each(items, render) : each(items, render, { key: list.key });
+  const render = (item: Item): SafeHtml =>
+    jsx(list.rowTag, {
+      'data-list': String(listIndex),
+      // Row keys are namespaced by list: `data-key` is documented to be unique
+      // among siblings, and two lists over one source rendering into one parent
+      // would otherwise collide by construction rather than by defect.
+      'data-key': `L${listIndex}_${item.id}`,
+      children:
+        rowSig === null
+          ? item.t
+          : [
+              item.t,
+              jsx(list.rowTag === 'g' ? 'text' : 'span', {
+                'data-rowhole': String(listIndex),
+                children: rowSig,
+              }),
+            ],
+    });
+  return list.key === null
+    ? each(items, render)
+    : each(items, render, { key: list.key });
 }
 
 function renderNode(node: NodeSpec, world: World): Rendered {
@@ -253,7 +284,10 @@ function renderNode(node: NodeSpec, world: World): Rendered {
     case 'text':
       return node.text;
     case 'hole':
-      return jsx('span', { 'data-hole': String(node.id), children: world.sigs[node.sig] });
+      return jsx('span', {
+        'data-hole': String(node.id),
+        children: world.sigs[node.sig],
+      });
     case 'list':
       return renderList(world, node.list);
     case 'cond':
@@ -261,7 +295,9 @@ function renderNode(node: NodeSpec, world: World): Rendered {
         ? node.children.map((c) => renderNode(c, world))
         : '';
     case 'svg':
-      return jsx('svg', { children: node.children.map((c) => renderNode(c, world)) });
+      return jsx('svg', {
+        children: node.children.map((c) => renderNode(c, world)),
+      });
     case 'el': {
       const props: Record<string, unknown> = {
         children: node.children.map((c) => renderNode(c, world)),
@@ -279,7 +315,10 @@ function renderNode(node: NodeSpec, world: World): Rendered {
 }
 
 export function makeRender(world: World): () => SafeHtml {
-  return () => jsx(Fragment, { children: world.spec.root.map((n) => renderNode(n, world)) });
+  return () =>
+    jsx(Fragment, {
+      children: world.spec.root.map((n) => renderNode(n, world)),
+    });
 }
 
 // ---------------------------------------------------------------------------
@@ -318,7 +357,8 @@ export function liveness(world: World): Liveness {
           walk(n.children, true);
           break;
         case 'el':
-          if (n.boundAttr !== null) out.attrs.set(n.boundAttr.id, n.boundAttr.sig);
+          if (n.boundAttr !== null)
+            out.attrs.set(n.boundAttr.id, n.boundAttr.sig);
           // A morph-skipped subtree is frozen after the first paint by design,
           // and generation guarantees it holds nothing dynamic — nothing under
           // it is worth asserting on.

@@ -2,7 +2,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { attach } from '../../src/attach.js';
 
-const microtask = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
+const microtask = (): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, 0));
 const frame = (): Promise<void> =>
   new Promise((resolve) => globalThis.requestAnimationFrame(() => resolve()));
 
@@ -24,7 +25,9 @@ describe('attach()', () => {
     const parent = host();
     const node = parent.querySelector('.widget')!;
     const seen: Element[] = [];
-    const stop = attach(node, (el) => { seen.push(el); });
+    const stop = attach(node, (el) => {
+      seen.push(el);
+    });
     expect(seen).toEqual([node]);
     stop();
   });
@@ -187,7 +190,9 @@ describe('attach()', () => {
     const parent = host();
     const node = parent.querySelector('.widget')!;
     let count = 0;
-    const stop = attach(node, () => () => { count++; });
+    const stop = attach(node, () => () => {
+      count++;
+    });
 
     stop();
     expect(count).toBe(1);
@@ -199,7 +204,9 @@ describe('attach()', () => {
     const parent = host();
     const node = parent.querySelector('.widget')!;
     let count = 0;
-    const stop = attach(node, () => () => { count++; });
+    const stop = attach(node, () => () => {
+      count++;
+    });
 
     stop();
     node.remove();
@@ -225,7 +232,9 @@ describe('attach()', () => {
     const node = parent.querySelector('.widget')!;
     const disconnect = vi.spyOn(MutationObserver.prototype, 'disconnect');
 
-    const stop = attach(node, () => { /* no teardown */ });
+    const stop = attach(node, () => {
+      /* no teardown */
+    });
     node.remove();
     await microtask();
     expect(disconnect).toHaveBeenCalled(); // no throw despite no teardown fn

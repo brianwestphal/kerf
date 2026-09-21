@@ -54,37 +54,45 @@ const doc = readFileSync(join(ROOT, DOC_PATH), 'utf8');
 const publishedDoc = readFileSync(join(ROOT, PUBLISHED_DOC_PATH), 'utf8');
 
 /** Every `KERF_DEV_WARN_*` name in the ENV_NAME map. */
-const envNameBlock = /const ENV_NAME[^=]*=\s*\{([\s\S]*?)\n\};/.exec(config)?.[1];
+const envNameBlock = /const ENV_NAME[^=]*=\s*\{([\s\S]*?)\n\};/.exec(
+  config,
+)?.[1];
 if (envNameBlock === undefined) {
   console.error(
-    'check-dev-warn-docs: could not find the ENV_NAME map in src/dev-warn-config.ts.\n'
-    + 'If it was renamed or restructured, update the pattern in this script.',
+    'check-dev-warn-docs: could not find the ENV_NAME map in src/dev-warn-config.ts.\n' +
+      'If it was renamed or restructured, update the pattern in this script.',
   );
   process.exit(1);
 }
-const declared = [...envNameBlock.matchAll(/'(KERF_DEV_WARN_\w+)'/g)].map((m) => m[1]);
+const declared = [...envNameBlock.matchAll(/["'](KERF_DEV_WARN_\w+)["']/g)].map(
+  (m) => m[1],
+);
 if (declared.length === 0) {
-  console.error('check-dev-warn-docs: ENV_NAME matched but yielded no KERF_DEV_WARN_* names.');
+  console.error(
+    'check-dev-warn-docs: ENV_NAME matched but yielded no KERF_DEV_WARN_* names.',
+  );
   process.exit(1);
 }
 
 const problems = [];
 
 // 1 + 2 — the doc and ENV_NAME must name the same set.
-const documented = new Set([...doc.matchAll(/KERF_DEV_WARN_\w+/g)].map((m) => m[0]));
+const documented = new Set(
+  [...doc.matchAll(/KERF_DEV_WARN_\w+/g)].map((m) => m[0]),
+);
 for (const name of declared) {
   if (!documented.has(name)) {
     problems.push(
-      `${name} is in ENV_NAME but has no section in ${DOC_PATH}.\n`
-      + '    Every diagnostic needs a section: what fires it, why it is opt-in, and the fix it names.',
+      `${name} is in ENV_NAME but has no section in ${DOC_PATH}.\n` +
+        '    Every diagnostic needs a section: what fires it, why it is opt-in, and the fix it names.',
     );
   }
 }
 for (const name of documented) {
   if (!declared.includes(name)) {
     problems.push(
-      `${DOC_PATH} documents ${name}, which is not in ENV_NAME.\n`
-      + '    Either the warning was removed and the doc kept it, or the env var is misspelled in one of the two.',
+      `${DOC_PATH} documents ${name}, which is not in ENV_NAME.\n` +
+        '    Either the warning was removed and the doc kept it, or the env var is misspelled in one of the two.',
     );
   }
 }
@@ -92,12 +100,14 @@ for (const name of documented) {
 // 3 — headings must run 1..N in document order. Appending a section without
 // renumbering is what broke this before; a reader following a cross-reference
 // lands by number, so the numbers have to agree with the reading order.
-const headingNumbers = [...doc.matchAll(/^### 11\.2\.(\d+)/gm)].map((m) => Number(m[1]));
+const headingNumbers = [...doc.matchAll(/^### 11\.2\.(\d+)/gm)].map((m) =>
+  Number(m[1]),
+);
 headingNumbers.forEach((num, i) => {
   if (num !== i + 1) {
     problems.push(
-      `section heading 11.2.${num} appears at position ${i + 1} in ${DOC_PATH}.\n`
-      + '    Headings must be numbered 1..N in document order — other docs cross-reference them by number.',
+      `section heading 11.2.${num} appears at position ${i + 1} in ${DOC_PATH}.\n` +
+        '    Headings must be numbered 1..N in document order — other docs cross-reference them by number.',
     );
   }
 });
@@ -106,16 +116,17 @@ headingNumbers.forEach((num, i) => {
 // canonical headings deliberately cover both the switched warning family and
 // the always-on hooks/guards, so a new or renamed section cannot silently stay
 // private to the repository-facing design doc.
-const canonicalDiagnosticHeadings = [...doc.matchAll(/^### 11\.2\.\d+ (.+)$/gm)]
-  .map((m) => m[1]);
+const canonicalDiagnosticHeadings = [
+  ...doc.matchAll(/^### 11\.2\.\d+ (.+)$/gm),
+].map((m) => m[1]);
 const publishedHeadings = new Set(
   [...publishedDoc.matchAll(/^### (.+)$/gm)].map((m) => m[1]),
 );
 for (const heading of canonicalDiagnosticHeadings) {
   if (!publishedHeadings.has(heading)) {
     problems.push(
-      `${PUBLISHED_DOC_PATH} is missing the canonical diagnostic section ${JSON.stringify(heading)}.\n`
-      + `    Mirror every 11.2 diagnostic from ${DOC_PATH}, including always-on diagnostics.`,
+      `${PUBLISHED_DOC_PATH} is missing the canonical diagnostic section ${JSON.stringify(heading)}.\n` +
+        `    Mirror every 11.2 diagnostic from ${DOC_PATH}, including always-on diagnostics.`,
     );
   }
 }
@@ -154,8 +165,8 @@ for (const path of GATING_PROSE_PATHS) {
     if (match === null) continue;
     const line = prose.slice(0, match.index).split('\n').length;
     problems.push(
-      `${path}:${line} repeats a stale or incomplete diagnostic-gating claim: ${JSON.stringify(match[0])}.\n`
-      + '    Describe both axes: the dev entry installs nullable hooks; each opt-in warner uses enableWarnings()/its environment fallback, while always-on hooks skip that switch.',
+      `${path}:${line} repeats a stale or incomplete diagnostic-gating claim: ${JSON.stringify(match[0])}.\n` +
+        '    Describe both axes: the dev entry installs nullable hooks; each opt-in warner uses enableWarnings()/its environment fallback, while always-on hooks skip that switch.',
     );
   }
 }
@@ -167,7 +178,7 @@ if (problems.length > 0) {
 }
 
 console.log(
-  `[check-dev-warn-docs] OK — ${declared.length} KERF_DEV_WARN_* names documented, `
-  + `${headingNumbers.length} diagnostic sections published and numbered in order, `
-  + 'and diagnostic-gating prose is current.',
+  `[check-dev-warn-docs] OK — ${declared.length} KERF_DEV_WARN_* names documented, ` +
+    `${headingNumbers.length} diagnostic sections published and numbered in order, ` +
+    'and diagnostic-gating prose is current.',
 );

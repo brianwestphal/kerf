@@ -9,9 +9,9 @@
  * import → `.internal.test.ts` so the dist-full suite excludes it.
  */
 
-import { describe,expect,it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import { type Binding,carryOrRewireRowBindings } from '../../src/bindings.js';
+import { type Binding, carryOrRewireRowBindings } from '../../src/bindings.js';
 import { signal } from '../../src/reactive.js';
 
 describe('carryOrRewireRowBindings — argument-shape matrix', () => {
@@ -31,9 +31,18 @@ describe('carryOrRewireRowBindings — argument-shape matrix', () => {
 
   it('old side present, new side undefined → disposes old, wires nothing', () => {
     let disposed = 0;
-    const oldBindings: Binding[] = [{ kind: 'text', id: 't0', signal: signal('x') }];
+    const oldBindings: Binding[] = [
+      { kind: 'text', id: 't0', signal: signal('x') },
+    ];
     const out = carryOrRewireRowBindings(
-      el(), oldBindings, [(): void => { disposed++; }], undefined,
+      el(),
+      oldBindings,
+      [
+        (): void => {
+          disposed++;
+        },
+      ],
+      undefined,
     );
     expect(disposed).toBe(1);
     expect(out.bindings).toBeUndefined();
@@ -44,7 +53,9 @@ describe('carryOrRewireRowBindings — argument-shape matrix', () => {
     const s = signal('x');
     const bindings: Binding[] = [{ kind: 'text', id: 't0', signal: s }];
     const disposers = [(): void => {}];
-    const out = carryOrRewireRowBindings(el(), bindings, disposers, [...bindings]);
+    const out = carryOrRewireRowBindings(el(), bindings, disposers, [
+      ...bindings,
+    ]);
     expect(out.bindings).toBe(bindings);
     expect(out.bindingDisposers).toBe(disposers);
   });

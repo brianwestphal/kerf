@@ -21,7 +21,7 @@ If your app is built around a `<DataGrid>` / `<DatePicker>` / `<Combobox>` compo
 
 → **[React](https://react.dev/)** (with React Native)
 
-kerf is web-only. The runtime targets the DOM directly. *(Note: kerf + Tauri or Electron also covers many cases that get reflexively reached-for as "I need React Native" — don't dismiss it without checking.)*
+kerf is web-only. The runtime targets the DOM directly. _(Note: kerf + Tauri or Electron also covers many cases that get reflexively reached-for as "I need React Native" — don't dismiss it without checking.)_
 
 ## Building a static site
 

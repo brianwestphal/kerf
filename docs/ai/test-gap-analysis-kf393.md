@@ -47,12 +47,12 @@ context rather than representing current defects.
 **Historical verdict: CONFIRMED, and broader than suspected.** The table is
 the pre-KF-394 observation, captured by execution rather than code reading:
 
-| Shape | Id | Warning fires? | Verdict |
-| --- | --- | --- | --- |
-| `each(cond ? a : b, r, { key: 'x' })` — keyed, source swap | `k:x`, stable | **YES** | **False positive** — tells the author to add the key they already have; leaks the internal `k:` namespace in the quoted id |
-| `each(cond ? a : b, r)` — unkeyed SOLE list, source swap | `0`, stable — no call-count change anywhere | **YES** | **False positive** — the "identified by call order" message fires although call order never changed (everyday filter/tab swap) |
-| `cond ? each(a, rA, {key:'x'}) : each(b, rB, {key:'x'})` — branch swap, one identity | `k:x`, stable | **YES** | False positive (same trigger) |
-| Genuine id shift (conditional list ahead of an unkeyed one) | shifted | YES | Correct |
+| Shape                                                                                | Id                                          | Warning fires? | Verdict                                                                                                                        |
+| ------------------------------------------------------------------------------------ | ------------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `each(cond ? a : b, r, { key: 'x' })` — keyed, source swap                           | `k:x`, stable                               | **YES**        | **False positive** — tells the author to add the key they already have; leaks the internal `k:` namespace in the quoted id     |
+| `each(cond ? a : b, r)` — unkeyed SOLE list, source swap                             | `0`, stable — no call-count change anywhere | **YES**        | **False positive** — the "identified by call order" message fires although call order never changed (everyday filter/tab swap) |
+| `cond ? each(a, rA, {key:'x'}) : each(b, rB, {key:'x'})` — branch swap, one identity | `k:x`, stable                               | **YES**        | False positive (same trigger)                                                                                                  |
+| Genuine id shift (conditional list ahead of an unkeyed one)                          | shifted                                     | YES            | Correct                                                                                                                        |
 
 Root cause at the time: the trigger
 `bindingSources.has(id) && previousSource !== sig` detected "this id's source
@@ -61,13 +61,13 @@ changed," conflating two different events —
 data source" (never warn; the snapshot rebuild is correct and unavoidable).
 The ROUTING is right in every case; only the diagnostic is wrong. Bonus
 finding while in there: the one-shot dedup set is module-level but ids are
-per-mount, so mount #2's *genuine* shift on an id mount #1 already warned for
+per-mount, so mount #2's _genuine_ shift on an id mount #1 already warned for
 was silent forever. KF-394 split the warning predicate from routing and moved
 dedup into the per-mount context; the regression cases remain in
 `list-identity-warning.test.tsx`.
 
 The existing `dev-list-key-warn.internal.test.tsx` asserts "a KEYED list never
-triggers it" — with a keyed list whose source is *stable*. The
+triggers it" — with a keyed list whose source is _stable_. The
 keyed-with-changing-source neighbor fires. The KF-387 method question ("what
 neighboring shape would this test NOT catch?") answered itself.
 
@@ -81,7 +81,7 @@ neighboring shape would this test NOT catch?") answered itself.
   nothing; the id lands verbatim in `<!--kf-list:{id}-->`. Measured: the
   `<b>` is a LIVE element in the mount root, then `bindListsFromMarkers`
   crashes on the truncated id with `TypeError: Cannot read properties of
-  undefined (reading 'items')` (the `lists.get(id) as ListSegment` cast).
+undefined (reading 'items')` (the `lists.get(id) as ListSegment` cast).
   A key containing `<!--` worked by accident (longer comment). Both are now
   rejected before marker emission; the tests assert that no markup is injected.
 - Non-string keys from JS: `{ key: 42 }` → key `'42'`, `{ key: null }` → key

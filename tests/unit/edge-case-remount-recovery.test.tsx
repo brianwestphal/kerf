@@ -23,40 +23,57 @@
  *   - data-morph-skip wrapping a list parent.
  *   - Stress: 1000-row mutate-and-restore round-trip.
  */
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import {
-each,
-mount,
-signal
-} from '../../src/index.js';
+import { each, mount, signal } from '../../src/index.js';
 
 describe('Round 3: re-mount state reset', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   it('re-mount on same element: each() callsite at position 0 starts with id 0 (no leak from prior mount)', () => {
     const itemsA = [{ id: 'a1' }, { id: 'a2' }];
     const dispose1 = mount(root, () => (
       <div>
-        <ul>{each(itemsA, (it) => <li data-key={it.id}>{it.id}</li>)}</ul>
-        <ul>{each(itemsA, (it) => <li data-key={`${it.id}-x`}>{it.id}-x</li>)}</ul>
+        <ul>
+          {each(itemsA, (it) => (
+            <li data-key={it.id}>{it.id}</li>
+          ))}
+        </ul>
+        <ul>
+          {each(itemsA, (it) => (
+            <li data-key={`${it.id}-x`}>{it.id}-x</li>
+          ))}
+        </ul>
       </div>
     ));
-    expect(root.querySelectorAll('li').length).toBe(4);  // 2 + 2
+    expect(root.querySelectorAll('li').length).toBe(4); // 2 + 2
     const m1 = root.querySelectorAll('ul')[0];
-    const m1Comments = Array.from(m1.childNodes).filter((n) => n.nodeType === Node.COMMENT_NODE) as Comment[];
+    const m1Comments = Array.from(m1.childNodes).filter(
+      (n) => n.nodeType === Node.COMMENT_NODE,
+    ) as Comment[];
     expect(m1Comments[0].data).toBe('kf-list:0');
     dispose1();
 
     // Re-mount — counter should reset.
     const itemsB = [{ id: 'b1' }];
     const dispose2 = mount(root, () => (
-      <ol>{each(itemsB, (it) => <li data-key={it.id}>{it.id}</li>)}</ol>
+      <ol>
+        {each(itemsB, (it) => (
+          <li data-key={it.id}>{it.id}</li>
+        ))}
+      </ol>
     ));
     const ol = root.querySelector('ol')!;
-    const olComments = Array.from(ol.childNodes).filter((n) => n.nodeType === Node.COMMENT_NODE) as Comment[];
+    const olComments = Array.from(ol.childNodes).filter(
+      (n) => n.nodeType === Node.COMMENT_NODE,
+    ) as Comment[];
     expect(olComments[0].data).toBe('kf-list:0');
     expect(root.querySelectorAll('li').length).toBe(1);
     dispose2();
@@ -92,12 +109,19 @@ describe('Round 3: re-mount state reset', () => {
 
 describe('Round 3: render-throw recovery', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   it('render throws on first call: mount itself throws', () => {
     expect(() => {
-      mount(root, () => { throw new Error('boom'); });
+      mount(root, () => {
+        throw new Error('boom');
+      });
     }).toThrow(/boom/);
   });
 
@@ -110,7 +134,9 @@ describe('Round 3: render-throw recovery', () => {
       return <span>{tick.value}</span>;
     });
     expect(calls).toBe(1);
-    expect(() => { tick.value = 1; }).toThrow();
+    expect(() => {
+      tick.value = 1;
+    }).toThrow();
     expect(calls).toBe(2);
     // Recovery: subsequent mutation re-runs the render.
     tick.value = 2;

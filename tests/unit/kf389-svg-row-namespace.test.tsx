@@ -34,7 +34,9 @@ beforeEach(() => {
   document.body.appendChild(root);
 });
 
-afterEach(() => { document.body.innerHTML = ''; });
+afterEach(() => {
+  document.body.innerHTML = '';
+});
 
 const nsOf = (sel: string): string | null =>
   (root.querySelector(sel) as Element | null)?.namespaceURI ?? null;
@@ -44,7 +46,9 @@ describe('KF-389: SVG-namespaced row parsing', () => {
     const pts = arraySignal([{ id: 'p1' }]);
     const dispose = mount(root, () => (
       <svg viewBox="0 0 10 10">
-        {each(pts, (p) => <circle data-key={p.id} cx="1" cy="1" r="1" />)}
+        {each(pts, (p) => (
+          <circle data-key={p.id} cx="1" cy="1" r="1" />
+        ))}
       </svg>
     ));
     expect(nsOf('[data-key="p1"]')).toBe(SVG_NS); // first render was always fine
@@ -59,7 +63,9 @@ describe('KF-389: SVG-namespaced row parsing', () => {
     const pts = arraySignal([{ id: 'p1' }]);
     const dispose = mount(root, () => (
       <svg viewBox="0 0 10 10">
-        {each(pts, (p) => <circle data-key={p.id} cx="1" cy="1" r="1" />)}
+        {each(pts, (p) => (
+          <circle data-key={p.id} cx="1" cy="1" r="1" />
+        ))}
       </svg>
     ));
     pts.push({ id: 'p2' });
@@ -74,7 +80,9 @@ describe('KF-389: SVG-namespaced row parsing', () => {
     const list = signal([{ id: 's1' }]);
     const dispose = mount(root, () => (
       <svg viewBox="0 0 10 10">
-        {each(list.value, (p) => <circle data-key={p.id} cx="1" cy="1" r="1" />)}
+        {each(list.value, (p) => (
+          <circle data-key={p.id} cx="1" cy="1" r="1" />
+        ))}
       </svg>
     ));
     list.value = [...list.value, { id: 's2' }];
@@ -86,9 +94,13 @@ describe('KF-389: SVG-namespaced row parsing', () => {
     const shapes = arraySignal([{ id: 'g1', big: false }]);
     const dispose = mount(root, () => (
       <svg viewBox="0 0 10 10">
-        {each(shapes, (p) => (p.big
-          ? <rect data-key={p.id} width="5" height="5" />
-          : <circle data-key={p.id} cx="1" cy="1" r="1" />))}
+        {each(shapes, (p) =>
+          p.big ? (
+            <rect data-key={p.id} width="5" height="5" />
+          ) : (
+            <circle data-key={p.id} cx="1" cy="1" r="1" />
+          ),
+        )}
       </svg>
     ));
     shapes.update(0, (r) => ({ ...r, big: true }));
@@ -103,7 +115,9 @@ describe('KF-389: SVG-namespaced row parsing', () => {
     const dispose = mount(root, () => (
       <svg viewBox="0 0 10 10">
         {each(shapes, (p) => (
-          <g data-key={p.id}><circle cx="1" cy="1" r="1" /></g>
+          <g data-key={p.id}>
+            <circle cx="1" cy="1" r="1" />
+          </g>
         ))}
       </svg>
     ));
@@ -121,7 +135,9 @@ describe('KF-389: SVG-namespaced row parsing', () => {
     const dispose = mount(root, () => (
       <svg viewBox="0 0 10 10">
         <foreignObject width="10" height="10">
-          {each(rows, (r) => <div data-key={r.id}>x</div>)}
+          {each(rows, (r) => (
+            <div data-key={r.id}>x</div>
+          ))}
         </foreignObject>
       </svg>
     ));
@@ -133,7 +149,11 @@ describe('KF-389: SVG-namespaced row parsing', () => {
   it('ordinary HTML lists are unaffected', () => {
     const rows = arraySignal([{ id: 'h1' }]);
     const dispose = mount(root, () => (
-      <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>)}</ul>
+      <ul>
+        {each(rows, (r) => (
+          <li data-key={r.id}>{r.id}</li>
+        ))}
+      </ul>
     ));
     rows.push({ id: 'h2' });
     expect(nsOf('[data-key="h2"]')).toBe(XHTML_NS);
@@ -146,14 +166,18 @@ describe('KF-389: SVG-namespaced row parsing', () => {
     // still a row-precise error, not a silent misbind. It fires at first
     // render (fail-fast), before any reconcile path is reached.
     const rows = arraySignal([{ id: 'c1' }]);
-    expect(() => mount(root, () => (
-      <svg viewBox="0 0 10 10">
-        {each(rows, (r) => <>
-          <circle data-key={r.id} cx="1" cy="1" r="1" />
-          <circle cx="2" cy="2" r="1" />
-        </>)}
-      </svg>
-    ))).toThrow(/exactly one/);
+    expect(() =>
+      mount(root, () => (
+        <svg viewBox="0 0 10 10">
+          {each(rows, (r) => (
+            <>
+              <circle data-key={r.id} cx="1" cy="1" r="1" />
+              <circle cx="2" cy="2" r="1" />
+            </>
+          ))}
+        </svg>
+      )),
+    ).toThrow(/exactly one/);
   });
 
   it('the row contract throws for a multi-root SVG row introduced by a later insert', () => {
@@ -162,12 +186,16 @@ describe('KF-389: SVG-namespaced row parsing', () => {
     const rows = arraySignal<{ id: string; split?: boolean }>([{ id: 'd1' }]);
     const dispose = mount(root, () => (
       <svg viewBox="0 0 10 10">
-        {each(rows, (r) => (r.split === true
-          ? <>
+        {each(rows, (r) =>
+          r.split === true ? (
+            <>
+              <circle data-key={r.id} cx="1" cy="1" r="1" />
+              <circle cx="2" cy="2" r="1" />
+            </>
+          ) : (
             <circle data-key={r.id} cx="1" cy="1" r="1" />
-            <circle cx="2" cy="2" r="1" />
-          </>
-          : <circle data-key={r.id} cx="1" cy="1" r="1" />))}
+          ),
+        )}
       </svg>
     ));
     expect(() => rows.push({ id: 'd2', split: true })).toThrow(/exactly one/);

@@ -49,18 +49,26 @@ export function ToolbarText({
   maxLines = null,
 }: ToolbarTextProps) {
   const capped = wrap && maxLines != null && maxLines > 0;
-  return <span
-    class={`kui-toolbar-text ${className}`.trim()}
-    data-component="toolbar-text"
-    data-size={size}
-    data-wrap={wrap ? 'true' : undefined}
-    data-ellipsis={ellipsis ? undefined : 'false'}
-    data-max-lines={capped ? String(maxLines) : undefined}
-    style={capped ? `--kui-toolbar-text-max-lines:${maxLines}` : undefined}
-    data-placeholder={placeholder ? 'true' : undefined}
-    id={id}
-    role={headingLevel ? 'heading' : undefined}
-    aria-level={headingLevel ? String(headingLevel) : undefined}
-    aria-busy={placeholder ? 'true' : undefined}
-  >{placeholder ? <Skeleton width="8em" /> : <span class="kui-toolbar-text__text">{text}</span>}</span>;
+  return (
+    <span
+      class={`kui-toolbar-text ${className}`.trim()}
+      data-component="toolbar-text"
+      data-size={size}
+      data-wrap={wrap ? 'true' : undefined}
+      data-ellipsis={ellipsis ? undefined : 'false'}
+      data-max-lines={capped ? String(maxLines) : undefined}
+      style={capped ? `--kui-toolbar-text-max-lines:${maxLines}` : undefined}
+      data-placeholder={placeholder ? 'true' : undefined}
+      id={id}
+      role={headingLevel ? 'heading' : undefined}
+      aria-level={headingLevel ? String(headingLevel) : undefined}
+      aria-busy={placeholder ? 'true' : undefined}
+    >
+      {placeholder ? (
+        <Skeleton width="8em" />
+      ) : (
+        <span class="kui-toolbar-text__text">{text}</span>
+      )}
+    </span>
+  );
 }

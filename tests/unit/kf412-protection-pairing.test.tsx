@@ -35,15 +35,17 @@ describe('KF-412/413: protected live nodes are not positionally repurposed', () 
     const dispose = mount(root, () => (
       <div>
         {show.value ? <div class="cond">conditional</div> : ''}
-        <div class="widget" data-morph-skip-children><span>placeholder</span></div>
+        <div class="widget" data-morph-skip-children>
+          <span>placeholder</span>
+        </div>
       </div>
     ));
     const widget = root.querySelector('.widget') as HTMLElement;
     widget.innerHTML = '<canvas id="hydrated"></canvas>'; // library hydrates the slot
 
     show.value = true;
-    expect(root.querySelector('.widget')).toBe(widget);          // same node
-    expect(root.querySelector('#hydrated')).not.toBeNull();       // hydrated child survives
+    expect(root.querySelector('.widget')).toBe(widget); // same node
+    expect(root.querySelector('#hydrated')).not.toBeNull(); // hydrated child survives
     expect(root.querySelector('.cond')?.textContent).toBe('conditional');
     dispose();
   });
@@ -66,7 +68,7 @@ describe('KF-412/413: protected live nodes are not positionally repurposed', () 
     show.value = true; // the conditional reappears where the tooltip sits
     const survivor = root.querySelector('.tooltip');
     expect(survivor).not.toBeNull();
-    expect(survivor?.textContent).toBe('injected');               // content intact
+    expect(survivor?.textContent).toBe('injected'); // content intact
     expect(survivor?.hasAttribute('data-morph-preserve')).toBe(true); // attribute intact
     expect(root.querySelector('.cond')?.textContent).toBe('cond'); // conditional rendered fresh
     dispose();
@@ -100,14 +102,16 @@ describe('KF-412/413: protected live nodes are not positionally repurposed', () 
     const cls = signal('a');
     const dispose = mount(root, () => (
       <div>
-        <div data-key="w" data-morph-skip-children class={cls.value}><span>child</span></div>
+        <div data-key="w" data-morph-skip-children class={cls.value}>
+          <span>child</span>
+        </div>
       </div>
     ));
     const widget = root.querySelector('[data-key="w"]') as HTMLElement;
     widget.querySelector('span')!.textContent = 'hydrated';
     cls.value = 'b';
-    expect(root.querySelector('[data-key="w"]')).toBe(widget);   // identity kept by key
-    expect(widget.getAttribute('class')).toBe('b');               // attrs morphed
+    expect(root.querySelector('[data-key="w"]')).toBe(widget); // identity kept by key
+    expect(widget.getAttribute('class')).toBe('b'); // attrs morphed
     expect(widget.querySelector('span')?.textContent).toBe('hydrated'); // children skipped
     dispose();
   });

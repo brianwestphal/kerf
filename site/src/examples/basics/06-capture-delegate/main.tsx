@@ -10,7 +10,9 @@ mount(root, () => (
     <div style="display: grid; grid-template-columns: 8rem 1fr; gap: 0.5rem 1rem; align-items: center;">
       {fields.value.map((label, i) => (
         <>
-          <label data-key={`l-${label}-${i}`} for={`field-${i}`}>{label}</label>
+          <label data-key={`l-${label}-${i}`} for={`field-${i}`}>
+            {label}
+          </label>
           <input
             data-key={`i-${label}-${i}`}
             id={`field-${i}`}
@@ -21,9 +23,14 @@ mount(root, () => (
       ))}
     </div>
     <div class="kerf-toolbar">
-      <button type="button" data-action="add">Add field</button>
+      <button type="button" data-action="add">
+        Add field
+      </button>
     </div>
-    <div class="kerf-output kerf-mono" style="display: flex; justify-content: space-between;">
+    <div
+      class="kerf-output kerf-mono"
+      style="display: flex; justify-content: space-between;"
+    >
       <span>Focused</span>
       <strong>{focused.value ?? '(none)'}</strong>
     </div>

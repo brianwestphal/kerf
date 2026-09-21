@@ -6,7 +6,9 @@ const root = document.getElementById('app')!;
 
 mount(root, () => (
   <div class="kerf-stack" style="max-width: 24rem;">
-    <label for="kerf-slider" class="kerf-helper-text">Move the dot</label>
+    <label for="kerf-slider" class="kerf-helper-text">
+      Move the dot
+    </label>
     <input
       id="kerf-slider"
       type="range"
@@ -37,5 +39,7 @@ delegate(root, 'input', '[data-slider]', (_, input) => {
 });
 
 // The escape hatch: building an SVG fragment WITHOUT an <svg> wrapper.
-const tickPath = toElement('<path d="M 0 10 L 100 10" stroke="#9ca3af" stroke-width="0.5" />');
+const tickPath = toElement(
+  '<path d="M 0 10 L 100 10" stroke="#9ca3af" stroke-width="0.5" />',
+);
 document.getElementById('kerf-example-svg')!.prepend(tickPath);

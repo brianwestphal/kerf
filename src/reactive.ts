@@ -22,7 +22,11 @@
  * docs/11-dev-warnings.md for the install-ordering rules.
  */
 
-import { effect as coreEffect,Signal,signal as coreSignal } from '@preact/signals-core';
+import {
+  effect as coreEffect,
+  Signal,
+  signal as coreSignal,
+} from '@preact/signals-core';
 
 import { devHooks } from './dev-hooks.js';
 

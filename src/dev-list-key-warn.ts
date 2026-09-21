@@ -41,12 +41,12 @@
  */
 export function maybeWarnListIdShift(id: string): void {
   console.warn(
-    `kerf each(): list '${id}' is now a different list than it was last render. `
-    + 'Lists without a key are identified by call order, so adding or removing an each() call '
-    + 'before this one reassigns its identity — kerf rebuilds the list from scratch and its rows '
-    + 'lose DOM identity, focus, scroll position and in-progress IME composition. '
-    + 'Give the affected lists a stable key: each(items, render, { key: \'my-list\' }). '
-    + 'Keying the conditional list is usually enough — a keyed list does not take a call-order '
-    + 'slot, so its siblings stop shifting too.',
+    `kerf each(): list '${id}' is now a different list than it was last render. ` +
+      'Lists without a key are identified by call order, so adding or removing an each() call ' +
+      'before this one reassigns its identity — kerf rebuilds the list from scratch and its rows ' +
+      'lose DOM identity, focus, scroll position and in-progress IME composition. ' +
+      "Give the affected lists a stable key: each(items, render, { key: 'my-list' }). " +
+      'Keying the conditional list is usually enough — a keyed list does not take a call-order ' +
+      'slot, so its siblings stop shifting too.',
   );
 }

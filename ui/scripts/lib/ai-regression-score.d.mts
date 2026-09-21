@@ -7,7 +7,10 @@ export interface AiRegressionCheck {
 export interface AiRegressionScore {
   caseId: string;
   pass: boolean;
-  dimensions: Record<'reuse' | 'wiring' | 'layout' | 'accessibility' | 'escalation', boolean>;
+  dimensions: Record<
+    'reuse' | 'wiring' | 'layout' | 'accessibility' | 'escalation',
+    boolean
+  >;
   checks: AiRegressionCheck[];
 }
 
@@ -15,4 +18,9 @@ export interface AiRegressionScoreOptions {
   legacyPublicBoundary?: boolean;
 }
 
-export function scoreAiRegression(caseDefinition: Record<string, unknown>, response: Record<string, unknown>, catalog: { entries: Array<Record<string, unknown>> }, options?: AiRegressionScoreOptions): AiRegressionScore;
+export function scoreAiRegression(
+  caseDefinition: Record<string, unknown>,
+  response: Record<string, unknown>,
+  catalog: { entries: Array<Record<string, unknown>> },
+  options?: AiRegressionScoreOptions,
+): AiRegressionScore;

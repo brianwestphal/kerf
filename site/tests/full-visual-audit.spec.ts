@@ -46,11 +46,15 @@ test('normalizes route filters and discovers every emitted HTML surface', () => 
   expect(normalizeRequestedRoute(undefined)).toBeUndefined();
   expect(normalizeRequestedRoute('/')).toBe('');
   expect(normalizeRequestedRoute('/kerf')).toBe('');
-  expect(normalizeRequestedRoute('https://brianwestphal.github.io/kerf/')).toBe('');
+  expect(normalizeRequestedRoute('https://brianwestphal.github.io/kerf/')).toBe(
+    '',
+  );
   expect(normalizeRequestedRoute('api')).toBe('api/');
   expect(normalizeRequestedRoute('/kerf/api/')).toBe('api/');
   expect(
-    normalizeRequestedRoute('https://brianwestphal.github.io/kerf/api/?x=1#top'),
+    normalizeRequestedRoute(
+      'https://brianwestphal.github.io/kerf/api/?x=1#top',
+    ),
   ).toBe('api/');
   expect(normalizeRequestedRoute('/kerf/404.html')).toBe('404.html');
 
@@ -86,7 +90,9 @@ test('visually audits every emitted site route at desktop, tablet, and mobile wi
     await page.setViewportSize(viewport);
     for (const route of routes) {
       const response = await page.goto(`./${route}`, { waitUntil: 'load' });
-      expect.soft(response?.ok(), `${route || '/'} loads at ${viewport.name}`).toBe(true);
+      expect
+        .soft(response?.ok(), `${route || '/'} loads at ${viewport.name}`)
+        .toBe(true);
       // Some emitted compatibility pages use an immediate meta refresh. Let
       // that navigation settle before measuring the destination document.
       await page.waitForTimeout(100);
@@ -124,17 +130,17 @@ test('visually audits every emitted site route at desktop, tablet, and mobile wi
         const brokenImages = [...document.images]
           .filter((image) => !image.complete || image.naturalWidth === 0)
           .map((image) => image.currentSrc || image.src);
-        const overflowingElements = [...document.querySelectorAll<HTMLElement>('body *')]
+        const overflowingElements = [
+          ...document.querySelectorAll<HTMLElement>('body *'),
+        ]
           .filter((element) => {
             if (element.closest('[data-site-sidebar]')) return false;
             const bounds = element.getBoundingClientRect();
-            if (
-              !(
-                bounds.width > 0 &&
-                bounds.height > 0 &&
-                (bounds.right > viewportWidth + 1 || bounds.left < -1)
-              )
-            ) {
+            if (!(
+              bounds.width > 0 &&
+              bounds.height > 0 &&
+              (bounds.right > viewportWidth + 1 || bounds.left < -1)
+            )) {
               return false;
             }
             let ancestor = element.parentElement;
@@ -156,7 +162,8 @@ test('visually audits every emitted site route at desktop, tablet, and mobile wi
             return `${element.tagName.toLowerCase()}.${element.className || '-'} [${Math.round(bounds.left)}, ${Math.round(bounds.right)}] ${element.textContent?.trim().slice(0, 80)}`;
           });
         return {
-          documentOverflow: document.documentElement.scrollWidth - viewportWidth,
+          documentOverflow:
+            document.documentElement.scrollWidth - viewportWidth,
           contentWidth: contentRoot?.getBoundingClientRect().width ?? 0,
           contentHeight: contentRoot?.getBoundingClientRect().height ?? 0,
           brokenImages,
@@ -170,10 +177,12 @@ test('visually audits every emitted site route at desktop, tablet, and mobile wi
         fullPage: true,
         animations: 'disabled',
       });
-      expect.soft(
-        health.documentOverflow,
-        `${route || '/'} horizontal overflow at ${viewport.name}: ${health.overflowingElements.join(' | ')}`,
-      ).toBeLessThanOrEqual(1);
+      expect
+        .soft(
+          health.documentOverflow,
+          `${route || '/'} horizontal overflow at ${viewport.name}: ${health.overflowingElements.join(' | ')}`,
+        )
+        .toBeLessThanOrEqual(1);
       expect
         .soft(
           health.contentWidth,

@@ -92,11 +92,11 @@ export function maybeWarnValueOnlyRerender(
   if (!_isValueOnlyDiff(a.content, b.content)) return;
   ctx.warned = true;
   console.warn(
-    'kerf: this re-render changed only text content and attribute values — no structural '
-    + 'change — so every changed hole could be a fine-grained binding instead. Values bind, '
-    + 'structure re-renders: pass the signal/computed itself ({count}, class={sig}) rather than '
-    + 'reading .value in the hole, and each change updates just that node with no render re-run '
-    + '(a mount whose render reads no .value never re-renders at all). See docs/2-reactivity §2.9. '
-    + 'Set KERF_DEV_WARN_VALUE_ONLY_RERENDER=0 (or unset it) to silence this warning.',
+    'kerf: this re-render changed only text content and attribute values — no structural ' +
+      'change — so every changed hole could be a fine-grained binding instead. Values bind, ' +
+      'structure re-renders: pass the signal/computed itself ({count}, class={sig}) rather than ' +
+      'reading .value in the hole, and each change updates just that node with no render re-run ' +
+      '(a mount whose render reads no .value never re-renders at all). See docs/2-reactivity §2.9. ' +
+      'Set KERF_DEV_WARN_VALUE_ONLY_RERENDER=0 (or unset it) to silence this warning.',
   );
 }

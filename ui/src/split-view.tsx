@@ -42,22 +42,75 @@ export interface SplitViewProps {
  * resizable wiring with `wireResizableRegions` and the compact back with
  * `wireNavStack`.
  */
-export function SplitView({ id, label, list, detail, compact = false, detailActive = false, listTitle = '', detailTitle = '', backLabel = 'Back', resizable, className = '' }: SplitViewProps) {
+export function SplitView({
+  id,
+  label,
+  list,
+  detail,
+  compact = false,
+  detailActive = false,
+  listTitle = '',
+  detailTitle = '',
+  backLabel = 'Back',
+  resizable,
+  className = '',
+}: SplitViewProps) {
   if (compact) {
     const views = detailActive
-      ? [{ key: 'list', title: listTitle, content: list }, { key: 'detail', title: detailTitle, content: detail }]
+      ? [
+          { key: 'list', title: listTitle, content: list },
+          { key: 'detail', title: detailTitle, content: detail },
+        ]
       : [{ key: 'list', title: listTitle, content: list }];
-    return <div class={`kui-split-view kui-split-view--compact ${className}`.trim()} id={id} data-component="split-view" data-split-mode="compact">
-      <NavStack id={`${id}-stack`} label={label} views={views} backLabel={backLabel} />
-    </div>;
+    return (
+      <div
+        class={`kui-split-view kui-split-view--compact ${className}`.trim()}
+        id={id}
+        data-component="split-view"
+        data-split-mode="compact"
+      >
+        <NavStack
+          id={`${id}-stack`}
+          label={label}
+          views={views}
+          backLabel={backLabel}
+        />
+      </div>
+    );
   }
-  const listPane = resizable
-    ? <ResizableRegion id={`${id}-list`} label={listTitle || 'List'} size={resizable.size} min={resizable.min} max={resizable.max}>
-        <div class="kui-split-view__list kui-pane" data-split-list>{list}</div>
-      </ResizableRegion>
-    : <div class="kui-split-view__list kui-pane" data-split-list>{list}</div>;
-  return <div class={`kui-split-view ${className}`.trim()} id={id} data-component="split-view" data-split-mode="split" aria-label={label}>
-    {listPane}
-    <div class="kui-split-view__detail kui-pane" data-split-detail aria-label={detailTitle || undefined}>{detail}</div>
-  </div>;
+  const listPane = resizable ? (
+    <ResizableRegion
+      id={`${id}-list`}
+      label={listTitle || 'List'}
+      size={resizable.size}
+      min={resizable.min}
+      max={resizable.max}
+    >
+      <div class="kui-split-view__list kui-pane" data-split-list>
+        {list}
+      </div>
+    </ResizableRegion>
+  ) : (
+    <div class="kui-split-view__list kui-pane" data-split-list>
+      {list}
+    </div>
+  );
+  return (
+    <div
+      class={`kui-split-view ${className}`.trim()}
+      id={id}
+      data-component="split-view"
+      data-split-mode="split"
+      aria-label={label}
+    >
+      {listPane}
+      <div
+        class="kui-split-view__detail kui-pane"
+        data-split-detail
+        aria-label={detailTitle || undefined}
+      >
+        {detail}
+      </div>
+    </div>
+  );
 }

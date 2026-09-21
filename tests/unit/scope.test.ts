@@ -1,7 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { signal } from '../../src/reactive.js';
-import { disposeScope, disposeSubtree, observeRemovals } from '../../src/scope.js';
+import {
+  disposeScope,
+  disposeSubtree,
+  observeRemovals,
+} from '../../src/scope.js';
 
 afterEach(() => {
   document.body.innerHTML = '';
@@ -56,7 +60,9 @@ describe('disposeScope()', () => {
     const sig = signal(0);
     const runs: number[] = [];
     const s = disposeScope(el);
-    s.effect(() => { runs.push(sig.value); });
+    s.effect(() => {
+      runs.push(sig.value);
+    });
     sig.value = 1;
     expect(runs).toEqual([0, 1]);
     s.dispose();
@@ -109,7 +115,7 @@ describe('disposeSubtree()', () => {
 });
 
 describe('observeRemovals()', () => {
-  it('auto-disposes a removed node\'s scope and its descendants', async () => {
+  it("auto-disposes a removed node's scope and its descendants", async () => {
     const stop = observeRemovals(document.body);
     const card = document.createElement('div');
     const inner = document.createElement('span');

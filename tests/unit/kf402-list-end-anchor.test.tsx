@@ -42,8 +42,20 @@ describe('KF-402/KF-404: a list ends at its last row, whatever node comes next',
     const s = signal<{ id: string }[]>([]);
     const dispose = mount(root, () => (
       <div>
-        {each(s.value, (r) => <li data-key={`A_${r.id}`}>A{r.id}</li>, { key: 'LA' })}
-        {each(s.value, (r) => <li data-key={`B_${r.id}`}>B{r.id}</li>, { key: 'LB' })}
+        {each(
+          s.value,
+          (r) => (
+            <li data-key={`A_${r.id}`}>A{r.id}</li>
+          ),
+          { key: 'LA' },
+        )}
+        {each(
+          s.value,
+          (r) => (
+            <li data-key={`B_${r.id}`}>B{r.id}</li>
+          ),
+          { key: 'LB' },
+        )}
       </div>
     ));
     s.value = [{ id: '1' }, { id: '2' }];
@@ -56,8 +68,20 @@ describe('KF-402/KF-404: a list ends at its last row, whatever node comes next',
     const b = signal<{ id: string }[]>([]);
     const dispose = mount(root, () => (
       <div>
-        {each(a.value, (r) => <li data-key={`A_${r.id}`}>A{r.id}</li>, { key: 'LA' })}
-        {each(b.value, (r) => <li data-key={`B_${r.id}`}>B{r.id}</li>, { key: 'LB' })}
+        {each(
+          a.value,
+          (r) => (
+            <li data-key={`A_${r.id}`}>A{r.id}</li>
+          ),
+          { key: 'LA' },
+        )}
+        {each(
+          b.value,
+          (r) => (
+            <li data-key={`B_${r.id}`}>B{r.id}</li>
+          ),
+          { key: 'LB' },
+        )}
       </div>
     ));
     b.value = [{ id: '1' }];
@@ -72,8 +96,20 @@ describe('KF-402/KF-404: a list ends at its last row, whatever node comes next',
     const s = signal([{ id: 'a' }]);
     const dispose = mount(root, () => (
       <ul data-key="c">
-        {each(s.value, (r) => <li data-key={`L0_${r.id}`}>{r.id}</li>, { key: 'L0' })}
-        {each(s.value, (r) => <li data-key={`L1_${r.id}`}>{r.id}</li>, { key: 'L1' })}
+        {each(
+          s.value,
+          (r) => (
+            <li data-key={`L0_${r.id}`}>{r.id}</li>
+          ),
+          { key: 'L0' },
+        )}
+        {each(
+          s.value,
+          (r) => (
+            <li data-key={`L1_${r.id}`}>{r.id}</li>
+          ),
+          { key: 'L1' },
+        )}
       </ul>
     ));
     s.value = [{ id: 'a2' }];
@@ -81,8 +117,8 @@ describe('KF-402/KF-404: a list ends at its last row, whatever node comes next',
     // markers here — the shape that made `afterListRegion` believe the first
     // list owned nothing.
     expect(root.querySelector('ul')?.innerHTML).toBe(
-      '<!--kf-list:k:L0--><li data-key="L0_a2">a2</li>'
-      + '<!--kf-list:k:L1--><li data-key="L1_a2">a2</li>',
+      '<!--kf-list:k:L0--><li data-key="L0_a2">a2</li>' +
+        '<!--kf-list:k:L1--><li data-key="L1_a2">a2</li>',
     );
     dispose();
   });
@@ -91,7 +127,13 @@ describe('KF-402/KF-404: a list ends at its last row, whatever node comes next',
     const s = arraySignal([{ id: 'a' }]);
     const dispose = mount(root, () => (
       <ul>
-        {each(s, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'L' })}
+        {each(
+          s,
+          (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ),
+          { key: 'L' },
+        )}
         footer
       </ul>
     ));
@@ -108,8 +150,18 @@ describe('KF-402/KF-404: a list ends at its last row, whatever node comes next',
     const s = signal([{ id: 'a' }]);
     const dispose = mount(root, () => (
       <ul>
-        {each(s.value, (r) => <li data-key={r.id} class="row">{r.id}</li>, { key: 'L' })}
-        <li data-key="footer" class="foot">footer</li>
+        {each(
+          s.value,
+          (r) => (
+            <li data-key={r.id} class="row">
+              {r.id}
+            </li>
+          ),
+          { key: 'L' },
+        )}
+        <li data-key="footer" class="foot">
+          footer
+        </li>
       </ul>
     ));
     s.value = [{ id: 'a' }, { id: 'b' }];
@@ -121,8 +173,16 @@ describe('KF-402/KF-404: a list ends at its last row, whatever node comes next',
     const s = arraySignal<{ id: string }>([]);
     const dispose = mount(root, () => (
       <ul>
-        <li data-key="head" class="head">head</li>
-        {each(s, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'L' })}
+        <li data-key="head" class="head">
+          head
+        </li>
+        {each(
+          s,
+          (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ),
+          { key: 'L' },
+        )}
         footer
       </ul>
     ));
@@ -138,9 +198,27 @@ describe('KF-402/KF-404: a list ends at its last row, whatever node comes next',
     const c = arraySignal<{ id: string }>([]);
     const dispose = mount(root, () => (
       <div>
-        {each(a, (r) => <li data-key={`a${r.id}`}>a{r.id}</li>, { key: 'A' })}
-        {each(b, (r) => <li data-key={`b${r.id}`}>b{r.id}</li>, { key: 'B' })}
-        {each(c, (r) => <li data-key={`c${r.id}`}>c{r.id}</li>, { key: 'C' })}
+        {each(
+          a,
+          (r) => (
+            <li data-key={`a${r.id}`}>a{r.id}</li>
+          ),
+          { key: 'A' },
+        )}
+        {each(
+          b,
+          (r) => (
+            <li data-key={`b${r.id}`}>b{r.id}</li>
+          ),
+          { key: 'B' },
+        )}
+        {each(
+          c,
+          (r) => (
+            <li data-key={`c${r.id}`}>c{r.id}</li>
+          ),
+          { key: 'C' },
+        )}
       </div>
     ));
     c.push({ id: '1' });

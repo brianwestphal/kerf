@@ -41,12 +41,13 @@ let anyVersioned = false;
  * versioned (so the primitive path stays a zero-cost lookup).
  */
 export function bumpItemVersion(item: unknown): void {
-  if (item === null || (typeof item !== 'object' && typeof item !== 'function')) return;
+  if (item === null || (typeof item !== 'object' && typeof item !== 'function'))
+    return;
   anyVersioned = true;
   versions.set(item, (versions.get(item) ?? 0) + 1);
 }
 
 /** `item`'s current content version — 0 if it has never been same-ref-updated. */
 export function itemVersion(item: object): number {
-  return anyVersioned ? versions.get(item) ?? 0 : 0;
+  return anyVersioned ? (versions.get(item) ?? 0) : 0;
 }

@@ -1,0 +1,19 @@
+{
+  "singleQuote": true,
+  "embeddedLanguageFormatting": "off",
+  "plugins": ["prettier-plugin-astro", "prettier-plugin-sh"],
+  "overrides": [
+    {
+      "files": ["*.css", "*.scss"],
+      "options": {
+        "singleQuote": false
+      }
+    },
+    {
+      "files": ["*.cursorrules", "llms.txt", "ui/llms.txt"],
+      "options": {
+        "parser": "markdown"
+      }
+    }
+  ]
+}

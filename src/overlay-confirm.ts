@@ -33,7 +33,10 @@ export interface ConfirmOptions {
 }
 
 /** A promise-based `window.confirm` replacement. */
-export function confirm(message: string, options: ConfirmOptions = {}): Promise<boolean> {
+export function confirm(
+  message: string,
+  options: ConfirmOptions = {},
+): Promise<boolean> {
   const {
     container,
     className = 'kerf-overlay',
@@ -45,27 +48,38 @@ export function confirm(message: string, options: ConfirmOptions = {}): Promise<
     render,
   } = options;
 
-  const body: OverlayContent = render !== undefined
-    ? render({ message, ok: { 'data-confirm': 'ok' }, cancel: { 'data-confirm': 'cancel' } })
-    : jsx('div', {
-      class: 'kerf-confirm',
-      children: [
-        title !== undefined ? jsx('h2', { class: 'kerf-confirm__title', children: title }) : '',
-        jsx('p', { class: 'kerf-confirm__message', children: message }),
-        jsx('div', {
-          class: 'kerf-confirm__actions',
+  const body: OverlayContent =
+    render !== undefined
+      ? render({
+          message,
+          ok: { 'data-confirm': 'ok' },
+          cancel: { 'data-confirm': 'cancel' },
+        })
+      : jsx('div', {
+          class: 'kerf-confirm',
           children: [
-            jsx('button', { type: 'button', 'data-confirm': 'cancel', children: cancelText }),
-            jsx('button', {
-              type: 'button',
-              'data-confirm': 'ok',
-              class: 'kerf-confirm__ok',
-              children: okText,
+            title !== undefined
+              ? jsx('h2', { class: 'kerf-confirm__title', children: title })
+              : '',
+            jsx('p', { class: 'kerf-confirm__message', children: message }),
+            jsx('div', {
+              class: 'kerf-confirm__actions',
+              children: [
+                jsx('button', {
+                  type: 'button',
+                  'data-confirm': 'cancel',
+                  children: cancelText,
+                }),
+                jsx('button', {
+                  type: 'button',
+                  'data-confirm': 'ok',
+                  class: 'kerf-confirm__ok',
+                  children: okText,
+                }),
+              ],
             }),
           ],
-        }),
-      ],
-    });
+        });
 
   const handle = overlay(body, {
     container,

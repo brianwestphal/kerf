@@ -25,12 +25,15 @@
  * shadowed the list container). Both fixes have shipped; every test in this
  * matrix now runs and asserts the corrected behavior.
  */
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { batch,each,mount,raw,signal,toElement } from '../../src/index.js';
+import { batch, each, mount, raw, signal, toElement } from '../../src/index.js';
 
-interface Item { id: string; label: string }
+interface Item {
+  id: string;
+  label: string;
+}
 const ROWS: Item[] = [
   { id: 'a', label: 'A' },
   { id: 'b', label: 'B' },
@@ -43,10 +46,14 @@ beforeEach(() => {
   document.body.appendChild(root);
 });
 
-afterEach(() => { document.body.innerHTML = ''; });
+afterEach(() => {
+  document.body.innerHTML = '';
+});
 
 function labels(scope: HTMLElement = root): string[] {
-  return Array.from(scope.querySelectorAll('li:not(.hd)')).map((li) => li.textContent ?? '');
+  return Array.from(scope.querySelectorAll('li:not(.hd)')).map(
+    (li) => li.textContent ?? '',
+  );
 }
 
 describe('KF-380 interaction matrix: morph × owned each() rows × conditional siblings', () => {
@@ -59,7 +66,11 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
       <div>
         {banners.value >= 1 ? <div class="b1">one</div> : ''}
         {banners.value >= 2 ? <div class="b2">two</div> : ''}
-        <ul>{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        <ul>
+          {each(ROWS, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
       </div>
     ));
     const liA = root.querySelector('li[data-key="a"]');
@@ -76,13 +87,24 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
   });
 
   it('a conditional between two lists: both bindings survive its removal and return', () => {
-    const MORE: Item[] = [{ id: 'x', label: 'X' }, { id: 'y', label: 'Y' }];
+    const MORE: Item[] = [
+      { id: 'x', label: 'X' },
+      { id: 'y', label: 'Y' },
+    ];
     const mid = signal(true);
     const dispose = mount(root, () => (
       <div>
-        <ul class="one">{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        <ul class="one">
+          {each(ROWS, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
         {mid.value ? <p class="mid">between</p> : ''}
-        <ul class="two">{each(MORE, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        <ul class="two">
+          {each(MORE, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
       </div>
     ));
     const ulTwo = root.querySelector('ul.two');
@@ -103,9 +125,19 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     const ordered = signal(false);
     const dispose = mount(root, () => (
       <div>
-        {ordered.value
-          ? <ol>{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ol>
-          : <ul>{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>}
+        {ordered.value ? (
+          <ol>
+            {each(ROWS, (r) => (
+              <li data-key={r.id}>{r.label}</li>
+            ))}
+          </ol>
+        ) : (
+          <ul>
+            {each(ROWS, (r) => (
+              <li data-key={r.id}>{r.label}</li>
+            ))}
+          </ul>
+        )}
       </div>
     ));
     expect(labels()).toEqual(['A', 'B']);
@@ -128,9 +160,23 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     const rows = arraySignal<Item>([...ROWS]);
     const dispose = mount(root, () => (
       <div>
-        {wide.value
-          ? <section class="w"><ul>{each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}</ul></section>
-          : <article class="n"><ul>{each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}</ul></article>}
+        {wide.value ? (
+          <section class="w">
+            <ul>
+              {each(rows, (r) => (
+                <li data-key={r.id}>{r.label}</li>
+              ))}
+            </ul>
+          </section>
+        ) : (
+          <article class="n">
+            <ul>
+              {each(rows, (r) => (
+                <li data-key={r.id}>{r.label}</li>
+              ))}
+            </ul>
+          </article>
+        )}
       </div>
     ));
     wide.value = true; // replaceChild rebuild → self-heal re-bind
@@ -156,7 +202,11 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     const dispose = mount(root, () => (
       <div>
         {banner.value ? <div class="banner">warn</div> : ''}
-        <ul>{each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
       </div>
     ));
     expect(labels()).toEqual([]);
@@ -190,7 +240,9 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     const dispose = mount(root, () => (
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
-        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+        {each(ROWS, (r) => (
+          <li data-key={r.id}>{r.label}</li>
+        ))}
       </ul>
     ));
     expect(labels()).toEqual(['A', 'B']);
@@ -217,10 +269,16 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     const dispose = mount(root, () => (
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
-        {each(ROWS, (r) => <li data-key={r.id}><input value={r.label} /></li>)}
+        {each(ROWS, (r) => (
+          <li data-key={r.id}>
+            <input value={r.label} />
+          </li>
+        ))}
       </ul>
     ));
-    const input = root.querySelector('li[data-key="a"] input') as HTMLInputElement;
+    const input = root.querySelector(
+      'li[data-key="a"] input',
+    ) as HTMLInputElement;
     input.focus();
     expect(document.activeElement).toBe(input);
 
@@ -239,7 +297,9 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
         {raw('<!--note-->')}
-        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+        {each(ROWS, (r) => (
+          <li data-key={r.id}>{r.label}</li>
+        ))}
       </ul>
     ));
     expect(labels()).toEqual(['A', 'B']);
@@ -254,13 +314,20 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     // Exact-data marker matching: list 0's lookahead must not latch onto
     // list 1's marker (which would splice the wrong rows into the wrong slot).
     const hd = signal(true);
-    const first = [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }];
+    const first = [
+      { id: 'a', label: 'A' },
+      { id: 'b', label: 'B' },
+    ];
     const second = [{ id: 'c', label: 'C' }];
     const dispose = mount(root, () => (
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
-        {each(first, (r) => <li data-key={r.id}>{r.label}</li>)}
-        {each(second, (r) => <li data-key={r.id}>{r.label}</li>)}
+        {each(first, (r) => (
+          <li data-key={r.id}>{r.label}</li>
+        ))}
+        {each(second, (r) => (
+          <li data-key={r.id}>{r.label}</li>
+        ))}
       </ul>
     ));
     expect(labels()).toEqual(['A', 'B', 'C']);
@@ -284,7 +351,9 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     const dispose = mount(root, () => (
       <ul>
         {cond.value ? 'heading text' : ''}
-        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+        {each(ROWS, (r) => (
+          <li data-key={r.id}>{r.label}</li>
+        ))}
       </ul>
     ));
     expect(labels()).toEqual(['A', 'B']);
@@ -293,7 +362,9 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     cond.value = false;
     expect(labels()).toEqual(['A', 'B']);
     expect(root.querySelector('li[data-key="a"]')).toBe(rowA);
-    expect((root.querySelector('ul') as HTMLElement).textContent).not.toContain('heading text');
+    expect((root.querySelector('ul') as HTMLElement).textContent).not.toContain(
+      'heading text',
+    );
 
     cond.value = true;
     expect(labels()).toEqual(['A', 'B']);
@@ -312,7 +383,11 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
       <div>
         {banner.value ? <p class="banner">warn</p> : ''}
         <section>
-          <ul>{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+          <ul>
+            {each(ROWS, (r) => (
+              <li data-key={r.id}>{r.label}</li>
+            ))}
+          </ul>
         </section>
       </div>
     ));
@@ -322,7 +397,7 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
 
     banner.value = false;
     expect(labels()).toEqual(['A', 'B']);
-    expect(root.querySelector('section')).toBe(section);   // container moved, not cloned
+    expect(root.querySelector('section')).toBe(section); // container moved, not cloned
     expect(root.querySelector('li[data-key="a"]')).toBe(rowA); // rows rode along
 
     banner.value = true;
@@ -339,7 +414,9 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     const dispose = mount(root, () => (
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
-        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+        {each(ROWS, (r) => (
+          <li data-key={r.id}>{r.label}</li>
+        ))}
         <button class="more">more</button>
       </ul>
     ));
@@ -347,8 +424,12 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     hd.value = false;
     expect(labels()).toEqual(['A', 'B']);
     // Rows must still precede the trailing button, matching JSX order.
-    const tags = Array.from((root.querySelector('ul') as HTMLElement).children)
-      .map((el) => el.tagName.toLowerCase() + (el.className ? `.${el.className}` : ''));
+    const tags = Array.from(
+      (root.querySelector('ul') as HTMLElement).children,
+    ).map(
+      (el) =>
+        el.tagName.toLowerCase() + (el.className ? `.${el.className}` : ''),
+    );
     expect(tags).toEqual(['li', 'li', 'button.more']);
     dispose();
   });
@@ -365,8 +446,18 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     const banner = signal(true);
     const dispose = mount(root, () => (
       <div>
-        {banner.value ? <ul class="banner"><li class="hd">warn</li></ul> : ''}
-        <ul class="list">{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        {banner.value ? (
+          <ul class="banner">
+            <li class="hd">warn</li>
+          </ul>
+        ) : (
+          ''
+        )}
+        <ul class="list">
+          {each(ROWS, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
       </div>
     ));
     expect(labels()).toEqual(['A', 'B']);
@@ -407,9 +498,17 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     const banner = signal(true);
     const dispose = mount(root, () => (
       <div>
-        {banner.value ? <ul class="banner"><li class="hd">warn</li></ul> : ''}
+        {banner.value ? (
+          <ul class="banner">
+            <li class="hd">warn</li>
+          </ul>
+        ) : (
+          ''
+        )}
         <ul class="list" data-key="the-list">
-          {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+          {each(ROWS, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
         </ul>
       </div>
     ));
@@ -437,7 +536,9 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     const dispose = mount(root, () => (
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
-        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+        {each(ROWS, (r) => (
+          <li data-key={r.id}>{r.label}</li>
+        ))}
       </ul>
     ));
     for (let i = 0; i < 4; i++) {
@@ -453,11 +554,16 @@ describe('KF-380 interaction matrix: morph × owned each() rows × conditional s
     // After the stranded-row removal + repopulate, the re-bound list must
     // accept granular patches — i.e. the binding is healthy, not half-dead.
     const hd = signal(true);
-    const rows = arraySignal([{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }]);
+    const rows = arraySignal([
+      { id: 'a', label: 'A' },
+      { id: 'b', label: 'B' },
+    ]);
     const dispose = mount(root, () => (
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
-        {each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}
+        {each(rows, (r) => (
+          <li data-key={r.id}>{r.label}</li>
+        ))}
       </ul>
     ));
     expect(labels()).toEqual(['A', 'B']);

@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added repository-wide Prettier formatting for TypeScript, JavaScript, Astro, shell, CSS, HTML, Markdown, YAML, and JSON source and structured-content files. Root and `@kerfjs/ui` lint gates now reject formatting drift, while generated, binary, and parser-incompatible fixtures remain explicitly excluded.
 - Added reusable sidebar tags to `@kerfjs/ui` Catalog entries and marked the 15 Web Awesome components superseded by preferred Kerf patterns or reserved for exceptional cases as `Discouraged` in the UX catalog. The tag is deterministically projected from the canonical recommendation metadata; Popup remains an available conditional positioning primitive.
 - Aligned Web Awesome Accordion, Card, Details, Callout, and Include surfaces with Kerf content-item geometry: each complete surface now has an overridable 8px logical inline margin and 8px inner padding, Accordion keeps connected items under one group margin, and Card's header/body/footer share the full inset. Tab Panel intentionally retains the roomier 16px container inset.
 - Fixed `@kerfjs/ui` Web Awesome Slider geometry: its complete interactive region now receives the shared 8px logical inline outer inset without shifting the already-aligned label.
@@ -155,15 +156,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [4.4.1] - 2026-08-26
 
-
-
 - Overhauled the README landing page: new one-line tagline, npm/size/license/TypeScript-types badges, a hoisted "Quick start" (install + `tsconfig`) right under the hook, and a jump nav (Quick start · Why kerf · Quick tour · Docs). The counter example now shows `delegate()` wiring the click handler.
 - Reworked the homepage hero to lead with the value proposition ("Reactive UI that touches only the bytes that changed"), with "Introducing Kerf" demoted to an eyebrow, a right-sized logo, tighter vertical spacing, and "Get started" as the single filled primary action ("View examples" now a secondary/outline button).
 - Redesigned the complete-apps index as a card grid — each app appears once with an animated preview, a one-line summary, and "Run live" / "Source" buttons.
 - Every complete-app page now shows "Run live" and "View source" as buttons above the demo instead of small inline text links.
 - Rewrote the site's docs pages as hand-authored consumer content (cleaner headings, no internal section numbers) rather than verbatim copies of the internal design docs.
 - Renamed the migration guides' "Side-by-side code" heading to "Section by section" (the sections stack code blocks rather than showing true columns), across all framework pages.
-
 
 - The getting-started and Markdown-editor demo animations now open on a non-blank frame — real code and a rendered heading are visible immediately instead of an empty pane.
 - Added a horizontal-scroll shadow affordance to wide tables so off-screen columns are discoverable on narrow viewports.
@@ -172,28 +170,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [4.4.0] - 2026-08-23
 
-
-
 - Reworked the router example app to run inside a fake browser window — traffic-light chrome, working Back/Forward buttons wired to `router.back()`/`forward()` via one delegated listener, and a live address bar bound to `router.route` that updates as you navigate — making the URL-driven, no-reload story clearer.
 
 - **New `kerfjs/router` subpath — a client-side router (the "postcard router").** `createRouter({ routes, mode?, base?, interceptLinks? })` returns a handle over three things kerf already has: a reactive `route` signal (`{ path, params, query, hash }`), `delegate()`-based `<a href>` link interception, and a keyed **outlet** — `router.outlet()` renders the matched route in a `data-key`ed wrapper, so kerf's keyed morph **replaces the page wholesale on a route change** (fresh DOM) and **reconciles in place on a same-route param change** (preserving scroll / focus). Route patterns are static, `:param`, a trailing `*rest` wildcard, and `*` catch-all; the handle also gives `navigate(path, { replace?, state? })`, `back()`/`forward()`, `match(pattern)` / `activeClass(pattern, className)` reactive active-link helpers, hash **or** history mode, an optional base path, and `dispose()`. Link interception is automatic (same-origin, left-click, no modifier/`target`/`download`, opt out per-link with `data-router-ignore` / `rel="external"` or globally with `interceptLinks: false`). **Deliberately scoped** — no nested layouts, data loaders, lazy routes, guards, or SSR matching; compose those with kerf primitives (`resource` for loading, an `effect` on `route` for guards). The kerf **core stays router-free** — this is opt-in and tree-shakeable, adding nothing to the main barrel until imported, and docs/1's "Not a router" is about the runtime. See [`docs/20-router.md`](docs/20-router.md).
 
 ## [4.3.0] - 2026-08-22
 
-
-
 - KF-529: refresh README for the 4.3 cycle (prep-major-release) (`909c82a`)
 - KF-530: extract promise-dialog helpers into overlay-dialogs.ts (`5d4ac38`)
 - KF-528: sync llms.txt with docs/19 + 4.3 features (`1d9c004`)
 
 - **`kerfjs/overlay` gains opt-in native top-layer backing (`native: true`).** Every overlay surface (`overlay`, `confirm`, `prompt`, `form`, `choice`, `popover`, `tooltip`) now takes `native?: boolean` (default `false`). When `true` and the engine supports it, a **modal** surface (`trap: true`) is hosted in a `<dialog>` opened with `.showModal()` — real document inerting (pointer + focus + AT) and guaranteed stacking above any `z-index` — and a **non-modal** surface (`trap: false`) uses the **Popover API** (`[popover]` + `showPopover()`). Feature-detected (`HTMLDialogElement.prototype.showModal`, `HTMLElement.prototype.showPopover`), falling back to today's plain `<div>` where unsupported, so `native: true` is always safe to pass. The `render` slot + promise API are unchanged — kerf just hosts your markup in a `<dialog>` / `[popover]`. **Opt-in on purpose:** the native elements carry UA default styles (a `::backdrop`, centering, border, padding) that kerf does **not** reset (a reset would violate the zero-CSS contract) — style the element and its `::backdrop` via `className` (`.kerf-overlay::backdrop { … }`, the stable contract); and `container` becomes a visual no-op in native mode (the top layer ignores DOM position). See [`docs/19-native-overlay-backing.md`](docs/19-native-overlay-backing.md).
-- **`bindList` virtualization gains a `content-visibility` mode.** `virtualize: { rowHeight, mode: 'content-visibility' }` is a second virtualization strategy alongside the default `mode: 'window'` (today's JS windowing). It keeps **every** row in the DOM and sets `content-visibility: auto` + `contain-intrinsic-size: 0 <rowHeight>px` on each row, so a supporting engine (Chromium, Safari 18) skips the *layout/paint* of off-screen rows while **all rows stay findable** — find-in-page (Cmd/Ctrl+F), the accessibility tree, and anchor links / `scrollIntoView` all work on any row (the exact guarantee `mode: 'window'` can't give, since it removes off-window rows from the DOM). The `mode` choice is the app's and it's about list size: pick `'content-visibility'` for medium lists where findability beats the node ceiling, keep `'window'` for very large (100k-row) lists. In this mode `rowHeight` is only the `contain-intrinsic-size` placeholder (no windowing math), `setHeight` / `observeRowHeights` are no-ops (the browser owns measurement), `minRows` is ignored (all rows already render), and no scroll listener / `ResizeObserver` is installed — while `handle.container` / `containerClass` / `containerId` still work. There is deliberately **no feature detection**: on an engine without `content-visibility` the CSS is inert, so all rows still render (correct, still findable) — only the off-screen-skip optimization is absent. See [`docs/17-list-virtualization.md`](docs/17-list-virtualization.md) §17.11.
+- **`bindList` virtualization gains a `content-visibility` mode.** `virtualize: { rowHeight, mode: 'content-visibility' }` is a second virtualization strategy alongside the default `mode: 'window'` (today's JS windowing). It keeps **every** row in the DOM and sets `content-visibility: auto` + `contain-intrinsic-size: 0 <rowHeight>px` on each row, so a supporting engine (Chromium, Safari 18) skips the _layout/paint_ of off-screen rows while **all rows stay findable** — find-in-page (Cmd/Ctrl+F), the accessibility tree, and anchor links / `scrollIntoView` all work on any row (the exact guarantee `mode: 'window'` can't give, since it removes off-window rows from the DOM). The `mode` choice is the app's and it's about list size: pick `'content-visibility'` for medium lists where findability beats the node ceiling, keep `'window'` for very large (100k-row) lists. In this mode `rowHeight` is only the `contain-intrinsic-size` placeholder (no windowing math), `setHeight` / `observeRowHeights` are no-ops (the browser owns measurement), `minRows` is ignored (all rows already render), and no scroll listener / `ResizeObserver` is installed — while `handle.container` / `containerClass` / `containerId` still work. There is deliberately **no feature detection**: on an engine without `content-visibility` the CSS is inert, so all rows still render (correct, still findable) — only the off-screen-skip optimization is absent. See [`docs/17-list-virtualization.md`](docs/17-list-virtualization.md) §17.11.
 - **Docs: `bindList` virtualization findability/a11y tradeoff is now a first-class caveat.** Off-window rows are removed from the DOM (not just hidden), so with `virtualize` set, find-in-page (Cmd/Ctrl+F), screen readers / the accessibility tree, and anchor links / `scrollIntoView` reach only the visible window. New `docs/17-list-virtualization.md` §17.10 spells out the consequences and the guidance (don't virtualize, or use `minRows` above the list length, when full findability matters more than the DOM node ceiling), and the `bindList` JSDoc + `docs/8-api-reference.md` §8.11 carry the same note. Behavior unchanged — documentation only.
 - **State-preserving row moves via `moveBefore()` (transparent optimization).** When a keyed list reorders — `each()` (snapshot and granular paths), `bindList`, and `morph()`'s keyed / positional / list-marker moves — kerf now relocates an already-connected row with `Node.prototype.moveBefore()` where the engine supports it (Chromium 133+, spreading to other engines), falling back to `insertBefore()` everywhere else. `moveBefore()` is an atomic move: the node is never disconnected, so a moved row keeps its focus, text selection, `<iframe>` document state, playing media, running CSS transitions/animations, and open `popover`/`dialog` state across the reorder — richer state than the existing focus snapshot in the reconciler could ever restore, and it needs no snapshot at all where it runs. No API change and no behavior change on engines without `moveBefore()`; the focus-preservation snapshot stays in place for them. Fresh (not-yet-connected) rows still use `insertBefore()` — only genuine moves of connected rows take the new path. See [`docs/18-state-preserving-moves.md`](docs/18-state-preserving-moves.md).
 
 ## [4.2.0] - 2026-08-20
-
-
 
 - Added a **Virtual list** example app — a 10,000-row virtualized list showcasing the companion subpaths together: `kerfjs/list` viewport virtualization (only a screenful in the DOM), `kerfjs/timing` debounced search, and `kerfjs/overlay` confirm-to-delete with a toast. Includes a live "in the DOM" counter that stays flat as you scroll all 10,000 rows.
 - Expanded the README with a companion-subpaths spotlight covering `list`, `overlay`, `async`, `scope`, `timing`, `remount`, `attach`, and `actions`, with `bindList` fixed and measured-height virtualization examples.
@@ -208,86 +200,70 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **New `kerfjs/remount` subpath** — `remountOn(parent, key, render)`, the opposite of kerf's morph-by-default: **replace** a subtree wholesale when `key` changes instead of morphing it. Names the hand-rolled `data-key={`gen-${n}`}` + `data-morph-skip` counter trick, for library-owned subtrees (a highlighted diff, a chart, an editor) that must tear down and re-initialize on fresh DOM. `key` is a signal or a thunk `() => K`; an unchanged key (including a thunk whose inputs moved but whose value stayed equal) leaves the subtree alone, so per-row reactivity inside `render` still updates in place. An optional `onMount(root)` callback runs after each (re)mount with the live subtree — the place to bind an imperative widget (`kerfjs/attach`) to the fresh DOM; returning `attach`'s disposer from it makes teardown synchronous. `remountOn` owns `parent`'s children and returns a disposer. Optional and tree-shakeable.
 - **New `kerfjs/timing` subpath** — the `let timer; clearTimeout(timer); timer = setTimeout(…)` pattern every app hand-rolls, blessed with disposer-shaped ergonomics. `debounce(fn, ms)` is trailing-edge (runs once `ms` after calls stop, latest args); `throttle(fn, ms)` is leading-plus-trailing (fires immediately, then at most once per `ms`, collapsing a burst to one trailing call). Both return a callable with `cancel()` / `flush()`. `debouncedSignal(source, ms)` is a read-only signal that trails `source` by `ms` so it composes inside the reactive graph (`computed`/`effect`/`mount`) instead of beside it. `debounce`/`throttle` are dependency-free; `debouncedSignal` pulls in signals only (no render core). Optional and tree-shakeable; tiny.
 - **New `kerfjs/scope` subpath** — tie disposers to a DOM element's lifetime, so append-heavy UIs stop leaking detached-but-subscribed effects/listeners. `disposeScope(el)` returns a WeakMap-keyed, accumulating scope whose `add(disposer)` (plus convenience `mount` / `effect` / `delegate` wrappers that register their own disposer) collects teardown; `dispose()` runs it all best-effort and idempotently. `disposeSubtree(root)` sweeps a subtree before removal; `observeRemovals(root)` installs one `MutationObserver` that auto-disposes on removal. No module-level mutable state. Optional and tree-shakeable.
-- **New `kerfjs/overlay` subpath** — the blessed modal/overlay + dismiss manager that every real kerf app hand-rolls. `overlay(content, options?)` appends a wrapper, `mount()`s content inside it (owning the disposal), wires dismissals (Escape / backdrop / outside-click, with `outsideIgnore`), a focus trap (`role="dialog"` / `aria-modal`, Tab wrap-around, restore-focus-on-close), and returns `{ el, close(result?), result }`. `confirm(message, options?)` is a promise-based `window.confirm` replacement, and `prompt(message, options?)` → `Promise<string | null>` its `window.prompt` counterpart (both globals are no-ops in Tauri webviews); `form(fields, options?)` → `Promise<Record<string, string> | null>` collects a two-or-three-field dialog. `choice<R>(message, actions, options?)` → `Promise<R | null>` is the **N-way** sibling of `confirm` — one button per action resolves that action's `value` (or `null` on dismissal), and `options.defaultValue` makes **Enter** (anywhere in the dialog) resolve a default action (the "global Enter-to-confirm" model) without holding the overlay handle. `prompt`/`form` submit on Enter and take an inline `validate`; all auto-escape their content. `confirm` / `prompt` / `form` also accept a **`render` slot option** for design-system teams — return your own markup and spread the provided `ok`/`cancel` (+ `input`/`error`) wiring onto it; kerf keeps owning the promise, `validate`, Enter-submit, dismiss, focus-trap, and focus-restore, so you adopt the batteries-included dialogs without a CSS rewrite. `popover(anchor, content, options?)` → `OverlayHandle` is a non-modal **anchored** overlay: it positions the content relative to `anchor` (below by default, flipping above on viewport overflow, clamped horizontally), defaults to dismiss-on-outside with the anchor exempt, and repositions on scroll / resize. `popover`'s placement core is also exported standalone: **`positionAnchored(el, anchor, options?)`** (one-shot) and **`autoReposition(el, anchor, options?)`** (keeps an element positioned on scroll/resize, returns a disposer) position *your own* element with no overlay lifecycle. **`tooltip(anchor, content, options?)`** is a hover/focus-triggered, non-modal, auto-hiding tooltip built on them. `toast(content, options?)` now returns a **`ToastHandle` (`{ el, dismiss }`)** instead of a bare dismiss function, so callers can inspect the node, wire an action button, or run entrance/exit transitions; new options: `mode: 'replace'` (collapse a rapid sequence to the latest) with `collapse: 'fade'` (default — run the prior toast's exit transition, good for a stacking region) or `'instant'` (remove it synchronously, what a single centered slot wants so messages never cross-fade in place), `variant` (`'info'`/`'success'`/`'warning'` → a `${className}--${variant}` accent class), `enterClass` (added on the next animation frame for a CSS entrance) and `exitClass` + `exitDuration` (CSS owns the exit — on dismiss the `enterClass` is **removed** so `exitClass` needn't out-specify it, and a symmetric single-class fade works with just `enterClass` + `exitDuration`; the node is removed after the delay). `dismiss({ instant: true })` removes the toast **synchronously** (skipping the exit transition), and `mode: 'replace'` `collapse: 'instant'` also force-removes a toast that is already mid-fade — so an action button that dismisses itself and shows a replacement in a single centered slot doesn't cross-fade the two. **Breaking (beta):** `toast()`'s return type changed from `() => void` to `{ el, dismiss }` — call `toast(...).dismiss()` or destructure `{ dismiss }`. Structural only — kerf ships no CSS. Optional and tree-shakeable; shares the core with the main barrel via code-splitting.
+- **New `kerfjs/overlay` subpath** — the blessed modal/overlay + dismiss manager that every real kerf app hand-rolls. `overlay(content, options?)` appends a wrapper, `mount()`s content inside it (owning the disposal), wires dismissals (Escape / backdrop / outside-click, with `outsideIgnore`), a focus trap (`role="dialog"` / `aria-modal`, Tab wrap-around, restore-focus-on-close), and returns `{ el, close(result?), result }`. `confirm(message, options?)` is a promise-based `window.confirm` replacement, and `prompt(message, options?)` → `Promise<string | null>` its `window.prompt` counterpart (both globals are no-ops in Tauri webviews); `form(fields, options?)` → `Promise<Record<string, string> | null>` collects a two-or-three-field dialog. `choice<R>(message, actions, options?)` → `Promise<R | null>` is the **N-way** sibling of `confirm` — one button per action resolves that action's `value` (or `null` on dismissal), and `options.defaultValue` makes **Enter** (anywhere in the dialog) resolve a default action (the "global Enter-to-confirm" model) without holding the overlay handle. `prompt`/`form` submit on Enter and take an inline `validate`; all auto-escape their content. `confirm` / `prompt` / `form` also accept a **`render` slot option** for design-system teams — return your own markup and spread the provided `ok`/`cancel` (+ `input`/`error`) wiring onto it; kerf keeps owning the promise, `validate`, Enter-submit, dismiss, focus-trap, and focus-restore, so you adopt the batteries-included dialogs without a CSS rewrite. `popover(anchor, content, options?)` → `OverlayHandle` is a non-modal **anchored** overlay: it positions the content relative to `anchor` (below by default, flipping above on viewport overflow, clamped horizontally), defaults to dismiss-on-outside with the anchor exempt, and repositions on scroll / resize. `popover`'s placement core is also exported standalone: **`positionAnchored(el, anchor, options?)`** (one-shot) and **`autoReposition(el, anchor, options?)`** (keeps an element positioned on scroll/resize, returns a disposer) position _your own_ element with no overlay lifecycle. **`tooltip(anchor, content, options?)`** is a hover/focus-triggered, non-modal, auto-hiding tooltip built on them. `toast(content, options?)` now returns a **`ToastHandle` (`{ el, dismiss }`)** instead of a bare dismiss function, so callers can inspect the node, wire an action button, or run entrance/exit transitions; new options: `mode: 'replace'` (collapse a rapid sequence to the latest) with `collapse: 'fade'` (default — run the prior toast's exit transition, good for a stacking region) or `'instant'` (remove it synchronously, what a single centered slot wants so messages never cross-fade in place), `variant` (`'info'`/`'success'`/`'warning'` → a `${className}--${variant}` accent class), `enterClass` (added on the next animation frame for a CSS entrance) and `exitClass` + `exitDuration` (CSS owns the exit — on dismiss the `enterClass` is **removed** so `exitClass` needn't out-specify it, and a symmetric single-class fade works with just `enterClass` + `exitDuration`; the node is removed after the delay). `dismiss({ instant: true })` removes the toast **synchronously** (skipping the exit transition), and `mode: 'replace'` `collapse: 'instant'` also force-removes a toast that is already mid-fade — so an action button that dismisses itself and shows a replacement in a single centered slot doesn't cross-fade the two. **Breaking (beta):** `toast()`'s return type changed from `() => void` to `{ el, dismiss }` — call `toast(...).dismiss()` or destructure `{ dismiss }`. Structural only — kerf ships no CSS. Optional and tree-shakeable; shares the core with the main barrel via code-splitting.
 - **New `kerfjs/actions` subpath** — the blessed delegated action-table helper. `action(value)` returns a `data-action` `AttrSpec` (a thin specialization of `attr()`); `delegateActions(root, eventType, table, options?)` wires a whole table of `data-action` handlers with one delegated listener (built on `delegate()`) and returns a disposer. Formalizes the most-reinvented idiom in real kerf apps — one `attr('data-action', …)` table as the single source of truth for both the JSX attribute and the delegate dispatch. Optional and tree-shakeable; adds nothing to the main barrel.
 
 ## [4.1.1] - 2026-08-14
-
-
 
 - Added a CDN / importmap quickstart (`docs/6-jsx-runtime.md` §6.11.1) covering three no-install ways to load kerf from an ESM CDN: a direct `esm.sh` import, and jsDelivr / unpkg behind an importmap that also maps `@preact/signals-core`. Explains why a raw `dist/*.js` path fails (its unrewritten bare `@preact/signals-core` import won't resolve in the browser) and recommends pinning to a major version.
 - Updated the README no-build example to use version-pinned CDN URLs (`kerfjs@4`) and noted that jsDelivr / unpkg need an importmap while esm.sh works with a direct import.
 
 ## [4.1.0] - 2026-07-31
 
-
-
 - ESLint 10 is now supported: `eslint-plugin-kerfjs` declares `peerDependencies.eslint` as `^9.0.0 || ^10.0.0`, and every named major is exercised by the rule suite in CI.
 - The plugin now runs its rule suite against each supported ESLint major via `npm run test:eslint-matrix`, which also fails if the declared peer range, the tested set, and the CI matrix disagree — or if the range is left open-ended.
-
 
 - **ESLint 8 is no longer supported by `eslint-plugin-kerfjs`.** The package is ESM-only and ESLint 8 resolves `.eslintrc` plugins with `require()`, so `extends: ["plugin:kerfjs/…"]` could never load it.
 - **Legacy `.eslintrc` configuration is documented as unsupported.** Use flat config (`eslint.config.js`); the `legacy-recommended` export remains in the package but is unreachable through any config system and should be treated as deprecated.
 
-
 - Generated Hot Sheet skill and rule files no longer hardcode a machine's local API port or shared secret. The curl fallbacks read `$HOTSHEET_PORT` / `$HOTSHEET_SECRET` from `.hotsheet/settings.local.json` and `.hotsheet/secret.json` instead, with `.hotsheet/settings.json` as the fallback for older projects.
 - A new `npm run check:audit` gate runs `npm audit --omit=dev --audit-level=high` against the published dependency tree and is wired into the pre-push `check:full` gate.
-
 
 - Test tooling moved to vitest 4 and ESLint 10; coverage thresholds were recalibrated to 98.5% branches / 99.5% statements (lines and functions stay at 100%) after vitest 4's sharper AST-based coverage mapping resolved seventeen previously-miscredited defensive branches.
 - Removed the `hs-m` marketing-ticket skill and Cursor rule.
 
 ## [4.0.0] - 2026-07-28
 
-
-
 - `draggable`, `spellCheck`, and `contentEditable` no longer accept booleans — they are enumerated HTML attributes, so write the keyword string (`draggable="true"`, `spellCheck="false"`). The boolean forms rendered markup that meant the opposite of what was written; real boolean attributes like `hidden`/`checked`/`disabled` are unchanged.
 - `<select value>` / `<textarea value>` (and their `defaultValue` forms) no longer typecheck — neither element has a `value` content attribute, so kerf was emitting markup no browser reads. Use `<option selected>` and `<textarea>{draft}</textarea>`.
-- Lowercase `autofocus` no longer accepts `"true"` / `"false"` — it is a real boolean attribute, so `autofocus="false"` turned autofocus *on*. Use `autofocus={false}` or omit it.
-
+- Lowercase `autofocus` no longer accepts `"true"` / `"false"` — it is a real boolean attribute, so `autofocus="false"` turned autofocus _on_. Use `autofocus={false}` or omit it.
 
 - `href="javascript:void(0)"` and its five sibling spellings are no longer dropped by the URL screen. Dropping the `href` unmade the anchor — it lost `:link` styling, keyboard focus, and its pointer cursor. Matching is against the whole normalized value, so nothing can ride along after an inert body.
 - `defaultSelected` rendered as `defaultselected`, an attribute no browser reads, so the option it named was never pre-selected. It now correctly emits `selected`.
-
 
 - Typed JSX gained a wide set of modern attributes: globals `inert`, `popover`, `nonce`, `part`/`exportparts`, `enterKeyHint`, `translate`, `autocorrect`, and the full microdata family; per-element `<button popoverTarget/popoverTargetAction/command>`, `<input popoverTarget/popoverTargetAction>`, `<form rel>`, `<source width/height>`, and `writingsuggestions`.
 - `<button command>` is now typed to the spec keywords (`show-modal`, `close`, `request-close`, `toggle-popover`, `show-popover`, `hide-popover`) plus any `--custom` command, catching a custom command written without its required `--` prefix.
 - `<a download>` and `<area download>` accept the bare boolean form as well as a string filename, so `<a href="/report.pdf" download>` compiles.
 
-
 - The advertised bundle size is corrected everywhere: ~12 KB min+gzip for a realistic import, ~13 KB with `arraySignal` (previously stated as ~11/~12 KB, and ~6.1 KB in the Cursor rules). Every migration page's delta row was recomputed against the new figure.
 - The JSX runtime doc gained a section on enumerated vs. boolean attributes, and the API reference now records where the JSX types come from (WHATWG HTML Living Standard + SVG 2, not another framework's property table).
 - The dev-warning sections in the dev-warnings doc were renumbered by family so the `11.2.N` headings run in document order; cross-references elsewhere in the docs were updated to match.
 
-
-- The bundle-size check now gates the *prose* as well as the build: every place the docs advertise a size is matched against the measured figure, and a reworded claim that stops matching fails rather than going silently unchecked.
+- The bundle-size check now gates the _prose_ as well as the build: every place the docs advertise a size is matched against the measured figure, and a reworded claim that stops matching fails rather than going silently unchecked.
 - New repo checks wired into `npm run check`: `check:docs:dev-warns` (the dev-warning doc and `ENV_NAME` must name the same set, with monotonic section numbers), `check:design-rule-5` (every top-level `let` in `src/` must be accounted for by the documented rule), and `check:skills` (a skill file restating a threshold its owner disagrees with fails).
 
 ## [3.0.0] - 2026-07-27
 
-
-
 - **kerf no longer infers development mode — add one line to your entry to keep the dev diagnostics.**
 
   ```js
-  if (import.meta.env.DEV) await import('kerfjs/dev');                   // Vite
-  if (process.env.NODE_ENV !== 'production') await import('kerfjs/dev'); // webpack / Node
+  if (import.meta.env.DEV) await import("kerfjs/dev"); // Vite
+  if (process.env.NODE_ENV !== "production") await import("kerfjs/dev"); // webpack / Node
   ```
 
   Without it you get production shape: no dev warnings, no read-only `defineStore` `get()`
   snapshot, and a screened dangerous URL warns-and-drops instead of throwing. Nothing else
   changes, and if you never used the dev warnings you get a smaller bundle for free.
 
-  **Why it changed.** kerf inferred its own dev/prod mode by reading `globalThis.process?.env?.NODE_ENV`. Bundlers substitute the *bare* `process.env.NODE_ENV` token and never create a `globalThis.process` object for browser targets, so that read was `undefined`, `undefined !== 'production'` was `true`, and every production browser build silently took the development path. Consequences that were shipping: every `defineStore` `get()` returned a deep read-only `Proxy` (an allocation on every store read), a screened `javascript:`/`data:` URL **threw** instead of the documented warn-and-drop, and the always-on list-key warnings printed to production consoles. Server/Node builds, where `process` exists, were unaffected.
+  **Why it changed.** kerf inferred its own dev/prod mode by reading `globalThis.process?.env?.NODE_ENV`. Bundlers substitute the _bare_ `process.env.NODE_ENV` token and never create a `globalThis.process` object for browser targets, so that read was `undefined`, `undefined !== 'production'` was `true`, and every production browser build silently took the development path. Consequences that were shipping: every `defineStore` `get()` returned a deep read-only `Proxy` (an allocation on every store read), a screened `javascript:`/`data:` URL **threw** instead of the documented warn-and-drop, and the always-on list-key warnings printed to production consoles. Server/Node builds, where `process` exists, were unaffected.
 
   Removing the inference also shrinks production bundles by **~4.7 KB min+gzip (27%)** — a realistic import (`signal`/`computed`/`effect`/`batch`/`mount`/`each`/`delegate`) goes from 16.91 KB to **12.24 KB**. Previously the dev-warning modules were imported unconditionally by `mount()`/`each()` and gated at runtime, so they shipped to production regardless of build mode and no amount of tree-shaking could reclaim them. With the dev entry absent they are unreachable, and the `import()` statement itself is eliminated — the chunk is never emitted, let alone fetched.
 
   `globalThis.KERF_DEV` is no longer consulted — not importing the dev entry is now the (compile-time) way to opt out. One ordering note: `signal()` picks its constructor at creation time, so put the import first if you rely on the untracked-signal warning.
 
-- The `KERF_DEV_WARN_*` diagnostics no longer consult `NODE_ENV` or `globalThis.KERF_DEV` at all. Whether they run is decided in exactly one place: whether you imported `kerfjs/dev`. The previous release stopped kerf's core from inferring dev mode but left a second, inherited gate inside each warner, so a Node/SSR consumer who *deliberately* installed the diagnostics under `NODE_ENV=production` got silence — and `globalThis.KERF_DEV = false` still silenced warnings the consumer had explicitly opted into. Both are gone; each warning is now gated only by its own env var. If you were using `globalThis.KERF_DEV` to turn diagnostics off, remove the dev import instead (which is also what sheds the ~4.7 KB from your bundle).
+- The `KERF_DEV_WARN_*` diagnostics no longer consult `NODE_ENV` or `globalThis.KERF_DEV` at all. Whether they run is decided in exactly one place: whether you imported `kerfjs/dev`. The previous release stopped kerf's core from inferring dev mode but left a second, inherited gate inside each warner, so a Node/SSR consumer who _deliberately_ installed the diagnostics under `NODE_ENV=production` got silence — and `globalThis.KERF_DEV = false` still silenced warnings the consumer had explicitly opted into. Both are gone; each warning is now gated only by its own env var. If you were using `globalThis.KERF_DEV` to turn diagnostics off, remove the dev import instead (which is also what sheds the ~4.7 KB from your bundle).
 
-
-- **New:** `each()` accepts an options object — `each(items, render, { cacheKey, key })` — and `key` gives a list a **stable identity**. Without one a list is identified by its position among the `each()` calls in a render, so adding or removing a conditional list above it made kerf rebuild it from scratch: rows lost their DOM nodes, and with them focus, scroll position and in-progress IME composition. Keying a list removes that dependency; because a keyed list doesn't occupy a positional slot, keying just the *conditional* list usually stabilizes its siblings too. The existing three-argument `each(items, render, cacheKey)` form is unchanged. In development kerf now warns once per list when it detects such a shift and names the fix.
+- **New:** `each()` accepts an options object — `each(items, render, { cacheKey, key })` — and `key` gives a list a **stable identity**. Without one a list is identified by its position among the `each()` calls in a render, so adding or removing a conditional list above it made kerf rebuild it from scratch: rows lost their DOM nodes, and with them focus, scroll position and in-progress IME composition. Keying a list removes that dependency; because a keyed list doesn't occupy a positional slot, keying just the _conditional_ list usually stabilizes its siblings too. The existing three-argument `each(items, render, cacheKey)` form is unchanged. In development kerf now warns once per list when it detects such a shift and names the fix.
 
 - **`kerfjs/dev` now exports `enableWarnings()`** — and it fixes a defect: until now, none of the
   `KERF_DEV_WARN_*` diagnostics could be switched on in a browser at all. Every one of them read `globalThis.process.env`, which does not exist in a browser realm — and a bundler `define` cannot reach it either, because the read goes through `globalThis.process` into a local binding rather than the substitutable `process.env.X` token. So in a Vite/webpack dev server, the environment where these warnings are most wanted, the entire opt-in family was permanently and silently off. Only Node/SSR (and kerf's own vitest suite, which is why nothing caught it) could turn any of them on.
@@ -296,8 +272,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
   ```js
   if (import.meta.env.DEV) {
-    const dev = await import('kerfjs/dev');
-    dev.enableWarnings({ staleBinding: true, narrowSet: true, invariants: 'throw' });
+    const dev = await import("kerfjs/dev");
+    dev.enableWarnings({
+      staleBinding: true,
+      narrowSet: true,
+      invariants: "throw",
+    });
   }
   ```
 
@@ -311,8 +291,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - New opt-in dev warning `KERF_DEV_WARN_LIST_REBIND=1`: fires (once per list) when an `each()` list's container is rebuilt by the morph — an ancestor's tag changed across renders, so the subtree was replaced and the list self-healed by re-binding and repopulating. The recovery is correct but discards row DOM state (focus, scroll, IME, imperative listeners); the warning names the list and points at keeping ancestor tags stable. Follows the standard `KERF_DEV_WARN_*` family rules: off by default, dev-mode only, zero production cost.
 
-
-- `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` now tells you what it can and cannot see. The warning picks its machinery when a signal is *created*, so it only covers signals created after `kerfjs/dev` is installed — and because static imports are hoisted above a top-level `await import('kerfjs/dev')`, the module-scope signals it most wants to catch are usually created first. Previously that failed silently: you set the env var, saw nothing, and concluded your code was clean. Opting in now prints the coverage boundary once, along with the fix (make `import 'kerfjs/dev'` the first static import of a dev-only entry file). The boundary itself can't be removed — `Signal.prototype`'s `value` accessor is non-configurable, so already-created signals can't be retro-fitted without kerf keeping a registry of every signal, which production would pay for.
+- `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` now tells you what it can and cannot see. The warning picks its machinery when a signal is _created_, so it only covers signals created after `kerfjs/dev` is installed — and because static imports are hoisted above a top-level `await import('kerfjs/dev')`, the module-scope signals it most wants to catch are usually created first. Previously that failed silently: you set the env var, saw nothing, and concluded your code was clean. Opting in now prints the coverage boundary once, along with the fix (make `import 'kerfjs/dev'` the first static import of a dev-only entry file). The boundary itself can't be removed — `Signal.prototype`'s `value` accessor is non-configurable, so already-created signals can't be retro-fitted without kerf keeping a registry of every signal, which production would pay for.
 
 - An `each()` of `<tr>` written directly inside `<table>` now fails with a clear error instead of silently duplicating rows: the HTML parser inserts a `<tbody>` around the rows, which kerf cannot bind through. The message names both tags and shows the supported shape (`<table><tbody>{each(...)}</tbody></table>`). Previously this also mis-reported the rows as missing `data-key`.
 
@@ -320,8 +299,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Toolchain: the repo now type-checks with the native **TypeScript 7** compiler across every gate (`typecheck`, the dist `.d.ts` typing gates, the docs code-block compile — a full-repo `tsc --noEmit` now takes ~0.3 s), with `typescript@6` (the JS-API bridge release) retained for tsup's `.d.ts` emit and typescript-eslint, which still require the JS compiler API. `@typescript-eslint/*` bumped to 8.65. No shipped-code changes — `dist/` output is unaffected.
 
-
-- Fixed: passing a **function** as an `each()` item through an `arraySignal` insert/update (an unusual mistake, but functions are valid `WeakMap` keys so the per-item cache silently accepted them) rendered the row and then threw `each(): items must be objects…` on a *later, unrelated* re-render — far from the cause. The granular path now enforces the same objects-only item contract the snapshot path does, so the error is thrown on the render the offending mutation triggered, naming the type and index. Primitive items already behaved this way; functions now match.
+- Fixed: passing a **function** as an `each()` item through an `arraySignal` insert/update (an unusual mistake, but functions are valid `WeakMap` keys so the per-item cache silently accepted them) rendered the row and then threw `each(): items must be objects…` on a _later, unrelated_ re-render — far from the cause. The granular path now enforces the same objects-only item contract the snapshot path does, so the error is thrown on the render the offending mutation triggered, naming the type and index. Primitive items already behaved this way; functions now match.
 
 - `arraySignal.update(i, fn)` now works when `fn` mutates the row object and returns it (not only when it returns a fresh object). Previously such a same-ref update rendered correctly in one list but left every other view of the same signal — a second list, a second `mount()`, a `filter()`ed plain-array view — permanently stale, and was lost outright when the update was batched with a selection change or a `replace()`. kerf now tracks a per-item content version so the change reaches every consumer. Returning a fresh object remains the idiomatic style; both are supported. (Fixed in the same line of work: the per-item version tracking briefly made `arraySignal.update()` throw on a signal of primitives — `arraySignal<number>` used as a plain signal — because a primitive can't key the internal version map; primitive items are now simply skipped, since only object rows are ever memoized.)
 
@@ -333,13 +311,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Fixed: an `arraySignal.update()` that mutated a row object in place (returning the same reference) could be silently reverted to its old content by the next unrelated re-render. The granular update path now keeps kerf's per-row HTML cache in sync with what it rendered, so the two never disagree. (Immutable updates — returning a fresh object — were unaffected, and remain the recommendation.)
 
-- Fixed: showing an empty conditionally-rendered `each()` list in the same batch as an update to a *sibling* list could empty the sibling entirely — it rendered zero rows. When the conditional list reappeared, its list-marker comment landed next to the sibling's, and the diff overwrote the sibling marker's internal id with the reappearing one's, so the sibling's binding could no longer find its own marker. Marker comments (kerf's internal list and binding anchors) now pair only with the identical marker, never with a different one that happens to be the same kind. Ordinary comments in your markup are unaffected.
+- Fixed: showing an empty conditionally-rendered `each()` list in the same batch as an update to a _sibling_ list could empty the sibling entirely — it rendered zero rows. When the conditional list reappeared, its list-marker comment landed next to the sibling's, and the diff overwrote the sibling marker's internal id with the reappearing one's, so the sibling's binding could no longer find its own marker. Marker comments (kerf's internal list and binding anchors) now pair only with the identical marker, never with a different one that happens to be the same kind. Ordinary comments in your markup are unaffected.
 
 - Fixed: when an element rendered by a condition came back, the diff could pair it with an unrelated sibling that happened to have the same tag, and then whatever protects that sibling's contents kept the wrong contents alive inside it. A `data-morph-skip` widget **swallowed** the reappearing element — its content never rendered — and the widget was duplicated, which for a library-owned subtree (an editor, a chart, a terminal) means a second live instance attached to a node the library has no reference to. A `data-morph-preserve` child ended up under the foreign host and appeared twice. A bound hole's text leaked into the reappearing element and rendered twice. Three rules now gate that pairing: an element with an `id`/`data-key` is only ever matched to a live element with the same key; a `data-morph-skip` element only ever matches another one (so a library-owned subtree is never adopted as a stand-in, whether or not you use keys); and a comment anchoring kerf's own state only matches an anchor of the same kind. Ordinary elements without a key still match positionally exactly as before.
 
-- Fixed: when the number of `each()` calls in a render changed — a conditional list appearing or disappearing — a *surviving* list could render the departed list's rows, or render its own rows inside the wrong container. Lists without a `key` are identified by their position among the `each()` calls, and both the per-item HTML cache and the live list binding were being read as belonging to whichever list now held that position. Two lists over the same collection hit each other's cache exactly, so nothing could detect it from the data. A shift now discards that state and re-renders, which is what the documentation already described it as costing: a rebuild, never wrong output. Lists given a `key` are unaffected, and a render that doesn't change the call count is unaffected. One related improvement falls out: an unrelated list no longer loses its row nodes when a nested `each()` shifts the count.
+- Fixed: when the number of `each()` calls in a render changed — a conditional list appearing or disappearing — a _surviving_ list could render the departed list's rows, or render its own rows inside the wrong container. Lists without a `key` are identified by their position among the `each()` calls, and both the per-item HTML cache and the live list binding were being read as belonging to whichever list now held that position. Two lists over the same collection hit each other's cache exactly, so nothing could detect it from the data. A shift now discards that state and re-renders, which is what the documentation already described it as costing: a rebuild, never wrong output. Lists given a `key` are unaffected, and a render that doesn't change the call count is unaffected. One related improvement falls out: an unrelated list no longer loses its row nodes when a nested `each()` shifts the count.
 
-- Fixed: a row added to an `each()` list could land in the wrong place whenever the list wasn't the last thing inside its parent. A list ends at its last row, but kerf was looking for the next *element* after it and skipping everything else on the way — so static content following the list (a footer row, a totals line, an "add item" control) got jumped, and a new row appeared after it instead of before. The same skip crossed a neighboring list's internal anchor: with two `each()` lists in one parent, rows from the first could be placed inside the second's region, and when both lists started empty their rows came out **in the wrong order** — the second list's rows rendered first. Both were correct on the initial paint and only went wrong on a later update, which made them read as intermittent. Lists now anchor on the next node of any kind, so a list's rows always stay within its own region.
+- Fixed: a row added to an `each()` list could land in the wrong place whenever the list wasn't the last thing inside its parent. A list ends at its last row, but kerf was looking for the next _element_ after it and skipping everything else on the way — so static content following the list (a footer row, a totals line, an "add item" control) got jumped, and a new row appeared after it instead of before. The same skip crossed a neighboring list's internal anchor: with two `each()` lists in one parent, rows from the first could be placed inside the second's region, and when both lists started empty their rows came out **in the wrong order** — the second list's rows rendered first. Both were correct on the initial paint and only went wrong on a later update, which made them read as intermittent. Lists now anchor on the next node of any kind, so a list's rows always stay within its own region.
 
 - Fixed: an `each()` list inside an `<svg>` whose row markup contained an apostrophe (or anything else the serializer writes back differently) failed to mount at all, with a self-contradictory error. Also fixed: `each({ key })` now validates the key, so a key containing an HTML comment terminator can no longer break out of the list's internal marker and put markup in the page.
 
@@ -351,7 +329,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Fixed: a controlled `checked` / `value` on an `each()` row's own top-level element could stay visibly stale after the user had interacted with it — the row reconciler's attribute-only fast path wrote the attribute without syncing the live property, so whether the control obeyed your data depended on which internal route the update happened to take.
 
-- Fixed: when a conditionally-rendered `each()` list is added or removed, a sibling list could render the *other* list's rows — a batched "hide one list and push to another" applied the queued update to the wrong list's DOM. Lists now verify which data a pending update belongs to before applying it, and rebuild from their own items when it doesn't match.
+- Fixed: when a conditionally-rendered `each()` list is added or removed, a sibling list could render the _other_ list's rows — a batched "hide one list and push to another" applied the queued update to the wrong list's DOM. Lists now verify which data a pending update belongs to before applying it, and rebuild from their own items when it doesn't match.
 
 - Fixed: `each()` rows inside an `<svg>` root were re-parsed in the HTML namespace on every update, so rows added or structurally changed after the first render were invisible in the browser — the initial picture looked right, which made it read as a rendering flake. Row parsing now follows the list parent's namespace (rows under `<foreignObject>` correctly stay HTML).
 
@@ -359,67 +337,51 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Fixed: anything sitting between a keyed `each()` list's anchor and its rows — a node injected imperatively into the list region — could make a conditional sibling's removal reorder the list, landing a trailing sibling ahead of the rows. A list's row region (anchor through last row) is now treated as one unit by the diff: it moves whole, the diff's cursor steps over it whole, and injected nodes inside it travel along keeping their position relative to the rows.
 
-- A conditional sibling *inside* a keyed `each()` list's parent — a header row that comes and goes above the list — no longer costs the list's rows their DOM identity. The morph now recognizes the list's marker when a sibling shifts it, moving the marker and its rows up as a single unit instead of rebuilding the list, so row nodes, focus, and the caret survive the toggle. (An ancestor tag change, or a same-tag sibling that positionally takes the container's place, still rebuilds the list — give the list's own container a stable `id`/`data-key` if its rows need to survive that.)
+- A conditional sibling _inside_ a keyed `each()` list's parent — a header row that comes and goes above the list — no longer costs the list's rows their DOM identity. The morph now recognizes the list's marker when a sibling shifts it, moving the marker and its rows up as a single unit instead of rebuilding the list, so row nodes, focus, and the caret survive the toggle. (An ancestor tag change, or a same-tag sibling that positionally takes the container's place, still rebuilds the list — give the list's own container a stable `id`/`data-key` if its rows need to survive that.)
 
 - Fixed: a conditional sibling that shared or positionally shadowed a keyed `each()` list's container could strand the list's rows and then render a duplicate copy of them (e.g. a header `<li>` toggled inside the list's `<ul>`, or a same-tag banner `<ul>` before the list container). The morph can separate the list's marker comment from its still-attached rows; the self-heal now removes any such still-live stranded rows before repopulating, so recovery replaces the rows rather than duplicating them.
 
 ## [2.0.1] - 2026-07-23
 
-
-
 - Fixed a `morph()` bug where static text siblings of a fine-grained bound text hole were dropped after a structural re-render (e.g. `<div>{label} / static</div>` collapsing to just the label).
-
 
 - New animated coding-session demo on the getting-started page: watch the canonical counter get typed out, served, clicked in a browser, and live-edited into a todo list.
 - Added an animated architecture diagram and a link to the docs site from the README.
 
 ## [2.0.0] - 2026-07-23
 
-
-
 - `delegateCapture()` now uses `closest()`-style walk-up matching like `delegate()`, passing the matched ancestor to the handler; pass `{ match: 'direct' }` (new `DelegateOptions`) to restore exact-element matching.
 - The dangerous-URL screen (`javascript:`, `vbscript:`, script-executing `data:` URLs) now throws an error in development instead of only warning. Production behavior is unchanged: warn and drop the attribute.
-
 
 - New `kerfjs/html` tagged template: author kerf UIs with no build step (CDN / importmap, no JSX transform) with runtime semantics identical to JSX — signal holes become fine-grained bindings, attributes and text are escaped and URL-screened the same way.
 - New no-build example app, **live-poll**, served exactly as authored — an importmap plus one `html`-templated module, with view-source showing the app.
 - Added `<filter>` to the typed JSX intrinsic elements, so SVG filters compile in JSX-authored code.
 - Fully-bound mounts are now a documented, test-pinned guarantee: a render that reads no signal `.value` runs exactly once, forever — every update is a direct per-node write.
 
-
 - Controlled form state now survives user interaction: `checked`, `value`, and `selected` DOM properties are synced when the reconciler mutates those attributes, so a clicked checkbox or typed-into input no longer ignores later updates.
 - Fixed stale fine-grained bindings after `arraySignal.update()`: in-place row updates now re-wire bindings whose signal instance changed, instead of leaving effects reading the old row object forever.
-
 
 - New runtime dev-mode override: set `globalThis.KERF_DEV = false` (or `true`) to control dev mode without a bundler — CDN/importmap apps are no longer stuck in dev mode in production.
 - Two new opt-in dev warnings: `KERF_DEV_WARN_STALE_BINDING` flags bindings that silently go stale on the byte-equal fast path, and `KERF_DEV_WARN_VALUE_ONLY_RERENDER` flags re-renders whose only changes could have been fine-grained bindings.
 - `defineStore`'s dev-mode `get()` snapshot now returns a deep read-only proxy instead of freezing the live state: nested mutations like `get().nested.x = 1` are caught too, and they throw a descriptive `TypeError` rather than failing silently.
-
 
 - Docs repositioned around the "values bind, structure re-renders" idiom as the primary way to render dynamic values, across the overview, reactivity guide, and AI assistant configs.
 - New guide covering the no-build authoring path and example app, plus a documentation-wide accuracy pass (delegate capture semantics, `effect()` cleanup returns, URL-screen behavior, and more).
 
 ## [1.0.2] - 2026-07-22
 
-
-
 - Fixed the row-selector demo animation 404ing on the published site — the missing SVG capture is now generated and committed.
 
 ## [1.0.1] - 2026-07-22
-
-
 
 - KF-329: pin release-workflow npm upgrade to npm@11 — npm@12 needs Node ≥ 22.22.2, above the 22.21.0 pin (`c54559f`)
 
 ## [1.0.0] - 2026-07-22
 
-
-
 - **Fine-grained signal bindings** — pass a signal or `computed` directly into a JSX attribute or text hole (e.g. `class={computed(...)}` or `{sig}`) inside `mount()`, and that one node updates on signal change without re-running `render()` or walking the list reconciler. Opt-in per hole and non-breaking; works in static content and inside `each()` rows on both the snapshot and `arraySignal` reconcile paths, with binding effects correctly wired, carried, and disposed across row insert/update/remove/move.
 - Bound values get the same safety treatment as static ones: URL screening and `SafeHtml`/`raw()` unwrapping now apply to fine-grained bound attributes.
 - New interactive benchmark playground (`npm run bench:serve`) to explore kerf by hand in the standard 1k-rows benchmark app.
 - New **row-selector** example app and a "Fine-grained bindings" section in the reactivity demo, both showing select-row updates with zero render re-runs and zero list reconciles.
-
 
 - Hardened the dangerous-URL screen: scheme detection now normalizes away C0 control characters, DEL, and leading whitespace, so obfuscations like `java	script:` or a NUL before the colon can no longer slip `javascript:`/`vbscript:` URLs past the check.
 - Attribute names are now validated — malformed names (e.g. from spreading attacker-controlled keys into JSX) throw instead of breaking out of the open tag, and inline `on*` event handlers are rejected on both the static and signal-bound attribute paths, closing an XSS vector where a bound `onclick` would have installed a live handler.
@@ -427,23 +389,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Documented the trusted-input bridges (`toElement()`, `morph()` with string/Element templates, `<iframe srcdoc>`) that bypass escaping by design, and the `raw()`/`SafeHtml` trust boundary.
 - Hardened the release pipeline: least-privilege OIDC scoping per job, SHA-pinned GitHub Actions with automated Dependabot bumps, and a token-holding publish job that runs with `--ignore-scripts` and no build tools.
 
-
 - Reduced the per-row create cost of fine-grained row bindings from ~1.65× to ~1.15× via lazy row wiring — the common single-root-binding case now needs no subtree walk or extra allocations.
 - Published cross-framework benchmark numbers now come from the official upstream krausest js-framework-benchmark run (kerf is a merged upstream entry), replacing stale local-machine measurements.
-
 
 - README refreshed for the 1.0 release: fine-grained updates and safe-by-default escaping promoted to headline features, and the status line flipped from "Pre-1.0 — API may evolve" to stable 1.0.
 - Fine-grained bindings documented across all consumer and AI-assistant surfaces (reactivity docs, API reference, usage guide, Cursor rules, Claude skill).
 
-- **Signposted the raw HTML/SVG → DOM bridges as trusted-input only.** `toElement()`, `morph()` (with a string/Element template), and the `<iframe srcdoc>` attribute bypass kerf's escaping/URL-screening by design — they're the same trust model as `innerHTML` / `raw()`. The docs now call this out loudly, including that the SVG path is *more* dangerous than the HTML path (a top-level `<svg><script>`, SVG event attributes, and `xlink:href="javascript:"` execute once inserted, whereas an HTML-string `<script>` is inert), and that `srcdoc` is HTML a browser re-parses as a document (so `srcdoc={userString}` executes even though the value is escaped as an attribute). No behavior change — these are documentation + regression tests: a real-browser spec (`tests/browser/trusted-html-bridges.spec.ts`) pins the execution boundary across Chromium/Firefox/WebKit, a unit test pins that the granular list fast path keeps the URL screen's guarantee end-to-end, and another pins that SVG input isn't sanitized. See [`docs/7-svg.md`](docs/7-svg.md) § Security, [`docs/8-api-reference.md`](docs/8-api-reference.md), and [`docs/6-jsx-runtime.md`](docs/6-jsx-runtime.md) §6.4.3.
-- **Documented kerf's reserved marker namespace.** Fine-grained bindings and `each()` lists coordinate through in-band markers that the wiring pass finds by scanning the mounted subtree and matching by id. A consumer element that carries one of those names can collide with a real binding's id and silently steal its update, so the names are now documented as reserved: the `data-kfb` / `data-kfbrow` attributes and HTML comments beginning `kfb:` / `kfbr:` / `kf-list:`. Don't emit them from your own markup or via `raw()`. (kerf's escaping already prevents a plain text/attribute *value* from forging one — the only ways in are hand-written markup or `raw()`.) See [`docs/2-reactivity.md`](docs/2-reactivity.md) § "Reserved marker names".
-- **Attribute names are now validated, and inline event handlers are rejected outright.** The JSX runtime already escaped attribute *values*; it now also validates each attribute *name* against a safe shape (a letter/underscore/colon followed by letters, digits, or `_ . : -`) and **throws** on anything else. This closes a markup-injection vector when an object with attacker-controlled keys is spread into JSX (`<div {...untrustedObj}>`) — previously a key like `'x><img onerror=…>'` broke out of the open tag even though the value was escaped. Separately, any `on*` attribute (a function *or* a string value, in any case — e.g. `onClick={fn}` or `onclick="…"`) now throws and points at `delegate()`; previously only function-valued keys matching `/^on[A-Z]/` were caught, so a string `onclick="alert(1)"` slipped through and became a live inline handler when parsed. Both checks now cover the **fine-grained bound path** too: a signal bound straight into an attribute (`onclick={signal}`) is written with `setAttribute`, and `setAttribute('onclick', …)` installs a live inline handler just as a parsed string would — so an `on*` (or malformed) name bound as a signal is rejected at binding time, closing the same vector on the signal path. See [`docs/6-jsx-runtime.md`](docs/6-jsx-runtime.md) §6.4.2.
+- **Signposted the raw HTML/SVG → DOM bridges as trusted-input only.** `toElement()`, `morph()` (with a string/Element template), and the `<iframe srcdoc>` attribute bypass kerf's escaping/URL-screening by design — they're the same trust model as `innerHTML` / `raw()`. The docs now call this out loudly, including that the SVG path is _more_ dangerous than the HTML path (a top-level `<svg><script>`, SVG event attributes, and `xlink:href="javascript:"` execute once inserted, whereas an HTML-string `<script>` is inert), and that `srcdoc` is HTML a browser re-parses as a document (so `srcdoc={userString}` executes even though the value is escaped as an attribute). No behavior change — these are documentation + regression tests: a real-browser spec (`tests/browser/trusted-html-bridges.spec.ts`) pins the execution boundary across Chromium/Firefox/WebKit, a unit test pins that the granular list fast path keeps the URL screen's guarantee end-to-end, and another pins that SVG input isn't sanitized. See [`docs/7-svg.md`](docs/7-svg.md) § Security, [`docs/8-api-reference.md`](docs/8-api-reference.md), and [`docs/6-jsx-runtime.md`](docs/6-jsx-runtime.md) §6.4.3.
+- **Documented kerf's reserved marker namespace.** Fine-grained bindings and `each()` lists coordinate through in-band markers that the wiring pass finds by scanning the mounted subtree and matching by id. A consumer element that carries one of those names can collide with a real binding's id and silently steal its update, so the names are now documented as reserved: the `data-kfb` / `data-kfbrow` attributes and HTML comments beginning `kfb:` / `kfbr:` / `kf-list:`. Don't emit them from your own markup or via `raw()`. (kerf's escaping already prevents a plain text/attribute _value_ from forging one — the only ways in are hand-written markup or `raw()`.) See [`docs/2-reactivity.md`](docs/2-reactivity.md) § "Reserved marker names".
+- **Attribute names are now validated, and inline event handlers are rejected outright.** The JSX runtime already escaped attribute _values_; it now also validates each attribute _name_ against a safe shape (a letter/underscore/colon followed by letters, digits, or `_ . : -`) and **throws** on anything else. This closes a markup-injection vector when an object with attacker-controlled keys is spread into JSX (`<div {...untrustedObj}>`) — previously a key like `'x><img onerror=…>'` broke out of the open tag even though the value was escaped. Separately, any `on*` attribute (a function _or_ a string value, in any case — e.g. `onClick={fn}` or `onclick="…"`) now throws and points at `delegate()`; previously only function-valued keys matching `/^on[A-Z]/` were caught, so a string `onclick="alert(1)"` slipped through and became a live inline handler when parsed. Both checks now cover the **fine-grained bound path** too: a signal bound straight into an attribute (`onclick={signal}`) is written with `setAttribute`, and `setAttribute('onclick', …)` installs a live inline handler just as a parsed string would — so an `on*` (or malformed) name bound as a signal is rejected at binding time, closing the same vector on the signal path. See [`docs/6-jsx-runtime.md`](docs/6-jsx-runtime.md) §6.4.2.
 - **Hardened the dangerous-URL screen.** The URL-attribute filter (on `href`/`src`/`xlink:href`/`formaction`/`action`) now: (1) sees through control-character and whitespace obfuscation of the scheme — a leading ``, an in-scheme `TAB`/`LF`/`CR` (`java	script:`), or a `NUL` before the colon are all normalized away before the scheme is read, matching how a browser resolves the URL, so they can no longer slip a `javascript:` past the screen; (2) treats `data:` by subtype instead of only blocking `data:text/html` — script-executing document types (`data:text/html`, `data:image/svg+xml`, XHTML/XML) are dropped while inert media (raster images, fonts, audio, video, plain text/CSS) still pass, and any unknown subtype fails closed; and (3) also screens the `data` attribute on `<object>` (which loads its target as a document). `raw()` remains the opt-out. Both the static serializer and the fine-grained bound-attribute writer share the screen, so both paths are covered.
-- **Fine-grained signal bindings.** Hand a `Signal`/`computed` *itself* (not its `.value`) into a JSX attribute (`class={someSignal}`) or a text hole (`{someSignal}`) inside a `mount()`, and kerf binds that hole directly to the signal: when the signal changes, only that attribute/text node updates — the render function does **not** re-run and the list reconciler does **not** walk. This is kerf's fine-grained update tier, sitting below the coarse `mount()` effect, for the "external state drives one spot" pattern (a `selectedId` flipping a row's class, a live status attribute, etc.). Works in static content and inside `each()` rows on both the snapshot and `arraySignal` (granular) paths, and row bindings' lifetimes track their row node (a row reorder is free; a removed row's binding is torn down). Opt-in and non-breaking: passing a raw signal into JSX previously threw, so existing apps are unchanged, and any hole that isn't a signal stringifies exactly as before. Bound URL attributes (`href`/`src`/`formaction`/`action`/`xlink:href`) get the same `javascript:`/`vbscript:`/`data:text/html` screening as static attributes (`raw()` opts out). Outside a `mount()` (SSR / `SafeHtml.toString()`) a bound signal snapshots its current value and emits no markers. See [`docs/2-reactivity.md`](docs/2-reactivity.md) §2.9.
+- **Fine-grained signal bindings.** Hand a `Signal`/`computed` _itself_ (not its `.value`) into a JSX attribute (`class={someSignal}`) or a text hole (`{someSignal}`) inside a `mount()`, and kerf binds that hole directly to the signal: when the signal changes, only that attribute/text node updates — the render function does **not** re-run and the list reconciler does **not** walk. This is kerf's fine-grained update tier, sitting below the coarse `mount()` effect, for the "external state drives one spot" pattern (a `selectedId` flipping a row's class, a live status attribute, etc.). Works in static content and inside `each()` rows on both the snapshot and `arraySignal` (granular) paths, and row bindings' lifetimes track their row node (a row reorder is free; a removed row's binding is torn down). Opt-in and non-breaking: passing a raw signal into JSX previously threw, so existing apps are unchanged, and any hole that isn't a signal stringifies exactly as before. Bound URL attributes (`href`/`src`/`formaction`/`action`/`xlink:href`) get the same `javascript:`/`vbscript:`/`data:text/html` screening as static attributes (`raw()` opts out). Outside a `mount()` (SSR / `SafeHtml.toString()`) a bound signal snapshots its current value and emits no markers. See [`docs/2-reactivity.md`](docs/2-reactivity.md) §2.9.
 
 ## [0.16.0] - 2026-07-01
-
-
 
 - Fixed keyed-list selection breaking after a row was removed: a signal read only inside `each()`'s `cacheKey` (such as a `selectedId` toggling a row's class) no longer drops out of the reactive dependency set, so later changes re-render correctly.
 - Fixed appending items to a list after clearing it rendering nothing.
@@ -453,13 +411,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.15.5] - 2026-06-30
 
-
-
 - Corrected the advertised bundle size in `llms.txt` to ~11 KB minified + gzipped (including the `@preact/signals-core` runtime dependency; ~12 KB with `arraySignal`), matching the README.
 
 ## [0.15.4] - 2026-06-30
-
-
 
 - `llms.txt` is now published at a public docs-site URL and bundled in the npm package, making kerf's AI-assistant documentation index discoverable to llms.txt directories and tooling.
 
@@ -467,28 +421,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.15.3] - 2026-06-30
 
-
-
 - `npm create kerf-component` with no directory argument now prompts for the target directory (defaulting to `my-kerf-component`, with a `.` hint for the current directory) instead of printing usage text and exiting with an error.
 
 ## [0.15.2] - 2026-06-30
-
-
 
 - Added the `create-kerf-component` initializer — scaffold a ready-to-publish kerf component package with `npm create kerf-component@latest <dir>`, no need to reverse-engineer the packaging rules.
 
 ## [0.15.1] - 2026-06-30
 
-
-
 - README refresh + eslint rule-count fixes + CHANGELOG hygiene (`cfbaef3`)
 
 ## [0.15.0] - 2026-06-30
 
-
-
 - List updates now morph same-identity rows in place instead of recreating their DOM nodes, avoiding full-table relayout on large lists and preserving DOM identity, focus, and IME composition across re-renders.
-
 
 - New guide on incremental migration: kerf can own a single DOM subtree and coexist with React (or any framework), letting you migrate one island at a time.
 - New guide on building and publishing reusable kerf components as npm packages.
@@ -496,12 +441,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.14.0] - 2026-05-27
 
-
 - Fix `toElement()` first-paint divergence in WebKit by adopting its result into the live document
 - Fix `mount()` first render in WebKit by adopting an inert `rootEl` into the live document
 
 ## [0.13.0] - 2026-05-23
-
 
 - Add `KERF_DEV_WARN_DELEGATE_IN_EFFECT` dev warning to catch `delegate()` calls inside reactive effects
 - New `require-delegate-disposer` ESLint rule flags `delegate()` calls whose disposer is discarded
@@ -509,21 +452,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.12.1] - 2026-05-22
 
-
 - Add GitHub Sponsors link to README, homepage, and npm `funding` field
 
 ## [0.12.0] - 2026-05-22
-
 
 - `toElement` now returns `Element | DocumentFragment` to support multi-root inputs
 
 ## [0.11.1] - 2026-05-21
 
-
 - `attr()` redesign: typed `AttrSpec<N, V>` exposes `.attrs` with dual overloads for cleaner attribute handling
 
 ## [0.11.0] - 2026-05-21
-
 
 - `attr()` redesigned with `AttrSpec<N,V>` shape, `.attrs` accessor, and dual overloads
 - Hardened defensive programming across the runtime for safer edge-case handling
@@ -531,12 +470,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.10.0] - 2026-05-20
 
-
 - Expose `kerfjs/ai/*` subpaths via package `exports` so the bundled skill/cursorrules files are resolvable
 - Add a defensive fallback in `kerfjs/ai-assistant-configs` ESLint rule so it fires against installed kerfjs versions whose `exports` block subpath resolution
 
 ## [0.9.1] - 2026-05-20
-
 
 - Bundle the kerf-app Claude Code skill and Cursor rules inside the npm package at `ai/skill.md`, `ai/cursorrules`, and `ai/manifest.json`
 - Add `kerfjs/ai-assistant-configs` rule to `eslint-plugin-kerfjs` (warn in recommended) to flag drift in installed AI assistant configs
@@ -544,23 +481,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.9.0] - 2026-05-20
 
-
 - Bundle the kerf-app Claude Code skill and Cursor rules inside the npm package at `ai/skill.md`, `ai/cursorrules`, and `ai/manifest.json`
 - Add `kerfjs/ai-assistant-configs` rule (warn in recommended) to `eslint-plugin-kerfjs` v0.9.0 to surface AI-config drift on every lint pass
 - Canonical-file contract (`kerf-skill-version` + `KERF-APP-CANONICAL-END` marker) lets `eslint --fix` refresh the canonical section while preserving consumer customizations below the marker
 
 ## [0.8.2] - 2026-05-19
 
-
 - Package `homepage` fields now point to the published docs site, with prominent links in both READMEs
 
 ## [0.8.1] - 2026-05-19
 
-
 - New `eslint-plugin-kerfjs` with four AST rules enforcing kerf Hard Rules
 
 ## [0.8.0] - 2026-05-18
-
 
 - Add opt-in dev warning `KERF_DEV_WARN_NARROW_SET=1` that fires when `set()` is called with a partial-state object (replace semantics would silently drop missing keys); names the missing keys and points at the `set({ ...get(), ...next })` merge fix
 - Widen `KerfBaseAttrs.contentEditable` to accept `'plaintext-only'` and add the lowercase `contenteditable` alias
@@ -571,7 +504,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - New `scripts/check-docs-examples.mjs` doc/example consistency gate (wired into `npm run check`): verifies every example linked from a migration page is built + tested, and typechecks self-contained doc code blocks against `dist/`
 
 ## [0.7.0] - 2026-05-18
-
 
 - Granular list updates now preserve DOM identity, focus, scroll, IME state, `<details open>`/`<dialog open>`, and `data-morph-skip` subtrees across in-place row updates
 - Two new fast paths in the granular reconciler cut krausest select-row by 71% (27.8 → 8.2 ms) and partial-update by 28% (46.8 → 33.8 ms)
@@ -588,7 +520,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.6.0] - 2026-05-11
 
-
 - Public `morph(liveRoot, template)` export for standalone DOM reconciliation
 - New `data-morph-preserve` attribute to opt elements out of morphing
 - New `data-morph-skip-children` attribute — morph host attrs but leave subtree intact
@@ -597,11 +528,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.5.1] - 2026-05-11
 
-
 - Fix `dist/jsx-runtime.d.ts` IntrinsicElements self-shadow that broke JSX typing in consumer apps
 
 ## [0.5.0] - 2026-05-10
-
 
 - Add `arraySignal` (`kerfjs/array-signal` subpath) — granular collection signal that drives O(patches) DOM updates for keyed lists
 - Faster keyed-list updates: bulk-parse contiguous insert runs and consecutive update patches in the granular reconcile path
@@ -616,16 +545,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.4.2] - 2026-05-09
 
-
 - No user-facing changes in this release.
 
 ## [0.4.1] - 2026-05-09
 
-
 - Just fixing the build
 
 ## [0.4.0] - 2026-05-09
-
 
 - `delegate()` now auto-promotes the seven well-known non-bubbling events (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) to capture phase, with `closest()`-style selector matching preserved
 - Fixed focus and caret position loss when reordering keyed `each()` rows on engines that drop focus on `insertBefore` (older Safari, happy-dom)
@@ -637,11 +563,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.3.1] - 2026-05-08
 
-
 - Removed stale `morphdom` references; the bundled native diff is now the only reconciler
 
 ## [0.3.0] - 2026-05-08
-
 
 - Rebuilt render pipeline with structured segments and a native keyed-list diff, replacing the morphdom dependency
 - Added `each()` for keyed list iteration with per-item HTML memoization by object identity
@@ -653,11 +577,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.2.1] - 2026-05-07
 
-
 - Add `Fragment` export to the `kerfjs` barrel for explicit JSX fragment usage
 
 ## [0.2.0] - 2026-05-07
-
 
 - Fix focused contenteditable losing focus/caret during morph
 - Fix `SafeHtml` identity mismatch across entry points caused by dist bundling
@@ -665,11 +587,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.1.2] - 2026-05-07
 
-
 - No user-facing changes; release tooling fixes only.
 
 ## [0.1.1] - 2026-05-07
-
 
 - This is just a publication script test
 

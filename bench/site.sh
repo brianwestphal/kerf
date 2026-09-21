@@ -38,17 +38,26 @@ BUILD=1
 for arg in "$@"; do
   case "$arg" in
     --no-build) BUILD=0 ;;
-    -h|--help) sed -n '2,26p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
-    *) echo "Unknown option: $arg (try --no-build)" >&2; exit 2 ;;
+    -h | --help)
+      sed -n '2,26p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+      exit 0
+      ;;
+    *)
+      echo "Unknown option: $arg (try --no-build)" >&2
+      exit 2
+      ;;
   esac
 done
 
 # Cross-platform "open this URL in the default browser".
 open_browser() {
   local url="$1"
-  if command -v open >/dev/null 2>&1; then open "$url"            # macOS
-  elif command -v xdg-open >/dev/null 2>&1; then xdg-open "$url"  # Linux
-  elif command -v start >/dev/null 2>&1; then start "" "$url"     # Windows/Git Bash
+  if command -v open > /dev/null 2>&1; then
+    open "$url" # macOS
+  elif command -v xdg-open > /dev/null 2>&1; then
+    xdg-open "$url" # Linux
+  elif command -v start > /dev/null 2>&1; then
+    start "" "$url" # Windows/Git Bash
   else echo "==> Open this URL manually: $url"; fi
 }
 
@@ -66,7 +75,7 @@ fi
 if [[ "${BUILD}" -eq 1 ]]; then
   echo "==> Rebuilding the kerfjs entry from your working tree"
   cd "${REPO_ROOT}"
-  npm run build >/dev/null
+  npm run build > /dev/null
   TARBALL="$(npm pack | tail -n1)"
   TARBALL_ABS="${REPO_ROOT}/${TARBALL}"
 
@@ -77,7 +86,7 @@ if [[ "${BUILD}" -eq 1 ]]; then
     "${BENCH_DIR}/kerfjs-impl/" "${DEST}/"
 
   # Point the entry's kerfjs dependency at the freshly packed local tarball.
-  node - "$DEST/package.json" "$TARBALL_ABS" <<'NODE'
+  node - "$DEST/package.json" "$TARBALL_ABS" << 'NODE'
 const fs = require('fs');
 const [, , pkgPath, tarball] = process.argv;
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
@@ -89,7 +98,7 @@ NODE
   # Force a fresh extract of the tarball: npm can skip reinstalling a file:
   # dependency whose version + path are unchanged, which would serve stale kerf.
   rm -rf "${DEST}/node_modules/kerfjs"
-  (cd "${DEST}" && npm install >/dev/null && npm run build-prod >/dev/null)
+  (cd "${DEST}" && npm install > /dev/null && npm run build-prod > /dev/null)
   rm -f "${TARBALL_ABS}"
   echo "    done."
 fi
@@ -107,7 +116,10 @@ for _ in $(seq 1 60); do
     break
   fi
   # Bail early if the server died on startup (e.g. port already in use).
-  kill -0 "${SERVER_PID}" 2>/dev/null || { echo "Server exited before it was ready." >&2; exit 1; }
+  kill -0 "${SERVER_PID}" 2> /dev/null || {
+    echo "Server exited before it was ready." >&2
+    exit 1
+  }
   sleep 0.5
 done
 

@@ -29,7 +29,10 @@ describe('timing — full pipeline', () => {
     let renders = 0;
     mount(app, () => {
       renders++;
-      return jsx('p', { class: 'result', children: `results for: ${debounced.value}` });
+      return jsx('p', {
+        class: 'result',
+        children: `results for: ${debounced.value}`,
+      });
     });
     const rendersAfterMount = renders;
     expect(app.querySelector('.result')?.textContent).toBe('results for: ');

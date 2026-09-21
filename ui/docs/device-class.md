@@ -7,7 +7,7 @@ the foundation the app/dialog layouts build on (see
 [`../../docs/23-app-layouts.md`](../../docs/23-app-layouts.md)).
 
 ```ts
-import { deviceClass } from '@kerfjs/ui/device-class';
+import { deviceClass } from "@kerfjs/ui/device-class";
 
 const device = deviceClass(); // ReadonlySignal<DeviceClass>
 
@@ -19,14 +19,14 @@ effect(() => {
 
 ## `DeviceClass`
 
-| Field | Meaning |
-| --- | --- |
-| `size` | `xs-mobile` \| `mobile` \| `tablet` \| `desktop` \| `xl-desktop` |
-| `orientation` | `portrait` \| `landscape` |
+| Field                           | Meaning                                                                    |
+| ------------------------------- | -------------------------------------------------------------------------- |
+| `size`                          | `xs-mobile` \| `mobile` \| `tablet` \| `desktop` \| `xl-desktop`           |
+| `orientation`                   | `portrait` \| `landscape`                                                  |
 | `segments` / `verticalSegments` | viewport segment counts (foldables / dual-screen); `1` on ordinary devices |
-| `handset` | `xs-mobile` or `mobile` |
-| `compact` | "one pane at a time" — a handset or a portrait tablet |
-| `atLeast(size)` | true when the current size is `size` or larger |
+| `handset`                       | `xs-mobile` or `mobile`                                                    |
+| `compact`                       | "one pane at a time" — a handset or a portrait tablet                      |
+| `atLeast(size)`                 | true when the current size is `size` or larger                             |
 
 Reading `device.value` inside an `effect`/`computed` re-runs when the viewport
 crosses a breakpoint, rotates, or changes its segment count. One shared viewport

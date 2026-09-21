@@ -7,30 +7,40 @@ type RowGeometry = {
   lineCount: number;
 };
 
-async function rowGeometry(row: Locator, iconSelector: string, labelSelector: string): Promise<RowGeometry> {
-  return row.evaluate((element, selectors) => {
-    const icon = element.querySelector<HTMLElement>(selectors.iconSelector);
-    const label = element.querySelector<HTMLElement>(selectors.labelSelector);
-    const text = label?.firstChild;
-    if (!icon || !label || !text) throw new Error('Expected an icon and a text label');
+async function rowGeometry(
+  row: Locator,
+  iconSelector: string,
+  labelSelector: string,
+): Promise<RowGeometry> {
+  return row.evaluate(
+    (element, selectors) => {
+      const icon = element.querySelector<HTMLElement>(selectors.iconSelector);
+      const label = element.querySelector<HTMLElement>(selectors.labelSelector);
+      const text = label?.firstChild;
+      if (!icon || !label || !text)
+        throw new Error('Expected an icon and a text label');
 
-    const range = document.createRange();
-    range.selectNodeContents(text);
-    const lineRects = [...range.getClientRects()];
-    const firstLine = lineRects[0];
-    if (!firstLine) throw new Error('Expected the label to produce a line box');
-    const iconRect = icon.getBoundingClientRect();
+      const range = document.createRange();
+      range.selectNodeContents(text);
+      const lineRects = [...range.getClientRects()];
+      const firstLine = lineRects[0];
+      if (!firstLine)
+        throw new Error('Expected the label to produce a line box');
+      const iconRect = icon.getBoundingClientRect();
 
-    return {
-      centerDelta: Math.abs(
-        (iconRect.top + iconRect.height / 2)
-          - (firstLine.top + firstLine.height / 2),
-      ),
-      firstLineHeight: firstLine.height,
-      iconHeight: iconRect.height,
-      lineCount: lineRects.length,
-    };
-  }, { iconSelector, labelSelector });
+      return {
+        centerDelta: Math.abs(
+          iconRect.top +
+            iconRect.height / 2 -
+            (firstLine.top + firstLine.height / 2),
+        ),
+        firstLineHeight: firstLine.height,
+        iconHeight: iconRect.height,
+        lineCount: lineRects.length,
+      };
+    },
+    { iconSelector, labelSelector },
+  );
 }
 
 async function expectFirstLineAlignment(
@@ -54,7 +64,10 @@ async function expectFirstLineAlignment(
   return row;
 }
 
-test('aligns multiline ListItem and ListActionRow icons with the first text line', async ({ page, browserName }) => {
+test('aligns multiline ListItem and ListActionRow icons with the first text line', async ({
+  page,
+  browserName,
+}) => {
   const wideListItem = await expectFirstLineAlignment(
     page,
     'list-item',
@@ -66,7 +79,9 @@ test('aligns multiline ListItem and ListActionRow icons with the first text line
   );
   if (browserName === 'chromium') {
     await wideListItem.hover();
-    await wideListItem.screenshot({ path: 'test-results/list-item-first-line-alignment-wide.png' });
+    await wideListItem.screenshot({
+      path: 'test-results/list-item-first-line-alignment-wide.png',
+    });
   }
   const menuItem = await expectFirstLineAlignment(
     page,
@@ -78,7 +93,9 @@ test('aligns multiline ListItem and ListActionRow icons with the first text line
   );
   if (browserName === 'chromium') {
     await menuItem.hover();
-    await menuItem.screenshot({ path: 'test-results/list-item-first-line-alignment-narrow.png' });
+    await menuItem.screenshot({
+      path: 'test-results/list-item-first-line-alignment-narrow.png',
+    });
   }
 
   const wideActionRow = await expectFirstLineAlignment(
@@ -92,7 +109,9 @@ test('aligns multiline ListItem and ListActionRow icons with the first text line
   );
   if (browserName === 'chromium') {
     await wideActionRow.locator('.kui-list-action-row__primary').hover();
-    await wideActionRow.screenshot({ path: 'test-results/list-action-row-first-line-alignment-wide.png' });
+    await wideActionRow.screenshot({
+      path: 'test-results/list-action-row-first-line-alignment-wide.png',
+    });
   }
   const actionRow = await expectFirstLineAlignment(
     page,
@@ -104,11 +123,15 @@ test('aligns multiline ListItem and ListActionRow icons with the first text line
   );
   if (browserName === 'chromium') {
     await actionRow.locator('.kui-list-action-row__primary').hover();
-    await actionRow.screenshot({ path: 'test-results/list-action-row-first-line-alignment-narrow.png' });
+    await actionRow.screenshot({
+      path: 'test-results/list-action-row-first-line-alignment-narrow.png',
+    });
   }
 
   await page.setViewportSize({ width: 720, height: 900 });
-  await page.locator('html').evaluate((element) => { element.style.fontSize = '200%'; });
+  await page.locator('html').evaluate((element) => {
+    element.style.fontSize = '200%';
+  });
   const zoomGeometry = await rowGeometry(
     actionRow,
     '.kui-list-action-row__icon',

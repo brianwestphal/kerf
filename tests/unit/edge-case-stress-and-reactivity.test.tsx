@@ -23,38 +23,56 @@
  *   - data-morph-skip wrapping a list parent.
  *   - Stress: 1000-row mutate-and-restore round-trip.
  */
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import {
-batch,
-computed,
-delegate,
-each,
-effect,
-mount,
-signal
+  batch,
+  computed,
+  delegate,
+  each,
+  effect,
+  mount,
+  signal,
 } from '../../src/index.js';
 
 describe('Adversarial edge cases', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   // ─── Mount lifecycle ────────────────────────────────────────────────
 
   describe('stress + invariants', () => {
     it('1000-row mutate-and-restore round-trip: final DOM matches initial DOM', () => {
-      const initial = Array.from({ length: 1000 }, (_, i) => ({ id: i, v: `r${i}` }));
+      const initial = Array.from({ length: 1000 }, (_, i) => ({
+        id: i,
+        v: `r${i}`,
+      }));
       const rows = arraySignal(initial);
-      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>);
-      const initialFingerprint = Array.from(root.querySelectorAll('li')).map((l) => l.textContent);
+      mount(root, () => (
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>{r.v}</li>
+          ))}
+        </ul>
+      ));
+      const initialFingerprint = Array.from(root.querySelectorAll('li')).map(
+        (l) => l.textContent,
+      );
       expect(initialFingerprint.length).toBe(1000);
 
       // Reverse, then reverse again.
       rows.replace([...rows.value].reverse());
       rows.replace([...rows.value].reverse());
-      const finalFingerprint = Array.from(root.querySelectorAll('li')).map((l) => l.textContent);
+      const finalFingerprint = Array.from(root.querySelectorAll('li')).map(
+        (l) => l.textContent,
+      );
       expect(finalFingerprint).toEqual(initialFingerprint);
     });
 
@@ -63,7 +81,11 @@ describe('Adversarial edge cases', () => {
       mount(root, () => (
         <div>
           <button data-action="add">add</button>
-          <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>
+          <ul>
+            {each(rows, (r) => (
+              <li data-key={String(r.id)}>{r.id}</li>
+            ))}
+          </ul>
         </div>
       ));
       let nextId = 0;
@@ -117,8 +139,10 @@ describe('Adversarial edge cases', () => {
         if (x.value === 1) throw new Error('boom');
       });
       expect(runs).toBe(1);
-      expect(() => { x.value = 1; }).toThrow();
-      expect(runs).toBe(2);  // ran, threw
+      expect(() => {
+        x.value = 1;
+      }).toThrow();
+      expect(runs).toBe(2); // ran, threw
       // Subscription survives: next mutation still fires the effect.
       x.value = 2;
       expect(runs).toBe(3);
@@ -142,7 +166,13 @@ describe('Adversarial edge cases', () => {
       const tick = signal(0);
       mount(root, () => {
         void tick.value;
-        return <ul>{each([{ id: 1 }, { id: 2 }], (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>;
+        return (
+          <ul>
+            {each([{ id: 1 }, { id: 2 }], (r) => (
+              <li data-key={String(r.id)}>{r.id}</li>
+            ))}
+          </ul>
+        );
       });
       const ul = root.querySelector('ul')!;
       const findMarker = (): Comment | null => {
@@ -159,12 +189,12 @@ describe('Adversarial edge cases', () => {
       tick.value = 1;
       tick.value = 2;
       const m2 = findMarker();
-      expect(m2).toBe(m1);  // same node identity
+      expect(m2).toBe(m1); // same node identity
       const allComments: Comment[] = [];
       for (let c = ul.firstChild; c !== null; c = c.nextSibling) {
         if (c.nodeType === Node.COMMENT_NODE) allComments.push(c as Comment);
       }
-      expect(allComments.length).toBe(1);  // exactly one marker, no duplicates
+      expect(allComments.length).toBe(1); // exactly one marker, no duplicates
     });
   });
 });

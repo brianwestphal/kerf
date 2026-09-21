@@ -14,10 +14,16 @@ import { signal, mount, each, delegate, attr, type AttrSpec } from 'kerfjs';
 // production, so neither the import nor the chunk it loads ships.
 if (import.meta.env.DEV) await import('kerfjs/dev');
 
-const ACTIONS = { remove: attr('data-action', 'remove') } as const satisfies Record<string, AttrSpec<'data-action'>>;
+const ACTIONS = {
+  remove: attr('data-action', 'remove'),
+} as const satisfies Record<string, AttrSpec<'data-action'>>;
 const ITEM = { id: attr('data-id') } as const;
 
-interface CartItem { id: string; name: string; price: number }
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+}
 
 const SHELL_VARIANTS: CartItem[][] = [
   [
@@ -70,21 +76,33 @@ function simulateSwap(initial: CartItem[]): void {
       <h2>Cart</h2>
       <ul class="cart-items">
         {items.value.length === 0 ? (
-          <li><span class="empty">Cart is empty.</span></li>
+          <li>
+            <span class="empty">Cart is empty.</span>
+          </li>
         ) : (
           each(
             items.value,
             (it) => (
               <li data-key={it.id}>
-                <span>{it.name} — ${it.price}</span>
-                <button class="remove" {...ACTIONS.remove.attrs} {...ITEM.id(it.id)}>×</button>
+                <span>
+                  {it.name} — ${it.price}
+                </span>
+                <button
+                  class="remove"
+                  {...ACTIONS.remove.attrs}
+                  {...ITEM.id(it.id)}
+                >
+                  ×
+                </button>
               </li>
             ),
             (it) => it.id,
           )
         )}
       </ul>
-      <p class="total">Total: ${items.value.reduce((s, it) => s + it.price, 0)}</p>
+      <p class="total">
+        Total: ${items.value.reduce((s, it) => s + it.price, 0)}
+      </p>
     </div>
   ));
 
@@ -92,11 +110,16 @@ function simulateSwap(initial: CartItem[]): void {
   // CAPTURE the delegate disposer and call it alongside stopMount() on the next
   // swap. Discarding the disposer here would leak a listener (and its closure
   // over `items`) per swap. See docs/5-event-delegation.md §5.3.
-  const stopDelegate = delegate(root, 'click', ACTIONS.remove.selector, (_e, btn) => {
-    const id = (btn as HTMLElement).dataset.id;
-    items.value = items.value.filter((it) => it.id !== id);
-    logLine(`removed ${id} — ${items.value.length} items left`);
-  });
+  const stopDelegate = delegate(
+    root,
+    'click',
+    ACTIONS.remove.selector,
+    (_e, btn) => {
+      const id = (btn as HTMLElement).dataset.id;
+      items.value = items.value.filter((it) => it.id !== id);
+      logLine(`removed ${id} — ${items.value.length} items left`);
+    },
+  );
 
   activeDispose = () => {
     stopMount();

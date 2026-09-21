@@ -1,11 +1,22 @@
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { jsx } from '../../src/jsx-runtime.js';
-import { choice,confirm,form,prompt } from '../../src/overlay.js';
+import { choice, confirm, form, prompt } from '../../src/overlay.js';
 import { clickBtn } from './overlay-test-helpers.js';
 
-function key(target: EventTarget, k: string, init: KeyboardEventInit = {}): void {
-  target.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true, ...init }));
+function key(
+  target: EventTarget,
+  k: string,
+  init: KeyboardEventInit = {},
+): void {
+  target.dispatchEvent(
+    new KeyboardEvent('keydown', {
+      key: k,
+      bubbles: true,
+      cancelable: true,
+      ...init,
+    }),
+  );
 }
 
 beforeEach(() => {
@@ -34,14 +45,22 @@ describe('confirm()', () => {
   });
 
   it('escapes the message + labels and honors title / danger', () => {
-    void confirm('<img src=x onerror=alert(1)>', { title: 'Danger', okText: 'Yes', danger: true });
-    const wrapper = document.querySelector('.kerf-confirm--danger') as HTMLElement;
+    void confirm('<img src=x onerror=alert(1)>', {
+      title: 'Danger',
+      okText: 'Yes',
+      danger: true,
+    });
+    const wrapper = document.querySelector(
+      '.kerf-confirm--danger',
+    ) as HTMLElement;
     expect(wrapper).not.toBeNull();
     const msg = wrapper.querySelector('.kerf-confirm__message') as HTMLElement;
     // Auto-escaped: the tag is text, not a real <img> element.
     expect(msg.querySelector('img')).toBeNull();
     expect(msg.textContent).toBe('<img src=x onerror=alert(1)>');
-    expect(wrapper.querySelector('.kerf-confirm__title')?.textContent).toBe('Danger');
+    expect(wrapper.querySelector('.kerf-confirm__title')?.textContent).toBe(
+      'Danger',
+    );
     expect(wrapper.querySelector('.kerf-confirm__ok')?.textContent).toBe('Yes');
   });
 });
@@ -49,7 +68,9 @@ describe('confirm()', () => {
 describe('prompt()', () => {
   it('prefills defaultValue and resolves the live entered string on OK', async () => {
     const p = prompt('Name?', { defaultValue: 'ada' });
-    const input = document.querySelector<HTMLInputElement>('.kerf-prompt__input')!;
+    const input = document.querySelector<HTMLInputElement>(
+      '.kerf-prompt__input',
+    )!;
     expect(input.value).toBe('ada');
     input.value = 'grace';
     clickBtn('[data-prompt="ok"]');
@@ -77,14 +98,20 @@ describe('prompt()', () => {
 
   it('Enter in the field submits, like the native prompt', async () => {
     const p = prompt('X', { defaultValue: 'v' });
-    const input = document.querySelector<HTMLInputElement>('.kerf-prompt__input')!;
+    const input = document.querySelector<HTMLInputElement>(
+      '.kerf-prompt__input',
+    )!;
     key(input, 'Enter');
     await expect(p).resolves.toBe('v');
   });
 
   it('validate blocks OK inline and keeps the dialog open, then allows once it passes', async () => {
-    const p = prompt('Email', { validate: (v) => (v.includes('@') ? '' : 'need @') });
-    const input = document.querySelector<HTMLInputElement>('.kerf-prompt__input')!;
+    const p = prompt('Email', {
+      validate: (v) => (v.includes('@') ? '' : 'need @'),
+    });
+    const input = document.querySelector<HTMLInputElement>(
+      '.kerf-prompt__input',
+    )!;
     const err = document.querySelector<HTMLElement>('.kerf-prompt__error')!;
     expect(err.hidden).toBe(true);
 
@@ -109,9 +136,17 @@ describe('prompt()', () => {
   });
 
   it('renders an optional title, placeholder, and a custom inputType', async () => {
-    const p = prompt('Email please', { title: 'Sign in', placeholder: 'you@example.com', inputType: 'email' });
-    expect(document.querySelector('.kerf-prompt__title')?.textContent).toBe('Sign in');
-    const input = document.querySelector<HTMLInputElement>('.kerf-prompt__input')!;
+    const p = prompt('Email please', {
+      title: 'Sign in',
+      placeholder: 'you@example.com',
+      inputType: 'email',
+    });
+    expect(document.querySelector('.kerf-prompt__title')?.textContent).toBe(
+      'Sign in',
+    );
+    const input = document.querySelector<HTMLInputElement>(
+      '.kerf-prompt__input',
+    )!;
     expect(input.getAttribute('type')).toBe('email');
     expect(input.getAttribute('placeholder')).toBe('you@example.com');
     clickBtn('[data-prompt="cancel"]');
@@ -133,10 +168,13 @@ describe('form()', () => {
       { name: 'host', label: 'Host', defaultValue: 'localhost' },
       { name: 'port', defaultValue: '80' },
     ]);
-    const labels = Array.from(document.querySelectorAll('.kerf-form__label')).map((l) => l.textContent);
+    const labels = Array.from(
+      document.querySelectorAll('.kerf-form__label'),
+    ).map((l) => l.textContent);
     expect(labels).toEqual(['Host', 'port']); // second falls back to the name
 
-    document.querySelector<HTMLInputElement>('[data-field="host"]')!.value = 'db.example';
+    document.querySelector<HTMLInputElement>('[data-field="host"]')!.value =
+      'db.example';
     clickBtn('[data-form="ok"]');
     await expect(p).resolves.toEqual({ host: 'db.example', port: '80' });
     expect(document.querySelector('.kerf-form')).toBeNull();
@@ -159,16 +197,24 @@ describe('form()', () => {
     ]);
     clickBtn('[data-form="ok"]');
 
-    const uErr = document.querySelector<HTMLElement>('[data-field-error="user"]')!;
-    const tErr = document.querySelector<HTMLElement>('[data-field-error="token"]')!;
+    const uErr = document.querySelector<HTMLElement>(
+      '[data-field-error="user"]',
+    )!;
+    const tErr = document.querySelector<HTMLElement>(
+      '[data-field-error="token"]',
+    )!;
     expect(uErr.hidden).toBe(false);
     expect(uErr.textContent).toBe('required');
     expect(tErr.textContent).toBe('too short');
-    expect(document.activeElement).toBe(document.querySelector('[data-field="user"]'));
+    expect(document.activeElement).toBe(
+      document.querySelector('[data-field="user"]'),
+    );
     expect(document.querySelector('.kerf-form')).not.toBeNull(); // still open
 
-    document.querySelector<HTMLInputElement>('[data-field="user"]')!.value = 'ada';
-    document.querySelector<HTMLInputElement>('[data-field="token"]')!.value = 'abcd';
+    document.querySelector<HTMLInputElement>('[data-field="user"]')!.value =
+      'ada';
+    document.querySelector<HTMLInputElement>('[data-field="token"]')!.value =
+      'abcd';
     clickBtn('[data-form="ok"]');
     await expect(p).resolves.toEqual({ user: 'ada', token: 'abcd' });
   });
@@ -191,9 +237,22 @@ describe('form()', () => {
   });
 
   it('renders an optional title, a field placeholder, and a custom input type', async () => {
-    const p = form([{ name: 'pw', label: 'Password', type: 'password', placeholder: '••••' }], { title: 'Login' });
-    expect(document.querySelector('.kerf-form__title')?.textContent).toBe('Login');
-    const input = document.querySelector<HTMLInputElement>('[data-field="pw"]')!;
+    const p = form(
+      [
+        {
+          name: 'pw',
+          label: 'Password',
+          type: 'password',
+          placeholder: '••••',
+        },
+      ],
+      { title: 'Login' },
+    );
+    expect(document.querySelector('.kerf-form__title')?.textContent).toBe(
+      'Login',
+    );
+    const input =
+      document.querySelector<HTMLInputElement>('[data-field="pw"]')!;
     expect(input.getAttribute('type')).toBe('password');
     expect(input.getAttribute('placeholder')).toBe('••••');
     clickBtn('[data-form="ok"]');
@@ -212,14 +271,15 @@ describe('form()', () => {
 describe('confirm / prompt / form — bring-your-own markup (render)', () => {
   it('confirm render: spreading ok/cancel wires the buttons; default markup is not used', async () => {
     const p = confirm('Delete?', {
-      render: ({ message, ok, cancel }) => jsx('div', {
-        class: 'my-dialog',
-        children: [
-          jsx('p', { children: message }),
-          jsx('button', { ...cancel, class: 'btn', children: 'No' }),
-          jsx('button', { ...ok, class: 'btn btn-danger', children: 'Yes' }),
-        ],
-      }),
+      render: ({ message, ok, cancel }) =>
+        jsx('div', {
+          class: 'my-dialog',
+          children: [
+            jsx('p', { children: message }),
+            jsx('button', { ...cancel, class: 'btn', children: 'No' }),
+            jsx('button', { ...ok, class: 'btn btn-danger', children: 'Yes' }),
+          ],
+        }),
     });
     expect(document.querySelector('.my-dialog')).not.toBeNull();
     expect(document.querySelector('.kerf-confirm')).toBeNull(); // default markup skipped
@@ -229,12 +289,13 @@ describe('confirm / prompt / form — bring-your-own markup (render)', () => {
     await expect(p).resolves.toBe(true);
 
     const p2 = confirm('Delete?', {
-      render: ({ ok, cancel }) => jsx('div', {
-        children: [
-          jsx('button', { ...cancel, class: 'no-btn', children: 'No' }),
-          jsx('button', { ...ok, children: 'Yes' }),
-        ],
-      }),
+      render: ({ ok, cancel }) =>
+        jsx('div', {
+          children: [
+            jsx('button', { ...cancel, class: 'no-btn', children: 'No' }),
+            jsx('button', { ...ok, children: 'Yes' }),
+          ],
+        }),
     });
     (document.querySelector('.no-btn') as HTMLElement).click();
     await expect(p2).resolves.toBe(false);
@@ -244,16 +305,17 @@ describe('confirm / prompt / form — bring-your-own markup (render)', () => {
     const p = prompt('Name', {
       defaultValue: 'seed',
       validate: (v) => (v.length > 0 ? '' : 'required'),
-      render: ({ message, input, error, ok, cancel }) => jsx('div', {
-        class: 'my-prompt',
-        children: [
-          jsx('label', { children: message }),
-          jsx('input', { ...input, class: 'my-input' }),
-          jsx('span', { ...error, class: 'my-err' }),
-          jsx('button', { ...cancel, class: 'my-cancel', children: 'X' }),
-          jsx('button', { ...ok, class: 'my-ok', children: 'Go' }),
-        ],
-      }),
+      render: ({ message, input, error, ok, cancel }) =>
+        jsx('div', {
+          class: 'my-prompt',
+          children: [
+            jsx('label', { children: message }),
+            jsx('input', { ...input, class: 'my-input' }),
+            jsx('span', { ...error, class: 'my-err' }),
+            jsx('button', { ...cancel, class: 'my-cancel', children: 'X' }),
+            jsx('button', { ...ok, class: 'my-ok', children: 'Go' }),
+          ],
+        }),
     });
     const input = document.querySelector('.my-input') as HTMLInputElement;
     expect(input.getAttribute('data-prompt-input')).toBe('');
@@ -274,13 +336,14 @@ describe('confirm / prompt / form — bring-your-own markup (render)', () => {
   it('prompt render without an error slot: validate re-focuses without a message (no crash)', async () => {
     const p = prompt('Name', {
       validate: (v) => (v ? '' : 'nope'),
-      render: ({ input, ok, cancel }) => jsx('div', {
-        children: [
-          jsx('input', { ...input, class: 'bare-input' }),
-          jsx('button', { ...cancel, class: 'bc', children: 'X' }),
-          jsx('button', { ...ok, class: 'bo', children: 'Go' }),
-        ],
-      }),
+      render: ({ input, ok, cancel }) =>
+        jsx('div', {
+          children: [
+            jsx('input', { ...input, class: 'bare-input' }),
+            jsx('button', { ...cancel, class: 'bc', children: 'X' }),
+            jsx('button', { ...ok, class: 'bo', children: 'Go' }),
+          ],
+        }),
     });
     (document.querySelector('.bo') as HTMLElement).click(); // empty → validate blocks
     expect(document.querySelector('.bare-input')).not.toBeNull(); // still open, no throw
@@ -291,16 +354,17 @@ describe('confirm / prompt / form — bring-your-own markup (render)', () => {
   });
 
   it('prompt render fails immediately when the required input slot is missing', () => {
-    expect(() => prompt('Name', {
-      render: ({ ok }) => jsx('div', {
-        children: [
-          jsx('input', { class: 'unwired-input' }),
-          jsx('button', { ...ok, children: 'Go' }),
-        ],
+    expect(() =>
+      prompt('Name', {
+        render: ({ ok }) =>
+          jsx('div', {
+            children: [
+              jsx('input', { class: 'unwired-input' }),
+              jsx('button', { ...ok, children: 'Go' }),
+            ],
+          }),
       }),
-    })).toThrowError(
-      'prompt(): render missing <input data-prompt-input>.',
-    );
+    ).toThrowError('prompt(): render missing <input data-prompt-input>.');
     expect(document.querySelector('.kerf-overlay')).toBeNull();
   });
 
@@ -311,20 +375,23 @@ describe('confirm / prompt / form — bring-your-own markup (render)', () => {
         { name: 'token', validate: (v) => (v.length >= 3 ? '' : 'short') },
       ],
       {
-        render: ({ fields, ok, cancel }) => jsx('div', {
-          class: 'my-form',
-          children: [
-            ...fields.map((f) => jsx('div', {
-              children: [
-                jsx('label', { children: f.label }),
-                jsx('input', { ...f.input, class: `fi-${f.name}` }),
-                jsx('span', { ...f.error, class: `fe-${f.name}` }),
-              ],
-            })),
-            jsx('button', { ...cancel, class: 'fc', children: 'X' }),
-            jsx('button', { ...ok, class: 'fo', children: 'Go' }),
-          ],
-        }),
+        render: ({ fields, ok, cancel }) =>
+          jsx('div', {
+            class: 'my-form',
+            children: [
+              ...fields.map((f) =>
+                jsx('div', {
+                  children: [
+                    jsx('label', { children: f.label }),
+                    jsx('input', { ...f.input, class: `fi-${f.name}` }),
+                    jsx('span', { ...f.error, class: `fe-${f.name}` }),
+                  ],
+                }),
+              ),
+              jsx('button', { ...cancel, class: 'fc', children: 'X' }),
+              jsx('button', { ...ok, class: 'fo', children: 'Go' }),
+            ],
+          }),
       },
     );
     const host = document.querySelector('.fi-host') as HTMLInputElement;
@@ -343,13 +410,16 @@ describe('confirm / prompt / form — bring-your-own markup (render)', () => {
 
   it('form render without error slots: blocks + focuses first invalid, then resolves (no crash)', async () => {
     const p = form([{ name: 'a', validate: (v) => (v ? '' : 'req') }], {
-      render: ({ fields, ok, cancel }) => jsx('div', {
-        children: [
-          ...fields.map((f) => jsx('input', { ...f.input, class: `bare-${f.name}` })),
-          jsx('button', { ...cancel, class: 'bfc', children: 'X' }),
-          jsx('button', { ...ok, class: 'bfo', children: 'Go' }),
-        ],
-      }),
+      render: ({ fields, ok, cancel }) =>
+        jsx('div', {
+          children: [
+            ...fields.map((f) =>
+              jsx('input', { ...f.input, class: `bare-${f.name}` }),
+            ),
+            jsx('button', { ...cancel, class: 'bfc', children: 'X' }),
+            jsx('button', { ...ok, class: 'bfo', children: 'Go' }),
+          ],
+        }),
     });
     (document.querySelector('.bfo') as HTMLElement).click(); // empty → blocks, no error slot
     expect(document.querySelector('.bare-a')).not.toBeNull(); // still open
@@ -360,17 +430,18 @@ describe('confirm / prompt / form — bring-your-own markup (render)', () => {
   });
 
   it('form render fails immediately and names the field whose required input marker is mistyped', () => {
-    expect(() => form([{ name: 'host' }, { name: 'token' }], {
-      render: ({ fields, ok }) => jsx('div', {
-        children: [
-          jsx('input', { ...fields[0].input }),
-          jsx('input', { 'data-feild': fields[1].name }),
-          jsx('button', { ...ok, children: 'Go' }),
-        ],
+    expect(() =>
+      form([{ name: 'host' }, { name: 'token' }], {
+        render: ({ fields, ok }) =>
+          jsx('div', {
+            children: [
+              jsx('input', { ...fields[0].input }),
+              jsx('input', { 'data-feild': fields[1].name }),
+              jsx('button', { ...ok, children: 'Go' }),
+            ],
+          }),
       }),
-    })).toThrowError(
-      'form(): render missing <input data-field="token">.',
-    );
+    ).toThrowError('form(): render missing <input data-field="token">.');
     expect(document.querySelector('.kerf-overlay')).toBeNull();
   });
 });
@@ -385,7 +456,11 @@ describe('choice() — N-way dialog', () => {
   it('renders one button per action and resolves the clicked action value', async () => {
     const p = choice('Unsaved changes', actions);
     const buttons = document.querySelectorAll('.kerf-choice__action');
-    expect(Array.from(buttons).map((b) => b.textContent)).toEqual(['Save Draft', 'Discard', 'Keep Editing']);
+    expect(Array.from(buttons).map((b) => b.textContent)).toEqual([
+      'Save Draft',
+      'Discard',
+      'Keep Editing',
+    ]);
 
     (buttons[1] as HTMLElement).click(); // Discard
     await expect(p).resolves.toBe('secondary');
@@ -411,7 +486,9 @@ describe('choice() — N-way dialog', () => {
     const p = choice('Pick', actions);
     key(document.querySelector('.kerf-choice__message')!, 'Enter');
     expect(document.querySelector('.kerf-choice')).not.toBeNull(); // still open
-    (document.querySelectorAll('.kerf-choice__action')[0] as HTMLElement).click();
+    (
+      document.querySelectorAll('.kerf-choice__action')[0] as HTMLElement
+    ).click();
     await expect(p).resolves.toBe('primary');
   });
 
@@ -420,14 +497,20 @@ describe('choice() — N-way dialog', () => {
       { value: null, label: 'Nullish' },
       { value: 'x', label: 'X' },
     ]);
-    (document.querySelectorAll('.kerf-choice__action')[0] as HTMLElement).click(); // value: null
+    (
+      document.querySelectorAll('.kerf-choice__action')[0] as HTMLElement
+    ).click(); // value: null
     // Resolves the ACTION's null, not a dismissal — both are null here but the promise resolved via the click.
     await expect(p).resolves.toBeNull();
   });
 
   it('applies an optional per-action className and a title', () => {
-    choice('Pick', [{ value: 1, label: 'One', className: 'btn btn-danger' }], { title: 'Heads up' });
-    expect(document.querySelector('.kerf-choice__title')?.textContent).toBe('Heads up');
+    choice('Pick', [{ value: 1, label: 'One', className: 'btn btn-danger' }], {
+      title: 'Heads up',
+    });
+    expect(document.querySelector('.kerf-choice__title')?.textContent).toBe(
+      'Heads up',
+    );
     const btn = document.querySelector('.kerf-choice__action') as HTMLElement;
     expect(btn.classList.contains('btn')).toBe(true);
     expect(btn.classList.contains('btn-danger')).toBe(true);
@@ -436,13 +519,20 @@ describe('choice() — N-way dialog', () => {
 
   it('render: BYO markup — spread actions[i] onto your buttons', async () => {
     const p = choice('Pick', actions, {
-      render: ({ message, actions: slots }) => jsx('div', {
-        class: 'my-choice',
-        children: [
-          jsx('p', { children: message }),
-          ...slots.map((slot, i) => jsx('button', { ...slot, class: `c-${i}`, children: actions[i].label })),
-        ],
-      }),
+      render: ({ message, actions: slots }) =>
+        jsx('div', {
+          class: 'my-choice',
+          children: [
+            jsx('p', { children: message }),
+            ...slots.map((slot, i) =>
+              jsx('button', {
+                ...slot,
+                class: `c-${i}`,
+                children: actions[i].label,
+              }),
+            ),
+          ],
+        }),
     });
     expect(document.querySelector('.my-choice')).not.toBeNull();
     expect(document.querySelector('.kerf-choice')).toBeNull(); // default markup skipped

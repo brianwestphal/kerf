@@ -13,7 +13,9 @@ const BUMP = attr('data-action', 'bump');
 
 export function mountMorphSkip(root: HTMLElement): void {
   const tick = signal(0);
-  setInterval(() => { tick.value += 1; }, 1000);
+  setInterval(() => {
+    tick.value += 1;
+  }, 1000);
 
   // Persistent widget DOM, mutated directly. Lives inside the
   // data-morph-skip mount; morphdom never traverses it.
@@ -25,7 +27,12 @@ export function mountMorphSkip(root: HTMLElement): void {
   const internalLabel = document.createElement('strong');
   const internalDot = document.createElement('span');
   internalDot.className = 'demo-skip-dot';
-  widgetHost.append('Library-owned widget · internal ticks: ', internalLabel, ' ', internalDot);
+  widgetHost.append(
+    'Library-owned widget · internal ticks: ',
+    internalLabel,
+    ' ',
+    internalDot,
+  );
 
   function updateWidget(): void {
     internalTicks += 1;
@@ -37,23 +44,33 @@ export function mountMorphSkip(root: HTMLElement): void {
 
   mount(root, () => (
     <div className="demo-card">
-      <h2>5. Morph-skip <span className="demo-tag">data-morph-skip • Tier 3 lifecycle</span></h2>
+      <h2>
+        5. Morph-skip{' '}
+        <span className="demo-tag">data-morph-skip • Tier 3 lifecycle</span>
+      </h2>
 
       <p className="demo-tick-line">
-        Outer tick (forces parent re-render every second): <strong>{tick.value}</strong>
+        Outer tick (forces parent re-render every second):{' '}
+        <strong>{tick.value}</strong>
       </p>
 
-      <div id="morph-skip-mount" className="demo-skip-mount" data-morph-skip>
-      </div>
+      <div
+        id="morph-skip-mount"
+        className="demo-skip-mount"
+        data-morph-skip
+      ></div>
 
       <div className="demo-row">
-        <button type="button" {...BUMP.attrs} className="demo-btn">bump outer state</button>
+        <button type="button" {...BUMP.attrs} className="demo-btn">
+          bump outer state
+        </button>
       </div>
 
       <p className="demo-note">
         The animated dot inside the bordered widget is a stand-in for an
         xterm-style library that owns its own children. The mount div has
-        <code> data-morph-skip</code>, so morphdom's <code>onBeforeElUpdated </code>
+        <code> data-morph-skip</code>, so morphdom's{' '}
+        <code>onBeforeElUpdated </code>
         returns <code>false</code> and the inside is never traversed.
       </p>
     </div>
@@ -62,5 +79,7 @@ export function mountMorphSkip(root: HTMLElement): void {
   const mountEl = root.querySelector<HTMLElement>('#morph-skip-mount');
   if (mountEl !== null) mountEl.appendChild(widgetHost);
 
-  delegate(root, 'click', BUMP.selector, () => { tick.value += 100; });
+  delegate(root, 'click', BUMP.selector, () => {
+    tick.value += 100;
+  });
 }

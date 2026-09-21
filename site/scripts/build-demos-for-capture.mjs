@@ -61,4 +61,7 @@ async function main() {
   console.log(`[demos] built ${COMPLETE_APPS.length} apps → ${outRoot}`);
 }
 
-main().catch((err) => { console.error(err); process.exit(1); });
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

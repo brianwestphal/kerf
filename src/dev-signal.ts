@@ -27,12 +27,12 @@ import { Signal } from '@preact/signals-core';
 
 import { devFlag } from './dev-warn-config.js';
 
-const WARNING_MESSAGE
-  = 'kerf: signal was written but has no subscribers. '
-  + 'Did you read `.value` outside of a render fn / effect()? '
-  + 'Hoisted reads do not subscribe, so subsequent writes will not re-render. '
-  + 'Move the read inside mount()\'s render fn or effect() callback. '
-  + 'Set KERF_DEV_WARN_UNTRACKED_SIGNALS=0 (or unset it) to silence this warning.';
+const WARNING_MESSAGE =
+  'kerf: signal was written but has no subscribers. ' +
+  'Did you read `.value` outside of a render fn / effect()? ' +
+  'Hoisted reads do not subscribe, so subsequent writes will not re-render. ' +
+  "Move the read inside mount()'s render fn or effect() callback. " +
+  'Set KERF_DEV_WARN_UNTRACKED_SIGNALS=0 (or unset it) to silence this warning.';
 
 export class DevSignal<T> extends Signal<T> {
   private __hasSubscriber = false;
@@ -42,13 +42,16 @@ export class DevSignal<T> extends Signal<T> {
   constructor(initial?: T) {
     super(initial as T, {
       watched(this: Signal<T>) {
-        (this as unknown as { __hasSubscriber: boolean }).__hasSubscriber = true;
+        (this as unknown as { __hasSubscriber: boolean }).__hasSubscriber =
+          true;
       },
     });
     this.__constructed = true;
   }
 
-  override get value(): T { return super.value; }
+  override get value(): T {
+    return super.value;
+  }
   override set value(v: T) {
     super.value = v;
     if (this.__constructed && !this.__hasSubscriber && !this.__warned) {
@@ -95,12 +98,12 @@ export function noteUntrackedCoverage(): void {
   if (coverageNoticeShown) return;
   coverageNoticeShown = true;
   console.warn(
-    'kerf: KERF_DEV_WARN_UNTRACKED_SIGNALS only covers signals created AFTER kerfjs/dev is installed. '
-    + 'Static imports are hoisted above `await import(\'kerfjs/dev\')`, so module-scope signals in the modules '
-    + 'you import are created first and this warning cannot see them — you may get no warnings even where the '
-    + 'bug exists. To cover them, make `import \'kerfjs/dev\'` the FIRST STATIC import of a dev-only entry file '
-    + '(static imports evaluate in order), then load the rest of your app. '
-    + 'Set KERF_DEV_WARN_UNTRACKED_SIGNALS=0 (or unset it) to silence this warning.',
+    'kerf: KERF_DEV_WARN_UNTRACKED_SIGNALS only covers signals created AFTER kerfjs/dev is installed. ' +
+      "Static imports are hoisted above `await import('kerfjs/dev')`, so module-scope signals in the modules " +
+      'you import are created first and this warning cannot see them — you may get no warnings even where the ' +
+      "bug exists. To cover them, make `import 'kerfjs/dev'` the FIRST STATIC import of a dev-only entry file " +
+      '(static imports evaluate in order), then load the rest of your app. ' +
+      'Set KERF_DEV_WARN_UNTRACKED_SIGNALS=0 (or unset it) to silence this warning.',
   );
 }
 

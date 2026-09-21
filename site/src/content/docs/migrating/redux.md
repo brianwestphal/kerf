@@ -11,22 +11,22 @@ If you're using Redux with React: also read [Coming from React](/kerf/migrating/
 
 ## 1. Conceptual mapping
 
-| Redux concept | Kerf equivalent | Notes |
-| --- | --- | --- |
-| **Store** (single global state tree) | one or more `defineStore({...})` objects | Kerf prefers multiple small stores over one big one. |
-| **Action** (`{ type: 'ADD_TODO', payload }`) | a method on a store's `actions` object | Named function calls instead of dispatched objects. |
-| **Action creator** (`addTodo(text)` returns `{ type, payload }`) | the action method directly | One layer collapses — the function *is* the dispatched action. |
-| **Reducer** (`(state, action) => newState`) | the body of a store action | The action receives `(set, get)` and calls `set({...})` with the next state. |
-| **`dispatch(action)`** | `store.actions.actionName(args)` | Direct method call. |
-| **Selector** (`(state) => state.foo.bar`) | `computed(() => store.state.value.foo.bar)` | Same idea — derive a value from state, memoized. |
-| **`useSelector(fn)`** (react-redux) | read `store.state.value` (or a `computed`) inside the kerf `mount` render fn | Auto-tracked — no hook, no provider. |
-| **`createSlice`** (Redux Toolkit) | `defineStore({ initial, actions })` | Same shape, less ceremony. |
-| **Thunk** (action that does async work, then dispatches) | a `defineStore` action that's `async` and calls other actions | No special "thunk" middleware needed. |
-| **Middleware** (logger, persistence, devtools) | a plain `effect()` that watches the store's state | No middleware chain — write the side effect directly. |
-| **`combineReducers`** | multiple `defineStore` calls | Each "slice" is its own store. |
-| **`Provider`** | n/a | Stores are module-level singletons; no React context provider tree. |
-| **Immutable updates** (`{ ...state, foo: next }`) | same pattern with `set({ ...get(), foo: next })` | The discipline is the same; the API is more compact. |
-| **Redux DevTools** | wire your own via an `effect()` that posts state to the devtools extension | No first-party integration; ~20 lines if you want one. |
+| Redux concept                                                    | Kerf equivalent                                                              | Notes                                                                        |
+| ---------------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **Store** (single global state tree)                             | one or more `defineStore({...})` objects                                     | Kerf prefers multiple small stores over one big one.                         |
+| **Action** (`{ type: 'ADD_TODO', payload }`)                     | a method on a store's `actions` object                                       | Named function calls instead of dispatched objects.                          |
+| **Action creator** (`addTodo(text)` returns `{ type, payload }`) | the action method directly                                                   | One layer collapses — the function _is_ the dispatched action.               |
+| **Reducer** (`(state, action) => newState`)                      | the body of a store action                                                   | The action receives `(set, get)` and calls `set({...})` with the next state. |
+| **`dispatch(action)`**                                           | `store.actions.actionName(args)`                                             | Direct method call.                                                          |
+| **Selector** (`(state) => state.foo.bar`)                        | `computed(() => store.state.value.foo.bar)`                                  | Same idea — derive a value from state, memoized.                             |
+| **`useSelector(fn)`** (react-redux)                              | read `store.state.value` (or a `computed`) inside the kerf `mount` render fn | Auto-tracked — no hook, no provider.                                         |
+| **`createSlice`** (Redux Toolkit)                                | `defineStore({ initial, actions })`                                          | Same shape, less ceremony.                                                   |
+| **Thunk** (action that does async work, then dispatches)         | a `defineStore` action that's `async` and calls other actions                | No special "thunk" middleware needed.                                        |
+| **Middleware** (logger, persistence, devtools)                   | a plain `effect()` that watches the store's state                            | No middleware chain — write the side effect directly.                        |
+| **`combineReducers`**                                            | multiple `defineStore` calls                                                 | Each "slice" is its own store.                                               |
+| **`Provider`**                                                   | n/a                                                                          | Stores are module-level singletons; no React context provider tree.          |
+| **Immutable updates** (`{ ...state, foo: next }`)                | same pattern with `set({ ...get(), foo: next })`                             | The discipline is the same; the API is more compact.                         |
+| **Redux DevTools**                                               | wire your own via an `effect()` that posts state to the devtools extension   | No first-party integration; ~20 lines if you want one.                       |
 
 ## 2. Redux → kerf, translated
 
@@ -36,10 +36,10 @@ A small counter slice in Redux Toolkit vs. kerf. The kerf side runs at [`site/sr
 
 ```ts
 // Redux Toolkit (RTK)
-import { createSlice, configureStore } from '@reduxjs/toolkit';
+import { createSlice, configureStore } from "@reduxjs/toolkit";
 
 const counterSlice = createSlice({
-  name: 'counter',
+  name: "counter",
   initialState: { count: 0, lastBumpedAt: null as Date | null },
   reducers: {
     increment: (state) => {
@@ -58,7 +58,9 @@ const counterSlice = createSlice({
 });
 
 export const { increment, decrement, reset } = counterSlice.actions;
-export const store = configureStore({ reducer: { counter: counterSlice.reducer } });
+export const store = configureStore({
+  reducer: { counter: counterSlice.reducer },
+});
 
 // React usage:
 // const count = useSelector((s) => s.counter.count);
@@ -68,14 +70,14 @@ export const store = configureStore({ reducer: { counter: counterSlice.reducer }
 
 ```ts
 // Kerf
-import { defineStore } from 'kerfjs';
+import { defineStore } from "kerfjs";
 
 export const counter = defineStore({
   initial: () => ({ count: 0, lastBumpedAt: null as Date | null }),
   actions: (set, get) => ({
     increment: () => set({ count: get().count + 1, lastBumpedAt: new Date() }),
     decrement: () => set({ count: get().count - 1, lastBumpedAt: new Date() }),
-    reset: ()     => set({ count: 0, lastBumpedAt: null }),
+    reset: () => set({ count: 0, lastBumpedAt: null }),
   }),
 });
 
@@ -97,20 +99,29 @@ What moved:
 
 ```ts
 // Redux Toolkit thunk
-const fetchUser = createAsyncThunk('user/fetch', async (id: string) => {
+const fetchUser = createAsyncThunk("user/fetch", async (id: string) => {
   const res = await fetch(`/api/users/${id}`);
   return await res.json();
 });
 
 const userSlice = createSlice({
-  name: 'user',
+  name: "user",
   initialState: { data: null, loading: false, error: null },
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUser.pending,   (s) => { s.loading = true; s.error = null; })
-      .addCase(fetchUser.fulfilled, (s, a) => { s.loading = false; s.data = a.payload; })
-      .addCase(fetchUser.rejected,  (s, a) => { s.loading = false; s.error = a.error.message; });
+      .addCase(fetchUser.pending, (s) => {
+        s.loading = true;
+        s.error = null;
+      })
+      .addCase(fetchUser.fulfilled, (s, a) => {
+        s.loading = false;
+        s.data = a.payload;
+      })
+      .addCase(fetchUser.rejected, (s, a) => {
+        s.loading = false;
+        s.error = a.error.message;
+      });
   },
 });
 ```
@@ -118,7 +129,11 @@ const userSlice = createSlice({
 ```ts
 // Kerf
 export const user = defineStore({
-  initial: () => ({ data: null as User | null, loading: false, error: null as string | null }),
+  initial: () => ({
+    data: null as User | null,
+    loading: false,
+    error: null as string | null,
+  }),
   actions: (set, _get) => ({
     fetch: async (id: string) => {
       set({ data: null, loading: true, error: null });
@@ -127,7 +142,11 @@ export const user = defineStore({
         const data = await res.json();
         set({ data, loading: false, error: null });
       } catch (e: unknown) {
-        set({ data: null, loading: false, error: e instanceof Error ? e.message : String(e) });
+        set({
+          data: null,
+          loading: false,
+          error: e instanceof Error ? e.message : String(e),
+        });
       }
     },
   }),
@@ -141,7 +160,7 @@ What moved: RTK's three-callback thunk pattern (`pending` / `fulfilled` / `rejec
 ```ts
 // Redux logger middleware
 const logger: Middleware = (api) => (next) => (action) => {
-  console.log('dispatch', action.type, action.payload);
+  console.log("dispatch", action.type, action.payload);
   return next(action);
 };
 ```
@@ -152,7 +171,7 @@ let prevCount = counter.state.value.count;
 effect(() => {
   const next = counter.state.value.count;
   if (next !== prevCount) {
-    console.log('counter changed', prevCount, '→', next);
+    console.log("counter changed", prevCount, "→", next);
     prevCount = next;
   }
 });
@@ -164,10 +183,10 @@ What moved: Redux middleware sits between dispatch and reducer and runs on every
 
 ```ts
 // redux-persist
-import { persistReducer, persistStore } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
+import { persistReducer, persistStore } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 
-const persistedReducer = persistReducer({ key: 'root', storage }, rootReducer);
+const persistedReducer = persistReducer({ key: "root", storage }, rootReducer);
 const store = configureStore({ reducer: persistedReducer });
 export const persistor = persistStore(store);
 ```
@@ -175,14 +194,17 @@ export const persistor = persistStore(store);
 ```ts
 // Kerf — one effect per persisted store
 effect(() => {
-  localStorage.setItem('counter', JSON.stringify(counter.state.value));
+  localStorage.setItem("counter", JSON.stringify(counter.state.value));
 });
 
 // On boot, rehydrate by passing the parsed JSON to `initial()`:
 const counter = defineStore({
   initial: () => {
-    try { return JSON.parse(localStorage.getItem('counter') ?? '') as CounterState; }
-    catch { return { count: 0, lastBumpedAt: null }; }
+    try {
+      return JSON.parse(localStorage.getItem("counter") ?? "") as CounterState;
+    } catch {
+      return { count: 0, lastBumpedAt: null };
+    }
   },
   // ...
 });
@@ -192,7 +214,7 @@ What moved: `redux-persist` is replaced by an `effect()` that writes JSON to `lo
 
 ## 6. Gotchas
 
-**No single global state tree.** Redux is opinionated about *one* store. Kerf is the opposite — define as many small stores as makes sense for your app. Co-located stores (per feature, per page) are the kerf idiom.
+**No single global state tree.** Redux is opinionated about _one_ store. Kerf is the opposite — define as many small stores as makes sense for your app. Co-located stores (per feature, per page) are the kerf idiom.
 
 **No `dispatch`, no action objects, no action types.** Kerf actions are plain method calls. You lose the "every state transition is a serializable action object" property — if you depended on it for replay, devtools time-travel, or cross-tab sync, that's a real loss. For most apps, plain method calls are fine.
 
@@ -200,7 +222,7 @@ What moved: `redux-persist` is replaced by an `effect()` that writes JSON to `lo
 
 **No DevTools by default.** Redux DevTools is a real productivity tool. Kerf doesn't ship a first-party integration — wire your own via an `effect()` if you want time-travel.
 
-**`useSelector` becomes auto-tracked reads.** In react-redux, `useSelector` subscribes the component to a specific slice of state. In kerf, *any* read of a signal inside a tracked context (`computed`, `effect`, `mount` render) auto-subscribes. There's no equivalence-check optimization to worry about — the morph applies the minimum diff regardless of whether your selector returned a new reference.
+**`useSelector` becomes auto-tracked reads.** In react-redux, `useSelector` subscribes the component to a specific slice of state. In kerf, _any_ read of a signal inside a tracked context (`computed`, `effect`, `mount` render) auto-subscribes. There's no equivalence-check optimization to worry about — the morph applies the minimum diff regardless of whether your selector returned a new reference.
 
 **Multi-store coordination is your problem.** Redux's `combineReducers` keeps cross-slice coordination implicit. Kerf's multi-store approach means cross-store coordination is a `computed()` that reads from both, or an `effect()` that subscribes to both.
 
@@ -218,6 +240,6 @@ The state-layer migration is mostly mechanical. The React → kerf migration (th
 
 ## 8. Perf numbers
 
-Redux is a state library, not a renderer. Performance comparisons apply to the *renderer* paired with each (React + Redux vs kerf + defineStore, say). The renderer comparisons live on the per-framework pages — see [Coming from React](/kerf/migrating/react/) §5.
+Redux is a state library, not a renderer. Performance comparisons apply to the _renderer_ paired with each (React + Redux vs kerf + defineStore, say). The renderer comparisons live on the per-framework pages — see [Coming from React](/kerf/migrating/react/) §5.
 
 [See the kerf bench table →](https://github.com/brianwestphal/kerf/blob/main/bench/results.md)

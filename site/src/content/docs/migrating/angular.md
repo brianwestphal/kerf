@@ -18,7 +18,7 @@ These two are not the same kind of tool. Kerf doesn't try to be Angular-minus-a-
 - **Enterprise apps with strict architectural conventions.** Angular's DI, modules, and CLI scaffolding scale to large teams in a way kerf actively doesn't try to.
 - **You need a router, forms, HTTP, and animations as one coherent thing.** Angular ships these; kerf doesn't.
 - **The team already knows Angular.** Switching costs always dominate framework choice. If your team is fluent in Angular, kerf's gains don't pay for the re-learning.
-- **You want signals *and* a full ecosystem.** Angular's signal-based reactivity (post-v16) is mature and integrated with the rest of the framework. Kerf has the signal-based reactivity but not the ecosystem.
+- **You want signals _and_ a full ecosystem.** Angular's signal-based reactivity (post-v16) is mature and integrated with the rest of the framework. Kerf has the signal-based reactivity but not the ecosystem.
 
 ## 3. When kerf wins (the specific cases)
 
@@ -29,21 +29,21 @@ These two are not the same kind of tool. Kerf doesn't try to be Angular-minus-a-
 
 ## 4. Mental-model translations (the partial overlap)
 
-| Angular | Kerf | Notes |
-| --- | --- | --- |
-| `signal(0)` (v16+) | `signal(0)` | Conceptually the same — Angular's signals are a different implementation but the same model. Reads are `s()`; kerf is `s.value`. |
-| `computed(() => ...)` | `computed(() => ...)` | Same. |
-| `effect(() => ...)` | `effect(() => ...)` | Same. |
-| `@Component({ template, selector })` | plain function returning JSX | No component decorator, no selector, no template DSL. |
-| `*ngFor="let item of items; trackBy: trackByFn"` | `each(items, render, key)` plus `data-key={item.id}` | The `trackBy` function corresponds to the `data-key` attribute (DOM-identity) — kerf adds a second key for row-memoization. |
-| `*ngIf="cond"` | `cond ? <a/> : <b/>` | JSX ternaries. |
-| `[class.done]="todo.done"` | `class={todo.done ? 'done' : ''}` | Template-literal class binding. |
-| `(click)="handler($event)"` | `delegate(root, 'click', '[data-action="..."]', handler)` | One listener at the root; survives every re-render. |
-| `[(ngModel)]="x"` | `value={x.value}` + `delegate('input', ...)` | No two-way binding sugar. |
-| `@Injectable()` services + DI | module-level `defineStore` or imported singletons | No DI container. Import the module that exports the singleton. |
-| `RouterModule` | bring your own router | Kerf has no router. `wouter`, `nanoroute`, or your server. |
-| `ReactiveFormsModule` | manual: `signal()` per field + validators as plain functions | No forms library. |
-| `HttpClient` | `fetch()` | No HTTP wrapper. |
+| Angular                                          | Kerf                                                         | Notes                                                                                                                            |
+| ------------------------------------------------ | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| `signal(0)` (v16+)                               | `signal(0)`                                                  | Conceptually the same — Angular's signals are a different implementation but the same model. Reads are `s()`; kerf is `s.value`. |
+| `computed(() => ...)`                            | `computed(() => ...)`                                        | Same.                                                                                                                            |
+| `effect(() => ...)`                              | `effect(() => ...)`                                          | Same.                                                                                                                            |
+| `@Component({ template, selector })`             | plain function returning JSX                                 | No component decorator, no selector, no template DSL.                                                                            |
+| `*ngFor="let item of items; trackBy: trackByFn"` | `each(items, render, key)` plus `data-key={item.id}`         | The `trackBy` function corresponds to the `data-key` attribute (DOM-identity) — kerf adds a second key for row-memoization.      |
+| `*ngIf="cond"`                                   | `cond ? <a/> : <b/>`                                         | JSX ternaries.                                                                                                                   |
+| `[class.done]="todo.done"`                       | `class={todo.done ? 'done' : ''}`                            | Template-literal class binding.                                                                                                  |
+| `(click)="handler($event)"`                      | `delegate(root, 'click', '[data-action="..."]', handler)`    | One listener at the root; survives every re-render.                                                                              |
+| `[(ngModel)]="x"`                                | `value={x.value}` + `delegate('input', ...)`                 | No two-way binding sugar.                                                                                                        |
+| `@Injectable()` services + DI                    | module-level `defineStore` or imported singletons            | No DI container. Import the module that exports the singleton.                                                                   |
+| `RouterModule`                                   | bring your own router                                        | Kerf has no router. `wouter`, `nanoroute`, or your server.                                                                       |
+| `ReactiveFormsModule`                            | manual: `signal()` per field + validators as plain functions | No forms library.                                                                                                                |
+| `HttpClient`                                     | `fetch()`                                                    | No HTTP wrapper.                                                                                                                 |
 
 ## 5. Gotchas (the mental shifts)
 

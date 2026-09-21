@@ -23,23 +23,28 @@
  *   - data-morph-skip wrapping a list parent.
  *   - Stress: 1000-row mutate-and-restore round-trip.
  */
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import {
-batch,
-delegate,
-delegateCapture,
-each,
-effect,
-mount,
-signal
+  batch,
+  delegate,
+  delegateCapture,
+  each,
+  effect,
+  mount,
+  signal,
 } from '../../src/index.js';
 
 describe('More adversarial cases', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   // ─── Mutation inside render ──────────────────────────────────────
 
@@ -53,7 +58,9 @@ describe('More adversarial cases', () => {
       // Read AND write in the same closure — only mutate once to avoid loop.
       if (x.value === 0 && renders === 1) {
         // Defer the mutation so we don't recurse synchronously into ourselves.
-        Promise.resolve().then(() => { x.value = 1; });
+        Promise.resolve().then(() => {
+          x.value = 1;
+        });
       }
       return <span>{x.value}</span>;
     });
@@ -73,9 +80,17 @@ describe('More adversarial cases', () => {
       renders++;
       if (renders === 1) {
         // Defer to avoid sync recursion.
-        Promise.resolve().then(() => { rows.push({ id: 2 }); });
+        Promise.resolve().then(() => {
+          rows.push({ id: 2 });
+        });
       }
-      return <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>;
+      return (
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>{r.id}</li>
+          ))}
+        </ul>
+      );
     });
     return Promise.resolve().then(() => {
       expect(root.querySelectorAll('li').length).toBe(2);
@@ -93,10 +108,15 @@ describe('More adversarial cases', () => {
     const captureCalls: string[] = [];
     const bubbleCalls: string[] = [];
     // delegateCapture installs in capture phase; stop here prevents bubble.
-    const captureDispose = delegateCapture(root, 'click', '[data-action="x"]', (e) => {
-      captureCalls.push('cap');
-      e.stopPropagation();
-    });
+    const captureDispose = delegateCapture(
+      root,
+      'click',
+      '[data-action="x"]',
+      (e) => {
+        captureCalls.push('cap');
+        e.stopPropagation();
+      },
+    );
     const bubbleDispose = delegate(root, 'click', '[data-action="x"]', () => {
       bubbleCalls.push('bub');
     });
@@ -110,7 +130,10 @@ describe('More adversarial cases', () => {
   // ─── Cross-feature interaction ───────────────────────────────────
 
   it('focused input + each() reorder + delegated click all firing together', () => {
-    interface Row { id: number; label: string }
+    interface Row {
+      id: number;
+      label: string;
+    }
     const rows = arraySignal<Row>([
       { id: 1, label: 'first' },
       { id: 2, label: 'second' },
@@ -118,15 +141,21 @@ describe('More adversarial cases', () => {
     let clicks = 0;
     mount(root, () => (
       <div>
-        <ul>{each(rows, (r) => (
-          <li data-key={String(r.id)}>
-            <input type="text" defaultValue={r.label} />
-            <button data-action="bump" data-id={String(r.id)}>+</button>
-          </li>
-        ))}</ul>
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>
+              <input type="text" defaultValue={r.label} />
+              <button data-action="bump" data-id={String(r.id)}>
+                +
+              </button>
+            </li>
+          ))}
+        </ul>
       </div>
     ));
-    delegate(root, 'click', '[data-action="bump"]', () => { clicks++; });
+    delegate(root, 'click', '[data-action="bump"]', () => {
+      clicks++;
+    });
 
     // Focus first input.
     const firstInput = root.querySelectorAll('input')[0] as HTMLInputElement;
@@ -154,7 +183,11 @@ describe('More adversarial cases', () => {
     mount(root, () => (
       <div>
         <h1>{heading.value}</h1>
-        <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>{r.v}</li>
+          ))}
+        </ul>
       </div>
     ));
     expect(root.querySelector('h1')!.textContent).toBe('initial heading');
@@ -162,11 +195,11 @@ describe('More adversarial cases', () => {
 
     heading.value = 'updated';
     expect(root.querySelector('h1')!.textContent).toBe('updated');
-    expect(root.querySelectorAll('li').length).toBe(1);  // list unchanged
+    expect(root.querySelectorAll('li').length).toBe(1); // list unchanged
 
     rows.push({ id: 2, v: 'r2' });
     expect(root.querySelectorAll('li').length).toBe(2);
-    expect(root.querySelector('h1')!.textContent).toBe('updated');  // heading unchanged
+    expect(root.querySelector('h1')!.textContent).toBe('updated'); // heading unchanged
   });
 
   // ─── Effect inside a mount render ────────────────────────────────
@@ -181,7 +214,9 @@ describe('More adversarial cases', () => {
       void tick.value;
       // Each render creates a NEW effect. Without external dispose, they
       // pile up — but each one's subscription is independent.
-      const d = effect(() => { effectRuns++; });
+      const d = effect(() => {
+        effectRuns++;
+      });
       disposers.push(d);
       return <span>{tick.value}</span>;
     });
@@ -201,14 +236,18 @@ describe('More adversarial cases', () => {
   it('disposing during a batched mutation does not crash', () => {
     const rows = arraySignal<{ id: number }>([{ id: 1 }]);
     const dispose = mount(root, () => (
-      <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>
+      <ul>
+        {each(rows, (r) => (
+          <li data-key={String(r.id)}>{r.id}</li>
+        ))}
+      </ul>
     ));
     expect(() => {
       batch(() => {
         rows.push({ id: 2 });
         rows.push({ id: 3 });
         dispose();
-        rows.push({ id: 4 });  // post-dispose mutation
+        rows.push({ id: 4 }); // post-dispose mutation
       });
     }).not.toThrow();
   });
@@ -216,19 +255,34 @@ describe('More adversarial cases', () => {
   // ─── arraySignal of objects with shared shape but different identity ─
 
   it('two each() callsites with the same items array produce same DOM (identity in cache)', () => {
-    const items = [{ id: 1, v: 'a' }, { id: 2, v: 'b' }];
+    const items = [
+      { id: 1, v: 'a' },
+      { id: 2, v: 'b' },
+    ];
     mount(root, () => (
       <div>
-        <ul className="P">{each(items, (it) => <li data-key={String(it.id)}>P:{it.v}</li>)}</ul>
-        <ul className="Q">{each(items, (it) => <li data-key={String(it.id)}>Q:{it.v}</li>)}</ul>
+        <ul className="P">
+          {each(items, (it) => (
+            <li data-key={String(it.id)}>P:{it.v}</li>
+          ))}
+        </ul>
+        <ul className="Q">
+          {each(items, (it) => (
+            <li data-key={String(it.id)}>Q:{it.v}</li>
+          ))}
+        </ul>
       </div>
     ));
     expect(root.querySelector('.P')!.querySelectorAll('li').length).toBe(2);
     expect(root.querySelector('.Q')!.querySelectorAll('li').length).toBe(2);
     // Different render functions → different cache entries by id, but the
     // item refs are shared. Both lists rendered correctly.
-    expect(root.querySelector('.P')!.querySelectorAll('li')[0].textContent).toBe('P:a');
-    expect(root.querySelector('.Q')!.querySelectorAll('li')[0].textContent).toBe('Q:a');
+    expect(
+      root.querySelector('.P')!.querySelectorAll('li')[0].textContent,
+    ).toBe('P:a');
+    expect(
+      root.querySelector('.Q')!.querySelectorAll('li')[0].textContent,
+    ).toBe('Q:a');
   });
 
   // ─── First render / dispose race ────────────────────────────────
@@ -247,7 +301,11 @@ describe('More adversarial cases', () => {
   it('marker remains a single comment node after 100 list-shape changes', () => {
     const items = signal<{ id: number }[]>([{ id: 1 }]);
     mount(root, () => (
-      <ul>{each(items.value, (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>
+      <ul>
+        {each(items.value, (r) => (
+          <li data-key={String(r.id)}>{r.id}</li>
+        ))}
+      </ul>
     ));
     for (let i = 0; i < 100; i++) {
       items.value = Array.from({ length: (i % 10) + 1 }, (_, j) => ({ id: j }));
@@ -267,8 +325,13 @@ describe('More adversarial cases', () => {
 
 describe('Round 3: granular path × cross-feature interactions', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   it('granular update of a row: data-morph-skip subtree on the row is replaced like any other row', () => {
     // The granular update path uses replaceChild — the old row's entire
@@ -280,11 +343,13 @@ describe('Round 3: granular path × cross-feature interactions', () => {
     type R = { id: number; v: string };
     const rows = arraySignal<R>([{ id: 1, v: 'a' }]);
     mount(root, () => (
-      <ul>{each(rows, (r) => (
-        <li data-key={String(r.id)} data-morph-skip>
-          <span>{r.v}</span>
-        </li>
-      ))}</ul>
+      <ul>
+        {each(rows, (r) => (
+          <li data-key={String(r.id)} data-morph-skip>
+            <span>{r.v}</span>
+          </li>
+        ))}
+      </ul>
     ));
     const li = root.querySelector('li')!;
     li.setAttribute('data-imperative', 'sticky');
@@ -308,11 +373,13 @@ describe('Round 3: granular path × cross-feature interactions', () => {
     // path used replaceChild and dropped both.)
     const rows = arraySignal([{ id: 1, body: 'orig' }]);
     mount(root, () => (
-      <ul>{each(rows, (r) => (
-        <li data-key={String(r.id)}>
-          <div contentEditable="true">{r.body}</div>
-        </li>
-      ))}</ul>
+      <ul>
+        {each(rows, (r) => (
+          <li data-key={String(r.id)}>
+            <div contentEditable="true">{r.body}</div>
+          </li>
+        ))}
+      </ul>
     ));
     const ce = root.querySelector('[contenteditable]') as HTMLElement;
     ce.focus();
@@ -325,7 +392,7 @@ describe('Round 3: granular path × cross-feature interactions', () => {
     rows.update(0, (r) => ({ ...r, body: 'updated' }));
     const sameCe = root.querySelector('[contenteditable]') as HTMLElement;
     expect(sameCe).toBe(ce);
-    expect(sameCe.innerHTML).toBe('edited inline');  // typed content preserved
+    expect(sameCe.innerHTML).toBe('edited inline'); // typed content preserved
     expect(document.activeElement).toBe(ce);
   });
 
@@ -335,11 +402,13 @@ describe('Round 3: granular path × cross-feature interactions', () => {
       { id: 2, body: 'second' },
     ]);
     mount(root, () => (
-      <ul>{each(rows, (r) => (
-        <li data-key={String(r.id)}>
-          <div contentEditable="true">{r.body}</div>
-        </li>
-      ))}</ul>
+      <ul>
+        {each(rows, (r) => (
+          <li data-key={String(r.id)}>
+            <div contentEditable="true">{r.body}</div>
+          </li>
+        ))}
+      </ul>
     ));
     const editables = root.querySelectorAll('[contenteditable]');
     const firstCe = editables[0] as HTMLElement;
@@ -361,14 +430,16 @@ describe('Round 3: granular path × cross-feature interactions', () => {
     // replaceChild and wiped the browser-set `open` attribute.)
     const rows = arraySignal([{ id: 1, label: 'panel' }]);
     mount(root, () => (
-      <ul>{each(rows, (r) => (
-        <li data-key={String(r.id)}>
-          <details>
-            <summary>click me</summary>
-            <p>{r.label}</p>
-          </details>
-        </li>
-      ))}</ul>
+      <ul>
+        {each(rows, (r) => (
+          <li data-key={String(r.id)}>
+            <details>
+              <summary>click me</summary>
+              <p>{r.label}</p>
+            </details>
+          </li>
+        ))}
+      </ul>
     ));
     const details = root.querySelector('details') as HTMLDetailsElement;
     details.setAttribute('open', '');
@@ -385,8 +456,13 @@ describe('Round 3: granular path × cross-feature interactions', () => {
 
 describe('Round 3: cleanupOrphanBindings completeness', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   it('orphaned binding: items removed from DOM, marker removed, no leak after re-introduction', () => {
     const showA = signal(true);
@@ -394,9 +470,19 @@ describe('Round 3: cleanupOrphanBindings completeness', () => {
     const itemsB = [{ id: 'b1' }];
     mount(root, () => (
       <div>
-        {showA.value
-          ? <ul className="A">{each(itemsA, (it) => <li data-key={it.id}>{it.id}</li>)}</ul>
-          : <ul className="B">{each(itemsB, (it) => <li data-key={it.id}>{it.id}</li>)}</ul>}
+        {showA.value ? (
+          <ul className="A">
+            {each(itemsA, (it) => (
+              <li data-key={it.id}>{it.id}</li>
+            ))}
+          </ul>
+        ) : (
+          <ul className="B">
+            {each(itemsB, (it) => (
+              <li data-key={it.id}>{it.id}</li>
+            ))}
+          </ul>
+        )}
       </div>
     ));
     expect(root.querySelectorAll('.A li').length).toBe(2);
@@ -413,7 +499,7 @@ describe('Round 3: cleanupOrphanBindings completeness', () => {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_COMMENT);
     let c: Node | null;
     while ((c = walker.nextNode()) !== null) allComments.push(c as Comment);
-    expect(allComments.length).toBe(1);  // exactly the B-list marker
+    expect(allComments.length).toBe(1); // exactly the B-list marker
     expect(allComments[0].data).toBe('kf-list:0');
 
     // Bring A back. Should rebuild from scratch — no ghost rows.
@@ -431,10 +517,20 @@ describe('Round 3: cleanupOrphanBindings completeness', () => {
       <div>
         {phase.value === 'AB' ? (
           <>
-            <ul className="A">{each(itemsA, (it) => <li data-key={it.id}>{it.id}</li>)}</ul>
-            <ul className="B">{each(itemsB, (it) => <li data-key={it.id}>{it.id}</li>)}</ul>
+            <ul className="A">
+              {each(itemsA, (it) => (
+                <li data-key={it.id}>{it.id}</li>
+              ))}
+            </ul>
+            <ul className="B">
+              {each(itemsB, (it) => (
+                <li data-key={it.id}>{it.id}</li>
+              ))}
+            </ul>
           </>
-        ) : <p>nothing</p>}
+        ) : (
+          <p>nothing</p>
+        )}
       </div>
     ));
     expect(root.querySelectorAll('li').length).toBe(2);
@@ -460,9 +556,16 @@ describe('Round 3: cleanupOrphanBindings completeness', () => {
     const showA = signal(true);
     const sigA = arraySignal([{ id: 1, v: 'a' }]);
     mount(root, () => (
-      <div>{showA.value
-        ? <ul>{each(sigA, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>
-        : <p>hidden</p>}
+      <div>
+        {showA.value ? (
+          <ul>
+            {each(sigA, (r) => (
+              <li data-key={String(r.id)}>{r.v}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>hidden</p>
+        )}
       </div>
     ));
     expect(root.querySelectorAll('li').length).toBe(1);

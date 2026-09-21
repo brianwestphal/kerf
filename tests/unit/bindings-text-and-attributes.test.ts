@@ -8,12 +8,12 @@
  * snapshot fallback, teardown, and survival across a coarse (morph) re-render.
  */
 
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
-import { computed,signal } from '../../src/reactive.js';
+import { computed, signal } from '../../src/reactive.js';
 
 let root: HTMLElement;
 
@@ -163,8 +163,14 @@ describe('fine-grained bindings — on* / malformed-name rejection on the bound 
 
   it('throws when a signal is bound to onclick inside a mount — no handler installed', () => {
     const handler = signal('alert(1)');
-    const bag = { id: 'b', onclick: handler, children: 'go' } as unknown as AttrBag;
-    expect(() => mount(root, () => jsx('button', bag))).toThrow(/event-handler attribute/);
+    const bag = {
+      id: 'b',
+      onclick: handler,
+      children: 'go',
+    } as unknown as AttrBag;
+    expect(() => mount(root, () => jsx('button', bag))).toThrow(
+      /event-handler attribute/,
+    );
     // The render threw before registering the binding, so nothing mounted and —
     // critically — no live inline onclick handler was written to the DOM.
     expect(root.querySelector('#b')).toBeNull();
@@ -173,33 +179,48 @@ describe('fine-grained bindings — on* / malformed-name rejection on the bound 
   it('rejects an on* signal attribute case-insensitively (onMouseOver)', () => {
     const sig = signal('x');
     const bag = { onMouseOver: sig, children: 'x' } as unknown as AttrBag;
-    expect(() => mount(root, () => jsx('div', bag))).toThrow(/event-handler attribute/);
+    expect(() => mount(root, () => jsx('div', bag))).toThrow(
+      /event-handler attribute/,
+    );
   });
 
   it('rejects an on* signal attribute inside an each() row (row-scoped binding path)', () => {
     const sig = signal('alert(1)');
     const items = signal([{ id: 'r1' }]);
     const rowBag = (item: { id: string }) =>
-      ({ 'data-key': item.id, onclick: sig, children: item.id }) as unknown as AttrBag;
+      ({
+        'data-key': item.id,
+        onclick: sig,
+        children: item.id,
+      }) as unknown as AttrBag;
     expect(() =>
-      mount(root, () => jsx('ul', { children: each(items.value, (item) => jsx('li', rowBag(item))) })),
+      mount(root, () =>
+        jsx('ul', {
+          children: each(items.value, (item) => jsx('li', rowBag(item))),
+        }),
+      ),
     ).toThrow(/event-handler attribute/);
   });
 
-  it('rejects the on* NAME regardless of the signal\'s current value (value null)', () => {
+  it("rejects the on* NAME regardless of the signal's current value (value null)", () => {
     // Proves the guard keys on the attribute NAME, not the value: a null-valued
     // signal (which would otherwise emit/write nothing) is still rejected, so
     // the vector can't be smuggled in behind a currently-empty signal.
     const empty = signal<string | null>(null);
     const bag = { onclick: empty, children: 'x' } as unknown as AttrBag;
-    expect(() => jsx('button', bag).toString()).toThrow(/event-handler attribute/);
+    expect(() => jsx('button', bag).toString()).toThrow(
+      /event-handler attribute/,
+    );
   });
 
   it('rejects a signal bound to a malformed attribute name', () => {
     // Not injectable on the bound path (setAttribute throws InvalidCharacterError
     // rather than parsing markup), but rejected for one consistent contract.
     const sig = signal('y');
-    const bag = { 'x><img src=q onerror=alert(1)>': sig, children: 'z' } as unknown as AttrBag;
+    const bag = {
+      'x><img src=q onerror=alert(1)>': sig,
+      children: 'z',
+    } as unknown as AttrBag;
     expect(() => jsx('div', bag).toString()).toThrow(/invalid attribute name/);
   });
 });
@@ -221,11 +242,17 @@ describe('fine-grained bindings — SSR / toString fallback', () => {
 
   it('escapes a snapshotted text value', () => {
     const s = signal('<script>');
-    expect(jsx('div', { children: s }).toString()).toBe('<div>&lt;script&gt;</div>');
+    expect(jsx('div', { children: s }).toString()).toBe(
+      '<div>&lt;script&gt;</div>',
+    );
   });
 
   it('snapshots a nullish / boolean signal text child to empty', () => {
-    expect(jsx('div', { children: signal(null) }).toString()).toBe('<div></div>');
-    expect(jsx('div', { children: signal(true) }).toString()).toBe('<div></div>');
+    expect(jsx('div', { children: signal(null) }).toString()).toBe(
+      '<div></div>',
+    );
+    expect(jsx('div', { children: signal(true) }).toString()).toBe(
+      '<div></div>',
+    );
   });
 });

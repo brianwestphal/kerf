@@ -22,10 +22,9 @@ export {
   type Signal,
   signal,
 } from './reactive.js';
-export { renderDocument, type RenderDocumentOptions } from './renderDocument.js';
 export {
-  defineStore,
-  resetAllStores,
-  type Store,
-} from './store.js';
+  renderDocument,
+  type RenderDocumentOptions,
+} from './renderDocument.js';
+export { defineStore, resetAllStores, type Store } from './store.js';
 export { toElement } from './toElement.js';

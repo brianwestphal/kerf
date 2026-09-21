@@ -4,15 +4,20 @@ import { expect, test } from '@playwright/test';
 // wireTokenSearchFields hooks a real app reaches for — a focusout keep-open
 // exception, the atomic-chip keyboard, and the onEdit readout — across all three
 // engines.
-test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', async ({ page }) => {
+test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=token-search-field');
 
-  const field = page.locator('.token-search-adoption [data-component="token-search-field"]');
+  const field = page.locator(
+    '.token-search-adoption [data-component="token-search-field"]',
+  );
   const editor = field.getByRole('searchbox', { name: 'Filter records' });
   const readout = page.locator('[data-demo-adoption-readout]');
   const chips = field.locator('[data-component="token-search-token"]');
-  const suggestion = (name: string) => page.locator('.token-search-adoption__suggestion', { hasText: name });
+  const suggestion = (name: string) =>
+    page.locator('.token-search-adoption__suggestion', { hasText: name });
 
   // Starts expanded and empty (the app owns `expanded`).
   await expect(field).toHaveAttribute('data-expanded', 'true');
@@ -27,7 +32,12 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
   // Empty the field so collapse-on-empty-blur is armed.
   await editor.evaluate((element) => {
     element.textContent = '';
-    element.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'deleteContentBackward' }));
+    element.dispatchEvent(
+      new InputEvent('input', {
+        bubbles: true,
+        inputType: 'deleteContentBackward',
+      }),
+    );
   });
   await expect(field).toHaveAttribute('data-expanded', 'true');
 
@@ -82,7 +92,11 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
     const before = document.createRange();
     before.setStart(element, 0);
     before.setEnd(caret.startContainer, caret.startOffset);
-    return before.cloneContents().querySelector('[data-component="token-search-token"]') !== null;
+    return (
+      before
+        .cloneContents()
+        .querySelector('[data-component="token-search-token"]') !== null
+    );
   });
   expect(chipBehindCaret).toBe(true);
 });

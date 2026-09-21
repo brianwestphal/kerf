@@ -30,10 +30,10 @@
  * must never hold a Proxy.
  */
 
-const RULE_MESSAGE
-  = 'kerf: store state is read-only — all writes must go through actions '
-  + '(build a new state object and pass it to `set()`). Mutating the object '
-  + 'returned by `get()` is a Rule 8 violation and never notifies subscribers.';
+const RULE_MESSAGE =
+  'kerf: store state is read-only — all writes must go through actions ' +
+  '(build a new state object and pass it to `set()`). Mutating the object ' +
+  'returned by `get()` is a Rule 8 violation and never notifies subscribers.';
 
 /** proxy → its raw target. Lets `toRaw()` unwrap a value derived from `get()`. */
 const proxyToRaw = new WeakMap<object, object>();

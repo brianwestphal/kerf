@@ -76,13 +76,13 @@ export function maybeWarnStaleBinding(
     if (warnedHoles.has(cur.id)) continue;
     warnedHoles.add(cur.id);
     console.warn(
-      `kerf: fine-grained binding ${describeHole(cur)} switched to a different signal instance `
-      + 'on a render whose static-surrounds HTML was byte-for-byte unchanged. On that fast path kerf '
-      + 'keeps the original binding effect and does NOT re-bind, so this hole is now stale — it still '
-      + 'tracks the FIRST signal instance and will not reflect the new one. Bind one computed that '
-      + 'switches internally (e.g. class={computed(() => cond.value ? sigA.value : sigB.value)}) instead '
-      + 'of switching which signal instance you bind (see docs/2-reactivity §2.9). '
-      + 'Set KERF_DEV_WARN_STALE_BINDING=0 (or unset it) to silence this warning.',
+      `kerf: fine-grained binding ${describeHole(cur)} switched to a different signal instance ` +
+        'on a render whose static-surrounds HTML was byte-for-byte unchanged. On that fast path kerf ' +
+        'keeps the original binding effect and does NOT re-bind, so this hole is now stale — it still ' +
+        'tracks the FIRST signal instance and will not reflect the new one. Bind one computed that ' +
+        'switches internally (e.g. class={computed(() => cond.value ? sigA.value : sigB.value)}) instead ' +
+        'of switching which signal instance you bind (see docs/2-reactivity §2.9). ' +
+        'Set KERF_DEV_WARN_STALE_BINDING=0 (or unset it) to silence this warning.',
     );
   }
 }

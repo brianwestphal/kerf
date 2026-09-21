@@ -25,36 +25,46 @@ function buildLive(html: string): Element {
 }
 
 describe('fast-paths internal — tryAttributeOnlyFastPath bail branches', () => {
-  it('bails when oldHtml has no \'>\' at all', () => {
+  it("bails when oldHtml has no '>' at all", () => {
     const live = buildLive('<li></li>');
-    expect(tryAttributeOnlyFastPath(live, 'no-tag-here', '<li></li>')).toBe(false);
+    expect(tryAttributeOnlyFastPath(live, 'no-tag-here', '<li></li>')).toBe(
+      false,
+    );
   });
 
-  it('bails when newHtml has no \'>\' at all', () => {
+  it("bails when newHtml has no '>' at all", () => {
     const live = buildLive('<li></li>');
-    expect(tryAttributeOnlyFastPath(live, '<li></li>', 'no-tag-here')).toBe(false);
+    expect(tryAttributeOnlyFastPath(live, '<li></li>', 'no-tag-here')).toBe(
+      false,
+    );
   });
 
-  it('bails when the tail after \'>\' differs in length', () => {
+  it("bails when the tail after '>' differs in length", () => {
     const live = buildLive('<li>x</li>');
-    expect(tryAttributeOnlyFastPath(live, '<li>x</li>', '<li>xx</li>')).toBe(false);
+    expect(tryAttributeOnlyFastPath(live, '<li>x</li>', '<li>xx</li>')).toBe(
+      false,
+    );
   });
 
-  it('bails when the tail after \'>\' differs in content', () => {
+  it("bails when the tail after '>' differs in content", () => {
     const live = buildLive('<li>x</li>');
-    expect(tryAttributeOnlyFastPath(live, '<li>x</li>', '<li>y</li>')).toBe(false);
+    expect(tryAttributeOnlyFastPath(live, '<li>x</li>', '<li>y</li>')).toBe(
+      false,
+    );
   });
 
   it('bails when tag names differ', () => {
     const live = buildLive('<li class="a"></li>');
-    expect(tryAttributeOnlyFastPath(
-      live,
-      '<li class="a"></li>',
-      '<ul class="b"></ul>',
-    )).toBe(false);
+    expect(
+      tryAttributeOnlyFastPath(
+        live,
+        '<li class="a"></li>',
+        '<ul class="b"></ul>',
+      ),
+    ).toBe(false);
   });
 
-  it('bails when an attribute name is namespaced (contains \':\')', () => {
+  it("bails when an attribute name is namespaced (contains ':')", () => {
     // `xlink:href` is the SVG-namespace attribute kerf might emit alongside
     // SVG `<use>` elements. parseOpeningTag accepts the name (no `:` lexer
     // rule), but the pre-validate sweep rejects it.
@@ -66,40 +76,54 @@ describe('fast-paths internal — tryAttributeOnlyFastPath bail branches', () =>
 
   it('bails on malformed parseOpeningTag: empty tag name', () => {
     const live = buildLive('<li></li>');
-    expect(tryAttributeOnlyFastPath(live, '< x="a"></li>', '< x="b"></li>')).toBe(false);
+    expect(
+      tryAttributeOnlyFastPath(live, '< x="a"></li>', '< x="b"></li>'),
+    ).toBe(false);
   });
 
   it('bails on malformed parseOpeningTag: unquoted attribute value', () => {
     const live = buildLive('<li></li>');
-    expect(tryAttributeOnlyFastPath(live, '<li x=a></li>', '<li x=b></li>')).toBe(false);
+    expect(
+      tryAttributeOnlyFastPath(live, '<li x=a></li>', '<li x=b></li>'),
+    ).toBe(false);
   });
 
-  it('bails on malformed parseOpeningTag: empty attribute name (stray \'=\')', () => {
+  it("bails on malformed parseOpeningTag: empty attribute name (stray '=')", () => {
     const live = buildLive('<li></li>');
-    expect(tryAttributeOnlyFastPath(live, '<li ="a"></li>', '<li ="b"></li>')).toBe(false);
+    expect(
+      tryAttributeOnlyFastPath(live, '<li ="a"></li>', '<li ="b"></li>'),
+    ).toBe(false);
   });
 
   it('bails on malformed parseOpeningTag: unterminated quoted value', () => {
     const live = buildLive('<li></li>');
-    expect(tryAttributeOnlyFastPath(live, '<li x="a></li>', '<li x="b></li>')).toBe(false);
+    expect(
+      tryAttributeOnlyFastPath(live, '<li x="a></li>', '<li x="b></li>'),
+    ).toBe(false);
   });
 
-  it('bails on malformed input: \'=\' at end of opening tag with no value', () => {
+  it("bails on malformed input: '=' at end of opening tag with no value", () => {
     const live = buildLive('<li></li>');
-    expect(tryAttributeOnlyFastPath(live, '<li x= ></li>', '<li y= ></li>')).toBe(false);
+    expect(
+      tryAttributeOnlyFastPath(live, '<li x= ></li>', '<li y= ></li>'),
+    ).toBe(false);
   });
 
-  it('bails when the opening tag does not start with \'<\' (HTML without leading tag)', () => {
+  it("bails when the opening tag does not start with '<' (HTML without leading tag)", () => {
     const live = buildLive('<li></li>');
-    expect(tryAttributeOnlyFastPath(live, 'a>b<li></li>', 'a>c<li></li>')).toBe(false);
+    expect(tryAttributeOnlyFastPath(live, 'a>b<li></li>', 'a>c<li></li>')).toBe(
+      false,
+    );
   });
 });
 
 describe('fast-paths internal — tryAttributeOnlyFastPath success branches', () => {
-  it('parses a boolean attribute (no \'=value\') without bailing', () => {
+  it("parses a boolean attribute (no '=value') without bailing", () => {
     const live = document.createElement('input');
     live.setAttribute('autofocus', '');
-    expect(tryAttributeOnlyFastPath(live, '<input autofocus>', '<input>')).toBe(true);
+    expect(tryAttributeOnlyFastPath(live, '<input autofocus>', '<input>')).toBe(
+      true,
+    );
     expect(live.hasAttribute('autofocus')).toBe(false);
   });
 
@@ -125,26 +149,32 @@ describe('fast-paths internal — tryAttributeOnlyFastPath success branches', ()
     expect(live.hasAttribute('open')).toBe(true);
   });
 
-  it('tolerates whitespace around \'=\' in attribute syntax', () => {
+  it("tolerates whitespace around '=' in attribute syntax", () => {
     // Hand-crafted HTML with `attr = "value"`. Kerf's JSX runtime never
     // emits this shape, but the parser handles it for robustness.
     const live = document.createElement('li');
     live.setAttribute('x', 'a');
-    expect(tryAttributeOnlyFastPath(live, '<li x = "a"></li>', '<li x = "b"></li>')).toBe(true);
+    expect(
+      tryAttributeOnlyFastPath(live, '<li x = "a"></li>', '<li x = "b"></li>'),
+    ).toBe(true);
     expect(live.getAttribute('x')).toBe('b');
   });
 
-  it('parses self-closing-style opening tag (trailing slash before \'>\')', () => {
+  it("parses self-closing-style opening tag (trailing slash before '>')", () => {
     const live = document.createElement('br');
     live.setAttribute('class', 'a');
-    expect(tryAttributeOnlyFastPath(live, '<br class="a"/>', '<br class="b"/>')).toBe(true);
+    expect(
+      tryAttributeOnlyFastPath(live, '<br class="a"/>', '<br class="b"/>'),
+    ).toBe(true);
     expect(live.getAttribute('class')).toBe('b');
   });
 
   it('tolerates trailing whitespace inside the opening tag', () => {
     const live = document.createElement('li');
     live.setAttribute('x', 'a');
-    expect(tryAttributeOnlyFastPath(live, '<li x="a" ></li>', '<li x="b" ></li>')).toBe(true);
+    expect(
+      tryAttributeOnlyFastPath(live, '<li x="a" ></li>', '<li x="b" ></li>'),
+    ).toBe(true);
     expect(live.getAttribute('x')).toBe('b');
   });
 });
@@ -152,46 +182,52 @@ describe('fast-paths internal — tryAttributeOnlyFastPath success branches', ()
 describe('fast-paths internal — tryTextContentFastPath bail branches', () => {
   it('bails when the equal-prefix is zero (diff starts at column 0)', () => {
     const live = buildLive('<li>x</li>');
-    expect(tryTextContentFastPath(live, '<li>x</li>', '<ul>x</ul>')).toBe(false);
+    expect(tryTextContentFastPath(live, '<li>x</li>', '<ul>x</ul>')).toBe(
+      false,
+    );
   });
 
   it('bails when the boundary char before the diff is unsafe (inside an attr value)', () => {
     const live = buildLive('<li title="x">y</li>');
-    expect(tryTextContentFastPath(
-      live,
-      '<li title="x">y</li>',
-      '<li title="z">y</li>',
-    )).toBe(false);
+    expect(
+      tryTextContentFastPath(
+        live,
+        '<li title="x">y</li>',
+        '<li title="z">y</li>',
+      ),
+    ).toBe(false);
   });
 
-  it('bails when the diff window contains \'<\' (structural change)', () => {
+  it("bails when the diff window contains '<' (structural change)", () => {
     const live = buildLive('<li>a</li>');
-    expect(tryTextContentFastPath(live, '<li>a</li>', '<li>a<br></li>')).toBe(false);
+    expect(tryTextContentFastPath(live, '<li>a</li>', '<li>a<br></li>')).toBe(
+      false,
+    );
   });
 
   it('bails when the live text node does not match what oldHtml expected', () => {
     const live = buildLive('<li>original</li>');
     (live.firstChild as Text).nodeValue = 'mutated';
-    expect(tryTextContentFastPath(
-      live,
-      '<li>original</li>',
-      '<li>updated</li>',
-    )).toBe(false);
+    expect(
+      tryTextContentFastPath(live, '<li>original</li>', '<li>updated</li>'),
+    ).toBe(false);
   });
 
-  it('bails when oldHtml has no preceding \'>\' (degenerate input)', () => {
+  it("bails when oldHtml has no preceding '>' (degenerate input)", () => {
     const live = buildLive('<li>x</li>');
     expect(tryTextContentFastPath(live, 'abcde', 'abcfg')).toBe(false);
   });
 
-  it('bails when oldHtml has no following \'<\' after the diff (degenerate input)', () => {
+  it("bails when oldHtml has no following '<' after the diff (degenerate input)", () => {
     const live = buildLive('<li>x</li>');
     expect(tryTextContentFastPath(live, '<li>old', '<li>new')).toBe(false);
   });
 
   it('bails when the text node index walks past the live tree', () => {
     const live = document.createElement('li');
-    expect(tryTextContentFastPath(live, '<li>x</li>', '<li>y</li>')).toBe(false);
+    expect(tryTextContentFastPath(live, '<li>x</li>', '<li>y</li>')).toBe(
+      false,
+    );
   });
 
   it('bails when a binding text marker precedes the diff (KF-374 — the live row carries an inserted node the HTML lacks)', () => {
@@ -205,22 +241,26 @@ describe('fast-paths internal — tryTextContentFastPath bail branches', () => {
     const live = buildLive('<li><span>x</span><!--kfbr:t0-->7 / </li>');
     const marker = live.childNodes[1] as Comment;
     marker.after(document.createTextNode('7 / ')); // the wiring-inserted bound node
-    expect(tryTextContentFastPath(
-      live,
-      '<li><span>x</span><!--kfbr:t0-->7 / </li>',
-      '<li><span>x</span><!--kfbr:t0-->8 / </li>',
-    )).toBe(false);
+    expect(
+      tryTextContentFastPath(
+        live,
+        '<li><span>x</span><!--kfbr:t0-->7 / </li>',
+        '<li><span>x</span><!--kfbr:t0-->8 / </li>',
+      ),
+    ).toBe(false);
     // Neither the bound node nor the static text was touched.
     expect(live.textContent).toBe('x7 / 7 / ');
   });
 
   it('stays on the fast path when the only binding marker sits after the diff', () => {
     const live = buildLive('<li>1 / <!--kfbr:t0--></li>');
-    expect(tryTextContentFastPath(
-      live,
-      '<li>1 / <!--kfbr:t0--></li>',
-      '<li>2 / <!--kfbr:t0--></li>',
-    )).toBe(true);
+    expect(
+      tryTextContentFastPath(
+        live,
+        '<li>1 / <!--kfbr:t0--></li>',
+        '<li>2 / <!--kfbr:t0--></li>',
+      ),
+    ).toBe(true);
     expect(live.textContent).toBe('2 / ');
   });
 });
@@ -230,11 +270,13 @@ describe('fast-paths internal — tryTextContentFastPath walk-and-find', () => {
     // countTextNodesBefore walks past 'x' (text branch);
     // nthTextNodeDescendant walks past 'x' (count++) before reaching the target.
     const live = buildLive('<li>x<span>y</span></li>');
-    expect(tryTextContentFastPath(
-      live,
-      '<li>x<span>y</span></li>',
-      '<li>x<span>z</span></li>',
-    )).toBe(true);
+    expect(
+      tryTextContentFastPath(
+        live,
+        '<li>x<span>y</span></li>',
+        '<li>x<span>z</span></li>',
+      ),
+    ).toBe(true);
     expect(live.outerHTML).toBe('<li>x<span>z</span></li>');
   });
 
@@ -242,11 +284,13 @@ describe('fast-paths internal — tryTextContentFastPath walk-and-find', () => {
     // After walk(span) sets result, the parent walk(li)'s loop iterates
     // to 'z' but the early-return guard short-circuits.
     const live = buildLive('<li><span>y</span>z</li>');
-    expect(tryTextContentFastPath(
-      live,
-      '<li><span>y</span>z</li>',
-      '<li><span>w</span>z</li>',
-    )).toBe(true);
+    expect(
+      tryTextContentFastPath(
+        live,
+        '<li><span>y</span>z</li>',
+        '<li><span>w</span>z</li>',
+      ),
+    ).toBe(true);
     expect(live.outerHTML).toBe('<li><span>w</span>z</li>');
   });
 });

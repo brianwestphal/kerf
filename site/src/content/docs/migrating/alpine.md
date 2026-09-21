@@ -9,33 +9,33 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 
 ## 1. Bundle delta
 
-| | Min + gz, runtime only |
-| --- | --- |
-| `alpinejs` 3.14 | ~14 KB |
-| `kerfjs` (incl. signals) | ~12 KB |
-| **Delta** | **~2 KB lighter** |
+|                          | Min + gz, runtime only |
+| ------------------------ | ---------------------- |
+| `alpinejs` 3.14          | ~14 KB                 |
+| `kerfjs` (incl. signals) | ~12 KB                 |
+| **Delta**                | **~2 KB lighter**      |
 
 But the realistic trade is bigger than the runtime row suggests: Alpine wants no build step, kerf wants one. If your Alpine app is currently `<script src="alpine.js">` + sprinkles of `x-data` on server-rendered HTML, kerf changes the shape of how the page is assembled. Static-site shells (Astro / Hono / 11ty / Rails / Phoenix) + per-island `mount()` is a clean fit; replacing Alpine on a fully server-rendered page is more disruptive.
 
 ## 2. Mental-model translations
 
-| Alpine | Kerf | Notes |
-| --- | --- | --- |
-| `x-data="{ count: 0 }"` (local) | `signal(0)` (module-scoped) | Kerf state lives in the JS module, not on a DOM element. |
-| `Alpine.store('todos', { ... })` | `defineStore({ initial, actions })` | Same shape — initial state + named actions. |
-| `x-text="todo.text"` | `{todo.text}` in JSX | JSX expressions are the template. |
-| `x-html="raw"` | `{raw('<b>...</b>')}` from `kerfjs` | Same intent, escape-by-default; opt in with `raw()`. |
-| `x-show="open"` | `{open && <div>...</div>}` | Ternary / `&&` in JSX. There's no separate hide-vs-remove distinction — the element is in the output or it isn't. |
-| `x-if="cond"` | `{cond ? <a/> : <b/>}` | Same idea as `x-show`; kerf doesn't have a non-removal "hide" mode. |
-| `x-for="todo in items"` | `each(items, (todo) => <li.../>, (todo) => todo.id)` | `each` takes the array, the row renderer, and a key function. |
-| `:key="todo.id"` | `data-key={todo.id}` *and* the third arg to `each` | DOM key + memo key. |
-| `x-model="input"` | input + `delegate(root, 'input', ...)` | No two-way binding — you wire the read and the write yourself. Three lines instead of one attribute. |
-| `@click="toggle(id)"` | `delegate(root, 'click', '[data-action="toggle"]', fn)` | One delegated listener per action. |
-| `@click.prevent` | `e.preventDefault()` inside the handler | Modifiers don't exist; do it in JS. |
-| `@keydown.enter` | `if (e.key !== 'Enter') return` | Same. |
-| `x-init="setup()"` | top-level call or `effect(() => setup())` | No lifecycle — modules run when they import. |
-| `x-ref="input"` then `$refs.input` | `el` argument inside the `delegate` handler | You get the matched element; refs by name aren't a kerf concept. |
-| `$watch('items', fn)` | `effect(() => { fn(store.state.value.items); })` | Auto-tracked — read the signal inside the effect. |
+| Alpine                             | Kerf                                                    | Notes                                                                                                             |
+| ---------------------------------- | ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `x-data="{ count: 0 }"` (local)    | `signal(0)` (module-scoped)                             | Kerf state lives in the JS module, not on a DOM element.                                                          |
+| `Alpine.store('todos', { ... })`   | `defineStore({ initial, actions })`                     | Same shape — initial state + named actions.                                                                       |
+| `x-text="todo.text"`               | `{todo.text}` in JSX                                    | JSX expressions are the template.                                                                                 |
+| `x-html="raw"`                     | `{raw('<b>...</b>')}` from `kerfjs`                     | Same intent, escape-by-default; opt in with `raw()`.                                                              |
+| `x-show="open"`                    | `{open && <div>...</div>}`                              | Ternary / `&&` in JSX. There's no separate hide-vs-remove distinction — the element is in the output or it isn't. |
+| `x-if="cond"`                      | `{cond ? <a/> : <b/>}`                                  | Same idea as `x-show`; kerf doesn't have a non-removal "hide" mode.                                               |
+| `x-for="todo in items"`            | `each(items, (todo) => <li.../>, (todo) => todo.id)`    | `each` takes the array, the row renderer, and a key function.                                                     |
+| `:key="todo.id"`                   | `data-key={todo.id}` _and_ the third arg to `each`      | DOM key + memo key.                                                                                               |
+| `x-model="input"`                  | input + `delegate(root, 'input', ...)`                  | No two-way binding — you wire the read and the write yourself. Three lines instead of one attribute.              |
+| `@click="toggle(id)"`              | `delegate(root, 'click', '[data-action="toggle"]', fn)` | One delegated listener per action.                                                                                |
+| `@click.prevent`                   | `e.preventDefault()` inside the handler                 | Modifiers don't exist; do it in JS.                                                                               |
+| `@keydown.enter`                   | `if (e.key !== 'Enter') return`                         | Same.                                                                                                             |
+| `x-init="setup()"`                 | top-level call or `effect(() => setup())`               | No lifecycle — modules run when they import.                                                                      |
+| `x-ref="input"` then `$refs.input` | `el` argument inside the `delegate` handler             | You get the matched element; refs by name aren't a kerf concept.                                                  |
+| `$watch('items', fn)`              | `effect(() => { fn(store.state.value.items); })`        | Auto-tracked — read the signal inside the effect.                                                                 |
 
 ## 3. Section by section
 
@@ -46,10 +46,10 @@ The same TodoMVC, section by section. The Alpine side is a faithful HTML-first v
 ```html
 <!-- Alpine -->
 <script>
-  document.addEventListener('alpine:init', () => {
-    Alpine.store('todos', {
-      items: JSON.parse(localStorage.getItem('alpine-todomvc') || '[]'),
-      filter: 'all',
+  document.addEventListener("alpine:init", () => {
+    Alpine.store("todos", {
+      items: JSON.parse(localStorage.getItem("alpine-todomvc") || "[]"),
+      filter: "all",
       editingId: null,
       add(text) {
         const t = text.trim();
@@ -62,8 +62,13 @@ The same TodoMVC, section by section. The Alpine side is a faithful HTML-first v
         if (it) it.done = !it.done;
         this.persist();
       },
-      remove(id) { this.items = this.items.filter((x) => x.id !== id); this.persist(); },
-      persist() { localStorage.setItem('alpine-todomvc', JSON.stringify(this.items)); },
+      remove(id) {
+        this.items = this.items.filter((x) => x.id !== id);
+        this.persist();
+      },
+      persist() {
+        localStorage.setItem("alpine-todomvc", JSON.stringify(this.items));
+      },
     });
   });
 </script>
@@ -71,34 +76,57 @@ The same TodoMVC, section by section. The Alpine side is a faithful HTML-first v
 
 ```ts
 // Kerf
-import { defineStore, mount, each, delegate, delegateCapture, effect, attr, type AttrSpec } from 'kerfjs';
+import {
+  defineStore,
+  mount,
+  each,
+  delegate,
+  delegateCapture,
+  effect,
+  attr,
+  type AttrSpec,
+} from "kerfjs";
 
 const ACTIONS = {
-  toggle: attr('data-action', 'toggle'),
-  remove: attr('data-action', 'remove'),
-  edit:   attr('data-action', 'edit'),
-} as const satisfies Record<string, AttrSpec<'data-action'>>;
-const ITEM = { id: attr('data-id') } as const;
+  toggle: attr("data-action", "toggle"),
+  remove: attr("data-action", "remove"),
+  edit: attr("data-action", "edit"),
+} as const satisfies Record<string, AttrSpec<"data-action">>;
+const ITEM = { id: attr("data-id") } as const;
 
 const todos = defineStore({
-  initial: () => ({ items: load(), filter: 'all' as Filter, editingId: null as string | null }),
+  initial: () => ({
+    items: load(),
+    filter: "all" as Filter,
+    editingId: null as string | null,
+  }),
   actions: (set, get) => ({
     add: (text: string) => {
       const t = text.trim();
       if (!t) return;
-      set({ ...get(), items: [...get().items, { id: crypto.randomUUID(), text: t, done: false }] });
+      set({
+        ...get(),
+        items: [
+          ...get().items,
+          { id: crypto.randomUUID(), text: t, done: false },
+        ],
+      });
     },
-    toggle: (id: string) => set({
-      ...get(),
-      items: get().items.map((it) => (it.id === id ? { ...it, done: !it.done } : it)),
-    }),
-    remove: (id: string) => set({ ...get(), items: get().items.filter((it) => it.id !== id) }),
+    toggle: (id: string) =>
+      set({
+        ...get(),
+        items: get().items.map((it) =>
+          it.id === id ? { ...it, done: !it.done } : it,
+        ),
+      }),
+    remove: (id: string) =>
+      set({ ...get(), items: get().items.filter((it) => it.id !== id) }),
     // ...
   }),
 });
 
 effect(() => {
-  localStorage.setItem('kerf-todomvc', JSON.stringify(todos.state.value.items));
+  localStorage.setItem("kerf-todomvc", JSON.stringify(todos.state.value.items));
 });
 ```
 
@@ -130,7 +158,12 @@ mount(root, () => {
     <div class="todoapp">
       <header>
         <h1>todos</h1>
-        <input class="new-todo" data-new placeholder="What needs to be done?" autofocus />
+        <input
+          class="new-todo"
+          data-new
+          placeholder="What needs to be done?"
+          autofocus
+        />
       </header>
       {/* list goes here */}
     </div>
@@ -153,8 +186,15 @@ What moved: the HTML still looks like HTML — JSX is HTML's superset for contro
         <input class="edit" :value="todo.text" x-init="$el.focus()" />
       </template>
       <template x-if="$store.todos.editingId !== todo.id">
-        <input type="checkbox" :checked="todo.done" @change="$store.todos.toggle(todo.id)" />
-        <label @dblclick="$store.todos.editingId = todo.id" x-text="todo.text"></label>
+        <input
+          type="checkbox"
+          :checked="todo.done"
+          @change="$store.todos.toggle(todo.id)"
+        />
+        <label
+          @dblclick="$store.todos.editingId = todo.id"
+          x-text="todo.text"
+        ></label>
         <button class="destroy" @click="$store.todos.remove(todo.id)">×</button>
       </template>
     </li>
@@ -167,25 +207,45 @@ What moved: the HTML still looks like HTML — JSX is HTML's superset for contro
 <ul class="todo-list">
   {each(
     items.filter((it) =>
-      filter === 'active' ? !it.done : filter === 'done' ? it.done : true,
+      filter === "active" ? !it.done : filter === "done" ? it.done : true,
     ),
     (todo) => (
       <li
         data-key={todo.id}
-        class={`${todo.done ? 'done' : ''} ${editingId === todo.id ? 'editing' : ''}`}
+        class={`${todo.done ? "done" : ""} ${editingId === todo.id ? "editing" : ""}`}
       >
         {editingId === todo.id ? (
-          <input class="edit" data-edit data-id={todo.id} value={todo.text} autofocus />
+          <input
+            class="edit"
+            data-edit
+            data-id={todo.id}
+            value={todo.text}
+            autofocus
+          />
         ) : (
           <>
-            <input type="checkbox" class="toggle" {...ACTIONS.toggle.attrs} {...ITEM.id(todo.id)} checked={todo.done} />
-            <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>{todo.text}</label>
-            <button class="destroy" {...ACTIONS.remove.attrs} {...ITEM.id(todo.id)}>×</button>
+            <input
+              type="checkbox"
+              class="toggle"
+              {...ACTIONS.toggle.attrs}
+              {...ITEM.id(todo.id)}
+              checked={todo.done}
+            />
+            <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>
+              {todo.text}
+            </label>
+            <button
+              class="destroy"
+              {...ACTIONS.remove.attrs}
+              {...ITEM.id(todo.id)}
+            >
+              ×
+            </button>
           </>
         )}
       </li>
     ),
-    (todo) => `${todo.id}-${editingId === todo.id ? 'edit' : 'view'}`,
+    (todo) => `${todo.id}-${editingId === todo.id ? "edit" : "view"}`,
   )}
 </ul>
 ```
@@ -196,31 +256,35 @@ What moved: `<template x-for>` → `each(items, render, key)`. The two `<templat
 
 ```html
 <!-- Alpine — handlers are on every node, parsed from attribute strings -->
-<input type="checkbox" :checked="todo.done" @change="$store.todos.toggle(todo.id)" />
+<input
+  type="checkbox"
+  :checked="todo.done"
+  @change="$store.todos.toggle(todo.id)"
+/>
 <button @click="$store.todos.remove(todo.id)">×</button>
 <label @dblclick="$store.todos.editingId = todo.id"></label>
 ```
 
 ```tsx
 // Kerf — handlers register once, at module load, on the root
-delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.toggle.selector, (_e, el) => {
   todos.actions.toggle((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.remove.selector, (_e, el) => {
   todos.actions.remove((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.edit.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.edit.selector, (_e, el) => {
   todos.actions.startEdit((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'keydown', '[data-new]', (e, el) => {
-  if ((e as KeyboardEvent).key !== 'Enter') return;
+delegate(root, "keydown", "[data-new]", (e, el) => {
+  if ((e as KeyboardEvent).key !== "Enter") return;
   const input = el as HTMLInputElement;
   todos.actions.add(input.value);
-  input.value = '';
+  input.value = "";
 });
 
 // Tier 2: blur doesn't bubble — capture phase is required.
-delegateCapture(root, 'blur', '[data-edit]', (_e, el) => {
+delegateCapture(root, "blur", "[data-edit]", (_e, el) => {
   const input = el as HTMLInputElement;
   if (todos.state.value.editingId === input.dataset.id) {
     todos.actions.commitEdit(input.dataset.id!, input.value);
@@ -244,7 +308,7 @@ What moved: all per-element `@click` / `@change` / `@dblclick` handlers consolid
 
 **No `Alpine.start()` or `<script defer>` cliffhanger.** Kerf modules run as soon as they're imported. Put the imports + signal definitions + `mount()` call at the top level of `main.tsx` and the app boots when the bundle loads. No event listener for "alpine:init."
 
-**`data-key` is required.** Alpine's `:key` is optional; kerf's `each` requires both `data-key={item.id}` on the row's top-level element *and* a key function as the third argument. Without them you'll see focus drop on insert/delete or stale row HTML on filter changes.
+**`data-key` is required.** Alpine's `:key` is optional; kerf's `each` requires both `data-key={item.id}` on the row's top-level element _and_ a key function as the third argument. Without them you'll see focus drop on insert/delete or stale row HTML on filter changes.
 
 **`<template>` doesn't render in kerf.** Alpine used `<template x-for>` and `<template x-if>` as syntactic carriers that didn't show in the DOM. Kerf JSX renders everything you write — Fragments (`<>...</>`) are the way to group siblings without adding a wrapper element.
 
@@ -254,13 +318,13 @@ Alpine isn't in the [krausest js-framework-benchmark](https://github.com/krauses
 
 For kerf's standing in the cluster, here are kerf's krausest numbers vs the closest-in-spirit lightweight frameworks (medians of 3 iterations, ms — lower is better):
 
-| Op | Vue 3.6 | Lit 3.2 | **Kerf 0.5** | vanjs 1.5 |
-| --- | --- | --- | --- | --- |
-| create 1k | 42.0 | 38.5 | 46.1 | 46.6 |
-| partial update | 22.5 | 21.9 | 44.6 | 41.8 |
-| swap rows | 23.6 | 28.9 | 22.3 | 23.7 |
-| select row | 6.8 | 9.3 | 27.6 | 14.3 |
-| remove row | 20.0 | 18.3 | 17.0 | 18.3 |
+| Op             | Vue 3.6 | Lit 3.2 | **Kerf 0.5** | vanjs 1.5 |
+| -------------- | ------- | ------- | ------------ | --------- |
+| create 1k      | 42.0    | 38.5    | 46.1         | 46.6      |
+| partial update | 22.5    | 21.9    | 44.6         | 41.8      |
+| swap rows      | 23.6    | 28.9    | 22.3         | 23.7      |
+| select row     | 6.8     | 9.3     | 27.6         | 14.3      |
+| remove row     | 20.0    | 18.3    | 17.0         | 18.3      |
 
 The shape of the trade: kerf lands in the small-runtime cluster on the bulk ops (create, swap, clear, remove), trades that against Vue / Lit / Solid on the per-row-targeted ops (select-row, partial-update) where their compilers can produce direct mutations.
 

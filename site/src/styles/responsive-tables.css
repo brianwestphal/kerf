@@ -15,21 +15,35 @@
   background:
     linear-gradient(to right, var(--sl-color-bg) 30%, transparent) 0 0,
     linear-gradient(to left, var(--sl-color-bg) 30%, transparent) 100% 0,
-    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.16), transparent) 0 0,
-    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.16), transparent) 100% 0;
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.16), transparent) 0
+      0,
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.16), transparent)
+      100% 0;
   background-repeat: no-repeat;
-  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-size:
+    40px 100%,
+    40px 100%,
+    14px 100%,
+    14px 100%;
   background-attachment: local, local, scroll, scroll;
 }
 
 /* The default shadow reads on light backgrounds; deepen it in dark mode. */
-:root[data-theme='dark'] .sl-markdown-content table:not(:where(.not-content *)) {
+:root[data-theme="dark"]
+  .sl-markdown-content
+  table:not(:where(.not-content *)) {
   background:
     linear-gradient(to right, var(--sl-color-bg) 30%, transparent) 0 0,
     linear-gradient(to left, var(--sl-color-bg) 30%, transparent) 100% 0,
-    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.55), transparent) 0 0,
-    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.55), transparent) 100% 0;
+    radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.55), transparent) 0
+      0,
+    radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.55), transparent)
+      100% 0;
   background-repeat: no-repeat;
-  background-size: 40px 100%, 40px 100%, 14px 100%, 14px 100%;
+  background-size:
+    40px 100%,
+    40px 100%,
+    14px 100%,
+    14px 100%;
   background-attachment: local, local, scroll, scroll;
 }

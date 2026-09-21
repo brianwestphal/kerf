@@ -44,7 +44,10 @@ export interface Throttled<A extends unknown[]> {
  * arguments. Every call within the quiet window resets the timer. `cancel()`
  * drops a pending call; `flush()` runs it immediately.
  */
-export function debounce<A extends unknown[]>(fn: (...args: A) => void, ms: number): Debounced<A> {
+export function debounce<A extends unknown[]>(
+  fn: (...args: A) => void,
+  ms: number,
+): Debounced<A> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let lastArgs: A | undefined;
 
@@ -84,7 +87,10 @@ export function debounce<A extends unknown[]>(fn: (...args: A) => void, ms: numb
  * pending trailing call and resets the window, even when called by a leading
  * or trailing callback; `flush()` runs a pending trailing call now.
  */
-export function throttle<A extends unknown[]>(fn: (...args: A) => void, ms: number): Throttled<A> {
+export function throttle<A extends unknown[]>(
+  fn: (...args: A) => void,
+  ms: number,
+): Throttled<A> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let trailingArgs: A | undefined;
 
@@ -140,7 +146,10 @@ export function throttle<A extends unknown[]>(fn: (...args: A) => void, ms: numb
  * `effect`) — intended for app-lifetime signals, not throwaway ones. For a
  * disposable variant, drive your own `effect` with {@link debounce}.
  */
-export function debouncedSignal<T>(source: ReadonlySignal<T>, ms: number): ReadonlySignal<T> {
+export function debouncedSignal<T>(
+  source: ReadonlySignal<T>,
+  ms: number,
+): ReadonlySignal<T> {
   const out = signal(source.value);
   const write = debounce((value: T) => {
     out.value = value;

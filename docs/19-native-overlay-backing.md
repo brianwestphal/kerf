@@ -16,12 +16,12 @@ common case but has three gaps a JS overlay cannot fully close:
 
 1. **Stacking.** The `<div>` sets **no `z-index`** — it wins only by being last in
    DOM order. Any page element with `position: fixed/absolute; z-index: N` (a
-   sticky header, a toast from another library) can paint *over* it. The browser
+   sticky header, a toast from another library) can paint _over_ it. The browser
    **top layer** (`dialog.showModal()`, `[popover]`) always renders above the
    entire page regardless of `z-index`.
 2. **Real modality / inerting.** kerf's focus trap only intercepts `Tab`.
    `dialog.showModal()` makes the rest of the document **`inert`** — pointer,
-   focus, *and* assistive-technology virtual-cursor navigation are all blocked. A
+   focus, _and_ assistive-technology virtual-cursor navigation are all blocked. A
    JS focus trap leaves the background reachable by AT and by pointer.
 3. **Light-dismiss for popovers.** The Popover API brings native light-dismiss and
    the `:popover-open` state for `popover()` / `tooltip()`.
@@ -33,7 +33,7 @@ keeping kerf's exact promise API and `render` slots.
 
 kerf is **structural-only and ships zero CSS.** Native `<dialog>` and `[popover]`
 carry **UA default styles** — a `::backdrop`, centering, a border, padding,
-`margin: auto`. Switching the *default* backing would silently inject those styles
+`margin: auto`. Switching the _default_ backing would silently inject those styles
 into every consumer's dialog, a behavior change for a no-CSS library; and a
 "structural reset" of those styles would itself be shipping CSS. So native backing
 is **opt-in** — a consumer asks for it per call (or wraps their own default) and
@@ -50,10 +50,10 @@ dialog-vs-popover; the function they called does:
 
 <div class="kerf-compare">
 
-| Surface | Modality | Native backing |
-| --- | --- | --- |
-| `overlay({ trap: true })`, `confirm`, `prompt`, `form`, `choice` | modal | `<dialog>` + `.showModal()` |
-| `overlay({ trap: false })`, `popover`, `tooltip` | non-modal | `[popover]` + `.showPopover()` |
+| Surface                                                          | Modality  | Native backing                 |
+| ---------------------------------------------------------------- | --------- | ------------------------------ |
+| `overlay({ trap: true })`, `confirm`, `prompt`, `form`, `choice` | modal     | `<dialog>` + `.showModal()`    |
+| `overlay({ trap: false })`, `popover`, `tooltip`                 | non-modal | `[popover]` + `.showPopover()` |
 
 </div>
 
@@ -109,7 +109,7 @@ const menu = popover(triggerEl, <Menu />, { native: true });
   reset would violate its zero-CSS contract.
 - **`container` is effectively a visual no-op.** The top layer ignores where the
   element lives in the DOM, so `container` no longer controls where the overlay
-  *appears* (it still governs which document the element is created in, which
+  _appears_ (it still governs which document the element is created in, which
   matters for nested-document / Tauri cases). No dev warning is emitted — it is
   documented behavior.
 - **Focus-restore is doubly handled.** `<dialog>` restores focus on close and kerf

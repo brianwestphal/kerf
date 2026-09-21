@@ -4,9 +4,9 @@
  * path.
  */
 
-import { describe,expect,it,vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
-import { ArraySignal,arraySignal } from '../../src/array-signal.js';
+import { ArraySignal, arraySignal } from '../../src/array-signal.js';
 import { each } from '../../src/index.js';
 
 describe('arraySignal — standalone API', () => {
@@ -14,7 +14,7 @@ describe('arraySignal — standalone API', () => {
     const seed = [{ id: 1 }, { id: 2 }];
     const sig = arraySignal(seed);
     expect(sig.value).toEqual(seed);
-    expect(sig.value).not.toBe(seed);  // defensive copy
+    expect(sig.value).not.toBe(seed); // defensive copy
   });
 
   it('seeds empty when no argument given', () => {
@@ -22,7 +22,10 @@ describe('arraySignal — standalone API', () => {
   });
 
   it('update replaces the item at the given index', () => {
-    const sig = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const sig = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
     sig.update(0, (r) => ({ ...r, label: 'X' }));
     expect(sig.value[0]).toEqual({ id: 1, label: 'X' });
     expect(sig.value[1]).toEqual({ id: 2, label: 'b' });
@@ -96,11 +99,15 @@ describe('arraySignal — standalone API', () => {
 
       expect(() => sig.update(invalidIndex, update)).toThrow(/out of bounds/);
       expect(update).not.toHaveBeenCalled();
-      expect(() => sig.insert(invalidIndex, { id: 3 })).toThrow(/out of bounds/);
+      expect(() => sig.insert(invalidIndex, { id: 3 })).toThrow(
+        /out of bounds/,
+      );
       expect(() => sig.remove(invalidIndex)).toThrow(/out of bounds/);
       expect(() => sig.move(invalidIndex, 0)).toThrow(/out of bounds/);
       expect(() => sig.move(0, invalidIndex)).toThrow(/out of bounds/);
-      expect(() => sig.move(invalidIndex, invalidIndex)).toThrow(/out of bounds/);
+      expect(() => sig.move(invalidIndex, invalidIndex)).toThrow(
+        /out of bounds/,
+      );
       expect(sig.value).toEqual([{ id: 1 }, { id: 2 }]);
       expect(sig._consumePatches()).toEqual([]);
     },
@@ -140,7 +147,10 @@ describe('arraySignal — standalone API', () => {
   });
 
   it('each(arraySignal) outside a mount context falls through to snapshot path', () => {
-    const sig = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const sig = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
     const out = each(sig, (it) => `<li>${it.label}</li>`);
     expect(out.toString()).toBe('<li>a</li><li>b</li>');
   });

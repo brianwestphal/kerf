@@ -9,7 +9,9 @@ import { expect, type Page, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
-  await page.waitForFunction(() => (window as unknown as { kerfReady: boolean }).kerfReady === true);
+  await page.waitForFunction(
+    () => (window as unknown as { kerfReady: boolean }).kerfReady === true,
+  );
 });
 
 async function setup(page: Page): Promise<void> {
@@ -21,9 +23,19 @@ async function setup(page: Page): Promise<void> {
     const router = createRouter({
       base: '/tests/browser/fixtures/index.html',
       routes: [
-        { path: '/', component: () => raw('<div class="page home">Home</div>') },
-        { path: '/users/:id', component: (p: any) => raw(`<div class="page user">User ${p.id}</div>`) },
-        { path: '*', component: () => raw('<div class="page nf">Not found</div>') },
+        {
+          path: '/',
+          component: () => raw('<div class="page home">Home</div>'),
+        },
+        {
+          path: '/users/:id',
+          component: (p: any) =>
+            raw(`<div class="page user">User ${p.id}</div>`),
+        },
+        {
+          path: '*',
+          component: () => raw('<div class="page nf">Not found</div>'),
+        },
       ],
     });
     (window as any)._router = router;
@@ -32,13 +44,17 @@ async function setup(page: Page): Promise<void> {
     const app = document.createElement('div');
     app.id = 'app';
     document.body.appendChild(app);
-    mount(app, () => raw(
-      `<nav>
+    mount(
+      app,
+      () =>
+        raw(
+          `<nav>
          <a id="home" href="/tests/browser/fixtures/index.html/" class="${router.activeClass('/', 'active').value}">Home</a>
          <a id="u1" href="/tests/browser/fixtures/index.html/users/1">User 1</a>
          <a id="u2" href="/tests/browser/fixtures/index.html/users/2">User 2</a>
        </nav>`,
-    ) as any);
+        ) as any,
+    );
     // The outlet lives in its own mount so navigation only re-renders the routed view.
     const outlet = document.createElement('div');
     outlet.id = 'outlet';
@@ -47,7 +63,9 @@ async function setup(page: Page): Promise<void> {
   });
 }
 
-test('a real link click routes without a reload; the outlet swaps', async ({ page }) => {
+test('a real link click routes without a reload; the outlet swaps', async ({
+  page,
+}) => {
   await setup(page);
   await expect(page.locator('#outlet .home')).toHaveText('Home');
 
@@ -59,7 +77,9 @@ test('a real link click routes without a reload; the outlet swaps', async ({ pag
   await expect(page.locator('#outlet .home')).toHaveCount(0);
 });
 
-test('a base-prefix sibling link is not intercepted as an in-app route', async ({ page }) => {
+test('a base-prefix sibling link is not intercepted as an in-app route', async ({
+  page,
+}) => {
   await setup(page);
   await page.evaluate(() => {
     const sibling = document.createElement('a');
@@ -70,17 +90,22 @@ test('a base-prefix sibling link is not intercepted as an in-app route', async (
     // Registered after the router's delegated body listener: suppress the real
     // navigation only after kerf has had the chance to decide whether to claim it.
     document.body.addEventListener('click', (event) => {
-      if ((event.target as Element).closest('#base-prefix-sibling')) event.preventDefault();
+      if ((event.target as Element).closest('#base-prefix-sibling'))
+        event.preventDefault();
     });
   });
 
   await page.locator('#base-prefix-sibling').click();
   expect(page.url()).toContain('/tests/browser/fixtures/index.html');
-  expect(await page.evaluate(() => (window as any)._router.route.value.path)).toBe('/');
+  expect(
+    await page.evaluate(() => (window as any)._router.route.value.path),
+  ).toBe('/');
   await expect(page.locator('#outlet .home')).toHaveText('Home');
 });
 
-test('malformed encoded named and wildcard params fail closed without URIError', async ({ page }) => {
+test('malformed encoded named and wildcard params fail closed without URIError', async ({
+  page,
+}) => {
   await setup(page);
   const result = await page.evaluate(() => {
     const router = (window as any)._router;
@@ -91,7 +116,10 @@ test('malformed encoded named and wildcard params fail closed without URIError',
     } catch {
       namedThrew = true;
     }
-    const named = { path: router.route.value.path, params: router.route.value.params };
+    const named = {
+      path: router.route.value.path,
+      params: router.route.value.params,
+    };
     try {
       router.navigate('/files/good/%E0%A4%A');
     } catch {
@@ -101,7 +129,10 @@ test('malformed encoded named and wildcard params fail closed without URIError',
       namedThrew,
       wildcardThrew,
       named,
-      wildcard: { path: router.route.value.path, params: router.route.value.params },
+      wildcard: {
+        path: router.route.value.path,
+        params: router.route.value.params,
+      },
     };
   });
 
@@ -114,7 +145,9 @@ test('malformed encoded named and wildcard params fail closed without URIError',
   await expect(page.locator('#outlet .nf')).toHaveText('Not found');
 });
 
-test('browser Back / Forward drives popstate → the outlet follows', async ({ page }) => {
+test('browser Back / Forward drives popstate → the outlet follows', async ({
+  page,
+}) => {
   await setup(page);
   await page.locator('#u1').click();
   await page.locator('#u2').click();
@@ -126,27 +159,35 @@ test('browser Back / Forward drives popstate → the outlet follows', async ({ p
   await expect(page.locator('#outlet .user')).toHaveText('User 2');
 });
 
-test('outlet keeps DOM identity on a param change, replaces it across routes', async ({ page }) => {
+test('outlet keeps DOM identity on a param change, replaces it across routes', async ({
+  page,
+}) => {
   await setup(page);
   await page.locator('#u1').click();
   // Tag the current outlet wrapper with a NON-attribute JS property, so the
   // morph's attribute reconciliation can't clear it — it survives iff the same
   // element object survives.
   await page.evaluate(() => {
-    (document.querySelector('#outlet [data-router-outlet]') as any)._id = 'first';
+    (document.querySelector('#outlet [data-router-outlet]') as any)._id =
+      'first';
   });
 
   // Same route, different param → SAME wrapper element (morph in place).
   await page.locator('#u2').click();
   await expect(page.locator('#outlet .user')).toHaveText('User 2');
-  expect(await page.evaluate(
-    () => (document.querySelector('#outlet [data-router-outlet]') as any)._id,
-  )).toBe('first'); // preserved
+  expect(
+    await page.evaluate(
+      () => (document.querySelector('#outlet [data-router-outlet]') as any)._id,
+    ),
+  ).toBe('first'); // preserved
 
   // Cross-route → the wrapper is replaced (the property is gone with the element).
   await page.locator('#home').click();
   await expect(page.locator('#outlet .home')).toHaveText('Home');
-  expect(await page.evaluate(
-    () => (document.querySelector('#outlet [data-router-outlet]') as any)?._id,
-  )).toBeUndefined(); // fresh element
+  expect(
+    await page.evaluate(
+      () =>
+        (document.querySelector('#outlet [data-router-outlet]') as any)?._id,
+    ),
+  ).toBeUndefined(); // fresh element
 });

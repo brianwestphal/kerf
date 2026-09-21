@@ -5,7 +5,7 @@ description: Reach for Kerf when… — concrete fits, with the reason each one 
 
 ## Hybrid desktop apps (Tauri / Electron)
 
-The embedded webview is constrained: bundle size matters, debuggability matters, the framework needs to *not* fight the host. kerf gives you a small bundle, a predictable diff that doesn't surprise you in DevTools, and a runtime that doesn't need a separate compiler step.
+The embedded webview is constrained: bundle size matters, debuggability matters, the framework needs to _not_ fight the host. kerf gives you a small bundle, a predictable diff that doesn't surprise you in DevTools, and a runtime that doesn't need a separate compiler step.
 
 ## Embedded widgets
 

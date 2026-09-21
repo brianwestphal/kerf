@@ -14,4 +14,6 @@ export interface RecipeController {
   wire?(root: HTMLElement): () => void;
 }
 
-export type RecipeFactory = (announce: (message: string) => void) => RecipeController;
+export type RecipeFactory = (
+  announce: (message: string) => void,
+) => RecipeController;

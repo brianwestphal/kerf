@@ -33,11 +33,13 @@ const SRC = join(ROOT, 'src');
 /** The text of CLAUDE.md's Design rule 5, so identifiers can be looked up in it. */
 function ruleText() {
   const claudeMd = readFileSync(join(ROOT, 'CLAUDE.md'), 'utf8');
-  const start = claudeMd.indexOf('5. **Module-level mutable state is restricted');
+  const start = claudeMd.indexOf(
+    '5. **Module-level mutable state is restricted',
+  );
   if (start === -1) {
     console.error(
-      'check-design-rule-5: could not find Design rule 5 in CLAUDE.md.\n'
-      + 'If the rule was renumbered or reworded, update the anchor in this script.',
+      'check-design-rule-5: could not find Design rule 5 in CLAUDE.md.\n' +
+        'If the rule was renumbered or reworded, update the anchor in this script.',
     );
     process.exit(1);
   }
@@ -78,15 +80,20 @@ for (const file of sourceFiles()) {
 }
 
 if (unaccounted.length > 0) {
-  console.error('\nModule-level mutable state not accounted for by CLAUDE.md Design rule 5:\n');
-  for (const hit of unaccounted) console.error(`  ${hit.where}  —  ${hit.name}`);
   console.error(
-    '\nThe rule enumerates where module-level mutable state may live, and it is only\n'
-    + 'useful for judging a new one while that list is complete. Either fold this into\n'
-    + 'an existing clause, add a clause for it, or move the state into an argument.\n'
-    + 'Being correct code is not sufficient — the rule has to say so.\n',
+    '\nModule-level mutable state not accounted for by CLAUDE.md Design rule 5:\n',
+  );
+  for (const hit of unaccounted)
+    console.error(`  ${hit.where}  —  ${hit.name}`);
+  console.error(
+    '\nThe rule enumerates where module-level mutable state may live, and it is only\n' +
+      'useful for judging a new one while that list is complete. Either fold this into\n' +
+      'an existing clause, add a clause for it, or move the state into an argument.\n' +
+      'Being correct code is not sufficient — the rule has to say so.\n',
   );
   process.exit(1);
 }
 
-console.log('[check-design-rule-5] OK — every top-level `let` in src/ maps to a documented clause.');
+console.log(
+  '[check-design-rule-5] OK — every top-level `let` in src/ maps to a documented clause.',
+);

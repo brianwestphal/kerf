@@ -9,31 +9,31 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 
 ## 1. Bundle delta
 
-| | Min + gz, runtime only |
-| --- | --- |
-| `svelte` 5 runtime (per-app, post-compile) | varies — typically 2–6 KB for a small app, growing with feature surface |
-| `kerfjs` (incl. signals) | ~12 KB |
-| **Delta** | **kerf is heavier** (Svelte's compiled runtime is typically 2–6 KB for a small app) |
+|                                            | Min + gz, runtime only                                                              |
+| ------------------------------------------ | ----------------------------------------------------------------------------------- |
+| `svelte` 5 runtime (per-app, post-compile) | varies — typically 2–6 KB for a small app, growing with feature surface             |
+| `kerfjs` (incl. signals)                   | ~12 KB                                                                              |
+| **Delta**                                  | **kerf is heavier** (Svelte's compiled runtime is typically 2–6 KB for a small app) |
 
-This is the framework comparison where bundle is *not* the decider. Svelte 5's compiler emits a slim runtime per app — most apps land well below kerf's ~12 KB. The trade you're making is the compiler itself, the `.svelte` file format, and the implicit reactivity declarations (`$state`, `$derived`, `$effect`) for a runtime-only library you can read end-to-end. Same fine-grained reactivity model; no build step beyond the JSX one you already have.
+This is the framework comparison where bundle is _not_ the decider. Svelte 5's compiler emits a slim runtime per app — most apps land well below kerf's ~12 KB. The trade you're making is the compiler itself, the `.svelte` file format, and the implicit reactivity declarations (`$state`, `$derived`, `$effect`) for a runtime-only library you can read end-to-end. Same fine-grained reactivity model; no build step beyond the JSX one you already have.
 
 ## 2. Mental-model translations
 
-| Svelte 5 | Kerf | Notes |
-| --- | --- | --- |
-| `let count = $state(0)` | `const count = signal(0)` | Read with `count.value`; write with `count.value = ...`. Svelte's compiler hides the `.value`; kerf is explicit. |
-| `let doubled = $derived(count * 2)` | `const doubled = computed(() => count.value * 2)` | Same auto-tracking; kerf passes a function explicitly. |
-| `$effect(() => { ... })` | `effect(() => { ... })` | Same name, same idea. Kerf's `effect` returns an unsubscribe function. |
-| `$props()` | function parameters | Components are plain functions: `(props) => <jsx/>`. |
-| `<script>` block | module-level JS / TS | All state and event setup live in module scope. |
-| `{#if cond}` / `{:else}` | `cond ? <a/> : <b/>` | JSX ternaries. |
-| `{#each items as item (item.id)}` | `each(items, render, key)` plus `data-key={item.id}` | The `(item.id)` keying is the same idea, in two pieces (DOM-identity attr + cache key fn). |
-| `on:click={handler}` | `delegate(root, 'click', '[data-action="..."]', handler)` | One listener at the root; survives every re-render. |
-| `bind:value={x}` | `value={x.value}` + listener on `'input'` | No two-way binding sugar; bind explicitly. |
-| `<style>` block (component-scoped) | plain CSS + class names | No scoped styles built in. |
-| Stores (`writable`, `readable`, `derived`) | `defineStore({ initial, actions })` | Kerf stores are richer: named actions, reset, and a `state` signal you read with `.value`. |
-| Slots (`<slot />`) | pass JSX as a function argument | No slot DSL; functions take JSX-valued props. |
-| `onMount` / `onDestroy` | top-level `effect()` for setup; returned disposer for teardown | No lifecycle hooks. Setup and teardown live in module scope. |
+| Svelte 5                                   | Kerf                                                           | Notes                                                                                                            |
+| ------------------------------------------ | -------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `let count = $state(0)`                    | `const count = signal(0)`                                      | Read with `count.value`; write with `count.value = ...`. Svelte's compiler hides the `.value`; kerf is explicit. |
+| `let doubled = $derived(count * 2)`        | `const doubled = computed(() => count.value * 2)`              | Same auto-tracking; kerf passes a function explicitly.                                                           |
+| `$effect(() => { ... })`                   | `effect(() => { ... })`                                        | Same name, same idea. Kerf's `effect` returns an unsubscribe function.                                           |
+| `$props()`                                 | function parameters                                            | Components are plain functions: `(props) => <jsx/>`.                                                             |
+| `<script>` block                           | module-level JS / TS                                           | All state and event setup live in module scope.                                                                  |
+| `{#if cond}` / `{:else}`                   | `cond ? <a/> : <b/>`                                           | JSX ternaries.                                                                                                   |
+| `{#each items as item (item.id)}`          | `each(items, render, key)` plus `data-key={item.id}`           | The `(item.id)` keying is the same idea, in two pieces (DOM-identity attr + cache key fn).                       |
+| `on:click={handler}`                       | `delegate(root, 'click', '[data-action="..."]', handler)`      | One listener at the root; survives every re-render.                                                              |
+| `bind:value={x}`                           | `value={x.value}` + listener on `'input'`                      | No two-way binding sugar; bind explicitly.                                                                       |
+| `<style>` block (component-scoped)         | plain CSS + class names                                        | No scoped styles built in.                                                                                       |
+| Stores (`writable`, `readable`, `derived`) | `defineStore({ initial, actions })`                            | Kerf stores are richer: named actions, reset, and a `state` signal you read with `.value`.                       |
+| Slots (`<slot />`)                         | pass JSX as a function argument                                | No slot DSL; functions take JSX-valued props.                                                                    |
+| `onMount` / `onDestroy`                    | top-level `effect()` for setup; returned disposer for teardown | No lifecycle hooks. Setup and teardown live in module scope.                                                     |
 
 ## 3. Section by section
 
@@ -61,31 +61,62 @@ The same TodoMVC, section by section. Each kerf block matches `site/src/examples
 
 ```tsx
 // Kerf
-import { defineStore, mount, each, delegate, delegateCapture, effect, attr, type AttrSpec } from 'kerfjs';
+import {
+  defineStore,
+  mount,
+  each,
+  delegate,
+  delegateCapture,
+  effect,
+  attr,
+  type AttrSpec,
+} from "kerfjs";
 
 const ACTIONS = {
-  toggle: attr('data-action', 'toggle'),
-  remove: attr('data-action', 'remove'),
-  edit:   attr('data-action', 'edit'),
-} as const satisfies Record<string, AttrSpec<'data-action'>>;
-const ITEM = { id: attr('data-id') } as const;
+  toggle: attr("data-action", "toggle"),
+  remove: attr("data-action", "remove"),
+  edit: attr("data-action", "edit"),
+} as const satisfies Record<string, AttrSpec<"data-action">>;
+const ITEM = { id: attr("data-id") } as const;
 
-interface Todo { id: string; text: string; done: boolean }
-type Filter = 'all' | 'active' | 'done';
+interface Todo {
+  id: string;
+  text: string;
+  done: boolean;
+}
+type Filter = "all" | "active" | "done";
 
-const STORAGE_KEY = 'kerf-todomvc';
+const STORAGE_KEY = "kerf-todomvc";
 
 function load(): Todo[] {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]') as Todo[]; }
-  catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]") as Todo[];
+  } catch {
+    return [];
+  }
 }
 
 const todos = defineStore({
-  initial: () => ({ items: load(), filter: 'all' as Filter, editingId: null as string | null }),
+  initial: () => ({
+    items: load(),
+    filter: "all" as Filter,
+    editingId: null as string | null,
+  }),
   actions: (set, get) => ({
-    add: (text: string) => set({ ...get(), items: [...get().items, { id: crypto.randomUUID(), text, done: false }] }),
-    toggle: (id: string) => set({ ...get(), items: get().items.map((t) => t.id === id ? { ...t, done: !t.done } : t) }),
-    remove: (id: string) => set({ ...get(), items: get().items.filter((t) => t.id !== id) }),
+    add: (text: string) =>
+      set({
+        ...get(),
+        items: [...get().items, { id: crypto.randomUUID(), text, done: false }],
+      }),
+    toggle: (id: string) =>
+      set({
+        ...get(),
+        items: get().items.map((t) =>
+          t.id === id ? { ...t, done: !t.done } : t,
+        ),
+      }),
+    remove: (id: string) =>
+      set({ ...get(), items: get().items.filter((t) => t.id !== id) }),
     // ...
   }),
 });
@@ -128,7 +159,12 @@ mount(root, () => {
     <div class="todoapp">
       <header>
         <h1>todos</h1>
-        <input class="new-todo" data-new placeholder="What needs to be done?" autofocus />
+        <input
+          class="new-todo"
+          data-new
+          placeholder="What needs to be done?"
+          autofocus
+        />
       </header>
       {/* list goes here */}
     </div>
@@ -162,25 +198,45 @@ What moved: Svelte's template gains a JSX equivalent; the inline `onkeydown` mov
 <ul class="todo-list">
   {each(
     items.filter((it) =>
-      filter === 'active' ? !it.done : filter === 'done' ? it.done : true,
+      filter === "active" ? !it.done : filter === "done" ? it.done : true,
     ),
     (todo) => (
       <li
         data-key={todo.id}
-        class={`${todo.done ? 'done' : ''} ${editingId === todo.id ? 'editing' : ''}`}
+        class={`${todo.done ? "done" : ""} ${editingId === todo.id ? "editing" : ""}`}
       >
         {editingId === todo.id ? (
-          <input class="edit" data-edit data-id={todo.id} value={todo.text} autofocus />
+          <input
+            class="edit"
+            data-edit
+            data-id={todo.id}
+            value={todo.text}
+            autofocus
+          />
         ) : (
           <>
-            <input type="checkbox" class="toggle" {...ACTIONS.toggle.attrs} {...ITEM.id(todo.id)} checked={todo.done} />
-            <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>{todo.text}</label>
-            <button class="destroy" {...ACTIONS.remove.attrs} {...ITEM.id(todo.id)}>×</button>
+            <input
+              type="checkbox"
+              class="toggle"
+              {...ACTIONS.toggle.attrs}
+              {...ITEM.id(todo.id)}
+              checked={todo.done}
+            />
+            <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>
+              {todo.text}
+            </label>
+            <button
+              class="destroy"
+              {...ACTIONS.remove.attrs}
+              {...ITEM.id(todo.id)}
+            >
+              ×
+            </button>
           </>
         )}
       </li>
     ),
-    (todo) => `${todo.id}-${editingId === todo.id ? 'edit' : 'view'}`,
+    (todo) => `${todo.id}-${editingId === todo.id ? "edit" : "view"}`,
   )}
 </ul>
 ```
@@ -198,24 +254,24 @@ What moved: `{#each ... as todo (todo.id)}` → `each(items, render, cacheKey)` 
 
 ```tsx
 // Kerf — handlers register once, at module load, on the root
-delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.toggle.selector, (_e, el) => {
   todos.actions.toggle((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.remove.selector, (_e, el) => {
   todos.actions.remove((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.edit.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.edit.selector, (_e, el) => {
   todos.actions.startEdit((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'keydown', '[data-new]', (e, el) => {
-  if ((e as KeyboardEvent).key !== 'Enter') return;
+delegate(root, "keydown", "[data-new]", (e, el) => {
+  if ((e as KeyboardEvent).key !== "Enter") return;
   const input = el as HTMLInputElement;
   todos.actions.add(input.value);
-  input.value = '';
+  input.value = "";
 });
 
 // Tier 2: blur doesn't bubble — capture phase is required.
-delegateCapture(root, 'blur', '[data-edit]', (_e, el) => {
+delegateCapture(root, "blur", "[data-edit]", (_e, el) => {
   const input = el as HTMLInputElement;
   if (todos.state.value.editingId === input.dataset.id) {
     todos.actions.commitEdit(input.dataset.id!, input.value);

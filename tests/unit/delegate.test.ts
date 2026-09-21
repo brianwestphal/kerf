@@ -30,7 +30,8 @@ describe('delegate() — Tier 1 bubbling', () => {
   });
 
   it('passes the matched element (not the original target) as the second arg', () => {
-    root.innerHTML = '<button data-action="add"><span class="icon">+</span></button>';
+    root.innerHTML =
+      '<button data-action="add"><span class="icon">+</span></button>';
     const handler = vi.fn();
     delegate(root, 'click', '[data-action="add"]', handler);
 
@@ -44,7 +45,8 @@ describe('delegate() — Tier 1 bubbling', () => {
   });
 
   it('does not fire for clicks that do not match the selector', () => {
-    root.innerHTML = '<button data-action="add">+</button><button data-action="other">x</button>';
+    root.innerHTML =
+      '<button data-action="add">+</button><button data-action="other">x</button>';
     const handler = vi.fn();
     delegate(root, 'click', '[data-action="add"]', handler);
 
@@ -91,7 +93,8 @@ describe('delegate() — auto-promotion to capture for known non-bubblers (KF-56
     // event.target via closest(). delegateCapture would only match the
     // exact focused element. The wrapper-selector case is the common
     // delegation pattern users expect from delegate().
-    root.innerHTML = '<div class="field-row"><label>name</label><input /></div>';
+    root.innerHTML =
+      '<div class="field-row"><label>name</label><input /></div>';
     const handler = vi.fn();
     delegate(root, 'focus', '.field-row', handler);
 
@@ -138,7 +141,9 @@ describe('delegate() — auto-promotion to capture for known non-bubblers (KF-56
     // captured `click`, we'd see CAPTURING_PHASE (1).
     root.innerHTML = '<button data-action="x">x</button>';
     let phase = -1;
-    delegate(root, 'click', '[data-action]', (e) => { phase = e.eventPhase; });
+    delegate(root, 'click', '[data-action]', (e) => {
+      phase = e.eventPhase;
+    });
 
     root.querySelector('button')!.click();
     expect(phase).toBe(Event.BUBBLING_PHASE);
@@ -194,48 +199,51 @@ describe('delegateCapture() — Tier 2 capture-phase', () => {
     // event.target via closest(selector) — the SAME behavior as delegate() — and
     // passes the matched ancestor (not the raw target) as the second arg. Before,
     // a click on the inner span would have missed the wrapper button entirely.
-    root.innerHTML = '<button class="card"><span class="card-text">go</span></button>';
+    root.innerHTML =
+      '<button class="card"><span class="card-text">go</span></button>';
     const handler = vi.fn();
     delegateCapture(root, 'click', '.card', handler);
 
-    root.querySelector<HTMLElement>('.card-text')!.dispatchEvent(
-      new MouseEvent('click', { bubbles: true }),
-    );
+    root
+      .querySelector<HTMLElement>('.card-text')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(handler).toHaveBeenCalledOnce();
     const matched = handler.mock.calls[0]![1] as HTMLElement;
     expect(matched.className).toBe('card');
   });
 });
 
-describe('delegateCapture() — { match: \'direct\' } opt-in', () => {
+describe("delegateCapture() — { match: 'direct' } opt-in", () => {
   it('fires only when the event lands on the exact matching element (no walk-up)', () => {
-    root.innerHTML = '<button class="card"><span class="card-text">go</span></button>';
+    root.innerHTML =
+      '<button class="card"><span class="card-text">go</span></button>';
     const handler = vi.fn();
     delegateCapture(root, 'click', '.card', handler, { match: 'direct' });
 
     // Click on the descendant span: direct matching must NOT walk up to .card.
-    root.querySelector<HTMLElement>('.card-text')!.dispatchEvent(
-      new MouseEvent('click', { bubbles: true }),
-    );
+    root
+      .querySelector<HTMLElement>('.card-text')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(handler).not.toHaveBeenCalled();
 
     // Click directly on the .card element itself: fires, with itself as the match.
-    root.querySelector<HTMLElement>('.card')!.dispatchEvent(
-      new MouseEvent('click', { bubbles: true }),
-    );
+    root
+      .querySelector<HTMLElement>('.card')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(handler).toHaveBeenCalledOnce();
     const matched = handler.mock.calls[0]![1] as HTMLElement;
     expect(matched.className).toBe('card');
   });
 
-  it('explicit { match: \'closest\' } behaves like the default walk-up', () => {
-    root.innerHTML = '<button class="card"><span class="card-text">go</span></button>';
+  it("explicit { match: 'closest' } behaves like the default walk-up", () => {
+    root.innerHTML =
+      '<button class="card"><span class="card-text">go</span></button>';
     const handler = vi.fn();
     delegateCapture(root, 'click', '.card', handler, { match: 'closest' });
 
-    root.querySelector<HTMLElement>('.card-text')!.dispatchEvent(
-      new MouseEvent('click', { bubbles: true }),
-    );
+    root
+      .querySelector<HTMLElement>('.card-text')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(handler).toHaveBeenCalledOnce();
   });
 });
@@ -276,22 +284,25 @@ describe('delegate() / delegateCapture() — containment edge cases', () => {
   });
 });
 
-describe('delegate() — { match: \'direct\' } symmetry', () => {
+describe("delegate() — { match: 'direct' } symmetry", () => {
   it('fires only on the exact target, not a descendant, when direct matching is requested', () => {
-    root.innerHTML = '<button data-action="add"><span class="icon">+</span></button>';
+    root.innerHTML =
+      '<button data-action="add"><span class="icon">+</span></button>';
     const handler = vi.fn();
-    delegate(root, 'click', '[data-action="add"]', handler, { match: 'direct' });
+    delegate(root, 'click', '[data-action="add"]', handler, {
+      match: 'direct',
+    });
 
     // Click on the inner span: direct matching does NOT climb to the button.
-    root.querySelector<HTMLElement>('.icon')!.dispatchEvent(
-      new MouseEvent('click', { bubbles: true }),
-    );
+    root
+      .querySelector<HTMLElement>('.icon')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(handler).not.toHaveBeenCalled();
 
     // Click on the button itself: fires.
-    root.querySelector<HTMLElement>('button')!.dispatchEvent(
-      new MouseEvent('click', { bubbles: true }),
-    );
+    root
+      .querySelector<HTMLElement>('button')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(handler).toHaveBeenCalledOnce();
   });
 });
@@ -330,13 +341,15 @@ describe('non-Element event targets', () => {
 
 describe('selector validation', () => {
   it('delegate throws immediately on an invalid selector', () => {
-    expect(() => delegate(root, 'click', '[[bad', () => {}))
-      .toThrow(/delegate: invalid selector "\[\[bad"/);
+    expect(() => delegate(root, 'click', '[[bad', () => {})).toThrow(
+      /delegate: invalid selector "\[\[bad"/,
+    );
   });
 
   it('delegateCapture throws immediately on an invalid selector', () => {
-    expect(() => delegateCapture(root, 'focus', '[unclosed', () => {}))
-      .toThrow(/delegateCapture: invalid selector "\[unclosed"/);
+    expect(() => delegateCapture(root, 'focus', '[unclosed', () => {})).toThrow(
+      /delegateCapture: invalid selector "\[unclosed"/,
+    );
   });
 
   it('does NOT install a listener when the selector is invalid', () => {

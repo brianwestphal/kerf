@@ -18,11 +18,15 @@ const URL = '/tests/dist/consumer-app/index.html';
 test.beforeEach(async ({ page }) => {
   await page.goto(URL);
   await page.waitForFunction(
-    () => (window as unknown as { kerfConsumerReady?: boolean }).kerfConsumerReady === true,
+    () =>
+      (window as unknown as { kerfConsumerReady?: boolean })
+        .kerfConsumerReady === true,
   );
 });
 
-test('counter — signal + computed + delegate increments and re-renders', async ({ page }) => {
+test('counter — signal + computed + delegate increments and re-renders', async ({
+  page,
+}) => {
   await expect(page.getByTestId('counter-value')).toHaveText('0');
   await expect(page.getByTestId('counter-doubled')).toHaveText('×2=0');
   await page.getByTestId('counter-inc').click();
@@ -34,7 +38,9 @@ test('counter — signal + computed + delegate increments and re-renders', async
   await expect(page.getByTestId('counter-value')).toHaveText('2');
 });
 
-test('store — defineStore actions + each() row removal + batch coupon-and-clear', async ({ page }) => {
+test('store — defineStore actions + each() row removal + batch coupon-and-clear', async ({
+  page,
+}) => {
   await page.getByTestId('store-add-a').click();
   await page.getByTestId('store-add-b').click();
   await page.getByTestId('store-add-a').click();
@@ -48,12 +54,16 @@ test('store — defineStore actions + each() row removal + batch coupon-and-clea
   await expect(page.getByTestId('store-coupon')).toHaveText('coupon:SAVE10');
 });
 
-test('each() — keyed reverse + targeted rename, identity-based memo keeps DOM nodes', async ({ page }) => {
+test('each() — keyed reverse + targeted rename, identity-based memo keeps DOM nodes', async ({
+  page,
+}) => {
   // Capture initial input nodes' identity by stamping a DOM property.
   await page.evaluate(() => {
-    document.querySelectorAll('[data-testid^="each-input-"]').forEach((el, i) => {
-      (el as HTMLInputElement & { __stamp: number }).__stamp = i + 100;
-    });
+    document
+      .querySelectorAll('[data-testid^="each-input-"]')
+      .forEach((el, i) => {
+        (el as HTMLInputElement & { __stamp: number }).__stamp = i + 100;
+      });
   });
   await page.getByTestId('each-reverse').click();
   // Stamps survive the reorder: the keyed reconciler moved nodes, didn't recreate.
@@ -75,7 +85,9 @@ test('each() — keyed reverse + targeted rename, identity-based memo keeps DOM 
   expect(otherStamps.every((s) => typeof s === 'number')).toBe(true);
 });
 
-test('arraySignal — push/update/move/remove patches apply to live DOM', async ({ page }) => {
+test('arraySignal — push/update/move/remove patches apply to live DOM', async ({
+  page,
+}) => {
   await expect(page.getByTestId('array-len')).toHaveText('len:2');
   await page.getByTestId('array-push').click();
   await page.getByTestId('array-push').click();
@@ -96,22 +108,32 @@ test('arraySignal — push/update/move/remove patches apply to live DOM', async 
   expect(lenText).toMatch(/^len:3$/);
 });
 
-test('arraySignal — invalid indices are rejected before source or patch mutation', async ({ page }) => {
+test('arraySignal — invalid indices are rejected before source or patch mutation', async ({
+  page,
+}) => {
   await expect(page.getByTestId('array-len')).toHaveText('len:2');
-  await expect(page.getByTestId('array-invalid-result')).toHaveText('invalid:untested');
+  await expect(page.getByTestId('array-invalid-result')).toHaveText(
+    'invalid:untested',
+  );
   await page.getByTestId('array-invalid-indices').click();
-  await expect(page.getByTestId('array-invalid-result')).toHaveText('invalid:rejected');
+  await expect(page.getByTestId('array-invalid-result')).toHaveText(
+    'invalid:rejected',
+  );
   await expect(page.getByTestId('array-len')).toHaveText('len:2');
   await expect(page.getByTestId('array-list').locator('li')).toHaveCount(2);
 });
 
-test('delegateCapture — focus event fires under explicit capture', async ({ page }) => {
+test('delegateCapture — focus event fires under explicit capture', async ({
+  page,
+}) => {
   await expect(page.getByTestId('capture-count')).toHaveText('focuses:0');
   await page.getByTestId('capture-input').focus();
   await expect(page.getByTestId('capture-count')).toHaveText('focuses:1');
 });
 
-test('focus survives unrelated re-renders driven by a 50ms tick', async ({ page }) => {
+test('focus survives unrelated re-renders driven by a 50ms tick', async ({
+  page,
+}) => {
   const input = page.getByTestId('focus-input');
   await input.focus();
   await input.type('hello', { delay: 30 });
@@ -120,7 +142,9 @@ test('focus survives unrelated re-renders driven by a 50ms tick', async ({ page 
   await expect(input).toHaveValue('hello');
 });
 
-test('data-morph-skip + raw + isSafeHtml — imperative additions survive re-renders', async ({ page }) => {
+test('data-morph-skip + raw + isSafeHtml — imperative additions survive re-renders', async ({
+  page,
+}) => {
   // The app stamps the skipped subtree from a timer after first paint; wait
   // for the stamp itself rather than for a duration.
   await page.waitForSelector('[data-testid="skip-stamp"]', { timeout: 2000 });
@@ -137,7 +161,9 @@ test('data-morph-skip + raw + isSafeHtml — imperative additions survive re-ren
   await expect(page.getByTestId('skip-stamp')).toBeVisible();
 });
 
-test('toElement — SVG element gets the SVG namespace in real browsers', async ({ page }) => {
+test('toElement — SVG element gets the SVG namespace in real browsers', async ({
+  page,
+}) => {
   const ns = await page.evaluate(() => {
     const svg = document.querySelector('[data-testid="svg-root"]');
     return svg ? svg.namespaceURI : null;
@@ -145,7 +171,9 @@ test('toElement — SVG element gets the SVG namespace in real browsers', async 
   expect(ns).toBe('http://www.w3.org/2000/svg');
 });
 
-test('Fragment — children render side by side and react to swap', async ({ page }) => {
+test('Fragment — children render side by side and react to swap', async ({
+  page,
+}) => {
   await expect(page.getByTestId('frag-a')).toHaveText('one');
   await expect(page.getByTestId('frag-b')).toHaveText('two');
   await page.getByTestId('frag-swap').click();
@@ -153,7 +181,9 @@ test('Fragment — children render side by side and react to swap', async ({ pag
   await expect(page.getByTestId('frag-b')).toHaveText('one');
 });
 
-test('declaration-merged custom element renders with its merged attributes', async ({ page }) => {
+test('declaration-merged custom element renders with its merged attributes', async ({
+  page,
+}) => {
   const widget = page.getByTestId('merge-widget');
   await expect(widget).toBeVisible();
   await expect(widget).toHaveAttribute('greeting', 'hi');

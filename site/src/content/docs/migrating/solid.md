@@ -5,35 +5,35 @@ description: A side-by-side translation of a TodoMVC from Solid 1.9 to Kerf. Bun
 
 You wrote a Solid app. You're reading this because you want signals without the compiler step, or because your toolchain doesn't play well with the Solid plugin, or because you want a runtime small enough to read end-to-end. Solid is kerf's closest philosophical sibling — fine-grained signals, no virtual DOM, JSX as the template language. The differences are real but narrower than with any other framework in this section.
 
-**This page is unusually honest about when Solid is the better answer.** Kerf does not target Solid's compiler-driven update-path performance. On `partial update` and `select row` on the krausest benchmark, Solid is decisively faster than kerf and will remain so. If raw row-update latency on long lists is your primary decision driver, this page exists to talk you *out* of migrating. The reasons to migrate are bundle-and-build, not performance.
+**This page is unusually honest about when Solid is the better answer.** Kerf does not target Solid's compiler-driven update-path performance. On `partial update` and `select row` on the krausest benchmark, Solid is decisively faster than kerf and will remain so. If raw row-update latency on long lists is your primary decision driver, this page exists to talk you _out_ of migrating. The reasons to migrate are bundle-and-build, not performance.
 
 The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc/`](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/todomvc) — [run it live](/kerf/examples/complete/todomvc/) and you're looking at the same bytes the snippets below show.
 
 ## 1. Bundle delta
 
-| | Min + gz, runtime only |
-| --- | --- |
-| `solid-js` 1.9 | ~4.5 KB |
-| `kerfjs` (incl. signals) | ~12 KB |
-| **Delta** | **kerf is ~7.5 KB larger** |
+|                          | Min + gz, runtime only     |
+| ------------------------ | -------------------------- |
+| `solid-js` 1.9           | ~4.5 KB                    |
+| `kerfjs` (incl. signals) | ~12 KB                     |
+| **Delta**                | **kerf is ~7.5 KB larger** |
 
 Solid is smaller. The trade you're making in either direction isn't bundle — it's the compiler. Solid relies on `babel-plugin-jsx-dom-expressions` (via `vite-plugin-solid`) to transform JSX into fine-grained reactive DOM operations at build time. Kerf has no such plugin: JSX renders to HTML strings at runtime, and a small reconciler patches the live DOM in place. Same JSX surface for the developer; different machinery underneath.
 
 ## 2. Mental-model translations
 
-| Solid | Kerf | Notes |
-| --- | --- | --- |
-| `createSignal(0)` → `[count, setCount]` | `signal(0)` → `count.value` | Solid's getter/setter pair becomes kerf's `.value` property. |
-| `createMemo(() => ...)` | `computed(() => ...)` | Same auto-tracking. |
-| `createEffect(() => ...)` | `effect(() => ...)` | Same auto-tracking. Kerf's returns an unsubscribe function. |
-| `createResource(fetcher)` | manual: `signal()` + `effect()` + `fetch()` | Kerf doesn't ship a resource primitive. |
-| `<For each={items}>{...}</For>` | `each(items, render, key)` plus `data-key={item.id}` | Conceptually the same; kerf splits DOM-identity (the `data-key` attribute) and row-memoization (the third arg to `each`). |
-| `<Show when={cond}>` | `cond ? <a/> : <b/>` | JSX ternaries; no `<Show>` component. |
-| `onClick={fn}` on the JSX node | `delegate(root, 'click', '[data-action="..."]', fn)` | Solid compiles inline handlers efficiently; kerf takes the delegation route — one listener, many descendants. |
-| `createStore({...})` | `defineStore({ initial, actions })` | Solid stores are deep-reactive proxies; kerf stores are flat objects with named actions and `set`/`get`. |
-| `onMount(fn)` / `onCleanup(fn)` | top-level `effect()` for setup; returned disposer for teardown | No lifecycle hooks. |
-| `createContext` / `useContext` | module-level signal or `defineStore` | No component tree to traverse. |
-| Compiler-driven `value={cond ? "a" : "b"}` updates a single attribute | runtime `morph()` walks the tree and patches the diff | Kerf does more work per render; Solid does almost none. |
+| Solid                                                                 | Kerf                                                           | Notes                                                                                                                     |
+| --------------------------------------------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `createSignal(0)` → `[count, setCount]`                               | `signal(0)` → `count.value`                                    | Solid's getter/setter pair becomes kerf's `.value` property.                                                              |
+| `createMemo(() => ...)`                                               | `computed(() => ...)`                                          | Same auto-tracking.                                                                                                       |
+| `createEffect(() => ...)`                                             | `effect(() => ...)`                                            | Same auto-tracking. Kerf's returns an unsubscribe function.                                                               |
+| `createResource(fetcher)`                                             | manual: `signal()` + `effect()` + `fetch()`                    | Kerf doesn't ship a resource primitive.                                                                                   |
+| `<For each={items}>{...}</For>`                                       | `each(items, render, key)` plus `data-key={item.id}`           | Conceptually the same; kerf splits DOM-identity (the `data-key` attribute) and row-memoization (the third arg to `each`). |
+| `<Show when={cond}>`                                                  | `cond ? <a/> : <b/>`                                           | JSX ternaries; no `<Show>` component.                                                                                     |
+| `onClick={fn}` on the JSX node                                        | `delegate(root, 'click', '[data-action="..."]', fn)`           | Solid compiles inline handlers efficiently; kerf takes the delegation route — one listener, many descendants.             |
+| `createStore({...})`                                                  | `defineStore({ initial, actions })`                            | Solid stores are deep-reactive proxies; kerf stores are flat objects with named actions and `set`/`get`.                  |
+| `onMount(fn)` / `onCleanup(fn)`                                       | top-level `effect()` for setup; returned disposer for teardown | No lifecycle hooks.                                                                                                       |
+| `createContext` / `useContext`                                        | module-level signal or `defineStore`                           | No component tree to traverse.                                                                                            |
+| Compiler-driven `value={cond ? "a" : "b"}` updates a single attribute | runtime `morph()` walks the tree and patches the diff          | Kerf does more work per render; Solid does almost none.                                                                   |
 
 ## 3. Section by section
 
@@ -43,20 +43,27 @@ The same TodoMVC, section by section. Each kerf block matches `site/src/examples
 
 ```tsx
 // Solid
-import { createSignal, createEffect } from 'solid-js';
+import { createSignal, createEffect } from "solid-js";
 
-interface Todo { id: string; text: string; done: boolean }
-type Filter = 'all' | 'active' | 'done';
+interface Todo {
+  id: string;
+  text: string;
+  done: boolean;
+}
+type Filter = "all" | "active" | "done";
 
-const STORAGE_KEY = 'solid-todomvc';
+const STORAGE_KEY = "solid-todomvc";
 
 function load(): Todo[] {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]') as Todo[]; }
-  catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]") as Todo[];
+  } catch {
+    return [];
+  }
 }
 
-const [items, setItems]         = createSignal<Todo[]>(load());
-const [filter, setFilter]       = createSignal<Filter>('all');
+const [items, setItems] = createSignal<Todo[]>(load());
+const [filter, setFilter] = createSignal<Filter>("all");
 const [editingId, setEditingId] = createSignal<string | null>(null);
 
 createEffect(() => {
@@ -66,31 +73,62 @@ createEffect(() => {
 
 ```tsx
 // Kerf
-import { defineStore, mount, each, delegate, delegateCapture, effect, attr, type AttrSpec } from 'kerfjs';
+import {
+  defineStore,
+  mount,
+  each,
+  delegate,
+  delegateCapture,
+  effect,
+  attr,
+  type AttrSpec,
+} from "kerfjs";
 
 const ACTIONS = {
-  toggle: attr('data-action', 'toggle'),
-  remove: attr('data-action', 'remove'),
-  edit:   attr('data-action', 'edit'),
-} as const satisfies Record<string, AttrSpec<'data-action'>>;
-const ITEM = { id: attr('data-id') } as const;
+  toggle: attr("data-action", "toggle"),
+  remove: attr("data-action", "remove"),
+  edit: attr("data-action", "edit"),
+} as const satisfies Record<string, AttrSpec<"data-action">>;
+const ITEM = { id: attr("data-id") } as const;
 
-interface Todo { id: string; text: string; done: boolean }
-type Filter = 'all' | 'active' | 'done';
+interface Todo {
+  id: string;
+  text: string;
+  done: boolean;
+}
+type Filter = "all" | "active" | "done";
 
-const STORAGE_KEY = 'kerf-todomvc';
+const STORAGE_KEY = "kerf-todomvc";
 
 function load(): Todo[] {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]') as Todo[]; }
-  catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]") as Todo[];
+  } catch {
+    return [];
+  }
 }
 
 const todos = defineStore({
-  initial: () => ({ items: load(), filter: 'all' as Filter, editingId: null as string | null }),
+  initial: () => ({
+    items: load(),
+    filter: "all" as Filter,
+    editingId: null as string | null,
+  }),
   actions: (set, get) => ({
-    add: (text: string) => set({ ...get(), items: [...get().items, { id: crypto.randomUUID(), text, done: false }] }),
-    toggle: (id: string) => set({ ...get(), items: get().items.map((t) => t.id === id ? { ...t, done: !t.done } : t) }),
-    remove: (id: string) => set({ ...get(), items: get().items.filter((t) => t.id !== id) }),
+    add: (text: string) =>
+      set({
+        ...get(),
+        items: [...get().items, { id: crypto.randomUUID(), text, done: false }],
+      }),
+    toggle: (id: string) =>
+      set({
+        ...get(),
+        items: get().items.map((t) =>
+          t.id === id ? { ...t, done: !t.done } : t,
+        ),
+      }),
+    remove: (id: string) =>
+      set({ ...get(), items: get().items.filter((t) => t.id !== id) }),
     // ...
   }),
 });
@@ -114,10 +152,13 @@ return (
         class="new-todo"
         placeholder="What needs to be done?"
         onKeyDown={(e) => {
-          if (e.key !== 'Enter') return;
+          if (e.key !== "Enter") return;
           const input = e.currentTarget;
-          setItems([...items(), { id: crypto.randomUUID(), text: input.value, done: false }]);
-          input.value = '';
+          setItems([
+            ...items(),
+            { id: crypto.randomUUID(), text: input.value, done: false },
+          ]);
+          input.value = "";
         }}
         autofocus
       />
@@ -135,7 +176,12 @@ mount(root, () => {
     <div class="todoapp">
       <header>
         <h1>todos</h1>
-        <input class="new-todo" data-new placeholder="What needs to be done?" autofocus />
+        <input
+          class="new-todo"
+          data-new
+          placeholder="What needs to be done?"
+          autofocus
+        />
       </header>
       {/* list goes here */}
     </div>
@@ -150,17 +196,25 @@ What moved: the JSX shape is almost identical. The biggest visible difference: k
 ```tsx
 // Solid
 <ul class="todo-list">
-  <For each={items().filter((it) => filter() === 'active' ? !it.done : filter() === 'done' ? it.done : true)}>
+  <For
+    each={items().filter((it) =>
+      filter() === "active" ? !it.done : filter() === "done" ? it.done : true,
+    )}
+  >
     {(todo) => (
-      <li
-        classList={{ done: todo.done, editing: editingId() === todo.id }}
-      >
+      <li classList={{ done: todo.done, editing: editingId() === todo.id }}>
         <Show
           when={editingId() === todo.id}
           fallback={
             <>
-              <input type="checkbox" checked={todo.done} onChange={() => toggle(todo.id)} />
-              <label onDblClick={() => setEditingId(todo.id)}>{todo.text}</label>
+              <input
+                type="checkbox"
+                checked={todo.done}
+                onChange={() => toggle(todo.id)}
+              />
+              <label onDblClick={() => setEditingId(todo.id)}>
+                {todo.text}
+              </label>
               <button onClick={() => remove(todo.id)}>×</button>
             </>
           }
@@ -178,25 +232,45 @@ What moved: the JSX shape is almost identical. The biggest visible difference: k
 <ul class="todo-list">
   {each(
     items.filter((it) =>
-      filter === 'active' ? !it.done : filter === 'done' ? it.done : true,
+      filter === "active" ? !it.done : filter === "done" ? it.done : true,
     ),
     (todo) => (
       <li
         data-key={todo.id}
-        class={`${todo.done ? 'done' : ''} ${editingId === todo.id ? 'editing' : ''}`}
+        class={`${todo.done ? "done" : ""} ${editingId === todo.id ? "editing" : ""}`}
       >
         {editingId === todo.id ? (
-          <input class="edit" data-edit data-id={todo.id} value={todo.text} autofocus />
+          <input
+            class="edit"
+            data-edit
+            data-id={todo.id}
+            value={todo.text}
+            autofocus
+          />
         ) : (
           <>
-            <input type="checkbox" class="toggle" {...ACTIONS.toggle.attrs} {...ITEM.id(todo.id)} checked={todo.done} />
-            <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>{todo.text}</label>
-            <button class="destroy" {...ACTIONS.remove.attrs} {...ITEM.id(todo.id)}>×</button>
+            <input
+              type="checkbox"
+              class="toggle"
+              {...ACTIONS.toggle.attrs}
+              {...ITEM.id(todo.id)}
+              checked={todo.done}
+            />
+            <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>
+              {todo.text}
+            </label>
+            <button
+              class="destroy"
+              {...ACTIONS.remove.attrs}
+              {...ITEM.id(todo.id)}
+            >
+              ×
+            </button>
           </>
         )}
       </li>
     ),
-    (todo) => `${todo.id}-${editingId === todo.id ? 'edit' : 'view'}`,
+    (todo) => `${todo.id}-${editingId === todo.id ? "edit" : "view"}`,
   )}
 </ul>
 ```
@@ -214,24 +288,24 @@ What moved: `<For each={...}>` → `each(items, render, cacheKey)`. `<Show when=
 
 ```tsx
 // Kerf — handlers register once, at module load, on the root
-delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.toggle.selector, (_e, el) => {
   todos.actions.toggle((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.remove.selector, (_e, el) => {
   todos.actions.remove((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.edit.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.edit.selector, (_e, el) => {
   todos.actions.startEdit((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'keydown', '[data-new]', (e, el) => {
-  if ((e as KeyboardEvent).key !== 'Enter') return;
+delegate(root, "keydown", "[data-new]", (e, el) => {
+  if ((e as KeyboardEvent).key !== "Enter") return;
   const input = el as HTMLInputElement;
   todos.actions.add(input.value);
-  input.value = '';
+  input.value = "";
 });
 
 // Tier 2: blur doesn't bubble — capture phase is required.
-delegateCapture(root, 'blur', '[data-edit]', (_e, el) => {
+delegateCapture(root, "blur", "[data-edit]", (_e, el) => {
   const input = el as HTMLInputElement;
   if (todos.state.value.editingId === input.dataset.id) {
     todos.actions.commitEdit(input.dataset.id!, input.value);
@@ -245,7 +319,7 @@ What moved: Solid's inline event handlers (compiled to direct `addEventListener`
 
 Both frameworks preserve focus across re-renders by default in the common case — Solid because its compiler emits minimal-mutation updates that don't touch the focused element; kerf because the morph's focus-preservation pass saves the focused element's caret position and selection range before the diff and restores it after. The user-visible behavior is the same. The mechanism is different.
 
-## 4. Gotchas (this is the *honest* section)
+## 4. Gotchas (this is the _honest_ section)
 
 **Solid is faster on row-updates.** Kerf does not target Solid's compiler-driven update-path performance and will not catch it on the `partial update` and `select row` krausest benchmarks. Kerf's runtime `morph()` walks the tree and patches the diff; Solid's compiled output knows at build time which DOM node corresponds to which signal and patches a single attribute. The architectural ceiling is real. If your app's hot path is "1000-row table where one cell updates per second," Solid is the right answer.
 

@@ -7,27 +7,93 @@ if (import.meta.env.DEV) await import('kerfjs/dev');
 
 type Tag = 'design' | 'code' | 'docs' | 'bug' | 'ops';
 type Avatar = 'a' | 'b' | 'c' | 'd' | 'e';
-interface Card { id: string; text: string; tag: Tag; who: Avatar; initial: string }
+interface Card {
+  id: string;
+  text: string;
+  tag: Tag;
+  who: Avatar;
+  initial: string;
+}
 type ColId = 'todo' | 'doing' | 'done';
 
 const board = defineStore({
   initial: () => ({
     cols: {
       todo: [
-        { id: 'a', text: 'Design new hero illustration',     tag: 'design', who: 'a', initial: 'A' },
-        { id: 'b', text: 'Draft v1.0 announcement post',     tag: 'docs',   who: 'b', initial: 'M' },
-        { id: 'c', text: 'Investigate flicker on slow 4G',   tag: 'bug',    who: 'c', initial: 'J' },
-        { id: 'd', text: 'Sketch component playground UX',   tag: 'design', who: 'a', initial: 'A' },
+        {
+          id: 'a',
+          text: 'Design new hero illustration',
+          tag: 'design',
+          who: 'a',
+          initial: 'A',
+        },
+        {
+          id: 'b',
+          text: 'Draft v1.0 announcement post',
+          tag: 'docs',
+          who: 'b',
+          initial: 'M',
+        },
+        {
+          id: 'c',
+          text: 'Investigate flicker on slow 4G',
+          tag: 'bug',
+          who: 'c',
+          initial: 'J',
+        },
+        {
+          id: 'd',
+          text: 'Sketch component playground UX',
+          tag: 'design',
+          who: 'a',
+          initial: 'A',
+        },
       ] as Card[],
       doing: [
-        { id: 'e', text: 'Wire up streaming chat example',   tag: 'code',   who: 'd', initial: 'S' },
-        { id: 'f', text: 'Migrate CI to ARM runners',        tag: 'ops',    who: 'e', initial: 'T' },
-        { id: 'g', text: 'Rewrite onboarding tour',          tag: 'docs',   who: 'b', initial: 'M' },
+        {
+          id: 'e',
+          text: 'Wire up streaming chat example',
+          tag: 'code',
+          who: 'd',
+          initial: 'S',
+        },
+        {
+          id: 'f',
+          text: 'Migrate CI to ARM runners',
+          tag: 'ops',
+          who: 'e',
+          initial: 'T',
+        },
+        {
+          id: 'g',
+          text: 'Rewrite onboarding tour',
+          tag: 'docs',
+          who: 'b',
+          initial: 'M',
+        },
       ] as Card[],
       done: [
-        { id: 'h', text: 'Ship granular array signals',      tag: 'code',   who: 'd', initial: 'S' },
-        { id: 'i', text: 'Tune morph for IME composition',   tag: 'code',   who: 'c', initial: 'J' },
-        { id: 'j', text: 'Audit American-English spelling',  tag: 'docs',   who: 'b', initial: 'M' },
+        {
+          id: 'h',
+          text: 'Ship granular array signals',
+          tag: 'code',
+          who: 'd',
+          initial: 'S',
+        },
+        {
+          id: 'i',
+          text: 'Tune morph for IME composition',
+          tag: 'code',
+          who: 'c',
+          initial: 'J',
+        },
+        {
+          id: 'j',
+          text: 'Audit American-English spelling',
+          tag: 'docs',
+          who: 'b',
+          initial: 'M',
+        },
       ] as Card[],
     } satisfies Record<ColId, Card[]>,
   }),
@@ -59,13 +125,21 @@ const board = defineStore({
 //      a pure visual effect.
 //   2. The dragging row carries `data-morph-skip`, so it's already "owned by the drag
 //      handler" by contract. Direct DOM writes are the natural way to drive it.
-interface DragState { id: string; w: number; h: number }
+interface DragState {
+  id: string;
+  w: number;
+  h: number;
+}
 const drag = signal<DragState | null>(null);
 
 const root = document.getElementById('app')!;
 
 const COLS: ColId[] = ['todo', 'doing', 'done'];
-const COL_TITLES: Record<ColId, string> = { todo: 'To do', doing: 'Doing', done: 'Done' };
+const COL_TITLES: Record<ColId, string> = {
+  todo: 'To do',
+  doing: 'Doing',
+  done: 'Done',
+};
 
 mount(root, () => (
   <div class="board">
@@ -100,13 +174,16 @@ mount(root, () => (
                     <span class={`card-tag ${card.tag}`}>{card.tag}</span>
                     <div class="card-text">{card.text}</div>
                     <div class="card-meta">
-                      <span><span class={`avatar ${card.who}`}>{card.initial}</span></span>
+                      <span>
+                        <span class={`avatar ${card.who}`}>{card.initial}</span>
+                      </span>
                       <span>#{card.id.toUpperCase()}</span>
                     </div>
                   </li>
                 );
               },
-              (card) => `${card.id}-${drag.value?.id === card.id ? 'drag' : 'rest'}`,
+              (card) =>
+                `${card.id}-${drag.value?.id === card.id ? 'drag' : 'rest'}`,
             )}
           </ul>
         </section>
@@ -150,7 +227,9 @@ void delegate(root, 'pointerdown', '.card', (e, el) => {
   // The signal write above runs the mount() re-render synchronously (signals-core
   // effects are synchronous), so the `.dragging` + `data-morph-skip` row already
   // exists in the DOM by the time we look it up here.
-  dragEl = root.querySelector(`.card.dragging[data-card="${card.dataset.card!}"]`) as HTMLElement | null;
+  dragEl = root.querySelector(
+    `.card.dragging[data-card="${card.dataset.card!}"]`,
+  ) as HTMLElement | null;
   window.addEventListener('pointermove', onMove);
   window.addEventListener('pointerup', onUp, { once: true });
 });
@@ -171,10 +250,14 @@ function onUp(ev: PointerEvent) {
   drag.value = null;
   if (!d) return;
   // Find the column and slot the cursor was over.
-  const colEl = (document.elementFromPoint(ev.clientX, ev.clientY) as HTMLElement | null)?.closest('.col') as HTMLElement | null;
+  const colEl = (
+    document.elementFromPoint(ev.clientX, ev.clientY) as HTMLElement | null
+  )?.closest('.col') as HTMLElement | null;
   if (!colEl) return;
   const toCol = colEl.dataset.col as ColId;
-  const cards = Array.from(colEl.querySelectorAll<HTMLElement>('.card:not(.dragging)'));
+  const cards = Array.from(
+    colEl.querySelectorAll<HTMLElement>('.card:not(.dragging)'),
+  );
   let toIdx = cards.length;
   for (let i = 0; i < cards.length; i++) {
     const r = cards[i].getBoundingClientRect();

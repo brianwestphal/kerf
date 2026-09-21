@@ -41,14 +41,14 @@ export function maybeWarnListRebind(id: string, liveParent: Element): void {
   if (warnedIds.has(id)) return;
   warnedIds.add(id);
   console.warn(
-    `kerf: each() list '${id}' had its container (<${liveParent.tagName.toLowerCase()}>) rebuilt by the morph this render — `
-    + 'an ancestor\'s tag changed so the subtree was replaced, or a same-tag sibling positionally took the '
-    + 'container\'s place. The list re-binds and repopulates automatically, but its rows were re-created '
-    + 'from scratch: focus, scroll positions, in-progress IME composition, and any imperative listeners on '
-    + 'the old row nodes are lost. If the rows should survive, give the LIST\'S OWN container a stable '
-    + 'id/data-key (keying the conditional sibling instead only helps when it is removed, not when it '
-    + 'reappears) and keep the tags of the list\'s ancestors stable across renders. '
-    + 'Set KERF_DEV_WARN_LIST_REBIND=0 (or unset it) to silence this warning.',
+    `kerf: each() list '${id}' had its container (<${liveParent.tagName.toLowerCase()}>) rebuilt by the morph this render — ` +
+      "an ancestor's tag changed so the subtree was replaced, or a same-tag sibling positionally took the " +
+      "container's place. The list re-binds and repopulates automatically, but its rows were re-created " +
+      'from scratch: focus, scroll positions, in-progress IME composition, and any imperative listeners on ' +
+      "the old row nodes are lost. If the rows should survive, give the LIST'S OWN container a stable " +
+      'id/data-key (keying the conditional sibling instead only helps when it is removed, not when it ' +
+      "reappears) and keep the tags of the list's ancestors stable across renders. " +
+      'Set KERF_DEV_WARN_LIST_REBIND=0 (or unset it) to silence this warning.',
   );
 }
 

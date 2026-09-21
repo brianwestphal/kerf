@@ -15,17 +15,26 @@ import { expect, test } from '@playwright/test';
 const BASE = '/tests/dist/example-apps';
 
 test.describe('kanban', () => {
-  test('stacks its columns without document overflow on a mobile viewport', async ({ page }) => {
+  test('stacks its columns without document overflow on a mobile viewport', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`${BASE}/kanban/`);
 
     const layout = await page.evaluate(() => ({
       viewportWidth: document.documentElement.clientWidth,
       documentWidth: document.documentElement.scrollWidth,
-      columns: [...document.querySelectorAll<HTMLElement>('.col')].map((column) => {
-        const bounds = column.getBoundingClientRect();
-        return { left: bounds.left, right: bounds.right, top: bounds.top, bottom: bounds.bottom };
-      }),
+      columns: [...document.querySelectorAll<HTMLElement>('.col')].map(
+        (column) => {
+          const bounds = column.getBoundingClientRect();
+          return {
+            left: bounds.left,
+            right: bounds.right,
+            top: bounds.top,
+            bottom: bounds.bottom,
+          };
+        },
+      ),
     }));
 
     expect(layout.documentWidth).toBeLessThanOrEqual(layout.viewportWidth + 1);
@@ -38,7 +47,9 @@ test.describe('kanban', () => {
     expect(layout.columns[2]!.top).toBeGreaterThan(layout.columns[1]!.bottom);
   });
 
-  test('drag updates the card transform during pointermove (KF-163 regression)', async ({ page }) => {
+  test('drag updates the card transform during pointermove (KF-163 regression)', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/kanban/`);
     const card = page.locator('.card[data-card="a"]');
     await expect(card).toBeVisible();
@@ -56,7 +67,9 @@ test.describe('kanban', () => {
     // The card should carry a non-zero transform NOW (not the initial
     // translate(0px, 0px) baked at drag-start). This is the assertion that
     // would have failed under KF-163.
-    const transform = await card.evaluate((el) => (el as HTMLElement).style.transform);
+    const transform = await card.evaluate(
+      (el) => (el as HTMLElement).style.transform,
+    );
     expect(transform).toMatch(/translate\(\s*1\d\dpx/); // dx ≈ 120
     expect(transform).toContain('rotate(2deg)');
 
@@ -67,14 +80,19 @@ test.describe('kanban', () => {
     // the example's CSS is what protects this.
     const trans = await card.evaluate((el) => {
       const cs = window.getComputedStyle(el);
-      return { property: cs.transitionProperty, duration: cs.transitionDuration };
+      return {
+        property: cs.transitionProperty,
+        duration: cs.transitionDuration,
+      };
     });
     expect(trans.duration).toMatch(/^0s(?:,\s*0s)*$/);
 
     await page.mouse.up();
   });
 
-  test('drop into another column updates the count (and the card relocates)', async ({ page }) => {
+  test('drop into another column updates the count (and the card relocates)', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/kanban/`);
 
     const todoCol = page.locator('.col[data-col="todo"]');
@@ -91,9 +109,13 @@ test.describe('kanban', () => {
     await page.mouse.move(cardBox!.x + 20, cardBox!.y + 20);
     await page.mouse.down();
     // Move into the done column's body in steps so onMove fires before drop.
-    await page.mouse.move(doneBox!.x + doneBox!.width / 2, doneBox!.y + doneBox!.height / 2, {
-      steps: 10,
-    });
+    await page.mouse.move(
+      doneBox!.x + doneBox!.width / 2,
+      doneBox!.y + doneBox!.height / 2,
+      {
+        steps: 10,
+      },
+    );
     await page.mouse.up();
 
     // Counts have flipped — one out of todo, one into done.
@@ -107,7 +129,9 @@ test.describe('kanban', () => {
     );
   });
 
-  test('pointerdown does not start a text selection on the card', async ({ page }) => {
+  test('pointerdown does not start a text selection on the card', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/kanban/`);
     const card = page.locator('.card[data-card="a"]');
     const box = await card.boundingBox();
@@ -115,14 +139,18 @@ test.describe('kanban', () => {
     await page.mouse.move(box!.x + 20, box!.y + 20);
     await page.mouse.down();
     await page.mouse.move(box!.x + 80, box!.y + 40, { steps: 4 });
-    const selection = await page.evaluate(() => window.getSelection()?.toString() ?? '');
+    const selection = await page.evaluate(
+      () => window.getSelection()?.toString() ?? '',
+    );
     expect(selection).toBe('');
     await page.mouse.up();
   });
 });
 
 test.describe('markdown-editor', () => {
-  test('typing into the contenteditable flows through to the preview', async ({ page }) => {
+  test('typing into the contenteditable flows through to the preview', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/markdown-editor/`);
     const editor = page.locator('.editor-input');
     await expect(editor).toBeVisible();
@@ -133,10 +161,14 @@ test.describe('markdown-editor', () => {
     await page.keyboard.press('End');
     await page.keyboard.type('\n\n## Hello from Playwright', { delay: 5 });
     // The preview should pick up the new H2.
-    await expect(page.locator('.preview h2', { hasText: 'Hello from Playwright' })).toBeVisible();
+    await expect(
+      page.locator('.preview h2', { hasText: 'Hello from Playwright' }),
+    ).toBeVisible();
   });
 
-  test('caret stays in the contenteditable across reactive re-renders', async ({ page }) => {
+  test('caret stays in the contenteditable across reactive re-renders', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/markdown-editor/`);
     const editor = page.locator('.editor-input');
     await editor.click();
@@ -157,7 +189,9 @@ test.describe('chat', () => {
     await page.keyboard.press('Enter');
 
     // The user bubble lands immediately.
-    await expect(page.locator('.msg.user .bubble', { hasText: 'Tell me about streaming' })).toBeVisible();
+    await expect(
+      page.locator('.msg.user .bubble', { hasText: 'Tell me about streaming' }),
+    ).toBeVisible();
 
     // A bot bubble appears and grows over time. Wait until the latest bot
     // bubble has meaningful text (the streaming finishes well under 5 s).
@@ -167,7 +201,9 @@ test.describe('chat', () => {
     expect(initialText.length).toBeGreaterThan(0);
 
     // After the stream settles, the caret marker should be gone.
-    await expect(page.locator('.msg.bot .caret').last()).toHaveCount(0, { timeout: 8000 });
+    await expect(page.locator('.msg.bot .caret').last()).toHaveCount(0, {
+      timeout: 8000,
+    });
   });
 
   test('textarea draft survives streaming re-renders', async ({ page }) => {
@@ -194,7 +230,9 @@ test.describe('chat', () => {
 });
 
 test.describe('counter-store', () => {
-  test('sync counter increments, persists, resets; async fetch resolves and rejects', async ({ page }) => {
+  test('sync counter increments, persists, resets; async fetch resolves and rejects', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/counter-store/`);
     await page.evaluate(() => localStorage.removeItem('kerf-counter-store'));
     await page.reload();
@@ -215,23 +253,31 @@ test.describe('counter-store', () => {
     // Reset → 0, last-bumped reverts to "never".
     await page.locator('button[data-action="reset"]').click();
     await expect(page.locator('[data-count]')).toHaveText('0');
-    await expect(page.locator('[data-meta]')).toContainText('last bumped: never');
+    await expect(page.locator('[data-meta]')).toContainText(
+      'last bumped: never',
+    );
 
     // Async fetch — success branch.
     await page.locator('button[data-action="fetch-ok"]').click();
     await expect(page.locator('[data-async-status]')).toHaveText('loading…');
     await expect(page.locator('[data-async-status]')).toHaveText('ok');
-    await expect(page.locator('[data-async-data]')).toContainText('Kerf store demo');
+    await expect(page.locator('[data-async-data]')).toContainText(
+      'Kerf store demo',
+    );
 
     // Async fetch — failure branch.
     await page.locator('button[data-action="fetch-fail"]').click();
     await expect(page.locator('[data-async-status]')).toHaveText('loading…');
-    await expect(page.locator('[data-async-status]')).toContainText('error: Simulated network failure');
+    await expect(page.locator('[data-async-status]')).toContainText(
+      'error: Simulated network failure',
+    );
   });
 });
 
 test.describe('cart-htmx', () => {
-  test('simulated swap → kerf mount; remove reduces total', async ({ page }) => {
+  test('simulated swap → kerf mount; remove reduces total', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/cart-htmx/`);
 
     // Before swap: shell is empty placeholder.
@@ -292,7 +338,9 @@ test.describe('todomvc', () => {
     await expect(items.first()).toContainText('Ship KF-165');
   });
 
-  test('filter clicks survive across all/active/done (partial-set regression gate)', async ({ page }) => {
+  test('filter clicks survive across all/active/done (partial-set regression gate)', async ({
+    page,
+  }) => {
     // The "add / toggle / clear-completed" test above never clicks a filter
     // because every action only writes `items` and the render gracefully
     // handles undefined `filter` / `editingId`. The partial-set bug
@@ -356,7 +404,9 @@ test.describe('todomvc', () => {
     expect(pageErrors).toEqual([]);
   });
 
-  test('edit flow: click → type → Enter commits, Escape cancels', async ({ page }) => {
+  test('edit flow: click → type → Enter commits, Escape cancels', async ({
+    page,
+  }) => {
     const pageErrors: string[] = [];
     page.on('pageerror', (err) => pageErrors.push(err.message));
 
@@ -420,7 +470,9 @@ test.describe('dashboard', () => {
     await expect(page.locator('.status')).toContainText('LIVE');
   });
 
-  test('fits the mobile viewport without horizontal overflow', async ({ page }) => {
+  test('fits the mobile viewport without horizontal overflow', async ({
+    page,
+  }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto(`${BASE}/dashboard/`);
     await expect(page.locator('.chart-host')).toBeVisible();
@@ -428,7 +480,8 @@ test.describe('dashboard', () => {
     const geometry = await page.evaluate(() => ({
       clientWidth: document.documentElement.clientWidth,
       scrollWidth: document.documentElement.scrollWidth,
-      chartRight: document.querySelector('.chart-host')!.getBoundingClientRect().right,
+      chartRight: document.querySelector('.chart-host')!.getBoundingClientRect()
+        .right,
     }));
     expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
     expect(geometry.chartRight).toBeLessThanOrEqual(geometry.clientWidth + 1);
@@ -436,7 +489,9 @@ test.describe('dashboard', () => {
 });
 
 test.describe('row-selector', () => {
-  test('selecting a row updates only the bound holes — no list re-render', async ({ page }) => {
+  test('selecting a row updates only the bound holes — no list re-render', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/row-selector/`);
 
     const rows = page.locator('[data-select]');
@@ -475,7 +530,9 @@ test.describe('row-selector', () => {
 });
 
 test.describe('live-poll', () => {
-  test('the no-build (importmap + html``) app votes fine-grained — render count stays 1', async ({ page }) => {
+  test('the no-build (importmap + html``) app votes fine-grained — render count stays 1', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/live-poll/`);
 
     // The app is served as untranspiled source resolved via an importmap —
@@ -498,7 +555,10 @@ test.describe('live-poll', () => {
     await expect(total).toHaveText('3');
 
     // Bound bar style follows the vote share (2/3 ≈ 67%).
-    await expect(tabs.locator('.opt-bar')).toHaveAttribute('style', /width:\s*67%/);
+    await expect(tabs.locator('.opt-bar')).toHaveAttribute(
+      'style',
+      /width:\s*67%/,
+    );
 
     // The render function reads no signal .value — it ran exactly once.
     await expect(renders).toHaveText('1');
@@ -507,14 +567,18 @@ test.describe('live-poll', () => {
     await page.locator('[data-reset]').click();
     await expect(total).toHaveText('0');
     await expect(tabs.locator('.opt-count')).toHaveText('0');
-    await expect(tabs.locator('.opt-bar')).toHaveAttribute('style', /width:\s*0%/);
+    await expect(tabs.locator('.opt-bar')).toHaveAttribute(
+      'style',
+      /width:\s*0%/,
+    );
     await expect(renders).toHaveText('1');
   });
 });
 
-
 test.describe('virtual-list', () => {
-  test('virtualizes 10k rows, debounced filter narrows, confirm-to-delete toasts', async ({ page }) => {
+  test('virtualizes 10k rows, debounced filter narrows, confirm-to-delete toasts', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/virtual-list/`);
 
     const rows = page.locator('#list .vl-row');
@@ -542,20 +606,28 @@ test.describe('virtual-list', () => {
     await expect(dialog).toContainText('Delete');
     await dialog.locator('.kerf-confirm__ok').click();
 
-    await expect(page.locator('.kerf-toast')).toContainText('Deleted crimson-falcon-0');
+    await expect(page.locator('.kerf-toast')).toContainText(
+      'Deleted crimson-falcon-0',
+    );
     // The row is gone from the source: 9,999 remain, and the filter now matches none.
     await expect(page.locator('#count')).toContainText('0 of 9,999 rows');
   });
 });
 
 test.describe('router', () => {
-  test('navigating routes the outlet + active nav without reloading', async ({ page }) => {
+  test('navigating routes the outlet + active nav without reloading', async ({
+    page,
+  }) => {
     await page.goto(`${BASE}/router/`);
     // Prove no full reload happens across navigation.
-    await page.evaluate(() => { (window as any)._noReload = true; });
+    await page.evaluate(() => {
+      (window as any)._noReload = true;
+    });
 
     await expect(page.locator('.rt-view h2')).toHaveText('Home');
-    await expect(page.locator('.rt-bar a', { hasText: 'Home' })).toHaveClass(/active/);
+    await expect(page.locator('.rt-bar a', { hasText: 'Home' })).toHaveClass(
+      /active/,
+    );
 
     // The fake browser's address bar is bound to the route.
     await expect(page.locator('.rt-addr .path')).toHaveText('#/');
@@ -563,7 +635,9 @@ test.describe('router', () => {
     // Click Guides → the outlet swaps, the active tab moves, the address bar updates.
     await page.locator(".rt-bar a[href='#/guides']").click();
     await expect(page.locator('.rt-view h2')).toHaveText('Guides');
-    await expect(page.locator('.rt-bar a', { hasText: 'Guides' })).toHaveClass(/active/);
+    await expect(page.locator('.rt-bar a', { hasText: 'Guides' })).toHaveClass(
+      /active/,
+    );
     await expect(page.locator('.rt-addr .path')).toHaveText('#/guides');
     expect(page.url()).toContain('#/guides');
 

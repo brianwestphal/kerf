@@ -1,6 +1,6 @@
 ---
-title: 'Event delegation'
-description: 'Tier 1 / Tier 2 / Tier 3 listener model — delegate and delegateCapture.'
+title: "Event delegation"
+description: "Tier 1 / Tier 2 / Tier 3 listener model — delegate and delegateCapture."
 ---
 
 Per-element `addEventListener` calls don't survive morph re-renders for nodes the diff inserts or rebuilds. The fix is delegation: bind one listener at the morph root and dispatch via `closest()`.
@@ -20,17 +20,22 @@ Bubbling events handled directly: `click`, `input`, `change`, `submit`, `mousedo
 Non-bubbling events that `delegate()` auto-promotes to capture phase under the hood: `focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`. Selector matching stays `closest()`-style — same as for bubbling events — so a wrapper selector still matches when the event fires on a descendant.
 
 ```ts
-import { delegate } from 'kerfjs';
+import { delegate } from "kerfjs";
 
-delegate<HTMLButtonElement>(rootEl, 'click', '[data-action="add"]', (e, btn) => {
-  // `btn` is the matched element (the button), not the original target.
-  // The generic narrows it from the default `Element` so `.dataset` typechecks.
-  console.log('clicked', btn.dataset.id);
-});
+delegate<HTMLButtonElement>(
+  rootEl,
+  "click",
+  '[data-action="add"]',
+  (e, btn) => {
+    // `btn` is the matched element (the button), not the original target.
+    // The generic narrows it from the default `Element` so `.dataset` typechecks.
+    console.log("clicked", btn.dataset.id);
+  },
+);
 
 // Auto-capture under the hood; the call site looks the same.
-delegate(rootEl, 'focus', '.field-row', (_e, row) => {
-  row.classList.add('field-row--active');
+delegate(rootEl, "focus", ".field-row", (_e, row) => {
+  row.classList.add("field-row--active");
 });
 ```
 
@@ -44,19 +49,20 @@ Explicit-capture escape hatch. After `delegate()`'s auto-promotion list expanded
 Selector matching is `closest()`-style by default — the same walk-up as `delegate()`, passing the matched ancestor (not the raw target) to your handler — so a click on any descendant of the selected element climbs to it. This unifies the two helpers on the one matching model you almost always want.
 
 ```ts
-import { delegateCapture } from 'kerfjs';
+import { delegateCapture } from "kerfjs";
 
 // 1. Custom non-bubbling event from a third-party widget.
 //    e.g. `xterm-resize` is dispatched on the terminal element and doesn't bubble:
-delegateCapture(rootEl, 'xterm-resize', '.terminal-host', (event, host) => {
+delegateCapture(rootEl, "xterm-resize", ".terminal-host", (event, host) => {
   // host === the .terminal-host element (or its closest matching ancestor).
-  void event; void host;
+  void event;
+  void host;
 });
 
 // 2. Intercept clicks BEFORE the bubble-phase delegate handler sees them
 //    (e.g. to validate before a "submit" handler runs).
-delegateCapture(rootEl, 'click', '[data-action="submit"]', (event) => {
-  if (!isValid()) event.stopPropagation();  // bubble-phase handler won't fire
+delegateCapture(rootEl, "click", '[data-action="submit"]', (event) => {
+  if (!isValid()) event.stopPropagation(); // bubble-phase handler won't fire
 });
 ```
 
@@ -64,13 +70,19 @@ delegateCapture(rootEl, 'click', '[data-action="submit"]', (event) => {
 
 ```ts
 // Only fire when the click lands ON the element, not a child.
-delegateCapture(rootEl, 'click', '.exact-target', (_event, exact) => {
-  // descendant clicks won't trigger this — `target.matches('.exact-target')` is false.
-  void exact;
-}, { match: 'direct' });
+delegateCapture(
+  rootEl,
+  "click",
+  ".exact-target",
+  (_event, exact) => {
+    // descendant clicks won't trigger this — `target.matches('.exact-target')` is false.
+    void exact;
+  },
+  { match: "direct" },
+);
 
 // The option is symmetric — delegate() accepts it too:
-delegate(rootEl, 'click', '.exact-target', handler, { match: 'direct' });
+delegate(rootEl, "click", ".exact-target", handler, { match: "direct" });
 ```
 
 In practice you almost never need `delegateCapture()` — `delegate()` covers the common cases. Reach for it only when scenario 1 or 2 above applies.
@@ -93,8 +105,10 @@ mount(rootEl, () => (
   </div>
 ));
 
-const chart = new MyChart(document.getElementById('chart-mount')!);
-chart.on('select', (point) => { /* ... */ });   // direct listener — fine
+const chart = new MyChart(document.getElementById("chart-mount")!);
+chart.on("select", (point) => {
+  /* ... */
+}); // direct listener — fine
 ```
 
 `IntersectionObserver` / `ResizeObserver` keyed to morph-replaceable elements are theoretically Tier 3 but uncommon in practice — observers usually attach to a stable parent and observe descendants generically.
@@ -112,16 +126,16 @@ When you genuinely want direct-match semantics — fire only when the event land
 Both helpers return a `() => void` disposer. **Capture it and call it when the delegate's scope ends** — the default rule, with exactly one narrow exception (described at the bottom of this section).
 
 ```ts
-const offClick = delegate(rootEl, 'click', '[data-action]', handler);
+const offClick = delegate(rootEl, "click", "[data-action]", handler);
 // later, when this scope is done:
 offClick();
 ```
 
 ### Why "capture by default"
 
-A `delegate()` call installs a listener on `rootEl` and returns a disposer that's the *only* way to remove it. If you discard the disposer, four things can go wrong:
+A `delegate()` call installs a listener on `rootEl` and returns a disposer that's the _only_ way to remove it. If you discard the disposer, four things can go wrong:
 
-1. **Transient roots leak.** Modals, route-level views, dynamically mounted widgets, popovers, micro-frontend slots — anything mounted and later torn down. The listener closure captures `rootEl`, `selector`, and `handler`. While that closure is alive, the detached `rootEl` is reachable, the handler is reachable, and *everything the handler closes over* (stores, signals, app state) is reachable. The listener doesn't go away just because the element was removed from the DOM.
+1. **Transient roots leak.** Modals, route-level views, dynamically mounted widgets, popovers, micro-frontend slots — anything mounted and later torn down. The listener closure captures `rootEl`, `selector`, and `handler`. While that closure is alive, the detached `rootEl` is reachable, the handler is reachable, and _everything the handler closes over_ (stores, signals, app state) is reachable. The listener doesn't go away just because the element was removed from the DOM.
 2. **Re-mount cycles stack listeners.** If you tear down the old root and mount a new one in its place without disposing, the previous listener stays on the now-detached element AND a fresh one attaches to the new element. Repeat the cycle and the leak grows linearly.
 3. **GC timing isn't a property you can design around.** Even if the detached element is eventually collectable, you can't predict when. Until it is, the listener — and everything in its closure — is still wired up. If the element ever re-enters the document (re-parented, held by a cache, referenced from a Map), the handler fires against state the rest of the app considers gone.
 4. **`mount()` does NOT clean up delegates for you.** The disposer returned by `mount()` only stops the reactive effect and clears the mount marker. Any `delegate()` you registered alongside the mount keeps its listener attached. If you re-`mount()` on the same root without first disposing the prior delegates, you stack listeners.
@@ -150,8 +164,8 @@ Collecting into an array is fine too — whatever fits the surrounding code:
 ```ts
 const disposers: Array<() => void> = [];
 disposers.push(mount(host, render));
-disposers.push(delegate(host, 'click',  '[data-action]', onAction));
-disposers.push(delegate(host, 'keydown', '[data-edit]', onEdit));
+disposers.push(delegate(host, "click", "[data-action]", onAction));
+disposers.push(delegate(host, "keydown", "[data-edit]", onEdit));
 
 function teardown() {
   for (const off of disposers) off();
@@ -163,7 +177,7 @@ See `cart-htmx/main.tsx` for a live example: its mount swap captures `stopMount`
 
 ### The narrow exception: genuinely page-lifetime registrations
 
-If — and only if — *all three* of these are true, discarding the disposer is safe:
+If — and only if — _all three_ of these are true, discarding the disposer is safe:
 
 - The registration runs once at module top-level (or once during app bootstrap).
 - `rootEl` is `document.body` or another element that lives for the page's lifetime.
@@ -173,7 +187,7 @@ In that case the listener is page-scoped by intent, and discarding the disposer 
 
 ### When capturing the disposer still isn't enough
 
-Capturing the disposer is necessary but not always sufficient. Because kerf has no formal mount/unmount lifecycle by design — the call site is the only signal — a handful of patterns capture the disposer in a way that *looks* right and still leaks. Each scenario below has the same root cause: the lifetime the disposer is tied to is shorter than the lifetime of the variable holding it.
+Capturing the disposer is necessary but not always sufficient. Because kerf has no formal mount/unmount lifecycle by design — the call site is the only signal — a handful of patterns capture the disposer in a way that _looks_ right and still leaks. Each scenario below has the same root cause: the lifetime the disposer is tied to is shorter than the lifetime of the variable holding it.
 
 #### `delegate()` rooted on a node inside a morph-managed tree
 
@@ -202,18 +216,18 @@ mount(appRoot, () => (
 delegate(appRoot, 'click', '[data-row] .action', handleAction);
 ```
 
-Rule of thumb: root `delegate()` at the *outermost* stable element — the `mount()` root, or a `data-morph-skip` host — and let `closest()` matching reach inner targets.
+Rule of thumb: root `delegate()` at the _outermost_ stable element — the `mount()` root, or a `data-morph-skip` host — and let `closest()` matching reach inner targets.
 
 #### `delegate()` called inside an `effect()`
 
-`effect()` re-runs its body every time a tracked signal changes. The effect's disposer tears down the *reactive subscription* but not whatever side-effects the body produced. Every re-run installs a fresh delegate listener on the root; nothing removes the previous one.
+`effect()` re-runs its body every time a tracked signal changes. The effect's disposer tears down the _reactive subscription_ but not whatever side-effects the body produced. Every re-run installs a fresh delegate listener on the root; nothing removes the previous one.
 
 ```ts
 // ❌ Wrong — every signal change adds another listener. The effect disposer
 // stops the subscription but the listeners stay attached forever.
 effect(() => {
-  if (mode.value === 'edit') {
-    delegate(root, 'keydown', '[data-edit]', commitOnEnter);
+  if (mode.value === "edit") {
+    delegate(root, "keydown", "[data-edit]", commitOnEnter);
   }
 });
 ```
@@ -221,8 +235,8 @@ effect(() => {
 ```ts
 // ✅ Right — register the delegate once at module / setup scope. Gate the
 // behavior on the signal inside the handler, where it's free.
-delegate(root, 'keydown', '[data-edit]', (e, el) => {
-  if (mode.value !== 'edit') return;
+delegate(root, "keydown", "[data-edit]", (e, el) => {
+  if (mode.value !== "edit") return;
   commitOnEnter(e, el);
 });
 ```
@@ -231,7 +245,7 @@ This is the same shape as the addEventListener-inside-mount foot-gun (Hard Rule 
 
 #### `delegate()` on a `toElement()` node that gets replaced
 
-`toElement()` returns a live DOM node you can `appendChild` / `replaceChildren` anywhere. If you attach a delegate to that node and later swap it out, the node is detached but the listener — and the disposer's closure — are still in memory. This case doesn't *look* like a transient root (there's no `mount()`), so it's easy to miss.
+`toElement()` returns a live DOM node you can `appendChild` / `replaceChildren` anywhere. If you attach a delegate to that node and later swap it out, the node is detached but the listener — and the disposer's closure — are still in memory. This case doesn't _look_ like a transient root (there's no `mount()`), so it's easy to miss.
 
 ```ts
 // ❌ Wrong — `card` is detached on the next replaceChildren(), but `off` is
@@ -249,20 +263,20 @@ let off: (() => void) | null = null;
 function swapCard(jsx: SafeHtml): void {
   off?.();
   const card = toElement(jsx) as HTMLElement;
-  off = delegate(card, 'click', '.btn', onBtn);
+  off = delegate(card, "click", ".btn", onBtn);
   host.replaceChildren(card);
 }
 ```
 
 #### Disposer variables overwritten by reassignment
 
-A captured disposer that gets reassigned without being called first leaks the prior listener. The `kerfjs/require-delegate-disposer` lint rule passes — the call's return value *is* assigned — but the leak is in the next statement after the rule's window.
+A captured disposer that gets reassigned without being called first leaks the prior listener. The `kerfjs/require-delegate-disposer` lint rule passes — the call's return value _is_ assigned — but the leak is in the next statement after the rule's window.
 
 ```ts
 // ❌ Wrong — every store change overwrites `off` without calling the prior one.
 let off: () => void = () => {};
 store.subscribe(() => {
-  off = delegate(root, 'click', currentSelector(), handler);
+  off = delegate(root, "click", currentSelector(), handler);
 });
 ```
 
@@ -271,7 +285,7 @@ store.subscribe(() => {
 let off: () => void = () => {};
 store.subscribe(() => {
   off();
-  off = delegate(root, 'click', currentSelector(), handler);
+  off = delegate(root, "click", currentSelector(), handler);
 });
 ```
 
@@ -279,7 +293,7 @@ If the reason you're re-registering is "the selector changed," consider whether 
 
 #### Nested-root confusion: stable parent, transient child
 
-"Page-lifetime" is a property of the *root element you pass to `delegate()`*, not the surrounding app. A stable outer mount doesn't make every descendant safe to ignore.
+"Page-lifetime" is a property of the _root element you pass to `delegate()`_, not the surrounding app. A stable outer mount doesn't make every descendant safe to ignore.
 
 ```ts
 // ❌ Wrong — #app is page-lifetime, but `modalInstanceEl` is not. The modal
@@ -305,7 +319,7 @@ function openModal() {
 }
 ```
 
-When deciding whether a `delegate()` is page-lifetime, ask: "is *this specific element* attached once and never removed?" If you can construct a code path that removes it, the disposer must be captured.
+When deciding whether a `delegate()` is page-lifetime, ask: "is _this specific element_ attached once and never removed?" If you can construct a code path that removes it, the disposer must be captured.
 
 ## `attr()` — building selectors from typed constants
 
@@ -314,19 +328,19 @@ When your `data-action` names live in a typed constant object, hand-writing the 
 ### Static form — fixed action names
 
 ```ts
-import { delegate, attr, type AttrSpec } from 'kerfjs';
+import { delegate, attr, type AttrSpec } from "kerfjs";
 
 const ACTIONS = {
-  add:    attr('data-action', 'add-todo'),
-  remove: attr('data-action', 'remove-todo'),
-  toggle: attr('data-action', 'toggle-todo'),
-} as const satisfies Record<string, AttrSpec<'data-action'>>;
+  add: attr("data-action", "add-todo"),
+  remove: attr("data-action", "remove-todo"),
+  toggle: attr("data-action", "toggle-todo"),
+} as const satisfies Record<string, AttrSpec<"data-action">>;
 
 // In JSX — spread .attrs (rename-safe; no hardcoded 'data-action' at call sites):
 // <button {...ACTIONS.toggle.attrs}>Toggle</button>
 
 // In delegate — use the pre-computed selector:
-delegate(root, 'click', ACTIONS.toggle.selector, handler);
+delegate(root, "click", ACTIONS.toggle.selector, handler);
 // → '[data-action="toggle-todo"]'
 ```
 
@@ -337,7 +351,7 @@ delegate(root, 'click', ACTIONS.toggle.selector, handler);
 For attributes whose value changes per item (like `data-id`), use the single-argument overload. The name is validated once; calling the returned factory is cheap.
 
 ```ts
-const ITEM = { id: attr('data-id') } as const;
+const ITEM = { id: attr("data-id") } as const;
 
 // In JSX — call the factory inline:
 // <li {...ITEM.id(String(item.id))}>…</li>
@@ -350,29 +364,32 @@ The optional `V` generic constrains which values the factory accepts. Leaving bo
 
 ```ts
 // Both generics off — N inferred as 'data-id', V defaults to string:
-const idFactory = attr('data-id');
+const idFactory = attr("data-id");
 
 // Both generics explicit — factory only accepts 'asc' | 'desc':
-const sortFactory = attr<'data-sort', 'asc' | 'desc'>('data-sort');
+const sortFactory = attr<"data-sort", "asc" | "desc">("data-sort");
 ```
 
 The dynamic factory result is a plain frozen object `{ 'data-id': value }`. It has no `.selector` (the value is unknown at definition time), so ad-hoc compound selectors still use string concatenation:
 
 ```ts
-delegate(root, 'click',
-  ACTIONS.toggle.selector + attr('data-id', id).selector,
-  handler);
+delegate(
+  root,
+  "click",
+  ACTIONS.toggle.selector + attr("data-id", id).selector,
+  handler,
+);
 // → '[data-action="toggle-todo"][data-id="42"]'
 ```
 
-The static form CSS-escapes the name and value at creation time; the dynamic form validates and escapes the *name* at creation, while values are escaped later by the JSX attribute renderer when the factory result is spread (SSR-safe either way; no `CSS.escape` dependency). Hand-written string literals like `'[data-action="add"]'` are still fine for one-off selectors. `attr()` earns its keep when the attribute name and value both live in a typed constant that's also referenced in JSX.
+The static form CSS-escapes the name and value at creation time; the dynamic form validates and escapes the _name_ at creation, while values are escaped later by the JSX attribute renderer when the factory result is spread (SSR-safe either way; no `CSS.escape` dependency). Hand-written string literals like `'[data-action="add"]'` are still fine for one-off selectors. `attr()` earns its keep when the attribute name and value both live in a typed constant that's also referenced in JSX.
 
 ### Generic type parameter
 
 Both `delegate()` and `delegateCapture()` accept an optional element-type generic that narrows the matched element in the handler, avoiding casts:
 
 ```ts
-delegate<HTMLButtonElement>(root, 'click', 'button[data-action]', (_e, btn) => {
+delegate<HTMLButtonElement>(root, "click", "button[data-action]", (_e, btn) => {
   // btn is HTMLButtonElement — no cast needed
   btn.disabled = true;
 });
@@ -385,12 +402,12 @@ The default is `Element`, so untyped call sites are unaffected.
 The `attr()` + `delegate()` pattern above has one recurring shape: a table of `data-action` specs used as the single source of truth for both the JSX attribute and the delegate selector, plus a `switch (dataset.action)` that routes each event to a handler. It is the most-reinvented idiom in real kerf apps, so it ships blessed at the optional `kerfjs/actions` subpath — two thin helpers over `attr()` and `delegate()` that don't replace either.
 
 ```ts
-import { action, delegateActions } from 'kerfjs/actions';
+import { action, delegateActions } from "kerfjs/actions";
 
 // One table = the attribute in JSX AND the dispatch key. They can't drift.
 const A = {
-  select: action('select'),   // = attr('data-action', 'select')
-  remove: action('remove'),
+  select: action("select"), // = attr('data-action', 'select')
+  remove: action("remove"),
 };
 
 // JSX (possibly in another file — no co-location required):
@@ -398,9 +415,9 @@ const A = {
 //   <button {...A.remove.attrs} data-id={id}>Remove</button>
 
 // One delegated listener dispatches the whole table; returns a disposer:
-const dispose = delegateActions(root, 'click', {
-  [A.select.value]: (_e, el) => select(el.getAttribute('data-id')),
-  [A.remove.value]: (_e, el) => remove(el.getAttribute('data-id')),
+const dispose = delegateActions(root, "click", {
+  [A.select.value]: (_e, el) => select(el.getAttribute("data-id")),
+  [A.remove.value]: (_e, el) => remove(el.getAttribute("data-id")),
 });
 ```
 
@@ -415,13 +432,13 @@ const dispose = delegateActions(root, 'click', {
 
   ```ts
   // Wrong — e.target can be a child <span>, not the <button>
-  delegate(root, 'click', '[data-action="remove"]', (e) => {
+  delegate(root, "click", '[data-action="remove"]', (e) => {
     const id = (e.target as HTMLElement).dataset.id; // undefined when target is <span>
     remove(id!); // id is undefined, silent failure
   });
 
   // Right — el is always the matched [data-action="remove"] element
-  delegate(root, 'click', '[data-action="remove"]', (_e, el) => {
+  delegate(root, "click", '[data-action="remove"]', (_e, el) => {
     const id = (el as HTMLElement).dataset.id; // always correct
     remove(id!);
   });

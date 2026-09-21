@@ -5,7 +5,7 @@ description: htmx and kerf solve different halves of the same problem — server
 
 You wrote an htmx app. You're reading this because you've discovered the cases htmx isn't a great fit for, or you want a small client-side reactivity layer to layer on top of your htmx-driven HTML.
 
-**These two tools don't compete head-on.** htmx's value proposition is *let the server return HTML and swap it into the DOM via attribute-driven AJAX*. Kerf's value proposition is *render JSX to HTML strings and reconcile against the live DOM driven by signals*. The first is a network architecture; the second is a client-side rendering library. You can use both at once — htmx for navigation and major partial-page updates, kerf for the interactive bits inside an island.
+**These two tools don't compete head-on.** htmx's value proposition is _let the server return HTML and swap it into the DOM via attribute-driven AJAX_. Kerf's value proposition is _render JSX to HTML strings and reconcile against the live DOM driven by signals_. The first is a network architecture; the second is a client-side rendering library. You can use both at once — htmx for navigation and major partial-page updates, kerf for the interactive bits inside an island.
 
 This page is shorter than the others in this section. There's no TodoMVC-shaped side-by-side because the two tools are not interchangeable on the same problem.
 
@@ -30,7 +30,6 @@ A working version of the composition lives at [`site/src/examples/complete/cart-
 
 [![Animated preview: swapping in the cart island, kerf mounting it, then removing an item](/kerf/demos/cart-htmx.svg)](/kerf/run/cart-htmx/)
 
-
 ```html
 <!-- Server-rendered page -->
 <div hx-get="/cart" hx-trigger="load" hx-swap="innerHTML">
@@ -38,12 +37,12 @@ A working version of the composition lives at [`site/src/examples/complete/cart-
 </div>
 
 <script type="module">
-  import { mount, signal, delegate, attr } from 'https://esm.sh/kerfjs';
+  import { mount, signal, delegate, attr } from "https://esm.sh/kerfjs";
 
-  const ADD = attr('data-action', 'add');
+  const ADD = attr("data-action", "add");
 
-  document.body.addEventListener('htmx:afterSwap', (e) => {
-    const root = e.target.querySelector('[data-kerf-cart]');
+  document.body.addEventListener("htmx:afterSwap", (e) => {
+    const root = e.target.querySelector("[data-kerf-cart]");
     if (root) mountCart(root);
   });
 
@@ -55,7 +54,7 @@ A working version of the composition lives at [`site/src/examples/complete/cart-
         <span>{count.value}</span>
       </div>
     ));
-    delegate(root, 'click', ADD.selector, () => count.value += 1);
+    delegate(root, "click", ADD.selector, () => (count.value += 1));
   }
 </script>
 ```
@@ -66,14 +65,14 @@ If the server returns a new shell later (another htmx swap into the same parent)
 
 ## 4. Mental-model translations (the partial overlap)
 
-| htmx | Kerf | Notes |
-| --- | --- | --- |
-| `hx-get="/url" hx-swap="innerHTML"` | `fetch()` + `mount(root, () => <jsx/>)` | htmx is declarative HTML swap; kerf is imperative-render-then-reconcile. |
-| `hx-trigger="click"` | `delegate(root, 'click', selector, fn)` | Different primitives, but the "one declarative trigger per DOM target" idea is similar. |
-| `hx-target="#foo"` | the `el` argument to `mount(el, ...)` | Kerf is always mounted to one specific element. |
-| `hx-swap="outerHTML"` | call `mount()` on the parent and let the JSX define the structure | Or use `morph(el, html)` for one-shot HTML-string-driven reconciliation. |
-| `hx-on::after-request="..."` | a `delegate` handler that calls `fetch()` directly | No `hx-on` analog; write the fetch yourself inside the handler. |
-| `<htmx-extension>` | n/a | No extension system — the runtime is fixed. |
+| htmx                                | Kerf                                                              | Notes                                                                                   |
+| ----------------------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `hx-get="/url" hx-swap="innerHTML"` | `fetch()` + `mount(root, () => <jsx/>)`                           | htmx is declarative HTML swap; kerf is imperative-render-then-reconcile.                |
+| `hx-trigger="click"`                | `delegate(root, 'click', selector, fn)`                           | Different primitives, but the "one declarative trigger per DOM target" idea is similar. |
+| `hx-target="#foo"`                  | the `el` argument to `mount(el, ...)`                             | Kerf is always mounted to one specific element.                                         |
+| `hx-swap="outerHTML"`               | call `mount()` on the parent and let the JSX define the structure | Or use `morph(el, html)` for one-shot HTML-string-driven reconciliation.                |
+| `hx-on::after-request="..."`        | a `delegate` handler that calls `fetch()` directly                | No `hx-on` analog; write the fetch yourself inside the handler.                         |
+| `<htmx-extension>`                  | n/a                                                               | No extension system — the runtime is fixed.                                             |
 
 ## 5. Gotchas (the mental shifts)
 

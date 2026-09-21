@@ -17,10 +17,10 @@
  * The rest pin documented claims verified true by execution (the KF-383
  * lesson: run the claim, don't read the code).
  */
-import { beforeEach,describe,expect,it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { each,mount,signal } from '../../src/index.js';
+import { each, mount, signal } from '../../src/index.js';
 
 let root: HTMLElement;
 
@@ -43,10 +43,14 @@ describe('KF-387 seam: SVG × list reconcile', () => {
       </svg>
     ));
     on.value = true;
-    expect((root.querySelector('.dot') as Element).namespaceURI).toBe('http://www.w3.org/2000/svg');
+    expect((root.querySelector('.dot') as Element).namespaceURI).toBe(
+      'http://www.w3.org/2000/svg',
+    );
     on.value = false;
     on.value = true; // round trip: still correctly namespaced
-    expect((root.querySelector('.dot') as Element).namespaceURI).toBe('http://www.w3.org/2000/svg');
+    expect((root.querySelector('.dot') as Element).namespaceURI).toBe(
+      'http://www.w3.org/2000/svg',
+    );
     dispose();
   });
 
@@ -63,23 +67,35 @@ describe('KF-387 seam: SVG × list reconcile', () => {
     // Granular insert.
     const pts = arraySignal([{ id: 'p1' }]);
     const dispose1 = mount(root, () => (
-      <svg viewBox="0 0 10 10">{each(pts, (p) => <circle data-key={p.id} cx="1" cy="1" r="1" />)}</svg>
+      <svg viewBox="0 0 10 10">
+        {each(pts, (p) => (
+          <circle data-key={p.id} cx="1" cy="1" r="1" />
+        ))}
+      </svg>
     ));
-    expect((root.querySelector('circle[data-key="p1"]') as Element).namespaceURI).toBe(SVG_NS);
+    expect(
+      (root.querySelector('circle[data-key="p1"]') as Element).namespaceURI,
+    ).toBe(SVG_NS);
     pts.push({ id: 'p2' });
-    expect((root.querySelector('circle[data-key="p2"]') as Element).namespaceURI)
-      .toBe(SVG_NS);
+    expect(
+      (root.querySelector('circle[data-key="p2"]') as Element).namespaceURI,
+    ).toBe(SVG_NS);
     dispose1();
     root.innerHTML = '';
 
     // Snapshot append (plain array, new row identity).
     const list = signal([{ id: 's1' }]);
     const dispose2 = mount(root, () => (
-      <svg viewBox="0 0 10 10">{each(list.value, (p) => <circle data-key={p.id} cx="1" cy="1" r="1" />)}</svg>
+      <svg viewBox="0 0 10 10">
+        {each(list.value, (p) => (
+          <circle data-key={p.id} cx="1" cy="1" r="1" />
+        ))}
+      </svg>
     ));
     list.value = [...list.value, { id: 's2' }];
-    expect((root.querySelector('circle[data-key="s2"]') as Element).namespaceURI)
-      .toBe(SVG_NS);
+    expect(
+      (root.querySelector('circle[data-key="s2"]') as Element).namespaceURI,
+    ).toBe(SVG_NS);
     dispose2();
     root.innerHTML = '';
 
@@ -87,14 +103,19 @@ describe('KF-387 seam: SVG × list reconcile', () => {
     const shapes = arraySignal([{ id: 'g1', big: false }]);
     const dispose3 = mount(root, () => (
       <svg viewBox="0 0 10 10">
-        {each(shapes, (p) => (p.big
-          ? <g data-key={p.id}><circle cx="1" cy="1" r="5" /></g>
-          : <circle data-key={p.id} cx="1" cy="1" r="1" />))}
+        {each(shapes, (p) =>
+          p.big ? (
+            <g data-key={p.id}>
+              <circle cx="1" cy="1" r="5" />
+            </g>
+          ) : (
+            <circle data-key={p.id} cx="1" cy="1" r="1" />
+          ),
+        )}
       </svg>
     ));
     shapes.update(0, (r) => ({ ...r, big: true }));
-    expect((root.querySelector('g') as Element).namespaceURI)
-      .toBe(SVG_NS);
+    expect((root.querySelector('g') as Element).namespaceURI).toBe(SVG_NS);
     dispose3();
   });
 });

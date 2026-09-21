@@ -4,7 +4,7 @@
  * keyed list reorders, and the data-morph-skip escape hatch.
  */
 
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
@@ -52,16 +52,23 @@ describe('mount()', () => {
   });
 
   it('preserves element identity across re-renders for keyed list rows', () => {
-    interface Row { id: string; label: string }
+    interface Row {
+      id: string;
+      label: string;
+    }
     const rows = signal<Row[]>([
       { id: 'a', label: 'Alpha' },
       { id: 'b', label: 'Beta' },
       { id: 'c', label: 'Gamma' },
     ]);
 
-    mount(root, () => jsx('ul', {
-      children: rows.value.map((r) => jsx('li', { 'data-key': r.id, children: r.label })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: rows.value.map((r) =>
+          jsx('li', { 'data-key': r.id, children: r.label }),
+        ),
+      }),
+    );
 
     const liA = root.querySelector('[data-key="a"]')!;
     const liB = root.querySelector('[data-key="b"]')!;
@@ -75,18 +82,22 @@ describe('mount()', () => {
     expect(root.querySelector('[data-key="c"]')).toBe(liC);
 
     // And they should be in reversed order in the DOM.
-    const order = Array.from(root.querySelectorAll('li')).map((li) => li.getAttribute('data-key'));
+    const order = Array.from(root.querySelectorAll('li')).map((li) =>
+      li.getAttribute('data-key'),
+    );
     expect(order).toEqual(['c', 'b', 'a']);
   });
 
   it('preserves typed input value when the parent re-renders', () => {
     const tick = signal(0);
-    mount(root, () => jsx('div', {
-      children: [
-        jsx('span', { children: `tick:${tick.value}` }),
-        jsx('input', { id: 'name-input', type: 'text' }),
-      ],
-    }));
+    mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('span', { children: `tick:${tick.value}` }),
+          jsx('input', { id: 'name-input', type: 'text' }),
+        ],
+      }),
+    );
 
     const input = root.querySelector<HTMLInputElement>('#name-input')!;
     input.value = 'hello';
@@ -104,28 +115,37 @@ describe('mount()', () => {
   it('throws a descriptive error when an each() is INTRODUCED inside a data-morph-skip subtree on a re-render (marker never reaches the live DOM)', () => {
     const showList = signal(false);
     const items = [{ id: 'a' }, { id: 'b' }];
-    mount(root, () => jsx('div', {
-      'data-morph-skip': true,
-      children: showList.value
-        ? each(items, (i) => jsx('li', { 'data-key': i.id, children: i.id }))
-        : jsx('span', { children: 'no list yet' }),
-    }) as never);
+    mount(
+      root,
+      () =>
+        jsx('div', {
+          'data-morph-skip': true,
+          children: showList.value
+            ? each(items, (i) =>
+                jsx('li', { 'data-key': i.id, children: i.id }),
+              )
+            : jsx('span', { children: 'no list yet' }),
+        }) as never,
+    );
 
     // The morph refuses to write into the skipped subtree, so the new list's
     // marker never lands in the live DOM — kerf must fail loudly, not with a
     // bare TypeError from reconcileList(undefined, …).
-    expect(() => { showList.value = true; })
-      .toThrow(/each\(\) list appeared in the render output.*data-morph-skip/s);
+    expect(() => {
+      showList.value = true;
+    }).toThrow(/each\(\) list appeared in the render output.*data-morph-skip/s);
   });
 
   it('skips morphing inside elements marked data-morph-skip', () => {
     const tick = signal(0);
-    mount(root, () => jsx('div', {
-      children: [
-        jsx('span', { children: `tick:${tick.value}` }),
-        jsx('div', { id: 'widget', 'data-morph-skip': true }),
-      ],
-    }));
+    mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('span', { children: `tick:${tick.value}` }),
+          jsx('div', { id: 'widget', 'data-morph-skip': true }),
+        ],
+      }),
+    );
 
     // Append a child to the morph-skip host directly (simulating a library
     // that owns this subtree).
@@ -162,13 +182,15 @@ describe('mount()', () => {
   });
 
   it('throws a descriptive error when rootEl is null', () => {
-    expect(() => mount(null as unknown as HTMLElement, () => '<p>x</p>'))
-      .toThrow(/mount: rootEl is null\/undefined/);
+    expect(() =>
+      mount(null as unknown as HTMLElement, () => '<p>x</p>'),
+    ).toThrow(/mount: rootEl is null\/undefined/);
   });
 
   it('throws a descriptive error when rootEl is undefined', () => {
-    expect(() => mount(undefined as unknown as HTMLElement, () => '<p>x</p>'))
-      .toThrow(/mount: rootEl is null\/undefined/);
+    expect(() =>
+      mount(undefined as unknown as HTMLElement, () => '<p>x</p>'),
+    ).toThrow(/mount: rootEl is null\/undefined/);
   });
 
   it('adopts an inert-document root into the live document before rendering (KF-243)', () => {
@@ -200,16 +222,22 @@ describe('mount()', () => {
 
   describe('one-mount-per-tree precondition (KF-175)', () => {
     it('throws when mount() is called on a descendant of an already-mounted element', () => {
-      mount(root, () => jsx('div', { children: jsx('span', { id: 'inner', children: 'x' }) }));
+      mount(root, () =>
+        jsx('div', { children: jsx('span', { id: 'inner', children: 'x' }) }),
+      );
       const inner = root.querySelector('#inner') as HTMLElement;
-      expect(() => mount(inner, () => 'y')).toThrow(/already inside.*mounted tree/);
+      expect(() => mount(inner, () => 'y')).toThrow(
+        /already inside.*mounted tree/,
+      );
     });
 
     it('throws when mount() is called on an ancestor of an already-mounted element', () => {
       const inner = document.createElement('div');
       root.appendChild(inner);
       mount(inner, () => 'inner');
-      expect(() => mount(root, () => 'outer')).toThrow(/already inside.*mounted tree/);
+      expect(() => mount(root, () => 'outer')).toThrow(
+        /already inside.*mounted tree/,
+      );
     });
 
     it('throws when mount() is called twice on the same element without dispose', () => {
@@ -274,12 +302,14 @@ describe('mount()', () => {
     expect(det.hasAttribute('open')).toBe(true);
     cls.value = 'b';
     expect(det.hasAttribute('open')).toBe(true);
-    expect(det.getAttribute('class')).toBe('b');  // confirms diff did run
+    expect(det.getAttribute('class')).toBe('b'); // confirms diff did run
   });
 
   it('preserves user-set <dialog open> across re-renders (KF-84)', () => {
     const cls = signal('a');
-    mount(root, () => jsx('dialog', { className: cls.value, children: 'hello' }));
+    mount(root, () =>
+      jsx('dialog', { className: cls.value, children: 'hello' }),
+    );
     const dlg = root.querySelector('dialog') as HTMLDialogElement;
     dlg.setAttribute('open', '');
     expect(dlg.hasAttribute('open')).toBe(true);
@@ -300,7 +330,7 @@ describe('mount()', () => {
     const div = root.querySelector('div')!;
     div.setAttribute('data-imperative', 'set');
     expect(div.getAttribute('data-imperative')).toBe('set');
-    cls.value = 'b';  // forces the template to change → diff runs → wipe
+    cls.value = 'b'; // forces the template to change → diff runs → wipe
     expect(div.getAttribute('data-imperative')).toBe(null);
   });
 
@@ -308,22 +338,30 @@ describe('mount()', () => {
     // Mount has an each() list. Flipping a class on the parent forces the
     // KF-88 slow path; the diff needs the list parent in `listParents` so
     // it doesn't recurse into the list's children.
-    interface Row { id: string; label: string }
-    const rows = signal<Row[]>([{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }]);
+    interface Row {
+      id: string;
+      label: string;
+    }
+    const rows = signal<Row[]>([
+      { id: 'a', label: 'A' },
+      { id: 'b', label: 'B' },
+    ]);
     const cls = signal('one');
     mount(root, () =>
       jsx('section', {
         className: cls.value,
         children: jsx('ul', {
-          children: each(rows.value, (r) => jsx('li', { 'data-key': r.id, children: r.label })),
+          children: each(rows.value, (r) =>
+            jsx('li', { 'data-key': r.id, children: r.label }),
+          ),
         }),
       }),
     );
     const ul = root.querySelector('ul')!;
     expect(ul.children.length).toBe(2);
-    cls.value = 'two';  // template changes → diff runs → listParents path is taken
+    cls.value = 'two'; // template changes → diff runs → listParents path is taken
     expect(root.querySelector('section')!.getAttribute('class')).toBe('two');
-    expect(root.querySelector('ul')!.children.length).toBe(2);  // list children preserved
+    expect(root.querySelector('ul')!.children.length).toBe(2); // list children preserved
   });
 
   it('preserves imperative attribute mutations when the template is byte-identical (KF-88 fast path)', () => {

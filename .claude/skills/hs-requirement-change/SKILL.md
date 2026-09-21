@@ -3,11 +3,13 @@ name: hs-requirement-change
 description: Create a new req change ticket in Hot Sheet
 allowed-tools: Bash
 ---
+
 <!-- hotsheet-skill-version: 30 -->
 
 Create a new Hot Sheet **req change** ticket. Changes to existing requirements.
 
 **Parsing the input:**
+
 - If the input starts with "next", "up next", or "do next" (case-insensitive), set `up_next` to `true` and use the remaining text as the title
 - Otherwise, use the entire input as the title
 

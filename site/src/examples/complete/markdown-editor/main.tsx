@@ -38,7 +38,9 @@ const html = computed(() =>
 const source = signal(SAMPLE);
 
 // computed → memoized. Re-renders only when source changes.
-const html = computed(() => DOMPurify.sanitize(marked.parse(source.value, { async: false }) as string));
+const html = computed(() =>
+  DOMPurify.sanitize(marked.parse(source.value, { async: false }) as string),
+);
 
 const root = document.getElementById('app')!;
 
@@ -55,11 +57,11 @@ mount(root, () => (
         class="editor-input"
         contenteditable="plaintext-only"
         spellcheck="false"
-      >{source.value}</div>
+      >
+        {source.value}
+      </div>
     </div>
-    <article class="pane preview">
-      {raw(html.value)}
-    </article>
+    <article class="pane preview">{raw(html.value)}</article>
   </div>
 ));
 

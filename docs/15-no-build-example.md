@@ -1,6 +1,6 @@
 # 15 — The no-build example app (`live-poll`)
 
-kerf's positioning is "the fastest framework that needs no build step beyond your existing one" — and with the `html` tagged template (`kerfjs/html`, doc 6 §6.11), *no build step at all* is literally true. This document specifies the example app that proves it on the site: a complete, served-as-source app with zero tooling.
+kerf's positioning is "the fastest framework that needs no build step beyond your existing one" — and with the `html` tagged template (`kerfjs/html`, doc 6 §6.11), _no build step at all_ is literally true. This document specifies the example app that proves it on the site: a complete, served-as-source app with zero tooling.
 
 ## 15.1 Purpose and requirements
 
@@ -20,11 +20,11 @@ The app lives at `site/src/examples/complete/live-poll/` like every complete app
 
 Every path in the app is relative, so the identical copied output serves under any base — `/kerf/run/live-poll/` (site), `/live-poll/` (capture server), and `./` (Playwright test server). All three build scripts route through the helper and must stay in sync:
 
-| Script | Purpose |
-| --- | --- |
-| `site/scripts/build-examples.mjs` | site build → `public/run/live-poll/` |
-| `site/scripts/build-demos-for-capture.mjs` | demo-capture serve root |
-| `tests/dist/example-apps/build.mjs` | Playwright test build |
+| Script                                     | Purpose                              |
+| ------------------------------------------ | ------------------------------------ |
+| `site/scripts/build-examples.mjs`          | site build → `public/run/live-poll/` |
+| `site/scripts/build-demos-for-capture.mjs` | demo-capture serve root              |
+| `tests/dist/example-apps/build.mjs`        | Playwright test build                |
 
 Consequences of "copied, not compiled":
 

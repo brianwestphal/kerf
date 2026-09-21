@@ -45,34 +45,49 @@ import { clearStoreRegistry } from '../../src/testing.js';
 
 describe('Doc contract coverage (KF-104)', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; clearStoreRegistry(); });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+    clearStoreRegistry();
+  });
 
   describe('signal contracts (docs/2-reactivity.md)', () => {
     it('signal NOT deep-reactive: mutating in place does not notify', () => {
       const arr = signal<number[]>([1, 2, 3]);
       let runs = 0;
-      effect(() => { void arr.value; runs++; });
+      effect(() => {
+        void arr.value;
+        runs++;
+      });
       expect(runs).toBe(1);
-      arr.value.push(4);  // in-place mutation
-      expect(runs).toBe(1);  // no notification
-      arr.value = [...arr.value];  // new ref
+      arr.value.push(4); // in-place mutation
+      expect(runs).toBe(1); // no notification
+      arr.value = [...arr.value]; // new ref
       expect(runs).toBe(2);
     });
 
     it('replacing a signal with a new object reference (even structurally equal) notifies', () => {
       const obj = signal<{ a: number }>({ a: 1 });
       let runs = 0;
-      effect(() => { void obj.value; runs++; });
+      effect(() => {
+        void obj.value;
+        runs++;
+      });
       expect(runs).toBe(1);
-      obj.value = { a: 1 };  // new ref, structurally same
+      obj.value = { a: 1 }; // new ref, structurally same
       expect(runs).toBe(2);
     });
 
     it('effect disposer stops re-runs', () => {
       const x = signal(0);
       let runs = 0;
-      const dispose = effect(() => { void x.value; runs++; });
+      const dispose = effect(() => {
+        void x.value;
+        runs++;
+      });
       expect(runs).toBe(1);
       x.value = 1;
       expect(runs).toBe(2);
@@ -111,8 +126,8 @@ describe('Doc contract coverage (KF-104)', () => {
       // Mutate the store to a different value, then call resetAllStores —
       // since the registry was cleared, reset does nothing for our store.
       store.actions.inc();
-      expect(store.state.value.x).toBe(1);  // already 1; just confirm not reset
-      resetAllStores();  // should not touch the deregistered store
+      expect(store.state.value.x).toBe(1); // already 1; just confirm not reset
+      resetAllStores(); // should not touch the deregistered store
       expect(store.state.value.x).toBe(1);
     });
 
@@ -120,7 +135,10 @@ describe('Doc contract coverage (KF-104)', () => {
       const a = signal(1);
       const b = signal('unrelated');
       let runs = 0;
-      const c = computed(() => { runs++; return a.value * 2; });
+      const c = computed(() => {
+        runs++;
+        return a.value * 2;
+      });
       expect(c.value).toBe(2);
       expect(runs).toBe(1);
       // Mutating an unrelated signal does NOT invalidate the computed.
@@ -136,7 +154,9 @@ describe('Doc contract coverage (KF-104)', () => {
 
   describe('mount contracts (docs/4-render.md)', () => {
     it('mount throws a descriptive error when rootEl is null', () => {
-      expect(() => mount(null as unknown as HTMLElement, () => 'x')).toThrow(/null\/undefined/);
+      expect(() => mount(null as unknown as HTMLElement, () => 'x')).toThrow(
+        /null\/undefined/,
+      );
     });
 
     it('focused row that is REPLACED loses focus (the documented trade-off)', () => {
@@ -146,11 +166,15 @@ describe('Doc contract coverage (KF-104)', () => {
       const items = signal<{ id: number; ver: number }[]>([{ id: 1, ver: 1 }]);
       mount(root, () => (
         <ul>
-          {each(items.value, (it) => (
-            <li data-key={String(it.id)}>
-              <input type="text" defaultValue={`v${it.ver}`} />
-            </li>
-          ), (it) => `${it.id}-${it.ver}`)}
+          {each(
+            items.value,
+            (it) => (
+              <li data-key={String(it.id)}>
+                <input type="text" defaultValue={`v${it.ver}`} />
+              </li>
+            ),
+            (it) => `${it.id}-${it.ver}`,
+          )}
         </ul>
       ));
       const input = root.querySelector('input')!;
@@ -187,7 +211,9 @@ describe('Doc contract coverage (KF-104)', () => {
       const items = signal([{ id: 1 }]);
       mount(root, () => (
         <ul>
-          {each(items.value, (it) => <li data-key={String(it.id)}>x</li>)}
+          {each(items.value, (it) => (
+            <li data-key={String(it.id)}>x</li>
+          ))}
         </ul>
       ));
       let directClicks = 0;
@@ -198,16 +224,14 @@ describe('Doc contract coverage (KF-104)', () => {
       // Replace the row (different ref → cache miss → fresh node).
       items.value = [{ id: 1 }];
       const li2 = root.querySelector('li')!;
-      expect(li2).not.toBe(li1);  // new node
+      expect(li2).not.toBe(li1); // new node
       li2.click();
-      expect(directClicks).toBe(1);  // listener gone with the old node
+      expect(directClicks).toBe(1); // listener gone with the old node
     });
 
     it('delegate handler triggering a re-render does NOT lose its own subscription', () => {
       const count = signal(0);
-      mount(root, () => (
-        <button data-action="inc">{count.value}</button>
-      ));
+      mount(root, () => <button data-action="inc">{count.value}</button>);
       let handlerCalls = 0;
       delegate(root, 'click', '[data-action="inc"]', () => {
         handlerCalls++;
@@ -241,13 +265,18 @@ describe('Doc contract coverage (KF-104)', () => {
       });
       root.querySelector('button')!.click();
       expect(captureCalls).toEqual(['capture']);
-      expect(bubbleCalls).toEqual([]);  // capture stopped propagation
+      expect(bubbleCalls).toEqual([]); // capture stopped propagation
     });
   });
 
   describe('jsx-runtime contracts (docs/6-jsx-runtime.md)', () => {
     it('Fragment composes children without a wrapper tag', () => {
-      const f = <Fragment><span>a</span><span>b</span></Fragment>;
+      const f = (
+        <Fragment>
+          <span>a</span>
+          <span>b</span>
+        </Fragment>
+      );
       expect(f.toString()).toBe('<span>a</span><span>b</span>');
     });
 
@@ -281,7 +310,9 @@ describe('Doc contract coverage (KF-104)', () => {
       // it right. The dedicated `tests/unit/toElement.test.ts` uses jsdom
       // for that reason — see CLAUDE.md "tech stack" notes. Here we assert
       // basic structural integrity.
-      const el = toElement('<svg viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/></svg>');
+      const el = toElement(
+        '<svg viewBox="0 0 10 10"><circle cx="5" cy="5" r="4"/></svg>',
+      );
       expect(el).toBeInstanceOf(Element);
       const svg = el as Element;
       expect(svg.tagName.toLowerCase()).toBe('svg');
@@ -296,37 +327,67 @@ describe('Doc contract coverage (KF-104)', () => {
   describe('each() contracts (docs/8-api-reference.md)', () => {
     it('throws on duplicate item references', () => {
       const dup = { id: 1 };
-      expect(() => mount(root, () => (
-        <ul>{each([dup, dup], (r) => <li data-key={String(r.id)}>x</li>)}</ul>
-      ))).toThrow(/same object reference/);
+      expect(() =>
+        mount(root, () => (
+          <ul>
+            {each([dup, dup], (r) => (
+              <li data-key={String(r.id)}>x</li>
+            ))}
+          </ul>
+        )),
+      ).toThrow(/same object reference/);
     });
 
     it('throws on primitive items with a useful message', () => {
-      expect(() => mount(root, () => (
-        <ul>{each([1, 2, 3] as unknown[] as object[], () => <li>x</li>)}</ul>
-      ))).toThrow(/items must be objects/);
+      expect(() =>
+        mount(root, () => (
+          <ul>
+            {each([1, 2, 3] as unknown[] as object[], () => (
+              <li>x</li>
+            ))}
+          </ul>
+        )),
+      ).toThrow(/items must be objects/);
     });
 
     it('arraySignal of non-object items: each() throws when reading', () => {
       // arraySignal can technically hold primitives, but each()'s WeakMap
       // cache requires objects. Verify the error path.
       const sig = arraySignal<unknown>([1, 2, 3]);
-      expect(() => mount(root, () => (
-        <ul>{each(sig as unknown as ReturnType<typeof arraySignal<{ id: number }>>,
-          (r) => <li data-key={String(r.id)}>x</li>)}</ul>
-      ))).toThrow(/items must be objects/);
+      expect(() =>
+        mount(root, () => (
+          <ul>
+            {each(
+              sig as unknown as ReturnType<typeof arraySignal<{ id: number }>>,
+              (r) => (
+                <li data-key={String(r.id)}>x</li>
+              ),
+            )}
+          </ul>
+        )),
+      ).toThrow(/items must be objects/);
     });
 
     it('per-item key argument forces re-render when external state changes (selected-id pattern)', () => {
-      const items = [{ id: 1, label: 'a' }, { id: 2, label: 'b' }];
+      const items = [
+        { id: 1, label: 'a' },
+        { id: 2, label: 'b' },
+      ];
       const selectedId = signal(1);
       mount(root, () => (
         <ul>
-          {each(items, (it) => (
-            <li data-key={String(it.id)} className={it.id === selectedId.value ? 'selected' : ''}>
-              {it.label}
-            </li>
-          ), (it) => `${it.id}-${it.id === selectedId.value ? 1 : 0}`)}
+          {each(
+            items,
+            (it) => (
+              <li
+                data-key={String(it.id)}
+                className={it.id === selectedId.value ? 'selected' : ''}
+              >
+                {it.label}
+              </li>
+            ),
+            (it) => `${it.id}-${it.id === selectedId.value ? 1 : 0}`,
+          )}
         </ul>
       ));
       expect(root.querySelectorAll('li.selected').length).toBe(1);
@@ -357,8 +418,8 @@ describe('Doc contract coverage (KF-104)', () => {
     it('initial array is defensively copied (caller mutation does not leak)', () => {
       const seed = [{ id: 1 }, { id: 2 }];
       const a = arraySignal(seed);
-      seed.push({ id: 3 });  // mutate caller's array
-      expect(a.value.length).toBe(2);  // signal unaffected
+      seed.push({ id: 3 }); // mutate caller's array
+      expect(a.value.length).toBe(2); // signal unaffected
     });
   });
 });

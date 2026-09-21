@@ -23,22 +23,29 @@
 
 import { bench, describe } from 'vitest';
 
-interface Row { id: number; label: string }
+interface Row {
+  id: number;
+  label: string;
+}
 const N = 1000;
 const ADJ = ['pretty', 'large', 'big', 'small', 'tall'];
-const rows: Row[] = Array.from({ length: N }, (_, i) => ({ id: i + 1, label: `${ADJ[i % 5]} red chair` }));
+const rows: Row[] = Array.from({ length: N }, (_, i) => ({
+  id: i + 1,
+  label: `${ADJ[i % 5]} red chair`,
+}));
 
 // One row's HTML (krausest shape: <tr data-key><td>id</td><td><a>label</a></td> + 2 static cells).
 const rowHtml = (r: Row): string =>
-  `<tr data-key="${r.id}"><td class="col-md-1">${r.id}</td>`
-  + `<td class="col-md-4"><a class="lbl">${r.label}</a></td>`
-  + `<td class="col-md-1"><a class="remove"><span class="glyphicon glyphicon-remove"></span></a></td>`
-  + `<td class="col-md-6"></td></tr>`;
+  `<tr data-key="${r.id}"><td class="col-md-1">${r.id}</td>` +
+  `<td class="col-md-4"><a class="lbl">${r.label}</a></td>` +
+  `<td class="col-md-1"><a class="remove"><span class="glyphicon glyphicon-remove"></span></a></td>` +
+  `<td class="col-md-6"></td></tr>`;
 
-const SKELETON = '<tr data-key=""><td class="col-md-1"></td>'
-  + '<td class="col-md-4"><a class="lbl"></a></td>'
-  + '<td class="col-md-1"><a class="remove"><span class="glyphicon glyphicon-remove"></span></a></td>'
-  + '<td class="col-md-6"></td></tr>';
+const SKELETON =
+  '<tr data-key=""><td class="col-md-1"></td>' +
+  '<td class="col-md-4"><a class="lbl"></a></td>' +
+  '<td class="col-md-1"><a class="remove"><span class="glyphicon glyphicon-remove"></span></a></td>' +
+  '<td class="col-md-6"></td></tr>';
 
 describe('create 1k rows: instantiate strategies (JS work only)', () => {
   bench('A. current — build 1k strings + one innerHTML parse', () => {
@@ -79,7 +86,11 @@ describe('create 1k rows: sub-cost attribution of approach A', () => {
   });
 
   // Pre-build the big string once so this bench measures ONLY the parse.
-  const big = (() => { let s = ''; for (let i = 0; i < N; i++) s += rowHtml(rows[i]); return s; })();
+  const big = (() => {
+    let s = '';
+    for (let i = 0; i < N; i++) s += rowHtml(rows[i]);
+    return s;
+  })();
   bench('A2. innerHTML parse only (string prebuilt)', () => {
     const tpl = document.createElement('template');
     tpl.innerHTML = big;

@@ -14,19 +14,23 @@ ruleTester.run('prefer-attr-selector', rule, {
     // Tag-qualified — compound selector, not a simple attr().
     { code: "delegate(root, 'click', 'button[data-action=\"x\"]', fn);" },
     // Compound attr selectors — not 1:1 with a single attr() spec.
-    { code: "delegate(root, 'click', '[data-action=\"x\"][data-id=\"y\"]', fn);" },
+    {
+      code: 'delegate(root, \'click\', \'[data-action="x"][data-id="y"]\', fn);',
+    },
     // Bare-attribute presence selectors — no value to embed.
     { code: "delegate(root, 'click', '[data-new]', fn);" },
     { code: "delegate(root, 'click', '[data-edit]', fn);" },
     // Not delegate / delegateCapture.
-    { code: "querySelector('[data-action=\"x\"]');" },
-    { code: "el.matches('[data-action=\"x\"]');" },
+    { code: 'querySelector(\'[data-action="x"]\');' },
+    { code: 'el.matches(\'[data-action="x"]\');' },
     // Selector argument is a variable, not a literal.
     { code: "delegate(root, 'click', selector, fn);" },
     // kerfjs/actions: delegateActions() takes a handler TABLE (an object), not a
     // literal selector arg, so it is never flagged — the action strings live in
     // the table keys, and the [data-action] wiring is internal to the helper.
-    { code: "delegateActions(root, 'click', { 'select-file': fn, remove: fn2 });" },
+    {
+      code: "delegateActions(root, 'click', { 'select-file': fn, remove: fn2 });",
+    },
     { code: "delegateActions(root, 'input', table, { attr: 'data-action' });" },
     // action('x').selector is a member expression (the blessed attr-table form),
     // not a literal — not flagged, same as attr('data-action','x').selector.
@@ -36,20 +40,34 @@ ruleTester.run('prefer-attr-selector', rule, {
   invalid: [
     {
       code: "delegate(root, 'click', '[data-action=\"toggle\"]', fn);",
-      errors: [{ messageId: 'preferAttr', data: { name: 'data-action', value: 'toggle' } }],
+      errors: [
+        {
+          messageId: 'preferAttr',
+          data: { name: 'data-action', value: 'toggle' },
+        },
+      ],
     },
     {
       code: "delegateCapture(root, 'blur', '[data-edit=\"row\"]', fn);",
-      errors: [{ messageId: 'preferAttr', data: { name: 'data-edit', value: 'row' } }],
+      errors: [
+        { messageId: 'preferAttr', data: { name: 'data-edit', value: 'row' } },
+      ],
     },
     {
       code: "delegate(root, 'submit', '[role=\"dialog\"]', fn);",
-      errors: [{ messageId: 'preferAttr', data: { name: 'role', value: 'dialog' } }],
+      errors: [
+        { messageId: 'preferAttr', data: { name: 'role', value: 'dialog' } },
+      ],
     },
     {
       // Single-quoted CSS string inside double-quoted JS literal.
       code: 'delegate(root, "click", "[data-action=\'save\']", fn);',
-      errors: [{ messageId: 'preferAttr', data: { name: 'data-action', value: 'save' } }],
+      errors: [
+        {
+          messageId: 'preferAttr',
+          data: { name: 'data-action', value: 'save' },
+        },
+      ],
     },
   ],
 });

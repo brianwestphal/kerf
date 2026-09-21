@@ -26,9 +26,21 @@ interface Guide {
 
 // Deterministic content (no Math.random) so the demo + its capture are stable.
 const GUIDES: Guide[] = [
-  { slug: 'getting-started', title: 'Getting started', body: 'Install kerfjs, point your JSX at it, and mount. Ten lines to a reactive app.' },
-  { slug: 'signals', title: 'Signals & bindings', body: 'Hand a signal into a JSX hole and kerf binds that one node — values bind, structure re-renders.' },
-  { slug: 'routing', title: 'Routing', body: 'This page. createRouter gives you a route signal, an outlet, and link interception.' },
+  {
+    slug: 'getting-started',
+    title: 'Getting started',
+    body: 'Install kerfjs, point your JSX at it, and mount. Ten lines to a reactive app.',
+  },
+  {
+    slug: 'signals',
+    title: 'Signals & bindings',
+    body: 'Hand a signal into a JSX hole and kerf binds that one node — values bind, structure re-renders.',
+  },
+  {
+    slug: 'routing',
+    title: 'Routing',
+    body: 'This page. createRouter gives you a route signal, an outlet, and link interception.',
+  },
 ];
 const guideBySlug = new Map(GUIDES.map((g) => [g.slug, g]));
 
@@ -36,10 +48,17 @@ function Home() {
   return (
     <div class="rt-view">
       <h2>Home</h2>
-      <p>Welcome to the postcard router. Pick a guide, follow a link, and hit Back — every navigation stays on this page.</p>
+      <p>
+        Welcome to the postcard router. Pick a guide, follow a link, and hit
+        Back — every navigation stays on this page.
+      </p>
       <ul class="rt-guides">
-        <li><a href="#/guides">Browse the guides →</a></li>
-        <li><a href="#/about">About this demo →</a></li>
+        <li>
+          <a href="#/guides">Browse the guides →</a>
+        </li>
+        <li>
+          <a href="#/about">About this demo →</a>
+        </li>
       </ul>
     </div>
   );
@@ -49,10 +68,15 @@ function Guides() {
   return (
     <div class="rt-view">
       <h2>Guides</h2>
-      <p>A <code>/guides/:slug</code> param route — each link matches the same pattern, so switching between them morphs in place.</p>
+      <p>
+        A <code>/guides/:slug</code> param route — each link matches the same
+        pattern, so switching between them morphs in place.
+      </p>
       <ul class="rt-guides">
         {GUIDES.map((g) => (
-          <li data-key={g.slug}><a href={`#/guides/${g.slug}`}>{g.title}</a></li>
+          <li data-key={g.slug}>
+            <a href={`#/guides/${g.slug}`}>{g.title}</a>
+          </li>
         ))}
       </ul>
     </div>
@@ -65,8 +89,12 @@ function GuideDetail(params: Record<string, string>) {
     return (
       <div class="rt-view">
         <h2 class="rt-nf">No such guide</h2>
-        <p>There's no guide called <code>{params.slug}</code>.</p>
-        <a class="rt-back" href="#/guides">← Back to guides</a>
+        <p>
+          There's no guide called <code>{params.slug}</code>.
+        </p>
+        <a class="rt-back" href="#/guides">
+          ← Back to guides
+        </a>
       </div>
     );
   }
@@ -74,7 +102,9 @@ function GuideDetail(params: Record<string, string>) {
     <div class="rt-view">
       <h2>{guide.title}</h2>
       <p>{guide.body}</p>
-      <a class="rt-back" href="#/guides">← Back to guides</a>
+      <a class="rt-back" href="#/guides">
+        ← Back to guides
+      </a>
     </div>
   );
 }
@@ -83,7 +113,11 @@ function About() {
   return (
     <div class="rt-view">
       <h2>About</h2>
-      <p>Built with <code>kerfjs/router</code> — a reactive route signal, a keyed outlet, and delegated link interception, in about 1&nbsp;KB of app-facing code on top of kerf.</p>
+      <p>
+        Built with <code>kerfjs/router</code> — a reactive route signal, a keyed
+        outlet, and delegated link interception, in about 1&nbsp;KB of
+        app-facing code on top of kerf.
+      </p>
     </div>
   );
 }
@@ -92,8 +126,12 @@ function NotFound() {
   return (
     <div class="rt-view">
       <h2 class="rt-nf">Not found</h2>
-      <p>Nothing is routed here. The <code>*</code> catch-all caught it.</p>
-      <a class="rt-back" href="#/">← Home</a>
+      <p>
+        Nothing is routed here. The <code>*</code> catch-all caught it.
+      </p>
+      <a class="rt-back" href="#/">
+        ← Home
+      </a>
     </div>
   );
 }
@@ -117,10 +155,28 @@ mount(app, () => (
       {/* Fake browser chrome — the address bar is bound to the route, so it
           updates live as you navigate, making the URL-driven story visible. */}
       <div class="rt-chrome">
-        <div class="rt-dots"><i class="r"></i><i class="y"></i><i class="g"></i></div>
+        <div class="rt-dots">
+          <i class="r"></i>
+          <i class="y"></i>
+          <i class="g"></i>
+        </div>
         <div class="rt-navbtns">
-          <button class="rt-navbtn" data-nav="back" title="Back" aria-label="Back">‹</button>
-          <button class="rt-navbtn" data-nav="forward" title="Forward" aria-label="Forward">›</button>
+          <button
+            class="rt-navbtn"
+            data-nav="back"
+            title="Back"
+            aria-label="Back"
+          >
+            ‹
+          </button>
+          <button
+            class="rt-navbtn"
+            data-nav="forward"
+            title="Forward"
+            aria-label="Forward"
+          >
+            ›
+          </button>
         </div>
         <div class="rt-addr">
           <span class="lock">🔒</span>
@@ -130,15 +186,22 @@ mount(app, () => (
       </div>
       <div class="rt-viewport">
         <nav class="rt-bar">
-          <a href="#/" class={router.activeClass('/', 'active')}>Home</a>
-          <a href="#/guides" class={router.activeClass('/guides', 'active')}>Guides</a>
-          <a href="#/about" class={router.activeClass('/about', 'active')}>About</a>
+          <a href="#/" class={router.activeClass('/', 'active')}>
+            Home
+          </a>
+          <a href="#/guides" class={router.activeClass('/guides', 'active')}>
+            Guides
+          </a>
+          <a href="#/about" class={router.activeClass('/about', 'active')}>
+            About
+          </a>
         </nav>
         {router.outlet()}
       </div>
     </div>
     <p class="rt-note">
-      One <b>createRouter</b> · pattern matching · a keyed <b>outlet()</b> · auto <b>&lt;a&gt;</b> interception · real Back/Forward.
+      One <b>createRouter</b> · pattern matching · a keyed <b>outlet()</b> ·
+      auto <b>&lt;a&gt;</b> interception · real Back/Forward.
     </p>
   </div>
 ));

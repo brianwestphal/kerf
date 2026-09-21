@@ -8,8 +8,8 @@ sidebar. One of the opt-in app layouts (see
 desktop-class devices.
 
 ```ts
-import { Workbench } from '@kerfjs/ui/workbench';
-import '@kerfjs/ui/workbench.css';
+import { Workbench } from "@kerfjs/ui/workbench";
+import "@kerfjs/ui/workbench.css";
 ```
 
 ## State lives in the app
@@ -25,9 +25,22 @@ const navCollapsed = signal(false);
   id="studio"
   label="Studio"
   main={<Editor />}
-  leftRail={{ content: <Navigator />, label: 'Navigator', collapsed: navCollapsed.value, size: 280 }}
-  rightRail={{ content: <Inspector />, label: 'Inspector', collapsed: inspectorCollapsed.value }}
-  bottomDrawer={{ content: <Console />, label: 'Console', collapsed: consoleCollapsed.value }}
+  leftRail={{
+    content: <Navigator />,
+    label: "Navigator",
+    collapsed: navCollapsed.value,
+    size: 280,
+  }}
+  rightRail={{
+    content: <Inspector />,
+    label: "Inspector",
+    collapsed: inspectorCollapsed.value,
+  }}
+  bottomDrawer={{
+    content: <Console />,
+    label: "Console",
+    collapsed: consoleCollapsed.value,
+  }}
 />;
 ```
 

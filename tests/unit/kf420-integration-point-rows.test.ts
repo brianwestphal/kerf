@@ -36,7 +36,8 @@ beforeEach(() => {
   document.body.appendChild(root);
 });
 
-const nsOf = (sel: string): string | null | undefined => root.querySelector(sel)?.namespaceURI;
+const nsOf = (sel: string): string | null | undefined =>
+  root.querySelector(sel)?.namespaceURI;
 
 describe('KF-420: HTML rows under a foreign integration point stay HTML on re-parse', () => {
   it('env sanity: jsdom parses <mtext> and <desc> children as HTML', () => {
@@ -48,9 +49,15 @@ describe('KF-420: HTML rows under a foreign integration point stay HTML on re-pa
 
   it('breakout <span> rows under MathML <mtext>: a granular insert neither throws nor mis-namespaces', () => {
     const rows = arraySignal([{ id: 1, t: 'a' }]);
-    const dispose = mount(root, () => html`<math><mtext>${
-      each(rows, (r) => html`<span data-key="${String(r.id)}">${r.t}</span>`, { key: 'M' })
-    }</mtext></math>`);
+    const dispose = mount(
+      root,
+      () =>
+        html`<math><mtext>${each(
+          rows,
+          (r) => html`<span data-key="${String(r.id)}">${r.t}</span>`,
+          { key: 'M' },
+        )}</mtext></math>`,
+    );
     expect(nsOf('[data-key="1"]')).toBe(XHTML);
     expect(() => rows.push({ id: 2, t: 'b' })).not.toThrow();
     expect(nsOf('[data-key="2"]')).toBe(XHTML);
@@ -59,9 +66,15 @@ describe('KF-420: HTML rows under a foreign integration point stay HTML on re-pa
 
   it('non-breakout <abbr> rows under MathML <mtext>: the inserted row stays HTML-namespaced', () => {
     const rows = arraySignal([{ id: 1, t: 'a' }]);
-    const dispose = mount(root, () => html`<math><mtext>${
-      each(rows, (r) => html`<abbr data-key="${String(r.id)}">${r.t}</abbr>`, { key: 'M' })
-    }</mtext></math>`);
+    const dispose = mount(
+      root,
+      () =>
+        html`<math><mtext>${each(
+          rows,
+          (r) => html`<abbr data-key="${String(r.id)}">${r.t}</abbr>`,
+          { key: 'M' },
+        )}</mtext></math>`,
+    );
     rows.push({ id: 2, t: 'b' });
     expect(nsOf('[data-key="2"]')).toBe(XHTML);
     dispose();
@@ -69,9 +82,15 @@ describe('KF-420: HTML rows under a foreign integration point stay HTML on re-pa
 
   it('breakout <div> rows under SVG <desc>: a granular insert neither throws nor mis-namespaces', () => {
     const rows = arraySignal([{ id: 1, t: 'a' }]);
-    const dispose = mount(root, () => html`<svg><desc>${
-      each(rows, (r) => html`<div data-key="${String(r.id)}">${r.t}</div>`, { key: 'S' })
-    }</desc></svg>`);
+    const dispose = mount(
+      root,
+      () =>
+        html`<svg><desc>${each(
+          rows,
+          (r) => html`<div data-key="${String(r.id)}">${r.t}</div>`,
+          { key: 'S' },
+        )}</desc></svg>`,
+    );
     expect(nsOf('[data-key="1"]')).toBe(XHTML);
     expect(() => rows.push({ id: 2, t: 'b' })).not.toThrow();
     expect(nsOf('[data-key="2"]')).toBe(XHTML);
@@ -80,10 +99,19 @@ describe('KF-420: HTML rows under a foreign integration point stay HTML on re-pa
 
   it('a snapshot rebuild under an integration point keeps all rows HTML', () => {
     const data = signal([{ id: 1, v: 1 }]);
-    const dispose = mount(root, () => html`<svg><title>${
-      each(data.value, (r) => html`<b data-key="${String(r.id)}">${String(r.v)}</b>`, { key: 'T' })
-    }</title></svg>`);
-    data.value = [{ id: 1, v: 2 }, { id: 2, v: 3 }];
+    const dispose = mount(
+      root,
+      () =>
+        html`<svg><title>${each(
+          data.value,
+          (r) => html`<b data-key="${String(r.id)}">${String(r.v)}</b>`,
+          { key: 'T' },
+        )}</title></svg>`,
+    );
+    data.value = [
+      { id: 1, v: 2 },
+      { id: 2, v: 3 },
+    ];
     expect(nsOf('[data-key="1"]')).toBe(XHTML);
     expect(nsOf('[data-key="2"]')).toBe(XHTML);
     dispose();
@@ -91,9 +119,15 @@ describe('KF-420: HTML rows under a foreign integration point stay HTML on re-pa
 
   it('MathML token element <mi> is also an HTML integration point', () => {
     const rows = arraySignal([{ id: 1 }]);
-    const dispose = mount(root, () => html`<math><mi>${
-      each(rows, (r) => html`<span data-key="${String(r.id)}">${String(r.id)}</span>`, { key: 'I' })
-    }</mi></math>`);
+    const dispose = mount(
+      root,
+      () =>
+        html`<math><mi>${each(
+          rows,
+          (r) => html`<span data-key="${String(r.id)}">${String(r.id)}</span>`,
+          { key: 'I' },
+        )}</mi></math>`,
+    );
     expect(() => rows.push({ id: 2 })).not.toThrow();
     expect(nsOf('[data-key="2"]')).toBe(XHTML);
     dispose();
@@ -107,9 +141,15 @@ describe('KF-420: HTML rows under a foreign integration point stay HTML on re-pa
     // self-contradictory "produced 1 top-level elements; exactly one is required".
     // Start empty so the throw happens on the granular insert, not at first paint.
     const rows = arraySignal<{ id: number }>([]);
-    const dispose = mount(root, () => html`<math>${
-      each(rows, (r) => html`<div data-key="${String(r.id)}">${String(r.id)}</div>`, { key: 'D' })
-    }</math>`);
+    const dispose = mount(
+      root,
+      () =>
+        html`<math>${each(
+          rows,
+          (r) => html`<div data-key="${String(r.id)}">${String(r.id)}</div>`,
+          { key: 'D' },
+        )}</math>`,
+    );
     let msg = '';
     try {
       rows.push({ id: 1 });
@@ -124,9 +164,16 @@ describe('KF-420: HTML rows under a foreign integration point stay HTML on re-pa
   it('SVG <foreignObject> and ordinary <math>/<svg> parents are unregressed', () => {
     // foreignObject: HTML rows stay HTML (already worked pre-KF-420).
     const a = arraySignal([{ id: 1 }]);
-    const d1 = mount(root, () => html`<svg><foreignObject>${
-      each(a, (r) => html`<div data-key="${'fo' + String(r.id)}">${String(r.id)}</div>`, { key: 'FO' })
-    }</foreignObject></svg>`);
+    const d1 = mount(
+      root,
+      () =>
+        html`<svg><foreignObject>${each(
+          a,
+          (r) =>
+            html`<div data-key="${'fo' + String(r.id)}">${String(r.id)}</div>`,
+          { key: 'FO' },
+        )}</foreignObject></svg>`,
+    );
     a.push({ id: 2 });
     expect(nsOf('[data-key="fo2"]')).toBe(XHTML);
     d1();
@@ -134,9 +181,16 @@ describe('KF-420: HTML rows under a foreign integration point stay HTML on re-pa
     // A real MathML row under <math> still wraps and namespaces correctly.
     root.innerHTML = '';
     const b = arraySignal([{ id: 1 }]);
-    const d2 = mount(root, () => html`<math>${
-      each(b, (r) => html`<mrow data-key="${'mr' + String(r.id)}"><mn>${String(r.id)}</mn></mrow>`, { key: 'MR' })
-    }</math>`);
+    const d2 = mount(
+      root,
+      () =>
+        html`<math>${each(
+          b,
+          (r) =>
+            html`<mrow data-key="${'mr' + String(r.id)}"><mn>${String(r.id)}</mn></mrow>`,
+          { key: 'MR' },
+        )}</math>`,
+    );
     b.push({ id: 2 });
     expect(nsOf('[data-key="mr2"]')).toBe(MATHML);
     expect(nsOf('mn')).toBe(MATHML);
@@ -145,9 +199,16 @@ describe('KF-420: HTML rows under a foreign integration point stay HTML on re-pa
     // A real SVG row under <svg> still wraps and namespaces correctly.
     root.innerHTML = '';
     const c = arraySignal([{ id: 1 }]);
-    const d3 = mount(root, () => html`<svg>${
-      each(c, (r) => html`<g data-key="${'g' + String(r.id)}"><circle></circle></g>`, { key: 'G' })
-    }</svg>`);
+    const d3 = mount(
+      root,
+      () =>
+        html`<svg>${each(
+          c,
+          (r) =>
+            html`<g data-key="${'g' + String(r.id)}"><circle></circle></g>`,
+          { key: 'G' },
+        )}</svg>`,
+    );
     c.push({ id: 2 });
     expect(nsOf('[data-key="g2"]')).toBe(SVG);
     d3();

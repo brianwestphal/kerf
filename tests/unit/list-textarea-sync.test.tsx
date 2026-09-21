@@ -17,10 +17,18 @@
  *
  * Every regression test asserts the shipped behavior (never `.skip`).
  */
-import { afterEach,beforeEach,describe,expect,it,type MockInstance,vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { each,mount,signal } from '../../src/index.js';
+import { each, mount, signal } from '../../src/index.js';
 
 let root: HTMLElement;
 let warnSpy: MockInstance<typeof console.warn>;
@@ -46,7 +54,11 @@ describe('KF-393: textarea text fast path form-state sync (KF-397)', () => {
     // state follows the DOM text and the app's model.
     const rows = arraySignal([{ id: 'a', v: 'one' }]);
     const dispose = mount(root, () => (
-      <div>{each(rows, (r) => <textarea data-key={r.id}>{r.v}</textarea>)}</div>
+      <div>
+        {each(rows, (r) => (
+          <textarea data-key={r.id}>{r.v}</textarea>
+        ))}
+      </div>
     ));
     const ta = root.querySelector('textarea') as HTMLTextAreaElement;
     ta.value = 'user typed'; // dirty, not focused
@@ -62,7 +74,13 @@ describe('KF-393: textarea text fast path form-state sync (KF-397)', () => {
     // path bail, and morph.ts's syncTextareaValue carries the property along.
     const rows = arraySignal([{ id: 'a', v: 'one', cls: '' }]);
     const dispose = mount(root, () => (
-      <div>{each(rows, (r) => <li data-key={r.id} class={r.cls}><textarea>{r.v}</textarea></li>)}</div>
+      <div>
+        {each(rows, (r) => (
+          <li data-key={r.id} class={r.cls}>
+            <textarea>{r.v}</textarea>
+          </li>
+        ))}
+      </div>
     ));
     const ta = root.querySelector('textarea') as HTMLTextAreaElement;
     ta.value = 'user typed';
@@ -72,10 +90,14 @@ describe('KF-393: textarea text fast path form-state sync (KF-397)', () => {
     dispose();
   });
 
-  it('a FOCUSED textarea keeps the user\'s in-progress edit on both routes (already consistent)', () => {
+  it("a FOCUSED textarea keeps the user's in-progress edit on both routes (already consistent)", () => {
     const rows = arraySignal([{ id: 'a', v: 'one' }]);
     const dispose = mount(root, () => (
-      <div>{each(rows, (r) => <textarea data-key={r.id}>{r.v}</textarea>)}</div>
+      <div>
+        {each(rows, (r) => (
+          <textarea data-key={r.id}>{r.v}</textarea>
+        ))}
+      </div>
     ));
     const ta = root.querySelector('textarea') as HTMLTextAreaElement;
     ta.focus();
@@ -95,7 +117,13 @@ describe('KF-393: textarea text fast path form-state sync (KF-397)', () => {
       <div>
         {each(
           rows,
-          (r) => <input type="checkbox" data-key={r.id} checked={sel.value === r.id} />,
+          (r) => (
+            <input
+              type="checkbox"
+              data-key={r.id}
+              checked={sel.value === r.id}
+            />
+          ),
           (r) => sel.value === r.id,
         )}
       </div>

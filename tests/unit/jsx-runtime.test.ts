@@ -3,10 +3,27 @@
  * pipeline produces correctly-escaped, alias-translated, void-tag-aware HTML.
  */
 
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
-import { Fragment, isSafeHtml, jsx, raw, SafeHtml } from '../../src/jsx-runtime.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  Fragment,
+  isSafeHtml,
+  jsx,
+  raw,
+  SafeHtml,
+} from '../../src/jsx-runtime.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
 describe('SafeHtml', () => {
   it('wraps a string and exposes it via toString()', () => {
@@ -45,8 +62,12 @@ describe('isSafeHtml() — cross-bundle brand', () => {
     class OtherSafeHtml {
       readonly __html: string;
       readonly [BRAND] = true as const;
-      constructor(html: string) { this.__html = html; }
-      toString(): string { return this.__html; }
+      constructor(html: string) {
+        this.__html = html;
+      }
+      toString(): string {
+        return this.__html;
+      }
     }
     const other = new OtherSafeHtml('<b>cross-bundle</b>');
     expect(other instanceof SafeHtml).toBe(false); // sanity: distinct classes
@@ -58,10 +79,16 @@ describe('isSafeHtml() — cross-bundle brand', () => {
   });
 
   it('rejects an object that has __html but no brand', () => {
-    const fake = { __html: '<p>x</p>', toString() { return this.__html; } };
+    const fake = {
+      __html: '<p>x</p>',
+      toString() {
+        return this.__html;
+      },
+    };
     expect(isSafeHtml(fake)).toBe(false);
-    expect(() => jsx('div', { children: fake as unknown as SafeHtml }).toString())
-      .toThrow(/unsupported child of type object/);
+    expect(() =>
+      jsx('div', { children: fake as unknown as SafeHtml }).toString(),
+    ).toThrow(/unsupported child of type object/);
   });
 });
 
@@ -92,16 +119,17 @@ describe('jsx()', () => {
   });
 
   it('joins array children', () => {
-    const out = jsx('ul', { children: [
-      jsx('li', { children: 'a' }),
-      jsx('li', { children: 'b' }),
-    ]});
+    const out = jsx('ul', {
+      children: [jsx('li', { children: 'a' }), jsx('li', { children: 'b' })],
+    });
     expect(out.toString()).toBe('<ul><li>a</li><li>b</li></ul>');
   });
 
   it('escapes attribute values', () => {
     const out = jsx('a', { href: 'https://example.com/?q=a&b="c"' });
-    expect(out.toString()).toContain('href="https://example.com/?q=a&amp;b=&quot;c&quot;"');
+    expect(out.toString()).toContain(
+      'href="https://example.com/?q=a&amp;b=&quot;c&quot;"',
+    );
   });
 
   it('translates className → class', () => {
@@ -120,63 +148,83 @@ describe('jsx()', () => {
   });
 
   it('omits attributes whose value is false / null / undefined', () => {
-    const out = jsx('input', { type: 'checkbox', checked: false, disabled: null, hidden: undefined });
+    const out = jsx('input', {
+      type: 'checkbox',
+      checked: false,
+      disabled: null,
+      hidden: undefined,
+    });
     expect(out.toString()).toBe('<input type="checkbox">');
   });
 
   it('produces self-closing void tags without a closing tag', () => {
     expect(jsx('br', {}).toString()).toBe('<br>');
     expect(jsx('img', { src: 'x.png' }).toString()).toBe('<img src="x.png">');
-    expect(jsx('input', { type: 'text' }).toString()).toBe('<input type="text">');
+    expect(jsx('input', { type: 'text' }).toString()).toBe(
+      '<input type="text">',
+    );
   });
 
   it('throws when a DOM node is passed as a child', () => {
     const fakeNode = { nodeType: 1, outerHTML: '<x>' };
-    expect(() => jsx('div', { children: fakeNode as never }).toString()).toThrow(/DOM elements cannot be passed as children/);
+    expect(() =>
+      jsx('div', { children: fakeNode as never }).toString(),
+    ).toThrow(/DOM elements cannot be passed as children/);
   });
 
   it('throws on a plain object child (e.g. forgot store.state.value)', () => {
-    expect(() => jsx('div', { children: { foo: 'bar' } as never }).toString())
-      .toThrow(/unsupported child of type object/);
+    expect(() =>
+      jsx('div', { children: { foo: 'bar' } as never }).toString(),
+    ).toThrow(/unsupported child of type object/);
   });
 
   it('throws on a function child', () => {
-    expect(() => jsx('div', { children: (() => 'x') as never }).toString())
-      .toThrow(/unsupported child of type function/);
+    expect(() =>
+      jsx('div', { children: (() => 'x') as never }).toString(),
+    ).toThrow(/unsupported child of type function/);
   });
 
   it('throws on a Promise child and names the constructor', () => {
     const p = Promise.resolve('x');
-    expect(() => jsx('div', { children: p as never }).toString())
-      .toThrow(/object \(Promise\)/);
+    expect(() => jsx('div', { children: p as never }).toString()).toThrow(
+      /object \(Promise\)/,
+    );
     p.catch(() => {});
   });
 
   it('throws on an unsupported attribute value type', () => {
-    expect(() => jsx('div', { foo: { x: 1 } } as never).toString())
-      .toThrow(/unsupported value for attribute "foo"/);
+    expect(() => jsx('div', { foo: { x: 1 } } as never).toString()).toThrow(
+      /unsupported value for attribute "foo"/,
+    );
   });
 
   it('attribute-error message names the constructor for class instances', () => {
-    class MySignal { value = 1 }
-    expect(() => jsx('div', { foo: new MySignal() } as never).toString())
-      .toThrow(/object \(MySignal\)/);
+    class MySignal {
+      value = 1;
+    }
+    expect(() =>
+      jsx('div', { foo: new MySignal() } as never).toString(),
+    ).toThrow(/object \(MySignal\)/);
   });
 
   it('function-valued onX={fn} attributes throw with a delegate() fix-pointer (KF-178)', () => {
     const handler = () => {};
-    expect(() => jsx('button', { onClick: handler, children: 'x' } as never).toString())
-      .toThrow(/inline event handlers like onClick=\{fn\} are not supported/);
-    expect(() => jsx('button', { onClick: handler, children: 'x' } as never).toString())
-      .toThrow(/delegate\(rootEl, 'click', '\[data-action="\.\.\."\]'/);
-    expect(() => jsx('input', { onInput: handler } as never).toString())
-      .toThrow(/inline event handlers like onInput=\{fn\}/);
+    expect(() =>
+      jsx('button', { onClick: handler, children: 'x' } as never).toString(),
+    ).toThrow(/inline event handlers like onClick=\{fn\} are not supported/);
+    expect(() =>
+      jsx('button', { onClick: handler, children: 'x' } as never).toString(),
+    ).toThrow(/delegate\(rootEl, 'click', '\[data-action="\.\.\."\]'/);
+    expect(() =>
+      jsx('input', { onInput: handler } as never).toString(),
+    ).toThrow(/inline event handlers like onInput=\{fn\}/);
   });
 
   it('function-valued non-onX attributes still hit the generic unsupported-value path', () => {
     const handler = () => {};
-    expect(() => jsx('div', { customAttr: handler } as never).toString())
-      .toThrow(/unsupported value for attribute "customAttr"/);
+    expect(() =>
+      jsx('div', { customAttr: handler } as never).toString(),
+    ).toThrow(/unsupported value for attribute "customAttr"/);
   });
 
   it('accepts a SafeHtml as an attribute value (raw injection for pre-escaped data)', () => {
@@ -185,18 +233,21 @@ describe('jsx()', () => {
   });
 
   it('attribute-error message names "array" when an array is passed', () => {
-    expect(() => jsx('div', { foo: [1, 2, 3] } as never).toString())
-      .toThrow(/got array/);
+    expect(() => jsx('div', { foo: [1, 2, 3] } as never).toString()).toThrow(
+      /got array/,
+    );
   });
 
   it('invokes function components with their props', () => {
-    interface GreetingProps { name: string }
-    const Greeting = ({ name }: GreetingProps) => jsx('p', { children: `hi, ${name}` });
+    interface GreetingProps {
+      name: string;
+    }
+    const Greeting = ({ name }: GreetingProps) =>
+      jsx('p', { children: `hi, ${name}` });
     const out = jsx(Greeting as never, { name: 'world' });
     expect(out.toString()).toBe('<p>hi, world</p>');
   });
 });
-
 
 // KF-340: the URL screen throws in dev, warns + drops in prod. This block pins
 // the PRODUCTION warn+drop behavior across the full obfuscation/subtype matrix;
@@ -220,7 +271,9 @@ describe('jsx — dangerous URL attribute filter (production warn+drop)', () => 
     const out = jsx('a', { href: 'javascript:alert(1)', children: 'click' });
     expect(out.toString()).toBe('<a>click</a>');
     expect(warnSpy).toHaveBeenCalledOnce();
-    expect(warnSpy.mock.calls[0][0]).toMatch(/dropped dangerous URL value for href/);
+    expect(warnSpy.mock.calls[0][0]).toMatch(
+      /dropped dangerous URL value for href/,
+    );
   });
 
   it('drops javascript: in src on img', () => {
@@ -229,7 +282,10 @@ describe('jsx — dangerous URL attribute filter (production warn+drop)', () => 
   });
 
   it('drops javascript: in formaction on button', () => {
-    const out = jsx('button', { formaction: 'javascript:alert(1)', children: 'go' });
+    const out = jsx('button', {
+      formaction: 'javascript:alert(1)',
+      children: 'go',
+    });
     expect(out.toString()).toBe('<button>go</button>');
   });
 
@@ -268,7 +324,10 @@ describe('jsx — dangerous URL attribute filter (production warn+drop)', () => 
   });
 
   it('drops data:text/html URLs', () => {
-    const out = jsx('a', { href: 'data:text/html,<script>alert(1)</script>', children: 'x' });
+    const out = jsx('a', {
+      href: 'data:text/html,<script>alert(1)</script>',
+      children: 'x',
+    });
     expect(out.toString()).toBe('<a>x</a>');
   });
 
@@ -285,12 +344,19 @@ describe('jsx — dangerous URL attribute filter (production warn+drop)', () => 
 
   it('preserves dangerous protocols on non-URL attributes (e.g. data-action)', () => {
     const out = jsx('div', { 'data-action': 'javascript:alert(1)' });
-    expect(out.toString()).toBe('<div data-action="javascript:alert(1)"></div>');
+    expect(out.toString()).toBe(
+      '<div data-action="javascript:alert(1)"></div>',
+    );
   });
 
   it('lets raw() pass through as the documented opt-out', () => {
-    const out = jsx('a', { href: raw('javascript:alert(1)'), children: 'bookmarklet' });
-    expect(out.toString()).toBe('<a href="javascript:alert(1)">bookmarklet</a>');
+    const out = jsx('a', {
+      href: raw('javascript:alert(1)'),
+      children: 'bookmarklet',
+    });
+    expect(out.toString()).toBe(
+      '<a href="javascript:alert(1)">bookmarklet</a>',
+    );
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
@@ -332,7 +398,9 @@ describe('jsx — dangerous URL attribute filter (production warn+drop)', () => 
   // KF-311: the data: denylist is subtype-specific. Document-loading subtypes
   // that run script are blocked; inert media families stay allowed.
   it('drops data:image/svg+xml (SVG can carry <script>)', () => {
-    const out = jsx('iframe', { src: 'data:image/svg+xml,<svg onload=alert(1)/>' });
+    const out = jsx('iframe', {
+      src: 'data:image/svg+xml,<svg onload=alert(1)/>',
+    });
     expect(out.toString()).toBe('<iframe></iframe>');
   });
 
@@ -357,7 +425,9 @@ describe('jsx — dangerous URL attribute filter (production warn+drop)', () => 
       'data:video/mp4;base64,AAAA',
     ];
     for (const href of inert) {
-      expect(jsx('a', { href, children: 'x' }).toString()).toBe(`<a href="${href}">x</a>`);
+      expect(jsx('a', { href, children: 'x' }).toString()).toBe(
+        `<a href="${href}">x</a>`,
+      );
     }
     expect(warnSpy).not.toHaveBeenCalled();
   });
@@ -378,7 +448,9 @@ describe('jsx — dangerous URL attribute filter (production warn+drop)', () => 
       '  javascript:void(0)  ',
     ];
     for (const href of inert) {
-      expect(jsx('a', { href, children: 'x' }).toString()).toBe(`<a href="${href}">x</a>`);
+      expect(jsx('a', { href, children: 'x' }).toString()).toBe(
+        `<a href="${href}">x</a>`,
+      );
     }
     expect(warnSpy).not.toHaveBeenCalled();
   });
@@ -395,18 +467,22 @@ describe('jsx — dangerous URL attribute filter (production warn+drop)', () => 
       'javascript:void(0)\nalert(1)',
       'javascript:;alert(1)',
       'javascript:alert(1);void(0)',
-      'javascript:void0',           // not one of the listed spellings
-      'vbscript:void(0)',           // the allowlist is javascript:-only
+      'javascript:void0', // not one of the listed spellings
+      'vbscript:void(0)', // the allowlist is javascript:-only
     ];
     for (const href of dangerous) {
-      expect(jsx('a', { href, children: 'x' }).toString(), href).toBe('<a>x</a>');
+      expect(jsx('a', { href, children: 'x' }).toString(), href).toBe(
+        '<a>x</a>',
+      );
     }
     expect(warnSpy).toHaveBeenCalledTimes(dangerous.length);
   });
 
   // KF-312: <object data> is a URL-bearing, document-loading attribute.
   it('screens the data attribute on <object> (data:text/html XSS)', () => {
-    const out = jsx('object', { data: 'data:text/html,<script>alert(1)</script>' });
+    const out = jsx('object', {
+      data: 'data:text/html,<script>alert(1)</script>',
+    });
     expect(out.toString()).toBe('<object></object>');
   });
 
@@ -422,39 +498,57 @@ describe('attribute name safety (KF-306)', () => {
   type AttrBag = Parameters<typeof jsx>[1];
 
   it('throws on an attribute name that would break out of the tag', () => {
-    const evil = { 'x><img src=q onerror=alert(1)>': 'y', children: 'z' } as unknown as AttrBag;
+    const evil = {
+      'x><img src=q onerror=alert(1)>': 'y',
+      children: 'z',
+    } as unknown as AttrBag;
     expect(() => jsx('div', evil).toString()).toThrow(/invalid attribute name/);
   });
 
   it('throws on an attribute name carrying an injected handler (no > needed)', () => {
-    const evil = { 'x onmouseover=alert(1)': '', children: 'z' } as unknown as AttrBag;
+    const evil = {
+      'x onmouseover=alert(1)': '',
+      children: 'z',
+    } as unknown as AttrBag;
     expect(() => jsx('div', evil).toString()).toThrow(/invalid attribute name/);
   });
 
   it('rejects a string-valued on* attribute (would be a live inline handler)', () => {
     const bag = { onclick: 'alert(1)', children: 'go' } as unknown as AttrBag;
-    expect(() => jsx('button', bag).toString()).toThrow(/event-handler attribute/);
+    expect(() => jsx('button', bag).toString()).toThrow(
+      /event-handler attribute/,
+    );
   });
 
   it('rejects a lowercase-keyed function handler the old /^on[A-Z]/ guard missed', () => {
     const bag = { onclick: () => {}, children: 'go' } as unknown as AttrBag;
-    expect(() => jsx('button', bag).toString()).toThrow(/inline event handlers/);
+    expect(() => jsx('button', bag).toString()).toThrow(
+      /inline event handlers/,
+    );
   });
 
   it('still accepts valid namespaced / data / aria attribute names', () => {
-    expect(jsx('use', { 'xlink:href': '#icon' } as unknown as AttrBag).toString())
-      .toBe('<use xlink:href="#icon"></use>');
-    expect(jsx('div', { 'data-id': '1', 'aria-label': 'ok', children: 'z' }).toString())
-      .toBe('<div data-id="1" aria-label="ok">z</div>');
+    expect(
+      jsx('use', { 'xlink:href': '#icon' } as unknown as AttrBag).toString(),
+    ).toBe('<use xlink:href="#icon"></use>');
+    expect(
+      jsx('div', {
+        'data-id': '1',
+        'aria-label': 'ok',
+        children: 'z',
+      }).toString(),
+    ).toBe('<div data-id="1" aria-label="ok">z</div>');
   });
 });
 
 describe('Fragment', () => {
   it('renders without a wrapper tag', () => {
-    const out = Fragment({ children: [
-      jsx('span', { children: 'a' }),
-      jsx('span', { children: 'b' }),
-    ]});
+    const out = Fragment({
+      children: [
+        jsx('span', { children: 'a' }),
+        jsx('span', { children: 'b' }),
+      ],
+    });
     expect(out.toString()).toBe('<span>a</span><span>b</span>');
   });
 
@@ -472,38 +566,47 @@ describe('static renderAttr URL screen — throws in dev (KF-297 / KF-340)', () 
   // (tests/setup-dev-hooks.ts), and installation IS the dev signal.
 
   it('throws on a javascript: href', () => {
-    expect(() => jsx('a', { href: 'javascript:alert(1)', children: 'x' }))
-      .toThrow(/dropped dangerous URL value for href/);
+    expect(() =>
+      jsx('a', { href: 'javascript:alert(1)', children: 'x' }),
+    ).toThrow(/dropped dangerous URL value for href/);
   });
 
   it('throws on a script-executing data: src (hardened subtype screen)', () => {
-    expect(() => jsx('iframe', { src: 'data:text/html,<script>alert(1)</script>' }))
-      .toThrow(/dropped dangerous URL value for src/);
+    expect(() =>
+      jsx('iframe', { src: 'data:text/html,<script>alert(1)</script>' }),
+    ).toThrow(/dropped dangerous URL value for src/);
   });
 
   it('does NOT throw for a safe URL', () => {
-    expect(jsx('a', { href: '/safe', children: 'x' }).toString()).toBe('<a href="/safe">x</a>');
+    expect(jsx('a', { href: '/safe', children: 'x' }).toString()).toBe(
+      '<a href="/safe">x</a>',
+    );
   });
 
   it('lets a raw()/SafeHtml href bypass the screen in dev — no throw', () => {
-    expect(jsx('a', { href: raw('javascript:void(0)'), children: 'go' }).toString())
-      .toBe('<a href="javascript:void(0)">go</a>');
+    expect(
+      jsx('a', { href: raw('javascript:void(0)'), children: 'go' }).toString(),
+    ).toBe('<a href="javascript:void(0)">go</a>');
   });
 
   it('emits a JSX-prefixed diagnostic identical to the prod warn body', () => {
     // The thrown Error message matches the prod console.warn text byte-for-byte
     // (same `dangerousUrlWarning` body, same `JSX:` prefix).
-    expect(() => jsx('a', { href: 'vbscript:msgbox(1)', children: 'x' }))
-      .toThrow(/^JSX: dropped dangerous URL value for href/);
+    expect(() =>
+      jsx('a', { href: 'vbscript:msgbox(1)', children: 'x' }),
+    ).toThrow(/^JSX: dropped dangerous URL value for href/);
   });
 
   it('throws whatever NODE_ENV says — installation is the only signal', () => {
-    const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+    const env = (
+      globalThis as { process: { env: Record<string, string | undefined> } }
+    ).process.env;
     const prev = env.NODE_ENV;
     env.NODE_ENV = 'production';
     try {
-      expect(() => jsx('a', { href: 'javascript:alert(1)', children: 'x' }))
-        .toThrow(/dropped dangerous URL value for href/);
+      expect(() =>
+        jsx('a', { href: 'javascript:alert(1)', children: 'x' }),
+      ).toThrow(/dropped dangerous URL value for href/);
     } finally {
       env.NODE_ENV = prev;
     }

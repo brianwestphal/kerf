@@ -51,19 +51,36 @@ export function wireCatalog(
   const disposers: Array<() => void> = [
     // Sidebar items AND the footer's related-entry popup-menu items both carry
     // `data-action={selectAction}` + `data-item-id`, so one delegated click covers both.
-    delegate(root, 'click', `[data-action="${selectAction}"]`, (_event, element) => {
-      const id = (element as HTMLElement).dataset.itemId;
-      if (id) select(id);
-    }),
+    delegate(
+      root,
+      'click',
+      `[data-action="${selectAction}"]`,
+      (_event, element) => {
+        const id = (element as HTMLElement).dataset.itemId;
+        if (id) select(id);
+      },
+    ),
   ];
   if (onToggleSidebar) {
-    disposers.push(delegate(root, 'click', `[data-action="${toggleSidebarAction}"]`, () => onToggleSidebar()));
+    disposers.push(
+      delegate(root, 'click', `[data-action="${toggleSidebarAction}"]`, () =>
+        onToggleSidebar(),
+      ),
+    );
   }
   if (onToggleTheme) {
-    disposers.push(delegate(root, 'click', `[data-action="${toggleThemeAction}"]`, () => onToggleTheme()));
+    disposers.push(
+      delegate(root, 'click', `[data-action="${toggleThemeAction}"]`, () =>
+        onToggleTheme(),
+      ),
+    );
   }
   if (onToggleSecondary) {
-    disposers.push(delegate(root, 'click', `[data-action="${toggleSecondaryAction}"]`, () => onToggleSecondary()));
+    disposers.push(
+      delegate(root, 'click', `[data-action="${toggleSecondaryAction}"]`, () =>
+        onToggleSecondary(),
+      ),
+    );
   }
   return () => {
     for (const dispose of disposers.splice(0)) dispose();

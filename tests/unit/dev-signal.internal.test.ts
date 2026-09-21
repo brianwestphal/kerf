@@ -16,9 +16,20 @@
  */
 
 import { Signal } from '@preact/signals-core';
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
-import { _resetCoverageNoticeForTests, noteUntrackedCoverage } from '../../src/dev-signal.js';
+import {
+  _resetCoverageNoticeForTests,
+  noteUntrackedCoverage,
+} from '../../src/dev-signal.js';
 
 let warnSpy: MockInstance<typeof console.warn>;
 
@@ -69,7 +80,10 @@ describe('why the boundary cannot simply be removed', () => {
     expect(desc).toBeDefined();
     expect(desc?.configurable).toBe(false);
     expect(() => {
-      Object.defineProperty(Signal.prototype, 'value', { get: () => 0, set: () => {} });
+      Object.defineProperty(Signal.prototype, 'value', {
+        get: () => 0,
+        set: () => {},
+      });
     }).toThrow(/Cannot redefine property/);
   });
 });

@@ -35,7 +35,11 @@ import {
   wireRowBindings,
 } from './bindings.js';
 import { devHooks, type WarnOnceContext } from './dev-hooks.js';
-import { _resetCallOrderListState, _setRenderContext, type RenderContext } from './each.js';
+import {
+  _resetCallOrderListState,
+  _setRenderContext,
+  type RenderContext,
+} from './each.js';
 import type { SafeHtml } from './jsx-runtime.js';
 import { isSafeHtml } from './jsx-runtime.js';
 import {
@@ -56,7 +60,8 @@ import {
 import { parseRowTemplate, rowContractError } from './utils/row-contract.js';
 
 /** What `mount()`'s render function may return; non-SafeHtml values coerce (nullish/boolean → render nothing). */
-export type MountResult = SafeHtml | string | number | boolean | null | undefined;
+export type MountResult =
+  SafeHtml | string | number | boolean | null | undefined;
 
 // KF-175 — non-enumerable marker placed on `mount()`'s rootEl so that a
 // second `mount()` call on a descendant, ancestor, or the same element can be
@@ -65,9 +70,9 @@ export type MountResult = SafeHtml | string | number | boolean | null | undefine
 // rebuilt bundle against the src test infrastructure).
 const MOUNTED_MARKER = Symbol.for('kerfjs.mounted');
 
-const NESTED_MOUNT_MSG
-  = 'mount: rootEl is already inside (or contains) a mounted tree. '
-  + 'kerf supports one mount per tree — compose with plain functions that return JSX instead of nesting mounts.';
+const NESTED_MOUNT_MSG =
+  'mount: rootEl is already inside (or contains) a mounted tree. ' +
+  'kerf supports one mount per tree — compose with plain functions that return JSX instead of nesting mounts.';
 
 function isMounted(el: Element): boolean {
   return (el as unknown as Record<symbol, unknown>)[MOUNTED_MARKER] === true;
@@ -91,9 +96,9 @@ function assertNotInsideMountedTree(rootEl: HTMLElement): void {
   // The element itself — same element mounted twice.
   if (isMounted(rootEl)) {
     throw new Error(
-      `mount: ${describeEl(rootEl)} is already mounted. `
-      + 'Call the disposer returned by the first mount() before mounting again. '
-      + 'kerf supports one mount per element — compose with plain functions that return JSX instead of nesting mounts.',
+      `mount: ${describeEl(rootEl)} is already mounted. ` +
+        'Call the disposer returned by the first mount() before mounting again. ' +
+        'kerf supports one mount per element — compose with plain functions that return JSX instead of nesting mounts.',
     );
   }
   // Ancestors — walk up.
@@ -104,7 +109,8 @@ function assertNotInsideMountedTree(rootEl: HTMLElement): void {
   }
   // Descendants — DFS.
   const stack: Element[] = [];
-  for (let i = 0; i < rootEl.children.length; i++) stack.push(rootEl.children[i]);
+  for (let i = 0; i < rootEl.children.length; i++)
+    stack.push(rootEl.children[i]);
   while (stack.length > 0) {
     const cur = stack.pop() as Element;
     if (isMounted(cur)) throw new Error(NESTED_MOUNT_MSG);
@@ -135,11 +141,14 @@ function assertNotInsideMountedTree(rootEl: HTMLElement): void {
  *   else they did to the DOM — survives verbatim. The next render after
  *   blur catches up.
  */
-export function mount(rootEl: HTMLElement, render: () => MountResult): () => void {
+export function mount(
+  rootEl: HTMLElement,
+  render: () => MountResult,
+): () => void {
   if (rootEl == null) {
     throw new Error(
-      'mount: rootEl is null/undefined — pass the live element, e.g. mount(document.getElementById("app")!, render). '
-      + 'A common cause is a typo in the id or selector that returns null at runtime even though the TypeScript types say HTMLElement.',
+      'mount: rootEl is null/undefined — pass the live element, e.g. mount(document.getElementById("app")!, render). ' +
+        'A common cause is a typo in the id or selector that returns null at runtime even though the TypeScript types say HTMLElement.',
     );
   }
   // KF-243: defense-in-depth for inert-document roots. `toElement()` already
@@ -237,8 +246,10 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     // and render again. The discarded pass costs one extra render on precisely
     // the render that was already going to rebuild — and never on a steady-state
     // one, where the count is unchanged.
-    if (renderCtx.previousCallCount !== undefined
-      && renderCtx.previousCallCount !== renderCtx.counter) {
+    if (
+      renderCtx.previousCallCount !== undefined &&
+      renderCtx.previousCallCount !== renderCtx.counter
+    ) {
       // Warn from the FIRST pass: the reset clears the recorded sources the
       // shift detection compares against, so a second pass has nothing to spot.
       for (const id of renderCtx.shiftCandidates) {
@@ -268,7 +279,12 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       isFirst = false;
     } else {
       let nextStaticHtml = runSubsequentRender(
-        rootEl, segment, bindings, renderCtx, prevStaticHtml, valueOnlyWarnCtx,
+        rootEl,
+        segment,
+        bindings,
+        renderCtx,
+        prevStaticHtml,
+        valueOnlyWarnCtx,
       );
 
       // KF-411: the morph just rebuilt one or more lists' containers, so their
@@ -281,11 +297,17 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       // reconciles it to the real rows. Only fires on a container-rebuild
       // render — already O(N) — never in steady state.
       if (anyRebuiltListIsGranular(segment, renderCtx.rebuiltLists)) {
-        for (const id of renderCtx.rebuiltLists) renderCtx.bindingCounts.delete(id);
+        for (const id of renderCtx.rebuiltLists)
+          renderCtx.bindingCounts.delete(id);
         result = runRenderPass();
         segment = resultToSegment(result);
         nextStaticHtml = runSubsequentRender(
-          rootEl, segment, bindings, renderCtx, prevStaticHtml, valueOnlyWarnCtx,
+          rootEl,
+          segment,
+          bindings,
+          renderCtx,
+          prevStaticHtml,
+          valueOnlyWarnCtx,
         );
       }
       // A changed static-surrounds string means morph() ran, which strips
@@ -308,7 +330,8 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       // duplicating inserted text nodes, so it's not worth it for an anti-pattern.
       if (nextStaticHtml !== prevStaticHtml) {
         bindingDisposers = wireBindings(rootEl, bindingCtx, bindingDisposers);
-        if (devHooks.staleBindingEnabled?.()) prevWiredBindings = bindingCtx.list;
+        if (devHooks.staleBindingEnabled?.())
+          prevWiredBindings = bindingCtx.list;
       } else {
         // KF-338: fast path — the effects stay bound to `prevWiredBindings`.
         // Dev-warn (opt-in) if this render tried to bind a DIFFERENT signal
@@ -326,7 +349,9 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
     // KF-416: per-list expected row count, for the dev-mode row-count invariant.
     // Only built when the checks are enabled — otherwise the map would cost an
     // allocation per render for nothing, and this family promises zero prod cost.
-    const expectedCounts = devHooks.listInvariantsEnabled?.() ? new Map<string, number>() : null;
+    const expectedCounts = devHooks.listInvariantsEnabled?.()
+      ? new Map<string, number>()
+      : null;
 
     for (const listSeg of collectLists(segment).values()) {
       // Invariant: `bindListsFromMarkers` just ran over this segment, so every
@@ -337,10 +362,10 @@ export function mount(rootEl: HTMLElement, render: () => MountResult): () => voi
       const binding = bindings.get(listSeg.id);
       if (!binding) {
         throw new Error(
-          'mount: an each() list appeared in the render output but its marker never reached the live DOM. '
-          + 'The most common cause is an each() introduced inside a data-morph-skip subtree on a re-render — '
-          + 'the morph leaves that subtree untouched, so the list can never bind. '
-          + 'Move the each() outside the skipped subtree, or remove data-morph-skip from its ancestor.',
+          'mount: an each() list appeared in the render output but its marker never reached the live DOM. ' +
+            'The most common cause is an each() introduced inside a data-morph-skip subtree on a re-render — ' +
+            'the morph leaves that subtree untouched, so the list can never bind. ' +
+            'Move the each() outside the skipped subtree, or remove data-morph-skip from its ancestor.',
         );
       }
       reconcileList(binding, listSeg);
@@ -451,12 +476,22 @@ function runSubsequentRender(
   // changed render is confined to text/attribute values, every changed hole
   // could have been a fine-grained binding — surface the bound-first guidance
   // once per mount. Gate short-circuits before any parsing.
-  devHooks.valueOnlyRerender?.(prevStaticHtml, currentStaticHtml, valueOnlyWarnCtx);
+  devHooks.valueOnlyRerender?.(
+    prevStaticHtml,
+    currentStaticHtml,
+    valueOnlyWarnCtx,
+  );
   cleanupOrphanBindings(segment, bindings, renderCtx);
   const template = rootEl.cloneNode(false) as HTMLElement;
   template.innerHTML = currentStaticHtml;
   morph(rootEl, template, collectOwnedItems(bindings));
-  bindListsFromMarkers(rootEl, segment, bindings, false, renderCtx.rebuiltLists);
+  bindListsFromMarkers(
+    rootEl,
+    segment,
+    bindings,
+    false,
+    renderCtx.rebuiltLists,
+  );
   return currentStaticHtml;
 }
 
@@ -489,7 +524,10 @@ function resultToSegment(result: MountResult): Segment {
  * freshly self-healed (empty) binding would reconcile the live rows to zero.
  * `mount()` re-renders those lists onto the snapshot path when this is true.
  */
-function anyRebuiltListIsGranular(segment: Segment, rebuilt: ReadonlySet<string>): boolean {
+function anyRebuiltListIsGranular(
+  segment: Segment,
+  rebuilt: ReadonlySet<string>,
+): boolean {
   if (!rebuilt.size) return false;
   const lists = collectLists(segment);
   for (const id of rebuilt) {
@@ -541,7 +579,8 @@ function bindListsFromMarkers(
       // marker is typically still live under its new id. Accepting that binding
       // would point the arriving list at the previous occupant's parent and
       // anchor, so its rows land inside the wrong container.
-      if (existing.marker === marker && rootEl.contains(existing.marker)) continue;
+      if (existing.marker === marker && rootEl.contains(existing.marker))
+        continue;
       // KF-377 self-heal: the marker we found is a fresh clone — the list's
       // container was rebuilt by the morph (e.g. an ancestor's tag changed,
       // so replaceChild swapped the whole subtree). The old binding points at
@@ -657,7 +696,8 @@ function validateInlinedRowMatch(
   // element" class the row contract exists to reject, so reject it loudly
   // rather than binding to the wrong node.
   const expectedTag = (content.firstElementChild as Element).tagName;
-  if (boundEl.tagName !== expectedTag) throw rowStructureError(index, boundEl.tagName, expectedTag);
+  if (boundEl.tagName !== expectedTag)
+    throw rowStructureError(index, boundEl.tagName, expectedTag);
 }
 
 /**
@@ -666,15 +706,19 @@ function validateInlinedRowMatch(
  * at the fix — the shape kerf supports (and that the benchmark entry uses) is
  * an explicit sectioning element around the list.
  */
-function rowStructureError(index: number, gotTag: string, wantTag: string): Error {
+function rowStructureError(
+  index: number,
+  gotTag: string,
+  wantTag: string,
+): Error {
   const got = gotTag.toLowerCase();
   const want = wantTag.toLowerCase();
   return new Error(
-    `each(): row ${index} renders <${want}>, but the HTML parser wrapped the rows in `
-    + `<${got}> — so kerf cannot bind one row per element. This happens when an each() of `
-    + `<${want}> sits directly inside a table: the parser inserts <${got}> around the whole run. `
-    + `Put the each() inside an explicit <${got}> (e.g. <table><${got}>{each(...)}</${got}></table>) `
-    + 'so the rows are the direct children kerf binds.',
+    `each(): row ${index} renders <${want}>, but the HTML parser wrapped the rows in ` +
+      `<${got}> — so kerf cannot bind one row per element. This happens when an each() of ` +
+      `<${want}> sits directly inside a table: the parser inserts <${got}> around the whole run. ` +
+      `Put the each() inside an explicit <${got}> (e.g. <table><${got}>{each(...)}</${got}></table>) ` +
+      'so the rows are the direct children kerf binds.',
   );
 }
 

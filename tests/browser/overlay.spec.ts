@@ -5,17 +5,21 @@
  * Chromium / Firefox / WebKit. The DOM-lifecycle + dismiss-trigger logic is
  * unit-tested in the behavior-focused `tests/unit/overlay-*.test.ts` suites.
  */
-import { expect, type Page,test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
-  await page.waitForFunction(() => (window as unknown as { kerfReady: boolean }).kerfReady === true);
+  await page.waitForFunction(
+    () => (window as unknown as { kerfReady: boolean }).kerfReady === true,
+  );
 });
 
 const activeId = (page: Page) =>
   page.evaluate(() => document.activeElement?.id ?? null);
 
-test('focus trap: initial focus, Tab cycles + wraps within, Escape restores focus to the trigger', async ({ page }) => {
+test('focus trap: initial focus, Tab cycles + wraps within, Escape restores focus to the trigger', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     const trigger = document.createElement('button');
     trigger.id = 'trigger';
@@ -45,7 +49,9 @@ test('focus trap: initial focus, Tab cycles + wraps within, Escape restores focu
   expect(await activeId(page)).toBe('trigger'); // focus restored on close
 });
 
-test('fallback overlays arbitrate Escape and outside dismissal from the top down', async ({ page }) => {
+test('fallback overlays arbitrate Escape and outside dismissal from the top down', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     const { overlay } = (window as any).kerfOverlay;
     const { raw } = (window as any).jsxRuntime;
@@ -67,10 +73,14 @@ test('fallback overlays arbitrate Escape and outside dismissal from the top down
     outside.textContent = 'outside';
     document.body.appendChild(outside);
     overlay(raw('<div>lower menu</div>'), {
-      className: 'lower-menu', dismiss: 'outside', trap: false,
+      className: 'lower-menu',
+      dismiss: 'outside',
+      trap: false,
     });
     overlay(raw('<div>upper menu</div>'), {
-      className: 'upper-menu', dismiss: 'outside', trap: false,
+      className: 'upper-menu',
+      dismiss: 'outside',
+      trap: false,
     });
   });
 
@@ -81,14 +91,18 @@ test('fallback overlays arbitrate Escape and outside dismissal from the top down
   await expect(page.locator('.lower-menu')).toHaveCount(0);
 });
 
-test('prompt(): real focus lands in the field, typing + Enter resolves the entered string', async ({ page }) => {
+test('prompt(): real focus lands in the field, typing + Enter resolves the entered string', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     const { prompt } = (window as any).kerfOverlay;
     (window as any)._result = prompt('Rename', { defaultValue: 'old' });
   });
 
   // Initial focus is the input (real browser focus, not a synthetic .focus()).
-  expect(await page.evaluate(() => document.activeElement?.className ?? null)).toBe('kerf-prompt__input');
+  expect(
+    await page.evaluate(() => document.activeElement?.className ?? null),
+  ).toBe('kerf-prompt__input');
 
   // Select-all + retype, then submit with a real Enter keypress.
   await page.keyboard.press('ControlOrMeta+a');
@@ -100,12 +114,18 @@ test('prompt(): real focus lands in the field, typing + Enter resolves the enter
   await expect(page.locator('.kerf-prompt')).toHaveCount(0); // closed
 });
 
-test('popover(): positions below a real anchor, left-aligned (real layout)', async ({ page }) => {
+test('popover(): positions below a real anchor, left-aligned (real layout)', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     const anchor = document.createElement('button');
     anchor.id = 'pop-anchor';
     anchor.textContent = 'open';
-    Object.assign(anchor.style, { position: 'absolute', left: '120px', top: '240px' });
+    Object.assign(anchor.style, {
+      position: 'absolute',
+      left: '120px',
+      top: '240px',
+    });
     document.body.appendChild(anchor);
     const { popover } = (window as any).kerfOverlay;
     const { raw } = (window as any).jsxRuntime;
@@ -120,7 +140,9 @@ test('popover(): positions below a real anchor, left-aligned (real layout)', asy
   const popBox = (await page.locator('.pop-body').boundingBox())!;
   // Below the anchor by ~gap, and left edges aligned (both within a couple px).
   expect(popBox.y).toBeGreaterThanOrEqual(anchorBox.y + anchorBox.height);
-  expect(Math.abs(popBox.y - (anchorBox.y + anchorBox.height + 6))).toBeLessThan(2);
+  expect(
+    Math.abs(popBox.y - (anchorBox.y + anchorBox.height + 6)),
+  ).toBeLessThan(2);
   expect(Math.abs(popBox.x - anchorBox.x)).toBeLessThan(2);
 });
 
@@ -129,14 +151,27 @@ test('tooltip(): shows on real hover and hides on leave', async ({ page }) => {
     const anchor = document.createElement('button');
     anchor.id = 'tip-anchor';
     anchor.textContent = 'hover me';
-    Object.assign(anchor.style, { position: 'absolute', left: '150px', top: '150px' });
+    Object.assign(anchor.style, {
+      position: 'absolute',
+      left: '150px',
+      top: '150px',
+    });
     document.body.appendChild(anchor);
     const spacer = document.createElement('div');
     spacer.id = 'away';
-    Object.assign(spacer.style, { position: 'absolute', left: '0', top: '400px', width: '40px', height: '40px' });
+    Object.assign(spacer.style, {
+      position: 'absolute',
+      left: '0',
+      top: '400px',
+      width: '40px',
+      height: '40px',
+    });
     document.body.appendChild(spacer);
     const { tooltip } = (window as any).kerfOverlay;
-    (window as any)._tipStop = tooltip(anchor, 'Hello', { delay: 0, hideDelay: 0 });
+    (window as any)._tipStop = tooltip(anchor, 'Hello', {
+      delay: 0,
+      hideDelay: 0,
+    });
   });
 
   await page.locator('#tip-anchor').hover();
@@ -145,17 +180,23 @@ test('tooltip(): shows on real hover and hides on leave', async ({ page }) => {
   await expect(page.locator('.kerf-tooltip')).toHaveCount(0);
 });
 
-test('tooltip(): pointer and focus presence keep each other alive across modality transitions', async ({ page }) => {
+test('tooltip(): pointer and focus presence keep each other alive across modality transitions', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     const anchor = document.createElement('button');
     anchor.id = 'tip-modality-anchor';
     anchor.textContent = 'mixed modality';
     document.body.appendChild(anchor);
     const { tooltip } = (window as any).kerfOverlay;
-    (window as any)._tipModalityStop = tooltip(anchor, 'Mixed', { delay: 0, hideDelay: 0 });
+    (window as any)._tipModalityStop = tooltip(anchor, 'Mixed', {
+      delay: 0,
+      hideDelay: 0,
+    });
   });
 
-  const dispatch = (type: string) => page.locator('#tip-modality-anchor').dispatchEvent(type);
+  const dispatch = (type: string) =>
+    page.locator('#tip-modality-anchor').dispatchEvent(type);
 
   await dispatch('pointerenter');
   await expect(page.locator('.kerf-tooltip')).toHaveText('Mixed');
@@ -174,14 +215,18 @@ test('tooltip(): pointer and focus presence keep each other alive across modalit
   await expect(page.locator('.kerf-tooltip')).toHaveCount(0);
 });
 
-test('toast(): string content is text while SafeHtml and render functions preserve markup', async ({ page }) => {
+test('toast(): string content is text while SafeHtml and render functions preserve markup', async ({
+  page,
+}) => {
   const attack = '<img id="toast-xss" src="x" onerror="globalThis.pwned=true">';
   await page.evaluate((untrusted) => {
     const { toast } = (window as any).kerfOverlay;
     const { jsx, raw } = (window as any).jsxRuntime;
     toast(untrusted, { duration: 0 });
     toast(raw('<strong id="trusted-toast">trusted</strong>'), { duration: 0 });
-    toast(() => jsx('em', { id: 'rendered-toast', children: 'rendered' }), { duration: 0 });
+    toast(() => jsx('em', { id: 'rendered-toast', children: 'rendered' }), {
+      duration: 0,
+    });
   }, attack);
 
   const toasts = page.locator('.kerf-toast');
@@ -193,7 +238,9 @@ test('toast(): string content is text while SafeHtml and render functions preser
   await expect(page.locator('#rendered-toast')).toHaveText('rendered');
 });
 
-test('outside click dismisses a non-modal popover; content + an outsideIgnore trigger do not', async ({ page }) => {
+test('outside click dismisses a non-modal popover; content + an outsideIgnore trigger do not', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     const trigger = document.createElement('button');
     trigger.id = 'pop-trigger';
@@ -205,10 +252,12 @@ test('outside click dismisses a non-modal popover; content + an outsideIgnore tr
     document.body.appendChild(elsewhere);
     const { overlay } = (window as any).kerfOverlay;
     const { raw } = (window as any).jsxRuntime;
-    (window as any)._ov = overlay(
-      raw('<button id="pop-inner">x</button>'),
-      { className: 'pop', dismiss: ['outside'], trap: false, outsideIgnore: trigger },
-    );
+    (window as any)._ov = overlay(raw('<button id="pop-inner">x</button>'), {
+      className: 'pop',
+      dismiss: ['outside'],
+      trap: false,
+      outsideIgnore: trigger,
+    });
   });
 
   await page.locator('#pop-inner').click(); // inside — stays
@@ -219,23 +268,34 @@ test('outside click dismisses a non-modal popover; content + an outsideIgnore tr
   await expect(page.locator('.pop')).toHaveCount(0);
 });
 
-test('native: modal confirm is a real <dialog> in the top layer, resolves on click', async ({ page }) => {
+test('native: modal confirm is a real <dialog> in the top layer, resolves on click', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     const { confirm } = (window as any).kerfOverlay;
-    (window as any)._result = confirm('Delete?', { native: true, className: 'nc' });
+    (window as any)._result = confirm('Delete?', {
+      native: true,
+      className: 'nc',
+    });
   });
 
   const dialog = page.locator('dialog.nc');
   await expect(dialog).toHaveCount(1);
   // Real modality: the <dialog> is open (top layer + ::backdrop + inert document).
-  expect(await page.evaluate(() => (document.querySelector('dialog.nc') as HTMLDialogElement).open)).toBe(true);
+  expect(
+    await page.evaluate(
+      () => (document.querySelector('dialog.nc') as HTMLDialogElement).open,
+    ),
+  ).toBe(true);
 
   await dialog.locator('[data-confirm="ok"]').click();
   expect(await page.evaluate(() => (window as any)._result)).toBe(true);
   await expect(dialog).toHaveCount(0); // closed + removed
 });
 
-test('native: a modal <dialog> stacks above a high z-index element (top layer wins)', async ({ page }) => {
+test('native: a modal <dialog> stacks above a high z-index element (top layer wins)', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     const bar = document.createElement('div');
     bar.id = 'zbar';
@@ -244,7 +304,9 @@ test('native: a modal <dialog> stacks above a high z-index element (top layer wi
     const { overlay } = (window as any).kerfOverlay;
     const { raw } = (window as any).jsxRuntime;
     (window as any)._ov = overlay(raw('<button id="in-dialog">hi</button>'), {
-      native: true, trap: true, className: 'zdlg',
+      native: true,
+      trap: true,
+      className: 'zdlg',
     });
   });
 
@@ -257,7 +319,9 @@ test('native: a modal <dialog> stacks above a high z-index element (top layer wi
   await expect(page.locator('.zdlg')).toHaveCount(0);
 });
 
-test('native: popover is :popover-open in the top layer, positioned at the anchor', async ({ page }) => {
+test('native: popover is :popover-open in the top layer, positioned at the anchor', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     const anchor = document.createElement('button');
     anchor.id = 'np-anchor';
@@ -266,14 +330,23 @@ test('native: popover is :popover-open in the top layer, positioned at the ancho
     document.body.appendChild(anchor);
     const { popover } = (window as any).kerfOverlay;
     const { raw } = (window as any).jsxRuntime;
-    (window as any)._pop = popover(anchor, raw('<div id="np-body">menu</div>'), {
-      native: true, className: 'np',
-    });
+    (window as any)._pop = popover(
+      anchor,
+      raw('<div id="np-body">menu</div>'),
+      {
+        native: true,
+        className: 'np',
+      },
+    );
   });
 
   const pop = page.locator('.np');
   await expect(pop).toHaveCount(1);
-  expect(await page.evaluate(() => (document.querySelector('.np') as HTMLElement).matches(':popover-open'))).toBe(true);
+  expect(
+    await page.evaluate(() =>
+      (document.querySelector('.np') as HTMLElement).matches(':popover-open'),
+    ),
+  ).toBe(true);
   // positionAnchored controls placement despite the UA [popover] inset (neutralized to auto).
   const box = await pop.boundingBox(); // { x, y, width, height }
   expect(box!.x).toBeGreaterThan(30);

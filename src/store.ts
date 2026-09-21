@@ -33,7 +33,10 @@ export interface Store<TState, TActions> {
 
 interface DefineStoreSpec<TState, TActions> {
   initial: () => TState;
-  actions: (set: (next: TState) => void, get: () => Readonly<TState>) => TActions;
+  actions: (
+    set: (next: TState) => void,
+    get: () => Readonly<TState>,
+  ) => TActions;
 }
 
 const REGISTRY: Array<{ reset: () => void }> = [];

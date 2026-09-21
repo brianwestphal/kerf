@@ -46,29 +46,53 @@
 
 import { type Signal, signal as coreSignal } from '@preact/signals-core';
 
-import { isOptedIn as staleBindingOptedIn, maybeWarnStaleBinding } from './dev-binding-warn.js';
+import {
+  isOptedIn as staleBindingOptedIn,
+  maybeWarnStaleBinding,
+} from './dev-binding-warn.js';
 import {
   enterEffect,
   exitEffect,
   isDevWarnDelegateInEffectEnabled,
   warnIfInsideEffect,
 } from './dev-delegate-warn.js';
-import { maybeWarnDuplicateCacheKeys, maybeWarnEachInMorphSkip } from './dev-each-warn.js';
+import {
+  maybeWarnDuplicateCacheKeys,
+  maybeWarnEachInMorphSkip,
+} from './dev-each-warn.js';
 import { type DevHooks, installDevHooks } from './dev-hooks.js';
-import { listInvariantsEnabled, maybeCheckListInvariants } from './dev-invariants.js';
-import { isOptedInStaleIndex, maybeWarnStaleIndex } from './dev-list-index-warn.js';
+import {
+  listInvariantsEnabled,
+  maybeCheckListInvariants,
+} from './dev-invariants.js';
+import {
+  isOptedInStaleIndex,
+  maybeWarnStaleIndex,
+} from './dev-list-index-warn.js';
 import { maybeWarnListIdShift } from './dev-list-key-warn.js';
 import { maybeWarnListRebind } from './dev-list-rebind-warn.js';
 import { installListenerRebuildWarn } from './dev-listener-warn.js';
 import { maybeWarnParserRepair } from './dev-parser-repair-warn.js';
 import { maybeWarnValueOnlyRerender } from './dev-rerender-warn.js';
 import { maybeWarnMissingRowKey } from './dev-row-key-warn.js';
-import { DevSignal, isDevWarnUntrackedEnabled, noteUntrackedCoverage } from './dev-signal.js';
+import {
+  DevSignal,
+  isDevWarnUntrackedEnabled,
+  noteUntrackedCoverage,
+} from './dev-signal.js';
 import { maybeWarnNarrowSet } from './dev-store-warn.js';
-import { applyWarningOptions, type DevWarningOptions } from './dev-warn-config.js';
+import {
+  applyWarningOptions,
+  type DevWarningOptions,
+} from './dev-warn-config.js';
 import { devReadonlyProxy, toRaw } from './utils/dev-readonly.js';
 
-export { clearDevHooks, type DevHooks, devHooks, installDevHooks } from './dev-hooks.js';
+export {
+  clearDevHooks,
+  type DevHooks,
+  devHooks,
+  installDevHooks,
+} from './dev-hooks.js';
 export type { DevWarningOptions } from './dev-warn-config.js';
 
 /**
@@ -109,9 +133,10 @@ export function enableWarnings(options: DevWarningOptions): void {
  */
 export const DEV_HOOKS: DevHooks = {
   // --- reactive ---------------------------------------------------------
-  signalFactory: <T>(value: T): Signal<T> => (
-    isDevWarnUntrackedEnabled() ? new DevSignal<T>(value) : coreSignal<T>(value)
-  ),
+  signalFactory: <T>(value: T): Signal<T> =>
+    isDevWarnUntrackedEnabled()
+      ? new DevSignal<T>(value)
+      : coreSignal<T>(value),
   wrapEffect: (fn) => {
     // Resolved once per `effect()` call, matching the pre-hook behavior: an
     // effect created while the warning is off is never wrapped.

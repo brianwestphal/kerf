@@ -17,7 +17,15 @@
 // kerf-component` alone just works. No third-party dependencies — the
 // initializer is plain Node so `npm create` runs it with zero install latency.
 
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import {
+  cpSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  renameSync,
+  writeFileSync,
+} from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
 import { createInterface } from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
@@ -41,7 +49,9 @@ const USAGE =
 async function promptForTarget() {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
   try {
-    const answer = await rl.question(`Directory (\`.\` for current) [${DEFAULT_NAME}]: `);
+    const answer = await rl.question(
+      `Directory (\`.\` for current) [${DEFAULT_NAME}]: `,
+    );
     return answer.trim() || DEFAULT_NAME;
   } finally {
     rl.close();

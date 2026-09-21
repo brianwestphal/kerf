@@ -60,9 +60,10 @@ author files and applies the same transform. Consequently `cd ui && npm run
 dev` watches CSS edits and updates the catalog through Vite HMR, while
 `npm run demo:serve` remains a preview server for an already-built catalog.
 
-Prettier owns readable CSS layout. Run `npm run format:css`; `npm run check`
-rejects formatting drift, malformed `remify()` calls, or build/demo CSS that
-still contains the authoring function.
+Prettier owns readable source layout. Run `npm run format` for the whole UI
+package or `npm run format:css` for style-only work; `npm run lint` and
+`npm run check` reject formatting drift, malformed `remify()` calls, or
+build/demo CSS that still contains the authoring function.
 
 ## 22.4 Verification
 

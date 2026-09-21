@@ -3,35 +3,35 @@ title: Coming from jQuery
 description: jQuery's .on() delegation is the closest mental analogue to kerf's delegate(). A side-by-side translation, plus the patterns that survive and the ones that change.
 ---
 
-You have a jQuery codebase. You're reading this because you want to modernize without a full React-shaped rewrite, or because the imperative DOM-manipulation style that worked for years is starting to creak under a state model that grew bigger than `$(el).text(value)`. Kerf is the closest modern analogue to jQuery's *philosophy* — direct DOM operations, event delegation as the first-class event model, no virtual layer — with reactive state grafted on. This page makes that comparison concrete.
+You have a jQuery codebase. You're reading this because you want to modernize without a full React-shaped rewrite, or because the imperative DOM-manipulation style that worked for years is starting to creak under a state model that grew bigger than `$(el).text(value)`. Kerf is the closest modern analogue to jQuery's _philosophy_ — direct DOM operations, event delegation as the first-class event model, no virtual layer — with reactive state grafted on. This page makes that comparison concrete.
 
 The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc/`](https://github.com/brianwestphal/kerf/tree/main/site/src/examples/complete/todomvc) — [run it live](/kerf/examples/complete/todomvc/) and you're looking at the same bytes the snippets below show.
 
 ## 1. Bundle delta
 
-| | Min + gz, runtime only |
-| --- | --- |
-| `jquery` 3.x | ~30 KB |
-| `kerfjs` (incl. signals) | ~12 KB |
-| **Delta** | **~18 KB lighter** |
+|                          | Min + gz, runtime only |
+| ------------------------ | ---------------------- |
+| `jquery` 3.x             | ~30 KB                 |
+| `kerfjs` (incl. signals) | ~12 KB                 |
+| **Delta**                | **~18 KB lighter**     |
 
 The big win is bundle, but the real story is what you're getting in exchange: a state model. jQuery has none — you write `$(el).text(value)` everywhere and the source of truth is wherever you last wrote it. Kerf has `signal()` and `defineStore()`; the source of truth is the signal, and the DOM mirrors it.
 
 ## 2. Mental-model translations
 
-| jQuery | Kerf | Notes |
-| --- | --- | --- |
-| `$(document).on('click', '.btn', fn)` | `delegate(root, 'click', '.btn', fn)` | Direct analog. Kerf's `delegate()` is the same `closest()`-style delegation as jQuery's `.on()`. |
-| `$(target).text(value)` | render via JSX inside `mount(root, () => <div>{value.value}</div>)` | Push the text via a signal; let the morph apply the change. |
-| `$(el).html(htmlString)` | `morph(el, htmlString)` | One-shot reconcile against an HTML string. |
-| `$(el).addClass('done')` / `removeClass` | `class={done.value ? 'done' : ''}` in the JSX | Class is a function of state; not a thing you toggle imperatively. |
-| `$(el).val()` / `.val(next)` | `el.value` (read) / `value={signal.value}` (render) | The DOM API directly for reading; render via JSX for the write side. |
-| `$.ajax({...})` | `fetch(...)` | Modern browsers have `fetch` built in. |
-| `$(el).find('.x')` | `el.querySelector('.x')` | Same idea, native API. |
-| `$(el).data('id')` | `el.dataset.id` | Native. |
-| `$(window).on('scroll', fn)` | `window.addEventListener('scroll', fn)` | Outside the mount tree, use native APIs directly — `delegate()` is for inside `mount()`'s root. |
-| jQuery animations (`$(el).fadeIn()`) | CSS transitions + a class toggle | Animations live in CSS now; kerf doesn't bundle one. |
-| jQuery plugins (`$(el).datepicker()`) | wrap the library subtree in `data-morph-skip` so kerf leaves it alone | The morph won't touch attributes or children of a `data-morph-skip` element. |
+| jQuery                                   | Kerf                                                                  | Notes                                                                                            |
+| ---------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `$(document).on('click', '.btn', fn)`    | `delegate(root, 'click', '.btn', fn)`                                 | Direct analog. Kerf's `delegate()` is the same `closest()`-style delegation as jQuery's `.on()`. |
+| `$(target).text(value)`                  | render via JSX inside `mount(root, () => <div>{value.value}</div>)`   | Push the text via a signal; let the morph apply the change.                                      |
+| `$(el).html(htmlString)`                 | `morph(el, htmlString)`                                               | One-shot reconcile against an HTML string.                                                       |
+| `$(el).addClass('done')` / `removeClass` | `class={done.value ? 'done' : ''}` in the JSX                         | Class is a function of state; not a thing you toggle imperatively.                               |
+| `$(el).val()` / `.val(next)`             | `el.value` (read) / `value={signal.value}` (render)                   | The DOM API directly for reading; render via JSX for the write side.                             |
+| `$.ajax({...})`                          | `fetch(...)`                                                          | Modern browsers have `fetch` built in.                                                           |
+| `$(el).find('.x')`                       | `el.querySelector('.x')`                                              | Same idea, native API.                                                                           |
+| `$(el).data('id')`                       | `el.dataset.id`                                                       | Native.                                                                                          |
+| `$(window).on('scroll', fn)`             | `window.addEventListener('scroll', fn)`                               | Outside the mount tree, use native APIs directly — `delegate()` is for inside `mount()`'s root.  |
+| jQuery animations (`$(el).fadeIn()`)     | CSS transitions + a class toggle                                      | Animations live in CSS now; kerf doesn't bundle one.                                             |
+| jQuery plugins (`$(el).datepicker()`)    | wrap the library subtree in `data-morph-skip` so kerf leaves it alone | The morph won't touch attributes or children of a `data-morph-skip` element.                     |
 
 ## 3. Section by section
 
@@ -41,40 +41,67 @@ The same TodoMVC, section by section.
 
 ```js
 // jQuery — state lives in the DOM (the source of truth IS the DOM)
-let items = JSON.parse(localStorage.getItem('jq-todomvc') ?? '[]');
-let filter = 'all';
+let items = JSON.parse(localStorage.getItem("jq-todomvc") ?? "[]");
+let filter = "all";
 let editingId = null;
 
-function persist() { localStorage.setItem('jq-todomvc', JSON.stringify(items)); }
-function rerender() { /* manually rebuild $('.todo-list').html(...) from items */ }
+function persist() {
+  localStorage.setItem("jq-todomvc", JSON.stringify(items));
+}
+function rerender() {
+  /* manually rebuild $('.todo-list').html(...) from items */
+}
 ```
 
 ```tsx
 // Kerf — state lives in signals; the DOM is a function of state
-import { defineStore, mount, each, delegate, delegateCapture, effect, attr, type AttrSpec } from 'kerfjs';
+import {
+  defineStore,
+  mount,
+  each,
+  delegate,
+  delegateCapture,
+  effect,
+  attr,
+  type AttrSpec,
+} from "kerfjs";
 
 const ACTIONS = {
-  toggle: attr('data-action', 'toggle'),
-  remove: attr('data-action', 'remove'),
-  edit:   attr('data-action', 'edit'),
-} as const satisfies Record<string, AttrSpec<'data-action'>>;
-const ITEM = { id: attr('data-id') } as const;
+  toggle: attr("data-action", "toggle"),
+  remove: attr("data-action", "remove"),
+  edit: attr("data-action", "edit"),
+} as const satisfies Record<string, AttrSpec<"data-action">>;
+const ITEM = { id: attr("data-id") } as const;
 
 const todos = defineStore({
-  initial: () => ({ items: load(), filter: 'all', editingId: null as string | null }),
+  initial: () => ({
+    items: load(),
+    filter: "all",
+    editingId: null as string | null,
+  }),
   actions: (set, get) => ({
-    add: (text: string) => set({ ...get(), items: [...get().items, { id: crypto.randomUUID(), text, done: false }] }),
-    toggle: (id: string) => set({ ...get(), items: get().items.map((t) => t.id === id ? { ...t, done: !t.done } : t) }),
+    add: (text: string) =>
+      set({
+        ...get(),
+        items: [...get().items, { id: crypto.randomUUID(), text, done: false }],
+      }),
+    toggle: (id: string) =>
+      set({
+        ...get(),
+        items: get().items.map((t) =>
+          t.id === id ? { ...t, done: !t.done } : t,
+        ),
+      }),
     // ...
   }),
 });
 
 effect(() => {
-  localStorage.setItem('kerf-todomvc', JSON.stringify(todos.state.value.items));
+  localStorage.setItem("kerf-todomvc", JSON.stringify(todos.state.value.items));
 });
 ```
 
-What moved: the biggest shift in the whole migration. In jQuery the DOM *is* the source of truth — your `rerender()` function rebuilds the DOM from `items`, and any code that wants to know what's there reads it back out of the DOM (or out of `items` and hopes they're in sync). In kerf the signal is the source of truth; the DOM is a render of the signal. You never write a `rerender()` function — the morph runs automatically when a signal you read changes.
+What moved: the biggest shift in the whole migration. In jQuery the DOM _is_ the source of truth — your `rerender()` function rebuilds the DOM from `items`, and any code that wants to know what's there reads it back out of the DOM (or out of `items` and hopes they're in sync). In kerf the signal is the source of truth; the DOM is a render of the signal. You never write a `rerender()` function — the morph runs automatically when a signal you read changes.
 
 ### 3b. Render
 
@@ -82,19 +109,24 @@ What moved: the biggest shift in the whole migration. In jQuery the DOM *is* the
 // jQuery — write a function that builds the HTML, call it whenever state changes
 function rerender() {
   const visible = items.filter((t) =>
-    filter === 'active' ? !t.done : filter === 'done' ? t.done : true
+    filter === "active" ? !t.done : filter === "done" ? t.done : true,
   );
-  const html = visible.map((todo) => `
-    <li data-id="${todo.id}" class="${todo.done ? 'done' : ''} ${editingId === todo.id ? 'editing' : ''}">
-      ${editingId === todo.id
-        ? `<input class="edit" value="${escapeHtml(todo.text)}" />`
-        : `<input type="checkbox" class="toggle" ${todo.done ? 'checked' : ''} />
+  const html = visible
+    .map(
+      (todo) => `
+    <li data-id="${todo.id}" class="${todo.done ? "done" : ""} ${editingId === todo.id ? "editing" : ""}">
+      ${
+        editingId === todo.id
+          ? `<input class="edit" value="${escapeHtml(todo.text)}" />`
+          : `<input type="checkbox" class="toggle" ${todo.done ? "checked" : ""} />
            <label>${escapeHtml(todo.text)}</label>
            <button class="destroy">×</button>`
       }
     </li>
-  `).join('');
-  $('.todo-list').html(html);  // ⚠️ blows away focus, caret, listeners
+  `,
+    )
+    .join("");
+  $(".todo-list").html(html); // ⚠️ blows away focus, caret, listeners
 }
 ```
 
@@ -109,20 +141,40 @@ mount(root, () => {
         (todo) => (
           <li
             data-key={todo.id}
-            class={`${todo.done ? 'done' : ''} ${editingId === todo.id ? 'editing' : ''}`}
+            class={`${todo.done ? "done" : ""} ${editingId === todo.id ? "editing" : ""}`}
           >
             {editingId === todo.id ? (
-              <input class="edit" data-edit data-id={todo.id} value={todo.text} autofocus />
+              <input
+                class="edit"
+                data-edit
+                data-id={todo.id}
+                value={todo.text}
+                autofocus
+              />
             ) : (
               <>
-                <input type="checkbox" class="toggle" {...ACTIONS.toggle.attrs} {...ITEM.id(todo.id)} checked={todo.done} />
-                <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>{todo.text}</label>
-                <button class="destroy" {...ACTIONS.remove.attrs} {...ITEM.id(todo.id)}>×</button>
+                <input
+                  type="checkbox"
+                  class="toggle"
+                  {...ACTIONS.toggle.attrs}
+                  {...ITEM.id(todo.id)}
+                  checked={todo.done}
+                />
+                <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>
+                  {todo.text}
+                </label>
+                <button
+                  class="destroy"
+                  {...ACTIONS.remove.attrs}
+                  {...ITEM.id(todo.id)}
+                >
+                  ×
+                </button>
               </>
             )}
           </li>
         ),
-        (todo) => `${todo.id}-${editingId === todo.id ? 'edit' : 'view'}`,
+        (todo) => `${todo.id}-${editingId === todo.id ? "edit" : "view"}`,
       )}
     </ul>
   );
@@ -135,36 +187,39 @@ What moved: `$('.todo-list').html(html)` → `mount(root, () => <ul>...</ul>)`. 
 
 ```js
 // jQuery — same delegation idea kerf adopts
-$('#root').on('click', '[data-action="toggle"]', function () {
-  const id = $(this).data('id');
+$("#root").on("click", '[data-action="toggle"]', function () {
+  const id = $(this).data("id");
   /* toggle the item with that id, then rerender() */
 });
-$('#root').on('click', '[data-action="remove"]', function () { /* ... */ });
-$('#root').on('keydown', '.new-todo', function (e) {
-  if (e.key !== 'Enter') return;
+$("#root").on("click", '[data-action="remove"]', function () {
+  /* ... */
+});
+$("#root").on("keydown", ".new-todo", function (e) {
+  if (e.key !== "Enter") return;
   /* add the item, then rerender() */
 });
-$('#root').on('blur', '.edit', function () {  // ⚠️ blur doesn't bubble — jQuery's .on('blur') doesn't always work for delegation
+$("#root").on("blur", ".edit", function () {
+  // ⚠️ blur doesn't bubble — jQuery's .on('blur') doesn't always work for delegation
   /* commit the edit */
 });
 ```
 
 ```tsx
 // Kerf
-delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.toggle.selector, (_e, el) => {
   todos.actions.toggle((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.remove.selector, (_e, el) => {
   todos.actions.remove((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'keydown', '[data-new]', (e, el) => {
-  if ((e as KeyboardEvent).key !== 'Enter') return;
+delegate(root, "keydown", "[data-new]", (e, el) => {
+  if ((e as KeyboardEvent).key !== "Enter") return;
   const input = el as HTMLInputElement;
   todos.actions.add(input.value);
-  input.value = '';
+  input.value = "";
 });
 // Tier 2: blur doesn't bubble — capture phase is required.
-delegateCapture(root, 'blur', '[data-edit]', (_e, el) => {
+delegateCapture(root, "blur", "[data-edit]", (_e, el) => {
   const input = el as HTMLInputElement;
   if (todos.state.value.editingId === input.dataset.id) {
     todos.actions.commitEdit(input.dataset.id!, input.value);
@@ -184,9 +239,9 @@ In kerf: focus + caret position + selection range on the currently-focused input
 
 **Stop calling `rerender()`.** Every signal write triggers the relevant `mount()`'s effect to re-run. Your event handler reads `(el as HTMLElement).dataset.id`, calls `todos.actions.toggle(id)`, and that's it — no `rerender()` call, no manual DOM walk.
 
-**The DOM is not the source of truth anymore.** If you want to know whether a todo is done, you read `todos.state.value.items.find(t => t.id === id)?.done`, not `$(el).hasClass('done')`. The class is a *render* of the state, not the state itself. This is the largest mental shift in the migration.
+**The DOM is not the source of truth anymore.** If you want to know whether a todo is done, you read `todos.state.value.items.find(t => t.id === id)?.done`, not `$(el).hasClass('done')`. The class is a _render_ of the state, not the state itself. This is the largest mental shift in the migration.
 
-**`$(el).attr()` is for reading; rendering happens through JSX.** You can still call `el.getAttribute('data-id')` in your event handler to read it; what changes is that you don't *write* attributes by mutating the DOM. You change the signal, and the new attribute appears via the morph.
+**`$(el).attr()` is for reading; rendering happens through JSX.** You can still call `el.getAttribute('data-id')` in your event handler to read it; what changes is that you don't _write_ attributes by mutating the DOM. You change the signal, and the new attribute appears via the morph.
 
 **No `$.fn` plugins.** Plugins that wrap an element with imperative behavior (datepickers, masked inputs, charts) integrate by giving them a host element marked with `data-morph-skip`, then mounting the library imperatively. The morph won't touch the subtree, so the plugin's DOM stays untouched across re-renders.
 

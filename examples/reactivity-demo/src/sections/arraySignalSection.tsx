@@ -20,13 +20,13 @@ import { attr, delegate, each, mount, signal, type AttrSpec } from 'kerfjs';
 import { arraySignal } from 'kerfjs/array-signal';
 
 const ACTIONS = {
-  push:          attr('data-action', 'push'),
-  push100:       attr('data-action', 'push-100'),
-  toggleFirst:   attr('data-action', 'toggle-first'),
-  toggle:        attr('data-action', 'toggle'),
+  push: attr('data-action', 'push'),
+  push100: attr('data-action', 'push-100'),
+  toggleFirst: attr('data-action', 'toggle-first'),
+  toggle: attr('data-action', 'toggle'),
   moveFirstLast: attr('data-action', 'move-first-last'),
-  removeLast:    attr('data-action', 'remove-last'),
-  reset:         attr('data-action', 'reset'),
+  removeLast: attr('data-action', 'remove-last'),
+  reset: attr('data-action', 'reset'),
 } as const satisfies Record<string, AttrSpec<'data-action'>>;
 const ITEM = { id: attr('data-id') } as const;
 
@@ -59,16 +59,47 @@ export function mountArraySignalSection(root: HTMLElement): void {
   mount(root, () => (
     <div className="demo-card">
       <h2>
-        8. arraySignal <span className="demo-tag">granular reconcile · O(patches), not O(N)</span>
+        8. arraySignal{' '}
+        <span className="demo-tag">
+          granular reconcile · O(patches), not O(N)
+        </span>
       </h2>
 
       <div className="demo-row">
-        <button type="button" {...ACTIONS.push.attrs} className="demo-btn">push 1</button>
-        <button type="button" {...ACTIONS.push100.attrs} className="demo-btn">push 100</button>
-        <button type="button" {...ACTIONS.toggleFirst.attrs} className="demo-btn">toggle row 0</button>
-        <button type="button" {...ACTIONS.moveFirstLast.attrs} className="demo-btn">move 0 → end</button>
-        <button type="button" {...ACTIONS.removeLast.attrs} className="demo-btn demo-btn-ghost">pop</button>
-        <button type="button" {...ACTIONS.reset.attrs} className="demo-btn demo-btn-ghost">reset</button>
+        <button type="button" {...ACTIONS.push.attrs} className="demo-btn">
+          push 1
+        </button>
+        <button type="button" {...ACTIONS.push100.attrs} className="demo-btn">
+          push 100
+        </button>
+        <button
+          type="button"
+          {...ACTIONS.toggleFirst.attrs}
+          className="demo-btn"
+        >
+          toggle row 0
+        </button>
+        <button
+          type="button"
+          {...ACTIONS.moveFirstLast.attrs}
+          className="demo-btn"
+        >
+          move 0 → end
+        </button>
+        <button
+          type="button"
+          {...ACTIONS.removeLast.attrs}
+          className="demo-btn demo-btn-ghost"
+        >
+          pop
+        </button>
+        <button
+          type="button"
+          {...ACTIONS.reset.attrs}
+          className="demo-btn demo-btn-ghost"
+        >
+          reset
+        </button>
       </div>
 
       <p className="demo-note">
@@ -98,10 +129,10 @@ export function mountArraySignalSection(root: HTMLElement): void {
       <p className="demo-note">
         Each mutator emits one patch event. <code>push 100</code> emits 100
         contiguous <code>insert</code> patches that the reconciler bulk-parses
-        in one <code>template.innerHTML</code> call. Toggle a row — only
-        that row's <code>&lt;li&gt;</code> is replaced; siblings keep their
-        existing DOM nodes. Move row 0 to the end — the LIS pass moves a single
-        node, no rebuild.
+        in one <code>template.innerHTML</code> call. Toggle a row — only that
+        row's <code>&lt;li&gt;</code> is replaced; siblings keep their existing
+        DOM nodes. Move row 0 to the end — the LIS pass moves a single node, no
+        rebuild.
       </p>
     </div>
   ));
@@ -125,7 +156,10 @@ export function mountArraySignalSection(root: HTMLElement): void {
     rows.update(0, (r) => ({ ...r, selected: !r.selected }));
     // arraySignal mutates _items eagerly, so rows.value[0].selected is
     // already the post-update value here — log it directly, not negated.
-    logPatch('update', `0 selected→${rows.value[0].selected ? 'true' : 'false'}`);
+    logPatch(
+      'update',
+      `0 selected→${rows.value[0].selected ? 'true' : 'false'}`,
+    );
   });
 
   delegate(root, 'click', ACTIONS.toggle.selector, (_e, btn) => {
@@ -150,11 +184,7 @@ export function mountArraySignalSection(root: HTMLElement): void {
   });
 
   delegate(root, 'click', ACTIONS.reset.selector, () => {
-    rows.replace([
-      makeRow('Apple'),
-      makeRow('Banana'),
-      makeRow('Cherry'),
-    ]);
+    rows.replace([makeRow('Apple'), makeRow('Banana'), makeRow('Cherry')]);
     logPatch('replace', '3 items');
   });
 }

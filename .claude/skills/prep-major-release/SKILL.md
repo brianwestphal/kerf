@@ -44,7 +44,7 @@ Review and update as needed:
 - **The hook** (logo block + "Introducing Kerf" pitch + first code sample). Is the
   one-liner still true (bundle size, "no virtual DOM / no compiler / no magic")?
   Is the opening example the clearest possible 10-line taste of kerf?
-- **"Why Kerf"** — does it lead with the *most important and interesting* features?
+- **"Why Kerf"** — does it lead with the _most important and interesting_ features?
   Promote anything that became a headline feature since the last major (e.g. a new
   reconcile fast path, `morph` as a public export, `arraySignal`, the ESLint
   plugin, AI-assistant configs). Demote or cut anything that's no longer a
@@ -55,7 +55,7 @@ Review and update as needed:
   represented? Add a short spotlight for any new marquee primitive.
 - **Install / config** — `tsconfig` snippet, package names, subpath imports correct?
 - **Links section** — every link resolves, and the **Demo** bullet's description
-  matches the demo's *actual* current sections/count (cross-check against the live
+  matches the demo's _actual_ current sections/count (cross-check against the live
   demo + Part 2).
 - **Numbers & counts** — export count, KB figures, "N sections" — all must match
   reality. Grep the source rather than trusting the old prose.
@@ -80,7 +80,7 @@ flow; `capture-demos.sh` renders each to `site/public/demos/<name>.svg`
 
 Your job is to decide whether the **set** of demos and the **flow each one shows**
 still tells the best story for this release — i.e. whether new / different / fewer
-screenshots are needed — and to update the *configs* accordingly. You do **not**
+screenshots are needed — and to update the _configs_ accordingly. You do **not**
 run the capture.
 
 ### Step 0 — upgrade `domotion-svg` to the latest before anything captures
@@ -88,7 +88,7 @@ run the capture.
 `domotion-svg` is the renderer that turns each app into its animated SVG, and it's
 pinned as a root devDependency (`package.json` / lockfile; `npx domotion` resolves
 the local install). A major release should capture with the **latest** domotion so
-the committed SVGs reflect the current renderer — do this bump *before* the
+the committed SVGs reflect the current renderer — do this bump _before_ the
 maintainer re-captures.
 
 1. **Compare versions.** Read the pinned range in `package.json` (`domotion-svg`)
@@ -107,7 +107,7 @@ maintainer re-captures.
    ```
 
    Commit the resulting `package.json` + `package-lock.json` bump. This is a
-   dependency change the skill *does* make — it's separate from running the
+   dependency change the skill _does_ make — it's separate from running the
    capture, which stays the maintainer's step.
 
 3. **Re-check the version-dependent capture machinery.** domotion's cut/optimize
@@ -140,7 +140,7 @@ Review:
   array in `capture-demos.sh`, the `<name>.json` configs, the table in
   `site/scripts/demo-captures/README.md`, and the embeds in
   `site/src/content/docs/examples/complete/*.md`. Keep all of those in sync.
-- **Flow quality** — does each config still drive the app's *most compelling*
+- **Flow quality** — does each config still drive the app's _most compelling_
   interaction? If an app gained a better headline feature since the last major,
   revise its frames to show it. If a flow is redundant or no longer the best
   pitch, simplify or drop it ("fewer screenshots").
@@ -167,11 +167,12 @@ When Parts 1 and 2 are done, finish with an explicit handoff that lists, precise
 
    Note that the script re-renders **all** apps in its `APPS=` array; if only a
    subset changed, say so explicitly so the maintainer knows what to eyeball after.
+
 4. **Anything you couldn't decide** — surface it as a question rather than guessing.
 
 ## Hard rules
 
-- **Don't capture screenshots.** Editing capture *configs* is in scope; running
+- **Don't capture screenshots.** Editing capture _configs_ is in scope; running
   `capture-demos.sh` is the maintainer's step. They said: "I'll capture new
   screenshots once you're ready." Get them ready; let them capture.
 - **No `KF-NN` markers on any published surface** — `README.md`, anything under

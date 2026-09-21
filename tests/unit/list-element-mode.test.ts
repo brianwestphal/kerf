@@ -1,4 +1,4 @@
-import { afterEach,describe,expect,it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { bindList } from '../../src/list.js';
@@ -17,7 +17,10 @@ function host(): HTMLElement {
 describe('bindList() — element mode (render returns the row element)', () => {
   it('uses the returned HTMLElement as the row (app owns tag / class / data-attrs)', () => {
     const parent = host();
-    const items = signal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const items = signal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
     const dispose = bindList(parent, items, {
       key: (i) => i.id,
       tag: 'div', // ignored in element mode
@@ -73,7 +76,9 @@ describe('bindList() — element mode (render returns the row element)', () => {
     const first = parent.querySelector('[data-id="1"]');
     items.value = [b, a]; // reorder
     expect(parent.querySelector('[data-id="1"]')).toBe(first); // same element, moved
-    expect(Array.from(parent.children).map((c) => (c as HTMLElement).dataset.id)).toEqual(['2', '1']);
+    expect(
+      Array.from(parent.children).map((c) => (c as HTMLElement).dataset.id),
+    ).toEqual(['2', '1']);
     dispose();
   });
 
@@ -86,7 +91,13 @@ describe('bindList() — element mode (render returns the row element)', () => {
       render: (i) => {
         const el = document.createElement('div');
         el.textContent = i.v;
-        return { el, update: (next) => { el.textContent = next.v; }, dispose: () => torn.push(i.id) };
+        return {
+          el,
+          update: (next) => {
+            el.textContent = next.v;
+          },
+          dispose: () => torn.push(i.id),
+        };
       },
     });
     const first = parent.querySelector('div');
@@ -145,7 +156,9 @@ describe('bindList() — element mode (render returns the row element)', () => {
     const n3 = parent.querySelector('[data-id="3"]');
 
     src.value = [{ id: 3 }, { id: 2 }, { id: 1 }]; // reverse, fresh objects
-    expect(Array.from(parent.children).map((c) => (c as HTMLElement).dataset.id)).toEqual(['3', '2', '1']);
+    expect(
+      Array.from(parent.children).map((c) => (c as HTMLElement).dataset.id),
+    ).toEqual(['3', '2', '1']);
     expect(parent.querySelector('[data-id="1"]')).toBe(n1); // same elements, moved
     expect(parent.querySelector('[data-id="3"]')).toBe(n3);
     expect(disposed).toEqual([]); // a reorder rebuilds nothing
@@ -161,7 +174,13 @@ describe('bindList() — element mode (render returns the row element)', () => {
       render: (r) => {
         const el = document.createElement('div');
         el.textContent = r.v;
-        return { el, update: (n) => { el.textContent = n.v; }, dispose: () => disposed.push(r.id) };
+        return {
+          el,
+          update: (n) => {
+            el.textContent = n.v;
+          },
+          dispose: () => disposed.push(r.id),
+        };
       },
     });
     const node = parent.querySelector('div');
@@ -183,7 +202,9 @@ describe('bindList() — element mode (render returns the row element)', () => {
         el.dataset.id = String(r.id);
         return {
           el,
-          update: (n) => { el.dataset.id = String(n.id); },
+          update: (n) => {
+            el.dataset.id = String(n.id);
+          },
           dispose: () => disposed.push(r.id),
         };
       },
@@ -232,7 +253,11 @@ describe('bindList() — element mode (render returns the row element)', () => {
     const items = signal([one]);
     const dispose = bindList(parent, items, {
       key: (i) => i.id,
-      render: (i) => ({ el: Object.assign(document.createElement('div'), { textContent: `r${i.id}` }) }),
+      render: (i) => ({
+        el: Object.assign(document.createElement('div'), {
+          textContent: `r${i.id}`,
+        }),
+      }),
     });
     expect(parent.textContent).toBe('r1');
     items.value = []; // remove — no caller dispose, must not throw
@@ -242,7 +267,10 @@ describe('bindList() — element mode (render returns the row element)', () => {
 
   it('element mode + virtualization sizes each returned element to rowHeight', () => {
     const parent = host();
-    Object.defineProperty(parent, 'clientHeight', { configurable: true, value: 100 }); // 5 rows at rowHeight 20
+    Object.defineProperty(parent, 'clientHeight', {
+      configurable: true,
+      value: 100,
+    }); // 5 rows at rowHeight 20
     parent.scrollTop = 0;
     const items = signal(Array.from({ length: 30 }, (_, i) => ({ id: i })));
     const dispose = bindList(parent, items, {
@@ -272,16 +300,24 @@ describe('bindList() — element mode (render returns the row element)', () => {
       },
     });
     items.insert(1, { id: 3 }); // granular insert
-    expect(Array.from(parent.children).map((c) => (c as HTMLElement).dataset.id)).toEqual(['1', '3', '2']);
+    expect(
+      Array.from(parent.children).map((c) => (c as HTMLElement).dataset.id),
+    ).toEqual(['1', '3', '2']);
     items.remove(0); // granular remove
-    expect(Array.from(parent.children).map((c) => (c as HTMLElement).dataset.id)).toEqual(['3', '2']);
+    expect(
+      Array.from(parent.children).map((c) => (c as HTMLElement).dataset.id),
+    ).toEqual(['3', '2']);
     dispose();
   });
 });
 
 describe('bindList() — before (rows sharing a parent with trailing controls)', () => {
   const idsOf = (parent: HTMLElement) =>
-    Array.from(parent.children).map((c) => (c as HTMLElement).dataset.id ?? (c as HTMLElement).className.toUpperCase());
+    Array.from(parent.children).map(
+      (c) =>
+        (c as HTMLElement).dataset.id ??
+        (c as HTMLElement).className.toUpperCase(),
+    );
   const elRow = (i: { id: number }) => {
     const el = document.createElement('div');
     el.dataset.id = String(i.id);
@@ -295,7 +331,11 @@ describe('bindList() — before (rows sharing a parent with trailing controls)',
     parent.appendChild(addBtn); // trailing control — NOT a row
 
     const items = signal([{ id: 1 }, { id: 2 }]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: elRow, before: () => addBtn });
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: elRow,
+      before: () => addBtn,
+    });
     expect(idsOf(parent)).toEqual(['1', '2', 'ADD']); // rows before the button
 
     items.value = [{ id: 1 }, { id: 2 }, { id: 3 }]; // append → new row before the button, not after
@@ -317,7 +357,11 @@ describe('bindList() — before (rows sharing a parent with trailing controls)',
     tail.className = 'tail';
     parent.appendChild(tail);
     const items = signal([{ id: 1 }]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: elRow, before: tail });
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: elRow,
+      before: tail,
+    });
     items.value = [{ id: 1 }, { id: 2 }];
     expect(idsOf(parent)).toEqual(['1', '2', 'TAIL']);
     dispose();
@@ -329,7 +373,11 @@ describe('bindList() — before (rows sharing a parent with trailing controls)',
     addBtn.className = 'add';
     parent.appendChild(addBtn);
     const items = arraySignal([{ id: 1 }, { id: 2 }]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: elRow, before: () => addBtn });
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: elRow,
+      before: () => addBtn,
+    });
 
     items.push({ id: 3 }); // granular insert at the END → before the button
     expect(idsOf(parent)).toEqual(['1', '2', '3', 'ADD']);
@@ -350,7 +398,10 @@ describe('bindList() — before (rows sharing a parent with trailing controls)',
       tag: 'span',
       before: () => tail,
     });
-    items.value = [{ id: 1, label: 'a' }, { id: 2, label: 'b' }];
+    items.value = [
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ];
     const texts = Array.from(parent.children).map((c) => c.textContent);
     expect(texts).toEqual(['a', 'b', '']); // the trailing button (empty text) stays last
     expect((parent.lastElementChild as HTMLElement).className).toBe('tail');
@@ -360,7 +411,11 @@ describe('bindList() — before (rows sharing a parent with trailing controls)',
   it('a before() returning null falls back to appending at the end', () => {
     const parent = host();
     const items = signal([{ id: 1 }]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: elRow, before: () => null });
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: elRow,
+      before: () => null,
+    });
     items.value = [{ id: 1 }, { id: 2 }];
     expect(idsOf(parent)).toEqual(['1', '2']);
     dispose();

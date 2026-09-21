@@ -1,15 +1,29 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { classifyViewport, DEFAULT_BREAKPOINTS, deviceClass } from '../../src/device-class.js';
+import {
+  classifyViewport,
+  DEFAULT_BREAKPOINTS,
+  deviceClass,
+} from '../../src/device-class.js';
 
 function setViewport(width: number, height: number): void {
-  Object.defineProperty(window, 'innerWidth', { value: width, configurable: true });
-  Object.defineProperty(window, 'innerHeight', { value: height, configurable: true });
+  Object.defineProperty(window, 'innerWidth', {
+    value: width,
+    configurable: true,
+  });
+  Object.defineProperty(window, 'innerHeight', {
+    value: height,
+    configurable: true,
+  });
 }
 
 /** A matchMedia stub that reports `n` horizontal segments and 1 vertical. */
-function segmentedMatchMedia(horizontal: number): (query: string) => { matches: boolean } {
-  return (query: string) => ({ matches: query === `(horizontal-viewport-segments: ${horizontal})` });
+function segmentedMatchMedia(
+  horizontal: number,
+): (query: string) => { matches: boolean } {
+  return (query: string) => ({
+    matches: query === `(horizontal-viewport-segments: ${horizontal})`,
+  });
 }
 
 afterEach(() => {
@@ -47,8 +61,14 @@ describe('classifyViewport', () => {
   });
 
   it('defaults segment counts to 1 and passes explicit counts through', () => {
-    expect(classifyViewport(1024, 'landscape')).toMatchObject({ segments: 1, verticalSegments: 1 });
-    expect(classifyViewport(1024, 'landscape', 2, 2)).toMatchObject({ segments: 2, verticalSegments: 2 });
+    expect(classifyViewport(1024, 'landscape')).toMatchObject({
+      segments: 1,
+      verticalSegments: 1,
+    });
+    expect(classifyViewport(1024, 'landscape', 2, 2)).toMatchObject({
+      segments: 2,
+      verticalSegments: 2,
+    });
   });
 
   it('honors custom breakpoints', () => {
@@ -85,20 +105,32 @@ describe('deviceClass', () => {
   it('detects viewport segments and falls back to one when unsupported', () => {
     setViewport(1400, 900);
     vi.stubGlobal('matchMedia', segmentedMatchMedia(2));
-    Object.defineProperty(window, 'matchMedia', { value: segmentedMatchMedia(2), configurable: true });
+    Object.defineProperty(window, 'matchMedia', {
+      value: segmentedMatchMedia(2),
+      configurable: true,
+    });
     window.dispatchEvent(new Event('resize'));
     expect(deviceClass().value.segments).toBe(2);
     expect(deviceClass().value.verticalSegments).toBe(1);
 
     // No matchMedia at all → single segment.
-    Object.defineProperty(window, 'matchMedia', { value: undefined, configurable: true });
+    Object.defineProperty(window, 'matchMedia', {
+      value: undefined,
+      configurable: true,
+    });
     window.dispatchEvent(new Event('resize'));
     expect(deviceClass().value.segments).toBe(1);
   });
 
   it('resolves to an SSR default without a DOM, overridable via options.ssr', () => {
     vi.stubGlobal('window', undefined);
-    expect(deviceClass().value).toMatchObject({ size: 'desktop', orientation: 'landscape', segments: 1 });
-    expect(deviceClass({ ssr: { width: 375, height: 812 } }).value).toMatchObject({ size: 'mobile', orientation: 'portrait' });
+    expect(deviceClass().value).toMatchObject({
+      size: 'desktop',
+      orientation: 'landscape',
+      segments: 1,
+    });
+    expect(
+      deviceClass({ ssr: { width: 375, height: 812 } }).value,
+    ).toMatchObject({ size: 'mobile', orientation: 'portrait' });
   });
 });

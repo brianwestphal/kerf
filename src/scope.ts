@@ -130,7 +130,8 @@ export function observeRemovals(root: Element): () => void {
   const observer = new MutationObserver((records) => {
     for (const record of records) {
       for (const node of record.removedNodes) {
-        if (node instanceof Element && !root.contains(node)) disposeSubtree(node);
+        if (node instanceof Element && !root.contains(node))
+          disposeSubtree(node);
       }
     }
   });

@@ -46,16 +46,16 @@ semantic status.
 
 ## Public roles and tokens
 
-| Need | Class | Token / default |
-| --- | --- | --- |
-| Unpadded toolbar/content/footer structure | `.kui-pane` | — |
-| Scrolling pane content | `.kui-pane__content` | — |
-| Major vertical rhythm | `.kui-content` | `--kui-layout-content-gap: 24px` |
-| Self-contained child geometry | `.kui-content-item` | 8px margin + 1px border + 8px padding |
-| Pill child | `.kui-content-item--pill` | `--kui-layout-pill-radius: 22px` |
-| Related controls | `.kui-control-cluster` | `--kui-layout-control-gap: 8px` |
-| Inline metadata | `.kui-inline-metadata` | `--kui-layout-metadata-gap: 4px` |
-| Explicit scroll owner outside a pane | `.kui-scroll-owner` | `overflow: auto` |
+| Need                                      | Class                     | Token / default                       |
+| ----------------------------------------- | ------------------------- | ------------------------------------- |
+| Unpadded toolbar/content/footer structure | `.kui-pane`               | —                                     |
+| Scrolling pane content                    | `.kui-pane__content`      | —                                     |
+| Major vertical rhythm                     | `.kui-content`            | `--kui-layout-content-gap: 24px`      |
+| Self-contained child geometry             | `.kui-content-item`       | 8px margin + 1px border + 8px padding |
+| Pill child                                | `.kui-content-item--pill` | `--kui-layout-pill-radius: 22px`      |
+| Related controls                          | `.kui-control-cluster`    | `--kui-layout-control-gap: 8px`       |
+| Inline metadata                           | `.kui-inline-metadata`    | `--kui-layout-metadata-gap: 4px`      |
+| Explicit scroll owner outside a pane      | `.kui-scroll-owner`       | `overflow: auto`                      |
 
 The component layer applies the same contract to `Toolbar`, `ListHeader`,
 `ListItem`, `PanelHeader`, `StateBanner`, `ValueTable`,
@@ -81,16 +81,16 @@ expressing exactly one relationship — pick the step by **how connected two
 elements are**, not by eye. Every scalable value is `remify`-authored against the
 fixed 16px baseline, so it delivers as `rem`.
 
-| Value | Token | Relationship — when to use |
-| --- | --- | --- |
-| 0px | `--kui-space-none` | No separation. The elements read as a single unit (a control and its own affordance, adjacent `ListItem` rows). |
-| 4px | `--kui-space-2xs` | Very minor. Still one connected cluster, but readability or aesthetics demand a hair of air (inline metadata, an icon beside its label). |
-| 8px | `--kui-space-xs` | Standard. Between elements **within a group** — the content-item padding/gutter, gaps between toolbar controls in a group. |
-| 16px | `--kui-space-m` | Minor. Between **homogeneous groups** — two lists, two sibling sections of the same kind. |
-| 24px | `--kui-space-l` | Major. Between **heterogeneous groups** — the `.kui-content` rhythm between major, differing regions. |
+| Value | Token              | Relationship — when to use                                                                                                               |
+| ----- | ------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| 0px   | `--kui-space-none` | No separation. The elements read as a single unit (a control and its own affordance, adjacent `ListItem` rows).                          |
+| 4px   | `--kui-space-2xs`  | Very minor. Still one connected cluster, but readability or aesthetics demand a hair of air (inline metadata, an icon beside its label). |
+| 8px   | `--kui-space-xs`   | Standard. Between elements **within a group** — the content-item padding/gutter, gaps between toolbar controls in a group.               |
+| 16px  | `--kui-space-m`    | Minor. Between **homogeneous groups** — two lists, two sibling sections of the same kind.                                                |
+| 24px  | `--kui-space-l`    | Major. Between **heterogeneous groups** — the `.kui-content` rhythm between major, differing regions.                                    |
 
-The two relationships that get confused most are 8px vs 24px: 8px is *inside* a
-group, 24px is *between* major, differing regions. 16px sits between them for
+The two relationships that get confused most are 8px vs 24px: 8px is _inside_ a
+group, 24px is _between_ major, differing regions. 16px sits between them for
 same-kind groups.
 
 `--kui-space-s` (12px) and `--kui-space-xl` (32px) exist but are **off the

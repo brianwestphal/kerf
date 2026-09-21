@@ -11,16 +11,32 @@
  * production-shape (hooks uninstalled) paths through the real pipeline.
  */
 
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { _resetWarnedForTests, maybeWarnStaleIndex } from '../../src/dev-list-index-warn.js';
+import {
+  _resetWarnedForTests,
+  maybeWarnStaleIndex,
+} from '../../src/dev-list-index-warn.js';
 import { each } from '../../src/each.js';
 import { mount } from '../../src/mount.js';
 import { batch, signal } from '../../src/reactive.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
-const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+const env = (
+  globalThis as { process: { env: Record<string, string | undefined> } }
+).process.env;
 
 let root: HTMLElement;
 let warnSpy: MockInstance<typeof console.warn>;
@@ -38,10 +54,13 @@ afterEach(() => {
   warnSpy.mockRestore();
 });
 
-const texts = (): (string | null)[] => Array.from(root.querySelectorAll('li')).map((l) => l.textContent);
+const texts = (): (string | null)[] =>
+  Array.from(root.querySelectorAll('li')).map((l) => l.textContent);
 
 // render fns: one reads the index (arity 2), one does not (arity 1).
-const withIndex = (it: { id: string }, i: number) => <li data-key={it.id}>{`${i}:${it.id}`}</li>;
+const withIndex = (it: { id: string }, i: number) => (
+  <li data-key={it.id}>{`${i}:${it.id}`}</li>
+);
 const noIndex = (it: { id: string }) => <li data-key={it.id}>{it.id}</li>;
 
 describe('dev-list-index-warn (KERF_DEV_WARN_STALE_INDEX=1)', () => {
@@ -106,7 +125,9 @@ describe('dev-list-index-warn (KERF_DEV_WARN_STALE_INDEX=1)', () => {
     expect(warnSpy).not.toHaveBeenCalled();
     // Granular, too.
     const rows = arraySignal([{ id: 'a' }, { id: 'b' }]);
-    mount(document.body.appendChild(document.createElement('div')), () => <ul>{each(rows, noIndex)}</ul>);
+    mount(document.body.appendChild(document.createElement('div')), () => (
+      <ul>{each(rows, noIndex)}</ul>
+    ));
     rows.insert(0, { id: 'c' });
     expect(warnSpy).not.toHaveBeenCalled();
   });
@@ -137,7 +158,15 @@ describe('dev-list-index-warn (KERF_DEV_WARN_STALE_INDEX=1)', () => {
     env.KERF_DEV_WARN_STALE_INDEX = '1';
     const rows = arraySignal([{ id: 'a' }, { id: 'b' }]);
     const dispose = mount(root, () => (
-      <ul>{each(rows, (r, i) => <li data-key={r.id}>{`${i}:${r.id}`}</li>, { cacheKey: (_, i) => i })}</ul>
+      <ul>
+        {each(
+          rows,
+          (r, i) => (
+            <li data-key={r.id}>{`${i}:${r.id}`}</li>
+          ),
+          { cacheKey: (_, i) => i },
+        )}
+      </ul>
     ));
     rows.insert(0, { id: 'c' }); // shifts a,b → cachekey drift → snapshot re-renders them correctly
     expect(texts()).toEqual(['0:c', '1:a', '2:b']); // output is correct...
@@ -149,7 +178,10 @@ describe('dev-list-index-warn (KERF_DEV_WARN_STALE_INDEX=1)', () => {
     env.KERF_DEV_WARN_STALE_INDEX = '1';
     const rows = arraySignal([{ id: 'a' }, { id: 'b' }]);
     const dispose = mount(root, () => <ul>{each(rows, withIndex)}</ul>);
-    batch(() => { rows.insert(0, { id: 't' }); rows.remove(0); });
+    batch(() => {
+      rows.insert(0, { id: 't' });
+      rows.remove(0);
+    });
     expect(texts()).toEqual(['0:a', '1:b']);
     expect(warnSpy).not.toHaveBeenCalled();
     dispose();
@@ -169,7 +201,10 @@ describe('dev-list-index-warn (KERF_DEV_WARN_STALE_INDEX=1)', () => {
     const rows = arraySignal([{ id: 'x' }]);
     const dispose = mount(root, () => <ul>{each(rows, withIndex)}</ul>);
     // 'a' inserted at 1, then 'b' inserted at 1 displaces 'a' to 2 — 'a' rendered at index 1.
-    batch(() => { rows.insert(1, { id: 'a' }); rows.insert(1, { id: 'b' }); });
+    batch(() => {
+      rows.insert(1, { id: 'a' });
+      rows.insert(1, { id: 'b' });
+    });
     expect(warnSpy).toHaveBeenCalledTimes(1);
     dispose();
   });

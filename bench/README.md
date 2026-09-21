@@ -48,8 +48,8 @@ the kerfjs page — the standard 1k-rows app with the Create / Append / Update /
 Swap / Clear buttons plus row select + remove. Ctrl-C stops the server.
 
 ```bash
-npm run bench:serve                 # rebuild from the working tree, then serve + open
-npm run bench:serve -- --no-build   # skip the rebuild; serve what's already built (fast)
+npm run bench:serve               # rebuild from the working tree, then serve + open
+npm run bench:serve -- --no-build # skip the rebuild; serve what's already built (fast)
 ```
 
 The first run bootstraps the cache via `setup.sh` (one-time clone + reference
@@ -64,6 +64,7 @@ bench/setup.sh
 ```
 
 This:
+
 1. Builds local kerfjs and packs it as a tarball.
 2. Clones `krausest/js-framework-benchmark` into `bench/.bench-cache/`.
 3. Copies `kerfjs-impl/` into the cache as `frameworks/keyed/kerfjs/` and
@@ -87,8 +88,8 @@ Runs the default framework set (kerfjs + the four references) headless and
 writes per-framework JSON to `bench/.bench-cache/js-framework-benchmark/webdriver-ts/results/`.
 
 ```bash
-bench/run.sh keyed/kerfjs keyed/solid     # run just two frameworks
-bench/run.sh --count=5                    # run 5 iterations instead of the default
+bench/run.sh keyed/kerfjs keyed/solid # run just two frameworks
+bench/run.sh --count=5                # run 5 iterations instead of the default
 ```
 
 Anything starting with `-` is forwarded to webdriver-ts; anything else is
@@ -138,11 +139,11 @@ with a one-line cause + remediation for each failed check. This is what
 keeps the numbers in `bench/results.md` clean instead of noisy.
 
 ```bash
-bench/preflight.sh                       # run the checks standalone
-bench/run.sh --force                     # skip checks (intentional noisy run)
-KERF_BENCH_FORCE=1 bench/run.sh ...      # same, via env (useful for CI)
-BENCH_LOAD_MAX=4.0 bench/run.sh ...      # raise the load-avg ceiling
-BENCH_OTHER_CPU_MAX=50 bench/run.sh ...  # raise the per-process CPU ceiling
+bench/preflight.sh                      # run the checks standalone
+bench/run.sh --force                    # skip checks (intentional noisy run)
+KERF_BENCH_FORCE=1 bench/run.sh ...     # same, via env (useful for CI)
+BENCH_LOAD_MAX=4.0 bench/run.sh ...     # raise the load-avg ceiling
+BENCH_OTHER_CPU_MAX=50 bench/run.sh ... # raise the per-process CPU ceiling
 ```
 
 Linux is supported for CI (`uptime` for load, `/sys/class/power_supply` for
@@ -161,9 +162,9 @@ Aggregates raw results into the upstream viewer's table format and serves
 For a quick text dump that doesn't need a browser:
 
 ```bash
-node bench/results-table.mjs            # fixed-width comparison table to stdout
-node bench/results-table.mjs --csv      # same data, comma-separated
-node bench/results-table.mjs --pin solid    # put `solid*` first instead of kerfjs
+node bench/results-table.mjs             # fixed-width comparison table to stdout
+node bench/results-table.mjs --csv       # same data, comma-separated
+node bench/results-table.mjs --pin solid # put `solid*` first instead of kerfjs
 ```
 
 Reads the same per-framework JSONs in `webdriver-ts/results/` that the viewer
@@ -178,8 +179,8 @@ The numbers the site publishes come from **upstream krausest**, not this local
 harness (see the top of this file for why). Refresh them with:
 
 ```bash
-node bench/import-krausest.mjs        # fetch krausest's live published results
-node bench/import-krausest.mjs FILE   # or parse a local results.ts copy offline
+node bench/import-krausest.mjs      # fetch krausest's live published results
+node bench/import-krausest.mjs FILE # or parse a local results.ts copy offline
 ```
 
 It fetches krausest's published `webdriver-ts-results` data, extracts the
@@ -223,13 +224,13 @@ npm run bench:micro
 
 Each `*.bench.ts` file targets one hot path:
 
-| File | What it answers |
-| --- | --- |
-| `morph-vs-replace.bench.ts` | Is `morph()` faster than `replaceChild` for a kerf-typical row? (Spoiler: comparable. This is the retrospective KF-201 check that would have predicted the perf nothingburger.) |
-| `parse-row.bench.ts` | What's the cost of `parseRowTemplate` for one row vs 100 bulk-joined? Sets the ceiling for "how much KF-198's parse-skipping fast path could save." |
-| `each-snapshot-classify.bench.ts` | What's the per-row cost in `eachSnapshotById`'s cache-hit and cache-miss loops? Tests KF-199's "alloc reduction is meaningful" premise. |
-| `jsx-string-build.bench.ts` | JSX runtime vs raw string concat. Shows the JSX abstraction's overhead vs the absolute floor. |
-| `attribute-diff-detection.bench.ts` | Placeholder for KF-198 — measures the proposed HTML-string diff heuristic in isolation. |
+| File                                | What it answers                                                                                                                                                                 |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `morph-vs-replace.bench.ts`         | Is `morph()` faster than `replaceChild` for a kerf-typical row? (Spoiler: comparable. This is the retrospective KF-201 check that would have predicted the perf nothingburger.) |
+| `parse-row.bench.ts`                | What's the cost of `parseRowTemplate` for one row vs 100 bulk-joined? Sets the ceiling for "how much KF-198's parse-skipping fast path could save."                             |
+| `each-snapshot-classify.bench.ts`   | What's the per-row cost in `eachSnapshotById`'s cache-hit and cache-miss loops? Tests KF-199's "alloc reduction is meaningful" premise.                                         |
+| `jsx-string-build.bench.ts`         | JSX runtime vs raw string concat. Shows the JSX abstraction's overhead vs the absolute floor.                                                                                   |
+| `attribute-diff-detection.bench.ts` | Placeholder for KF-198 — measures the proposed HTML-string diff heuristic in isolation.                                                                                         |
 
 ### When to use
 

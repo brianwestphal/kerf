@@ -12,10 +12,14 @@ import { devReadonlyProxy, toRaw } from '../../src/utils/dev-readonly.js';
 
 describe('devReadonlyProxy()', () => {
   it('wraps null-prototype nested objects (treated as plain)', () => {
-    const nullProto = Object.assign(Object.create(null) as object, { x: 1 }) as { x: number };
+    const nullProto = Object.assign(Object.create(null) as object, {
+      x: 1,
+    }) as { x: number };
     const p = devReadonlyProxy({ n: nullProto });
     // Accessing the nested null-proto object returns a proxy that also traps writes.
-    expect(() => { (p.n as { x: number }).x = 2; }).toThrow(/read-only/);
+    expect(() => {
+      (p.n as { x: number }).x = 2;
+    }).toThrow(/read-only/);
     expect(nullProto.x).toBe(1);
   });
 

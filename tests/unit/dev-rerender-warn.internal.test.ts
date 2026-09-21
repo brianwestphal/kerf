@@ -8,15 +8,31 @@
  * dist-full suite excludes it.
  */
 
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
-import { _isValueOnlyDiff, isOptedIn, maybeWarnValueOnlyRerender } from '../../src/dev-rerender-warn.js';
+import {
+  _isValueOnlyDiff,
+  isOptedIn,
+  maybeWarnValueOnlyRerender,
+} from '../../src/dev-rerender-warn.js';
 import { mount, signal } from '../../src/index.js';
 import { jsx } from '../../src/jsx-runtime.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
-const env = (globalThis as { process?: { env?: Record<string, string | undefined> } })
-  .process!.env!;
+const env = (
+  globalThis as { process?: { env?: Record<string, string | undefined> } }
+).process!.env!;
 
 let warn: MockInstance<typeof console.warn>;
 let disposers: Array<() => void>;
@@ -77,7 +93,9 @@ describe('end-to-end through mount()', () => {
     mounted(() => jsx('span', { children: label.value }));
     label.value = 'b';
     expect(warn).toHaveBeenCalledTimes(1);
-    expect(String(warn.mock.calls[0][0])).toMatch(/values bind, structure re-renders/i);
+    expect(String(warn.mock.calls[0][0])).toMatch(
+      /values bind, structure re-renders/i,
+    );
   });
 
   it('warns on an attribute-value-only change', () => {
@@ -96,21 +114,25 @@ describe('end-to-end through mount()', () => {
 
   it('does NOT warn on a structural change (conditional element)', () => {
     const show = signal(false);
-    mounted(() => jsx('div', {
-      children: show.value ? jsx('em', { children: 'x' }) : 'x',
-    }));
+    mounted(() =>
+      jsx('div', {
+        children: show.value ? jsx('em', { children: 'x' }) : 'x',
+      }),
+    );
     show.value = true;
     expect(warn).not.toHaveBeenCalled();
   });
 
   it('does NOT warn when a value change rides along with a structural change', () => {
     const state = signal({ label: 'a', extra: false });
-    mounted(() => jsx('div', {
-      children: [
-        jsx('span', { children: state.value.label }),
-        state.value.extra ? jsx('em', { children: '!' }) : null,
-      ],
-    }));
+    mounted(() =>
+      jsx('div', {
+        children: [
+          jsx('span', { children: state.value.label }),
+          state.value.extra ? jsx('em', { children: '!' }) : null,
+        ],
+      }),
+    );
     state.value = { label: 'b', extra: true };
     expect(warn).not.toHaveBeenCalled();
   });
@@ -127,10 +149,16 @@ describe('end-to-end through mount()', () => {
     document.body.innerHTML = '<div id="root"></div><div id="root2"></div>';
     const a = signal('a');
     const b = signal('a');
-    disposers.push(mount(document.getElementById('root')!, () =>
-      jsx('span', { children: a.value })));
-    disposers.push(mount(document.getElementById('root2')!, () =>
-      jsx('span', { children: b.value })));
+    disposers.push(
+      mount(document.getElementById('root')!, () =>
+        jsx('span', { children: a.value }),
+      ),
+    );
+    disposers.push(
+      mount(document.getElementById('root2')!, () =>
+        jsx('span', { children: b.value }),
+      ),
+    );
     a.value = 'x';
     b.value = 'y';
     expect(warn).toHaveBeenCalledTimes(2);
@@ -145,12 +173,18 @@ describe('_isValueOnlyDiff branch matrix', () => {
   };
 
   it('true for text-data and attribute differences', () => {
-    expect(_isValueOnlyDiff(frag('<p class="a">x</p>'), frag('<p class="b">y</p>'))).toBe(true);
-    expect(_isValueOnlyDiff(frag('<p>x</p>'), frag('<p data-new>x</p>'))).toBe(true);
+    expect(
+      _isValueOnlyDiff(frag('<p class="a">x</p>'), frag('<p class="b">y</p>')),
+    ).toBe(true);
+    expect(_isValueOnlyDiff(frag('<p>x</p>'), frag('<p data-new>x</p>'))).toBe(
+      true,
+    );
   });
 
   it('false on child-count mismatch', () => {
-    expect(_isValueOnlyDiff(frag('<p>x</p>'), frag('<p>x</p><p>y</p>'))).toBe(false);
+    expect(_isValueOnlyDiff(frag('<p>x</p>'), frag('<p>x</p><p>y</p>'))).toBe(
+      false,
+    );
   });
 
   it('false on node-type mismatch at the same index', () => {
@@ -158,20 +192,30 @@ describe('_isValueOnlyDiff branch matrix', () => {
   });
 
   it('false on tag-name mismatch', () => {
-    expect(_isValueOnlyDiff(frag('<p>x</p>'), frag('<div>x</div>'))).toBe(false);
+    expect(_isValueOnlyDiff(frag('<p>x</p>'), frag('<div>x</div>'))).toBe(
+      false,
+    );
   });
 
   it('false when nested children differ structurally', () => {
-    expect(_isValueOnlyDiff(frag('<div><p>x</p></div>'), frag('<div><p>x</p><i>!</i></div>')))
-      .toBe(false);
+    expect(
+      _isValueOnlyDiff(
+        frag('<div><p>x</p></div>'),
+        frag('<div><p>x</p><i>!</i></div>'),
+      ),
+    ).toBe(false);
   });
 
   it('false on comment-data mismatch (markers are structural)', () => {
-    expect(_isValueOnlyDiff(frag('<!--kf-list:0-->'), frag('<!--kf-list:1-->'))).toBe(false);
+    expect(
+      _isValueOnlyDiff(frag('<!--kf-list:0-->'), frag('<!--kf-list:1-->')),
+    ).toBe(false);
   });
 
   it('true on identical comments', () => {
-    expect(_isValueOnlyDiff(frag('<!--m--><p>a</p>'), frag('<!--m--><p>b</p>'))).toBe(true);
+    expect(
+      _isValueOnlyDiff(frag('<!--m--><p>a</p>'), frag('<!--m--><p>b</p>')),
+    ).toBe(true);
   });
 
   it('warns through the direct API and then dedups via the context', () => {

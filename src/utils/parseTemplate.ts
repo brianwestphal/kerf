@@ -61,10 +61,10 @@ function holeError(detail: string): Error {
 
 function partialValueError(tail: string): Error {
   return holeError(
-    `partial attribute values are not supported (near ${JSON.stringify(tail.slice(-PARTIAL_VALUE_DIAGNOSTIC_TAIL_LENGTH))}) — `
-    + 'a hole must be the COMPLETE attribute value: attr=${v} or attr="${v}". '
-    + 'For class="a ${b}"-style composition, build the full string first '
-    + '(a plain template literal, or computed(() => `a ${b.value}`) for a bound attribute).',
+    `partial attribute values are not supported (near ${JSON.stringify(tail.slice(-PARTIAL_VALUE_DIAGNOSTIC_TAIL_LENGTH))}) — ` +
+      'a hole must be the COMPLETE attribute value: attr=${v} or attr="${v}". ' +
+      'For class="a ${b}"-style composition, build the full string first ' +
+      '(a plain template literal, or computed(() => `a ${b.value}`) for a bound attribute).',
   );
 }
 
@@ -125,8 +125,8 @@ export function parseTemplate(strings: readonly string[]): ParsedTemplate {
       if (mode === 'text') {
         if (/<\/?$/.test(s)) {
           throw holeError(
-            'tag-name holes (`<${…}>`) are not supported — write tag names statically. '
-            + 'For a literal "<" before a hole, escape it as &lt;.',
+            'tag-name holes (`<${…}>`) are not supported — write tag names statically. ' +
+              'For a literal "<" before a hole, escape it as &lt;.',
           );
         }
         holes[i] = TEXT_HOLE;
@@ -143,20 +143,23 @@ export function parseTemplate(strings: readonly string[]): ParsedTemplate {
           // Unquoted `attr=${v}`: the next static chunk must resume with an
           // attribute delimiter, or the template may simply end there.
           const next = strings[i + 1];
-          const validNext = next.length > 0 ? /^[\s>/]/.test(next) : i + 1 === strings.length - 1;
+          const validNext =
+            next.length > 0
+              ? /^[\s>/]/.test(next)
+              : i + 1 === strings.length - 1;
           if (!validNext) throw partialValueError(s);
           holes[i] = { kind: 'attr', name: m[2], quote: null };
           s = s.slice(0, s.length - m[0].length);
         } else if (/<\/?$/.test(s)) {
           // The tag opened as the chunk's last characters (`</${…}`).
           throw holeError(
-            'tag-name holes (`<${…}>`) are not supported — write tag names statically. '
-            + 'For a literal "<" before a hole, escape it as &lt;.',
+            'tag-name holes (`<${…}>`) are not supported — write tag names statically. ' +
+              'For a literal "<" before a hole, escape it as &lt;.',
           );
         } else {
           throw holeError(
-            'a hole inside a tag must be a complete attribute value — attr=${…} or attr="${…}". '
-            + 'Tag-name and attribute-name holes are not supported; write those statically.',
+            'a hole inside a tag must be a complete attribute value — attr=${…} or attr="${…}". ' +
+              'Tag-name and attribute-name holes are not supported; write those statically.',
           );
         }
       }

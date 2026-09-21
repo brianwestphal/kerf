@@ -18,7 +18,7 @@ A reference image defines hierarchy, relationships, and intended feel. It does n
 
 ### Continuity is correctness
 
-Unrelated updates must not close controls, move focus, reset a draft, replace a selection, or jump scroll. Give every durable and transient state an explicit owner. The default owner is the application: domain data and persisted layout preferences — a navigation stack, a selection, a tab order, a pane size, a `collapsed`/`expanded` disclosure flag — are the app's signals, which it reads to render. A `wire…` helper owns only the *ephemeral mechanics* around that state (a push/pop animation, overflow autoscroll, a live resize preview) and reports committed changes through callbacks. A helper takes over a piece of transient state itself only when hand-rolling that behavior is substantial and error-prone enough to cause real, inconsistent variation across apps — `wireTokenSearchFields`'s collapsible reveal/focus/Escape/blur-collapse is the bar; a one-line boolean toggle is not. Preserve DOM identity when meaning has not changed. Distinguish blocking foreground work from background synchronization.
+Unrelated updates must not close controls, move focus, reset a draft, replace a selection, or jump scroll. Give every durable and transient state an explicit owner. The default owner is the application: domain data and persisted layout preferences — a navigation stack, a selection, a tab order, a pane size, a `collapsed`/`expanded` disclosure flag — are the app's signals, which it reads to render. A `wire…` helper owns only the _ephemeral mechanics_ around that state (a push/pop animation, overflow autoscroll, a live resize preview) and reports committed changes through callbacks. A helper takes over a piece of transient state itself only when hand-rolling that behavior is substantial and error-prone enough to cause real, inconsistent variation across apps — `wireTokenSearchFields`'s collapsible reveal/focus/Escape/blur-collapse is the bar; a one-line boolean toggle is not. Preserve DOM identity when meaning has not changed. Distinguish blocking foreground work from background synchronization.
 
 ### Hierarchy precedes decoration
 
@@ -26,7 +26,7 @@ Establish one reading order and one dominant action per decision point. Group fi
 
 ### Reach for the primitive, not for CSS
 
-The package is designed to look right *unstyled*. A screen built from the
+The package is designed to look right _unstyled_. A screen built from the
 primitives, their props, and the semantic tokens should already read well, so
 custom CSS is the exception. Before adding any `padding`, `margin`, `width`,
 `height`, `border`, `background`, wrapper card, or decoration, check whether the
@@ -53,9 +53,9 @@ Use the package composition so the geometry has one owner:
 <aside class="kui-pane">
   <nav class="kui-pane__content kui-content">
     <section>
-    <ListHeader label="Workspace" />
-    <ListItem action="open" label="Inbox" icon={inboxIcon} />
-    <ListItem action="open" label="Drafts" />
+      <ListHeader label="Workspace" />
+      <ListItem action="open" label="Inbox" icon={inboxIcon} />
+      <ListItem action="open" label="Drafts" />
     </section>
     <div class="kui-content-item">Panel contents</div>
   </nav>

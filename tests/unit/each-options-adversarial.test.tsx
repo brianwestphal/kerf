@@ -17,11 +17,19 @@
  *
  * Every regression test asserts the shipped behavior (never `.skip`).
  */
-import { afterEach,beforeEach,describe,expect,it,type MockInstance,vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { html } from '../../src/html.js';
-import { batch,each,mount,signal } from '../../src/index.js';
+import { batch, each, mount, signal } from '../../src/index.js';
 
 let root: HTMLElement;
 let warnSpy: MockInstance<typeof console.warn>;
@@ -41,12 +49,22 @@ describe('KF-393: each() options API adversarial probes', () => {
   it('an empty options object behaves exactly like the bare form', () => {
     const rows = arraySignal([{ id: 'a' }]);
     const dispose = mount(root, () => (
-      <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, {})}</ul>
+      <ul>
+        {each(
+          rows,
+          (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ),
+          {},
+        )}
+      </ul>
     ));
     const rowA = root.querySelector('li[data-key="a"]');
     rows.push({ id: 'b' });
     expect(root.querySelector('li[data-key="a"]')).toBe(rowA); // granular path kept
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['a', 'b']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['a', 'b']);
     dispose();
   });
 
@@ -55,9 +73,19 @@ describe('KF-393: each() options API adversarial probes', () => {
     // almost certainly a bug at the callsite (an unset variable), and the key
     // validation added for the marker-injection fix rejects it by construction.
     const rows = arraySignal([{ id: 'a' }]);
-    expect(() => mount(root, () => (
-      <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: '' })}</ul>
-    ))).toThrow(/invalid list key ""/);
+    expect(() =>
+      mount(root, () => (
+        <ul>
+          {each(
+            rows,
+            (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ),
+            { key: '' },
+          )}
+        </ul>
+      )),
+    ).toThrow(/invalid list key ""/);
   });
 
   it('an author key of "0" cannot collide with the call-order id 0 (namespacing holds)', () => {
@@ -65,19 +93,40 @@ describe('KF-393: each() options API adversarial probes', () => {
     const y = arraySignal([{ id: 'y1' }]);
     const dispose = mount(root, () => (
       <div>
-        <ul data-key="ux">{each(x, (r) => <li data-key={r.id}>{r.id}</li>)}</ul>
-        <ul data-key="uy">{each(y, (r) => <li data-key={r.id}>{r.id}</li>, { key: '0' })}</ul>
+        <ul data-key="ux">
+          {each(x, (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ))}
+        </ul>
+        <ul data-key="uy">
+          {each(
+            y,
+            (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ),
+            { key: '0' },
+          )}
+        </ul>
       </div>
     ));
     // Distinct marker namespaces for the two lists.
     expect(root.innerHTML).toContain('<!--kf-list:0-->');
     expect(root.innerHTML).toContain('<!--kf-list:k:0-->');
     // Both lists reconcile independently against their own signals.
-    batch(() => { x.push({ id: 'x2' }); y.push({ id: 'y2' }); });
-    expect(Array.from(root.querySelectorAll('ul[data-key="ux"] li')).map((l) => l.textContent))
-      .toEqual(x.value.map((r) => r.id));
-    expect(Array.from(root.querySelectorAll('ul[data-key="uy"] li')).map((l) => l.textContent))
-      .toEqual(y.value.map((r) => r.id));
+    batch(() => {
+      x.push({ id: 'x2' });
+      y.push({ id: 'y2' });
+    });
+    expect(
+      Array.from(root.querySelectorAll('ul[data-key="ux"] li')).map(
+        (l) => l.textContent,
+      ),
+    ).toEqual(x.value.map((r) => r.id));
+    expect(
+      Array.from(root.querySelectorAll('ul[data-key="uy"] li')).map(
+        (l) => l.textContent,
+      ),
+    ).toEqual(y.value.map((r) => r.id));
     dispose();
   });
 
@@ -86,20 +135,37 @@ describe('KF-393: each() options API adversarial probes', () => {
     const a = arraySignal([{ id: 'a1' }]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value
-          ? <ul data-key="ca">{each(a, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'a' })}</ul>
-          : ''}
+        {cond.value ? (
+          <ul data-key="ca">
+            {each(
+              a,
+              (r) => (
+                <li data-key={r.id}>{r.id}</li>
+              ),
+              { key: 'a' },
+            )}
+          </ul>
+        ) : (
+          ''
+        )}
       </div>
     ));
     // Unbatched: hide, push while hidden, re-show.
     cond.value = false;
     a.push({ id: 'a2' });
     cond.value = true;
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['a1', 'a2']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['a1', 'a2']);
     // Batched: hide + push in one commit, then re-show.
-    batch(() => { cond.value = false; a.push({ id: 'a3' }); });
+    batch(() => {
+      cond.value = false;
+      a.push({ id: 'a3' });
+    });
     cond.value = true;
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['a1', 'a2', 'a3']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['a1', 'a2', 'a3']);
     dispose();
   });
 
@@ -109,18 +175,42 @@ describe('KF-393: each() options API adversarial probes', () => {
     const b = arraySignal([{ id: 'b1' }]);
     const dispose = mount(root, () => (
       <div>
-        <ul data-key="u1">{each(a, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'dup' })}</ul>
-        {cond.value ? <ul data-key="u2">{each(b, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'dup' })}</ul> : ''}
+        <ul data-key="u1">
+          {each(
+            a,
+            (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ),
+            { key: 'dup' },
+          )}
+        </ul>
+        {cond.value ? (
+          <ul data-key="u2">
+            {each(
+              b,
+              (r) => (
+                <li data-key={r.id}>{r.id}</li>
+              ),
+              { key: 'dup' },
+            )}
+          </ul>
+        ) : (
+          ''
+        )}
       </div>
     ));
-    expect(() => { cond.value = true; }).toThrow(/duplicate list key "dup"/);
+    expect(() => {
+      cond.value = true;
+    }).toThrow(/duplicate list key "dup"/);
     // The previous render's DOM is intact — no half-applied output.
     expect(root.querySelector('ul[data-key="u2"]')).toBeNull();
     expect(root.querySelector('ul[data-key="u1"] li')?.textContent).toBe('a1');
     // A following good render works — the throw did not wedge the effect.
     cond.value = false;
     a.push({ id: 'a2' });
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['a1', 'a2']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['a1', 'a2']);
     dispose();
   });
 
@@ -130,16 +220,38 @@ describe('KF-393: each() options API adversarial probes', () => {
     const b = arraySignal([{ id: 'b1', t: 'B' }]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value
-          ? <ul data-key="u">{each(a, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'x' })}</ul>
-          : <ol data-key="u2">{each(b, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'x' })}</ol>}
+        {cond.value ? (
+          <ul data-key="u">
+            {each(
+              a,
+              (r) => (
+                <li data-key={r.id}>{r.t}</li>
+              ),
+              { key: 'x' },
+            )}
+          </ul>
+        ) : (
+          <ol data-key="u2">
+            {each(
+              b,
+              (r) => (
+                <li data-key={r.id}>{r.t}</li>
+              ),
+              { key: 'x' },
+            )}
+          </ol>
+        )}
       </div>
     ));
     cond.value = false;
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['B']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['B']);
     // Granular ops after the swap apply to the CURRENT source, never the old one.
     b.push({ id: 'b2', t: 'B2' });
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['B', 'B2']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['B', 'B2']);
     dispose();
   });
 
@@ -149,7 +261,17 @@ describe('KF-393: each() options API adversarial probes', () => {
     const rows = arraySignal([{ id: 'a' }]);
     const dispose = mount(root, () => {
       void bump.value;
-      return <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, opts)}</ul>;
+      return (
+        <ul>
+          {each(
+            rows,
+            (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ),
+            opts,
+          )}
+        </ul>
+      );
     });
     const row0 = root.querySelector('li');
     opts.key = 'k2';
@@ -160,15 +282,27 @@ describe('KF-393: each() options API adversarial probes', () => {
     expect(root.innerHTML).toContain('<!--kf-list:k:k2-->');
     expect(root.innerHTML).not.toContain('<!--kf-list:k:k1-->');
     rows.push({ id: 'b' });
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['a', 'b']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['a', 'b']);
     dispose();
   });
 
   it('a keyed each() outside a mount (SSR toString) renders markerless, keyless output', () => {
-    const inner = each([{ id: 'a' }], (r) => <li data-key={r.id}>{r.id}</li>, { key: 'ssr' }).toString();
+    const inner = each([{ id: 'a' }], (r) => <li data-key={r.id}>{r.id}</li>, {
+      key: 'ssr',
+    }).toString();
     expect(inner).toBe('<li data-key="a">a</li>');
     const outer = (
-      <ul>{each([{ id: 'a' }], (r) => <li data-key={r.id}>{r.id}</li>, { key: 'ssr' })}</ul>
+      <ul>
+        {each(
+          [{ id: 'a' }],
+          (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ),
+          { key: 'ssr' },
+        )}
+      </ul>
     ).toString();
     expect(outer).toBe('<ul><li data-key="a">a</li></ul>');
     expect(outer).not.toContain('kf-list');
@@ -178,16 +312,22 @@ describe('KF-393: each() options API adversarial probes', () => {
     const rows = arraySignal([{ id: 'a' }]);
     const aux = arraySignal([{ id: 'z' }]);
     const cond = signal(true);
-    const dispose = mount(root, () => html`<div>
+    const dispose = mount(
+      root,
+      () => html`<div>
       ${cond.value ? html`<ul data-key="ca">${each(aux, (r) => html`<li data-key="${r.id}">${r.id}</li>`)}</ul>` : ''}
       <ul data-key="cb">${each(rows, (r) => html`<li data-key="${r.id}">${r.id}</li>`, { key: 'h' })}</ul>
-    </div>`);
+    </div>`,
+    );
     const row = root.querySelector('ul[data-key="cb"] li');
     cond.value = false;
     expect(root.querySelector('ul[data-key="cb"] li')).toBe(row);
     rows.push({ id: 'b' });
-    expect(Array.from(root.querySelectorAll('ul[data-key="cb"] li')).map((l) => l.textContent))
-      .toEqual(['a', 'b']);
+    expect(
+      Array.from(root.querySelectorAll('ul[data-key="cb"] li')).map(
+        (l) => l.textContent,
+      ),
+    ).toEqual(['a', 'b']);
     dispose();
   });
 
@@ -196,12 +336,36 @@ describe('KF-393: each() options API adversarial probes', () => {
     document.body.appendChild(root2);
     const a = arraySignal([{ id: 'a1' }]);
     const b = arraySignal([{ id: 'b1' }]);
-    const d1 = mount(root, () => <ul>{each(a, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'k' })}</ul>);
-    const d2 = mount(root2, () => <ul>{each(b, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'k' })}</ul>);
+    const d1 = mount(root, () => (
+      <ul>
+        {each(
+          a,
+          (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ),
+          { key: 'k' },
+        )}
+      </ul>
+    ));
+    const d2 = mount(root2, () => (
+      <ul>
+        {each(
+          b,
+          (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ),
+          { key: 'k' },
+        )}
+      </ul>
+    ));
     a.push({ id: 'a2' });
     b.push({ id: 'b2' });
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['a1', 'a2']);
-    expect(Array.from(root2.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['b1', 'b2']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['a1', 'a2']);
+    expect(
+      Array.from(root2.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['b1', 'b2']);
     d1();
     d2();
   });
@@ -216,13 +380,25 @@ describe('KF-393: each() options API adversarial probes', () => {
       { id: 'a', subs: [{ id: 's1' }] },
       { id: 'b', subs: [{ id: 's2' }] },
     ]);
-    expect(() => mount(root, () => (
-      <ul>{each(rows, (r) => (
-        <li data-key={r.id}>
-          <ol>{each(r.subs, (s) => <li data-key={s.id}>{s.id}</li>, { key: 'nested' })}</ol>
-        </li>
-      ))}</ul>
-    ))).toThrow(/nested each\(\) is not reconciled/);
+    expect(() =>
+      mount(root, () => (
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={r.id}>
+              <ol>
+                {each(
+                  r.subs,
+                  (s) => (
+                    <li data-key={s.id}>{s.id}</li>
+                  ),
+                  { key: 'nested' },
+                )}
+              </ol>
+            </li>
+          ))}
+        </ul>
+      )),
+    ).toThrow(/nested each\(\) is not reconciled/);
   });
 });
 
@@ -234,9 +410,19 @@ describe('KF-393: list-key marker injection is rejected (KF-395)', () => {
     // Both halves were wrong — markup in the DOM, and an internal error rather
     // than an actionable one. Keys are now validated up front.
     const rows = arraySignal([{ id: 'a' }]);
-    expect(() => mount(root, () => (
-      <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'x--><b>pwn</b>' })}</ul>
-    ))).toThrow(/invalid list key/);
+    expect(() =>
+      mount(root, () => (
+        <ul>
+          {each(
+            rows,
+            (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ),
+            { key: 'x--><b>pwn</b>' },
+          )}
+        </ul>
+      )),
+    ).toThrow(/invalid list key/);
     expect(root.querySelector('b')).toBeNull(); // nothing injected
     expect(root.innerHTML).not.toContain('pwn');
   });
@@ -246,9 +432,19 @@ describe('KF-393: list-key marker injection is rejected (KF-395)', () => {
     // comment. The validation decides this shape deliberately instead of
     // leaving it to parser luck.
     const rows = arraySignal([{ id: 'a' }]);
-    expect(() => mount(root, () => (
-      <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: '<!--y' })}</ul>
-    ))).toThrow(/invalid list key/);
+    expect(() =>
+      mount(root, () => (
+        <ul>
+          {each(
+            rows,
+            (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ),
+            { key: '<!--y' },
+          )}
+        </ul>
+      )),
+    ).toThrow(/invalid list key/);
   });
 
   it('ordinary keys — letters, digits, _ . : / and single dashes — are accepted (KF-395)', () => {
@@ -259,7 +455,15 @@ describe('KF-393: list-key marker injection is rejected (KF-395)', () => {
       document.body.appendChild(host);
       const rows = arraySignal([{ id: 'a' }]);
       const dispose = mount(host, () => (
-        <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key })}</ul>
+        <ul>
+          {each(
+            rows,
+            (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ),
+            { key },
+          )}
+        </ul>
       ));
       expect(host.querySelectorAll('li').length).toBe(1);
       dispose();

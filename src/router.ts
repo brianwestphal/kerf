@@ -48,7 +48,10 @@ export interface RouteState {
 }
 
 /** A route's view: receives the matched `params` and the full `route` snapshot, returns kerf content. */
-export type RouteComponent = (params: Record<string, string>, route: RouteState) => MountResult;
+export type RouteComponent = (
+  params: Record<string, string>,
+  route: RouteState,
+) => MountResult;
 
 /** One route in the table. `path` is a pattern: `/`, `/users/:id`, `/files/*rest`, or `*` (catch-all). */
 export interface RouteDef {
@@ -120,7 +123,10 @@ export interface RouterHandle {
  * or `null` on no match. `*` matches anything; a trailing `*name` captures the
  * remaining segments joined by `/`; `:name` captures one segment.
  */
-function matchPattern(pattern: string, path: string): Record<string, string> | null {
+function matchPattern(
+  pattern: string,
+  path: string,
+): Record<string, string> | null {
   if (pattern === '*') return {};
   const patternSegments = pattern.split('/').filter(Boolean);
   const pathSegments = path.split('/').filter(Boolean);
@@ -175,7 +181,12 @@ function isWithinBase(path: string, base: string): boolean {
  * single delegated link interceptor. See {@link RouterOptions} / {@link RouterHandle}.
  */
 export function createRouter(options: RouterOptions): RouterHandle {
-  const { routes, mode = 'history', base = '', interceptLinks = true } = options;
+  const {
+    routes,
+    mode = 'history',
+    base = '',
+    interceptLinks = true,
+  } = options;
   // Normalize base to '' or '/foo' (no trailing slash), so `base + path` is clean.
   const normBase = base === '/' ? '' : base.replace(/\/$/, '');
 
@@ -224,18 +235,26 @@ export function createRouter(options: RouterOptions): RouterHandle {
   // changed, so a doubled popstate/hashchange is a harmless no-op.
   const sync = (): void => {
     const next = resolve(readLocation());
-    if (next.path !== route.value.path || next.query.toString() !== route.value.query.toString()
-      || next.hash !== route.value.hash) {
+    if (
+      next.path !== route.value.path ||
+      next.query.toString() !== route.value.query.toString() ||
+      next.hash !== route.value.hash
+    ) {
       route.value = next;
     }
   };
 
   const navigate = (path: string, opts: NavigateOptions = {}): void => {
-    const url = mode === 'hash'
-      ? '#' + (path.startsWith('/') ? path : '/' + path)
-      : normBase + (path.startsWith('/') ? path : '/' + path);
+    const url =
+      mode === 'hash'
+        ? '#' + (path.startsWith('/') ? path : '/' + path)
+        : normBase + (path.startsWith('/') ? path : '/' + path);
     // pushState/replaceState do NOT fire popstate, so publish the new route ourselves.
-    history[opts.replace === true ? 'replaceState' : 'pushState'](opts.state ?? null, '', url);
+    history[opts.replace === true ? 'replaceState' : 'pushState'](
+      opts.state ?? null,
+      '',
+      url,
+    );
     route.value = resolve(readLocation());
   };
 
@@ -247,7 +266,10 @@ export function createRouter(options: RouterOptions): RouterHandle {
       return p === base || p.startsWith(base + '/');
     });
 
-  const activeClass = (pattern: string, className: string): ReadonlySignal<string> => {
+  const activeClass = (
+    pattern: string,
+    className: string,
+  ): ReadonlySignal<string> => {
     const active = match(pattern);
     return computed(() => (active.value ? className : ''));
   };
@@ -278,9 +300,20 @@ export function createRouter(options: RouterOptions): RouterHandle {
     const onClick = (event: Event, anchor: HTMLAnchorElement): void => {
       const mouseEvent = event as MouseEvent;
       // Let the browser handle anything that isn't a plain left-click navigation.
-      if (mouseEvent.defaultPrevented || mouseEvent.button !== 0 || mouseEvent.metaKey
-        || mouseEvent.ctrlKey || mouseEvent.shiftKey || mouseEvent.altKey) return;
-      if (anchor.hasAttribute('download') || anchor.hasAttribute('data-router-ignore')) return;
+      if (
+        mouseEvent.defaultPrevented ||
+        mouseEvent.button !== 0 ||
+        mouseEvent.metaKey ||
+        mouseEvent.ctrlKey ||
+        mouseEvent.shiftKey ||
+        mouseEvent.altKey
+      )
+        return;
+      if (
+        anchor.hasAttribute('download') ||
+        anchor.hasAttribute('data-router-ignore')
+      )
+        return;
       const target = anchor.getAttribute('target');
       if (target !== null && target !== '' && target !== '_self') return;
       const rel = anchor.getAttribute('rel');
@@ -293,12 +326,15 @@ export function createRouter(options: RouterOptions): RouterHandle {
         navigate(url.pathname.slice(normBase.length) + url.search + url.hash);
       } else {
         // Hash mode: only intercept in-app hash links (`#/...`), leave others alone.
-        if (url.pathname !== location.pathname || !url.hash.startsWith('#/')) return;
+        if (url.pathname !== location.pathname || !url.hash.startsWith('#/'))
+          return;
         event.preventDefault();
         navigate(url.hash.slice(1));
       }
     };
-    removers.push(delegate<HTMLAnchorElement>(document.body, 'click', 'a[href]', onClick));
+    removers.push(
+      delegate<HTMLAnchorElement>(document.body, 'click', 'a[href]', onClick),
+    );
   }
 
   let disposed = false;
@@ -308,5 +344,14 @@ export function createRouter(options: RouterOptions): RouterHandle {
     for (const remove of removers) remove();
   };
 
-  return { route, navigate, back: () => history.back(), forward: () => history.forward(), match, activeClass, outlet, dispose };
+  return {
+    route,
+    navigate,
+    back: () => history.back(),
+    forward: () => history.forward(),
+    match,
+    activeClass,
+    outlet,
+    dispose,
+  };
 }

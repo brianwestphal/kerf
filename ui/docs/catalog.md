@@ -7,7 +7,7 @@ you get the same shell without rebuilding it. Like the app layouts, it is a
 subpath-only, tree-shakeable module that adds nothing to the main barrel.
 
 ```bash
-npm install @kerfjs/ui   # kerfjs is a peer; @kerfjs/ui/select/register is needed only if entries use `related`
+npm install @kerfjs/ui # kerfjs is a peer; @kerfjs/ui/select/register is needed only if entries use `related`
 ```
 
 - `Catalog(props)` returns the shell as `SafeHtml` (a `<main class="kui-catalog">`).
@@ -22,15 +22,15 @@ npm install @kerfjs/ui   # kerfjs is a peer; @kerfjs/ui/select/register is neede
 ## What you supply
 
 - **`sections`** — category-grouped entries: `{ category, entries: [{ id, name,
-  description?, tags?, resources?, related? }] }`. Each entry becomes a sidebar
+description?, tags?, resources?, related? }] }`. Each entry becomes a sidebar
   `ListItem` under a `ListHeader` for its category. Short `tags` render as quiet
   trailing pills for decision metadata such as `Discouraged`.
 - **`content`** — the rendered preview for the active entry. Keep a map of `id →
-  () => SafeHtml` in your app and call `renderers[active]()` in your render.
+() => SafeHtml` in your app and call `renderers[active]()` in your render.
 - **`brand`** — `{ title, subtitle?, logoUrl? }` for the sidebar header.
 - **`secondarySections`** — an optional secondary "ecosystem" group shown below the
   primary sections with a quieter treatment: `{ label, sections, collapsible?,
-  expanded? }`. When `collapsible`, the label is a disclosure toggle controlling
+expanded? }`. When `collapsible`, the label is a disclosure toggle controlling
   `expanded` (the app owns it; wire it with `wireCatalog`'s `onToggleSecondary`).
 - Optional slots: `headerActions` (extra header controls), `sidebarFooter` (extra
   sidebar content), and `status` (a footer status line).
@@ -47,7 +47,7 @@ instead of hand-rolled example markup, so labels, notes, and left-edge alignment
 stay consistent:
 
 ```tsx
-import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { CatalogExample, CatalogExampleStack } from "@kerfjs/ui/catalog";
 
 const buttonPreview = (
   <CatalogExampleStack label="Button variants">
@@ -75,23 +75,43 @@ from a specimen's measured margin.
 ## Complete example
 
 ```tsx
-import { mount, signal } from 'kerfjs';
-import { Catalog, type CatalogSection } from '@kerfjs/ui/catalog';
-import { wireCatalog } from '@kerfjs/ui/wire-catalog';
-import '@kerfjs/ui/styles.css'; // or import each primitive's CSS + @kerfjs/ui/catalog.css
+import { mount, signal } from "kerfjs";
+import { Catalog, type CatalogSection } from "@kerfjs/ui/catalog";
+import { wireCatalog } from "@kerfjs/ui/wire-catalog";
+import "@kerfjs/ui/styles.css"; // or import each primitive's CSS + @kerfjs/ui/catalog.css
 
 // 1. Describe your components once.
 const sections: CatalogSection[] = [
   {
-    category: 'Controls',
+    category: "Controls",
     entries: [
-      { id: 'button', name: 'Button', description: 'A pressable control.',
-        resources: [{ label: 'Source', href: '/src/button.tsx', detail: 'src/button.tsx' }] },
-      { id: 'field', name: 'Field', description: 'A labeled input.', tags: ['Discouraged'],
-        related: [{ id: 'button', name: 'Button', group: 'Used with' }] },
+      {
+        id: "button",
+        name: "Button",
+        description: "A pressable control.",
+        resources: [
+          {
+            label: "Source",
+            href: "/src/button.tsx",
+            detail: "src/button.tsx",
+          },
+        ],
+      },
+      {
+        id: "field",
+        name: "Field",
+        description: "A labeled input.",
+        tags: ["Discouraged"],
+        related: [{ id: "button", name: "Button", group: "Used with" }],
+      },
     ],
   },
-  { category: 'Feedback', entries: [{ id: 'toast', name: 'Toast', description: 'A transient message.' }] },
+  {
+    category: "Feedback",
+    entries: [
+      { id: "toast", name: "Toast", description: "A transient message." },
+    ],
+  },
 ];
 
 // 2. One preview render per entry id.
@@ -102,15 +122,16 @@ const renderers: Record<string, () => ReturnType<typeof Button>> = {
 };
 
 // 3. App-owned state (domain: which entry; transient: collapsed; global: theme).
-const initial = new URLSearchParams(location.search).get('c') ?? sections[0].entries[0].id;
+const initial =
+  new URLSearchParams(location.search).get("c") ?? sections[0].entries[0].id;
 const active = signal(initial);
 const collapsed = signal(false);
-const theme = signal<'light' | 'dark'>('light');
+const theme = signal<"light" | "dark">("light");
 
-const app = document.getElementById('app')!;
+const app = document.getElementById("app")!;
 mount(app, () => (
   <Catalog
-    brand={{ title: 'Acme UI', subtitle: 'Design system' }}
+    brand={{ title: "Acme UI", subtitle: "Design system" }}
     sections={sections}
     active={active.value}
     content={renderers[active.value]?.() ?? <></>}
@@ -120,13 +141,17 @@ mount(app, () => (
 ));
 
 wireCatalog(app, {
-  onSelect: (id) => { active.value = id; },
-  onToggleSidebar: () => { collapsed.value = !collapsed.value; },
+  onSelect: (id) => {
+    active.value = id;
+  },
+  onToggleSidebar: () => {
+    collapsed.value = !collapsed.value;
+  },
   onToggleTheme: () => {
-    theme.value = theme.value === 'dark' ? 'light' : 'dark';
+    theme.value = theme.value === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = theme.value; // apply your theme however you like
   },
-  urlParam: 'c', // mirror the active id into ?c=<id>
+  urlParam: "c", // mirror the active id into ?c=<id>
 });
 ```
 

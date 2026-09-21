@@ -11,30 +11,30 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 
 ## 1. Bundle delta
 
-| | Min + gz, runtime only |
-| --- | --- |
-| `react` + `react-dom` 19.2 | ~45 KB |
-| `kerfjs` (incl. signals) | ~12 KB |
-| **Delta** | **~33 KB lighter** |
+|                            | Min + gz, runtime only |
+| -------------------------- | ---------------------- |
+| `react` + `react-dom` 19.2 | ~45 KB                 |
+| `kerfjs` (incl. signals)   | ~12 KB                 |
+| **Delta**                  | **~33 KB lighter**     |
 
 The trade you're making: virtual DOM and the hooks scheduler go away. JSX still works (it compiles to HTML strings, not virtual nodes), `signal`/`computed`/`effect` replace `useState`/`useMemo`/`useEffect`, and `each(items, render, key)` replaces `.map(item => <Row key={item.id} ... />)`. There are no components — function calls return JSX directly.
 
 ## 2. Mental-model translations
 
-| React | Kerf | Notes |
-| --- | --- | --- |
-| `useState(initial)` | `signal(initial)` | Module-scoped, not per-component. Read with `s.value`, write with `s.value = ...`. |
-| `useMemo(fn, deps)` | `computed(fn)` | Dependencies are auto-tracked — no deps array. |
-| `useEffect(fn, deps)` | `effect(fn)` | Auto-tracked. Returns an unsubscribe function instead of taking a cleanup return. |
-| `useReducer` / Context | `defineStore({ initial, actions })` | One store, named actions, no provider tree. |
-| `useRef` (for focus) | *usually unnecessary* | The morph preserves focus + selection on the input being typed into. |
-| `<Component />` | plain function returning JSX | No instances, no `props` object — pass arguments directly. |
-| `items.map((it) => <Row key={it.id} ... />)` | `each(items, (it) => <Row ... />, (it) => it.id)` | The third arg is the key function. Listing rows without `each` loses focus on reorder. |
-| `onClick={fn}` on the JSX node | `delegate(root, 'click', '[data-action="..."]', fn)` | One listener at the root, matched by selector. Survives re-render. |
-| `key` prop | `data-key={item.id}` *and* the third arg to `each` | The DOM attribute keys the morph; the function keys `each`'s per-row memo. |
-| `React.memo(Component)` | per-row memoization is automatic in `each` | The render function is skipped when the item identity (+ key) is unchanged. |
-| `useEffect(() => cleanup)` | `const stop = effect(fn); stop()` | The return value *is* the cleanup. |
-| `Strict Mode` double-invocation | n/a | `mount`'s render function runs once per change. |
+| React                                        | Kerf                                                 | Notes                                                                                  |
+| -------------------------------------------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `useState(initial)`                          | `signal(initial)`                                    | Module-scoped, not per-component. Read with `s.value`, write with `s.value = ...`.     |
+| `useMemo(fn, deps)`                          | `computed(fn)`                                       | Dependencies are auto-tracked — no deps array.                                         |
+| `useEffect(fn, deps)`                        | `effect(fn)`                                         | Auto-tracked. Returns an unsubscribe function instead of taking a cleanup return.      |
+| `useReducer` / Context                       | `defineStore({ initial, actions })`                  | One store, named actions, no provider tree.                                            |
+| `useRef` (for focus)                         | _usually unnecessary_                                | The morph preserves focus + selection on the input being typed into.                   |
+| `<Component />`                              | plain function returning JSX                         | No instances, no `props` object — pass arguments directly.                             |
+| `items.map((it) => <Row key={it.id} ... />)` | `each(items, (it) => <Row ... />, (it) => it.id)`    | The third arg is the key function. Listing rows without `each` loses focus on reorder. |
+| `onClick={fn}` on the JSX node               | `delegate(root, 'click', '[data-action="..."]', fn)` | One listener at the root, matched by selector. Survives re-render.                     |
+| `key` prop                                   | `data-key={item.id}` _and_ the third arg to `each`   | The DOM attribute keys the morph; the function keys `each`'s per-row memo.             |
+| `React.memo(Component)`                      | per-row memoization is automatic in `each`           | The render function is skipped when the item identity (+ key) is unchanged.            |
+| `useEffect(() => cleanup)`                   | `const stop = effect(fn); stop()`                    | The return value _is_ the cleanup.                                                     |
+| `Strict Mode` double-invocation              | n/a                                                  | `mount`'s render function runs once per change.                                        |
 
 ## 3. Section by section
 
@@ -44,23 +44,29 @@ The same TodoMVC, section by section. Each kerf block matches `site/src/examples
 
 ```tsx
 // React
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
-interface Todo { id: string; text: string; done: boolean }
-type Filter = 'all' | 'active' | 'done';
+interface Todo {
+  id: string;
+  text: string;
+  done: boolean;
+}
+type Filter = "all" | "active" | "done";
 
-const STORAGE_KEY = 'react-todomvc';
+const STORAGE_KEY = "react-todomvc";
 
 function load(): Todo[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? (JSON.parse(raw) as Todo[]) : [];
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 }
 
 function App() {
   const [items, setItems] = useState<Todo[]>(load);
-  const [filter, setFilter] = useState<Filter>('all');
+  const [filter, setFilter] = useState<Filter>("all");
   const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -72,33 +78,56 @@ function App() {
 
 ```tsx
 // Kerf
-import { defineStore, mount, each, delegate, delegateCapture, effect, attr, type AttrSpec } from 'kerfjs';
+import {
+  defineStore,
+  mount,
+  each,
+  delegate,
+  delegateCapture,
+  effect,
+  attr,
+  type AttrSpec,
+} from "kerfjs";
 
 // Rename-safe action keys: pre-escaped CSS selectors, spreadable JSX attrs.
 const ACTIONS = {
-  toggle: attr('data-action', 'toggle'),
-  remove: attr('data-action', 'remove'),
-  edit:   attr('data-action', 'edit'),
-} as const satisfies Record<string, AttrSpec<'data-action'>>;
-const ITEM = { id: attr('data-id') } as const;
+  toggle: attr("data-action", "toggle"),
+  remove: attr("data-action", "remove"),
+  edit: attr("data-action", "edit"),
+} as const satisfies Record<string, AttrSpec<"data-action">>;
+const ITEM = { id: attr("data-id") } as const;
 
-interface Todo { id: string; text: string; done: boolean }
-type Filter = 'all' | 'active' | 'done';
+interface Todo {
+  id: string;
+  text: string;
+  done: boolean;
+}
+type Filter = "all" | "active" | "done";
 
-const STORAGE_KEY = 'kerf-todomvc';
+const STORAGE_KEY = "kerf-todomvc";
 
 function load(): Todo[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? (JSON.parse(raw) as Todo[]) : [];
-  } catch { return []; }
+  } catch {
+    return [];
+  }
 }
 
 const todos = defineStore({
-  initial: () => ({ items: load(), filter: 'all' as Filter, editingId: null as string | null }),
+  initial: () => ({
+    items: load(),
+    filter: "all" as Filter,
+    editingId: null as string | null,
+  }),
   actions: (set, get) => ({
-    add: (text: string) => { /* ... */ },
-    toggle: (id: string) => { /* ... */ },
+    add: (text: string) => {
+      /* ... */
+    },
+    toggle: (id: string) => {
+      /* ... */
+    },
     // ...
   }),
 });
@@ -122,10 +151,13 @@ return (
         className="new-todo"
         placeholder="What needs to be done?"
         onKeyDown={(e) => {
-          if (e.key !== 'Enter') return;
+          if (e.key !== "Enter") return;
           const input = e.currentTarget;
-          setItems([...items, { id: crypto.randomUUID(), text: input.value, done: false }]);
-          input.value = '';
+          setItems([
+            ...items,
+            { id: crypto.randomUUID(), text: input.value, done: false },
+          ]);
+          input.value = "";
         }}
         autoFocus
       />
@@ -143,7 +175,12 @@ mount(root, () => {
     <div class="todoapp">
       <header>
         <h1>todos</h1>
-        <input class="new-todo" data-new placeholder="What needs to be done?" autofocus />
+        <input
+          class="new-todo"
+          data-new
+          placeholder="What needs to be done?"
+          autofocus
+        />
       </header>
       {/* list goes here */}
     </div>
@@ -159,18 +196,26 @@ What moved: `className` → `class`, `autoFocus` → `autofocus` (kerf uses the 
 // React
 <ul className="todo-list">
   {items
-    .filter((it) => filter === 'active' ? !it.done : filter === 'done' ? it.done : true)
+    .filter((it) =>
+      filter === "active" ? !it.done : filter === "done" ? it.done : true,
+    )
     .map((todo) => (
       <li
         key={todo.id}
-        className={`${todo.done ? 'done' : ''} ${editingId === todo.id ? 'editing' : ''}`}
+        className={`${todo.done ? "done" : ""} ${editingId === todo.id ? "editing" : ""}`}
       >
         {editingId === todo.id ? (
           <input className="edit" defaultValue={todo.text} autoFocus />
         ) : (
           <>
-            <input type="checkbox" checked={todo.done} onChange={() => toggle(todo.id)} />
-            <label onDoubleClick={() => setEditingId(todo.id)}>{todo.text}</label>
+            <input
+              type="checkbox"
+              checked={todo.done}
+              onChange={() => toggle(todo.id)}
+            />
+            <label onDoubleClick={() => setEditingId(todo.id)}>
+              {todo.text}
+            </label>
             <button onClick={() => remove(todo.id)}>×</button>
           </>
         )}
@@ -184,30 +229,50 @@ What moved: `className` → `class`, `autoFocus` → `autofocus` (kerf uses the 
 <ul class="todo-list">
   {each(
     items.filter((it) =>
-      filter === 'active' ? !it.done : filter === 'done' ? it.done : true,
+      filter === "active" ? !it.done : filter === "done" ? it.done : true,
     ),
     (todo) => (
       <li
         data-key={todo.id}
-        class={`${todo.done ? 'done' : ''} ${editingId === todo.id ? 'editing' : ''}`}
+        class={`${todo.done ? "done" : ""} ${editingId === todo.id ? "editing" : ""}`}
       >
         {editingId === todo.id ? (
-          <input class="edit" data-edit data-id={todo.id} value={todo.text} autofocus />
+          <input
+            class="edit"
+            data-edit
+            data-id={todo.id}
+            value={todo.text}
+            autofocus
+          />
         ) : (
           <>
-            <input type="checkbox" class="toggle" {...ACTIONS.toggle.attrs} {...ITEM.id(todo.id)} checked={todo.done} />
-            <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>{todo.text}</label>
-            <button class="destroy" {...ACTIONS.remove.attrs} {...ITEM.id(todo.id)}>×</button>
+            <input
+              type="checkbox"
+              class="toggle"
+              {...ACTIONS.toggle.attrs}
+              {...ITEM.id(todo.id)}
+              checked={todo.done}
+            />
+            <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>
+              {todo.text}
+            </label>
+            <button
+              class="destroy"
+              {...ACTIONS.remove.attrs}
+              {...ITEM.id(todo.id)}
+            >
+              ×
+            </button>
           </>
         )}
       </li>
     ),
-    (todo) => `${todo.id}-${editingId === todo.id ? 'edit' : 'view'}`,
+    (todo) => `${todo.id}-${editingId === todo.id ? "edit" : "view"}`,
   )}
 </ul>
 ```
 
-What moved: `items.map` → `each(items, render, key)`. The third argument — the key function — is what `each` uses to memoize each row's HTML output between renders; rows whose key is unchanged are pulled from cache and never re-rendered. The `data-key={todo.id}` on the `<li>` is the *DOM* key the morph uses to identify the row across renders (so insert/delete don't blur the focused element). React's single `key` prop does both jobs; kerf splits them because the row-cache key sometimes needs to encode mode (e.g. `view` vs `edit`) while the DOM-identity key stays stable.
+What moved: `items.map` → `each(items, render, key)`. The third argument — the key function — is what `each` uses to memoize each row's HTML output between renders; rows whose key is unchanged are pulled from cache and never re-rendered. The `data-key={todo.id}` on the `<li>` is the _DOM_ key the morph uses to identify the row across renders (so insert/delete don't blur the focused element). React's single `key` prop does both jobs; kerf splits them because the row-cache key sometimes needs to encode mode (e.g. `view` vs `edit`) while the DOM-identity key stays stable.
 
 Inline `onChange`/`onClick`/`onDoubleClick` handlers are replaced by `data-action` attributes (here spread from the `ACTIONS` map via `attr()` so renaming an action updates JSX + delegate together); the real handler is registered once on the root in §3d.
 
@@ -223,24 +288,24 @@ Inline `onChange`/`onClick`/`onDoubleClick` handlers are replaced by `data-actio
 
 ```tsx
 // Kerf — handlers register once, at module load, on the root
-delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.toggle.selector, (_e, el) => {
   todos.actions.toggle((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.remove.selector, (_e, el) => {
   todos.actions.remove((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.edit.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.edit.selector, (_e, el) => {
   todos.actions.startEdit((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'keydown', '[data-new]', (e, el) => {
-  if ((e as KeyboardEvent).key !== 'Enter') return;
+delegate(root, "keydown", "[data-new]", (e, el) => {
+  if ((e as KeyboardEvent).key !== "Enter") return;
   const input = el as HTMLInputElement;
   todos.actions.add(input.value);
-  input.value = '';
+  input.value = "";
 });
 
 // Tier 2: blur doesn't bubble — capture phase is required.
-delegateCapture(root, 'blur', '[data-edit]', (_e, el) => {
+delegateCapture(root, "blur", "[data-edit]", (_e, el) => {
   const input = el as HTMLInputElement;
   if (todos.state.value.editingId === input.dataset.id) {
     todos.actions.commitEdit(input.dataset.id!, input.value);
@@ -260,7 +325,7 @@ In kerf: focus + caret position + selection range on the currently-focused input
 
 **`<MyComponent />` is sugar for a function call, not a component instance.** Writing `<MyComponent props />` works — the JSX runtime calls `MyComponent(props)` and uses the returned JSX — but there's no instance state, no hooks, no lifecycle. The function takes its props and returns JSX; that's it. If you find yourself reaching for `useState` inside a child component, the value goes in a module-level `signal` or a `defineStore` instead. The mental adjustment is from "components own state" to "modules own state, functions render it."
 
-**No closure-capture footgun on event handlers.** React's `useEffect` famously captures stale state unless you list every read in the deps array. `effect()` in kerf auto-tracks; you never list deps. The flip side: `effect()` re-runs the *entire* function whenever any signal it reads changes, so don't pile unrelated work into one `effect`.
+**No closure-capture footgun on event handlers.** React's `useEffect` famously captures stale state unless you list every read in the deps array. `effect()` in kerf auto-tracks; you never list deps. The flip side: `effect()` re-runs the _entire_ function whenever any signal it reads changes, so don't pile unrelated work into one `effect`.
 
 **Refs are usually unnecessary.** `useRef` for "I need to focus this element after render" or "I need to read this DOM property" is almost always unneeded — the morph preserves focus, and you can read DOM state in your `delegate` handler from the `el` argument. The exception is integrating a non-kerf library (a chart, an editor) that needs a stable DOM target; in that case wrap its mount point in `data-morph-skip` so the morph leaves the subtree alone.
 
@@ -268,7 +333,7 @@ In kerf: focus + caret position + selection range on the currently-focused input
 
 **No Strict Mode double-invocation.** React 19's dev-mode double-render of effects catches bugs that come from React's own reconciliation model; kerf doesn't have that reconciliation model, so it doesn't need the double-invocation. Your `effect()` runs once per change.
 
-**`useEffect` cleanup → `effect()` return value.** React expects you to return a cleanup function from `useEffect`. Kerf's `effect()` *returns* an unsubscribe function: `const stop = effect(...); stop()` cancels the subscription. You won't need this for most app code (effects live for the app's lifetime), but if you do, the shape is different.
+**`useEffect` cleanup → `effect()` return value.** React expects you to return a cleanup function from `useEffect`. Kerf's `effect()` _returns_ an unsubscribe function: `const stop = effect(...); stop()` cancels the subscription. You won't need this for most app code (effects live for the app's lifetime), but if you do, the shape is different.
 
 **Class vs className.** Kerf JSX uses HTML attribute names — `class`, `for`, `tabindex`, `autofocus` — not React's `className`, `htmlFor`, `tabIndex`, `autoFocus`. Same with SVG: `stroke-width`, not `strokeWidth`.
 

@@ -17,10 +17,33 @@ export interface TabBarProps {
 }
 
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
-export function TabBar({ id, label, children, leading, trailing, className = '', activation }: TabBarProps) {
-  return <nav class={`kui-tab-bar ${className}`.trim()} data-component="tab-bar" data-tab-bar-id={id} data-tab-activation={activation} aria-label={label}>
-    {leading && <div class="kui-tab-bar__leading">{leading}</div>}
-    <div class="kui-tab-bar__tabs" role="tablist" aria-label={label} data-kui-tab-list>{children}</div>
-    {trailing && <div class="kui-tab-bar__trailing">{trailing}</div>}
-  </nav>;
+export function TabBar({
+  id,
+  label,
+  children,
+  leading,
+  trailing,
+  className = '',
+  activation,
+}: TabBarProps) {
+  return (
+    <nav
+      class={`kui-tab-bar ${className}`.trim()}
+      data-component="tab-bar"
+      data-tab-bar-id={id}
+      data-tab-activation={activation}
+      aria-label={label}
+    >
+      {leading && <div class="kui-tab-bar__leading">{leading}</div>}
+      <div
+        class="kui-tab-bar__tabs"
+        role="tablist"
+        aria-label={label}
+        data-kui-tab-list
+      >
+        {children}
+      </div>
+      {trailing && <div class="kui-tab-bar__trailing">{trailing}</div>}
+    </nav>
+  );
 }

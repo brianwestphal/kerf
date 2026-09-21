@@ -4,10 +4,10 @@
  * path.
  */
 
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { batch,each,mount,signal } from '../../src/index.js';
+import { batch, each, mount, signal } from '../../src/index.js';
 import { jsx } from '../../src/jsx-runtime.js';
 
 describe('arraySignal — reconciler transition matrix (adversarial)', () => {
@@ -20,28 +20,40 @@ describe('arraySignal — reconciler transition matrix (adversarial)', () => {
     root = document.createElement('div');
     document.body.appendChild(root);
   });
-  afterEach(() => { document.body.innerHTML = ''; });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   function harness() {
     const rows = arraySignal<{ id: number; label: string }>([]);
     const selectedId = signal(-1);
-    mount(root, () => jsx('table', {
-      children: jsx('tbody', {
-        children: each(
-          rows,
-          (r) => jsx('tr', {
-            'data-key': String(r.id),
-            className: r.id === selectedId.value ? 'sel' : '',
-            children: jsx('td', { children: r.label }),
-          }),
-          (r) => r.id === selectedId.value,
-        ),
+    mount(root, () =>
+      jsx('table', {
+        children: jsx('tbody', {
+          children: each(
+            rows,
+            (r) =>
+              jsx('tr', {
+                'data-key': String(r.id),
+                className: r.id === selectedId.value ? 'sel' : '',
+                children: jsx('td', { children: r.label }),
+              }),
+            (r) => r.id === selectedId.value,
+          ),
+        }),
       }),
-    }));
+    );
     return {
-      rows, selectedId,
-      ids: () => Array.from(root.querySelectorAll('tr')).map((t) => t.getAttribute('data-key')),
-      selIds: () => Array.from(root.querySelectorAll('tr.sel')).map((t) => t.getAttribute('data-key')),
+      rows,
+      selectedId,
+      ids: () =>
+        Array.from(root.querySelectorAll('tr')).map((t) =>
+          t.getAttribute('data-key'),
+        ),
+      selIds: () =>
+        Array.from(root.querySelectorAll('tr.sel')).map((t) =>
+          t.getAttribute('data-key'),
+        ),
     };
   }
 
@@ -49,16 +61,26 @@ describe('arraySignal — reconciler transition matrix (adversarial)', () => {
     const t = harness();
     batch(() => t.rows.replace(build(3)));
     const cur = t.rows.value.map((r) => r.id);
-    batch(() => { for (const id of cur) t.rows.remove(t.rows.value.findIndex((r) => r.id === id)); });
+    batch(() => {
+      for (const id of cur)
+        t.rows.remove(t.rows.value.findIndex((r) => r.id === id));
+    });
     expect(t.ids().length).toBe(0);
-    batch(() => { const a = build(2); for (let i = 0; i < a.length; i++) t.rows.insert(i, a[i]); });
+    batch(() => {
+      const a = build(2);
+      for (let i = 0; i < a.length; i++) t.rows.insert(i, a[i]);
+    });
     expect(t.ids().length).toBe(2);
   });
 
   it('append then select the appended row', () => {
     const t = harness();
     batch(() => t.rows.replace(build(3)));
-    batch(() => { const a = build(2); const s = t.rows.value.length; for (let i = 0; i < a.length; i++) t.rows.insert(s + i, a[i]); });
+    batch(() => {
+      const a = build(2);
+      const s = t.rows.value.length;
+      for (let i = 0; i < a.length; i++) t.rows.insert(s + i, a[i]);
+    });
     const id = t.rows.value[t.rows.value.length - 1].id;
     t.selectedId.value = id;
     expect(t.selIds()).toEqual([String(id)]);
@@ -76,7 +98,10 @@ describe('arraySignal — reconciler transition matrix (adversarial)', () => {
   it('move (swap) then select', () => {
     const t = harness();
     batch(() => t.rows.replace(build(4)));
-    batch(() => { t.rows.move(3, 1); t.rows.move(2, 3); });
+    batch(() => {
+      t.rows.move(3, 1);
+      t.rows.move(2, 3);
+    });
     const id = t.rows.value[0].id;
     t.selectedId.value = id;
     expect(t.selIds()).toEqual([String(id)]);
@@ -107,10 +132,16 @@ describe('arraySignal — reconciler transition matrix (adversarial)', () => {
     const t = harness();
     batch(() => t.rows.replace(build(3)));
     batch(() => t.rows.replace([]));
-    batch(() => { const a = build(3); for (let i = 0; i < a.length; i++) t.rows.insert(i, a[i]); });
+    batch(() => {
+      const a = build(3);
+      for (let i = 0; i < a.length; i++) t.rows.insert(i, a[i]);
+    });
     expect(t.ids().length).toBe(3);
     batch(() => t.rows.replace([]));
-    batch(() => { const a = build(2); for (let i = 0; i < a.length; i++) t.rows.insert(i, a[i]); });
+    batch(() => {
+      const a = build(2);
+      for (let i = 0; i < a.length; i++) t.rows.insert(i, a[i]);
+    });
     expect(t.ids().length).toBe(2);
   });
 
@@ -137,28 +168,39 @@ describe('arraySignal — reconciler transition matrix (adversarial)', () => {
   it('row-contract failure after a granular insert recovers through count-drift', () => {
     const rows = arraySignal([{ id: 1, label: 'a' }]);
     let invalidId: number | undefined;
-    mount(root, () => jsx('ul', {
-      children: each(rows, (row) => invalidId === row.id
-        ? '   '
-        : jsx('li', { 'data-key': String(row.id), children: row.label })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (row) =>
+          invalidId === row.id
+            ? '   '
+            : jsx('li', { 'data-key': String(row.id), children: row.label }),
+        ),
+      }),
+    );
 
     invalidId = 2;
-    expect(() => rows.push({ id: 2, label: 'broken' }))
-      .toThrow(/row render at index 1 produced no top-level element/);
+    expect(() => rows.push({ id: 2, label: 'broken' })).toThrow(
+      /row render at index 1 produced no top-level element/,
+    );
     expect(rows.value).toHaveLength(2);
-    expect([...root.querySelectorAll('li')].map((row) => row.textContent)).toEqual(['a']);
+    expect(
+      [...root.querySelectorAll('li')].map((row) => row.textContent),
+    ).toEqual(['a']);
 
     invalidId = undefined;
     rows.update(1, (row) => ({ ...row, label: 'repaired' }));
-    expect([...root.querySelectorAll('li')].map((row) => row.textContent))
-      .toEqual(['a', 'repaired']);
+    expect(
+      [...root.querySelectorAll('li')].map((row) => row.textContent),
+    ).toEqual(['a', 'repaired']);
   });
 
   it('partial-update-every-other → remove → select', () => {
     const t = harness();
     batch(() => t.rows.replace(build(6)));
-    batch(() => { for (let i = 0; i < 6; i += 2) t.rows.update(i, (r) => ({ ...r, label: r.label + '!' })); });
+    batch(() => {
+      for (let i = 0; i < 6; i += 2)
+        t.rows.update(i, (r) => ({ ...r, label: r.label + '!' }));
+    });
     t.rows.remove(0);
     const id = t.rows.value[2].id;
     t.selectedId.value = id;

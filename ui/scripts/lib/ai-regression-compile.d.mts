@@ -12,10 +12,18 @@ export interface AiRegressionCompileEvidence {
   responseSha256: string;
   compilerOptionsSha256: string;
   typescriptVersion: string;
-  packages: Array<{ name: string; version: string; declarationSetSha256: string }>;
+  packages: Array<{
+    name: string;
+    version: string;
+    declarationSetSha256: string;
+  }>;
   compiledFiles: number;
   passed: boolean;
   diagnostics: AiRegressionCompileDiagnostic[];
 }
 
-export function compileAiRegressionResponse(root: string, response: unknown, responseText?: string): Promise<AiRegressionCompileEvidence>;
+export function compileAiRegressionResponse(
+  root: string,
+  response: unknown,
+  responseText?: string,
+): Promise<AiRegressionCompileEvidence>;

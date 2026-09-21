@@ -1,7 +1,7 @@
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { raw } from '../../src/jsx-runtime.js';
-import { confirm,overlay,popover,tooltip } from '../../src/overlay.js';
+import { confirm, overlay, popover, tooltip } from '../../src/overlay.js';
 import { anchorAt } from './overlay-test-helpers.js';
 
 beforeEach(() => {
@@ -18,7 +18,10 @@ describe('overlay() — native top-layer backing (KF-526)', () => {
 
   describe('modal — <dialog>.showModal()', () => {
     it('hosts a modal overlay in a <dialog>, opened, without the ARIA fallback attrs', () => {
-      const h = overlay(raw('<button class="go">go</button>'), { native: true, trap: true });
+      const h = overlay(raw('<button class="go">go</button>'), {
+        native: true,
+        trap: true,
+      });
       expect(h.el.tagName).toBe('DIALOG');
       expect((h.el as HTMLDialogElement).open).toBe(true);
       // Native <dialog> conveys modality itself — no role/aria-modal fallback.
@@ -37,7 +40,12 @@ describe('overlay() — native top-layer backing (KF-526)', () => {
 
     it('the native cancel event (Escape) dismisses when escape is a trigger, and preventDefaults', () => {
       const onDismiss = vi.fn();
-      const h = overlay(raw('<div/>'), { native: true, trap: true, dismiss: ['escape'], onDismiss });
+      const h = overlay(raw('<div/>'), {
+        native: true,
+        trap: true,
+        dismiss: ['escape'],
+        onDismiss,
+      });
       const ev = new Event('cancel', { cancelable: true });
       h.el.dispatchEvent(ev);
       expect(ev.defaultPrevented).toBe(true); // kerf owns teardown
@@ -47,7 +55,12 @@ describe('overlay() — native top-layer backing (KF-526)', () => {
 
     it('the native cancel event is swallowed (kept open) when escape is NOT a dismiss trigger', () => {
       const onDismiss = vi.fn();
-      const h = overlay(raw('<div/>'), { native: true, trap: true, dismiss: ['backdrop'], onDismiss });
+      const h = overlay(raw('<div/>'), {
+        native: true,
+        trap: true,
+        dismiss: ['backdrop'],
+        onDismiss,
+      });
       const ev = new Event('cancel', { cancelable: true });
       h.el.dispatchEvent(ev);
       expect(ev.defaultPrevented).toBe(true);
@@ -58,7 +71,12 @@ describe('overlay() — native top-layer backing (KF-526)', () => {
 
     it('a backdrop click (target is the dialog itself) still dismisses', () => {
       const onDismiss = vi.fn();
-      const h = overlay(raw('<button>x</button>'), { native: true, trap: true, dismiss: ['backdrop'], onDismiss });
+      const h = overlay(raw('<button>x</button>'), {
+        native: true,
+        trap: true,
+        dismiss: ['backdrop'],
+        onDismiss,
+      });
       h.el.dispatchEvent(new MouseEvent('click', { bubbles: true })); // target === dialog
       expect(onDismiss).toHaveBeenCalledTimes(1);
       expect(h.el.parentElement).toBeNull();
@@ -103,8 +121,12 @@ describe('overlay() — native top-layer backing (KF-526)', () => {
       shown = 0;
       hidden = 0;
       original = { show: proto.showPopover, hide: proto.hidePopover };
-      proto.showPopover = function () { shown++; };
-      proto.hidePopover = function () { hidden++; };
+      proto.showPopover = function () {
+        shown++;
+      };
+      proto.hidePopover = function () {
+        hidden++;
+      };
     });
     afterEach(() => {
       proto.showPopover = original.show;
@@ -113,7 +135,9 @@ describe('overlay() — native top-layer backing (KF-526)', () => {
 
     it('backs a popover() with [popover] + showPopover, neutralizing UA anchoring', () => {
       const anchor = anchorAt({ bottom: 20, left: 10, right: 60, top: 10 });
-      const h = popover(anchor, raw('<div class="menu">m</div>'), { native: true });
+      const h = popover(anchor, raw('<div class="menu">m</div>'), {
+        native: true,
+      });
       expect(h.el.getAttribute('popover')).toBe('manual');
       expect(shown).toBe(1);
       expect(h.el.style.inset).toBe('auto'); // UA inset neutralized for positionAnchored

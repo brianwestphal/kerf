@@ -23,7 +23,11 @@ describe('remount — full pipeline', () => {
 
     const fileId = signal('a');
     const stop = remountOn(parent, fileId, () =>
-      jsx('div', { class: 'pane', 'data-morph-skip': '', children: 'placeholder' }),
+      jsx('div', {
+        class: 'pane',
+        'data-morph-skip': '',
+        children: 'placeholder',
+      }),
     );
 
     // A library imperatively takes over the skipped subtree.

@@ -2,12 +2,7 @@ import type { SafeHtml } from 'kerfjs';
 
 /** Where a {@link FloatingToolbar} floats within its positioned container. */
 export type FloatingToolbarPosition =
-  | 'bottom'
-  | 'bottom-start'
-  | 'bottom-end'
-  | 'top'
-  | 'top-start'
-  | 'top-end';
+  'bottom' | 'bottom-start' | 'bottom-end' | 'top' | 'top-start' | 'top-end';
 
 export interface FloatingToolbarProps {
   /** Toolbar contents — normally one or more `ToolbarControlGroup`s. */
@@ -31,6 +26,21 @@ export interface FloatingToolbarProps {
  * top toolbar's own inset); override that token to move it. The app owns the
  * controls and their behavior — wire them with `delegate()` as usual.
  */
-export function FloatingToolbar({ children, label, position = 'bottom-end', className = '' }: FloatingToolbarProps) {
-  return <div class={`kui-floating-toolbar ${className}`.trim()} data-component="floating-toolbar" data-position={position} role="toolbar" aria-label={label}>{children}</div>;
+export function FloatingToolbar({
+  children,
+  label,
+  position = 'bottom-end',
+  className = '',
+}: FloatingToolbarProps) {
+  return (
+    <div
+      class={`kui-floating-toolbar ${className}`.trim()}
+      data-component="floating-toolbar"
+      data-position={position}
+      role="toolbar"
+      aria-label={label}
+    >
+      {children}
+    </div>
+  );
 }

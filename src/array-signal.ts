@@ -45,8 +45,16 @@ export type ArrayPatch<T> =
  */
 export const ARRAY_SIGNAL_BRAND = Symbol.for('kerfjs.ArraySignal');
 
-function isValidIndex(index: number, length: number, allowEnd = false): boolean {
-  return Number.isInteger(index) && index >= 0 && (allowEnd ? index <= length : index < length);
+function isValidIndex(
+  index: number,
+  length: number,
+  allowEnd = false,
+): boolean {
+  return (
+    Number.isInteger(index) &&
+    index >= 0 &&
+    (allowEnd ? index <= length : index < length)
+  );
 }
 
 export class ArraySignal<T> {
@@ -127,7 +135,10 @@ export class ArraySignal<T> {
 
   /** Move the item at `from` to position `to`. Emits one `move` patch (no-op when from === to). */
   move(from: number, to: number): void {
-    if (!isValidIndex(from, this._items.length) || !isValidIndex(to, this._items.length)) {
+    if (
+      !isValidIndex(from, this._items.length) ||
+      !isValidIndex(to, this._items.length)
+    ) {
       throw new Error(
         `arraySignal.move: indices out of bounds (from=${from}, to=${to}, length=${this._items.length}).`,
       );

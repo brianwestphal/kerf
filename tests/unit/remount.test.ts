@@ -19,7 +19,9 @@ describe('remountOn()', () => {
     const parent = host();
     const key = signal(1);
     const label = signal('a');
-    const stop = remountOn(parent, key, () => jsx('span', { class: 'x', children: label.value }));
+    const stop = remountOn(parent, key, () =>
+      jsx('span', { class: 'x', children: label.value }),
+    );
 
     const first = parent.querySelector('.x')!;
     expect(first.textContent).toBe('a');
@@ -38,7 +40,9 @@ describe('remountOn()', () => {
   it('replaces the subtree wholesale when the key changes (a fresh DOM node)', () => {
     const parent = host();
     const key = signal('file-1');
-    const stop = remountOn(parent, key, () => jsx('div', { class: 'pane', children: key.value }));
+    const stop = remountOn(parent, key, () =>
+      jsx('div', { class: 'pane', children: key.value }),
+    );
 
     const firstNode = parent.querySelector('.pane')!;
     expect(firstNode.textContent).toBe('file-1');
@@ -55,8 +59,10 @@ describe('remountOn()', () => {
     const parent = host();
     const a = signal(1);
     const b = signal('x');
-    const stop = remountOn(parent, () => `${a.value}:${b.value}`, () =>
-      jsx('p', { class: 'p', children: `${a.value}-${b.value}` }),
+    const stop = remountOn(
+      parent,
+      () => `${a.value}:${b.value}`,
+      () => jsx('p', { class: 'p', children: `${a.value}-${b.value}` }),
     );
 
     const n1 = parent.querySelector('.p')!;
@@ -72,8 +78,14 @@ describe('remountOn()', () => {
   it('a thunk key whose inputs change but whose value stays equal does not remount', () => {
     const parent = host();
     const n = signal(1);
-    const stop = remountOn(parent, () => (n.value > 0 ? 'pos' : 'neg'), () =>
-      jsx('div', { class: 'g', children: n.value > 0 ? 'positive' : 'negative' }),
+    const stop = remountOn(
+      parent,
+      () => (n.value > 0 ? 'pos' : 'neg'),
+      () =>
+        jsx('div', {
+          class: 'g',
+          children: n.value > 0 ? 'positive' : 'negative',
+        }),
     );
 
     const node = parent.querySelector('.g')!;
@@ -92,7 +104,9 @@ describe('remountOn()', () => {
     const parent = host();
     const key = signal(1);
     const inner = signal('a');
-    const stop = remountOn(parent, key, () => jsx('span', { class: 's', children: inner.value }));
+    const stop = remountOn(parent, key, () =>
+      jsx('span', { class: 's', children: inner.value }),
+    );
 
     key.value = 2; // remount
     const node = parent.querySelector('.s')!;
@@ -216,9 +230,16 @@ describe('remountOn()', () => {
       const parent = host();
       const key = signal('a');
       const seen: (string | null)[] = [];
-      const stop = remountOn(parent, key, () => jsx('div', { class: 'x', children: key.value }), {
-        onMount: (root) => { seen.push(root.querySelector('.x')?.textContent ?? null); },
-      });
+      const stop = remountOn(
+        parent,
+        key,
+        () => jsx('div', { class: 'x', children: key.value }),
+        {
+          onMount: (root) => {
+            seen.push(root.querySelector('.x')?.textContent ?? null);
+          },
+        },
+      );
 
       expect(seen).toEqual(['a']); // fired after the initial mount, node already live
       key.value = 'b';
@@ -248,7 +269,11 @@ describe('remountOn()', () => {
     it('an onMount that returns no cleanup is fine across remounts', () => {
       const parent = host();
       const key = signal(1);
-      const stop = remountOn(parent, key, () => jsx('div', { class: 'x' }), { onMount: () => { /* no cleanup */ } });
+      const stop = remountOn(parent, key, () => jsx('div', { class: 'x' }), {
+        onMount: () => {
+          /* no cleanup */
+        },
+      });
       key.value = 2; // must not throw despite no cleanup returned
       expect(parent.querySelector('.x')).not.toBeNull();
       stop();

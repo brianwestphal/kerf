@@ -27,7 +27,10 @@
 import { carryOrRewireRowBindings, disposeRowBindings } from './bindings.js';
 import { devHooks } from './dev-hooks.js';
 import { type BoundItem, type ListBinding } from './list-binding.js';
-import { tryAttributeOnlyFastPath, tryTextContentFastPath } from './list-reconcile-fast-paths.js';
+import {
+  tryAttributeOnlyFastPath,
+  tryTextContentFastPath,
+} from './list-reconcile-fast-paths.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { _morphElement } from './morph.js';
 import type { ListItem, ListSegment } from './segment.js';
@@ -38,7 +41,10 @@ import { parseSingleRow } from './utils/row-contract.js';
  * apply each changed row in place and return `true` (handled). Otherwise
  * return `false` so the caller runs the full classify + LIS + move algorithm.
  */
-export function tryInPlaceContentUpdate(binding: ListBinding, listSeg: ListSegment): boolean {
+export function tryInPlaceContentUpdate(
+  binding: ListBinding,
+  listSeg: ListSegment,
+): boolean {
   const oldItems = binding.items;
   const items = listSeg.items;
   const n = items.length;
@@ -77,28 +83,48 @@ function updateRowInPlace(
   ni: ListItem,
   index: number,
 ): BoundItem {
-  if (old.html === ni.html
-      || tryAttributeOnlyFastPath(old.node, old.html, ni.html)
-      || tryTextContentFastPath(old.node, old.html, ni.html)) {
+  if (
+    old.html === ni.html ||
+    tryAttributeOnlyFastPath(old.node, old.html, ni.html) ||
+    tryTextContentFastPath(old.node, old.html, ni.html)
+  ) {
     // KF-294: node reused. Whether the bound effects survive with it is
     // per-hole (KF-347): same signal instances → carried for free (the
     // cache-hit / stable-external-signal case); any changed instance —
     // fresh computeds closing over a replaced row object — → dispose +
     // re-wire against the surviving node so self-reading holes don't stale.
-    const kept = carryOrRewireRowBindings(old.node, old.bindings, old.bindingDisposers, ni.bindings);
+    const kept = carryOrRewireRowBindings(
+      old.node,
+      old.bindings,
+      old.bindingDisposers,
+      ni.bindings,
+    );
     return {
-      ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: old.node,
-      bindings: kept.bindings, bindingDisposers: kept.bindingDisposers,
+      ref: ni.ref,
+      cacheKey: ni.cacheKey,
+      html: ni.html,
+      node: old.node,
+      bindings: kept.bindings,
+      bindingDisposers: kept.bindingDisposers,
     };
   }
   const newNode = parseSingleRow(ni.html, index, liveParent);
   if (old.node.tagName === newNode.tagName) {
     _morphElement(old.node, newNode);
     // Same carry-or-rewire decision as the fast-path arm above (KF-347).
-    const kept = carryOrRewireRowBindings(old.node, old.bindings, old.bindingDisposers, ni.bindings);
+    const kept = carryOrRewireRowBindings(
+      old.node,
+      old.bindings,
+      old.bindingDisposers,
+      ni.bindings,
+    );
     return {
-      ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: old.node,
-      bindings: kept.bindings, bindingDisposers: kept.bindingDisposers,
+      ref: ni.ref,
+      cacheKey: ni.cacheKey,
+      html: ni.html,
+      node: old.node,
+      bindings: kept.bindings,
+      bindingDisposers: kept.bindingDisposers,
     };
   }
   // Tag changed → old node (and its bound effects) is discarded. KF-347 also
@@ -107,9 +133,18 @@ function updateRowInPlace(
   // wires them against the brand-new node (old side empty → wire branch).
   disposeRowBindings(old.bindingDisposers);
   liveParent.replaceChild(newNode, old.node);
-  const fresh = carryOrRewireRowBindings(newNode, undefined, undefined, ni.bindings);
+  const fresh = carryOrRewireRowBindings(
+    newNode,
+    undefined,
+    undefined,
+    ni.bindings,
+  );
   return {
-    ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: newNode,
-    bindings: fresh.bindings, bindingDisposers: fresh.bindingDisposers,
+    ref: ni.ref,
+    cacheKey: ni.cacheKey,
+    html: ni.html,
+    node: newNode,
+    bindings: fresh.bindings,
+    bindingDisposers: fresh.bindingDisposers,
   };
 }

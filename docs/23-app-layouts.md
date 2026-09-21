@@ -54,13 +54,13 @@ awareness of **multiple viewport segments** (foldables / dual-screen):
 Proposed default breakpoints (min-width, `rem` at the ui 16px baseline; tunable
 via CSS custom properties so an app can shift them without forking the logic):
 
-| Bucket | Min width | Typical device |
-| --- | --- | --- |
-| `xs-mobile` | 0 | small phones (< 360px) |
-| `mobile` | 22.5rem (360px) | phones |
-| `tablet` | 45rem (720px) | tablets, small split windows |
-| `desktop` | 64rem (1024px) | laptops / desktops |
-| `xl-desktop` | 90rem (1440px) | large / wide desktops |
+| Bucket       | Min width       | Typical device               |
+| ------------ | --------------- | ---------------------------- |
+| `xs-mobile`  | 0               | small phones (< 360px)       |
+| `mobile`     | 22.5rem (360px) | phones                       |
+| `tablet`     | 45rem (720px)   | tablets, small split windows |
+| `desktop`    | 64rem (1024px)  | laptops / desktops           |
+| `xl-desktop` | 90rem (1440px)  | large / wide desktops        |
 
 Orientation is `matchMedia('(orientation: portrait)')`. Segments come from the
 Viewport Segments media features, feature-detected (absent on most engines →
@@ -72,19 +72,19 @@ Reactive, signals-based (kerf has no hooks; a device class is a
 `ReadonlySignal`, not a `useX`):
 
 ```ts
-import { deviceClass, type DeviceClass } from '@kerfjs/ui/device-class';
+import { deviceClass, type DeviceClass } from "@kerfjs/ui/device-class";
 
 const device = deviceClass(); // ReadonlySignal<DeviceClass>
 
 interface DeviceClass {
-  size: 'xs-mobile' | 'mobile' | 'tablet' | 'desktop' | 'xl-desktop';
-  orientation: 'portrait' | 'landscape';
-  segments: number;            // horizontal viewport segments, ≥ 1
-  verticalSegments: number;    // ≥ 1
+  size: "xs-mobile" | "mobile" | "tablet" | "desktop" | "xl-desktop";
+  orientation: "portrait" | "landscape";
+  segments: number; // horizontal viewport segments, ≥ 1
+  verticalSegments: number; // ≥ 1
   // Convenience predicates for the common queries:
-  atLeast(size): boolean;      // e.g. device.value.atLeast('tablet')
-  handset: boolean;            // size ∈ {xs-mobile, mobile}
-  compact: boolean;            // handset || (tablet && portrait) — "one pane at a time"
+  atLeast(size): boolean; // e.g. device.value.atLeast('tablet')
+  handset: boolean; // size ∈ {xs-mobile, mobile}
+  compact: boolean; // handset || (tablet && portrait) — "one pane at a time"
 }
 ```
 
@@ -270,13 +270,13 @@ own recipes + e2e remain pending.
 The rule each layout encodes, summarized (`compact` = handset or portrait
 tablet — "one pane at a time"):
 
-| Layout | handset | portrait tablet | landscape tablet / multi-segment | desktop+ |
-| --- | --- | --- | --- | --- |
-| `NavStack` | stack | stack | stack | stack (or one column of a larger shell) |
-| `SplitView` | → NavStack | → NavStack (full-screen detail) | two panes (detail may not be full-screen) | two panes, resizable |
-| `Workbench` | not recommended → NavStack/overlay | rails as overlay drawers | left rail inline; right/bottom as overlays | full three-panel |
-| `TabScaffold` | bottom tabs + per-tab stacks | bottom tabs | promote tabs to rail | promote tabs to sidebar/`Workbench` |
-| Dialog w/ `SplitView` | full-screen modal | full-screen modal | large partial-cover modal | inline two-pane dialog |
+| Layout                | handset                            | portrait tablet                 | landscape tablet / multi-segment           | desktop+                                |
+| --------------------- | ---------------------------------- | ------------------------------- | ------------------------------------------ | --------------------------------------- |
+| `NavStack`            | stack                              | stack                           | stack                                      | stack (or one column of a larger shell) |
+| `SplitView`           | → NavStack                         | → NavStack (full-screen detail) | two panes (detail may not be full-screen)  | two panes, resizable                    |
+| `Workbench`           | not recommended → NavStack/overlay | rails as overlay drawers        | left rail inline; right/bottom as overlays | full three-panel                        |
+| `TabScaffold`         | bottom tabs + per-tab stacks       | bottom tabs                     | promote tabs to rail                       | promote tabs to sidebar/`Workbench`     |
+| Dialog w/ `SplitView` | full-screen modal                  | full-screen modal               | large partial-cover modal                  | inline two-pane dialog                  |
 
 Dialogs integrate with `kerfjs/overlay` and its native top-layer backing
 ([`19-native-overlay-backing.md`](19-native-overlay-backing.md)); a layout used

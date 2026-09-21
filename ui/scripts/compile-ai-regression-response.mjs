@@ -10,9 +10,16 @@ const valueAfter = (flag) => {
   return index >= 0 ? process.argv[index + 1] : undefined;
 };
 const responsePath = valueAfter('--response');
-if (!responsePath) throw new Error('Usage: compile-ai-regression-response --response <response.json> [--out <evidence.json>]');
+if (!responsePath)
+  throw new Error(
+    'Usage: compile-ai-regression-response --response <response.json> [--out <evidence.json>]',
+  );
 const responseText = await readFile(resolve(root, responsePath), 'utf8');
-const evidence = await compileAiRegressionResponse(root, JSON.parse(responseText), responseText);
+const evidence = await compileAiRegressionResponse(
+  root,
+  JSON.parse(responseText),
+  responseText,
+);
 const output = `${JSON.stringify(evidence, null, 2)}\n`;
 const outputPath = valueAfter('--out');
 if (outputPath) await writeFile(resolve(root, outputPath), output);

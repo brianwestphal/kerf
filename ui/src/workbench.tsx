@@ -30,19 +30,74 @@ export interface WorkbenchProps {
  * work area relayouts once, not per frame. The app owns each `collapsed` flag;
  * the collapse is pure CSS (no wire). See `docs/23-app-layouts.md` §3.3.
  */
-export function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, className = '' }: WorkbenchProps) {
-  return <section class={`kui-workbench ${className}`.trim()} id={id} data-component="workbench" aria-label={label}>
-    {leftRail && <aside class="kui-workbench__rail kui-workbench__rail--left" data-workbench-rail="left" data-collapsed={String(leftRail.collapsed ?? false)} aria-label={leftRail.label || undefined} style={leftRail.size ? `--kui-workbench-rail-width: ${leftRail.size}px` : undefined}>
-      <div class="kui-workbench__panel-content">{leftRail.content}</div>
-    </aside>}
-    <div class="kui-workbench__center">
-      <div class="kui-workbench__main" data-workbench-main>{main}</div>
-      {bottomDrawer && <section class="kui-workbench__drawer" data-workbench-drawer data-collapsed={String(bottomDrawer.collapsed ?? false)} aria-label={bottomDrawer.label || undefined} style={bottomDrawer.size ? `--kui-workbench-drawer-height: ${bottomDrawer.size}px` : undefined}>
-        <div class="kui-workbench__panel-content">{bottomDrawer.content}</div>
-      </section>}
-    </div>
-    {rightRail && <aside class="kui-workbench__rail kui-workbench__rail--right" data-workbench-rail="right" data-collapsed={String(rightRail.collapsed ?? false)} aria-label={rightRail.label || undefined} style={rightRail.size ? `--kui-workbench-rail-width: ${rightRail.size}px` : undefined}>
-      <div class="kui-workbench__panel-content">{rightRail.content}</div>
-    </aside>}
-  </section>;
+export function Workbench({
+  id,
+  label,
+  main,
+  leftRail,
+  rightRail,
+  bottomDrawer,
+  className = '',
+}: WorkbenchProps) {
+  return (
+    <section
+      class={`kui-workbench ${className}`.trim()}
+      id={id}
+      data-component="workbench"
+      aria-label={label}
+    >
+      {leftRail && (
+        <aside
+          class="kui-workbench__rail kui-workbench__rail--left"
+          data-workbench-rail="left"
+          data-collapsed={String(leftRail.collapsed ?? false)}
+          aria-label={leftRail.label || undefined}
+          style={
+            leftRail.size
+              ? `--kui-workbench-rail-width: ${leftRail.size}px`
+              : undefined
+          }
+        >
+          <div class="kui-workbench__panel-content">{leftRail.content}</div>
+        </aside>
+      )}
+      <div class="kui-workbench__center">
+        <div class="kui-workbench__main" data-workbench-main>
+          {main}
+        </div>
+        {bottomDrawer && (
+          <section
+            class="kui-workbench__drawer"
+            data-workbench-drawer
+            data-collapsed={String(bottomDrawer.collapsed ?? false)}
+            aria-label={bottomDrawer.label || undefined}
+            style={
+              bottomDrawer.size
+                ? `--kui-workbench-drawer-height: ${bottomDrawer.size}px`
+                : undefined
+            }
+          >
+            <div class="kui-workbench__panel-content">
+              {bottomDrawer.content}
+            </div>
+          </section>
+        )}
+      </div>
+      {rightRail && (
+        <aside
+          class="kui-workbench__rail kui-workbench__rail--right"
+          data-workbench-rail="right"
+          data-collapsed={String(rightRail.collapsed ?? false)}
+          aria-label={rightRail.label || undefined}
+          style={
+            rightRail.size
+              ? `--kui-workbench-rail-width: ${rightRail.size}px`
+              : undefined
+          }
+        >
+          <div class="kui-workbench__panel-content">{rightRail.content}</div>
+        </aside>
+      )}
+    </section>
+  );
 }

@@ -10,7 +10,7 @@ Maps to **kerf Hard Rule 11** — kerf's JSX runtime looks up custom-element typ
 declare global {
   namespace JSX {
     interface IntrinsicElements {
-      'my-tag': { foo?: string };
+      "my-tag": { foo?: string };
     }
   }
 }
@@ -19,10 +19,10 @@ declare global {
 ## ✅ Correct
 
 ```ts
-declare module 'kerfjs/jsx-runtime' {
+declare module "kerfjs/jsx-runtime" {
   namespace JSX {
     interface IntrinsicElements {
-      'my-tag': KerfCustomElement & { foo?: string };
+      "my-tag": KerfCustomElement & { foo?: string };
     }
   }
 }
@@ -31,7 +31,11 @@ declare module 'kerfjs/jsx-runtime' {
 Import the building-block types from `kerfjs/jsx-runtime`:
 
 ```ts
-import type { KerfCustomElement, KerfBaseAttrs, AttrLike } from 'kerfjs/jsx-runtime';
+import type {
+  KerfCustomElement,
+  KerfBaseAttrs,
+  AttrLike,
+} from "kerfjs/jsx-runtime";
 ```
 
 ## What this rule does NOT catch

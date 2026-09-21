@@ -4,11 +4,11 @@
  * path.
  */
 
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import type { ArraySignal } from '../../src/array-signal.js';
 import { arraySignal } from '../../src/array-signal.js';
-import { each,mount } from '../../src/index.js';
+import { each, mount } from '../../src/index.js';
 import { jsx } from '../../src/jsx-runtime.js';
 
 describe('arraySignal — each() granular integration via mount()', () => {
@@ -24,13 +24,20 @@ describe('arraySignal — each() granular integration via mount()', () => {
   });
 
   function renderRows(rows: ArraySignal<{ id: number; label: string }>): void {
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', { 'data-key': String(r.id), children: r.label })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', { 'data-key': String(r.id), children: r.label }),
+        ),
+      }),
+    );
   }
 
   it('insert patch adds a single row without re-rendering siblings', () => {
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 3, label: 'c' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 3, label: 'c' },
+    ]);
     renderRows(rows);
     const oldA = root.querySelectorAll('li')[0];
     const oldC = root.querySelectorAll('li')[1];
@@ -54,7 +61,11 @@ describe('arraySignal — each() granular integration via mount()', () => {
   });
 
   it('remove patch deletes a single row without re-rendering siblings', () => {
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }, { id: 3, label: 'c' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+      { id: 3, label: 'c' },
+    ]);
     renderRows(rows);
     const oldA = root.querySelectorAll('li')[0];
     const oldC = root.querySelectorAll('li')[2];
@@ -69,17 +80,21 @@ describe('arraySignal — each() granular integration via mount()', () => {
     // Append-1k pattern: insert(N, x), insert(N+1, y), insert(N+2, z) — every
     // patch at the previous one's index + 1. The reconciler should detect
     // the run and bulk-parse instead of doing 3 individual parses.
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 9, label: 'tail' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 9, label: 'tail' },
+    ]);
     renderRows(rows);
     const oldHead = root.querySelector('li')!;
     const oldTail = root.querySelectorAll('li')[1];
 
     // Spy on template.innerHTML setter calls — bulk-parse should invoke it
     // exactly ONCE for a 3-insert run, not 3 times.
-    const origDescriptor = Object.getOwnPropertyDescriptor(
-      Object.getPrototypeOf(document.createElement('template')),
-      'innerHTML',
-    ) ?? Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!;
+    const origDescriptor =
+      Object.getOwnPropertyDescriptor(
+        Object.getPrototypeOf(document.createElement('template')),
+        'innerHTML',
+      ) ?? Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!;
     let templateInnerHTMLSetCount = 0;
     const tplProto = Object.getPrototypeOf(document.createElement('template'));
     Object.defineProperty(tplProto, 'innerHTML', {
@@ -103,10 +118,16 @@ describe('arraySignal — each() granular integration via mount()', () => {
     }
 
     const lis = root.querySelectorAll('li');
-    expect([...lis].map((li) => li.textContent)).toEqual(['a', 'b', 'c', 'd', 'tail']);
+    expect([...lis].map((li) => li.textContent)).toEqual([
+      'a',
+      'b',
+      'c',
+      'd',
+      'tail',
+    ]);
     expect(lis[0]).toBe(oldHead);
     expect(lis[4]).toBe(oldTail);
-    expect(templateInnerHTMLSetCount).toBe(1);  // bulk parse
+    expect(templateInnerHTMLSetCount).toBe(1); // bulk parse
   });
 
   it('KF-93 bulk-insert: append-at-end run inserts before nothing (anchor null) without crashing', async () => {
@@ -118,20 +139,25 @@ describe('arraySignal — each() granular integration via mount()', () => {
       rows.push({ id: 3, label: 'c' });
       rows.push({ id: 4, label: 'd' });
     });
-    expect([...root.querySelectorAll('li')].map((li) => li.textContent))
-      .toEqual(['a', 'b', 'c', 'd']);
+    expect(
+      [...root.querySelectorAll('li')].map((li) => li.textContent),
+    ).toEqual(['a', 'b', 'c', 'd']);
   });
 
   it('KF-93 bulk-insert: non-contiguous inserts fall back to per-patch (run-detector requires +1 stride)', async () => {
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
     renderRows(rows);
     const { batch } = await import('../../src/index.js');
     batch(() => {
-      rows.insert(0, { id: 0, label: 'before' });   // index 0
-      rows.insert(3, { id: 99, label: 'after' });   // not contiguous with the prior 0
+      rows.insert(0, { id: 0, label: 'before' }); // index 0
+      rows.insert(3, { id: 99, label: 'after' }); // not contiguous with the prior 0
     });
-    expect([...root.querySelectorAll('li')].map((li) => li.textContent))
-      .toEqual(['before', 'a', 'b', 'after']);
+    expect(
+      [...root.querySelectorAll('li')].map((li) => li.textContent),
+    ).toEqual(['before', 'a', 'b', 'after']);
   });
 
   it('KF-93 bulk-insert: throws if the bulk-parsed HTML produced fewer elements than patches', async () => {
@@ -141,11 +167,15 @@ describe('arraySignal — each() granular integration via mount()', () => {
     const rows = arraySignal([{ id: 1, label: 'a' }]);
     let renderImpl = (r: { id: number; label: string }): string =>
       `<li data-key="${r.id}">${r.label}</li>`;
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => renderImpl(r as { id: number; label: string })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          renderImpl(r as { id: number; label: string }),
+        ),
+      }),
+    );
     // Swap the render impl for the next batch so two of three rows produce empty HTML.
-    renderImpl = (r) => r.id === 3 ? `<li>${r.label}</li>` : '   ';
+    renderImpl = (r) => (r.id === 3 ? `<li>${r.label}</li>` : '   ');
     const { batch } = await import('../../src/index.js');
     expect(() => {
       batch(() => {
@@ -157,47 +187,62 @@ describe('arraySignal — each() granular integration via mount()', () => {
   });
 
   it('move patch reorders a single row via insertBefore (preserves node identity)', () => {
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }, { id: 3, label: 'c' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+      { id: 3, label: 'c' },
+    ]);
     renderRows(rows);
     const oldA = root.querySelectorAll('li')[0];
     const oldB = root.querySelectorAll('li')[1];
     const oldC = root.querySelectorAll('li')[2];
-    rows.move(0, 2);  // [b, c, a]
+    rows.move(0, 2); // [b, c, a]
     const lis = root.querySelectorAll('li');
     expect([...lis]).toEqual([oldB, oldC, oldA]);
   });
 
   it('move backwards (n→0) inserts at the front', () => {
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }, { id: 3, label: 'c' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+      { id: 3, label: 'c' },
+    ]);
     renderRows(rows);
     const oldA = root.querySelectorAll('li')[0];
     const oldB = root.querySelectorAll('li')[1];
     const oldC = root.querySelectorAll('li')[2];
-    rows.move(2, 0);  // [c, a, b]
+    rows.move(2, 0); // [c, a, b]
     const lis = root.querySelectorAll('li');
     expect([...lis]).toEqual([oldC, oldA, oldB]);
   });
 
   it('replace patch falls through to the snapshot reconciler', () => {
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
     renderRows(rows);
-    rows.replace([{ id: 9, label: 'x' }, { id: 10, label: 'y' }]);
+    rows.replace([
+      { id: 9, label: 'x' },
+      { id: 10, label: 'y' },
+    ]);
     const lis = root.querySelectorAll('li');
     expect(lis.length).toBe(2);
     expect([...lis].map((li) => li.textContent)).toEqual(['x', 'y']);
   });
 
   it('multiple granular events in sequence apply in order', () => {
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
     renderRows(rows);
     rows.push({ id: 3, label: 'c' });
     rows.update(0, (r) => ({ ...r, label: 'A' }));
-    rows.remove(1);  // remove 'b' (after the update, items are [A, b, c])
+    rows.remove(1); // remove 'b' (after the update, items are [A, b, c])
     const lis = root.querySelectorAll('li');
     expect([...lis].map((li) => li.textContent)).toEqual(['A', 'c']);
   });
-
-
 });
 
 /**

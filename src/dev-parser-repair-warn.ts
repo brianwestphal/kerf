@@ -39,10 +39,36 @@ import { devFlag } from './dev-warn-config.js';
  * can be omitted if the p element is immediately followed by…" list.
  */
 const BLOCK_TAGS = [
-  'address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl', 'fieldset',
-  'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-  'header', 'hgroup', 'hr', 'main', 'menu', 'nav', 'ol', 'p', 'pre', 'section',
-  'table', 'ul',
+  'address',
+  'article',
+  'aside',
+  'blockquote',
+  'details',
+  'div',
+  'dl',
+  'fieldset',
+  'figcaption',
+  'figure',
+  'footer',
+  'form',
+  'h1',
+  'h2',
+  'h3',
+  'h4',
+  'h5',
+  'h6',
+  'header',
+  'hgroup',
+  'hr',
+  'main',
+  'menu',
+  'nav',
+  'ol',
+  'p',
+  'pre',
+  'section',
+  'table',
+  'ul',
 ];
 
 /** `<p …>` or a block-level open tag — whichever comes first from a given index. */
@@ -68,7 +94,10 @@ export function findParagraphRepair(html: string): string | null {
   let inParagraph = false;
   for (let m = SCAN.exec(html); m !== null; m = SCAN.exec(html)) {
     const tag = m[1].toLowerCase();
-    if (tag === '/p') { inParagraph = false; continue; }
+    if (tag === '/p') {
+      inParagraph = false;
+      continue;
+    }
     if (tag === 'p') {
       // A nested <p> is itself a repair when one is already open.
       if (inParagraph) return 'p';
@@ -92,14 +121,14 @@ export function maybeWarnParserRepair(html: string): void {
   if (warnedPairs.has(pair)) return;
   warnedPairs.add(pair);
   console.warn(
-    `kerf: a <${tag}> inside a <p> will not survive parsing. `
-    + '<p> may contain only phrasing content, so the HTML parser closes it before a '
-    + `block-level child — your <p> ends up EMPTY and the <${tag}> (plus everything after it) `
-    + 'becomes its sibling instead of its child. kerf then reconciles that repaired tree '
-    + 'correctly, so updates still work; what you lose is the structure you wrote, along with '
-    + 'any CSS or querySelector that assumed it. Use a <div> (or a phrasing element like '
-    + '<span>) in place of the <p>, or move the block content outside it. '
-    + 'Set KERF_DEV_WARN_PARSER_REPAIR=0 (or unset it) to silence this warning.',
+    `kerf: a <${tag}> inside a <p> will not survive parsing. ` +
+      '<p> may contain only phrasing content, so the HTML parser closes it before a ' +
+      `block-level child — your <p> ends up EMPTY and the <${tag}> (plus everything after it) ` +
+      'becomes its sibling instead of its child. kerf then reconciles that repaired tree ' +
+      'correctly, so updates still work; what you lose is the structure you wrote, along with ' +
+      'any CSS or querySelector that assumed it. Use a <div> (or a phrasing element like ' +
+      '<span>) in place of the <p>, or move the block content outside it. ' +
+      'Set KERF_DEV_WARN_PARSER_REPAIR=0 (or unset it) to silence this warning.',
   );
 }
 

@@ -9,7 +9,6 @@
  * KF-115).
  */
 
-
 /**
  * Truncation limit applied to row HTML when including it in a contract-
  * violation error message. Keeps the error readable when a row produced
@@ -66,7 +65,9 @@ const MATHML_TEXT_INTEGRATION = new Set(['mi', 'mo', 'mn', 'ms', 'mtext']);
  * either crash (a breakout tag pops the wrapper, emptying it) or mis-namespace
  * the row (KF-420).
  */
-function foreignWrapper(parent: Element | null | undefined): 'svg' | 'math' | null {
+function foreignWrapper(
+  parent: Element | null | undefined,
+): 'svg' | 'math' | null {
   if (parent == null) return null;
   const { namespaceURI, localName } = parent;
   if (namespaceURI === SVG_NS) {
@@ -116,7 +117,11 @@ export function parseRowTemplate(
  * Shared by the granular reconciler's single-row paths and the snapshot
  * in-place morph path.
  */
-export function parseSingleRow(html: string, index: number, parent?: Element | null): Element {
+export function parseSingleRow(
+  html: string,
+  index: number,
+  parent?: Element | null,
+): Element {
   const { content, count } = parseRowTemplate(html, parent);
   if (count !== 1) throw rowContractError(index, html, parent);
   return content.firstElementChild as Element;
@@ -127,7 +132,10 @@ export function parseSingleRow(html: string, index: number, parent?: Element | n
  * array BEFORE a fragment insert empties it. Callers have already verified the
  * parse count equals `n`, so the walk never sees a null.
  */
-export function collectTemplateChildren(content: DocumentFragment, n: number): Element[] {
+export function collectTemplateChildren(
+  content: DocumentFragment,
+  n: number,
+): Element[] {
   const nodes = new Array<Element>(n);
   let child = content.firstElementChild;
   for (let k = 0; k < n; k++) {
@@ -148,15 +156,20 @@ export function collectTemplateChildren(content: DocumentFragment, n: number): E
  * differently under a foreign-content parent and print a self-contradictory
  * "produced 1 top-level elements; exactly one is required".
  */
-export function rowContractError(index: number, html: string, parent?: Element | null): Error {
+export function rowContractError(
+  index: number,
+  html: string,
+  parent?: Element | null,
+): Error {
   const { count } = parseRowTemplate(html, parent);
-  const reason = count === 0
-    ? 'produced no top-level element'
-    : `produced ${count} top-level elements; exactly one is required`;
+  const reason =
+    count === 0
+      ? 'produced no top-level element'
+      : `produced ${count} top-level elements; exactly one is required`;
   return new Error(
-    `each(): row render at index ${index} ${reason}. `
-    + 'Each item\'s render must return exactly one element — '
-    + 'wrap multiple roots in a single parent (e.g. <li>...</li>). '
-    + `Got HTML: ${JSON.stringify(truncateRowHtml(html))}`,
+    `each(): row render at index ${index} ${reason}. ` +
+      "Each item's render must return exactly one element — " +
+      'wrap multiple roots in a single parent (e.g. <li>...</li>). ' +
+      `Got HTML: ${JSON.stringify(truncateRowHtml(html))}`,
   );
 }

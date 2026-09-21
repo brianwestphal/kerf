@@ -53,8 +53,8 @@ const baseSeed = arg('seed', DEFAULT_SEED);
 const windows = Math.ceil(total / window);
 
 console.log(
-  `fuzz-soak: ${total} cases in ${windows} window(s) of ${window}, `
-  + `seeds ${baseSeed}–${baseSeed + total - 1}, one process each.`,
+  `fuzz-soak: ${total} cases in ${windows} window(s) of ${window}, ` +
+    `seeds ${baseSeed}–${baseSeed + total - 1}, one process each.`,
 );
 
 const startedAt = Date.now();
@@ -83,7 +83,9 @@ for (let w = 0; w < windows; w++) {
     console.log(result.stdout ?? '');
     console.error(result.stderr ?? '');
     console.error(`\nfuzz-soak: ${label} failed. Reproduce it alone with:`);
-    console.error(`  KERF_FUZZ_SEED=${seed} KERF_FUZZ_RUNS=${runs} npx vitest run ${SPEC}`);
+    console.error(
+      `  KERF_FUZZ_SEED=${seed} KERF_FUZZ_RUNS=${runs} npx vitest run ${SPEC}`,
+    );
     process.exit(1);
   }
   console.log('ok');

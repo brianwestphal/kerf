@@ -91,7 +91,10 @@ export function applyWarningOptions(options: DevWarningOptions): void {
     // Unknown keys are ignored rather than thrown on: a consumer who upgrades
     // kerf downwards should not have their app die on a key that used to exist.
     if (envName === undefined || value === undefined) continue;
-    overrides.set(envName, value === false ? false : value === true ? '1' : value);
+    overrides.set(
+      envName,
+      value === false ? false : value === true ? '1' : value,
+    );
   }
 }
 
@@ -102,7 +105,9 @@ export function applyWarningOptions(options: DevWarningOptions): void {
 export function devFlag(envName: string): string | undefined {
   const override = overrides.get(envName);
   if (override !== undefined) return override === false ? undefined : override;
-  const proc = (globalThis as { process?: { env?: Record<string, string | undefined> } }).process;
+  const proc = (
+    globalThis as { process?: { env?: Record<string, string | undefined> } }
+  ).process;
   return proc?.env?.[envName];
 }
 

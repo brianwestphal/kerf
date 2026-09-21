@@ -8,13 +8,13 @@
  * snapshot fallback, teardown, and survival across a coarse (morph) re-render.
  */
 
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
-import { computed,signal } from '../../src/reactive.js';
+import { computed, signal } from '../../src/reactive.js';
 
 let root: HTMLElement;
 
@@ -42,7 +42,10 @@ describe('mixed content: a bound hole sharing its parent with static siblings (K
     const render = vi.fn(() =>
       jsx('div', {
         children: [
-          jsx('button', { id: 'b', children: playing.value ? 'pause' : 'play' }),
+          jsx('button', {
+            id: 'b',
+            children: playing.value ? 'pause' : 'play',
+          }),
           jsx('div', { id: 'time', children: [timeLabel, ' / 0:05'] }),
         ],
       }),
@@ -134,14 +137,20 @@ describe('mixed content: a bound hole sharing its parent with static siblings (K
           : jsx('span', { id: 'alt', children: 'gone' }),
       }),
     );
-    expect((root.querySelector('#mixed') as HTMLElement).textContent).toBe('val static');
+    expect((root.querySelector('#mixed') as HTMLElement).textContent).toBe(
+      'val static',
+    );
     show.value = false; // hole element removed entirely
     expect(root.querySelector('#mixed')).toBeNull();
     v.value = 'ignored-while-hidden';
     show.value = true; // re-added: fresh marker, fresh node, current value
-    expect((root.querySelector('#mixed') as HTMLElement).textContent).toBe('ignored-while-hidden static');
+    expect((root.querySelector('#mixed') as HTMLElement).textContent).toBe(
+      'ignored-while-hidden static',
+    );
     v.value = 'live-again';
-    expect((root.querySelector('#mixed') as HTMLElement).textContent).toBe('live-again static');
+    expect((root.querySelector('#mixed') as HTMLElement).textContent).toBe(
+      'live-again static',
+    );
     dispose();
   });
 
@@ -201,7 +210,9 @@ describe('reserved marker namespace (KF-314)', () => {
     );
     const html = root.innerHTML;
     // GLOBAL scope: `data-kfb` attribute + `<!--kfb:*-->` text marker.
-    expect((root.querySelector('#g') as HTMLElement).hasAttribute('data-kfb')).toBe(true);
+    expect(
+      (root.querySelector('#g') as HTMLElement).hasAttribute('data-kfb'),
+    ).toBe(true);
     expect(html).toContain('<!--kfb:');
     // ROW scope: `data-kfbrow` attribute + `<!--kfbr:*-->` text marker.
     expect(root.querySelector('[data-kfbrow]')).not.toBeNull();
@@ -268,15 +279,28 @@ describe('in-place updates re-wire changed binding instances (KF-347)', () => {
   // instance change and carries for free when instances match (cache hits /
   // stable external signals).
 
-  interface Row { id: number; label: string; done?: boolean; big?: boolean }
+  interface Row {
+    id: number;
+    label: string;
+    done?: boolean;
+    big?: boolean;
+  }
 
   it('granular update(): self-reading bound TEXT hole updates (html-identical no-op arm)', () => {
-    const rows = arraySignal<Row>([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const rows = arraySignal<Row>([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
     const dispose = mount(root, () =>
       jsx('ul', {
         children: each(rows, (item) =>
-          jsx('li', { 'data-key': String(item.id), children: computed(() => item.label) })),
-      }));
+          jsx('li', {
+            'data-key': String(item.id),
+            children: computed(() => item.label),
+          }),
+        ),
+      }),
+    );
     expect(root.querySelectorAll('li')[0].textContent).toBe('a');
     rows.update(0, (r) => ({ ...r, label: 'A!' }));
     expect(root.querySelectorAll('li')[0].textContent).toBe('A!');
@@ -296,8 +320,10 @@ describe('in-place updates re-wire changed binding instances (KF-347)', () => {
             'data-key': String(item.id),
             class: computed(() => (item.done ? 'done' : '')),
             children: item.label,
-          })),
-      }));
+          }),
+        ),
+      }),
+    );
     const li = (): Element => root.querySelector('li') as Element;
     expect(li().getAttribute('class')).toBe('');
     rows.update(0, (r) => ({ ...r, done: true }));
@@ -314,9 +340,17 @@ describe('in-place updates re-wire changed binding instances (KF-347)', () => {
         children: each(rows, (item) =>
           jsx('li', {
             'data-key': String(item.id),
-            children: [item.label, ' ', jsx('em', { children: computed(() => (item.done ? 'yes' : 'no')) })],
-          })),
-      }));
+            children: [
+              item.label,
+              ' ',
+              jsx('em', {
+                children: computed(() => (item.done ? 'yes' : 'no')),
+              }),
+            ],
+          }),
+        ),
+      }),
+    );
     expect(root.querySelector('li')!.textContent).toBe('x no');
     // Static text AND the self-read hole change in one update.
     rows.update(0, (r) => ({ ...r, label: 'y', done: true }));
@@ -332,13 +366,19 @@ describe('in-place updates re-wire changed binding instances (KF-347)', () => {
         children: each(rows, (item) =>
           jsx('li', {
             'data-key': String(item.id),
-            children: [computed(() => item.label), '/', computed(() => ext.value)],
-          })),
-      }));
+            children: [
+              computed(() => item.label),
+              '/',
+              computed(() => ext.value),
+            ],
+          }),
+        ),
+      }),
+    );
     expect(root.querySelector('li')!.textContent).toBe('a/one');
     rows.update(0, (r) => ({ ...r, label: 'b' }));
     expect(root.querySelector('li')!.textContent).toBe('b/one');
-    ext.value = 'two';   // the re-wired external hole must still track
+    ext.value = 'two'; // the re-wired external hole must still track
     expect(root.querySelector('li')!.textContent).toBe('b/two');
     dispose();
   });
@@ -346,18 +386,26 @@ describe('in-place updates re-wire changed binding instances (KF-347)', () => {
   it('snapshot in-place: a cacheKey re-render re-wires the changed row; untouched rows carry for free and stay live', () => {
     const ext = signal('E');
     const sel = signal<number | null>(null);
-    const items = signal<Row[]>([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const items = signal<Row[]>([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
     const dispose = mount(root, () =>
       jsx('ul', {
-        children: each(items.value, (item) =>
-          jsx('li', {
-            'data-key': String(item.id),
-            class: computed(() => (item.id === sel.value ? 'sel' : '')),
-            children: [item.label, ':', computed(() => ext.value)],
-          }), (item) => (item.id === sel.value ? 'sel' : '')),
-      }));
+        children: each(
+          items.value,
+          (item) =>
+            jsx('li', {
+              'data-key': String(item.id),
+              class: computed(() => (item.id === sel.value ? 'sel' : '')),
+              children: [item.label, ':', computed(() => ext.value)],
+            }),
+          (item) => (item.id === sel.value ? 'sel' : ''),
+        ),
+      }),
+    );
     const lis = (): NodeListOf<Element> => root.querySelectorAll('li');
-    sel.value = 1;  // cacheKey drift → snapshot in-place: row 1 re-renders, row 2 cache-hits
+    sel.value = 1; // cacheKey drift → snapshot in-place: row 1 re-renders, row 2 cache-hits
     expect(lis()[0].getAttribute('class')).toBe('sel');
     // Row 1's fresh (re-wired) holes AND row 2's carried holes both track ext.
     ext.value = 'F';
@@ -378,8 +426,10 @@ describe('in-place updates re-wire changed binding instances (KF-347)', () => {
           jsx('li', {
             'data-key': String(item.id),
             children: item.done ? computed(() => item.label) : item.label,
-          })),
-      }));
+          }),
+        ),
+      }),
+    );
     expect(root.querySelector('li')!.textContent).toBe('a');
     // The update swaps the bound hole for plain static text (newLen === 0):
     // the old effect must be disposed, nothing re-wired, content correct.
@@ -397,16 +447,23 @@ describe('in-place updates re-wire changed binding instances (KF-347)', () => {
     const items = signal<Row[]>([{ id: 1, label: 'a' }]);
     const dispose = mount(root, () =>
       jsx('ul', {
-        children: each(items.value, (item) =>
-          jsx('li', {
-            'data-key': String(item.id),
-            children: jsx(sel.value ? 'strong' : 'span', { children: computed(() => ext.value) }),
-          }), () => String(sel.value)),
-      }));
+        children: each(
+          items.value,
+          (item) =>
+            jsx('li', {
+              'data-key': String(item.id),
+              children: jsx(sel.value ? 'strong' : 'span', {
+                children: computed(() => ext.value),
+              }),
+            }),
+          () => String(sel.value),
+        ),
+      }),
+    );
     expect(root.querySelector('li span')).not.toBeNull();
-    sel.value = true;  // cacheKey drift → in-place re-render → nested tag changes
+    sel.value = true; // cacheKey drift → in-place re-render → nested tag changes
     expect(root.querySelector('li strong')).not.toBeNull();
-    ext.value = 'v2';  // the re-rendered row's bound hole must be live
+    ext.value = 'v2'; // the re-rendered row's bound hole must be live
     expect(root.querySelector('li')!.textContent).toBe('v2');
     dispose();
   });

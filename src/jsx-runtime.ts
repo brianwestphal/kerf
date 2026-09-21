@@ -85,9 +85,11 @@ export class SafeHtml {
  * recognition, so it's kept global by design.
  */
 export function isSafeHtml(value: unknown): value is SafeHtml {
-  return typeof value === 'object'
-    && value !== null
-    && (value as Record<symbol, unknown>)[SAFE_HTML_BRAND] === true;
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    (value as Record<symbol, unknown>)[SAFE_HTML_BRAND] === true
+  );
 }
 
 /**
@@ -155,7 +157,14 @@ export function granularListSafeHtml(
 // KF-294: `ReadonlySignal<unknown>` (covariant) accepts both `signal()` and
 // `computed()` values of any T handed straight into a text hole — the runtime
 // binds them fine-grained instead of stringifying.
-type Child = SafeHtml | string | number | boolean | null | undefined | ReadonlySignal<unknown>;
+type Child =
+  | SafeHtml
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | ReadonlySignal<unknown>;
 type Children = Child | Children[];
 
 interface Props {
@@ -164,8 +173,19 @@ interface Props {
 }
 
 const VOID_TAGS = new Set([
-  'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input',
-  'link', 'meta', 'source', 'track', 'wbr',
+  'area',
+  'base',
+  'br',
+  'col',
+  'embed',
+  'hr',
+  'img',
+  'input',
+  'link',
+  'meta',
+  'source',
+  'track',
+  'wbr',
 ]);
 
 /**
@@ -174,7 +194,8 @@ const VOID_TAGS = new Set([
  * skip cases.
  */
 function toSegment(child: Children): Segment {
-  if (child == null || typeof child === 'boolean') return { kind: 'static', html: '' };
+  if (child == null || typeof child === 'boolean')
+    return { kind: 'static', html: '' };
   // KF-294: a signal handed straight into a text position. Inside a mount
   // render, emit a comment marker and record a binding so the text node
   // updates fine-grained (no render re-run). Outside a mount (SSR/toString),
@@ -183,13 +204,17 @@ function toSegment(child: Children): Segment {
     const marker = bindText(child);
     if (marker !== null) return { kind: 'static', html: marker };
     const v = (child as Signal<unknown>).value;
-    return { kind: 'static', html: v == null || typeof v === 'boolean' ? '' : escapeHtml(String(v)) };
+    return {
+      kind: 'static',
+      html: v == null || typeof v === 'boolean' ? '' : escapeHtml(String(v)),
+    };
   }
   if (isSafeHtml(child)) {
     // Cross-bundle SafeHtml shims (KF-14 case) may have only `__html`.
     return child.__segment ?? { kind: 'static', html: child.__html };
   }
-  if (typeof child === 'string') return { kind: 'static', html: escapeHtml(child) };
+  if (typeof child === 'string')
+    return { kind: 'static', html: escapeHtml(child) };
   if (typeof child === 'number') return { kind: 'static', html: String(child) };
   if (Array.isArray(child)) return mergeChildSegments(child.map(toSegment));
   // Catch the common mistake of passing a DOM element (e.g. the result of
@@ -197,18 +222,21 @@ function toSegment(child: Children): Segment {
   // DOM nodes can't be composed — they'd silently serialize to "" and their
   // event listeners would be lost. Throw loudly so this can't sneak in.
   const maybeNode = child as unknown;
-  if (typeof maybeNode === 'object' && maybeNode !== null
-      && ('nodeType' in maybeNode || 'outerHTML' in maybeNode)) {
+  if (
+    typeof maybeNode === 'object' &&
+    maybeNode !== null &&
+    ('nodeType' in maybeNode || 'outerHTML' in maybeNode)
+  ) {
     throw new Error(
-      'JSX: DOM elements cannot be passed as children (the JSX runtime renders to HTML strings). '
-      + 'Build the tree in one JSX expression and use querySelector after toElement() to get element refs.',
+      'JSX: DOM elements cannot be passed as children (the JSX runtime renders to HTML strings). ' +
+        'Build the tree in one JSX expression and use querySelector after toElement() to get element refs.',
     );
   }
   throw new Error(
-    `JSX: unsupported child of type ${describeValue(child)}. `
-    + 'Children must be SafeHtml, string, number, boolean, null, undefined, or an array of those. '
-    + 'Common mistakes: passing a Signal/Store object directly (use signal.value or store.state.value), '
-    + 'passing a function (call it first), or passing a Promise (await it before render).',
+    `JSX: unsupported child of type ${describeValue(child)}. ` +
+      'Children must be SafeHtml, string, number, boolean, null, undefined, or an array of those. ' +
+      'Common mistakes: passing a Signal/Store object directly (use signal.value or store.state.value), ' +
+      'passing a function (call it first), or passing a Promise (await it before render).',
   );
 }
 
@@ -255,31 +283,35 @@ const SAFE_ATTR_NAME = /^[A-Za-z_:][\w.:-]*$/;
  *      contract. Validated post-alias; every `ATTR_ALIASES` value is itself a
  *      valid name, so aliasing is unaffected.
  */
-function assertEmittableAttrName(key: string, name: string, isFn: boolean): void {
+function assertEmittableAttrName(
+  key: string,
+  name: string,
+  isFn: boolean,
+): void {
   if (/^on[a-z]/i.test(name)) {
     if (isFn) {
       throw new Error(
-        `JSX: inline event handlers like ${key}={fn} are not supported by kerf's JSX → HTML-string runtime. `
-        + 'Use event delegation from the mount root instead:\n\n'
-        + '  delegate(rootEl, \'click\', \'[data-action="..."]\', (evt, target) => { ... });\n'
-        + '  <button data-action="...">click</button>\n\n'
-        + 'See docs/5-event-delegation.md for the tier-1/tier-2/tier-3 model.',
+        `JSX: inline event handlers like ${key}={fn} are not supported by kerf's JSX → HTML-string runtime. ` +
+          'Use event delegation from the mount root instead:\n\n' +
+          "  delegate(rootEl, 'click', '[data-action=\"...\"]', (evt, target) => { ... });\n" +
+          '  <button data-action="...">click</button>\n\n' +
+          'See docs/5-event-delegation.md for the tier-1/tier-2/tier-3 model.',
       );
     }
     throw new Error(
-      `JSX: event-handler attribute ${JSON.stringify(key)} is not allowed — an `
-      + '`on*` attribute (whether a string emitted into HTML or a signal bound via '
-      + 'setAttribute) installs a live inline handler, an XSS vector. '
-      + 'kerf uses event delegation: delegate(rootEl, \'click\', \'[data-action="..."]\', handler). '
-      + 'See docs/5-event-delegation.md.',
+      `JSX: event-handler attribute ${JSON.stringify(key)} is not allowed — an ` +
+        '`on*` attribute (whether a string emitted into HTML or a signal bound via ' +
+        'setAttribute) installs a live inline handler, an XSS vector. ' +
+        "kerf uses event delegation: delegate(rootEl, 'click', '[data-action=\"...\"]', handler). " +
+        'See docs/5-event-delegation.md.',
     );
   }
   if (!SAFE_ATTR_NAME.test(name)) {
     throw new Error(
-      `JSX: invalid attribute name ${JSON.stringify(key)}. Attribute names must be a `
-      + 'letter/underscore/colon followed by letters, digits, or "_.:-" (e.g. class, '
-      + 'data-id, aria-label, xlink:href). This usually means an untrusted object was '
-      + 'spread into JSX ({...obj}) with attacker-controlled keys — validate keys first.',
+      `JSX: invalid attribute name ${JSON.stringify(key)}. Attribute names must be a ` +
+        'letter/underscore/colon followed by letters, digits, or "_.:-" (e.g. class, ' +
+        'data-id, aria-label, xlink:href). This usually means an untrusted object was ' +
+        'spread into JSX ({...obj}) with attacker-controlled keys — validate keys first.',
     );
   }
 }
@@ -313,15 +345,18 @@ function renderAttrNamed(key: string, name: string, value: unknown): string {
     strValue = escapeAttr(value);
   } else {
     throw new Error(
-      `JSX: unsupported value for attribute "${key}" — got ${describeValue(value)}. `
-      + 'Attribute values must be string, number, boolean, null, undefined, or SafeHtml. '
-      + 'Did you mean to read .value off a Signal, or stringify the object first?',
+      `JSX: unsupported value for attribute "${key}" — got ${describeValue(value)}. ` +
+        'Attribute values must be string, number, boolean, null, undefined, or SafeHtml. ' +
+        'Did you mean to read .value off a Signal, or stringify the object first?',
     );
   }
   return ` ${name}="${strValue}"`;
 }
 
-export function jsx(tag: string | ((props: Props) => SafeHtml), props: Props): SafeHtml {
+export function jsx(
+  tag: string | ((props: Props) => SafeHtml),
+  props: Props,
+): SafeHtml {
   if (typeof tag === 'function') return tag(props);
 
   const { children, ...attrs } = props;
@@ -354,14 +389,16 @@ export function jsx(tag: string | ((props: Props) => SafeHtml), props: Props): S
   }
   // All signal attrs on one element share a scope, so the marker attr name is
   // fetched once (avoids a per-attr object alloc from bindAttr).
-  if (bindIds !== null) attrStr += ` ${bindMarkerAttr()}="${bindIds.join(',')}"`;
+  if (bindIds !== null)
+    attrStr += ` ${bindMarkerAttr()}="${bindIds.join(',')}"`;
 
   if (VOID_TAGS.has(tag)) return new SafeHtml(`<${tag}${attrStr}>`);
 
-  const childSegment: Segment = children != null
-    ? toSegment(children)
-    : { kind: 'static', html: '' };
-  return new SafeHtml(wrapWithTags(childSegment, `<${tag}${attrStr}>`, `</${tag}>`));
+  const childSegment: Segment =
+    children != null ? toSegment(children) : { kind: 'static', html: '' };
+  return new SafeHtml(
+    wrapWithTags(childSegment, `<${tag}${attrStr}>`, `</${tag}>`),
+  );
 }
 
 export { jsx as jsxs };
@@ -371,7 +408,9 @@ export { jsx as jsxs };
 export { jsx as jsxDEV };
 
 export function Fragment({ children }: { children?: Children }): SafeHtml {
-  return new SafeHtml(children != null ? toSegment(children) : { kind: 'static', html: '' });
+  return new SafeHtml(
+    children != null ? toSegment(children) : { kind: 'static', html: '' },
+  );
 }
 
 // eslint-disable-next-line @typescript-eslint/no-namespace

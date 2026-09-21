@@ -21,7 +21,10 @@ export interface RenderDocumentOptions {
 }
 
 /** Prepend `<!DOCTYPE …>` to a rendered `SafeHtml` (or string) document and return the full HTML string. */
-export function renderDocument(node: SafeHtml | string, options: RenderDocumentOptions = {}): string {
+export function renderDocument(
+  node: SafeHtml | string,
+  options: RenderDocumentOptions = {},
+): string {
   const { doctype = 'html' } = options;
   return `<!DOCTYPE ${doctype}>${node.toString()}`;
 }

@@ -114,23 +114,43 @@ export function findListInvariantViolations(
     // `expectedCounts` is supplied only for lists in the current render.
     const expected = expectedCounts?.get(id);
     if (expected !== undefined && items.length !== expected) {
-      problems.push(describe(id, `holds ${items.length} row(s) but its source has ${expected} — `
-        + 'the reconcile dropped or duplicated rows'));
+      problems.push(
+        describe(
+          id,
+          `holds ${items.length} row(s) but its source has ${expected} — ` +
+            'the reconcile dropped or duplicated rows',
+        ),
+      );
     }
 
     if (!rootEl.contains(marker)) {
-      problems.push(describe(id, 'its marker comment is no longer inside the mount root, so every '
-        + 'future reconcile would mutate a detached tree'));
+      problems.push(
+        describe(
+          id,
+          'its marker comment is no longer inside the mount root, so every ' +
+            'future reconcile would mutate a detached tree',
+        ),
+      );
       continue;
     }
     if (marker.data !== `${LIST_MARKER_PREFIX}${id}`) {
-      problems.push(describe(id, `its marker reads '${marker.data}' — the id is carried by a `
-        + 'different marker node, so this binding describes another list'));
+      problems.push(
+        describe(
+          id,
+          `its marker reads '${marker.data}' — the id is carried by a ` +
+            'different marker node, so this binding describes another list',
+        ),
+      );
     }
 
     const markerIndex = indexIn(liveParent, marker);
     if (markerIndex === -1) {
-      problems.push(describe(id, 'its marker is not a child of the parent the binding records'));
+      problems.push(
+        describe(
+          id,
+          'its marker is not a child of the parent the binding records',
+        ),
+      );
       continue;
     }
 
@@ -140,25 +160,38 @@ export function findListInvariantViolations(
       const node = items[i].node;
       const index = indexIn(liveParent, node);
       if (index === -1) {
-        problems.push(describe(id, `bound row ${i} is not a child of the list's parent `
-          + `(<${liveParent.tagName.toLowerCase()}>)${node.isConnected ? ' — it is attached elsewhere in the document' : ' — it is detached'}`));
+        problems.push(
+          describe(
+            id,
+            `bound row ${i} is not a child of the list's parent ` +
+              `(<${liveParent.tagName.toLowerCase()}>)${node.isConnected ? ' — it is attached elsewhere in the document' : ' — it is detached'}`,
+          ),
+        );
         continue;
       }
       if (index <= previousIndex) {
-        problems.push(describe(id, `bound row ${i} appears at child position ${index}, which is not `
-          + `after the previous one (${previousIndex}) — the rows are out of order or have crossed the marker`));
+        problems.push(
+          describe(
+            id,
+            `bound row ${i} appears at child position ${index}, which is not ` +
+              `after the previous one (${previousIndex}) — the rows are out of order or have crossed the marker`,
+          ),
+        );
       }
       previousIndex = index;
       if (first === -1) first = index;
 
       const owner = owners.get(node);
       if (owner !== undefined) {
-        problems.push(describe(id, `bound row ${i} is also claimed by list '${owner}'`));
+        problems.push(
+          describe(id, `bound row ${i} is also claimed by list '${owner}'`),
+        );
       } else {
         owners.set(node, id);
       }
     }
-    if (first !== -1) spans.push({ id, parent: liveParent, from: first, to: previousIndex });
+    if (first !== -1)
+      spans.push({ id, parent: liveParent, from: first, to: previousIndex });
   }
 
   // Region overlap: two lists sharing a parent must occupy disjoint stretches of
@@ -168,8 +201,13 @@ export function findListInvariantViolations(
     for (let b = a + 1; b < spans.length; b++) {
       if (spans[a].parent !== spans[b].parent) continue;
       if (spans[a].from <= spans[b].to && spans[b].from <= spans[a].to) {
-        problems.push(describe(spans[a].id, `its rows (child positions ${spans[a].from}-${spans[a].to}) `
-          + `overlap those of list '${spans[b].id}' (${spans[b].from}-${spans[b].to}) in the same parent`));
+        problems.push(
+          describe(
+            spans[a].id,
+            `its rows (child positions ${spans[a].from}-${spans[a].to}) ` +
+              `overlap those of list '${spans[b].id}' (${spans[b].from}-${spans[b].to}) in the same parent`,
+          ),
+        );
       }
     }
   }
@@ -188,11 +226,16 @@ export function maybeCheckListInvariants(
 ): void {
   const level = mode();
   if (level === 'off') return;
-  const problems = findListInvariantViolations(rootEl, bindings, expectedCounts);
+  const problems = findListInvariantViolations(
+    rootEl,
+    bindings,
+    expectedCounts,
+  );
   if (problems.length === 0) return;
-  const report = `${problems.join('\n')}\n`
-    + 'This is a kerf bug, not an application one — please report it with the markup that produced it. '
-    + 'Set KERF_DEV_INVARIANTS=1 to warn instead of throw, or unset it to disable these checks.';
+  const report =
+    `${problems.join('\n')}\n` +
+    'This is a kerf bug, not an application one — please report it with the markup that produced it. ' +
+    'Set KERF_DEV_INVARIANTS=1 to warn instead of throw, or unset it to disable these checks.';
   if (level === 'throw') throw new Error(report);
   console.warn(report);
 }

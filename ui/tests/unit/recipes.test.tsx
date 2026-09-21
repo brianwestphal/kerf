@@ -20,22 +20,52 @@ const target = (data: Record<string, string> = {}) => {
 
 describe('production composition recipes', () => {
   it('renders every stable recipe marker from a per-instance factory', () => {
-    const factories = [createAppShell, createNavigationSidebar, createWorkspaceHeader, createMasterDetail, createComposerForm, createListWorkspace, createCompactToolbar];
-    const ids = ['recipe-app-shell', 'recipe-navigation-sidebar', 'recipe-workspace-header', 'recipe-list-detail-dialog', 'recipe-composer-form', 'recipe-list-workspace-states', 'recipe-compact-toolbar'];
-    factories.forEach((factory, index) => expect(html(factory(() => {}).render())).toContain(`data-recipe="${ids[index]}"`));
+    const factories = [
+      createAppShell,
+      createNavigationSidebar,
+      createWorkspaceHeader,
+      createMasterDetail,
+      createComposerForm,
+      createListWorkspace,
+      createCompactToolbar,
+    ];
+    const ids = [
+      'recipe-app-shell',
+      'recipe-navigation-sidebar',
+      'recipe-workspace-header',
+      'recipe-list-detail-dialog',
+      'recipe-composer-form',
+      'recipe-list-workspace-states',
+      'recipe-compact-toolbar',
+    ];
+    factories.forEach((factory, index) =>
+      expect(html(factory(() => {}).render())).toContain(
+        `data-recipe="${ids[index]}"`,
+      ),
+    );
   });
 
   it('keeps one scroll owner for each application-shell pane and updates controlled resize state', () => {
     const recipe = createAppShell(() => {});
     expect(html(recipe.render()).match(/kui-pane__content/g)).toHaveLength(3);
     recipe.resize?.('recipe-navigation', 288);
-    expect(html(recipe.render())).toContain('--kui-resizable-region-size:288px');
+    expect(html(recipe.render())).toContain(
+      '--kui-resizable-region-size:288px',
+    );
   });
 
   it('moves through every list workspace state deterministically', () => {
     const recipe = createListWorkspace(() => {});
     expect(html(recipe.render())).toContain('data-list-state="loading"');
-    for (const [command, state] of [['load', 'populated'], ['refresh', 'stale'], ['finish', 'populated'], ['empty', 'empty'], ['create', 'populated'], ['fail', 'error'], ['retry', 'populated']] as const) {
+    for (const [command, state] of [
+      ['load', 'populated'],
+      ['refresh', 'stale'],
+      ['finish', 'populated'],
+      ['empty', 'empty'],
+      ['create', 'populated'],
+      ['fail', 'error'],
+      ['retry', 'populated'],
+    ] as const) {
       recipe.action(command, target());
       expect(html(recipe.render())).toContain(`data-list-state="${state}"`);
     }
@@ -43,7 +73,8 @@ describe('production composition recipes', () => {
 
   it('controls sidebar disclosure, dialog selection, form validation, and toolbar choices', () => {
     const sidebar = createNavigationSidebar(() => {});
-    const toggle = target(); toggle.className = 'kui-list-header__toggle';
+    const toggle = target();
+    toggle.className = 'kui-list-header__toggle';
     sidebar.action('', toggle);
     expect(html(sidebar.render())).not.toContain('Design system rollout');
 
@@ -54,8 +85,13 @@ describe('production composition recipes', () => {
     const form = createComposerForm(() => {});
     form.action('submit', target());
     expect(html(form.render())).toContain('role="alert"');
-    const input = document.createElement('wa-input') as HTMLElement & { value: string }; input.setAttribute('name', 'recipe-title'); input.value = 'Shipped';
-    form.change?.(input); form.action('submit', target());
+    const input = document.createElement('wa-input') as HTMLElement & {
+      value: string;
+    };
+    input.setAttribute('name', 'recipe-title');
+    input.value = 'Shipped';
+    form.change?.(input);
+    form.action('submit', target());
     expect(html(form.render())).toContain('Update published');
 
     const toolbar = createCompactToolbar(() => {});
@@ -69,26 +105,54 @@ describe('production composition recipes', () => {
     const form = createComposerForm(() => {});
     const template = document.createElement('template');
     template.innerHTML = html(form.render());
-    const root = template.content.querySelector<HTMLFormElement>('[data-recipe="recipe-composer-form"]')!;
+    const root = template.content.querySelector<HTMLFormElement>(
+      '[data-recipe="recipe-composer-form"]',
+    )!;
     expect(root.classList).toContain('kui-recipe__surface');
     expect(root.getAttribute('aria-labelledby')).toBe('recipe-composer-title');
-    expect(root.getAttribute('aria-describedby')).toBe('recipe-composer-summary');
-    expect(root.querySelector(':scope > [data-component="panel-header"]')).not.toBeNull();
-    expect(root.querySelector('#recipe-composer-title')?.textContent).toBe('Publish workspace update');
-    expect(root.querySelector('#recipe-composer-summary')?.textContent).toBe('Share a concise, actionable update with collaborators.');
-    expect([...root.children].filter((child) => child.classList.contains('recipe-form__section'))).toHaveLength(2);
-    expect([...root.children].filter((child) => child.classList.contains('kui-content-item'))).toHaveLength(0);
+    expect(root.getAttribute('aria-describedby')).toBe(
+      'recipe-composer-summary',
+    );
+    expect(
+      root.querySelector(':scope > [data-component="panel-header"]'),
+    ).not.toBeNull();
+    expect(root.querySelector('#recipe-composer-title')?.textContent).toBe(
+      'Publish workspace update',
+    );
+    expect(root.querySelector('#recipe-composer-summary')?.textContent).toBe(
+      'Share a concise, actionable update with collaborators.',
+    );
+    expect(
+      [...root.children].filter((child) =>
+        child.classList.contains('recipe-form__section'),
+      ),
+    ).toHaveLength(2);
+    expect(
+      [...root.children].filter((child) =>
+        child.classList.contains('kui-content-item'),
+      ),
+    ).toHaveLength(0);
     expect(root.querySelector('[data-component="state-banner"]')).toBeNull();
-    expect(root.querySelector('.recipe-form__footer .recipe-form__actions')).not.toBeNull();
-    expect(root.querySelector('.recipe-form__footer .kui-recipe__ownership')).not.toBeNull();
+    expect(
+      root.querySelector('.recipe-form__footer .recipe-form__actions'),
+    ).not.toBeNull();
+    expect(
+      root.querySelector('.recipe-form__footer .kui-recipe__ownership'),
+    ).not.toBeNull();
 
     form.action('submit', target());
     template.innerHTML = html(form.render());
-    const errorRoot = template.content.querySelector<HTMLFormElement>('[data-recipe="recipe-composer-form"]')!;
+    const errorRoot = template.content.querySelector<HTMLFormElement>(
+      '[data-recipe="recipe-composer-form"]',
+    )!;
     const banner = errorRoot.querySelector('[data-component="state-banner"]');
     expect(banner?.parentElement).toBe(errorRoot);
     expect(banner?.getAttribute('role')).toBe('alert');
-    expect([...errorRoot.children].filter((child) => child.classList.contains('recipe-form__section'))).toHaveLength(2);
+    expect(
+      [...errorRoot.children].filter((child) =>
+        child.classList.contains('recipe-form__section'),
+      ),
+    ).toHaveLength(2);
   });
 
   it('resets the composer signals and upgraded field values together', () => {
@@ -120,8 +184,12 @@ describe('production composition recipes', () => {
     expect(resetMarkup).not.toContain('Update published');
     const template = document.createElement('template');
     template.innerHTML = resetMarkup;
-    expect(template.content.querySelector('wa-input')?.getAttribute('value')).toBe('');
-    expect(template.content.querySelector('wa-textarea')?.getAttribute('value')).toBe('');
+    expect(
+      template.content.querySelector('wa-input')?.getAttribute('value'),
+    ).toBe('');
+    expect(
+      template.content.querySelector('wa-textarea')?.getAttribute('value'),
+    ).toBe('');
     expect(announcements.at(-1)).toBe('Draft reset');
   });
 
@@ -129,16 +197,28 @@ describe('production composition recipes', () => {
     const announcements: string[] = [];
     const root = document.createElement('div');
     document.body.append(root);
-    const recipe = createNavigationSidebar((message) => announcements.push(message));
+    const recipe = createNavigationSidebar((message) =>
+      announcements.push(message),
+    );
     const stop = mountRecipe(root, recipe);
 
-    root.querySelector<HTMLElement>('[data-item-id="shared"] .kui-list-item__label')?.click();
-    expect(root.querySelector('[data-item-id="shared"]')?.getAttribute('aria-current')).toBe('page');
+    root
+      .querySelector<HTMLElement>(
+        '[data-item-id="shared"] .kui-list-item__label',
+      )
+      ?.click();
+    expect(
+      root
+        .querySelector('[data-item-id="shared"]')
+        ?.getAttribute('aria-current'),
+    ).toBe('page');
     expect(announcements).toContain('Selected shared');
 
     stop();
     stop();
-    root.querySelector<HTMLElement>('[data-recipe-command="settings"]')?.click();
+    root
+      .querySelector<HTMLElement>('[data-recipe-command="settings"]')
+      ?.click();
     expect(announcements).toHaveLength(1);
     root.remove();
   });
@@ -147,22 +227,40 @@ describe('production composition recipes', () => {
     const root = document.createElement('div');
     document.body.append(root);
     const recipe = createCollapsibleSidebar(() => {});
-    expect(html(recipe.render())).toContain('data-recipe="recipe-collapsible-sidebar"');
+    expect(html(recipe.render())).toContain(
+      'data-recipe="recipe-collapsible-sidebar"',
+    );
     const stop = mountRecipe(root, recipe);
 
     const rail = root.querySelector('[data-collapsible-panel="sidebar-rail"]')!;
     expect(rail.getAttribute('data-collapsed')).toBe('false');
-    const reveal = root.querySelector<HTMLButtonElement>('.recipe-collapsible-sidebar__reveal')!;
+    const reveal = root.querySelector<HTMLButtonElement>(
+      '.recipe-collapsible-sidebar__reveal',
+    )!;
     reveal.click();
-    expect(root.querySelector('[data-collapsible-panel="sidebar-rail"]')?.getAttribute('data-collapsed')).toBe('true');
+    expect(
+      root
+        .querySelector('[data-collapsible-panel="sidebar-rail"]')
+        ?.getAttribute('data-collapsed'),
+    ).toBe('true');
     reveal.click();
-    expect(root.querySelector('[data-collapsible-panel="sidebar-rail"]')?.getAttribute('data-collapsed')).toBe('false');
+    expect(
+      root
+        .querySelector('[data-collapsible-panel="sidebar-rail"]')
+        ?.getAttribute('data-collapsed'),
+    ).toBe('false');
 
     stop();
     stop();
-    root.querySelector<HTMLButtonElement>('.recipe-collapsible-sidebar__reveal')?.click();
+    root
+      .querySelector<HTMLButtonElement>('.recipe-collapsible-sidebar__reveal')
+      ?.click();
     // After disposal the toggle no longer flips the panel.
-    expect(root.querySelector('[data-collapsible-panel="sidebar-rail"]')?.getAttribute('data-collapsed')).toBe('false');
+    expect(
+      root
+        .querySelector('[data-collapsible-panel="sidebar-rail"]')
+        ?.getAttribute('data-collapsed'),
+    ).toBe('false');
     root.remove();
   });
 
@@ -171,13 +269,19 @@ describe('production composition recipes', () => {
     document.body.append(root);
     const runs: string[] = [];
     let closes = 0;
-    const stop = mountCommandPaletteAdapter(root, [
-      { id: 'open', label: 'Open project', keywords: ['workspace'] },
-      { id: 'publish', label: 'Publish update' },
-    ], {
-      onClose: () => { closes += 1; },
-      onRun: ({ id }) => runs.push(id),
-    });
+    const stop = mountCommandPaletteAdapter(
+      root,
+      [
+        { id: 'open', label: 'Open project', keywords: ['workspace'] },
+        { id: 'publish', label: 'Publish update' },
+      ],
+      {
+        onClose: () => {
+          closes += 1;
+        },
+        onRun: ({ id }) => runs.push(id),
+      },
+    );
 
     expect(root.querySelector('.kui-content')).not.toBeNull();
     expect(root.querySelector('.kui-content-item')).not.toBeNull();
@@ -188,7 +292,9 @@ describe('production composition recipes', () => {
     expect(root.textContent).toContain('1 matching commands');
     root.querySelector<HTMLElement>('[data-command-id="publish"]')?.click();
     expect(runs).toEqual(['publish']);
-    query.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }));
+    query.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'Escape' }),
+    );
     expect(closes).toBe(1);
 
     stop();
@@ -202,9 +308,16 @@ describe('production composition recipes', () => {
     const announcements: string[] = [];
     const root = document.createElement('div');
     document.body.append(root);
-    const stop = mountRecipe(root, createAppShell((message) => announcements.push(message)));
-    const separator = root.querySelector<HTMLElement>('[aria-label="Resize Navigation"]')!;
-    separator.dispatchEvent(new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }));
+    const stop = mountRecipe(
+      root,
+      createAppShell((message) => announcements.push(message)),
+    );
+    const separator = root.querySelector<HTMLElement>(
+      '[aria-label="Resize Navigation"]',
+    )!;
+    separator.dispatchEvent(
+      new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }),
+    );
     expect(separator.getAttribute('aria-valuenow')).toBe('240');
     expect(announcements).toContain('recipe-navigation resized to 240px');
     stop();

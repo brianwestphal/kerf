@@ -10,7 +10,7 @@
 `docs/1-overview.md` and `CLAUDE.md` say kerf is **"Not a router."** That is a
 statement about the **core runtime** — kerf-the-UI-runtime is not a full
 framework. It is not a claim that no official router may exist. `kerfjs/router`
-ships the router as a *separate, opt-in subpath*, on the exact footing as
+ships the router as a _separate, opt-in subpath_, on the exact footing as
 `kerfjs/list` / `kerfjs/overlay` / `kerfjs/async`: it lives in the `kerfjs`
 package, but tree-shakes away entirely unless imported, so the core stays minimal
 and the "Not a router" positioning holds. An app that never imports
@@ -156,7 +156,7 @@ composition with primitives you already have:
 ## 20.7 Testing
 
 The matching, navigation, `route` signal, `match` / `activeClass`, hash mode, base
-path, link-interception *logic*, and the keyed-outlet swap are all unit-tested in
+path, link-interception _logic_, and the keyed-outlet swap are all unit-tested in
 happy-dom (`tests/unit/router.test.ts`) — happy-dom implements `history` /
 `location` / `popstate`. The parts happy-dom can't model truthfully — real
 `popstate` from browser back/forward, real link-click navigation, scroll — belong

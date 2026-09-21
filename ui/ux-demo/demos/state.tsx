@@ -20,10 +20,17 @@ export const customDisclosureOpen = signal(false);
 export const menuToolsOpen = signal(true);
 export const tokenSearchQuery = signal('NOT  AND parser');
 export const tokenSearchTokens = signal<TokenSearchToken[]>([
-  { value: 'tag:client', label: 'tag:client', offset: 4, accessibleLabel: 'client tag' },
+  {
+    value: 'tag:client',
+    label: 'tag:client',
+    offset: 4,
+    accessibleLabel: 'client tag',
+  },
   { value: 'is:active', label: 'is:active', offset: 4 },
 ]);
-export const bannerTone = signal<'neutral' | 'info' | 'success' | 'warning' | 'danger'>('info');
+export const bannerTone = signal<
+  'neutral' | 'info' | 'success' | 'warning' | 'danger'
+>('info');
 export const toolbarChoice = signal<'list' | 'columns' | 'settings'>('list');
 export const toolbarFindQuery = signal('');
 export const toolbarFindOpen = signal(false);
@@ -42,8 +49,19 @@ export const ADOPTION_SUGGESTIONS: readonly TokenSearchToken[] = [
 ];
 export const menuActionCurrent = signal('src/main.ts');
 export const menuActionPressed = signal(false);
-export const inspectorSection = signal<'summary' | 'activity' | 'files'>('summary');
-export const displayDensity = signal<'compact' | 'comfortable' | 'roomy'>('comfortable');
+export const inspectorSection = signal<'summary' | 'activity' | 'files'>(
+  'summary',
+);
+export const displayDensity = signal<'compact' | 'comfortable' | 'roomy'>(
+  'comfortable',
+);
 
-export const icon = (node: Parameters<typeof LucideIcon>[0]['icon'], name: string) => <LucideIcon icon={node} name={name} />;
-export const button = (label: string, action: string) => <button type="button" class="demo-button" data-action={action}>{label}</button>;
+export const icon = (
+  node: Parameters<typeof LucideIcon>[0]['icon'],
+  name: string,
+) => <LucideIcon icon={node} name={name} />;
+export const button = (label: string, action: string) => (
+  <button type="button" class="demo-button" data-action={action}>
+    {label}
+  </button>
+);

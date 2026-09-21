@@ -1,10 +1,10 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync,mkdtempSync,rmSync,writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join,resolve } from 'node:path';
-import { cwd,env,execPath } from 'node:process';
+import { join, resolve } from 'node:path';
+import { cwd, env, execPath } from 'node:process';
 
-import { afterEach,describe,expect,it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 const SCRIPT = resolve(cwd(), 'scripts/check-feature-coverage.mjs');
 const EXPORT_SOURCES = [
@@ -25,7 +25,8 @@ const EXPORT_SOURCES = [
 const fixtureRoots: string[] = [];
 
 afterEach(() => {
-  for (const root of fixtureRoots.splice(0)) rmSync(root, { recursive: true, force: true });
+  for (const root of fixtureRoots.splice(0))
+    rmSync(root, { recursive: true, force: true });
 });
 
 interface GateFixture {
@@ -78,7 +79,9 @@ function runGate({
 
 describe('feature-coverage export inventory', () => {
   it('rejects an unrepresented value export from the router subpath', () => {
-    const result = runGate({ sources: { 'src/router.ts': 'export function routerOnly() {}' } });
+    const result = runGate({
+      sources: { 'src/router.ts': 'export function routerOnly() {}' },
+    });
 
     expect(result.status).toBe(1);
     expect(result.stderr).toContain('routerOnly (exported from src/router.ts)');
@@ -93,8 +96,12 @@ describe('feature-coverage export inventory', () => {
     });
 
     expect(result.status).toBe(1);
-    expect(result.stderr.match(/sharedExport \(exported from/g)).toHaveLength(1);
-    expect(result.stderr).toContain('exported from src/index.ts, src/router.ts');
+    expect(result.stderr.match(/sharedExport \(exported from/g)).toHaveLength(
+      1,
+    );
+    expect(result.stderr).toContain(
+      'exported from src/index.ts, src/router.ts',
+    );
   });
 
   it('accepts a complete example independently mapped to its own smoke title', () => {
@@ -107,10 +114,12 @@ describe('feature-coverage export inventory', () => {
     const result = runGate({ completeApps: ['fixture-app', 'unmapped-app'] });
 
     expect(result.status).toBe(1);
-    expect(result.stderr).toContain('complete example "unmapped-app" has no independent feature-index row');
+    expect(result.stderr).toContain(
+      'complete example "unmapped-app" has no independent feature-index row',
+    );
   });
 
-  it('rejects a complete example mapped to another app\'s smoke title', () => {
+  it("rejects a complete example mapped to another app's smoke title", () => {
     const result = runGate({
       exampleRows: [
         '| FC-EX | fixture complete example | `site/src/examples/complete/fixture-app` | `tests/browser/example-apps.spec.ts` › "other smoke" |',
@@ -122,6 +131,8 @@ describe('feature-coverage export inventory', () => {
     });
 
     expect(result.status).toBe(1);
-    expect(result.stderr).toContain('complete example "fixture-app" has no feature-index row mapped to one of its own browser smoke tests');
+    expect(result.stderr).toContain(
+      'complete example "fixture-app" has no feature-index row mapped to one of its own browser smoke tests',
+    );
   });
 });

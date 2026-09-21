@@ -1,9 +1,16 @@
 import { expect, test } from '@playwright/test';
 
-test('centers the PanelHeader icon inside its filled circle', async ({ page, browserName }) => {
+test('centers the PanelHeader icon inside its filled circle', async ({
+  page,
+  browserName,
+}) => {
   await page.setViewportSize({ width: 1000, height: 400 });
   await page.goto('/?component=panel-header');
-  const iconGroup = page.locator('[data-demo="panel-header"] [data-component="panel-header"][data-has-icon="true"] .kui-panel-header__icon').first();
+  const iconGroup = page
+    .locator(
+      '[data-demo="panel-header"] [data-component="panel-header"][data-has-icon="true"] .kui-panel-header__icon',
+    )
+    .first();
   await expect(iconGroup).toBeVisible();
 
   // The icon is a raw svg (not a button); it must sit dead-center in the tile.
@@ -19,14 +26,22 @@ test('centers the PanelHeader icon inside its filled circle', async ({ page, bro
   expect(geometry.dy).toBeLessThan(0.75);
 
   if (browserName === 'chromium') {
-    await page.locator('[data-demo="panel-header"] .kui-catalog-example').nth(1).screenshot({ path: 'test-results/panel-header-icon-centered.png' });
+    await page
+      .locator('[data-demo="panel-header"] .kui-catalog-example')
+      .nth(1)
+      .screenshot({ path: 'test-results/panel-header-icon-centered.png' });
   }
 });
 
-test('exposes a page PanelHeader title as a heading landmark', async ({ page }) => {
+test('exposes a page PanelHeader title as a heading landmark', async ({
+  page,
+}) => {
   await page.goto('/?component=panel-header');
   // The first example is a page title with headingLevel={1}.
-  const pageHeading = page.getByRole('heading', { level: 1, name: 'UI foundations' });
+  const pageHeading = page.getByRole('heading', {
+    level: 1,
+    name: 'UI foundations',
+  });
   await expect(pageHeading).toBeVisible();
   await expect(pageHeading).toHaveClass(/kui-panel-header__title/);
 

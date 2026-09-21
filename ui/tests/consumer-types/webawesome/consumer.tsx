@@ -12,7 +12,11 @@ export const WebAwesomeRecipe = () => (
       <wa-option value="mara">Mara Chen</wa-option>
       <wa-option value="sam">Sam Rivera</wa-option>
     </wa-select>
-    <wa-button slot="footer" appearance="outlined">Cancel</wa-button>
-    <wa-button slot="footer" variant="brand" appearance="accent">Create</wa-button>
+    <wa-button slot="footer" appearance="outlined">
+      Cancel
+    </wa-button>
+    <wa-button slot="footer" variant="brand" appearance="accent">
+      Create
+    </wa-button>
   </wa-dialog>
 );

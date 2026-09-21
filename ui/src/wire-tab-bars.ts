@@ -34,10 +34,17 @@ const AUTO_SCROLL_EDGE_PX = 56;
 const AUTO_SCROLL_MIN_PX_PER_SECOND = 180;
 const AUTO_SCROLL_MAX_PX_PER_SECOND = 900;
 
-export function reorderTabs<T>(items: readonly T[], getId: (item: T) => string, sourceId: string, targetId: string, position: TabDropPosition): T[] {
+export function reorderTabs<T>(
+  items: readonly T[],
+  getId: (item: T) => string,
+  sourceId: string,
+  targetId: string,
+  position: TabDropPosition,
+): T[] {
   if (sourceId === targetId) return [...items];
   const source = items.find((item) => getId(item) === sourceId);
-  if (!source || !items.some((item) => getId(item) === targetId)) return [...items];
+  if (!source || !items.some((item) => getId(item) === targetId))
+    return [...items];
   const remaining = items.filter((item) => getId(item) !== sourceId);
   const targetIndex = remaining.findIndex((item) => getId(item) === targetId);
   remaining.splice(targetIndex + (position === 'after' ? 1 : 0), 0, source);
@@ -45,7 +52,9 @@ export function reorderTabs<T>(items: readonly T[], getId: (item: T) => string, 
 }
 
 function tabRoot(target: EventTarget | null): TabRoot | undefined {
-  return target instanceof Element ? target.closest<TabRoot>('[data-component="app-tab"]') ?? undefined : undefined;
+  return target instanceof Element
+    ? (target.closest<TabRoot>('[data-component="app-tab"]') ?? undefined)
+    : undefined;
 }
 
 function tabBar(tab: TabRoot): TabBarRoot | undefined {
@@ -66,7 +75,11 @@ function positionFor(event: DragEvent, tab: TabRoot): TabDropPosition {
 }
 
 function tabsIn(bar: TabBarRoot): HTMLButtonElement[] {
-  return [...bar.querySelectorAll<HTMLButtonElement>('[data-kui-tab-list] [role="tab"]')];
+  return [
+    ...bar.querySelectorAll<HTMLButtonElement>(
+      '[data-kui-tab-list] [role="tab"]',
+    ),
+  ];
 }
 
 function reveal(tab: HTMLElement | null | undefined): void {
@@ -74,13 +87,26 @@ function reveal(tab: HTMLElement | null | undefined): void {
 }
 
 /** Wire reordering and keyboard navigation while leaving controlled state in the application. */
-export function wireTabBars(root: HTMLElement | Document, { onReorder, activation = 'automatic' }: WireTabBarsOptions): () => void {
-  const ownerDocument = (root.nodeType === 9 ? root as Document : root.ownerDocument)!;
+export function wireTabBars(
+  root: HTMLElement | Document,
+  { onReorder, activation = 'automatic' }: WireTabBarsOptions,
+): () => void {
+  const ownerDocument = (
+    root.nodeType === 9 ? (root as Document) : root.ownerDocument
+  )!;
   const view = ownerDocument.defaultView!;
-  let autoScroll: { strip: HTMLElement; velocity: number; frame: number | undefined; previousTime: number | undefined } | undefined;
+  let autoScroll:
+    | {
+        strip: HTMLElement;
+        velocity: number;
+        frame: number | undefined;
+        previousTime: number | undefined;
+      }
+    | undefined;
   const stopAutoScroll = () => {
     if (!autoScroll) return;
-    if (autoScroll.frame !== undefined) view.cancelAnimationFrame(autoScroll.frame);
+    if (autoScroll.frame !== undefined)
+      view.cancelAnimationFrame(autoScroll.frame);
     delete autoScroll.strip.dataset.tabAutoscroll;
     autoScroll = undefined;
   };
@@ -88,11 +114,20 @@ export function wireTabBars(root: HTMLElement | Document, { onReorder, activatio
     const current = autoScroll;
     if (!current) return;
     current.frame = undefined;
-    const elapsed = current.previousTime === undefined ? 1000 / 60 : Math.min(40, Math.max(1, time - current.previousTime));
+    const elapsed =
+      current.previousTime === undefined
+        ? 1000 / 60
+        : Math.min(40, Math.max(1, time - current.previousTime));
     current.previousTime = time;
-    const maximum = Math.max(0, current.strip.scrollWidth - current.strip.clientWidth);
+    const maximum = Math.max(
+      0,
+      current.strip.scrollWidth - current.strip.clientWidth,
+    );
     const previous = current.strip.scrollLeft;
-    current.strip.scrollLeft = Math.max(0, Math.min(maximum, previous + current.velocity * elapsed / 1000));
+    current.strip.scrollLeft = Math.max(
+      0,
+      Math.min(maximum, previous + (current.velocity * elapsed) / 1000),
+    );
     if (current.strip.scrollLeft === previous) {
       stopAutoScroll();
       return;
@@ -122,37 +157,62 @@ export function wireTabBars(root: HTMLElement | Document, { onReorder, activatio
       return;
     }
     const maximum = Math.max(0, strip.scrollWidth - strip.clientWidth);
-    if ((direction < 0 && strip.scrollLeft <= 0) || (direction > 0 && strip.scrollLeft >= maximum)) {
+    if (
+      (direction < 0 && strip.scrollLeft <= 0) ||
+      (direction > 0 && strip.scrollLeft >= maximum)
+    ) {
       stopAutoScroll();
       return;
     }
-    const speed = AUTO_SCROLL_MIN_PX_PER_SECOND + (AUTO_SCROLL_MAX_PX_PER_SECOND - AUTO_SCROLL_MIN_PX_PER_SECOND) * strength * strength;
+    const speed =
+      AUTO_SCROLL_MIN_PX_PER_SECOND +
+      (AUTO_SCROLL_MAX_PX_PER_SECOND - AUTO_SCROLL_MIN_PX_PER_SECOND) *
+        strength *
+        strength;
     if (autoScroll?.strip !== strip) stopAutoScroll();
-    autoScroll ??= { strip, velocity: 0, frame: undefined, previousTime: undefined };
+    autoScroll ??= {
+      strip,
+      velocity: 0,
+      frame: undefined,
+      previousTime: undefined,
+    };
     autoScroll.velocity = direction * speed;
     strip.dataset.tabAutoscroll = direction < 0 ? 'start' : 'end';
     autoScroll.frame ??= view.requestAnimationFrame(runAutoScroll);
   };
   let dragged: { barId: string; tabId: string } | undefined;
-  const clearDropPositions = () => root.querySelectorAll<HTMLElement>('[data-tab-drop-position]').forEach((tab) => delete tab.dataset.tabDropPosition);
+  const clearDropPositions = () =>
+    root
+      .querySelectorAll<HTMLElement>('[data-tab-drop-position]')
+      .forEach((tab) => delete tab.dataset.tabDropPosition);
   const clear = () => {
     stopAutoScroll();
     dragged = undefined;
-    root.querySelectorAll<HTMLElement>('[data-tab-dragging], [data-tab-drop-position]').forEach((tab) => {
-      delete tab.dataset.tabDragging;
-      delete tab.dataset.tabDropPosition;
-    });
-  };
-  const afterControlledRender = (sourceBarId: string, sourceTabId: string) => globalThis.queueMicrotask(() => {
-    const tab = [...root.querySelectorAll<TabRoot>('[data-component="app-tab"]')]
-      .find((candidate) => {
-        const candidateBar = tabBar(candidate);
-        return tabId(candidate) === sourceTabId && candidateBar !== undefined && barId(candidateBar) === sourceBarId;
+    root
+      .querySelectorAll<HTMLElement>(
+        '[data-tab-dragging], [data-tab-drop-position]',
+      )
+      .forEach((tab) => {
+        delete tab.dataset.tabDragging;
+        delete tab.dataset.tabDropPosition;
       });
-    const button = tab?.querySelector<HTMLButtonElement>('[role="tab"]');
-    button?.focus();
-    reveal(button);
-  });
+  };
+  const afterControlledRender = (sourceBarId: string, sourceTabId: string) =>
+    globalThis.queueMicrotask(() => {
+      const tab = [
+        ...root.querySelectorAll<TabRoot>('[data-component="app-tab"]'),
+      ].find((candidate) => {
+        const candidateBar = tabBar(candidate);
+        return (
+          tabId(candidate) === sourceTabId &&
+          candidateBar !== undefined &&
+          barId(candidateBar) === sourceBarId
+        );
+      });
+      const button = tab?.querySelector<HTMLButtonElement>('[role="tab"]');
+      button?.focus();
+      reveal(button);
+    });
 
   const onDragStart = (event: Event) => {
     const dragEvent = event as DragEvent;
@@ -160,18 +220,31 @@ export function wireTabBars(root: HTMLElement | Document, { onReorder, activatio
     const bar = tab && tabBar(tab);
     const sourceId = tab && tabId(tab);
     const sourceBarId = bar && barId(bar);
-    if (!tab || tab.getAttribute('draggable') !== 'true' || !sourceId || !sourceBarId) return;
+    if (
+      !tab ||
+      tab.getAttribute('draggable') !== 'true' ||
+      !sourceId ||
+      !sourceBarId
+    )
+      return;
     dragged = { barId: sourceBarId, tabId: sourceId };
     tab.dataset.tabDragging = 'true';
     if (dragEvent.dataTransfer) {
       dragEvent.dataTransfer.effectAllowed = 'move';
-      dragEvent.dataTransfer.setData('application/x-kerf-tab', `${sourceBarId}:${sourceId}`);
+      dragEvent.dataTransfer.setData(
+        'application/x-kerf-tab',
+        `${sourceBarId}:${sourceId}`,
+      );
     }
   };
   const onDragOver = (event: Event) => {
     const dragEvent = event as DragEvent;
     const tab = tabRoot(event.target);
-    const bar = event.target instanceof Element ? event.target.closest<TabBarRoot>('[data-component="tab-bar"]') ?? undefined : undefined;
+    const bar =
+      event.target instanceof Element
+        ? (event.target.closest<TabBarRoot>('[data-component="tab-bar"]') ??
+          undefined)
+        : undefined;
     const targetId = tab && tabId(tab);
     const targetBarId = bar && barId(bar);
     if (!dragged || !bar || targetBarId !== dragged.barId) {
@@ -194,19 +267,34 @@ export function wireTabBars(root: HTMLElement | Document, { onReorder, activatio
     const bar = tab && tabBar(tab);
     const targetId = tab && tabId(tab);
     const targetBarId = bar && barId(bar);
-    if (!dragged || !tab || !targetId || targetId === dragged.tabId || targetBarId !== dragged.barId) {
+    if (
+      !dragged ||
+      !tab ||
+      !targetId ||
+      targetId === dragged.tabId ||
+      targetBarId !== dragged.barId
+    ) {
       clear();
       return;
     }
     dragEvent.preventDefault();
-    const change: TabReorder = { barId: dragged.barId, sourceId: dragged.tabId, targetId, position: positionFor(dragEvent, tab), source: 'pointer' };
+    const change: TabReorder = {
+      barId: dragged.barId,
+      sourceId: dragged.tabId,
+      targetId,
+      position: positionFor(dragEvent, tab),
+      source: 'pointer',
+    };
     clear();
     onReorder(change);
     afterControlledRender(change.barId, change.sourceId);
   };
   const onKeyDown = (event: Event) => {
     const keyboardEvent = event as KeyboardEvent;
-    const button = event.target instanceof Element ? event.target.closest<HTMLButtonElement>('[role="tab"]') : null;
+    const button =
+      event.target instanceof Element
+        ? event.target.closest<HTMLButtonElement>('[role="tab"]')
+        : null;
     const tab = button && tabRoot(button);
     const bar = tab && tabBar(tab);
     if (!button || !tab || !bar) return;
@@ -220,28 +308,48 @@ export function wireTabBars(root: HTMLElement | Document, { onReorder, activatio
     const tabs = tabsIn(bar);
     const current = tabs.indexOf(button);
     if (current < 0) return;
-    if (keyboardEvent.altKey && keyboardEvent.shiftKey && (keyboardEvent.key === 'ArrowLeft' || keyboardEvent.key === 'ArrowRight')) {
-      const target = tabs[current + (keyboardEvent.key === 'ArrowLeft' ? -1 : 1)];
+    if (
+      keyboardEvent.altKey &&
+      keyboardEvent.shiftKey &&
+      (keyboardEvent.key === 'ArrowLeft' || keyboardEvent.key === 'ArrowRight')
+    ) {
+      const target =
+        tabs[current + (keyboardEvent.key === 'ArrowLeft' ? -1 : 1)];
       const sourceId = tabId(tab);
       const targetRoot = target && tabRoot(target);
       const targetId = targetRoot && tabId(targetRoot);
       const sourceBarId = barId(bar);
-      if (!target || !sourceId || !targetId || !sourceBarId || tab.getAttribute('draggable') !== 'true') return;
+      if (
+        !target ||
+        !sourceId ||
+        !targetId ||
+        !sourceBarId ||
+        tab.getAttribute('draggable') !== 'true'
+      )
+        return;
       keyboardEvent.preventDefault();
-      onReorder({ barId: sourceBarId, sourceId, targetId, position: keyboardEvent.key === 'ArrowLeft' ? 'before' : 'after', source: 'keyboard' });
+      onReorder({
+        barId: sourceBarId,
+        sourceId,
+        targetId,
+        position: keyboardEvent.key === 'ArrowLeft' ? 'before' : 'after',
+        source: 'keyboard',
+      });
       afterControlledRender(sourceBarId, sourceId);
       return;
     }
     let next: number | undefined;
     if (keyboardEvent.key === 'ArrowRight') next = (current + 1) % tabs.length;
-    else if (keyboardEvent.key === 'ArrowLeft') next = (current - 1 + tabs.length) % tabs.length;
+    else if (keyboardEvent.key === 'ArrowLeft')
+      next = (current - 1 + tabs.length) % tabs.length;
     else if (keyboardEvent.key === 'Home') next = 0;
     else if (keyboardEvent.key === 'End') next = tabs.length - 1;
     if (next === undefined) return;
     keyboardEvent.preventDefault();
     // A per-bar data-tab-activation attribute overrides the wireTabBars option.
     const perBar = bar.dataset.tabActivation;
-    const mode: TabActivation = perBar === 'manual' || perBar === 'automatic' ? perBar : activation;
+    const mode: TabActivation =
+      perBar === 'manual' || perBar === 'automatic' ? perBar : activation;
     tabs[next]?.focus();
     // Manual activation moves roving focus only; the user selects with Enter / Space
     // (native on the tab <button>) or click. Automatic also selects the focused tab.
@@ -249,7 +357,11 @@ export function wireTabBars(root: HTMLElement | Document, { onReorder, activatio
     reveal(tabs[next]);
   };
   const onFocusIn = (event: Event) => {
-    const tab = event.target instanceof HTMLElement && event.target.matches('[role="tab"]') ? event.target : undefined;
+    const tab =
+      event.target instanceof HTMLElement &&
+      event.target.matches('[role="tab"]')
+        ? event.target
+        : undefined;
     reveal(tab);
   };
 
@@ -259,7 +371,11 @@ export function wireTabBars(root: HTMLElement | Document, { onReorder, activatio
   root.addEventListener('dragend', clear);
   root.addEventListener('keydown', onKeyDown);
   root.addEventListener('focusin', onFocusIn);
-  root.querySelectorAll<HTMLElement>('[data-kui-tab-list] [role="tab"][aria-selected="true"]').forEach(reveal);
+  root
+    .querySelectorAll<HTMLElement>(
+      '[data-kui-tab-list] [role="tab"][aria-selected="true"]',
+    )
+    .forEach(reveal);
 
   return () => {
     clear();

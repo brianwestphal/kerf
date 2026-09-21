@@ -10,15 +10,28 @@
  * dedup / production-shape (hooks uninstalled) paths and the wiring-path retention.
  */
 
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
 import { _resetWarnedForTests } from '../../src/dev-binding-warn.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
-const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+const env = (
+  globalThis as { process: { env: Record<string, string | undefined> } }
+).process.env;
 
 let root: HTMLElement;
 let warnSpy: MockInstance<typeof console.warn>;
@@ -44,7 +57,11 @@ describe('dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)', () => {
     const sigB = signal('b');
     // `cond.value` is read in render() (drives re-render); the bound attr emits
     // only a marker, so the surrounds string is byte-equal across sigA↔sigB.
-    mount(root, () => jsx('div', { class: cond.value ? sigA : sigB, children: 'x' }) as never);
+    mount(
+      root,
+      () =>
+        jsx('div', { class: cond.value ? sigA : sigB, children: 'x' }) as never,
+    );
     expect(warnSpy).not.toHaveBeenCalled(); // first render — no switch yet
 
     cond.value = false; // fast-path re-render; hole now wants sigB, effect stuck on sigA
@@ -83,7 +100,11 @@ describe('dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)', () => {
     const cond = signal(true);
     const sigA = signal('a');
     const sigB = signal('b');
-    mount(root, () => jsx('div', { class: cond.value ? sigA : sigB, children: 'x' }) as never);
+    mount(
+      root,
+      () =>
+        jsx('div', { class: cond.value ? sigA : sigB, children: 'x' }) as never,
+    );
     cond.value = false;
     expect(warnSpy).not.toHaveBeenCalled();
   });
@@ -95,7 +116,14 @@ describe('dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)', () => {
       const cond = signal(true);
       const sigA = signal('a');
       const sigB = signal('b');
-      mount(root, () => jsx('div', { class: cond.value ? sigA : sigB, children: 'x' }) as never);
+      mount(
+        root,
+        () =>
+          jsx('div', {
+            class: cond.value ? sigA : sigB,
+            children: 'x',
+          }) as never,
+      );
       cond.value = false;
       expect(warnSpy).not.toHaveBeenCalled();
     } finally {
@@ -111,7 +139,14 @@ describe('dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)', () => {
       const cond = signal(true);
       const sigA = signal('a');
       const sigB = signal('b');
-      mount(root, () => jsx('div', { class: cond.value ? sigA : sigB, children: 'x' }) as never);
+      mount(
+        root,
+        () =>
+          jsx('div', {
+            class: cond.value ? sigA : sigB,
+            children: 'x',
+          }) as never,
+      );
       cond.value = false;
       // NODE_ENV is no longer consulted anywhere: installation is the signal.
       expect(warnSpy).toHaveBeenCalledTimes(1);
@@ -124,7 +159,10 @@ describe('dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)', () => {
     env.KERF_DEV_WARN_STALE_BINDING = '1';
     const which = signal(0);
     const sigs = [signal('a'), signal('b'), signal('c')];
-    mount(root, () => jsx('div', { class: sigs[which.value], children: 'x' }) as never);
+    mount(
+      root,
+      () => jsx('div', { class: sigs[which.value], children: 'x' }) as never,
+    );
     which.value = 1; // sig1 vs wired sig0 → differ → warn
     which.value = 2; // sig2 vs wired sig0 → differ → but deduped for this hole
     expect(warnSpy).toHaveBeenCalledTimes(1);
@@ -136,13 +174,15 @@ describe('dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)', () => {
     const cond = signal(true);
     const sigA = signal('a');
     const sigB = signal('b');
-    mount(root, () =>
-      jsx('div', {
-        children: [
-          jsx('span', { children: label.value }),
-          jsx('b', { class: cond.value ? sigA : sigB, children: 'y' }),
-        ],
-      }) as never,
+    mount(
+      root,
+      () =>
+        jsx('div', {
+          children: [
+            jsx('span', { children: label.value }),
+            jsx('b', { class: cond.value ? sigA : sigB, children: 'y' }),
+          ],
+        }) as never,
     );
     // Surrounds change (span text) → morph + re-wire → prevWired refreshed to sigA.
     label.value = 'z';
@@ -155,13 +195,15 @@ describe('dev-binding-warn (KERF_DEV_WARN_STALE_BINDING=1, opt-in)', () => {
   it('does NOT warn or retain across a surrounds-changed render when the env var is off', () => {
     const label = signal('x');
     const sig = signal('a');
-    mount(root, () =>
-      jsx('div', {
-        children: [
-          jsx('span', { children: label.value }),
-          jsx('b', { class: sig, children: 'y' }),
-        ],
-      }) as never,
+    mount(
+      root,
+      () =>
+        jsx('div', {
+          children: [
+            jsx('span', { children: label.value }),
+            jsx('b', { class: sig, children: 'y' }),
+          ],
+        }) as never,
     );
     label.value = 'z'; // surrounds change, env off → retention false branch, no warn
     expect(warnSpy).not.toHaveBeenCalled();

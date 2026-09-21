@@ -40,9 +40,12 @@ function genOne(rng: Rng, world: World, allowBatch: boolean): Mutation {
     // Batched multi-source edits are where a shared render context can leak
     // one list's patch queue into another list's DOM.
     const n = rng.range(2, 3);
-    return { k: 'batch', ms: Array.from({ length: n }, () => genOne(rng, world, false)) };
+    return {
+      k: 'batch',
+      ms: Array.from({ length: n }, () => genOne(rng, world, false)),
+    };
   }
-  if (roll < 0.30) return { k: 'cond', i: rng.int(world.conds.length) };
+  if (roll < 0.3) return { k: 'cond', i: rng.int(world.conds.length) };
   if (roll < 0.42) {
     const i = rng.int(world.sigs.length);
     return { k: 'sig', i, v: `v${rng.int(1000)}` };
@@ -51,17 +54,31 @@ function genOne(rng: Rng, world: World, allowBatch: boolean): Mutation {
   const s = rng.int(world.sources.length);
   const len = itemsOf(world, s).length;
   if (roll < 0.48 || len === 0) {
-    const ids = Array.from({ length: rng.range(0, 4) }, (_, i) => `s${s}r${rng.int(1000)}_${i}`);
+    const ids = Array.from(
+      { length: rng.range(0, 4) },
+      (_, i) => `s${s}r${rng.int(1000)}_${i}`,
+    );
     return { k: 'replace', s, ids };
   }
   const op = rng.next();
-  if (op < 0.34) return { k: 'insert', s, at: rng.int(len + 1), id: `s${s}n${rng.int(10000)}` };
+  if (op < 0.34)
+    return {
+      k: 'insert',
+      s,
+      at: rng.int(len + 1),
+      id: `s${s}n${rng.int(10000)}`,
+    };
   if (op < 0.55) return { k: 'remove', s, at: rng.int(len) };
-  if (op < 0.78) return { k: 'update', s, at: rng.int(len), t: `T${rng.int(1000)}` };
+  if (op < 0.78)
+    return { k: 'update', s, at: rng.int(len), t: `T${rng.int(1000)}` };
   return { k: 'move', s, from: rng.int(len), to: rng.int(len) };
 }
 
-export function generateMutations(rng: Rng, world: World, count: number): Mutation[] {
+export function generateMutations(
+  rng: Rng,
+  world: World,
+  count: number,
+): Mutation[] {
   // Generated against a *simulated* world so indices stay in range: we apply
   // each mutation for real as we go, then reset the world before the run.
   return Array.from({ length: count }, () => {
@@ -79,7 +96,9 @@ export function generateMutations(rng: Rng, world: World, count: number): Mutati
 export function applyMutation(m: Mutation, world: World): void {
   switch (m.k) {
     case 'batch':
-      batch(() => { for (const sub of m.ms) applyMutation(sub, world); });
+      batch(() => {
+        for (const sub of m.ms) applyMutation(sub, world);
+      });
       return;
     case 'cond': {
       const c = world.conds[m.i % world.conds.length];
@@ -108,23 +127,37 @@ export function applyMutation(m: Mutation, world: World): void {
 
   if (src instanceof ArraySignal) {
     switch (m.k) {
-      case 'insert': src.insert(Math.min(m.at, len), { id: m.id, t: m.id.toUpperCase() }); return;
-      case 'remove': src.remove(m.at % len); return;
-      case 'move': src.move(m.from % len, m.to % len); return;
-      case 'update': src.update(m.at % len, (it) => ({ ...it, t: m.t })); return;
+      case 'insert':
+        src.insert(Math.min(m.at, len), { id: m.id, t: m.id.toUpperCase() });
+        return;
+      case 'remove':
+        src.remove(m.at % len);
+        return;
+      case 'move':
+        src.move(m.from % len, m.to % len);
+        return;
+      case 'update':
+        src.update(m.at % len, (it) => ({ ...it, t: m.t }));
+        return;
     }
   }
 
   const next = current.slice();
   switch (m.k) {
-    case 'insert': next.splice(Math.min(m.at, len), 0, { id: m.id, t: m.id.toUpperCase() }); break;
-    case 'remove': next.splice(m.at % len, 1); break;
+    case 'insert':
+      next.splice(Math.min(m.at, len), 0, { id: m.id, t: m.id.toUpperCase() });
+      break;
+    case 'remove':
+      next.splice(m.at % len, 1);
+      break;
     case 'move': {
       const [moved] = next.splice(m.from % len, 1);
       next.splice(m.to % len, 0, moved);
       break;
     }
-    case 'update': next[m.at % len] = { ...next[m.at % len], t: m.t }; break;
+    case 'update':
+      next[m.at % len] = { ...next[m.at % len], t: m.t };
+      break;
   }
   (src as { value: Item[] }).value = next;
 }

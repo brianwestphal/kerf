@@ -13,7 +13,7 @@
 import { attr, delegate, mount, signal, type AttrSpec } from 'kerfjs';
 
 const ACTIONS = {
-  setAngle:  attr('data-action', 'set-angle'),
+  setAngle: attr('data-action', 'set-angle'),
   setRadius: attr('data-action', 'set-radius'),
 } as const satisfies Record<string, AttrSpec<'data-action'>>;
 
@@ -23,25 +23,55 @@ export function mountSvgRender(root: HTMLElement): void {
 
   mount(root, () => (
     <div className="demo-card">
-      <h2>6. SVG inside mount <span className="demo-tag">root-svg • animated re-render</span></h2>
+      <h2>
+        6. SVG inside mount{' '}
+        <span className="demo-tag">root-svg • animated re-render</span>
+      </h2>
 
       <div className="demo-row">
         <label className="demo-label">
           rotation:
-          <input type="range" min="0" max="360" value={String(angle.value)} {...ACTIONS.setAngle.attrs} className="demo-slider" />
+          <input
+            type="range"
+            min="0"
+            max="360"
+            value={String(angle.value)}
+            {...ACTIONS.setAngle.attrs}
+            className="demo-slider"
+          />
           <span className="demo-angle-value">{angle.value}°</span>
         </label>
         <label className="demo-label">
           radius:
-          <input type="range" min="10" max="55" value={String(radius.value)} {...ACTIONS.setRadius.attrs} className="demo-slider" />
+          <input
+            type="range"
+            min="10"
+            max="55"
+            value={String(radius.value)}
+            {...ACTIONS.setRadius.attrs}
+            className="demo-slider"
+          />
           <span className="demo-angle-value">{radius.value}</span>
         </label>
       </div>
 
       <div className="demo-svg-cell">
-        <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 120 120" className="demo-svg">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="160"
+          height="160"
+          viewBox="0 0 120 120"
+          className="demo-svg"
+        >
           <g transform={`rotate(${angle.value} 60 60)`}>
-            <circle cx="60" cy="60" r={radius.value} fill="#9bd1e5" stroke="#1a76b8" strokeWidth="2" />
+            <circle
+              cx="60"
+              cy="60"
+              r={radius.value}
+              fill="#9bd1e5"
+              stroke="#1a76b8"
+              strokeWidth="2"
+            />
             <path
               d={`M 60 ${60 - radius.value} L ${60 + radius.value} 60 L 60 ${60 + radius.value} L ${60 - radius.value} 60 Z`}
               fill="#fde68a"
@@ -49,7 +79,16 @@ export function mountSvgRender(root: HTMLElement): void {
               strokeWidth="2"
               opacity="0.85"
             />
-            <text x="60" y="64" textAnchor="middle" fontFamily="sans-serif" fontSize="13" fill="#1a76b8">{angle.value}°</text>
+            <text
+              x="60"
+              y="64"
+              textAnchor="middle"
+              fontFamily="sans-serif"
+              fontSize="13"
+              fill="#1a76b8"
+            >
+              {angle.value}°
+            </text>
           </g>
         </svg>
       </div>

@@ -23,20 +23,20 @@
  *   - data-morph-skip wrapping a list parent.
  *   - Stress: 1000-row mutate-and-restore round-trip.
  */
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import {
-batch,
-each,
-mount,
-signal
-} from '../../src/index.js';
+import { batch, each, mount, signal } from '../../src/index.js';
 
 describe('Adversarial edge cases', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   // ─── Mount lifecycle ────────────────────────────────────────────────
 
@@ -47,11 +47,13 @@ describe('Adversarial edge cases', () => {
         { id: 2, label: 'b' },
       ]);
       mount(root, () => (
-        <ul>{each(rows, (r) => (
-          <li data-key={String(r.id)}>
-            <input type="text" defaultValue={r.label} />
-          </li>
-        ))}</ul>
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>
+              <input type="text" defaultValue={r.label} />
+            </li>
+          ))}
+        </ul>
       ));
       const inputs = root.querySelectorAll('input');
       const firstInput = inputs[0] as HTMLInputElement;
@@ -72,11 +74,13 @@ describe('Adversarial edge cases', () => {
       // replaced the whole <li> on every update, which dropped focus inside.)
       const rows = arraySignal([{ id: 1, label: 'a' }]);
       mount(root, () => (
-        <ul>{each(rows, (r) => (
-          <li data-key={String(r.id)}>
-            <input type="text" defaultValue={r.label} />
-          </li>
-        ))}</ul>
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>
+              <input type="text" defaultValue={r.label} />
+            </li>
+          ))}
+        </ul>
       ));
       const input = root.querySelector('input') as HTMLInputElement;
       input.focus();
@@ -96,14 +100,18 @@ describe('Adversarial edge cases', () => {
       const selectedId = signal(1);
       mount(root, () => (
         <ul>
-          {each(items, (it) => (
-            <li
-              data-key={String(it.id)}
-              className={it.id === selectedId.value ? 'sel' : ''}
-            >
-              {it.id}
-            </li>
-          ), (it) => `${it.id}-${it.id === selectedId.value ? 1 : 0}`)}
+          {each(
+            items,
+            (it) => (
+              <li
+                data-key={String(it.id)}
+                className={it.id === selectedId.value ? 'sel' : ''}
+              >
+                {it.id}
+              </li>
+            ),
+            (it) => `${it.id}-${it.id === selectedId.value ? 1 : 0}`,
+          )}
         </ul>
       ));
       expect(root.querySelectorAll('li.sel').length).toBe(1);
@@ -115,7 +123,13 @@ describe('Adversarial edge cases', () => {
 
     it('KF-93 contiguous insert detector: alternating insert/update breaks the run', () => {
       const rows = arraySignal([{ id: 0, v: 'seed' }]);
-      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>);
+      mount(root, () => (
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>{r.v}</li>
+          ))}
+        </ul>
+      ));
       // Mix insert + update in one batch — KF-93's run detector should NOT
       // bulk-parse all of them; it only fires for contiguous-index insert runs.
       batch(() => {
@@ -124,14 +138,26 @@ describe('Adversarial edge cases', () => {
         rows.insert(2, { id: 2, v: 'B' });
       });
       const lis = root.querySelectorAll('li');
-      expect(Array.from(lis).map((l) => l.textContent)).toEqual(['SEED!', 'A', 'B']);
+      expect(Array.from(lis).map((l) => l.textContent)).toEqual([
+        'SEED!',
+        'A',
+        'B',
+      ]);
     });
 
     it('KF-94 update run detector: identical-html updates are no-ops, run still recognized', () => {
       const rows = arraySignal([
-        { id: 1, v: 'a' }, { id: 2, v: 'b' }, { id: 3, v: 'c' },
+        { id: 1, v: 'a' },
+        { id: 2, v: 'b' },
+        { id: 3, v: 'c' },
       ]);
-      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>);
+      mount(root, () => (
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>{r.v}</li>
+          ))}
+        </ul>
+      ));
       const before = Array.from(root.querySelectorAll('li'));
       // Trigger updates that produce IDENTICAL html (same v).
       batch(() => {
@@ -150,10 +176,21 @@ describe('Adversarial edge cases', () => {
       // Simulate something draining the patch queue mid-flight (e.g. a second
       // each() callsite that ran granular before this one). The next mutation
       // should still reconcile correctly.
-      const rows = arraySignal([{ id: 1, v: 'a' }, { id: 2, v: 'b' }]);
-      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>);
+      const rows = arraySignal([
+        { id: 1, v: 'a' },
+        { id: 2, v: 'b' },
+      ]);
+      mount(root, () => (
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>{r.v}</li>
+          ))}
+        </ul>
+      ));
       // Drain externally — simulates the "second consumer of same arraySignal".
-      (rows as unknown as { _consumePatches: () => unknown[] })._consumePatches();
+      (
+        rows as unknown as { _consumePatches: () => unknown[] }
+      )._consumePatches();
       // Normal mutation: should still propagate.
       rows.update(0, (r) => ({ ...r, v: 'A!' }));
       expect(root.querySelector('li')!.textContent).toBe('A!');
@@ -163,14 +200,18 @@ describe('Adversarial edge cases', () => {
       // KF-98 pinning: pre-mount mutations should NOT produce an empty first render.
       const rows = arraySignal<{ id: number }>([]);
       for (let i = 0; i < 1000; i++) rows.push({ id: i });
-      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>);
+      mount(root, () => (
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>{r.id}</li>
+          ))}
+        </ul>
+      ));
       expect(root.querySelectorAll('li').length).toBe(1000);
     });
   });
 
   // ─── Stress + invariants ──────────────────────────────────────────
-
-
 });
 
 // Avoid unused import warning if vi is referenced only for setup/teardown semantics.

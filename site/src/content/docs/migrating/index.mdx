@@ -3,7 +3,7 @@ title: Migrating to Kerf
 description: Side-by-side translations from React, Vue, Svelte, Solid, Preact, Alpine, Lit, vanjs, htmx, Angular, jQuery, Redux, and Astro to Kerf. Bundle size, mental model, and gotchas per source framework.
 ---
 
-import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
+import { Card, CardGrid, LinkCard } from "@astrojs/starlight/components";
 
 Kerf doesn't try to replace your framework. But if you've already decided to leave one — or you're building something new and weighing the cluster — these pages show your current code translated, line for line, into kerf.
 
@@ -87,18 +87,18 @@ How kerf compares to each source framework on the dimensions developers usually 
 
 <div class="kerf-compare">
 
-| Dimension | React 19 | Vue 3 | Svelte 5 | Solid | Preact | Alpine 3 | Lit 3 | vanjs 1.5 | **kerf** |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Bundle (min+gz, runtime only) | ~45 KB | ~22 KB | varies (compiled) | ~4.5 KB | ~6 KB (w/ signals) | ~14 KB | ~6 KB | **~1.6 KB** | ~11 KB |
-| Reactivity model | hooks + virtual DOM | refs + proxies | runes (compiled) | signals + compiler | hooks + virtual DOM | per-component `x-data` proxies | reactive properties + lit-html | signals + direct DOM | **signals + DOM morph** |
-| Component model | function / class components | composition + SFC | runes inside `.svelte` | function components | function components | HTML directives | web components | hyperscript factories | **plain functions returning JSX** |
-| Templating | JSX → virtual DOM | `<template>` DSL | `.svelte` DSL | JSX (compiled) | JSX → virtual DOM | HTML attributes | tagged-template literals | hyperscript / DOM nodes | **JSX → HTML strings → morph** |
-| Compiler required | no (but `@vitejs/plugin-react`) | yes (`@vue/compiler-sfc`) | yes | yes (`babel-plugin-jsx-dom-expressions`) | no (but plugin) | no | no | no | **no** |
-| Keyed list reconciliation | `key` prop, virtual-DOM diff | `v-for :key` | `{#each ... (id)}` | `<For each>` | `key` prop | manual via `x-for :key` | `repeat()` directive | manual via signal arrays | **`each(items, render, key)`** |
-| Focus / selection survival across re-render | manual via refs | manual | usually automatic | usually automatic | manual via refs | manual | manual | manual | **automatic in `morph()`** |
-| Event handling | per-node JSX handlers | `@click=` attributes | `onclick={fn}` on JSX | per-node JSX handlers | per-node JSX handlers | `@click=` attributes | `@click=` template directives | hyperscript handlers | **`delegate()` once on the root** |
-| Server rendering | first-class | first-class | first-class | first-class | first-class | none | declarative shadow DOM | `vanX.replace` story | **`SafeHtml.toString()`** |
-| State sharing across components | Context / Redux / Zustand | provide/inject + Pinia | Svelte stores | createStore | Context / signals | `Alpine.store` | global state libs | shared `van.state()` | **`defineStore`** |
+| Dimension                                   | React 19                        | Vue 3                     | Svelte 5               | Solid                                    | Preact                | Alpine 3                       | Lit 3                          | vanjs 1.5                | **kerf**                          |
+| ------------------------------------------- | ------------------------------- | ------------------------- | ---------------------- | ---------------------------------------- | --------------------- | ------------------------------ | ------------------------------ | ------------------------ | --------------------------------- |
+| Bundle (min+gz, runtime only)               | ~45 KB                          | ~22 KB                    | varies (compiled)      | ~4.5 KB                                  | ~6 KB (w/ signals)    | ~14 KB                         | ~6 KB                          | **~1.6 KB**              | ~11 KB                            |
+| Reactivity model                            | hooks + virtual DOM             | refs + proxies            | runes (compiled)       | signals + compiler                       | hooks + virtual DOM   | per-component `x-data` proxies | reactive properties + lit-html | signals + direct DOM     | **signals + DOM morph**           |
+| Component model                             | function / class components     | composition + SFC         | runes inside `.svelte` | function components                      | function components   | HTML directives                | web components                 | hyperscript factories    | **plain functions returning JSX** |
+| Templating                                  | JSX → virtual DOM               | `<template>` DSL          | `.svelte` DSL          | JSX (compiled)                           | JSX → virtual DOM     | HTML attributes                | tagged-template literals       | hyperscript / DOM nodes  | **JSX → HTML strings → morph**    |
+| Compiler required                           | no (but `@vitejs/plugin-react`) | yes (`@vue/compiler-sfc`) | yes                    | yes (`babel-plugin-jsx-dom-expressions`) | no (but plugin)       | no                             | no                             | no                       | **no**                            |
+| Keyed list reconciliation                   | `key` prop, virtual-DOM diff    | `v-for :key`              | `{#each ... (id)}`     | `<For each>`                             | `key` prop            | manual via `x-for :key`        | `repeat()` directive           | manual via signal arrays | **`each(items, render, key)`**    |
+| Focus / selection survival across re-render | manual via refs                 | manual                    | usually automatic      | usually automatic                        | manual via refs       | manual                         | manual                         | manual                   | **automatic in `morph()`**        |
+| Event handling                              | per-node JSX handlers           | `@click=` attributes      | `onclick={fn}` on JSX  | per-node JSX handlers                    | per-node JSX handlers | `@click=` attributes           | `@click=` template directives  | hyperscript handlers     | **`delegate()` once on the root** |
+| Server rendering                            | first-class                     | first-class               | first-class            | first-class                              | first-class           | none                           | declarative shadow DOM         | `vanX.replace` story     | **`SafeHtml.toString()`**         |
+| State sharing across components             | Context / Redux / Zustand       | provide/inject + Pinia    | Svelte stores          | createStore                              | Context / signals     | `Alpine.store`                 | global state libs              | shared `van.state()`     | **`defineStore`**                 |
 
 </div>
 

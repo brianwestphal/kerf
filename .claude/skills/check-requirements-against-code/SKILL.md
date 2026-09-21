@@ -32,28 +32,28 @@ Comprehensively compare the requirements documents in `docs/` against the actual
    - **Build outputs** section matches what `npm run build` actually emits (entries, chunks, source maps, .d.ts files).
    - **Where to look for X** reverse-index entries still point at files that exist and contain the symbol/section claimed.
    - **Update triggers** list at the bottom is still accurate.
-   Make the edits as part of this check — do not just report them.
+     Make the edits as part of this check — do not just report them.
 
 7. **Synchronize `docs/ai/requirements-summary.md`**: Open the file and confirm each entry still matches its source doc. Flag and update:
    - **Dashboard table** rows for each numbered doc, with current Status (Shipped / Partial / Design-only / Deferred).
    - **Per-doc summary** paragraphs — flag any sentence that no longer reflects the current doc.
    - Any newly-added numbered doc that is not listed here.
    - Any doc that has been renumbered or superseded.
-   Make the edits as part of this check — do not just report them.
+     Make the edits as part of this check — do not just report them.
 
 8. **Synchronize `docs/ai/usage-guide.md`**: Open the file and confirm:
    - The `import { … } from 'kerfjs'` block lists every public export.
    - The export table lists every symbol with a current signature.
    - The "Hard rules" don't contradict any current doc.
    - The "Common errors → fixes" table doesn't reference removed APIs.
-   Make the edits as part of this check.
+     Make the edits as part of this check.
 
 9. **Synchronize `docs/orientation.md` (KF-179)**: Open the file and confirm each section still matches the current codebase. **This doc is hard-capped at 500 words** (`wc -w docs/orientation.md` ≤ 500); preserve the cap when editing — trim elsewhere if you need to add. Check specifically:
    - **"How the source is organized"** bullets match the current files under `src/` (and `src/utils/`). One bullet per primary export; add new files as they land in `src/`.
    - **Render-pipeline diagram** at `docs/diagrams/render-pipeline.svg` still reflects the actual pipeline (signal write → render fn → SafeHtml → morph + list reconciler → live DOM). If the pipeline shape changes — e.g. a new pre-morph stage, a new segment kind — the SVG needs an edit and the surrounding paragraph needs a rewrite.
    - **"Things to be aware of"** still names the two documented module-level mutable spots (`store.ts:REGISTRY` and `each.ts:context`), the coverage thresholds, and the Hot Sheet `KF-` prefix convention. Coverage thresholds must match `vitest.config.ts`.
    - **"Where to look next"** links resolve.
-   Make the edits as part of this check. Run `wc -w docs/orientation.md` and confirm ≤ 500 afterwards. If you cannot stay under the cap without losing essential information, surface that in the report instead of silently bloating the doc.
+     Make the edits as part of this check. Run `wc -w docs/orientation.md` and confirm ≤ 500 afterwards. If you cannot stay under the cap without losing essential information, surface that in the report instead of silently bloating the doc.
 
 10. **Final consistency pass**: Make sure `CLAUDE.md`, `README.md`, `llms.txt`, `docs/orientation.md`, `docs/ai/code-summary.md`, `docs/ai/requirements-summary.md`, and `docs/ai/usage-guide.md` agree with each other and with the source docs / code. Any disagreement gets resolved in favor of the source doc / code, and the summaries and `CLAUDE.md` are updated accordingly. **The single most common drift in this project is when a new public export is added (e.g. `isSafeHtml`) and only `src/index.ts` + `docs/8-api-reference.md` are updated — the AI summaries and root-level files lag.** Look for that pattern explicitly.
 
@@ -62,6 +62,7 @@ Comprehensively compare the requirements documents in `docs/` against the actual
 ### Discrepancies Found
 
 For each discrepancy:
+
 - **Requirement**: Which doc, section number, and the stated requirement
 - **Implementation**: What the code actually does (file path, line numbers)
 - **Type**: `missing` (doc says X, code doesn't do X) | `different` (doc says X, code does Y) | `undocumented` (code does X, no doc mentions it) | `stale` (doc says X, feature was removed/changed)

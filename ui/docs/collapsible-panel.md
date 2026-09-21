@@ -7,7 +7,7 @@ a full shell so you can dock one panel wherever your layout needs it. They are
 subpath-only, tree-shakeable modules that add nothing to the main barrel.
 
 ```bash
-npm install @kerfjs/ui   # kerfjs is a peer
+npm install @kerfjs/ui # kerfjs is a peer
 ```
 
 Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.css`.
@@ -46,33 +46,60 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
 ## Example
 
 ```tsx
-import { signal, mount } from 'kerfjs';
-import { deviceClass } from '@kerfjs/ui/device-class';
-import { CollapsiblePanel, CollapsiblePanelToggle } from '@kerfjs/ui/collapsible-panel';
-import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
-import '@kerfjs/ui/collapsible-panel.css';
+import { signal, mount } from "kerfjs";
+import { deviceClass } from "@kerfjs/ui/device-class";
+import {
+  CollapsiblePanel,
+  CollapsiblePanelToggle,
+} from "@kerfjs/ui/collapsible-panel";
+import { wireSidebar } from "@kerfjs/ui/wire-sidebar";
+import "@kerfjs/ui/collapsible-panel.css";
 
 const navCollapsed = signal(false);
 const device = deviceClass();
 
-const app = document.querySelector('#app')!;
+const app = document.querySelector("#app")!;
 mount(app, () => (
   <div class="layout">
-    <CollapsiblePanel id="nav" side="left" collapsed={navCollapsed.value} label="Navigator">
+    <CollapsiblePanel
+      id="nav"
+      side="left"
+      collapsed={navCollapsed.value}
+      label="Navigator"
+    >
       <header>
-        <CollapsiblePanelToggle side="left" collapsed={navCollapsed.value} action="toggle-nav" panelId="nav" />
+        <CollapsiblePanelToggle
+          side="left"
+          collapsed={navCollapsed.value}
+          action="toggle-nav"
+          panelId="nav"
+        />
       </header>
       {/* nav items */}
     </CollapsiblePanel>
     <main>
-      {navCollapsed.value && <CollapsiblePanelToggle side="left" collapsed action="toggle-nav" label="Show navigator" />}
+      {navCollapsed.value && (
+        <CollapsiblePanelToggle
+          side="left"
+          collapsed
+          action="toggle-nav"
+          label="Show navigator"
+        />
+      )}
       {/* content */}
     </main>
   </div>
 ));
 
 const stop = wireSidebar(app, {
-  panels: [{ id: 'nav', collapsed: navCollapsed, toggleAction: 'toggle-nav', storageKey: 'app.nav-collapsed' }],
+  panels: [
+    {
+      id: "nav",
+      collapsed: navCollapsed,
+      toggleAction: "toggle-nav",
+      storageKey: "app.nav-collapsed",
+    },
+  ],
   deviceClass: device,
 });
 ```

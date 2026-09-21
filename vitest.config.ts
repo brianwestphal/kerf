@@ -7,11 +7,15 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '#kerf-self/jsx-runtime': new URL('./src/jsx-runtime.ts', import.meta.url).pathname,
+      '#kerf-self/jsx-runtime': new URL('./src/jsx-runtime.ts', import.meta.url)
+        .pathname,
       // The JSX transform emits `jsxDEV` calls in dev mode; pointing this
       // alias at the same module exposes the `jsxDEV` re-export, so .tsx
       // tests can use plain JSX syntax without a separate dev runtime.
-      '#kerf-self/jsx-dev-runtime': new URL('./src/jsx-runtime.ts', import.meta.url).pathname,
+      '#kerf-self/jsx-dev-runtime': new URL(
+        './src/jsx-runtime.ts',
+        import.meta.url,
+      ).pathname,
     },
   },
   test: {
@@ -26,7 +30,12 @@ export default defineConfig({
     setupFiles: ['./tests/setup-dev-hooks.ts'],
     environment: 'happy-dom',
     globals: false,
-    include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx', 'src/**/*.test.ts', 'src/**/*.test.tsx'],
+    include: [
+      'tests/**/*.test.ts',
+      'tests/**/*.test.tsx',
+      'src/**/*.test.ts',
+      'src/**/*.test.tsx',
+    ],
     exclude: ['node_modules/**', 'dist/**', 'tests/dist/**'],
     coverage: {
       provider: 'v8',
@@ -35,7 +44,12 @@ export default defineConfig({
       // `src/jsx-types.ts` is type-only (interfaces + type aliases, no value
       // exports) so it compiles to zero runtime JS and shows a permanent
       // 0/0/0/0 row; exclude it like the type-only `index.ts` barrels.
-      exclude: ['src/**/*.test.ts', 'src/**/*.test.tsx', 'src/**/index.ts', 'src/jsx-types.ts'],
+      exclude: [
+        'src/**/*.test.ts',
+        'src/**/*.test.tsx',
+        'src/**/index.ts',
+        'src/jsx-types.ts',
+      ],
       thresholds: {
         // Lines and functions stay at 100 and are the load-bearing pair: they
         // are what catches genuinely unexercised code, and neither moved when

@@ -20,10 +20,14 @@ import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
-  await page.waitForFunction(() => (window as unknown as { kerfReady: boolean }).kerfReady === true);
+  await page.waitForFunction(
+    () => (window as unknown as { kerfReady: boolean }).kerfReady === true,
+  );
 });
 
-test('focused <input> value + cursor survive a parent morph mid-composition', async ({ page }) => {
+test('focused <input> value + cursor survive a parent morph mid-composition', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const { mount, signal } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
@@ -48,7 +52,9 @@ test('focused <input> value + cursor survive a parent morph mid-composition', as
     inp.dispatchEvent(new CompositionEvent('compositionstart', { data: '' }));
     inp.value = 'hello に';
     inp.setSelectionRange(7, 7);
-    inp.dispatchEvent(new CompositionEvent('compositionupdate', { data: 'に' }));
+    inp.dispatchEvent(
+      new CompositionEvent('compositionupdate', { data: 'に' }),
+    );
 
     // === Mid-composition: trigger a parent morph. ===
     tick.value = 1;
@@ -64,7 +70,9 @@ test('focused <input> value + cursor survive a parent morph mid-composition', as
 
     // Finish composing: IME commits "煮" (just an example).
     inpAfter.value = 'hello 煮';
-    inpAfter.dispatchEvent(new CompositionEvent('compositionend', { data: '煮' }));
+    inpAfter.dispatchEvent(
+      new CompositionEvent('compositionend', { data: '煮' }),
+    );
     const finalValue = inpAfter.value;
 
     return { sameNode, stillFocused, valueDuringMorph, caret, finalValue };
@@ -77,7 +85,9 @@ test('focused <input> value + cursor survive a parent morph mid-composition', as
   expect(result.finalValue).toBe('hello 煮');
 });
 
-test('focused <textarea> value + multi-line caret survive a parent morph mid-composition', async ({ page }) => {
+test('focused <textarea> value + multi-line caret survive a parent morph mid-composition', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const { mount, signal } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
@@ -95,7 +105,7 @@ test('focused <textarea> value + multi-line caret survive a parent morph mid-com
     ta.setSelectionRange(15, 15);
 
     ta.dispatchEvent(new CompositionEvent('compositionstart', { data: '' }));
-    ta.value = 'first line\n안녕하세요';  // composing 요
+    ta.value = 'first line\n안녕하세요'; // composing 요
     ta.setSelectionRange(16, 16);
     ta.dispatchEvent(new CompositionEvent('compositionupdate', { data: '요' }));
 
@@ -115,7 +125,9 @@ test('focused <textarea> value + multi-line caret survive a parent morph mid-com
   expect(result.caret).toBe(16);
 });
 
-test('contenteditable mid-composition: subtree skipped (per docs §4.4)', async ({ page }) => {
+test('contenteditable mid-composition: subtree skipped (per docs §4.4)', async ({
+  page,
+}) => {
   // For [contenteditable], kerf's docs guarantee the entire subtree is
   // skipped on morph (the heavy-handed approach). So composition state on
   // any descendant is preserved by the skip itself, not by the input-
@@ -141,7 +153,9 @@ test('contenteditable mid-composition: subtree skipped (per docs §4.4)', async 
     ce.innerHTML = '<span>typed</span><b>bold</b>';
     ce.dispatchEvent(new CompositionEvent('compositionstart', { data: '' }));
     ce.innerHTML = '<span>typed</span><b>bold</b><i>composing</i>';
-    ce.dispatchEvent(new CompositionEvent('compositionupdate', { data: 'composing' }));
+    ce.dispatchEvent(
+      new CompositionEvent('compositionupdate', { data: 'composing' }),
+    );
 
     tick.value = 1;
 
@@ -156,10 +170,14 @@ test('contenteditable mid-composition: subtree skipped (per docs §4.4)', async 
 
   expect(result.sameNode).toBe(true);
   expect(result.stillFocused).toBe(true);
-  expect(result.innerHTML).toBe('<span>typed</span><b>bold</b><i>composing</i>');
+  expect(result.innerHTML).toBe(
+    '<span>typed</span><b>bold</b><i>composing</i>',
+  );
 });
 
-test('compositionend after a morph that ran during compose still finalizes correctly', async ({ page }) => {
+test('compositionend after a morph that ran during compose still finalizes correctly', async ({
+  page,
+}) => {
   // The composition end event should still fire, the final value should be
   // the committed text, and the input element identity should be preserved.
   const result = await page.evaluate(() => {
@@ -175,19 +193,25 @@ test('compositionend after a morph that ran during compose still finalizes corre
       }),
     );
     const inp = root.querySelector('input') as HTMLInputElement;
-    inp.addEventListener('compositionend', () => { endFired = true; });
+    inp.addEventListener('compositionend', () => {
+      endFired = true;
+    });
     inp.focus();
 
     inp.dispatchEvent(new CompositionEvent('compositionstart', { data: '' }));
     inp.value = '中';
-    inp.dispatchEvent(new CompositionEvent('compositionupdate', { data: '中' }));
+    inp.dispatchEvent(
+      new CompositionEvent('compositionupdate', { data: '中' }),
+    );
 
-    tick.value = 1;  // morph mid-composition
-    tick.value = 2;  // and again
+    tick.value = 1; // morph mid-composition
+    tick.value = 2; // and again
 
     const inpAfter = root.querySelector('input') as HTMLInputElement;
     inpAfter.value = '中国';
-    inpAfter.dispatchEvent(new CompositionEvent('compositionend', { data: '中国' }));
+    inpAfter.dispatchEvent(
+      new CompositionEvent('compositionend', { data: '中国' }),
+    );
 
     return { endFired, finalValue: inpAfter.value, sameNode: inp === inpAfter };
   });

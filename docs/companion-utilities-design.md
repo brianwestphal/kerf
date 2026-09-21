@@ -12,7 +12,7 @@ Six independent apps converged on a tiny subset of kerf (JSX + `signal` + `deleg
 2. **`delegateActions` + the `attr()`-action-table idiom (5/6)** — one `attr('data-action', …)` table used as the single source of truth for both the JSX attribute and the `delegate` selector, plus a `switch (dataset.action)` dispatcher. cue-car, languages, glassbox, and hotsheet each invented the table independently. The most-reinvented good idea in the whole set.
 3. **Dispose-scope registry (4/6)** — tie a set of disposers (`mount` / `effect` / `delegate` returns) to a DOM subtree's lifetime and run them when the subtree is removed. languages `cardLifecycle.ts` (`WeakMap<Element, disposers[]>`, swept on remove); hotsheet `reactive-bind` owned disposers; glassbox's repeated `disposeMount?.()` dance.
 4. **Async-state container (4/6)** — the exact shape `{ status: 'idle' | 'running' | 'completed' | 'failed', error, data/progress }` recurs verbatim as everyone's loading/error/progress UI (glassbox `AnalysisModeState`, cue-car in-store status, languages `dialogState`), usually paired with a hand-rolled stale-response guard (generation counter).
-5. **Keyed `bindList` + virtualization (higher effort, clearest single demand)** — hotsheet's `bindList<T>` is referenced ~200× and it additionally built `bindListVirtualized` (viewport windowing kerf offers nowhere). Notably built *because* the team rejected `each()` for external-state-driven rows.
+5. **Keyed `bindList` + virtualization (higher effort, clearest single demand)** — hotsheet's `bindList<T>` is referenced ~200× and it additionally built `bindListVirtualized` (viewport windowing kerf offers nowhere). Notably built _because_ the team rejected `each()` for external-state-driven rows.
 
 The friction is real and repeated. The question this doc answers is **what to ship, how to package it, and in what order** — without turning kerf into something it has decided not to be.
 
@@ -46,13 +46,15 @@ Rejected alternatives:
 Ship in two waves, ordered by demand × cost:
 
 **Wave 1 (highest demand, lowest risk, no overlap with existing API):**
+
 - `kerfjs/overlay` — the modal/overlay + dismiss manager (6/6 demand; the Tauri `confirm` gap makes it load-bearing).
 - `kerfjs/actions` — `delegateActions` + an `action()` helper (5/6 demand; pure ergonomics over `delegate` + `attr`, trivial surface).
 
 **Wave 2 (clear demand; scope now decided — see §8):**
+
 - `kerfjs/scope` — the dispose-scope registry (interacts with how consumers already hold disposers).
 - `kerfjs/async` — the async-state container. **Decided:** `.run(fetcher)` owns status transitions + the stale-guard, the app writes the fetch, and the shape carries an optional progress channel (§8.2, §6).
-- `kerfjs/list` — a **distinct** keyed `bindList` + virtualization. **Highest effort.** It deliberately does two things `each()` structurally cannot: surgical per-row patching (a per-row effect, no full re-render+morph) and viewport windowing. It does *not* replace `each()` — `each()` stays for item-owned-state lists, and its `cacheKey` still covers the common external-state case (docs: KF-465). (§8.3)
+- `kerfjs/list` — a **distinct** keyed `bindList` + virtualization. **Highest effort.** It deliberately does two things `each()` structurally cannot: surgical per-row patching (a per-row effect, no full re-render+morph) and viewport windowing. It does _not_ replace `each()` — `each()` stays for item-owned-state lists, and its `cacheKey` still covers the common external-state case (docs: KF-465). (§8.3)
 
 ## 5. API sketches — Wave 1
 
@@ -89,25 +91,30 @@ Implementation is the field pattern, blessed once: `toElement → appendChild �
 ### 5.2 `kerfjs/actions`
 
 ```ts
-import { action, delegateActions } from 'kerfjs/actions';
+import { action, delegateActions } from "kerfjs/actions";
 
 // action(name) -> an AttrSpec on data-action (thin specialization of attr()).
 const A = {
-  selectFile:   action('select-file'),
-  toggleFolder: action('toggle-folder'),
+  selectFile: action("select-file"),
+  toggleFolder: action("toggle-folder"),
 } as const;
 
 // JSX: spread the attr, add row data as usual.
 // <button {...A.selectFile.attrs} data-id={id}>…</button>
 
 // Wire the whole table with one delegate; returns a disposer.
-const dispose = delegateActions(root, 'click', {
-  'select-file':   (e, el) => selectFile(el.dataset.id!),
-  'toggle-folder': (e, el) => toggleFolder(el.dataset.id!),
-}, {
-  attr: 'data-action',   // default
-  match: 'closest',      // default (closest()-style walk-up, like delegate)
-});
+const dispose = delegateActions(
+  root,
+  "click",
+  {
+    "select-file": (e, el) => selectFile(el.dataset.id!),
+    "toggle-folder": (e, el) => toggleFolder(el.dataset.id!),
+  },
+  {
+    attr: "data-action", // default
+    match: "closest", // default (closest()-style walk-up, like delegate)
+  },
+);
 ```
 
 This is a thin, honest layer over `delegate` + `attr` — it does not replace them, it removes the `switch (dataset.action)` boilerplate and keeps the attribute name and the handler keys in one object so they can't drift. Optionally the table's keys are typed from the `action()` values so a typo is a compile error. Because the elements and the handlers may live in different files (cue-car's SSR/island split), the table is a plain object the consumer can export and share — no co-location requirement.
@@ -165,4 +172,4 @@ Each ticket carries the full subpath checklist (entry in `tsup.config.ts`, `dist
 
 1. **Packaging: `kerfjs/*` subpaths** — confirmed. Not a separate `@kerfjs/kit`, not micro-packages. (The one revisit trigger stands: a util that drags in a heavy dependency — e.g. a virtualization lib for `kerfjs/list` — could justify isolating just that one.)
 2. **`kerfjs/async` scope: `.run(fetcher)` owns status + stale-guard; the app writes the fetch.** Not a pure passive holder, and not an auto-refetch-on-deps resource. The state shape carries an **optional progress channel** (`{ completed, total }`) for long work / uploads; error auto-clear stays the app's concern. **Docs must include both transports** — Node global `fetch` (SSR) and browser `fetch` — since the same primitive serves both. **Follow-up (KF-480):** an additive `.run(input, fetcher)` overload threads the run's input to `value.input` for `running`/`completed`/`failed`, so the failure branch can recover which request failed (`resource<T, I>()`); the no-input `run(fetcher)` form keeps `value.input` `undefined`. **Follow-up (KF-489):** `resource({ cacheKey, equals })` turns it into a real SWR-with-cache primitive — `cacheKey` keeps the last value per input key (instant paint on a revisited key), and `value.revision` (bumping only when `data` changes by `equals`) is the skip-redundant-paint hook, so apps stop hand-rolling a `Map` cache + `JSON.stringify` dedup beside it. **Follow-up (KF-493):** the cache is readable/evictable — `cached(key)` / `cachedKeys()` / `clearCache(key?)` — so an app can point its existing cache-introspection tests (`hasCached`/`getCacheSize`/`getCached`) at the resource and delete the shadow `Map`.
-3. **`kerfjs/list`: ship a distinct `bindList`** (fine-grained per-row effects + viewport virtualization), positioned for externally-driven and/or very long lists; `each()` stays for item-owned-state lists. **Follow-up (KF-488, corrected by KF-492):** `render` gained an **element mode** — return an `HTMLElement` (or `{ el, update?, dispose? }`) and that element IS the row, so an app owns the row's tag / class / `data-*` / listeners (what every app-specific keyed list does), while kerf **keys/moves/reuses** it. This is what lets `bindList` replace an app's own keyed list instead of forcing an extra wrapper element around kerf's opaque row. Element rows are reused by key across updates — the same element survives a fresh item object at the same key, so `dispose` runs only on real removal and per-row DOM state (focus/scroll/listeners) is preserved; refresh content via the optional `update(item)`. (The initial KF-488 cut wrongly rebuilt element rows on object-identity change, defeating the keyed reuse — fixed in KF-492 before 4.2 shipped.) Content mode (return a `MountResult`) still rebuilds on identity change to refresh its mount; a list may mix the two. This is a deliberate second list API — justified because `bindList` does two things `each()` structurally cannot: surgical per-row patching without a full re-render, and viewport windowing. `each()`'s `cacheKey` still covers the *common* external-state case (documented by KF-465), so `bindList` is reserved for where fine-grained patching or virtualization actually pays.
+3. **`kerfjs/list`: ship a distinct `bindList`** (fine-grained per-row effects + viewport virtualization), positioned for externally-driven and/or very long lists; `each()` stays for item-owned-state lists. **Follow-up (KF-488, corrected by KF-492):** `render` gained an **element mode** — return an `HTMLElement` (or `{ el, update?, dispose? }`) and that element IS the row, so an app owns the row's tag / class / `data-*` / listeners (what every app-specific keyed list does), while kerf **keys/moves/reuses** it. This is what lets `bindList` replace an app's own keyed list instead of forcing an extra wrapper element around kerf's opaque row. Element rows are reused by key across updates — the same element survives a fresh item object at the same key, so `dispose` runs only on real removal and per-row DOM state (focus/scroll/listeners) is preserved; refresh content via the optional `update(item)`. (The initial KF-488 cut wrongly rebuilt element rows on object-identity change, defeating the keyed reuse — fixed in KF-492 before 4.2 shipped.) Content mode (return a `MountResult`) still rebuilds on identity change to refresh its mount; a list may mix the two. This is a deliberate second list API — justified because `bindList` does two things `each()` structurally cannot: surgical per-row patching without a full re-render, and viewport windowing. `each()`'s `cacheKey` still covers the _common_ external-state case (documented by KF-465), so `bindList` is reserved for where fine-grained patching or virtualization actually pays.

@@ -1,6 +1,6 @@
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { jsx,raw } from '../../src/jsx-runtime.js';
+import { jsx, raw } from '../../src/jsx-runtime.js';
 import { tooltip } from '../../src/overlay.js';
 import { anchorAt } from './overlay-test-helpers.js';
 
@@ -12,7 +12,15 @@ afterEach(() => {
 });
 
 describe('tooltip()', () => {
-  const tipAnchor = () => anchorAt({ left: 100, right: 150, top: 200, bottom: 220, width: 50, height: 20 });
+  const tipAnchor = () =>
+    anchorAt({
+      left: 100,
+      right: 150,
+      top: 200,
+      bottom: 220,
+      width: 50,
+      height: 20,
+    });
 
   it('shows after delay on pointerenter (role=tooltip), hides after hideDelay on pointerleave', () => {
     vi.useFakeTimers();
@@ -146,15 +154,23 @@ describe('tooltip()', () => {
     const stop1 = tooltip(a1, raw('<em class="tip-em">e</em>'), { delay: 0 });
     a1.dispatchEvent(new Event('pointerenter'));
     vi.advanceTimersByTime(0);
-    expect(document.querySelector('.kerf-tooltip .tip-em')?.textContent).toBe('e');
+    expect(document.querySelector('.kerf-tooltip .tip-em')?.textContent).toBe(
+      'e',
+    );
     stop1();
 
     document.body.innerHTML = '';
     const a2 = tipAnchor();
-    const stop2 = tooltip(a2, () => jsx('b', { class: 'tip-b', children: 'B' }), { delay: 0 });
+    const stop2 = tooltip(
+      a2,
+      () => jsx('b', { class: 'tip-b', children: 'B' }),
+      { delay: 0 },
+    );
     a2.dispatchEvent(new Event('pointerenter'));
     vi.advanceTimersByTime(0);
-    expect(document.querySelector('.kerf-tooltip .tip-b')?.textContent).toBe('B');
+    expect(document.querySelector('.kerf-tooltip .tip-b')?.textContent).toBe(
+      'B',
+    );
     stop2();
   });
 });

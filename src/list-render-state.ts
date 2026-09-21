@@ -50,7 +50,9 @@
 export type ListRenderState = 'unbound' | 'empty' | 'bound';
 
 /** Derive the list's dispatch state from `mount()`'s recorded binding count. */
-export function deriveListRenderState(bindingCount: number | undefined): ListRenderState {
+export function deriveListRenderState(
+  bindingCount: number | undefined,
+): ListRenderState {
   if (bindingCount === undefined) return 'unbound';
   return bindingCount === 0 ? 'empty' : 'bound';
 }
@@ -66,8 +68,7 @@ export type SnapshotReason =
   | 'render-threw';
 
 export type ListPathDecision =
-  | { path: 'snapshot'; reason: SnapshotReason }
-  | { path: 'granular' };
+  { path: 'snapshot'; reason: SnapshotReason } | { path: 'granular' };
 
 /**
  * The structural half of the dispatch: everything decidable from the state +
@@ -95,7 +96,8 @@ export function decideListPath(
   for (const p of patches) {
     if (p.type === 'insert') netDelta += 1;
     else if (p.type === 'remove') netDelta -= 1;
-    else if (p.type === 'replace') return { path: 'snapshot', reason: 'replace' };
+    else if (p.type === 'replace')
+      return { path: 'snapshot', reason: 'replace' };
   }
   // `state === 'bound'` implies the count is a positive number; the cast-free
   // fallback keeps the function total for defensive callers.

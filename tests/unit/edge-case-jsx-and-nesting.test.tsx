@@ -23,18 +23,19 @@
  *   - data-morph-skip wrapping a list parent.
  *   - Stress: 1000-row mutate-and-restore round-trip.
  */
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import {
-each,
-mount,
-type SafeHtml
-} from '../../src/index.js';
+import { each, mount, type SafeHtml } from '../../src/index.js';
 
 describe('Round 3: subtle JSX child types', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   it('JSX child of 0 (falsy number) renders as the string "0"', () => {
     // The trap: `{count}` where count === 0 should render "0", not skip.
@@ -67,11 +68,24 @@ describe('Round 3: subtle JSX child types', () => {
   });
 
   it('Function-component invocation with children prop works correctly', () => {
-    function Card({ title, children }: { title: string; children?: unknown }): SafeHtml {
-      return <div className="card"><h3>{title}</h3><div>{children as never}</div></div>;
+    function Card({
+      title,
+      children,
+    }: {
+      title: string;
+      children?: unknown;
+    }): SafeHtml {
+      return (
+        <div className="card">
+          <h3>{title}</h3>
+          <div>{children as never}</div>
+        </div>
+      );
     }
     mount(root, () => (
-      <Card title="hello"><p>body</p></Card>
+      <Card title="hello">
+        <p>body</p>
+      </Card>
     ));
     expect(root.querySelector('.card h3')!.textContent).toBe('hello');
     expect(root.querySelector('.card p')!.textContent).toBe('body');
@@ -80,22 +94,42 @@ describe('Round 3: subtle JSX child types', () => {
 
 describe('Round 3: nested each()', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   it('each() inside each(): parent rows + child rows render with stable identity', () => {
-    interface Group { id: string; items: { id: string; label: string }[] }
+    interface Group {
+      id: string;
+      items: { id: string; label: string }[];
+    }
     const groups: Group[] = [
-      { id: 'g1', items: [{ id: 'g1.a', label: '1.A' }, { id: 'g1.b', label: '1.B' }] },
+      {
+        id: 'g1',
+        items: [
+          { id: 'g1.a', label: '1.A' },
+          { id: 'g1.b', label: '1.B' },
+        ],
+      },
       { id: 'g2', items: [{ id: 'g2.a', label: '2.A' }] },
     ];
     mount(root, () => (
-      <ul>{each(groups, (g) => (
-        <li data-key={g.id}>
-          <strong>{g.id}</strong>
-          <ul>{each(g.items, (it) => <li data-key={it.id}>{it.label}</li>)}</ul>
-        </li>
-      ))}</ul>
+      <ul>
+        {each(groups, (g) => (
+          <li data-key={g.id}>
+            <strong>{g.id}</strong>
+            <ul>
+              {each(g.items, (it) => (
+                <li data-key={it.id}>{it.label}</li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ul>
     ));
     expect(root.querySelectorAll('li[data-key="g1"]').length).toBe(1);
     expect(root.querySelectorAll('li[data-key="g1.a"]').length).toBe(1);

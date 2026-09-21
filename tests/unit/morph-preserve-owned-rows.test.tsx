@@ -23,9 +23,9 @@
  * KF-385 is fixed, while KF-386 is pinned as an intentional boundary. The
  * tests below assert both current outcomes explicitly.
  */
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { each,mount,signal } from '../../src/index.js';
+import { each, mount, signal } from '../../src/index.js';
 
 let root: HTMLElement;
 
@@ -34,15 +34,23 @@ beforeEach(() => {
   document.body.appendChild(root);
 });
 
-afterEach(() => { document.body.innerHTML = ''; });
+afterEach(() => {
+  document.body.innerHTML = '';
+});
 
-const ROWS = [{ id: 'a', label: 'A' }, { id: 'b', label: 'B' }];
+const ROWS = [
+  { id: 'a', label: 'A' },
+  { id: 'b', label: 'B' },
+];
 
 /** The `each()` begin-anchor comment inside `parent`, if any. */
 function markerIn(parent: Element): Comment {
   for (let c: Node | null = parent.firstChild; c !== null; c = c.nextSibling) {
-    if (c.nodeType === Node.COMMENT_NODE
-      && (c as Comment).data.startsWith('kf-list:')) return c as Comment;
+    if (
+      c.nodeType === Node.COMMENT_NODE &&
+      (c as Comment).data.startsWith('kf-list:')
+    )
+      return c as Comment;
   }
   throw new Error('no kf-list marker found');
 }
@@ -52,14 +60,16 @@ function markerIn(parent: Element): Comment {
  * as the DOM order they are actually pinning. `[P]` marks a preserved node.
  */
 function shape(parent: Element): string {
-  return Array.from(parent.childNodes).map((n) => {
-    if (n.nodeType === Node.COMMENT_NODE) return 'marker';
-    if (n.nodeType === Node.TEXT_NODE) return `"${n.nodeValue ?? ''}"`;
-    const el = n as Element;
-    const cls = el.className ? `.${el.className}` : '';
-    const pres = el.hasAttribute('data-morph-preserve') ? '[P]' : '';
-    return `${el.tagName.toLowerCase()}${cls}${pres}`;
-  }).join(' ');
+  return Array.from(parent.childNodes)
+    .map((n) => {
+      if (n.nodeType === Node.COMMENT_NODE) return 'marker';
+      if (n.nodeType === Node.TEXT_NODE) return `"${n.nodeValue ?? ''}"`;
+      const el = n as Element;
+      const cls = el.className ? `.${el.className}` : '';
+      const pres = el.hasAttribute('data-morph-preserve') ? '[P]' : '';
+      return `${el.tagName.toLowerCase()}${cls}${pres}`;
+    })
+    .join(' ');
 }
 
 /** Imperatively inject a consumer-owned preserved node before `ref`. */
@@ -77,7 +87,9 @@ describe('KF-384: data-morph-preserve nodes interleaved with owned each() rows',
     const dispose = mount(root, () => (
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
-        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+        {each(ROWS, (r) => (
+          <li data-key={r.id}>{r.label}</li>
+        ))}
       </ul>
     ));
     const ul = root.querySelector('ul') as HTMLElement;
@@ -100,7 +112,9 @@ describe('KF-384: data-morph-preserve nodes interleaved with owned each() rows',
     const dispose = mount(root, () => (
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
-        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+        {each(ROWS, (r) => (
+          <li data-key={r.id}>{r.label}</li>
+        ))}
       </ul>
     ));
     const ul = root.querySelector('ul') as HTMLElement;
@@ -138,8 +152,18 @@ describe('KF-384: data-morph-preserve nodes interleaved with owned each() rows',
     const banner = signal(true);
     const dispose = mount(root, () => (
       <div>
-        {banner.value ? <ul class="banner"><li class="hd">warn</li></ul> : ''}
-        <ul class="list">{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        {banner.value ? (
+          <ul class="banner">
+            <li class="hd">warn</li>
+          </ul>
+        ) : (
+          ''
+        )}
+        <ul class="list">
+          {each(ROWS, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
       </div>
     ));
     const list = root.querySelector('ul.list') as HTMLElement;
@@ -149,8 +173,11 @@ describe('KF-384: data-morph-preserve nodes interleaved with owned each() rows',
     banner.value = false;
 
     // Rows recover…
-    expect(Array.from(root.querySelectorAll('li[data-key]')).map((l) => l.textContent))
-      .toEqual(['A', 'B']);
+    expect(
+      Array.from(root.querySelectorAll('li[data-key]')).map(
+        (l) => l.textContent,
+      ),
+    ).toEqual(['A', 'B']);
     // …the preserved node does not: this is the documented same-level
     // boundary of data-morph-preserve, not an outstanding bug.
     expect(root.contains(preserved)).toBe(false);
@@ -172,7 +199,9 @@ describe('KF-384: data-morph-preserve nodes interleaved with owned each() rows',
     const dispose = mount(root, () => (
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
-        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+        {each(ROWS, (r) => (
+          <li data-key={r.id}>{r.label}</li>
+        ))}
         <button class="more">more</button>
       </ul>
     ));
@@ -208,7 +237,9 @@ describe('KF-384: data-morph-preserve nodes interleaved with owned each() rows',
     const dispose = mount(root, () => (
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
-        {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+        {each(ROWS, (r) => (
+          <li data-key={r.id}>{r.label}</li>
+        ))}
       </ul>
     ));
     const ul = root.querySelector('ul') as HTMLElement;
@@ -230,9 +261,17 @@ describe('KF-384: data-morph-preserve nodes interleaved with owned each() rows',
     const banner = signal(true);
     const dispose = mount(root, () => (
       <div>
-        {banner.value ? <ul class="banner"><li class="hd">warn</li></ul> : ''}
+        {banner.value ? (
+          <ul class="banner">
+            <li class="hd">warn</li>
+          </ul>
+        ) : (
+          ''
+        )}
         <ul class="list" data-key="the-list">
-          {each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}
+          {each(ROWS, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
         </ul>
       </div>
     ));

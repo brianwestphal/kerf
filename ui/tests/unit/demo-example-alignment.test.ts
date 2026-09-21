@@ -9,15 +9,18 @@ describe('catalog-example note alignment', () => {
     const file = resolve(import.meta.dirname, '../../src/catalog.css');
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = root.nodes.find(
-      (node) => node.type === 'rule' && node.selector === '.kui-catalog-example__note',
+      (node) =>
+        node.type === 'rule' && node.selector === '.kui-catalog-example__note',
     );
 
-    if (!rule || rule.type !== 'rule') throw new Error('Missing catalog example note rule');
+    if (!rule || rule.type !== 'rule')
+      throw new Error('Missing catalog example note rule');
     const inset = rule.nodes.find(
       (node) => node.type === 'decl' && node.prop === 'padding-inline',
     );
 
-    if (!inset || inset.type !== 'decl') throw new Error('Missing catalog example note inset');
+    if (!inset || inset.type !== 'decl')
+      throw new Error('Missing catalog example note inset');
     expect(inset.value.replace(/\s+/g, ' ')).toBe(
       'calc( var(--kui-layout-inline-margin, remify(8px)) + 1px + var(--kui-layout-item-padding, remify(8px)) )',
     );

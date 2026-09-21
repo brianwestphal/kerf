@@ -29,7 +29,10 @@
   font-size: var(--sl-text-base);
   line-height: 1.1;
   text-decoration: none;
-  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 /* Primary — filled accent (mirrors Starlight's `.link-button.primary`, which

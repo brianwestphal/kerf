@@ -16,7 +16,8 @@ const required = (flag) => {
 };
 const outputPath = required('--out');
 const suiteVersion = Number(valueAfter('--suite') ?? 1);
-if (suiteVersion !== 1 && suiteVersion !== 2) throw new Error(`Unknown AI regression suite: ${suiteVersion}`);
+if (suiteVersion !== 1 && suiteVersion !== 2)
+  throw new Error(`Unknown AI regression suite: ${suiteVersion}`);
 const manifest = await buildAiRegressionRun(root, {
   suiteVersion,
   runId: required('--run-id'),
@@ -30,5 +31,10 @@ const manifest = await buildAiRegressionRun(root, {
   baseRevision: required('--base-revision'),
 });
 
-await writeFile(resolve(root, outputPath), `${JSON.stringify(manifest, null, 2)}\n`);
-console.log(`[record-ai-regression-run] ${manifest.runId}: ${manifest.summary.map(({ condition, staticHardPasses, totalCases }) => `${condition} ${staticHardPasses}/${totalCases}`).join(', ')}`);
+await writeFile(
+  resolve(root, outputPath),
+  `${JSON.stringify(manifest, null, 2)}\n`,
+);
+console.log(
+  `[record-ai-regression-run] ${manifest.runId}: ${manifest.summary.map(({ condition, staticHardPasses, totalCases }) => `${condition} ${staticHardPasses}/${totalCases}`).join(', ')}`,
+);

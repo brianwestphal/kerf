@@ -1,6 +1,9 @@
-import { delegate, type Signal,signal } from 'kerfjs';
+import { delegate, type Signal, signal } from 'kerfjs';
 
-import { placeTokenSearchCaret, readTokenSearchField } from './token-search-field.js';
+import {
+  placeTokenSearchCaret,
+  readTokenSearchField,
+} from './token-search-field.js';
 
 export interface TokenSearchSubmit {
   id: string;
@@ -111,7 +114,10 @@ interface PendingTokenDeletion {
   selectedAll: boolean;
 }
 
-function editorFromEvent(root: HTMLElement, event: Event): HTMLElement | undefined {
+function editorFromEvent(
+  root: HTMLElement,
+  event: Event,
+): HTMLElement | undefined {
   const target = event.target;
   if (!(target instanceof Element)) return;
   const editor = target.closest<HTMLElement>('[data-token-search-editor]');
@@ -131,9 +137,13 @@ function caretQueryOffset(editor: HTMLElement): number | undefined {
   return readTokenSearchField(prefix).query.length;
 }
 
-function replacementEditor(root: HTMLElement, id: string): HTMLElement | undefined {
-  return [...root.querySelectorAll<HTMLElement>('[data-token-search-editor]')]
-    .find((editor) => editor.dataset.tokenSearchEditor === id);
+function replacementEditor(
+  root: HTMLElement,
+  id: string,
+): HTMLElement | undefined {
+  return [
+    ...root.querySelectorAll<HTMLElement>('[data-token-search-editor]'),
+  ].find((editor) => editor.dataset.tokenSearchEditor === id);
 }
 
 function editorIsEmpty(editor: HTMLElement): boolean {
@@ -145,12 +155,15 @@ function editorIsEmpty(editor: HTMLElement): boolean {
 function selectionCoversEditor(editor: HTMLElement): boolean {
   // onBeforeInput calls this only after caretQueryOffset verified a live range.
   const selected = editor.ownerDocument.getSelection()!.getRangeAt(0);
-  if (selected.collapsed || !editor.contains(selected.commonAncestorContainer)) return false;
+  if (selected.collapsed || !editor.contains(selected.commonAncestorContainer))
+    return false;
   const contents = editor.ownerDocument.createRange();
   contents.selectNodeContents(editor);
   const RangeCtor = editor.ownerDocument.defaultView!.Range;
-  return selected.compareBoundaryPoints(RangeCtor.START_TO_START, contents) <= 0
-    && selected.compareBoundaryPoints(RangeCtor.END_TO_END, contents) >= 0;
+  return (
+    selected.compareBoundaryPoints(RangeCtor.START_TO_START, contents) <= 0 &&
+    selected.compareBoundaryPoints(RangeCtor.END_TO_END, contents) >= 0
+  );
 }
 
 const TOKEN_SELECTOR = '[data-component="token-search-token"]';
@@ -165,7 +178,10 @@ const stripZwsp = (text: string): string => text.replaceAll('​', '');
  * and place the caret in it so typing resumes cleanly. Called only after the browser has
  * applied the delete, so an ordinary partial delete is never touched.
  */
-function normalizeEmptiedEditor(editor: HTMLElement, selectedAll = false): void {
+function normalizeEmptiedEditor(
+  editor: HTMLElement,
+  selectedAll = false,
+): void {
   const lineBreaks = editor.querySelectorAll('br');
   if (lineBreaks.length === 0 && !selectedAll) return;
   for (const lineBreak of lineBreaks) lineBreak.remove();
@@ -198,34 +214,53 @@ function collapsedCaret(editor: HTMLElement): Range | undefined {
 /** The direct child of `editor` that contains `node` (or `node` itself), else null. */
 function topBlock(editor: HTMLElement, node: Node): Node | null {
   let current: Node = node;
-  while (current.parentNode && current.parentNode !== editor) current = current.parentNode;
+  while (current.parentNode && current.parentNode !== editor)
+    current = current.parentNode;
   return current.parentNode === editor ? current : null;
 }
 
 /** A text node or text span holding no visible character (only zero-width spacers). */
 function isBlankText(node: Node): boolean {
-  if (node.nodeType === Node.TEXT_NODE) return stripZwsp((node as CharacterData).data) === '';
-  return node instanceof Element && node.matches(TEXT_SELECTOR) && stripZwsp(node.textContent ?? '') === '';
+  if (node.nodeType === Node.TEXT_NODE)
+    return stripZwsp((node as CharacterData).data) === '';
+  return (
+    node instanceof Element &&
+    node.matches(TEXT_SELECTOR) &&
+    stripZwsp(node.textContent ?? '') === ''
+  );
 }
 
 /** The nearest sibling block on `direction`, skipping blank text spacers. */
-function meaningfulSibling(block: Node, direction: 'backward' | 'forward'): Node | null {
-  let sibling = direction === 'backward' ? block.previousSibling : block.nextSibling;
-  while (sibling && isBlankText(sibling)) sibling = direction === 'backward' ? sibling.previousSibling : sibling.nextSibling;
+function meaningfulSibling(
+  block: Node,
+  direction: 'backward' | 'forward',
+): Node | null {
+  let sibling =
+    direction === 'backward' ? block.previousSibling : block.nextSibling;
+  while (sibling && isBlankText(sibling))
+    sibling =
+      direction === 'backward' ? sibling.previousSibling : sibling.nextSibling;
   return sibling;
 }
 
 /** The node immediately on `direction` of the caret, only when no visible character separates them. */
-function caretSideNode(editor: HTMLElement, range: Range, direction: 'backward' | 'forward'): Node | null {
+function caretSideNode(
+  editor: HTMLElement,
+  range: Range,
+  direction: 'backward' | 'forward',
+): Node | null {
   const { startContainer: container, startOffset: offset } = range;
   if (container.nodeType === Node.TEXT_NODE) {
     const text = (container as CharacterData).data;
-    const side = direction === 'backward' ? text.slice(0, offset) : text.slice(offset);
+    const side =
+      direction === 'backward' ? text.slice(0, offset) : text.slice(offset);
     if (stripZwsp(side).length > 0) return null;
     // An in-editor text node always has a top block (itself or its wrapping span).
     return meaningfulSibling(topBlock(editor, container)!, direction);
   }
-  const child = container.childNodes[direction === 'backward' ? offset - 1 : offset] as Node | undefined;
+  const child = container.childNodes[
+    direction === 'backward' ? offset - 1 : offset
+  ] as Node | undefined;
   if (child) {
     // `child` is a descendant of the in-editor caret container, so it has a top block.
     const block = topBlock(editor, child)!;
@@ -236,7 +271,10 @@ function caretSideNode(editor: HTMLElement, range: Range, direction: 'backward' 
 }
 
 /** The atomic token chip adjacent to a collapsed caret on `direction`, if any. */
-function adjacentToken(editor: HTMLElement, direction: 'backward' | 'forward'): HTMLElement | undefined {
+function adjacentToken(
+  editor: HTMLElement,
+  direction: 'backward' | 'forward',
+): HTMLElement | undefined {
   const range = collapsedCaret(editor);
   if (!range) return;
   const node = caretSideNode(editor, range, direction);
@@ -267,7 +305,12 @@ function placeCaretAfterToken(editor: HTMLElement, chip: HTMLElement): void {
  */
 export function wireTokenSearchFields(
   root: HTMLElement,
-  { onSubmit, onEdit, collapsible = true, keyboard = false }: WireTokenSearchFieldsOptions = {},
+  {
+    onSubmit,
+    onEdit,
+    collapsible = true,
+    keyboard = false,
+  }: WireTokenSearchFieldsOptions = {},
 ): TokenSearchFieldsHandle {
   const managed = collapsible !== false;
   const config = typeof collapsible === 'object' ? collapsible : {};
@@ -278,8 +321,10 @@ export function wireTokenSearchFields(
   const keepOpenOn = config.keepOpenOn;
   const keyboardOn = keyboard !== false;
   const keyboardConfig = typeof keyboard === 'object' ? keyboard : {};
-  const removeAdjacentToken = keyboardOn && (keyboardConfig.removeAdjacentToken ?? true);
-  const moveCaretPastToken = keyboardOn && (keyboardConfig.moveCaretPastToken ?? true);
+  const removeAdjacentToken =
+    keyboardOn && (keyboardConfig.removeAdjacentToken ?? true);
+  const moveCaretPastToken =
+    keyboardOn && (keyboardConfig.moveCaretPastToken ?? true);
   const onRemoveToken = keyboardConfig.onRemoveToken;
   const adopted = config.signals ?? {};
   const created = new Map<string, Signal<boolean>>();
@@ -312,7 +357,8 @@ export function wireTokenSearchFields(
         `[data-component="token-search-field"][data-token-search-id="${CSS.escape(id)}"] ${selector}`,
       );
       if (!target) return;
-      if (target.matches('[data-token-search-editor]')) placeTokenSearchCaret(target);
+      if (target.matches('[data-token-search-editor]'))
+        placeTokenSearchCaret(target);
       else target.focus();
     });
   };
@@ -329,15 +375,25 @@ export function wireTokenSearchFields(
   const onBeforeInput = (event: Event) => {
     const inputEvent = event as InputEvent;
     const editor = editorFromEvent(root, event);
-    if (!editor || !inputEvent.inputType.startsWith('delete') || editor.ownerDocument.activeElement !== editor) return;
-    const field = editor.closest<HTMLElement>('[data-component="token-search-field"]');
+    if (
+      !editor ||
+      !inputEvent.inputType.startsWith('delete') ||
+      editor.ownerDocument.activeElement !== editor
+    )
+      return;
+    const field = editor.closest<HTMLElement>(
+      '[data-component="token-search-field"]',
+    );
     const id = field?.dataset.tokenSearchId;
     const offset = caretQueryOffset(editor);
-    if (!id || offset === undefined || field?.dataset.disabled === 'true') return;
+    if (!id || offset === undefined || field?.dataset.disabled === 'true')
+      return;
     pending.set(editor, {
       id,
       offset,
-      tokenCount: editor.querySelectorAll('[data-component="token-search-token"]').length,
+      tokenCount: editor.querySelectorAll(
+        '[data-component="token-search-token"]',
+      ).length,
       selectedAll: selectionCoversEditor(editor),
     });
   };
@@ -345,19 +401,33 @@ export function wireTokenSearchFields(
     const editor = editorFromEvent(root, event);
     if (!editor) return;
     const deletion = pending.get(editor);
-    if ((event as InputEvent).inputType?.startsWith('delete')) normalizeEmptiedEditor(editor, deletion?.selectedAll);
+    if ((event as InputEvent).inputType?.startsWith('delete'))
+      normalizeEmptiedEditor(editor, deletion?.selectedAll);
     if (onEdit) {
-      const field = editor.closest<HTMLElement>('[data-component="token-search-field"]');
+      const field = editor.closest<HTMLElement>(
+        '[data-component="token-search-field"]',
+      );
       const id = field?.dataset.tokenSearchId;
-      if (id && field?.dataset.disabled !== 'true') onEdit({ id, editor, event: event as InputEvent });
+      if (id && field?.dataset.disabled !== 'true')
+        onEdit({ id, editor, event: event as InputEvent });
     }
     pending.delete(editor);
-    if (!deletion || editor.querySelectorAll('[data-component="token-search-token"]').length >= deletion.tokenCount) return;
+    if (
+      !deletion ||
+      editor.querySelectorAll('[data-component="token-search-token"]').length >=
+        deletion.tokenCount
+    )
+      return;
     editor.ownerDocument.defaultView!.requestAnimationFrame(() => {
       const replacement = replacementEditor(root, deletion.id);
       if (!replacement) return;
       const active = replacement.ownerDocument.activeElement;
-      if (active !== editor && active !== replacement && active !== replacement.ownerDocument.body) return;
+      if (
+        active !== editor &&
+        active !== replacement &&
+        active !== replacement.ownerDocument.body
+      )
+        return;
       placeTokenSearchCaret(replacement, deletion.offset);
     });
   };
@@ -370,50 +440,78 @@ export function wireTokenSearchFields(
   ];
 
   disposers.push(
-    delegate(root, 'keydown', '[data-token-search-editor]', (event, element) => {
-      const keyboardEvent = event as KeyboardEvent;
-      const editor = element as HTMLElement;
-      if (keyboardEvent.isComposing) return;
-      const field = editor.closest<HTMLElement>('[data-component="token-search-field"]');
-      const id = field?.dataset.tokenSearchId;
-      if (!id || field?.dataset.disabled === 'true') return;
-      if (keyboardEvent.key === 'Enter') {
-        keyboardEvent.preventDefault();
-        onSubmit?.({ id, editor });
-        return;
-      }
-      if (removeAdjacentToken && (keyboardEvent.key === 'Backspace' || keyboardEvent.key === 'Delete')) {
-        const direction = keyboardEvent.key === 'Backspace' ? 'backward' : 'forward';
-        const chip = adjacentToken(editor, direction);
-        if (chip) {
+    delegate(
+      root,
+      'keydown',
+      '[data-token-search-editor]',
+      (event, element) => {
+        const keyboardEvent = event as KeyboardEvent;
+        const editor = element as HTMLElement;
+        if (keyboardEvent.isComposing) return;
+        const field = editor.closest<HTMLElement>(
+          '[data-component="token-search-field"]',
+        );
+        const id = field?.dataset.tokenSearchId;
+        if (!id || field?.dataset.disabled === 'true') return;
+        if (keyboardEvent.key === 'Enter') {
           keyboardEvent.preventDefault();
-          onRemoveToken?.({ id, value: chip.dataset.tokenValue ?? '', editor, direction });
+          onSubmit?.({ id, editor });
           return;
         }
-      }
-      if (moveCaretPastToken && keyboardEvent.key === 'ArrowRight') {
-        const chip = adjacentToken(editor, 'forward');
-        if (chip) {
-          keyboardEvent.preventDefault();
-          placeCaretAfterToken(editor, chip);
-          return;
+        if (
+          removeAdjacentToken &&
+          (keyboardEvent.key === 'Backspace' || keyboardEvent.key === 'Delete')
+        ) {
+          const direction =
+            keyboardEvent.key === 'Backspace' ? 'backward' : 'forward';
+          const chip = adjacentToken(editor, direction);
+          if (chip) {
+            keyboardEvent.preventDefault();
+            onRemoveToken?.({
+              id,
+              value: chip.dataset.tokenValue ?? '',
+              editor,
+              direction,
+            });
+            return;
+          }
         }
-      }
-      if (collapseOnEscape && keyboardEvent.key === 'Escape' && field?.dataset.collapsible === 'true' && editorIsEmpty(editor)) {
-        keyboardEvent.preventDefault();
-        closeField(id);
-      }
-    }),
+        if (moveCaretPastToken && keyboardEvent.key === 'ArrowRight') {
+          const chip = adjacentToken(editor, 'forward');
+          if (chip) {
+            keyboardEvent.preventDefault();
+            placeCaretAfterToken(editor, chip);
+            return;
+          }
+        }
+        if (
+          collapseOnEscape &&
+          keyboardEvent.key === 'Escape' &&
+          field?.dataset.collapsible === 'true' &&
+          editorIsEmpty(editor)
+        ) {
+          keyboardEvent.preventDefault();
+          closeField(id);
+        }
+      },
+    ),
   );
 
   if (expandOnActivate) {
     disposers.push(
-      delegate(root, 'click', '.kui-token-search__expand', (_event, element) => {
-        // The selector guarantees a collapsible field ancestor; only skip a disabled one.
-        const field = (element as HTMLElement).closest<HTMLElement>('[data-component="token-search-field"]');
-        const id = field?.dataset.tokenSearchId;
-        if (id && field?.dataset.disabled !== 'true') openField(id);
-      }),
+      delegate(
+        root,
+        'click',
+        '.kui-token-search__expand',
+        (_event, element) => {
+          // The selector guarantees a collapsible field ancestor; only skip a disabled one.
+          const field = (element as HTMLElement).closest<HTMLElement>(
+            '[data-component="token-search-field"]',
+          );
+          const id = field?.dataset.tokenSearchId;
+          if (id && field?.dataset.disabled !== 'true') openField(id);
+        },
+      ),
     );
   }
 
@@ -422,25 +520,43 @@ export function wireTokenSearchFields(
     // blur the editor — otherwise the transient blur would collapse the field before
     // the control's own handler runs. Keeping focus also keeps the click firing.
     disposers.push(
-      delegate(root, 'mousedown', '[data-component="token-search-field"][data-collapsible="true"] button', (event) => {
-        event.preventDefault();
-      }),
+      delegate(
+        root,
+        'mousedown',
+        '[data-component="token-search-field"][data-collapsible="true"] button',
+        (event) => {
+          event.preventDefault();
+        },
+      ),
     );
     disposers.push(
-      delegate(root, 'focusout', '[data-token-search-editor]', (event, element) => {
-        const editor = element as HTMLElement;
-        const field = editor.closest<HTMLElement>('[data-component="token-search-field"]');
-        const id = field?.dataset.tokenSearchId;
-        if (!id || field?.dataset.collapsible !== 'true' || field.dataset.disabled === 'true') return;
-        const next = (event as FocusEvent).relatedTarget;
-        if (next instanceof Node && field.contains(next)) return;
-        if (isExemptTarget(next instanceof Element ? next : null)) return;
-        if (!editorIsEmpty(editor)) return;
-        view().queueMicrotask(() => {
-          const active = field.ownerDocument.activeElement;
-          if (!field.contains(active) && !isExemptTarget(active)) setExpanded(id, false);
-        });
-      }),
+      delegate(
+        root,
+        'focusout',
+        '[data-token-search-editor]',
+        (event, element) => {
+          const editor = element as HTMLElement;
+          const field = editor.closest<HTMLElement>(
+            '[data-component="token-search-field"]',
+          );
+          const id = field?.dataset.tokenSearchId;
+          if (
+            !id ||
+            field?.dataset.collapsible !== 'true' ||
+            field.dataset.disabled === 'true'
+          )
+            return;
+          const next = (event as FocusEvent).relatedTarget;
+          if (next instanceof Node && field.contains(next)) return;
+          if (isExemptTarget(next instanceof Element ? next : null)) return;
+          if (!editorIsEmpty(editor)) return;
+          view().queueMicrotask(() => {
+            const active = field.ownerDocument.activeElement;
+            if (!field.contains(active) && !isExemptTarget(active))
+              setExpanded(id, false);
+          });
+        },
+      ),
     );
   }
 

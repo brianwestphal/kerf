@@ -4,10 +4,21 @@
  * their semantics.
  */
 
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
 import { batch, computed, effect, signal } from '../../src/reactive.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
 describe('signal()', () => {
   it('exposes initial value via .value', () => {
@@ -47,7 +58,9 @@ describe('effect()', () => {
   it('runs synchronously on creation, then again on dependency change', () => {
     const a = signal(1);
     const log: number[] = [];
-    const dispose = effect(() => { log.push(a.value); });
+    const dispose = effect(() => {
+      log.push(a.value);
+    });
     expect(log).toEqual([1]);
     a.value = 2;
     expect(log).toEqual([1, 2]);
@@ -60,7 +73,9 @@ describe('effect()', () => {
     const a = signal(1);
     const b = signal(100);
     const log: number[] = [];
-    effect(() => { log.push(a.value); });
+    effect(() => {
+      log.push(a.value);
+    });
     expect(log).toEqual([1]);
     b.value = 200;
     expect(log).toEqual([1]); // only `a` was read; `b` change is irrelevant
@@ -72,7 +87,9 @@ describe('batch()', () => {
     const a = signal(1);
     const b = signal(2);
     const log: string[] = [];
-    effect(() => { log.push(`${a.value},${b.value}`); });
+    effect(() => {
+      log.push(`${a.value},${b.value}`);
+    });
     expect(log).toEqual(['1,2']);
 
     batch(() => {
@@ -89,7 +106,9 @@ describe('dev-mode untracked-write warning (KF-176, opt-in)', () => {
   // so flipping the env var before each `signal()` call is enough; no module
   // reload required. Routes via `globalThis.process` to keep the test file
   // working under the same lint config as `src/` (no bare `process` ref).
-  const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+  const env = (
+    globalThis as { process: { env: Record<string, string | undefined> } }
+  ).process.env;
   let warnSpy: MockInstance<typeof console.warn>;
 
   beforeEach(() => {
@@ -108,7 +127,9 @@ describe('dev-mode untracked-write warning (KF-176, opt-in)', () => {
     s.value = 1;
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy.mock.calls[0][0]).toMatch(/written but has no subscribers/);
-    expect(warnSpy.mock.calls[0][0]).toMatch(/KERF_DEV_WARN_UNTRACKED_SIGNALS=0/);
+    expect(warnSpy.mock.calls[0][0]).toMatch(
+      /KERF_DEV_WARN_UNTRACKED_SIGNALS=0/,
+    );
   });
 
   it('warns only once per signal even after many writes', () => {
@@ -121,7 +142,9 @@ describe('dev-mode untracked-write warning (KF-176, opt-in)', () => {
 
   it('does NOT warn when the signal has been subscribed via effect()', () => {
     const s = signal(0);
-    effect(() => { void s.value; });
+    effect(() => {
+      void s.value;
+    });
     s.value = 1;
     s.value = 2;
     expect(warnSpy).not.toHaveBeenCalled();
@@ -133,7 +156,9 @@ describe('dev-mode untracked-write warning (KF-176, opt-in)', () => {
     // Force the computed to evaluate so its source subscribes — computeds are lazy.
     expect(doubled.value).toBe(0);
     // Bind a live consumer so signals-core treats the computed's source as watched.
-    const dispose = effect(() => { void doubled.value; });
+    const dispose = effect(() => {
+      void doubled.value;
+    });
     s.value = 5;
     expect(warnSpy).not.toHaveBeenCalled();
     dispose();
@@ -183,7 +208,10 @@ describe('signals are NOT deep-reactive', () => {
   it('does NOT notify subscribers when an array inside .value is mutated in place', () => {
     const list = signal<number[]>([]);
     let runs = 0;
-    effect(() => { void list.value; runs += 1; });
+    effect(() => {
+      void list.value;
+      runs += 1;
+    });
     expect(runs).toBe(1);
     list.value.push(1); // in-place mutation — must not trigger
     expect(runs).toBe(1);

@@ -12,6 +12,16 @@ export interface ListInsetControlProps {
  * Use it for controls that carry their own border and padding but no outer margin
  * — the wrapper adds only the alignment margin and layout, not a second inset.
  */
-export function ListInsetControl({ children, className = '' }: ListInsetControlProps) {
-  return <div class={`kui-list-inset-control ${className}`.trim()} data-component="list-inset-control">{children}</div>;
+export function ListInsetControl({
+  children,
+  className = '',
+}: ListInsetControlProps) {
+  return (
+    <div
+      class={`kui-list-inset-control ${className}`.trim()}
+      data-component="list-inset-control"
+    >
+      {children}
+    </div>
+  );
 }

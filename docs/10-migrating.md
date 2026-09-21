@@ -6,9 +6,9 @@ This doc covers **why** the comparison hub exists, **what** each page surfaces, 
 
 ## 10.1 Why it exists
 
-Per KF-124: people convert when they see *their current code* rewritten, not a generic counter. The homepage cards and the API reference answer "what is kerf"; they don't answer "what does my current app look like *in* kerf." The migrating hub is the answer.
+Per KF-124: people convert when they see _their current code_ rewritten, not a generic counter. The homepage cards and the API reference answer "what is kerf"; they don't answer "what does my current app look like _in_ kerf." The migrating hub is the answer.
 
-The audience is a developer who has *already* decided to look at alternatives — they typed "react alternatives small bundle" or "alpinejs vs ..." into a search engine. The job of these pages is to put kerf in the lineup with concrete, code-level comparisons rather than abstract claims.
+The audience is a developer who has _already_ decided to look at alternatives — they typed "react alternatives small bundle" or "alpinejs vs ..." into a search engine. The job of these pages is to put kerf in the lineup with concrete, code-level comparisons rather than abstract claims.
 
 ## 10.2 Page set
 

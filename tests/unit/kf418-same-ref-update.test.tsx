@@ -36,16 +36,45 @@ const texts = (r: HTMLElement, sel: string): (string | null)[] =>
 
 describe('KF-418: same-ref update propagates to every consumer', () => {
   it('a second list AND a plain-array filter view over the same signal both update', () => {
-    const rows = arraySignal([{ id: 1, t: 'a' }, { id: 2, t: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, t: 'a' },
+      { id: 2, t: 'b' },
+    ]);
     const dispose = mount(root, () => (
       <div>
-        <ul class="a">{each(rows, (r) => <li data-key={`a${r.id}`}>{r.t}</li>, { key: 'A' })}</ul>
-        <ul class="b">{each(rows, (r) => <li data-key={`b${r.id}`}>{r.t}</li>, { key: 'B' })}</ul>
-        <ul class="f">{each(rows.value.filter((r) => r.id <= 2),
-          (r) => <li data-key={`f${r.id}`}>{r.t}</li>, { key: 'F' })}</ul>
+        <ul class="a">
+          {each(
+            rows,
+            (r) => (
+              <li data-key={`a${r.id}`}>{r.t}</li>
+            ),
+            { key: 'A' },
+          )}
+        </ul>
+        <ul class="b">
+          {each(
+            rows,
+            (r) => (
+              <li data-key={`b${r.id}`}>{r.t}</li>
+            ),
+            { key: 'B' },
+          )}
+        </ul>
+        <ul class="f">
+          {each(
+            rows.value.filter((r) => r.id <= 2),
+            (r) => (
+              <li data-key={`f${r.id}`}>{r.t}</li>
+            ),
+            { key: 'F' },
+          )}
+        </ul>
       </div>
     ));
-    rows.update(0, (r) => { r.t = 'X'; return r; });
+    rows.update(0, (r) => {
+      r.t = 'X';
+      return r;
+    });
     expect(texts(root, '.a li')).toEqual(['X', 'b']);
     expect(texts(root, '.b li')).toEqual(['X', 'b']);
     expect(texts(root, '.f li')).toEqual(['X', 'b']);
@@ -54,9 +83,32 @@ describe('KF-418: same-ref update propagates to every consumer', () => {
 
   it('a second mount over the same signal updates too', () => {
     const rows = arraySignal([{ id: 1, t: 'a' }]);
-    const d1 = mount(root, () => <ul>{each(rows, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'A' })}</ul>);
-    const d2 = mount(root2, () => <ul>{each(rows, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'B' })}</ul>);
-    rows.update(0, (r) => { r.t = 'X'; return r; });
+    const d1 = mount(root, () => (
+      <ul>
+        {each(
+          rows,
+          (r) => (
+            <li data-key={r.id}>{r.t}</li>
+          ),
+          { key: 'A' },
+        )}
+      </ul>
+    ));
+    const d2 = mount(root2, () => (
+      <ul>
+        {each(
+          rows,
+          (r) => (
+            <li data-key={r.id}>{r.t}</li>
+          ),
+          { key: 'B' },
+        )}
+      </ul>
+    ));
+    rows.update(0, (r) => {
+      r.t = 'X';
+      return r;
+    });
     expect(texts(root, 'li')).toEqual(['X']);
     expect(texts(root2, 'li')).toEqual(['X']);
     d1();
@@ -64,24 +116,56 @@ describe('KF-418: same-ref update propagates to every consumer', () => {
   });
 
   it('the update survives being batched with a cacheKey drift (snapshot route)', () => {
-    const rows = arraySignal([{ id: 1, t: 'a' }, { id: 2, t: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, t: 'a' },
+      { id: 2, t: 'b' },
+    ]);
     const sel = signal(-1);
     const dispose = mount(root, () => (
-      <ul>{each(rows, (r) => <li data-key={r.id} class={sel.value === r.id ? 'on' : 'off'}>{r.t}</li>,
-        { key: 'L', cacheKey: (r) => sel.value === r.id })}</ul>
+      <ul>
+        {each(
+          rows,
+          (r) => (
+            <li data-key={r.id} class={sel.value === r.id ? 'on' : 'off'}>
+              {r.t}
+            </li>
+          ),
+          { key: 'L', cacheKey: (r) => sel.value === r.id },
+        )}
+      </ul>
     ));
-    batch(() => { rows.update(0, (r) => { r.t = 'X'; return r; }); sel.value = 2; });
+    batch(() => {
+      rows.update(0, (r) => {
+        r.t = 'X';
+        return r;
+      });
+      sel.value = 2;
+    });
     expect(texts(root, 'li')).toEqual(['X', 'b']);
     dispose();
   });
 
   it('the update survives being batched with replace()', () => {
-    const rows = arraySignal([{ id: 1, t: 'a' }, { id: 2, t: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, t: 'a' },
+      { id: 2, t: 'b' },
+    ]);
     const dispose = mount(root, () => (
-      <ul>{each(rows, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'L' })}</ul>
+      <ul>
+        {each(
+          rows,
+          (r) => (
+            <li data-key={r.id}>{r.t}</li>
+          ),
+          { key: 'L' },
+        )}
+      </ul>
     ));
     batch(() => {
-      rows.update(0, (r) => { r.t = 'X'; return r; });
+      rows.update(0, (r) => {
+        r.t = 'X';
+        return r;
+      });
       rows.replace(rows.value.slice().reverse());
     });
     expect(texts(root, 'li')).toEqual(['b', 'X']);
@@ -92,23 +176,59 @@ describe('KF-418: same-ref update propagates to every consumer', () => {
     const rows = arraySignal([{ id: 1, t: 'a' }]);
     const flag = signal(false);
     const dispose = mount(root, () => (
-      <div><p>{flag.value ? '1' : '0'}</p><ul>{each(rows, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'L' })}</ul></div>
+      <div>
+        <p>{flag.value ? '1' : '0'}</p>
+        <ul>
+          {each(
+            rows,
+            (r) => (
+              <li data-key={r.id}>{r.t}</li>
+            ),
+            { key: 'L' },
+          )}
+        </ul>
+      </div>
     ));
-    rows.update(0, (r) => { r.t = 'X'; return r; });
+    rows.update(0, (r) => {
+      r.t = 'X';
+      return r;
+    });
     flag.value = true; // unrelated snapshot render
     expect(texts(root, 'li')).toEqual(['X']);
-    rows.update(0, (r) => { r.t = 'Y'; return r; });
+    rows.update(0, (r) => {
+      r.t = 'Y';
+      return r;
+    });
     flag.value = false;
     expect(texts(root, 'li')).toEqual(['Y']);
     dispose();
   });
 
   it('immutable (new-ref) updates are unaffected — they propagate as before', () => {
-    const rows = arraySignal([{ id: 1, t: 'a' }, { id: 2, t: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, t: 'a' },
+      { id: 2, t: 'b' },
+    ]);
     const dispose = mount(root, () => (
       <div>
-        <ul class="a">{each(rows, (r) => <li data-key={`a${r.id}`}>{r.t}</li>, { key: 'A' })}</ul>
-        <ul class="b">{each(rows, (r) => <li data-key={`b${r.id}`}>{r.t}</li>, { key: 'B' })}</ul>
+        <ul class="a">
+          {each(
+            rows,
+            (r) => (
+              <li data-key={`a${r.id}`}>{r.t}</li>
+            ),
+            { key: 'A' },
+          )}
+        </ul>
+        <ul class="b">
+          {each(
+            rows,
+            (r) => (
+              <li data-key={`b${r.id}`}>{r.t}</li>
+            ),
+            { key: 'B' },
+          )}
+        </ul>
       </div>
     ));
     rows.update(0, (r) => ({ ...r, t: 'X' }));
@@ -118,12 +238,26 @@ describe('KF-418: same-ref update propagates to every consumer', () => {
   });
 
   it('an unchanged row keeps its DOM node across a same-ref update of a DIFFERENT row', () => {
-    const rows = arraySignal([{ id: 1, t: 'a' }, { id: 2, t: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, t: 'a' },
+      { id: 2, t: 'b' },
+    ]);
     const dispose = mount(root, () => (
-      <ul>{each(rows, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'L' })}</ul>
+      <ul>
+        {each(
+          rows,
+          (r) => (
+            <li data-key={r.id}>{r.t}</li>
+          ),
+          { key: 'L' },
+        )}
+      </ul>
     ));
     const row2 = root.querySelector('[data-key="2"]');
-    rows.update(0, (r) => { r.t = 'X'; return r; });
+    rows.update(0, (r) => {
+      r.t = 'X';
+      return r;
+    });
     expect(root.querySelector('[data-key="2"]')).toBe(row2); // untouched row kept identity
     expect(texts(root, 'li')).toEqual(['X', 'b']);
     dispose();
@@ -134,7 +268,9 @@ describe('KF-419: version bump is skipped for non-object items (no WeakMap-key c
   it('update() on a number-item arraySignal does not throw and still notifies', () => {
     const nums = arraySignal<number>([1, 2, 3]);
     const seen: number[][] = [];
-    const dispose = effect(() => { seen.push([...nums.value]); });
+    const dispose = effect(() => {
+      seen.push([...nums.value]);
+    });
     expect(() => nums.update(0, (n) => n + 1)).not.toThrow();
     expect(nums.value).toEqual([2, 2, 3]);
     expect(seen.at(-1)).toEqual([2, 2, 3]); // the version++ notification reached the effect
@@ -153,9 +289,22 @@ describe('KF-419: version bump is skipped for non-object items (no WeakMap-key c
     // A primitive update must NOT poison the object path: this list still re-renders on a same-ref bump.
     const rows = arraySignal([{ id: 1, t: 'a' }]);
     const nums = arraySignal<number>([0]);
-    const dispose = mount(root, () => <ul>{each(rows, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'L' })}</ul>);
+    const dispose = mount(root, () => (
+      <ul>
+        {each(
+          rows,
+          (r) => (
+            <li data-key={r.id}>{r.t}</li>
+          ),
+          { key: 'L' },
+        )}
+      </ul>
+    ));
     nums.update(0, (n) => n + 1); // primitive update — skipped, no crash
-    rows.update(0, (r) => { r.t = 'X'; return r; }); // object same-ref update — must still propagate
+    rows.update(0, (r) => {
+      r.t = 'X';
+      return r;
+    }); // object same-ref update — must still propagate
     expect(texts(root, 'li')).toEqual(['X']);
     dispose();
   });

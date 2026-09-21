@@ -131,7 +131,7 @@ jobs:
     needs: [test, lint, typecheck, npm-dry-run, dist-gate, detect]
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # softprops/action-gh-release creates the GitHub Release
+      contents: write # softprops/action-gh-release creates the GitHub Release
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Extract release notes from CHANGELOG (stable)
@@ -182,7 +182,7 @@ jobs:
           name: v${{ needs.detect.outputs.version }}
           body_path: release-notes.md
           prerelease: true
-          make_latest: 'false'  # defence-in-depth
+          make_latest: 'false' # defence-in-depth
 
   # ─── Phase 3: build + pack (no token) → publish tarball (token) ─────
   #
@@ -223,7 +223,7 @@ jobs:
     environment: npm-publish
     permissions:
       contents: read
-      id-token: write   # npm OIDC trusted publishing
+      id-token: write # npm OIDC trusted publishing
     steps:
       # No `cache: npm` — this job installs nothing (no `npm ci`, no build).
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0

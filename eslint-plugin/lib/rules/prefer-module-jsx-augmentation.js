@@ -10,7 +10,8 @@ function findGlobalJSXIntrinsics(moduleBlock) {
   for (const m of moduleBlock.body) {
     if (m.type !== 'TSModuleDeclaration') continue;
     const idNode = m.id;
-    if (!idNode || idNode.type !== 'Identifier' || idNode.name !== 'JSX') continue;
+    if (!idNode || idNode.type !== 'Identifier' || idNode.name !== 'JSX')
+      continue;
     const inner = m.body;
     if (!inner || inner.type !== 'TSModuleBlock') continue;
     for (const member of inner.body) {
@@ -31,7 +32,7 @@ const meta = {
   type: 'problem',
   docs: {
     description:
-      "Declaration-merge `JSX.IntrinsicElements` into `kerfjs/jsx-runtime`, not the global namespace.",
+      'Declaration-merge `JSX.IntrinsicElements` into `kerfjs/jsx-runtime`, not the global namespace.',
     url: 'https://github.com/brianwestphal/kerf/blob/main/eslint-plugin/docs/rules/prefer-module-jsx-augmentation.md',
   },
   schema: [],

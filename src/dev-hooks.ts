@@ -104,14 +104,21 @@ export interface DevHooks {
   listIdShift?: (id: string) => void;
   parserRepair?: (html: string) => void;
   staleBindingEnabled?: () => boolean;
-  staleBinding?: (prevWired: readonly Binding[], current: readonly Binding[]) => void;
+  staleBinding?: (
+    prevWired: readonly Binding[],
+    current: readonly Binding[],
+  ) => void;
   listInvariantsEnabled?: () => boolean;
   listInvariants?: (
     rootEl: Element,
     bindings: ReadonlyMap<string, ListBinding>,
     expectedCounts?: ReadonlyMap<string, number>,
   ) => void;
-  valueOnlyRerender?: (prevHtml: string, nextHtml: string, ctx: WarnOnceContext) => void;
+  valueOnlyRerender?: (
+    prevHtml: string,
+    nextHtml: string,
+    ctx: WarnOnceContext,
+  ) => void;
   listRebind?: (id: string, liveParent: Element) => void;
   eachInMorphSkip?: (id: string, liveParent: Element, rootEl: Element) => void;
   missingRowKey?: (
@@ -123,7 +130,10 @@ export interface DevHooks {
   // --- each.ts -----------------------------------------------------------
   staleIndexEnabled?: () => boolean;
   staleIndex?: (id: string) => void;
-  duplicateCacheKeys?: (id: string, segItems: readonly { cacheKey: unknown }[]) => void;
+  duplicateCacheKeys?: (
+    id: string,
+    segItems: readonly { cacheKey: unknown }[],
+  ) => void;
 
   // --- utils/url-screen.ts -----------------------------------------------
   /**

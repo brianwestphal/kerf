@@ -17,10 +17,18 @@
  *
  * Every regression test asserts the shipped behavior (never `.skip`).
  */
-import { afterEach,beforeEach,describe,expect,it,type MockInstance,vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { each,mount,signal } from '../../src/index.js';
+import { each, mount, signal } from '../../src/index.js';
 
 let root: HTMLElement;
 let warnSpy: MockInstance<typeof console.warn>;
@@ -37,7 +45,9 @@ afterEach(() => {
 });
 
 const shiftWarnings = (): string[] =>
-  warnSpy.mock.calls.map((c) => String(c[0])).filter((m) => m.includes('is now a different list'));
+  warnSpy.mock.calls
+    .map((c) => String(c[0]))
+    .filter((m) => m.includes('is now a different list'));
 
 describe('KF-393: identity-shift warning fires only on a real shift (KF-394)', () => {
   it('a KEYED list legitimately swapping its data source does NOT warn (KF-394)', () => {
@@ -50,13 +60,21 @@ describe('KF-393: identity-shift warning fires only on a real shift (KF-394)', (
     const b = arraySignal([{ id: 'b1', t: 'B1' }]);
     const dispose = mount(root, () => (
       <ul data-key="c">
-        {each(cond.value ? a : b, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'x' })}
+        {each(
+          cond.value ? a : b,
+          (r) => (
+            <li data-key={r.id}>{r.t}</li>
+          ),
+          { key: 'x' },
+        )}
       </ul>
     ));
     cond.value = false;
     expect(shiftWarnings()).toEqual([]);
     // The routing itself was always right: the list renders its new source's rows.
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['B1']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['B1']);
     dispose();
   });
 
@@ -71,12 +89,16 @@ describe('KF-393: identity-shift warning fires only on a real shift (KF-394)', (
     const b = arraySignal([{ id: 'b1', t: 'B1' }]);
     const dispose = mount(root, () => (
       <ul data-key="c">
-        {each(cond.value ? a : b, (r) => <li data-key={r.id}>{r.t}</li>)}
+        {each(cond.value ? a : b, (r) => (
+          <li data-key={r.id}>{r.t}</li>
+        ))}
       </ul>
     ));
     cond.value = false;
     expect(shiftWarnings()).toEqual([]);
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['B1']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['B1']);
     dispose();
   });
 
@@ -91,8 +113,20 @@ describe('KF-393: identity-shift warning fires only on a real shift (KF-394)', (
       const b = arraySignal([{ id: 'b1' }]);
       const dispose = mount(host, () => (
         <div>
-          {cond.value ? <ul data-key="ca">{each(a, (r) => <li data-key={r.id}>{r.id}</li>)}</ul> : ''}
-          <ul data-key="cb">{each(b, (r) => <li data-key={r.id}>{r.id}</li>)}</ul>
+          {cond.value ? (
+            <ul data-key="ca">
+              {each(a, (r) => (
+                <li data-key={r.id}>{r.id}</li>
+              ))}
+            </ul>
+          ) : (
+            ''
+          )}
+          <ul data-key="cb">
+            {each(b, (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ))}
+          </ul>
         </div>
       ));
       return { cond, dispose };

@@ -31,19 +31,23 @@ const OPTIONS = [
 
 // One vote counter per option. Everything the UI shows derives from these.
 const votes = new Map(OPTIONS.map((o) => [o.id, signal(0)]));
-const total = computed(() => OPTIONS.reduce((n, o) => n + votes.get(o.id).value, 0));
+const total = computed(() =>
+  OPTIONS.reduce((n, o) => n + votes.get(o.id).value, 0),
+);
 
 // Per-option bound holes, created once at module scope. The bar style is a
 // complete-attribute-value hole (`style="${bar}"`) — kerf binds it to the
 // computed, so a vote updates just that one attribute.
-const bars = new Map(OPTIONS.map((o) => [
-  o.id,
-  computed(() => {
-    const t = total.value;
-    const share = t === 0 ? 0 : Math.round((votes.get(o.id).value / t) * 100);
-    return `width:${share}%`;
-  }),
-]));
+const bars = new Map(
+  OPTIONS.map((o) => [
+    o.id,
+    computed(() => {
+      const t = total.value;
+      const share = t === 0 ? 0 : Math.round((votes.get(o.id).value / t) * 100);
+      return `width:${share}%`;
+    }),
+  ]),
+);
 
 // Plain counter (not a signal) incremented inside the render — a snapshot of
 // how many times render() ran. This render reads no `.value`, so it stays 1.
@@ -56,7 +60,9 @@ mount(root, () => {
     <div class="poll">
       <h1>Tabs or spaces?</h1>
       <p class="poll-lede">Vote as often as you like. The list below rendered once — every update is a fine-grained binding.</p>
-      <ul class="opts">${each(OPTIONS, (o) => html`<li class="opt" data-key="${o.id}">
+      <ul class="opts">${each(
+        OPTIONS,
+        (o) => html`<li class="opt" data-key="${o.id}">
         <button class="opt-btn" data-vote="${o.id}">
           <span class="opt-row">
             <span class="opt-label">${o.label}</span>
@@ -64,7 +70,8 @@ mount(root, () => {
           </span>
           <span class="opt-track"><span class="opt-bar" style="${bars.get(o.id)}"></span></span>
         </button>
-      </li>`)}</ul>
+      </li>`,
+      )}</ul>
       <div class="poll-foot">
         <span><b data-total>${total}</b> votes</span>
         <span class="poll-renders">renders: <b data-renders>${renders}</b></span>

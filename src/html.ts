@@ -82,7 +82,10 @@ function getParsed(strings: TemplateStringsArray): ParsedTemplate {
   return parsed;
 }
 
-export function html(strings: TemplateStringsArray, ...values: HtmlValue[]): SafeHtml {
+export function html(
+  strings: TemplateStringsArray,
+  ...values: HtmlValue[]
+): SafeHtml {
   const { chunks, holes, tagClose } = getParsed(strings);
   const parts: Segment[] = [];
   let buf = '';
@@ -127,6 +130,7 @@ export function html(strings: TemplateStringsArray, ...values: HtmlValue[]): Saf
       buf += _renderAttrVerbatim(hole.name, value);
     }
   }
-  if (buf !== '' || parts.length === 0) parts.push({ kind: 'static', html: buf });
+  if (buf !== '' || parts.length === 0)
+    parts.push({ kind: 'static', html: buf });
   return new SafeHtml(mergeChildSegments(parts));
 }

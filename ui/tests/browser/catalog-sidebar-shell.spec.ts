@@ -1,14 +1,14 @@
-import { expect, type Page, test } from "@playwright/test";
+import { expect, type Page, test } from '@playwright/test';
 
 const headerGeometry = async (page: Page) =>
   page.evaluate(() => {
     const rect = (selector: string) =>
       document.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
-    const logo = rect(".kui-catalog__mark");
-    const title = rect(".kui-catalog__identity h1");
-    const subtitle = rect(".kui-catalog__subtitle");
+    const logo = rect('.kui-catalog__mark');
+    const title = rect('.kui-catalog__identity h1');
+    const subtitle = rect('.kui-catalog__subtitle');
     const subtitleStyle = window.getComputedStyle(
-      document.querySelector<HTMLElement>(".kui-catalog__subtitle")!,
+      document.querySelector<HTMLElement>('.kui-catalog__subtitle')!,
     );
     const collapse = rect(
       '.kui-catalog__brand [aria-label="Collapse Kerf catalog"]',
@@ -26,19 +26,19 @@ const headerGeometry = async (page: Page) =>
     };
   });
 
-test("uses the Kerf identity and relocates sidebar restore into the detail toolbar", async ({
+test('uses the Kerf identity and relocates sidebar restore into the detail toolbar', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/?component=recipe-app-shell");
+  await page.goto('/?component=recipe-app-shell');
 
-  const shell = page.locator(".kui-catalog");
-  const sidebar = page.locator(".kui-catalog__sidebar");
-  const detail = page.locator(".kui-catalog__detail");
-  const logo = sidebar.locator(".kui-catalog__mark");
+  const shell = page.locator('.kui-catalog');
+  const sidebar = page.locator('.kui-catalog__sidebar');
+  const detail = page.locator('.kui-catalog__detail');
+  const logo = sidebar.locator('.kui-catalog__mark');
 
-  await expect(logo).toHaveAttribute("src", /assets\/logo(?:-[^/]+)?\.svg/);
-  await expect(logo).toHaveAttribute("alt", "");
+  await expect(logo).toHaveAttribute('src', /assets\/logo(?:-[^/]+)?\.svg/);
+  await expect(logo).toHaveAttribute('alt', '');
   await expect
     .poll(() =>
       logo.evaluate(
@@ -46,7 +46,7 @@ test("uses the Kerf identity and relocates sidebar restore into the detail toolb
       ),
     )
     .toBe(true);
-  await expect(sidebar.getByText("K", { exact: true })).toHaveCount(0);
+  await expect(sidebar.getByText('K', { exact: true })).toHaveCount(0);
   const wideGeometry = await headerGeometry(page);
   expect(wideGeometry).toMatchObject({
     subtitleBelowTitle: true,
@@ -55,17 +55,15 @@ test("uses the Kerf identity and relocates sidebar restore into the detail toolb
   expect(wideGeometry.logoTitleCenterDelta).toBeLessThanOrEqual(1);
   expect(wideGeometry.subtitleTitleLeftDelta).toBeLessThanOrEqual(1);
 
-  await sidebar
-    .getByRole("button", { name: "Collapse Kerf catalog" })
-    .click();
-  await expect(shell).toHaveAttribute("data-sidebar-collapsed", "true");
+  await sidebar.getByRole('button', { name: 'Collapse Kerf catalog' }).click();
+  await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'true');
   await expect(sidebar).toBeHidden();
   await expect(
-    sidebar.getByRole("button", { name: "Collapse Kerf catalog" }),
+    sidebar.getByRole('button', { name: 'Collapse Kerf catalog' }),
   ).toHaveCount(0);
 
-  const restore = detail.getByRole("button", {
-    name: "Expand Kerf catalog",
+  const restore = detail.getByRole('button', {
+    name: 'Expand Kerf catalog',
   });
   await expect(restore).toBeVisible();
   await expect(restore).toBeFocused();
@@ -73,13 +71,18 @@ test("uses the Kerf identity and relocates sidebar restore into the detail toolb
     await restore.evaluate(
       (element) =>
         element ===
-        document.querySelector(".kui-catalog__header .kui-toolbar__leading button"),
+        document.querySelector(
+          '.kui-catalog__header .kui-toolbar__leading button',
+        ),
     ),
   ).toBe(true);
   // The collapsed sidebar slides fully off-screen (its right edge at/left of 0)
   // rather than zeroing its box, and the detail pane takes the full width.
   await expect
-    .poll(async () => { const box = await sidebar.boundingBox(); return box ? box.x + box.width : 0; })
+    .poll(async () => {
+      const box = await sidebar.boundingBox();
+      return box ? box.x + box.width : 0;
+    })
     .toBeLessThanOrEqual(1);
   await expect
     .poll(async () => (await detail.boundingBox())?.x ?? -1)
@@ -91,11 +94,9 @@ test("uses the Kerf identity and relocates sidebar restore into the detail toolb
   expect(await headerGeometry(page)).toMatchObject({
     subtitleBelowTitle: true,
   });
-  await sidebar
-    .getByRole("button", { name: "Collapse Kerf catalog" })
-    .click();
+  await sidebar.getByRole('button', { name: 'Collapse Kerf catalog' }).click();
   await expect(
-    detail.getByRole("button", { name: "Expand Kerf catalog" }),
+    detail.getByRole('button', { name: 'Expand Kerf catalog' }),
   ).toBeVisible();
   await expect
     .poll(() =>

@@ -12,7 +12,8 @@ import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
 
-const microtask = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
+const microtask = (): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, 0));
 
 afterEach(() => {
   document.body.innerHTML = '';

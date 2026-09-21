@@ -49,7 +49,10 @@ interface Classification {
  * (happy-dom, older Safari) even when it stays connected; the snapshot fixes
  * those engines and is a no-op on engines that already preserve focus.
  */
-export function reconcileSnapshot(binding: ListBinding, listSeg: ListSegment): void {
+export function reconcileSnapshot(
+  binding: ListBinding,
+  listSeg: ListSegment,
+): void {
   // In-place fast path: same refs in the same order (no inserts/removes/moves)
   // → only content changed, so morph changed rows in place instead of swapping
   // their DOM nodes. Avoids the table-relayout cost of node replacement for
@@ -61,8 +64,8 @@ export function reconcileSnapshot(binding: ListBinding, listSeg: ListSegment): v
   // where nothing changed — is handled earlier by tryInPlaceContentUpdate,
   // which keeps every surviving node and morphs only changed rows in place.
   const { liveParent } = binding;
-  const { newRecord, prevIdx, removedItems, freshIndices, freshHtmls }
-    = classifyItems(binding.items, listSeg);
+  const { newRecord, prevIdx, removedItems, freshIndices, freshHtmls } =
+    classifyItems(binding.items, listSeg);
 
   // Compute tail anchor BEFORE removing old nodes: once an item is
   // detached, its `.nextElementSibling` is null and we lose the
@@ -85,7 +88,10 @@ export function reconcileSnapshot(binding: ListBinding, listSeg: ListSegment): v
  * a cache-hit (same ref + same html) are reused; replaced/new items get a
  * placeholder `BoundItem` whose `node` is filled in by the bulk parse below.
  */
-function classifyItems(oldItems: BoundItem[], listSeg: ListSegment): Classification {
+function classifyItems(
+  oldItems: BoundItem[],
+  listSeg: ListSegment,
+): Classification {
   // Single Map<ref, [item, index]> instead of two Maps over the same key set
   // (KF-90). Halves the .set() calls during the build, halves the lookup
   // probe count during classification. ~1-2 ms saved per render on 1k-row
@@ -118,7 +124,10 @@ function classifyItems(oldItems: BoundItem[], listSeg: ListSegment): Classificat
     newRecord[i] = {
       // `node` placeholder is filled by `buildFreshNodes`; its parse-count
       // check guarantees every fresh index gets a real element before use.
-      ref: ni.ref, cacheKey: ni.cacheKey, html: ni.html, node: null as unknown as Element,
+      ref: ni.ref,
+      cacheKey: ni.cacheKey,
+      html: ni.html,
+      node: null as unknown as Element,
       bindings: ni.bindings,
     };
     prevIdx[i] = -1;
@@ -185,11 +194,17 @@ function findOffendingRow(
     // Parse in the live parent's namespace so the per-row count matches the bulk
     // parse (KF-420) — a namespace mismatch would otherwise miss the offender.
     if (parseRowTemplate(freshHtmls[i], liveParent).count !== 1) {
-      return rowContractError(freshIndices[i], newRecord[freshIndices[i]].html, liveParent);
+      return rowContractError(
+        freshIndices[i],
+        newRecord[freshIndices[i]].html,
+        liveParent,
+      );
     }
   }
   /* c8 ignore next 2 — unreachable: bulk mismatch ⇒ at least one row violates. */
-  return new Error('each(): bulk-parse mismatch with no per-row offender (kerf bug).');
+  return new Error(
+    'each(): bulk-parse mismatch with no per-row offender (kerf bug).',
+  );
 }
 
 /**
@@ -200,7 +215,8 @@ function findOffendingRow(
 function removeOldNodes(liveParent: Element, removedItems: BoundItem[]): void {
   for (const item of removedItems) {
     disposeRowBindings(item.bindingDisposers);
-    if (item.node.parentElement === liveParent) liveParent.removeChild(item.node);
+    if (item.node.parentElement === liveParent)
+      liveParent.removeChild(item.node);
   }
 }
 

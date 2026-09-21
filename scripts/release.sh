@@ -27,10 +27,10 @@ CYAN="\033[36m"
 RESET="\033[0m"
 
 # --- Helpers ---
-info()    { echo -e "${CYAN}${BOLD}>>>${RESET} $1"; }
+info() { echo -e "${CYAN}${BOLD}>>>${RESET} $1"; }
 success() { echo -e "${GREEN}${BOLD}>>>${RESET} $1"; }
-warn()    { echo -e "${YELLOW}${BOLD}>>>${RESET} $1"; }
-error()   { echo -e "${RED}${BOLD}>>>${RESET} $1"; }
+warn() { echo -e "${YELLOW}${BOLD}>>>${RESET} $1"; }
+error() { echo -e "${RED}${BOLD}>>>${RESET} $1"; }
 
 confirm() {
   local prompt="$1"
@@ -41,10 +41,19 @@ confirm() {
 }
 
 resolve_editor() {
-  if [[ -n "${EDITOR:-}" ]]; then echo "$EDITOR"; return; fi
-  if [[ -n "${VISUAL:-}" ]]; then echo "$VISUAL"; return; fi
+  if [[ -n "${EDITOR:-}" ]]; then
+    echo "$EDITOR"
+    return
+  fi
+  if [[ -n "${VISUAL:-}" ]]; then
+    echo "$VISUAL"
+    return
+  fi
   for cmd in nano vim vi; do
-    if command -v "$cmd" &>/dev/null; then echo "$cmd"; return; fi
+    if command -v "$cmd" &> /dev/null; then
+      echo "$cmd"
+      return
+    fi
   done
   echo ""
 }
@@ -116,7 +125,7 @@ get_state() {
   node -e "
     const s = JSON.parse(require('fs').readFileSync('$STATE_FILE','utf8'));
     process.stdout.write(s[process.argv[1]] || '');
-  " "$1" 2>/dev/null || echo ""
+  " "$1" 2> /dev/null || echo ""
 }
 
 set_state() {
@@ -153,7 +162,7 @@ preflight() {
     if ! confirm "Continue anyway?"; then exit 1; fi
   fi
 
-  if ! npm whoami &>/dev/null; then
+  if ! npm whoami &> /dev/null; then
     warn "Not logged in to npm locally — that's OK if you rely on CI's OIDC publish."
   else
     local npm_user
@@ -212,7 +221,10 @@ step_version() {
       echo -en "${CYAN}${BOLD}>>>${RESET} Enter version: "
       read -r REPLY
       ;;
-    *) error "Invalid choice"; exit 1 ;;
+    *)
+      error "Invalid choice"
+      exit 1
+      ;;
   esac
 
   set_state "version" "$REPLY"
@@ -229,7 +241,7 @@ step_release_notes() {
   fi
 
   local last_tag
-  last_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+  last_tag=$(git describe --tags --abbrev=0 2> /dev/null || echo "")
   local log_range="${last_tag:+${last_tag}..HEAD}"
 
   # gitgist (https://github.com/brianwestphal/gitgist) turns the commit range
@@ -239,9 +251,9 @@ step_release_notes() {
   # exactly what we want; we pass the explicit range when a tag exists so the
   # boundary is unambiguous.
   local generated=""
-  if command -v claude &>/dev/null; then
+  if command -v claude &> /dev/null; then
     info "Drafting release notes with gitgist (commits since ${last_tag:-the start})..."
-    generated=$(gitgist ${log_range:+"$log_range"} 2>/dev/null || true)
+    generated=$(gitgist ${log_range:+"$log_range"} 2> /dev/null || true)
     generated=$(echo "$generated" | sed -e '/^```/d' -e :a -e '/^[[:space:]]*$/{$d;N;ba' -e '}')
   fi
 
@@ -271,7 +283,7 @@ ${generated}"
     if (m === null) process.exit(0);
     const body = m[1].split('\n').filter((l) => l.trim().startsWith('- ')).join('\n');
     process.stdout.write(body);
-  " 2>/dev/null || true)
+  " 2> /dev/null || true)
   if [[ -n "$carried" ]]; then
     initial="${initial}
 
@@ -387,14 +399,14 @@ step_git_commit() {
   version=$(get_state "version")
   info "Creating git commit..."
   git add package.json package-lock.json CHANGELOG.md \
-          eslint-plugin/package.json eslint-plugin/package-lock.json \
-          eslint-plugin/index.js \
-          create-kerf-component/package.json create-kerf-component/package-lock.json \
-          create-kerf-component/template/package.json \
-          ui/package.json ui/package-lock.json \
-          docs/13-component-packages.md site/src/content/docs/docs/component-packages.md \
-          examples/reactivity-demo/package-lock.json site/package-lock.json \
-          ai/manifest.json
+    eslint-plugin/package.json eslint-plugin/package-lock.json \
+    eslint-plugin/index.js \
+    create-kerf-component/package.json create-kerf-component/package-lock.json \
+    create-kerf-component/template/package.json \
+    ui/package.json ui/package-lock.json \
+    docs/13-component-packages.md site/src/content/docs/docs/component-packages.md \
+    examples/reactivity-demo/package-lock.json site/package-lock.json \
+    ai/manifest.json
   # Idempotent: if a previous run already absorbed these files into a manual
   # commit (e.g. recovery after the pre-commit hook failed), there's nothing
   # left to stage. Skip rather than fail under `set -e` so the tag-and-push
@@ -439,7 +451,7 @@ step_beta_tag_and_push() {
   notes=$(get_state "release_notes")
 
   local beta_num=1
-  while git rev-parse "v${version}-beta.${beta_num}" >/dev/null 2>&1; do
+  while git rev-parse "v${version}-beta.${beta_num}" > /dev/null 2>&1; do
     beta_num=$((beta_num + 1))
   done
   local beta_tag="v${version}-beta.${beta_num}"
@@ -501,9 +513,19 @@ main() {
     fi
   fi
 
-  if ! past_step 1; then preflight; set_step 1; fi
-  if ! past_step 2; then step_release_notes; set_step 2; fi
-  if ! past_step 3; then echo ""; step_version; set_step 3; fi
+  if ! past_step 1; then
+    preflight
+    set_step 1
+  fi
+  if ! past_step 2; then
+    step_release_notes
+    set_step 2
+  fi
+  if ! past_step 3; then
+    echo ""
+    step_version
+    set_step 3
+  fi
   if ! past_step 4; then
     step_review
     if [[ "$BETA_MODE" == "true" ]]; then
@@ -521,12 +543,30 @@ main() {
   fi
 
   if [[ "$BETA_MODE" == "true" ]]; then
-    if ! past_step 7; then echo ""; step_local_checks; set_step 7; fi
-    if ! past_step 8; then step_beta_tag_and_push; set_step 8; fi
+    if ! past_step 7; then
+      echo ""
+      step_local_checks
+      set_step 7
+    fi
+    if ! past_step 8; then
+      step_beta_tag_and_push
+      set_step 8
+    fi
   else
-    if ! past_step 5; then echo ""; step_update_version; set_step 5; fi
-    if ! past_step 6; then step_update_changelog; set_step 6; fi
-    if ! past_step 7; then echo ""; step_local_checks; set_step 7; fi
+    if ! past_step 5; then
+      echo ""
+      step_update_version
+      set_step 5
+    fi
+    if ! past_step 6; then
+      step_update_changelog
+      set_step 6
+    fi
+    if ! past_step 7; then
+      echo ""
+      step_local_checks
+      set_step 7
+    fi
     if ! past_step 8; then
       step_git_commit
       step_stable_tag_and_push

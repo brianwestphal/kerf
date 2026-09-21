@@ -14,10 +14,14 @@ import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
-  await page.waitForFunction(() => (window as unknown as { kerfReady: boolean }).kerfReady === true);
+  await page.waitForFunction(
+    () => (window as unknown as { kerfReady: boolean }).kerfReady === true,
+  );
 });
 
-test('html``: mount + fine-grained signal update + each() list, from dist via importmap', async ({ page }) => {
+test('html``: mount + fine-grained signal update + each() list, from dist via importmap', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const { mount, signal, each } = (window as any).kerf;
     const html = (window as any).kerfHtml;
@@ -25,15 +29,19 @@ test('html``: mount + fine-grained signal update + each() list, from dist via im
 
     const count = signal(0);
     const cls = signal('idle');
-    const items = signal([{ id: 1, label: 'one' }, { id: 2, label: 'two' }]);
+    const items = signal([
+      { id: 1, label: 'one' },
+      { id: 2, label: 'two' },
+    ]);
     let renders = 0;
 
     mount(root, () => {
       renders++;
-      return html`<section id="app" class="${cls}">Count: ${count}<ul>${
-        each(items.value, (i: { id: number; label: string }) =>
-          html`<li data-key="${String(i.id)}">${i.label}</li>`)
-      }</ul></section>`;
+      return html`<section id="app" class="${cls}">Count: ${count}<ul>${each(
+        items.value,
+        (i: { id: number; label: string }) =>
+          html`<li data-key="${String(i.id)}">${i.label}</li>`,
+      )}</ul></section>`;
     });
 
     const app = root.querySelector('#app') as HTMLElement;
@@ -49,7 +57,8 @@ test('html``: mount + fine-grained signal update + each() list, from dist via im
     count.value = 42;
     cls.value = 'busy';
     const afterSignals = {
-      text: (root.querySelector('#app') as HTMLElement).childNodes[1]?.textContent,
+      text: (root.querySelector('#app') as HTMLElement).childNodes[1]
+        ?.textContent,
       containsCount: app.textContent!.includes('Count: 42'),
       cls: app.getAttribute('class'),
       renders,

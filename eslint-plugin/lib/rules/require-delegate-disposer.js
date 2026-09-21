@@ -52,7 +52,8 @@ function create(context) {
       // the disposer is being routed somewhere reachable — accept.
       const parent = node.parent;
       if (!parent) return;
-      if (parent.type === 'UnaryExpression' && parent.operator === 'void') return;
+      if (parent.type === 'UnaryExpression' && parent.operator === 'void')
+        return;
       if (parent.type !== 'ExpressionStatement') return;
 
       context.report({

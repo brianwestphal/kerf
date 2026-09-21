@@ -36,7 +36,11 @@ const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 // Source docs that carry pinned CDN URLs. The site copies under
 // site/src/content/docs/ are generated from docs/*.md by sync-docs.mjs, so
 // fixing the source and re-syncing is the whole workflow — we scan source only.
-const SCANNED = ['README.md', 'docs/6-jsx-runtime.md', 'docs/ai/usage-guide.md'];
+const SCANNED = [
+  'README.md',
+  'docs/6-jsx-runtime.md',
+  'docs/ai/usage-guide.md',
+];
 
 // A pinned reference is `<pkg>@<major>[.<minor>.<patch>][-tag]`. We only care
 // about the major. `\bkerfjs@` will not match `kerf-component@` or a bare
@@ -53,12 +57,14 @@ function majorOf(range) {
 function main() {
   const pkg = JSON.parse(readFileSync(join(REPO_ROOT, 'package.json'), 'utf8'));
   const kerfMajor = majorOf(pkg.version);
-  const signalsMajor = majorOf(pkg.dependencies?.['@preact/signals-core'] ?? '');
+  const signalsMajor = majorOf(
+    pkg.dependencies?.['@preact/signals-core'] ?? '',
+  );
 
   if (kerfMajor === null || signalsMajor === null) {
     console.error(
-      `[check-cdn-versions] could not read a major from package.json `
-      + `(version=${pkg.version}, @preact/signals-core=${pkg.dependencies?.['@preact/signals-core']}).`,
+      `[check-cdn-versions] could not read a major from package.json ` +
+        `(version=${pkg.version}, @preact/signals-core=${pkg.dependencies?.['@preact/signals-core']}).`,
     );
     process.exit(1);
   }
@@ -72,7 +78,13 @@ function main() {
       for (const m of line.matchAll(KERF_RE)) {
         kerfHits++;
         if (m[1] !== kerfMajor) {
-          offenders.push({ rel, line: i + 1, found: m[0], want: `kerfjs@${kerfMajor}`, text: line.trim() });
+          offenders.push({
+            rel,
+            line: i + 1,
+            found: m[0],
+            want: `kerfjs@${kerfMajor}`,
+            text: line.trim(),
+          });
         }
       }
       for (const m of line.matchAll(SIGNALS_RE)) {
@@ -94,21 +106,23 @@ function main() {
   // Fail loudly rather than pass vacuously.
   if (kerfHits === 0) {
     console.error(
-      `[check-cdn-versions] found no \`kerfjs@<version>\` CDN pins in [${SCANNED.join(', ')}]. `
-      + `A file moved or the URL shape changed — update SCANNED in this script.`,
+      `[check-cdn-versions] found no \`kerfjs@<version>\` CDN pins in [${SCANNED.join(', ')}]. ` +
+        `A file moved or the URL shape changed — update SCANNED in this script.`,
     );
     process.exit(1);
   }
 
   if (offenders.length === 0) {
     console.log(
-      `[check-cdn-versions] OK — ${kerfHits} kerfjs@ CDN pin(s) on major ${kerfMajor}; `
-      + `signals-core pins on major ${signalsMajor}.`,
+      `[check-cdn-versions] OK — ${kerfHits} kerfjs@ CDN pin(s) on major ${kerfMajor}; ` +
+        `signals-core pins on major ${signalsMajor}.`,
     );
     process.exit(0);
   }
 
-  console.error(`\n${offenders.length} stale CDN version pin(s) — the docs point at the wrong major:\n`);
+  console.error(
+    `\n${offenders.length} stale CDN version pin(s) — the docs point at the wrong major:\n`,
+  );
   for (const { rel, line, found, want, text } of offenders) {
     const snippet = text.length > 100 ? `${text.slice(0, 97)}...` : text;
     console.error(`  ${rel}:${line}`);
@@ -116,8 +130,8 @@ function main() {
     console.error(`    ${snippet}`);
   }
   console.error(
-    `\nBump the pins to the current major, then re-run \`node site/scripts/sync-docs.mjs\`\n`
-    + `so the generated site copies follow. See docs/6-jsx-runtime.md §6.11.1.\n`,
+    `\nBump the pins to the current major, then re-run \`node site/scripts/sync-docs.mjs\`\n` +
+      `so the generated site copies follow. See docs/6-jsx-runtime.md §6.11.1.\n`,
   );
   process.exit(1);
 }

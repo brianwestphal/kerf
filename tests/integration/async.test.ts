@@ -11,7 +11,9 @@ import { mount } from '../../src/mount.js';
 
 function deferred<T>() {
   let resolve!: (v: T) => void;
-  const promise = new Promise<T>((res) => { resolve = res; });
+  const promise = new Promise<T>((res) => {
+    resolve = res;
+  });
   return { promise, resolve };
 }
 
@@ -27,9 +29,13 @@ describe('async — full pipeline', () => {
 
     mount(app, () => {
       const s = users.value;
-      if (s.status === 'running') return jsx('p', { class: 'state', children: 'loading' });
+      if (s.status === 'running')
+        return jsx('p', { class: 'state', children: 'loading' });
       if (s.status === 'completed') {
-        return jsx('ul', { class: 'state', children: (s.data ?? []).map((u) => jsx('li', { children: u })) });
+        return jsx('ul', {
+          class: 'state',
+          children: (s.data ?? []).map((u) => jsx('li', { children: u })),
+        });
       }
       return jsx('p', { class: 'state', children: 'idle' });
     });
@@ -56,16 +62,24 @@ describe('async — full pipeline', () => {
     mount(app, () => {
       const s = diff.value;
       if (s.status === 'failed') {
-        return jsx('p', { class: 'state err', children: `failed: ${s.input?.fileId}` });
+        return jsx('p', {
+          class: 'state err',
+          children: `failed: ${s.input?.fileId}`,
+        });
       }
-      if (s.status === 'completed') return jsx('pre', { class: 'state', children: s.data });
+      if (s.status === 'completed')
+        return jsx('pre', { class: 'state', children: s.data });
       return jsx('p', { class: 'state', children: 'idle' });
     });
 
-    const err = await diff.run({ fileId: 'src/x.ts' }, () => Promise.reject(new Error('nope')));
+    const err = await diff.run({ fileId: 'src/x.ts' }, () =>
+      Promise.reject(new Error('nope')),
+    );
     expect(err).toBeUndefined();
     await Promise.resolve();
     // The projection reads value.input.fileId on the failed branch — no separate bookkeeping.
-    expect(app.querySelector('.state.err')?.textContent).toBe('failed: src/x.ts');
+    expect(app.querySelector('.state.err')?.textContent).toBe(
+      'failed: src/x.ts',
+    );
   });
 });

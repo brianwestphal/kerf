@@ -29,7 +29,7 @@ _preflight_uname="$(uname)"
 _preflight_load() {
   local load=""
   if [[ "${_preflight_uname}" == "Darwin" ]]; then
-    load=$(sysctl -n vm.loadavg 2>/dev/null | awk '{print $2}')
+    load=$(sysctl -n vm.loadavg 2> /dev/null | awk '{print $2}')
   elif [[ -r /proc/loadavg ]]; then
     load=$(awk '{print $1}' /proc/loadavg)
   fi
@@ -50,7 +50,7 @@ _preflight_load() {
 
 _preflight_ac_power() {
   if [[ "${_preflight_uname}" == "Darwin" ]]; then
-    if pmset -g batt 2>/dev/null | grep -q "Battery Power"; then
+    if pmset -g batt 2> /dev/null | grep -q "Battery Power"; then
       echo "FAIL  Running on battery — CPU will throttle aggressively"
       echo "      → plug in the charger"
       return 1
@@ -72,7 +72,7 @@ _preflight_ac_power() {
 _preflight_lowpower() {
   [[ "${_preflight_uname}" == "Darwin" ]] || return 0
   local lpm
-  lpm=$(pmset -g 2>/dev/null | awk '/lowpowermode/ { print $2 }')
+  lpm=$(pmset -g 2> /dev/null | awk '/lowpowermode/ { print $2 }')
   if [[ "${lpm}" == "1" ]]; then
     echo "FAIL  macOS Low Power Mode is enabled"
     echo "      → sudo pmset -a lowpowermode 0"
@@ -87,7 +87,7 @@ _preflight_thermal() {
   # `pmset -g therm` doesn't require sudo and emits nothing on Apple Silicon
   # when the system is happy. Treat empty / missing as "no throttle reported".
   local limit
-  limit=$(pmset -g therm 2>/dev/null | awk '/CPU_Speed_Limit/ { print $3 }')
+  limit=$(pmset -g therm 2> /dev/null | awk '/CPU_Speed_Limit/ { print $3 }')
   if [[ -z "${limit}" ]]; then
     echo "OK    No thermal throttle reported"
     return 0
@@ -108,7 +108,7 @@ _preflight_other_processes() {
   # are always hot on macOS, and the preflight shell itself.
   local me=$$ parent=${PPID:-0}
   local hot
-  hot=$(ps -A -o pid=,pcpu=,comm= 2>/dev/null \
+  hot=$(ps -A -o pid=,pcpu=,comm= 2> /dev/null \
     | awk -v me="${me}" -v parent="${parent}" -v max="${BENCH_OTHER_CPU_MAX}" '
         $1 == me || $1 == parent { next }
         $3 ~ /WindowServer|kernel_task|launchd$/ { next }
@@ -136,7 +136,7 @@ _preflight_paging() {
   # preflight call. Worth flagging only when the cumulative number is huge.
   [[ "${_preflight_uname}" == "Darwin" ]] || return 0
   local pageouts
-  pageouts=$(vm_stat 2>/dev/null | awk -F'[: .]+' '/^Pageouts/ { print $2 }')
+  pageouts=$(vm_stat 2> /dev/null | awk -F'[: .]+' '/^Pageouts/ { print $2 }')
   if [[ -n "${pageouts}" && "${pageouts}" -gt 1000000 ]]; then
     echo "WARN  cumulative pageouts since boot: ${pageouts} — memory pressure may be in play"
   fi
@@ -150,12 +150,12 @@ preflight() {
   fi
   echo "==> Pre-flight system check (KERF_BENCH_FORCE=1 or --force to skip)"
   local rc=0
-  _preflight_load            || rc=1
-  _preflight_ac_power        || rc=1
-  _preflight_lowpower        || rc=1
-  _preflight_thermal         || rc=1
+  _preflight_load || rc=1
+  _preflight_ac_power || rc=1
+  _preflight_lowpower || rc=1
+  _preflight_thermal || rc=1
   _preflight_other_processes || rc=1
-  _preflight_paging          || rc=1
+  _preflight_paging || rc=1
   if [[ ${rc} -ne 0 ]]; then
     echo
     echo "Pre-flight failed. Address the items above, or re-run with --force." >&2

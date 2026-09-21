@@ -75,7 +75,9 @@ function collectExports(absPath) {
 
   // 1. `export { foo, type Bar, baz as qux } from '...'` re-exports.
   //    Captures the inner brace group and splits on commas.
-  for (const m of src.matchAll(/export\s*\{([^}]+)\}\s*from\s*['"][^'"]+['"]/g)) {
+  for (const m of src.matchAll(
+    /export\s*\{([^}]+)\}\s*from\s*['"][^'"]+['"]/g,
+  )) {
     for (const raw of m[1].split(',')) {
       const piece = raw.trim();
       if (piece === '') continue;
@@ -106,7 +108,9 @@ function collectExports(absPath) {
 
   // 3. `export const Foo`, `export function foo`, `export class Foo`,
   //    `export type Foo`, `export interface Foo`.
-  for (const m of src.matchAll(/^export\s+(?:declare\s+)?(?:const|let|var|function|class|type|interface)\s+([A-Za-z_$][\w$]*)/gm)) {
+  for (const m of src.matchAll(
+    /^export\s+(?:declare\s+)?(?:const|let|var|function|class|type|interface)\s+([A-Za-z_$][\w$]*)/gm,
+  )) {
     names.add(m[1]);
   }
 
@@ -132,18 +136,24 @@ function main() {
 
   if (missing.length === 0) {
     // eslint-disable-next-line no-console
-    console.log(`[check-doc-api-coverage] OK — docs/8-api-reference.md mentions every public export.`);
+    console.log(
+      `[check-doc-api-coverage] OK — docs/8-api-reference.md mentions every public export.`,
+    );
     return;
   }
 
   // eslint-disable-next-line no-console
-  console.error('[check-doc-api-coverage] docs/8-api-reference.md is missing entries for:');
+  console.error(
+    '[check-doc-api-coverage] docs/8-api-reference.md is missing entries for:',
+  );
   for (const { name, source, label } of missing) {
     // eslint-disable-next-line no-console
     console.error(`  - ${name}  (exported from ${source}, surface: ${label})`);
   }
   // eslint-disable-next-line no-console
-  console.error('\nAdd a heading or at least a prose mention in docs/8-api-reference.md, then re-run.');
+  console.error(
+    '\nAdd a heading or at least a prose mention in docs/8-api-reference.md, then re-run.',
+  );
   process.exit(1);
 }
 

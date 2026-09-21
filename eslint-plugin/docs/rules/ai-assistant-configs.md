@@ -10,10 +10,10 @@ Maps to design doc [`docs/12-ai-assistant-configs.md`](https://github.com/brianw
 
 The rule resolves `kerfjs/ai/manifest.json` from the consumer's installed `kerfjs` (silently no-ops if `kerfjs` isn't a dep). For each bundled file, it picks a trigger heuristic — "is this project using the tool this file is for?" — and only nudges the consumer when the trigger says yes:
 
-| Bundled file | Triggers when | Installed to |
-|---|---|---|
-| `ai/skill.md` (Claude Code) | `.claude/` directory exists at the project root | `.claude/skills/kerf-app/SKILL.md` |
-| `ai/cursorrules` (Cursor) | `.cursorrules` file or `.cursor/` directory exists | `.cursorrules` |
+| Bundled file                | Triggers when                                      | Installed to                       |
+| --------------------------- | -------------------------------------------------- | ---------------------------------- |
+| `ai/skill.md` (Claude Code) | `.claude/` directory exists at the project root    | `.claude/skills/kerf-app/SKILL.md` |
+| `ai/cursorrules` (Cursor)   | `.cursorrules` file or `.cursor/` directory exists | `.cursorrules`                     |
 
 A triggered file is then classified into one of three reported states (a fourth, "up-to-date," is silent):
 
@@ -78,4 +78,4 @@ Both `claude` and `cursor` default to `true`. Setting either to `false` makes th
 - It does not install the configs at `npm install` time — there are no postinstall scripts. The first lint pass after `npm install kerfjs` surfaces the recommendation.
 - It does not write to disk under plain `eslint` (no `--fix`). The warning is emitted; nothing changes on disk.
 - It does not push Claude Code or Cursor on consumers who haven't signalled they use them — no `.claude/` or `.cursor*` ⇒ silent.
-- It does not validate the *content* of the canonical files in the bundle. That's the kerf maintainer's responsibility (and the `check:ai-bundle-in-sync` gate in the kerf repo).
+- It does not validate the _content_ of the canonical files in the bundle. That's the kerf maintainer's responsibility (and the `check:ai-bundle-in-sync` gate in the kerf repo).

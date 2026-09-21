@@ -7,14 +7,14 @@ allowed-tools: Read, Grep, Glob, Bash, Edit, Write
 Produce a **one-page technical report** of what changed for a release, stored in
 `docs/technical-changelog/<base>-<next>.md`. The report must be grounded in the **real
 diff** — added/modified/removed code, export/dep deltas, measured size/coverage — **not**
-commit messages, the CHANGELOG, or the requirements docs (those describe the *end state*
-and the *whole* feature history, so they routinely credit the range with work that predates
+commit messages, the CHANGELOG, or the requirements docs (those describe the _end state_
+and the _whole_ feature history, so they routinely credit the range with work that predates
 it, or describe posture that was already true). Every claim is a verified delta between the
 base tag and HEAD.
 
 ## The two facts that make this skill necessary
 
-1. **HEAD is the next, unreleased version.** `package.json` still holds the *last* released
+1. **HEAD is the next, unreleased version.** `package.json` still holds the _last_ released
    version, so the release number can't be read from the repo — **you must ask the user**
    what the next planned version is.
 2. **The base is always the most recent production release tag** (e.g. `v0.16.0`), and the
@@ -23,33 +23,39 @@ base tag and HEAD.
 ## Steps
 
 1. **Ask for the next release number first.** Use `AskUserQuestion` (or ask in prose):
-   *"What's the next planned release version for this changelog?"* Do not guess and do not
+   _"What's the next planned release version for this changelog?"_ Do not guess and do not
    read it from `package.json` (that's the previous release). Accept e.g. `1.0.0` / `v1.0.0`.
 
 2. **Run the analysis script** — it does the deterministic git work:
+
    ```bash
    node scripts/changelog-analysis.mjs --next <version>
    ```
+
    It auto-detects the base as the newest production `vX.Y.Z` tag that is an ancestor of
    HEAD, buckets the line delta **by area** (`src` runtime vs sub-packages vs tests vs bench
    vs docs vs site vs agent/skill scaffolding vs generated `ai/`/`assets`), gives a
    **product-only** total, lists **added/removed** files and candidate **new subsystems**,
    and extracts the **barrel-export** (`src/index.ts`), **subpath-export** (`package.json
-   exports`), and **dependency** deltas. Override the base with `--base <tag>` only if the
+exports`), and **dependency** deltas. Override the base with `--base <tag>` only if the
    user asks (it warns if a newer production tag exists than the one it picked).
 
-3. **Read the real diffs — do not stop at the script.** The script tells you *where* to
+3. **Read the real diffs — do not stop at the script.** The script tells you _where_ to
    look; the narrative comes from the actual changes. For each non-trivial area:
+
    ```bash
    git diff <base>..HEAD -- <path>          # what actually changed
    ```
+
    And **verify every "new" claim against the base tree** rather than trusting a commit
    subject:
+
    ```bash
    git cat-file -e <base>:<file>            # non-zero exit → file is genuinely new
    git show <base>:<file> | grep -c <sym>   # 0 → the symbol/behavior was added in range
    git ls-tree -r --name-only <base> -- src/   # what the tree looked like at the base
    ```
+
    Classic traps to check: a module that looks new but existed at the base; a feature added
    **and removed within the same range** (nets to zero at HEAD — say so); posture like "no
    virtual DOM" / "one dependency" that was **already true at the base** (baseline, not a
@@ -57,12 +63,14 @@ base tag and HEAD.
 
 4. **Measure — never quote.** Numbers that aren't line-deltas come from a real run, not from
    a doc or a commit message:
+
    ```bash
    npm run build && node -e "const z=require('zlib'),fs=require('fs');console.log((z.gzipSync(fs.readFileSync('dist/index.js')).length/1024).toFixed(1)+' KB gzip')"
-   npm test        # for the real test count + coverage
+   npm test # for the real test count + coverage
    ```
+
    (The kerf-specific trap: the fine-grained-bindings work is **additive behavior on the
-   existing JSX surface** — the script will show *zero* `src/index.ts` export changes. Don't
+   existing JSX surface** — the script will show _zero_ `src/index.ts` export changes. Don't
    describe it as a new export; describe it as new behavior when a signal is placed in a hole.)
 
 5. **Write the report** to `docs/technical-changelog/<base>-<next>.md` (the script prints

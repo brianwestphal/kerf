@@ -32,14 +32,22 @@ export const NO_BUILD_APPS = new Set(['live-poll']);
  */
 export function copyNoBuildApp(appRoot, outDir, repoRoot) {
   const dist = resolve(repoRoot, 'dist');
-  if (!existsSync(resolve(dist, 'index.js')) || !existsSync(resolve(dist, 'html.js'))) {
+  if (
+    !existsSync(resolve(dist, 'index.js')) ||
+    !existsSync(resolve(dist, 'html.js'))
+  ) {
     throw new Error(
       `[copy-no-build-app] built dist/ not found at ${dist} — run \`npm run build\` first`,
     );
   }
-  const signalsCore = resolve(repoRoot, 'node_modules/@preact/signals-core/dist/signals-core.mjs');
+  const signalsCore = resolve(
+    repoRoot,
+    'node_modules/@preact/signals-core/dist/signals-core.mjs',
+  );
   if (!existsSync(signalsCore)) {
-    throw new Error(`[copy-no-build-app] signals-core ESM build not found at ${signalsCore}`);
+    throw new Error(
+      `[copy-no-build-app] signals-core ESM build not found at ${signalsCore}`,
+    );
   }
 
   if (existsSync(outDir)) rmSync(outDir, { recursive: true, force: true });

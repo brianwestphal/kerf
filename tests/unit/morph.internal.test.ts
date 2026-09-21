@@ -63,7 +63,9 @@ describe('morph()', () => {
   it('matches by data-key when ids are absent', () => {
     live.innerHTML = '<li data-key="1">1</li><li data-key="2">2</li>';
     const before = Array.from(live.children);
-    const tpl = renderTemplate('<li data-key="2">2</li><li data-key="1">1</li>');
+    const tpl = renderTemplate(
+      '<li data-key="2">2</li><li data-key="1">1</li>',
+    );
     morph(live, tpl, new Set());
     expect(live.children[0]).toBe(before[1]);
     expect(live.children[1]).toBe(before[0]);
@@ -151,12 +153,17 @@ describe('morph()', () => {
     // The slot's classes flip from "is-loading" to "is-ready" across renders
     // (server-driven state) but the children were imperatively painted by the
     // client and must survive the morph.
-    live.innerHTML = '<div data-morph-skip-children class="slot is-loading"><span>client-painted</span></div>';
+    live.innerHTML =
+      '<div data-morph-skip-children class="slot is-loading"><span>client-painted</span></div>';
     const inner = live.querySelector('span');
-    const tpl = renderTemplate('<div data-morph-skip-children class="slot is-ready"><b>different</b></div>');
+    const tpl = renderTemplate(
+      '<div data-morph-skip-children class="slot is-ready"><b>different</b></div>',
+    );
     morph(live, tpl, new Set());
     // Attribute morph still happened on the slot itself…
-    expect(live.querySelector('div')?.getAttribute('class')).toBe('slot is-ready');
+    expect(live.querySelector('div')?.getAttribute('class')).toBe(
+      'slot is-ready',
+    );
     // …but the children are untouched.
     expect(live.querySelector('span')).toBe(inner);
     expect(live.querySelector('b')).toBe(null);
@@ -166,7 +173,8 @@ describe('morph()', () => {
     // Simulates an imperatively-injected node: the template renders just <a>,
     // but the live tree has an extra <video data-morph-preserve> that some
     // client-side module appended after first render. The morph must keep it.
-    live.innerHTML = '<div><a>kept</a><video data-morph-preserve></video><b>unmarked</b></div>';
+    live.innerHTML =
+      '<div><a>kept</a><video data-morph-preserve></video><b>unmarked</b></div>';
     const host = live.querySelector('div')!;
     const preserved = host.querySelector('video');
     const tpl = renderTemplate('<div><a>kept</a></div>');
@@ -186,7 +194,8 @@ describe('morph()', () => {
     // pinning, because "preserve" reads stronger than it is and the loss is
     // silent. Consumers who need the node to outlive its host must attach it
     // to an element the template keeps.
-    live.innerHTML = '<section class="wrap"><span data-morph-preserve></span></section><p>tail</p>';
+    live.innerHTML =
+      '<section class="wrap"><span data-morph-preserve></span></section><p>tail</p>';
     const preserved = live.querySelector('span');
     const tpl = renderTemplate('<p>tail</p>');
     morph(live, tpl, new Set());
@@ -231,10 +240,13 @@ describe('morph()', () => {
   it('reconciles non-list siblings of an owned-item region (KF-102 round 2)', () => {
     // The list parent contains: [marker, ownedItem1, ownedItem2, sibling]
     // The diff should walk children, skip owned items, and update sibling.
-    live.innerHTML = '<div><!--marker--><li data-key="a">A</li><li data-key="b">B</li><button class="old">x</button></div>';
+    live.innerHTML =
+      '<div><!--marker--><li data-key="a">A</li><li data-key="b">B</li><button class="old">x</button></div>';
     const wrap = live.querySelector('div')!;
     const items = Array.from(wrap.querySelectorAll('li'));
-    const tpl = renderTemplate('<div><!--marker--><button class="new">x</button></div>');
+    const tpl = renderTemplate(
+      '<div><!--marker--><button class="new">x</button></div>',
+    );
     morph(live, tpl, new Set(items));
     // Owned items survive; sibling's class updates.
     expect(wrap.querySelectorAll('li').length).toBe(2);
@@ -260,7 +272,8 @@ describe('morph()', () => {
     it('scans past owned items and keyed elements without matching them', () => {
       // The owned <ul> and the keyed <ul id="x"> must both be invisible to the
       // lookahead; the unkeyed trailing <ul> is the one that gets moved up.
-      live.innerHTML = '<span>s</span><ul class="owned"></ul><ul id="x"></ul><ul class="plain"></ul>';
+      live.innerHTML =
+        '<span>s</span><ul class="owned"></ul><ul id="x"></ul><ul class="plain"></ul>';
       const owned = live.querySelector('ul.owned') as Element;
       const plain = live.querySelector('ul.plain');
       const tpl = renderTemplate('<ul class="target"></ul><ul id="x"></ul>');
@@ -329,10 +342,12 @@ describe('morph()', () => {
 
   describe('KF-150 public surface', () => {
     it('throws a descriptive hinted error for a null/undefined liveRoot (parity with mount())', () => {
-      expect(() => morph(null as unknown as Element, '<p>x</p>'))
-        .toThrow(/morph: liveRoot is null\/undefined.*getElementById/s);
-      expect(() => morph(undefined as unknown as Element, '<p>x</p>'))
-        .toThrow(/liveRoot is null\/undefined/);
+      expect(() => morph(null as unknown as Element, '<p>x</p>')).toThrow(
+        /morph: liveRoot is null\/undefined.*getElementById/s,
+      );
+      expect(() => morph(undefined as unknown as Element, '<p>x</p>')).toThrow(
+        /liveRoot is null\/undefined/,
+      );
     });
 
     it('accepts a raw HTML string as the template', () => {
@@ -354,7 +369,8 @@ describe('morph()', () => {
     });
 
     it('omits ownedItems entirely — non-list trees reconcile normally', () => {
-      live.innerHTML = '<ul><li data-key="a">a</li><li data-key="b">b</li></ul>';
+      live.innerHTML =
+        '<ul><li data-key="a">a</li><li data-key="b">b</li></ul>';
       morph(live, '<ul><li data-key="b">b</li><li data-key="a">a</li></ul>');
       const items = Array.from(live.querySelectorAll('li'));
       expect(items.map((li) => li.dataset.key)).toEqual(['b', 'a']);
@@ -377,22 +393,35 @@ describe('morph()', () => {
 
   it('namespaced attributes are added, updated, and removed (SVG xlink:href)', () => {
     const NS = 'http://www.w3.org/1999/xlink';
-    const liveSvg = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    const liveSvg = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'use',
+    );
     liveSvg.setAttributeNS(NS, 'xlink:href', '#old');
     live.appendChild(liveSvg);
 
     const tplWrap = document.createElement('div');
-    const tplUse = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    const tplUse = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'use',
+    );
     tplUse.setAttributeNS(NS, 'xlink:href', '#new');
     tplWrap.appendChild(tplUse);
     morph(live, tplWrap, new Set());
-    expect((live.firstElementChild as Element).getAttributeNS(NS, 'href')).toBe('#new');
+    expect((live.firstElementChild as Element).getAttributeNS(NS, 'href')).toBe(
+      '#new',
+    );
 
     // And removal.
     const tplWrap2 = document.createElement('div');
-    const tplUse2 = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+    const tplUse2 = document.createElementNS(
+      'http://www.w3.org/2000/svg',
+      'use',
+    );
     tplWrap2.appendChild(tplUse2);
     morph(live, tplWrap2, new Set());
-    expect((live.firstElementChild as Element).hasAttributeNS(NS, 'href')).toBe(false);
+    expect((live.firstElementChild as Element).hasAttributeNS(NS, 'href')).toBe(
+      false,
+    );
   });
 });

@@ -7,16 +7,32 @@
  * dedup / production-shape (hooks uninstalled) paths.
  */
 
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
-import { _resetDupWarnedForTests, _resetWarnedForTests } from '../../src/dev-each-warn.js';
+import {
+  _resetDupWarnedForTests,
+  _resetWarnedForTests,
+} from '../../src/dev-each-warn.js';
 import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
-const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+const env = (
+  globalThis as { process: { env: Record<string, string | undefined> } }
+).process.env;
 
 let root: HTMLElement;
 let warnSpy: MockInstance<typeof console.warn>;
@@ -66,7 +82,9 @@ describe('dev-each-warn (KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1)', () => {
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy.mock.calls[0][0]).toMatch(/data-morph-skip/);
     expect(warnSpy.mock.calls[0][0]).toMatch(/each\(\)/);
-    expect(warnSpy.mock.calls[0][0]).toMatch(/KERF_DEV_WARN_EACH_IN_MORPH_SKIP=0/);
+    expect(warnSpy.mock.calls[0][0]).toMatch(
+      /KERF_DEV_WARN_EACH_IN_MORPH_SKIP=0/,
+    );
   });
 
   it('does NOT warn when the env var is unset (default off)', () => {
@@ -94,15 +112,17 @@ describe('dev-each-warn (KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1)', () => {
   it('warns at most once per list id (one-shot dedup)', () => {
     env.KERF_DEV_WARN_EACH_IN_MORPH_SKIP = '1';
     const sig = signal(items);
-    mount(root, () =>
-      jsx('div', {
-        'data-morph-skip': '',
-        children: jsx('ul', {
-          children: each(sig.value, (it) =>
-            jsx('li', { 'data-key': String(it.id), children: String(it.id) }),
-          ),
-        }),
-      }) as never,
+    mount(
+      root,
+      () =>
+        jsx('div', {
+          'data-morph-skip': '',
+          children: jsx('ul', {
+            children: each(sig.value, (it) =>
+              jsx('li', { 'data-key': String(it.id), children: String(it.id) }),
+            ),
+          }),
+        }) as never,
     );
     expect(warnSpy).toHaveBeenCalledTimes(1);
     // Signal change triggers a re-render; warn should NOT fire again for the same list id.
@@ -113,83 +133,108 @@ describe('dev-each-warn (KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1)', () => {
   it('warns independently for two different each() lists in the same morph-skipped subtree', () => {
     env.KERF_DEV_WARN_EACH_IN_MORPH_SKIP = '1';
     const items2 = [{ id: 3 }];
-    mount(root, () =>
-      jsx('div', {
-        'data-morph-skip': '',
-        children: [
-          jsx('ul', {
-            children: each(items, (it) =>
-              jsx('li', { 'data-key': String(it.id), children: String(it.id) }),
-            ),
-          }),
-          jsx('ul', {
-            children: each(items2, (it) =>
-              jsx('li', { 'data-key': String(it.id), children: String(it.id) }),
-            ),
-          }),
-        ],
-      }) as never,
+    mount(
+      root,
+      () =>
+        jsx('div', {
+          'data-morph-skip': '',
+          children: [
+            jsx('ul', {
+              children: each(items, (it) =>
+                jsx('li', {
+                  'data-key': String(it.id),
+                  children: String(it.id),
+                }),
+              ),
+            }),
+            jsx('ul', {
+              children: each(items2, (it) =>
+                jsx('li', {
+                  'data-key': String(it.id),
+                  children: String(it.id),
+                }),
+              ),
+            }),
+          ],
+        }) as never,
     );
     expect(warnSpy).toHaveBeenCalledTimes(2);
   });
 });
 
 describe('dev-each-warn duplicate cacheKey (KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1)', () => {
-  const itemsWithDupKey = [{ id: 1, type: 'a' }, { id: 2, type: 'a' }, { id: 3, type: 'b' }];
-  const itemsNoDupKey  = [{ id: 1, type: 'a' }, { id: 2, type: 'b' }, { id: 3, type: 'c' }];
+  const itemsWithDupKey = [
+    { id: 1, type: 'a' },
+    { id: 2, type: 'a' },
+    { id: 3, type: 'b' },
+  ];
+  const itemsNoDupKey = [
+    { id: 1, type: 'a' },
+    { id: 2, type: 'b' },
+    { id: 3, type: 'c' },
+  ];
 
   it('warns when cacheKey function returns duplicate values', () => {
     env.KERF_DEV_WARN_DUPLICATE_EACH_KEYS = '1';
-    mount(root, () =>
-      jsx('ul', {
-        children: each(
-          itemsWithDupKey,
-          (it) => jsx('li', { 'data-key': String(it.id), children: it.type }),
-          (it) => it.type,
-        ),
-      }) as never,
+    mount(
+      root,
+      () =>
+        jsx('ul', {
+          children: each(
+            itemsWithDupKey,
+            (it) => jsx('li', { 'data-key': String(it.id), children: it.type }),
+            (it) => it.type,
+          ),
+        }) as never,
     );
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy.mock.calls[0][0]).toMatch(/duplicate cacheKey/);
-    expect(warnSpy.mock.calls[0][0]).toMatch(/KERF_DEV_WARN_DUPLICATE_EACH_KEYS=0/);
+    expect(warnSpy.mock.calls[0][0]).toMatch(
+      /KERF_DEV_WARN_DUPLICATE_EACH_KEYS=0/,
+    );
   });
 
   it('does NOT warn when all cacheKey values are unique', () => {
     env.KERF_DEV_WARN_DUPLICATE_EACH_KEYS = '1';
-    mount(root, () =>
-      jsx('ul', {
-        children: each(
-          itemsNoDupKey,
-          (it) => jsx('li', { 'data-key': String(it.id), children: it.type }),
-          (it) => it.type,
-        ),
-      }) as never,
+    mount(
+      root,
+      () =>
+        jsx('ul', {
+          children: each(
+            itemsNoDupKey,
+            (it) => jsx('li', { 'data-key': String(it.id), children: it.type }),
+            (it) => it.type,
+          ),
+        }) as never,
     );
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it('does NOT warn when no cacheKey function is provided', () => {
     env.KERF_DEV_WARN_DUPLICATE_EACH_KEYS = '1';
-    mount(root, () =>
-      jsx('ul', {
-        children: each(
-          itemsWithDupKey,
-          (it) => jsx('li', { 'data-key': String(it.id), children: it.type }),
-        ),
-      }) as never,
+    mount(
+      root,
+      () =>
+        jsx('ul', {
+          children: each(itemsWithDupKey, (it) =>
+            jsx('li', { 'data-key': String(it.id), children: it.type }),
+          ),
+        }) as never,
     );
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it('does NOT warn when the env var is unset (default off)', () => {
-    mount(root, () =>
-      jsx('ul', {
-        children: each(
-          itemsWithDupKey,
-          (it) => jsx('li', { 'data-key': String(it.id), children: it.type }),
-          (it) => it.type,
-        ),
-      }) as never,
+    mount(
+      root,
+      () =>
+        jsx('ul', {
+          children: each(
+            itemsWithDupKey,
+            (it) => jsx('li', { 'data-key': String(it.id), children: it.type }),
+            (it) => it.type,
+          ),
+        }) as never,
     );
     expect(warnSpy).not.toHaveBeenCalled();
   });
@@ -197,14 +242,16 @@ describe('dev-each-warn duplicate cacheKey (KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1)
   it('warns at most once per list id (one-shot dedup)', () => {
     env.KERF_DEV_WARN_DUPLICATE_EACH_KEYS = '1';
     const sig = signal(itemsWithDupKey);
-    mount(root, () =>
-      jsx('ul', {
-        children: each(
-          sig.value,
-          (it) => jsx('li', { 'data-key': String(it.id), children: it.type }),
-          (it) => it.type,
-        ),
-      }) as never,
+    mount(
+      root,
+      () =>
+        jsx('ul', {
+          children: each(
+            sig.value,
+            (it) => jsx('li', { 'data-key': String(it.id), children: it.type }),
+            (it) => it.type,
+          ),
+        }) as never,
     );
     expect(warnSpy).toHaveBeenCalledTimes(1);
     sig.value = [...itemsWithDupKey];
@@ -215,14 +262,17 @@ describe('dev-each-warn duplicate cacheKey (KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1)
     env.KERF_DEV_WARN_DUPLICATE_EACH_KEYS = '1';
     enterProductionShape();
     try {
-      mount(root, () =>
-        jsx('ul', {
-          children: each(
-            itemsWithDupKey,
-            (it) => jsx('li', { 'data-key': String(it.id), children: it.type }),
-            (it) => it.type,
-          ),
-        }) as never,
+      mount(
+        root,
+        () =>
+          jsx('ul', {
+            children: each(
+              itemsWithDupKey,
+              (it) =>
+                jsx('li', { 'data-key': String(it.id), children: it.type }),
+              (it) => it.type,
+            ),
+          }) as never,
       );
       expect(warnSpy).not.toHaveBeenCalled();
     } finally {

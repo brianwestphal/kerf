@@ -24,8 +24,12 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '#kerf-self/jsx-runtime': new URL('./src/jsx-runtime.ts', import.meta.url).pathname,
-      '#kerf-self/jsx-dev-runtime': new URL('./src/jsx-runtime.ts', import.meta.url).pathname,
+      '#kerf-self/jsx-runtime': new URL('./src/jsx-runtime.ts', import.meta.url)
+        .pathname,
+      '#kerf-self/jsx-dev-runtime': new URL(
+        './src/jsx-runtime.ts',
+        import.meta.url,
+      ).pathname,
     },
   },
   test: {

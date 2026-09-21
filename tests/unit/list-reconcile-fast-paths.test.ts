@@ -9,10 +9,13 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { type ArraySignal,arraySignal } from '../../src/array-signal.js';
+import { type ArraySignal, arraySignal } from '../../src/array-signal.js';
 import { batch, each, mount } from '../../src/index.js';
 import { jsx } from '../../src/jsx-runtime.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
 interface ParseSpy {
   count: number;
@@ -21,8 +24,9 @@ interface ParseSpy {
 
 function spyTemplateInnerHTML(): ParseSpy {
   const tplProto = Object.getPrototypeOf(document.createElement('template'));
-  const origDescriptor = Object.getOwnPropertyDescriptor(tplProto, 'innerHTML')
-    ?? Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!;
+  const origDescriptor =
+    Object.getOwnPropertyDescriptor(tplProto, 'innerHTML') ??
+    Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!;
   const spy: ParseSpy = {
     count: 0,
     restore: () => Object.defineProperty(tplProto, 'innerHTML', origDescriptor),
@@ -56,15 +60,19 @@ describe('granular update fast paths — KF-198 attribute-only', () => {
       { id: 1, selected: false },
       { id: 2, selected: false },
     ]);
-    mount(root, () => jsx('table', {
-      children: jsx('tbody', {
-        children: each(rows, (r) => jsx('tr', {
-          'data-key': String(r.id),
-          class: r.selected ? 'danger' : '',
-          children: jsx('td', { children: String(r.id) }),
-        })),
+    mount(root, () =>
+      jsx('table', {
+        children: jsx('tbody', {
+          children: each(rows, (r) =>
+            jsx('tr', {
+              'data-key': String(r.id),
+              class: r.selected ? 'danger' : '',
+              children: jsx('td', { children: String(r.id) }),
+            }),
+          ),
+        }),
       }),
-    }));
+    );
     const oldTr1 = root.querySelectorAll('tr')[0];
     const oldTr2 = root.querySelectorAll('tr')[1];
     expect(oldTr1.getAttribute('class')).toBe('');
@@ -86,14 +94,18 @@ describe('granular update fast paths — KF-198 attribute-only', () => {
   it('multi-attribute change on top-level: fast path fires, all changed attrs applied', () => {
     type R = { id: number; cls: string; title: string };
     const rows = arraySignal<R>([{ id: 1, cls: 'a', title: 'one' }]);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', {
-        'data-key': String(r.id),
-        class: r.cls,
-        title: r.title,
-        children: 'x',
-      })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            class: r.cls,
+            title: r.title,
+            children: 'x',
+          }),
+        ),
+      }),
+    );
     const oldLi = root.querySelector('li')!;
 
     const spy = spyTemplateInnerHTML();
@@ -112,13 +124,17 @@ describe('granular update fast paths — KF-198 attribute-only', () => {
   it('attribute added: fast path fires, attribute appears on live node', () => {
     type R = { id: number; title?: string };
     const rows = arraySignal<R>([{ id: 1 }]);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', {
-        'data-key': String(r.id),
-        title: r.title,
-        children: 'x',
-      })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            title: r.title,
+            children: 'x',
+          }),
+        ),
+      }),
+    );
     const oldLi = root.querySelector('li')!;
     expect(oldLi.hasAttribute('title')).toBe(false);
 
@@ -137,13 +153,17 @@ describe('granular update fast paths — KF-198 attribute-only', () => {
   it('attribute removed: fast path fires, attribute is gone from live node', () => {
     type R = { id: number; title?: string };
     const rows = arraySignal<R>([{ id: 1, title: 'starts' }]);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', {
-        'data-key': String(r.id),
-        title: r.title,
-        children: 'x',
-      })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            title: r.title,
+            children: 'x',
+          }),
+        ),
+      }),
+    );
     const oldLi = root.querySelector('li')!;
     expect(oldLi.getAttribute('title')).toBe('starts');
 
@@ -167,13 +187,17 @@ describe('granular update fast paths — KF-198 attribute-only', () => {
     // through to morph (one parse).
     type R = { id: number; cls: string; label: string };
     const rows = arraySignal<R>([{ id: 1, cls: 'a', label: 'one' }]);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', {
-        'data-key': String(r.id),
-        class: r.cls,
-        children: r.label,
-      })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            class: r.cls,
+            children: r.label,
+          }),
+        ),
+      }),
+    );
     const oldLi = root.querySelector('li')!;
 
     const spy = spyTemplateInnerHTML();
@@ -194,14 +218,18 @@ describe('granular update fast paths — KF-198 attribute-only', () => {
   it('data-morph-skip on row: fast path bails, morph respects the skip', () => {
     type R = { id: number; cls: string };
     const rows = arraySignal<R>([{ id: 1, cls: 'a' }]);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', {
-        'data-key': String(r.id),
-        'data-morph-skip': true,
-        class: r.cls,
-        children: 'x',
-      })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            'data-morph-skip': true,
+            class: r.cls,
+            children: 'x',
+          }),
+        ),
+      }),
+    );
     const oldLi = root.querySelector('li')!;
     expect(oldLi.getAttribute('class')).toBe('a');
 
@@ -222,13 +250,17 @@ describe('granular update fast paths — KF-198 attribute-only', () => {
   it('attribute value containing escaped entities: fast path decodes before setAttribute', () => {
     type R = { id: number; title: string };
     const rows = arraySignal<R>([{ id: 1, title: 'plain' }]);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', {
-        'data-key': String(r.id),
-        title: r.title,
-        children: 'x',
-      })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            title: r.title,
+            children: 'x',
+          }),
+        ),
+      }),
+    );
     const oldLi = root.querySelector('li')!;
 
     const spy = spyTemplateInnerHTML();
@@ -255,15 +287,19 @@ describe('granular update fast paths — KF-198 attribute-only', () => {
       { id: 1, selected: false },
       { id: 2, selected: true },
     ]);
-    mount(root, () => jsx('table', {
-      children: jsx('tbody', {
-        children: each(rows, (r) => jsx('tr', {
-          'data-key': String(r.id),
-          class: r.selected ? 'danger' : '',
-          children: jsx('td', { children: String(r.id) }),
-        })),
+    mount(root, () =>
+      jsx('table', {
+        children: jsx('tbody', {
+          children: each(rows, (r) =>
+            jsx('tr', {
+              'data-key': String(r.id),
+              class: r.selected ? 'danger' : '',
+              children: jsx('td', { children: String(r.id) }),
+            }),
+          ),
+        }),
       }),
-    }));
+    );
     const oldTrs = [...root.querySelectorAll('tr')];
 
     const spy = spyTemplateInnerHTML();
@@ -298,12 +334,16 @@ describe('granular update fast paths — KF-206 text-content-only', () => {
   });
 
   function mountRows(rows: ArraySignal<{ id: number; label: string }>): void {
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', {
-        'data-key': String(r.id),
-        children: jsx('span', { children: r.label }),
-      })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            children: jsx('span', { children: r.label }),
+          }),
+        ),
+      }),
+    );
   }
 
   it('text node inside a child element: fast path fires, no parse, text node identity preserved', () => {
@@ -335,12 +375,16 @@ describe('granular update fast paths — KF-206 text-content-only', () => {
 
   it('top-level text-only change (no wrapping span): fast path fires', () => {
     const rows = arraySignal([{ id: 1, label: 'a' }]);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', {
-        'data-key': String(r.id),
-        children: r.label,
-      })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            children: r.label,
+          }),
+        ),
+      }),
+    );
     const oldLi = root.querySelector('li')!;
     const oldText = oldLi.firstChild as Text;
 
@@ -360,7 +404,10 @@ describe('granular update fast paths — KF-206 text-content-only', () => {
     // krausest partial-update shape: 100 label-only updates at every 10th
     // index. Each diff is one text node, so every row hits the text-content
     // fast path; the bulk parse never runs.
-    const initial = Array.from({ length: 5 }, (_, i) => ({ id: i, label: `row${i}` }));
+    const initial = Array.from({ length: 5 }, (_, i) => ({
+      id: i,
+      label: `row${i}`,
+    }));
     const rows = arraySignal(initial);
     mountRows(rows);
     const oldRows = [...root.querySelectorAll('li')];
@@ -377,7 +424,13 @@ describe('granular update fast paths — KF-206 text-content-only', () => {
     }
 
     const lis = root.querySelectorAll('li');
-    expect([...lis].map((li) => li.textContent)).toEqual(['A', 'row1', 'C', 'row3', 'E']);
+    expect([...lis].map((li) => li.textContent)).toEqual([
+      'A',
+      'row1',
+      'C',
+      'row3',
+      'E',
+    ]);
     // Every <li> identity preserved.
     for (let i = 0; i < oldRows.length; i++) {
       expect(lis[i]).toBe(oldRows[i]);
@@ -391,12 +444,16 @@ describe('granular update fast paths — KF-206 text-content-only', () => {
     // diff window. The fast path's pure-text-window check rejects '&'
     // (entity-touching) and bails.
     const rows = arraySignal([{ id: 1, label: 'plain' }]);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', {
-        'data-key': String(r.id),
-        children: r.label,
-      })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            children: r.label,
+          }),
+        ),
+      }),
+    );
     const oldLi = root.querySelector('li')!;
 
     const spy = spyTemplateInnerHTML();
@@ -414,14 +471,18 @@ describe('granular update fast paths — KF-206 text-content-only', () => {
   it('structural diff (text + child-element change): fast paths bail, morph runs', () => {
     type R = { id: number; label: string; hasFlag: boolean };
     const rows = arraySignal<R>([{ id: 1, label: 'a', hasFlag: false }]);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', {
-        'data-key': String(r.id),
-        children: r.hasFlag
-          ? jsx('strong', { children: r.label })
-          : r.label,
-      })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            children: r.hasFlag
+              ? jsx('strong', { children: r.label })
+              : r.label,
+          }),
+        ),
+      }),
+    );
     const oldLi = root.querySelector('li')!;
 
     const spy = spyTemplateInnerHTML();
@@ -442,13 +503,17 @@ describe('granular update fast paths — KF-206 text-content-only', () => {
   it('data-morph-skip on row: text-content fast path bails too', () => {
     type R = { id: number; label: string };
     const rows = arraySignal<R>([{ id: 1, label: 'first' }]);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', {
-        'data-key': String(r.id),
-        'data-morph-skip': true,
-        children: r.label,
-      })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            'data-morph-skip': true,
+            children: r.label,
+          }),
+        ),
+      }),
+    );
     const oldLi = root.querySelector('li')!;
     expect(oldLi.textContent).toBe('first');
 
@@ -465,7 +530,6 @@ describe('granular update fast paths — KF-206 text-content-only', () => {
     expect(spy.count).toBe(1);
   });
 });
-
 
 describe('granular fast path — URL screen invariant (KF-305)', () => {
   let root: HTMLElement;
@@ -496,13 +560,17 @@ describe('granular fast path — URL screen invariant (KF-305)', () => {
     try {
       type R = { id: number; url: string };
       const rows = arraySignal<R>([{ id: 1, url: '/safe' }]);
-      mount(root, () => jsx('div', {
-        children: each(rows, (r) => jsx('a', {
-          'data-key': String(r.id),
-          href: r.url,
-          children: 'x',
-        })),
-      }));
+      mount(root, () =>
+        jsx('div', {
+          children: each(rows, (r) =>
+            jsx('a', {
+              'data-key': String(r.id),
+              href: r.url,
+              children: 'x',
+            }),
+          ),
+        }),
+      );
       const a = root.querySelector('a')!;
       expect(a.getAttribute('href')).toBe('/safe');
 
@@ -513,9 +581,9 @@ describe('granular fast path — URL screen invariant (KF-305)', () => {
         spy.restore();
       }
 
-      expect(a.hasAttribute('href')).toBe(false);   // dropped, never written
-      expect(root.querySelector('a')).toBe(a);       // same node — fast path, not a rebuild
-      expect(spy.count).toBe(0);                     // no innerHTML parse: the granular fast path ran
+      expect(a.hasAttribute('href')).toBe(false); // dropped, never written
+      expect(root.querySelector('a')).toBe(a); // same node — fast path, not a rebuild
+      expect(spy.count).toBe(0); // no innerHTML parse: the granular fast path ran
     } finally {
       warn.mockRestore();
       restoreDevelopmentShape();

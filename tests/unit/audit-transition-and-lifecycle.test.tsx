@@ -20,29 +20,34 @@
  * Plus assorted contract pins (effect throwing, nested batch, diamond
  * computed) that the audit flagged.
  */
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import {
-delegate,
-each,
-mount,
-signal
-} from '../../src/index.js';
+import { delegate, each, mount, signal } from '../../src/index.js';
 
 describe('Audit gap coverage', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   describe('shape transitions (pre-existing gap that allowed KF-102 to land)', () => {
     it('each() conditionally removed and re-introduced rebuilds correctly', () => {
       const showList = signal(true);
-      const items = [{ id: 1, label: 'a' }, { id: 2, label: 'b' }];
+      const items = [
+        { id: 1, label: 'a' },
+        { id: 2, label: 'b' },
+      ];
       mount(root, () => (
         <div>
-          {showList.value
-            ? each(items, (it) => <li data-key={String(it.id)}>{it.label}</li>)
-            : <p>list hidden</p>}
+          {showList.value ? (
+            each(items, (it) => <li data-key={String(it.id)}>{it.label}</li>)
+          ) : (
+            <p>list hidden</p>
+          )}
         </div>
       ));
       expect(root.querySelectorAll('li').length).toBe(2);
@@ -61,16 +66,26 @@ describe('Audit gap coverage', () => {
       // *conditionally added* second list at the END of the render must NOT
       // collide with the first list's binding.
       const showSecond = signal(false);
-      const itemsA = [{ id: 'a1', label: 'A1' }, { id: 'a2', label: 'A2' }];
-      const itemsB = [{ id: 'b1', label: 'B1' }, { id: 'b2', label: 'B2' }];
+      const itemsA = [
+        { id: 'a1', label: 'A1' },
+        { id: 'a2', label: 'A2' },
+      ];
+      const itemsB = [
+        { id: 'b1', label: 'B1' },
+        { id: 'b2', label: 'B2' },
+      ];
       mount(root, () => (
         <div>
           <ul className="A">
-            {each(itemsA, (it) => <li data-key={it.id}>{it.label}</li>)}
+            {each(itemsA, (it) => (
+              <li data-key={it.id}>{it.label}</li>
+            ))}
           </ul>
           {showSecond.value && (
             <ul className="B">
-              {each(itemsB, (it) => <li data-key={it.id}>{it.label}</li>)}
+              {each(itemsB, (it) => (
+                <li data-key={it.id}>{it.label}</li>
+              ))}
             </ul>
           )}
         </div>
@@ -81,33 +96,53 @@ describe('Audit gap coverage', () => {
       expect(root.querySelector('.A')!.querySelectorAll('li').length).toBe(2);
       expect(root.querySelector('.B')!.querySelectorAll('li').length).toBe(2);
       // First list contents unchanged.
-      expect(root.querySelector('.A')!.querySelectorAll('li')[0].textContent).toBe('A1');
+      expect(
+        root.querySelector('.A')!.querySelectorAll('li')[0].textContent,
+      ).toBe('A1');
       // Second list rendered fresh.
-      expect(root.querySelector('.B')!.querySelectorAll('li')[0].textContent).toBe('B1');
+      expect(
+        root.querySelector('.B')!.querySelectorAll('li')[0].textContent,
+      ).toBe('B1');
     });
   });
 
   describe('integration: shape transition + delegation', () => {
     it('delegated click on a list row introduced via re-render fires correctly', () => {
-      type Phase = { kind: 'loading' } | { kind: 'ready'; opts: { id: string; label: string }[] };
+      type Phase =
+        | { kind: 'loading' }
+        | { kind: 'ready'; opts: { id: string; label: string }[] };
       const state = signal<Phase>({ kind: 'loading' });
       let clickedId: string | null = null;
-      mount(root, () => state.value.kind === 'loading'
-        ? <p>loading</p>
-        : (
+      mount(root, () =>
+        state.value.kind === 'loading' ? (
+          <p>loading</p>
+        ) : (
           <div>
             {each(state.value.opts, (o) => (
-              <button data-key={o.id} data-action="pick" data-id={o.id}>{o.label}</button>
+              <button data-key={o.id} data-action="pick" data-id={o.id}>
+                {o.label}
+              </button>
             ))}
             <button data-action="cancel">Cancel</button>
           </div>
-        ));
+        ),
+      );
       delegate(root, 'click', '[data-action="pick"]', (_e, btn) => {
         clickedId = (btn as HTMLElement).dataset.id ?? null;
       });
-      state.value = { kind: 'ready', opts: [{ id: 'x', label: 'X' }, { id: 'y', label: 'Y' }] };
-      expect(root.querySelectorAll('button[data-action="pick"]').length).toBe(2);
-      (root.querySelectorAll<HTMLButtonElement>('button[data-action="pick"]')[1]).click();
+      state.value = {
+        kind: 'ready',
+        opts: [
+          { id: 'x', label: 'X' },
+          { id: 'y', label: 'Y' },
+        ],
+      };
+      expect(root.querySelectorAll('button[data-action="pick"]').length).toBe(
+        2,
+      );
+      root
+        .querySelectorAll<HTMLButtonElement>('button[data-action="pick"]')[1]
+        .click();
       expect(clickedId).toBe('y');
     });
   });
@@ -115,23 +150,34 @@ describe('Audit gap coverage', () => {
   describe('mount lifecycle', () => {
     it('mount → dispose → mount(sameEl, differentRender) — bindings do not leak', () => {
       const itemsA = [{ id: 1, label: 'a' }];
-      const itemsB = [{ id: 1, label: 'b' }, { id: 2, label: 'c' }];
+      const itemsB = [
+        { id: 1, label: 'b' },
+        { id: 2, label: 'c' },
+      ];
 
       const dispose1 = mount(root, () => (
-        <ul>{each(itemsA, (it) => <li data-key={it.id}>{it.label}</li>)}</ul>
+        <ul>
+          {each(itemsA, (it) => (
+            <li data-key={it.id}>{it.label}</li>
+          ))}
+        </ul>
       ));
       expect(root.querySelectorAll('li').length).toBe(1);
       dispose1();
 
       const dispose2 = mount(root, () => (
-        <ol>{each(itemsB, (it) => <li data-key={it.id}>{it.label}</li>)}</ol>
+        <ol>
+          {each(itemsB, (it) => (
+            <li data-key={it.id}>{it.label}</li>
+          ))}
+        </ol>
       ));
       expect(root.querySelector('ol')).not.toBe(null);
       expect(root.querySelectorAll('li').length).toBe(2);
-      expect(Array.from(root.querySelectorAll('li')).map((n) => n.textContent)).toEqual(['b', 'c']);
+      expect(
+        Array.from(root.querySelectorAll('li')).map((n) => n.textContent),
+      ).toEqual(['b', 'c']);
       dispose2();
     });
   });
-
-
 });

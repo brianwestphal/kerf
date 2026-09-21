@@ -46,7 +46,13 @@ export function form(
   options: FormOptions = {},
 ): Promise<Record<string, string> | null> {
   const {
-    container, className = 'kerf-overlay', title, okText = 'OK', cancelText = 'Cancel', native = false, render,
+    container,
+    className = 'kerf-overlay',
+    title,
+    okText = 'OK',
+    cancelText = 'Cancel',
+    native = false,
+    render,
   } = options;
 
   const fieldAttrs = (field: FormField): Record<string, string> => ({
@@ -54,48 +60,67 @@ export function form(
     name: field.name,
     type: field.type ?? 'text',
     value: field.defaultValue ?? '',
-    ...(field.placeholder !== undefined ? { placeholder: field.placeholder } : {}),
+    ...(field.placeholder !== undefined
+      ? { placeholder: field.placeholder }
+      : {}),
   });
 
-  const body: OverlayContent = render !== undefined
-    ? render({
-      fields: fields.map((field) => ({
-        name: field.name,
-        label: field.label ?? field.name,
-        input: fieldAttrs(field),
-        error: { 'data-field-error': field.name },
-      })),
-      ok: { 'data-form': 'ok' },
-      cancel: { 'data-form': 'cancel' },
-    })
-    : jsx('div', {
-      class: 'kerf-form',
-      children: [
-        title !== undefined ? jsx('h2', { class: 'kerf-form__title', children: title }) : '',
-        ...fields.map((field) =>
-          jsx('div', {
-            class: 'kerf-form__field',
-            children: [
-              jsx('label', { class: 'kerf-form__label', children: field.label ?? field.name }),
-              jsx('input', { class: 'kerf-form__input', ...fieldAttrs(field) }),
-              jsx('p', { class: 'kerf-form__error', 'data-field-error': field.name, children: '' }),
-            ],
-          }),
-        ),
-        jsx('div', {
-          class: 'kerf-form__actions',
+  const body: OverlayContent =
+    render !== undefined
+      ? render({
+          fields: fields.map((field) => ({
+            name: field.name,
+            label: field.label ?? field.name,
+            input: fieldAttrs(field),
+            error: { 'data-field-error': field.name },
+          })),
+          ok: { 'data-form': 'ok' },
+          cancel: { 'data-form': 'cancel' },
+        })
+      : jsx('div', {
+          class: 'kerf-form',
           children: [
-            jsx('button', { type: 'button', 'data-form': 'cancel', children: cancelText }),
-            jsx('button', {
-              type: 'button',
-              'data-form': 'ok',
-              class: 'kerf-form__ok',
-              children: okText,
+            title !== undefined
+              ? jsx('h2', { class: 'kerf-form__title', children: title })
+              : '',
+            ...fields.map((field) =>
+              jsx('div', {
+                class: 'kerf-form__field',
+                children: [
+                  jsx('label', {
+                    class: 'kerf-form__label',
+                    children: field.label ?? field.name,
+                  }),
+                  jsx('input', {
+                    class: 'kerf-form__input',
+                    ...fieldAttrs(field),
+                  }),
+                  jsx('p', {
+                    class: 'kerf-form__error',
+                    'data-field-error': field.name,
+                    children: '',
+                  }),
+                ],
+              }),
+            ),
+            jsx('div', {
+              class: 'kerf-form__actions',
+              children: [
+                jsx('button', {
+                  type: 'button',
+                  'data-form': 'cancel',
+                  children: cancelText,
+                }),
+                jsx('button', {
+                  type: 'button',
+                  'data-form': 'ok',
+                  class: 'kerf-form__ok',
+                  children: okText,
+                }),
+              ],
             }),
           ],
-        }),
-      ],
-    });
+        });
 
   const handle = overlay(body, {
     container,
@@ -107,13 +132,13 @@ export function form(
   });
 
   const errorFor = (name: string): HTMLElement | null =>
-    Array.from(handle.el.querySelectorAll<HTMLElement>('[data-field-error]')).find(
-      (el) => el.getAttribute('data-field-error') === name,
-    ) ?? null;
+    Array.from(
+      handle.el.querySelectorAll<HTMLElement>('[data-field-error]'),
+    ).find((el) => el.getAttribute('data-field-error') === name) ?? null;
   const inputFor = (name: string): HTMLInputElement => {
-    const input = Array.from(handle.el.querySelectorAll<HTMLInputElement>('input[data-field]')).find(
-      (el) => el.getAttribute('data-field') === name,
-    );
+    const input = Array.from(
+      handle.el.querySelectorAll<HTMLInputElement>('input[data-field]'),
+    ).find((el) => el.getAttribute('data-field') === name);
     if (input !== undefined) return input;
     handle.close(null);
     throw new Error(`form(): render missing <input data-field="${name}">.`);
@@ -157,13 +182,18 @@ export function form(
   });
 
   handle.el.addEventListener('keydown', (event: KeyboardEvent) => {
-    if (event.key === 'Enter' && (event.target as Element | null)?.matches('[data-field]')) {
+    if (
+      event.key === 'Enter' &&
+      (event.target as Element | null)?.matches('[data-field]')
+    ) {
       event.preventDefault();
       attemptOk();
     }
   });
 
   return handle.result.then((value) =>
-    value !== null && typeof value === 'object' ? (value as Record<string, string>) : null,
+    value !== null && typeof value === 'object'
+      ? (value as Record<string, string>)
+      : null,
   );
 }

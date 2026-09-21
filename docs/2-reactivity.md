@@ -5,11 +5,11 @@ kerf's reactivity primitive is `@preact/signals-core` re-exported through `src/r
 ## 2.1 `signal(initialValue)`
 
 ```ts
-import { signal } from 'kerfjs';
+import { signal } from "kerfjs";
 
 const count = signal(0);
-count.value;        // → 0   (read)
-count.value = 7;    // (write — notifies subscribers)
+count.value; // → 0   (read)
+count.value = 7; // (write — notifies subscribers)
 ```
 
 A signal is a single piece of reactive state. Reads via `.value` are tracked when they happen inside an `effect()` or `computed()`. Writes via `.value = …` trigger every effect that read this signal during its previous run.
@@ -17,15 +17,15 @@ A signal is a single piece of reactive state. Reads via `.value` are tracked whe
 ## 2.2 `computed(fn)`
 
 ```ts
-import { computed, signal } from 'kerfjs';
+import { computed, signal } from "kerfjs";
 
 const a = signal(1);
 const b = signal(2);
 const sum = computed(() => a.value + b.value);
 
-sum.value;          // → 3
+sum.value; // → 3
 a.value = 10;
-sum.value;          // → 12
+sum.value; // → 12
 ```
 
 A `computed` is a derived signal. Its body is re-run whenever any signal it reads changes. The result is cached until a dependency mutates.
@@ -35,11 +35,11 @@ A `computed` is a derived signal. Its body is re-run whenever any signal it read
 ## 2.3 `effect(fn)`
 
 ```ts
-import { effect, signal } from 'kerfjs';
+import { effect, signal } from "kerfjs";
 
 const count = signal(0);
 const dispose = effect(() => {
-  console.log('count is', count.value);
+  console.log("count is", count.value);
 });
 // → "count is 0" (synchronous initial run)
 
@@ -67,7 +67,7 @@ const dispose = effect(() => {
 ## 2.4 `batch(fn)`
 
 ```ts
-import { batch, effect, signal } from 'kerfjs';
+import { batch, effect, signal } from "kerfjs";
 
 const a = signal(1);
 const b = signal(2);
@@ -86,14 +86,14 @@ Coalesces multiple writes inside `fn` into a single re-run of any subscribed eff
 ## 2.5 The `Signal<T>` and `ReadonlySignal<T>` types
 
 ```ts
-import type { ReadonlySignal, Signal } from 'kerfjs';
+import type { ReadonlySignal, Signal } from "kerfjs";
 
 function reset(s: Signal<number>) {
-  s.value = 0;       // OK — Signal allows writes
+  s.value = 0; // OK — Signal allows writes
 }
 
 function display(s: ReadonlySignal<number>) {
-  return s.value;    // OK — read-only
+  return s.value; // OK — read-only
   // s.value = 0;    // type error — ReadonlySignal forbids writes
 }
 ```
@@ -103,18 +103,18 @@ function display(s: ReadonlySignal<number>) {
 ## 2.6 `arraySignal(initial)` (granular collection signal)
 
 ```ts
-import { arraySignal } from 'kerfjs/array-signal';
+import { arraySignal } from "kerfjs/array-signal";
 
 const rows = arraySignal<{ id: number; label: string }>([]);
 
-rows.push({ id: 1, label: 'a' });
-rows.update(0, (r) => ({ ...r, label: 'A' }));
-rows.insert(1, { id: 2, label: 'b' });
+rows.push({ id: 1, label: "a" });
+rows.update(0, (r) => ({ ...r, label: "A" }));
+rows.insert(1, { id: 2, label: "b" });
 rows.move(0, 1);
 rows.remove(0);
-rows.replace([{ id: 99, label: 'reset' }]);
+rows.replace([{ id: 99, label: "reset" }]);
 
-rows.value;       // → the live array, readonly-typed; registers a tracking dependency
+rows.value; // → the live array, readonly-typed; registers a tracking dependency
 ```
 
 `arraySignal` is a keyed-list-friendly variant of `signal()`. The mutators emit typed patch events (`update` / `insert` / `remove` / `move` / `replace`); when an `arraySignal` is bound to `each(...)` inside a `mount()`, the keyed list reconciler applies just the patches against the live DOM — no per-row iteration, no `classifyItems` Map build, no LIS pass over unchanged rows. Cost is **O(patches)**, not O(N).
@@ -124,14 +124,17 @@ It lives in its own subpath (`kerfjs/array-signal`) so apps that don't need gran
 Read-side semantics match a regular signal: reads of `arraySig.value` inside `effect()` / `computed()` register as dependencies, so `computed(() => arraySig.value.filter(...))` works the way you expect. Note the returned array is the signal's live internal array typed `readonly`, not a defensive copy — a reference you hold across a later mutation will observe that mutation; spread (`[...arraySig.value]`) if you need a stable snapshot.
 
 ### When to reach for `arraySignal`
+
 - Long keyed lists (hundreds of rows) where most updates are pointwise (selection class flips, single-row edits, append-to-end, etc.).
 - Lists where `signal(items.value = [...items.value, x])` is the bottleneck — that pattern triggers a full classify pass on every render.
 
 ### When NOT to reach for it
+
 - Short lists (a handful of items). The constant-factor wins don't outweigh the API friction.
 - Lists where every render rebuilds from scratch (filter / sort pipelines that reset on every input change). Use `signal` + `computed` and let `each()`'s identity-based caching handle the rest.
 
 ### Gotchas
+
 - `arraySignal` mutates `_items` eagerly at the call site. The patch queue and the snapshot are always in sync after a mutation returns.
 - Every `update` / `insert` / `remove` / `move` index must be a finite integer in range. Invalid indices throw before the callback, source array, or patch queue changes; equal `move(from, to)` indices are validated before they no-op.
 - Multiple `each(...)` callsites bound to the same `arraySignal` in one render: the first caller drains the patch queue and runs granular reconcile; the second (and beyond) sees an empty queue and falls through to the snapshot path. Both lists end up correct, but only one gets the perf win. Prefer one-binding-per-arraySignal-per-render.
@@ -160,8 +163,8 @@ Read-side semantics match a regular signal: reads of `arraySig.value` inside `ef
 
 A signal can reach JSX two ways, and the difference is the single most important idiom choice in kerf:
 
-- **Pass the signal itself** (`{count}`, `class={sig}`) — kerf **binds** that one hole to the signal, so a change updates only that attribute or text node. **`render()` does not re-run, and `each()`'s reconciler does not walk.** This is the *canonical* form for a **value** hole: whenever a hole's content is "this signal's (or computed's) current value," pass the signal.
-- **Read `.value`** (`{count.value}`, `cond ? <a/> : <b/>`) — the read is tracked by `mount()`'s effect, so a change re-runs the whole render function and kerf applies the smallest DOM cut. This is the tool for **structural** changes: conditionals that swap elements, list shape, anything where what *exists* — not just a value — depends on the signal.
+- **Pass the signal itself** (`{count}`, `class={sig}`) — kerf **binds** that one hole to the signal, so a change updates only that attribute or text node. **`render()` does not re-run, and `each()`'s reconciler does not walk.** This is the _canonical_ form for a **value** hole: whenever a hole's content is "this signal's (or computed's) current value," pass the signal.
+- **Read `.value`** (`{count.value}`, `cond ? <a/> : <b/>`) — the read is tracked by `mount()`'s effect, so a change re-runs the whole render function and kerf applies the smallest DOM cut. This is the tool for **structural** changes: conditionals that swap elements, list shape, anything where what _exists_ — not just a value — depends on the signal.
 
 Rule of thumb: **values bind, structure re-renders.** The bound form is both the fastest path kerf has and the one with the simplest cost model (one effect, one node write), so reach for it first; fall back to `.value` when the JSX structure itself depends on the signal. To find `.value` holes worth migrating, the opt-in dev warning `KERF_DEV_WARN_VALUE_ONLY_RERENDER=1` flags re-renders whose only differences were text/attribute values (see the dev-warnings doc).
 
@@ -174,12 +177,20 @@ const selectedId = signal<number | null>(null);
 
 mount(root, () => (
   <ul>
-    {each(items.value, (item) => (
-      // Pass the computed itself — kerf binds `class` to it.
-      <li class={computed(() => (item.id === selectedId.value ? 'selected' : ''))}>
-        {item.label}
-      </li>
-    ), (item) => item.id)}
+    {each(
+      items.value,
+      (item) => (
+        // Pass the computed itself — kerf binds `class` to it.
+        <li
+          class={computed(() =>
+            item.id === selectedId.value ? "selected" : "",
+          )}
+        >
+          {item.label}
+        </li>
+      ),
+      (item) => item.id,
+    )}
   </ul>
 ));
 
@@ -191,7 +202,7 @@ Text holes work the same way:
 ```tsx
 const count = signal(0);
 mount(root, () => <span>{count}</span>); // pass the signal, not count.value
-count.value++;                            // updates only that text node
+count.value++; // updates only that text node
 ```
 
 A bound text hole does not need its own element — it can share a parent with
@@ -199,7 +210,11 @@ static text and other holes, and the mix survives coarse re-renders intact:
 
 ```tsx
 const elapsed = computed(() => fmt(playhead.value));
-mount(root, () => <div class="time">{elapsed} / {fmt(duration)}</div>);
+mount(root, () => (
+  <div class="time">
+    {elapsed} / {fmt(duration)}
+  </div>
+));
 ```
 
 ### When to bind (the default for values)
@@ -215,7 +230,7 @@ mount(root, () => <div class="time">{elapsed} / {fmt(duration)}</div>);
 
 ### Use `computed()`, not a bare closure
 
-Wrap the expression in `computed(() => …)` (or pass a plain `signal`). The memoization matters: when a *shared* signal like `selectedId` changes, every row's `computed` re-evaluates cheaply, but only the ones whose value actually changed re-run their bound effect — so a selection flip touches ~2 DOM nodes, not N. (kerf has no compiler, so it can't auto-lift a bare `{expr}` into a tracked closure the way Solid does — the signal/`computed` must be explicit.)
+Wrap the expression in `computed(() => …)` (or pass a plain `signal`). The memoization matters: when a _shared_ signal like `selectedId` changes, every row's `computed` re-evaluates cheaply, but only the ones whose value actually changed re-run their bound effect — so a selection flip touches ~2 DOM nodes, not N. (kerf has no compiler, so it can't auto-lift a bare `{expr}` into a tracked closure the way Solid does — the signal/`computed` must be explicit.)
 
 ### How it works (and why it's safe)
 
@@ -232,12 +247,12 @@ Because the wiring pass finds its markers by scanning the mounted subtree and ma
 - the `data-kfb` and `data-kfbrow` attributes (fine-grained attribute bindings), and
 - HTML comments beginning `kfb:`, `kfbr:`, or `kf-list:` (text bindings and `each()` list boundaries).
 
-A marker that collides with a real binding's id **is not contained to where it appears** — the wiring pass scans the whole mounted subtree, so a stray marker can reach across it: a duplicate `kfb:`/`kfbr:` comment steals a *sibling* text binding's update (the effect wires to the wrong node, silently), and a duplicate `kf-list:` comment can bind a real `each()` list to the *wrong parent element* so its rows render into the wrong place. These names are an internal detail you'll never need in normal use; the only way to hit this is to hand-write one of them or emit one through `raw()` (e.g. rendering user-authored HTML that happens to contain one — sanitize such HTML upstream, as always).
+A marker that collides with a real binding's id **is not contained to where it appears** — the wiring pass scans the whole mounted subtree, so a stray marker can reach across it: a duplicate `kfb:`/`kfbr:` comment steals a _sibling_ text binding's update (the effect wires to the wrong node, silently), and a duplicate `kf-list:` comment can bind a real `each()` list to the _wrong parent element_ so its rows render into the wrong place. These names are an internal detail you'll never need in normal use; the only way to hit this is to hand-write one of them or emit one through `raw()` (e.g. rendering user-authored HTML that happens to contain one — sanitize such HTML upstream, as always).
 
 ### Limitations
 
-**Bind a stable signal source; don't switch which signal *instance* you bind.** Wrapping in `computed(() => …)` creates a fresh instance every render — that's fine, because the live effect stays bound to the first one and it reads the same underlying signals, so later changes still fire. What you must *not* do is bind a *different signal instance* across renders (`class={cond ? sigA : sigB}`): on a re-render that leaves the surrounds unchanged, kerf keeps the original effect and doesn't re-bind, so the hole goes stale. Bind one `computed` that switches internally instead (`class={computed(() => cond.value ? sigA.value : sigB.value)}`).
+**Bind a stable signal source; don't switch which signal _instance_ you bind.** Wrapping in `computed(() => …)` creates a fresh instance every render — that's fine, because the live effect stays bound to the first one and it reads the same underlying signals, so later changes still fire. What you must _not_ do is bind a _different signal instance_ across renders (`class={cond ? sigA : sigB}`): on a re-render that leaves the surrounds unchanged, kerf keeps the original effect and doesn't re-bind, so the hole goes stale. Bind one `computed` that switches internally instead (`class={computed(() => cond.value ? sigA.value : sigB.value)}`).
 
-Because this failure is silent (the UI just stops updating, with no error), there's an opt-in dev warning for it. Install `kerfjs/dev`, then switch on `staleBinding` with `enableWarnings({ staleBinding: true })` (browser) or `KERF_DEV_WARN_STALE_BINDING=1` (Node/SSR/CI); kerf will `console.warn` once, naming the hole, the first time a static-surround hole binds a different signal instance on that fast path. It is off by default, and omitting the dev entry makes the warning unreachable in a production bundle. Note it compares signal identity, so it will also flag a *fresh inline* `computed(() => …)` on a global hole (safe, but a new instance each render) — bind a stable `computed`/`signal` reference for global holes to keep it quiet.
+Because this failure is silent (the UI just stops updating, with no error), there's an opt-in dev warning for it. Install `kerfjs/dev`, then switch on `staleBinding` with `enableWarnings({ staleBinding: true })` (browser) or `KERF_DEV_WARN_STALE_BINDING=1` (Node/SSR/CI); kerf will `console.warn` once, naming the hole, the first time a static-surround hole binds a different signal instance on that fast path. It is off by default, and omitting the dev entry makes the warning unreachable in a production bundle. Note it compares signal identity, so it will also flag a _fresh inline_ `computed(() => …)` on a global hole (safe, but a new instance each render) — bind a stable `computed`/`signal` reference for global holes to keep it quiet.
 
 **Row bindings that depend on the row's own data work across in-place updates.** A row binding's effect closes over the row object as it was when the row rendered. When an `arraySignal` update (or a `cacheKey`-driven re-render) applies to a row **in place** — the DOM node survives — kerf compares the fresh render's binding instances against the wired ones per hole: unchanged instances carry forward for free (stable external signals, cache hits), and any changed instance is re-wired against the surviving node. So `{computed(() => item.label)}` inside an `arraySignal` row updates correctly after `update()` swaps the row object; a bound hole is never left reading the pre-update object.

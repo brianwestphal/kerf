@@ -10,7 +10,8 @@ import { computed, type ReadonlySignal, signal } from 'kerfjs';
  * core is DOM-free and directly unit-tested.
  */
 
-export type DeviceSize = 'xs-mobile' | 'mobile' | 'tablet' | 'desktop' | 'xl-desktop';
+export type DeviceSize =
+  'xs-mobile' | 'mobile' | 'tablet' | 'desktop' | 'xl-desktop';
 export type DeviceOrientation = 'portrait' | 'landscape';
 
 /** Minimum widths (px) at which each larger bucket begins. `xs-mobile` is 0. */
@@ -58,9 +59,20 @@ export const DEFAULT_BREAKPOINTS: DeviceBreakpoints = {
   'xl-desktop': 1440,
 };
 
-const SIZE_ORDER: readonly DeviceSize[] = ['xs-mobile', 'mobile', 'tablet', 'desktop', 'xl-desktop'];
+const SIZE_ORDER: readonly DeviceSize[] = [
+  'xs-mobile',
+  'mobile',
+  'tablet',
+  'desktop',
+  'xl-desktop',
+];
 
-const SSR_VIEWPORT: Viewport = { width: 1024, height: 768, segments: 1, verticalSegments: 1 };
+const SSR_VIEWPORT: Viewport = {
+  width: 1024,
+  height: 768,
+  segments: 1,
+  verticalSegments: 1,
+};
 
 /**
  * Classify a raw viewport into a {@link DeviceClass}. Pure and DOM-free — the
@@ -149,16 +161,35 @@ function orientationOf(view: Viewport): DeviceOrientation {
  * or changes its segment count. Without a DOM it resolves to `options.ssr`
  * (default 1024×768, landscape, one segment).
  */
-export function deviceClass(options: DeviceClassOptions = {}): ReadonlySignal<DeviceClass> {
-  const breakpoints: DeviceBreakpoints = { ...DEFAULT_BREAKPOINTS, ...options.breakpoints };
+export function deviceClass(
+  options: DeviceClassOptions = {},
+): ReadonlySignal<DeviceClass> {
+  const breakpoints: DeviceBreakpoints = {
+    ...DEFAULT_BREAKPOINTS,
+    ...options.breakpoints,
+  };
   const view = browserWindow();
   if (!view) {
     const snapshot: Viewport = { ...SSR_VIEWPORT, ...options.ssr };
-    return computed(() => classifyViewport(snapshot.width, orientationOf(snapshot), snapshot.segments, snapshot.verticalSegments, breakpoints));
+    return computed(() =>
+      classifyViewport(
+        snapshot.width,
+        orientationOf(snapshot),
+        snapshot.segments,
+        snapshot.verticalSegments,
+        breakpoints,
+      ),
+    );
   }
   const source = viewportSource(view);
   return computed(() => {
     const v = source.value;
-    return classifyViewport(v.width, orientationOf(v), v.segments, v.verticalSegments, breakpoints);
+    return classifyViewport(
+      v.width,
+      orientationOf(v),
+      v.segments,
+      v.verticalSegments,
+      breakpoints,
+    );
   });
 }

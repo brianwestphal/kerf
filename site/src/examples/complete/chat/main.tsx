@@ -1,21 +1,42 @@
-import { signal, mount, each, delegate, effect, attr, type AttrSpec } from 'kerfjs';
+import {
+  signal,
+  mount,
+  each,
+  delegate,
+  effect,
+  attr,
+  type AttrSpec,
+} from 'kerfjs';
 
 // Dev diagnostics: kerf never infers dev mode, so the app installs them behind
 // its own build's dev flag. Vite folds this to `false` when it builds for
 // production, so neither the import nor the chunk it loads ships.
 if (import.meta.env.DEV) await import('kerfjs/dev');
 
-const ACTIONS = { copy: attr('data-action', 'copy') } as const satisfies Record<string, AttrSpec<'data-action'>>;
+const ACTIONS = { copy: attr('data-action', 'copy') } as const satisfies Record<
+  string,
+  AttrSpec<'data-action'>
+>;
 const ITEM = { id: attr('data-id') } as const;
 
-interface Message { id: string; role: 'user' | 'bot'; text: string; streaming?: boolean }
+interface Message {
+  id: string;
+  role: 'user' | 'bot';
+  text: string;
+  streaming?: boolean;
+}
 
 const SCRIPT: Record<string, string> = {
-  default: "Sure! Streaming uses one signal mutation per chunk — kerf's morph keeps your scroll position and the caret in the textarea untouched while the bubble fills in.",
-  signals: "Signals are the reactive primitive. A `signal()` is a value plus a subscription set; reading it inside an `effect()` or `mount()` registers a dependency, and writing to it re-runs only the dependents.",
-  streaming: "Each chunk just pushes a new string onto the last message's text. kerf's keyed-list reconciler diffs only that one bubble — the rest of the chat (and your composer caret) is never touched.",
-  delegation: "Three tiers. Tier 1 — `delegate()` for bubbling events: clicks, input, keydown. Tier 2 — `delegateCapture()` for non-bubblers like blur and focus. Tier 3 — `data-morph-skip` for subtrees the framework should leave alone.",
-  morph: "kerf doesn't ship a virtual DOM. JSX renders to a real HTML string; the morph algorithm walks the live tree and patches what changed, preserving focus, selection, and any owned subtrees.",
+  default:
+    "Sure! Streaming uses one signal mutation per chunk — kerf's morph keeps your scroll position and the caret in the textarea untouched while the bubble fills in.",
+  signals:
+    'Signals are the reactive primitive. A `signal()` is a value plus a subscription set; reading it inside an `effect()` or `mount()` registers a dependency, and writing to it re-runs only the dependents.',
+  streaming:
+    "Each chunk just pushes a new string onto the last message's text. kerf's keyed-list reconciler diffs only that one bubble — the rest of the chat (and your composer caret) is never touched.",
+  delegation:
+    'Three tiers. Tier 1 — `delegate()` for bubbling events: clicks, input, keydown. Tier 2 — `delegateCapture()` for non-bubblers like blur and focus. Tier 3 — `data-morph-skip` for subtrees the framework should leave alone.',
+  morph:
+    "kerf doesn't ship a virtual DOM. JSX renders to a real HTML string; the morph algorithm walks the live tree and patches what changed, preserving focus, selection, and any owned subtrees.",
 };
 
 function reply(prompt: string): string {
@@ -28,7 +49,11 @@ function reply(prompt: string): string {
 }
 
 const messages = signal<Message[]>([
-  { id: 'welcome', role: 'bot', text: "Hi! I'm a tiny demo chat built with kerf. Try a quick prompt below, or ask me anything." },
+  {
+    id: 'welcome',
+    role: 'bot',
+    text: "Hi! I'm a tiny demo chat built with kerf. Try a quick prompt below, or ask me anything.",
+  },
 ]);
 const busy = signal(false);
 
@@ -58,7 +83,15 @@ mount(root, () => (
                 {m.streaming ? <span class="caret"></span> : null}
               </div>
               {m.role === 'bot' && !m.streaming ? (
-                <div class="meta"><button class="copy" {...ACTIONS.copy.attrs} {...ITEM.id(m.id)}>Copy</button></div>
+                <div class="meta">
+                  <button
+                    class="copy"
+                    {...ACTIONS.copy.attrs}
+                    {...ITEM.id(m.id)}
+                  >
+                    Copy
+                  </button>
+                </div>
               ) : null}
             </div>
           </div>
@@ -71,10 +104,22 @@ mount(root, () => (
 
     <div>
       <div class="chips">
-        <button type="button" class="chip" data-prompt="What are signals?">What are signals?</button>
-        <button type="button" class="chip" data-prompt="How does streaming work?">How does streaming work?</button>
-        <button type="button" class="chip" data-prompt="Explain delegation">Explain delegation</button>
-        <button type="button" class="chip" data-prompt="What is the morph?">What is the morph?</button>
+        <button type="button" class="chip" data-prompt="What are signals?">
+          What are signals?
+        </button>
+        <button
+          type="button"
+          class="chip"
+          data-prompt="How does streaming work?"
+        >
+          How does streaming work?
+        </button>
+        <button type="button" class="chip" data-prompt="Explain delegation">
+          Explain delegation
+        </button>
+        <button type="button" class="chip" data-prompt="What is the morph?">
+          What is the morph?
+        </button>
       </div>
       <form class="composer" data-composer>
         {/*
@@ -89,7 +134,9 @@ mount(root, () => (
           placeholder="Ask anything…  (Enter to send, Shift+Enter for newline)"
           rows={1}
         ></textarea>
-        <button type="submit" disabled={busy.value}>Send</button>
+        <button type="submit" disabled={busy.value}>
+          Send
+        </button>
       </form>
     </div>
   </>
@@ -142,8 +189,17 @@ void delegate(root, 'click', ACTIONS.copy.selector, (_e, el) => {
 function send(text: string) {
   const trimmed = text.trim();
   if (!trimmed || busy.value) return;
-  const userMsg: Message = { id: `u-${Date.now()}`, role: 'user', text: trimmed };
-  const botMsg: Message = { id: `b-${Date.now()}`, role: 'bot', text: '', streaming: true };
+  const userMsg: Message = {
+    id: `u-${Date.now()}`,
+    role: 'user',
+    text: trimmed,
+  };
+  const botMsg: Message = {
+    id: `b-${Date.now()}`,
+    role: 'bot',
+    text: '',
+    streaming: true,
+  };
   messages.value = [...messages.value, userMsg, botMsg];
   const ta = root.querySelector('[data-input]') as HTMLTextAreaElement | null;
   if (ta) ta.value = '';

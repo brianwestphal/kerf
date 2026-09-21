@@ -14,12 +14,12 @@ the public `onCommit` callback, retains every disposer, and returns one
 idempotent disposer:
 
 ```ts
-import { createRecipe } from './navigation-sidebar.js';
-import { mountRecipe } from './mount-recipe.js';
+import { createRecipe } from "./navigation-sidebar.js";
+import { mountRecipe } from "./mount-recipe.js";
 
-const root = document.querySelector<HTMLElement>('#navigation')!;
+const root = document.querySelector<HTMLElement>("#navigation")!;
 const stopRecipe = mountRecipe(root, createRecipe(announce));
-window.addEventListener('pagehide', stopRecipe, { once: true });
+window.addEventListener("pagehide", stopRecipe, { once: true });
 ```
 
 The adapter is delivered as reference source, not a new package runtime export.

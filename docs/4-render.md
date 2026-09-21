@@ -20,7 +20,7 @@ const dispose = mount(document.getElementById('app')!, () => (
 1. Wraps `effect()` so the render fn re-runs whenever any signal it reads changes.
 2. Evaluates `render()` to a `SafeHtml`. The wrapped `Segment` is either a single static-html node (most renders), or a tree containing `list` segments (anywhere `each(...)` was used) and `mixed` segments wrapping their parents. As a small ergonomic affordance, a render that returns `null`, `undefined`, `false`, or `true` is coerced to "render nothing" (empty string) — so `mount(el, () => cond ? <jsx/> : null)` and `mount(el, () => cond && <jsx/>)` work without each consumer adding a sentinel. Numbers stringify; real strings pass through.
 3. **First render:** sets `rootEl.innerHTML` to the flattened HTML (with a sentinel comment before each list), then walks those comments to bind every list to its live parent. Bulk parse, single pass.
-4. **Subsequent renders:** builds a marker-only template (lists become `<!--kf-list:N-->` placeholders, *no row HTML*), runs kerf's native morph (`src/morph.ts`) over the static surrounds, then dispatches each list segment to a keyed reconciler that operates directly on the live parent's children. Cache-hit rows are reused verbatim. When the list's item references are unchanged in count and order but some rows' content changed (the common "external state flipped a class/label" case), the reconciler updates each changed row *in place* when its top-level tag stays the same — preserving DOM identity, focus, scroll, IME composition, and in-progress CSS transitions. A top-level tag change still replaces that row. If content and list structure change in the same snapshot, changed rows also take the general fresh-node path. (The pure-content in-place behavior is new in 0.15.0; versions ≤ 0.14.x recreated the row node on a content change instead. One consequence of reusing the node: a CSS enter-animation keyed on the row element's *creation* no longer replays on a content-only update — key such animations on a state-class toggle if you need them to fire.) Genuinely new rows are batched into one parse and inserted into place; a longest-increasing-subsequence pass keeps reorder mutations to the minimum.
+4. **Subsequent renders:** builds a marker-only template (lists become `<!--kf-list:N-->` placeholders, _no row HTML_), runs kerf's native morph (`src/morph.ts`) over the static surrounds, then dispatches each list segment to a keyed reconciler that operates directly on the live parent's children. Cache-hit rows are reused verbatim. When the list's item references are unchanged in count and order but some rows' content changed (the common "external state flipped a class/label" case), the reconciler updates each changed row _in place_ when its top-level tag stays the same — preserving DOM identity, focus, scroll, IME composition, and in-progress CSS transitions. A top-level tag change still replaces that row. If content and list structure change in the same snapshot, changed rows also take the general fresh-node path. (The pure-content in-place behavior is new in 0.15.0; versions ≤ 0.14.x recreated the row node on a content change instead. One consequence of reusing the node: a CSS enter-animation keyed on the row element's _creation_ no longer replays on a content-only update — key such animations on a state-class toggle if you need them to fire.) Genuinely new rows are batched into one parse and inserted into place; a longest-increasing-subsequence pass keeps reorder mutations to the minimum.
 5. Returns a disposer that tears down the effect.
 
 The structural payoff: a thousand-row snapshot where 100 rows changed still scans the 1,000 item references and cache keys, but only those 100 rows miss the memo and need content work; unchanged rows skip JSX evaluation and keep their live nodes. If the item references stay in the same order, same-tag changed rows update in place. If the structure changes too, changed/new rows are bulk-parsed and the LIS pass limits DOM moves. The `arraySignal` path described below avoids the full snapshot scan as well. The static surrounds (which are usually small) go through the general-purpose diff.
@@ -29,12 +29,12 @@ Everything above is the **coarse** update path: a signal change re-runs `render(
 
 ### Values bind, structure re-renders
 
-This is kerf's governing update model, worth stating outright. When a signal changes, two things can happen — and *how you reference the signal* decides which:
+This is kerf's governing update model, worth stating outright. When a signal changes, two things can happen — and _how you reference the signal_ decides which:
 
-- **A value binding** — pass the signal or `computed` *itself* into a text hole or attribute (`<span>{count}</span>`, `class={selected}`). kerf updates that one node directly: no `render()` re-run, no morph, no reconcile.
-- **A structural re-render** — read `.value` *inside* the render body (`() => <span>{count.value}</span>`). The change re-runs `render()` and kerf morphs the result. This is the right path when the signal changes the *shape* of the tree (which rows exist, whether a panel is shown), not just a value inside it.
+- **A value binding** — pass the signal or `computed` _itself_ into a text hole or attribute (`<span>{count}</span>`, `class={selected}`). kerf updates that one node directly: no `render()` re-run, no morph, no reconcile.
+- **A structural re-render** — read `.value` _inside_ the render body (`() => <span>{count.value}</span>`). The change re-runs `render()` and kerf morphs the result. This is the right path when the signal changes the _shape_ of the tree (which rows exist, whether a panel is shown), not just a value inside it.
 
-The rule of thumb: **bind values, re-render structure.** A signal handed straight to a hole is the cheapest possible update; a `.value` read in the render body is the general path. Keep per-frame or high-frequency state (a playhead label, a live count, a scrubbing position) in a bound hole the render body never reads, so playback/typing never triggers a full morph. One catch: the `.value` read must happen *inside* the render function to be tracked — `const x = count.value` captured before `mount()` runs never re-renders. See [`docs/2-reactivity.md`](2-reactivity.md) §2.9 for the binding mechanics.
+The rule of thumb: **bind values, re-render structure.** A signal handed straight to a hole is the cheapest possible update; a `.value` read in the render body is the general path. Keep per-frame or high-frequency state (a playhead label, a live count, a scrubbing position) in a bound hole the render body never reads, so playback/typing never triggers a full morph. One catch: the `.value` read must happen _inside_ the render function to be tracked — `const x = count.value` captured before `mount()` runs never re-renders. See [`docs/2-reactivity.md`](2-reactivity.md) §2.9 for the binding mechanics.
 
 ## 4.2 Morph keys
 
@@ -45,11 +45,11 @@ The rule of thumb: **bind values, re-render structure.** A signal handed straigh
 
 Elements without a key are matched positionally by tag name, with a forward lookahead: when the element at a position doesn't match (say, a conditional banner was removed this render, shifting everything after it), the diff scans later live siblings for the first same-tag unkeyed element and moves it up instead of rebuilding it from the template. Stateful subtrees — most importantly the parent of an `each()` list — keep their node identity when a sibling before them appears or disappears. Pure-HTML diffs work fine without keys; you only need keys when list rows reorder, are inserted in the middle, or removed.
 
-The lookahead also covers the `each()` list marker itself. A list's begin-anchor is a comment node, and its rows live only in the live tree (the template carries the bare marker), so a conditional sibling *inside* the list's parent — a header row that comes and goes above the list — would otherwise leave the marker un-matched at the cursor. kerf matches it by its exact marker data and moves it up, carrying its whole run of rows with it, so the list binding never detaches and every row keeps its DOM identity, focus, and caret. Moving the marker and its rows as one unit is what stops a later template sibling (a trailing button, say) from landing between the anchor and the rows it anchors.
+The lookahead also covers the `each()` list marker itself. A list's begin-anchor is a comment node, and its rows live only in the live tree (the template carries the bare marker), so a conditional sibling _inside_ the list's parent — a header row that comes and goes above the list — would otherwise leave the marker un-matched at the cursor. kerf matches it by its exact marker data and moves it up, carrying its whole run of rows with it, so the list binding never detaches and every row keeps its DOM identity, focus, and caret. Moving the marker and its rows as one unit is what stops a later template sibling (a trailing button, say) from landing between the anchor and the rows it anchors.
 
-A list's **row region** — the marker through its last row — is atomic to the diff: it moves as a unit and the diff's cursor steps over it whole. Anything you inject imperatively *between* rows is inside that region, so it travels with the list and keeps its position relative to the rows, and the removal pass never reaches it (with or without `data-morph-preserve`). That region belongs to the list reconciler; the diff leaves it alone by design.
+A list's **row region** — the marker through its last row — is atomic to the diff: it moves as a unit and the diff's cursor steps over it whole. Anything you inject imperatively _between_ rows is inside that region, so it travels with the list and keeps its position relative to the rows, and the removal pass never reaches it (with or without `data-morph-preserve`). That region belongs to the list reconciler; the diff leaves it alone by design.
 
-Two shapes still rebuild a list's container: an *ancestor's tag* changing across renders (`<section>` ↔ `<article>` around the same list), and a *same-tag sibling* that positionally takes the container's place (a `<ul>` banner rendered before a `<ul>` list). Both replace the container, and kerf self-heals — re-binding the list, discarding any rows stranded by the swap, and repopulating. That recovery is correct but lossy: the rows are fresh nodes, so focus, scroll, and IME state on them are discarded.
+Two shapes still rebuild a list's container: an _ancestor's tag_ changing across renders (`<section>` ↔ `<article>` around the same list), and a _same-tag sibling_ that positionally takes the container's place (a `<ul>` banner rendered before a `<ul>` list). Both replace the container, and kerf self-heals — re-binding the list, discarding any rows stranded by the swap, and repopulating. That recovery is correct but lossy: the rows are fresh nodes, so focus, scroll, and IME state on them are discarded.
 
 If the rows should survive, keep ancestor tags stable, and **give the list's own container a stable `id` or `data-key`**:
 
@@ -60,7 +60,7 @@ If the rows should survive, keep ancestor tags stable, and **give the list's own
 </div>
 ```
 
-A key makes the container ineligible for positional matching *and* findable by key, so no sibling can take its place from either direction. Note the asymmetry: keying the *conditional sibling* instead only helps when the sibling is being removed — when it reappears, its key has no live counterpart, the diff falls back to position, and the unkeyed container is taken over anyway. Key the container, not the sibling. The opt-in dev warning `KERF_DEV_WARN_LIST_REBIND=1` surfaces each list the first time such a rebuild happens (see [`docs/11-dev-warnings.md`](11-dev-warnings.md)).
+A key makes the container ineligible for positional matching _and_ findable by key, so no sibling can take its place from either direction. Note the asymmetry: keying the _conditional sibling_ instead only helps when the sibling is being removed — when it reappears, its key has no live counterpart, the diff falls back to position, and the unkeyed container is taken over anyway. Key the container, not the sibling. The opt-in dev warning `KERF_DEV_WARN_LIST_REBIND=1` surfaces each list the first time such a rebuild happens (see [`docs/11-dev-warnings.md`](11-dev-warnings.md)).
 
 ```tsx
 // Reorderable list — give each row a stable data-key
@@ -71,40 +71,51 @@ A key makes the container ineligible for positional matching *and* findable by k
 </ul>
 ```
 
-For large lists, swap `.map(...)` for the `each(items, render, cacheKey?)` helper. It returns a structured list segment that `mount()` recognizes and routes to the keyed reconciler — bypassing the parse-the-whole-table step entirely. Each row is memoized by item identity (with an optional `cacheKey` that captures external state like a "selected id"), so unchanged rows skip JSX evaluation, string-building, *and* the morph walk. Items must be objects (the cache is a `WeakMap`), and the same object reference must not appear at more than one index — `each()` throws on a duplicate reference, since one object can only map to one cached row node. The immutable-update style elsewhere in this codebase makes the cache work automatically — replace a row with a fresh object and it re-renders, leave its reference alone and it doesn't. Mutating a row in place also works: `arraySignal.update(i, r => { r.x = 1; return r })` re-renders that row everywhere it appears (a second list, another mount, a filtered view), because kerf tracks a per-item content version. Immutable updates remain the idiomatic style, but the mutate-and-return path is supported, not a footgun.
+For large lists, swap `.map(...)` for the `each(items, render, cacheKey?)` helper. It returns a structured list segment that `mount()` recognizes and routes to the keyed reconciler — bypassing the parse-the-whole-table step entirely. Each row is memoized by item identity (with an optional `cacheKey` that captures external state like a "selected id"), so unchanged rows skip JSX evaluation, string-building, _and_ the morph walk. Items must be objects (the cache is a `WeakMap`), and the same object reference must not appear at more than one index — `each()` throws on a duplicate reference, since one object can only map to one cached row node. The immutable-update style elsewhere in this codebase makes the cache work automatically — replace a row with a fresh object and it re-renders, leave its reference alone and it doesn't. Mutating a row in place also works: `arraySignal.update(i, r => { r.x = 1; return r })` re-renders that row everywhere it appears (a second list, another mount, a filtered view), because kerf tracks a per-item content version. Immutable updates remain the idiomatic style, but the mutate-and-return path is supported, not a footgun.
 
-Give a list a **stable key** — `each(items, render, { key: 'results' })` — whenever it can be preceded by a *conditional* list. Without one a list is identified by its call order, so adding or removing an `each()` above it reassigns its identity and kerf rebuilds it from scratch, costing its rows their DOM nodes, focus, scroll position and in-progress IME. A keyed list doesn't occupy a call-order slot, so keying the conditional list alone usually stabilizes its siblings too. kerf warns once per list in development when it detects the shift. See [`docs/16-list-identity.md`](16-list-identity.md).
+Give a list a **stable key** — `each(items, render, { key: 'results' })` — whenever it can be preceded by a _conditional_ list. Without one a list is identified by its call order, so adding or removing an `each()` above it reassigns its identity and kerf rebuilds it from scratch, costing its rows their DOM nodes, focus, scroll position and in-progress IME. A keyed list doesn't occupy a call-order slot, so keying the conditional list alone usually stabilizes its siblings too. kerf warns once per list in development when it detects the shift. See [`docs/16-list-identity.md`](16-list-identity.md).
 
 When `kerfjs/dev` is installed, if the first row of a list renders without an `id` or `data-key` attribute, kerf logs a one-shot warning (no per-warning switch): keyless rows match positionally, so focus and per-row state jump rows on insert/delete.
 
 ```tsx
-import { each } from 'kerfjs';
+import { each } from "kerfjs";
 
 <ul>
-  {each(rows.value, (r) => <li data-key={r.id}>{r.label}</li>)}
-</ul>
+  {each(rows.value, (r) => (
+    <li data-key={r.id}>{r.label}</li>
+  ))}
+</ul>;
 ```
 
-> **Memo cache invariant.** The memo cache invalidates *purely* on the third argument (the `cacheKey` function's return value) plus item identity. If a row's rendered output depends on external state that the memo doesn't include, the row will go stale — kerf will return cached HTML even though the render function would produce something different now. The fix is either: (a) bake that state into the memo (`(r) => \`${r.id}-${selectedId === r.id ? 'on' : 'off'}\``), or (b) own the changing DOM imperatively under `data-morph-skip` and let kerf cache the surrounding shell. The kanban example chooses (b) for the live drag transform; the TodoMVC example chooses (a) for the per-row view/edit flip.
+> **Memo cache invariant.** The memo cache invalidates _purely_ on the third argument (the `cacheKey` function's return value) plus item identity. If a row's rendered output depends on external state that the memo doesn't include, the row will go stale — kerf will return cached HTML even though the render function would produce something different now. The fix is either: (a) bake that state into the memo (`(r) => \`${r.id}-${selectedId === r.id ? 'on' : 'off'}\``), or (b) own the changing DOM imperatively under `data-morph-skip` and let kerf cache the surrounding shell. The kanban example chooses (b) for the live drag transform; the TodoMVC example chooses (a) for the per-row view/edit flip.
 
-> **The identity trap — memoization is keyed on object identity, both directions bite.** `each()` caches a row by the *item object's identity*, never by its `data-key` (that attribute is only the DOM-diff hint the reconciler uses to match nodes). Two symmetric mistakes follow, and both have been misread as reconciler bugs:
-> - **Accidentally *changing* identity destroys the cache.** A `.map((x) => ({ ...x }))` — or a sort/filter/transform that returns fresh objects — *inside or upstream of* the `each()` argument hands every row a brand-new reference, so every row misses the cache and re-renders on every pass. It looks like "`each()` is slow" or "the reconciler rebuilds everything"; it is actually the items being cloned. Keep the same object references across renders — immutable updates should replace only the rows that changed, not clone the whole array.
-> - **Not changing identity *hides* an update.** The mirror image: when a row's appearance depends on *external* state (a `selectedId`, a sort dimension, a "show scores" flag) but the item object is untouched, its identity is unchanged, the cache hits, and the row keeps its old HTML. Dropping to `.map()` (no cache) *appears* to fix "my rows won't update" — but the real fix keeps the cache and folds that state into `cacheKey` (see the invariant above), or opts the one hot hole into a fine-grained binding (§4.1, *Values bind, structure re-renders*).
+> **The identity trap — memoization is keyed on object identity, both directions bite.** `each()` caches a row by the _item object's identity_, never by its `data-key` (that attribute is only the DOM-diff hint the reconciler uses to match nodes). Two symmetric mistakes follow, and both have been misread as reconciler bugs:
+>
+> - **Accidentally _changing_ identity destroys the cache.** A `.map((x) => ({ ...x }))` — or a sort/filter/transform that returns fresh objects — _inside or upstream of_ the `each()` argument hands every row a brand-new reference, so every row misses the cache and re-renders on every pass. It looks like "`each()` is slow" or "the reconciler rebuilds everything"; it is actually the items being cloned. Keep the same object references across renders — immutable updates should replace only the rows that changed, not clone the whole array.
+> - **Not changing identity _hides_ an update.** The mirror image: when a row's appearance depends on _external_ state (a `selectedId`, a sort dimension, a "show scores" flag) but the item object is untouched, its identity is unchanged, the cache hits, and the row keeps its old HTML. Dropping to `.map()` (no cache) _appears_ to fix "my rows won't update" — but the real fix keeps the cache and folds that state into `cacheKey` (see the invariant above), or opts the one hot hole into a fine-grained binding (§4.1, _Values bind, structure re-renders_).
 >
 > For a list that is heavily externally-driven, or long enough to need windowing, the optional `bindList` primitive (`kerfjs/list`) is the alternative: it mounts each row individually (so a signal the row reads updates just that row, no full-list pass) and can virtualize the viewport. `each()` stays the default for item-owned-state lists rendered to HTML strings; `bindList` is for surgical per-row updates or virtualization. See [`docs/8-api-reference.md`](8-api-reference.md) §8.11.
 
-> **The `index` argument is a special case of that invariant.** The render function receives the row's position — `each(items, (item, index) => …)` — but `index` is **not** part of the memo key (only item identity, `cacheKey`, and content version are). So a row that keeps its identity while its *position* changes — a reorder, or an insert/remove/move ahead of it — keeps the HTML it rendered at its old index. A numbered list (`{index + 1}. …`), zebra striping, or an "N of M" label then silently shows the wrong value on the moved rows, while everything else looks right. If the row's output depends on the index, fold the index into the memo key so a shift re-renders the displaced rows:
+> **The `index` argument is a special case of that invariant.** The render function receives the row's position — `each(items, (item, index) => …)` — but `index` is **not** part of the memo key (only item identity, `cacheKey`, and content version are). So a row that keeps its identity while its _position_ changes — a reorder, or an insert/remove/move ahead of it — keeps the HTML it rendered at its old index. A numbered list (`{index + 1}. …`), zebra striping, or an "N of M" label then silently shows the wrong value on the moved rows, while everything else looks right. If the row's output depends on the index, fold the index into the memo key so a shift re-renders the displaced rows:
 >
 > ```tsx
-> each(items, (item, i) => <li data-key={item.id}>{i + 1}. {item.label}</li>, { cacheKey: (_, i) => i })
+> each(
+>   items,
+>   (item, i) => (
+>     <li data-key={item.id}>
+>       {i + 1}. {item.label}
+>     </li>
+>   ),
+>   { cacheKey: (_, i) => i },
+> );
 > // combine with your own key if you use one: { key: 'list', cacheKey: (_, i) => i }
 > ```
 >
 > This trades the memo's benefit for those rows (a reorder now re-renders every displaced row, O(n) on a structural change) for correctness — pay it only when the index actually appears in the output. The opt-in dev warning `KERF_DEV_WARN_STALE_INDEX=1` fires the first time a list reuses a memoized row at a changed index while its render function reads the index (see [`docs/11-dev-warnings.md`](11-dev-warnings.md) §11.2.10).
 >
-> One edge the `cacheKey` fix does *not* cover: a single `arraySignal` batch in which freshly-inserted rows displace *each other* — e.g. `batch(() => { rows.insert(1, a); rows.insert(1, b) })`, where the second insert pushes the first to a later index. The workaround re-renders rows that already existed, but a row inserted earlier in the same batch is rendered once at its insert-time index and isn't revisited, so it can show a stale index until the next unrelated re-render heals it. The DOM order is correct; only the `index` value on those brand-new rows lags. The dev warning still flags it. If you index-label rows *and* do multi-insert batches at the same position, prefer immutable whole-array updates (`signal<T[]>` + `each(items.value, …)`), which always render every row at its final index.
+> One edge the `cacheKey` fix does _not_ cover: a single `arraySignal` batch in which freshly-inserted rows displace _each other_ — e.g. `batch(() => { rows.insert(1, a); rows.insert(1, b) })`, where the second insert pushes the first to a later index. The workaround re-renders rows that already existed, but a row inserted earlier in the same batch is rendered once at its insert-time index and isn't revisited, so it can show a stale index until the next unrelated re-render heals it. The DOM order is correct; only the `index` value on those brand-new rows lags. The dev warning still flags it. If you index-label rows _and_ do multi-insert batches at the same position, prefer immutable whole-array updates (`signal<T[]>` + `each(items.value, …)`), which always render every row at its final index.
 
-> **Static structural arrays — use `.map()`, not `each()`.** `each()` is for dynamic lists. When the outer array is a module-level constant (`COLUMNS`, settings sections, nav tabs) whose items never change identity, the per-item HTML cache hits every render *forever* — the row render fn is invoked exactly once at first paint and never again, even when signals it reads change. Signal subscriptions established during that first render get dropped after the next effect run (signal-core only retains subscriptions for signals re-read in the current run), so writes to those signals quietly stop triggering re-renders. The whole rendered tree looks frozen; only elements *outside* the `each()` reflect updates.
+> **Static structural arrays — use `.map()`, not `each()`.** `each()` is for dynamic lists. When the outer array is a module-level constant (`COLUMNS`, settings sections, nav tabs) whose items never change identity, the per-item HTML cache hits every render _forever_ — the row render fn is invoked exactly once at first paint and never again, even when signals it reads change. Signal subscriptions established during that first render get dropped after the next effect run (signal-core only retains subscriptions for signals re-read in the current run), so writes to those signals quietly stop triggering re-renders. The whole rendered tree looks frozen; only elements _outside_ the `each()` reflect updates.
 >
 > The wrong shape:
 >
@@ -137,24 +148,28 @@ import { each } from 'kerfjs';
 > ));
 > ```
 >
-> Rule of thumb: if the array reference is the same across renders AND the row render reads signals, you want `.map()`. If the array is a fresh reference per render (because it came from a signal or a filter/sort pipeline), you want `each()`. Inner `each()` over the *dynamic* sub-list is fine in both shapes.
+> Rule of thumb: if the array reference is the same across renders AND the row render reads signals, you want `.map()`. If the array is a fresh reference per render (because it came from a signal or a filter/sort pipeline), you want `each()`. Inner `each()` over the _dynamic_ sub-list is fine in both shapes.
 
 ### Granular reconcile via `arraySignal`
 
 Pass an `arraySignal` to `each()` and `mount()` runs an even faster path: instead of iterating the whole snapshot to classify changed/unchanged rows, the reconciler consumes the patch queue the `arraySignal` emitted (one `update`/`insert`/`remove`/`move` per mutation) and applies only those to the live DOM. Cost is O(patches), not O(N).
 
 ```tsx
-import { each, mount } from 'kerfjs';
-import { arraySignal } from 'kerfjs/array-signal';
+import { each, mount } from "kerfjs";
+import { arraySignal } from "kerfjs/array-signal";
 
 const rows = arraySignal<{ id: number; label: string }>([]);
 
 mount(rootEl, () => (
-  <ul>{each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+  <ul>
+    {each(rows, (r) => (
+      <li data-key={r.id}>{r.label}</li>
+    ))}
+  </ul>
 ));
 
-rows.push({ id: 1, label: 'a' });           // 1 insert patch
-rows.update(0, (r) => ({ ...r, label: 'A' })); // 1 update patch
+rows.push({ id: 1, label: "a" }); // 1 insert patch
+rows.update(0, (r) => ({ ...r, label: "A" })); // 1 update patch
 ```
 
 When patches are emitted contiguously (e.g. an append-1k loop, or a partial-update batch), the reconciler bulk-parses them in a single `template.innerHTML` call and applies one `insertBefore` per fragment.
@@ -173,11 +188,11 @@ See §2.6 for the full `arraySignal` API.
 
 Three `data-*` attributes opt portions of the live tree out of the diff. They overlap deliberately — pick the one that matches your reason for excluding the element.
 
-| Attribute | Element itself | Subtree | Trailing-removal | Use when |
-| --- | --- | --- | --- | --- |
-| `data-morph-skip` | left verbatim (no attr morph) | left verbatim | n/a (the element is in the template) | Library-owned hosts: xterm / Monaco / D3 — the library mutates classes too, so you don't want kerf undoing them. |
-| `data-morph-skip-children` | attrs morph | left verbatim | n/a | Client-hydrated slots: server emits an empty container, the client fills it asynchronously, but the server's classes / data attrs on the slot itself still need to flow through (e.g. `class="slot is-loading"` → `"slot is-ready"`). |
-| `data-morph-preserve` | attrs morph if key-matched; otherwise untouched | morphed if key-matched; otherwise untouched | skipped (element survives even when the new template doesn't emit it) | Imperatively-injected nodes the consumer added AFTER first render — autoplay `<video>`, tooltip layer, analytics pixel — that aren't in the JSX. |
+| Attribute                  | Element itself                                  | Subtree                                     | Trailing-removal                                                      | Use when                                                                                                                                                                                                                              |
+| -------------------------- | ----------------------------------------------- | ------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data-morph-skip`          | left verbatim (no attr morph)                   | left verbatim                               | n/a (the element is in the template)                                  | Library-owned hosts: xterm / Monaco / D3 — the library mutates classes too, so you don't want kerf undoing them.                                                                                                                      |
+| `data-morph-skip-children` | attrs morph                                     | left verbatim                               | n/a                                                                   | Client-hydrated slots: server emits an empty container, the client fills it asynchronously, but the server's classes / data attrs on the slot itself still need to flow through (e.g. `class="slot is-loading"` → `"slot is-ready"`). |
+| `data-morph-preserve`      | attrs morph if key-matched; otherwise untouched | morphed if key-matched; otherwise untouched | skipped (element survives even when the new template doesn't emit it) | Imperatively-injected nodes the consumer added AFTER first render — autoplay `<video>`, tooltip layer, analytics pixel — that aren't in the JSX.                                                                                      |
 
 All three attributes also protect the node from **positional repurposing**: the diff will not adopt a `data-morph-skip` / `data-morph-skip-children` / `data-morph-preserve` live node as the positional match for a template element that makes no such claim. So a library-owned widget or an injected preserved node keeps its identity and contents even when a conditional sibling reappears at its exact position — the template element is inserted fresh beside it instead. A keyed match (`id` / `data-key`) is the one way to deliberately morph such a node in place.
 
@@ -194,7 +209,7 @@ Apply this attribute to any element whose subtree AND attributes you DON'T want 
 After the first render, mount your library widget into `#chart-mount` directly:
 
 ```ts
-const chart = new ThirdPartyChart(document.getElementById('chart-mount')!);
+const chart = new ThirdPartyChart(document.getElementById("chart-mount")!);
 ```
 
 On subsequent re-renders, the diff sees `data-morph-skip` on the host and short-circuits before attribute morphing — so the entire subtree (the chart's internal DOM) AND any classes the library set on the host are preserved. Use this for:
@@ -211,7 +226,7 @@ On subsequent re-renders, the diff sees `data-morph-skip` on the host and short-
 
 ### `data-morph-skip-children` — client-hydrated slot
 
-Apply this attribute when the *children* are imperatively painted (and must survive the morph) but the element itself is server-rendered and needs its attributes to keep flowing through:
+Apply this attribute when the _children_ are imperatively painted (and must survive the morph) but the element itself is server-rendered and needs its attributes to keep flowing through:
 
 ```tsx
 // Server template
@@ -220,7 +235,7 @@ Apply this attribute when the *children* are imperatively painted (and must surv
 
 ```ts
 // Client paints comments into the slot asynchronously
-fetchComments(cardId).then(rows => {
+fetchComments(cardId).then((rows) => {
   slot.replaceChildren(...rows.map(renderRow));
 });
 ```
@@ -236,9 +251,10 @@ Apply this attribute to an element that the consumer adds to the live tree AFTER
 ```ts
 // First render emits <article class="card">...</article>.
 // Client-side autoplay module appends a hidden <video> per card:
-const v = document.createElement('video');
-v.dataset.morphPreserve = '';  // any value (even '') opts the node out of removal
-v.muted = true; v.playsInline = true;
+const v = document.createElement("video");
+v.dataset.morphPreserve = ""; // any value (even '') opts the node out of removal
+v.muted = true;
+v.playsInline = true;
 v.src = card.videoUrl;
 card.appendChild(v);
 ```
@@ -254,9 +270,9 @@ Scope is deliberately narrow — it's an **end-of-list-discard opt-out**, nothin
 
 Comparison:
 
-- `data-morph-skip` covers *library-owned hosts*: the whole region is off-limits.
-- `data-morph-skip-children` covers *server-rendered shells*: attributes flow, children are off-limits.
-- `data-morph-preserve` covers *imperatively-injected children*: the element keeps existing across renders even though kerf's template never mentions it.
+- `data-morph-skip` covers _library-owned hosts_: the whole region is off-limits.
+- `data-morph-skip-children` covers _server-rendered shells_: attributes flow, children are off-limits.
+- `data-morph-preserve` covers _imperatively-injected children_: the element keeps existing across renders even though kerf's template never mentions it.
 
 ## 4.4 Focus + selection preservation
 
@@ -275,7 +291,7 @@ Other input types (range, color, file, date, checkbox, radio…) don't have mean
 
 ### Form-state properties: `checked`, `value`, `selected`
 
-Browsers detach a form control's live property from its attribute once the control is "dirty" (the user — or script — has touched it): after that, the attribute is only the *default*. An attribute-only reconciler would update `checked=""` on a checkbox the user already clicked while the visible checkmark stayed stale.
+Browsers detach a form control's live property from its attribute once the control is "dirty" (the user — or script — has touched it): after that, the attribute is only the _default_. An attribute-only reconciler would update `checked=""` on a checkbox the user already clicked while the visible checkmark stayed stale.
 
 kerf closes this gap with one rule: **whenever the diff (or a fine-grained signal binding) actually mutates a `checked`, `value`, or `selected` attribute, the matching property is synced too.** The consequences:
 
@@ -285,7 +301,7 @@ kerf closes this gap with one rule: **whenever the diff (or a fine-grained signa
 
 ### `[contenteditable]`
 
-For a focused contenteditable, kerf takes the heavier-handed approach: **the entire subtree is skipped on this morph**, the same way `data-morph-skip` works. The user's typed content, caret position, and any multi-range selection survive verbatim — including any custom DOM they produced (`<b>`, `<a>`, line breaks, etc.). The trade-off is that *any* update to the contenteditable's attributes or children is also deferred until the next render after the user blurs.
+For a focused contenteditable, kerf takes the heavier-handed approach: **the entire subtree is skipped on this morph**, the same way `data-morph-skip` works. The user's typed content, caret position, and any multi-range selection survive verbatim — including any custom DOM they produced (`<b>`, `<a>`, line breaks, etc.). The trade-off is that _any_ update to the contenteditable's attributes or children is also deferred until the next render after the user blurs.
 
 This is the behavior you almost always want for in-progress rich-text editing: don't disturb the editor mid-edit. If you want kerf to drive a contenteditable's content despite the user being focused, that's outside the framework — manage it imperatively or move that state outside the contenteditable.
 
@@ -307,14 +323,14 @@ The rules above add up to one practical guarantee for app authors: **you do not 
 
 Two patterns are supported. Pick one per field:
 
-- **Uncontrolled (the default for text entry).** Don't bind `value` at all. The DOM owns the field; you read it when you need it — typically from a `delegate()` handler at submit or change time (`e.target.value`). Because the template never mentions `value`, no re-render can touch it (see *Form-state properties* above). This is the simplest, fastest path and what most fields want.
+- **Uncontrolled (the default for text entry).** Don't bind `value` at all. The DOM owns the field; you read it when you need it — typically from a `delegate()` handler at submit or change time (`e.target.value`). Because the template never mentions `value`, no re-render can touch it (see _Form-state properties_ above). This is the simplest, fastest path and what most fields want.
 
-- **Controlled.** Bind `value={sig}` and write the signal back on `input` (usually `delegate(root, 'input', selector, …)`). The signal is the source of truth; while the field is focused, both morph and the binding writer skip its `value`, so your keystrokes and caret are never overwritten mid-edit. Use this when something *other* than the user also sets the field — a "clear" button, a preset, a value derived from another signal.
+- **Controlled.** Bind `value={sig}` and write the signal back on `input` (usually `delegate(root, 'input', selector, …)`). The signal is the source of truth; while the field is focused, both morph and the binding writer skip its `value`, so your keystrokes and caret are never overwritten mid-edit. Use this when something _other_ than the user also sets the field — a "clear" button, a preset, a value derived from another signal.
 
 ```tsx
-import { signal, mount, delegate } from 'kerfjs';
+import { signal, mount, delegate } from "kerfjs";
 
-const name = signal('');
+const name = signal("");
 
 mount(root, () => (
   <label>
@@ -326,20 +342,20 @@ mount(root, () => (
 
 // DOM -> signal. A direct listener would be dropped on re-render, so delegate
 // from a stable root; the handler survives every morph.
-delegate<HTMLInputElement>(root, 'input', '.name-field', (_e, el) => {
+delegate<HTMLInputElement>(root, "input", ".name-field", (_e, el) => {
   name.value = el.value;
 });
 ```
 
 There is deliberately no `bindValue(el, signal)` helper: real controlled handlers almost never just mirror the value — they transform, derive sibling fields, normalize in place, or fire side effects (e.g. deriving a slug from a label, upper-casing, clamping length, scheduling a save). The `delegate('input', …)` handler is where that logic lives, so a mirror-only helper would help the rare trivial case and mislead the rest. For a field where nothing but the user writes it, prefer the uncontrolled pattern and skip the binding entirely.
 
-**The boundary.** The preservation guarantee holds while the input's **own DOM node is matched** across the reconcile. It is lost only when that node is *replaced* — a top-level tag change on the row, a dropped ancestor, or a row whose content changes during a structural snapshot reconcile and therefore takes the general fresh-node path (see *Across `each()` reorders* above). This is the same rule every preserved thing follows. Practically: give an input that lives inside a list row or a conditionally-rendered region a stable `id` or `data-key` so the reconciler matches it instead of replacing it.
+**The boundary.** The preservation guarantee holds while the input's **own DOM node is matched** across the reconcile. It is lost only when that node is _replaced_ — a top-level tag change on the row, a dropped ancestor, or a row whose content changes during a structural snapshot reconcile and therefore takes the general fresh-node path (see _Across `each()` reorders_ above). This is the same rule every preserved thing follows. Practically: give an input that lives inside a list row or a conditionally-rendered region a stable `id` or `data-key` so the reconciler matches it instead of replacing it.
 
-**The one caveat.** A controlled `value={sig}` *does* update while the field is **not** focused — correct controlled-input behavior, but it means a background signal change can replace text a user typed and then tabbed away from before committing. If you don't want that, use the uncontrolled pattern.
+**The one caveat.** A controlled `value={sig}` _does_ update while the field is **not** focused — correct controlled-input behavior, but it means a background signal change can replace text a user typed and then tabbed away from before committing. If you don't want that, use the uncontrolled pattern.
 
 ## 4.4.1 User-agent-owned state attributes
 
-A handful of HTML elements have boolean attributes that the *user agent* sets in response to user interaction — `<details open>` and `<dialog open>` are the canonical pair. When a user expands a `<details>`, the browser adds `open=""` to the element. If kerf's morph treated that attribute like any other developer-authored attribute, the next re-render would see the live `open=""` against a template without it and remove it — collapsing the user's expansion.
+A handful of HTML elements have boolean attributes that the _user agent_ sets in response to user interaction — `<details open>` and `<dialog open>` are the canonical pair. When a user expands a `<details>`, the browser adds `open=""` to the element. If kerf's morph treated that attribute like any other developer-authored attribute, the next re-render would see the live `open=""` against a template without it and remove it — collapsing the user's expansion.
 
 To keep uncontrolled `<details>` and `<dialog>` working naturally, the morph **never removes `open` from these elements**. The attribute is treated as user-agent-owned: the diff doesn't know whether the developer or the browser put it there, so the safe default is to leave it alone.
 
@@ -357,11 +373,11 @@ Controlled-style usage where a signal flips `open` from `true` → `false` does 
 If you need controlled behavior, drive `open` imperatively from a signal subscription:
 
 ```tsx
-import { effect } from 'kerfjs';
+import { effect } from "kerfjs";
 
 mount(rootEl, () => <details id="panel">...</details>);
 effect(() => {
-  const det = document.getElementById('panel') as HTMLDetailsElement;
+  const det = document.getElementById("panel") as HTMLDetailsElement;
   if (det) det.open = isOpen.value;
 });
 ```
@@ -377,12 +393,12 @@ The implication for imperative DOM mutations: any attribute, text node, or child
 ```tsx
 const tick = signal(0);
 mount(rootEl, () => {
-  void tick.value;                           // re-renders on every tick
-  return <div className="card">hello</div>;  // …producing the same HTML
+  void tick.value; // re-renders on every tick
+  return <div className="card">hello</div>; // …producing the same HTML
 });
 
-const div = rootEl.querySelector('div')!;
-div.setAttribute('data-instrumented', 'true');  // imperative mutation
+const div = rootEl.querySelector("div")!;
+div.setAttribute("data-instrumented", "true"); // imperative mutation
 
 tick.value = 1;
 // div.getAttribute('data-instrumented') === 'true'
@@ -392,17 +408,17 @@ tick.value = 1;
 The complementary half: **when the surrounds DO change**, the diff runs and `morphAttributes` removes anything the JSX didn't authorise:
 
 ```tsx
-const label = signal('first');
+const label = signal("first");
 mount(rootEl, () => <div className="card">{label.value}</div>);
-const div = rootEl.querySelector('div')!;
-div.setAttribute('data-instrumented', 'true');
+const div = rootEl.querySelector("div")!;
+div.setAttribute("data-instrumented", "true");
 
-label.value = 'second';   // surrounds changed → diff runs → attribute wiped.
+label.value = "second"; // surrounds changed → diff runs → attribute wiped.
 ```
 
 ### Practical guidance
 
-- For library-owned subtrees (charts, terminals, editors), use `data-morph-skip` to opt out of diffing entirely. The fast path's behavior above is brittle as a long-term plan because *any* change to the JSX surrounds will wipe your imperative mutations on the next render.
+- For library-owned subtrees (charts, terminals, editors), use `data-morph-skip` to opt out of diffing entirely. The fast path's behavior above is brittle as a long-term plan because _any_ change to the JSX surrounds will wipe your imperative mutations on the next render.
 - For attribute reflection (e.g. an MutationObserver-driven highlight), prefer driving the attribute through a signal so the JSX is the source of truth. The fast path then becomes irrelevant.
 - For one-off attribute pokes (analytics IDs, ARIA mirrors), the fast path means the poke usually sticks — but you should expect it to disappear the moment the surrounding render changes shape. Design for that.
 
@@ -419,7 +435,7 @@ The alternative — running the diff on every render even when nothing changed �
 - **Third-party widget remounts.** The widget rendered something; you have a new version of "what it should look like" as HTML and need an in-place update.
 
 ```ts
-import { morph } from 'kerfjs';
+import { morph } from "kerfjs";
 
 // Element template
 morph(liveCard, freshlyBuiltCard);

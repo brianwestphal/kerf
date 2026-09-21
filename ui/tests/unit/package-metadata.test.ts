@@ -14,14 +14,20 @@ describe('package metadata', () => {
     );
     expect(
       existsSync(
-        resolve(import.meta.dirname, '../../../site/src/content/docs/docs/component-packages.md'),
+        resolve(
+          import.meta.dirname,
+          '../../../site/src/content/docs/docs/component-packages.md',
+        ),
       ),
     ).toBe(true);
   });
 
   it('builds the UI distribution before catalog validation in CI and releases', () => {
     const repoRoot = resolve(import.meta.dirname, '../../..');
-    const ciWorkflow = readFileSync(resolve(repoRoot, '.github/workflows/ci.yml'), 'utf8');
+    const ciWorkflow = readFileSync(
+      resolve(repoRoot, '.github/workflows/ci.yml'),
+      'utf8',
+    );
     const releaseWorkflow = readFileSync(
       resolve(repoRoot, '.github/workflows/release-ui.yml'),
       'utf8',
@@ -36,9 +42,11 @@ describe('package metadata', () => {
     );
 
     expect(ciUiJob).toContain(
-      ['      - run: npm ci', '      - run: npm run build', '      - run: npm run check'].join(
-        '\n',
-      ),
+      [
+        '      - run: npm ci',
+        '      - run: npm run build',
+        '      - run: npm run check',
+      ].join('\n'),
     );
     expect(releaseValidationJob).toContain(
       [

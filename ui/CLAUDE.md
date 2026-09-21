@@ -8,7 +8,7 @@ two goals everything serves:
 
 1. **An AI can make good, consistent UI decisions with this package** — aesthetics,
    clarity, hierarchy — without a human correcting layout after the fact.
-2. **The base looks good and consistent *unstyled*.** A screen built only from the
+2. **The base looks good and consistent _unstyled_.** A screen built only from the
    primitives, their props, and their tokens should already read well. Reaching for
    custom CSS is the exception, not the rhythm.
 
@@ -30,7 +30,7 @@ probably wrong:**
   oval). Change the icon-size or spacing token instead.
 - A **card / border / background / dashed outline / folded corner** to make a demo
   or region "look contained." Hierarchy comes from alignment, spacing, and type
-  first; a border must mark a *real* distinction. A component sitting directly on
+  first; a border must mark a _real_ distinction. A component sitting directly on
   the surface is usually correct.
 - A **fixed heading row** you hand-built — use `PanelHeader` (a plain Toolbar with
   an xl `ToolbarText` title). Do not restyle a toolbar to make a header.
@@ -40,12 +40,12 @@ probably wrong:**
 - **No double-inset.** A pane has **no** padding; its `.kui-content` children own
   the 8px margin / 1px border / 8px padding. If a container already pads, the
   content-item inside must not also carry a margin that stacks with it, and
-  vice-versa. When two things should line up, check their *content* edges land at
+  vice-versa. When two things should line up, check their _content_ edges land at
   the same inset (typically 8px, or 17px = 8 margin + 1 border + 8 padding).
 - **Trust the defaults.** Render a component at its natural size and color; a
   LucideIcon is 24px by design, not 16px. If it looks wrong at the default, the
   fix is usually the surrounding layout, not an override.
-- **One heading primitive.** `PanelHeader` is *the* panel/dialog/page heading.
+- **One heading primitive.** `PanelHeader` is _the_ panel/dialog/page heading.
   There is no separate page-header vs dialog-header. It overrides no Toolbar
   styles; its only bespoke CSS is the icon group's fill/border and the subtitle.
 - **Toolbars hold only `ToolbarText` and `ToolbarControlGroup`.** Never a bare
@@ -57,7 +57,7 @@ probably wrong:**
 - **Match the spacing scale, by relationship not by eye.** 8px inside a group, 24px
   between major differing regions; `--kui-space-*` tokens only. See `docs/layout.md`.
 - **Animations move the right way.** A push slides the incoming view in; a pop
-  slides the *outgoing* view out — verify direction, don't assume symmetry.
+  slides the _outgoing_ view out — verify direction, don't assume symmetry.
 
 ## When custom CSS is legitimate
 
@@ -78,7 +78,7 @@ primitives.
 ## Demos and recipes are the proof
 
 The catalog renders the same exports and CSS consumers get, so a demo that needs
-custom chrome to look right is a signal the *component or composition* is wrong —
+custom chrome to look right is a signal the _component or composition_ is wrong —
 fix that, don't dress the demo. Single-component demos sit directly on the grid
 (no cards); label examples with a `ListHeader` + optional note, left-aligned and
 vertically stacked. Recipes compose public primitives and show ownership

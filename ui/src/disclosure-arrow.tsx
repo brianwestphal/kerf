@@ -30,7 +30,7 @@ function rotationForState(
   if (!open) return closedRotation;
 
   const openRotation = directionRotations[openDirection];
-  const shortestDelta = (openRotation - closedRotation + 540) % 360 - 180;
+  const shortestDelta = ((openRotation - closedRotation + 540) % 360) - 180;
   return closedRotation + shortestDelta;
 }
 
@@ -43,12 +43,16 @@ export function DisclosureArrow({
 }: DisclosureArrowProps) {
   const direction = open ? openDirection : closedDirection;
   const rotation = rotationForState(open, openDirection, closedDirection);
-  return <span
-    class={`kui-disclosure-arrow ${className}`.trim()}
-    style={`--_kui-disclosure-arrow-rotation:${rotation}deg`}
-    data-component="disclosure-arrow"
-    data-open={String(open)}
-    data-direction={direction}
-    aria-hidden="true"
-  >{icon ?? <LucideIcon icon={ChevronRight} name="chevron-right" />}</span>;
+  return (
+    <span
+      class={`kui-disclosure-arrow ${className}`.trim()}
+      style={`--_kui-disclosure-arrow-rotation:${rotation}deg`}
+      data-component="disclosure-arrow"
+      data-open={String(open)}
+      data-direction={direction}
+      aria-hidden="true"
+    >
+      {icon ?? <LucideIcon icon={ChevronRight} name="chevron-right" />}
+    </span>
+  );
 }

@@ -4,11 +4,11 @@
  * path.
  */
 
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import type { ArraySignal } from '../../src/array-signal.js';
 import { arraySignal } from '../../src/array-signal.js';
-import { batch,each,mount } from '../../src/index.js';
+import { batch, each, mount } from '../../src/index.js';
 import { jsx } from '../../src/jsx-runtime.js';
 
 describe('arraySignal — each() granular integration via mount()', () => {
@@ -24,30 +24,48 @@ describe('arraySignal — each() granular integration via mount()', () => {
   });
 
   function renderRows(rows: ArraySignal<{ id: number; label: string }>): void {
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', { 'data-key': String(r.id), children: r.label })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', { 'data-key': String(r.id), children: r.label }),
+        ),
+      }),
+    );
   }
 
   it('granular path coexists with non-arraySignal each() callsites', () => {
     const rowsA = arraySignal([{ id: 1, label: 'a' }]);
     const staticRows = [{ id: 99, label: 'static' }];
-    mount(root, () => jsx('div', {
-      children: [
-        jsx('ul', { children: each(rowsA, (r) => jsx('li', { 'data-key': String(r.id), children: r.label })) }),
-        jsx('ol', { children: each(staticRows, (r) => jsx('li', { 'data-key': String(r.id), children: r.label })) }),
-      ],
-    }));
+    mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('ul', {
+            children: each(rowsA, (r) =>
+              jsx('li', { 'data-key': String(r.id), children: r.label }),
+            ),
+          }),
+          jsx('ol', {
+            children: each(staticRows, (r) =>
+              jsx('li', { 'data-key': String(r.id), children: r.label }),
+            ),
+          }),
+        ],
+      }),
+    );
     rowsA.update(0, (r) => ({ ...r, label: 'A' }));
     expect(root.querySelector('ul li')!.textContent).toBe('A');
     expect(root.querySelector('ol li')!.textContent).toBe('static');
   });
 
-  it('non-arraySignal each() falls through to today\'s snapshot path', () => {
+  it("non-arraySignal each() falls through to today's snapshot path", () => {
     const items = [{ id: 1 }, { id: 2 }];
-    mount(root, () => jsx('ul', {
-      children: each(items, (r) => jsx('li', { 'data-key': String(r.id), children: String(r.id) })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(items, (r) =>
+          jsx('li', { 'data-key': String(r.id), children: String(r.id) }),
+        ),
+      }),
+    );
     expect(root.querySelectorAll('li').length).toBe(2);
   });
 
@@ -58,17 +76,21 @@ describe('arraySignal — each() granular integration via mount()', () => {
     const rows = arraySignal([{ id: 1, label: 'a' }]);
     renderRows(rows);
     const oldA = root.querySelector('li')!;
-    rows.update(0, (r) => ({ ...r }));  // fresh ref, identical content → identical html
-    expect(root.querySelector('li')).toBe(oldA);  // node identity preserved
+    rows.update(0, (r) => ({ ...r })); // fresh ref, identical content → identical html
+    expect(root.querySelector('li')).toBe(oldA); // node identity preserved
   });
 
   it('throws a descriptive error when a granular row render produces no top-level element', () => {
     const rows = arraySignal([{ id: 1, label: 'a' }]);
     let renderImpl = (r: { id: number; label: string }): string =>
       `<li data-key="${r.id}">${r.label}</li>`;
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => renderImpl(r as { id: number; label: string })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          renderImpl(r as { id: number; label: string }),
+        ),
+      }),
+    );
     // Swap the render impl mid-flight so the next update produces empty HTML.
     renderImpl = () => '   ';
     expect(() => rows.update(0, (r) => ({ ...r, label: 'changed' }))).toThrow(
@@ -85,9 +107,13 @@ describe('arraySignal — each() granular integration via mount()', () => {
     const rows = arraySignal<{ id: number; label: string }>([]);
     rows.push({ id: 1, label: 'a' });
     rows.push({ id: 2, label: 'b' });
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', { 'data-key': String(r.id), children: r.label })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', { 'data-key': String(r.id), children: r.label }),
+        ),
+      }),
+    );
     const lis = root.querySelectorAll('li');
     expect(lis.length).toBe(2);
     expect(lis[0].textContent).toBe('a');
@@ -95,11 +121,18 @@ describe('arraySignal — each() granular integration via mount()', () => {
   });
 
   it('KF-98: pre-mount update on seeded array renders the post-update label', () => {
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
     rows.update(0, (r) => ({ ...r, label: 'A' }));
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', { 'data-key': String(r.id), children: r.label })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', { 'data-key': String(r.id), children: r.label }),
+        ),
+      }),
+    );
     const lis = root.querySelectorAll('li');
     expect(lis[0].textContent).toBe('A');
     expect(lis[1].textContent).toBe('b');
@@ -108,9 +141,13 @@ describe('arraySignal — each() granular integration via mount()', () => {
   it('KF-98: pre-mount mutations do NOT poison subsequent granular reconciles', () => {
     const rows = arraySignal<{ id: number; label: string }>([]);
     rows.push({ id: 1, label: 'a' });
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', { 'data-key': String(r.id), children: r.label })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', { 'data-key': String(r.id), children: r.label }),
+        ),
+      }),
+    );
     expect(root.querySelectorAll('li').length).toBe(1);
     rows.push({ id: 2, label: 'b' });
     rows.update(0, (r) => ({ ...r, label: 'A' }));
@@ -123,12 +160,14 @@ describe('arraySignal — each() granular integration via mount()', () => {
   it('KF-99: a thrown render in a single insert falls back to snapshot — DOM matches signal', () => {
     type Row = { id: number; label: string; explode?: boolean };
     const rows = arraySignal<Row>([{ id: 0, label: 'seed' }]);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => {
-        if (r.explode) throw new Error('boom');
-        return jsx('li', { 'data-key': String(r.id), children: r.label });
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) => {
+          if (r.explode) throw new Error('boom');
+          return jsx('li', { 'data-key': String(r.id), children: r.label });
+        }),
       }),
-    }));
+    );
     expect(root.querySelectorAll('li').length).toBe(1);
     // Set up the row to no longer explode AFTER the insert that would have
     // exploded — the insert queues a patch with explode:true; the snapshot
@@ -139,7 +178,9 @@ describe('arraySignal — each() granular integration via mount()', () => {
     let caught: unknown = null;
     try {
       rows.insert(1, { id: 1, label: 'A', explode: true });
-    } catch (e) { caught = e; }
+    } catch (e) {
+      caught = e;
+    }
     expect(caught).toBeInstanceOf(Error);
     // After the thrown render, the signal still has 2 rows but we couldn't
     // render the bad one. Now mutate to a recoverable state — replace the
@@ -155,12 +196,14 @@ describe('arraySignal — each() granular integration via mount()', () => {
   it('KF-99: a thrown render mid bulk-insert run falls back to snapshot — DOM converges', () => {
     type Row = { id: number; label: string; explode?: boolean };
     const rows = arraySignal<Row>([{ id: 0, label: 'seed' }]);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => {
-        if (r.explode) throw new Error('boom');
-        return jsx('li', { 'data-key': String(r.id), children: r.label });
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) => {
+          if (r.explode) throw new Error('boom');
+          return jsx('li', { 'data-key': String(r.id), children: r.label });
+        }),
       }),
-    }));
+    );
     let caught: unknown = null;
     try {
       // Three contiguous inserts in one batch; middle one explodes.
@@ -171,12 +214,19 @@ describe('arraySignal — each() granular integration via mount()', () => {
         rows.insert(2, { id: 2, label: 'B', explode: true });
         rows.insert(3, { id: 3, label: 'C' });
       });
-    } catch (e) { caught = e; }
+    } catch (e) {
+      caught = e;
+    }
     expect(caught).toBeInstanceOf(Error);
     // Replace the throwing row, trigger a re-render — DOM converges with signal.
     rows.update(2, () => ({ id: 2, label: 'B' }));
     const lis = root.querySelectorAll('li');
-    expect(Array.from(lis).map((l) => l.textContent)).toEqual(['seed', 'A', 'B', 'C']);
+    expect(Array.from(lis).map((l) => l.textContent)).toEqual([
+      'seed',
+      'A',
+      'B',
+      'C',
+    ]);
   });
 
   it('KF-99: bulk-update with a throwing patch — recovery via further mutation succeeds', () => {
@@ -186,12 +236,14 @@ describe('arraySignal — each() granular integration via mount()', () => {
       { id: 1, label: 'b' },
       { id: 2, label: 'c' },
     ]);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => {
-        if (r.explode) throw new Error('boom');
-        return jsx('li', { 'data-key': String(r.id), children: r.label });
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) => {
+          if (r.explode) throw new Error('boom');
+          return jsx('li', { 'data-key': String(r.id), children: r.label });
+        }),
       }),
-    }));
+    );
     let caught: unknown = null;
     try {
       // Three updates queued in a batch; middle one's render throws.
@@ -201,15 +253,15 @@ describe('arraySignal — each() granular integration via mount()', () => {
         rows.update(1, (r) => ({ ...r, label: 'B', explode: true }));
         rows.update(2, (r) => ({ ...r, label: 'C' }));
       });
-    } catch (e) { caught = e; }
+    } catch (e) {
+      caught = e;
+    }
     expect(caught).toBeInstanceOf(Error);
     // Recover: clear the explode flag on row 1.
     rows.update(1, (r) => ({ id: r.id, label: 'B' }));
     const lis = root.querySelectorAll('li');
     expect(Array.from(lis).map((l) => l.textContent)).toEqual(['A', 'B', 'C']);
   });
-
-
 });
 
 /**

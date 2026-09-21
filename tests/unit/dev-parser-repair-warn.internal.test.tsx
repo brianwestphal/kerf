@@ -7,14 +7,30 @@
  * its siblings. The tests below pin both halves of the claim: that the repair
  * really happens (and what it costs), and that the warning names it.
  */
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { _resetWarnedForTests, findParagraphRepair } from '../../src/dev-parser-repair-warn.js';
+import {
+  _resetWarnedForTests,
+  findParagraphRepair,
+} from '../../src/dev-parser-repair-warn.js';
 import { each, mount, signal } from '../../src/index.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
-const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+const env = (
+  globalThis as { process: { env: Record<string, string | undefined> } }
+).process.env;
 
 let root: HTMLElement;
 let warn: MockInstance<typeof console.warn>;
@@ -39,9 +55,14 @@ const warnedAbout = (): string =>
 describe('parser repair: what it actually does', () => {
   it('the parser empties the <p> and hoists its children to siblings', () => {
     const dispose = mount(root, () => (
-      <p><section>head</section><span>tail</span></p>
+      <p>
+        <section>head</section>
+        <span>tail</span>
+      </p>
     ));
-    expect(root.innerHTML).toBe('<p></p><section>head</section><span>tail</span>');
+    expect(root.innerHTML).toBe(
+      '<p></p><section>head</section><span>tail</span>',
+    );
     dispose();
   });
 
@@ -54,14 +75,26 @@ describe('parser repair: what it actually does', () => {
       <p>
         <section>head</section>
         {cond.value ? <b>flag</b> : ''}
-        <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'L' })}</ul>
+        <ul>
+          {each(
+            rows,
+            (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ),
+            { key: 'L' },
+          )}
+        </ul>
       </p>
     ));
     rows.push({ id: 'b' });
-    expect(Array.from(root.querySelectorAll('li')).map((li) => li.textContent)).toEqual(['a', 'b']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((li) => li.textContent),
+    ).toEqual(['a', 'b']);
     cond.value = false;
     expect(root.querySelector('b')).toBeNull();
-    expect(Array.from(root.querySelectorAll('li')).map((li) => li.textContent)).toEqual(['a', 'b']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((li) => li.textContent),
+    ).toEqual(['a', 'b']);
     dispose();
   });
 });
@@ -82,20 +115,30 @@ describe('parser repair: detection', () => {
   });
 
   it('is not confused by a block element that follows a properly closed <p>', () => {
-    expect(findParagraphRepair('<p>one</p><h2>two</h2><p>three</p><h3>four</h3>')).toBeNull();
+    expect(
+      findParagraphRepair('<p>one</p><h2>two</h2><p>three</p><h3>four</h3>'),
+    ).toBeNull();
   });
 });
 
 describe('parser repair: reporting', () => {
   it('says nothing when the env var is unset', () => {
-    const dispose = mount(root, () => <p><section>x</section></p>);
+    const dispose = mount(root, () => (
+      <p>
+        <section>x</section>
+      </p>
+    ));
     expect(warn).not.toHaveBeenCalled();
     dispose();
   });
 
   it('warns once, naming the offending tag and the fix', () => {
     env.KERF_DEV_WARN_PARSER_REPAIR = '1';
-    const dispose = mount(root, () => <p><section>x</section></p>);
+    const dispose = mount(root, () => (
+      <p>
+        <section>x</section>
+      </p>
+    ));
     expect(warn).toHaveBeenCalledTimes(1);
     expect(warnedAbout()).toMatch(/a <section> inside a <p>/);
     expect(warnedAbout()).toMatch(/Use a <div>/);
@@ -104,18 +147,31 @@ describe('parser repair: reporting', () => {
 
   it('does not repeat for the same tag pair across mounts', () => {
     env.KERF_DEV_WARN_PARSER_REPAIR = '1';
-    const a = mount(root, () => <p><section>x</section></p>);
+    const a = mount(root, () => (
+      <p>
+        <section>x</section>
+      </p>
+    ));
     a();
     const second = document.createElement('div');
     document.body.appendChild(second);
-    const b = mount(second, () => <p><section>y</section></p>);
+    const b = mount(second, () => (
+      <p>
+        <section>y</section>
+      </p>
+    ));
     expect(warn).toHaveBeenCalledTimes(1);
     b();
   });
 
   it('stays quiet for valid phrasing content', () => {
     env.KERF_DEV_WARN_PARSER_REPAIR = '1';
-    const dispose = mount(root, () => <p><span>fine</span><em>also fine</em></p>);
+    const dispose = mount(root, () => (
+      <p>
+        <span>fine</span>
+        <em>also fine</em>
+      </p>
+    ));
     expect(warn).not.toHaveBeenCalled();
     dispose();
   });
@@ -124,7 +180,11 @@ describe('parser repair: reporting', () => {
     env.KERF_DEV_WARN_PARSER_REPAIR = '1';
     enterProductionShape();
     try {
-      const dispose = mount(root, () => <p><section>x</section></p>);
+      const dispose = mount(root, () => (
+        <p>
+          <section>x</section>
+        </p>
+      ));
       expect(warn).not.toHaveBeenCalled();
       dispose();
     } finally {

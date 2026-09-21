@@ -43,13 +43,53 @@ export default defineConfig({
         // PNG fallbacks, Apple touch icon, Safari pinned-tab mask, manifest,
         // and the Android theme-color meta. All assets are emitted by
         // `scripts/build-icons.mjs` from the SVGs in `src/assets/`.
-        { tag: 'link', attrs: { rel: 'icon',             type: 'image/png',     sizes: '32x32', href: '/kerf/favicon-32.png' } },
-        { tag: 'link', attrs: { rel: 'icon',             type: 'image/png',     sizes: '16x16', href: '/kerf/favicon-16.png' } },
-        { tag: 'link', attrs: { rel: 'icon',             type: 'image/x-icon',                  href: '/kerf/favicon.ico' } },
-        { tag: 'link', attrs: { rel: 'apple-touch-icon', sizes: '180x180',                       href: '/kerf/apple-touch-icon.png' } },
-        { tag: 'link', attrs: { rel: 'mask-icon',                                                href: '/kerf/mask-icon.svg', color: '#ef4370' } },
-        { tag: 'link', attrs: { rel: 'manifest',                                                 href: '/kerf/site.webmanifest' } },
-        { tag: 'meta', attrs: { name: 'theme-color',                                             content: '#ef4370' } },
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'icon',
+            type: 'image/png',
+            sizes: '32x32',
+            href: '/kerf/favicon-32.png',
+          },
+        },
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'icon',
+            type: 'image/png',
+            sizes: '16x16',
+            href: '/kerf/favicon-16.png',
+          },
+        },
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'icon',
+            type: 'image/x-icon',
+            href: '/kerf/favicon.ico',
+          },
+        },
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'apple-touch-icon',
+            sizes: '180x180',
+            href: '/kerf/apple-touch-icon.png',
+          },
+        },
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'mask-icon',
+            href: '/kerf/mask-icon.svg',
+            color: '#ef4370',
+          },
+        },
+        {
+          tag: 'link',
+          attrs: { rel: 'manifest', href: '/kerf/site.webmanifest' },
+        },
+        { tag: 'meta', attrs: { name: 'theme-color', content: '#ef4370' } },
       ],
       logo: {
         src: './src/assets/logo.svg',
@@ -111,7 +151,10 @@ export default defineConfig({
           label: 'Migrating',
           items: [
             { label: 'Pick your starting point', slug: 'migrating' },
-            { label: 'Adopting kerf incrementally', slug: 'migrating/incremental' },
+            {
+              label: 'Adopting kerf incrementally',
+              slug: 'migrating/incremental',
+            },
             { label: 'Coming from React', slug: 'migrating/react' },
             { label: 'Coming from Vue', slug: 'migrating/vue' },
             { label: 'Coming from Svelte', slug: 'migrating/svelte' },

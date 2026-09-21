@@ -1,10 +1,13 @@
-import { afterEach,describe,expect,it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { bindList } from '../../src/list.js';
-import { batch,signal } from '../../src/reactive.js';
+import { batch, signal } from '../../src/reactive.js';
 
-interface Item { id: number; label: string }
+interface Item {
+  id: number;
+  label: string;
+}
 
 afterEach(() => {
   document.body.innerHTML = '';
@@ -16,13 +19,21 @@ function host(): HTMLElement {
   return el;
 }
 
-const texts = (parent: HTMLElement) => Array.from(parent.children).map((c) => c.textContent);
+const texts = (parent: HTMLElement) =>
+  Array.from(parent.children).map((c) => c.textContent);
 
 describe('bindList() — keyed reconcile', () => {
   it('renders one row element per item (using the configured tag)', () => {
     const parent = host();
-    const items = signal<Item[]>([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label, tag: 'li' });
+    const items = signal<Item[]>([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      tag: 'li',
+    });
     expect(parent.children.length).toBe(2);
     expect(parent.firstElementChild?.tagName).toBe('LI');
     expect(texts(parent)).toEqual(['a', 'b']);
@@ -32,9 +43,15 @@ describe('bindList() — keyed reconcile', () => {
   it('appends new rows and removes gone rows (disposing them)', () => {
     const parent = host();
     const items = signal<Item[]>([{ id: 1, label: 'a' }]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
 
-    items.value = [{ id: 1, label: 'a' }, { id: 2, label: 'b' }];
+    items.value = [
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ];
     expect(texts(parent)).toEqual(['a', 'b']);
 
     items.value = [{ id: 2, label: 'b' }];
@@ -48,7 +65,10 @@ describe('bindList() — keyed reconcile', () => {
     const b = { id: 2, label: 'b' };
     const c = { id: 3, label: 'c' };
     const items = signal<Item[]>([a, b, c]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
     const rowB = parent.children[1];
 
     items.value = [c, b, a]; // reverse
@@ -62,12 +82,17 @@ describe('bindList() — keyed reconcile', () => {
     const a = { id: 1, label: 'a' };
     const b = { id: 2, label: 'b' };
     const items = signal<Item[]>([a, b]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
     const originalRows = Array.from(parent.children);
 
     expect(() => {
       items.value = [a, { id: 1, label: 'duplicate' }];
-    }).toThrow('bindList: duplicate key 1 at indices 0 and 1 — every row key must be unique.');
+    }).toThrow(
+      'bindList: duplicate key 1 at indices 0 and 1 — every row key must be unique.',
+    );
     expect(Array.from(parent.children)).toEqual(originalRows);
     expect(texts(parent)).toEqual(['a', 'b']);
 
@@ -80,20 +105,30 @@ describe('bindList() — keyed reconcile', () => {
     const parent = host();
     const existing = document.createElement('button');
     parent.appendChild(existing);
-    const items = signal<Item[]>([{ id: 1, label: 'a' }, { id: 1, label: 'duplicate' }]);
+    const items = signal<Item[]>([
+      { id: 1, label: 'a' },
+      { id: 1, label: 'duplicate' },
+    ]);
 
-    expect(() => bindList(parent, items, {
-      key: (i) => i.id,
-      render: (i) => i.label,
-      virtualize: { rowHeight: 32 },
-    })).toThrow('bindList: duplicate key 1 at indices 0 and 1 — every row key must be unique.');
+    expect(() =>
+      bindList(parent, items, {
+        key: (i) => i.id,
+        render: (i) => i.label,
+        virtualize: { rowHeight: 32 },
+      }),
+    ).toThrow(
+      'bindList: duplicate key 1 at indices 0 and 1 — every row key must be unique.',
+    );
     expect(Array.from(parent.childNodes)).toEqual([existing]);
   });
 
   it('rebuilds a row when its item OBJECT identity changes at the same key', () => {
     const parent = host();
     const items = signal<Item[]>([{ id: 1, label: 'a' }]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
     const first = parent.firstElementChild;
 
     items.value = [{ id: 1, label: 'A' }]; // same key, new object
@@ -105,7 +140,10 @@ describe('bindList() — keyed reconcile', () => {
   it('accepts an arraySignal source and reconciles on its mutations', () => {
     const parent = host();
     const items = arraySignal<Item>([{ id: 1, label: 'a' }]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
     expect(texts(parent)).toEqual(['a']);
     items.push({ id: 2, label: 'b' });
     expect(texts(parent)).toEqual(['a', 'b']);
@@ -117,10 +155,16 @@ describe('bindList() — keyed reconcile', () => {
   it('dispose() removes every row and stops reacting', () => {
     const parent = host();
     const items = signal<Item[]>([{ id: 1, label: 'a' }]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
     dispose();
     expect(parent.children.length).toBe(0);
-    items.value = [{ id: 1, label: 'a' }, { id: 2, label: 'b' }]; // ignored after dispose
+    items.value = [
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]; // ignored after dispose
     expect(parent.children.length).toBe(0);
   });
 });
@@ -131,12 +175,17 @@ describe('bindList() — arraySignal granular patch path (KF-478)', () => {
     const a = { id: 1, label: 'a' };
     const b = { id: 2, label: 'b' };
     const items = arraySignal<Item>([a, b]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
     const originalRows = Array.from(parent.children);
 
     expect(() => {
       items.insert(1, { id: 1, label: 'duplicate' });
-    }).toThrow('bindList: duplicate key 1 at indices 0 and 1 — every row key must be unique.');
+    }).toThrow(
+      'bindList: duplicate key 1 at indices 0 and 1 — every row key must be unique.',
+    );
     expect(Array.from(parent.children)).toEqual(originalRows);
     expect(texts(parent)).toEqual(['a', 'b']);
 
@@ -150,14 +199,17 @@ describe('bindList() — arraySignal granular patch path (KF-478)', () => {
     dispose();
   });
 
-  it('applies insert / move / remove patches, preserving unchanged rows\' element identity', () => {
+  it("applies insert / move / remove patches, preserving unchanged rows' element identity", () => {
     const parent = host();
     const items = arraySignal<Item>([
       { id: 1, label: 'a' },
       { id: 2, label: 'b' },
       { id: 3, label: 'c' },
     ]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
     const rA = parent.children[0];
     const rB = parent.children[1];
     const rC = parent.children[2];
@@ -184,7 +236,10 @@ describe('bindList() — arraySignal granular patch path (KF-478)', () => {
 
   it('update with a NEW object identity rebuilds the row; a same-ref update does not', () => {
     const parent = host();
-    const items = arraySignal([{ id: 1, on: signal(false) }, { id: 2, on: signal(false) }]);
+    const items = arraySignal([
+      { id: 1, on: signal(false) },
+      { id: 2, on: signal(false) },
+    ]);
     const dispose = bindList(parent, items, {
       key: (i) => i.id,
       render: (i) => (i.on.value ? 'on' : 'off'),
@@ -193,7 +248,10 @@ describe('bindList() — arraySignal granular patch path (KF-478)', () => {
     expect(texts(parent)).toEqual(['off', 'off']);
 
     // Same-ref update (mutate in place) — row NOT rebuilt; content follows the signal.
-    items.update(0, (i) => { i.on.value = true; return i; });
+    items.update(0, (i) => {
+      i.on.value = true;
+      return i;
+    });
     expect(parent.firstElementChild).toBe(original);
     expect(texts(parent)).toEqual(['on', 'off']);
 
@@ -212,9 +270,18 @@ describe('bindList() — arraySignal granular patch path (KF-478)', () => {
 
   it('a replace() patch falls back to the keyed diff (snapshot)', () => {
     const parent = host();
-    const items = arraySignal<Item>([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
-    items.replace([{ id: 3, label: 'c' }, { id: 1, label: 'a' }]);
+    const items = arraySignal<Item>([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
+    items.replace([
+      { id: 3, label: 'c' },
+      { id: 1, label: 'a' },
+    ]);
     expect(texts(parent)).toEqual(['c', 'a']);
     dispose();
   });
@@ -222,7 +289,10 @@ describe('bindList() — arraySignal granular patch path (KF-478)', () => {
   it('applies a batch of patches in order (multi-insert at the same position)', () => {
     const parent = host();
     const items = arraySignal<Item>([{ id: 1, label: 'a' }]);
-    const dispose = bindList(parent, items, { key: (i) => i.id, render: (i) => i.label });
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
     batch(() => {
       items.push({ id: 2, label: 'b' });
       items.insert(0, { id: 3, label: 'c' });
@@ -292,8 +362,14 @@ describe('bindList() — arraySignal granular patch path (KF-478)', () => {
     const p1 = host();
     const p2 = host();
     const items = arraySignal<Item>([{ id: 1, label: 'a' }]);
-    const d1 = bindList(p1, items, { key: (i) => i.id, render: (i) => i.label });
-    const d2 = bindList(p2, items, { key: (i) => i.id, render: (i) => i.label });
+    const d1 = bindList(p1, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
+    const d2 = bindList(p2, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
 
     items.push({ id: 2, label: 'b' });
     expect(texts(p1)).toEqual(['a', 'b']);

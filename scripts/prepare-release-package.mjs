@@ -25,12 +25,12 @@ const packagePaths = {
 };
 
 if (
-  !Object.hasOwn(packagePaths, packageName ?? '')
-  || !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version ?? '')
+  !Object.hasOwn(packagePaths, packageName ?? '') ||
+  !/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(version ?? '')
 ) {
   throw new Error(
-    'Usage: node scripts/prepare-release-package.mjs '
-      + '<kerfjs|eslint-plugin-kerfjs|create-kerf-component|@kerfjs/ui> <version> [--root <path>]',
+    'Usage: node scripts/prepare-release-package.mjs ' +
+      '<kerfjs|eslint-plugin-kerfjs|create-kerf-component|@kerfjs/ui> <version> [--root <path>]',
   );
 }
 
@@ -68,7 +68,9 @@ function replaceRequired(relative, pattern, replacement) {
   const before = read(relative);
   const after = before.replace(pattern, replacement);
   if (after === before && !pattern.test(before)) {
-    throw new Error(`[prepare-release-package] missing expected version surface in ${relative}`);
+    throw new Error(
+      `[prepare-release-package] missing expected version surface in ${relative}`,
+    );
   }
   write(relative, after);
 }

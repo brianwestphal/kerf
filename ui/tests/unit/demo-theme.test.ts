@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { applyDemoTheme, oppositeDemoTheme, preferredDemoTheme } from '../../ux-demo/demo-theme.js';
+import {
+  applyDemoTheme,
+  oppositeDemoTheme,
+  preferredDemoTheme,
+} from '../../ux-demo/demo-theme.js';
 
 describe('UX catalog theme controls', () => {
   it('derives the initial effective theme from the operating-system preference', () => {

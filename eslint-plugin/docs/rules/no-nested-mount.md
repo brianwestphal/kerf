@@ -24,7 +24,12 @@ mount(bodyRoot, () => <Body />);
 
 // Composition via plain functions:
 const Header = () => <h1>{title.value}</h1>;
-const Body = () => <main><Header /><div>{count.value}</div></main>;
+const Body = () => (
+  <main>
+    <Header />
+    <div>{count.value}</div>
+  </main>
+);
 mount(root, () => <Body />);
 ```
 

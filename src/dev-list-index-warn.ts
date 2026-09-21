@@ -51,13 +51,13 @@ export function maybeWarnStaleIndex(id: string): void {
   if (warnedIds.has(id)) return;
   warnedIds.add(id);
   console.warn(
-    `kerf: each() list '${id}' reused a memoized row at a new index this render, but its render function `
-    + 'takes an `index` argument. Rows are memoized by object identity, not by position, so a reorder or an '
-    + 'insert/remove ahead of a surviving row serves that row\'s cached HTML — computed at its OLD index. A '
-    + 'numbered list, zebra striping, or an "N of M" label will silently show the wrong value. If the row '
-    + 'output depends on the index, fold it into the memo key: each(items, render, { cacheKey: (_, i) => i }) '
-    + '(combine with your own key if you have one). If the index is not used in the output, ignore this. '
-    + 'Set KERF_DEV_WARN_STALE_INDEX=0 (or unset it) to silence this warning.',
+    `kerf: each() list '${id}' reused a memoized row at a new index this render, but its render function ` +
+      'takes an `index` argument. Rows are memoized by object identity, not by position, so a reorder or an ' +
+      "insert/remove ahead of a surviving row serves that row's cached HTML — computed at its OLD index. A " +
+      'numbered list, zebra striping, or an "N of M" label will silently show the wrong value. If the row ' +
+      'output depends on the index, fold it into the memo key: each(items, render, { cacheKey: (_, i) => i }) ' +
+      '(combine with your own key if you have one). If the index is not used in the output, ignore this. ' +
+      'Set KERF_DEV_WARN_STALE_INDEX=0 (or unset it) to silence this warning.',
   );
 }
 

@@ -24,10 +24,10 @@
  * rebuild. Those cases are correct-but-lossy and pinned in
  * `list-identity-shift.test.tsx`.
  */
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { batch,each,mount,signal } from '../../src/index.js';
+import { batch, each, mount, signal } from '../../src/index.js';
 
 let root: HTMLElement;
 
@@ -36,34 +36,59 @@ beforeEach(() => {
   document.body.appendChild(root);
 });
 
-afterEach(() => { document.body.innerHTML = ''; });
+afterEach(() => {
+  document.body.innerHTML = '';
+});
 
-interface Row { id: string; t: string }
+interface Row {
+  id: string;
+  t: string;
+}
 
 /** The canonical shape: a conditional list ahead of a second list. */
 function twoLists() {
   const cond = signal(true);
-  const a = arraySignal<Row>([{ id: 'a1', t: 'A1' }, { id: 'a2', t: 'A2' }]);
-  const b = arraySignal<Row>([{ id: 'b1', t: 'B1' }, { id: 'b2', t: 'B2' }]);
+  const a = arraySignal<Row>([
+    { id: 'a1', t: 'A1' },
+    { id: 'a2', t: 'A2' },
+  ]);
+  const b = arraySignal<Row>([
+    { id: 'b1', t: 'B1' },
+    { id: 'b2', t: 'B2' },
+  ]);
   const dispose = mount(root, () => (
     <div>
-      {cond.value ? <ul class="a">{each(a, (r) => <li data-key={r.id}>{r.t}</li>)}</ul> : ''}
-      <ul class="b">{each(b, (r) => <li data-key={r.id}>{r.t}</li>)}</ul>
+      {cond.value ? (
+        <ul class="a">
+          {each(a, (r) => (
+            <li data-key={r.id}>{r.t}</li>
+          ))}
+        </ul>
+      ) : (
+        ''
+      )}
+      <ul class="b">
+        {each(b, (r) => (
+          <li data-key={r.id}>{r.t}</li>
+        ))}
+      </ul>
     </div>
   ));
   return { cond, a, b, dispose };
 }
 
 const labels = (sel: string): string[] =>
-  Array.from(root.querySelectorAll(`${sel} li`)).map((l) => l.textContent ?? '');
+  Array.from(root.querySelectorAll(`${sel} li`)).map(
+    (l) => l.textContent ?? '',
+  );
 
 /** The DOM a list renders must always equal what its own signal holds. */
 const expectMatches = (sel: string, sig: { value: readonly Row[] }): void => {
   expect(labels(sel)).toEqual(sig.value.map((r) => r.t));
 };
 
-describe('KF-388: a patch queue never reaches another list\'s binding', () => {
-  it('batched hide + insert renders the pushed list\'s own rows', () => {
+describe("KF-388: a patch queue never reaches another list's binding", () => {
+  it("batched hide + insert renders the pushed list's own rows", () => {
     const { cond, b, dispose } = twoLists();
     batch(() => {
       cond.value = false;
@@ -74,7 +99,7 @@ describe('KF-388: a patch queue never reaches another list\'s binding', () => {
     dispose();
   });
 
-  it('batched hide + update renders the updated list\'s own rows', () => {
+  it("batched hide + update renders the updated list's own rows", () => {
     const { cond, b, dispose } = twoLists();
     batch(() => {
       cond.value = false;
@@ -85,7 +110,7 @@ describe('KF-388: a patch queue never reaches another list\'s binding', () => {
     dispose();
   });
 
-  it('batched hide + remove renders the shortened list\'s own rows', () => {
+  it("batched hide + remove renders the shortened list's own rows", () => {
     const { cond, b, dispose } = twoLists();
     batch(() => {
       cond.value = false;
@@ -95,7 +120,7 @@ describe('KF-388: a patch queue never reaches another list\'s binding', () => {
     dispose();
   });
 
-  it('batched hide + move renders the reordered list\'s own rows', () => {
+  it("batched hide + move renders the reordered list's own rows", () => {
     const { cond, b, dispose } = twoLists();
     batch(() => {
       cond.value = false;
@@ -162,7 +187,11 @@ describe('KF-388: a patch queue never reaches another list\'s binding', () => {
     const rows = arraySignal<Row>([{ id: 'r1', t: 'R1' }]);
     const dispose = mount(root, () => (
       <div>
-        <ul class="list">{each(rows, (r) => <li data-key={r.id}>{r.t}</li>)}</ul>
+        <ul class="list">
+          {each(rows, (r) => (
+            <li data-key={r.id}>{r.t}</li>
+          ))}
+        </ul>
         {show.value ? <p class="after">after</p> : ''}
       </div>
     ));

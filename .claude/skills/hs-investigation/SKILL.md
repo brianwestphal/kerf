@@ -3,11 +3,13 @@ name: hs-investigation
 description: Create a new investigation ticket in Hot Sheet
 allowed-tools: Bash
 ---
+
 <!-- hotsheet-skill-version: 30 -->
 
 Create a new Hot Sheet **investigation** ticket. Items requiring research or analysis.
 
 **Parsing the input:**
+
 - If the input starts with "next", "up next", or "do next" (case-insensitive), set `up_next` to `true` and use the remaining text as the title
 - Otherwise, use the entire input as the title
 

@@ -89,11 +89,12 @@ describe('fine-grained bound attributes sync form properties', () => {
   it('bound checked={sig} carries the property through toggles', () => {
     const on = signal(true);
     const dispose = mount(root(), () =>
-      jsx('div', { children: jsx('input', { type: 'checkbox', checked: on }) }));
+      jsx('div', { children: jsx('input', { type: 'checkbox', checked: on }) }),
+    );
     const box = root().querySelector('input') as HTMLInputElement;
     box.checked = false; // diverge (simulated user uncheck)
     on.value = false;
-    on.value = true;     // attr re-added → property must follow
+    on.value = true; // attr re-added → property must follow
     expect(box.hasAttribute('checked')).toBe(true);
     expect(box.checked).toBe(true);
     dispose();
@@ -102,7 +103,8 @@ describe('fine-grained bound attributes sync form properties', () => {
   it('bound value={sig} updates a diverged non-focused input', () => {
     const v = signal('initial');
     const dispose = mount(root(), () =>
-      jsx('div', { children: jsx('input', { type: 'text', value: v }) }));
+      jsx('div', { children: jsx('input', { type: 'text', value: v }) }),
+    );
     const input = root().querySelector('input') as HTMLInputElement;
     input.value = 'typed'; // diverge
     v.value = 'from-signal';

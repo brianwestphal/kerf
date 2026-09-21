@@ -33,7 +33,9 @@ beforeEach(() => {
   document.body.appendChild(root);
 });
 
-afterEach(() => { document.body.innerHTML = ''; });
+afterEach(() => {
+  document.body.innerHTML = '';
+});
 
 describe('KF-391: parser-restructured row markup', () => {
   it('an each() of <tr> directly inside <table> throws naming both tags and the fix', () => {
@@ -41,7 +43,13 @@ describe('KF-391: parser-restructured row markup', () => {
     let message = '';
     try {
       mount(root, () => (
-        <table>{each(rows, (r) => <tr data-key={r.id}><td>{r.id}</td></tr>)}</table>
+        <table>
+          {each(rows, (r) => (
+            <tr data-key={r.id}>
+              <td>{r.id}</td>
+            </tr>
+          ))}
+        </table>
       ));
     } catch (e) {
       message = (e as Error).message;
@@ -50,24 +58,42 @@ describe('KF-391: parser-restructured row markup', () => {
     // the old failure mode gave the author a misleading data-key warning.
     expect(message).toMatch(/row 0 renders <tr>/);
     expect(message).toMatch(/wrapped the rows in <tbody>/);
-    expect(message).toMatch(/<table><tbody>\{each\(\.\.\.\)\}<\/tbody><\/table>/);
+    expect(message).toMatch(
+      /<table><tbody>\{each\(\.\.\.\)\}<\/tbody><\/table>/,
+    );
   });
 
   it('does not leave a half-built list behind when it throws', () => {
     // The throw happens during first render, so nothing should have been
     // bound or reconciled — no duplicate rows sitting in the DOM.
     const rows = [{ id: 'r1' }, { id: 'r2' }];
-    expect(() => mount(root, () => (
-      <table>{each(rows, (r) => <tr data-key={r.id}><td>{r.id}</td></tr>)}</table>
-    ))).toThrow();
-    expect(root.querySelectorAll('tr[data-key="r2"]').length).toBeLessThanOrEqual(1);
+    expect(() =>
+      mount(root, () => (
+        <table>
+          {each(rows, (r) => (
+            <tr data-key={r.id}>
+              <td>{r.id}</td>
+            </tr>
+          ))}
+        </table>
+      )),
+    ).toThrow();
+    expect(
+      root.querySelectorAll('tr[data-key="r2"]').length,
+    ).toBeLessThanOrEqual(1);
   });
 
   it('the supported shape — each() inside an explicit <tbody> — binds and reconciles cleanly', () => {
     const rows = arraySignal([{ id: 'r1' }, { id: 'r2' }]);
     const dispose = mount(root, () => (
       <table>
-        <tbody>{each(rows, (r) => <tr data-key={r.id}><td>{r.id}</td></tr>)}</tbody>
+        <tbody>
+          {each(rows, (r) => (
+            <tr data-key={r.id}>
+              <td>{r.id}</td>
+            </tr>
+          ))}
+        </tbody>
       </table>
     ));
     expect(root.querySelectorAll('tbody tr').length).toBe(2);
@@ -89,10 +115,20 @@ describe('KF-391: parser-restructured row markup', () => {
       const rows = [{ id: 'r1' }];
       const dispose = mount(root, () => (
         <table>
-          <tbody>{each(rows, (r) => <tr data-key={r.id}><td>{r.id}</td></tr>)}</tbody>
+          <tbody>
+            {each(rows, (r) => (
+              <tr data-key={r.id}>
+                <td>{r.id}</td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       ));
-      expect(warn.mock.calls.some((c) => String(c[0]).includes('no `id` or `data-key`'))).toBe(false);
+      expect(
+        warn.mock.calls.some((c) =>
+          String(c[0]).includes('no `id` or `data-key`'),
+        ),
+      ).toBe(false);
       dispose();
     } finally {
       warn.mockRestore();
@@ -105,7 +141,14 @@ describe('KF-391: parser-restructured row markup', () => {
     // spelling). Same tag in and out → no error.
     const rows = arraySignal([{ id: 'a' }, { id: 'b' }]);
     const dispose = mount(root, () => (
-      <ul>{each(rows, (r) => <li data-key={r.id}><br />{r.id}</li>)}</ul>
+      <ul>
+        {each(rows, (r) => (
+          <li data-key={r.id}>
+            <br />
+            {r.id}
+          </li>
+        ))}
+      </ul>
     ));
     expect(root.querySelectorAll('li').length).toBe(2);
     rows.push({ id: 'c' });

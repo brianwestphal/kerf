@@ -31,7 +31,11 @@ declare module '../../src/jsx-runtime.js' {
 describe('JSX.IntrinsicElements typing (compile-time)', () => {
   it('accepts known attributes on known tags', () => {
     const ok1 = <input type="text" disabled />;
-    const ok2 = <a href="/x" target="_blank">link</a>;
+    const ok2 = (
+      <a href="/x" target="_blank">
+        link
+      </a>
+    );
     const ok3 = <img src="/x.png" alt="x" width={32} />;
     expect(ok1.toString()).toContain('<input');
     expect(ok2.toString()).toContain('href="/x"');
@@ -170,12 +174,18 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     const bad6 = <div contenteditable={true} />;
 
     // The correct forms compile and render the keyword verbatim.
-    expect(String(<div draggable="true" />)).toBe('<div draggable="true"></div>');
-    expect(String(<img src="x.png" alt="x" draggable="false" />))
-      .toBe('<img src="x.png" alt="x" draggable="false">');
-    expect(String(<textarea spellCheck="false" />)).toBe('<textarea spellcheck="false"></textarea>');
-    expect(String(<div contentEditable="plaintext-only" />))
-      .toBe('<div contenteditable="plaintext-only"></div>');
+    expect(String(<div draggable="true" />)).toBe(
+      '<div draggable="true"></div>',
+    );
+    expect(String(<img src="x.png" alt="x" draggable="false" />)).toBe(
+      '<img src="x.png" alt="x" draggable="false">',
+    );
+    expect(String(<textarea spellCheck="false" />)).toBe(
+      '<textarea spellcheck="false"></textarea>',
+    );
+    expect(String(<div contentEditable="plaintext-only" />)).toBe(
+      '<div contenteditable="plaintext-only"></div>',
+    );
 
     // And the wrong forms really do render the wrong markup — this is the
     // failure the type now prevents, pinned so the claim stays checkable.
@@ -190,8 +200,9 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
   it('KF-436: `hidden` stays boolean (a real boolean attribute) and takes `until-found`', () => {
     expect(String(<div hidden />)).toBe('<div hidden></div>');
     expect(String(<div hidden={false} />)).toBe('<div></div>');
-    expect(String(<div hidden="until-found">x</div>))
-      .toBe('<div hidden="until-found">x</div>');
+    expect(String(<div hidden="until-found">x</div>)).toBe(
+      '<div hidden="until-found">x</div>',
+    );
   });
 
   it('KF-436: lowercase `autofocus` rejects the string forms', () => {
@@ -214,9 +225,16 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     expect(bad2.toString()).toBe('<textarea value="hi"></textarea>');
 
     // The forms that actually work.
-    expect(String(<option value="b" defaultSelected>b</option>))
-      .toBe('<option value="b" selected>b</option>');
-    expect(String(<textarea>draft</textarea>)).toBe('<textarea>draft</textarea>');
+    expect(
+      String(
+        <option value="b" defaultSelected>
+          b
+        </option>,
+      ),
+    ).toBe('<option value="b" selected>b</option>');
+    expect(String(<textarea>draft</textarea>)).toBe(
+      '<textarea>draft</textarea>',
+    );
   });
 
   it('KF-436: `<style scoped>` is gone (removed from the standard, never shipped)', () => {
@@ -245,8 +263,12 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     // The correct forms compile and render the keyword verbatim.
     expect(String(<div translate="no" />)).toBe('<div translate="no"></div>');
     expect(String(<p translate="yes" />)).toBe('<p translate="yes"></p>');
-    expect(String(<input autocorrect="off" />)).toBe('<input autocorrect="off">');
-    expect(String(<textarea autocorrect="on" />)).toBe('<textarea autocorrect="on"></textarea>');
+    expect(String(<input autocorrect="off" />)).toBe(
+      '<input autocorrect="off">',
+    );
+    expect(String(<textarea autocorrect="on" />)).toBe(
+      '<textarea autocorrect="on"></textarea>',
+    );
 
     // And the wrong forms really do render the wrong markup — pinned so the
     // claim stays checkable.
@@ -263,7 +285,9 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     // popover. So boolean stays allowed here.
     expect(String(<div popover />)).toBe('<div popover></div>');
     expect(String(<div popover={false} />)).toBe('<div></div>');
-    expect(String(<div popover="manual" />)).toBe('<div popover="manual"></div>');
+    expect(String(<div popover="manual" />)).toBe(
+      '<div popover="manual"></div>',
+    );
     expect(String(<div popover="hint" />)).toBe('<div popover="hint"></div>');
     expect(String(<div popover="auto" />)).toBe('<div popover="auto"></div>');
   });
@@ -272,16 +296,26 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     // `inert` and `itemScope` are genuine boolean attributes.
     expect(String(<div inert />)).toBe('<div inert></div>');
     expect(String(<div inert={false} />)).toBe('<div></div>');
-    expect(String(<script nonce="r4nd0m">{'x()'}</script>)).toContain('nonce="r4nd0m"');
-    expect(String(<span part="label" exportparts="inner: outer" />))
-      .toBe('<span part="label" exportparts="inner: outer"></span>');
-    expect(String(<input enterKeyHint="send" />)).toContain('enterKeyHint="send"');
+    expect(String(<script nonce="r4nd0m">{'x()'}</script>)).toContain(
+      'nonce="r4nd0m"',
+    );
+    expect(String(<span part="label" exportparts="inner: outer" />)).toBe(
+      '<span part="label" exportparts="inner: outer"></span>',
+    );
+    expect(String(<input enterKeyHint="send" />)).toContain(
+      'enterKeyHint="send"',
+    );
 
     // The camelCase spellings reach the real lowercase names through the HTML
     // parser (pinned per-name in jsx-attr-names.test.tsx).
     const host = document.createElement('div');
     host.innerHTML = String(
-      <div itemScope itemType="https://schema.org/Person" itemId="urn:p:1" itemRef="extra">
+      <div
+        itemScope
+        itemType="https://schema.org/Person"
+        itemId="urn:p:1"
+        itemRef="extra"
+      >
         <span itemProp="name">Ada</span>
         <input enterKeyHint="go" />
       </div>,
@@ -292,7 +326,9 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     expect(item.getAttribute('itemid')).toBe('urn:p:1');
     expect(item.getAttribute('itemref')).toBe('extra');
     expect(item.querySelector('span')!.getAttribute('itemprop')).toBe('name');
-    expect(item.querySelector('input')!.getAttribute('enterkeyhint')).toBe('go');
+    expect(item.querySelector('input')!.getAttribute('enterkeyhint')).toBe(
+      'go',
+    );
   });
 
   it('KF-438: per-element additions render their real HTML names', () => {
@@ -300,7 +336,14 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
 
     // <button> popover-invoker + Invoker Commands attributes.
     host.innerHTML = String(
-      <button popoverTarget="menu" popoverTargetAction="show" command="show-modal" commandFor="dlg">open</button>,
+      <button
+        popoverTarget="menu"
+        popoverTargetAction="show"
+        command="show-modal"
+        commandFor="dlg"
+      >
+        open
+      </button>,
     );
     const button = host.firstElementChild!;
     expect(button.getAttribute('popovertarget')).toBe('menu');
@@ -318,7 +361,14 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
 
     // <link disabled / imagesrcset / imagesizes / blocking>.
     host.innerHTML = String(
-      <link rel="preload" as="image" imageSrcSet="a.png 1x, b.png 2x" imageSizes="100vw" blocking="render" disabled />,
+      <link
+        rel="preload"
+        as="image"
+        imageSrcSet="a.png 1x, b.png 2x"
+        imageSizes="100vw"
+        blocking="render"
+        disabled
+      />,
     );
     const link = host.firstElementChild!;
     expect(link.getAttribute('imagesrcset')).toBe('a.png 1x, b.png 2x');
@@ -327,12 +377,19 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     expect(link.hasAttribute('disabled')).toBe(true);
 
     // <script blocking / fetchpriority>.
-    expect(String(<script src="/app.js" blocking="render" fetchPriority="high" />))
-      .toContain('blocking="render" fetchPriority="high"');
+    expect(
+      String(<script src="/app.js" blocking="render" fetchPriority="high" />),
+    ).toContain('blocking="render" fetchPriority="high"');
 
     // <area download / ping / referrerpolicy> — typed on <a>, now on <area> too.
     host.innerHTML = String(
-      <area alt="zone" href="/z" download="zone.png" ping="https://log.example/a" referrerPolicy="no-referrer" />,
+      <area
+        alt="zone"
+        href="/z"
+        download="zone.png"
+        ping="https://log.example/a"
+        referrerPolicy="no-referrer"
+      />,
     );
     const area = host.firstElementChild!;
     expect(area.getAttribute('download')).toBe('zone.png');
@@ -341,10 +398,18 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
 
     // <meta media / property> (property is Open Graph — not in the HTML
     // standard, typed because it is universal; see jsx-types.ts's deviations).
-    expect(String(<meta property="og:title" content="kerf" />))
-      .toBe('<meta property="og:title" content="kerf">');
-    expect(String(<meta name="theme-color" content="#000" media="(prefers-color-scheme: dark)" />))
-      .toContain('media="(prefers-color-scheme: dark)"');
+    expect(String(<meta property="og:title" content="kerf" />)).toBe(
+      '<meta property="og:title" content="kerf">',
+    );
+    expect(
+      String(
+        <meta
+          name="theme-color"
+          content="#000"
+          media="(prefers-color-scheme: dark)"
+        />,
+      ),
+    ).toContain('media="(prefers-color-scheme: dark)"');
   });
 
   it('KF-439: presence-or-value attributes accept BOTH the bare and valued forms', () => {
@@ -353,23 +418,44 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     // All three states are real and distinct, which is exactly what separates
     // this shape from `draggable` — there, `{true}` and `{false}` collapse onto
     // the same `auto` state, so boolean is rejected. Here it isn't.
-    expect(String(<a href="/report.pdf" download>Get it</a>))
-      .toBe('<a href="/report.pdf" download>Get it</a>');
-    expect(String(<a href="/report.pdf" download="q3-summary.pdf">Get it</a>))
-      .toBe('<a href="/report.pdf" download="q3-summary.pdf">Get it</a>');
-    expect(String(<a href="/report.pdf" download={false}>Open it</a>))
-      .toBe('<a href="/report.pdf">Open it</a>');
+    expect(
+      String(
+        <a href="/report.pdf" download>
+          Get it
+        </a>,
+      ),
+    ).toBe('<a href="/report.pdf" download>Get it</a>');
+    expect(
+      String(
+        <a href="/report.pdf" download="q3-summary.pdf">
+          Get it
+        </a>,
+      ),
+    ).toBe('<a href="/report.pdf" download="q3-summary.pdf">Get it</a>');
+    expect(
+      String(
+        <a href="/report.pdf" download={false}>
+          Open it
+        </a>,
+      ),
+    ).toBe('<a href="/report.pdf">Open it</a>');
 
     // Same on <area>, which shares the hyperlink attribute set.
-    expect(String(<area alt="z" href="/z.png" download />))
-      .toBe('<area alt="z" href="/z.png" download>');
-    expect(String(<area alt="z" href="/z.png" download="zone.png" />))
-      .toBe('<area alt="z" href="/z.png" download="zone.png">');
+    expect(String(<area alt="z" href="/z.png" download />)).toBe(
+      '<area alt="z" href="/z.png" download>',
+    );
+    expect(String(<area alt="z" href="/z.png" download="zone.png" />)).toBe(
+      '<area alt="z" href="/z.png" download="zone.png">',
+    );
 
     // `capture` on a file input is the same shape and already worked; pinned
     // here so the two stay described by one rule.
-    expect(String(<input type="file" capture />)).toBe('<input type="file" capture>');
-    expect(String(<input type="file" capture="user" />)).toBe('<input type="file" capture="user">');
+    expect(String(<input type="file" capture />)).toBe(
+      '<input type="file" capture>',
+    );
+    expect(String(<input type="file" capture="user" />)).toBe(
+      '<input type="file" capture="user">',
+    );
   });
 
   it('KF-440: `writingsuggestions` is enumerated — boolean rejected, keywords accepted', () => {
@@ -387,10 +473,12 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     const bad2 = <input writingsuggestions={true} />;
 
     // The correct forms compile and render the keyword verbatim.
-    expect(String(<textarea writingsuggestions="false" />))
-      .toBe('<textarea writingsuggestions="false"></textarea>');
-    expect(String(<input writingsuggestions="true" />))
-      .toBe('<input writingsuggestions="true">');
+    expect(String(<textarea writingsuggestions="false" />)).toBe(
+      '<textarea writingsuggestions="false"></textarea>',
+    );
+    expect(String(<input writingsuggestions="true" />)).toBe(
+      '<input writingsuggestions="true">',
+    );
 
     // And the wrong forms really do render the wrong markup — pinned so the
     // claim stays checkable.
@@ -404,7 +492,12 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     // innerHTML so the real lowercase DOM names are what's asserted.
     const host = document.createElement('div');
     host.innerHTML = String(
-      <input type="button" value="Open" popoverTarget="menu" popoverTargetAction="show" />,
+      <input
+        type="button"
+        value="Open"
+        popoverTarget="menu"
+        popoverTargetAction="show"
+      />,
     );
     const input = host.firstElementChild!;
     expect(input.getAttribute('popovertarget')).toBe('menu');
@@ -414,17 +507,22 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
   it('KF-440: <form rel> and <source width / height> render', () => {
     // `rel` on <form> is the pairing `target="_blank"` warrants
     // (noopener / noreferrer / opener), standard since forms got link types.
-    expect(String(<form action="/go" target="_blank" rel="noopener" />))
-      .toBe('<form action="/go" target="_blank" rel="noopener"></form>');
+    expect(String(<form action="/go" target="_blank" rel="noopener" />)).toBe(
+      '<form action="/go" target="_blank" rel="noopener"></form>',
+    );
 
     // width / height on <source> are valid inside <picture> so layout is
     // stable before the browser picks a candidate.
-    expect(String(
-      <picture>
-        <source srcSet="a.avif" type="image/avif" width={800} height={600} />
-        <img src="a.jpg" alt="a" width={800} height={600} />
-      </picture>,
-    )).toContain('<source srcset="a.avif" type="image/avif" width="800" height="600">');
+    expect(
+      String(
+        <picture>
+          <source srcSet="a.avif" type="image/avif" width={800} height={600} />
+          <img src="a.jpg" alt="a" width={800} height={600} />
+        </picture>,
+      ),
+    ).toContain(
+      '<source srcset="a.avif" type="image/avif" width="800" height="600">',
+    );
   });
 
   it('KF-441: `<button command>` is narrowed to the spec keywords plus custom `--*`', () => {
@@ -432,18 +530,37 @@ describe('JSX.IntrinsicElements typing (compile-time)', () => {
     // verbatim and lowercased by the parser — proven separately in the
     // per-element test above; here the concern is the `command` value.)
     for (const kw of ['show-modal', 'close', 'request-close'] as const) {
-      expect(String(<button command={kw} commandFor="dlg">x</button>))
-        .toBe(`<button command="${kw}" commandFor="dlg">x</button>`);
+      expect(
+        String(
+          <button command={kw} commandFor="dlg">
+            x
+          </button>,
+        ),
+      ).toBe(`<button command="${kw}" commandFor="dlg">x</button>`);
     }
-    for (const kw of ['toggle-popover', 'show-popover', 'hide-popover'] as const) {
-      expect(String(<button command={kw} commandFor="tip">x</button>))
-        .toBe(`<button command="${kw}" commandFor="tip">x</button>`);
+    for (const kw of [
+      'toggle-popover',
+      'show-popover',
+      'hide-popover',
+    ] as const) {
+      expect(
+        String(
+          <button command={kw} commandFor="tip">
+            x
+          </button>,
+        ),
+      ).toBe(`<button command="${kw}" commandFor="tip">x</button>`);
     }
 
     // Custom commands are part of the design — the spec requires the `--`
     // prefix, and the template-literal arm is what accepts them.
-    expect(String(<button command="--archive" commandFor="row-9">x</button>))
-      .toBe('<button command="--archive" commandFor="row-9">x</button>');
+    expect(
+      String(
+        <button command="--archive" commandFor="row-9">
+          x
+        </button>,
+      ),
+    ).toBe('<button command="--archive" commandFor="row-9">x</button>');
 
     // @ts-expect-error — a custom command without the `--` prefix is invalid
     // per the spec, and is the typo this narrowing exists to catch.

@@ -58,4 +58,7 @@ export const demos = {
   'empty-state': EmptyStateDemo,
   'loading-spinner': LoadingSpinnerDemo,
   skeleton: SkeletonDemo,
-} satisfies Record<Exclude<KerfCatalogId, RecipeId>, () => ReturnType<typeof LucideIconDemo>>;
+} satisfies Record<
+  Exclude<KerfCatalogId, RecipeId>,
+  () => ReturnType<typeof LucideIconDemo>
+>;

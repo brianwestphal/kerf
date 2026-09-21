@@ -26,32 +26,48 @@ A list of **10,000 rows** where only a screenful is ever in the DOM. It's built 
 
 ```tsx
 // site/src/examples/complete/virtual-list/main.tsx (excerpt — full source on GitHub)
-import { computed, delegate, mount, signal } from 'kerfjs';
-import { bindList } from 'kerfjs/list';
-import { confirm, toast } from 'kerfjs/overlay';
-import { debouncedSignal } from 'kerfjs/timing';
+import { computed, delegate, mount, signal } from "kerfjs";
+import { bindList } from "kerfjs/list";
+import { confirm, toast } from "kerfjs/overlay";
+import { debouncedSignal } from "kerfjs/timing";
 
-const query = signal('');
-const debouncedQuery = debouncedSignal(query, 200);           // trails the input by 200 ms
+const query = signal("");
+const debouncedQuery = debouncedSignal(query, 200); // trails the input by 200 ms
 const filtered = computed(() =>
-  debouncedQuery.value ? all.value.filter((r) => r.name.includes(debouncedQuery.value)) : all.value,
+  debouncedQuery.value
+    ? all.value.filter((r) => r.name.includes(debouncedQuery.value))
+    : all.value,
 );
 
 // A one-shot mount with a bound text hole — the header count updates without
 // touching the list.
-const countText = computed(() => `${filtered.value.length} of ${all.value.length} rows`);
+const countText = computed(
+  () => `${filtered.value.length} of ${all.value.length} rows`,
+);
 mount(countEl, () => <span>{countText}</span>);
 
 bindList(listEl, filtered, {
   key: (r) => r.id,
-  render: (r) => <div class="vl-row" style="height:36px">{r.name}</div>,
-  virtualize: { rowHeight: 36, overscan: 4 },               // only the visible slice renders
+  render: (r) => (
+    <div class="vl-row" style="height:36px">
+      {r.name}
+    </div>
+  ),
+  virtualize: { rowHeight: 36, overscan: 4 }, // only the visible slice renders
 });
 
-delegate(listEl, 'click', '[data-del]', (_e, el) => {
-  const row = all.value.find((r) => r.id === Number(el.getAttribute('data-del')))!;
-  void confirm(`Delete “${row.name}”?`, { danger: true, okText: 'Delete' }).then((ok) => {
-    if (ok) { all.value = all.value.filter((r) => r !== row); toast(`Deleted ${row.name}`); }
+delegate(listEl, "click", "[data-del]", (_e, el) => {
+  const row = all.value.find(
+    (r) => r.id === Number(el.getAttribute("data-del")),
+  )!;
+  void confirm(`Delete “${row.name}”?`, {
+    danger: true,
+    okText: "Delete",
+  }).then((ok) => {
+    if (ok) {
+      all.value = all.value.filter((r) => r !== row);
+      toast(`Deleted ${row.name}`);
+    }
   });
 });
 ```

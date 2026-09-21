@@ -65,23 +65,47 @@ function specimens(root: HTMLElement): Element[] {
     seen.add(el);
     result.push(el);
   };
-  for (const example of root.querySelectorAll<HTMLElement>('.kui-catalog-example')) {
-    if (example.closest('[data-demo-overlay]') || example.closest('[data-demo-overlay-skip]')) continue;
+  for (const example of root.querySelectorAll<HTMLElement>(
+    '.kui-catalog-example',
+  )) {
+    if (
+      example.closest('[data-demo-overlay]') ||
+      example.closest('[data-demo-overlay-skip]')
+    )
+      continue;
     for (const child of example.children) {
-      if (child.classList.contains('kui-catalog-example__note') || isExampleLabel(child)) continue;
+      if (
+        child.classList.contains('kui-catalog-example__note') ||
+        isExampleLabel(child)
+      )
+        continue;
       push(child);
     }
   }
-  for (const element of root.querySelectorAll<HTMLElement>('[data-component]')) {
-    if (element.closest('[data-demo-overlay]') || element.closest('[data-demo-overlay-skip]') || element.closest('.kui-catalog-example')) continue;
-    const parent = element.parentElement?.closest<HTMLElement>('[data-component]');
+  for (const element of root.querySelectorAll<HTMLElement>(
+    '[data-component]',
+  )) {
+    if (
+      element.closest('[data-demo-overlay]') ||
+      element.closest('[data-demo-overlay-skip]') ||
+      element.closest('.kui-catalog-example')
+    )
+      continue;
+    const parent =
+      element.parentElement?.closest<HTMLElement>('[data-component]');
     if (parent && root.contains(parent)) continue;
     push(element);
   }
   return result;
 }
 
-function box(className: string, left: number, top: number, width: number, height: number): HTMLElement {
+function box(
+  className: string,
+  left: number,
+  top: number,
+  width: number,
+  height: number,
+): HTMLElement {
   const element = document.createElement('div');
   element.className = className;
   element.style.transform = `translate(${left}px, ${top}px)`;
@@ -90,7 +114,10 @@ function box(className: string, left: number, top: number, width: number, height
   return element;
 }
 
-export function createComponentOverlay(canvas: HTMLElement, layer: HTMLElement): ComponentOverlayHandle {
+export function createComponentOverlay(
+  canvas: HTMLElement,
+  layer: HTMLElement,
+): ComponentOverlayHandle {
   let active = false;
 
   const render = (): void => {
@@ -102,7 +129,9 @@ export function createComponentOverlay(canvas: HTMLElement, layer: HTMLElement):
       const style = window.getComputedStyle(element);
       // Exclude the example alignment inset (published as --kui-catalog-example-align
       // and applied as the leading margin) so it is not drawn as intrinsic margin.
-      const alignInset = px(style.getPropertyValue('--kui-catalog-example-align'));
+      const alignInset = px(
+        style.getPropertyValue('--kui-catalog-example-align'),
+      );
       const mt = px(style.marginTop);
       const mr = px(style.marginRight);
       const mb = px(style.marginBottom);
@@ -113,10 +142,26 @@ export function createComponentOverlay(canvas: HTMLElement, layer: HTMLElement):
       if (isTransparent(style.backgroundColor)) {
         layer.append(box('demo-overlay__bound', x, y, rect.width, rect.height));
       }
-      if (mt > 0) layer.append(box('demo-overlay__margin', x - ml, y - mt, rect.width + ml + mr, mt));
-      if (mb > 0) layer.append(box('demo-overlay__margin', x - ml, y + rect.height, rect.width + ml + mr, mb));
-      if (ml > 0) layer.append(box('demo-overlay__margin', x - ml, y, ml, rect.height));
-      if (mr > 0) layer.append(box('demo-overlay__margin', x + rect.width, y, mr, rect.height));
+      if (mt > 0)
+        layer.append(
+          box('demo-overlay__margin', x - ml, y - mt, rect.width + ml + mr, mt),
+        );
+      if (mb > 0)
+        layer.append(
+          box(
+            'demo-overlay__margin',
+            x - ml,
+            y + rect.height,
+            rect.width + ml + mr,
+            mb,
+          ),
+        );
+      if (ml > 0)
+        layer.append(box('demo-overlay__margin', x - ml, y, ml, rect.height));
+      if (mr > 0)
+        layer.append(
+          box('demo-overlay__margin', x + rect.width, y, mr, rect.height),
+        );
     }
   };
 

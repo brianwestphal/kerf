@@ -71,11 +71,14 @@ function stripFirstH1(body) {
 }
 
 function rewriteLinks(body) {
-  return body.replace(/\(([0-9]+-[a-z-]+\.md)(#[^)]*)?\)/g, (_, file, anchor) => {
-    const slug = LINK_REWRITE[file];
-    if (!slug) return `(${file}${anchor ?? ''})`;
-    return `(${slug}${anchor ?? ''})`;
-  });
+  return body.replace(
+    /\(([0-9]+-[a-z-]+\.md)(#[^)]*)?\)/g,
+    (_, file, anchor) => {
+      const slug = LINK_REWRITE[file];
+      if (!slug) return `(${file}${anchor ?? ''})`;
+      return `(${slug}${anchor ?? ''})`;
+    },
+  );
 }
 
 function escapeYaml(s) {
@@ -122,7 +125,10 @@ async function main() {
 
 // Only sync when run as a script. Importing this module (the ticket-marker
 // check imports `MAP`) must not write files as a side effect.
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (
+  process.argv[1] &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
   main().catch((err) => {
     // eslint-disable-next-line no-console
     console.error('[sync-docs] failed:', err);

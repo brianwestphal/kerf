@@ -34,7 +34,7 @@ interface ToolbarProps {
     divider?: boolean;
     className?: string;
 }
-declare function Toolbar({ leading, center, trailing, label, divider, className }: ToolbarProps): SafeHtml;
+declare function Toolbar({ leading, center, trailing, label, divider, className, }: ToolbarProps): SafeHtml;
 
 export { Toolbar, type ToolbarProps };
 ```
@@ -100,7 +100,7 @@ interface ToolbarControlGroupProps {
     /** Corner shape: fully round `pill` (default) or a softer `rounded` rectangle. */
     shape?: 'pill' | 'rounded';
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape }: ToolbarControlGroupProps): SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, }: ToolbarControlGroupProps): SafeHtml;
 
 export { ToolbarControlGroup, type ToolbarControlGroupProps };
 ```
@@ -133,7 +133,7 @@ interface FloatingToolbarProps {
  * top toolbar's own inset); override that token to move it. The app owns the
  * controls and their behavior — wire them with `delegate()` as usual.
  */
-declare function FloatingToolbar({ children, label, position, className }: FloatingToolbarProps): SafeHtml;
+declare function FloatingToolbar({ children, label, position, className, }: FloatingToolbarProps): SafeHtml;
 
 export { FloatingToolbar, type FloatingToolbarPosition, type FloatingToolbarProps };
 ```
@@ -181,7 +181,7 @@ type ListHeaderIndicatorProps = {
     badge?: SafeHtml;
 };
 type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps;
-declare function ListHeader({ label, count, countLabel, badge, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes }: ListHeaderProps): SafeHtml;
+declare function ListHeader({ label, count, countLabel, badge, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, }: ListHeaderProps): SafeHtml;
 
 export { ListHeader, type ListHeaderProps };
 ```
@@ -238,7 +238,7 @@ interface ListActionRowProps {
     rootAttributes?: ListActionRowRootAttributes;
     trailingActionAttributes?: ListActionRowTrailingAttributes;
 }
-declare function ListActionRow({ label, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, className, style, rootAttributes, trailingActionAttributes }: ListActionRowProps): SafeHtml;
+declare function ListActionRow({ label, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, className, style, rootAttributes, trailingActionAttributes, }: ListActionRowProps): SafeHtml;
 
 export { ListActionRow, type ListActionRowProps };
 ```
@@ -276,7 +276,7 @@ interface ListItemProps {
     placeholder?: boolean;
     rootAttributes?: ListItemRootAttributes;
 }
-declare function ListItem({ label, icon, trailing, selected, action, itemId, className, style, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, rootAttributes }: ListItemProps): SafeHtml;
+declare function ListItem({ label, icon, trailing, selected, action, itemId, className, style, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, rootAttributes, }: ListItemProps): SafeHtml;
 
 export { ListItem, type ListItemProps };
 ```
@@ -297,7 +297,7 @@ interface ListInsetControlProps {
  * Use it for controls that carry their own border and padding but no outer margin
  * — the wrapper adds only the alignment margin and layout, not a second inset.
  */
-declare function ListInsetControl({ children, className }: ListInsetControlProps): SafeHtml;
+declare function ListInsetControl({ children, className, }: ListInsetControlProps): SafeHtml;
 
 export { ListInsetControl, type ListInsetControlProps };
 ```
@@ -327,7 +327,7 @@ interface ListInsetTextProps {
  * Pass `horizontalOnly` to keep the horizontal inset but drop the vertical box
  * space for tight text layout.
  */
-declare function ListInsetText({ children, horizontalOnly, className }: ListInsetTextProps): SafeHtml;
+declare function ListInsetText({ children, horizontalOnly, className, }: ListInsetTextProps): SafeHtml;
 
 export { ListInsetText, type ListInsetTextProps };
 ```
@@ -368,7 +368,7 @@ interface PanelHeaderProps {
  * is passed straight into the toolbar's trailing zone; the app supplies whatever
  * trailing controls it needs (typically a `ToolbarControlGroup`).
  */
-declare function PanelHeader({ title, titleId, summary, summaryId, icon, iconClassName, actions, headingLevel, placeholder }: PanelHeaderProps): SafeHtml;
+declare function PanelHeader({ title, titleId, summary, summaryId, icon, iconClassName, actions, headingLevel, placeholder, }: PanelHeaderProps): SafeHtml;
 
 export { PanelHeader, type PanelHeaderProps };
 ```
@@ -386,14 +386,14 @@ interface ValueTableRowProps {
     /** Render the value as an unanimated loading skeleton, keeping the field label. */
     placeholder?: boolean;
 }
-declare function ValueTableRow({ label, value, icon, className, placeholder }: ValueTableRowProps): SafeHtml;
+declare function ValueTableRow({ label, value, icon, className, placeholder, }: ValueTableRowProps): SafeHtml;
 
 interface ValueTableProps {
     label: string;
     className?: string;
     children: SafeHtml | readonly SafeHtml[];
 }
-declare function ValueTable({ label, className, children }: ValueTableProps): SafeHtml;
+declare function ValueTable({ label, className, children, }: ValueTableProps): SafeHtml;
 
 export { ValueTable, type ValueTableProps, ValueTableRow, type ValueTableRowProps };
 ```
@@ -428,7 +428,7 @@ interface AppTabProps {
     placeholder?: boolean;
     rootAttributes?: AppTabRootAttributes;
 }
-declare function AppTab({ id, name, selected, closable, draggable, leading, trailing, closeIcon, selectAction, closeAction, className, placeholder, rootAttributes }: AppTabProps): SafeHtml;
+declare function AppTab({ id, name, selected, closable, draggable, leading, trailing, closeIcon, selectAction, closeAction, className, placeholder, rootAttributes, }: AppTabProps): SafeHtml;
 
 export { AppTab, type AppTabProps };
 ```
@@ -454,7 +454,7 @@ interface TabBarProps {
     activation?: 'automatic' | 'manual';
 }
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
-declare function TabBar({ id, label, children, leading, trailing, className, activation }: TabBarProps): SafeHtml;
+declare function TabBar({ id, label, children, leading, trailing, className, activation, }: TabBarProps): SafeHtml;
 
 export { TabBar, type TabBarProps };
 ```
@@ -532,7 +532,7 @@ interface NavStackProps {
  * cross-fades the chrome across a change. A single-pane layout is a `NavStack`
  * with one entry. See `docs/23-app-layouts.md` §3.1.
  */
-declare function NavStack({ id, label, views, backLabel, hideToolbar, bottomToolbar, className }: NavStackProps): SafeHtml;
+declare function NavStack({ id, label, views, backLabel, hideToolbar, bottomToolbar, className, }: NavStackProps): SafeHtml;
 
 export { NavStack, type NavStackProps, type NavStackView };
 ```
@@ -599,7 +599,7 @@ interface SplitViewProps {
  * resizable wiring with `wireResizableRegions` and the compact back with
  * `wireNavStack`.
  */
-declare function SplitView({ id, label, list, detail, compact, detailActive, listTitle, detailTitle, backLabel, resizable, className }: SplitViewProps): SafeHtml;
+declare function SplitView({ id, label, list, detail, compact, detailActive, listTitle, detailTitle, backLabel, resizable, className, }: SplitViewProps): SafeHtml;
 
 export { SplitView, type SplitViewProps, type SplitViewResizable };
 ```
@@ -637,7 +637,7 @@ interface WorkbenchProps {
  * work area relayouts once, not per frame. The app owns each `collapsed` flag;
  * the collapse is pure CSS (no wire). See `docs/23-app-layouts.md` §3.3.
  */
-declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, className }: WorkbenchProps): SafeHtml;
+declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, className, }: WorkbenchProps): SafeHtml;
 
 export { Workbench, type WorkbenchPanel, type WorkbenchProps };
 ```
@@ -682,7 +682,7 @@ interface CollapsiblePanelToggleProps {
  * put it in the panel's own header (to collapse) and somewhere always-visible
  * (to expand while collapsed).
  */
-declare function CollapsiblePanelToggle({ side, collapsed, action, panelId, label, className }: CollapsiblePanelToggleProps): SafeHtml;
+declare function CollapsiblePanelToggle({ side, collapsed, action, panelId, label, className, }: CollapsiblePanelToggleProps): SafeHtml;
 interface CollapsiblePanelProps {
     /** A stable id for the panel — `wireSidebar` targets it and toggles reference it. */
     id: string;
@@ -708,7 +708,7 @@ interface CollapsiblePanelProps {
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
  * affordance. See `docs/24-collapsible-panel.md`.
  */
-declare function CollapsiblePanel({ id, side, collapsed, size, label, children, className }: CollapsiblePanelProps): SafeHtml;
+declare function CollapsiblePanel({ id, side, collapsed, size, label, children, className, }: CollapsiblePanelProps): SafeHtml;
 
 export { CollapsiblePanel, type CollapsiblePanelProps, type CollapsiblePanelSide, CollapsiblePanelToggle, type CollapsiblePanelToggleProps, collapsiblePanelToggleIcon };
 ```
@@ -791,7 +791,7 @@ interface TabScaffoldProps {
  * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
-declare function TabScaffold({ id, label, tabs, active, className }: TabScaffoldProps): SafeHtml;
+declare function TabScaffold({ id, label, tabs, active, className, }: TabScaffoldProps): SafeHtml;
 
 export { TabScaffold, type TabScaffoldProps, type TabScaffoldTab };
 ```
@@ -835,7 +835,7 @@ interface ResizableRegionProps {
 }
 declare const clampRegionSize: (size: number, min: number, max: number) => number;
 declare const resizeRegionFromPointer: (startSize: number, delta: number, edge: ResizableRegionEdge) => number;
-declare function ResizableRegion({ id, label, size, min, max, axis, edge, collapsed, transitioning, handleIcon, children }: ResizableRegionProps): SafeHtml;
+declare function ResizableRegion({ id, label, size, min, max, axis, edge, collapsed, transitioning, handleIcon, children, }: ResizableRegionProps): SafeHtml;
 
 export { ResizableRegion, type ResizableRegionAxis, type ResizableRegionEdge, type ResizableRegionProps, clampRegionSize, resizeRegionFromPointer };
 ```
@@ -855,7 +855,7 @@ interface WireResizableRegionsOptions {
     onCommit: (change: ResizeCommit) => void;
 }
 /** Wire pointer and separator-keyboard behavior for every ResizableRegion below root. */
-declare function wireResizableRegions(root: HTMLElement, { step, largeStep, onPreview, onCommit }: WireResizableRegionsOptions): () => void;
+declare function wireResizableRegions(root: HTMLElement, { step, largeStep, onPreview, onCommit, }: WireResizableRegionsOptions): () => void;
 
 export { type ResizeCommit, type WireResizableRegionsOptions, wireResizableRegions };
 ```
@@ -1040,7 +1040,7 @@ interface CatalogExampleProps {
  * `--kui-catalog-example-align` custom property so a debug overlay can exclude it
  * from a specimen's measured margin.
  */
-declare function CatalogExample({ label, note, align, className, children }: CatalogExampleProps): SafeHtml;
+declare function CatalogExample({ label, note, align, className, children, }: CatalogExampleProps): SafeHtml;
 interface CatalogExampleStackProps {
     /** Accessible label for the stack region. */
     label?: string;
@@ -1048,7 +1048,7 @@ interface CatalogExampleStackProps {
     children?: SafeHtml | readonly SafeHtml[];
 }
 /** A vertically-stacked group of {@link CatalogExample}s with the catalog's example rhythm. */
-declare function CatalogExampleStack({ label, className, children }: CatalogExampleStackProps): SafeHtml;
+declare function CatalogExampleStack({ label, className, children, }: CatalogExampleStackProps): SafeHtml;
 
 export { Catalog, type CatalogBrand, type CatalogEntry, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, type CatalogProps, type CatalogRelated, type CatalogResource, type CatalogSecondaryGroup, type CatalogSection };
 ```
@@ -1136,7 +1136,7 @@ interface StateBannerProps {
     /** Render the title and detail as unanimated loading skeletons, keeping the icon and tone. */
     placeholder?: boolean;
 }
-declare function StateBanner({ title, detail, icon, action, tone, urgency, className, placeholder }: StateBannerProps): SafeHtml;
+declare function StateBanner({ title, detail, icon, action, tone, urgency, className, placeholder, }: StateBannerProps): SafeHtml;
 
 export { StateBanner, type StateBannerProps, type StateBannerTone };
 ```
@@ -1154,7 +1154,7 @@ interface EmptyStateProps {
     busy?: boolean;
     className?: string;
 }
-declare function EmptyState({ title, detail, icon, action, busy, className }: EmptyStateProps): SafeHtml;
+declare function EmptyState({ title, detail, icon, action, busy, className, }: EmptyStateProps): SafeHtml;
 
 export { EmptyState, type EmptyStateProps };
 ```
@@ -1198,7 +1198,7 @@ interface SkeletonProps {
  * `placeholder` prop. Decorative by default (`aria-hidden`); pass `label` to
  * announce it. Sizes to its slot unless `width`/`height` are given.
  */
-declare function Skeleton({ width, height, radius, lines, label, className }: SkeletonProps): kerfjs.SafeHtml;
+declare function Skeleton({ width, height, radius, lines, label, className, }: SkeletonProps): kerfjs.SafeHtml;
 
 export { Skeleton, type SkeletonProps };
 ```
@@ -1357,7 +1357,7 @@ interface TokenSearchFieldsHandle {
  * expand/collapse/focus. Returns a {@link TokenSearchFieldsHandle} — a disposer that also
  * exposes the managed `expanded` state per field id.
  */
-declare function wireTokenSearchFields(root: HTMLElement, { onSubmit, onEdit, collapsible, keyboard }?: WireTokenSearchFieldsOptions): TokenSearchFieldsHandle;
+declare function wireTokenSearchFields(root: HTMLElement, { onSubmit, onEdit, collapsible, keyboard, }?: WireTokenSearchFieldsOptions): TokenSearchFieldsHandle;
 
 export { type TokenSearchCollapsibleOptions, type TokenSearchEdit, type TokenSearchFieldsHandle, type TokenSearchKeyboardOptions, type TokenSearchSubmit, type TokenSearchTokenRemoval, type WireTokenSearchFieldsOptions, wireTokenSearchFields };
 ```

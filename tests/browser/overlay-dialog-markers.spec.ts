@@ -1,11 +1,15 @@
-import { expect,test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
-  await page.waitForFunction(() => (window as unknown as { kerfReady: boolean }).kerfReady === true);
+  await page.waitForFunction(
+    () => (window as unknown as { kerfReady: boolean }).kerfReady === true,
+  );
 });
 
-test('prompt() and form() reject missing BYO input markers immediately', async ({ page }) => {
+test('prompt() and form() reject missing BYO input markers immediately', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const { form, prompt } = (window as any).kerfOverlay;
     const { jsx } = (window as any).jsxRuntime;
@@ -24,7 +28,10 @@ test('prompt() and form() reject missing BYO input markers immediately', async (
       errors.push((error as Error).message);
     }
 
-    return { errors, overlays: document.querySelectorAll('.kerf-overlay').length };
+    return {
+      errors,
+      overlays: document.querySelectorAll('.kerf-overlay').length,
+    };
   });
 
   expect(result).toEqual({

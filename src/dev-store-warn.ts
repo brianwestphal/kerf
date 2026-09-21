@@ -44,12 +44,12 @@ export interface NarrowSetWarnContext {
   warned: boolean;
 }
 
-const WARNING_PREFIX
-  = 'kerf: defineStore.set() called with keys missing from the current state — ';
-const WARNING_SUFFIX
-  = '. set() REPLACES state; the missing keys will be undefined after this call. '
-  + 'Use `set({ ...get(), ...next })` to merge instead, or update each call site to pass the full state. '
-  + 'Set KERF_DEV_WARN_NARROW_SET=0 (or unset it) to silence this warning.';
+const WARNING_PREFIX =
+  'kerf: defineStore.set() called with keys missing from the current state — ';
+const WARNING_SUFFIX =
+  '. set() REPLACES state; the missing keys will be undefined after this call. ' +
+  'Use `set({ ...get(), ...next })` to merge instead, or update each call site to pass the full state. ' +
+  'Set KERF_DEV_WARN_NARROW_SET=0 (or unset it) to silence this warning.';
 
 export function isOptedIn(): boolean {
   return devFlag('KERF_DEV_WARN_NARROW_SET') === '1';

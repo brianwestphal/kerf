@@ -62,15 +62,26 @@ set -euo pipefail
 
 # --- Colors (stripped on non-tty for log readability) ---
 if [[ -t 1 ]]; then
-  BOLD="\033[1m"; DIM="\033[2m"; GREEN="\033[32m"; YELLOW="\033[33m"
-  RED="\033[31m"; CYAN="\033[36m"; RESET="\033[0m"
+  BOLD="\033[1m"
+  DIM="\033[2m"
+  GREEN="\033[32m"
+  YELLOW="\033[33m"
+  RED="\033[31m"
+  CYAN="\033[36m"
+  RESET="\033[0m"
 else
-  BOLD=""; DIM=""; GREEN=""; YELLOW=""; RED=""; CYAN=""; RESET=""
+  BOLD=""
+  DIM=""
+  GREEN=""
+  YELLOW=""
+  RED=""
+  CYAN=""
+  RESET=""
 fi
-info()    { echo -e "${CYAN}${BOLD}>>>${RESET} $1"; }
+info() { echo -e "${CYAN}${BOLD}>>>${RESET} $1"; }
 success() { echo -e "${GREEN}${BOLD}>>>${RESET} $1"; }
-warn()    { echo -e "${YELLOW}${BOLD}>>>${RESET} $1"; }
-error()   { echo -e "${RED}${BOLD}>>>${RESET} $1" >&2; }
+warn() { echo -e "${YELLOW}${BOLD}>>>${RESET} $1"; }
+error() { echo -e "${RED}${BOLD}>>>${RESET} $1" >&2; }
 
 # --- Preflight ---
 preflight() {
@@ -94,7 +105,7 @@ preflight() {
     exit 1
   fi
 
-  if ! command -v node >/dev/null; then
+  if ! command -v node > /dev/null; then
     error "node not found on PATH."
     exit 1
   fi
@@ -107,7 +118,7 @@ preflight() {
   # Failure is non-fatal (offline / network blip): proceed with local state and
   # let the downstream push surface any conflict.
   info "Fetching tags from origin..."
-  if ! git fetch --tags origin 2>/dev/null; then
+  if ! git fetch --tags origin 2> /dev/null; then
     warn "git fetch --tags failed (offline?) — proceeding with local tag list."
   fi
 
@@ -132,7 +143,7 @@ read_version() {
   current=$(node -p "require('./package.json').version")
 
   local target
-  if git rev-parse "v${current}" >/dev/null 2>&1; then
+  if git rev-parse "v${current}" > /dev/null 2>&1; then
     # Current is already a stable tag — package.json hasn't been bumped yet.
     # Pick next-minor.
     local major minor patch
@@ -154,7 +165,7 @@ read_version() {
 resolve_gitgist() {
   if [[ -x "node_modules/.bin/gitgist" ]]; then
     echo "node_modules/.bin/gitgist"
-  elif command -v gitgist >/dev/null; then
+  elif command -v gitgist > /dev/null; then
     echo "gitgist"
   fi
 }
@@ -182,7 +193,7 @@ draft_release_notes() {
   # Beta notes anchor at the most recent tag (beta or stable) — they're
   # incremental and shouldn't repeat bullets from an earlier beta.
   local last_tag range
-  last_tag=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+  last_tag=$(git describe --tags --abbrev=0 2> /dev/null || echo "")
   range="${last_tag:+${last_tag}..HEAD}"
   local pointer="- See \`git log ${range:-HEAD}\` for details."
 
@@ -199,15 +210,15 @@ draft_release_notes() {
   # guard against its "_No commits…_" sentinel becoming the tag body.
   local errfile generated
   errfile=$(mktemp "${TMPDIR:-/tmp}/gitgist-beta-auto.XXXXXX")
-  generated=$("$gitgist" ${range:+"$range"} 2>"$errfile" || true)
+  generated=$("$gitgist" ${range:+"$range"} 2> "$errfile" || true)
   [[ "$generated" == _No\ * ]] && generated=""
 
   # Fall back to gitgist's deterministic (no-AI) grouping if the AI draft failed
   # or no provider was available — better than a bare log pointer.
   if [[ -z "$generated" ]]; then
     warn "gitgist AI draft empty/failed — trying deterministic (--no-ai) grouping."
-    [[ -s "$errfile" ]] && warn "  $(tail -1 "$errfile" 2>/dev/null)"
-    generated=$("$gitgist" ${range:+"$range"} --no-ai 2>/dev/null || true)
+    [[ -s "$errfile" ]] && warn "  $(tail -1 "$errfile" 2> /dev/null)"
+    generated=$("$gitgist" ${range:+"$range"} --no-ai 2> /dev/null || true)
     [[ "$generated" == _No\ * ]] && generated=""
   fi
   rm -f "$errfile"
@@ -227,7 +238,10 @@ run_local_checks() {
   fi
 
   info "Running the full green-gate (npm run check)..."
-  npm run check || { error "'npm run check' failed. Fix the failures above, or re-run with --skip-checks if you've validated the tree some other way (CI re-runs on push regardless)."; exit 2; }
+  npm run check || {
+    error "'npm run check' failed. Fix the failures above, or re-run with --skip-checks if you've validated the tree some other way (CI re-runs on push regardless)."
+    exit 2
+  }
   echo ""
   success "All local checks passed"
 }
@@ -235,7 +249,7 @@ run_local_checks() {
 tag_and_push() {
   # Same auto-increment logic as release.sh::step_beta_tag_and_push.
   local n=1
-  while git rev-parse "v${VERSION}-beta.${n}" >/dev/null 2>&1; do
+  while git rev-parse "v${VERSION}-beta.${n}" > /dev/null 2>&1; do
     n=$((n + 1))
   done
   BETA_TAG="v${VERSION}-beta.${n}"
@@ -253,7 +267,10 @@ tag_and_push() {
   # as a comment — silently deleting the `##`/`###` markdown headings gitgist
   # emits. The GitHub Release body is built from the tag message, so a stripped
   # heading is a lost section label in the published notes.
-  echo -e "$NOTES" | git tag -a "$BETA_TAG" --cleanup=verbatim -F - || { error "git tag -a failed."; exit 3; }
+  echo -e "$NOTES" | git tag -a "$BETA_TAG" --cleanup=verbatim -F - || {
+    error "git tag -a failed."
+    exit 3
+  }
 
   info "Pushing tag to origin..."
   git push origin "$BETA_TAG" || {
@@ -301,7 +318,7 @@ while [[ $# -gt 0 ]]; do
       OVERRIDE_VERSION="${1#--version=}"
       shift
       ;;
-    --skip-checks|--skip-tests)
+    --skip-checks | --skip-tests)
       SKIP_CHECKS="true"
       shift
       ;;
@@ -337,8 +354,8 @@ while [[ $# -gt 0 ]]; do
       NOTES_SOURCE_LABEL="--notes-stdin"
       shift
       ;;
-    -h|--help)
-      cat <<EOF
+    -h | --help)
+      cat << EOF
 Usage: bash scripts/release-beta-auto.sh [--version X.Y.Z] [--skip-checks] [--dry-run] [--notes <file> | --notes-stdin]
 
 Non-interactive beta release for kerf. Matches \`npm run release:beta\` without

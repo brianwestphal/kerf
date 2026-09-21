@@ -3,15 +3,15 @@
 > **Status: shipped.** `each(items, render, { key })` gives a list a stable
 > identity, and an always-on dev warning names it as the fix when an identity
 > shift is detected. §16.4/§16.5 record why the alternatives were rejected —
-> the constraints in §16.3 are what make an *automatic* scheme unreachable
+> the constraints in §16.3 are what make an _automatic_ scheme unreachable
 > without a reconciler restructure, so they remain the reason this is opt-in.
 
 ## 16.1 The concept that isn't named
 
 > **Two different "identities" — don't conflate them.** This document is about a
-> *list's* identity: which `each()` call this is, so kerf can find the same
+> _list's_ identity: which `each()` call this is, so kerf can find the same
 > list's cache and DOM binding next render (call-order based, the subject
-> below). That is **not** the same as a *row's* identity, which is the item
+> below). That is **not** the same as a _row's_ identity, which is the item
 > **object's** reference and is what the per-item HTML memo is keyed on
 > (`data-key` is neither — it is only the reconciler's DOM-match hint). Row
 > memoization, and the traps of accidentally changing or failing to change an
@@ -25,12 +25,12 @@ Today that identity is implicit: **"the n-th `each()` call this render."**
 `each()` increments a counter on the render context and stringifies it
 (`each.ts`), and four persistent structures are keyed on the result:
 
-| Structure | Owner | Purpose |
-| --- | --- | --- |
-| `renderCtx.caches` | `each()` | per-item HTML memo |
-| `renderCtx.bindingCounts` | `mount()` | drift detection |
+| Structure                  | Owner     | Purpose                  |
+| -------------------------- | --------- | ------------------------ |
+| `renderCtx.caches`         | `each()`  | per-item HTML memo       |
+| `renderCtx.bindingCounts`  | `mount()` | drift detection          |
 | `renderCtx.bindingSources` | `mount()` | the source guard (§16.2) |
-| `bindings` | `mount()` | the live DOM binding |
+| `bindings`                 | `mount()` | the live DOM binding     |
 
 All four silently assume the counter is stable. It isn't: **any render that
 changes how many `each()` calls run before a given list reassigns that list's
@@ -45,25 +45,25 @@ that the code re-derived at each use instead of naming once:
 - a list's **identity** — this document.
 
 The pattern is worth stating plainly, because it predicts where the next one
-will be: *a concept that several call sites each reconstruct from raw
-materials will eventually be reconstructed differently by one of them.*
+will be: _a concept that several call sites each reconstruct from raw
+materials will eventually be reconstructed differently by one of them._
 
 ## 16.2 The two halves of the problem
 
 **Fixed — the corruption.** `each()` records each id's data source and refuses
-to emit an `arraySignal` patch queue when the id now holds a *different*
+to emit an `arraySignal` patch queue when the id now holds a _different_
 source, falling back to a snapshot rebuild. Before that, a batched
 "hide one list + push to another" applied the pushed list's patch to the other
 list's live rows: the second list rendered the first list's data. The DOM now
 always matches the list's own signal.
 
 **Also fixed — the rebuild had to actually be a rebuild.** For a time the shift
-did worse than cost a rebuild: it produced *wrong output*. Two structures keyed
+did worse than cost a rebuild: it produced _wrong output_. Two structures keyed
 on the call-order id were read as the arriving list's own — the per-item HTML
 memo, which two lists over one source hit identically (same refs, same
 `cacheKey`), so the surviving list emitted the departed list's row markup; and
-the live list binding, which was reused whenever *a* marker bearing that id was
-still in the tree rather than the same marker *node*, so rows landed inside the
+the live list binding, which was reused whenever _a_ marker bearing that id was
+still in the tree rather than the same marker _node_, so rows landed inside the
 previous occupant's container. Neither is visible to the source guard, because a
 shared source is identical by construction.
 
@@ -85,7 +85,7 @@ affected list rebuild from scratch:
 
 Two shapes trigger it. A **conditional list before another list** (toggling it
 in either direction shifts the later list's id), and a **nested `each()`
-inside a row render** (it increments the shared counter only on cache-*miss*
+inside a row render** (it increments the shared counter only on cache-_miss_
 renders, so the count varies with cache state).
 
 The source guard also had one hole of its own: two `each()` calls over the
@@ -94,7 +94,7 @@ guard undetected.
 
 A key removes all of it — the list no longer depends on call order at all, and
 two lists over one signal are trivially distinguishable. What remains is that
-lists *without* a key still behave as described above, which is why the
+lists _without_ a key still behave as described above, which is why the
 diagnostic (§16.4 C) is part of the design rather than a nicety.
 
 ## 16.3 Constraints (verified, not assumed)
@@ -104,7 +104,7 @@ Any scheme has to survive all five of these.
 1. **Two `each()` calls may share one data source, and that works today.**
    Rendering the same `arraySignal` in two places renders and updates both
    lists correctly. So "key on the data source" alone is not merely
-   insufficient — it would *collide* and break a currently-working case.
+   insufficient — it would _collide_ and break a currently-working case.
 2. **Plain-array lists have no stable data identity.** A constant array
    reference is stable across renders, but the common shape — an array derived
    inside the render (`src.value.filter(...)`) — is a fresh reference every
@@ -116,7 +116,7 @@ Any scheme has to survive all five of these.
    `<!--kf-list:N-->` into the string it returns, so the id must exist before
    the segment tree is assembled — a structural path computed from the
    assembled tree is not available at the moment it is currently needed.
-5. **The id is needed early *because* of the granular fast path.** `each()`
+5. **The id is needed early _because_ of the granular fast path.** `each()`
    consults the prior state under that id to decide whether to emit patches or
    a full snapshot. Deferring the decision to tree-assembly time would mean
    always producing the full snapshot — surrendering the O(patches) property
@@ -176,7 +176,7 @@ fix when a shift is detected.
 The reasoning is that a fully automatic scheme is not reachable without the
 restructure that constraints 4 and 5 describe, and that restructure puts cost
 on the reconciler's hottest path to fix a shape that is uncommon in real
-markup. An explicit key that is *airtight where used* and a diagnostic that
+markup. An explicit key that is _airtight where used_ and a diagnostic that
 tells authors exactly when to use it matches how the rest of kerf handles this
 class of trade-off — `data-key` is the same bargain for row identity, and the
 missing-row-key warning is the same discovery mechanism.
@@ -190,7 +190,7 @@ argument still supported, so no existing call changes.
 
 Two properties fell out of the implementation that are worth stating:
 
-- **A keyed list does not consume a call-order slot.** Keying the *conditional*
+- **A keyed list does not consume a call-order slot.** Keying the _conditional_
   list therefore stabilizes its unkeyed siblings as well, so a whole tree is
   usually fixed by keying the one list that comes and goes.
 - **The source guard stays a routing decision, not an assertion.** The original

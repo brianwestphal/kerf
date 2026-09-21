@@ -4,9 +4,9 @@
  * keyed list reorders, and the data-morph-skip escape hatch.
  */
 
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { jsx,raw } from '../../src/jsx-runtime.js';
+import { jsx, raw } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
 
@@ -47,16 +47,20 @@ describe('mount() — focus and selection preservation', () => {
     // behavior is tested elsewhere; this pins the listener-survival
     // guarantee that motivates the entire pattern (xterm/CodeMirror/charts).
     const tick = signal(0);
-    mount(root, () => jsx('div', {
-      children: jsx('div', {
-        'data-morph-skip': true,
-        id: 'host',
-        children: jsx('button', { id: 'btn', children: String(tick.value) }),
+    mount(root, () =>
+      jsx('div', {
+        children: jsx('div', {
+          'data-morph-skip': true,
+          id: 'host',
+          children: jsx('button', { id: 'btn', children: String(tick.value) }),
+        }),
       }),
-    }));
+    );
     const btn = root.querySelector<HTMLButtonElement>('#btn')!;
     let clicks = 0;
-    btn.addEventListener('click', () => { clicks += 1; });
+    btn.addEventListener('click', () => {
+      clicks += 1;
+    });
     tick.value = 1;
     tick.value = 2;
     btn.click();
@@ -71,6 +75,4 @@ describe('mount() — focus and selection preservation', () => {
   // The single-source path — partial-update / select-row / swap-rows
   // performance properties depend entirely on these working.
   // ============================================================
-
-
 });

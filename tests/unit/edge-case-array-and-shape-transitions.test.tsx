@@ -23,32 +23,48 @@
  *   - data-morph-skip wrapping a list parent.
  *   - Stress: 1000-row mutate-and-restore round-trip.
  */
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import {
-batch,
-computed,
-each,
-mount,
-signal
-} from '../../src/index.js';
+import { batch, computed, each, mount, signal } from '../../src/index.js';
 
 describe('Adversarial edge cases', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   // ─── Mount lifecycle ────────────────────────────────────────────────
 
   describe('arraySignal corner cases', () => {
     it('arraySignal sharing across mounts: each mount sees its own first-render snapshot', () => {
-      const rows = arraySignal([{ id: 1, v: 'a' }, { id: 2, v: 'b' }]);
-      const a = document.createElement('div'); document.body.appendChild(a);
-      const b = document.createElement('div'); document.body.appendChild(b);
+      const rows = arraySignal([
+        { id: 1, v: 'a' },
+        { id: 2, v: 'b' },
+      ]);
+      const a = document.createElement('div');
+      document.body.appendChild(a);
+      const b = document.createElement('div');
+      document.body.appendChild(b);
 
-      const dispA = mount(a, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>A:{r.v}</li>)}</ul>);
-      const dispB = mount(b, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>B:{r.v}</li>)}</ul>);
+      const dispA = mount(a, () => (
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>A:{r.v}</li>
+          ))}
+        </ul>
+      ));
+      const dispB = mount(b, () => (
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>B:{r.v}</li>
+          ))}
+        </ul>
+      ));
 
       expect(a.querySelectorAll('li').length).toBe(2);
       expect(b.querySelectorAll('li').length).toBe(2);
@@ -65,9 +81,18 @@ describe('Adversarial edge cases', () => {
 
     it('replace then update in same batch: snapshot path correctly applies both', () => {
       const rows = arraySignal([{ id: 1, v: 'a' }]);
-      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>);
+      mount(root, () => (
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>{r.v}</li>
+          ))}
+        </ul>
+      ));
       batch(() => {
-        rows.replace([{ id: 10, v: 'X' }, { id: 20, v: 'Y' }]);
+        rows.replace([
+          { id: 10, v: 'X' },
+          { id: 20, v: 'Y' },
+        ]);
         rows.update(0, (r) => ({ ...r, v: 'X!' }));
       });
       const lis = root.querySelectorAll('li');
@@ -82,15 +107,19 @@ describe('Adversarial edge cases', () => {
       type R = { id: number; v: string; bad?: boolean };
       const rows = arraySignal<R>([{ id: 1, v: 'a' }]);
       mount(root, () => (
-        <ul>{each(rows, (r) => {
-          if (r.bad) throw new Error('boom');
-          return <li data-key={String(r.id)}>{r.v}</li>;
-        })}</ul>
+        <ul>
+          {each(rows, (r) => {
+            if (r.bad) throw new Error('boom');
+            return <li data-key={String(r.id)}>{r.v}</li>;
+          })}
+        </ul>
       ));
       let caught: unknown = null;
       try {
         rows.insert(1, { id: 2, v: 'b', bad: true });
-      } catch (e) { caught = e; }
+      } catch (e) {
+        caught = e;
+      }
       expect(caught).toBeInstanceOf(Error);
       // Recover by replacing the bad row.
       rows.update(1, () => ({ id: 2, v: 'b' }));
@@ -99,20 +128,34 @@ describe('Adversarial edge cases', () => {
     });
 
     it('move with from === to is a no-op (no re-render)', () => {
-      const rows = arraySignal([{ id: 1, v: 'a' }, { id: 2, v: 'b' }]);
+      const rows = arraySignal([
+        { id: 1, v: 'a' },
+        { id: 2, v: 'b' },
+      ]);
       let renders = 0;
       mount(root, () => {
         renders++;
-        return <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>;
+        return (
+          <ul>
+            {each(rows, (r) => (
+              <li data-key={String(r.id)}>{r.v}</li>
+            ))}
+          </ul>
+        );
       });
       const initialRenders = renders;
       rows.move(0, 0);
-      expect(renders).toBe(initialRenders);  // no patch, no re-render
+      expect(renders).toBe(initialRenders); // no patch, no re-render
     });
 
     it('computed reading both length and items reacts to both axes', () => {
-      const rows = arraySignal([{ id: 1, v: 'a' }, { id: 2, v: 'b' }]);
-      const summary = computed(() => `${rows.value.length}:${rows.value.map((r) => r.v).join(',')}`);
+      const rows = arraySignal([
+        { id: 1, v: 'a' },
+        { id: 2, v: 'b' },
+      ]);
+      const summary = computed(
+        () => `${rows.value.length}:${rows.value.map((r) => r.v).join(',')}`,
+      );
       expect(summary.value).toBe('2:a,b');
       rows.push({ id: 3, v: 'c' });
       expect(summary.value).toBe('3:a,b,c');
@@ -128,15 +171,26 @@ describe('Adversarial edge cases', () => {
       rows.push({ id: 1, v: 'a' });
       rows.push({ id: 2, v: 'b' });
       rows.update(0, (r) => ({ ...r, v: 'A' }));
-      expect(rows.value).toEqual([{ id: 1, v: 'A' }, { id: 2, v: 'b' }]);
+      expect(rows.value).toEqual([
+        { id: 1, v: 'A' },
+        { id: 2, v: 'b' },
+      ]);
       // The patch queue should also have accumulated (verified via _consumePatches).
-      const patches = (rows as unknown as { _consumePatches: () => unknown[] })._consumePatches();
-      expect(patches.length).toBe(3);  // 2 inserts + 1 update
+      const patches = (
+        rows as unknown as { _consumePatches: () => unknown[] }
+      )._consumePatches();
+      expect(patches.length).toBe(3); // 2 inserts + 1 update
     });
 
     it('rapid-fire arraySignal mutations across many renders do not corrupt state', () => {
       const rows = arraySignal<{ id: number }>([]);
-      mount(root, () => <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.id}</li>)}</ul>);
+      mount(root, () => (
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={String(r.id)}>{r.id}</li>
+          ))}
+        </ul>
+      ));
       // 200 pushes
       for (let i = 0; i < 200; i++) rows.push({ id: i });
       expect(root.querySelectorAll('li').length).toBe(200);
@@ -160,37 +214,71 @@ describe('Adversarial edge cases', () => {
       // re-orders each() calls, the counter assigns them differently. This test
       // pins current behavior and surfaces any regression.
       const phase = signal<'AB' | 'BA'>('AB');
-      const itemsA = [{ id: 'a1', label: 'A1' }, { id: 'a2', label: 'A2' }];
-      const itemsB = [{ id: 'b1', label: 'B1' }, { id: 'b2', label: 'B2' }];
+      const itemsA = [
+        { id: 'a1', label: 'A1' },
+        { id: 'a2', label: 'A2' },
+      ];
+      const itemsB = [
+        { id: 'b1', label: 'B1' },
+        { id: 'b2', label: 'B2' },
+      ];
       mount(root, () => (
         <div>
           {phase.value === 'AB' ? (
             <>
-              <ul className="X">{each(itemsA, (it) => <li data-key={it.id}>{it.label}</li>)}</ul>
-              <ul className="Y">{each(itemsB, (it) => <li data-key={it.id}>{it.label}</li>)}</ul>
+              <ul className="X">
+                {each(itemsA, (it) => (
+                  <li data-key={it.id}>{it.label}</li>
+                ))}
+              </ul>
+              <ul className="Y">
+                {each(itemsB, (it) => (
+                  <li data-key={it.id}>{it.label}</li>
+                ))}
+              </ul>
             </>
           ) : (
             <>
-              <ul className="X">{each(itemsB, (it) => <li data-key={it.id}>{it.label}</li>)}</ul>
-              <ul className="Y">{each(itemsA, (it) => <li data-key={it.id}>{it.label}</li>)}</ul>
+              <ul className="X">
+                {each(itemsB, (it) => (
+                  <li data-key={it.id}>{it.label}</li>
+                ))}
+              </ul>
+              <ul className="Y">
+                {each(itemsA, (it) => (
+                  <li data-key={it.id}>{it.label}</li>
+                ))}
+              </ul>
             </>
           )}
         </div>
       ));
-      expect(root.querySelector('.X')!.querySelectorAll('li')[0].textContent).toBe('A1');
-      expect(root.querySelector('.Y')!.querySelectorAll('li')[0].textContent).toBe('B1');
+      expect(
+        root.querySelector('.X')!.querySelectorAll('li')[0].textContent,
+      ).toBe('A1');
+      expect(
+        root.querySelector('.Y')!.querySelectorAll('li')[0].textContent,
+      ).toBe('B1');
       // Flip JSX order. Behavior pinned: the .X list now contains itemsB
       // (because the each() at id=0 is now the B one), and .Y has itemsA.
       phase.value = 'BA';
-      expect(root.querySelector('.X')!.querySelectorAll('li')[0].textContent).toBe('B1');
-      expect(root.querySelector('.Y')!.querySelectorAll('li')[0].textContent).toBe('A1');
+      expect(
+        root.querySelector('.X')!.querySelectorAll('li')[0].textContent,
+      ).toBe('B1');
+      expect(
+        root.querySelector('.Y')!.querySelectorAll('li')[0].textContent,
+      ).toBe('A1');
     });
 
     it('list disappears from segment then reappears — no ghost rows from a stale binding', () => {
       const show = signal(true);
       const items = [{ id: 1, label: 'x' }];
       mount(root, () => (
-        <div>{show.value ? each(items, (it) => <li data-key={String(it.id)}>{it.label}</li>) : null}</div>
+        <div>
+          {show.value
+            ? each(items, (it) => <li data-key={String(it.id)}>{it.label}</li>)
+            : null}
+        </div>
       ));
       expect(root.querySelectorAll('li').length).toBe(1);
       show.value = false;
@@ -206,7 +294,11 @@ describe('Adversarial edge cases', () => {
       const rows = arraySignal([{ id: 1, v: 'a' }]);
       mount(root, () => (
         <div data-morph-skip>
-          <ul>{each(rows, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>
+          <ul>
+            {each(rows, (r) => (
+              <li data-key={String(r.id)}>{r.v}</li>
+            ))}
+          </ul>
         </div>
       ));
       expect(root.querySelector('li')!.textContent).toBe('a');
@@ -222,8 +314,6 @@ describe('Adversarial edge cases', () => {
   });
 
   // ─── Focus survival ────────────────────────────────────────────────
-
-
 });
 
 // Avoid unused import warning if vi is referenced only for setup/teardown semantics.

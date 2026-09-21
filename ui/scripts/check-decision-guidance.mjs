@@ -6,7 +6,10 @@ import ts from 'typescript';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const selectionPath = resolve(root, 'docs/component-selection.md');
-const missingConceptPath = resolve(root, 'docs/examples/command-palette-adapter.tsx');
+const missingConceptPath = resolve(
+  root,
+  'docs/examples/command-palette-adapter.tsx',
+);
 const requiredDocs = [
   selectionPath,
   resolve(root, 'docs/component-contract.md'),
@@ -15,16 +18,43 @@ const requiredDocs = [
   resolve(root, 'llms.txt'),
 ];
 const overlaps = [
-  'wa-button', 'wa-button-group', 'wa-dropdown', 'wa-dropdown-item',
-  'wa-input', 'wa-option', 'wa-select', 'wa-tag',
-  'wa-tab', 'wa-tab-group', 'wa-tab-panel', 'wa-icon', 'wa-split-panel',
-  'wa-spinner', 'wa-progress-bar', 'wa-progress-ring', 'wa-skeleton',
-  'wa-callout', 'wa-toast', 'wa-toast-item', 'wa-popup', 'wa-tooltip',
-  'wa-popover', 'wa-tree', 'wa-tree-item', 'wa-animated-image',
-  'wa-comparison', 'wa-zoomable-frame',
+  'wa-button',
+  'wa-button-group',
+  'wa-dropdown',
+  'wa-dropdown-item',
+  'wa-input',
+  'wa-option',
+  'wa-select',
+  'wa-tag',
+  'wa-tab',
+  'wa-tab-group',
+  'wa-tab-panel',
+  'wa-icon',
+  'wa-split-panel',
+  'wa-spinner',
+  'wa-progress-bar',
+  'wa-progress-ring',
+  'wa-skeleton',
+  'wa-callout',
+  'wa-toast',
+  'wa-toast-item',
+  'wa-popup',
+  'wa-tooltip',
+  'wa-popover',
+  'wa-tree',
+  'wa-tree-item',
+  'wa-animated-image',
+  'wa-comparison',
+  'wa-zoomable-frame',
 ];
 
-const [selection, missingConcept, indexSource, componentCatalogSource, packageSource] = await Promise.all([
+const [
+  selection,
+  missingConcept,
+  indexSource,
+  componentCatalogSource,
+  packageSource,
+] = await Promise.all([
   readFile(selectionPath, 'utf8'),
   readFile(missingConceptPath, 'utf8'),
   readFile(resolve(root, 'src/index.ts'), 'utf8'),
@@ -39,21 +69,35 @@ function fail(message) {
   failures.push(message);
 }
 
-const sourceFile = ts.createSourceFile('index.ts', indexSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+const sourceFile = ts.createSourceFile(
+  'index.ts',
+  indexSource,
+  ts.ScriptTarget.Latest,
+  true,
+  ts.ScriptKind.TS,
+);
 const runtimeExports = [];
 for (const statement of sourceFile.statements) {
-  if (!ts.isExportDeclaration(statement) || !statement.exportClause || !ts.isNamedExports(statement.exportClause)) continue;
+  if (
+    !ts.isExportDeclaration(statement) ||
+    !statement.exportClause ||
+    !ts.isNamedExports(statement.exportClause)
+  )
+    continue;
   for (const element of statement.exportClause.elements) {
     if (!element.isTypeOnly) runtimeExports.push(element.name.text);
   }
 }
 for (const name of runtimeExports) {
-  if (!selection.includes(`\`${name}\``)) fail(`component-selection.md does not cover public runtime export ${name}`);
+  if (!selection.includes(`\`${name}\``))
+    fail(`component-selection.md does not cover public runtime export ${name}`);
 }
 
 for (const id of overlaps) {
-  if (!componentCatalog.entries.some((entry) => entry.id === id)) fail(`decision overlap ${id} is missing from the component catalog`);
-  if (!selection.includes(`\`${id}\``)) fail(`component-selection.md does not decide supported overlap ${id}`);
+  if (!componentCatalog.entries.some((entry) => entry.id === id))
+    fail(`decision overlap ${id} is missing from the component catalog`);
+  if (!selection.includes(`\`${id}\``))
+    fail(`component-selection.md does not decide supported overlap ${id}`);
 }
 
 const requiredPhrases = [
@@ -68,12 +112,16 @@ const requiredPhrases = [
   'does not export a command-palette component',
 ];
 for (const phrase of requiredPhrases) {
-  if (!selection.includes(phrase)) fail(`component-selection.md is missing required decision guidance: ${phrase}`);
+  if (!selection.includes(phrase))
+    fail(
+      `component-selection.md is missing required decision guidance: ${phrase}`,
+    );
 }
 
 const menuEntry = componentCatalog.entries.find((entry) => entry.id === 'list');
 for (const className of ['kui-pane', 'kui-content', 'kui-content-item']) {
-  if (!menuEntry?.publicClasses.includes(className)) fail(`list catalog entry is missing public class ${className}`);
+  if (!menuEntry?.publicClasses.includes(className))
+    fail(`list catalog entry is missing public class ${className}`);
 }
 for (const token of [
   '--kui-layout-content-gap',
@@ -81,25 +129,47 @@ for (const token of [
   '--kui-layout-item-padding',
   '--kui-layout-rounded-radius',
 ]) {
-  if (!menuEntry?.publicTokens.includes(token)) fail(`list catalog entry is missing public token ${token}`);
+  if (!menuEntry?.publicTokens.includes(token))
+    fail(`list catalog entry is missing public token ${token}`);
 }
 const layoutGuidance = `${selection}\n${await readFile(resolve(root, 'ai/skill.md'), 'utf8')}\n${await readFile(resolve(root, 'README.md'), 'utf8')}`;
 for (const phrase of ['24px', '8px', '44px', 'content item']) {
-  if (!layoutGuidance.includes(phrase)) fail(`layout decision guidance is missing the canonical ${phrase} contract`);
+  if (!layoutGuidance.includes(phrase))
+    fail(
+      `layout decision guidance is missing the canonical ${phrase} contract`,
+    );
 }
-for (const phrase of ['publicClasses', 'public-class-to-public-class', 'descendant tag']) {
-  if (!layoutGuidance.includes(phrase)) fail(`CSS decision guidance is missing the ${phrase} boundary`);
+for (const phrase of [
+  'publicClasses',
+  'public-class-to-public-class',
+  'descendant tag',
+]) {
+  if (!layoutGuidance.includes(phrase))
+    fail(`CSS decision guidance is missing the ${phrase} boundary`);
 }
 
 // The UX demo dogfoods the shipped @kerfjs/ui/catalog shell, so its sidebar
 // navigation is rendered by the Catalog component. Verify Catalog itself uses the
 // ListItem multiline prop (primary + secondary groups) rather than CSS overrides.
 const catalogSource = await readFile(resolve(root, 'src/catalog.tsx'), 'utf8');
-const catalogRows = catalogSource.match(/<ListItem action=\{selectAction\}[^>]+multiline \/>/g) ?? [];
-if (catalogRows.length !== 2) fail('catalog navigation must use the ListItem multiline prop instead of descendant CSS overrides');
+const catalogRows =
+  catalogSource.match(
+    /<ListItem\s+action=\{selectAction\}[^>]+multiline\s*\/>/g,
+  ) ?? [];
+if (catalogRows.length !== 2)
+  fail(
+    'catalog navigation must use the ListItem multiline prop instead of descendant CSS overrides',
+  );
 
-const missingConceptSource = ts.createSourceFile('command-palette-adapter.tsx', missingConcept, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
-if (missingConceptSource.parseDiagnostics.length) fail('command-palette adapter example must parse as TSX');
+const missingConceptSource = ts.createSourceFile(
+  'command-palette-adapter.tsx',
+  missingConcept,
+  ts.ScriptTarget.Latest,
+  true,
+  ts.ScriptKind.TSX,
+);
+if (missingConceptSource.parseDiagnostics.length)
+  fail('command-palette adapter example must parse as TSX');
 for (const required of [
   "import '@kerfjs/ui/layout.css'",
   'class="app-command-palette kui-content"',
@@ -109,23 +179,40 @@ for (const required of [
   'not an @kerfjs/ui export',
   'ranking, history, shortcuts, focus policy, command availability, and copy',
 ]) {
-  if (!missingConcept.includes(required)) fail(`command-palette adapter example is missing ${required}`);
+  if (!missingConcept.includes(required))
+    fail(`command-palette adapter example is missing ${required}`);
 }
 const contentItems = missingConcept.match(/\bkui-content-item\b/g) ?? [];
-if (contentItems.length < 4) fail('command-palette adapter example must give each ordinary content child shared item geometry');
-if (/from ['"]@kerfjs\/ui\/command-palette/.test(missingConcept)) fail('command-palette adapter must not invent a package export');
+if (contentItems.length < 4)
+  fail(
+    'command-palette adapter example must give each ordinary content child shared item geometry',
+  );
+if (/from ['"]@kerfjs\/ui\/command-palette/.test(missingConcept))
+  fail('command-palette adapter must not invent a package export');
 
 const importPattern = /`(@kerfjs\/ui(?:\/[a-z0-9./*-]+)?)`/g;
 function packageExports(subpath) {
-  return subpath in packageJson.exports || Object.keys(packageJson.exports).some((pattern) => pattern.endsWith('*') && subpath.startsWith(pattern.slice(0, -1)));
+  return (
+    subpath in packageJson.exports ||
+    Object.keys(packageJson.exports).some(
+      (pattern) =>
+        pattern.endsWith('*') && subpath.startsWith(pattern.slice(0, -1)),
+    )
+  );
 }
 for (const path of requiredDocs) {
   const contents = await readFile(path, 'utf8');
   for (const match of contents.matchAll(importPattern)) {
     const specifier = match[1];
     if (specifier.includes('*')) continue;
-    const subpath = specifier === '@kerfjs/ui' ? '.' : `.${specifier.slice('@kerfjs/ui'.length)}`;
-    if (!packageExports(subpath)) fail(`${relative(root, path)} contains stale package import ${specifier}`);
+    const subpath =
+      specifier === '@kerfjs/ui'
+        ? '.'
+        : `.${specifier.slice('@kerfjs/ui'.length)}`;
+    if (!packageExports(subpath))
+      fail(
+        `${relative(root, path)} contains stale package import ${specifier}`,
+      );
   }
 }
 
@@ -154,8 +241,11 @@ for (const sourcePath of requiredDocs) {
     }
     if (!fragment || !['.md', '.txt'].includes(extname(targetPath))) continue;
     const target = await readFile(targetPath, 'utf8');
-    const headings = [...target.matchAll(/^#{1,6}\s+(.+)$/gm)].map((heading) => githubSlug(heading[1]));
-    if (!headings.includes(fragment)) fail(`${relative(root, sourcePath)} has broken heading link ${href}`);
+    const headings = [...target.matchAll(/^#{1,6}\s+(.+)$/gm)].map((heading) =>
+      githubSlug(heading[1]),
+    );
+    if (!headings.includes(fragment))
+      fail(`${relative(root, sourcePath)} has broken heading link ${href}`);
   }
 }
 
@@ -164,5 +254,7 @@ if (failures.length > 0) {
   for (const failure of failures) console.error(`- ${failure}`);
   process.exitCode = 1;
 } else {
-  console.log(`[check-decision-guidance] OK — ${runtimeExports.length} public values, ${overlaps.length} Web Awesome overlaps, imports, and recipe links are covered.`);
+  console.log(
+    `[check-decision-guidance] OK — ${runtimeExports.length} public values, ${overlaps.length} Web Awesome overlaps, imports, and recipe links are covered.`,
+  );
 }

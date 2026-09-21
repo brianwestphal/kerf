@@ -26,13 +26,17 @@ import { bench, describe } from 'vitest';
 import { _morphElement } from '../../src/morph.js';
 import { parseRowTemplate } from '../../src/utils/row-contract.js';
 
-const KRAUSEST_ROW_TEMPLATE = (id: number, label: string, danger: boolean): string =>
-  `<tr data-key="${id}" class="${danger ? 'danger' : ''}">`
-  + `<td class="col-md-1">${id}</td>`
-  + `<td class="col-md-4"><a class="lbl" data-id="${id}">${label}</a></td>`
-  + `<td class="col-md-1"><a class="remove" data-id="${id}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>`
-  + `<td class="col-md-6"></td>`
-  + `</tr>`;
+const KRAUSEST_ROW_TEMPLATE = (
+  id: number,
+  label: string,
+  danger: boolean,
+): string =>
+  `<tr data-key="${id}" class="${danger ? 'danger' : ''}">` +
+  `<td class="col-md-1">${id}</td>` +
+  `<td class="col-md-4"><a class="lbl" data-id="${id}">${label}</a></td>` +
+  `<td class="col-md-1"><a class="remove" data-id="${id}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>` +
+  `<td class="col-md-6"></td>` +
+  `</tr>`;
 
 /** Build a live row + a parent for it. Parent has no other siblings. */
 function buildLiveRow(html: string): { parent: Element; row: Element } {
@@ -89,9 +93,12 @@ describe('morph-vs-replace: no diff (isEqualNode short-circuit)', () => {
     parent.replaceChild(newRow, row);
   });
 
-  bench('_morphElement (isEqualNode short-circuit makes this near-free)', () => {
-    const { row } = buildLiveRow(html);
-    const newRow = parseRow(html);
-    _morphElement(row, newRow);
-  });
+  bench(
+    '_morphElement (isEqualNode short-circuit makes this near-free)',
+    () => {
+      const { row } = buildLiveRow(html);
+      const newRow = parseRow(html);
+      _morphElement(row, newRow);
+    },
+  );
 });

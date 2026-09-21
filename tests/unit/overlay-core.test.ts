@@ -1,11 +1,22 @@
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { jsx,raw } from '../../src/jsx-runtime.js';
+import { jsx, raw } from '../../src/jsx-runtime.js';
 import { overlay } from '../../src/overlay.js';
 import { signal } from '../../src/reactive.js';
 
-function key(target: EventTarget, k: string, init: KeyboardEventInit = {}): void {
-  target.dispatchEvent(new KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true, ...init }));
+function key(
+  target: EventTarget,
+  k: string,
+  init: KeyboardEventInit = {},
+): void {
+  target.dispatchEvent(
+    new KeyboardEvent('keydown', {
+      key: k,
+      bubbles: true,
+      cancelable: true,
+      ...init,
+    }),
+  );
 }
 
 beforeEach(() => {
@@ -17,7 +28,10 @@ afterEach(() => {
 
 describe('overlay()', () => {
   it('appends a wrapper with the className + aria, mounts content, and removes it all on close', () => {
-    const h = overlay(raw('<button class="go">go</button>'), { className: 'my-overlay', trap: true });
+    const h = overlay(raw('<button class="go">go</button>'), {
+      className: 'my-overlay',
+      trap: true,
+    });
     expect(h.el.parentElement).toBe(document.body);
     expect(h.el.className).toBe('my-overlay');
     expect(h.el.getAttribute('role')).toBe('dialog');
@@ -43,7 +57,9 @@ describe('overlay()', () => {
     expect(h.el.querySelector('.v')?.textContent).toBe('b');
     h.close();
     // After close the mount is disposed — a further write does not throw / re-render.
-    expect(() => { label.value = 'c'; }).not.toThrow();
+    expect(() => {
+      label.value = 'c';
+    }).not.toThrow();
   });
 
   it('close() is idempotent', async () => {
@@ -64,7 +80,9 @@ describe('overlay()', () => {
     });
 
     it('a backdrop click (on the wrapper itself) dismisses, but a click on content does NOT', () => {
-      const h = overlay(raw('<button class="inner">x</button>'), { dismiss: ['backdrop'] });
+      const h = overlay(raw('<button class="inner">x</button>'), {
+        dismiss: ['backdrop'],
+      });
       (h.el.querySelector('.inner') as HTMLElement).click(); // content — no dismiss
       expect(h.el.parentElement).toBe(document.body);
       h.el.click(); // the wrapper/backdrop itself
@@ -74,7 +92,11 @@ describe('overlay()', () => {
     it('outside: a click outside the wrapper dismisses; outsideIgnore exempts an element', () => {
       const trigger = document.createElement('button');
       document.body.appendChild(trigger);
-      const h = overlay(raw('<div class="inner"/>'), { dismiss: ['outside'], trap: false, outsideIgnore: trigger });
+      const h = overlay(raw('<div class="inner"/>'), {
+        dismiss: ['outside'],
+        trap: false,
+        outsideIgnore: trigger,
+      });
 
       trigger.click(); // ignored
       expect(h.el.parentElement).toBe(document.body);
@@ -97,7 +119,11 @@ describe('overlay()', () => {
       const child = document.createElement('button');
       panel.appendChild(child);
       document.body.appendChild(panel);
-      const h = overlay(raw('<div/>'), { dismiss: ['outside'], trap: false, outsideIgnore: [panel] });
+      const h = overlay(raw('<div/>'), {
+        dismiss: ['outside'],
+        trap: false,
+        outsideIgnore: [panel],
+      });
       child.click(); // descendant of an ignored element — not dismissed
       expect(h.el.parentElement).toBe(document.body);
       document.body.click(); // truly outside — dismiss
@@ -116,8 +142,12 @@ describe('overlay()', () => {
     it('concurrent fallback modals dismiss from the top down on Escape', () => {
       const lowerDismiss = vi.fn();
       const upperDismiss = vi.fn();
-      const lower = overlay(raw('<div class="lower"/>'), { onDismiss: lowerDismiss });
-      const upper = overlay(raw('<div class="upper"/>'), { onDismiss: upperDismiss });
+      const lower = overlay(raw('<div class="lower"/>'), {
+        onDismiss: lowerDismiss,
+      });
+      const upper = overlay(raw('<div class="upper"/>'), {
+        onDismiss: upperDismiss,
+      });
 
       key(document, 'Escape');
       expect(upper.el.isConnected).toBe(false);
@@ -131,8 +161,14 @@ describe('overlay()', () => {
     });
 
     it('concurrent fallback non-modal overlays dismiss from the top down on outside clicks', () => {
-      const lower = overlay(raw('<div class="lower"/>'), { dismiss: 'outside', trap: false });
-      const upper = overlay(raw('<div class="upper"/>'), { dismiss: 'outside', trap: false });
+      const lower = overlay(raw('<div class="lower"/>'), {
+        dismiss: 'outside',
+        trap: false,
+      });
+      const upper = overlay(raw('<div class="upper"/>'), {
+        dismiss: 'outside',
+        trap: false,
+      });
 
       document.body.click();
       expect(upper.el.isConnected).toBe(false);
@@ -144,7 +180,9 @@ describe('overlay()', () => {
   });
 
   it('initialFocus: a selector focuses the matched element', () => {
-    const h = overlay(raw('<input class="first"/><input class="second"/>'), { initialFocus: '.second' });
+    const h = overlay(raw('<input class="first"/><input class="second"/>'), {
+      initialFocus: '.second',
+    });
     expect(document.activeElement).toBe(h.el.querySelector('.second'));
   });
 
@@ -160,14 +198,25 @@ describe('overlay()', () => {
   describe('focus trap', () => {
     const tab = (shift = false) =>
       document.dispatchEvent(
-        new KeyboardEvent('keydown', { key: 'Tab', shiftKey: shift, bubbles: true, cancelable: true }),
+        new KeyboardEvent('keydown', {
+          key: 'Tab',
+          shiftKey: shift,
+          bubbles: true,
+          cancelable: true,
+        }),
       );
     const setup = () => {
-      const h = overlay(raw('<button id="a">a</button><button id="b">b</button><button id="c">c</button>'), {
-        trap: true,
-        initialFocus: '#a',
-      });
-      const get = (id: string) => h.el.querySelector<HTMLElement>('#' + id) as HTMLElement;
+      const h = overlay(
+        raw(
+          '<button id="a">a</button><button id="b">b</button><button id="c">c</button>',
+        ),
+        {
+          trap: true,
+          initialFocus: '#a',
+        },
+      );
+      const get = (id: string) =>
+        h.el.querySelector<HTMLElement>('#' + id) as HTMLElement;
       return { h, get };
     };
 
@@ -200,11 +249,14 @@ describe('overlay()', () => {
     });
 
     it('normalizes implicit tab stops while preserving authored tabindex values', () => {
-      const h = overlay(raw(
-        '<button id="implicit">a</button><button id="priority" tabindex="2">priority</button>'
-        + '<input id="field" /><button id="last">last</button>'
-        + '<button id="skip" tabindex="-1">skip</button>',
-      ), { trap: true, initialFocus: '#implicit' });
+      const h = overlay(
+        raw(
+          '<button id="implicit">a</button><button id="priority" tabindex="2">priority</button>' +
+            '<input id="field" /><button id="last">last</button>' +
+            '<button id="skip" tabindex="-1">skip</button>',
+        ),
+        { trap: true, initialFocus: '#implicit' },
+      );
       const get = (id: string) => h.el.querySelector<HTMLElement>('#' + id)!;
 
       tab();

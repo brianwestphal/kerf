@@ -11,7 +11,7 @@
 
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { Fragment,jsx } from '../../src/jsx-runtime.js';
+import { Fragment, jsx } from '../../src/jsx-runtime.js';
 import { toElement } from '../../src/toElement.js';
 
 afterEach(() => {
@@ -103,7 +103,9 @@ describe('toElement() — HTML', () => {
 
 describe('toElement() — SVG', () => {
   it('parses a root-<svg> with proper namespace', () => {
-    const el = toElement('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="3"/></svg>');
+    const el = toElement(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><circle cx="5" cy="5" r="3"/></svg>',
+    );
     expect(el).toBeInstanceOf(Element);
     const svg = el as Element;
     expect(svg.tagName.toLowerCase()).toBe('svg');
@@ -127,7 +129,9 @@ describe('toElement() — SVG', () => {
     const g = el as Element;
     expect(g.tagName.toLowerCase()).toBe('g');
     expect(g.namespaceURI).toBe('http://www.w3.org/2000/svg');
-    expect(g.firstElementChild!.namespaceURI).toBe('http://www.w3.org/2000/svg');
+    expect(g.firstElementChild!.namespaceURI).toBe(
+      'http://www.w3.org/2000/svg',
+    );
   });
 
   it('does NOT route plain HTML through the SVG path', () => {
@@ -139,11 +143,15 @@ describe('toElement() — SVG', () => {
   });
 
   it('throws with input excerpt on a malformed root <svg>', () => {
-    expect(() => toElement('<svg><unclosed</svg>')).toThrow(/SVG parse error.*input:/s);
+    expect(() => toElement('<svg><unclosed</svg>')).toThrow(
+      /SVG parse error.*input:/s,
+    );
   });
 
   it('throws with input excerpt on a malformed SVG fragment', () => {
-    expect(() => toElement('<g><circle cx=</g>')).toThrow(/SVG fragment parse error.*input:/s);
+    expect(() => toElement('<g><circle cx=</g>')).toThrow(
+      /SVG fragment parse error.*input:/s,
+    );
   });
 });
 
@@ -152,7 +160,8 @@ describe('toElement() — fragments with <svg> and siblings (KF-232)', () => {
   // image/svg+xml parser, which rejects multi-root input. After KF-232 these
   // shapes return a DocumentFragment that DOM insertion APIs splat into the
   // parent — text nodes preserved, namespaces correct.
-  const SPINNER = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /></svg>';
+  const SPINNER =
+    '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /></svg>';
   const SPINNER_B = SPINNER.replace('cx="12"', 'cx="6"');
   const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -173,7 +182,9 @@ describe('toElement() — fragments with <svg> and siblings (KF-232)', () => {
   });
 
   it('case: self-closing <svg .../> followed by text — DocumentFragment preserves text', () => {
-    const frag = toElement('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" /> label');
+    const frag = toElement(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10" /> label',
+    );
     expect(frag).toBeInstanceOf(DocumentFragment);
     const parent = document.createElement('div');
     parent.appendChild(frag);
@@ -201,8 +212,12 @@ describe('toElement() — fragments with <svg> and siblings (KF-232)', () => {
     expect(parent.children.length).toBe(2);
     expect(parent.children[0].namespaceURI).toBe(SVG_NS);
     expect(parent.children[1].namespaceURI).toBe(SVG_NS);
-    expect(parent.children[0].querySelector('circle')!.getAttribute('cx')).toBe('12');
-    expect(parent.children[1].querySelector('circle')!.getAttribute('cx')).toBe('6');
+    expect(parent.children[0].querySelector('circle')!.getAttribute('cx')).toBe(
+      '12',
+    );
+    expect(parent.children[1].querySelector('circle')!.getAttribute('cx')).toBe(
+      '6',
+    );
   });
 
   it('case: <svg/> text <svg/> — DocumentFragment with svg+text+svg', () => {
@@ -254,7 +269,9 @@ describe('toElement() — returned node is adopted into the live document (KF-24
     // Direct regression for the LingoGist repro shape: build a detached card,
     // then write its innerHTML BEFORE it's inserted. The content must match
     // exactly what was written (no inert-document parse anomaly).
-    const card = toElement(jsx('div', { className: 'probe-card' })) as HTMLElement;
+    const card = toElement(
+      jsx('div', { className: 'probe-card' }),
+    ) as HTMLElement;
     expect(card.ownerDocument).toBe(document);
     card.innerHTML = '<button class="opt">Yes</button>';
     expect(card.querySelectorAll('.selected, button[disabled]').length).toBe(0);
@@ -262,10 +279,14 @@ describe('toElement() — returned node is adopted into the live document (KF-24
   });
 
   it('SVG root is owned by the live document (and adoption preserves namespace)', () => {
-    const el = toElement('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><circle r="1"/></svg>') as Element;
+    const el = toElement(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1 1"><circle r="1"/></svg>',
+    ) as Element;
     expect(el.ownerDocument).toBe(document);
     expect(el.namespaceURI).toBe('http://www.w3.org/2000/svg'); // namespace survives adoption
-    expect(el.firstElementChild!.namespaceURI).toBe('http://www.w3.org/2000/svg');
+    expect(el.firstElementChild!.namespaceURI).toBe(
+      'http://www.w3.org/2000/svg',
+    );
   });
 
   it('orphan SVG fragment is owned by the live document', () => {
@@ -275,7 +296,14 @@ describe('toElement() — returned node is adopted into the live document (KF-24
   });
 
   it('multi-root DocumentFragment is owned by the live document', () => {
-    const frag = toElement(jsx(Fragment, { children: [jsx('span', { children: 'a' }), jsx('span', { children: 'b' })] })) as DocumentFragment;
+    const frag = toElement(
+      jsx(Fragment, {
+        children: [
+          jsx('span', { children: 'a' }),
+          jsx('span', { children: 'b' }),
+        ],
+      }),
+    ) as DocumentFragment;
     expect(frag.ownerDocument).toBe(document);
     for (const child of Array.from(frag.children)) {
       expect(child.ownerDocument).toBe(document);

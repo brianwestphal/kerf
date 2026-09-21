@@ -10,7 +10,14 @@
  */
 import { strict as assert } from 'node:assert';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { test } from 'node:test';
@@ -31,27 +38,27 @@ function sha256(text) {
 
 function makeSkillBody(version) {
   return (
-    `---\n`
-    + `name: kerf-app\n`
-    + `kerf-skill-version: ${version}\n`
-    + `---\n`
-    + `\n`
-    + `# Building apps with kerf\n`
-    + `\n`
-    + `Canonical body for ${version}.\n`
-    + `\n`
-    + `${MARKER}\n`
+    `---\n` +
+    `name: kerf-app\n` +
+    `kerf-skill-version: ${version}\n` +
+    `---\n` +
+    `\n` +
+    `# Building apps with kerf\n` +
+    `\n` +
+    `Canonical body for ${version}.\n` +
+    `\n` +
+    `${MARKER}\n`
   );
 }
 
 function makeCursorrulesBody(version) {
   return (
-    `<!-- kerf-skill-version: ${version} -->\n`
-    + `# kerf.cursorrules\n`
-    + `\n`
-    + `Canonical body for ${version}.\n`
-    + `\n`
-    + `${MARKER}\n`
+    `<!-- kerf-skill-version: ${version} -->\n` +
+    `# kerf.cursorrules\n` +
+    `\n` +
+    `Canonical body for ${version}.\n` +
+    `\n` +
+    `${MARKER}\n`
   );
 }
 
@@ -77,7 +84,10 @@ function setupProject({
   const root = mkdtempSync(join(tmpdir(), 'kerf-ai-test-'));
 
   // Consumer's package.json (any content; require.resolve needs the dir to look like a project).
-  writeFileSync(join(root, 'package.json'), JSON.stringify({ name: 'fixture', version: '0.0.0' }) + '\n');
+  writeFileSync(
+    join(root, 'package.json'),
+    JSON.stringify({ name: 'fixture', version: '0.0.0' }) + '\n',
+  );
 
   // Build the bundled kerfjs at node_modules/kerfjs/ai/.
   const bundledSkill = makeSkillBody(skillVersion);
@@ -109,7 +119,10 @@ function setupProject({
       },
     ],
   };
-  writeFileSync(join(aiDir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
+  writeFileSync(
+    join(aiDir, 'manifest.json'),
+    JSON.stringify(manifest, null, 2) + '\n',
+  );
 
   // kerfjs needs a package.json so `require.resolve('kerfjs/ai/manifest.json')`
   // can find it under the node_modules/kerfjs root. Default fixture has no
@@ -118,7 +131,8 @@ function setupProject({
   // ERR_PACKAGE_PATH_NOT_EXPORTED → direct-path-lookup branch.
   writeFileSync(
     join(root, 'node_modules', 'kerfjs', 'package.json'),
-    JSON.stringify({ name: 'kerfjs', version: '0.8.2', main: 'index.js' }) + '\n',
+    JSON.stringify({ name: 'kerfjs', version: '0.8.2', main: 'index.js' }) +
+      '\n',
   );
 
   if (withClaude) {
@@ -174,12 +188,19 @@ async function withFixCliFlag(run) {
 test('ESLint integration — plain lint reports a missing drop-in without writing it', async () => {
   _resetForTests();
   const { root, manifest } = setupProject({ withClaude: true });
-  const dest = join(root, manifest.files.find((file) => file.name === 'skill').dest);
+  const dest = join(
+    root,
+    manifest.files.find((file) => file.name === 'skill').dest,
+  );
   try {
     const [result] = await lintProject(root, false);
     assert.equal(result.warningCount, 1);
     assert.match(result.messages[0].message, /drop-in is missing/);
-    assert.equal(existsSync(dest), false, 'plain lint must not install the drop-in');
+    assert.equal(
+      existsSync(dest),
+      false,
+      'plain lint must not install the drop-in',
+    );
   } finally {
     cleanup(root);
   }
@@ -188,7 +209,10 @@ test('ESLint integration — plain lint reports a missing drop-in without writin
 test('ESLint integration — fix mode installs a missing drop-in without changing source', async () => {
   _resetForTests();
   const { root, manifest, bundledSkill } = setupProject({ withClaude: true });
-  const dest = join(root, manifest.files.find((file) => file.name === 'skill').dest);
+  const dest = join(
+    root,
+    manifest.files.find((file) => file.name === 'skill').dest,
+  );
   try {
     const [result] = await withFixCliFlag(() => lintProject(root, true));
     assert.equal(result.warningCount, 1);
@@ -207,7 +231,10 @@ test('ESLint integration — plain lint leaves a stale drop-in byte-for-byte unc
     withClaude: true,
     skillBody: stale,
   });
-  const dest = join(root, manifest.files.find((file) => file.name === 'skill').dest);
+  const dest = join(
+    root,
+    manifest.files.find((file) => file.name === 'skill').dest,
+  );
   try {
     const [result] = await lintProject(root, false);
     assert.equal(result.warningCount, 1);
@@ -226,7 +253,10 @@ test('ESLint integration — fix mode updates stale canonical content and preser
     withClaude: true,
     skillBody: makeSkillBody('1.0.0') + appendZone,
   });
-  const dest = join(root, manifest.files.find((file) => file.name === 'skill').dest);
+  const dest = join(
+    root,
+    manifest.files.find((file) => file.name === 'skill').dest,
+  );
   try {
     await withFixCliFlag(() => lintProject(root, true));
     assert.equal(readFileSync(dest, 'utf8'), bundledSkill + appendZone);
@@ -237,13 +267,19 @@ test('ESLint integration — fix mode updates stale canonical content and preser
 
 test('ESLint integration — fix mode does not overwrite an edited stale canonical section', async () => {
   _resetForTests();
-  const edited = makeSkillBody('1.0.0').replace('Canonical body', 'EDITED body');
+  const edited = makeSkillBody('1.0.0').replace(
+    'Canonical body',
+    'EDITED body',
+  );
   const { root, manifest } = setupProject({
     skillVersion: '1.1.0',
     withClaude: true,
     skillBody: edited,
   });
-  const dest = join(root, manifest.files.find((file) => file.name === 'skill').dest);
+  const dest = join(
+    root,
+    manifest.files.find((file) => file.name === 'skill').dest,
+  );
   try {
     const [result] = await withFixCliFlag(() => lintProject(root, true));
     assert.equal(result.warningCount, 1);
@@ -264,7 +300,9 @@ test('missing — .claude/ exists but no SKILL.md installed', () => {
     assert.ok(skillResult, 'skill should be triggered when .claude/ exists');
     assert.equal(skillResult.result.state, 'missing');
     // Cursor file should NOT be triggered (no .cursor* present).
-    const cursorResult = checked.results.find((r) => r.file.name === 'cursorrules');
+    const cursorResult = checked.results.find(
+      (r) => r.file.name === 'cursorrules',
+    );
     assert.equal(cursorResult, undefined);
     void manifest;
   } finally {
@@ -287,7 +325,8 @@ test('ok — consumer file matches bundled version + sha256', () => {
 
 test('stale — consumer version is behind bundle, append zone preserved', () => {
   _resetForTests();
-  const consumerSkill = makeSkillBody('1.0.0') + '\n## My customizations\n\nKeep me!\n';
+  const consumerSkill =
+    makeSkillBody('1.0.0') + '\n## My customizations\n\nKeep me!\n';
   const { root } = setupProject({
     skillVersion: '1.1.0',
     withClaude: true,
@@ -307,7 +346,10 @@ test('stale — consumer version is behind bundle, append zone preserved', () =>
 
 test('forked — edited canonical content stays protected after the bundled version advances', () => {
   _resetForTests();
-  const consumerSkill = makeSkillBody('1.0.0').replace('Canonical body', 'EDITED body');
+  const consumerSkill = makeSkillBody('1.0.0').replace(
+    'Canonical body',
+    'EDITED body',
+  );
   const { root } = setupProject({
     skillVersion: '1.1.0',
     withClaude: true,
@@ -344,7 +386,10 @@ test('forked — unknown stale versions are preserved when no canonical hash is 
 test('forked — content above marker has been edited', () => {
   _resetForTests();
   // Same version line, but the body text differs from the bundled file.
-  const consumerSkill = makeSkillBody('1.0.0').replace('Canonical body', 'EDITED body');
+  const consumerSkill = makeSkillBody('1.0.0').replace(
+    'Canonical body',
+    'EDITED body',
+  );
   const { root } = setupProject({ withClaude: true, skillBody: consumerSkill });
   try {
     const checked = runCheck(root);
@@ -386,7 +431,10 @@ test('forked — multiple markers', () => {
 
 test('forked — no kerf-skill-version line', () => {
   _resetForTests();
-  const consumerSkill = makeSkillBody('1.0.0').replace(/kerf-skill-version:.*\n/, '');
+  const consumerSkill = makeSkillBody('1.0.0').replace(
+    /kerf-skill-version:.*\n/,
+    '',
+  );
   const { root } = setupProject({ withClaude: true, skillBody: consumerSkill });
   try {
     const checked = runCheck(root);
@@ -412,10 +460,15 @@ test('silent — neither .claude/ nor .cursor* present (untriggered)', () => {
 
 test('cursor — .cursorrules file triggers the cursorrules check', () => {
   _resetForTests();
-  const { root } = setupProject({ withCursor: true, cursorBody: makeCursorrulesBody('1.0.0') });
+  const { root } = setupProject({
+    withCursor: true,
+    cursorBody: makeCursorrulesBody('1.0.0'),
+  });
   try {
     const checked = runCheck(root);
-    const cursorResult = checked.results.find((r) => r.file.name === 'cursorrules');
+    const cursorResult = checked.results.find(
+      (r) => r.file.name === 'cursorrules',
+    );
     assert.ok(cursorResult);
     assert.equal(cursorResult.result.state, 'ok');
   } finally {
@@ -487,14 +540,19 @@ test('applyFix — stale file is updated, append zone preserved verbatim', () =>
     // Sanity: before fix, classifier says stale and gives us the appendZone.
     const beforeChecked = runCheck(root);
     _resetForTests();
-    const before = beforeChecked.results.find((r) => r.file.name === 'skill').result;
+    const before = beforeChecked.results.find(
+      (r) => r.file.name === 'skill',
+    ).result;
     assert.equal(before.state, 'stale');
     assert.equal(before.appendZone, APPEND);
 
     applyFix(file, bundleDir, root, before.appendZone);
 
     const after = readFileSync(destAbs, 'utf8');
-    assert.ok(after.includes('kerf-skill-version: 1.1.0'), 'canonical was upgraded');
+    assert.ok(
+      after.includes('kerf-skill-version: 1.1.0'),
+      'canonical was upgraded',
+    );
     assert.ok(after.endsWith(APPEND), 'append zone preserved verbatim');
 
     // Re-classify: should now be ok.

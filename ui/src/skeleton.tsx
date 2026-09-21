@@ -12,7 +12,11 @@ export interface SkeletonProps {
   className?: string;
 }
 
-function blockStyle(width?: string, height?: string, radius?: string): string | undefined {
+function blockStyle(
+  width?: string,
+  height?: string,
+  radius?: string,
+): string | undefined {
   const parts = [
     width && `width:${width}`,
     height && `height:${height}`,
@@ -27,12 +31,47 @@ function blockStyle(width?: string, height?: string, radius?: string): string | 
  * `placeholder` prop. Decorative by default (`aria-hidden`); pass `label` to
  * announce it. Sizes to its slot unless `width`/`height` are given.
  */
-export function Skeleton({ width, height, radius, lines, label, className = '' }: SkeletonProps) {
-  const a11y = { role: label ? 'img' : undefined, 'aria-label': label, 'aria-hidden': label ? undefined : ('true' as const) };
+export function Skeleton({
+  width,
+  height,
+  radius,
+  lines,
+  label,
+  className = '',
+}: SkeletonProps) {
+  const a11y = {
+    role: label ? 'img' : undefined,
+    'aria-label': label,
+    'aria-hidden': label ? undefined : ('true' as const),
+  };
   if (lines && lines > 1) {
-    return <span class={`kui-skeleton-lines ${className}`.trim()} data-component="skeleton" style={width ? `width:${width}` : undefined} {...a11y}>
-      {Array.from({ length: lines }, (_, index) => <span class="kui-skeleton" aria-hidden="true" style={blockStyle(index === lines - 1 ? '60%' : undefined, height, radius)}></span>)}
-    </span>;
+    return (
+      <span
+        class={`kui-skeleton-lines ${className}`.trim()}
+        data-component="skeleton"
+        style={width ? `width:${width}` : undefined}
+        {...a11y}
+      >
+        {Array.from({ length: lines }, (_, index) => (
+          <span
+            class="kui-skeleton"
+            aria-hidden="true"
+            style={blockStyle(
+              index === lines - 1 ? '60%' : undefined,
+              height,
+              radius,
+            )}
+          ></span>
+        ))}
+      </span>
+    );
   }
-  return <span class={`kui-skeleton ${className}`.trim()} data-component="skeleton" style={blockStyle(width, height, radius)} {...a11y}></span>;
+  return (
+    <span
+      class={`kui-skeleton ${className}`.trim()}
+      data-component="skeleton"
+      style={blockStyle(width, height, radius)}
+      {...a11y}
+    ></span>
+  );
 }

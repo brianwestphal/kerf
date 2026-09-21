@@ -3,11 +3,13 @@ name: hs-feature
 description: Create a new feature ticket in Hot Sheet
 allowed-tools: Bash
 ---
+
 <!-- hotsheet-skill-version: 30 -->
 
 Create a new Hot Sheet **feature** ticket. New features to be implemented.
 
 **Parsing the input:**
+
 - If the input starts with "next", "up next", or "do next" (case-insensitive), set `up_next` to `true` and use the remaining text as the title
 - Otherwise, use the entire input as the title
 

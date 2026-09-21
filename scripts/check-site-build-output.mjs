@@ -18,13 +18,18 @@ async function main() {
   for await (const chunk of process.stdin) output += chunk;
   const warnings = findBlockingSiteBuildWarnings(output);
   if (warnings.length === 0) {
-    console.log('Site build warning gate: no route collisions or future hard errors');
+    console.log(
+      'Site build warning gate: no route collisions or future hard errors',
+    );
     return;
   }
 
-  console.error('Site build warning gate rejected warnings that represent route collisions or future hard errors:');
+  console.error(
+    'Site build warning gate rejected warnings that represent route collisions or future hard errors:',
+  );
   for (const warning of warnings) console.error(warning);
   process.exitCode = 1;
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) await main();
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href)
+  await main();

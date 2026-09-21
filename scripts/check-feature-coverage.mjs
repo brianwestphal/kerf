@@ -47,16 +47,34 @@ const REPO_ROOT = env.KERF_FEATURE_COVERAGE_ROOT
   : dirname(dirname(fileURLToPath(import.meta.url)));
 const INDEX_DOC = resolve(REPO_ROOT, 'docs/14-feature-coverage.md');
 const EXAMPLE_BUILD = resolve(REPO_ROOT, 'site/scripts/build-examples.mjs');
-const EXAMPLE_BROWSER_SPEC = resolve(REPO_ROOT, 'tests/browser/example-apps.spec.ts');
+const EXAMPLE_BROWSER_SPEC = resolve(
+  REPO_ROOT,
+  'tests/browser/example-apps.spec.ts',
+);
 
 // Export-representation completeness (KF-289): every user-facing *value* export
 // must be named by at least one index row, so adding a public export forces a
 // behavior row. Type-only exports have no behavior; internal/JSX-transform
 // symbols are exempt.
-const EXPORT_SOURCES = ['src/index.ts', 'src/array-signal.ts', 'src/html.ts', 'src/actions.ts', 'src/overlay.ts', 'src/scope.ts', 'src/async.ts', 'src/list.ts', 'src/timing.ts', 'src/remount.ts', 'src/attach.ts', 'src/router.ts'];
+const EXPORT_SOURCES = [
+  'src/index.ts',
+  'src/array-signal.ts',
+  'src/html.ts',
+  'src/actions.ts',
+  'src/overlay.ts',
+  'src/scope.ts',
+  'src/async.ts',
+  'src/list.ts',
+  'src/timing.ts',
+  'src/remount.ts',
+  'src/attach.ts',
+  'src/router.ts',
+];
 const EXPORT_EXEMPT = new Set([
   'ARRAY_SIGNAL_BRAND', // internal cross-bundle brand symbol, not a user behavior
-  'jsx', 'jsxs', 'jsxDEV', // JSX-transform entry points, not called by hand
+  'jsx',
+  'jsxs',
+  'jsxDEV', // JSX-transform entry points, not called by hand
   '_parseCount', // test-only cache-stats hook on kerfjs/html
 ]);
 
@@ -68,13 +86,20 @@ function collectValueExports(relPath) {
   const src = readFileSync(resolve(REPO_ROOT, relPath), 'utf8');
   const names = new Set();
   for (const m of src.matchAll(/export\s*\{([^}]+)\}/g)) {
-    for (const piece of m[1].split(',').map((p) => p.trim()).filter(Boolean)) {
+    for (const piece of m[1]
+      .split(',')
+      .map((p) => p.trim())
+      .filter(Boolean)) {
       if (/^type\s/.test(piece)) continue; // type-only export — no runtime behavior
-      const name = piece.includes(' as ') ? piece.split(' as ')[1].trim() : piece;
+      const name = piece.includes(' as ')
+        ? piece.split(' as ')[1].trim()
+        : piece;
       names.add(name);
     }
   }
-  for (const m of src.matchAll(/^export\s+(?:const|function|class)\s+([A-Za-z_$][\w$]*)/gm)) {
+  for (const m of src.matchAll(
+    /^export\s+(?:const|function|class)\s+([A-Za-z_$][\w$]*)/gm,
+  )) {
     names.add(m[1]);
   }
   return names;
@@ -88,7 +113,8 @@ function cells(line) {
   return parts;
 }
 
-const isSeparator = (line) => /^\s*\|?\s*:?-{2,}/.test(line) && /-\s*\|/.test(line + '|');
+const isSeparator = (line) =>
+  /^\s*\|?\s*:?-{2,}/.test(line) && /-\s*\|/.test(line + '|');
 
 /** Collect index rows from every "Guarding test(s)" table in the doc. */
 function collectRows(docText) {
@@ -109,7 +135,8 @@ function collectRows(docText) {
       rows.push({
         line: j + 1,
         id: idCol >= 0 ? (c[idCol] ?? '') : (c[0] ?? ''),
-        implements: c[header.findIndex((value) => value === 'implements')] ?? '',
+        implements:
+          c[header.findIndex((value) => value === 'implements')] ?? '',
         guarding: c[c.length - 1] ?? '',
       });
     }
@@ -121,7 +148,9 @@ function collectRows(docText) {
 function guardingTitles(guarding) {
   return [
     ...[...guarding.matchAll(/"([^"]+)"/g)].map((m) => m[1]),
-    ...[...guarding.matchAll(/`([^`]+)`/g)].map((m) => m[1]).filter((t) => !/\.tsx?$/.test(t)),
+    ...[...guarding.matchAll(/`([^`]+)`/g)]
+      .map((m) => m[1])
+      .filter((t) => !/\.tsx?$/.test(t)),
   ];
 }
 
@@ -138,54 +167,74 @@ function collectCompleteExamples() {
 function collectExampleTestBodies() {
   const source = readFileSync(EXAMPLE_BROWSER_SPEC, 'utf8');
   const starts = [...source.matchAll(/test\.describe\(\s*['"]([^'"]+)['"]/g)];
-  return new Map(starts.map((match, index) => [
-    match[1],
-    source.slice(match.index, starts[index + 1]?.index ?? source.length),
-  ]));
+  return new Map(
+    starts.map((match, index) => [
+      match[1],
+      source.slice(match.index, starts[index + 1]?.index ?? source.length),
+    ]),
+  );
 }
 
 function main() {
   if (!existsSync(INDEX_DOC)) {
-    console.error(`[check-feature-coverage] missing index doc: docs/14-feature-coverage.md`);
+    console.error(
+      `[check-feature-coverage] missing index doc: docs/14-feature-coverage.md`,
+    );
     process.exit(1);
   }
   const rows = collectRows(readFileSync(INDEX_DOC, 'utf8'));
   const errors = [];
 
   if (rows.length === 0) {
-    errors.push('no feature-index rows found (expected at least one "Guarding test(s)" table)');
+    errors.push(
+      'no feature-index rows found (expected at least one "Guarding test(s)" table)',
+    );
   }
 
   const fileCache = new Map();
   const readNorm = (rel) => {
     if (!fileCache.has(rel)) {
       const abs = resolve(REPO_ROOT, rel);
-      fileCache.set(rel, existsSync(abs) ? norm(readFileSync(abs, 'utf8')) : null);
+      fileCache.set(
+        rel,
+        existsSync(abs) ? norm(readFileSync(abs, 'utf8')) : null,
+      );
     }
     return fileCache.get(rel);
   };
 
   for (const row of rows) {
-    const files = [...row.guarding.matchAll(/`([^`]+\.tsx?)`/g)].map((m) => m[1]);
+    const files = [...row.guarding.matchAll(/`([^`]+\.tsx?)`/g)].map(
+      (m) => m[1],
+    );
     // Titles: double-quoted strings, plus backtick spans that are NOT file
     // paths (so a title containing `<svg>`/`<details>` can be written in a
     // code span and won't be mangled by Markdown's HTML parsing).
     const titles = guardingTitles(row.guarding);
     const where = `${row.id || '(no id)'} @ docs/14-feature-coverage.md:${row.line}`;
 
-    if (files.length === 0) { errors.push(`${where}: no guarding test file referenced`); continue; }
-    if (titles.length === 0) { errors.push(`${where}: no guarding test title referenced`); continue; }
+    if (files.length === 0) {
+      errors.push(`${where}: no guarding test file referenced`);
+      continue;
+    }
+    if (titles.length === 0) {
+      errors.push(`${where}: no guarding test title referenced`);
+      continue;
+    }
 
     const contents = [];
     for (const f of files) {
       const txt = readNorm(f);
-      if (txt === null) errors.push(`${where}: referenced test file not found: ${f}`);
+      if (txt === null)
+        errors.push(`${where}: referenced test file not found: ${f}`);
       else contents.push({ f, txt });
     }
     for (const title of titles) {
       const needle = norm(title);
       if (!contents.some(({ txt }) => txt.includes(needle))) {
-        errors.push(`${where}: title not found in any referenced file: "${title}"`);
+        errors.push(
+          `${where}: title not found in any referenced file: "${title}"`,
+        );
       }
     }
   }
@@ -195,21 +244,37 @@ function main() {
   // removed smoke test for one of the other examples.
   const completeExamples = collectCompleteExamples();
   if (completeExamples === null) {
-    errors.push('could not find COMPLETE_APPS in site/scripts/build-examples.mjs');
+    errors.push(
+      'could not find COMPLETE_APPS in site/scripts/build-examples.mjs',
+    );
   } else {
     const exampleBodies = collectExampleTestBodies();
     for (const app of completeExamples) {
       const implementation = `site/src/examples/complete/${app}`;
-      const appRows = rows.filter((row) => row.implements.includes(implementation));
+      const appRows = rows.filter((row) =>
+        row.implements.includes(implementation),
+      );
       const body = exampleBodies.get(app);
       if (appRows.length === 0) {
-        errors.push(`complete example "${app}" has no independent feature-index row naming ${implementation}`);
+        errors.push(
+          `complete example "${app}" has no independent feature-index row naming ${implementation}`,
+        );
       } else if (body === undefined) {
-        errors.push(`complete example "${app}" has no test.describe block in tests/browser/example-apps.spec.ts`);
-      } else if (!appRows.some((row) =>
-        row.guarding.includes('tests/browser/example-apps.spec.ts')
-        && guardingTitles(row.guarding).some((title) => norm(body).includes(norm(title))))) {
-        errors.push(`complete example "${app}" has no feature-index row mapped to one of its own browser smoke tests`);
+        errors.push(
+          `complete example "${app}" has no test.describe block in tests/browser/example-apps.spec.ts`,
+        );
+      } else if (
+        !appRows.some(
+          (row) =>
+            row.guarding.includes('tests/browser/example-apps.spec.ts') &&
+            guardingTitles(row.guarding).some((title) =>
+              norm(body).includes(norm(title)),
+            ),
+        )
+      ) {
+        errors.push(
+          `complete example "${app}" has no feature-index row mapped to one of its own browser smoke tests`,
+        );
       }
     }
   }
@@ -235,18 +300,28 @@ function main() {
   }
 
   if (errors.length === 0 && missingExports.length === 0) {
-    console.log(`[check-feature-coverage] OK — ${rows.length} feature-index rows all map to live guarding tests; every public value export is represented.`);
+    console.log(
+      `[check-feature-coverage] OK — ${rows.length} feature-index rows all map to live guarding tests; every public value export is represented.`,
+    );
     return;
   }
   if (errors.length > 0) {
-    console.error('[check-feature-coverage] feature index has broken mappings:');
+    console.error(
+      '[check-feature-coverage] feature index has broken mappings:',
+    );
     for (const e of errors) console.error(`  - ${e}`);
-    console.error('Update docs/14-feature-coverage.md (fix the row) or restore/rename the guarding test.');
+    console.error(
+      'Update docs/14-feature-coverage.md (fix the row) or restore/rename the guarding test.',
+    );
   }
   if (missingExports.length > 0) {
-    console.error('[check-feature-coverage] public value exports with NO index row:');
+    console.error(
+      '[check-feature-coverage] public value exports with NO index row:',
+    );
     for (const e of missingExports) console.error(`  - ${e}`);
-    console.error('Add a behavior row for each to docs/14-feature-coverage.md (or EXPORT_EXEMPT it if genuinely internal).');
+    console.error(
+      'Add a behavior row for each to docs/14-feature-coverage.md (or EXPORT_EXEMPT it if genuinely internal).',
+    );
   }
   process.exit(1);
 }

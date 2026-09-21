@@ -94,13 +94,13 @@ if ! preflight; then
 fi
 
 echo "==> Starting upstream HTTP server in the background"
-(cd "${UPSTREAM_DIR}" && npm start >/tmp/jfb-server.log 2>&1) &
+(cd "${UPSTREAM_DIR}" && npm start > /tmp/jfb-server.log 2>&1) &
 SERVER_PID=$!
 trap 'kill ${SERVER_PID} 2>/dev/null || true' EXIT
 
 # Wait for the server to come up.
 for _ in {1..30}; do
-  if curl -sf http://localhost:8080/ >/dev/null 2>&1; then break; fi
+  if curl -sf http://localhost:8080/ > /dev/null 2>&1; then break; fi
   sleep 1
 done
 

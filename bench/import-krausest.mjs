@@ -28,7 +28,8 @@ import { readFileSync, writeFileSync } from 'node:fs';
 // The published data behind https://krausest.github.io/js-framework-benchmark/current.html
 const DATA_URL =
   'https://raw.githubusercontent.com/krausest/js-framework-benchmark/master/webdriver-ts-results/src/results.ts';
-const SITE_URL = 'https://krausest.github.io/js-framework-benchmark/current.html';
+const SITE_URL =
+  'https://krausest.github.io/js-framework-benchmark/current.html';
 
 const JSON_OUT = new URL('./results.json', import.meta.url).pathname;
 const MD_OUT = new URL('./results.md', import.meta.url).pathname;
@@ -74,7 +75,10 @@ const SIZE_BENCHMARKS = [
 /** Extract `export const <name> = [ ... ]` as parsed JSON (tolerates TS trailing commas). */
 function extractArray(src, name) {
   const decl = src.indexOf('export const ' + name);
-  if (decl === -1) throw new Error(`import-krausest: could not find "export const ${name}" in the data`);
+  if (decl === -1)
+    throw new Error(
+      `import-krausest: could not find "export const ${name}" in the data`,
+    );
   const start = src.indexOf('[', src.indexOf('=', decl));
   let depth = 0;
   let end = start;
@@ -83,7 +87,10 @@ function extractArray(src, name) {
     if (c === '[') depth++;
     else if (c === ']') {
       depth--;
-      if (depth === 0) { end++; break; }
+      if (depth === 0) {
+        end++;
+        break;
+      }
     }
   }
   return JSON.parse(src.slice(start, end).replace(/,(\s*[\]}])/g, '$1'));
@@ -115,9 +122,14 @@ async function loadSource() {
   } catch (err) {
     // Some sandboxes allow `curl` but not node's fetch DNS — fall back to it.
     try {
-      return execFileSync('curl', ['-fsSL', DATA_URL], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+      return execFileSync('curl', ['-fsSL', DATA_URL], {
+        encoding: 'utf8',
+        maxBuffer: 64 * 1024 * 1024,
+      });
     } catch {
-      throw new Error(`import-krausest: could not fetch ${DATA_URL} (fetch: ${err.message}); pass a local results.ts path as an argument to parse offline`);
+      throw new Error(
+        `import-krausest: could not fetch ${DATA_URL} (fetch: ${err.message}); pass a local results.ts path as an argument to parse offline`,
+      );
     }
   }
 }
@@ -150,7 +162,10 @@ function valueFor(fwIndex, benchId) {
 // Resolve the tracked frameworks (error loudly if upstream renamed a dir).
 const tracked = TRACKED_DIRS.map((dir) => {
   const f = fwByDir.get(dir);
-  if (!f) throw new Error(`import-krausest: tracked dir "${dir}" not found upstream — update TRACKED_DIRS`);
+  if (!f)
+    throw new Error(
+      `import-krausest: tracked dir "${dir}" not found upstream — update TRACKED_DIRS`,
+    );
   const { name, version } = parseFrameworkKey(f.name);
   return { key: f.name, name, version, keyed: f.keyed, index: f.index };
 });
@@ -170,7 +185,13 @@ const snapshot = {
   },
   scenarios: CPU_BENCHMARKS.map(([id, label]) => ({ id, label })),
   frameworks: [...tracked]
-    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : a.version.localeCompare(b.version)))
+    .sort((a, b) =>
+      a.name < b.name
+        ? -1
+        : a.name > b.name
+          ? 1
+          : a.version.localeCompare(b.version),
+    )
     .map(({ key, name, version, keyed, index }) => ({
       key,
       name,
@@ -191,7 +212,8 @@ function table(title, benches) {
     }))
     .filter((r) => r.cells.some((v) => v !== null))
     .sort((a, b) => {
-      const av = a.cells[0]; const bv = b.cells[0];
+      const av = a.cells[0];
+      const bv = b.cells[0];
       if (av === null && bv === null) return 0;
       if (av === null) return 1;
       if (bv === null) return -1;
@@ -210,7 +232,7 @@ function table(title, benches) {
 const md =
   '# kerfjs vs reference frameworks — krausest js-framework-benchmark\n\n' +
   `**Source of truth:** the official [krausest js-framework-benchmark](${SITE_URL}), ` +
-  'measured on the maintainer\'s reference machine. kerf is a merged upstream entry ' +
+  "measured on the maintainer's reference machine. kerf is a merged upstream entry " +
   '(`frameworks/keyed/kerfjs`), so it is measured alongside every competitor on the same ' +
   'hardware in the same run — the numbers below are therefore directly comparable and ' +
   'independently reproducible.\n\n' +
@@ -224,4 +246,6 @@ const md =
   table('Size + first-paint', SIZE_BENCHMARKS);
 writeFileSync(MD_OUT, md);
 
-console.error(`[import-krausest] wrote ${JSON_OUT} and ${MD_OUT} (${tracked.length} frameworks, imported ${importedAt.slice(0, 10)})`);
+console.error(
+  `[import-krausest] wrote ${JSON_OUT} and ${MD_OUT} (${tracked.length} frameworks, imported ${importedAt.slice(0, 10)})`,
+);

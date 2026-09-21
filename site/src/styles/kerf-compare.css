@@ -28,8 +28,18 @@
 
 /* When the row is highlighted, lift the kerf label itself to the accent
  * color so the row reads as one cohesive callout. */
-.kerf-compare table tbody tr:has(td:first-child > strong:only-child) td:first-child > strong,
-.kerf-compare table tbody tr:has(th:first-child > strong:only-child) th:first-child > strong {
+.kerf-compare
+  table
+  tbody
+  tr:has(td:first-child > strong:only-child)
+  td:first-child
+  > strong,
+.kerf-compare
+  table
+  tbody
+  tr:has(th:first-child > strong:only-child)
+  th:first-child
+  > strong {
   color: var(--sl-color-accent-high);
 }
 

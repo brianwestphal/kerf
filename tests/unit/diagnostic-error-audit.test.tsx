@@ -15,7 +15,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import type { KerfBaseAttrs, KerfCustomElement } from '../../src/jsx-runtime.js';
+import type {
+  KerfBaseAttrs,
+  KerfCustomElement,
+} from '../../src/jsx-runtime.js';
 
 // Rule 11 in this audit pins the correct declaration-merge target. The
 // merge below also makes the no-runtime-error fixture below type-check.
@@ -57,7 +60,7 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
 
   it('Rule 1 — DOM node as JSX child: throws naming the root cause and the fix (score 3)', () => {
     const node = toElement('<span>oops</span>');
-    expect(() => (<div>{node as unknown as string}</div>)).toThrow(
+    expect(() => <div>{node as unknown as string}</div>).toThrow(
       /JSX: DOM elements cannot be passed as children.*toElement/s,
     );
   });
@@ -70,10 +73,12 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
       mount(host, () => (
         <table>
           <tbody>
-            {each(items, () => <>
-              <td>cell 1</td>
-              <td>cell 2</td>
-            </>)}
+            {each(items, () => (
+              <>
+                <td>cell 1</td>
+                <td>cell 2</td>
+              </>
+            ))}
           </tbody>
         </table>
       ));
@@ -93,7 +98,9 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     // system catching it earlier is a bonus, not the subject under test).
     const handler = () => {};
     const props = { onClick: handler } as unknown as Record<string, unknown>;
-    expect(() => (<button {...props as Record<string, never>}>x</button>).toString()).toThrow(
+    expect(() =>
+      (<button {...(props as Record<string, never>)}>x</button>).toString(),
+    ).toThrow(
       /JSX: inline event handlers like onClick=\{fn\} are not supported.*delegate\(rootEl/s,
     );
   });
@@ -105,14 +112,20 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
   });
 
   it('each() primitive items: throws naming the index and the wrap-fix (bonus rule, score 3)', () => {
-    expect(() => each([1, 2] as unknown as object[], (n) => <li>{String(n)}</li>).toString()).toThrow(
-      /each\(\): items must be objects.*index 0.*Wrap primitives/s,
-    );
+    expect(() =>
+      each([1, 2] as unknown as object[], (n) => (
+        <li>{String(n)}</li>
+      )).toString(),
+    ).toThrow(/each\(\): items must be objects.*index 0.*Wrap primitives/s);
   });
 
   it('each() duplicate references: throws naming the index and the immutable-copy fix (bonus rule, score 3)', () => {
     const a = { id: 'a' };
-    expect(() => each([a, a], (item) => <li data-key={(item as { id: string }).id}>x</li>).toString()).toThrow(
+    expect(() =>
+      each([a, a], (item) => (
+        <li data-key={(item as { id: string }).id}>x</li>
+      )).toString(),
+    ).toThrow(
       /each\(\): the same object reference appears at multiple indices.*index 1.*items\.map/s,
     );
   });
@@ -134,7 +147,9 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
       expect(() => {
         mount(host, () => (
           <ul>
-            {each(items.value, (item) => <li>{item.id}</li>)}
+            {each(items.value, (item) => (
+              <li>{item.id}</li>
+            ))}
           </ul>
         ));
       }).not.toThrow();
@@ -200,8 +215,9 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     // and appending it before mount wouldn't work — the first render's
     // `innerHTML =` replaces the children, orphaning the pre-created element.)
     const innerHost = host.querySelector('#inner-host') as HTMLElement;
-    expect(() => mount(innerHost, () => <span>{inner.value}</span>))
-      .toThrow(/already inside.*mounted tree/);
+    expect(() => mount(innerHost, () => <span>{inner.value}</span>)).toThrow(
+      /already inside.*mounted tree/,
+    );
   });
 
   it('Rule 7 — signal read outside render fn: the captured value is frozen; subsequent updates do not re-render (score 0 by default; score 2 with KF-176 opt-in)', () => {
@@ -258,8 +274,16 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     expect(() => {
       mount(host, () => (
         <div>
-          <ul>{each(items.value, (item) => <li data-key={item.id}>top:{item.id}</li>)}</ul>
-          <ul>{each(items.value, (item) => <li data-key={item.id}>bot:{item.id}</li>)}</ul>
+          <ul>
+            {each(items.value, (item) => (
+              <li data-key={item.id}>top:{item.id}</li>
+            ))}
+          </ul>
+          <ul>
+            {each(items.value, (item) => (
+              <li data-key={item.id}>bot:{item.id}</li>
+            ))}
+          </ul>
         </div>
       ));
     }).not.toThrow();
@@ -278,7 +302,9 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     mount(host, () => (
       <div>
         outer={sentinel.value}
-        <div data-morph-skip><span className="lib-state">untouched</span></div>
+        <div data-morph-skip>
+          <span className="lib-state">untouched</span>
+        </div>
       </div>
     ));
     const libSpan = host.querySelector('.lib-state')!;
@@ -286,7 +312,9 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
     sentinel.value = 1;
     // After re-render, the imperative attribute survives because data-morph-skip
     // froze the subtree.
-    expect(host.querySelector('.lib-state')!.getAttribute('data-imperative')).toBe('set-after-mount');
+    expect(
+      host.querySelector('.lib-state')!.getAttribute('data-imperative'),
+    ).toBe('set-after-mount');
   });
 
   it('Rule 6 — components are plain functions: a "hook" call via signal() inside the component body works as expected (N/A)', () => {
@@ -323,7 +351,12 @@ describe('Diagnostic-error audit (KF-169) — Hard Rules 1–12', () => {
       score0: 2, // Rules 4, 7
       na: 3, // Rules 3, 6, 11
     };
-    const total = summary.score3 + summary.score2 + summary.score1 + summary.score0 + summary.na;
+    const total =
+      summary.score3 +
+      summary.score2 +
+      summary.score1 +
+      summary.score0 +
+      summary.na;
     expect(total).toBe(15);
   });
 });

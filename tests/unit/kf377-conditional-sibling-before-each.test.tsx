@@ -28,7 +28,10 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { arraySignal } from '../../src/array-signal.js';
 import { each, mount, signal, toElement } from '../../src/index.js';
 
-interface Item { id: string; label: string }
+interface Item {
+  id: string;
+  label: string;
+}
 const ROWS: Item[] = [
   { id: 'a', label: 'A' },
   { id: 'b', label: 'B' },
@@ -41,11 +44,15 @@ function host(): HTMLElement {
 }
 
 function labels(root: HTMLElement): string[] {
-  return Array.from(root.querySelectorAll('li')).map((li) => li.textContent ?? '');
+  return Array.from(root.querySelectorAll('li')).map(
+    (li) => li.textContent ?? '',
+  );
 }
 
 describe('KF-377: conditional sibling removed before a keyed each() list', () => {
-  afterEach(() => { document.body.innerHTML = ''; });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   it("direct sibling with '' false-branch: rows survive ON → OFF → ON", () => {
     const banner = signal(false);
@@ -53,7 +60,11 @@ describe('KF-377: conditional sibling removed before a keyed each() list', () =>
     mount(root, () => (
       <div>
         {banner.value ? <div class="banner">warn</div> : ''}
-        <ul>{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        <ul>
+          {each(ROWS, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
       </div>
     ));
     expect(labels(root)).toEqual(['A', 'B']);
@@ -63,14 +74,14 @@ describe('KF-377: conditional sibling removed before a keyed each() list', () =>
     expect(root.querySelector('.banner')).not.toBeNull();
     expect(labels(root)).toEqual(['A', 'B']);
 
-    banner.value = false;   // the buggy step: banner removed → list emptied
+    banner.value = false; // the buggy step: banner removed → list emptied
     expect(root.querySelector('.banner')).toBeNull();
     expect(labels(root)).toEqual(['A', 'B']);
     // The morph lookahead must have preserved the container in place, so the
     // row nodes keep their DOM identity (focus/listeners on them survive).
     expect(root.querySelector('li[data-key="a"]')).toBe(liA);
 
-    banner.value = true;    // recovery direction of the original repro table
+    banner.value = true; // recovery direction of the original repro table
     expect(labels(root)).toEqual(['A', 'B']);
   });
 
@@ -80,7 +91,11 @@ describe('KF-377: conditional sibling removed before a keyed each() list', () =>
     mount(root, () => (
       <div>
         {banner.value ? <div class="banner">warn</div> : null}
-        <ul>{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        <ul>
+          {each(ROWS, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
       </div>
     ));
     banner.value = true;
@@ -95,12 +110,19 @@ describe('KF-377: conditional sibling removed before a keyed each() list', () =>
     mount(root, () => (
       <div>
         {banner.value ? <div class="banner">warn</div> : ''}
-        <ul>{each(rows.value, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        <ul>
+          {each(rows.value, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
       </div>
     ));
     banner.value = true;
     banner.value = false;
-    rows.value = [{ id: 'c', label: 'C' }, { id: 'd', label: 'D' }];
+    rows.value = [
+      { id: 'c', label: 'C' },
+      { id: 'd', label: 'D' },
+    ];
     expect(labels(root)).toEqual(['C', 'D']);
   });
 
@@ -112,7 +134,11 @@ describe('KF-377: conditional sibling removed before a keyed each() list', () =>
         <header>Header</header>
         {banner.value ? <div class="banner">warn</div> : ''}
         <section class="two">
-          <ul>{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+          <ul>
+            {each(ROWS, (r) => (
+              <li data-key={r.id}>{r.label}</li>
+            ))}
+          </ul>
         </section>
       </div>
     ));
@@ -128,7 +154,11 @@ describe('KF-377: conditional sibling removed before a keyed each() list', () =>
     const root = host();
     mount(root, () => (
       <div>
-        <ul>{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        <ul>
+          {each(ROWS, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
         {footer.value ? <div class="footer">bye</div> : ''}
       </div>
     ));
@@ -147,7 +177,11 @@ describe('KF-377: conditional sibling removed before a keyed each() list', () =>
     mount(root, () => (
       <div>
         {banner.value ? <div class="banner">warn</div> : ''}
-        <ul>{each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
+        <ul>
+          {each(rows, (r) => (
+            <li data-key={r.id}>{r.label}</li>
+          ))}
+        </ul>
       </div>
     ));
     banner.value = true;
@@ -168,9 +202,15 @@ describe('KF-377: conditional sibling removed before a keyed each() list', () =>
     const root = host();
     mount(root, () => (
       <div>
-        {showList.value
-          ? <ul>{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul>
-          : <p>empty</p>}
+        {showList.value ? (
+          <ul>
+            {each(ROWS, (r) => (
+              <li data-key={r.id}>{r.label}</li>
+            ))}
+          </ul>
+        ) : (
+          <p>empty</p>
+        )}
       </div>
     ));
     expect(labels(root)).toEqual(['A', 'B']);
@@ -191,9 +231,23 @@ describe('KF-377: conditional sibling removed before a keyed each() list', () =>
     const root = host();
     mount(root, () => (
       <div>
-        {wide.value
-          ? <section class="w"><ul>{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul></section>
-          : <article class="n"><ul>{each(ROWS, (r) => <li data-key={r.id}>{r.label}</li>)}</ul></article>}
+        {wide.value ? (
+          <section class="w">
+            <ul>
+              {each(ROWS, (r) => (
+                <li data-key={r.id}>{r.label}</li>
+              ))}
+            </ul>
+          </section>
+        ) : (
+          <article class="n">
+            <ul>
+              {each(ROWS, (r) => (
+                <li data-key={r.id}>{r.label}</li>
+              ))}
+            </ul>
+          </article>
+        )}
       </div>
     ));
     expect(labels(root)).toEqual(['A', 'B']);

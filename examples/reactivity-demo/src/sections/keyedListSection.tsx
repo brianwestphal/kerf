@@ -11,15 +11,18 @@
 import { attr, delegate, mount, signal, type AttrSpec } from 'kerfjs';
 
 const ACTIONS = {
-  add:      attr('data-action', 'add'),
-  remove:   attr('data-action', 'remove'),
-  shuffle:  attr('data-action', 'shuffle'),
-  reverse:  attr('data-action', 'reverse'),
+  add: attr('data-action', 'add'),
+  remove: attr('data-action', 'remove'),
+  shuffle: attr('data-action', 'shuffle'),
+  reverse: attr('data-action', 'reverse'),
   rerender: attr('data-action', 'rerender'),
 } as const satisfies Record<string, AttrSpec<'data-action'>>;
 const ITEM = { id: attr('data-id') } as const;
 
-interface Row { id: string; label: string }
+interface Row {
+  id: string;
+  label: string;
+}
 
 let rowSeq = 0;
 function makeRow(label: string): Row {
@@ -39,13 +42,30 @@ export function mountKeyedList(root: HTMLElement): void {
     void renderTicks.value;
     return (
       <div className="demo-card">
-        <h2>4. Keyed list <span className="demo-tag">data-key • identity preserved across reorders</span></h2>
+        <h2>
+          4. Keyed list{' '}
+          <span className="demo-tag">
+            data-key • identity preserved across reorders
+          </span>
+        </h2>
 
         <div className="demo-row">
-          <button type="button" {...ACTIONS.add.attrs} className="demo-btn">+ add row</button>
-          <button type="button" {...ACTIONS.shuffle.attrs} className="demo-btn">shuffle</button>
-          <button type="button" {...ACTIONS.reverse.attrs} className="demo-btn">reverse</button>
-          <button type="button" {...ACTIONS.rerender.attrs} className="demo-btn demo-btn-ghost">force re-render</button>
+          <button type="button" {...ACTIONS.add.attrs} className="demo-btn">
+            + add row
+          </button>
+          <button type="button" {...ACTIONS.shuffle.attrs} className="demo-btn">
+            shuffle
+          </button>
+          <button type="button" {...ACTIONS.reverse.attrs} className="demo-btn">
+            reverse
+          </button>
+          <button
+            type="button"
+            {...ACTIONS.rerender.attrs}
+            className="demo-btn demo-btn-ghost"
+          >
+            force re-render
+          </button>
         </div>
 
         <ul className="demo-keyed-list">
@@ -59,7 +79,14 @@ export function mountKeyedList(root: HTMLElement): void {
                 autocomplete="off"
                 spellcheck="false"
               />
-              <button type="button" {...ACTIONS.remove.attrs} {...ITEM.id(row.id)} className="demo-btn demo-btn-ghost demo-btn-tiny">×</button>
+              <button
+                type="button"
+                {...ACTIONS.remove.attrs}
+                {...ITEM.id(row.id)}
+                className="demo-btn demo-btn-ghost demo-btn-tiny"
+              >
+                ×
+              </button>
             </li>
           ))}
         </ul>

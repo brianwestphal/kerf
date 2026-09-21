@@ -74,13 +74,19 @@ describe('KF-407/408/409: a keyed template element never matches positionally', 
     const dispose = mount(root, () => (
       <div data-key="outer">
         {cond.value ? <span data-key="head">head</span> : ''}
-        <span class="body"><ul data-key="kept" data-morph-preserve>kept</ul></span>
+        <span class="body">
+          <ul data-key="kept" data-morph-preserve>
+            kept
+          </ul>
+        </span>
       </div>
     ));
     cond.value = false;
     cond.value = true;
     expect(root.querySelectorAll('[data-morph-preserve]').length).toBe(1);
-    expect(root.querySelector('span.body > [data-morph-preserve]')).not.toBeNull();
+    expect(
+      root.querySelector('span.body > [data-morph-preserve]'),
+    ).not.toBeNull();
     dispose();
   });
 
@@ -90,9 +96,15 @@ describe('KF-407/408/409: a keyed template element never matches positionally', 
     const rows = arraySignal<{ id: string }>([]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value
-          ? <span data-key="box">{each(rows, (r) => <li data-key={r.id}>{r.id}</li>)}</span>
-          : ''}
+        {cond.value ? (
+          <span data-key="box">
+            {each(rows, (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ))}
+          </span>
+        ) : (
+          ''
+        )}
         <span data-hole="h">{label}</span>
       </div>
     ));
@@ -111,16 +123,28 @@ describe('KF-407/408/409: a keyed template element never matches positionally', 
     const rows = arraySignal([{ id: 'a' }]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value
-          ? <span data-key="box">{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'L' })}</span>
-          : ''}
+        {cond.value ? (
+          <span data-key="box">
+            {each(
+              rows,
+              (r) => (
+                <li data-key={r.id}>{r.id}</li>
+              ),
+              { key: 'L' },
+            )}
+          </span>
+        ) : (
+          ''
+        )}
         <span class="other">other</span>
       </div>
     ));
     cond.value = false;
     cond.value = true;
     rows.push({ id: 'b' });
-    expect(Array.from(root.querySelectorAll('li')).map((li) => li.textContent)).toEqual(['a', 'b']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((li) => li.textContent),
+    ).toEqual(['a', 'b']);
     dispose();
   });
 
@@ -160,8 +184,9 @@ describe('KF-407/408/409: a keyed template element never matches positionally', 
     cond.value = true;
     expect(root.querySelectorAll('[data-morph-skip]').length).toBe(1);
     expect(root.querySelector('[data-morph-skip]')).toBe(widget);
-    expect(Array.from(root.querySelectorAll('ul')).map((u) => u.textContent))
-      .toEqual(['head', 'widget']);
+    expect(
+      Array.from(root.querySelectorAll('ul')).map((u) => u.textContent),
+    ).toEqual(['head', 'widget']);
     dispose();
   });
 
@@ -174,7 +199,15 @@ describe('KF-407/408/409: a keyed template element never matches positionally', 
     const rows = arraySignal<{ id: string }>([]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value ? <span>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>)}</span> : ''}
+        {cond.value ? (
+          <span>
+            {each(rows, (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ))}
+          </span>
+        ) : (
+          ''
+        )}
         <span data-hole="h">{label}</span>
       </div>
     ));
@@ -199,7 +232,9 @@ describe('KF-407/408/409: a keyed template element never matches positionally', 
       </div>
     ));
     const kids = (): (string | null)[] =>
-      Array.from((root.firstElementChild as Element).children).map((c) => c.textContent);
+      Array.from((root.firstElementChild as Element).children).map(
+        (c) => c.textContent,
+      );
     const widget = root.querySelector('[data-morph-skip]');
     cond.value = false;
     expect(kids()).toEqual(['mid', 'widget']);
@@ -223,8 +258,11 @@ describe('KF-407/408/409: a keyed template element never matches positionally', 
     const a = root.querySelector('[data-key="a"]');
     const b = root.querySelector('[data-key="b"]');
     flip.value = true;
-    expect(Array.from(root.querySelectorAll('span')).map((s) => s.getAttribute('data-key')))
-      .toEqual(['b', 'a']);
+    expect(
+      Array.from(root.querySelectorAll('span')).map((s) =>
+        s.getAttribute('data-key'),
+      ),
+    ).toEqual(['b', 'a']);
     expect(root.querySelector('[data-key="a"]')).toBe(a);
     expect(root.querySelector('[data-key="b"]')).toBe(b);
     dispose();

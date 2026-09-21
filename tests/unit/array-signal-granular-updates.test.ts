@@ -4,11 +4,11 @@
  * path.
  */
 
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import type { ArraySignal } from '../../src/array-signal.js';
 import { arraySignal } from '../../src/array-signal.js';
-import { batch,each,mount } from '../../src/index.js';
+import { batch, each, mount } from '../../src/index.js';
 import { jsx } from '../../src/jsx-runtime.js';
 
 describe('arraySignal — each() granular integration via mount()', () => {
@@ -24,13 +24,20 @@ describe('arraySignal — each() granular integration via mount()', () => {
   });
 
   function renderRows(rows: ArraySignal<{ id: number; label: string }>): void {
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', { 'data-key': String(r.id), children: r.label })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', { 'data-key': String(r.id), children: r.label }),
+        ),
+      }),
+    );
   }
 
   it('first render emits the snapshot path (no patches yet)', () => {
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
     renderRows(rows);
     expect(root.querySelectorAll('li').length).toBe(2);
     expect(root.querySelectorAll('li')[0].textContent).toBe('a');
@@ -42,17 +49,27 @@ describe('arraySignal — each() granular integration via mount()', () => {
     // rendered it and only a later unrelated snapshot render threw. Now the item
     // contract is enforced on the granular path too, so the throw lands on the
     // render this insert triggered.
-    const rows = arraySignal<{ id: number; label: string }>([{ id: 1, label: 'a' }]);
+    const rows = arraySignal<{ id: number; label: string }>([
+      { id: 1, label: 'a' },
+    ]);
     renderRows(rows);
-    const fnItem = Object.assign(() => 'hi', { id: 2, label: 'f' }) as unknown as { id: number; label: string };
-    expect(() => rows.insert(1, fnItem)).toThrow(/items must be objects.*got function/);
+    const fnItem = Object.assign(() => 'hi', {
+      id: 2,
+      label: 'f',
+    }) as unknown as { id: number; label: string };
+    expect(() => rows.insert(1, fnItem)).toThrow(
+      /items must be objects.*got function/,
+    );
   });
 
   it('KF-426: a primitive item inserted via the granular path also throws at that insert (control)', () => {
-    const rows = arraySignal<{ id: number; label: string }>([{ id: 1, label: 'a' }]);
+    const rows = arraySignal<{ id: number; label: string }>([
+      { id: 1, label: 'a' },
+    ]);
     renderRows(rows);
-    expect(() => rows.insert(1, 42 as unknown as { id: number; label: string }))
-      .toThrow(/items must be objects.*got number/);
+    expect(() =>
+      rows.insert(1, 42 as unknown as { id: number; label: string }),
+    ).toThrow(/items must be objects.*got number/);
   });
 
   it('KF-201: update with a tag mismatch falls back to replaceChild (single-update path)', () => {
@@ -62,13 +79,15 @@ describe('arraySignal — each() granular integration via mount()', () => {
     // replaceChild. This covers `applySingleUpdate`'s tag-mismatch branch.
     type R = { id: number; kind: 'li' | 'article'; label: string };
     const rows = arraySignal<R>([{ id: 1, kind: 'li', label: 'a' }]);
-    mount(root, () => jsx('div', {
-      children: each(rows, (r) => (
-        r.kind === 'li'
-          ? jsx('li', { 'data-key': String(r.id), children: r.label })
-          : jsx('article', { 'data-key': String(r.id), children: r.label })
-      )),
-    }));
+    mount(root, () =>
+      jsx('div', {
+        children: each(rows, (r) =>
+          r.kind === 'li'
+            ? jsx('li', { 'data-key': String(r.id), children: r.label })
+            : jsx('article', { 'data-key': String(r.id), children: r.label }),
+        ),
+      }),
+    );
     const oldLi = root.querySelector('li');
     expect(oldLi).not.toBeNull();
     expect(root.querySelector('article')).toBeNull();
@@ -91,13 +110,15 @@ describe('arraySignal — each() granular integration via mount()', () => {
       { id: 1, kind: 'li', label: 'a' },
       { id: 2, kind: 'li', label: 'b' },
     ]);
-    mount(root, () => jsx('section', {
-      children: each(rows, (r) => (
-        r.kind === 'li'
-          ? jsx('li', { 'data-key': String(r.id), children: r.label })
-          : jsx('div', { 'data-key': String(r.id), children: r.label })
-      )),
-    }));
+    mount(root, () =>
+      jsx('section', {
+        children: each(rows, (r) =>
+          r.kind === 'li'
+            ? jsx('li', { 'data-key': String(r.id), children: r.label })
+            : jsx('div', { 'data-key': String(r.id), children: r.label }),
+        ),
+      }),
+    );
     const oldLi1 = root.querySelectorAll('li')[0];
     const oldLi2 = root.querySelectorAll('li')[1];
     expect(root.querySelectorAll('li').length).toBe(2);
@@ -122,14 +143,17 @@ describe('arraySignal — each() granular integration via mount()', () => {
   });
 
   it('update patch applies via reconcileGranular and preserves siblings', () => {
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
     renderRows(rows);
     const oldA = root.querySelectorAll('li')[0];
     const oldB = root.querySelectorAll('li')[1];
     rows.update(0, (r) => ({ ...r, label: 'A' }));
     const lis = root.querySelectorAll('li');
     expect(lis[0].textContent).toBe('A');
-    expect(lis[1]).toBe(oldB);  // sibling preserved (granular reconciler doesn't touch unchanged rows)
+    expect(lis[1]).toBe(oldB); // sibling preserved (granular reconciler doesn't touch unchanged rows)
     // KF-201: updated row preserves its DOM node identity — morph applies the
     // text-node change in place. Skips the layout cost of a full subtree
     // discard-and-reinsert, and preserves focus / scroll / IME state on
@@ -149,20 +173,30 @@ describe('arraySignal — each() granular integration via mount()', () => {
     // ensures the bulk-parse path is exercised.
     type R = { id: number; label: string; kind: 'plain' | 'wrapped' };
     const initial: R[] = Array.from({ length: 5 }, (_, i) => ({
-      id: i, label: `row${i}`, kind: 'plain' as const,
+      id: i,
+      label: `row${i}`,
+      kind: 'plain' as const,
     }));
     const rows = arraySignal<R>(initial);
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => jsx('li', {
-        'data-key': String(r.id),
-        children: r.kind === 'wrapped' ? jsx('strong', { children: r.label }) : r.label,
-      })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          jsx('li', {
+            'data-key': String(r.id),
+            children:
+              r.kind === 'wrapped'
+                ? jsx('strong', { children: r.label })
+                : r.label,
+          }),
+        ),
+      }),
+    );
     const oldRows = [...root.querySelectorAll('li')];
 
     const tplProto = Object.getPrototypeOf(document.createElement('template'));
-    const origDescriptor = Object.getOwnPropertyDescriptor(tplProto, 'innerHTML')
-      ?? Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!;
+    const origDescriptor =
+      Object.getOwnPropertyDescriptor(tplProto, 'innerHTML') ??
+      Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!;
     let parseCount = 0;
     Object.defineProperty(tplProto, 'innerHTML', {
       configurable: true,
@@ -185,37 +219,50 @@ describe('arraySignal — each() granular integration via mount()', () => {
     }
 
     const lis = root.querySelectorAll('li');
-    expect([...lis].map((li) => li.textContent)).toEqual(['A', 'row1', 'C', 'row3', 'E']);
+    expect([...lis].map((li) => li.textContent)).toEqual([
+      'A',
+      'row1',
+      'C',
+      'row3',
+      'E',
+    ]);
     expect(lis[0].querySelector('strong')).not.toBeNull();
     expect(lis[2].querySelector('strong')).not.toBeNull();
     expect(lis[4].querySelector('strong')).not.toBeNull();
-    expect(lis[1]).toBe(oldRows[1]);  // unchanged sibling preserved
-    expect(lis[3]).toBe(oldRows[3]);  // unchanged sibling preserved
-    expect(parseCount).toBe(1);  // bulk parse — one innerHTML write for 3 updates
+    expect(lis[1]).toBe(oldRows[1]); // unchanged sibling preserved
+    expect(lis[3]).toBe(oldRows[3]); // unchanged sibling preserved
+    expect(parseCount).toBe(1); // bulk parse — one innerHTML write for 3 updates
   });
 
   it('KF-94 bulk-update: no-op updates are filtered before the bulk parse', async () => {
     // If every update produces identical HTML, no DOM work happens — and
     // the bulk-parse innerHTML setter is never called.
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
     renderRows(rows);
     const oldA = root.querySelectorAll('li')[0];
     const oldB = root.querySelectorAll('li')[1];
 
     const tplProto = Object.getPrototypeOf(document.createElement('template'));
-    const origDescriptor = Object.getOwnPropertyDescriptor(tplProto, 'innerHTML')
-      ?? Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!;
+    const origDescriptor =
+      Object.getOwnPropertyDescriptor(tplProto, 'innerHTML') ??
+      Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerHTML')!;
     let parseCount = 0;
     Object.defineProperty(tplProto, 'innerHTML', {
       configurable: true,
       get: origDescriptor.get,
-      set(value: string) { parseCount += 1; origDescriptor.set!.call(this, value); },
+      set(value: string) {
+        parseCount += 1;
+        origDescriptor.set!.call(this, value);
+      },
     });
 
     try {
       const { batch } = await import('../../src/index.js');
       batch(() => {
-        rows.update(0, (r) => ({ ...r }));  // identity → same HTML
+        rows.update(0, (r) => ({ ...r })); // identity → same HTML
         rows.update(1, (r) => ({ ...r }));
       });
     } finally {
@@ -224,30 +271,43 @@ describe('arraySignal — each() granular integration via mount()', () => {
 
     expect(root.querySelectorAll('li')[0]).toBe(oldA);
     expect(root.querySelectorAll('li')[1]).toBe(oldB);
-    expect(parseCount).toBe(0);  // all no-ops → no parse at all
+    expect(parseCount).toBe(0); // all no-ops → no parse at all
   });
 
   it('KF-94 bulk-update: partial no-ops still apply the real changes', async () => {
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }, { id: 3, label: 'c' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+      { id: 3, label: 'c' },
+    ]);
     renderRows(rows);
     const { batch } = await import('../../src/index.js');
     batch(() => {
-      rows.update(0, (r) => ({ ...r }));            // no-op
+      rows.update(0, (r) => ({ ...r })); // no-op
       rows.update(1, (r) => ({ ...r, label: 'B' })); // real change
-      rows.update(2, (r) => ({ ...r }));            // no-op
+      rows.update(2, (r) => ({ ...r })); // no-op
     });
-    expect([...root.querySelectorAll('li')].map((li) => li.textContent)).toEqual(['a', 'B', 'c']);
+    expect(
+      [...root.querySelectorAll('li')].map((li) => li.textContent),
+    ).toEqual(['a', 'B', 'c']);
   });
 
   it('KF-94 bulk-update: throws when bulk-parsed HTML produces fewer elements than non-noop changes', async () => {
-    const rows = arraySignal([{ id: 1, label: 'a' }, { id: 2, label: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, label: 'a' },
+      { id: 2, label: 'b' },
+    ]);
     let renderImpl = (r: { id: number; label: string }): string =>
       `<li data-key="${r.id}">${r.label}</li>`;
-    mount(root, () => jsx('ul', {
-      children: each(rows, (r) => renderImpl(r as { id: number; label: string })),
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: each(rows, (r) =>
+          renderImpl(r as { id: number; label: string }),
+        ),
+      }),
+    );
     // Force the row that would otherwise change to render empty HTML.
-    renderImpl = (r) => r.id === 1 ? `<li data-key="${r.id}">X</li>` : '   ';
+    renderImpl = (r) => (r.id === 1 ? `<li data-key="${r.id}">X</li>` : '   ');
     const { batch } = await import('../../src/index.js');
     expect(() => {
       batch(() => {
@@ -256,8 +316,6 @@ describe('arraySignal — each() granular integration via mount()', () => {
       });
     }).toThrow(/row render at index 1 produced no top-level element/);
   });
-
-
 });
 
 /**

@@ -7,7 +7,14 @@
 //
 // Mirrors the worked examples in site/src/content/docs/migrating/redux.md.
 
-import { defineStore, effect, mount, delegate, attr, type AttrSpec } from 'kerfjs';
+import {
+  defineStore,
+  effect,
+  mount,
+  delegate,
+  attr,
+  type AttrSpec,
+} from 'kerfjs';
 
 // Dev diagnostics: kerf never infers dev mode, so the app installs them behind
 // its own build's dev flag. Vite folds this to `false` when it builds for
@@ -15,10 +22,10 @@ import { defineStore, effect, mount, delegate, attr, type AttrSpec } from 'kerfj
 if (import.meta.env.DEV) await import('kerfjs/dev');
 
 const ACTIONS = {
-  inc:       attr('data-action', 'inc'),
-  dec:       attr('data-action', 'dec'),
-  reset:     attr('data-action', 'reset'),
-  fetchOk:   attr('data-action', 'fetch-ok'),
+  inc: attr('data-action', 'inc'),
+  dec: attr('data-action', 'dec'),
+  reset: attr('data-action', 'reset'),
+  fetchOk: attr('data-action', 'fetch-ok'),
   fetchFail: attr('data-action', 'fetch-fail'),
 } as const satisfies Record<string, AttrSpec<'data-action'>>;
 
@@ -44,8 +51,10 @@ function loadCounter(): CounterState {
 const counter = defineStore({
   initial: loadCounter,
   actions: (set, get) => ({
-    increment: () => set({ count: get().count + 1, lastBumpedAt: new Date().toISOString() }),
-    decrement: () => set({ count: get().count - 1, lastBumpedAt: new Date().toISOString() }),
+    increment: () =>
+      set({ count: get().count + 1, lastBumpedAt: new Date().toISOString() }),
+    decrement: () =>
+      set({ count: get().count - 1, lastBumpedAt: new Date().toISOString() }),
     reset: () => set({ count: 0, lastBumpedAt: null }),
   }),
 });
@@ -99,9 +108,12 @@ mount(counterRoot, () => {
   return (
     <div data-counter>
       <h2>Counter</h2>
-      <div class="count" data-count>{count}</div>
+      <div class="count" data-count>
+        {count}
+      </div>
       <div class="meta" data-meta>
-        last bumped: {lastBumpedAt ? new Date(lastBumpedAt).toLocaleTimeString() : 'never'}
+        last bumped:{' '}
+        {lastBumpedAt ? new Date(lastBumpedAt).toLocaleTimeString() : 'never'}
       </div>
       <div class="row">
         <button {...ACTIONS.inc.attrs}>+1</button>
@@ -119,7 +131,13 @@ mount(asyncRoot, () => {
     <div data-async>
       <h2>Async action (fetch + load/error states)</h2>
       <div class="async-status" data-async-status>
-        {loading ? 'loading…' : error ? `error: ${error}` : data ? 'ok' : 'idle'}
+        {loading
+          ? 'loading…'
+          : error
+            ? `error: ${error}`
+            : data
+              ? 'ok'
+              : 'idle'}
       </div>
       <div class="row">
         <button {...ACTIONS.fetchOk.attrs}>Fetch (succeeds)</button>
@@ -141,8 +159,18 @@ mount(asyncRoot, () => {
 // like an accidental discard. For transient roots (modals, route views, mount
 // swaps) capture and call the disposer — see docs/5-event-delegation.md §5.3
 // and the `cart-htmx` example.
-void delegate(document.body, 'click', ACTIONS.inc.selector, () => counter.actions.increment());
-void delegate(document.body, 'click', ACTIONS.dec.selector, () => counter.actions.decrement());
-void delegate(document.body, 'click', ACTIONS.reset.selector, () => counter.actions.reset());
-void delegate(document.body, 'click', ACTIONS.fetchOk.selector, () => { void remote.actions.fetch(true); });
-void delegate(document.body, 'click', ACTIONS.fetchFail.selector, () => { void remote.actions.fetch(false); });
+void delegate(document.body, 'click', ACTIONS.inc.selector, () =>
+  counter.actions.increment(),
+);
+void delegate(document.body, 'click', ACTIONS.dec.selector, () =>
+  counter.actions.decrement(),
+);
+void delegate(document.body, 'click', ACTIONS.reset.selector, () =>
+  counter.actions.reset(),
+);
+void delegate(document.body, 'click', ACTIONS.fetchOk.selector, () => {
+  void remote.actions.fetch(true);
+});
+void delegate(document.body, 'click', ACTIONS.fetchFail.selector, () => {
+  void remote.actions.fetch(false);
+});

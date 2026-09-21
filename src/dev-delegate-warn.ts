@@ -59,13 +59,13 @@ export function warnIfInsideEffect(fn: 'delegate' | 'delegateCapture'): void {
   if (warned) return;
   warned = true;
   console.warn(
-    `kerf: ${fn}() was called inside an effect() body. `
-    + 'Every effect re-run installs a fresh root listener; the effect disposer cleans up the '
-    + 'reactive subscription but not the listeners, so listener count grows linearly with signal '
-    + 'churn and each listener pins its handler closure. Register the delegate once at module '
-    + 'or setup scope and gate behavior on the signal *inside the handler* where the read is free. '
-    + 'See docs/5-event-delegation.md §5.3 "When capturing the disposer still isn\'t enough". '
-    + 'Set KERF_DEV_WARN_DELEGATE_IN_EFFECT=0 (or unset it) to silence this warning.',
+    `kerf: ${fn}() was called inside an effect() body. ` +
+      'Every effect re-run installs a fresh root listener; the effect disposer cleans up the ' +
+      'reactive subscription but not the listeners, so listener count grows linearly with signal ' +
+      'churn and each listener pins its handler closure. Register the delegate once at module ' +
+      'or setup scope and gate behavior on the signal *inside the handler* where the read is free. ' +
+      'See docs/5-event-delegation.md §5.3 "When capturing the disposer still isn\'t enough". ' +
+      'Set KERF_DEV_WARN_DELEGATE_IN_EFFECT=0 (or unset it) to silence this warning.',
   );
 }
 

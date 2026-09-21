@@ -7,7 +7,7 @@ const meta = {
   type: 'problem',
   docs: {
     description:
-      "Disallow inline `onClick`-style JSX event handler attributes; use `data-action` + `delegate()` instead.",
+      'Disallow inline `onClick`-style JSX event handler attributes; use `data-action` + `delegate()` instead.',
     url: 'https://github.com/brianwestphal/kerf/blob/main/eslint-plugin/docs/rules/no-inline-jsx-event-handlers.md',
   },
   schema: [],

@@ -1,5 +1,12 @@
 import type { SafeHtml } from 'kerfjs';
-import { PanelBottomClose, PanelBottomOpen, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from 'lucide';
+import {
+  PanelBottomClose,
+  PanelBottomOpen,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
+} from 'lucide';
 
 import { LucideIcon } from './lucide-icon.js';
 
@@ -13,10 +20,21 @@ export type CollapsiblePanelSide = 'left' | 'right' | 'bottom';
  * for a bottom drawer — the `Close` glyph while open, the `Open` glyph while
  * collapsed. Exposed so an app can render its own toggle affordance.
  */
-export function collapsiblePanelToggleIcon(side: CollapsiblePanelSide, collapsed: boolean): { icon: Parameters<typeof LucideIcon>[0]['icon']; name: string } {
-  if (side === 'left') return collapsed ? { icon: PanelLeftOpen, name: 'panel-left-open' } : { icon: PanelLeftClose, name: 'panel-left-close' };
-  if (side === 'right') return collapsed ? { icon: PanelRightOpen, name: 'panel-right-open' } : { icon: PanelRightClose, name: 'panel-right-close' };
-  return collapsed ? { icon: PanelBottomOpen, name: 'panel-bottom-open' } : { icon: PanelBottomClose, name: 'panel-bottom-close' };
+export function collapsiblePanelToggleIcon(
+  side: CollapsiblePanelSide,
+  collapsed: boolean,
+): { icon: Parameters<typeof LucideIcon>[0]['icon']; name: string } {
+  if (side === 'left')
+    return collapsed
+      ? { icon: PanelLeftOpen, name: 'panel-left-open' }
+      : { icon: PanelLeftClose, name: 'panel-left-close' };
+  if (side === 'right')
+    return collapsed
+      ? { icon: PanelRightOpen, name: 'panel-right-open' }
+      : { icon: PanelRightClose, name: 'panel-right-close' };
+  return collapsed
+    ? { icon: PanelBottomOpen, name: 'panel-bottom-open' }
+    : { icon: PanelBottomClose, name: 'panel-bottom-close' };
 }
 
 export interface CollapsiblePanelToggleProps {
@@ -40,10 +58,28 @@ export interface CollapsiblePanelToggleProps {
  * put it in the panel's own header (to collapse) and somewhere always-visible
  * (to expand while collapsed).
  */
-export function CollapsiblePanelToggle({ side, collapsed, action, panelId, label, className = '' }: CollapsiblePanelToggleProps) {
+export function CollapsiblePanelToggle({
+  side,
+  collapsed,
+  action,
+  panelId,
+  label,
+  className = '',
+}: CollapsiblePanelToggleProps) {
   const glyph = collapsiblePanelToggleIcon(side, collapsed);
   const accessible = label ?? (collapsed ? 'Expand' : 'Collapse');
-  return <button type="button" class={`kui-collapsible-panel__toggle ${className}`.trim()} data-action={action} data-collapsible-target={panelId} aria-expanded={String(!collapsed)} aria-label={accessible}><LucideIcon icon={glyph.icon} name={glyph.name} /></button>;
+  return (
+    <button
+      type="button"
+      class={`kui-collapsible-panel__toggle ${className}`.trim()}
+      data-action={action}
+      data-collapsible-target={panelId}
+      aria-expanded={String(!collapsed)}
+      aria-label={accessible}
+    >
+      <LucideIcon icon={glyph.icon} name={glyph.name} />
+    </button>
+  );
 }
 
 export interface CollapsiblePanelProps {
@@ -72,9 +108,31 @@ export interface CollapsiblePanelProps {
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
  * affordance. See `docs/24-collapsible-panel.md`.
  */
-export function CollapsiblePanel({ id, side, collapsed = false, size, label, children, className = '' }: CollapsiblePanelProps) {
-  const sizeVar = side === 'bottom' ? '--kui-collapsible-panel-height' : '--kui-collapsible-panel-width';
-  return <aside class={`kui-collapsible-panel kui-collapsible-panel--${side} ${className}`.trim()} data-component="collapsible-panel" data-collapsible-panel={id} data-side={side} data-collapsed={String(collapsed)} aria-label={label || undefined} aria-hidden={collapsed ? 'true' : undefined} style={size ? `${sizeVar}: ${size}px` : undefined}>
-    <div class="kui-collapsible-panel__content">{children}</div>
-  </aside>;
+export function CollapsiblePanel({
+  id,
+  side,
+  collapsed = false,
+  size,
+  label,
+  children,
+  className = '',
+}: CollapsiblePanelProps) {
+  const sizeVar =
+    side === 'bottom'
+      ? '--kui-collapsible-panel-height'
+      : '--kui-collapsible-panel-width';
+  return (
+    <aside
+      class={`kui-collapsible-panel kui-collapsible-panel--${side} ${className}`.trim()}
+      data-component="collapsible-panel"
+      data-collapsible-panel={id}
+      data-side={side}
+      data-collapsed={String(collapsed)}
+      aria-label={label || undefined}
+      aria-hidden={collapsed ? 'true' : undefined}
+      style={size ? `${sizeVar}: ${size}px` : undefined}
+    >
+      <div class="kui-collapsible-panel__content">{children}</div>
+    </aside>
+  );
 }

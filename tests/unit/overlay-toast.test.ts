@@ -1,4 +1,4 @@
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { jsx, raw } from '../../src/jsx-runtime.js';
 import { toast } from '../../src/overlay.js';
@@ -28,7 +28,9 @@ describe('toast()', () => {
     vi.useFakeTimers();
     toast('one', { duration: 0 });
     toast('two', { duration: 0 });
-    expect(document.querySelectorAll('.kerf-toasts .kerf-toast').length).toBe(2);
+    expect(document.querySelectorAll('.kerf-toasts .kerf-toast').length).toBe(
+      2,
+    );
   });
 
   it('accepts a render function as content', () => {
@@ -38,14 +40,20 @@ describe('toast()', () => {
   });
 
   it('escapes string content as text while preserving trusted SafeHtml markup', () => {
-    const attack = '<img id="toast-xss" src="x" onerror="globalThis.pwned=true"> & "quoted"';
+    const attack =
+      '<img id="toast-xss" src="x" onerror="globalThis.pwned=true"> & "quoted"';
     const textToast = toast(attack, { duration: 0 }).el;
 
     expect(textToast.textContent).toBe(attack);
     expect(textToast.querySelector('#toast-xss')).toBeNull();
 
-    const htmlToast = toast(raw('<strong id="trusted-toast">trusted</strong>'), { duration: 0 }).el;
-    expect(htmlToast.querySelector('#trusted-toast')?.textContent).toBe('trusted');
+    const htmlToast = toast(
+      raw('<strong id="trusted-toast">trusted</strong>'),
+      { duration: 0 },
+    ).el;
+    expect(htmlToast.querySelector('#trusted-toast')?.textContent).toBe(
+      'trusted',
+    );
   });
 
   it('returns { el, dismiss } — el is the node, dismiss removes it early (idempotent)', () => {
@@ -77,7 +85,7 @@ describe('toast()', () => {
     dismiss();
   });
 
-  it("variant adds a `${className}--${variant}` accent class", () => {
+  it('variant adds a `${className}--${variant}` accent class', () => {
     vi.useFakeTimers();
     toast('done', { variant: 'success', duration: 0 });
     const el = document.querySelector('.kerf-toast') as HTMLElement;
@@ -106,7 +114,11 @@ describe('toast()', () => {
 
   it('exitClass is added on dismiss and the node is removed after exitDuration (CSS exit hook)', () => {
     vi.useFakeTimers();
-    const { el, dismiss } = toast('bye', { exitClass: 'is-out', exitDuration: 200, duration: 0 });
+    const { el, dismiss } = toast('bye', {
+      exitClass: 'is-out',
+      exitDuration: 200,
+      duration: 0,
+    });
     dismiss();
     expect(el.classList.contains('is-out')).toBe(true); // exit class applied
     expect(document.querySelector('.kerf-toast')).not.toBeNull(); // still present during the transition
@@ -123,13 +135,24 @@ describe('toast()', () => {
   });
 });
 
-describe("toast() — KF-495 replace collapse + symmetric exit", () => {
+describe('toast() — KF-495 replace collapse + symmetric exit', () => {
   it("mode:'replace' collapse:'instant' removes the prior toast synchronously (no cross-fade)", () => {
     vi.useFakeTimers();
-    toast('First', { mode: 'replace', exitClass: 'hide', exitDuration: 300, duration: 0 });
+    toast('First', {
+      mode: 'replace',
+      exitClass: 'hide',
+      exitDuration: 300,
+      duration: 0,
+    });
     expect(document.querySelectorAll('.kerf-toast').length).toBe(1);
 
-    toast('Second', { mode: 'replace', collapse: 'instant', exitClass: 'hide', exitDuration: 300, duration: 0 });
+    toast('Second', {
+      mode: 'replace',
+      collapse: 'instant',
+      exitClass: 'hide',
+      exitDuration: 300,
+      duration: 0,
+    });
     const toasts = document.querySelectorAll('.kerf-toast');
     expect(toasts.length).toBe(1); // First removed immediately — never overlaps
     expect(toasts[0].textContent).toBe('Second');
@@ -137,11 +160,23 @@ describe("toast() — KF-495 replace collapse + symmetric exit", () => {
 
   it("mode:'replace' default collapse:'fade' keeps the prior through its exit transition", () => {
     vi.useFakeTimers();
-    toast('First', { mode: 'replace', exitClass: 'hide', exitDuration: 300, duration: 0 });
-    toast('Second', { mode: 'replace', exitClass: 'hide', exitDuration: 300, duration: 0 }); // default fade
+    toast('First', {
+      mode: 'replace',
+      exitClass: 'hide',
+      exitDuration: 300,
+      duration: 0,
+    });
+    toast('Second', {
+      mode: 'replace',
+      exitClass: 'hide',
+      exitDuration: 300,
+      duration: 0,
+    }); // default fade
 
     expect(document.querySelectorAll('.kerf-toast').length).toBe(2); // both present during the fade
-    const first = Array.from(document.querySelectorAll('.kerf-toast')).find((t) => t.textContent === 'First')!;
+    const first = Array.from(document.querySelectorAll('.kerf-toast')).find(
+      (t) => t.textContent === 'First',
+    )!;
     expect(first.classList.contains('hide')).toBe(true); // First is exiting
     vi.advanceTimersByTime(300);
     expect(document.querySelectorAll('.kerf-toast').length).toBe(1); // First gone after exitDuration
@@ -149,7 +184,12 @@ describe("toast() — KF-495 replace collapse + symmetric exit", () => {
 
   it('exit removes the enterClass and adds the exitClass', () => {
     vi.useFakeTimers();
-    const { el, dismiss } = toast('x', { enterClass: 'show', exitClass: 'hide', exitDuration: 100, duration: 0 });
+    const { el, dismiss } = toast('x', {
+      enterClass: 'show',
+      exitClass: 'hide',
+      exitDuration: 100,
+      duration: 0,
+    });
     vi.advanceTimersByTime(20); // entrance applied
     expect(el.classList.contains('show')).toBe(true);
 
@@ -162,7 +202,11 @@ describe("toast() — KF-495 replace collapse + symmetric exit", () => {
 
   it('exitDuration delays removal even without an exitClass (symmetric single-class fade)', () => {
     vi.useFakeTimers();
-    const { el, dismiss } = toast('x', { enterClass: 'visible', exitDuration: 200, duration: 0 });
+    const { el, dismiss } = toast('x', {
+      enterClass: 'visible',
+      exitDuration: 200,
+      duration: 0,
+    });
     vi.advanceTimersByTime(20);
     expect(el.classList.contains('visible')).toBe(true);
 
@@ -174,10 +218,14 @@ describe("toast() — KF-495 replace collapse + symmetric exit", () => {
   });
 });
 
-describe("toast() — KF-497 instant single-toast dismiss", () => {
+describe('toast() — KF-497 instant single-toast dismiss', () => {
   it('dismiss({ instant: true }) removes synchronously, skipping the exit transition', () => {
     vi.useFakeTimers();
-    const { el, dismiss } = toast('x', { exitClass: 'hide', exitDuration: 300, duration: 0 });
+    const { el, dismiss } = toast('x', {
+      exitClass: 'hide',
+      exitDuration: 300,
+      duration: 0,
+    });
     dismiss({ instant: true });
     expect(el.classList.contains('hide')).toBe(false); // no exit class added
     expect(document.querySelector('.kerf-toast')).toBeNull(); // gone NOW, no 300ms wait
@@ -190,7 +238,13 @@ describe("toast() — KF-497 instant single-toast dismiss", () => {
     expect(document.querySelector('.kerf-toast')).not.toBeNull();
 
     // The action shows a replacement in the SAME centered slot.
-    toast('B', { mode: 'replace', collapse: 'instant', exitClass: 'hide', exitDuration: 300, duration: 0 });
+    toast('B', {
+      mode: 'replace',
+      collapse: 'instant',
+      exitClass: 'hide',
+      exitDuration: 300,
+      duration: 0,
+    });
     // A (mid-fade) is removed synchronously — only B remains, no cross-fade.
     const toasts = document.querySelectorAll('.kerf-toast');
     expect(toasts.length).toBe(1);
@@ -199,7 +253,11 @@ describe("toast() — KF-497 instant single-toast dismiss", () => {
 
   it('a stale exit timer after an instant dismiss is a no-op (idempotent)', () => {
     vi.useFakeTimers();
-    const { dismiss } = toast('x', { exitClass: 'hide', exitDuration: 300, duration: 0 });
+    const { dismiss } = toast('x', {
+      exitClass: 'hide',
+      exitDuration: 300,
+      duration: 0,
+    });
     dismiss(); // fade → exit timer scheduled
     dismiss({ instant: true }); // force-remove now
     expect(document.querySelector('.kerf-toast')).toBeNull();
@@ -218,10 +276,17 @@ describe("toast() — KF-497 instant single-toast dismiss", () => {
 
   it('further dismiss calls after removal are no-ops (idempotent both ways)', () => {
     vi.useFakeTimers();
-    const { dismiss } = toast('x', { exitClass: 'hide', exitDuration: 300, duration: 0 });
+    const { dismiss } = toast('x', {
+      exitClass: 'hide',
+      exitDuration: 300,
+      duration: 0,
+    });
     dismiss({ instant: true });
     expect(document.querySelector('.kerf-toast')).toBeNull();
-    expect(() => { dismiss({ instant: true }); dismiss(); }).not.toThrow(); // removed → guarded
+    expect(() => {
+      dismiss({ instant: true });
+      dismiss();
+    }).not.toThrow(); // removed → guarded
     expect(document.querySelector('.kerf-toast')).toBeNull();
   });
 });

@@ -47,13 +47,16 @@
 
 @keyframes kerf-live-pulse {
   0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--sl-color-accent) 60%, transparent);
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--sl-color-accent) 60%, transparent);
   }
   70% {
-    box-shadow: 0 0 0 6px color-mix(in srgb, var(--sl-color-accent) 0%, transparent);
+    box-shadow: 0 0 0 6px
+      color-mix(in srgb, var(--sl-color-accent) 0%, transparent);
   }
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--sl-color-accent) 0%, transparent);
+    box-shadow: 0 0 0 0
+      color-mix(in srgb, var(--sl-color-accent) 0%, transparent);
   }
 }
 
@@ -135,7 +138,8 @@
 .kerf-live-example textarea:focus {
   outline: none;
   border-color: var(--sl-color-accent);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--sl-color-accent) 25%, transparent);
+  box-shadow: 0 0 0 2px
+    color-mix(in srgb, var(--sl-color-accent) 25%, transparent);
 }
 
 .kerf-live-example label {
@@ -245,13 +249,17 @@
 .video-placeholder {
   margin: 1rem 0 1.5rem;
   padding: 1.25rem 1.25rem 1rem;
-  border: 1px dashed color-mix(in srgb, var(--sl-color-accent) 60%, var(--sl-color-text) 20%);
+  border: 1px dashed
+    color-mix(in srgb, var(--sl-color-accent) 60%, var(--sl-color-text) 20%);
   border-radius: 8px;
   background: color-mix(in srgb, var(--sl-color-accent) 6%, var(--sl-color-bg));
   text-align: center;
   font-size: 0.95rem;
 }
-.video-placeholder strong { color: var(--sl-color-text); letter-spacing: 0.01em; }
+.video-placeholder strong {
+  color: var(--sl-color-text);
+  letter-spacing: 0.01em;
+}
 .video-placeholder p {
   margin: 0.35rem 0 0;
   font-size: 0.85rem;

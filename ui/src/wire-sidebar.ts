@@ -35,7 +35,8 @@ export interface WireSidebarOptions {
   storage?: SidebarStorage;
 }
 
-const FOCUSABLE = 'a[href],area[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+const FOCUSABLE =
+  'a[href],area[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
 function focusables(panel: HTMLElement): HTMLElement[] {
   // Focus only ever targets an OPEN panel, so the selector (which already drops
@@ -59,7 +60,10 @@ function defaultStorage(): SidebarStorage | undefined {
  * persistence hook. The app owns each `collapsed` signal and the layout; this wire
  * owns the interaction. Returns a disposer. See `docs/24-collapsible-panel.md`.
  */
-export function wireSidebar(root: HTMLElement, { panels, deviceClass, storage = defaultStorage() }: WireSidebarOptions): () => void {
+export function wireSidebar(
+  root: HTMLElement,
+  { panels, deviceClass, storage = defaultStorage() }: WireSidebarOptions,
+): () => void {
   const ownerDocument = root.ownerDocument;
   const byAction = new Map(panels.map((panel) => [panel.toggleAction, panel]));
   const returnFocus = new Map<string, HTMLElement>();
@@ -69,13 +73,17 @@ export function wireSidebar(root: HTMLElement, { panels, deviceClass, storage = 
   for (const panel of panels) {
     if (!panel.storageKey || !storage) continue;
     const stored = storage.getItem(panel.storageKey);
-    if (stored === 'true' || stored === 'false') panel.collapsed.value = stored === 'true';
-    disposers.push(effect(() => {
-      storage.setItem(panel.storageKey!, String(panel.collapsed.value));
-    }));
+    if (stored === 'true' || stored === 'false')
+      panel.collapsed.value = stored === 'true';
+    disposers.push(
+      effect(() => {
+        storage.setItem(panel.storageKey!, String(panel.collapsed.value));
+      }),
+    );
   }
 
-  const panelElement = (id: string): HTMLElement | null => root.querySelector<HTMLElement>(`[data-collapsible-panel="${id}"]`);
+  const panelElement = (id: string): HTMLElement | null =>
+    root.querySelector<HTMLElement>(`[data-collapsible-panel="${id}"]`);
 
   const collapse = (panel: WireSidebarPanel): void => {
     if (panel.collapsed.value) return;
@@ -83,58 +91,65 @@ export function wireSidebar(root: HTMLElement, { panels, deviceClass, storage = 
   };
 
   // Toggle delegation. The trigger is remembered so focus restores to it on close.
-  disposers.push(delegate(root, 'click', '[data-action]', (_event, element) => {
-    const trigger = element as HTMLElement;
-    const panel = byAction.get(trigger.dataset.action ?? '');
-    if (!panel) return;
-    returnFocus.set(panel.id, trigger);
-    panel.collapsed.value = !panel.collapsed.value;
-  }));
+  disposers.push(
+    delegate(root, 'click', '[data-action]', (_event, element) => {
+      const trigger = element as HTMLElement;
+      const panel = byAction.get(trigger.dataset.action ?? '');
+      if (!panel) return;
+      returnFocus.set(panel.id, trigger);
+      panel.collapsed.value = !panel.collapsed.value;
+    }),
+  );
 
   // Focus: move into the panel when it opens; restore to the trigger when it closes.
   for (const panel of panels) {
     let previous = panel.collapsed.value;
-    disposers.push(effect(() => {
-      const collapsed = panel.collapsed.value;
-      if (collapsed === previous) return;
-      previous = collapsed;
-      const element = panelElement(panel.id);
-      if (!collapsed && element) {
-        (focusables(element)[0] ?? element).focus();
-      } else if (collapsed) {
-        returnFocus.get(panel.id)?.focus();
-      }
-    }));
+    disposers.push(
+      effect(() => {
+        const collapsed = panel.collapsed.value;
+        if (collapsed === previous) return;
+        previous = collapsed;
+        const element = panelElement(panel.id);
+        if (!collapsed && element) {
+          (focusables(element)[0] ?? element).focus();
+        } else if (collapsed) {
+          returnFocus.get(panel.id)?.focus();
+        }
+      }),
+    );
   }
 
   // Compact overlay: a dismissable backdrop + Escape + focus trap while compact
   // and a panel is open.
   if (deviceClass) {
     let backdrop: HTMLButtonElement | undefined;
-    const openPanel = (): WireSidebarPanel | undefined => panels.find((panel) => !panel.collapsed.value);
+    const openPanel = (): WireSidebarPanel | undefined =>
+      panels.find((panel) => !panel.collapsed.value);
     const removeBackdrop = (): void => {
       backdrop?.remove();
       backdrop = undefined;
     };
-    disposers.push(effect(() => {
-      const compact = deviceClass.value.compact;
-      const open = compact ? openPanel() : undefined;
-      root.dataset.collapsibleOverlay = String(compact);
-      if (compact && open) {
-        if (!backdrop) {
-          backdrop = ownerDocument.createElement('button');
-          backdrop.type = 'button';
-          backdrop.className = 'kui-collapsible-panel__backdrop';
-          backdrop.setAttribute('aria-label', 'Close');
-          backdrop.addEventListener('click', () => collapse(open));
-          const element = panelElement(open.id);
-          element?.parentElement?.insertBefore(backdrop, element);
+    disposers.push(
+      effect(() => {
+        const compact = deviceClass.value.compact;
+        const open = compact ? openPanel() : undefined;
+        root.dataset.collapsibleOverlay = String(compact);
+        if (compact && open) {
+          if (!backdrop) {
+            backdrop = ownerDocument.createElement('button');
+            backdrop.type = 'button';
+            backdrop.className = 'kui-collapsible-panel__backdrop';
+            backdrop.setAttribute('aria-label', 'Close');
+            backdrop.addEventListener('click', () => collapse(open));
+            const element = panelElement(open.id);
+            element?.parentElement?.insertBefore(backdrop, element);
+          }
+        } else {
+          removeBackdrop();
+          if (!compact) delete root.dataset.collapsibleOverlay;
         }
-      } else {
-        removeBackdrop();
-        if (!compact) delete root.dataset.collapsibleOverlay;
-      }
-    }));
+      }),
+    );
 
     const onKeydown = (event: KeyboardEvent): void => {
       if (!deviceClass.value.compact) return;
@@ -162,7 +177,9 @@ export function wireSidebar(root: HTMLElement, { panels, deviceClass, storage = 
       }
     };
     ownerDocument.addEventListener('keydown', onKeydown);
-    disposers.push(() => ownerDocument.removeEventListener('keydown', onKeydown));
+    disposers.push(() =>
+      ownerDocument.removeEventListener('keydown', onKeydown),
+    );
     disposers.push(removeBackdrop);
   }
 

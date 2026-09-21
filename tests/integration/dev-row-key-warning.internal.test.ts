@@ -11,7 +11,10 @@ import { installDevHooks } from '../../src/dev-hooks.js';
 import { maybeWarnMissingRowKey } from '../../src/dev-row-key-warn.js';
 import { each, mount, signal } from '../../src/index.js';
 import { jsx } from '../../src/jsx-runtime.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
 interface Row {
   id: number;
@@ -45,33 +48,43 @@ describe('missing-row-key warning — full each() reconciliation pipeline', () =
     const rows = arraySignal([a, b]);
     const emphasized = signal(false);
 
-    const dispose = mount(root, () => jsx('ul', {
-      children: each(
-        rows,
-        (row) => jsx('li', {
-          class: emphasized.value ? 'emphasized' : '',
-          children: row.label,
-        }),
-        () => emphasized.value,
-      ),
-    }));
+    const dispose = mount(root, () =>
+      jsx('ul', {
+        children: each(
+          rows,
+          (row) =>
+            jsx('li', {
+              class: emphasized.value ? 'emphasized' : '',
+              children: row.label,
+            }),
+          () => emphasized.value,
+        ),
+      }),
+    );
 
     // Initial binding samples its inlined first row, then the normal post-bind
     // reconcile samples the same first row through the in-place path. The
     // binding-level flag still emits the diagnostic only once.
     expect(hook).toHaveBeenCalledTimes(2);
-    expect(warn.mock.calls.filter(([message]) => MISSING_KEY_MESSAGE.test(String(message))))
-      .toHaveLength(1);
+    expect(
+      warn.mock.calls.filter(([message]) =>
+        MISSING_KEY_MESSAGE.test(String(message)),
+      ),
+    ).toHaveLength(1);
 
     // A patch-backed insert takes the granular reconciler and samples again.
     rows.insert(2, c);
-    expect(Array.from(root.querySelectorAll('li'), (el) => el.textContent)).toEqual(['a', 'b', 'c']);
+    expect(
+      Array.from(root.querySelectorAll('li'), (el) => el.textContent),
+    ).toEqual(['a', 'b', 'c']);
     expect(hook).toHaveBeenCalledTimes(3);
 
     // replace() deliberately invalidates granular patching. Reordering the
     // existing refs makes the snapshot reconciler do structural work.
     rows.replace([b, a, c]);
-    expect(Array.from(root.querySelectorAll('li'), (el) => el.textContent)).toEqual(['b', 'a', 'c']);
+    expect(
+      Array.from(root.querySelectorAll('li'), (el) => el.textContent),
+    ).toEqual(['b', 'a', 'c']);
     expect(hook).toHaveBeenCalledTimes(4);
 
     // With the same refs/order, cacheKey drift routes through the snapshot
@@ -85,18 +98,26 @@ describe('missing-row-key warning — full each() reconciliation pipeline', () =
 
     // Every path calls the hook, but the mutable binding context suppresses
     // repeats after the initial decision.
-    expect(warn.mock.calls.filter(([message]) => MISSING_KEY_MESSAGE.test(String(message))))
-      .toHaveLength(1);
+    expect(
+      warn.mock.calls.filter(([message]) =>
+        MISSING_KEY_MESSAGE.test(String(message)),
+      ),
+    ).toHaveLength(1);
 
     // Deduplication belongs to one binding, not the process: a second mount
     // gets its own warning decision.
     const secondRoot = document.createElement('div');
     document.body.appendChild(secondRoot);
-    const disposeSecond = mount(secondRoot, () => jsx('ul', {
-      children: each([a], (row) => jsx('li', { children: row.label })),
-    }));
-    expect(warn.mock.calls.filter(([message]) => MISSING_KEY_MESSAGE.test(String(message))))
-      .toHaveLength(2);
+    const disposeSecond = mount(secondRoot, () =>
+      jsx('ul', {
+        children: each([a], (row) => jsx('li', { children: row.label })),
+      }),
+    );
+    expect(
+      warn.mock.calls.filter(([message]) =>
+        MISSING_KEY_MESSAGE.test(String(message)),
+      ),
+    ).toHaveLength(2);
 
     disposeSecond();
     dispose();
@@ -111,16 +132,19 @@ describe('missing-row-key warning — full each() reconciliation pipeline', () =
     const c: Row = { id: 3, label: 'c' };
     const rows = arraySignal([a, b]);
     const emphasized = signal(false);
-    const dispose = mount(root, () => jsx('ul', {
-      children: each(
-        rows,
-        (row) => jsx('li', {
-          class: emphasized.value ? 'emphasized' : '',
-          children: row.label,
-        }),
-        () => emphasized.value,
-      ),
-    }));
+    const dispose = mount(root, () =>
+      jsx('ul', {
+        children: each(
+          rows,
+          (row) =>
+            jsx('li', {
+              class: emphasized.value ? 'emphasized' : '',
+              children: row.label,
+            }),
+          () => emphasized.value,
+        ),
+      }),
+    );
 
     // Exercise the same granular → snapshot → in-place sequence with the
     // optional hook absent. Core rendering remains live and silent.
@@ -128,10 +152,15 @@ describe('missing-row-key warning — full each() reconciliation pipeline', () =
     rows.replace([b, a, c]);
     emphasized.value = true;
 
-    expect(Array.from(root.querySelectorAll('li'), (el) => el.textContent)).toEqual(['b', 'a', 'c']);
+    expect(
+      Array.from(root.querySelectorAll('li'), (el) => el.textContent),
+    ).toEqual(['b', 'a', 'c']);
     expect(root.querySelectorAll('li.emphasized')).toHaveLength(3);
-    expect(warn.mock.calls.filter(([message]) => MISSING_KEY_MESSAGE.test(String(message))))
-      .toHaveLength(0);
+    expect(
+      warn.mock.calls.filter(([message]) =>
+        MISSING_KEY_MESSAGE.test(String(message)),
+      ),
+    ).toHaveLength(0);
 
     dispose();
   });

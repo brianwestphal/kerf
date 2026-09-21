@@ -91,7 +91,10 @@ function toastRegion(container?: Element): Element {
  * node. `mode: 'replace'` collapses a rapid sequence to the latest; `variant`
  * adds an accent class; `enterClass`/`exitClass` let CSS own the animation.
  */
-export function toast(content: ToastContent, options: ToastOptions = {}): ToastHandle {
+export function toast(
+  content: ToastContent,
+  options: ToastOptions = {},
+): ToastHandle {
   const {
     container,
     className = 'kerf-toast',
@@ -122,16 +125,22 @@ export function toast(content: ToastContent, options: ToastOptions = {}): ToastH
   el.setAttribute('role', role);
   region.appendChild(el);
 
-  const render = typeof content === 'function'
-    ? content
-    : () => typeof content === 'string' ? escapeHtml(content) : content;
+  const render =
+    typeof content === 'function'
+      ? content
+      : () => (typeof content === 'string' ? escapeHtml(content) : content);
   const disposeMount = mount(el, render);
   const state: {
     dismissed: boolean;
     removed: boolean;
     timer: ReturnType<typeof setTimeout> | undefined;
     exitTimer: ReturnType<typeof setTimeout> | undefined;
-  } = { dismissed: false, removed: false, timer: undefined, exitTimer: undefined };
+  } = {
+    dismissed: false,
+    removed: false,
+    timer: undefined,
+    exitTimer: undefined,
+  };
 
   if (enterClass !== undefined) {
     globalThis.requestAnimationFrame(() => {

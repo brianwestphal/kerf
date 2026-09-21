@@ -106,8 +106,10 @@ export function classifyFile(file, bundleDir, cwd) {
   }
 
   const markerIdx = findMarkerIndex(consumer);
-  if (markerIdx === -1) return { state: 'forked', reason: 'no canonical-end marker' };
-  if (markerIdx === -2) return { state: 'forked', reason: 'multiple canonical-end markers' };
+  if (markerIdx === -1)
+    return { state: 'forked', reason: 'no canonical-end marker' };
+  if (markerIdx === -2)
+    return { state: 'forked', reason: 'multiple canonical-end markers' };
 
   const canonicalEnd = canonicalEndOffset(consumer);
   const consumerCanonical = consumer.slice(0, canonicalEnd);
@@ -134,7 +136,10 @@ export function classifyFile(file, bundleDir, cwd) {
       };
     }
     if (consumerCanonicalHash !== historicalHash) {
-      return { state: 'forked', reason: 'content above marker has been edited' };
+      return {
+        state: 'forked',
+        reason: 'content above marker has been edited',
+      };
     }
     return {
       state: 'stale',
@@ -164,7 +169,9 @@ function loadBundle(cwd) {
 function isTriggered(name, cwd) {
   if (name === 'skill') return existsSync(join(cwd, '.claude'));
   if (name === 'cursorrules') {
-    return existsSync(join(cwd, '.cursorrules')) || existsSync(join(cwd, '.cursor'));
+    return (
+      existsSync(join(cwd, '.cursorrules')) || existsSync(join(cwd, '.cursor'))
+    );
   }
   return false;
 }
@@ -220,7 +227,7 @@ const meta = {
     stale:
       '{{tool}} drop-in at `{{dest}}` is stale (have {{consumerVersion}}, latest is {{bundledVersion}}). Run `eslint --fix` to update the canonical section above the `KERF-APP-CANONICAL-END` marker; your customizations below the marker are preserved.',
     forked:
-      '{{tool}} drop-in at `{{dest}}` is forked: {{reason}}. Restore the canonical layout (one `KERF-APP-CANONICAL-END` marker, no edits above it) or disable this rule with `\'kerfjs/ai-assistant-configs\': \'off\'`.',
+      "{{tool}} drop-in at `{{dest}}` is forked: {{reason}}. Restore the canonical layout (one `KERF-APP-CANONICAL-END` marker, no edits above it) or disable this rule with `'kerfjs/ai-assistant-configs': 'off'`.",
   },
   // Mark as fixable so the CLI exposes this rule under `--fix`. The callback
   // writes to a separate file and returns null, so ESLint applies no edit to
@@ -247,7 +254,10 @@ function create(context) {
         if (file.name === 'cursorrules' && !cursorEnabled) continue;
         if (result.state === 'ok') continue;
 
-        const tool = file.name === 'skill' ? 'Claude Code kerf-app skill' : 'Cursor kerf rules';
+        const tool =
+          file.name === 'skill'
+            ? 'Claude Code kerf-app skill'
+            : 'Cursor kerf rules';
         const bundle = file.bundle; // e.g. 'ai/skill.md'
         const data = { tool, dest: file.dest, bundle };
 
@@ -291,9 +301,9 @@ function create(context) {
 
 function contextCwd(context) {
   return (
-    (typeof context.cwd === 'string' && context.cwd)
-    || (typeof context.getCwd === 'function' && context.getCwd())
-    || process.cwd()
+    (typeof context.cwd === 'string' && context.cwd) ||
+    (typeof context.getCwd === 'function' && context.getCwd()) ||
+    process.cwd()
   );
 }
 

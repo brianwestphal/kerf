@@ -15,7 +15,9 @@ import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
-  await page.waitForFunction(() => (window as unknown as { kerfReady: boolean }).kerfReady === true);
+  await page.waitForFunction(
+    () => (window as unknown as { kerfReady: boolean }).kerfReady === true,
+  );
 });
 
 interface MutationSummary {
@@ -28,17 +30,27 @@ interface MutationSummary {
 
 test.beforeEach(async ({ page }) => {
   await page.evaluate(() => {
-    (window as any).measure = (setup: (root: HTMLElement) => () => void): MutationSummary => {
+    (window as any).measure = (
+      setup: (root: HTMLElement) => () => void,
+    ): MutationSummary => {
       const root = document.getElementById('root') as HTMLElement;
       root.innerHTML = '';
       const post = setup(root);
       const mutations: MutationRecord[] = [];
       const obs = new MutationObserver((records) => mutations.push(...records));
-      obs.observe(root, { subtree: true, childList: true, attributes: true, characterData: true });
+      obs.observe(root, {
+        subtree: true,
+        childList: true,
+        attributes: true,
+        characterData: true,
+      });
       post();
       obs.takeRecords().forEach((r) => mutations.push(r));
       obs.disconnect();
-      let characterData = 0, attributes = 0, childListAdded = 0, childListRemoved = 0;
+      let characterData = 0,
+        attributes = 0,
+        childListAdded = 0,
+        childListRemoved = 0;
       for (const m of mutations) {
         if (m.type === 'characterData') characterData++;
         else if (m.type === 'attributes') attributes++;
@@ -47,12 +59,20 @@ test.beforeEach(async ({ page }) => {
           childListRemoved += m.removedNodes.length;
         }
       }
-      return { total: mutations.length, characterData, attributes, childListAdded, childListRemoved };
+      return {
+        total: mutations.length,
+        characterData,
+        attributes,
+        childListAdded,
+        childListRemoved,
+      };
     };
   });
 });
 
-test('text node update deep in a static tree → exactly 1 characterData mutation', async ({ page }) => {
+test('text node update deep in a static tree → exactly 1 characterData mutation', async ({
+  page,
+}) => {
   const summary = await page.evaluate<MutationSummary>(() => {
     const { mount, signal } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
@@ -61,11 +81,15 @@ test('text node update deep in a static tree → exactly 1 characterData mutatio
       mount(root, () =>
         jsx('div', {
           children: jsx('section', {
-            children: jsx('p', { children: jsx('span', { children: count.value }) }),
+            children: jsx('p', {
+              children: jsx('span', { children: count.value }),
+            }),
           }),
         }),
       );
-      return () => { count.value = 1; };
+      return () => {
+        count.value = 1;
+      };
     });
   });
   expect(summary.characterData).toBe(1);
@@ -74,7 +98,9 @@ test('text node update deep in a static tree → exactly 1 characterData mutatio
   expect(summary.childListRemoved).toBe(0);
 });
 
-test('attribute change on one element → exactly 1 attributes mutation', async ({ page }) => {
+test('attribute change on one element → exactly 1 attributes mutation', async ({
+  page,
+}) => {
   const summary = await page.evaluate<MutationSummary>(() => {
     const { mount, signal } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
@@ -85,7 +111,9 @@ test('attribute change on one element → exactly 1 attributes mutation', async 
           children: jsx('button', { className: cls.value, children: 'click' }),
         }),
       );
-      return () => { cls.value = 'b'; };
+      return () => {
+        cls.value = 'b';
+      };
     });
   });
   expect(summary.attributes).toBe(1);
@@ -94,7 +122,9 @@ test('attribute change on one element → exactly 1 attributes mutation', async 
   expect(summary.childListRemoved).toBe(0);
 });
 
-test('row insert mid-list via each() → exactly 1 added node, no other mutations', async ({ page }) => {
+test('row insert mid-list via each() → exactly 1 added node, no other mutations', async ({
+  page,
+}) => {
   const summary = await page.evaluate<MutationSummary>(() => {
     const { mount, signal, each } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
@@ -105,10 +135,14 @@ test('row insert mid-list via each() → exactly 1 added node, no other mutation
       const rows = signal([a, c]);
       mount(root, () =>
         jsx('ul', {
-          children: each(rows.value, (r: any) => jsx('li', { 'data-key': r.id, children: r.label })),
+          children: each(rows.value, (r: any) =>
+            jsx('li', { 'data-key': r.id, children: r.label }),
+          ),
         }),
       );
-      return () => { rows.value = [a, b, c]; };
+      return () => {
+        rows.value = [a, b, c];
+      };
     });
   });
   expect(summary.childListAdded).toBe(1);
@@ -117,7 +151,9 @@ test('row insert mid-list via each() → exactly 1 added node, no other mutation
   expect(summary.attributes).toBe(0);
 });
 
-test('row remove from middle of list via each() → exactly 1 removed node, no other mutations', async ({ page }) => {
+test('row remove from middle of list via each() → exactly 1 removed node, no other mutations', async ({
+  page,
+}) => {
   const summary = await page.evaluate<MutationSummary>(() => {
     const { mount, signal, each } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
@@ -128,10 +164,14 @@ test('row remove from middle of list via each() → exactly 1 removed node, no o
       const rows = signal([a, b, c]);
       mount(root, () =>
         jsx('ul', {
-          children: each(rows.value, (r: any) => jsx('li', { 'data-key': r.id, children: r.label })),
+          children: each(rows.value, (r: any) =>
+            jsx('li', { 'data-key': r.id, children: r.label }),
+          ),
         }),
       );
-      return () => { rows.value = [a, c]; };
+      return () => {
+        rows.value = [a, c];
+      };
     });
   });
   expect(summary.childListRemoved).toBe(1);
@@ -140,7 +180,9 @@ test('row remove from middle of list via each() → exactly 1 removed node, no o
   expect(summary.attributes).toBe(0);
 });
 
-test('row reorder via each() (LIS pass): swap two ends → minimum insertBefore moves', async ({ page }) => {
+test('row reorder via each() (LIS pass): swap two ends → minimum insertBefore moves', async ({
+  page,
+}) => {
   // For [a,b,c,d,e] → [e,b,c,d,a] (swap ends), the LIS is [b,c,d] (kept in
   // place); only `a` and `e` need to move. `insertBefore` of an existing node
   // produces childListRemoved=1 + childListAdded=1 per move (the engine
@@ -149,15 +191,22 @@ test('row reorder via each() (LIS pass): swap two ends → minimum insertBefore 
     const { mount, signal, each } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
     return (window as any).measure((root: HTMLElement) => {
-      const a = { id: 'a' }; const b = { id: 'b' }; const c = { id: 'c' };
-      const d = { id: 'd' }; const e = { id: 'e' };
+      const a = { id: 'a' };
+      const b = { id: 'b' };
+      const c = { id: 'c' };
+      const d = { id: 'd' };
+      const e = { id: 'e' };
       const rows = signal([a, b, c, d, e]);
       mount(root, () =>
         jsx('ul', {
-          children: each(rows.value, (r: any) => jsx('li', { 'data-key': r.id, children: r.id })),
+          children: each(rows.value, (r: any) =>
+            jsx('li', { 'data-key': r.id, children: r.id }),
+          ),
         }),
       );
-      return () => { rows.value = [e, b, c, d, a]; };
+      return () => {
+        rows.value = [e, b, c, d, a];
+      };
     });
   });
   // ≤ 2 moves = ≤ 4 mutations total (each insertBefore is 1 add + 1 remove).
@@ -167,20 +216,24 @@ test('row reorder via each() (LIS pass): swap two ends → minimum insertBefore 
   expect(summary.attributes).toBe(0);
 });
 
-test('no-op re-render (same JSX, no signal change to read deps) → zero mutations', async ({ page }) => {
+test('no-op re-render (same JSX, no signal change to read deps) → zero mutations', async ({
+  page,
+}) => {
   const summary = await page.evaluate<MutationSummary>(() => {
     const { mount, signal } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
     return (window as any).measure((root: HTMLElement) => {
       const tick = signal(0);
-      const unread = signal('hi');  // never read by render → not tracked
+      const unread = signal('hi'); // never read by render → not tracked
       mount(root, () => {
         void tick.value;
         return jsx('div', { children: jsx('span', { children: 'static' }) });
       });
       // Writing to a signal not read by the render fn must NOT trigger
       // anything — render didn't depend on it.
-      return () => { unread.value = 'bye'; };
+      return () => {
+        unread.value = 'bye';
+      };
     });
   });
   expect(summary.total).toBe(0);

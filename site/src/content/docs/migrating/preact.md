@@ -9,30 +9,30 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 
 ## 1. Bundle delta
 
-| | Min + gz, runtime only |
-| --- | --- |
-| `preact` 10.x | ~4 KB |
-| `preact` + `@preact/signals` | ~6 KB |
-| `kerfjs` (incl. signals) | ~12 KB |
-| **Delta vs Preact** | **kerf is ~6 KB larger** (vs. Preact + signals) |
+|                              | Min + gz, runtime only                          |
+| ---------------------------- | ----------------------------------------------- |
+| `preact` 10.x                | ~4 KB                                           |
+| `preact` + `@preact/signals` | ~6 KB                                           |
+| `kerfjs` (incl. signals)     | ~12 KB                                          |
+| **Delta vs Preact**          | **kerf is ~6 KB larger** (vs. Preact + signals) |
 
 Bundle is not the decider between Preact and kerf. The trade you're making is virtual-DOM vs DOM-morph, hooks vs no-hooks, and components-with-instances vs functions-returning-strings. Both ship `@preact/signals-core` (or its wrappers); kerf re-exports it directly under the `signal` / `computed` / `effect` / `batch` names.
 
 ## 2. Mental-model translations
 
-| Preact (hooks) | Kerf | Notes |
-| --- | --- | --- |
-| `useState(initial)` | `signal(initial)` | Module-scoped, not per-component. |
-| `useMemo(fn, deps)` | `computed(fn)` | Auto-tracked. No deps array. |
-| `useEffect(fn, deps)` | `effect(fn)` | Auto-tracked. Returns an unsubscribe function instead of taking a cleanup return. |
-| `useSignal(0)` (preact/signals) | `signal(0)` | Kerf re-exports `@preact/signals-core` directly; reading `signal.value` is identical. |
-| `useComputed(fn)` (preact/signals) | `computed(fn)` | Identical. |
-| `useReducer` / Context | `defineStore({ initial, actions })` | One store, named actions, no provider tree. |
-| `useRef` (for focus) | *usually unnecessary* | The morph preserves focus + selection on the input being typed into. |
-| `<Component />` | plain function returning JSX | No instances, no `props` object. |
-| `items.map((it) => <Row key={it.id} ... />)` | `each(items, (it) => <Row ... />, (it) => it.id)` | Third arg is the per-row cache key. |
-| `onClick={fn}` | `delegate(root, 'click', '[data-action="..."]', fn)` | One listener at the root, survives every re-render. |
-| `class={...}` (Preact accepts both `class` and `className`) | `class={...}` | Kerf also accepts both, but `class` is canonical. |
+| Preact (hooks)                                              | Kerf                                                 | Notes                                                                                 |
+| ----------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `useState(initial)`                                         | `signal(initial)`                                    | Module-scoped, not per-component.                                                     |
+| `useMemo(fn, deps)`                                         | `computed(fn)`                                       | Auto-tracked. No deps array.                                                          |
+| `useEffect(fn, deps)`                                       | `effect(fn)`                                         | Auto-tracked. Returns an unsubscribe function instead of taking a cleanup return.     |
+| `useSignal(0)` (preact/signals)                             | `signal(0)`                                          | Kerf re-exports `@preact/signals-core` directly; reading `signal.value` is identical. |
+| `useComputed(fn)` (preact/signals)                          | `computed(fn)`                                       | Identical.                                                                            |
+| `useReducer` / Context                                      | `defineStore({ initial, actions })`                  | One store, named actions, no provider tree.                                           |
+| `useRef` (for focus)                                        | _usually unnecessary_                                | The morph preserves focus + selection on the input being typed into.                  |
+| `<Component />`                                             | plain function returning JSX                         | No instances, no `props` object.                                                      |
+| `items.map((it) => <Row key={it.id} ... />)`                | `each(items, (it) => <Row ... />, (it) => it.id)`    | Third arg is the per-row cache key.                                                   |
+| `onClick={fn}`                                              | `delegate(root, 'click', '[data-action="..."]', fn)` | One listener at the root, survives every re-render.                                   |
+| `class={...}` (Preact accepts both `class` and `className`) | `class={...}`                                        | Kerf also accepts both, but `class` is canonical.                                     |
 
 ## 3. Section by section
 
@@ -40,11 +40,11 @@ The Preact + signals shape is the most React-shaped variant; the translation is 
 
 ```tsx
 // Preact + signals
-import { signal, computed, effect } from '@preact/signals';
-import { render } from 'preact';
+import { signal, computed, effect } from "@preact/signals";
+import { render } from "preact";
 
 const items = signal<Todo[]>(load());
-const filter = signal<Filter>('all');
+const filter = signal<Filter>("all");
 
 effect(() => localStorage.setItem(STORAGE_KEY, JSON.stringify(items.value)));
 
@@ -52,40 +52,42 @@ function App() {
   return (
     <div class="todoapp">
       <ul class="todo-list">
-        {items.value
-          .filter(/* ... */)
-          .map((todo) => (
-            <li key={todo.id}>
-              <input type="checkbox" checked={todo.done} onChange={() => toggle(todo.id)} />
-              <label>{todo.text}</label>
-              <button onClick={() => remove(todo.id)}>×</button>
-            </li>
-          ))}
+        {items.value.filter(/* ... */).map((todo) => (
+          <li key={todo.id}>
+            <input
+              type="checkbox"
+              checked={todo.done}
+              onChange={() => toggle(todo.id)}
+            />
+            <label>{todo.text}</label>
+            <button onClick={() => remove(todo.id)}>×</button>
+          </li>
+        ))}
       </ul>
     </div>
   );
 }
 
-render(<App />, document.getElementById('root')!);
+render(<App />, document.getElementById("root")!);
 ```
 
 ```tsx
 // Kerf
-import { mount, each, delegate, attr, type AttrSpec } from 'kerfjs';
-import { signal, computed, effect } from 'kerfjs';
+import { mount, each, delegate, attr, type AttrSpec } from "kerfjs";
+import { signal, computed, effect } from "kerfjs";
 
 const ACTIONS = {
-  toggle: attr('data-action', 'toggle'),
-  remove: attr('data-action', 'remove'),
-} as const satisfies Record<string, AttrSpec<'data-action'>>;
-const ITEM = { id: attr('data-id') } as const;
+  toggle: attr("data-action", "toggle"),
+  remove: attr("data-action", "remove"),
+} as const satisfies Record<string, AttrSpec<"data-action">>;
+const ITEM = { id: attr("data-id") } as const;
 
 const items = signal<Todo[]>(load());
-const filter = signal<Filter>('all');
+const filter = signal<Filter>("all");
 
 effect(() => localStorage.setItem(STORAGE_KEY, JSON.stringify(items.value)));
 
-const root = document.getElementById('root')!;
+const root = document.getElementById("root")!;
 
 mount(root, () => (
   <div class="todoapp">
@@ -94,9 +96,21 @@ mount(root, () => (
         items.value.filter(/* ... */),
         (todo) => (
           <li data-key={todo.id}>
-            <input type="checkbox" class="toggle" {...ACTIONS.toggle.attrs} {...ITEM.id(todo.id)} checked={todo.done} />
+            <input
+              type="checkbox"
+              class="toggle"
+              {...ACTIONS.toggle.attrs}
+              {...ITEM.id(todo.id)}
+              checked={todo.done}
+            />
             <label>{todo.text}</label>
-            <button class="destroy" {...ACTIONS.remove.attrs} {...ITEM.id(todo.id)}>×</button>
+            <button
+              class="destroy"
+              {...ACTIONS.remove.attrs}
+              {...ITEM.id(todo.id)}
+            >
+              ×
+            </button>
           </li>
         ),
         (todo) => todo.id,
@@ -105,8 +119,12 @@ mount(root, () => (
   </div>
 ));
 
-delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => toggle((el as HTMLElement).dataset.id!));
-delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => remove((el as HTMLElement).dataset.id!));
+delegate(root, "click", ACTIONS.toggle.selector, (_e, el) =>
+  toggle((el as HTMLElement).dataset.id!),
+);
+delegate(root, "click", ACTIONS.remove.selector, (_e, el) =>
+  remove((el as HTMLElement).dataset.id!),
+);
 ```
 
 What moved:

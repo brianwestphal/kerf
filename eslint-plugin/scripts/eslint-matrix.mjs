@@ -39,7 +39,12 @@ const REPO = resolve(PLUGIN, '..');
 const SUPPORTED = ['9.39.5', '10.8.0'];
 
 const run = (cmd, args, opts = {}) =>
-  execFileSync(cmd, args, { cwd: PLUGIN, encoding: 'utf8', stdio: 'pipe', ...opts });
+  execFileSync(cmd, args, {
+    cwd: PLUGIN,
+    encoding: 'utf8',
+    stdio: 'pipe',
+    ...opts,
+  });
 
 function fail(lines) {
   console.error(`\n[eslint-matrix] FAILED:\n`);
@@ -53,8 +58,9 @@ function fail(lines) {
 const problems = [];
 const majors = SUPPORTED.map((v) => v.split('.')[0]);
 
-const peerRange = JSON.parse(readFileSync(resolve(PLUGIN, 'package.json'), 'utf8'))
-  .peerDependencies.eslint;
+const peerRange = JSON.parse(
+  readFileSync(resolve(PLUGIN, 'package.json'), 'utf8'),
+).peerDependencies.eslint;
 
 // Both directions. Checking only "every tested major is named" would let
 // someone widen the range to an untested major and stay green — which is the
@@ -62,8 +68,8 @@ const peerRange = JSON.parse(readFileSync(resolve(PLUGIN, 'package.json'), 'utf8
 for (const major of majors) {
   if (!peerRange.includes(`^${major}.`)) {
     problems.push(
-      `peerDependencies.eslint is ${JSON.stringify(peerRange)}, which does not name ESLint ${major}. `
-      + 'The declared range must be exactly the tested set.',
+      `peerDependencies.eslint is ${JSON.stringify(peerRange)}, which does not name ESLint ${major}. ` +
+        'The declared range must be exactly the tested set.',
     );
   }
 }
@@ -71,62 +77,85 @@ const namedMajors = [...peerRange.matchAll(/\^(\d+)\./g)].map((m) => m[1]);
 for (const major of namedMajors) {
   if (!majors.includes(major)) {
     problems.push(
-      `peerDependencies.eslint promises ESLint ${major}, which is not in SUPPORTED and has never been run. `
-      + 'Add it to SUPPORTED and the CI matrix and let the suite prove it, or drop it from the range.',
+      `peerDependencies.eslint promises ESLint ${major}, which is not in SUPPORTED and has never been run. ` +
+        'Add it to SUPPORTED and the CI matrix and let the suite prove it, or drop it from the range.',
     );
   }
 }
 // An open-ended range defeats the entire policy, so refuse it outright.
 if (/>=|\*/.test(peerRange)) {
   problems.push(
-    `peerDependencies.eslint is ${JSON.stringify(peerRange)} — an open range promises majors that do not `
-    + 'exist yet and cannot have been tested. Name the supported majors explicitly.',
+    `peerDependencies.eslint is ${JSON.stringify(peerRange)} — an open range promises majors that do not ` +
+      'exist yet and cannot have been tested. Name the supported majors explicitly.',
   );
 }
 
 const ci = readFileSync(resolve(REPO, '.github/workflows/ci.yml'), 'utf8');
 const matrixLine = /eslint:\s*\[([^\]]*)\]/.exec(ci);
 if (matrixLine === null) {
-  problems.push('could not find the `eslint:` matrix in .github/workflows/ci.yml.');
+  problems.push(
+    'could not find the `eslint:` matrix in .github/workflows/ci.yml.',
+  );
 } else {
   const inCi = [...matrixLine[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
   const missing = SUPPORTED.filter((v) => !inCi.includes(v));
   const extra = inCi.filter((v) => !SUPPORTED.includes(v));
-  if (missing.length) problems.push(`CI matrix is missing: ${missing.join(', ')}`);
-  if (extra.length) problems.push(`CI matrix tests versions this script does not: ${extra.join(', ')}`);
+  if (missing.length)
+    problems.push(`CI matrix is missing: ${missing.join(', ')}`);
+  if (extra.length)
+    problems.push(
+      `CI matrix tests versions this script does not: ${extra.join(', ')}`,
+    );
 }
 
 if (problems.length) fail(problems);
 
 // --- 2. The suite must pass on each ----------------------------------------
 
-const installed = JSON.parse(readFileSync(resolve(PLUGIN, 'package.json'), 'utf8'))
-  .devDependencies.eslint;
+const installed = JSON.parse(
+  readFileSync(resolve(PLUGIN, 'package.json'), 'utf8'),
+).devDependencies.eslint;
 console.log(`[eslint-matrix] peer range ${peerRange}\n`);
 
 const failures = [];
 for (const version of SUPPORTED) {
   process.stdout.write(`  eslint ${version.padEnd(9)} `);
   try {
-    run('npm', ['install', '--no-save', '--no-audit', '--no-fund', `eslint@${version}`]);
+    run('npm', [
+      'install',
+      '--no-save',
+      '--no-audit',
+      '--no-fund',
+      `eslint@${version}`,
+    ]);
     const out = run('npm', ['test']);
     const pass = /# pass (\d+)/.exec(out)?.[1] ?? '?';
     console.log(`ok — ${pass} assertions`);
   } catch (err) {
     console.log('FAILED');
-    failures.push(`${version}: ${(err.stdout ?? err.message ?? '').toString().slice(-600)}`);
+    failures.push(
+      `${version}: ${(err.stdout ?? err.message ?? '').toString().slice(-600)}`,
+    );
   }
 }
 
 // Put the working tree back the way the lockfile describes it.
-run('npm', ['install', '--no-save', '--no-audit', '--no-fund', `eslint@${installed}`]);
+run('npm', [
+  'install',
+  '--no-save',
+  '--no-audit',
+  '--no-fund',
+  `eslint@${installed}`,
+]);
 
 if (failures.length) {
   fail([
     ...failures,
-    'Either fix the plugin for that major, or drop it from SUPPORTED, the peer range and the CI matrix together. '
-    + 'Do not leave a major in the range that the suite cannot pass on.',
+    'Either fix the plugin for that major, or drop it from SUPPORTED, the peer range and the CI matrix together. ' +
+      'Do not leave a major in the range that the suite cannot pass on.',
   ]);
 }
 
-console.log(`\n[eslint-matrix] OK — ${SUPPORTED.length} ESLint majors verified, and the peer range names exactly those.`);
+console.log(
+  `\n[eslint-matrix] OK — ${SUPPORTED.length} ESLint majors verified, and the peer range names exactly those.`,
+);

@@ -6,7 +6,7 @@
 > generate correct, good-looking kerf UI — it is not a catalog to browse.
 
 ```bash
-npm install kerfjs @kerfjs/ui   # kerfjs is a peer; Web Awesome is an optional peer
+npm install kerfjs @kerfjs/ui # kerfjs is a peer; Web Awesome is an optional peer
 ```
 
 Import each component from its own subpath (`@kerfjs/ui/list-item`, `@kerfjs/ui/toolbar`,
@@ -30,7 +30,7 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 ## Core rules (do the right thing)
 
 - **Reach for the primitive, not for CSS.** The package is built to look right
-  *unstyled*. Before adding `padding`, `margin`, `width`, `height`, `border`,
+  _unstyled_. Before adding `padding`, `margin`, `width`, `height`, `border`,
   `background`, a wrapper card, or a decoration, check whether the component, the
   pane, or the content-item already owns it — it almost always does. Prefer a
   component prop or a `--kui-*` token; write CSS only for genuinely new structure,
@@ -69,7 +69,7 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   popup menu. A toolbar popup menu is a `single` `ToolbarControlGroup` around a
   `wa-dropdown` (its `slot="trigger"` `wa-button` is the toolbar button, kept under
   `data-morph-skip-children`).
-- **`PanelHeader` is *the* panel/dialog/page heading.** A plain toolbar with an
+- **`PanelHeader` is _the_ panel/dialog/page heading.** A plain toolbar with an
   optional bordered icon group, an extra-large `ToolbarText` title, the trailing
   controls you pass, and an optional subtitle below — do not hand-build a heading
   row or restyle a toolbar into one.
@@ -90,7 +90,7 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 - **App state is domain/persisted; helpers own only ephemeral mechanics.** Keep
   navigation stacks, tab selection and order, pane sizes, and `collapsed`/`expanded`
   disclosure flags in the app — they are data or persisted layout, and the app reads
-  them to render. The `wire…` helpers own the *ephemeral* parts: `wireNavStack` the
+  them to render. The `wire…` helpers own the _ephemeral_ parts: `wireNavStack` the
   push/pop animation, `wireTabBars` the overflow autoscroll and drag preview,
   `wireResizableRegions` the live drag preview; they report committed changes via
   callbacks. The one richer case is `wireTokenSearchFields`, which manages the
@@ -128,13 +128,14 @@ tree-shakeable, declarative with `wire…` helpers, each with a companion CSS im
 `NavStack`, `SplitView`, `Workbench`, `TabScaffold`, driven by `deviceClass()` from
 `@kerfjs/ui/device-class`. For a standalone collapsible rail/drawer outside a full
 shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelToggle`)
-+ `@kerfjs/ui/wire-sidebar` (`wireSidebar`: toggle, focus, compact overlay, persistence).
-`@kerfjs/ui/catalog` is another opt-in shell — a
-`Catalog` component + `wireCatalog` helper for building a component-gallery catalog
-(collapsible category sidebar + preview stage + resources footer) from your own
-entries; controlled/stateless like the layouts. `@kerfjs/ui/webawesome` is a
-type-only boundary for `wa-*` JSX; `@kerfjs/ui/select/register` and the CSS are the
-declared side effects.
+
+- `@kerfjs/ui/wire-sidebar` (`wireSidebar`: toggle, focus, compact overlay, persistence).
+  `@kerfjs/ui/catalog` is another opt-in shell — a
+  `Catalog` component + `wireCatalog` helper for building a component-gallery catalog
+  (collapsible category sidebar + preview stage + resources footer) from your own
+  entries; controlled/stateless like the layouts. `@kerfjs/ui/webawesome` is a
+  type-only boundary for `wa-*` JSX; `@kerfjs/ui/select/register` and the CSS are the
+  declared side effects.
 
 ## Reference
 

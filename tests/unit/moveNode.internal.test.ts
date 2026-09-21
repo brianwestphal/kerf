@@ -7,7 +7,12 @@ afterEach(() => {
 });
 
 /** A parent + three connected children `a`, `b`, `c` attached to the document. */
-function threeRows(): { parent: HTMLElement; a: HTMLElement; b: HTMLElement; c: HTMLElement } {
+function threeRows(): {
+  parent: HTMLElement;
+  a: HTMLElement;
+  b: HTMLElement;
+  c: HTMLElement;
+} {
   const parent = document.createElement('ul');
   const a = document.createElement('li');
   const b = document.createElement('li');
@@ -21,7 +26,9 @@ function threeRows(): { parent: HTMLElement; a: HTMLElement; b: HTMLElement; c: 
 }
 
 const order = (parent: Element): string =>
-  Array.from(parent.children).map((el) => el.textContent).join('');
+  Array.from(parent.children)
+    .map((el) => el.textContent)
+    .join('');
 
 describe('moveNode', () => {
   describe('fallback path (no moveBefore on the engine)', () => {
@@ -56,7 +63,8 @@ describe('moveNode', () => {
       const moveBefore = vi.fn((node: Node, ref: Node | null) => {
         HTMLElement.prototype.insertBefore.call(parent, node, ref);
       });
-      (parent as unknown as { moveBefore: typeof moveBefore }).moveBefore = moveBefore;
+      (parent as unknown as { moveBefore: typeof moveBefore }).moveBefore =
+        moveBefore;
       const insertSpy = vi.spyOn(parent, 'insertBefore');
 
       moveNode(parent, c, a);
@@ -72,7 +80,8 @@ describe('moveNode', () => {
       const moveBefore = vi.fn((node: Node, ref: Node | null) => {
         HTMLElement.prototype.insertBefore.call(parent, node, ref);
       });
-      (parent as unknown as { moveBefore: typeof moveBefore }).moveBefore = moveBefore;
+      (parent as unknown as { moveBefore: typeof moveBefore }).moveBefore =
+        moveBefore;
 
       moveNode(parent, a, null);
 
@@ -85,7 +94,8 @@ describe('moveNode', () => {
       // guard must keep fresh inserts on the insertBefore path.
       const { parent, b } = threeRows();
       const moveBefore = vi.fn();
-      (parent as unknown as { moveBefore: typeof moveBefore }).moveBefore = moveBefore;
+      (parent as unknown as { moveBefore: typeof moveBefore }).moveBefore =
+        moveBefore;
       const fresh = document.createElement('li');
       fresh.textContent = 'x';
 

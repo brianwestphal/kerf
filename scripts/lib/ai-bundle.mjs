@@ -10,7 +10,9 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export const REPO_ROOT = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
+export const REPO_ROOT = dirname(
+  dirname(dirname(fileURLToPath(import.meta.url))),
+);
 
 export const FILES = [
   {
@@ -27,7 +29,8 @@ export const FILES = [
   },
 ];
 
-export const MARKER = '<!-- KERF-APP-CANONICAL-END · your customizations below -->';
+export const MARKER =
+  '<!-- KERF-APP-CANONICAL-END · your customizations below -->';
 const VERSION_RE = /kerf-skill-version:\s*(\d+\.\d+\.\d+(?:-[\w.]+)?)/;
 const HISTORY_PATH = join(REPO_ROOT, 'scripts', 'ai-canonical-history.json');
 
@@ -41,8 +44,8 @@ function extractVersion(source, path) {
   const m = head.match(VERSION_RE);
   if (!m) {
     throw new Error(
-      `${path}: missing 'kerf-skill-version: <semver>' line in the first 512 bytes. `
-      + `Add it inside the file's frontmatter (.md) or as an HTML comment at the top (.cursorrules).`,
+      `${path}: missing 'kerf-skill-version: <semver>' line in the first 512 bytes. ` +
+        `Add it inside the file's frontmatter (.md) or as an HTML comment at the top (.cursorrules).`,
     );
   }
   return m[1];

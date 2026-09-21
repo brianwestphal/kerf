@@ -16,10 +16,14 @@ import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
-  await page.waitForFunction(() => (window as unknown as { kerfReady: boolean }).kerfReady === true);
+  await page.waitForFunction(
+    () => (window as unknown as { kerfReady: boolean }).kerfReady === true,
+  );
 });
 
-test('renders <svg> with correct namespace via mount() + JSX', async ({ page }) => {
+test('renders <svg> with correct namespace via mount() + JSX', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const { mount } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
@@ -51,7 +55,9 @@ test('renders <svg> with correct namespace via mount() + JSX', async ({ page }) 
   expect(result.pathD).toBe('M 0 50 L 100 50');
 });
 
-test('orphan SVG fragment via toElement() gets correct namespace', async ({ page }) => {
+test('orphan SVG fragment via toElement() gets correct namespace', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const { toElement } = (window as any).kerf;
     const path = toElement('<path d="M 0 0 L 10 10" />');
@@ -66,7 +72,9 @@ test('orphan SVG fragment via toElement() gets correct namespace', async ({ page
   expect(result.d).toBe('M 0 0 L 10 10');
 });
 
-test('<svg> with <foreignObject> containing HTML — children are HTML namespace', async ({ page }) => {
+test('<svg> with <foreignObject> containing HTML — children are HTML namespace', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const { mount } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
@@ -75,7 +83,10 @@ test('<svg> with <foreignObject> containing HTML — children are HTML namespace
       jsx('svg', {
         viewBox: '0 0 200 200',
         children: jsx('foreignObject', {
-          x: 0, y: 0, width: 200, height: 200,
+          x: 0,
+          y: 0,
+          width: 200,
+          height: 200,
           children: jsx('div', { className: 'inner', children: 'html in svg' }),
         }),
       }),
@@ -97,7 +108,9 @@ test('<svg> with <foreignObject> containing HTML — children are HTML namespace
   expect(result.innerText).toBe('html in svg');
 });
 
-test('<use xlink:href="..."> via xlinkHref alias resolves correctly', async ({ page }) => {
+test('<use xlink:href="..."> via xlinkHref alias resolves correctly', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const { mount } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
@@ -106,7 +119,11 @@ test('<use xlink:href="..."> via xlinkHref alias resolves correctly', async ({ p
       jsx('svg', {
         children: [
           jsx('defs', {
-            children: jsx('symbol', { id: 'icon', viewBox: '0 0 10 10', children: jsx('rect', { width: 10, height: 10 }) }),
+            children: jsx('symbol', {
+              id: 'icon',
+              viewBox: '0 0 10 10',
+              children: jsx('rect', { width: 10, height: 10 }),
+            }),
           }),
           jsx('use', { xlinkHref: '#icon' }),
         ],
@@ -118,7 +135,9 @@ test('<use xlink:href="..."> via xlinkHref alias resolves correctly', async ({ p
       // Both xlink:href (legacy SVG 1.1) and href (SVG 2) are valid.
       // The runtime serialized xlinkHref → xlink:href.
       xlinkAttr: useEl.getAttributeNS('http://www.w3.org/1999/xlink', 'href'),
-      hasOuter: useEl.outerHTML.includes('xlink:href') || useEl.outerHTML.includes('href'),
+      hasOuter:
+        useEl.outerHTML.includes('xlink:href') ||
+        useEl.outerHTML.includes('href'),
     };
   });
   expect(result.ns).toBe('http://www.w3.org/2000/svg');
@@ -126,13 +145,19 @@ test('<use xlink:href="..."> via xlinkHref alias resolves correctly', async ({ p
   expect(result.xlinkAttr).toBe('#icon');
 });
 
-test('SVG attribute updates flow through the diff (signal-driven r)', async ({ page }) => {
+test('SVG attribute updates flow through the diff (signal-driven r)', async ({
+  page,
+}) => {
   const result = await page.evaluate(async () => {
     const { mount, signal } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
     const root = document.getElementById('root')!;
     const r = signal(10);
-    mount(root, () => jsx('svg', { children: jsx('circle', { cx: 50, cy: 50, r: r.value, fill: 'blue' }) }));
+    mount(root, () =>
+      jsx('svg', {
+        children: jsx('circle', { cx: 50, cy: 50, r: r.value, fill: 'blue' }),
+      }),
+    );
     const before = root.querySelector('circle')!.getAttribute('r');
     r.value = 30;
     const after = root.querySelector('circle')!.getAttribute('r');
@@ -145,7 +170,9 @@ test('SVG attribute updates flow through the diff (signal-driven r)', async ({ p
   expect(result.sameNode).toBe('http://www.w3.org/2000/svg');
 });
 
-test('MathML interleaved with HTML retains correct namespace', async ({ page }) => {
+test('MathML interleaved with HTML retains correct namespace', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const { mount } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
@@ -182,7 +209,9 @@ test('MathML interleaved with HTML retains correct namespace', async ({ page }) 
   expect(result.mnNS).toBe('http://www.w3.org/1998/Math/MathML');
 });
 
-test('KF-417: MathML each() rows keep the namespace after a list update', async ({ page }) => {
+test('KF-417: MathML each() rows keep the namespace after a list update', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const { mount, each, signal } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
@@ -194,14 +223,18 @@ test('KF-417: MathML each() rows keep the namespace after a list update', async 
           children: each(
             data.value,
             (r: { id: number }) =>
-              jsx('mrow', { 'data-key': String(r.id), children: jsx('mn', { children: String(r.id) }) }),
+              jsx('mrow', {
+                'data-key': String(r.id),
+                children: jsx('mn', { children: String(r.id) }),
+              }),
             { key: 'M' },
           ),
         }),
       }),
     );
     const MATHML = 'http://www.w3.org/1998/Math/MathML';
-    const firstPaintOk = root.querySelector('[data-key="1"]')?.namespaceURI === MATHML;
+    const firstPaintOk =
+      root.querySelector('[data-key="1"]')?.namespaceURI === MATHML;
     // A snapshot rebuild — the later parse that used to land rows in the HTML ns.
     data.value = [{ id: 1 }, { id: 2 }];
     return {
@@ -215,7 +248,9 @@ test('KF-417: MathML each() rows keep the namespace after a list update', async 
   expect(result.mnNS).toBe('http://www.w3.org/1998/Math/MathML');
 });
 
-test('KF-420: HTML each() rows under a MathML integration point stay HTML after a list update', async ({ page }) => {
+test('KF-420: HTML each() rows under a MathML integration point stay HTML after a list update', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const { mount, each, signal } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
@@ -229,14 +264,16 @@ test('KF-420: HTML each() rows under a MathML integration point stay HTML after 
         children: jsx('mtext', {
           children: each(
             data.value,
-            (r: { id: number }) => jsx('span', { 'data-key': String(r.id), children: String(r.id) }),
+            (r: { id: number }) =>
+              jsx('span', { 'data-key': String(r.id), children: String(r.id) }),
             { key: 'M' },
           ),
         }),
       }),
     );
     const XHTML = 'http://www.w3.org/1999/xhtml';
-    const firstPaintOk = root.querySelector('[data-key="1"]')?.namespaceURI === XHTML;
+    const firstPaintOk =
+      root.querySelector('[data-key="1"]')?.namespaceURI === XHTML;
     // A snapshot rebuild — the later parse that used to wrap the row in <math>.
     data.value = [{ id: 1 }, { id: 2 }];
     return {

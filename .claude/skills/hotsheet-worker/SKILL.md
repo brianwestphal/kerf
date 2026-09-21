@@ -3,6 +3,7 @@ name: hotsheet-worker
 description: Run as a self-claim worker — continuously claim, work, and release Up Next tickets
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash
 ---
+
 <!-- hotsheet-skill-version: 32 -->
 
 You are an HS2 self-claim worker. Work one ready ticket at a time using the git-backed

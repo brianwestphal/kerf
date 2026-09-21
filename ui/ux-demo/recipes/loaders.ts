@@ -13,9 +13,12 @@ export const recipeIds = [
   'recipe-collapsible-sidebar',
 ] as const;
 
-export type RecipeId = typeof recipeIds[number];
+export type RecipeId = (typeof recipeIds)[number];
 
-export const recipeLoaders: Record<RecipeId, () => Promise<{ createRecipe: RecipeFactory }>> = {
+export const recipeLoaders: Record<
+  RecipeId,
+  () => Promise<{ createRecipe: RecipeFactory }>
+> = {
   'recipe-app-shell': () => import('./app-shell.js'),
   'recipe-navigation-sidebar': () => import('./navigation-sidebar.js'),
   'recipe-workspace-header': () => import('./workspace-header.js'),

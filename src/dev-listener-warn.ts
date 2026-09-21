@@ -44,7 +44,13 @@ function isOptedIn(): boolean {
   return devFlag('KERF_DEV_WARN_REBUILT_LISTENERS') === '1';
 }
 
-type ElementProto = { addEventListener: (type: string, listener: EventListenerOrEventListenerObject | null, options?: AddEventListenerOptions | boolean) => void };
+type ElementProto = {
+  addEventListener: (
+    type: string,
+    listener: EventListenerOrEventListenerObject | null,
+    options?: AddEventListenerOptions | boolean,
+  ) => void;
+};
 
 function findAddEventListenerProto(): ElementProto {
   // Walk a probe Element's prototype chain to find the prototype that
@@ -83,7 +89,8 @@ function patchAddEventListenerOnce(): void {
 }
 
 function hasMarkedListener(el: Element): boolean {
-  if ((el as unknown as Record<symbol, boolean>)[LISTENER_MARKER] === true) return true;
+  if ((el as unknown as Record<symbol, boolean>)[LISTENER_MARKER] === true)
+    return true;
   // Walk descendants — when the morph removes a whole subtree, only the root
   // appears in the MutationRecord's removedNodes; an imperative listener on a
   // grandchild would otherwise be invisible.
@@ -91,7 +98,8 @@ function hasMarkedListener(el: Element): boolean {
   for (let i = 0; i < el.children.length; i++) stack.push(el.children[i]);
   while (stack.length > 0) {
     const cur = stack.pop() as Element;
-    if ((cur as unknown as Record<symbol, boolean>)[LISTENER_MARKER] === true) return true;
+    if ((cur as unknown as Record<symbol, boolean>)[LISTENER_MARKER] === true)
+      return true;
     for (let i = 0; i < cur.children.length; i++) stack.push(cur.children[i]);
   }
   return false;
@@ -102,15 +110,17 @@ function emitWarning(): void {
   if (warned) return;
   warned = true;
   console.warn(
-    'kerf: a node inside a mount()-managed tree was removed/rebuilt while carrying an imperative addEventListener listener. '
-    + 'The listener is gone with the old node. Use `delegate(rootEl, \'click\', \'[data-action="..."]\', handler)` '
-    + 'so the listener lives on a stable ancestor and survives re-renders, or wrap the host in `data-morph-skip` if '
-    + 'the subtree is library-owned (Monaco, xterm, D3 charts). '
-    + 'Set KERF_DEV_WARN_REBUILT_LISTENERS=0 (or unset it) to silence this warning.',
+    'kerf: a node inside a mount()-managed tree was removed/rebuilt while carrying an imperative addEventListener listener. ' +
+      "The listener is gone with the old node. Use `delegate(rootEl, 'click', '[data-action=\"...\"]', handler)` " +
+      'so the listener lives on a stable ancestor and survives re-renders, or wrap the host in `data-morph-skip` if ' +
+      'the subtree is library-owned (Monaco, xterm, D3 charts). ' +
+      'Set KERF_DEV_WARN_REBUILT_LISTENERS=0 (or unset it) to silence this warning.',
   );
 }
 
-export function installListenerRebuildWarn(rootEl: Element): MutationObserver | null {
+export function installListenerRebuildWarn(
+  rootEl: Element,
+): MutationObserver | null {
   if (!isOptedIn()) return null;
   patchAddEventListenerOnce();
   const observer = new MutationObserver((mutations) => {

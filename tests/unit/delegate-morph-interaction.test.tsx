@@ -17,9 +17,9 @@
  * The rest pin documented claims verified true by execution (the KF-383
  * lesson: run the claim, don't read the code).
  */
-import { beforeEach,describe,expect,it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
-import { delegate,mount,signal } from '../../src/index.js';
+import { delegate, mount, signal } from '../../src/index.js';
 
 let root: HTMLElement;
 
@@ -41,12 +41,20 @@ describe('KF-387 seam: delegate() × morph node replacement', () => {
     const dispose = mount(root, () => (
       <div>
         {lead.value ? <p class="lead">lead</p> : ''}
-        {mode.value === 'a'
-          ? <section><button class="go">A</button></section>
-          : <article><button class="go">B</button></article>}
+        {mode.value === 'a' ? (
+          <section>
+            <button class="go">A</button>
+          </section>
+        ) : (
+          <article>
+            <button class="go">B</button>
+          </article>
+        )}
       </div>
     ));
-    const off = delegate(root, 'click', '.go', (_e, el) => hits.push(el.textContent ?? ''));
+    const off = delegate(root, 'click', '.go', (_e, el) =>
+      hits.push(el.textContent ?? ''),
+    );
     (root.querySelector('.go') as HTMLElement).click();
     mode.value = 'b'; // replaceChild rebuild of the subtree hosting the target
     (root.querySelector('.go') as HTMLElement).click();

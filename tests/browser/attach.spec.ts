@@ -3,8 +3,7 @@ import { expect, test } from '@playwright/test';
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
   await page.waitForFunction(
-    () =>
-      (window as unknown as { kerfReady: boolean }).kerfReady === true,
+    () => (window as unknown as { kerfReady: boolean }).kerfReady === true,
   );
 });
 

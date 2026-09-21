@@ -9,21 +9,21 @@ Warn when `raw()` is called with a dynamic argument (any expression that is not 
 ## ❌ Incorrect
 
 ```ts
-raw(userInput)                     // variable reference
-raw(fetchedHtml())                 // function call
-raw(`<b>${title}</b>`)             // template literal with expressions
-raw(isAdmin ? adminHtml : guestHtml)  // conditional expression
+raw(userInput); // variable reference
+raw(fetchedHtml()); // function call
+raw(`<b>${title}</b>`); // template literal with expressions
+raw(isAdmin ? adminHtml : guestHtml); // conditional expression
 ```
 
 ## ✅ Correct
 
 ```ts
-raw('<p>Static markup</p>')        // string literal — no warning
-raw(`<p>Static template</p>`)      // expression-free template literal — no warning
+raw("<p>Static markup</p>"); // string literal — no warning
+raw(`<p>Static template</p>`); // expression-free template literal — no warning
 
 // Dynamic but audited — suppress with eslint-disable
 // eslint-disable-next-line kerfjs/no-raw-with-dynamic-arg
-raw(DOMPurify.sanitize(marked(userMarkdown)))
+raw(DOMPurify.sanitize(marked(userMarkdown)));
 ```
 
 ## Why `warn` and not `error`

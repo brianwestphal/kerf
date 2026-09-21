@@ -23,28 +23,31 @@
  *   - data-morph-skip wrapping a list parent.
  *   - Stress: 1000-row mutate-and-restore round-trip.
  */
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import {
-computed,
-delegate,
-each,
-mount,
-signal
-} from '../../src/index.js';
+import { computed, delegate, each, mount, signal } from '../../src/index.js';
 
 describe('Round 3: delegate handler corner cases', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   it('multiple delegate handlers for the same selector + event type both fire', () => {
     mount(root, () => <button data-action="x">click</button>);
     let aCalls = 0;
     let bCalls = 0;
-    delegate(root, 'click', '[data-action="x"]', () => { aCalls++; });
-    delegate(root, 'click', '[data-action="x"]', () => { bCalls++; });
+    delegate(root, 'click', '[data-action="x"]', () => {
+      aCalls++;
+    });
+    delegate(root, 'click', '[data-action="x"]', () => {
+      bCalls++;
+    });
     root.querySelector('button')!.click();
     expect(aCalls).toBe(1);
     expect(bCalls).toBe(1);
@@ -52,10 +55,16 @@ describe('Round 3: delegate handler corner cases', () => {
 
   it('delegate handler that removes the matched element does not crash', () => {
     const remove = signal(false);
-    mount(root, () => (
-      remove.value ? <p>gone</p> : <button data-action="self-destruct">click</button>
-    ));
-    delegate(root, 'click', '[data-action="self-destruct"]', () => { remove.value = true; });
+    mount(root, () =>
+      remove.value ? (
+        <p>gone</p>
+      ) : (
+        <button data-action="self-destruct">click</button>
+      ),
+    );
+    delegate(root, 'click', '[data-action="self-destruct"]', () => {
+      remove.value = true;
+    });
     const btn = root.querySelector('button')!;
     expect(() => btn.click()).not.toThrow();
     expect(root.querySelector('button')).toBe(null);
@@ -64,7 +73,12 @@ describe('Round 3: delegate handler corner cases', () => {
 
   it('delegate disposer called twice is a no-op', () => {
     mount(root, () => <button data-action="x">click</button>);
-    const dispose = delegate(root, 'click', '[data-action="x"]', () => undefined);
+    const dispose = delegate(
+      root,
+      'click',
+      '[data-action="x"]',
+      () => undefined,
+    );
     dispose();
     expect(() => dispose()).not.toThrow();
   });
@@ -72,37 +86,70 @@ describe('Round 3: delegate handler corner cases', () => {
 
 describe('Round 3: arraySignal × rare item shapes', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   it('arraySignal of items with Symbol-keyed properties renders correctly', () => {
     const tag = Symbol('tag');
-    interface Item { id: number; [tag]: string; label: string }
+    interface Item {
+      id: number;
+      [tag]: string;
+      label: string;
+    }
     const items: Item[] = [
       { id: 1, [tag]: 'a', label: 'one' },
       { id: 2, [tag]: 'b', label: 'two' },
     ];
     const sig = arraySignal(items);
-    mount(root, () => <ul>{each(sig, (r) => <li data-key={String(r.id)}>{r.label}</li>)}</ul>);
+    mount(root, () => (
+      <ul>
+        {each(sig, (r) => (
+          <li data-key={String(r.id)}>{r.label}</li>
+        ))}
+      </ul>
+    ));
     expect(root.querySelectorAll('li').length).toBe(2);
     expect(root.querySelectorAll('li')[0].textContent).toBe('one');
   });
 
   it('arraySignal items can be class instances (not just plain objects)', () => {
     class Row {
-      constructor(public id: number, public label: string) {}
+      constructor(
+        public id: number,
+        public label: string,
+      ) {}
     }
     const sig = arraySignal<Row>([new Row(1, 'one'), new Row(2, 'two')]);
-    mount(root, () => <ul>{each(sig, (r) => <li data-key={String(r.id)}>{r.label}</li>)}</ul>);
+    mount(root, () => (
+      <ul>
+        {each(sig, (r) => (
+          <li data-key={String(r.id)}>{r.label}</li>
+        ))}
+      </ul>
+    ));
     expect(root.querySelectorAll('li').length).toBe(2);
     sig.update(0, (r) => new Row(r.id, 'ONE'));
     expect(root.querySelector('li')!.textContent).toBe('ONE');
   });
 
   it('arraySignal containing frozen objects (Object.freeze) — mutation still works via update', () => {
-    interface Row { id: number; v: string }
+    interface Row {
+      id: number;
+      v: string;
+    }
     const sig = arraySignal<Row>([Object.freeze({ id: 1, v: 'a' }) as Row]);
-    mount(root, () => <ul>{each(sig, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>);
+    mount(root, () => (
+      <ul>
+        {each(sig, (r) => (
+          <li data-key={String(r.id)}>{r.v}</li>
+        ))}
+      </ul>
+    ));
     expect(root.querySelector('li')!.textContent).toBe('a');
     // update returns a new object, so the frozen one isn't mutated in place.
     sig.update(0, (r) => ({ id: r.id, v: 'A' }));
@@ -112,8 +159,13 @@ describe('Round 3: arraySignal × rare item shapes', () => {
 
 describe('Round 3: signal/computed extreme cases', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   it('signal === comparison: setting same value does NOT trigger re-render', () => {
     const x = signal({ ref: 1 });

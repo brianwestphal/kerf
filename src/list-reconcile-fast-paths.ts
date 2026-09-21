@@ -29,20 +29,20 @@
  * Internal to kerf.
  */
 
-const LT = 0x3C;      // <
-const GT = 0x3E;      // >
-const DQUOTE = 0x22;  // "
-const SQUOTE = 0x27;  // '
-const AMP = 0x26;     // &
-const EQ = 0x3D;      // =
-const SLASH = 0x2F;   // /
+const LT = 0x3c; // <
+const GT = 0x3e; // >
+const DQUOTE = 0x22; // "
+const SQUOTE = 0x27; // '
+const AMP = 0x26; // &
+const EQ = 0x3d; // =
+const SLASH = 0x2f; // /
 const TEXT_NODE = 3;
 import { syncFormProp } from './utils/syncFormProp.js';
 
 const ELEMENT_NODE = 1;
 
 function isWhitespace(cc: number): boolean {
-  return cc === 0x20 || cc === 0x09 || cc === 0x0A || cc === 0x0D;
+  return cc === 0x20 || cc === 0x09 || cc === 0x0a || cc === 0x0d;
 }
 
 interface ParsedTag {
@@ -73,7 +73,8 @@ export function tryAttributeOnlyFastPath(
   if (oldHtml.length - oldGt !== newHtml.length - newGt) return false;
   if (oldHtml.slice(oldGt) !== newHtml.slice(newGt)) return false;
 
-  if (containsDataMorphSkip(oldHtml) || containsDataMorphSkip(newHtml)) return false;
+  if (containsDataMorphSkip(oldHtml) || containsDataMorphSkip(newHtml))
+    return false;
 
   const oldTag = parseOpeningTag(oldHtml, oldGt);
   const newTag = parseOpeningTag(newHtml, newGt);
@@ -125,15 +126,19 @@ export function tryTextContentFastPath(
   oldHtml: string,
   newHtml: string,
 ): boolean {
-  if (containsDataMorphSkip(oldHtml) || containsDataMorphSkip(newHtml)) return false;
+  if (containsDataMorphSkip(oldHtml) || containsDataMorphSkip(newHtml))
+    return false;
 
   let p = 0;
   const minLen = Math.min(oldHtml.length, newHtml.length);
   while (p < minLen && oldHtml.charCodeAt(p) === newHtml.charCodeAt(p)) p++;
   let s = 0;
   const maxS = minLen - p;
-  while (s < maxS
-      && oldHtml.charCodeAt(oldHtml.length - 1 - s) === newHtml.charCodeAt(newHtml.length - 1 - s)) {
+  while (
+    s < maxS &&
+    oldHtml.charCodeAt(oldHtml.length - 1 - s) ===
+      newHtml.charCodeAt(newHtml.length - 1 - s)
+  ) {
     s++;
   }
 
@@ -152,8 +157,14 @@ export function tryTextContentFastPath(
   // '<' / '"' / "'" / '=' / '&' would mean we're inside a tag or entity.
   if (p === 0) return false;
   const boundaryCc = oldHtml.charCodeAt(p - 1);
-  if (boundaryCc === LT || boundaryCc === DQUOTE || boundaryCc === SQUOTE
-      || boundaryCc === EQ || boundaryCc === AMP) return false;
+  if (
+    boundaryCc === LT ||
+    boundaryCc === DQUOTE ||
+    boundaryCc === SQUOTE ||
+    boundaryCc === EQ ||
+    boundaryCc === AMP
+  )
+    return false;
 
   // Find the text node's HTML-string boundaries. Text node containing
   // position p starts after the most recent '>' before p in oldHtml; ends
@@ -202,8 +213,11 @@ export function tryTextContentFastPath(
   // route already syncs here, so without this the control's visible value
   // depended on which internal route the diff took.
   const host = targetNode.parentNode;
-  if (host !== null && (host as Element).tagName === 'TEXTAREA'
-    && host !== document.activeElement) {
+  if (
+    host !== null &&
+    (host as Element).tagName === 'TEXTAREA' &&
+    host !== document.activeElement
+  ) {
     // A focused textarea holds the user's in-progress edit — the same
     // exception `syncFormProp` makes for `value`.
     (host as HTMLTextAreaElement).value = newText;
@@ -218,13 +232,24 @@ function containsDataMorphSkip(html: string): boolean {
 function isPureTextWindow(html: string, start: number, end: number): boolean {
   for (let i = start; i < end; i++) {
     const cc = html.charCodeAt(i);
-    if (cc === LT || cc === GT || cc === DQUOTE || cc === SQUOTE
-        || cc === AMP || cc === EQ) return false;
+    if (
+      cc === LT ||
+      cc === GT ||
+      cc === DQUOTE ||
+      cc === SQUOTE ||
+      cc === AMP ||
+      cc === EQ
+    )
+      return false;
   }
   return true;
 }
 
-function lastIndexOfChar(html: string, target: number, beforeInclusive: number): number {
+function lastIndexOfChar(
+  html: string,
+  target: number,
+  beforeInclusive: number,
+): number {
   for (let i = beforeInclusive; i >= 0; i--) {
     if (html.charCodeAt(i) === target) return i;
   }
@@ -351,5 +376,7 @@ function unescapeAttrValue(s: string): string {
  * during the fast path — the user-driven state would be wiped.
  */
 function isUserAgentOwnedAttr(tagNameUpper: string, name: string): boolean {
-  return name === 'open' && (tagNameUpper === 'DETAILS' || tagNameUpper === 'DIALOG');
+  return (
+    name === 'open' && (tagNameUpper === 'DETAILS' || tagNameUpper === 'DIALOG')
+  );
 }

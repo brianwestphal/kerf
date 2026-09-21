@@ -34,11 +34,38 @@ describe('KF-411: a container rebuild batched with a granular patch keeps the ro
     const rows = arraySignal([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }]);
     const swap = signal(false);
     const dispose = mount(root, () => (
-      <div>{swap.value
-        ? <section><ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'L' })}</ul></section>
-        : <article><ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'L' })}</ul></article>}</div>
+      <div>
+        {swap.value ? (
+          <section>
+            <ul>
+              {each(
+                rows,
+                (r) => (
+                  <li data-key={r.id}>{r.id}</li>
+                ),
+                { key: 'L' },
+              )}
+            </ul>
+          </section>
+        ) : (
+          <article>
+            <ul>
+              {each(
+                rows,
+                (r) => (
+                  <li data-key={r.id}>{r.id}</li>
+                ),
+                { key: 'L' },
+              )}
+            </ul>
+          </article>
+        )}
+      </div>
     ));
-    batch(() => { swap.value = true; rows.remove(0); });
+    batch(() => {
+      swap.value = true;
+      rows.remove(0);
+    });
     expect(rowsIn()).toEqual(['2', '3', '4']);
     // …and the list keeps working afterwards, on the granular path again.
     rows.push({ id: 5 });
@@ -52,21 +79,61 @@ describe('KF-411: a container rebuild batched with a granular patch keeps the ro
     const dispose = mount(root, () => (
       <div>
         {show.value ? <div class="banner">banner</div> : ''}
-        <div class="host"><ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'L' })}</ul></div>
+        <div class="host">
+          <ul>
+            {each(
+              rows,
+              (r) => (
+                <li data-key={r.id}>{r.id}</li>
+              ),
+              { key: 'L' },
+            )}
+          </ul>
+        </div>
       </div>
     ));
-    batch(() => { show.value = true; rows.remove(0); });
+    batch(() => {
+      show.value = true;
+      rows.remove(0);
+    });
     expect(rowsIn('.host li')).toEqual(['2', '3']);
     dispose();
   });
 
   it('a rebuild batched with an insert and an update', () => {
-    const rows = arraySignal([{ id: 1, t: 'a' }, { id: 2, t: 'b' }]);
+    const rows = arraySignal([
+      { id: 1, t: 'a' },
+      { id: 2, t: 'b' },
+    ]);
     const swap = signal(false);
     const dispose = mount(root, () => (
-      <div>{swap.value
-        ? <section><ul>{each(rows, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'L' })}</ul></section>
-        : <article><ul>{each(rows, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'L' })}</ul></article>}</div>
+      <div>
+        {swap.value ? (
+          <section>
+            <ul>
+              {each(
+                rows,
+                (r) => (
+                  <li data-key={r.id}>{r.t}</li>
+                ),
+                { key: 'L' },
+              )}
+            </ul>
+          </section>
+        ) : (
+          <article>
+            <ul>
+              {each(
+                rows,
+                (r) => (
+                  <li data-key={r.id}>{r.t}</li>
+                ),
+                { key: 'L' },
+              )}
+            </ul>
+          </article>
+        )}
+      </div>
     ));
     batch(() => {
       swap.value = true;
@@ -84,9 +151,33 @@ describe('KF-411: a container rebuild batched with a granular patch keeps the ro
     const dispose = mount(root, () => {
       renders++;
       return (
-        <div>{swap.value
-          ? <section><ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'L' })}</ul></section>
-          : <article><ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'L' })}</ul></article>}</div>
+        <div>
+          {swap.value ? (
+            <section>
+              <ul>
+                {each(
+                  rows,
+                  (r) => (
+                    <li data-key={r.id}>{r.id}</li>
+                  ),
+                  { key: 'L' },
+                )}
+              </ul>
+            </section>
+          ) : (
+            <article>
+              <ul>
+                {each(
+                  rows,
+                  (r) => (
+                    <li data-key={r.id}>{r.id}</li>
+                  ),
+                  { key: 'L' },
+                )}
+              </ul>
+            </article>
+          )}
+        </div>
       );
     });
     const before = renders;
@@ -102,11 +193,38 @@ describe('KF-411: a container rebuild batched with a granular patch keeps the ro
     const data = signal([{ id: 1 }, { id: 2 }]);
     const swap = signal(false);
     const dispose = mount(root, () => (
-      <div>{swap.value
-        ? <section><ul>{each(data.value, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'L' })}</ul></section>
-        : <article><ul>{each(data.value, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'L' })}</ul></article>}</div>
+      <div>
+        {swap.value ? (
+          <section>
+            <ul>
+              {each(
+                data.value,
+                (r) => (
+                  <li data-key={r.id}>{r.id}</li>
+                ),
+                { key: 'L' },
+              )}
+            </ul>
+          </section>
+        ) : (
+          <article>
+            <ul>
+              {each(
+                data.value,
+                (r) => (
+                  <li data-key={r.id}>{r.id}</li>
+                ),
+                { key: 'L' },
+              )}
+            </ul>
+          </article>
+        )}
+      </div>
     ));
-    batch(() => { swap.value = true; data.value = [{ id: 2 }, { id: 3 }]; });
+    batch(() => {
+      swap.value = true;
+      data.value = [{ id: 2 }, { id: 3 }];
+    });
     expect(rowsIn()).toEqual(['2', '3']);
     dispose();
   });

@@ -21,13 +21,13 @@ gate the roomier presentations.
 
 ## Decision matrix
 
-| Situation | Layout | Device threshold |
-| --- | --- | --- |
-| Simple app, a few flat sections | `NavStack` with one entry (single pane); add `TabScaffold` for 2–5 co-equal sections on handset | `TabScaffold` on `compact`; promote its tabs to a `Workbench` rail / sidebar `atLeast('desktop')` |
-| Drill-down browsing (list → item → sub-item) | `NavStack`; upgrade to `SplitView` once list + detail fit together | `SplitView` two-pane `atLeast('tablet')` landscape / non-`compact`; `NavStack` form on `compact` |
-| Two related panes, selecting on the left updates the right | `SplitView` | two panes when not `compact`; collapses to `NavStack` (list → detail) on `compact` |
-| Complex tool / editor with peripheral panels (navigator, inspector, console) | `Workbench` | full three-panel `atLeast('desktop')`; on smaller classes present the rails via `NavStack` / overlay drawers, not a shrunken shell |
-| Mobile app with 2–5 top-level destinations, each its own drill-down | `TabScaffold`, each tab a `NavStack` | bottom bar on `compact`; promote to a rail / sidebar `atLeast('desktop')` |
+| Situation                                                                    | Layout                                                                                          | Device threshold                                                                                                                   |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Simple app, a few flat sections                                              | `NavStack` with one entry (single pane); add `TabScaffold` for 2–5 co-equal sections on handset | `TabScaffold` on `compact`; promote its tabs to a `Workbench` rail / sidebar `atLeast('desktop')`                                  |
+| Drill-down browsing (list → item → sub-item)                                 | `NavStack`; upgrade to `SplitView` once list + detail fit together                              | `SplitView` two-pane `atLeast('tablet')` landscape / non-`compact`; `NavStack` form on `compact`                                   |
+| Two related panes, selecting on the left updates the right                   | `SplitView`                                                                                     | two panes when not `compact`; collapses to `NavStack` (list → detail) on `compact`                                                 |
+| Complex tool / editor with peripheral panels (navigator, inspector, console) | `Workbench`                                                                                     | full three-panel `atLeast('desktop')`; on smaller classes present the rails via `NavStack` / overlay drawers, not a shrunken shell |
+| Mobile app with 2–5 top-level destinations, each its own drill-down          | `TabScaffold`, each tab a `NavStack`                                                            | bottom bar on `compact`; promote to a rail / sidebar `atLeast('desktop')`                                                          |
 
 ### Worked examples
 

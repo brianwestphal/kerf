@@ -4,21 +4,25 @@
  * with `mount()` is covered by `mount-rendering.test.ts`.
  */
 
-import { describe,expect,it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
-collectLists,
-flatten,
-flattenWithoutListItems,
-mergeChildSegments,
-type Segment,
-wrapWithTags,
+  collectLists,
+  flatten,
+  flattenWithoutListItems,
+  mergeChildSegments,
+  type Segment,
+  wrapWithTags,
 } from '../../src/segment.js';
 
 describe('flatten()', () => {
   it('returns html for a static segment unchanged', () => {
-    expect(flatten({ kind: 'static', html: '<p>x</p>' }, false)).toBe('<p>x</p>');
-    expect(flatten({ kind: 'static', html: '<p>x</p>' }, true)).toBe('<p>x</p>');
+    expect(flatten({ kind: 'static', html: '<p>x</p>' }, false)).toBe(
+      '<p>x</p>',
+    );
+    expect(flatten({ kind: 'static', html: '<p>x</p>' }, true)).toBe(
+      '<p>x</p>',
+    );
   });
 
   it('inlines list items and emits a marker comment when withMarkers is true', () => {
@@ -39,7 +43,11 @@ describe('flatten()', () => {
       kind: 'mixed',
       parts: [
         { kind: 'static', html: '<ul>' },
-        { kind: 'list', id: '0', items: [{ ref: { id: 1 }, cacheKey: 1, html: '<li>x</li>' }] },
+        {
+          kind: 'list',
+          id: '0',
+          items: [{ ref: { id: 1 }, cacheKey: 1, html: '<li>x</li>' }],
+        },
         { kind: 'static', html: '</ul>' },
       ],
     };
@@ -69,12 +77,15 @@ describe('flattenWithoutListItems()', () => {
   });
 
   it('passes static segments through verbatim', () => {
-    expect(flattenWithoutListItems({ kind: 'static', html: '<x/>' })).toBe('<x/>');
+    expect(flattenWithoutListItems({ kind: 'static', html: '<x/>' })).toBe(
+      '<x/>',
+    );
   });
 
   it('reduces a bare list segment to its marker', () => {
-    expect(flattenWithoutListItems({ kind: 'list', id: '3', items: [] }))
-      .toBe('<!--kf-list:3-->');
+    expect(flattenWithoutListItems({ kind: 'list', id: '3', items: [] })).toBe(
+      '<!--kf-list:3-->',
+    );
   });
 });
 
@@ -177,7 +188,11 @@ describe('wrapWithTags()', () => {
     const list: Segment = { kind: 'list', id: '0', items: [] };
     const inner: Segment = {
       kind: 'mixed',
-      parts: [{ kind: 'static', html: 'a' }, list, { kind: 'static', html: 'b' }],
+      parts: [
+        { kind: 'static', html: 'a' },
+        list,
+        { kind: 'static', html: 'b' },
+      ],
     };
     const out = wrapWithTags(inner, '<x>', '</x>');
     expect(out).toEqual({

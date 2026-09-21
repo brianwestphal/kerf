@@ -17,7 +17,11 @@ import { computed } from '../../src/reactive.js';
 import { defineStore, resetAllStores } from '../../src/store.js';
 import { clearStoreRegistry } from '../../src/testing.js';
 
-interface CartItem { id: string; name: string; price: number }
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+}
 
 function makeCartStore() {
   let nextId = 1;
@@ -68,14 +72,22 @@ describe('end-to-end cart', () => {
       cart.state.value.items.reduce((sum, i) => sum + i.price, 0),
     );
 
-    mount(badgeEl, () => jsx('span', { children: cart.state.value.items.length }));
-    mount(listEl, () => jsx('ul', {
-      children: cart.state.value.items.map((item) => jsx('li', {
-        'data-key': item.id,
-        children: `${item.name}|${item.price}`,
-      })),
-    }));
-    mount(footerEl, () => jsx('div', { children: `total:${total.value.toFixed(2)}` }));
+    mount(badgeEl, () =>
+      jsx('span', { children: cart.state.value.items.length }),
+    );
+    mount(listEl, () =>
+      jsx('ul', {
+        children: cart.state.value.items.map((item) =>
+          jsx('li', {
+            'data-key': item.id,
+            children: `${item.name}|${item.price}`,
+          }),
+        ),
+      }),
+    );
+    mount(footerEl, () =>
+      jsx('div', { children: `total:${total.value.toFixed(2)}` }),
+    );
 
     expect(badgeEl.textContent).toBe('0');
     expect(listEl.querySelectorAll('li')).toHaveLength(0);
@@ -100,15 +112,23 @@ describe('end-to-end cart', () => {
     cart.actions.add('Coffee', 4.5);
     cart.actions.add('Croissant', 3.25);
 
-    mount(listEl, () => jsx('ul', {
-      children: cart.state.value.items.map((item) => jsx('li', {
-        'data-key': item.id,
-        children: [
-          jsx('span', { className: 'name', children: item.name }),
-          jsx('button', { 'data-action': 'remove', 'data-id': item.id, children: 'x' }),
-        ],
-      })),
-    }));
+    mount(listEl, () =>
+      jsx('ul', {
+        children: cart.state.value.items.map((item) =>
+          jsx('li', {
+            'data-key': item.id,
+            children: [
+              jsx('span', { className: 'name', children: item.name }),
+              jsx('button', {
+                'data-action': 'remove',
+                'data-id': item.id,
+                children: 'x',
+              }),
+            ],
+          }),
+        ),
+      }),
+    );
 
     delegate(listEl, 'click', '[data-action="remove"]', (_e, btn) => {
       const id = (btn as HTMLElement).dataset.id;
@@ -146,12 +166,14 @@ describe('end-to-end cart', () => {
     const cart = makeCartStore();
     cart.actions.add('Coffee', 4.5);
 
-    mount(listEl, () => jsx('ul', {
-      children: [
-        jsx('li', { children: `count:${cart.state.value.items.length}` }),
-        jsx('li', { children: jsx('input', { id: 'q', type: 'text' }) }),
-      ],
-    }));
+    mount(listEl, () =>
+      jsx('ul', {
+        children: [
+          jsx('li', { children: `count:${cart.state.value.items.length}` }),
+          jsx('li', { children: jsx('input', { id: 'q', type: 'text' }) }),
+        ],
+      }),
+    );
 
     const input = listEl.querySelector<HTMLInputElement>('#q')!;
     input.value = 'partial query';

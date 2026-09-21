@@ -16,23 +16,23 @@ mapping, see your source framework's page — e.g. [Coming from React](/kerf/mig
 Two frameworks can share a page but **never the same DOM node**. kerf's `mount()`
 takes over an element's children (it sets `innerHTML` on first render, then morphs on
 every change); React's reconciler does the same for its root. As long as each
-framework owns a *different* subtree, they don't fight.
+framework owns a _different_ subtree, they don't fight.
 
 So every migration step is the same shape: carve out one element, hand it to kerf,
 and tell the other framework to keep its hands off it. There are two directions.
 
 ## Direction A — a kerf island inside a React app
 
-The common case while migrating *away* from React: React still owns the page; you
+The common case while migrating _away_ from React: React still owns the page; you
 replace one widget at a time with kerf. React renders an **empty** host element and
 never gives it children, so it leaves kerf's DOM alone. A `useEffect` mounts kerf and
 returns the disposer for teardown:
 
 ```tsx
 /** @jsxImportSource react */
-import { useEffect, useRef } from 'react';
-import { mount } from 'kerfjs';
-import { CartWidget } from './cart-widget'; // a kerf component (its own file, see below)
+import { useEffect, useRef } from "react";
+import { mount } from "kerfjs";
+import { CartWidget } from "./cart-widget"; // a kerf component (its own file, see below)
 
 export function CartIsland() {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -59,10 +59,10 @@ it, then React mounts into that host:
 
 ```tsx
 /** @jsxImportSource kerfjs */
-import { mount } from 'kerfjs';
-import { createElement } from 'react';
-import { createRoot } from 'react-dom/client';
-import { LegacyChart } from './legacy-chart'; // a React component
+import { mount } from "kerfjs";
+import { createElement } from "react";
+import { createRoot } from "react-dom/client";
+import { LegacyChart } from "./legacy-chart"; // a React component
 
 mount(appRoot, () => (
   <section>
@@ -72,7 +72,7 @@ mount(appRoot, () => (
 ));
 
 // After first render, hand the skipped host to React:
-const host = appRoot.querySelector('.chart-host')!;
+const host = appRoot.querySelector(".chart-host")!;
 const root = createRoot(host);
 root.render(createElement(LegacyChart));
 // on teardown: root.unmount();
@@ -90,11 +90,11 @@ mixed project you override per file with the standard TypeScript pragma — a bl
 comment on the **first line**:
 
 ```tsx
-/** @jsxImportSource kerfjs */   // top of a kerf file
+/** @jsxImportSource kerfjs */ // top of a kerf file
 ```
 
 ```tsx
-/** @jsxImportSource react */    // top of a React file
+/** @jsxImportSource react */ // top of a React file
 ```
 
 The pragma overrides the tsconfig default and is understood by tsc, esbuild, Vite,
@@ -113,7 +113,7 @@ channel. Put the state in a module both sides import:
 
 ```ts
 // shared-state.ts — no JSX, no framework
-import { signal } from 'kerfjs';
+import { signal } from "kerfjs";
 export const cartCount = signal(0);
 ```
 
@@ -122,9 +122,9 @@ change). The React side bridges a signal into local state with one `effect`:
 
 ```tsx
 /** @jsxImportSource react */
-import { useEffect, useState } from 'react';
-import { effect } from 'kerfjs';
-import { cartCount } from './shared-state';
+import { useEffect, useState } from "react";
+import { effect } from "kerfjs";
+import { cartCount } from "./shared-state";
 
 export function CartBadge() {
   const [count, setCount] = useState(cartCount.value);
@@ -163,7 +163,7 @@ bridging pattern, `store.state.value` in place of the signal read.
 - **You ship two runtimes mid-migration.** That's a temporary bundle cost, not a
   permanent one — the whole point is that it shrinks to just kerf as islands convert.
 - **SSR / hydration.** If the surrounding app is server-rendered, mount kerf islands
-  *after* the host framework hydrates (in `useEffect` / `onMounted`), not during SSR.
+  _after_ the host framework hydrates (in `useEffect` / `onMounted`), not during SSR.
   `SafeHtml.toString()` can server-render kerf, but don't interleave it with another
   framework's hydration pass over the same nodes.
 - **Attribute names.** kerf JSX uses HTML names (`class`, `for`, `autofocus`), not

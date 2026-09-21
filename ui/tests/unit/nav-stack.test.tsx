@@ -4,14 +4,31 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { NavStack, type NavStackView } from '../../src/nav-stack.js';
 import { wireNavStack } from '../../src/wire-nav-stack.js';
 
-const view = (key: string, title?: string, toolbar?: unknown): NavStackView => ({ key, title, content: raw(`<p class="body">${key}</p>`), toolbar: toolbar as NavStackView['toolbar'] });
+const view = (
+  key: string,
+  title?: string,
+  toolbar?: unknown,
+): NavStackView => ({
+  key,
+  title,
+  content: raw(`<p class="body">${key}</p>`),
+  toolbar: toolbar as NavStackView['toolbar'],
+});
 
 const tick = () => new Promise((resolve) => window.setTimeout(resolve, 0));
-const delay = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+const delay = (ms: number) =>
+  new Promise((resolve) => window.setTimeout(resolve, ms));
 
-function mountStack(views: NavStackView[], props: Partial<Parameters<typeof NavStack>[0]> = {}): HTMLElement {
-  document.body.innerHTML = String(NavStack({ id: 'nav', label: 'Flow', views, ...props }));
-  return document.body.querySelector<HTMLElement>('[data-component="nav-stack"]')!;
+function mountStack(
+  views: NavStackView[],
+  props: Partial<Parameters<typeof NavStack>[0]> = {},
+): HTMLElement {
+  document.body.innerHTML = String(
+    NavStack({ id: 'nav', label: 'Flow', views, ...props }),
+  );
+  return document.body.querySelector<HTMLElement>(
+    '[data-component="nav-stack"]',
+  )!;
 }
 
 afterEach(() => {
@@ -21,32 +38,51 @@ afterEach(() => {
 
 describe('NavStack markup', () => {
   it('renders a single view with no back control', () => {
-    const html = String(NavStack({ id: 'nav', label: 'Flow', views: [view('home', 'Home')] }));
+    const html = String(
+      NavStack({ id: 'nav', label: 'Flow', views: [view('home', 'Home')] }),
+    );
     expect(html).toContain('data-component="nav-stack"');
     expect(html).toContain('data-depth="1"');
     expect(html).not.toContain('data-nav-back');
     expect(html).toContain('data-nav-active="true"');
-    expect(html).toContain('kui-nav-stack__title" data-component="toolbar-text" data-size="large"><span class="kui-toolbar-text__text">Home</span></span>');
+    expect(html).toContain(
+      'kui-nav-stack__title" data-component="toolbar-text" data-size="large"><span class="kui-toolbar-text__text">Home</span></span>',
+    );
   });
 
   it('shows the back control and the top title once the stack has depth', () => {
-    const html = String(NavStack({ id: 'nav', label: 'Flow', views: [view('home', 'Home'), view('detail', 'Detail')] }));
+    const html = String(
+      NavStack({
+        id: 'nav',
+        label: 'Flow',
+        views: [view('home', 'Home'), view('detail', 'Detail')],
+      }),
+    );
     expect(html).toContain('data-nav-back');
     expect(html).toContain('aria-label="Back"');
-    expect(html).toContain('kui-nav-stack__title" data-component="toolbar-text" data-size="large"><span class="kui-toolbar-text__text">Detail</span></span>');
+    expect(html).toContain(
+      'kui-nav-stack__title" data-component="toolbar-text" data-size="large"><span class="kui-toolbar-text__text">Detail</span></span>',
+    );
     // Non-top views are hidden but kept mounted.
-    expect(html).toContain('data-nav-key="home" data-nav-active="false" aria-hidden="true"');
+    expect(html).toContain(
+      'data-nav-key="home" data-nav-active="false" aria-hidden="true"',
+    );
   });
 
   it('supports a custom back label, per-view actions, a bottom toolbar, and className', () => {
-    const html = String(NavStack({
-      id: 'nav',
-      label: 'Flow',
-      backLabel: 'Go back',
-      className: 'tall',
-      views: [view('home'), view('detail', 'Detail', raw('<button>Edit</button>'))],
-      bottomToolbar: raw('<nav>tabs</nav>'),
-    }));
+    const html = String(
+      NavStack({
+        id: 'nav',
+        label: 'Flow',
+        backLabel: 'Go back',
+        className: 'tall',
+        views: [
+          view('home'),
+          view('detail', 'Detail', raw('<button>Edit</button>')),
+        ],
+        bottomToolbar: raw('<nav>tabs</nav>'),
+      }),
+    );
     expect(html).toContain('aria-label="Go back"');
     expect(html).toContain('kui-nav-stack tall');
     expect(html).toContain('kui-nav-stack__actions');
@@ -58,11 +94,20 @@ describe('NavStack markup', () => {
     expect(html).toContain('data-depth="0"');
     expect(html).not.toContain('data-nav-back');
     expect(html).not.toContain('kui-nav-stack__actions');
-    expect(html).toContain('kui-nav-stack__title" data-component="toolbar-text" data-size="large"><span class="kui-toolbar-text__text"></span></span>');
+    expect(html).toContain(
+      'kui-nav-stack__title" data-component="toolbar-text" data-size="large"><span class="kui-toolbar-text__text"></span></span>',
+    );
   });
 
   it('omits the chrome when hideToolbar is set', () => {
-    const html = String(NavStack({ id: 'nav', label: 'Flow', hideToolbar: true, views: [view('home', 'Home')] }));
+    const html = String(
+      NavStack({
+        id: 'nav',
+        label: 'Flow',
+        hideToolbar: true,
+        views: [view('home', 'Home')],
+      }),
+    );
     expect(html).not.toContain('data-nav-stack-chrome');
     expect(html).toContain('data-nav-stack-viewport');
   });
@@ -98,7 +143,9 @@ describe('wireNavStack', () => {
     await tick();
     await delay(30);
     // The transient entering class is cleared once the animation frame runs.
-    expect(next.classList.contains('kui-nav-stack__view--entering')).toBe(false);
+    expect(next.classList.contains('kui-nav-stack__view--entering')).toBe(
+      false,
+    );
     expect(viewport.querySelectorAll('.kui-nav-stack__view')).toHaveLength(2);
     dispose();
   });
@@ -107,7 +154,9 @@ describe('wireNavStack', () => {
     const root = mountStack([view('home', 'Home')]);
     const dispose = wireNavStack(root, { duration: 0 });
     const viewport = root.querySelector('[data-nav-stack-viewport]')!;
-    viewport.querySelector<HTMLElement>('.kui-nav-stack__view')!.dataset.navActive = 'false';
+    viewport.querySelector<HTMLElement>(
+      '.kui-nav-stack__view',
+    )!.dataset.navActive = 'false';
     const next = document.createElement('article');
     next.className = 'kui-nav-stack__view';
     next.dataset.navKey = 'detail';
@@ -115,7 +164,9 @@ describe('wireNavStack', () => {
     viewport.append(next);
     await tick();
     // With animation off, the transient entering class is removed synchronously (no rAF).
-    expect(next.classList.contains('kui-nav-stack__view--entering')).toBe(false);
+    expect(next.classList.contains('kui-nav-stack__view--entering')).toBe(
+      false,
+    );
     expect(viewport.querySelectorAll('.kui-nav-stack__view')).toHaveLength(2);
     dispose();
   });
@@ -139,11 +190,15 @@ describe('wireNavStack', () => {
   });
 
   it('finalizes instantly under reduced motion', async () => {
-    vi.spyOn(window, 'matchMedia').mockImplementation((query) => ({ matches: query.includes('reduce') }) as MediaQueryList);
+    vi.spyOn(window, 'matchMedia').mockImplementation(
+      (query) => ({ matches: query.includes('reduce') }) as MediaQueryList,
+    );
     const root = mountStack([view('home', 'Home'), view('detail', 'Detail')]);
     const dispose = wireNavStack(root);
     const viewport = root.querySelector('[data-nav-stack-viewport]')!;
-    viewport.querySelector<HTMLElement>('[data-nav-key="home"]')!.dataset.navActive = 'true';
+    viewport.querySelector<HTMLElement>(
+      '[data-nav-key="home"]',
+    )!.dataset.navActive = 'true';
     viewport.querySelector<HTMLElement>('[data-nav-key="detail"]')!.remove();
     await tick();
     expect(viewport.querySelector('[data-nav-exiting="true"]')).toBeNull();
@@ -162,6 +217,8 @@ describe('wireNavStack', () => {
     next.dataset.navActive = 'true';
     viewport.append(next);
     await tick();
-    expect(next.classList.contains('kui-nav-stack__view--entering')).toBe(false);
+    expect(next.classList.contains('kui-nav-stack__view--entering')).toBe(
+      false,
+    );
   });
 });

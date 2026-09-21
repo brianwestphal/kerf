@@ -27,16 +27,51 @@ export interface TabScaffoldProps {
  * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
-export function TabScaffold({ id, label, tabs, active, className = '' }: TabScaffoldProps) {
-  return <section class={`kui-tab-scaffold ${className}`.trim()} id={id} data-component="tab-scaffold" data-tab-scaffold-id={id}>
-    <div class="kui-tab-scaffold__scenes">
-      {tabs.map((tab) => <div class="kui-tab-scaffold__scene" data-tab-scaffold-scene={tab.id} data-active={String(tab.id === active)} aria-hidden={String(tab.id !== active)}>{tab.content}</div>)}
-    </div>
-    <nav class="kui-tab-scaffold__bar" role="tablist" aria-label={label}>
-      {tabs.map((tab) => <button type="button" class="kui-tab-scaffold__tab" role="tab" data-tab-scaffold-tab={tab.id} aria-selected={String(tab.id === active)} tabindex={tab.id === active ? '0' : '-1'}>
-        {tab.icon && <span class="kui-tab-scaffold__tab-icon" aria-hidden="true">{tab.icon}</span>}
-        <span class="kui-tab-scaffold__tab-label">{tab.label}</span>
-      </button>)}
-    </nav>
-  </section>;
+export function TabScaffold({
+  id,
+  label,
+  tabs,
+  active,
+  className = '',
+}: TabScaffoldProps) {
+  return (
+    <section
+      class={`kui-tab-scaffold ${className}`.trim()}
+      id={id}
+      data-component="tab-scaffold"
+      data-tab-scaffold-id={id}
+    >
+      <div class="kui-tab-scaffold__scenes">
+        {tabs.map((tab) => (
+          <div
+            class="kui-tab-scaffold__scene"
+            data-tab-scaffold-scene={tab.id}
+            data-active={String(tab.id === active)}
+            aria-hidden={String(tab.id !== active)}
+          >
+            {tab.content}
+          </div>
+        ))}
+      </div>
+      <nav class="kui-tab-scaffold__bar" role="tablist" aria-label={label}>
+        {tabs.map((tab) => (
+          <button
+            type="button"
+            class="kui-tab-scaffold__tab"
+            role="tab"
+            data-tab-scaffold-tab={tab.id}
+            aria-selected={String(tab.id === active)}
+            tabindex={tab.id === active ? '0' : '-1'}
+          >
+            {tab.icon && (
+              <span class="kui-tab-scaffold__tab-icon" aria-hidden="true">
+                {tab.icon}
+              </span>
+            )}
+            <span class="kui-tab-scaffold__tab-label">{tab.label}</span>
+          </button>
+        ))}
+      </nav>
+    </section>
+  );
 }

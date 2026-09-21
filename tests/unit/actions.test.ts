@@ -30,7 +30,7 @@ describe('action()', () => {
 });
 
 describe('delegateActions()', () => {
-  it('dispatches to the handler keyed by the element\'s data-action value', () => {
+  it("dispatches to the handler keyed by the element's data-action value", () => {
     const root = mount(
       `<button data-action="select" data-id="7">s</button>
        <button data-action="remove" data-id="9">r</button>`,
@@ -53,7 +53,9 @@ describe('delegateActions()', () => {
   });
 
   it('walks up (closest) so a click on an inner child still matches the action element', () => {
-    const root = mount('<button data-action="go"><span class="label">go</span></button>');
+    const root = mount(
+      '<button data-action="go"><span class="label">go</span></button>',
+    );
     const go = vi.fn();
     delegateActions(root, 'click', { go });
 
@@ -83,7 +85,9 @@ describe('delegateActions()', () => {
   });
 
   it('supports match: "direct" — fires only when the target itself carries the action', () => {
-    const root = mount('<button data-action="go"><span class="label">go</span></button>');
+    const root = mount(
+      '<button data-action="go"><span class="label">go</span></button>',
+    );
     const go = vi.fn();
     delegateActions(root, 'click', { go }, { match: 'direct' });
 
@@ -123,7 +127,9 @@ describe('delegateActions()', () => {
     const d1 = delegateActions(root, 'click', { rename: clickH });
     const d2 = delegateActions(root, 'input', { rename: inputH });
 
-    const input = root.querySelector('[data-action="rename"]') as HTMLInputElement;
+    const input = root.querySelector(
+      '[data-action="rename"]',
+    ) as HTMLInputElement;
     input.click();
     input.dispatchEvent(new Event('input', { bubbles: true }));
     expect(clickH).toHaveBeenCalledTimes(1);

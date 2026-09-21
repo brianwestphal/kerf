@@ -2,10 +2,10 @@
 
 > **Status: shipped.** `bindList` virtualization accepts all three height
 > models — a fixed `rowHeight: number`, an app-declared `rowHeight: (item, index)
-> => number`, and a **measured** `rowHeight: { estimate }` where the app reports
+=> number`, and a **measured** `rowHeight: { estimate }` where the app reports
 > real heights via the handle's `setHeight` (or the `observeRowHeights` helper)
 > and kerf anchor-corrects `scrollTop`. §17.6 records the API decisions. A second
-> virtualization *strategy* — `mode: 'content-visibility'` (§17.11) — keeps every
+> virtualization _strategy_ — `mode: 'content-visibility'` (§17.11) — keeps every
 > row in the DOM (full find-in-page / a11y) and lets the browser skip off-screen
 > layout instead of kerf windowing rows out; `mode: 'window'` (the default) is the
 > behavior in §17.1–17.10.
@@ -18,17 +18,20 @@
 
 ```ts
 const start = Math.max(0, Math.floor(parent.scrollTop / rowHeight) - overscan);
-const end   = Math.min(total, Math.ceil((parent.scrollTop + parent.clientHeight) / rowHeight) + overscan);
-container.style.paddingTop    = `${start * rowHeight}px`;
+const end = Math.min(
+  total,
+  Math.ceil((parent.scrollTop + parent.clientHeight) / rowHeight) + overscan,
+);
+container.style.paddingTop = `${start * rowHeight}px`;
 container.style.paddingBottom = `${Math.max(0, total - end) * rowHeight}px`;
 ```
 
-It does not merely *assume* uniform rows — it **enforces** them: every row's
+It does not merely _assume_ uniform rows — it **enforces** them: every row's
 `style.height` is hard-set to `rowHeight`. Variable content is clamped, and the
 `scrollTop → index` mapping and the padding both break the moment a row's real
 height differs from the constant.
 
-That covers dense tables and equal-height cards, but it misses the *common*
+That covers dense tables and equal-height cards, but it misses the _common_
 case: chat messages, feeds, comment threads, cards with wrapping text — anything
 whose height depends on its content. Fixed-height-only virtualization is of
 limited general usefulness, so variable height is the headline gap.
@@ -36,24 +39,24 @@ limited general usefulness, so variable height is the headline gap.
 ## 17.2 Design principle — the height source is pluggable; kerf owns the math
 
 "How tall is row N?" is just a **source** feeding one piece of machinery that
-kerf owns and that never needs to know *where* a height came from:
+kerf owns and that never needs to know _where_ a height came from:
 
 - a **cumulative-offset model** (a prefix sum of row heights),
 - a **`scrollTop → start index`** lookup (binary search over the prefix sum),
 - the **top / bottom padding** that keeps `scrollHeight` honest,
 - and **scroll anchoring** (§17.4), the one genuinely hard part.
 
-Keep all of that in kerf, and make the height *source* a three-way option. The
+Keep all of that in kerf, and make the height _source_ a three-way option. The
 fixed-height fast path is preserved exactly — it is the degenerate case where
 the cumulative model isn't even needed.
 
 ### The three height sources
 
-| `rowHeight` | Height model | Who measures | Cost | Status |
-| --- | --- | --- | --- | --- |
-| `number` | fixed | nobody | O(1), no cumulative model | **shipped** |
-| `(item, index) => number` | variable, **app-declared** | app (knows from data) | prefix sum + binary search, no reflow, no observers (unit-testable) | **shipped** |
-| `{ estimate: number \| ((item, index) => number) }` + imperative `setHeight` | variable, **app-measured** | **app** (its own read / observer) | + estimate fallback + anchor correction (needs real layout) | **shipped** |
+| `rowHeight`                                                                  | Height model               | Who measures                      | Cost                                                                | Status      |
+| ---------------------------------------------------------------------------- | -------------------------- | --------------------------------- | ------------------------------------------------------------------- | ----------- |
+| `number`                                                                     | fixed                      | nobody                            | O(1), no cumulative model                                           | **shipped** |
+| `(item, index) => number`                                                    | variable, **app-declared** | app (knows from data)             | prefix sum + binary search, no reflow, no observers (unit-testable) | **shipped** |
+| `{ estimate: number \| ((item, index) => number) }` + imperative `setHeight` | variable, **app-measured** | **app** (its own read / observer) | + estimate fallback + anchor correction (needs real layout)         | **shipped** |
 
 - **`number`** stays byte-for-byte the current behavior.
 - **`(item, index) => number`** is for heights the app can compute up front — a
@@ -76,7 +79,7 @@ reasons:
 1. **Testability.** Because heights arrive as numbers through `setHeight`, the
    entire windowing + anchoring algorithm is unit-testable in happy-dom by
    feeding fake heights and asserting the window, the padding, and the corrected
-   `scrollTop`. happy-dom does no layout, so a kerf-owned *measured* tier could
+   `scrollTop`. happy-dom does no layout, so a kerf-owned _measured_ tier could
    only ever be tested in the Playwright suite. This design shrinks the
    browser-only surface to a tiny forwarding shim (§17.5).
 2. **On-brand.** It mirrors kerf's established core+convenience split — the
@@ -90,7 +93,7 @@ reasons:
 ## 17.4 Scroll anchoring — the part kerf must own
 
 The hard part of measured virtualization is **not** the measurement — it is what
-happens when a row *above* the viewport turns out to differ from its estimate.
+happens when a row _above_ the viewport turns out to differ from its estimate.
 Its real height shifts the cumulative offset of everything below it, so total
 height changes and the content under the user's eyes would visibly jump unless
 `scrollTop` is compensated by the same delta.
@@ -98,7 +101,7 @@ height changes and the content under the user's eyes would visibly jump unless
 Only kerf knows the cumulative-offset model, so **kerf owns this correction**:
 when a `setHeight(key, px)` report changes the offset of a row that sits before
 the current scroll position, kerf adjusts `parent.scrollTop` by the delta in the
-same frame. The app owning *measurement* does not mean the app owns *anchoring* —
+same frame. The app owning _measurement_ does not mean the app owns _anchoring_ —
 that stays in the algorithm, which is exactly why it must be unit-testable.
 
 ## 17.5 The optional measurement helper
@@ -109,7 +112,7 @@ installs a single `ResizeObserver` over the visible rows and forwards each row's
 `offsetHeight` into `handle.setHeight(key, px)`, returning a disposer. It is the
 batteries-included path, it is the **only** piece that needs the Playwright
 suite, and the core does not depend on it. The docs then show all three
-patterns: *declare* heights, *measure with the helper*, or *measure yourself*.
+patterns: _declare_ heights, _measure with the helper_, or _measure yourself_.
 
 ## 17.6 Shipped API shape
 
@@ -190,12 +193,12 @@ otherwise had to write.
 
 ### `minRows` — render-all below a threshold
 
-A list often wants to render *everything* when it's short and virtualize only
+A list often wants to render _everything_ when it's short and virtualize only
 when it's long: a fully-rendered short list is visible to find-in-page (Cmd+F),
 to screen readers, and to DOM-count tests, all of which only see rows actually in
 the DOM. Without a built-in, the caller branches on length between a plain
-`bindList` (rows mount into *their* container) and a virtualized one (kerf creates
-and owns an *inner* container) — two different DOM shapes, so the branch leaks
+`bindList` (rows mount into _their_ container) and a virtualized one (kerf creates
+and owns an _inner_ container) — two different DOM shapes, so the branch leaks
 into the caller and both paths must converge on the same hooks by hand.
 
 `virtualize: { rowHeight, minRows }` handles it inside kerf: below `minRows` it
@@ -264,7 +267,7 @@ user-visible consequences, none of which a virtualized list can paper over:
   app-driven scrolling as above.
 
 The `content-visibility` virtualization mode (§17.11) keeps **all** rows in the
-DOM — the browser skips *rendering* off-screen rows rather than kerf *removing*
+DOM — the browser skips _rendering_ off-screen rows rather than kerf _removing_
 them — so it preserves find-in-page, the a11y tree, and anchor links at the cost
 of an unbounded node count. It targets exactly the medium-list case where
 findability outweighs the node ceiling; the windowing described here stays the
@@ -273,7 +276,7 @@ right choice for very large lists.
 ## 17.11 The `content-visibility` mode — keep every row findable
 
 **Status: shipped.** `virtualize: { rowHeight, mode: 'content-visibility' }` is a
-second virtualization *strategy*, chosen against the default `mode: 'window'`
+second virtualization _strategy_, chosen against the default `mode: 'window'`
 (§17.1–17.9, today's JS windowing). It trades the node ceiling for full
 findability: **every** row stays in the DOM, and the browser — not kerf — skips
 the layout and paint of the off-screen ones via two CSS properties kerf sets on
@@ -286,7 +289,7 @@ contain-intrinsic-size: 0 <rowHeight>px;
 
 `content-visibility: auto` tells the engine it may skip rendering a row that is
 off-screen; `contain-intrinsic-size` gives it a placeholder height so the
-scrollbar stays accurate *before* a row has ever been rendered (the engine
+scrollbar stays accurate _before_ a row has ever been rendered (the engine
 remembers the real size once it renders the row). Because the row is present the
 whole time, **find-in-page, the accessibility tree, and anchor links /
 `scrollIntoView` all work on any row** — the browser renders an off-screen row on
@@ -298,17 +301,17 @@ cannot give (§17.10).
 
 `mode` is an **explicit app decision**, never auto-selected by browser support.
 The two modes make opposite tradeoffs, and which one is right depends on the
-*list*, not the engine:
+_list_, not the engine:
 
 <div class="kerf-compare">
 
-| | `mode: 'window'` (default) | `mode: 'content-visibility'` |
-| --- | --- | --- |
-| DOM nodes | **bounded** (visible window + overscan) | all N rows |
-| Find-in-page / a11y / anchor links | visible window only | **every row** |
-| Best for | very large lists (100k rows) | medium lists where findability wins |
-| Scroll handling | kerf windows on scroll/resize | browser skips off-screen layout |
-| Works on every engine | yes | yes (CSS inert where unsupported — see below) |
+|                                    | `mode: 'window'` (default)              | `mode: 'content-visibility'`                  |
+| ---------------------------------- | --------------------------------------- | --------------------------------------------- |
+| DOM nodes                          | **bounded** (visible window + overscan) | all N rows                                    |
+| Find-in-page / a11y / anchor links | visible window only                     | **every row**                                 |
+| Best for                           | very large lists (100k rows)            | medium lists where findability wins           |
+| Scroll handling                    | kerf windows on scroll/resize           | browser skips off-screen layout               |
+| Works on every engine              | yes                                     | yes (CSS inert where unsupported — see below) |
 
 </div>
 
@@ -318,7 +321,7 @@ The two modes make opposite tradeoffs, and which one is right depends on the
 - **window** keeps the node count bounded — the opposite tradeoff.
 
 Auto-picking the strategy by `CSS.supports` would be a trap: it would make the
-findability *guarantee* vary silently by browser (holds in Chrome, not in an
+findability _guarantee_ vary silently by browser (holds in Chrome, not in an
 engine without `content-visibility`), and make the DOM shape / row count differ
 per engine. So kerf never does that. **The app picks the guarantee; the mode is
 constant across every browser.**
@@ -326,10 +329,10 @@ constant across every browser.**
 ### 17.11.2 Feature-detection gates the speed, never the guarantee
 
 There is deliberately **no** feature detection inside the mode. `content-visibility:
-auto` is simply *inert* on an engine that doesn't support it (early-2026 Firefox,
+auto` is simply _inert_ on an engine that doesn't support it (early-2026 Firefox,
 say): kerf still renders every row and still sets both CSS properties, the row is
 still fully findable, and the only thing missing is the off-screen-skip
-*optimization*. So:
+_optimization_. So:
 
 - **Supporting engines** (Chromium, Safari 18) skip off-screen layout/paint — the
   performance win.
@@ -348,7 +351,7 @@ regardless of engine.
   size should the browser reserve for an unrendered row?": a fixed `number`
   applies to every row; an `(item, index) => number` gives each row its own
   intrinsic size; `{ estimate }` uses its estimate (number or function). The
-  browser measures the *real* height itself once a row renders.
+  browser measures the _real_ height itself once a row renders.
 - **`setHeight` and `observeRowHeights` are no-ops.** The measured tier's imperative
   channel exists to feed kerf's cumulative-offset model; there is no such model
   here (no rows are removed, so there is nothing to anchor-correct), and the

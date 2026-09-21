@@ -11,12 +11,24 @@ export interface ValueTableRowProps {
   placeholder?: boolean;
 }
 
-export function ValueTableRow({ label, value, icon, className = '', placeholder = false }: ValueTableRowProps) {
-  return <div class={`kui-value-table__row ${className}`.trim()} data-has-icon={String(Boolean(icon))} data-placeholder={placeholder ? 'true' : undefined}>
-    <dt>
-      {icon && <span class="kui-value-table__icon">{icon}</span>}
-      <span class="kui-value-table__label">{label}</span>
-    </dt>
-    <dd>{placeholder ? <Skeleton width="10em" /> : value}</dd>
-  </div>;
+export function ValueTableRow({
+  label,
+  value,
+  icon,
+  className = '',
+  placeholder = false,
+}: ValueTableRowProps) {
+  return (
+    <div
+      class={`kui-value-table__row ${className}`.trim()}
+      data-has-icon={String(Boolean(icon))}
+      data-placeholder={placeholder ? 'true' : undefined}
+    >
+      <dt>
+        {icon && <span class="kui-value-table__icon">{icon}</span>}
+        <span class="kui-value-table__label">{label}</span>
+      </dt>
+      <dd>{placeholder ? <Skeleton width="10em" /> : value}</dd>
+    </div>
+  );
 }

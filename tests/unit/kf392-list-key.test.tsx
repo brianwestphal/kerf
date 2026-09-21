@@ -35,7 +35,9 @@ beforeEach(() => {
   document.body.appendChild(root);
 });
 
-afterEach(() => { document.body.innerHTML = ''; });
+afterEach(() => {
+  document.body.innerHTML = '';
+});
 
 const cell = (list: string, row: string): Element | null =>
   root.querySelector(`ul[data-key="${list}"] li[data-key="${row}"]`);
@@ -47,11 +49,25 @@ describe('KF-392: each({ key }) — stable list identity', () => {
     const b = arraySignal([{ id: 'b1' }, { id: 'b2' }]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value
-          ? <ul data-key="ca">{each(a, (r) => <li data-key={r.id}>{r.id}</li>)}</ul>
-          : ''}
+        {cond.value ? (
+          <ul data-key="ca">
+            {each(a, (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ))}
+          </ul>
+        ) : (
+          ''
+        )}
         <ul data-key="cb">
-          {each(b, (r) => <li data-key={r.id}><input value={r.id} /></li>, { key: 'b' })}
+          {each(
+            b,
+            (r) => (
+              <li data-key={r.id}>
+                <input value={r.id} />
+              </li>
+            ),
+            { key: 'b' },
+          )}
         </ul>
       </div>
     ));
@@ -75,10 +91,20 @@ describe('KF-392: each({ key }) — stable list identity', () => {
     const b = arraySignal([{ id: 'b1' }]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value
-          ? <ul data-key="ca">{each(a, (r) => <li data-key={r.id}>{r.id}</li>)}</ul>
-          : ''}
-        <ul data-key="cb">{each(b, (r) => <li data-key={r.id}>{r.id}</li>)}</ul>
+        {cond.value ? (
+          <ul data-key="ca">
+            {each(a, (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ))}
+          </ul>
+        ) : (
+          ''
+        )}
+        <ul data-key="cb">
+          {each(b, (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ))}
+        </ul>
       </div>
     ));
     const row = cell('cb', 'b1');
@@ -96,10 +122,24 @@ describe('KF-392: each({ key }) — stable list identity', () => {
     const b = arraySignal([{ id: 'b1' }]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value
-          ? <ul data-key="ca">{each(a, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'a' })}</ul>
-          : ''}
-        <ul data-key="cb">{each(b, (r) => <li data-key={r.id}>{r.id}</li>)}</ul>
+        {cond.value ? (
+          <ul data-key="ca">
+            {each(
+              a,
+              (r) => (
+                <li data-key={r.id}>{r.id}</li>
+              ),
+              { key: 'a' },
+            )}
+          </ul>
+        ) : (
+          ''
+        )}
+        <ul data-key="cb">
+          {each(b, (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ))}
+        </ul>
       </div>
     ));
     const row = cell('cb', 'b1');
@@ -114,28 +154,62 @@ describe('KF-392: each({ key }) — stable list identity', () => {
     // The data-source guard cannot separate these — same instance — so this
     // shape was the one hole left in the corruption fix. Keys separate them.
     const cond = signal(true);
-    const s = arraySignal([{ id: 'x', t: 'X' }, { id: 'y', t: 'Y' }]);
+    const s = arraySignal([
+      { id: 'x', t: 'X' },
+      { id: 'y', t: 'Y' },
+    ]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value
-          ? <ul data-key="c1">{each(s, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'one' })}</ul>
-          : ''}
-        <ul data-key="c2">{each(s, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'two' })}</ul>
+        {cond.value ? (
+          <ul data-key="c1">
+            {each(
+              s,
+              (r) => (
+                <li data-key={r.id}>{r.t}</li>
+              ),
+              { key: 'one' },
+            )}
+          </ul>
+        ) : (
+          ''
+        )}
+        <ul data-key="c2">
+          {each(
+            s,
+            (r) => (
+              <li data-key={r.id}>{r.t}</li>
+            ),
+            { key: 'two' },
+          )}
+        </ul>
       </div>
     ));
     batch(() => {
       cond.value = false;
       s.push({ id: 'z', t: 'Z' });
     });
-    const shown = Array.from(root.querySelectorAll('ul[data-key="c2"] li')).map((l) => l.textContent);
+    const shown = Array.from(root.querySelectorAll('ul[data-key="c2"] li')).map(
+      (l) => l.textContent,
+    );
     expect(shown).toEqual(s.value.map((r) => r.t));
     dispose();
   });
 
   it('a keyed list keeps its granular fast path (row identity survives push/update/remove)', () => {
-    const rows = arraySignal([{ id: 'r1', t: 'R1' }, { id: 'r2', t: 'R2' }]);
+    const rows = arraySignal([
+      { id: 'r1', t: 'R1' },
+      { id: 'r2', t: 'R2' },
+    ]);
     const dispose = mount(root, () => (
-      <ul data-key="cl">{each(rows, (r) => <li data-key={r.id}>{r.t}</li>, { key: 'rows' })}</ul>
+      <ul data-key="cl">
+        {each(
+          rows,
+          (r) => (
+            <li data-key={r.id}>{r.t}</li>
+          ),
+          { key: 'rows' },
+        )}
+      </ul>
     ));
     const r1 = cell('cl', 'r1');
     rows.push({ id: 'r3', t: 'R3' });
@@ -144,19 +218,38 @@ describe('KF-392: each({ key }) — stable list identity', () => {
     expect(cell('cl', 'r1')).toBe(r1);
     expect(cell('cl', 'r2')?.textContent).toBe('R2!');
     rows.remove(0);
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent))
-      .toEqual(rows.value.map((r) => r.t));
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(rows.value.map((r) => r.t));
     dispose();
   });
 
   it('two lists claiming the same key throw rather than silently sharing state', () => {
     const s = arraySignal([{ id: 'a' }]);
-    expect(() => mount(root, () => (
-      <div>
-        <ul data-key="u1">{each(s, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'dup' })}</ul>
-        <ul data-key="u2">{each(s, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'dup' })}</ul>
-      </div>
-    ))).toThrow(/duplicate list key "dup"/);
+    expect(() =>
+      mount(root, () => (
+        <div>
+          <ul data-key="u1">
+            {each(
+              s,
+              (r) => (
+                <li data-key={r.id}>{r.id}</li>
+              ),
+              { key: 'dup' },
+            )}
+          </ul>
+          <ul data-key="u2">
+            {each(
+              s,
+              (r) => (
+                <li data-key={r.id}>{r.id}</li>
+              ),
+              { key: 'dup' },
+            )}
+          </ul>
+        </div>
+      )),
+    ).toThrow(/duplicate list key "dup"/);
   });
 
   it('the same key across separate renders is fine (it is per-render, not once-ever)', () => {
@@ -164,7 +257,17 @@ describe('KF-392: each({ key }) — stable list identity', () => {
     const rows = arraySignal([{ id: 'a' }]);
     const dispose = mount(root, () => {
       void bump.value; // track the signal so the render re-runs
-      return <ul data-key="cl">{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'k' })}</ul>;
+      return (
+        <ul data-key="cl">
+          {each(
+            rows,
+            (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ),
+            { key: 'k' },
+          )}
+        </ul>
+      );
     });
     const row = cell('cl', 'a');
     bump.value = 1;
@@ -180,7 +283,11 @@ describe('KF-392: each({ key }) — stable list identity', () => {
       <ul data-key="cl">
         {each(
           rows,
-          (r) => <li data-key={r.id} class={sel.value === r.id ? 'on' : ''}>{r.id}</li>,
+          (r) => (
+            <li data-key={r.id} class={sel.value === r.id ? 'on' : ''}>
+              {r.id}
+            </li>
+          ),
           (r) => `${r.id}:${String(sel.value === r.id)}`,
         )}
       </ul>
@@ -198,8 +305,15 @@ describe('KF-392: each({ key }) — stable list identity', () => {
       <ul data-key="cl">
         {each(
           rows,
-          (r) => <li data-key={r.id} class={sel.value === r.id ? 'on' : ''}>{r.id}</li>,
-          { cacheKey: (r) => `${r.id}:${String(sel.value === r.id)}`, key: 'sel' },
+          (r) => (
+            <li data-key={r.id} class={sel.value === r.id ? 'on' : ''}>
+              {r.id}
+            </li>
+          ),
+          {
+            cacheKey: (r) => `${r.id}:${String(sel.value === r.id)}`,
+            key: 'sel',
+          },
         )}
       </ul>
     ));

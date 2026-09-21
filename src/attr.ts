@@ -48,7 +48,10 @@
  */
 
 /** Descriptor created by the static {@link attr} overload. */
-export interface AttrSpec<N extends string = string, V extends string = string> {
+export interface AttrSpec<
+  N extends string = string,
+  V extends string = string,
+> {
   /** The raw attribute name passed to `attr()`. */
   readonly name: N;
   /** The raw attribute value passed to `attr()`. */
@@ -79,7 +82,7 @@ function cssEscapeIdent(value: string): string {
       continue;
     }
     // Control characters and DEL: hex-escape
-    if ((cp >= 0x0001 && cp <= 0x001F) || cp === 0x007F) {
+    if ((cp >= 0x0001 && cp <= 0x001f) || cp === 0x007f) {
       result += '\\' + cp.toString(16) + ' ';
       continue;
     }
@@ -91,8 +94,9 @@ function cssEscapeIdent(value: string): string {
     // Second char is a digit when first is '-' (e.g. "-3foo"): hex-escape digit
     if (
       i === 1 &&
-      cp >= 0x0030 && cp <= 0x0039 &&
-      str.charCodeAt(0) === 0x002D
+      cp >= 0x0030 &&
+      cp <= 0x0039 &&
+      str.charCodeAt(0) === 0x002d
     ) {
       result += '\\' + cp.toString(16) + ' ';
       continue;
@@ -100,11 +104,11 @@ function cssEscapeIdent(value: string): string {
     // Non-ASCII, safe identifier chars (letters, digits, underscore, hyphen)
     if (
       cp >= 0x0080 ||
-      cp === 0x002D ||              // `-`
-      cp === 0x005F ||              // `_`
+      cp === 0x002d || // `-`
+      cp === 0x005f || // `_`
       (cp >= 0x0030 && cp <= 0x0039) || // 0-9
-      (cp >= 0x0041 && cp <= 0x005A) || // A-Z
-      (cp >= 0x0061 && cp <= 0x007A)    // a-z
+      (cp >= 0x0041 && cp <= 0x005a) || // A-Z
+      (cp >= 0x0061 && cp <= 0x007a) // a-z
     ) {
       result += ch;
       continue;
@@ -126,10 +130,10 @@ function escapeCSSString(value: string): string {
     const ch = value.charAt(i);
     if (cp === 0x0000) {
       result += '�';
-    } else if ((cp >= 0x0001 && cp <= 0x001F) || cp === 0x007F) {
+    } else if ((cp >= 0x0001 && cp <= 0x001f) || cp === 0x007f) {
       // Control chars: hex-escape
       result += '\\' + cp.toString(16) + ' ';
-    } else if (cp === 0x005C) {
+    } else if (cp === 0x005c) {
       // Backslash
       result += '\\\\';
     } else if (cp === 0x0022) {
@@ -146,7 +150,10 @@ function escapeCSSString(value: string): string {
  * Static overload — pre-computes the full descriptor at definition time.
  * Returns an {@link AttrSpec} with `.name`, `.value`, `.selector`, and `.attrs`.
  */
-export function attr<N extends string, V extends string>(name: N, value: V): AttrSpec<N, V>;
+export function attr<N extends string, V extends string>(
+  name: N,
+  value: V,
+): AttrSpec<N, V>;
 
 /**
  * Dynamic overload — pre-validates and pre-escapes the attribute name, returns a
@@ -156,7 +163,9 @@ export function attr<N extends string, V extends string>(name: N, value: V): Att
  * `attr<'data-id', 'a'|'b'>('data-id')` → `(value: 'a'|'b') => { 'data-id': 'a'|'b' }`.
  * Leaving both generics off infers `N` from the argument and defaults `V` to `string`.
  */
-export function attr<N extends string, V extends string = string>(name: N): (value: V) => { readonly [K in N]: V };
+export function attr<N extends string, V extends string = string>(
+  name: N,
+): (value: V) => { readonly [K in N]: V };
 
 export function attr<N extends string, V extends string>(
   name: N,

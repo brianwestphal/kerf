@@ -38,8 +38,8 @@ REFERENCE_FRAMEWORKS=(
 
 echo "==> Building kerfjs and packing tarball"
 cd "${REPO_ROOT}"
-npm run build >/dev/null
-TARBALL="$(npm pack  | tail -n1)"
+npm run build > /dev/null
+TARBALL="$(npm pack | tail -n1)"
 TARBALL_ABS="${REPO_ROOT}/${TARBALL}"
 echo "    packed: ${TARBALL_ABS}"
 
@@ -66,7 +66,7 @@ rsync -a \
   "${BENCH_DIR}/kerfjs-impl/" "${DEST}/"
 
 # Patch the dependency to point at our local tarball.
-node - "$DEST/package.json" "$TARBALL_ABS" <<'NODE'
+node - "$DEST/package.json" "$TARBALL_ABS" << 'NODE'
 const fs = require('fs');
 const [, , pkgPath, tarball] = process.argv;
 const pkg = JSON.parse(fs.readFileSync(pkgPath, 'utf8'));
@@ -76,18 +76,18 @@ fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 2) + '\n');
 NODE
 
 echo "==> Installing root + webdriver-ts deps"
-(cd "${UPSTREAM_DIR}" && npm install )
+(cd "${UPSTREAM_DIR}" && npm install)
 (cd "${UPSTREAM_DIR}/webdriver-ts" && npm install && npm run compile)
-(cd "${UPSTREAM_DIR}/webdriver-ts-results" && npm install )
+(cd "${UPSTREAM_DIR}/webdriver-ts-results" && npm install)
 
 echo "==> Building kerfjs framework entry"
-(cd "${DEST}" && npm install  && npm run build-prod )
+(cd "${DEST}" && npm install && npm run build-prod)
 
 for fw in "${REFERENCE_FRAMEWORKS[@]}"; do
   FW_DIR="${UPSTREAM_DIR}/frameworks/${fw}"
   if [[ -d "${FW_DIR}" ]]; then
     echo "==> Building reference framework: ${fw}"
-    (cd "${FW_DIR}" && npm install  && npm run build-prod )
+    (cd "${FW_DIR}" && npm install && npm run build-prod)
   else
     echo "    skipping missing reference framework: ${fw}"
   fi

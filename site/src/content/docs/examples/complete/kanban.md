@@ -33,14 +33,16 @@ A mini Kanban board. Three columns (`To do` / `Doing` / `Done`), drag any card a
 
 ```tsx
 // site/src/examples/complete/kanban/main.tsx (excerpt — full source on GitHub)
-import { defineStore, signal, mount, each, delegate } from 'kerfjs';
+import { defineStore, signal, mount, each, delegate } from "kerfjs";
 
 const board = defineStore({
   initial: () => ({
     cols: { todo: [/* ... */], doing: [/* ... */], done: [/* ... */] },
   }),
   actions: (set, get) => ({
-    move: (cardId, toCol, toIdx) => { /* find + remove + splice + set */ },
+    move: (cardId, toCol, toIdx) => {
+      /* find + remove + splice + set */
+    },
   }),
 });
 
@@ -63,20 +65,21 @@ mount(root, () => (
               const dragging = d?.id === card.id;
               const style = dragging
                 ? `position:relative;z-index:10;transform:translate(0,0) rotate(2deg);width:${d!.w}px;pointer-events:none`
-                : '';
+                : "";
               return (
                 <li
                   data-key={card.id}
-                  class={`card ${dragging ? 'dragging' : ''}`}
+                  class={`card ${dragging ? "dragging" : ""}`}
                   data-card={card.id}
                   style={style}
-                  {...(dragging ? { 'data-morph-skip': '' } : {})}
+                  {...(dragging ? { "data-morph-skip": "" } : {})}
                 >
                   {/* …tag badge, .card-text, .card-meta children… */}
                 </li>
               );
             },
-            (card) => `${card.id}-${drag.value?.id === card.id ? 'drag' : 'rest'}`,
+            (card) =>
+              `${card.id}-${drag.value?.id === card.id ? "drag" : "rest"}`,
           )}
         </ul>
       </section>
@@ -86,7 +89,7 @@ mount(root, () => (
 
 // `delegate()` (not `delegateCapture()`) — pointerdown bubbles, and `delegate()`
 // uses `closest()` so a click on any descendant of `.card` resolves to the card.
-delegate(root, 'pointerdown', '.card', (e, el) => {
+delegate(root, "pointerdown", ".card", (e, el) => {
   // preventDefault, set drag.value, dragEl = querySelector('.card.dragging[...]'),
   // attach window listeners for pointermove (writes dragEl.style.transform) and
   // pointerup (drops + clears).

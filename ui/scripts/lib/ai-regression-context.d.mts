@@ -15,4 +15,8 @@ export interface AiRegressionContext {
 
 export const AI_REGRESSION_V1_CONTEXT_SNAPSHOTS: ReadonlyMap<string, string>;
 export const AI_REGRESSION_V2_CONTEXT_SNAPSHOTS: ReadonlyMap<string, string>;
-export function buildAiRegressionContext(root: string, condition: AiRegressionCondition, options?: { snapshotPath?: string }): Promise<AiRegressionContext>;
+export function buildAiRegressionContext(
+  root: string,
+  condition: AiRegressionCondition,
+  options?: { snapshotPath?: string },
+): Promise<AiRegressionContext>;

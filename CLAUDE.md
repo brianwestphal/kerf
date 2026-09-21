@@ -4,7 +4,7 @@
 
 kerf is a tiny reactive UI framework: fine-grained signals + a custom DOM diff specialized for keyed lists + a tiny JSX runtime. The whole runtime is roughly 12 KB minified + gzipped without `arraySignal`, 13 KB with it, including its sole runtime dependency (`@preact/signals-core`).
 
-The name *kerf* is a woodworking term — the narrow strip a saw blade removes. The framework's job is the same: apply the smallest possible cut to update your DOM.
+The name _kerf_ is a woodworking term — the narrow strip a saw blade removes. The framework's job is the same: apply the smallest possible cut to update your DOM.
 
 **New to this codebase?** Read [`docs/orientation.md`](docs/orientation.md) first — a hard-capped 500-word one-pager with the module map, render-pipeline diagram, and the unusual-things checklist. It's maintained by the `/check-requirements-against-code` skill alongside the AI summaries.
 
@@ -91,40 +91,75 @@ Everything users import lives at the top level of `kerfjs`:
 
 ```ts
 import {
-  signal, computed, effect, batch,
-  type Signal, type ReadonlySignal,
-  defineStore, resetAllStores, type Store,
-  mount, type MountResult, morph, each,
-  attr, type AttrSpec,
-  delegate, delegateCapture, type DelegateOptions,
+  signal,
+  computed,
+  effect,
+  batch,
+  type Signal,
+  type ReadonlySignal,
+  defineStore,
+  resetAllStores,
+  type Store,
+  mount,
+  type MountResult,
+  morph,
+  each,
+  attr,
+  type AttrSpec,
+  delegate,
+  delegateCapture,
+  type DelegateOptions,
   toElement,
-  renderDocument, type RenderDocumentOptions,
-  SafeHtml, isSafeHtml, raw, Fragment,
-} from 'kerfjs';
+  renderDocument,
+  type RenderDocumentOptions,
+  SafeHtml,
+  isSafeHtml,
+  raw,
+  Fragment,
+} from "kerfjs";
 
 // Optional, separate subpath — apps that don't use granular collection signals
 // shed ~1 KB from the main barrel.
-import { arraySignal, type ArraySignal, type ArrayPatch } from 'kerfjs/array-signal';
+import {
+  arraySignal,
+  type ArraySignal,
+  type ArrayPatch,
+} from "kerfjs/array-signal";
 
 // Optional no-build authoring path — tagged template with identical runtime
 // semantics to JSX, for CDN / importmap consumers with no JSX transform.
-import { html, type HtmlValue } from 'kerfjs/html';
+import { html, type HtmlValue } from "kerfjs/html";
 
 // Optional, tree-shakeable companion-utility subpaths — each covers a pattern
 // real apps hand-roll; none add to the main barrel unless imported.
-import { bindList, observeRowHeights, type BindListHandle } from 'kerfjs/list';
-import { createRouter, type RouterHandle, type RouteState } from 'kerfjs/router';
-import { overlay, confirm, prompt, form, choice, popover, tooltip, toast, positionAnchored, autoReposition } from 'kerfjs/overlay';
-import { disposeScope, disposeSubtree, observeRemovals } from 'kerfjs/scope';
-import { resource } from 'kerfjs/async';
-import { debounce, throttle, debouncedSignal } from 'kerfjs/timing';
-import { remountOn } from 'kerfjs/remount';
-import { attach } from 'kerfjs/attach';
-import { action, delegateActions } from 'kerfjs/actions';
+import { bindList, observeRowHeights, type BindListHandle } from "kerfjs/list";
+import {
+  createRouter,
+  type RouterHandle,
+  type RouteState,
+} from "kerfjs/router";
+import {
+  overlay,
+  confirm,
+  prompt,
+  form,
+  choice,
+  popover,
+  tooltip,
+  toast,
+  positionAnchored,
+  autoReposition,
+} from "kerfjs/overlay";
+import { disposeScope, disposeSubtree, observeRemovals } from "kerfjs/scope";
+import { resource } from "kerfjs/async";
+import { debounce, throttle, debouncedSignal } from "kerfjs/timing";
+import { remountOn } from "kerfjs/remount";
+import { attach } from "kerfjs/attach";
+import { action, delegateActions } from "kerfjs/actions";
 
 // Development diagnostics. kerf does NOT infer dev mode; the consumer gates
 // this with their own build's flag, so it folds away in production.
-if (import.meta.env.DEV) await import('kerfjs/dev');
+if (import.meta.env.DEV) await import("kerfjs/dev");
 ```
 
 The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure it via `tsconfig.json`'s `"jsxImportSource": "kerfjs"`. `kerfjs/jsx-runtime` also re-exports the typed JSX building blocks (`KerfBaseAttrs`, `KerfCustomElement`, `AttrLike`, `AttrValue`, `DataAriaAttrs`) for declaration-merging custom-element types into `JSX.IntrinsicElements` (KF-100). The `kerfjs/testing` subpath exposes `clearStoreRegistry` for test isolation.
@@ -142,14 +177,14 @@ The JSX runtime sits at `kerfjs/jsx-runtime` (subpath export). Users configure i
 ### What kerf is NOT
 
 - Not a component framework. `<MyComponent props />` works as JSX sugar — the runtime calls `MyComponent(props)` and uses the returned JSX — but there are no hooks, no lifecycle, and no per-instance state. Components are plain functions; state lives in module-scope signals or stores.
-- Not a router — *the core* is not. An opt-in, tree-shakeable `kerfjs/router` subpath (the "postcard router") exists for apps that want one; it adds nothing to the main barrel until imported, so the core stays router-free. Not a state-management library beyond the bare store factory. Not an SSR framework (though `SafeHtml.toString()` works server-side).
+- Not a router — _the core_ is not. An opt-in, tree-shakeable `kerfjs/router` subpath (the "postcard router") exists for apps that want one; it adds nothing to the main barrel until imported, so the core stays router-free. Not a state-management library beyond the bare store factory. Not an SSR framework (though `SafeHtml.toString()` works server-side).
 - Not opinionated about styling. Bring your own CSS.
 
 ## Build
 
 ```bash
-npm run build       # tsup → 15 ESM entry shims (index, jsx-runtime, testing, array-signal, html, actions, overlay, scope, async, list, router, timing, remount, attach, dev) + shared dist/chunk-*.js + .d.ts
-npm run dev         # tsup --watch
+npm run build # tsup → 15 ESM entry shims (index, jsx-runtime, testing, array-signal, html, actions, overlay, scope, async, list, router, timing, remount, attach, dev) + shared dist/chunk-*.js + .d.ts
+npm run dev   # tsup --watch
 ```
 
 `tsup.config.ts` runs with `splitting: true` so shared modules (`SafeHtml`, the store `REGISTRY`) live in a single chunk imported by every entry. See `docs/ai/code-summary.md` for the rationale (KF-14 / KF-15).
@@ -157,35 +192,37 @@ npm run dev         # tsup --watch
 ## Testing
 
 ```bash
-npm test                  # vitest vs src/, with coverage
-npm run test:watch        # vitest watch mode
-npm run test:unit         # tests/unit only
-npm run test:integration  # tests/integration only
-npm run test:dist         # build, then targeted dist regression suite (tests/dist) vs dist/
-npm run test:dist:full    # build, then full unit + integration suite remapped onto dist/
-npm run test:dist:jsx-typing  # KF-123: build, then `tsc -p tests/dist/jsx-typing/tsconfig.json` — typechecks consumer .tsx against dist/jsx-runtime.d.ts
-npm run test:dist:examples    # build, then typechecks the complete example apps (site/src/examples/complete/) against dist/
-npm run test:dist:scaffold-typing  # build, then typechecks the create-kerf-component template's src/ against dist/ (the living-proof gate for the scaffold)
-npm run test:browser      # build, then Playwright across chromium/firefox/webkit (tests/browser/) — globalSetup also rebuilds tests/dist/consumer-app/ AND tests/dist/example-apps/ (KF-165)
-npm run test:ui           # run the @kerfjs/ui package's unit, bundle, and contract suites
-npm run typecheck         # tsc --noEmit
-npm run lint              # eslint
-npm run check:docs:test-inventory  # KF-109: ensures docs/ai/code-summary.md mentions every test file in tests/
-npm run check:docs:api-coverage  # KF-162: ensures docs/8-api-reference.md mentions every public export from src/index.ts and its subpaths
-npm run check:docs:dev-warns  # KF-443: asserts `docs/11-dev-warnings.md` and `src/dev-warn-config.ts`'s `ENV_NAME` map name the same set of `KERF_DEV_WARN_*` diagnostics in both directions, and that the `11.2.N` section headings run 1..N in document order (other docs cross-reference them by number, so an appended-without-renumbering section sends readers to the wrong place)
-npm run check:design-rule-5  # KF-444: fails if a top-level `let` in `src/` is not accounted for by Design rule 5 — either named in the rule or living in a `dev-*` module (covered categorically). A hit is a finding even when the code is correct: the rule is only useful for judging a NEW mutable while its list is complete, and it had silently stopped being complete twice
-npm run check:skills      # KF-446: fails if a `.claude/skills/*/SKILL.md` restates a threshold or path that its real owner disagrees with — the file-length rule (CLAUDE.md), the coverage thresholds (`vitest.config.ts`), the dist entry list (`tsup.config.ts`), or a `src/…` path that no longer exists. Three skills had rotted this way at once; a stale skill fails silently, as an agent confidently reporting findings that aren't real
-npm run check:docs:site-tickets  # KF-433: fails if a `KF-NN` ticket marker appears in any site-published markdown — everything under site/src/content/docs/ (plus any docs/*.md still given a non-null target in sync-docs.mjs's MAP; currently none, since the numbered docs are no longer published verbatim)
-npm run check:cdn-versions  # KF-458: fails if a version-pinned CDN URL in README.md / docs/6-jsx-runtime.md / docs/ai/usage-guide.md drifts off the current major — every `kerfjs@N` must match package.json's major and every `@preact/signals-core@N` its dependency major. The no-build examples pin to a major (`kerfjs@4`), so this only fires at a major bump (or a hand-edit typo); fix each source it names. (The site's own hand-authored jsx page carries its own CDN pins now — it's no longer synced from docs/6 — so update it directly if it drifts.)
-npm run check:docs:api-signatures  # KF-343: builds, then verifies each public function export's signature in docs/8-api-reference.md matches the emitted dist/*.d.ts (param names + arity + return type per overload). In the check chain it runs right after the build step (no rebuild)
-npm run check:features    # KF-284/286/289: ensures every behavior in the docs/14-feature-coverage.md index maps to a live guarding test, AND every public value export is represented by an index row (a behavior/transition axis orthogonal to line coverage)
-npm run check:bundle-size # KF-428: builds, then bundles five representative consumer entries against dist/ (esbuild --bundle --minify + gzip, prod NODE_ENV define) and fails any over budget. It also gates the PROSE: every place the docs advertise a size (README, llms.txt, the AI summaries, the migration pages, …) is matched against the measured figure, and each migration page's Delta row must equal the gap between its own rows — a reworded claim that stops matching FAILS rather than silently going unchecked. Budgets RATCHET — an entry more than 0.35 KB under budget also fails, asking you to lower it so a win can't silently erode. The `main-no-dev-code` entry additionally greps the production bundle for dev-only markers, so any `dev-*` module reaching the main entry fails even if it were free. `--why <entry>` prints the per-module byte breakdown; `--report` prints sizes without failing
-npm run check:docs:examples  # ensures /kerf/run/ doc links resolve to built+tested examples, doc/source example pairs match, and self-contained kerf code blocks compile
-npm run fuzz:soak         # long fuzz soak — windows of seeds in fresh processes, no total limit (`-- --total 200000`)
-npm run check             # local pre-commit gate: lint + typecheck + doc inventory + api/feature coverage + ai-bundle sync + test + build + both dist:* suites + jsx-typing/examples/scaffold typing gates + docs-examples check
-npm run check:audit       # KF-450: `npm audit --omit=dev --audit-level=high` — the PUBLISHED tree, which is the only surface a consumer inherits (`@preact/signals-core` and nothing else). Dev-tree advisories get their own tickets rather than gating here, because a permanently-red audit is one nobody reads. Runs in `check:full`, NOT `check`: audit needs the network and `check` is the pre-commit hook, which has to work offline
-npm --prefix site run check:audit  # audits the complete private site build tree, including devDependencies, and fails on high/critical advisories. It runs in the networked CI site job rather than the offline root check
-npm run check:full        # KF-118: extended pre-push gate — `check` plus the production audit and the Playwright browser suite (chromium/firefox/webkit), which exercises tests/dist/consumer-app/ end-to-end
+npm test                          # vitest vs src/, with coverage
+npm run test:watch                # vitest watch mode
+npm run test:unit                 # tests/unit only
+npm run test:integration          # tests/integration only
+npm run test:dist                 # build, then targeted dist regression suite (tests/dist) vs dist/
+npm run test:dist:full            # build, then full unit + integration suite remapped onto dist/
+npm run test:dist:jsx-typing      # KF-123: build, then `tsc -p tests/dist/jsx-typing/tsconfig.json` — typechecks consumer .tsx against dist/jsx-runtime.d.ts
+npm run test:dist:examples        # build, then typechecks the complete example apps (site/src/examples/complete/) against dist/
+npm run test:dist:scaffold-typing # build, then typechecks the create-kerf-component template's src/ against dist/ (the living-proof gate for the scaffold)
+npm run test:browser              # build, then Playwright across chromium/firefox/webkit (tests/browser/) — globalSetup also rebuilds tests/dist/consumer-app/ AND tests/dist/example-apps/ (KF-165)
+npm run test:ui                   # run the @kerfjs/ui package's unit, bundle, and contract suites
+npm run format                    # write Prettier formatting across repository source and structured-content files
+npm run format:check              # verify repository-wide Prettier formatting without writing
+npm run typecheck                 # tsc --noEmit
+npm run lint                      # eslint plus the repository-wide Prettier check
+npm run check:docs:test-inventory # KF-109: ensures docs/ai/code-summary.md mentions every test file in tests/
+npm run check:docs:api-coverage   # KF-162: ensures docs/8-api-reference.md mentions every public export from src/index.ts and its subpaths
+npm run check:docs:dev-warns      # KF-443: asserts `docs/11-dev-warnings.md` and `src/dev-warn-config.ts`'s `ENV_NAME` map name the same set of `KERF_DEV_WARN_*` diagnostics in both directions, and that the `11.2.N` section headings run 1..N in document order (other docs cross-reference them by number, so an appended-without-renumbering section sends readers to the wrong place)
+npm run check:design-rule-5       # KF-444: fails if a top-level `let` in `src/` is not accounted for by Design rule 5 — either named in the rule or living in a `dev-*` module (covered categorically). A hit is a finding even when the code is correct: the rule is only useful for judging a NEW mutable while its list is complete, and it had silently stopped being complete twice
+npm run check:skills              # KF-446: fails if a `.claude/skills/*/SKILL.md` restates a threshold or path that its real owner disagrees with — the file-length rule (CLAUDE.md), the coverage thresholds (`vitest.config.ts`), the dist entry list (`tsup.config.ts`), or a `src/…` path that no longer exists. Three skills had rotted this way at once; a stale skill fails silently, as an agent confidently reporting findings that aren't real
+npm run check:docs:site-tickets   # KF-433: fails if a `KF-NN` ticket marker appears in any site-published markdown — everything under site/src/content/docs/ (plus any docs/*.md still given a non-null target in sync-docs.mjs's MAP; currently none, since the numbered docs are no longer published verbatim)
+npm run check:cdn-versions        # KF-458: fails if a version-pinned CDN URL in README.md / docs/6-jsx-runtime.md / docs/ai/usage-guide.md drifts off the current major — every `kerfjs@N` must match package.json's major and every `@preact/signals-core@N` its dependency major. The no-build examples pin to a major (`kerfjs@4`), so this only fires at a major bump (or a hand-edit typo); fix each source it names. (The site's own hand-authored jsx page carries its own CDN pins now — it's no longer synced from docs/6 — so update it directly if it drifts.)
+npm run check:docs:api-signatures # KF-343: builds, then verifies each public function export's signature in docs/8-api-reference.md matches the emitted dist/*.d.ts (param names + arity + return type per overload). In the check chain it runs right after the build step (no rebuild)
+npm run check:features            # KF-284/286/289: ensures every behavior in the docs/14-feature-coverage.md index maps to a live guarding test, AND every public value export is represented by an index row (a behavior/transition axis orthogonal to line coverage)
+npm run check:bundle-size         # KF-428: builds, then bundles five representative consumer entries against dist/ (esbuild --bundle --minify + gzip, prod NODE_ENV define) and fails any over budget. It also gates the PROSE: every place the docs advertise a size (README, llms.txt, the AI summaries, the migration pages, …) is matched against the measured figure, and each migration page's Delta row must equal the gap between its own rows — a reworded claim that stops matching FAILS rather than silently going unchecked. Budgets RATCHET — an entry more than 0.35 KB under budget also fails, asking you to lower it so a win can't silently erode. The `main-no-dev-code` entry additionally greps the production bundle for dev-only markers, so any `dev-*` module reaching the main entry fails even if it were free. `--why <entry>` prints the per-module byte breakdown; `--report` prints sizes without failing
+npm run check:docs:examples       # ensures /kerf/run/ doc links resolve to built+tested examples, doc/source example pairs match, and self-contained kerf code blocks compile
+npm run fuzz:soak                 # long fuzz soak — windows of seeds in fresh processes, no total limit (`-- --total 200000`)
+npm run check                     # local pre-commit gate: lint + typecheck + doc inventory + api/feature coverage + ai-bundle sync + test + build + both dist:* suites + jsx-typing/examples/scaffold typing gates + docs-examples check
+npm run check:audit               # KF-450: `npm audit --omit=dev --audit-level=high` — the PUBLISHED tree, which is the only surface a consumer inherits (`@preact/signals-core` and nothing else). Dev-tree advisories get their own tickets rather than gating here, because a permanently-red audit is one nobody reads. Runs in `check:full`, NOT `check`: audit needs the network and `check` is the pre-commit hook, which has to work offline
+npm --prefix site run check:audit # audits the complete private site build tree, including devDependencies, and fails on high/critical advisories. It runs in the networked CI site job rather than the offline root check
+npm run check:full                # KF-118: extended pre-push gate — `check` plus the production audit and the Playwright browser suite (chromium/firefox/webkit), which exercises tests/dist/consumer-app/ end-to-end
 ```
 
 Visually validate every site-facing change with Playwright, not just DOM
@@ -207,15 +244,15 @@ Coverage thresholds (`vitest.config.ts`): **100% lines and functions, 98.5% bran
 - **Browser tests** (`tests/browser/`): Real-browser tests via Playwright (Chromium / Firefox / WebKit) for scenarios `happy-dom` can't model truthfully — SVG/MathML namespacing, IME composition, MutationObserver counts. Run with `npm run test:browser` (builds dist first; the fixture page imports from `dist/` via importmap). Browser binaries are downloaded once via `npx playwright install`. **`tests/browser/consumer-app.spec.ts`** (KF-123) drives a real downstream-style app at `tests/dist/consumer-app/` that's bundled by esbuild against `dist/` (Playwright's `globalSetup` rebuilds it before every run); each zone exercises a public primitive end-to-end through all three engines, so a `dist/` regression that only manifests in a real-consumer bundle (KF-14 SafeHtml duplication, KF-123 IntrinsicElements self-shadow, etc.) trips the gate. **`tests/browser/example-apps.spec.ts`** (KF-165) drives the eleven complete example apps under `site/src/examples/complete/<name>/` (re-bundled by `tests/dist/example-apps/build.mjs` with `base: './'` so the test webServer can serve them; the no-build `live-poll` app is copied verbatim with a vendored dist instead of bundled). Each app gets a smoke spec that exercises its headline interaction (kanban drag, markdown caret survival, chat streaming, todomvc add/toggle/clear, dashboard tick, counter-store inc/fetch, cart-htmx swap, row-selector fine-grained select, virtual-list scrolling, router navigation, live-poll no-build voting). It surfaced the historical kanban regression where the old direct-match `delegateCapture` behavior used `target.matches()` and missed a pointerdown on `.card-text` inside `.card`; both delegation helpers now default to `closest()` walk-up matching, with `{ match: 'direct' }` as the explicit opt-in.
 - **Dist `.d.ts` typing gate** (`tests/dist/jsx-typing/`, KF-123): `tsc -p tests/dist/jsx-typing/tsconfig.json` typechecks `consumer.tsx` + `consumer-merge.tsx` against `dist/jsx-runtime.d.ts` with `jsxImportSource: "kerfjs"`. Catches IntrinsicElements self-shadow regressions (where `dist/jsx-runtime.d.ts` emits `interface IntrinsicElements extends IntrinsicElements {}`) and declaration-merge breakage that the in-source typing tests can't see because they never look at the emitted .d.ts.
 - **Coverage target**: Keep coverage above the thresholds. New code without tests fails CI.
-- **Coverage is a floor, not a ceiling.** Meeting the enforced coverage thresholds is necessary but **not sufficient** — it proves code *executed*, not that every *behavior* or every *sequence* of behaviors is *asserted*. Coverage is structurally blind to a **missing state transition**: if the test that would walk a transition doesn't exist, that path combination never runs, yet every individual line still gets hit by the isolated single-operation tests and the report stays green. Two basic, critical bugs (KF-125: select-after-delete lost the `cacheKey` dependency; append-after-clear rendered nothing) shipped under full line coverage for exactly this reason. Treat a green coverage report as the *trigger* for the behavioral audit below, never as proof of correctness.
+- **Coverage is a floor, not a ceiling.** Meeting the enforced coverage thresholds is necessary but **not sufficient** — it proves code _executed_, not that every _behavior_ or every _sequence_ of behaviors is _asserted_. Coverage is structurally blind to a **missing state transition**: if the test that would walk a transition doesn't exist, that path combination never runs, yet every individual line still gets hit by the isolated single-operation tests and the report stays green. Two basic, critical bugs (KF-125: select-after-delete lost the `cacheKey` dependency; append-after-clear rendered nothing) shipped under full line coverage for exactly this reason. Treat a green coverage report as the _trigger_ for the behavioral audit below, never as proof of correctness.
 - **Adversarial / state-transition testing for stateful modules.** Any module with multiple code paths keyed on an internal mode/phase — the `each()` / list-reconcile state machine (`first-render ↔ granular ↔ snapshot ↔ empty-binding ↔ drift-recovery`), `morph.ts`, `store.ts` — must be tested across its **transition matrix**, not just each operation from a clean initial state. When adding or altering a stateful path, do an explicit adversarial pass: **enumerate the states, enumerate the transitions between them, then write a probe that walks realistic multi-step user sequences that cross state boundaries** (e.g. `create → select → delete → select`; `clear → append → select`; `empty-via-remove → insert`). Deliberately try out-of-order / interleaved / repeated / empty-then-refill sequences, and pin the ones that would have failed as permanent regression tests. The template is `tests/unit/array-signal-transition-matrix.test.ts` › **"reconciler transition matrix (adversarial)"**. See also KF-284 (the feature/requirements coverage report that asserts every documented behavior — including transitions — is tested).
-- **Property-based (fuzz) testing is the instrument hand-written cases can't replace.** Three adversarial sweeps over the reconciler found nine defects, and every one was an unexpected *combination* of shapes rather than a wrong line of code — which is the ceiling of enumerating cases by hand, because the enumeration is steered by the same priors that wrote the code. `tests/unit/reconciler-fuzz.test.ts` (helpers in `tests/unit/fuzz/`) searches the shape space instead: it generates random-but-valid trees plus random mutation sequences, checks invariants after **every step**, and shrinks a failure to a minimal paste-ready case. Its strongest invariant is differential — *incremental reconcile must equal a from-scratch render of the same state* — which subsumes most hand-written assertions and needs no prediction about which shapes matter. It runs a small deterministic budget in `npm run check`; soak it with `npm run fuzz:soak` (one process caps out around 6–15k cases because **happy-dom retains detached DOM trees** — measured at ~1.5 MB per mount cycle with no kerf involved — so the runner windows across fresh processes). If it finds a defect you aren't fixing in the same change, **hold it in a quarantine scoped by the SHAPE of the case** (not the text of the failure), pin a reproduction that must keep failing so an entry cannot outlive its bug, and budget the excused fraction so the debt can shrink but never quietly grow. Six defects were carried that way and retired within a day; the harness currently runs with an empty quarantine, and every generated case is expected to hold.
+- **Property-based (fuzz) testing is the instrument hand-written cases can't replace.** Three adversarial sweeps over the reconciler found nine defects, and every one was an unexpected _combination_ of shapes rather than a wrong line of code — which is the ceiling of enumerating cases by hand, because the enumeration is steered by the same priors that wrote the code. `tests/unit/reconciler-fuzz.test.ts` (helpers in `tests/unit/fuzz/`) searches the shape space instead: it generates random-but-valid trees plus random mutation sequences, checks invariants after **every step**, and shrinks a failure to a minimal paste-ready case. Its strongest invariant is differential — _incremental reconcile must equal a from-scratch render of the same state_ — which subsumes most hand-written assertions and needs no prediction about which shapes matter. It runs a small deterministic budget in `npm run check`; soak it with `npm run fuzz:soak` (one process caps out around 6–15k cases because **happy-dom retains detached DOM trees** — measured at ~1.5 MB per mount cycle with no kerf involved — so the runner windows across fresh processes). If it finds a defect you aren't fixing in the same change, **hold it in a quarantine scoped by the SHAPE of the case** (not the text of the failure), pin a reproduction that must keep failing so an entry cannot outlive its bug, and budget the excused fraction so the debt can shrink but never quietly grow. Six defects were carried that way and retired within a day; the harness currently runs with an empty quarantine, and every generated case is expected to hold.
 
 ## Code Quality Gates
 
 - **Always fix lint and type errors before finishing work.** Run `npx tsc --noEmit` and `npm run lint` before handing work back. Both must pass with zero errors.
 - **Prefer editing existing files** to creating new ones. The runtime is small on purpose.
-- **One coherent concern per file.** Split a file when it holds two genuinely separable concerns — never to satisfy a line count. Prefer a ~400-line file that houses one coherent state machine or algorithm to three fragments that each hold a slice of it (the keyed list reconciler is deliberately one algorithm even though it spans several hundred lines across its dispatcher and path files). A file growing past ~500 LOC is a *smell* worth a second look for a hidden second concern, not a gate that fails the build. (One primary export per file — Design rule 4.)
+- **One coherent concern per file.** Split a file when it holds two genuinely separable concerns — never to satisfy a line count. Prefer a ~400-line file that houses one coherent state machine or algorithm to three fragments that each hold a slice of it (the keyed list reconciler is deliberately one algorithm even though it spans several hundred lines across its dispatcher and path files). A file growing past ~500 LOC is a _smell_ worth a second look for a hidden second concern, not a gate that fails the build. (One primary export per file — Design rule 4.)
 
 ### Code search (prefer ast-grep for structure)
 
@@ -250,7 +287,7 @@ Hot Sheet is local-only, so a bare `KF-NN` reference can't be looked up by anyon
 
 The same rule applies to commit messages — `git log` is a public-facing surface for any open-source consumer. Use `KF-NN: <short title>` shape so the title makes the commit understandable without a ticket lookup.
 
-**Exception: ticket-to-ticket references inside Hot Sheet itself are fine.** Anyone reading a ticket already has Hot Sheet open, so bare `KF-NN` cross-references in ticket titles, details, and notes resolve trivially. The self-contained-summary rule is only about surfaces *outside* Hot Sheet where readers may not have it.
+**Exception: ticket-to-ticket references inside Hot Sheet itself are fine.** Anyone reading a ticket already has Hot Sheet open, so bare `KF-NN` cross-references in ticket titles, details, and notes resolve trivially. The self-contained-summary rule is only about surfaces _outside_ Hot Sheet where readers may not have it.
 
 ### Comparison tables on the site
 
@@ -270,9 +307,10 @@ Cross-framework benchmark numbers (kerf vs Lit, kerf vs React, etc.) published o
 **The local harness (`bench/run.sh` + `bench/aggregate-results.mjs`) is now dev-only.** Use it for "did my change move the needle?" profiling on your own machine (`bash bench/run.sh keyed/kerfjs --count=10`, then `node bench/aggregate-results.mjs > bench/results.local.md`). It reads the local M1-Pro `bench/.bench-cache/` and writes the **gitignored** `bench/results.local.{json,md}` — deliberately NOT the published `bench/results.json`, so a local run can't clobber the krausest snapshot. `bench/preflight.sh` still gates local runs for clean-machine measurement. These local numbers are for iteration signal only and must not be published.
 
 What this means for the site:
+
 - The homepage performance table (rendered from `bench/results.json` by `site/src/components/PerfTable.astro`) shows the most recent committed krausest import. Re-commit only from `bench/import-krausest.mjs`.
 - Per-framework migration pages (`/kerf/migrating/{react,lit,vanjs,…}/`) may cite the krausest numbers for framework pairs that krausest measures. For a pair krausest doesn't cover (e.g. Alpine), keep the §5 "Perf numbers" section a one-paragraph qualitative note ("Both frameworks are in the same performance cluster on the krausest benchmark").
-- The bench-ai design doc (`docs/ai-codegen-bench-design.md`) is the separate *AI-codegen* benchmark; its leaderboard cadence is defined there and is independent of this krausest-import convention.
+- The bench-ai design doc (`docs/ai-codegen-bench-design.md`) is the separate _AI-codegen_ benchmark; its leaderboard cadence is defined there and is independent of this krausest-import convention.
 
 ### Concerns → tickets, not ad-hoc fixes
 
@@ -286,7 +324,7 @@ Use the `hs-bug` / `hs-task` / `hs-issue` / `hs-feature` / `hs-investigation` / 
 
 When **you** create a ticket, decide which model should work it and **tag it `Fable`** whenever Fable is the better fit. The tag is the signal for dispatching the work to a Fable subagent; untagged tickets are worked normally.
 
-Tag `Fable` when the ticket is **wide, exploratory, and search-shaped** — the work is mostly *finding* something whose location isn't known up front:
+Tag `Fable` when the ticket is **wide, exploratory, and search-shaped** — the work is mostly _finding_ something whose location isn't known up front:
 
 - Adversarial sweeps and audits over a large surface (the KF-380 / KF-387 interaction-matrix and seam sweeps).
 - "Where else does this pattern occur?" / "what else is broken like this?" investigations.
@@ -295,7 +333,7 @@ Tag `Fable` when the ticket is **wide, exploratory, and search-shaped** — the 
 
 Do **not** tag `Fable` for work that is narrow and already-located: a specific bug with a known repro, a targeted fix, a doc edit, a release chore. Those are ordinary tickets — the fix is the work, not the search.
 
-Rule of thumb: if the ticket's value is in **coverage and recall**, tag it `Fable`; if it's in **a precise change to a known place**, don't. When a sweep-style ticket files follow-up bug tickets, those follow-ups are usually *not* Fable work — the sweep already did the finding.
+Rule of thumb: if the ticket's value is in **coverage and recall**, tag it `Fable`; if it's in **a precise change to a known place**, don't. When a sweep-style ticket files follow-up bug tickets, those follow-ups are usually _not_ Fable work — the sweep already did the finding.
 
 ## Conventions
 
@@ -323,7 +361,7 @@ Numbered docs in `docs/` cover the design. Reading order:
 11. `11-dev-warnings.md` — the eleven opt-in `KERF_DEV_WARN_*` diagnostics (rebuilt listeners, untracked signals, narrow store sets, duplicate cache keys, each-in-morph-skip, delegate-in-effect, stale bindings, value-only re-renders, list rebinds, stale row indices, parser repairs), structural invariants, and always-on dev guards.
 12. `12-ai-assistant-configs.md` — how the drop-in Claude Code skill + Cursor rules ship inside the npm package, the canonical-file version + marker contract, and the `kerfjs/ai-assistant-configs` ESLint rule.
 13. `13-component-packages.md` — building and publishing reusable kerf components as npm packages (no-instance model, per-instance state via factories, event/cleanup patterns, `kerfjs`-as-peer-dependency packaging).
-14. `14-feature-coverage.md` — the feature/behavior coverage axis (orthogonal to line coverage): a per-behavior index mapping each behavior — especially reconciler *state transitions* — to the test that guards it, enforced by `scripts/check-feature-coverage.mjs` (`npm run check:features`).
+14. `14-feature-coverage.md` — the feature/behavior coverage axis (orthogonal to line coverage): a per-behavior index mapping each behavior — especially reconciler _state transitions_ — to the test that guards it, enforced by `scripts/check-feature-coverage.mjs` (`npm run check:features`).
 15. `15-no-build-example.md` — the no-build example app (`live-poll`): served-as-source (importmap + `html` tagged template, zero tooling), the vendor-copy contract shared by all three example build scripts (`site/scripts/lib/copy-no-build-app.mjs`), and its test/capture surfaces.
 16. `16-list-identity.md` — **shipped**: why an `each()` list's identity (its call-order index) is not stable, what the source guard already fixes vs. what it doesn't, the five verified constraints any scheme must survive, and the explicit-key + diagnostic recommendation.
 17. `17-list-virtualization.md` — **shipped**: `bindList` virtualization with fixed, app-declared variable, measured, and `content-visibility` modes; kerf owns windowing, cumulative-offset math, and scroll anchoring while apps may supply or observe row heights.
@@ -336,24 +374,24 @@ Numbered docs in `docs/` cover the design. Reading order:
 
 **Keep every surface up to date — proactively, without being asked.** Any change to source, API, behavior, or examples must be reflected across all affected surfaces in the same diff. Do not wait for a follow-up prompt. The full checklist:
 
-| Surface | What triggers an update |
-| --- | --- |
-| `tests/unit/` or `tests/integration/` | Any new behavior, overload, edge case, or option added to `src/` |
-| `site/src/examples/complete/*/main.tsx` | Any new idiomatic pattern or API shape that the examples should demonstrate |
-| `docs/5-*.md` … `docs/8-api-reference.md` | Any API addition, removal, signature change, or behavioral change |
-| `CHANGELOG.md` (Unreleased section) | Every user-visible change |
-| `docs/ai/code-summary.md` | Any new/renamed/removed file, export, or architectural fact |
-| `docs/ai/usage-guide.md` | Any API addition, signature change, or new pattern |
-| `kerf.cursorrules` + `kerf.claude-skill.md` | Any API addition, signature change, canonical pattern update, or new common-error row — then run `npm run ai-bundle:sync` and bump `kerf-skill-version` per the rubric in §12.3.2 |
-| `eslint-plugin/docs/rules/*.md` | Any change that affects what the lint rules flag or how users fix violations |
+| Surface                                                                                 | What triggers an update                                                                                                                                                                   |
+| --------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tests/unit/` or `tests/integration/`                                                   | Any new behavior, overload, edge case, or option added to `src/`                                                                                                                          |
+| `site/src/examples/complete/*/main.tsx`                                                 | Any new idiomatic pattern or API shape that the examples should demonstrate                                                                                                               |
+| `docs/5-*.md` … `docs/8-api-reference.md`                                               | Any API addition, removal, signature change, or behavioral change                                                                                                                         |
+| `CHANGELOG.md` (Unreleased section)                                                     | Every user-visible change                                                                                                                                                                 |
+| `docs/ai/code-summary.md`                                                               | Any new/renamed/removed file, export, or architectural fact                                                                                                                               |
+| `docs/ai/usage-guide.md`                                                                | Any API addition, signature change, or new pattern                                                                                                                                        |
+| `kerf.cursorrules` + `kerf.claude-skill.md`                                             | Any API addition, signature change, canonical pattern update, or new common-error row — then run `npm run ai-bundle:sync` and bump `kerf-skill-version` per the rubric in §12.3.2         |
+| `eslint-plugin/docs/rules/*.md`                                                         | Any change that affects what the lint rules flag or how users fix violations                                                                                                              |
 | `site/src/content/docs/docs/*.md` + `site/src/content/docs/api.md` (consumer doc pages) | Any API/behavior change. These are hand-authored consumer versions — no longer auto-synced from `docs/*.md` — so update them directly, alongside the internal `docs/*.md` source of truth |
-| `ui/docs/*`, `ui/ai/skill.md`, `ui/llms.txt`, `ui/ux-demo/*` | Any `@kerfjs/ui` component, styling, accessibility, or interaction-contract change |
+| `ui/docs/*`, `ui/ai/skill.md`, `ui/llms.txt`, `ui/ux-demo/*`                            | Any `@kerfjs/ui` component, styling, accessibility, or interaction-contract change                                                                                                        |
 
 ### AI summaries (`docs/ai/`)
 
 - `docs/ai/code-summary.md` — directory tree, public exports, where-to-find-X reverse index.
 - `docs/ai/requirements-summary.md` — synthesized view of every numbered doc with status markers.
-- `docs/ai/usage-guide.md` — consumer-facing cheat sheet for AI assistants writing apps *with* kerf (when to recommend it, public API at a glance, hard rules, common errors → fixes). Keep in sync with `docs/8-api-reference.md`.
+- `docs/ai/usage-guide.md` — consumer-facing cheat sheet for AI assistants writing apps _with_ kerf (when to recommend it, public API at a glance, hard rules, common errors → fixes). Keep in sync with `docs/8-api-reference.md`.
 
 Update all three whenever the corresponding source / design changes. The repo-root [`llms.txt`](../llms.txt) is the AI-discovery entry point and indexes the docs above — update it when the doc set changes.
 
@@ -372,7 +410,7 @@ These root files are the **source of truth**. A `npm install kerfjs` lands gener
 
 **Versioning the canonical content.** Each root file has a `kerf-skill-version: <semver>` line — inside the YAML frontmatter for `kerf.claude-skill.md`, inside a top-of-file HTML comment for `kerf.cursorrules`. Bump this version whenever the canonical content changes in a way a consumer would benefit from re-syncing (hard-rule additions/renumberings, new canonical patterns, API-surface changes, new common-error rows). Skip bumps for typos, grammar, and comment-only changes. See §12.3.2 of the doc for the full rubric.
 
-**The marker.** The last line of each root file's canonical content is `<!-- KERF-APP-CANONICAL-END · your customizations below -->`. Don't restyle or rephrase it — the eslint rule's parser is a strict-text match. Add or remove content above the marker; the consumer's append zone lives below it in *their* installed copy.
+**The marker.** The last line of each root file's canonical content is `<!-- KERF-APP-CANONICAL-END · your customizations below -->`. Don't restyle or rephrase it — the eslint rule's parser is a strict-text match. Add or remove content above the marker; the consumer's append zone lives below it in _their_ installed copy.
 
 ## The `eslint-plugin-kerfjs` peer range is a tested range
 
@@ -380,7 +418,7 @@ The plugin's `peerDependencies.eslint` names **only** ESLint majors its rule sui
 
 This replaced an open `>=8`, worth remembering as the cautionary case. It promised every ESLint that would ever exist while the suite ran on 9 alone — and ESLint 8 was not merely untested but **unusable**: the package is ESM-only, and ESLint 8 loads `.eslintrc` plugins with `require()`, so `extends: ["plugin:kerfjs/…"]` fails to resolve the plugin at all. (8's opt-in flat-config mode does work, but that is not the path an ESLint 8 project is on by default, so the range does not claim it.) An open range cannot be wrong in a way npm will report — the consumer installs cleanly and finds out themselves.
 
-The lesson generalizes past version numbers: **passing rule tests are not proof of support.** `RuleTester` is handed the rule object directly, so it never exercises plugin *loading* or config resolution — the two things that actually broke on 8. When adding a major, lint a scratch project with the published shape as well as running the suite.
+The lesson generalizes past version numbers: **passing rule tests are not proof of support.** `RuleTester` is handed the rule object directly, so it never exercises plugin _loading_ or config resolution — the two things that actually broke on 8. When adding a major, lint a scratch project with the published shape as well as running the suite.
 
 **Adding a major is a deliberate, verified act, and it is four edits in one commit:**
 
@@ -400,25 +438,26 @@ Compatibility across majors lives in one place: `eslint-plugin/tests/helpers/rul
 ## Releasing
 
 ```bash
-npm run release        # interactive: bumps version, updates changelog, tags v{ver}, pushes
-npm run release:beta   # tag-only: tags v{ver}-beta.{N}, publishes with --tag beta
+npm run release      # interactive: bumps version, updates changelog, tags v{ver}, pushes
+npm run release:beta # tag-only: tags v{ver}-beta.{N}, publishes with --tag beta
 ```
 
 The release scripts mirror Hot Sheet's flow and keep all four packages (`kerfjs`, `eslint-plugin-kerfjs`, `create-kerf-component`, and `@kerfjs/ui`) on one version/tag. `scripts/sync-lockstep-versions.mjs` also derives the plugin-reported version and component-scaffold/docs ranges; its `--check` mode runs in `npm run check`. Beta releases skip the version-file bump and changelog write. In CI, `scripts/prepare-release-package.mjs` applies the tag version plus package-specific embedded metadata (AI manifests/signatures, plugin-reported version, and Kerf peer/scaffold ranges), then a tokenless job creates the final tarball. The OIDC-token job only downloads and publishes those already-packed bytes; it never checks out or executes repository code.
 
-`scripts/release.sh` drafts the notes with [gitgist](https://github.com/brianwestphal/gitgist) (`gitgist <last-tag>..HEAD`), and `npm run commit:msg` uses it for commit messages. **Since 1.2.0 gitgist reads the range's actual code diff**, not just the commit log, which makes what it is *allowed* to read matter for this repo — a lot of what changes here is generated.
+`scripts/release.sh` drafts the notes with [gitgist](https://github.com/brianwestphal/gitgist) (`gitgist <last-tag>..HEAD`), and `npm run commit:msg` uses it for commit messages. **Since 1.2.0 gitgist reads the range's actual code diff**, not just the commit log, which makes what it is _allowed_ to read matter for this repo — a lot of what changes here is generated.
 
 The `gitgist.exclude` list in `package.json` holds those back (they still show as changed files, just without a diff body). Its built-in list already covers lockfiles, maps, and `dist/`; the entries added here are kerf-specific:
 
-| Excluded | Why |
-| --- | --- |
-| `site/public/demos/*.svg` | ~2.3 MB of generated animation data. One re-capture would consume the whole diff budget and crowd out every real source change. |
-| `ai/*`, `site/public/llms.txt` | Generated mirrors of `kerf.claude-skill.md` / `kerf.cursorrules` / `llms.txt`. |
-| `bench/results.{json,md}` | Imported from the upstream krausest benchmark, not authored here. |
+| Excluded                       | Why                                                                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| `site/public/demos/*.svg`      | ~2.3 MB of generated animation data. One re-capture would consume the whole diff budget and crowd out every real source change. |
+| `ai/*`, `site/public/llms.txt` | Generated mirrors of `kerf.claude-skill.md` / `kerf.cursorrules` / `llms.txt`.                                                  |
+| `bench/results.{json,md}`      | Imported from the upstream krausest benchmark, not authored here.                                                               |
 
 The site's doc pages under `site/src/content/docs/` are hand-authored consumer content (no longer generated from `docs/*.md`), so they carry a normal diff body like any other source.
 
 <!-- hotsheet:begin section=ticket-driven-work v=1 -->
+
 ## Ticket-Driven Work
 
 When the user gives you work directly (not via the Hot Sheet channel or events), create Hot Sheet tickets before starting implementation — especially for substantial or multi-step work.
@@ -428,22 +467,25 @@ When the user gives you work directly (not via the Hot Sheet channel or events),
 - **Always create follow-up tickets** for incomplete work (unfinished steps, open design questions, known gaps, designed-but-unbuilt features). If it's not in a ticket, it's forgotten.
 - **Incomplete-work checklist** — before marking a ticket `completed`, file follow-ups for any: (1) UI placeholder text ("coming soon"), (2) TODO/FIXME comments, (3) documented-but-unimplemented requirements, (4) empty/stub functions returning mock data.
 - **Use FEEDBACK NEEDED before deferring or asking about follow-ups.** When about to (a) defer a ticket needing more work, (b) ask whether to file follow-ups, or (c) close with a question buried in notes — DON'T. Leave the ticket `started`, add a `FEEDBACK NEEDED:` note (per `.hotsheet/worklist.md`), signal channel done, and wait. It's the only reliable way to surface a question.
+
 <!-- hotsheet:end section=ticket-driven-work -->
 
 <!-- hotsheet:begin section=testing-philosophy v=2 -->
+
 ## Testing Philosophy
 
 - **Double coverage**: every feature covered by both unit tests AND E2E tests. Unit = logic in isolation; E2E = real user flows through the running app with minimal mocking.
 - **Unit tests**: Mock external deps (filesystem, network), test real logic.
 - **E2E tests**: As much as possible, use test automation tools to run realistic, user-facing flows. Minimize mocks.
 - **Coverage**: Merge all test coverage (e.g. unit, E2E server, E2E browser) into one report. Low-coverage files should get more of both test types. Aim for 100% coverage of code lines, 100% coverage of branches, and 100% of features described in the requirements documentation.
-- **Coverage is a floor, not a ceiling**: 100% line/branch coverage shows every line *ran*, not that every *behavior* — or every *sequence* of behaviors — is *asserted*. It is structurally blind to a **missing state transition**: a bug living in an untested interaction sails through a green 100% report because the individual lines still get hit by isolated, single-operation tests.
+- **Coverage is a floor, not a ceiling**: 100% line/branch coverage shows every line _ran_, not that every _behavior_ — or every _sequence_ of behaviors — is _asserted_. It is structurally blind to a **missing state transition**: a bug living in an untested interaction sails through a green 100% report because the individual lines still get hit by isolated, single-operation tests.
 - **Transition-matrix testing for stateful modules**: for anything with modes / multiple code paths / a cache / a state machine, enumerate the states AND the transitions between them, then write tests that walk realistic multi-step sequences crossing state boundaries — not just each operation from a clean initial state.
 - **Adversarial pass on stateful changes**: when adding or altering a stateful code path, deliberately try to break it with out-of-order / interleaved / repeated / empty-then-refill sequences; pin any that would have failed as permanent regression tests.
 - **Manual test plan**: keep a manual test plan doc (e.g. `docs/manual-test-plan.md`) for features that can't be reliably automated. **Keep it up to date** — add such features there; when you add automated coverage for a previously-manual item, remove it and note it in an "Automated Coverage Summary".
 - **Always fix lint and type errors before finishing**: Fix as you go, don't batch.
 
 <!-- hotsheet:begin specifics=testing-philosophy v=1 -->
+
 ### This project's test setup
 
 Fully documented in the **Testing** section above; in brief:
@@ -453,10 +495,12 @@ Fully documented in the **Testing** section above; in brief:
 - **Browser / E2E** (`tests/browser/`): Playwright across Chromium / Firefox / WebKit; builds `dist/` first. Covers the consumer-app and example-apps specs.
 - **Dist regression** (`tests/dist/`): targeted suite + the `.d.ts` typing gate against built `dist/`.
 - **Commands**: `npm run check` (pre-commit gate) and `npm run check:full` (pre-push, adds Playwright) run everything; see the **Testing** section for the granular `test:*` scripts and the coverage thresholds.
+
 <!-- hotsheet:end specifics=testing-philosophy -->
 <!-- hotsheet:end section=testing-philosophy -->
 
 <!-- hotsheet:begin section=requirements-documentation v=1 -->
+
 ## Requirements Documentation
 
 Keep human-readable requirements documents as the source of truth for what the project does, and **keep them up to date in the same change as the code** (add/remove/modify a requirement → update its doc). Create new docs for major new functional areas. Cross-reference related docs with relative links.
@@ -469,6 +513,7 @@ Maintain two synthesis docs an AI assistant reads at the start of a fresh sessio
 - A **requirements summary** — a synthesized view of every requirements doc with status markers (e.g. Shipped / Partial / Design only / Deferred). Update it in the same change when you add a requirements doc, ship a design-only feature, or defer/regress a shipped one.
 
 <!-- hotsheet:begin specifics=requirements-documentation v=1 -->
+
 ### This project's docs layout
 
 Fully documented in the **Requirements Documentation** section above; in brief:
@@ -504,6 +549,7 @@ outstanding review and leave it open. Dependency presence alone is not visual
 validation.
 
 <!-- BEGIN hotsheet:claude -->
+
 ## Hot Sheet — ticket workflow
 
 This project tracks work as **Hot Sheet** tickets (plain files under the store). Use them to
@@ -518,18 +564,20 @@ code-changing task. Skip ticketing only for trivial one-offs: simple questions, 
 lookups, a single-line fix, or a git commit. When in doubt, create the ticket.
 
 **Find and plan the queue:**
+
 - `hotsheet-cli ls --up-next` — the prioritized Up Next queue.
 - `hotsheet-cli show <slug>` — read one ticket in full.
 - Or the MCP tools: `hotsheet_query` (with `up_next: true`) and `hotsheet_get`.
 
 **Claim a ticket before you work it — claiming, not `started`, is what signals live work:**
+
 - `hotsheet-cli claim <slug> --worker <your-id>` when you begin. This atomically moves a Not
-  Started ticket to **Started** *and* takes a renewable live lease that tells everyone you are
+  Started ticket to **Started** _and_ takes a renewable live lease that tells everyone you are
   actively on it. Always claim before you touch code. Prefer it over `hotsheet-cli edit <slug>
-  --status started`, which only flips the status and does **not** claim or signal live work.
+--status started`, which only flips the status and does **not** claim or signal live work.
   (Self-serve the top of the queue with `hotsheet-cli claim-next --worker <your-id>`.)
 - `hotsheet-cli renew <slug> --worker <your-id>` during long work; `hotsheet-cli release <slug>
-  --worker <your-id>` when you stop for completion, handoff, or a blocker.
+--worker <your-id>` when you stop for completion, handoff, or a blocker.
 - `hotsheet-cli edit <slug> --status completed --note "what you did"` when done.
 - Or the MCP tools: `hotsheet_claim_next` / `hotsheet_renew` / `hotsheet_release` for the lease,
   and `hotsheet_update` (it takes a `note`) / `hotsheet_close`.
@@ -546,7 +594,7 @@ ticket's completing note, then continue.
 docs the change requires; scan for placeholders, TODO/FIXME, stubs, and documented-but-
 unbuilt behavior; create a follow-up for every incomplete item; and put the result,
 verification, and all follow-up slugs in the completing note. `FEEDBACK NEEDED` is only for a
-blocker on the *current* ticket that needs a user decision or unavailable external state —
+blocker on the _current_ ticket that needs a user decision or unavailable external state —
 leave that ticket `started`, name the blocker, and release its lease (`hotsheet-cli release`).
 It does not replace follow-ups for independently describable work.
 
@@ -566,11 +614,11 @@ local path only as clearly labeled machine-local diagnostic evidence.
   dependencies mocked) **and** end-to-end tests (real user flows through the running system,
   minimal mocking). Keep test fakes faithful to the real contract — same shapes, fields, and
   status codes.
-- **Coverage is a floor, not a ceiling.** 100% lines means every line *ran*, not that every
-  *behavior* — or every *sequence* of behaviors — is *asserted*. It is blind to missing state
+- **Coverage is a floor, not a ceiling.** 100% lines means every line _ran_, not that every
+  _behavior_ — or every _sequence_ of behaviors — is _asserted_. It is blind to missing state
   transitions.
 - **Stateful code gets transition-matrix + adversarial tests.** For anything with modes, a
-  cache, or a state machine, enumerate the states *and* the transitions, then walk realistic
+  cache, or a state machine, enumerate the states _and_ the transitions, then walk realistic
   multi-step sequences that cross boundaries. Deliberately try to break it with out-of-order,
   interleaved, repeated, and empty-then-refill sequences; pin any bug you find as a permanent
   regression test.

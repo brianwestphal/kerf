@@ -20,7 +20,7 @@ directory's basename is used as the package name.
 ## What you get
 
 A ready-to-publish component package that encodes the rules from the kerf docs
-(*Building reusable component packages*):
+(_Building reusable component packages_):
 
 - **`kerfjs` as a `peerDependency`, `external` in the tsup build** — never
   bundled, so `isSafeHtml` brand checks and signal identity stay intact across

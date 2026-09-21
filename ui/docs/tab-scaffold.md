@@ -7,9 +7,9 @@ opt-in app layouts (see [`../../docs/23-app-layouts.md`](../../docs/23-app-layou
 It is distinct from `TabBar` (document-oriented, reorderable strips).
 
 ```ts
-import { TabScaffold } from '@kerfjs/ui/tab-scaffold';
-import { wireTabScaffold } from '@kerfjs/ui/wire-tab-scaffold';
-import '@kerfjs/ui/tab-scaffold.css';
+import { TabScaffold } from "@kerfjs/ui/tab-scaffold";
+import { wireTabScaffold } from "@kerfjs/ui/wire-tab-scaffold";
+import "@kerfjs/ui/tab-scaffold.css";
 ```
 
 ## Controlled selection
@@ -19,20 +19,29 @@ The app owns the active tab (a signal); `TabScaffold` renders every tab's scene
 clicks.
 
 ```tsx
-const active = signal('home');
+const active = signal("home");
 
 <TabScaffold
   id="app"
   label="Sections"
   active={active.value}
   tabs={[
-    { id: 'home', label: 'Home', icon: <HomeIcon />, content: <HomeStack /> },
-    { id: 'search', label: 'Search', icon: <SearchIcon />, content: <SearchStack /> },
+    { id: "home", label: "Home", icon: <HomeIcon />, content: <HomeStack /> },
+    {
+      id: "search",
+      label: "Search",
+      icon: <SearchIcon />,
+      content: <SearchStack />,
+    },
   ]}
 />;
 
 // once, after first render:
-const dispose = wireTabScaffold(root, { onSelect: (id) => { active.value = id; } });
+const dispose = wireTabScaffold(root, {
+  onSelect: (id) => {
+    active.value = id;
+  },
+});
 ```
 
 Each `TabScaffoldTab` has an `id`, `label`, optional `icon`, and `content`. The

@@ -14,10 +14,14 @@ const FIELD = `
          data-placeholder="Search"></div>
   </div>`;
 
-test('a collapsible field in a flex column stays a single line tall', async ({ page }) => {
+test('a collapsible field in a flex column stays a single line tall', async ({
+  page,
+}) => {
   // Load the page that pulls in token-search-field.css + the foundation tokens.
   await page.goto('/?component=token-search-field');
-  await expect(page.locator('.token-search-demo__collapsible').first()).toBeVisible();
+  await expect(
+    page.locator('.token-search-demo__collapsible').first(),
+  ).toBeVisible();
 
   const heights = await page.evaluate((markup) => {
     const make = (flexDirection: string) => {

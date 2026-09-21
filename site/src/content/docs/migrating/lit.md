@@ -9,11 +9,11 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 
 ## 1. Bundle delta
 
-| | Min + gz, runtime only |
-| --- | --- |
-| `lit` 3.2 (lit-html + lit-element) | ~6 KB |
-| `kerfjs` (incl. signals) | ~12 KB |
-| **Delta** | kerf is ~6 KB heavier |
+|                                    | Min + gz, runtime only |
+| ---------------------------------- | ---------------------- |
+| `lit` 3.2 (lit-html + lit-element) | ~6 KB                  |
+| `kerfjs` (incl. signals)           | ~12 KB                 |
+| **Delta**                          | kerf is ~6 KB heavier  |
 
 You're not migrating for bytes. You're migrating because:
 
@@ -23,22 +23,22 @@ You're not migrating for bytes. You're migrating because:
 
 ## 2. Mental-model translations
 
-| Lit | Kerf | Notes |
-| --- | --- | --- |
-| `class App extends LitElement` | plain function returning JSX | No class, no instance, no element registration. |
-| `@property() count = 0` | `signal(0)` | Module-scoped, not per-instance. Read with `s.value`, write with `s.value = ...`. |
-| `@state() open = false` | `signal(false)` | Same — `@state` was just the "don't expose as attribute" variant. |
-| `render() { return html\`...\` }` | `mount(root, () => <...>)` | The function re-runs on every signal change. |
-| `html\`<div>${name}</div>\`` | `<div>{name}</div>` (JSX) | Tagged template → JSX. |
-| `repeat(items, (it) => it.id, (it) => html\`...\`)` | `each(items, (it) => <.../>, (it) => it.id)` | Same three-arg shape; args reordered. |
-| `@click=${fn}` | `delegate(root, 'click', '[data-action="..."]', fn)` | One delegated listener per action. |
-| `?disabled=${flag}` | `disabled={flag}` | Boolean attributes work natively in JSX. |
-| `.prop=${value}` | `value={value}` | JSX writes properties or attributes — same surface as Lit. |
-| `connectedCallback / disconnectedCallback` | `effect()` / its returned unsubscribe | No per-instance lifecycle; effects scope to the module. |
-| `:host { ... }` CSS | consumer's stylesheet | Light DOM — bring your own scoping (BEM, CSS modules, scoped CSS). |
-| `slot` / `slotchange` | render the children inline | No Shadow DOM, no slots. |
-| `customElements.define('x-app', App)` | `mount(document.getElementById('app'), () => ...)` | No registration, no element name. |
-| `updated(changedProperties)` | `effect(() => { read sig.value; do thing })` | Read the signals you care about inside an effect. |
+| Lit                                                 | Kerf                                                 | Notes                                                                             |
+| --------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `class App extends LitElement`                      | plain function returning JSX                         | No class, no instance, no element registration.                                   |
+| `@property() count = 0`                             | `signal(0)`                                          | Module-scoped, not per-instance. Read with `s.value`, write with `s.value = ...`. |
+| `@state() open = false`                             | `signal(false)`                                      | Same — `@state` was just the "don't expose as attribute" variant.                 |
+| `render() { return html\`...\` }`                   | `mount(root, () => <...>)`                           | The function re-runs on every signal change.                                      |
+| `html\`<div>${name}</div>\``                        | `<div>{name}</div>` (JSX)                            | Tagged template → JSX.                                                            |
+| `repeat(items, (it) => it.id, (it) => html\`...\`)` | `each(items, (it) => <.../>, (it) => it.id)`         | Same three-arg shape; args reordered.                                             |
+| `@click=${fn}`                                      | `delegate(root, 'click', '[data-action="..."]', fn)` | One delegated listener per action.                                                |
+| `?disabled=${flag}`                                 | `disabled={flag}`                                    | Boolean attributes work natively in JSX.                                          |
+| `.prop=${value}`                                    | `value={value}`                                      | JSX writes properties or attributes — same surface as Lit.                        |
+| `connectedCallback / disconnectedCallback`          | `effect()` / its returned unsubscribe                | No per-instance lifecycle; effects scope to the module.                           |
+| `:host { ... }` CSS                                 | consumer's stylesheet                                | Light DOM — bring your own scoping (BEM, CSS modules, scoped CSS).                |
+| `slot` / `slotchange`                               | render the children inline                           | No Shadow DOM, no slots.                                                          |
+| `customElements.define('x-app', App)`               | `mount(document.getElementById('app'), () => ...)`   | No registration, no element name.                                                 |
+| `updated(changedProperties)`                        | `effect(() => { read sig.value; do thing })`         | Read the signals you care about inside an effect.                                 |
 
 ## 3. Section by section
 
@@ -48,20 +48,26 @@ The same TodoMVC, section by section. The Lit side uses `LitElement` + tagged-te
 
 ```ts
 // Lit
-import { LitElement, html } from 'lit';
-import { customElement, state } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat.js';
+import { LitElement, html } from "lit";
+import { customElement, state } from "lit/decorators.js";
+import { repeat } from "lit/directives/repeat.js";
 
-interface Todo { id: string; text: string; done: boolean }
+interface Todo {
+  id: string;
+  text: string;
+  done: boolean;
+}
 
-@customElement('todo-app')
+@customElement("todo-app")
 export class TodoApp extends LitElement {
-  @state() items: Todo[] = JSON.parse(localStorage.getItem('lit-todomvc') ?? '[]');
-  @state() filter: 'all' | 'active' | 'done' = 'all';
+  @state() items: Todo[] = JSON.parse(
+    localStorage.getItem("lit-todomvc") ?? "[]",
+  );
+  @state() filter: "all" | "active" | "done" = "all";
   @state() editingId: string | null = null;
 
   updated() {
-    localStorage.setItem('lit-todomvc', JSON.stringify(this.items));
+    localStorage.setItem("lit-todomvc", JSON.stringify(this.items));
   }
   // ...
 }
@@ -69,33 +75,54 @@ export class TodoApp extends LitElement {
 
 ```ts
 // Kerf
-import { defineStore, mount, each, delegate, delegateCapture, effect, attr, type AttrSpec } from 'kerfjs';
+import {
+  defineStore,
+  mount,
+  each,
+  delegate,
+  delegateCapture,
+  effect,
+  attr,
+  type AttrSpec,
+} from "kerfjs";
 
 const ACTIONS = {
-  toggle: attr('data-action', 'toggle'),
-  remove: attr('data-action', 'remove'),
-  edit:   attr('data-action', 'edit'),
-} as const satisfies Record<string, AttrSpec<'data-action'>>;
-const ITEM = { id: attr('data-id') } as const;
+  toggle: attr("data-action", "toggle"),
+  remove: attr("data-action", "remove"),
+  edit: attr("data-action", "edit"),
+} as const satisfies Record<string, AttrSpec<"data-action">>;
+const ITEM = { id: attr("data-id") } as const;
 
-interface Todo { id: string; text: string; done: boolean }
-type Filter = 'all' | 'active' | 'done';
+interface Todo {
+  id: string;
+  text: string;
+  done: boolean;
+}
+type Filter = "all" | "active" | "done";
 
 const todos = defineStore({
-  initial: () => ({ items: load(), filter: 'all' as Filter, editingId: null as string | null }),
+  initial: () => ({
+    items: load(),
+    filter: "all" as Filter,
+    editingId: null as string | null,
+  }),
   actions: (set, get) => ({
-    add: (text: string) => { /* ... */ },
-    toggle: (id: string) => { /* ... */ },
+    add: (text: string) => {
+      /* ... */
+    },
+    toggle: (id: string) => {
+      /* ... */
+    },
     // ...
   }),
 });
 
 effect(() => {
-  localStorage.setItem('kerf-todomvc', JSON.stringify(todos.state.value.items));
+  localStorage.setItem("kerf-todomvc", JSON.stringify(todos.state.value.items));
 });
 ```
 
-What moved: three `@state` properties on the element collapse into one `defineStore`. `updated()` (which fires on every property change) becomes a top-level `effect()` that auto-tracks `items` — note that Lit's `updated()` runs *after* render, on every render, regardless of whether `items` actually changed; kerf's `effect` only re-runs when `items` changes.
+What moved: three `@state` properties on the element collapse into one `defineStore`. `updated()` (which fires on every property change) becomes a top-level `effect()` that auto-tracks `items` — note that Lit's `updated()` runs _after_ render, on every render, regardless of whether `items` actually changed; kerf's `effect` only re-runs when `items` changes.
 
 ### 3b. Render
 
@@ -132,7 +159,12 @@ mount(root, () => {
     <div class="todoapp">
       <header>
         <h1>todos</h1>
-        <input class="new-todo" data-new placeholder="What needs to be done?" autofocus />
+        <input
+          class="new-todo"
+          data-new
+          placeholder="What needs to be done?"
+          autofocus
+        />
       </header>
       {/* list goes here */}
     </div>
@@ -178,30 +210,50 @@ private renderList() {
 <ul class="todo-list">
   {each(
     items.filter((it) =>
-      filter === 'active' ? !it.done : filter === 'done' ? it.done : true,
+      filter === "active" ? !it.done : filter === "done" ? it.done : true,
     ),
     (todo) => (
       <li
         data-key={todo.id}
-        class={`${todo.done ? 'done' : ''} ${editingId === todo.id ? 'editing' : ''}`}
+        class={`${todo.done ? "done" : ""} ${editingId === todo.id ? "editing" : ""}`}
       >
         {editingId === todo.id ? (
-          <input class="edit" data-edit data-id={todo.id} value={todo.text} autofocus />
+          <input
+            class="edit"
+            data-edit
+            data-id={todo.id}
+            value={todo.text}
+            autofocus
+          />
         ) : (
           <>
-            <input type="checkbox" class="toggle" {...ACTIONS.toggle.attrs} {...ITEM.id(todo.id)} checked={todo.done} />
-            <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>{todo.text}</label>
-            <button class="destroy" {...ACTIONS.remove.attrs} {...ITEM.id(todo.id)}>×</button>
+            <input
+              type="checkbox"
+              class="toggle"
+              {...ACTIONS.toggle.attrs}
+              {...ITEM.id(todo.id)}
+              checked={todo.done}
+            />
+            <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>
+              {todo.text}
+            </label>
+            <button
+              class="destroy"
+              {...ACTIONS.remove.attrs}
+              {...ITEM.id(todo.id)}
+            >
+              ×
+            </button>
           </>
         )}
       </li>
     ),
-    (todo) => `${todo.id}-${editingId === todo.id ? 'edit' : 'view'}`,
+    (todo) => `${todo.id}-${editingId === todo.id ? "edit" : "view"}`,
   )}
 </ul>
 ```
 
-What moved: `repeat(items, keyFn, renderFn)` → `each(items, renderFn, keyFn)`. Same three arguments, reordered: kerf puts the renderer second because it's the visually-largest argument and reads more naturally that way. The DOM-identity key moves from `repeat`'s `keyFn` argument to the row's `data-key={todo.id}` attribute (the morph uses it to identify the row across renders); kerf's third argument is a *memo* key (sometimes you want it to encode mode, e.g. `view` vs `edit`, so changing modes invalidates the row cache).
+What moved: `repeat(items, keyFn, renderFn)` → `each(items, renderFn, keyFn)`. Same three arguments, reordered: kerf puts the renderer second because it's the visually-largest argument and reads more naturally that way. The DOM-identity key moves from `repeat`'s `keyFn` argument to the row's `data-key={todo.id}` attribute (the morph uses it to identify the row across renders); kerf's third argument is a _memo_ key (sometimes you want it to encode mode, e.g. `view` vs `edit`, so changing modes invalidates the row cache).
 
 Lit's `.checked=${flag}` and `?disabled=${flag}` boolean-attribute / property syntax becomes plain JSX: `checked={flag}`, `disabled={flag}`. The runtime decides per-attribute whether to set a property or an attribute.
 
@@ -209,31 +261,31 @@ Lit's `.checked=${flag}` and `?disabled=${flag}` boolean-attribute / property sy
 
 ```ts
 // Lit — handlers are inline, captured per render
-html`<input type="checkbox" @change=${() => this.toggle(todo.id)} />`
-html`<button @click=${() => this.remove(todo.id)}>×</button>`
-html`<label @dblclick=${() => (this.editingId = todo.id)}>${todo.text}</label>`
+html`<input type="checkbox" @change=${() => this.toggle(todo.id)} />`;
+html`<button @click=${() => this.remove(todo.id)}>×</button>`;
+html`<label @dblclick=${() => (this.editingId = todo.id)}>${todo.text}</label>`;
 ```
 
 ```tsx
 // Kerf — handlers register once, at module load, on the root
-delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.toggle.selector, (_e, el) => {
   todos.actions.toggle((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.remove.selector, (_e, el) => {
   todos.actions.remove((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.edit.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.edit.selector, (_e, el) => {
   todos.actions.startEdit((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'keydown', '[data-new]', (e, el) => {
-  if ((e as KeyboardEvent).key !== 'Enter') return;
+delegate(root, "keydown", "[data-new]", (e, el) => {
+  if ((e as KeyboardEvent).key !== "Enter") return;
   const input = el as HTMLInputElement;
   todos.actions.add(input.value);
-  input.value = '';
+  input.value = "";
 });
 
 // Tier 2: blur doesn't bubble — capture phase is required.
-delegateCapture(root, 'blur', '[data-edit]', (_e, el) => {
+delegateCapture(root, "blur", "[data-edit]", (_e, el) => {
   const input = el as HTMLInputElement;
   if (todos.state.value.editingId === input.dataset.id) {
     todos.actions.commitEdit(input.dataset.id!, input.value);
@@ -247,12 +299,19 @@ What moved: every `@event=${fn}` template binding consolidates into a handful of
 
 ```ts
 // Lit — styles are scoped via Shadow DOM
-@customElement('todo-app')
+@customElement("todo-app")
 export class TodoApp extends LitElement {
   static styles = css`
-    :host { display: block; max-width: 550px; }
-    .todoapp { background: white; }
-    .todo-list li.done label { text-decoration: line-through; }
+    :host {
+      display: block;
+      max-width: 550px;
+    }
+    .todoapp {
+      background: white;
+    }
+    .todo-list li.done label {
+      text-decoration: line-through;
+    }
   `;
 }
 ```
@@ -260,8 +319,14 @@ export class TodoApp extends LitElement {
 ```css
 /* Kerf — bring your own stylesheet, scoped the way you choose */
 /* site/src/examples/complete/todomvc/style.css */
-.todoapp { display: block; max-width: 550px; background: white; }
-.todoapp .todo-list li.done label { text-decoration: line-through; }
+.todoapp {
+  display: block;
+  max-width: 550px;
+  background: white;
+}
+.todoapp .todo-list li.done label {
+  text-decoration: line-through;
+}
 ```
 
 What moved: `:host { ... }` becomes a wrapper-class selector. `static styles = css\`...\`` becomes a plain stylesheet imported at the entry point. Scoping is the consumer's problem — BEM, CSS modules, scoped CSS via Vite, Tailwind, plain class names. Kerf doesn't have an opinion.

@@ -1,6 +1,6 @@
 ---
-title: 'Building reusable component packages'
-description: 'Building and publishing reusable kerf components as npm packages.'
+title: "Building reusable component packages"
+description: "Building and publishing reusable kerf components as npm packages."
 ---
 
 kerf has no component runtime — a "component" is just a function that takes props
@@ -26,11 +26,11 @@ the per-instance-state and `wire(root)`-disposer patterns:
 npm create kerf-component@latest my-widgets
 cd my-widgets
 npm install
-npm run build      # tsup → ESM + .d.ts; kerfjs stays external
+npm run build # tsup → ESM + .d.ts; kerfjs stays external
 ```
 
 Pass `.` to scaffold into the current directory. The rest of this doc explains
-*why* the generated package is shaped the way it is — read on if you're authoring
+_why_ the generated package is shaped the way it is — read on if you're authoring
 by hand or want to understand the rules the scaffold encodes.
 
 ## What a component is
@@ -41,24 +41,32 @@ inlining the returned `SafeHtml` into the parent markup.
 
 ```tsx
 // my-button.tsx — in your component package
-import type { SafeHtml } from 'kerfjs';
+import type { SafeHtml } from "kerfjs";
 
 export interface ButtonProps {
   label: string;
   /** A delegation hook, NOT an inline handler — see Events and cleanup. */
   action: string;
-  variant?: 'primary' | 'ghost';
+  variant?: "primary" | "ghost";
 }
 
-export function Button({ label, action, variant = 'primary' }: ButtonProps): SafeHtml {
-  return <button class={`kbtn kbtn-${variant}`} data-action={action}>{label}</button>;
+export function Button({
+  label,
+  action,
+  variant = "primary",
+}: ButtonProps): SafeHtml {
+  return (
+    <button class={`kbtn kbtn-${variant}`} data-action={action}>
+      {label}
+    </button>
+  );
 }
 ```
 
 The consumer renders it the same way they'd use a local function:
 
 ```tsx
-import { Button } from 'my-kerf-buttons';
+import { Button } from "my-kerf-buttons";
 
 mount(root, () => (
   <div>
@@ -76,12 +84,12 @@ outside it (see State: the one thing to get right).
 
 Because a component is a plain function, **any state must live outside it** — in a
 signal or store. The trap is module scope: a signal declared at the top of a
-component module is a *singleton*, shared by every render and every consumer of
+component module is a _singleton_, shared by every render and every consumer of
 that module.
 
 ```tsx
 // ❌ Shared across ALL <Counter /> instances and ALL apps that import this.
-import { signal } from 'kerfjs';
+import { signal } from "kerfjs";
 const count = signal(0);
 export function Counter() {
   return <span>{count.value}</span>;
@@ -93,7 +101,7 @@ wrong for anything that should be per-instance. For per-instance state, export a
 **factory** that creates the state and have the component read it from props:
 
 ```tsx
-import { defineStore, type SafeHtml } from 'kerfjs';
+import { defineStore, type SafeHtml } from "kerfjs";
 
 export function createCounter(start = 0) {
   return defineStore({
@@ -103,7 +111,11 @@ export function createCounter(start = 0) {
   });
 }
 
-export function Counter({ store }: { store: ReturnType<typeof createCounter> }): SafeHtml {
+export function Counter({
+  store,
+}: {
+  store: ReturnType<typeof createCounter>;
+}): SafeHtml {
   // `state` is one ReadonlySignal<TState>, so read `state.value.count`.
   return <span data-action="counter:inc">{store.state.value.count}</span>;
 }
@@ -113,7 +125,12 @@ export function Counter({ store }: { store: ReturnType<typeof createCounter> }):
 // Consumer — two independent counters.
 const a = createCounter(0);
 const b = createCounter(100);
-mount(root, () => (<><Counter store={a} /><Counter store={b} /></>));
+mount(root, () => (
+  <>
+    <Counter store={a} />
+    <Counter store={b} />
+  </>
+));
 ```
 
 The rule of thumb: **a reusable component should never own per-instance mutable
@@ -126,7 +143,7 @@ Components are pure string-builders, so they can't attach listeners or register 
 Two patterns cover the cases:
 
 1. **Markup + delegation (preferred for most components).** The component emits
-   stable hooks (`data-action`, a class, an `id`) and the *host* wires events at the
+   stable hooks (`data-action`, a class, an `id`) and the _host_ wires events at the
    `mount()` root with [`delegate()`](/kerf/docs/events/), which returns a
    disposer. This survives re-renders because the listener lives on the root, not on
    the (re-rendered) component nodes. Never use inline JSX event handlers
@@ -137,11 +154,15 @@ Two patterns cover the cases:
    calls once and disposes:
 
    ```ts
-   import { delegate } from 'kerfjs';
+   import { delegate } from "kerfjs";
    /** Returns a disposer — call it on teardown. */
-   export function wireButtons(root: HTMLElement, onAction: (a: string) => void) {
-     return delegate(root, 'click', '[data-action]', (e, el) =>
-       onAction(el.getAttribute('data-action')!));
+   export function wireButtons(
+     root: HTMLElement,
+     onAction: (a: string) => void,
+   ) {
+     return delegate(root, "click", "[data-action]", (e, el) =>
+       onAction(el.getAttribute("data-action")!),
+     );
    }
    ```
 
@@ -161,7 +182,7 @@ Two patterns cover the cases:
 
    See the [render doc](/kerf/docs/render/) for the full `data-morph-skip` /
    `data-morph-skip-children` / `data-morph-preserve` semantics — note that
-   signal-reactive JSX placed *directly inside* a `data-morph-skip` host stops
+   signal-reactive JSX placed _directly inside_ a `data-morph-skip` host stops
    updating, which is exactly why imperative widgets manage their own DOM.
 
 ## Packaging
@@ -169,7 +190,7 @@ Two patterns cover the cases:
 The single most important rule: **declare `kerfjs` (and any other shared runtime)
 as a `peerDependency`, and never bundle it into your package.** A component returns
 `SafeHtml` and reads signals; both rely on the consumer and your package agreeing on
-*one* `SafeHtml` class and *one* signals instance. If your package bundled its own
+_one_ `SafeHtml` class and _one_ signals instance. If your package bundled its own
 copy of kerfjs, brand checks like `isSafeHtml` and signal identity would silently
 break across the boundary. Keep kerfjs external.
 
@@ -183,9 +204,13 @@ A minimal `package.json`:
   "license": "MIT",
   "peerDependencies": { "kerfjs": "^4.0.0" },
   "devDependencies": { "kerfjs": "^4.4.1", "tsup": "^8", "typescript": "^5" },
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+  },
   "files": ["dist", "README.md", "LICENSE"],
-  "scripts": { "build": "tsup src/index.ts --format esm --dts --external kerfjs" }
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --external kerfjs",
+  },
 }
 ```
 

@@ -39,8 +39,9 @@ describe('attr — static overload', () => {
   });
 
   it('escapes backslashes in values', () => {
-    expect(attr('data-path', 'C:\\Users\\foo').selector)
-      .toBe('[data-path="C:\\\\Users\\\\foo"]');
+    expect(attr('data-path', 'C:\\Users\\foo').selector).toBe(
+      '[data-path="C:\\\\Users\\\\foo"]',
+    );
   });
 
   it('escapes CSS metacharacters in attribute names', () => {
@@ -81,7 +82,8 @@ describe('attr — static overload', () => {
   });
 
   it('compound selectors are formed by concatenating .selector strings', () => {
-    const compound = attr('data-action', 'toggle').selector + attr('data-id', '42').selector;
+    const compound =
+      attr('data-action', 'toggle').selector + attr('data-id', '42').selector;
     expect(compound).toBe('[data-action="toggle"][data-id="42"]');
   });
 });

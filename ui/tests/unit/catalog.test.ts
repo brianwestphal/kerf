@@ -3,11 +3,30 @@ import { resolve } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { catalog, catalogCategories, catalogEntriesUsing, catalogRepositoryBlobUrl, catalogRepositoryHref, catalogSections, findCatalogEntry, isCatalogId, isDiscouragedWebAwesome, kerfCatalog, webAwesomeCatalog, webAwesomeCatalogSections, webAwesomeCategories } from '../../ux-demo/catalog.js';
+import {
+  catalog,
+  catalogCategories,
+  catalogEntriesUsing,
+  catalogRepositoryBlobUrl,
+  catalogRepositoryHref,
+  catalogSections,
+  findCatalogEntry,
+  isCatalogId,
+  isDiscouragedWebAwesome,
+  kerfCatalog,
+  webAwesomeCatalog,
+  webAwesomeCatalogSections,
+  webAwesomeCategories,
+} from '../../ux-demo/catalog.js';
 
 describe('UX catalog metadata', () => {
   it('projects the shipped machine-readable catalog without losing decision facts', async () => {
-    const artifact = JSON.parse(await readFile(resolve(import.meta.dirname, '../../ai/component-catalog.json'), 'utf8')) as {
+    const artifact = JSON.parse(
+      await readFile(
+        resolve(import.meta.dirname, '../../ai/component-catalog.json'),
+        'utf8',
+      ),
+    ) as {
       schemaVersion: number;
       package: string;
       entries: Array<{
@@ -23,18 +42,56 @@ describe('UX catalog metadata', () => {
 
     expect(artifact.schemaVersion).toBe(1);
     expect(artifact.package).toBe('@kerfjs/ui');
-    expect(artifact.entries.map(({ id }) => id)).toEqual(catalog.map(({ id }) => id));
+    expect(artifact.entries.map(({ id }) => id)).toEqual(
+      catalog.map(({ id }) => id),
+    );
     expect(artifact.entries).toHaveLength(108);
     expect(findCatalogEntry('recipe-command-palette')).toBeUndefined();
     expect(isCatalogId('recipe-command-palette')).toBe(false);
-    expect(artifact.entries.every((entry) => entry.useWhen.length > 0 && entry.avoidWhen.length > 0)).toBe(true);
-    expect(artifact.entries.every((entry) => entry.links.catalogRoute === `?component=${entry.id}` && entry.links.documentation && entry.links.recipe)).toBe(true);
-    expect(artifact.entries.find(({ id }) => id === 'tab-bar')?.publicExports).toEqual(['TabBar', 'wireTabBars', 'reorderTabs']);
-    expect(artifact.entries.find(({ id }) => id === 'resize')?.publicExports).toEqual(['ResizableRegion', 'clampRegionSize', 'resizeRegionFromPointer', 'wireResizableRegions']);
-    expect(artifact.entries.find(({ id }) => id === 'token-search-field')?.publicExports).toEqual(['TokenSearchField', 'readTokenSearchField', 'placeTokenSearchCaret', 'wireTokenSearchFields']);
-    expect(artifact.entries.find(({ id }) => id === 'select')?.delivery.registrationImport).toBe('@kerfjs/ui/select/register');
-    expect(artifact.entries.find(({ id }) => id === 'wa-button')?.delivery.registrationImport).toBe('@awesome.me/webawesome/dist/components/button/button.js');
-    expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome).map(({ id }) => id)).toEqual([
+    expect(
+      artifact.entries.every(
+        (entry) => entry.useWhen.length > 0 && entry.avoidWhen.length > 0,
+      ),
+    ).toBe(true);
+    expect(
+      artifact.entries.every(
+        (entry) =>
+          entry.links.catalogRoute === `?component=${entry.id}` &&
+          entry.links.documentation &&
+          entry.links.recipe,
+      ),
+    ).toBe(true);
+    expect(
+      artifact.entries.find(({ id }) => id === 'tab-bar')?.publicExports,
+    ).toEqual(['TabBar', 'wireTabBars', 'reorderTabs']);
+    expect(
+      artifact.entries.find(({ id }) => id === 'resize')?.publicExports,
+    ).toEqual([
+      'ResizableRegion',
+      'clampRegionSize',
+      'resizeRegionFromPointer',
+      'wireResizableRegions',
+    ]);
+    expect(
+      artifact.entries.find(({ id }) => id === 'token-search-field')
+        ?.publicExports,
+    ).toEqual([
+      'TokenSearchField',
+      'readTokenSearchField',
+      'placeTokenSearchCaret',
+      'wireTokenSearchFields',
+    ]);
+    expect(
+      artifact.entries.find(({ id }) => id === 'select')?.delivery
+        .registrationImport,
+    ).toBe('@kerfjs/ui/select/register');
+    expect(
+      artifact.entries.find(({ id }) => id === 'wa-button')?.delivery
+        .registrationImport,
+    ).toBe('@awesome.me/webawesome/dist/components/button/button.js');
+    expect(
+      webAwesomeCatalog.filter(isDiscouragedWebAwesome).map(({ id }) => id),
+    ).toEqual([
       'wa-button-group',
       'wa-dropdown',
       'wa-dropdown-item',
@@ -57,8 +114,21 @@ describe('UX catalog metadata', () => {
   it('keeps routes unique and dependency references valid', () => {
     const ids = catalog.map((entry) => entry.id);
     expect(new Set(ids).size).toBe(ids.length);
-    expect(catalog.every((entry) => entry.name && entry.description && entry.category && entry.kind && entry.source)).toBe(true);
-    expect(catalog.every((entry) => entry.uses?.every((id) => ids.includes(id)) ?? true)).toBe(true);
+    expect(
+      catalog.every(
+        (entry) =>
+          entry.name &&
+          entry.description &&
+          entry.category &&
+          entry.kind &&
+          entry.source,
+      ),
+    ).toBe(true);
+    expect(
+      catalog.every(
+        (entry) => entry.uses?.every((id) => ids.includes(id)) ?? true,
+      ),
+    ).toBe(true);
     expect(isCatalogId('toolbar')).toBe(true);
     expect(isCatalogId('missing')).toBe(false);
     expect(isCatalogId(null)).toBe(false);
@@ -78,38 +148,74 @@ describe('UX catalog metadata', () => {
       demoSource: 'ui/ux-demo/webawesome-demos.tsx',
       documentation: 'ui/docs/webawesome-theme.md#coverage',
     });
-    expect(findCatalogEntry('recipe-app-shell')).not.toHaveProperty('componentSource');
+    expect(findCatalogEntry('recipe-app-shell')).not.toHaveProperty(
+      'componentSource',
+    );
     expect(findCatalogEntry('wa-button')).not.toHaveProperty('componentSource');
 
-    expect(catalogRepositoryBlobUrl).toBe('https://github.com/brianwestphal/kerf/blob/main/');
+    expect(catalogRepositoryBlobUrl).toBe(
+      'https://github.com/brianwestphal/kerf/blob/main/',
+    );
     for (const entry of catalog) {
       const paths: string[] = [entry.demoSource, entry.documentation];
       if ('componentSource' in entry) paths.push(entry.componentSource);
       for (const path of paths) {
         expect(path).toMatch(/^ui\//);
         expect(path).not.toMatch(/(?:^|\/)\.\.(?:\/|$)|:\/\//);
-        expect(catalogRepositoryHref(path)).toBe(`${catalogRepositoryBlobUrl}${path}`);
-        await expect(access(resolve(import.meta.dirname, '../../..', path.split('#')[0]))).resolves.toBeUndefined();
+        expect(catalogRepositoryHref(path)).toBe(
+          `${catalogRepositoryBlobUrl}${path}`,
+        );
+        await expect(
+          access(resolve(import.meta.dirname, '../../..', path.split('#')[0])),
+        ).resolves.toBeUndefined();
       }
     }
-    expect(kerfCatalog.filter((entry) => entry.kind === 'component').every((entry) => 'componentSource' in entry && entry.componentSource)).toBe(true);
-    expect(catalog.filter((entry) => entry.kind !== 'component' || entry.source !== 'kerf').every((entry) => !('componentSource' in entry))).toBe(true);
+    expect(
+      kerfCatalog
+        .filter((entry) => entry.kind === 'component')
+        .every((entry) => 'componentSource' in entry && entry.componentSource),
+    ).toBe(true);
+    expect(
+      catalog
+        .filter(
+          (entry) => entry.kind !== 'component' || entry.source !== 'kerf',
+        )
+        .every((entry) => !('componentSource' in entry)),
+    ).toBe(true);
   });
 
   it('groups Kerf and Web Awesome routes once in their respective reading orders', () => {
-    expect(catalogSections.map((section) => section.category)).toEqual(catalogCategories);
-    expect(webAwesomeCatalogSections.map((section) => section.category)).toEqual(webAwesomeCategories);
-    const kerfIds = catalogSections.flatMap((section) => section.entries.map((entry) => entry.id));
-    const webAwesomeIds = webAwesomeCatalogSections.flatMap((section) => section.entries.map((entry) => entry.id));
+    expect(catalogSections.map((section) => section.category)).toEqual(
+      catalogCategories,
+    );
+    expect(
+      webAwesomeCatalogSections.map((section) => section.category),
+    ).toEqual(webAwesomeCategories);
+    const kerfIds = catalogSections.flatMap((section) =>
+      section.entries.map((entry) => entry.id),
+    );
+    const webAwesomeIds = webAwesomeCatalogSections.flatMap((section) =>
+      section.entries.map((entry) => entry.id),
+    );
     expect(kerfIds).toHaveLength(kerfCatalog.length);
     expect(webAwesomeIds).toHaveLength(webAwesomeCatalog.length);
-    expect(new Set([...kerfIds, ...webAwesomeIds])).toEqual(new Set(catalog.map((entry) => entry.id)));
-    expect(catalogSections.every((section) => section.entries.length > 0)).toBe(true);
-    expect(webAwesomeCatalogSections.every((section) => section.entries.length > 0)).toBe(true);
+    expect(new Set([...kerfIds, ...webAwesomeIds])).toEqual(
+      new Set(catalog.map((entry) => entry.id)),
+    );
+    expect(catalogSections.every((section) => section.entries.length > 0)).toBe(
+      true,
+    );
+    expect(
+      webAwesomeCatalogSections.every((section) => section.entries.length > 0),
+    ).toBe(true);
   });
 
   it('lists every public visual component plus composition demos', () => {
-    expect(kerfCatalog.filter((entry) => entry.kind === 'component').map((entry) => entry.name)).toEqual([
+    expect(
+      kerfCatalog
+        .filter((entry) => entry.kind === 'component')
+        .map((entry) => entry.name),
+    ).toEqual([
       'LucideIcon',
       'DisclosureArrow',
       'Toolbar',
@@ -134,35 +240,90 @@ describe('UX catalog metadata', () => {
       'LoadingSpinner',
       'Skeleton',
     ]);
-    expect(kerfCatalog.filter((entry) => entry.kind === 'composition').map((entry) => entry.id)).toEqual(['webawesome-theme', 'layout', 'headers', 'list', 'feedback']);
+    expect(
+      kerfCatalog
+        .filter((entry) => entry.kind === 'composition')
+        .map((entry) => entry.id),
+    ).toEqual(['webawesome-theme', 'layout', 'headers', 'list', 'feedback']);
     expect(webAwesomeCatalog).toHaveLength(70);
-    expect(webAwesomeCatalog.every((entry) => entry.source === 'webawesome' && entry.kind === 'component')).toBe(true);
+    expect(
+      webAwesomeCatalog.every(
+        (entry) => entry.source === 'webawesome' && entry.kind === 'component',
+      ),
+    ).toBe(true);
     expect(webAwesomeCatalog.map((entry) => entry.id)).toContain('wa-button');
-    expect(webAwesomeCatalog.map((entry) => entry.id)).toContain('wa-resize-observer');
+    expect(webAwesomeCatalog.map((entry) => entry.id)).toContain(
+      'wa-resize-observer',
+    );
   });
 
   it('resolves both sides of component relationships', () => {
-    expect(findCatalogEntry('empty-state')?.uses).toEqual(['lucide-icon', 'loading-spinner']);
-    expect(findCatalogEntry('toolbar-control-group')?.uses).toEqual(['lucide-icon', 'segmented-control']);
+    expect(findCatalogEntry('empty-state')?.uses).toEqual([
+      'lucide-icon',
+      'loading-spinner',
+    ]);
+    expect(findCatalogEntry('toolbar-control-group')?.uses).toEqual([
+      'lucide-icon',
+      'segmented-control',
+    ]);
     expect(findCatalogEntry('missing')).toBeUndefined();
-    expect(catalogEntriesUsing('loading-spinner').map((entry) => entry.id)).toEqual(['feedback', 'empty-state', 'recipe-list-workspace-states']);
-    expect(catalogEntriesUsing('resize').map((entry) => entry.id)).toEqual(['recipe-app-shell']);
-    expect(findCatalogEntry('wa-select')?.uses).toEqual(['wa-icon', 'wa-popup', 'wa-tag', 'wa-option']);
-    expect(catalogEntriesUsing('wa-select').map((entry) => entry.id)).toEqual(['webawesome-theme', 'select']);
-    expect(catalogEntriesUsing('wa-carousel-item').map((entry) => entry.id)).toEqual(['webawesome-theme', 'wa-carousel']);
-    expect(catalogEntriesUsing('segmented-control').map((entry) => entry.id)).toEqual(['toolbar-control-group', 'recipe-compact-toolbar', 'recipe-loading-inspector']);
-    expect(findCatalogEntry('token-search-field')?.uses).toEqual(['lucide-icon']);
+    expect(
+      catalogEntriesUsing('loading-spinner').map((entry) => entry.id),
+    ).toEqual(['feedback', 'empty-state', 'recipe-list-workspace-states']);
+    expect(catalogEntriesUsing('resize').map((entry) => entry.id)).toEqual([
+      'recipe-app-shell',
+    ]);
+    expect(findCatalogEntry('wa-select')?.uses).toEqual([
+      'wa-icon',
+      'wa-popup',
+      'wa-tag',
+      'wa-option',
+    ]);
+    expect(catalogEntriesUsing('wa-select').map((entry) => entry.id)).toEqual([
+      'webawesome-theme',
+      'select',
+    ]);
+    expect(
+      catalogEntriesUsing('wa-carousel-item').map((entry) => entry.id),
+    ).toEqual(['webawesome-theme', 'wa-carousel']);
+    expect(
+      catalogEntriesUsing('segmented-control').map((entry) => entry.id),
+    ).toEqual([
+      'toolbar-control-group',
+      'recipe-compact-toolbar',
+      'recipe-loading-inspector',
+    ]);
+    expect(findCatalogEntry('token-search-field')?.uses).toEqual([
+      'lucide-icon',
+    ]);
     expect(findCatalogEntry('list-action-row')?.uses).toEqual(['lucide-icon']);
-    expect(findCatalogEntry('panel-header')?.uses).toEqual(['lucide-icon', 'toolbar', 'toolbar-control-group', 'toolbar-text']);
-    expect(catalogEntriesUsing('list-action-row').map((entry) => entry.id)).toEqual(['list']);
+    expect(findCatalogEntry('panel-header')?.uses).toEqual([
+      'lucide-icon',
+      'toolbar',
+      'toolbar-control-group',
+      'toolbar-text',
+    ]);
+    expect(
+      catalogEntriesUsing('list-action-row').map((entry) => entry.id),
+    ).toEqual(['list']);
   });
 
   it('marks supported ecosystem alternatives without presenting them as defaults', () => {
-    expect(findCatalogEntry('wa-popup')?.description).toContain('Preferred low-level anchored positioning');
-    expect(findCatalogEntry('wa-split-panel')?.description).toContain('prefer Kerf ResizableRegion');
-    expect(findCatalogEntry('wa-button-group')?.description).toContain('prefer Kerf SegmentedControl');
-    expect(findCatalogEntry('wa-icon')?.description).toContain('use Kerf LucideIcon');
-    expect(findCatalogEntry('wa-zoomable-frame')?.description).toContain('Avoid for application UI');
+    expect(findCatalogEntry('wa-popup')?.description).toContain(
+      'Preferred low-level anchored positioning',
+    );
+    expect(findCatalogEntry('wa-split-panel')?.description).toContain(
+      'prefer Kerf ResizableRegion',
+    );
+    expect(findCatalogEntry('wa-button-group')?.description).toContain(
+      'prefer Kerf SegmentedControl',
+    );
+    expect(findCatalogEntry('wa-icon')?.description).toContain(
+      'use Kerf LucideIcon',
+    );
+    expect(findCatalogEntry('wa-zoomable-frame')?.description).toContain(
+      'Avoid for application UI',
+    );
     expect(webAwesomeCatalog.filter(isDiscouragedWebAwesome)).toHaveLength(15);
   });
 });

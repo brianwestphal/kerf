@@ -42,7 +42,14 @@ import { devHooks } from '../dev-hooks.js';
  * a `javascript:` / `data:` value in them does not execute as script in modern
  * browsers, so screening would add false positives without closing a real sink.
  */
-const URL_ATTRS = new Set(['href', 'src', 'xlink:href', 'formaction', 'action', 'data']);
+const URL_ATTRS = new Set([
+  'href',
+  'src',
+  'xlink:href',
+  'formaction',
+  'action',
+  'data',
+]);
 
 /** Schemes that execute script when a browser resolves them as a URL. */
 const DANGEROUS_SCHEMES = new Set(['javascript', 'vbscript']);
@@ -118,11 +125,14 @@ function schemeOf(normalized: string): string | null {
  * / plain text pass.
  */
 function isDangerousDataUrl(normalized: string): boolean {
-  const media = /^data:([^;,]*)/.exec(normalized.toLowerCase())?.[1].trim() ?? '';
-  if (media === '' || media === 'text/plain' || media === 'text/css') return false;
+  const media =
+    /^data:([^;,]*)/.exec(normalized.toLowerCase())?.[1].trim() ?? '';
+  if (media === '' || media === 'text/plain' || media === 'text/css')
+    return false;
   if (media === 'image/svg+xml') return true; // SVG can carry <script>
   if (media.startsWith('image/')) return false;
-  if (media.startsWith('font/') || media.startsWith('application/font')) return false;
+  if (media.startsWith('font/') || media.startsWith('application/font'))
+    return false;
   if (media.startsWith('audio/') || media.startsWith('video/')) return false;
   return true; // text/html, application/xhtml+xml, *xml, unknown → block
 }
@@ -151,10 +161,12 @@ export function isDangerousUrlValue(name: string, value: string): boolean {
  * live-attribute writer).
  */
 export function dangerousUrlWarning(name: string, value: string): string {
-  return `dropped dangerous URL value for ${name}=${JSON.stringify(value.slice(0, DANGEROUS_URL_DIAGNOSTIC_VALUE_LENGTH))}. `
-    + 'kerf blocks javascript:, vbscript:, and script-executing data: URLs '
-    + '(text/html, image/svg+xml, xml) in href/src/data/formaction/action/xlink:href by default. '
-    + 'Wrap in raw() if this is intentional (e.g. bookmarklets), or sanitize upstream.';
+  return (
+    `dropped dangerous URL value for ${name}=${JSON.stringify(value.slice(0, DANGEROUS_URL_DIAGNOSTIC_VALUE_LENGTH))}. ` +
+    'kerf blocks javascript:, vbscript:, and script-executing data: URLs ' +
+    '(text/html, image/svg+xml, xml) in href/src/data/formaction/action/xlink:href by default. ' +
+    'Wrap in raw() if this is intentional (e.g. bookmarklets), or sanitize upstream.'
+  );
 }
 
 /**
@@ -172,7 +184,11 @@ export function dangerousUrlWarning(name: string, value: string): string {
  * `context` is the caller's prefix (`JSX`/`kerf binding`); the composed message
  * is byte-identical to the pre-KF-340 warn text in production.
  */
-export function reportDangerousUrl(context: string, name: string, value: string): void {
+export function reportDangerousUrl(
+  context: string,
+  name: string,
+  value: string,
+): void {
   const message = `${context}: ${dangerousUrlWarning(name, value)}`;
   devHooks.urlScreenThrow?.(message);
   console.warn(message);

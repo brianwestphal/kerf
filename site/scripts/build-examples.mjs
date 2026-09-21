@@ -73,7 +73,9 @@ async function buildCompleteApps() {
     });
   }
 
-  console.log(`[build-examples] built ${COMPLETE_APPS.length} complete apps → public/run/`);
+  console.log(
+    `[build-examples] built ${COMPLETE_APPS.length} complete apps → public/run/`,
+  );
 }
 
 function buildDemo() {
@@ -82,7 +84,10 @@ function buildDemo() {
   const target = resolve(siteRoot, 'public/demo');
 
   // Build the demo via its own Vite config (already set to base /kerf/demo/).
-  execSync('npm install --no-audit --no-fund --silent', { cwd: demoSrc, stdio: 'inherit' });
+  execSync('npm install --no-audit --no-fund --silent', {
+    cwd: demoSrc,
+    stdio: 'inherit',
+  });
   execSync('npm run build --silent', { cwd: demoSrc, stdio: 'inherit' });
 
   if (existsSync(target)) rmSync(target, { recursive: true, force: true });

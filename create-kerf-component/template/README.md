@@ -1,4 +1,4 @@
-# __PKG_NAME__
+# **PKG_NAME**
 
 A reusable [kerf](https://github.com/brianwestphal/kerf) component package,
 scaffolded with `create-kerf-component`.
@@ -7,7 +7,7 @@ scaffolded with `create-kerf-component`.
 
 ```bash
 npm install
-npm run build       # tsup → dist/ (ESM + .d.ts); kerfjs stays external
+npm run build # tsup → dist/ (ESM + .d.ts); kerfjs stays external
 npm run typecheck
 ```
 
@@ -17,11 +17,11 @@ A kerf app that already has `jsxImportSource: "kerfjs"` configured can import an
 render the component like any local function — there's no extra toolchain:
 
 ```tsx
-import { mount } from 'kerfjs';
-import { Counter, createCounter, wireCounter } from '__PKG_NAME__';
+import { mount } from "kerfjs";
+import { Counter, createCounter, wireCounter } from "__PKG_NAME__";
 
-const counter = createCounter(0);          // per-instance state (a factory)
-const root = document.getElementById('app')!;
+const counter = createCounter(0); // per-instance state (a factory)
+const root = document.getElementById("app")!;
 
 mount(root, () => <Counter store={counter} label="Clicks" />);
 
@@ -31,7 +31,7 @@ const dispose = wireCounter(root, counter); // delegation disposer (call on tear
 ## The rules this package follows
 
 These are kerf's hard packaging rules (see the kerf docs,
-*Building reusable component packages*). The scaffold encodes them so you don't
+_Building reusable component packages_). The scaffold encodes them so you don't
 have to:
 
 - **`kerfjs` is a `peerDependency` and is `external` in the build — never
@@ -45,7 +45,7 @@ have to:
   `delegate()` (see `wireCounter`), which returns a disposer.
 - **Build emits ESM + `.d.ts`; `tsconfig` sets `jsxImportSource: "kerfjs"`.**
 - **Never import `kerfjs/dev`.** kerf's dev diagnostics install global hooks, so
-  installing them is the consuming *app's* call, not a library's — the app
+  installing them is the consuming _app's_ call, not a library's — the app
   writes `if (import.meta.env.DEV) await import('kerfjs/dev')` in its own entry.
   To get the diagnostics while developing this package, add that line to your own
   test harness or demo page instead (it belongs to the harness, not to `src/`).

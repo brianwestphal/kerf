@@ -11,7 +11,7 @@ Four things kerf optimizes for. In order.
 
 Fine-grained reactivity (signals from `@preact/signals-core`) means the render fn re-runs only when a value it actually read changed. No tree-walking to detect changes. No "hey, did anything change?" pass.
 
-Then the diff: when the render fn does run, kerf compares the new HTML against the live DOM and applies the *minimum* set of DOM operations to make them match. A 1000-row table where one row changed runs ~1 cache miss and ~0 unrelated DOM ops — not 1000 reconciliation checks.
+Then the diff: when the render fn does run, kerf compares the new HTML against the live DOM and applies the _minimum_ set of DOM operations to make them match. A 1000-row table where one row changed runs ~1 cache miss and ~0 unrelated DOM ops — not 1000 reconciliation checks.
 
 ## 2. No virtual DOM, no compiler
 
@@ -19,7 +19,7 @@ JSX renders to **HTML strings** (wrapped in `SafeHtml` for type safety). There i
 
 This means:
 
-- **DevTools shows the real DOM** because it *is* the DOM.
+- **DevTools shows the real DOM** because it _is_ the DOM.
 - **Server-side rendering is trivial** — `SafeHtml.toString()` returns the string. Hand it to Express, Hono, Rails, anything.
 - **No build step beyond what you already have.** Vite, esbuild, tsup all handle the JSX import out of the box.
 
@@ -39,7 +39,7 @@ If your toolchain can build a React app, it can build a kerf app, with **less** 
 
 ---
 
-## What kerf is *not*
+## What kerf is _not_
 
 - **Not a component framework.** `<MyComponent props />` works as JSX sugar — the runtime calls `MyComponent(props)` and uses the returned JSX — but there's no hooks, no lifecycle, no per-instance state. Components are plain functions; state lives in module-scope signals or stores.
 - **Not a router.** Use `wouter`, `nanoroute`, the URL bar, your server, whatever you like.

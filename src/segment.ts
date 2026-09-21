@@ -86,8 +86,20 @@ export interface ListSegment {
  * instead of leaving the signal and DOM divergent.
  */
 export type ArrayPatchInternal =
-  | { type: 'update'; index: number; item: object; html: string; bindings?: Binding[] }
-  | { type: 'insert'; index: number; item: object; html: string; bindings?: Binding[] }
+  | {
+      type: 'update';
+      index: number;
+      item: object;
+      html: string;
+      bindings?: Binding[];
+    }
+  | {
+      type: 'insert';
+      index: number;
+      item: object;
+      html: string;
+      bindings?: Binding[];
+    }
   | { type: 'remove'; index: number }
   | { type: 'move'; from: number; to: number }
   | { type: 'replace'; items: readonly object[] };
@@ -127,7 +139,9 @@ export function flatten(segment: Segment, withMarkers: boolean): string {
   if (segment.kind === 'static') return segment.html;
   if (segment.kind === 'list') {
     const items = segment.items.map((i) => i.html).join('');
-    return withMarkers ? `<!--${LIST_MARKER_PREFIX}${segment.id}-->${items}` : items;
+    return withMarkers
+      ? `<!--${LIST_MARKER_PREFIX}${segment.id}-->${items}`
+      : items;
   }
   return segment.parts.map((p) => flatten(p, withMarkers)).join('');
 }
@@ -142,7 +156,8 @@ export function flatten(segment: Segment, withMarkers: boolean): string {
  */
 export function flattenWithoutListItems(segment: Segment): string {
   if (segment.kind === 'static') return segment.html;
-  if (segment.kind === 'list') return `<!--${LIST_MARKER_PREFIX}${segment.id}-->`;
+  if (segment.kind === 'list')
+    return `<!--${LIST_MARKER_PREFIX}${segment.id}-->`;
   return segment.parts.map(flattenWithoutListItems).join('');
 }
 
@@ -194,7 +209,11 @@ export function mergeChildSegments(parts: Segment[]): Segment {
  * parent JSX element. Used by the JSX runtime when constructing
  * `_jsx(tag, ...)` output.
  */
-export function wrapWithTags(child: Segment, openTag: string, closeTag: string): Segment {
+export function wrapWithTags(
+  child: Segment,
+  openTag: string,
+  closeTag: string,
+): Segment {
   if (child.kind === 'static') {
     return { kind: 'static', html: openTag + child.html + closeTag };
   }

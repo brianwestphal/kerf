@@ -31,7 +31,9 @@ function dividePixelLiteralBySixteen(raw) {
 }
 
 function remifyError(argument, context) {
-  return new Error(`remify() accepts one numeric px literal; received "${argument}" in ${context}`);
+  return new Error(
+    `remify() accepts one numeric px literal; received "${argument}" in ${context}`,
+  );
 }
 
 export function transformRemifyValue(value, context = 'CSS value') {
@@ -63,7 +65,8 @@ export function transformRemifyValue(value, context = 'CSS value') {
     const previous = index === 0 ? '' : value[index - 1];
     if (value.startsWith(REMIFY_START, index) && !/[\w-]/.test(previous)) {
       const end = value.indexOf(')', index + REMIFY_START.length);
-      if (end === -1) throw remifyError(value.slice(index + REMIFY_START.length), context);
+      if (end === -1)
+        throw remifyError(value.slice(index + REMIFY_START.length), context);
       const argument = value.slice(index + REMIFY_START.length, end).trim();
       const match = PIXEL_LITERAL.exec(argument);
       if (!match) throw remifyError(argument, context);
@@ -82,7 +85,10 @@ export function transformRemifyValue(value, context = 'CSS value') {
 export default function remifyCss() {
   const transform = (node, field) => {
     try {
-      node[field] = transformRemifyValue(node[field], `${node.type} ${node.toString()}`);
+      node[field] = transformRemifyValue(
+        node[field],
+        `${node.type} ${node.toString()}`,
+      );
     } catch (error) {
       throw node.error(error instanceof Error ? error.message : String(error));
     }

@@ -46,7 +46,10 @@ if (existsSync(outRoot)) {
     const full = resolve(outRoot, entry);
     if (statSync(full).isDirectory()) {
       if (!COMPONENTS[entry]) stray.push(rel(full) + '/');
-      else for (const file of readdirSync(full)) if (!expected.has(resolve(full, file))) stray.push(rel(resolve(full, file)));
+      else
+        for (const file of readdirSync(full))
+          if (!expected.has(resolve(full, file)))
+            stray.push(rel(resolve(full, file)));
     } else if (entry.endsWith('.svg') && !expected.has(full)) {
       stray.push(rel(full));
     }
@@ -55,16 +58,27 @@ if (existsSync(outRoot)) {
 
 if (missing.length || stray.length) {
   if (missing.length) {
-    console.error(`[check-design-templates] ${missing.length} expected template file(s) missing:`);
+    console.error(
+      `[check-design-templates] ${missing.length} expected template file(s) missing:`,
+    );
     for (const m of missing) console.error(`  - ${m}`);
   }
   if (stray.length) {
-    console.error(`[check-design-templates] ${stray.length} committed file(s) not accounted for by the manifest:`);
+    console.error(
+      `[check-design-templates] ${stray.length} committed file(s) not accounted for by the manifest:`,
+    );
     for (const s of stray) console.error(`  - ${s}`);
   }
-  console.error('Run `npm run design-templates:build` (needs domotion-svg) and commit the result.');
+  console.error(
+    'Run `npm run design-templates:build` (needs domotion-svg) and commit the result.',
+  );
   process.exit(1);
 }
 
-const variantCount = Object.values(COMPONENTS).reduce((n, s) => n + s.variants.length, 0);
-console.log(`[check-design-templates] OK — ${Object.keys(COMPONENTS).length} components, ${variantCount} variants, light + dark each, libraries present.`);
+const variantCount = Object.values(COMPONENTS).reduce(
+  (n, s) => n + s.variants.length,
+  0,
+);
+console.log(
+  `[check-design-templates] OK — ${Object.keys(COMPONENTS).length} components, ${variantCount} variants, light + dark each, libraries present.`,
+);

@@ -9,32 +9,58 @@
  * `defineStore()`.
  */
 
-import { attr, computed, defineStore, delegate, mount, resetAllStores, toElement, type AttrSpec } from 'kerfjs';
+import {
+  attr,
+  computed,
+  defineStore,
+  delegate,
+  mount,
+  resetAllStores,
+  toElement,
+  type AttrSpec,
+} from 'kerfjs';
 
 const ACTIONS = {
-  add:      attr('data-action', 'add'),
-  remove:   attr('data-action', 'remove'),
-  clear:    attr('data-action', 'clear'),
+  add: attr('data-action', 'add'),
+  remove: attr('data-action', 'remove'),
+  clear: attr('data-action', 'clear'),
   resetAll: attr('data-action', 'reset-all'),
 } as const satisfies Record<string, AttrSpec<'data-action'>>;
 const ITEM = { id: attr('data-id'), idx: attr('data-idx') } as const;
 
-interface CartItem { id: string; name: string; price: number }
-interface CartState { items: CartItem[] }
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+}
+interface CartState {
+  items: CartItem[];
+}
 
 let nextId = 1;
-function makeId(): string { return `item-${nextId++}`; }
+function makeId(): string {
+  return `item-${nextId++}`;
+}
 
-const cartStore = defineStore<CartState, {
-  add(name: string, price: number): void;
-  remove(id: string): void;
-  clear(): void;
-}>({
+const cartStore = defineStore<
+  CartState,
+  {
+    add(name: string, price: number): void;
+    remove(id: string): void;
+    clear(): void;
+  }
+>({
   initial: () => ({ items: [] }),
   actions: (set, get) => ({
-    add(name, price) { set({ items: [...get().items, { id: makeId(), name, price }] }); },
-    remove(id) { set({ items: get().items.filter((i) => i.id !== id) }); },
-    clear() { set({ items: [] }); },
+    add(name, price) {
+      set({ items: [...get().items, { id: makeId(), name, price }] });
+    },
+    remove(id) {
+      set({ items: get().items.filter((i) => i.id !== id) });
+    },
+    clear() {
+      set({ items: [] });
+    },
   }),
 });
 
@@ -65,7 +91,9 @@ export function mountCart(root: HTMLElement): void {
     if (items.length === 0) {
       return (
         <ul className="demo-cart-list">
-          <li className="demo-cart-empty">Cart is empty — add something below.</li>
+          <li className="demo-cart-empty">
+            Cart is empty — add something below.
+          </li>
         </ul>
       );
     }
@@ -75,7 +103,14 @@ export function mountCart(root: HTMLElement): void {
           <li className="demo-cart-row" data-key={item.id}>
             <span className="demo-cart-name">{item.name}</span>
             <span className="demo-cart-price">${item.price.toFixed(2)}</span>
-            <button type="button" {...ACTIONS.remove.attrs} {...ITEM.id(item.id)} className="demo-btn demo-btn-ghost demo-btn-tiny">×</button>
+            <button
+              type="button"
+              {...ACTIONS.remove.attrs}
+              {...ITEM.id(item.id)}
+              className="demo-btn demo-btn-ghost demo-btn-tiny"
+            >
+              ×
+            </button>
           </li>
         ))}
       </ul>
@@ -98,8 +133,12 @@ export function mountCart(root: HTMLElement): void {
     const id = (btn as HTMLElement).dataset.id;
     if (id !== undefined) cartStore.actions.remove(id);
   });
-  delegate(root, 'click', ACTIONS.clear.selector, () => { cartStore.actions.clear(); });
-  delegate(root, 'click', ACTIONS.resetAll.selector, () => { resetAllStores(); });
+  delegate(root, 'click', ACTIONS.clear.selector, () => {
+    cartStore.actions.clear();
+  });
+  delegate(root, 'click', ACTIONS.resetAll.selector, () => {
+    resetAllStores();
+  });
 }
 
 function createScaffold(): Element {
@@ -107,16 +146,37 @@ function createScaffold(): Element {
     <div className="demo-card">
       <h2>
         2. Cart store
-        <span className="demo-tag">defineStore • multi-consumer • resetAllStores()</span>
+        <span className="demo-tag">
+          defineStore • multi-consumer • resetAllStores()
+        </span>
         <span className="demo-cart-badge-slot" data-region="badge"></span>
       </h2>
 
       <div className="demo-row demo-cart-add-row">
         {SAMPLES.map(([name, price], i) => (
-          <button type="button" {...ACTIONS.add.attrs} {...ITEM.idx(String(i))} className="demo-btn">+ {name} (${price.toFixed(2)})</button>
+          <button
+            type="button"
+            {...ACTIONS.add.attrs}
+            {...ITEM.idx(String(i))}
+            className="demo-btn"
+          >
+            + {name} (${price.toFixed(2)})
+          </button>
         ))}
-        <button type="button" {...ACTIONS.clear.attrs} className="demo-btn demo-btn-ghost">clear</button>
-        <button type="button" {...ACTIONS.resetAll.attrs} className="demo-btn demo-btn-warn">resetAllStores()</button>
+        <button
+          type="button"
+          {...ACTIONS.clear.attrs}
+          className="demo-btn demo-btn-ghost"
+        >
+          clear
+        </button>
+        <button
+          type="button"
+          {...ACTIONS.resetAll.attrs}
+          className="demo-btn demo-btn-warn"
+        >
+          resetAllStores()
+        </button>
       </div>
 
       <div data-region="list"></div>
@@ -124,9 +184,10 @@ function createScaffold(): Element {
 
       <p className="demo-note">
         Three independent regions (badge, list, footer) subscribe via separate
-        <code>mount()</code> calls. The footer's total is a <code>computed()</code>
-        derived from the same store. <code>resetAllStores()</code> walks the registry —
-        every store created via <code>defineStore()</code> is reset.
+        <code>mount()</code> calls. The footer's total is a{' '}
+        <code>computed()</code>
+        derived from the same store. <code>resetAllStores()</code> walks the
+        registry — every store created via <code>defineStore()</code> is reset.
       </p>
     </div>,
   );

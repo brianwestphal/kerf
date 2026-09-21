@@ -9,8 +9,8 @@ kerf ships its own JSX runtime at `kerfjs/jsx-runtime`. JSX renders to `SafeHtml
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "kerfjs"
-  }
+    "jsxImportSource": "kerfjs",
+  },
 }
 ```
 
@@ -19,11 +19,11 @@ That's the entire setup. The TypeScript / esbuild / vitest JSX transform looks f
 **Mixing kerf with another JSX runtime (e.g. React).** A project can only set one `jsxImportSource` default, so when kerf coexists with React in the same codebase, override per file with the standard TypeScript pragma — a block comment on the first line:
 
 ```tsx
-/** @jsxImportSource kerfjs */   // top of a kerf file
+/** @jsxImportSource kerfjs */ // top of a kerf file
 ```
 
 ```tsx
-/** @jsxImportSource react */    // top of a React file
+/** @jsxImportSource react */ // top of a React file
 ```
 
 The pragma is honored by tsc, esbuild, Vite, and swc. Set the tsconfig default to whichever runtime owns more files and pragma the rest. This is the foundation of incremental migration — see [10-migrating.md](10-migrating.md) and the `/kerf/migrating/incremental/` guide.
@@ -47,15 +47,15 @@ greeting.toString();
 
 JSX attributes use camelCase (React convention). The runtime translates the common ones to their HTML / SVG equivalents:
 
-| JSX | Output |
-| --- | --- |
-| `className` | `class` |
-| `htmlFor` | `for` |
-| `tabIndex` | `tabindex` |
-| `strokeWidth` | `stroke-width` |
-| `fillOpacity` | `fill-opacity` |
-| `xlinkHref` | `xlink:href` |
-| ...many more in `src/utils/jsx-attr-aliases.ts` (the `ATTR_ALIASES` table) | |
+| JSX                                                                        | Output         |
+| -------------------------------------------------------------------------- | -------------- |
+| `className`                                                                | `class`        |
+| `htmlFor`                                                                  | `for`          |
+| `tabIndex`                                                                 | `tabindex`     |
+| `strokeWidth`                                                              | `stroke-width` |
+| `fillOpacity`                                                              | `fill-opacity` |
+| `xlinkHref`                                                                | `xlink:href`   |
+| ...many more in `src/utils/jsx-attr-aliases.ts` (the `ATTR_ALIASES` table) |                |
 
 Anything not in the alias table is passed through verbatim. So `data-action`, `aria-label`, `data-key` all work as expected (JSX-to-HTML uses the literal attribute name) — as long as the name is well-formed (see [§6.4.2](#642-attribute-name-validation)).
 
@@ -71,21 +71,21 @@ Anything not in the alias table is passed through verbatim. So `data-action`, `a
 
 This matches HTML semantics — a boolean attribute is "on" by being present, regardless of its value.
 
-For the form-state trio — `checked`, `value`, `selected` — re-renders also carry the mutated attribute onto the live DOM *property*, so controlled form state keeps working after the user has interacted with the control (the browser's dirty-state flags would otherwise detach the visible state from the attribute). See the render doc's "Form-state properties" section for the full rules.
+For the form-state trio — `checked`, `value`, `selected` — re-renders also carry the mutated attribute onto the live DOM _property_, so controlled form state keeps working after the user has interacted with the control (the browser's dirty-state flags would otherwise detach the visible state from the attribute). See the render doc's "Form-state properties" section for the full rules.
 
 #### Enumerated attributes are not boolean attributes
 
-Six attributes read like booleans and are not: **`draggable`**, **`spellcheck`**, **`contenteditable`**, **`writingsuggestions`**, **`translate`**, and **`autocorrect`**. HTML calls them *enumerated* — they take literal keyword strings (`"true"` / `"false"` for the first four, `"yes"` / `"no"` for `translate`, `"on"` / `"off"` for `autocorrect`), and leaving them off selects a third state (`auto` for `draggable`, inherit-the-default for the rest). The boolean rendering above therefore lands on the wrong state:
+Six attributes read like booleans and are not: **`draggable`**, **`spellcheck`**, **`contenteditable`**, **`writingsuggestions`**, **`translate`**, and **`autocorrect`**. HTML calls them _enumerated_ — they take literal keyword strings (`"true"` / `"false"` for the first four, `"yes"` / `"no"` for `translate`, `"on"` / `"off"` for `autocorrect`), and leaving them off selects a third state (`auto` for `draggable`, inherit-the-default for the rest). The boolean rendering above therefore lands on the wrong state:
 
-| You write | Renders | Element ends up |
-| --- | --- | --- |
-| `draggable={true}` | `<div draggable>` | **not draggable** — an empty value is invalid, so `auto`, and `auto` for a `<div>` is off |
-| `draggable={false}` | *omitted* | `auto` again — and `auto` for `<img>` / `<a href>` is **draggable** |
-| `spellCheck={false}` | *omitted* | spellchecking **still on** — omission means "inherit", not "off" |
-| `contentEditable={false}` | *omitted* | inside an editable region, **still editable** |
-| `writingsuggestions={false}` | *omitted* | suggestions **still offered** — omission means "inherit the default" |
-| `translate={false}` | *omitted* | **still translated** — omission means "inherit", not "no" |
-| `autocorrect={false}` | *omitted* | autocorrection **still on** — omission means "inherit the default" |
+| You write                    | Renders           | Element ends up                                                                           |
+| ---------------------------- | ----------------- | ----------------------------------------------------------------------------------------- |
+| `draggable={true}`           | `<div draggable>` | **not draggable** — an empty value is invalid, so `auto`, and `auto` for a `<div>` is off |
+| `draggable={false}`          | _omitted_         | `auto` again — and `auto` for `<img>` / `<a href>` is **draggable**                       |
+| `spellCheck={false}`         | _omitted_         | spellchecking **still on** — omission means "inherit", not "off"                          |
+| `contentEditable={false}`    | _omitted_         | inside an editable region, **still editable**                                             |
+| `writingsuggestions={false}` | _omitted_         | suggestions **still offered** — omission means "inherit the default"                      |
+| `translate={false}`          | _omitted_         | **still translated** — omission means "inherit", not "no"                                 |
+| `autocorrect={false}`        | _omitted_         | autocorrection **still on** — omission means "inherit the default"                        |
 
 So the types reject `boolean` on these six. Write the keyword:
 
@@ -100,7 +100,7 @@ So the types reject `boolean` on these six. Write the keyword:
 
 Omit the attribute when you want the default state. `hidden`, `checked`, `disabled`, `autofocus`, and the rest of the real boolean attributes are unaffected — `hidden={isHidden}` is still exactly right. So is **`popover`**: it is technically enumerated (`auto` / `hint` / `manual`), but the bare attribute's empty value is a spec keyword for the `auto` state and omission means "not a popover", so `popover={true}` / `popover={false}` both land exactly where they read — the boolean forms stay allowed alongside the keywords.
 
-The fix is in the types rather than in the runtime deliberately. Translating `{true}` → `="true"` would mean the renderer carrying a list of every enumerated attribute in HTML, and any attribute *missing* from that list would silently reproduce this same bug. A per-attribute type keeps the knowledge where the rest of the spec knowledge already lives, and costs nothing at runtime.
+The fix is in the types rather than in the runtime deliberately. Translating `{true}` → `="true"` would mean the renderer carrying a list of every enumerated attribute in HTML, and any attribute _missing_ from that list would silently reproduce this same bug. A per-attribute type keeps the knowledge where the rest of the spec knowledge already lives, and costs nothing at runtime.
 
 One case the types can't reach: a signal-valued attribute (`draggable={sig}`) is opaque to the type system, so put the string in the signal — `signal('true')`, not `signal(true)`.
 
@@ -116,7 +116,7 @@ A third shape sits between the two: attributes where the **presence** carries th
 
 `capture` on `<input type="file">` is the same shape — bare means the default capture device, `"user"` / `"environment"` pick one. Both are typed `boolean | string`.
 
-The test that tells this shape apart from an enumerated attribute: ask what `{true}` and `{false}` each render, then what those markups *mean*. Here they mean three different things. For `draggable` they collapse onto the same `auto` state, which is why `boolean` is rejected there and accepted here.
+The test that tells this shape apart from an enumerated attribute: ask what `{true}` and `{false}` each render, then what those markups _mean_. Here they mean three different things. For `draggable` they collapse onto the same `auto` state, which is why `boolean` is rejected there and accepted here.
 
 Two attributes are absent for the same reason: **`<select value>` and `<textarea value>` don't exist in HTML.** A select's selection lives on its options (`<option value="b" selected>`), and a textarea's value is its child text (`<textarea>{draft}</textarea>`). Rendering a `value` attribute on either is inert markup the browser never reads, so the types don't offer it.
 
@@ -149,24 +149,24 @@ The screen exists so a stored-XSS payload reaching a `href={...}` interpolation 
 `SafeHtml` (i.e. `raw()`) values bypass the screen — that's the documented escape hatch:
 
 ```tsx
-import { raw } from 'kerfjs';
+import { raw } from "kerfjs";
 
 // Bookmarklet builder, sanitized-upstream input, etc.
-<a href={raw('javascript:doStuff()')}>bookmarklet</a>
+<a href={raw("javascript:doStuff()")}>bookmarklet</a>;
 ```
 
 If you find yourself reaching for `raw()` on URLs that came from users, route them through a real sanitizer (DOMPurify, Linkify, etc.) first; `raw()` is "I take responsibility for this string", not "skip the safety net."
 
 ### 6.4.2 Attribute name validation
 
-Attribute *values* are escaped, but so are attribute *names* checked. The runtime validates every attribute name against a safe shape — a letter/underscore/colon followed by letters, digits, or `_ . : -` (which covers `class`, `data-id`, `aria-label`, `xlink:href`, `stroke-width`, `viewBox`, …). A name outside that shape **throws**:
+Attribute _values_ are escaped, but so are attribute _names_ checked. The runtime validates every attribute name against a safe shape — a letter/underscore/colon followed by letters, digits, or `_ . : -` (which covers `class`, `data-id`, `aria-label`, `xlink:href`, `stroke-width`, `viewBox`, …). A name outside that shape **throws**:
 
 ```tsx
-const attrs = JSON.parse(untrustedConfig);   // attacker controls the KEYS
-<div {...attrs}>…</div>                       // a key like 'x><img onerror=…>' throws, not injects
+const attrs = JSON.parse(untrustedConfig); // attacker controls the KEYS
+<div {...attrs}>…</div>; // a key like 'x><img onerror=…>' throws, not injects
 ```
 
-This matters when you **spread an object with untrusted keys** into JSX (`<div {...obj}>`). Without the check, a malicious key could carry the `>`, `=`, quotes, or whitespace needed to break out of the open tag and inject markup — the attribute *value* being escaped doesn't help if the *name* is the payload. Validate keys before spreading if they come from user data.
+This matters when you **spread an object with untrusted keys** into JSX (`<div {...obj}>`). Without the check, a malicious key could carry the `>`, `=`, quotes, or whitespace needed to break out of the open tag and inject markup — the attribute _value_ being escaped doesn't help if the _name_ is the payload. Validate keys before spreading if they come from user data.
 
 Inline event-handler attributes are also rejected — any `on*` name, whether the value is a function or a string, in any case:
 
@@ -182,24 +182,26 @@ Both name checks apply to **every** attribute path, not just static string value
 
 ### 6.4.3 HTML-bearing attributes (`srcdoc`) are not URLs
 
-The dangerous-URL filter (§6.4.1) only covers attributes whose value is a **URL**. A few attributes instead hold **HTML that a browser re-parses as a document** — most notably `<iframe srcdoc>`. kerf escapes the *attribute value* correctly (so it's well-formed markup, not a way to break out of the tag), but the iframe then decodes that value once and runs it as a document, so `srcdoc={userString}` executes attacker `<script>` even though the value was "escaped":
+The dangerous-URL filter (§6.4.1) only covers attributes whose value is a **URL**. A few attributes instead hold **HTML that a browser re-parses as a document** — most notably `<iframe srcdoc>`. kerf escapes the _attribute value_ correctly (so it's well-formed markup, not a way to break out of the tag), but the iframe then decodes that value once and runs it as a document, so `srcdoc={userString}` executes attacker `<script>` even though the value was "escaped":
 
 ```tsx
-<iframe srcdoc={userHtml} />   // ⚠️ userHtml is parsed as a document — like innerHTML, not like text
+<iframe srcdoc={userHtml} /> // ⚠️ userHtml is parsed as a document — like innerHTML, not like text
 ```
 
-This is by design (it's what `srcdoc` is *for*), the same footgun as React's `srcDoc`. kerf does **not** reject `srcdoc` — trusted, app-generated `srcdoc` is a legitimate sandboxing pattern — so treat it like [`raw()`](8-api-reference.md): pass only markup you trust, and sanitize any user-supplied HTML upstream (DOMPurify) before it reaches `srcdoc`.
+This is by design (it's what `srcdoc` is _for_), the same footgun as React's `srcDoc`. kerf does **not** reject `srcdoc` — trusted, app-generated `srcdoc` is a legitimate sandboxing pattern — so treat it like [`raw()`](8-api-reference.md): pass only markup you trust, and sanitize any user-supplied HTML upstream (DOMPurify) before it reaches `srcdoc`.
 
 ## 6.5 Children
 
 ```tsx
 <div>
   Static text
-  {dynamicString}        {/* HTML-escaped */}
-  {42}                   {/* number, no escaping */}
-  {someSafeHtml}         {/* injected raw — already escaped by the producer */}
-  {[item1, item2]}       {/* arrays joined */}
-  {null}{undefined}{false}  {/* nothing rendered */}
+  {dynamicString} {/* HTML-escaped */}
+  {42} {/* number, no escaping */}
+  {someSafeHtml} {/* injected raw — already escaped by the producer */}
+  {[item1, item2]} {/* arrays joined */}
+  {null}
+  {undefined}
+  {false} {/* nothing rendered */}
 </div>
 ```
 
@@ -246,7 +248,7 @@ Renders without a wrapper tag. Just concatenates its children's strings.
 `Fragment` is also re-exported from the main `kerfjs` barrel — handy when you want to write `<Fragment>...</Fragment>` explicitly (rather than the `<>...</>` shorthand) or when a tool you're integrating with expects to receive the symbol by name:
 
 ```tsx
-import { Fragment } from 'kerfjs';
+import { Fragment } from "kerfjs";
 
 function MyList() {
   return (
@@ -263,7 +265,10 @@ function MyList() {
 A function component is a function that takes props and returns `SafeHtml`:
 
 ```tsx
-interface ButtonProps { label: string; action: string }
+interface ButtonProps {
+  label: string;
+  action: string;
+}
 
 function ActionButton({ label, action }: ButtonProps) {
   return <button data-action={action}>{label}</button>;
@@ -282,7 +287,7 @@ The JSX transform invokes the function with the props it gathered; the function 
 If you want stateful behavior, the state lives in signals/stores OUTSIDE the component, and the component reads them:
 
 ```tsx
-import { signal } from 'kerfjs';
+import { signal } from "kerfjs";
 const count = signal(0);
 
 function Counter() {
@@ -301,9 +306,9 @@ To ship reusable components as npm packages — including the per-instance-state
 For a full document, `renderDocument(node)` prepends the doctype so routes don't reinvent `"<!DOCTYPE html>" + page.toString()`:
 
 ```tsx
-import { renderDocument } from 'kerfjs';
+import { renderDocument } from "kerfjs";
 
-app.get('/', (c) => c.html(renderDocument(<Page />))); // "<!DOCTYPE html><html>…"
+app.get("/", (c) => c.html(renderDocument(<Page />))); // "<!DOCTYPE html><html>…"
 ```
 
 It takes a `SafeHtml` (JSX or the `html` tagged template) or a raw string, and an optional `{ doctype }` (default `'html'`). See [`docs/8-api-reference.md`](8-api-reference.md) §8.3.
@@ -312,19 +317,19 @@ It takes a `SafeHtml` (JSX or the `html` tagged template) or a raw string, and a
 
 The JSX transform looks at `JSX.IntrinsicElements` in `kerfjs/jsx-runtime` to type-check tags and attributes. The table covers roughly 100 HTML elements (the full sectioning / text / embedded / forms / tables / metadata / interactive sets) and the SVG primitives that `toElement()` supports. Misspelled tags (`<diiv>`) and misspelled attribute names (`<input typo />`) fail to compile.
 
-**Where the types come from.** Names, value sets, and per-element membership are taken from the WHATWG HTML Living Standard and SVG 2, with MDN as a readable index into them — not from another framework's table. That distinction is load-bearing: other tables describe a *property* surface (`HTMLElement.draggable: boolean`), while kerf emits *content attributes* into an HTML string, and the two disagree in exactly the places that cause silent bugs (see [§6.4](#64-boolean-attributes) on enumerated attributes). Coverage is focused rather than exhaustive — a missing attribute is a gap to fill, not a verdict that it's invalid; add it via declaration merging until it lands upstream. The handful of deliberate departures from the spec — lowercase aliases alongside the camelCase forms, `contentEditable="inherit"`, the obsolete presentational attributes kept as `@deprecated` — are enumerated with their reasons in `src/jsx-types.ts`'s header comment.
+**Where the types come from.** Names, value sets, and per-element membership are taken from the WHATWG HTML Living Standard and SVG 2, with MDN as a readable index into them — not from another framework's table. That distinction is load-bearing: other tables describe a _property_ surface (`HTMLElement.draggable: boolean`), while kerf emits _content attributes_ into an HTML string, and the two disagree in exactly the places that cause silent bugs (see [§6.4](#64-boolean-attributes) on enumerated attributes). Coverage is focused rather than exhaustive — a missing attribute is a gap to fill, not a verdict that it's invalid; add it via declaration merging until it lands upstream. The handful of deliberate departures from the spec — lowercase aliases alongside the camelCase forms, `contentEditable="inherit"`, the obsolete presentational attributes kept as `@deprecated` — are enumerated with their reasons in `src/jsx-types.ts`'s header comment.
 
 ### Adding custom elements / web components
 
 The framework uses **module augmentation**, not a global namespace. Open the `kerfjs/jsx-runtime` JSX namespace and add your tag:
 
 ```ts
-import type { KerfCustomElement } from 'kerfjs/jsx-runtime';
+import type { KerfCustomElement } from "kerfjs/jsx-runtime";
 
-declare module 'kerfjs/jsx-runtime' {
+declare module "kerfjs/jsx-runtime" {
   namespace JSX {
     interface IntrinsicElements {
-      'my-element': KerfCustomElement & {
+      "my-element": KerfCustomElement & {
         foo?: string;
         bar?: number;
       };
@@ -337,13 +342,13 @@ declare module 'kerfjs/jsx-runtime' {
 
 `KerfCustomElement` is a permissive base that extends `KerfBaseAttrs` and admits any extra attribute. Tighten it for your project by listing the attributes explicitly. The building-block types are all re-exported from `kerfjs/jsx-runtime`:
 
-| Type | Purpose |
-| --- | --- |
-| `KerfBaseAttrs` | Common attributes valid on every HTML element (`id`, `className`, `style`, `data-*`, `aria-*`, …) |
-| `KerfCustomElement` | `KerfBaseAttrs` plus an open index signature — for unknown / loose web components |
-| `AttrLike<T>` | An attribute value typed as `T` plus the runtime fall-throughs (`SafeHtml`, `null`, `undefined`) |
-| `AttrValue` | The most permissive single value: `string \| number \| boolean \| null \| undefined \| SafeHtml` |
-| `DataAriaAttrs` | `data-*` and `aria-*` index signatures, applied via `KerfBaseAttrs` |
+| Type                | Purpose                                                                                           |
+| ------------------- | ------------------------------------------------------------------------------------------------- |
+| `KerfBaseAttrs`     | Common attributes valid on every HTML element (`id`, `className`, `style`, `data-*`, `aria-*`, …) |
+| `KerfCustomElement` | `KerfBaseAttrs` plus an open index signature — for unknown / loose web components                 |
+| `AttrLike<T>`       | An attribute value typed as `T` plus the runtime fall-throughs (`SafeHtml`, `null`, `undefined`)  |
+| `AttrValue`         | The most permissive single value: `string \| number \| boolean \| null \| undefined \| SafeHtml`  |
+| `DataAriaAttrs`     | `data-*` and `aria-*` index signatures, applied via `KerfBaseAttrs`                               |
 
 ### Worked example: a Lit-style custom element
 
@@ -351,13 +356,13 @@ Suppose your app uses a third-party `<x-toast>` web component from `@example/toa
 
 ```ts
 // types/x-toast.d.ts (or anywhere the TypeScript project sees)
-import type { AttrLike, KerfCustomElement } from 'kerfjs/jsx-runtime';
+import type { AttrLike, KerfCustomElement } from "kerfjs/jsx-runtime";
 
-declare module 'kerfjs/jsx-runtime' {
+declare module "kerfjs/jsx-runtime" {
   namespace JSX {
     interface IntrinsicElements {
-      'x-toast': KerfCustomElement & {
-        variant?: AttrLike<'info' | 'success' | 'warning' | 'error'>;
+      "x-toast": KerfCustomElement & {
+        variant?: AttrLike<"info" | "success" | "warning" | "error">;
         dismissible?: AttrLike<boolean>;
         duration?: AttrLike<number>;
       };
@@ -369,15 +374,17 @@ declare module 'kerfjs/jsx-runtime' {
 Then in any JSX file:
 
 ```tsx
-import { mount, signal } from 'kerfjs';
+import { mount, signal } from "kerfjs";
 
 const visible = signal(true);
 
-mount(rootEl, () => visible.value ? (
-  <x-toast variant="success" duration={3000} dismissible>
-    Saved.
-  </x-toast>
-) : null);
+mount(rootEl, () =>
+  visible.value ? (
+    <x-toast variant="success" duration={3000} dismissible>
+      Saved.
+    </x-toast>
+  ) : null,
+);
 
 // Type errors fire on misuse:
 // <x-toast variant="rainbow" />     // error: not assignable to 'info' | 'success' | …
@@ -399,20 +406,25 @@ For Stencil / Lit / Solid-js custom-element libraries, repeat the pattern once p
 JSX needs a transform. If your project has none — a CDN / importmap page, a `<script type="module">` island, a quick prototype — author with the `html` tagged template instead. It lives at its own subpath so JSX-only apps don't ship a byte of it:
 
 ```js
-import { html } from 'kerfjs/html';
+import { html } from "kerfjs/html";
 
-const cls = signal('idle');
+const cls = signal("idle");
 const count = signal(0);
 
-mount(rootEl, () => html`
-  <div class="${cls}">Count: ${count}</div>
-  <ul>${each(items.value, (i) => html`<li id="${i.id}">${i.label}</li>`)}</ul>
-`);
+mount(
+  rootEl,
+  () => html`
+    <div class="${cls}">Count: ${count}</div>
+    <ul>
+      ${each(items.value, (i) => html`<li id="${i.id}">${i.label}</li>`)}
+    </ul>
+  `,
+);
 ```
 
 `html` returns the same `SafeHtml` JSX produces, and every hole runs through the **same runtime code paths** as the equivalent JSX — not a lookalike reimplementation:
 
-- **Text/child holes** follow §6.5 exactly: strings are HTML-escaped, numbers stringify, `null` / `undefined` / booleans render nothing, arrays join, `SafeHtml` (nested `html\`\``, `raw()`, and `each()` list segments) passes through — so a list hole is owned by the keyed reconciler just like in JSX. A signal/`computed` handed in *itself* binds fine-grained (see §8.5 of the API reference and `2-reactivity.md` §2.9); DOM nodes and other unsupported types throw the same errors.
+- **Text/child holes** follow §6.5 exactly: strings are HTML-escaped, numbers stringify, `null` / `undefined` / booleans render nothing, arrays join, `SafeHtml` (nested `html\`\``, `raw()`, and `each()` list segments) passes through — so a list hole is owned by the keyed reconciler just like in JSX. A signal/`computed`handed in *itself* binds fine-grained (see §8.5 of the API reference and`2-reactivity.md` §2.9); DOM nodes and other unsupported types throw the same errors.
 - **Attribute holes** follow §6.4 exactly: `true` renders the bare attribute, `false` / nullish omit it, `SafeHtml` values bypass the URL screen, plain strings are escaped and screened for dangerous URL schemes (§6.4.1), `on*` attributes and malformed names are rejected (§6.4.2), and a signal/`computed` binds the attribute fine-grained.
 
 Two authoring differences from JSX:
@@ -421,14 +433,14 @@ Two authoring differences from JSX:
 2. **The hole contract.** A `${…}` hole is allowed in exactly two positions: a text/child position, or as the **complete** value of an attribute — `attr=${v}`, `attr="${v}"`, or `attr='${v}'`. Everything else throws with a descriptive error at template evaluation:
 
 ```js
-html`<${tag}>…`                 // ✗ tag-name hole — write tag names statically
-html`<div ${name}="x">…`        // ✗ attribute-name hole — write names statically
-html`<div class="a ${b}">…`     // ✗ partial value — build the full string first,
-                                //   or bind computed(() => `a ${b.value}`)
-html`<!-- ${note} -->`          // ✗ hole inside a comment
+html`<${tag}>…</${tag}>`; // ✗ tag-name hole — write tag names statically
+html`<div ${name}="x">…</div>`; // ✗ attribute-name hole — write names statically
+html`<div class="a ${b}">…</div>`; // ✗ partial value — build the full string first,
+//   or bind computed(() => `a ${b.value}`)
+html`<!-- ${note} -->`; // ✗ hole inside a comment
 ```
 
-The static parts of the template are **author-written markup and pass through verbatim** — the same trust model as JSX tag and attribute names. Only hole *values* are escaped/screened; never splice untrusted text into the static side of a template.
+The static parts of the template are **author-written markup and pass through verbatim** — the same trust model as JSX tag and attribute names. Only hole _values_ are escaped/screened; never splice untrusted text into the static side of a template.
 
 Performance: the static strings are parsed once per call site (tagged-template string arrays have stable identity, so the parse is cached in a `WeakMap`) and each render is a chunk walk with string concatenation — the same cost shape as the JSX runtime. Server-side (`.toString()`, outside `mount()`) works like JSX too: signal holes snapshot their current value.
 
@@ -442,14 +454,19 @@ kerf is published to npm as `kerfjs`, so it is automatically mirrored by every n
 
 ```html
 <script type="module">
-  import { signal, mount, each } from 'https://esm.sh/kerfjs@4';
-  import { html } from 'https://esm.sh/kerfjs@4/html';
+  import { signal, mount, each } from "https://esm.sh/kerfjs@4";
+  import { html } from "https://esm.sh/kerfjs@4/html";
 
-  const items = signal([{ id: 1, label: 'no build step' }]);
+  const items = signal([{ id: 1, label: "no build step" }]);
 
-  mount(document.getElementById('app'), () => html`
-    <ul>${each(items.value, (i) => html`<li id="${i.id}">${i.label}</li>`)}</ul>
-  `);
+  mount(
+    document.getElementById("app"),
+    () => html`
+      <ul>
+        ${each(items.value, (i) => html`<li id="${i.id}">${i.label}</li>`)}
+      </ul>
+    `,
+  );
 </script>
 ```
 
@@ -457,24 +474,24 @@ kerf is published to npm as `kerfjs`, so it is automatically mirrored by every n
 
 ```html
 <script type="importmap">
-{
-  "imports": {
-    "kerfjs": "https://cdn.jsdelivr.net/npm/kerfjs@4/+esm",
-    "kerfjs/html": "https://cdn.jsdelivr.net/npm/kerfjs@4/html/+esm",
-    "kerfjs/array-signal": "https://cdn.jsdelivr.net/npm/kerfjs@4/array-signal/+esm",
-    "@preact/signals-core": "https://cdn.jsdelivr.net/npm/@preact/signals-core@1/+esm"
+  {
+    "imports": {
+      "kerfjs": "https://cdn.jsdelivr.net/npm/kerfjs@4/+esm",
+      "kerfjs/html": "https://cdn.jsdelivr.net/npm/kerfjs@4/html/+esm",
+      "kerfjs/array-signal": "https://cdn.jsdelivr.net/npm/kerfjs@4/array-signal/+esm",
+      "@preact/signals-core": "https://cdn.jsdelivr.net/npm/@preact/signals-core@1/+esm"
+    }
   }
-}
 </script>
 <script type="module">
-  import { signal, mount, each } from 'kerfjs';
-  import { html } from 'kerfjs/html';
+  import { signal, mount, each } from "kerfjs";
+  import { html } from "kerfjs/html";
   // …app as above; bare specifiers now resolve through the map
 </script>
 ```
 
 Every subpath is available the same way — `kerfjs/jsx-runtime`, `kerfjs/dev`, `kerfjs/testing`. Add a map entry only for the ones you actually import.
 
-**The trap to avoid: a raw file path.** `https://cdn.jsdelivr.net/npm/kerfjs@4/dist/index.js` (or the unpkg equivalent *without* `?module`) serves the file byte-for-byte — so the bare `@preact/signals-core` import inside it reaches the browser unrewritten and the module fails to load. Use `+esm` / `?module` / esm.sh, or map the specifier in an importmap; don't link the raw `dist/*.js` path directly.
+**The trap to avoid: a raw file path.** `https://cdn.jsdelivr.net/npm/kerfjs@4/dist/index.js` (or the unpkg equivalent _without_ `?module`) serves the file byte-for-byte — so the bare `@preact/signals-core` import inside it reaches the browser unrewritten and the module fails to load. Use `+esm` / `?module` / esm.sh, or map the specifier in an importmap; don't link the raw `dist/*.js` path directly.
 
 **Pin the version.** The examples pin to a major (`kerfjs@4`), which resolves to the latest `4.x` — you get minor/patch fixes automatically and only revisit the URL at a major bump. An unpinned `https://esm.sh/kerfjs` instead floats on `latest` and will silently jump across a major on the next release — fine for a scratch prototype, wrong for anything you ship. For maximum reproducibility pin an exact version (`kerfjs@4.1.0`), or vendor `dist/` yourself the way the [live-poll example](15-no-build-example.md) does, which removes the CDN from your runtime critical path entirely.

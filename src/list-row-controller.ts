@@ -1,7 +1,7 @@
 import type { ArrayPatch } from './array-signal.js';
-import type { BindListOptions,ListKey,RowElement } from './list.js';
-import { captureFocus,restoreFocus } from './list-reconcile-focus.js';
-import { mount,type MountResult } from './mount.js';
+import type { BindListOptions, ListKey, RowElement } from './list.js';
+import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
+import { mount, type MountResult } from './mount.js';
 import { moveNode } from './utils/moveNode.js';
 
 interface ListRow<T> {
@@ -27,28 +27,38 @@ interface ListRowControllerOptions<T> {
   endAnchor: () => Node | null;
 }
 
-const NOOP = (): void => { /* element-mode rows with no caller teardown */ };
+const NOOP = (): void => {
+  /* element-mode rows with no caller teardown */
+};
 
 /** Own the keyed row map, DOM order, row lifecycles, and both reconcile paths. */
 export function createListRowController<T>(
   options: ListRowControllerOptions<T>,
 ): ListRowController<T> {
-  const { container,key,render,tag,endAnchor } = options;
-  const rows = new Map<ListKey,ListRow<T>>();
+  const { container, key, render, tag, endAnchor } = options;
+  const rows = new Map<ListKey, ListRow<T>>();
   const order: Array<ListRow<T>> = [];
 
   const asElementRow = (
     rendered: MountResult | RowElement<T>,
-  ): { el: HTMLElement; dispose: () => void; update?: (item: T) => void } | null => {
-    if (rendered instanceof HTMLElement) return { el: rendered,dispose: NOOP };
+  ): {
+    el: HTMLElement;
+    dispose: () => void;
+    update?: (item: T) => void;
+  } | null => {
+    if (rendered instanceof HTMLElement) return { el: rendered, dispose: NOOP };
     if (
-      rendered !== null
-      && typeof rendered === 'object'
-      && 'el' in rendered
-      && (rendered as { el: unknown }).el instanceof HTMLElement
+      rendered !== null &&
+      typeof rendered === 'object' &&
+      'el' in rendered &&
+      (rendered as { el: unknown }).el instanceof HTMLElement
     ) {
-      const row = rendered as { el: HTMLElement; update?: (item: T) => void; dispose?: () => void };
-      return { el: row.el,dispose: row.dispose ?? NOOP,update: row.update };
+      const row = rendered as {
+        el: HTMLElement;
+        update?: (item: T) => void;
+        dispose?: () => void;
+      };
+      return { el: row.el, dispose: row.dispose ?? NOOP, update: row.update };
     }
     return null;
   };
@@ -65,14 +75,14 @@ export function createListRowController<T>(
       };
     }
     const el = document.createElement(tag);
-    const dispose = mount(el,() => render(item) as MountResult);
-    return { el,item,dispose,elementMode: false };
+    const dispose = mount(el, () => render(item) as MountResult);
+    return { el, item, dispose, elementMode: false };
   };
 
   // The single item-replacement contract used by snapshot and granular paths.
   // Element-mode rows keep their caller-owned element and are re-keyed; content
   // rows replace their mount. DOM placement remains the caller's responsibility.
-  const reconcileItem = (row: ListRow<T>,item: T): ListRow<T> => {
+  const reconcileItem = (row: ListRow<T>, item: T): ListRow<T> => {
     if (row.item === item) return row;
     const oldKey = key(row.item);
     const newKey = key(item);
@@ -80,7 +90,7 @@ export function createListRowController<T>(
       row.item = item;
       if (newKey !== oldKey) {
         rows.delete(oldKey);
-        rows.set(newKey,row);
+        rows.set(newKey, row);
       }
       row.update?.(item);
       return row;
@@ -89,7 +99,7 @@ export function createListRowController<T>(
     row.el.remove();
     rows.delete(oldKey);
     const fresh = makeRow(item);
-    rows.set(newKey,fresh);
+    rows.set(newKey, fresh);
     return fresh;
   };
 
@@ -107,7 +117,7 @@ export function createListRowController<T>(
       const wanted = new Set<ListKey>();
       for (const item of visible) wanted.add(key(item));
 
-      for (const [rowKey,row] of rows) {
+      for (const [rowKey, row] of rows) {
         if (!wanted.has(rowKey)) {
           row.dispose();
           row.el.remove();
@@ -119,15 +129,19 @@ export function createListRowController<T>(
       for (const item of visible) {
         const rowKey = key(item);
         const existing = rows.get(rowKey);
-        const row = existing === undefined ? makeRow(item) : reconcileItem(existing,item);
-        if (existing === undefined) rows.set(rowKey,row);
+        const row =
+          existing === undefined
+            ? makeRow(item)
+            : reconcileItem(existing, item);
+        if (existing === undefined) rows.set(rowKey, row);
         order.push(row);
       }
 
       let ref: Node | null = endAnchor();
       for (let index = order.length - 1; index >= 0; index--) {
         const el = order[index].el;
-        if (el.parentNode !== container || el.nextSibling !== ref) moveNode(container,el,ref);
+        if (el.parentNode !== container || el.nextSibling !== ref)
+          moveNode(container, el, ref);
         ref = el;
       }
     });
@@ -138,24 +152,30 @@ export function createListRowController<T>(
       for (const patch of patches) {
         if (patch.type === 'insert') {
           const row = makeRow(patch.item);
-          rows.set(key(patch.item),row);
-          order.splice(patch.index,0,row);
-          container.insertBefore(row.el,order[patch.index + 1]?.el ?? endAnchor());
+          rows.set(key(patch.item), row);
+          order.splice(patch.index, 0, row);
+          container.insertBefore(
+            row.el,
+            order[patch.index + 1]?.el ?? endAnchor(),
+          );
         } else if (patch.type === 'remove') {
-          const [row] = order.splice(patch.index,1);
+          const [row] = order.splice(patch.index, 1);
           row.dispose();
           row.el.remove();
           rows.delete(key(row.item));
         } else if (patch.type === 'move') {
-          const [row] = order.splice(patch.from,1);
-          order.splice(patch.to,0,row);
-          moveNode(container,row.el,order[patch.to + 1]?.el ?? endAnchor());
+          const [row] = order.splice(patch.from, 1);
+          order.splice(patch.to, 0, row);
+          moveNode(container, row.el, order[patch.to + 1]?.el ?? endAnchor());
         } else if (patch.type === 'update') {
           const current = order[patch.index];
-          const row = reconcileItem(current,patch.item);
+          const row = reconcileItem(current, patch.item);
           if (row !== current) {
             order[patch.index] = row;
-            container.insertBefore(row.el,order[patch.index + 1]?.el ?? endAnchor());
+            container.insertBefore(
+              row.el,
+              order[patch.index + 1]?.el ?? endAnchor(),
+            );
           }
         }
       }
@@ -171,5 +191,5 @@ export function createListRowController<T>(
     order.length = 0;
   };
 
-  return { order,sync,applyPatches,dispose };
+  return { order, sync, applyPatches, dispose };
 }

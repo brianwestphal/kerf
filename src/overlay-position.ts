@@ -28,7 +28,11 @@ export interface AnchorPositionOptions {
  * `popover()`'s placement core, usable on any element (an inline hint, a tooltip) —
  * no overlay lifecycle. Pair with {@link autoReposition} to keep it glued while open.
  */
-export function positionAnchored(el: HTMLElement, anchor: Element, options: AnchorPositionOptions = {}): void {
+export function positionAnchored(
+  el: HTMLElement,
+  anchor: Element,
+  options: AnchorPositionOptions = {},
+): void {
   const { placement = 'bottom', align = 'start', gap = 4 } = options;
   // Fix `el` FIRST, then measure it. Measuring a still-`display:block` wrapper
   // reports the full body-content width (≈ viewport minus body margins), which
@@ -45,11 +49,18 @@ export function positionAnchored(el: HTMLElement, anchor: Element, options: Anch
   const belowTop = anchorRect.bottom + gap;
   const aboveTop = anchorRect.top - gap - elementRect.height;
   let below = placement !== 'top';
-  if (below && belowTop + elementRect.height > viewportHeight && aboveTop >= 0) below = false;
-  else if (!below && aboveTop < 0 && belowTop + elementRect.height <= viewportHeight) below = true;
+  if (below && belowTop + elementRect.height > viewportHeight && aboveTop >= 0)
+    below = false;
+  else if (
+    !below &&
+    aboveTop < 0 &&
+    belowTop + elementRect.height <= viewportHeight
+  )
+    below = true;
 
   // Horizontal: align to an anchor edge, then clamp into the viewport.
-  let left = align === 'end' ? anchorRect.right - elementRect.width : anchorRect.left;
+  let left =
+    align === 'end' ? anchorRect.right - elementRect.width : anchorRect.left;
   left = Math.max(0, Math.min(left, viewportWidth - elementRect.width));
 
   el.style.left = `${left}px`;
@@ -62,7 +73,11 @@ export function positionAnchored(el: HTMLElement, anchor: Element, options: Anch
  * (capture phase — catches scrolls in any inner container, not just `window`) and
  * `resize`. Returns a disposer that removes the listeners.
  */
-export function autoReposition(el: HTMLElement, anchor: Element, options: AnchorPositionOptions = {}): () => void {
+export function autoReposition(
+  el: HTMLElement,
+  anchor: Element,
+  options: AnchorPositionOptions = {},
+): () => void {
   const reposition = (): void => positionAnchored(el, anchor, options);
   reposition();
   window.addEventListener('scroll', reposition, true);

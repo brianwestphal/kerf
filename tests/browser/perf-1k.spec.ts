@@ -18,7 +18,9 @@ import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
-  await page.waitForFunction(() => (window as unknown as { kerfReady: boolean }).kerfReady === true);
+  await page.waitForFunction(
+    () => (window as unknown as { kerfReady: boolean }).kerfReady === true,
+  );
 });
 
 interface PerfResult {
@@ -30,22 +32,63 @@ interface PerfResult {
   rows: number;
 }
 
-test('1000-row keyed list — create / partial-update / select / swap / clear timings', async ({ page }, testInfo) => {
+test('1000-row keyed list — create / partial-update / select / swap / clear timings', async ({
+  page,
+}, testInfo) => {
   const result = await page.evaluate(() => {
     const { mount, signal, each } = (window as any).kerf;
     const { jsx } = (window as any).jsxRuntime;
     const root = document.getElementById('root')!;
 
-    interface Row { id: number; label: string }
+    interface Row {
+      id: number;
+      label: string;
+    }
     let nextId = 1;
-    const labels = ['pretty', 'large', 'big', 'small', 'tall', 'short', 'long', 'handsome', 'plain', 'quaint'];
-    const colors = ['red', 'yellow', 'blue', 'green', 'pink', 'brown', 'purple', 'brown', 'white', 'black'];
-    const nouns = ['table', 'chair', 'house', 'bbq', 'desk', 'car', 'pony', 'cookie', 'sandwich', 'burger'];
+    const labels = [
+      'pretty',
+      'large',
+      'big',
+      'small',
+      'tall',
+      'short',
+      'long',
+      'handsome',
+      'plain',
+      'quaint',
+    ];
+    const colors = [
+      'red',
+      'yellow',
+      'blue',
+      'green',
+      'pink',
+      'brown',
+      'purple',
+      'brown',
+      'white',
+      'black',
+    ];
+    const nouns = [
+      'table',
+      'chair',
+      'house',
+      'bbq',
+      'desk',
+      'car',
+      'pony',
+      'cookie',
+      'sandwich',
+      'burger',
+    ];
     const rng = () => Math.floor(Math.random() * 10);
     const buildRows = (count: number): Row[] => {
       const out: Row[] = new Array(count);
       for (let i = 0; i < count; i++) {
-        out[i] = { id: nextId++, label: `${labels[rng()]} ${colors[rng()]} ${nouns[rng()]}` };
+        out[i] = {
+          id: nextId++,
+          label: `${labels[rng()]} ${colors[rng()]} ${nouns[rng()]}`,
+        };
       }
       return out;
     };
@@ -64,7 +107,14 @@ test('1000-row keyed list — create / partial-update / select / swap / clear ti
                 className: r.id === selectedId.value ? 'danger' : '',
                 children: [
                   jsx('td', { className: 'col-md-1', children: r.id }),
-                  jsx('td', { className: 'col-md-4', children: jsx('a', { 'data-action': 'select', 'data-id': r.id, children: r.label }) }),
+                  jsx('td', {
+                    className: 'col-md-4',
+                    children: jsx('a', {
+                      'data-action': 'select',
+                      'data-id': r.id,
+                      children: r.label,
+                    }),
+                  }),
                 ],
               }),
             (r: Row) => (r.id === selectedId.value ? 1 : 0),
@@ -80,27 +130,44 @@ test('1000-row keyed list — create / partial-update / select / swap / clear ti
     };
 
     // create 1000 rows
-    const createMs = time(() => { rows.value = buildRows(1000); });
+    const createMs = time(() => {
+      rows.value = buildRows(1000);
+    });
 
     // partial-update — every 10th row's label
     const partialUpdateMs = time(() => {
-      rows.value = (rows.value as Row[]).map((r: Row, i: number) => i % 10 === 0 ? { ...r, label: r.label + '!!!' } : r);
+      rows.value = (rows.value as Row[]).map((r: Row, i: number) =>
+        i % 10 === 0 ? { ...r, label: r.label + '!!!' } : r,
+      );
     });
 
     // select row 500 (toggles className via the cacheKey pattern)
-    const selectRowMs = time(() => { selectedId.value = (rows.value as Row[])[500].id; });
+    const selectRowMs = time(() => {
+      selectedId.value = (rows.value as Row[])[500].id;
+    });
 
     // swap rows 1 and 998
     const swapRowsMs = time(() => {
       const next = [...(rows.value as Row[])];
-      const t = next[1]; next[1] = next[998]; next[998] = t;
+      const t = next[1];
+      next[1] = next[998];
+      next[998] = t;
       rows.value = next;
     });
 
     // clear
-    const clearMs = time(() => { rows.value = []; });
+    const clearMs = time(() => {
+      rows.value = [];
+    });
 
-    return { createMs, partialUpdateMs, selectRowMs, swapRowsMs, clearMs, rows: 1000 } as PerfResult;
+    return {
+      createMs,
+      partialUpdateMs,
+      selectRowMs,
+      swapRowsMs,
+      clearMs,
+      rows: 1000,
+    } as PerfResult;
   });
 
   // Generous bounds (Playwright + happy-dom-like environment timing is noisy).

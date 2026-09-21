@@ -13,14 +13,27 @@
  * If any gate fails, the warn is silent.
  */
 
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
 import { delegate, delegateCapture } from '../../src/delegate.js';
 import { _resetWarnedForTests } from '../../src/dev-delegate-warn.js';
 import { effect } from '../../src/reactive.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
-const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+const env = (
+  globalThis as { process: { env: Record<string, string | undefined> } }
+).process.env;
 
 let root: HTMLElement;
 let warnSpy: MockInstance<typeof console.warn>;
@@ -45,9 +58,13 @@ describe('dev-delegate-warn (KF-238, opt-in)', () => {
       delegate(root, 'click', '.x', () => {});
     });
     expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0][0]).toMatch(/delegate\(\) was called inside an effect\(\) body/);
+    expect(warnSpy.mock.calls[0][0]).toMatch(
+      /delegate\(\) was called inside an effect\(\) body/,
+    );
     expect(warnSpy.mock.calls[0][0]).toMatch(/listener count grows linearly/);
-    expect(warnSpy.mock.calls[0][0]).toMatch(/KERF_DEV_WARN_DELEGATE_IN_EFFECT=0/);
+    expect(warnSpy.mock.calls[0][0]).toMatch(
+      /KERF_DEV_WARN_DELEGATE_IN_EFFECT=0/,
+    );
     stop();
   });
 
@@ -56,7 +73,9 @@ describe('dev-delegate-warn (KF-238, opt-in)', () => {
       delegateCapture(root, 'blur', '.x', () => {});
     });
     expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0][0]).toMatch(/delegateCapture\(\) was called inside an effect\(\) body/);
+    expect(warnSpy.mock.calls[0][0]).toMatch(
+      /delegateCapture\(\) was called inside an effect\(\) body/,
+    );
     stop();
   });
 

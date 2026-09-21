@@ -29,8 +29,26 @@ interface Row {
 
 // Deterministic data (no Math.random) so the demo, its capture, and the browser
 // smoke test are stable across runs.
-const ADJ = ['crimson', 'azure', 'golden', 'silent', 'rapid', 'hidden', 'ancient', 'gentle'];
-const NOUN = ['falcon', 'harbor', 'meadow', 'cipher', 'lantern', 'quartz', 'willow', 'ember'];
+const ADJ = [
+  'crimson',
+  'azure',
+  'golden',
+  'silent',
+  'rapid',
+  'hidden',
+  'ancient',
+  'gentle',
+];
+const NOUN = [
+  'falcon',
+  'harbor',
+  'meadow',
+  'cipher',
+  'lantern',
+  'quartz',
+  'willow',
+  'ember',
+];
 const all = signal<Row[]>(
   Array.from({ length: 10000 }, (_, i) => ({
     id: i,
@@ -49,7 +67,8 @@ const filtered = computed<readonly Row[]>(() => {
 // The header count is a one-shot mount with a bound text hole — it updates when
 // the filter changes without touching the list.
 const countText = computed(
-  () => `${filtered.value.length.toLocaleString()} of ${all.value.length.toLocaleString()} rows`,
+  () =>
+    `${filtered.value.length.toLocaleString()} of ${all.value.length.toLocaleString()} rows`,
 );
 mount(document.getElementById('count')!, () => <span>{countText}</span>);
 
@@ -62,7 +81,9 @@ const list = bindList(listEl, filtered, {
     <div class="vl-row" style="height:36px">
       <span class="vl-name">{r.name}</span>
       <span class="vl-size">{r.size} KB</span>
-      <button type="button" class="vl-del" data-del={String(r.id)}>Delete</button>
+      <button type="button" class="vl-del" data-del={String(r.id)}>
+        Delete
+      </button>
     </div>
   ),
   virtualize: { rowHeight: 36, overscan: 4 },
@@ -74,10 +95,16 @@ const list = bindList(listEl, filtered, {
 // 10,000 rows and this number never climbs past a screenful.
 const domCount = signal(0);
 const sizer = list.container ?? listEl;
-const recount = (): void => { domCount.value = sizer.querySelectorAll('.vl-row').length; };
+const recount = (): void => {
+  domCount.value = sizer.querySelectorAll('.vl-row').length;
+};
 new MutationObserver(recount).observe(sizer, { childList: true });
 recount();
-mount(document.getElementById('dom')!, () => <span><b>{domCount}</b> in the DOM</span>);
+mount(document.getElementById('dom')!, () => (
+  <span>
+    <b>{domCount}</b> in the DOM
+  </span>
+));
 
 // One delegated `input` listener drives the query signal; the debouncedSignal +
 // computed do the rest — the filter recomputes only after typing settles.
@@ -91,7 +118,10 @@ delegate(listEl, 'click', '[data-del]', (_event, el) => {
   const id = Number(el.getAttribute('data-del'));
   const row = all.value.find((r) => r.id === id);
   if (row === undefined) return;
-  void confirm(`Delete “${row.name}”?`, { danger: true, okText: 'Delete' }).then((ok) => {
+  void confirm(`Delete “${row.name}”?`, {
+    danger: true,
+    okText: 'Delete',
+  }).then((ok) => {
     if (!ok) return;
     all.value = all.value.filter((r) => r.id !== id);
     toast(`Deleted ${row.name}`, { variant: 'success' });

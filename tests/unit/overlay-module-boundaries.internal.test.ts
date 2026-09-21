@@ -4,14 +4,21 @@ import { cwd } from 'node:process';
 
 import { describe, expect, it } from 'vitest';
 
-import { choice as publicChoice, confirm as publicConfirm, form as publicForm, overlay as publicOverlay, prompt as publicPrompt } from '../../src/overlay.js';
+import {
+  choice as publicChoice,
+  confirm as publicConfirm,
+  form as publicForm,
+  overlay as publicOverlay,
+  prompt as publicPrompt,
+} from '../../src/overlay.js';
 import { choice } from '../../src/overlay-choice.js';
 import { confirm } from '../../src/overlay-confirm.js';
 import { overlay } from '../../src/overlay-core.js';
 import { form } from '../../src/overlay-form.js';
 import { prompt } from '../../src/overlay-prompt.js';
 
-const source = (file: string): string => readFileSync(resolve(cwd(), 'src', file), 'utf8');
+const source = (file: string): string =>
+  readFileSync(resolve(cwd(), 'src', file), 'utf8');
 
 describe('overlay module boundaries', () => {
   it('the public composition entry preserves the implementation exports', () => {

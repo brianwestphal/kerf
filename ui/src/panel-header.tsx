@@ -36,14 +36,53 @@ export interface PanelHeaderProps {
  * is passed straight into the toolbar's trailing zone; the app supplies whatever
  * trailing controls it needs (typically a `ToolbarControlGroup`).
  */
-export function PanelHeader({ title, titleId, summary, summaryId, icon, iconClassName = '', actions, headingLevel, placeholder = false }: PanelHeaderProps) {
-  const identity = <>
-    {icon && <ToolbarControlGroup single className={`kui-panel-header__icon ${iconClassName}`.trim()}>{icon}</ToolbarControlGroup>}
-    <ToolbarText text={title} size="xlarge" id={titleId} className="kui-panel-header__title" headingLevel={headingLevel} placeholder={placeholder} />
-  </>;
+export function PanelHeader({
+  title,
+  titleId,
+  summary,
+  summaryId,
+  icon,
+  iconClassName = '',
+  actions,
+  headingLevel,
+  placeholder = false,
+}: PanelHeaderProps) {
+  const identity = (
+    <>
+      {icon && (
+        <ToolbarControlGroup
+          single
+          className={`kui-panel-header__icon ${iconClassName}`.trim()}
+        >
+          {icon}
+        </ToolbarControlGroup>
+      )}
+      <ToolbarText
+        text={title}
+        size="xlarge"
+        id={titleId}
+        className="kui-panel-header__title"
+        headingLevel={headingLevel}
+        placeholder={placeholder}
+      />
+    </>
+  );
 
-  return <div class="kui-panel-header" data-component="panel-header" data-has-icon={String(Boolean(icon))} data-has-actions={String(Boolean(actions))} data-has-summary={String(Boolean(summary))} data-placeholder={placeholder ? 'true' : undefined}>
-    <Toolbar leading={identity} trailing={actions} divider={false} />
-    {summary && <p class="kui-panel-header__summary" id={summaryId}>{placeholder ? <Skeleton width="18em" /> : summary}</p>}
-  </div>;
+  return (
+    <div
+      class="kui-panel-header"
+      data-component="panel-header"
+      data-has-icon={String(Boolean(icon))}
+      data-has-actions={String(Boolean(actions))}
+      data-has-summary={String(Boolean(summary))}
+      data-placeholder={placeholder ? 'true' : undefined}
+    >
+      <Toolbar leading={identity} trailing={actions} divider={false} />
+      {summary && (
+        <p class="kui-panel-header__summary" id={summaryId}>
+          {placeholder ? <Skeleton width="18em" /> : summary}
+        </p>
+      )}
+    </div>
+  );
 }

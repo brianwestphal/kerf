@@ -9,30 +9,30 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 
 ## 1. Bundle delta
 
-| | Min + gz, runtime only |
-| --- | --- |
-| `vue` 3.x (runtime, no compiler) | ~22 KB |
-| `kerfjs` (incl. signals) | ~12 KB |
-| **Delta** | **~10 KB lighter** |
+|                                  | Min + gz, runtime only |
+| -------------------------------- | ---------------------- |
+| `vue` 3.x (runtime, no compiler) | ~22 KB                 |
+| `kerfjs` (incl. signals)         | ~12 KB                 |
+| **Delta**                        | **~10 KB lighter**     |
 
 Vue's runtime is one of the smaller "full framework" runtimes; the trade you're making isn't primarily bundle. It's the SFC compiler (`vite-plugin-vue` / `@vue/compiler-sfc`), the template DSL, the directive system (`v-if` / `v-for` / `v-model`), and the reactivity-via-proxy model. Kerf is plain JSX, plain functions, fine-grained signals from `@preact/signals-core`, and a `delegate()`-based event model. Same shape of reactivity (read inside a tracked context, write to re-run); different surface.
 
 ## 2. Mental-model translations
 
-| Vue 3 | Kerf | Notes |
-| --- | --- | --- |
-| `ref(initial)` | `signal(initial)` | Read with `s.value`, write with `s.value = ...` — same as Vue's `.value` convention. |
-| `reactive({...})` | `defineStore({ initial, actions })` or nested `signal()` | Kerf doesn't have a deep-proxy primitive; either flatten to named signals or wrap the object in a store. |
-| `computed(() => ...)` | `computed(() => ...)` | Same name, same idea, auto-tracked deps. |
-| `watch(src, fn)` / `watchEffect(fn)` | `effect(fn)` | `effect` is the `watchEffect` equivalent (auto-tracks reads). For explicit-source watching, `effect(() => { src.value; fn(); })`. |
-| `<template>` | JSX (HTML strings) | No template DSL — use JSX expressions. `v-if` → `cond ? <a/> : <b/>`. |
-| `v-for="item in items" :key="item.id"` | `each(items, render, key)` plus `data-key={item.id}` | Two keys: the DOM-identity attribute (`data-key`) and the row-memoization function (`each`'s third arg). |
-| `@click="handler"` | `delegate(root, 'click', '[data-action="..."]', handler)` | One listener at the root, survives every re-render. |
-| `v-model="x"` | listener on `'input'` / `'change'` + read from `el.value` | No two-way binding sugar; bind explicitly in your `delegate` handler. |
-| `provide` / `inject` | module-level signal or `defineStore` | No component tree to traverse; state is in modules. |
-| `<KeepAlive>` | `data-morph-skip` / `data-morph-skip-children` | Mark a host element; the reconciler leaves the subtree alone. |
-| SFC `<style scoped>` | plain CSS file + class names | No scoped styles built in — bring your own (CSS modules, BEM, etc.). |
-| `defineComponent({ props, setup })` | plain function `(props) => SafeHtml` | No instance, no `setup()` lifecycle, no `props` declaration object. |
+| Vue 3                                  | Kerf                                                      | Notes                                                                                                                             |
+| -------------------------------------- | --------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `ref(initial)`                         | `signal(initial)`                                         | Read with `s.value`, write with `s.value = ...` — same as Vue's `.value` convention.                                              |
+| `reactive({...})`                      | `defineStore({ initial, actions })` or nested `signal()`  | Kerf doesn't have a deep-proxy primitive; either flatten to named signals or wrap the object in a store.                          |
+| `computed(() => ...)`                  | `computed(() => ...)`                                     | Same name, same idea, auto-tracked deps.                                                                                          |
+| `watch(src, fn)` / `watchEffect(fn)`   | `effect(fn)`                                              | `effect` is the `watchEffect` equivalent (auto-tracks reads). For explicit-source watching, `effect(() => { src.value; fn(); })`. |
+| `<template>`                           | JSX (HTML strings)                                        | No template DSL — use JSX expressions. `v-if` → `cond ? <a/> : <b/>`.                                                             |
+| `v-for="item in items" :key="item.id"` | `each(items, render, key)` plus `data-key={item.id}`      | Two keys: the DOM-identity attribute (`data-key`) and the row-memoization function (`each`'s third arg).                          |
+| `@click="handler"`                     | `delegate(root, 'click', '[data-action="..."]', handler)` | One listener at the root, survives every re-render.                                                                               |
+| `v-model="x"`                          | listener on `'input'` / `'change'` + read from `el.value` | No two-way binding sugar; bind explicitly in your `delegate` handler.                                                             |
+| `provide` / `inject`                   | module-level signal or `defineStore`                      | No component tree to traverse; state is in modules.                                                                               |
+| `<KeepAlive>`                          | `data-morph-skip` / `data-morph-skip-children`            | Mark a host element; the reconciler leaves the subtree alone.                                                                     |
+| SFC `<style scoped>`                   | plain CSS file + class names                              | No scoped styles built in — bring your own (CSS modules, BEM, etc.).                                                              |
+| `defineComponent({ props, setup })`    | plain function `(props) => SafeHtml`                      | No instance, no `setup()` lifecycle, no `props` declaration object.                                                               |
 
 ## 3. Section by section
 
@@ -43,48 +43,87 @@ The same TodoMVC, section by section. Each kerf block matches `site/src/examples
 ```vue
 <!-- Vue 3 SFC -->
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch } from "vue";
 
-interface Todo { id: string; text: string; done: boolean }
-type Filter = 'all' | 'active' | 'done';
+interface Todo {
+  id: string;
+  text: string;
+  done: boolean;
+}
+type Filter = "all" | "active" | "done";
 
-const STORAGE_KEY = 'vue-todomvc';
+const STORAGE_KEY = "vue-todomvc";
 
-const items     = ref<Todo[]>(JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]'));
-const filter    = ref<Filter>('all');
+const items = ref<Todo[]>(
+  JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]"),
+);
+const filter = ref<Filter>("all");
 const editingId = ref<string | null>(null);
 
-watch(items, (v) => localStorage.setItem(STORAGE_KEY, JSON.stringify(v)), { deep: true });
+watch(items, (v) => localStorage.setItem(STORAGE_KEY, JSON.stringify(v)), {
+  deep: true,
+});
 </script>
 ```
 
 ```tsx
 // Kerf
-import { defineStore, mount, each, delegate, delegateCapture, effect, attr, type AttrSpec } from 'kerfjs';
+import {
+  defineStore,
+  mount,
+  each,
+  delegate,
+  delegateCapture,
+  effect,
+  attr,
+  type AttrSpec,
+} from "kerfjs";
 
 const ACTIONS = {
-  toggle: attr('data-action', 'toggle'),
-  remove: attr('data-action', 'remove'),
-  edit:   attr('data-action', 'edit'),
-} as const satisfies Record<string, AttrSpec<'data-action'>>;
-const ITEM = { id: attr('data-id') } as const;
+  toggle: attr("data-action", "toggle"),
+  remove: attr("data-action", "remove"),
+  edit: attr("data-action", "edit"),
+} as const satisfies Record<string, AttrSpec<"data-action">>;
+const ITEM = { id: attr("data-id") } as const;
 
-interface Todo { id: string; text: string; done: boolean }
-type Filter = 'all' | 'active' | 'done';
+interface Todo {
+  id: string;
+  text: string;
+  done: boolean;
+}
+type Filter = "all" | "active" | "done";
 
-const STORAGE_KEY = 'kerf-todomvc';
+const STORAGE_KEY = "kerf-todomvc";
 
 function load(): Todo[] {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? '[]') as Todo[]; }
-  catch { return []; }
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]") as Todo[];
+  } catch {
+    return [];
+  }
 }
 
 const todos = defineStore({
-  initial: () => ({ items: load(), filter: 'all' as Filter, editingId: null as string | null }),
+  initial: () => ({
+    items: load(),
+    filter: "all" as Filter,
+    editingId: null as string | null,
+  }),
   actions: (set, get) => ({
-    add: (text: string) => set({ ...get(), items: [...get().items, { id: crypto.randomUUID(), text, done: false }] }),
-    toggle: (id: string) => set({ ...get(), items: get().items.map((t) => t.id === id ? { ...t, done: !t.done } : t) }),
-    remove: (id: string) => set({ ...get(), items: get().items.filter((t) => t.id !== id) }),
+    add: (text: string) =>
+      set({
+        ...get(),
+        items: [...get().items, { id: crypto.randomUUID(), text, done: false }],
+      }),
+    toggle: (id: string) =>
+      set({
+        ...get(),
+        items: get().items.map((t) =>
+          t.id === id ? { ...t, done: !t.done } : t,
+        ),
+      }),
+    remove: (id: string) =>
+      set({ ...get(), items: get().items.filter((t) => t.id !== id) }),
     // ...
   }),
 });
@@ -124,7 +163,12 @@ mount(root, () => {
     <div class="todoapp">
       <header>
         <h1>todos</h1>
-        <input class="new-todo" data-new placeholder="What needs to be done?" autofocus />
+        <input
+          class="new-todo"
+          data-new
+          placeholder="What needs to be done?"
+          autofocus
+        />
       </header>
       {/* list goes here */}
     </div>
@@ -161,25 +205,45 @@ What moved: the SFC `<template>` block becomes a JSX expression inside `mount()`
 <ul class="todo-list">
   {each(
     items.filter((it) =>
-      filter === 'active' ? !it.done : filter === 'done' ? it.done : true,
+      filter === "active" ? !it.done : filter === "done" ? it.done : true,
     ),
     (todo) => (
       <li
         data-key={todo.id}
-        class={`${todo.done ? 'done' : ''} ${editingId === todo.id ? 'editing' : ''}`}
+        class={`${todo.done ? "done" : ""} ${editingId === todo.id ? "editing" : ""}`}
       >
         {editingId === todo.id ? (
-          <input class="edit" data-edit data-id={todo.id} value={todo.text} autofocus />
+          <input
+            class="edit"
+            data-edit
+            data-id={todo.id}
+            value={todo.text}
+            autofocus
+          />
         ) : (
           <>
-            <input type="checkbox" class="toggle" {...ACTIONS.toggle.attrs} {...ITEM.id(todo.id)} checked={todo.done} />
-            <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>{todo.text}</label>
-            <button class="destroy" {...ACTIONS.remove.attrs} {...ITEM.id(todo.id)}>×</button>
+            <input
+              type="checkbox"
+              class="toggle"
+              {...ACTIONS.toggle.attrs}
+              {...ITEM.id(todo.id)}
+              checked={todo.done}
+            />
+            <label {...ACTIONS.edit.attrs} {...ITEM.id(todo.id)}>
+              {todo.text}
+            </label>
+            <button
+              class="destroy"
+              {...ACTIONS.remove.attrs}
+              {...ITEM.id(todo.id)}
+            >
+              ×
+            </button>
           </>
         )}
       </li>
     ),
-    (todo) => `${todo.id}-${editingId === todo.id ? 'edit' : 'view'}`,
+    (todo) => `${todo.id}-${editingId === todo.id ? "edit" : "view"}`,
   )}
 </ul>
 ```
@@ -200,24 +264,24 @@ Inline `@change`/`@click`/`@dblclick` handlers move to `delegate()` calls in §3
 
 ```tsx
 // Kerf — handlers register once, at module load, on the root
-delegate(root, 'click', ACTIONS.toggle.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.toggle.selector, (_e, el) => {
   todos.actions.toggle((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.remove.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.remove.selector, (_e, el) => {
   todos.actions.remove((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'click', ACTIONS.edit.selector, (_e, el) => {
+delegate(root, "click", ACTIONS.edit.selector, (_e, el) => {
   todos.actions.startEdit((el as HTMLElement).dataset.id!);
 });
-delegate(root, 'keydown', '[data-new]', (e, el) => {
-  if ((e as KeyboardEvent).key !== 'Enter') return;
+delegate(root, "keydown", "[data-new]", (e, el) => {
+  if ((e as KeyboardEvent).key !== "Enter") return;
   const input = el as HTMLInputElement;
   todos.actions.add(input.value);
-  input.value = '';
+  input.value = "";
 });
 
 // Tier 2: blur doesn't bubble — capture phase is required.
-delegateCapture(root, 'blur', '[data-edit]', (_e, el) => {
+delegateCapture(root, "blur", "[data-edit]", (_e, el) => {
   const input = el as HTMLInputElement;
   if (todos.state.value.editingId === input.dataset.id) {
     todos.actions.commitEdit(input.dataset.id!, input.value);

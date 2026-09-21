@@ -42,16 +42,92 @@ export interface AppTabProps {
 }
 
 function CloseIcon() {
-  return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"><path d="m7 7 10 10"></path><path d="M17 7 7 17"></path></svg>;
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.25"
+      stroke-linecap="round"
+    >
+      <path d="m7 7 10 10"></path>
+      <path d="M17 7 7 17"></path>
+    </svg>
+  );
 }
 
-export function AppTab({ id, name, selected = false, closable = true, draggable = false, leading, trailing, closeIcon, selectAction = 'select-tab', closeAction = 'close-tab', className = '', placeholder = false, rootAttributes = {} }: AppTabProps) {
-  const keyshortcuts = [closable ? 'Delete Backspace' : '', draggable ? 'Alt+Shift+ArrowLeft Alt+Shift+ArrowRight' : ''].filter(Boolean).join(' ');
-  const extensionAttributes = filterDataAttributes(rootAttributes, PROTECTED_ROOT_DATA_ATTRIBUTES);
-  return <div {...extensionAttributes} class={`kui-app-tab ${className}`.trim()} data-component="app-tab" data-tab-id={id} data-selected={String(selected)} data-placeholder={placeholder ? 'true' : undefined} draggable={placeholder ? 'false' : draggable ? 'true' : 'false'} aria-busy={placeholder ? 'true' : undefined}>
-    {closable && <button type="button" tabindex="-1" class="kui-app-tab__close" data-action={placeholder ? undefined : closeAction} data-tab-id={id} disabled={placeholder || undefined} aria-label={`Close ${name}`} title={`Close ${name}`}><span class="kui-app-tab__close-icon" aria-hidden="true">{closeIcon ?? <CloseIcon />}</span></button>}
-    <button type="button" class="kui-app-tab__select" role="tab" aria-selected={String(selected)} aria-keyshortcuts={placeholder ? undefined : keyshortcuts || undefined} data-action={placeholder ? undefined : selectAction} data-tab-id={id} disabled={placeholder || undefined} tabindex={placeholder ? '-1' : selected ? '0' : '-1'}>
-      {leading}<span class="kui-app-tab__name">{placeholder ? <Skeleton width="7em" /> : name}</span>{closable || trailing ? <span class="kui-app-tab__trailing">{trailing}</span> : undefined}
-    </button>
-  </div>;
+export function AppTab({
+  id,
+  name,
+  selected = false,
+  closable = true,
+  draggable = false,
+  leading,
+  trailing,
+  closeIcon,
+  selectAction = 'select-tab',
+  closeAction = 'close-tab',
+  className = '',
+  placeholder = false,
+  rootAttributes = {},
+}: AppTabProps) {
+  const keyshortcuts = [
+    closable ? 'Delete Backspace' : '',
+    draggable ? 'Alt+Shift+ArrowLeft Alt+Shift+ArrowRight' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  const extensionAttributes = filterDataAttributes(
+    rootAttributes,
+    PROTECTED_ROOT_DATA_ATTRIBUTES,
+  );
+  return (
+    <div
+      {...extensionAttributes}
+      class={`kui-app-tab ${className}`.trim()}
+      data-component="app-tab"
+      data-tab-id={id}
+      data-selected={String(selected)}
+      data-placeholder={placeholder ? 'true' : undefined}
+      draggable={placeholder ? 'false' : draggable ? 'true' : 'false'}
+      aria-busy={placeholder ? 'true' : undefined}
+    >
+      {closable && (
+        <button
+          type="button"
+          tabindex="-1"
+          class="kui-app-tab__close"
+          data-action={placeholder ? undefined : closeAction}
+          data-tab-id={id}
+          disabled={placeholder || undefined}
+          aria-label={`Close ${name}`}
+          title={`Close ${name}`}
+        >
+          <span class="kui-app-tab__close-icon" aria-hidden="true">
+            {closeIcon ?? <CloseIcon />}
+          </span>
+        </button>
+      )}
+      <button
+        type="button"
+        class="kui-app-tab__select"
+        role="tab"
+        aria-selected={String(selected)}
+        aria-keyshortcuts={placeholder ? undefined : keyshortcuts || undefined}
+        data-action={placeholder ? undefined : selectAction}
+        data-tab-id={id}
+        disabled={placeholder || undefined}
+        tabindex={placeholder ? '-1' : selected ? '0' : '-1'}
+      >
+        {leading}
+        <span class="kui-app-tab__name">
+          {placeholder ? <Skeleton width="7em" /> : name}
+        </span>
+        {closable || trailing ? (
+          <span class="kui-app-tab__trailing">{trailing}</span>
+        ) : undefined}
+      </button>
+    </div>
+  );
 }

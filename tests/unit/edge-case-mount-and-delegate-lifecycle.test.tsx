@@ -23,49 +23,70 @@
  *   - data-morph-skip wrapping a list parent.
  *   - Stress: 1000-row mutate-and-restore round-trip.
  */
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import {
-delegate,
-each,
-mount,
-signal
-} from '../../src/index.js';
+import { delegate, each, mount, signal } from '../../src/index.js';
 
 describe('Adversarial edge cases', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   // ─── Mount lifecycle ────────────────────────────────────────────────
 
   describe('mount lifecycle', () => {
     it('mount → dispose → mount(sameEl) with stale list content cleans up correctly', () => {
-      const listA = [{ id: 1, label: 'a' }, { id: 2, label: 'b' }];
+      const listA = [
+        { id: 1, label: 'a' },
+        { id: 2, label: 'b' },
+      ];
       const dispose1 = mount(root, () => (
-        <ul>{each(listA, (it) => <li data-key={String(it.id)}>{it.label}</li>)}</ul>
+        <ul>
+          {each(listA, (it) => (
+            <li data-key={String(it.id)}>{it.label}</li>
+          ))}
+        </ul>
       ));
       expect(root.querySelectorAll('li').length).toBe(2);
       dispose1();
 
       // Stale content from mount A is still in the DOM after dispose.
       // mount B should wipe it cleanly via its first-render innerHTML reset.
-      const listB = [{ id: 100, label: 'x' }, { id: 200, label: 'y' }, { id: 300, label: 'z' }];
+      const listB = [
+        { id: 100, label: 'x' },
+        { id: 200, label: 'y' },
+        { id: 300, label: 'z' },
+      ];
       const dispose2 = mount(root, () => (
-        <ol>{each(listB, (it) => <li data-key={String(it.id)}>{it.label}</li>)}</ol>
+        <ol>
+          {each(listB, (it) => (
+            <li data-key={String(it.id)}>{it.label}</li>
+          ))}
+        </ol>
       ));
       expect(root.querySelector('ul')).toBe(null);
       expect(root.querySelector('ol')).not.toBe(null);
       expect(root.querySelectorAll('li').length).toBe(3);
-      expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['x', 'y', 'z']);
+      expect(
+        Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+      ).toEqual(['x', 'y', 'z']);
       dispose2();
     });
 
     it('mount → dispose → mount on same element with both using arraySignal — patch queues do not bleed', () => {
       const sigA = arraySignal([{ id: 1, v: 'A1' }]);
       const dispose1 = mount(root, () => (
-        <ul>{each(sigA, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>
+        <ul>
+          {each(sigA, (r) => (
+            <li data-key={String(r.id)}>{r.v}</li>
+          ))}
+        </ul>
       ));
       sigA.push({ id: 2, v: 'A2' });
       expect(root.querySelectorAll('li').length).toBe(2);
@@ -75,21 +96,32 @@ describe('Adversarial edge cases', () => {
       sigA.push({ id: 3, v: 'A3' });
 
       // Second mount on the same element with a DIFFERENT arraySignal.
-      const sigB = arraySignal([{ id: 100, v: 'B1' }, { id: 200, v: 'B2' }]);
+      const sigB = arraySignal([
+        { id: 100, v: 'B1' },
+        { id: 200, v: 'B2' },
+      ]);
       const dispose2 = mount(root, () => (
-        <ul>{each(sigB, (r) => <li data-key={String(r.id)}>{r.v}</li>)}</ul>
+        <ul>
+          {each(sigB, (r) => (
+            <li data-key={String(r.id)}>{r.v}</li>
+          ))}
+        </ul>
       ));
       expect(root.querySelectorAll('li').length).toBe(2);
-      expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['B1', 'B2']);
+      expect(
+        Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+      ).toEqual(['B1', 'B2']);
 
       // Mutating sigA must NOT update mount B's DOM.
       sigA.push({ id: 4, v: 'A4' });
-      expect(root.querySelectorAll('li').length).toBe(2);  // still B's content
+      expect(root.querySelectorAll('li').length).toBe(2); // still B's content
 
       // Mutating sigB updates B's DOM.
       sigB.push({ id: 300, v: 'B3' });
       expect(root.querySelectorAll('li').length).toBe(3);
-      expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['B1', 'B2', 'B3']);
+      expect(
+        Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+      ).toEqual(['B1', 'B2', 'B3']);
       dispose2();
     });
 
@@ -110,9 +142,11 @@ describe('Adversarial edge cases', () => {
         hosts.push(host);
         disposers.push(mount(host, () => <span>{tick.value}</span>));
       }
-      for (const h of hosts) expect(h.querySelector('span')!.textContent).toBe('0');
+      for (const h of hosts)
+        expect(h.querySelector('span')!.textContent).toBe('0');
       tick.value = 42;
-      for (const h of hosts) expect(h.querySelector('span')!.textContent).toBe('42');
+      for (const h of hosts)
+        expect(h.querySelector('span')!.textContent).toBe('42');
       for (const d of disposers) d();
     });
 
@@ -126,7 +160,9 @@ describe('Adversarial edge cases', () => {
       const x = signal(0);
       const dispose = mount(root, () => <span>{x.value}</span>);
       dispose();
-      expect(() => { x.value = 99; }).not.toThrow();
+      expect(() => {
+        x.value = 99;
+      }).not.toThrow();
       // DOM should NOT update post-dispose.
       expect(root.querySelector('span')!.textContent).toBe('0');
     });
@@ -183,7 +219,7 @@ describe('Adversarial edge cases', () => {
 
     it('conditional-render pattern { cond && <jsx/> } toggles between content and empty', () => {
       const show = signal(false);
-      mount(root, () => (show.value && <span>here</span>));
+      mount(root, () => show.value && <span>here</span>);
       expect(root.querySelector('span')).toBe(null);
       show.value = true;
       expect(root.querySelector('span')!.textContent).toBe('here');
@@ -220,7 +256,9 @@ describe('Adversarial edge cases', () => {
           <button data-action="inc">{count.value}</button>
         </div>
       ));
-      delegate(root, 'click', '[data-action="inc"]', () => { count.value += 1; });
+      delegate(root, 'click', '[data-action="inc"]', () => {
+        count.value += 1;
+      });
       const btn = (): HTMLButtonElement => root.querySelector('button')!;
       btn().click();
       expect(btn().textContent).toBe('1');
@@ -239,8 +277,6 @@ describe('Adversarial edge cases', () => {
   });
 
   // ─── arraySignal corner cases ───────────────────────────────────────
-
-
 });
 
 // Avoid unused import warning if vi is referenced only for setup/teardown semantics.

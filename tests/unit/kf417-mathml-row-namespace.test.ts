@@ -33,7 +33,8 @@ beforeEach(() => {
   document.body.appendChild(root);
 });
 
-const nsOf = (sel: string): string | null | undefined => root.querySelector(sel)?.namespaceURI;
+const nsOf = (sel: string): string | null | undefined =>
+  root.querySelector(sel)?.namespaceURI;
 
 describe('KF-417: MathML each() rows keep their namespace across updates', () => {
   it('env sanity: jsdom namespaces <math> content (the whole reason this file is jsdom)', () => {
@@ -43,22 +44,39 @@ describe('KF-417: MathML each() rows keep their namespace across updates', () =>
 
   it('a granular arraySignal insert keeps the new row in the MathML namespace', () => {
     const rows = arraySignal([{ id: 1 }]);
-    const dispose = mount(root, () => html`<div><math>${
-      each(rows, (r) => html`<mrow data-key="${String(r.id)}"><mn>${String(r.id)}</mn></mrow>`, { key: 'M' })
-    }</math></div>`);
+    const dispose = mount(
+      root,
+      () =>
+        html`<div><math>${each(
+          rows,
+          (r) =>
+            html`<mrow data-key="${String(r.id)}"><mn>${String(r.id)}</mn></mrow>`,
+          { key: 'M' },
+        )}</math></div>`,
+    );
     expect(nsOf('[data-key="1"]')).toBe(MATHML); // first paint (never broken)
     rows.push({ id: 2 });
     expect(nsOf('[data-key="2"]')).toBe(MATHML); // the row that used to land in xhtml
-    expect(nsOf('mn')).toBe(MATHML);             // and its descendants
+    expect(nsOf('mn')).toBe(MATHML); // and its descendants
     dispose();
   });
 
   it('a snapshot rebuild keeps every row in the MathML namespace', () => {
     const data = signal([{ id: 1, v: 1 }]);
-    const dispose = mount(root, () => html`<div><math>${
-      each(data.value, (r) => html`<mrow data-key="${String(r.id)}"><mn>${String(r.v)}</mn></mrow>`, { key: 'M' })
-    }</math></div>`);
-    data.value = [{ id: 1, v: 2 }, { id: 2, v: 3 }];
+    const dispose = mount(
+      root,
+      () =>
+        html`<div><math>${each(
+          data.value,
+          (r) =>
+            html`<mrow data-key="${String(r.id)}"><mn>${String(r.v)}</mn></mrow>`,
+          { key: 'M' },
+        )}</math></div>`,
+    );
+    data.value = [
+      { id: 1, v: 2 },
+      { id: 2, v: 3 },
+    ];
     expect(nsOf('[data-key="1"]')).toBe(MATHML);
     expect(nsOf('[data-key="2"]')).toBe(MATHML);
     dispose();
@@ -67,9 +85,15 @@ describe('KF-417: MathML each() rows keep their namespace across updates', () =>
   it('SVG rows are unaffected by the generalization (KF-389 unregressed)', () => {
     const SVG = 'http://www.w3.org/2000/svg';
     const rows = arraySignal([{ id: 1 }]);
-    const dispose = mount(root, () => html`<svg>${
-      each(rows, (r) => html`<g data-key="${String(r.id)}"><circle></circle></g>`, { key: 'S' })
-    }</svg>`);
+    const dispose = mount(
+      root,
+      () =>
+        html`<svg>${each(
+          rows,
+          (r) => html`<g data-key="${String(r.id)}"><circle></circle></g>`,
+          { key: 'S' },
+        )}</svg>`,
+    );
     rows.push({ id: 2 });
     expect(nsOf('[data-key="2"]')).toBe(SVG);
     expect(nsOf('circle')).toBe(SVG);

@@ -14,7 +14,9 @@ import { Columns3, FileText, Inbox, List } from 'lucide';
 
 import type { RecipeFactory } from './types.js';
 
-const icon = (node: Parameters<typeof LucideIcon>[0]['icon'], name: string) => <LucideIcon icon={node} name={name} />;
+const icon = (node: Parameters<typeof LucideIcon>[0]['icon'], name: string) => (
+  <LucideIcon icon={node} name={name} />
+);
 
 /**
  * A record inspector whose per-record values load asynchronously. Every
@@ -27,47 +29,128 @@ export const createRecipe: RecipeFactory = (announce) => {
   const loading = signal(true);
   const render = () => {
     const p = loading.value;
-    return <section class="kui-recipe recipe-inspector kui-recipe__surface kui-pane" data-recipe="recipe-loading-inspector" data-inspector-loading={String(p)}>
-      <PanelHeader
-        title="Ticket · KF-2048"
-        titleId="recipe-inspector-title"
-        summary="Restore keyboard focus after a dialog closes"
-        summaryId="recipe-inspector-summary"
-        icon={icon(FileText, 'file-text')}
-        placeholder={p}
-        actions={<button class="kui-recipe__button" data-primary="true" type="button" data-action="recipe-action" data-recipe-command="toggle">{p ? 'Show loaded' : 'Show loading'}</button>}
-      />
-      <div class="recipe-inspector__body kui-pane__content kui-content">
-        <section>
-          <ValueTable label="Ticket details">
-            <ValueTableRow label="Status" value="In review" icon={icon(Inbox, 'inbox')} placeholder={p} />
-            <ValueTableRow label="Owner" value="Mara Lopez" placeholder={p} />
-            <ValueTableRow label="Priority" value="High" placeholder={p} />
-            <ValueTableRow label="Updated" value="2 hours ago" placeholder={p} />
-          </ValueTable>
-        </section>
-        <div class="recipe-inspector__controls">
-          <Select name="recipe-inspector-status" value="review" label="Status" placeholder={p} choices={[
-            { value: 'review', label: 'In review' },
-            { value: 'ready', label: 'Ready' },
-            { value: 'done', label: 'Done' },
-          ]} />
-          <SegmentedControl id="recipe-inspector-view" label="Inspector view" value="details" appearance="toolbar" shape="pill" size="small" placeholder={p} choices={[
-            { value: 'details', label: 'Details', content: icon(List, 'list') },
-            { value: 'activity', label: 'Activity', content: icon(Columns3, 'columns-3') },
-            { value: 'files', label: 'Files', content: icon(FileText, 'file-text') },
-          ]} />
+    return (
+      <section
+        class="kui-recipe recipe-inspector kui-recipe__surface kui-pane"
+        data-recipe="recipe-loading-inspector"
+        data-inspector-loading={String(p)}
+      >
+        <PanelHeader
+          title="Ticket · KF-2048"
+          titleId="recipe-inspector-title"
+          summary="Restore keyboard focus after a dialog closes"
+          summaryId="recipe-inspector-summary"
+          icon={icon(FileText, 'file-text')}
+          placeholder={p}
+          actions={
+            <button
+              class="kui-recipe__button"
+              data-primary="true"
+              type="button"
+              data-action="recipe-action"
+              data-recipe-command="toggle"
+            >
+              {p ? 'Show loaded' : 'Show loading'}
+            </button>
+          }
+        />
+        <div class="recipe-inspector__body kui-pane__content kui-content">
+          <section>
+            <ValueTable label="Ticket details">
+              <ValueTableRow
+                label="Status"
+                value="In review"
+                icon={icon(Inbox, 'inbox')}
+                placeholder={p}
+              />
+              <ValueTableRow label="Owner" value="Mara Lopez" placeholder={p} />
+              <ValueTableRow label="Priority" value="High" placeholder={p} />
+              <ValueTableRow
+                label="Updated"
+                value="2 hours ago"
+                placeholder={p}
+              />
+            </ValueTable>
+          </section>
+          <div class="recipe-inspector__controls">
+            <Select
+              name="recipe-inspector-status"
+              value="review"
+              label="Status"
+              placeholder={p}
+              choices={[
+                { value: 'review', label: 'In review' },
+                { value: 'ready', label: 'Ready' },
+                { value: 'done', label: 'Done' },
+              ]}
+            />
+            <SegmentedControl
+              id="recipe-inspector-view"
+              label="Inspector view"
+              value="details"
+              appearance="toolbar"
+              shape="pill"
+              size="small"
+              placeholder={p}
+              choices={[
+                {
+                  value: 'details',
+                  label: 'Details',
+                  content: icon(List, 'list'),
+                },
+                {
+                  value: 'activity',
+                  label: 'Activity',
+                  content: icon(Columns3, 'columns-3'),
+                },
+                {
+                  value: 'files',
+                  label: 'Files',
+                  content: icon(FileText, 'file-text'),
+                },
+              ]}
+            />
+          </div>
+          <section>
+            <ListItem
+              action="recipe-action"
+              itemId="reassign"
+              label="Reassign ticket"
+              icon={icon(Inbox, 'inbox')}
+              placeholder={p}
+            />
+            <ListItem
+              action="recipe-action"
+              itemId="watch"
+              label="Watch for changes"
+              placeholder={p}
+            />
+          </section>
+          {p ? (
+            <StateBanner
+              tone="info"
+              title=""
+              detail=""
+              icon={icon(FileText, 'file-text')}
+              placeholder
+            />
+          ) : (
+            <StateBanner
+              tone="success"
+              title="Up to date"
+              detail="All checks passed on the latest revision."
+              icon={icon(FileText, 'file-text')}
+            />
+          )}
+          <p class="kui-recipe__ownership kui-content-item">
+            Each value-bearing component's <code>placeholder</code> prop renders
+            skeletons in its value slots while loading, so the recipe composes a
+            faithful loading inspector from real chrome. The app owns the
+            loading lifecycle and which values are still unknown.
+          </p>
         </div>
-        <section>
-          <ListItem action="recipe-action" itemId="reassign" label="Reassign ticket" icon={icon(Inbox, 'inbox')} placeholder={p} />
-          <ListItem action="recipe-action" itemId="watch" label="Watch for changes" placeholder={p} />
-        </section>
-        {p
-          ? <StateBanner tone="info" title="" detail="" icon={icon(FileText, 'file-text')} placeholder />
-          : <StateBanner tone="success" title="Up to date" detail="All checks passed on the latest revision." icon={icon(FileText, 'file-text')} />}
-        <p class="kui-recipe__ownership kui-content-item">Each value-bearing component's <code>placeholder</code> prop renders skeletons in its value slots while loading, so the recipe composes a faithful loading inspector from real chrome. The app owns the loading lifecycle and which values are still unknown.</p>
-      </div>
-    </section>;
+      </section>
+    );
   };
   return {
     render,

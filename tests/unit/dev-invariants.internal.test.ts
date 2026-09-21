@@ -11,15 +11,23 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { installDevHooks } from '../../src/dev.js';
 import { devHooks } from '../../src/dev-hooks.js';
-import { findListInvariantViolations, maybeCheckListInvariants } from '../../src/dev-invariants.js';
+import {
+  findListInvariantViolations,
+  maybeCheckListInvariants,
+} from '../../src/dev-invariants.js';
 import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import type { BoundItem, ListBinding } from '../../src/list-binding.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
-const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+const env = (
+  globalThis as { process: { env: Record<string, string | undefined> } }
+).process.env;
 
 let root: HTMLElement;
 
@@ -44,7 +52,9 @@ const check = (
   findListInvariantViolations(
     root,
     new Map(Object.entries(bindings)),
-    expectedCounts === undefined ? undefined : new Map(Object.entries(expectedCounts)),
+    expectedCounts === undefined
+      ? undefined
+      : new Map(Object.entries(expectedCounts)),
   );
 
 beforeEach(() => {
@@ -69,12 +79,16 @@ describe('dev invariants: detection', () => {
   it('flags a binding holding fewer rows than its source (KF-416 — the KF-411 shape)', () => {
     // A self-healed empty binding is internally perfect but rendered nothing.
     const b = makeList('0', 0);
-    expect(check({ '0': b }, { '0': 3 })[0]).toMatch(/holds 0 row\(s\) but its source has 3/);
+    expect(check({ '0': b }, { '0': 3 })[0]).toMatch(
+      /holds 0 row\(s\) but its source has 3/,
+    );
   });
 
   it('flags a binding holding MORE rows than its source (duplicated rows)', () => {
     const b = makeList('0', 4);
-    expect(check({ '0': b }, { '0': 2 })[0]).toMatch(/holds 4 row\(s\) but its source has 2/);
+    expect(check({ '0': b }, { '0': 2 })[0]).toMatch(
+      /holds 4 row\(s\) but its source has 2/,
+    );
   });
 
   it('a matching row count reports nothing', () => {
@@ -94,7 +108,9 @@ describe('dev invariants: detection', () => {
   it('flags a marker that left the mount root', () => {
     const b = makeList('0', 1);
     b.marker.remove();
-    expect(check({ '0': b })[0]).toMatch(/marker comment is no longer inside the mount root/);
+    expect(check({ '0': b })[0]).toMatch(
+      /marker comment is no longer inside the mount root/,
+    );
   });
 
   it('flags an id carried by a different marker node', () => {
@@ -110,13 +126,17 @@ describe('dev invariants: detection', () => {
     root.appendChild(other);
     const b = makeList('0', 1);
     other.appendChild(b.marker); // still in root, but not in liveParent
-    expect(check({ '0': b })[0]).toMatch(/marker is not a child of the parent the binding records/);
+    expect(check({ '0': b })[0]).toMatch(
+      /marker is not a child of the parent the binding records/,
+    );
   });
 
   it('flags a bound row that was detached', () => {
     const b = makeList('0', 2);
     b.items[1].node.remove();
-    expect(check({ '0': b })[0]).toMatch(/bound row 1 is not a child of the list's parent.*detached/);
+    expect(check({ '0': b })[0]).toMatch(
+      /bound row 1 is not a child of the list's parent.*detached/,
+    );
   });
 
   it('flags a bound row that is attached elsewhere in the document', () => {
@@ -145,7 +165,9 @@ describe('dev invariants: detection', () => {
     const a = makeList('0', 1);
     const b = makeList('1', 1);
     b.items[0] = a.items[0]; // both bindings now point at the same node
-    expect(check({ '0': a, '1': b }).some((p) => /also claimed by list '0'/.test(p))).toBe(true);
+    expect(
+      check({ '0': a, '1': b }).some((p) => /also claimed by list '0'/.test(p)),
+    ).toBe(true);
   });
 
   it('flags two lists whose row regions overlap in one parent', () => {
@@ -160,7 +182,9 @@ describe('dev invariants: detection', () => {
   it('lists in DIFFERENT parents never overlap', () => {
     const other = document.createElement('section');
     root.appendChild(other);
-    expect(check({ '0': makeList('0', 2), '1': makeList('1', 2, other) })).toEqual([]);
+    expect(
+      check({ '0': makeList('0', 2), '1': makeList('1', 2, other) }),
+    ).toEqual([]);
   });
 
   it('an empty list contributes no span, so it cannot overlap anything', () => {
@@ -193,7 +217,9 @@ describe('dev invariants: reporting modes', () => {
     b.marker.remove();
     maybeCheckListInvariants(root, new Map([['0', b]]));
     expect(warn).toHaveBeenCalledTimes(1);
-    expect(String(warn.mock.calls[0][0])).toMatch(/kerf invariant violated after reconcile/);
+    expect(String(warn.mock.calls[0][0])).toMatch(
+      /kerf invariant violated after reconcile/,
+    );
   });
 
   it('stays quiet when set to 1 and everything is healthy', () => {
@@ -207,8 +233,9 @@ describe('dev invariants: reporting modes', () => {
     env.KERF_DEV_INVARIANTS = 'throw';
     const b = makeList('0', 1);
     b.marker.remove();
-    expect(() => maybeCheckListInvariants(root, new Map([['0', b]])))
-      .toThrow(/kerf invariant violated after reconcile/);
+    expect(() => maybeCheckListInvariants(root, new Map([['0', b]]))).toThrow(
+      /kerf invariant violated after reconcile/,
+    );
   });
 
   it('hands mount() no expected-count map when the checks are off — the O(rows) counting is not paid', () => {
@@ -216,13 +243,21 @@ describe('dev invariants: reporting modes', () => {
     // is false and `mount()` passes `undefined` instead of building a
     // per-list count map on every render.
     const seen: unknown[][] = [];
-    const record = (...args: unknown[]): void => { seen.push(args); };
+    const record = (...args: unknown[]): void => {
+      seen.push(args);
+    };
     installDevHooks({ listInvariants: record as never });
     try {
       const items = signal([{ id: 'a' }]);
-      const dispose = mount(root, () => jsx('ul', {
-        children: each(items.value, (it) => jsx('li', { 'data-key': it.id, children: it.id })),
-      }) as never);
+      const dispose = mount(
+        root,
+        () =>
+          jsx('ul', {
+            children: each(items.value, (it) =>
+              jsx('li', { 'data-key': it.id, children: it.id }),
+            ),
+          }) as never,
+      );
       expect(seen.length).toBe(1);
       expect(seen[0][2]).toBeUndefined();
       dispose();

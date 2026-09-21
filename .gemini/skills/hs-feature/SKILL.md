@@ -2,6 +2,7 @@
 name: hs-feature
 description: Create a new feature ticket in Hot Sheet
 ---
+
 <!-- hotsheet-skill-version: 28 -->
 
 Read `../../../.claude/skills/hs-feature/SKILL.md` completely and follow its

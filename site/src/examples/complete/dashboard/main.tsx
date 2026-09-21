@@ -5,7 +5,13 @@ import { signal, computed, batch, effect, mount, each } from 'kerfjs';
 // production, so neither the import nor the chunk it loads ships.
 if (import.meta.env.DEV) await import('kerfjs/dev');
 
-interface Ticker { id: string; symbol: string; price: number; prev: number; volume: number }
+interface Ticker {
+  id: string;
+  symbol: string;
+  price: number;
+  prev: number;
+  volume: number;
+}
 
 const ROW_COUNT = 500;
 
@@ -13,7 +19,7 @@ const ROW_COUNT = 500;
 function genSymbols(): Ticker[] {
   const out: Ticker[] = [];
   for (let i = 0; i < ROW_COUNT; i++) {
-    const symbol = `${String.fromCharCode(65 + (i % 26))}${String.fromCharCode(65 + ((i / 26) | 0) % 26)}${i.toString(36).toUpperCase().padStart(2, '0')}`;
+    const symbol = `${String.fromCharCode(65 + (i % 26))}${String.fromCharCode(65 + (((i / 26) | 0) % 26))}${i.toString(36).toUpperCase().padStart(2, '0')}`;
     const price = 10 + Math.random() * 990;
     out.push({ id: `t-${i}`, symbol, price, prev: price, volume: 0 });
   }
@@ -48,7 +54,12 @@ mount(root, () => (
     </header>
     <table class="tickers">
       <thead>
-        <tr><th>Symbol</th><th class="num">Price</th><th class="num">Δ</th><th class="num">Volume</th></tr>
+        <tr>
+          <th>Symbol</th>
+          <th class="num">Price</th>
+          <th class="num">Δ</th>
+          <th class="num">Volume</th>
+        </tr>
       </thead>
       <tbody>
         {each(
@@ -56,15 +67,21 @@ mount(root, () => (
           (t) => {
             const delta = t.price - t.prev;
             return (
-              <tr data-key={t.id} class={delta > 0 ? 'up' : delta < 0 ? 'down' : ''}>
+              <tr
+                data-key={t.id}
+                class={delta > 0 ? 'up' : delta < 0 ? 'down' : ''}
+              >
                 <td>{t.symbol}</td>
                 <td class="num">{t.price.toFixed(2)}</td>
-                <td class="num">{delta >= 0 ? '+' : ''}{delta.toFixed(2)}</td>
+                <td class="num">
+                  {delta >= 0 ? '+' : ''}
+                  {delta.toFixed(2)}
+                </td>
                 <td class="num">{t.volume}</td>
               </tr>
             );
           },
-          (t) => `${t.id}-${t.price.toFixed(2)}`,  // memo key → row reuses cached HTML if price unchanged
+          (t) => `${t.id}-${t.price.toFixed(2)}`, // memo key → row reuses cached HTML if price unchanged
         )}
       </tbody>
     </table>
@@ -73,7 +90,9 @@ mount(root, () => (
 
 // Imperative canvas — set up once after first render. The data-morph-skip wrapper
 // keeps the diff out, so this rAF loop is never disturbed.
-const ctx = (document.getElementById('chart') as HTMLCanvasElement).getContext('2d')!;
+const ctx = (document.getElementById('chart') as HTMLCanvasElement).getContext(
+  '2d',
+)!;
 let cf = 0;
 function draw() {
   ctx.fillStyle = '#0f172a';
@@ -99,7 +118,7 @@ effect(() => {
     batch(() => {
       const arr = tickers.value;
       const out = arr.slice();
-      const updates = 60;  // ~60 of 500 rows per tick
+      const updates = 60; // ~60 of 500 rows per tick
       for (let i = 0; i < updates; i++) {
         const idx = (Math.random() * arr.length) | 0;
         const t = arr[idx];
@@ -114,7 +133,7 @@ effect(() => {
       tickers.value = out;
       frame.value = frame.value + 1;
     });
-  }, 33);  // ~30 Hz
+  }, 33); // ~30 Hz
 
   return () => {
     clearInterval(interval);

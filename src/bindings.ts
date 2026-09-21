@@ -117,7 +117,10 @@ export function _setBindingContext(c: BindingContext | null): void {
  * Returns the row HTML and its captured bindings (empty when the row has no
  * signal holes). Restores the prior capture state (supports nested `each()`).
  */
-export function captureRowBindings(renderRow: () => string): { html: string; bindings: Binding[] } {
+export function captureRowBindings(renderRow: () => string): {
+  html: string;
+  bindings: Binding[];
+} {
   const prevSink = rowSink;
   const prevCounter = rowCounter;
   rowSink = [];
@@ -203,7 +206,10 @@ export function wireBindings(
  * marker, e.g. `<tr data-kfbrow>`). Returns the row's disposers for the
  * reconciler to store on the bound item and call when the row node is removed.
  */
-export function wireRowBindings(rowNode: Element, bindings: Binding[]): Array<() => void> {
+export function wireRowBindings(
+  rowNode: Element,
+  bindings: Binding[],
+): Array<() => void> {
   // Callers (snapshot buildFreshNodes, mount first-render inline) only invoke
   // this for rows with at least one binding, so no empty-guard is needed.
   //
@@ -257,7 +263,9 @@ export function wireRowBindings(rowNode: Element, bindings: Binding[]): Array<()
 }
 
 /** Dispose a row's binding effects (called when its node leaves the DOM). */
-export function disposeRowBindings(disposers: Array<() => void> | undefined): void {
+export function disposeRowBindings(
+  disposers: Array<() => void> | undefined,
+): void {
   if (disposers === undefined) return;
   for (const d of disposers) d();
 }
@@ -287,13 +295,19 @@ export function carryOrRewireRowBindings(
   oldBindings: Binding[] | undefined,
   oldDisposers: Array<() => void> | undefined,
   newBindings: Binding[] | undefined,
-): { bindings: Binding[] | undefined; bindingDisposers: Array<() => void> | undefined } {
+): {
+  bindings: Binding[] | undefined;
+  bindingDisposers: Array<() => void> | undefined;
+} {
   const oldLen = oldBindings === undefined ? 0 : oldBindings.length;
   const newLen = newBindings === undefined ? 0 : newBindings.length;
   if (oldLen === newLen) {
     let same = true;
     for (let i = 0; i < newLen; i++) {
-      if ((oldBindings as Binding[])[i].signal !== (newBindings as Binding[])[i].signal) {
+      if (
+        (oldBindings as Binding[])[i].signal !==
+        (newBindings as Binding[])[i].signal
+      ) {
         same = false;
         break;
       }
@@ -303,7 +317,8 @@ export function carryOrRewireRowBindings(
   disposeRowBindings(oldDisposers);
   return {
     bindings: newBindings,
-    bindingDisposers: newLen > 0 ? wireRowBindings(node, newBindings as Binding[]) : undefined,
+    bindingDisposers:
+      newLen > 0 ? wireRowBindings(node, newBindings as Binding[]) : undefined,
   };
 }
 
@@ -345,13 +360,18 @@ function wireInto(
 function indexAttrEls(scope: Element, attrName: string): Map<string, Element> {
   const map = new Map<string, Element>();
   for (const el of scope.querySelectorAll(`[${attrName}]`)) {
-    for (const id of (el.getAttribute(attrName) as string).split(',')) map.set(id, el);
+    for (const id of (el.getAttribute(attrName) as string).split(','))
+      map.set(id, el);
   }
   return map;
 }
 
 /** Attach a fine-grained attribute effect; returns its disposer. */
-function attachAttrEffect(el: Element, attr: string, signal: Signal<unknown>): () => void {
+function attachAttrEffect(
+  el: Element,
+  attr: string,
+  signal: Signal<unknown>,
+): () => void {
   return effect(() => setBoundAttr(el, attr, signal.value));
 }
 
@@ -390,7 +410,10 @@ export function boundTextNodeOf(marker: Comment): Text | null {
  * in template output can never be hijacked: static content sits at
  * `nextSibling` only until the FIRST wiring inserts our node in front of it.
  */
-function attachTextEffect(marker: Comment, signal: Signal<unknown>): () => void {
+function attachTextEffect(
+  marker: Comment,
+  signal: Signal<unknown>,
+): () => void {
   let text = insertedTextNodes.get(marker);
   if (text === undefined || marker.nextSibling !== text) {
     text = (marker.ownerDocument as Document).createTextNode('');
@@ -398,7 +421,9 @@ function attachTextEffect(marker: Comment, signal: Signal<unknown>): () => void 
     insertedTextNodes.set(marker, text);
   }
   const node = text;
-  return effect(() => { node.data = coerceText(signal.value); });
+  return effect(() => {
+    node.data = coerceText(signal.value);
+  });
 }
 
 /**
@@ -455,8 +480,11 @@ function setBoundAttr(el: Element, name: string, value: unknown): void {
 // recognize SafeHtml instances from any copy of the module.
 const SAFE_HTML_BRAND = Symbol.for('kerfjs.SafeHtml');
 function isSafeHtmlValue(v: unknown): v is { __html: string } {
-  return typeof v === 'object' && v !== null
-    && (v as Record<symbol, unknown>)[SAFE_HTML_BRAND] === true;
+  return (
+    typeof v === 'object' &&
+    v !== null &&
+    (v as Record<symbol, unknown>)[SAFE_HTML_BRAND] === true
+  );
 }
 
 /** Coerce a bound text value: nullish + boolean render nothing (React-style). */
@@ -470,11 +498,16 @@ function coerceText(value: unknown): string {
  * Hand-rolled recursion (same as `mount.ts`'s comment walker) because
  * happy-dom's `TreeWalker` does not surface comment nodes.
  */
-function collectComments(node: Node, prefix: string, out: Map<string, Comment>): void {
+function collectComments(
+  node: Node,
+  prefix: string,
+  out: Map<string, Comment>,
+): void {
   for (let c: Node | null = node.firstChild; c !== null; c = c.nextSibling) {
     if (c.nodeType === Node.COMMENT_NODE) {
       const data = (c as Comment).data;
-      if (data.startsWith(prefix)) out.set(data.slice(prefix.length), c as Comment);
+      if (data.startsWith(prefix))
+        out.set(data.slice(prefix.length), c as Comment);
     } else if (c.nodeType === Node.ELEMENT_NODE) {
       collectComments(c, prefix, out);
     }

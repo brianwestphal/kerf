@@ -21,7 +21,16 @@ export interface ListInsetTextProps {
  * Pass `horizontalOnly` to keep the horizontal inset but drop the vertical box
  * space for tight text layout.
  */
-export function ListInsetText({ children, horizontalOnly = false, className = '' }: ListInsetTextProps) {
-  const cls = `kui-list-inset-text${horizontalOnly ? ' kui-list-inset-text--horizontal' : ''} ${className}`.trim();
-  return <div class={cls} data-component="list-inset-text">{children}</div>;
+export function ListInsetText({
+  children,
+  horizontalOnly = false,
+  className = '',
+}: ListInsetTextProps) {
+  const cls =
+    `kui-list-inset-text${horizontalOnly ? ' kui-list-inset-text--horizontal' : ''} ${className}`.trim();
+  return (
+    <div class={cls} data-component="list-inset-text">
+      {children}
+    </div>
+  );
 }

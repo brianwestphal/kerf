@@ -20,15 +20,19 @@ import {
   tryTextContentFastPath,
 } from '../../src/list-reconcile-fast-paths.js';
 
-const ROW_BEFORE = '<tr data-key="1" class="">'
-  + '<td class="col-md-1">1</td>'
-  + '<td class="col-md-4"><a class="lbl" data-id="1">pretty red house</a></td>'
-  + '<td class="col-md-1"><a class="remove" data-id="1"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>'
-  + '<td class="col-md-6"></td>'
-  + '</tr>';
+const ROW_BEFORE =
+  '<tr data-key="1" class="">' +
+  '<td class="col-md-1">1</td>' +
+  '<td class="col-md-4"><a class="lbl" data-id="1">pretty red house</a></td>' +
+  '<td class="col-md-1"><a class="remove" data-id="1"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>' +
+  '<td class="col-md-6"></td>' +
+  '</tr>';
 
 const ROW_SELECTED = ROW_BEFORE.replace('class=""', 'class="danger"');
-const ROW_LABEL_UPDATED = ROW_BEFORE.replace('pretty red house', 'pretty red house !!!');
+const ROW_LABEL_UPDATED = ROW_BEFORE.replace(
+  'pretty red house',
+  'pretty red house !!!',
+);
 const ROW_STRUCTURAL = ROW_BEFORE.replace(
   '<a class="lbl" data-id="1">pretty red house</a>',
   '<a class="lbl" data-id="1"><strong>pretty red house</strong></a>',
@@ -48,9 +52,12 @@ describe('attribute-only fast path: detection cost', () => {
     tryAttributeOnlyFastPath(liveRow, ROW_BEFORE, ROW_SELECTED);
   });
 
-  bench('tryAttributeOnlyFastPath — bails on text-only diff (must scan to first >)', () => {
-    tryAttributeOnlyFastPath(liveRow, ROW_BEFORE, ROW_LABEL_UPDATED);
-  });
+  bench(
+    'tryAttributeOnlyFastPath — bails on text-only diff (must scan to first >)',
+    () => {
+      tryAttributeOnlyFastPath(liveRow, ROW_BEFORE, ROW_LABEL_UPDATED);
+    },
+  );
 
   bench('tryAttributeOnlyFastPath — bails on structural diff', () => {
     tryAttributeOnlyFastPath(liveRow, ROW_BEFORE, ROW_STRUCTURAL);
@@ -64,9 +71,12 @@ describe('text-content fast path: detection cost', () => {
     tryTextContentFastPath(liveRow, ROW_BEFORE, ROW_LABEL_UPDATED);
   });
 
-  bench('tryTextContentFastPath — bails on attribute-only diff (diff window has \'"\')', () => {
-    tryTextContentFastPath(liveRow, ROW_BEFORE, ROW_SELECTED);
-  });
+  bench(
+    "tryTextContentFastPath — bails on attribute-only diff (diff window has '\"')",
+    () => {
+      tryTextContentFastPath(liveRow, ROW_BEFORE, ROW_SELECTED);
+    },
+  );
 
   bench('tryTextContentFastPath — bails on structural diff', () => {
     tryTextContentFastPath(liveRow, ROW_BEFORE, ROW_STRUCTURAL);

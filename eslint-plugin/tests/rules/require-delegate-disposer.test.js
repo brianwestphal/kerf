@@ -10,7 +10,9 @@ ruleTester.run('require-delegate-disposer', rule, {
     { code: "const off = delegate(root, 'click', '.x', fn);" },
     { code: "let off; off = delegate(root, 'click', '.x', fn);" },
     // Pushed into an array.
-    { code: "const disposers = []; disposers.push(delegate(root, 'click', '.x', fn));" },
+    {
+      code: "const disposers = []; disposers.push(delegate(root, 'click', '.x', fn));",
+    },
     // Returned from a function.
     { code: "function setup() { return delegate(root, 'click', '.x', fn); }" },
     { code: "const setup = () => delegate(root, 'click', '.x', fn);" },
@@ -19,7 +21,9 @@ ruleTester.run('require-delegate-disposer', rule, {
     // Property in an object literal.
     { code: "const teardown = { off: delegate(root, 'click', '.x', fn) };" },
     // Element in an array literal.
-    { code: "const offs = [delegate(root, 'click', '.x', fn), delegate(root, 'blur', '.y', fn)];" },
+    {
+      code: "const offs = [delegate(root, 'click', '.x', fn), delegate(root, 'blur', '.y', fn)];",
+    },
     // Explicit-discard sigil — page-lifetime opt-out.
     { code: "void delegate(document.body, 'click', '.x', fn);" },
     { code: "void delegateCapture(document.body, 'blur', '.x', fn);" },
@@ -39,7 +43,9 @@ ruleTester.run('require-delegate-disposer', rule, {
     },
     {
       code: "delegateCapture(root, 'blur', '.x', fn);",
-      errors: [{ messageId: 'requireDisposer', data: { fn: 'delegateCapture' } }],
+      errors: [
+        { messageId: 'requireDisposer', data: { fn: 'delegateCapture' } },
+      ],
     },
     {
       // Multiple bare calls — each flagged.

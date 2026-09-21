@@ -11,13 +11,13 @@
 # open recurring no-op PRs. Enable an `npm` entry here if/when that changes.
 version: 2
 updates:
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       github-actions:
         patterns:
-          - "*"
+          - '*'
     commit-message:
-      prefix: "ci"
+      prefix: 'ci'

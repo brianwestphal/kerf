@@ -7,24 +7,24 @@ Maps to **kerf Hard Rule 2** — the keyed reconciler matches items by `id` firs
 ## ❌ Incorrect
 
 ```tsx
-each(items, (item) => <li>{item.name}</li>)
+each(items, (item) => <li>{item.name}</li>);
 
 each(items, (item) => {
   return <li class="row">{item.name}</li>;
-})
+});
 
-each(items, (item) => <>{item.name}</>)
+each(items, (item) => <>{item.name}</>);
 ```
 
 ## ✅ Correct
 
 ```tsx
-each(items, (item) => <li data-key={item.id}>{item.name}</li>)
+each(items, (item) => <li data-key={item.id}>{item.name}</li>);
 
-each(items, (item) => <li id={item.id}>{item.name}</li>)
+each(items, (item) => <li id={item.id}>{item.name}</li>);
 
 // Spread attributes are conservatively allowed — they may include the key.
-each(items, (item) => <li {...item.attrs}>{item.name}</li>)
+each(items, (item) => <li {...item.attrs}>{item.name}</li>);
 ```
 
 ## What this rule does NOT catch

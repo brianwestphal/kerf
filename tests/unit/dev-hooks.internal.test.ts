@@ -17,10 +17,17 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { DEV_HOOKS } from '../../src/dev.js';
-import { clearDevHooks, devHooks, installDevHooks } from '../../src/dev-hooks.js';
+import {
+  clearDevHooks,
+  devHooks,
+  installDevHooks,
+} from '../../src/dev-hooks.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { defineStore } from '../../src/store.js';
-import { enterProductionShape, restoreDevelopmentShape } from '../helpers/dev-shape.js';
+import {
+  enterProductionShape,
+  restoreDevelopmentShape,
+} from '../helpers/dev-shape.js';
 
 afterEach(() => {
   restoreDevelopmentShape();
@@ -63,8 +70,12 @@ describe('production shape — no hooks installed', () => {
     const store = defineStore({
       initial: () => ({ count: 0, nested: { x: 1 } }),
       actions: (_set, get) => ({
-        mutate: () => { (get() as { count: number }).count = 42; },
-        mutateNested: () => { (get() as { nested: { x: number } }).nested.x = 9; },
+        mutate: () => {
+          (get() as { count: number }).count = 42;
+        },
+        mutateNested: () => {
+          (get() as { nested: { x: number } }).nested.x = 9;
+        },
       }),
     });
     // Production semantics: the write lands silently instead of throwing.
@@ -76,7 +87,10 @@ describe('production shape — no hooks installed', () => {
     enterProductionShape();
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     try {
-      const out = jsx('a', { href: 'javascript:alert(1)', children: 'x' }).toString();
+      const out = jsx('a', {
+        href: 'javascript:alert(1)',
+        children: 'x',
+      }).toString();
       expect(out).toBe('<a>x</a>');
       expect(warn).toHaveBeenCalledTimes(1);
     } finally {
@@ -87,7 +101,9 @@ describe('production shape — no hooks installed', () => {
   it('stays in production shape even with NODE_ENV=development and a KERF_DEV=true nothing reads', () => {
     // The old gate would have reported DEVELOPMENT for both of these. Neither
     // is consulted any more: installation is the only signal.
-    const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+    const env = (
+      globalThis as { process: { env: Record<string, string | undefined> } }
+    ).process.env;
     const glob = globalThis as { KERF_DEV?: unknown };
     const prev = env.NODE_ENV;
     env.NODE_ENV = 'development';
@@ -96,7 +112,11 @@ describe('production shape — no hooks installed', () => {
       enterProductionShape();
       const store = defineStore({
         initial: () => ({ count: 0 }),
-        actions: (_set, get) => ({ mutate: () => { (get() as { count: number }).count = 42; } }),
+        actions: (_set, get) => ({
+          mutate: () => {
+            (get() as { count: number }).count = 42;
+          },
+        }),
       });
       expect(() => store.actions.mutate()).not.toThrow();
     } finally {

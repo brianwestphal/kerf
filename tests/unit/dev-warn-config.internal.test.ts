@@ -12,16 +12,29 @@
  * excludes it.
  */
 
-import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
 import { enableWarnings } from '../../src/dev.js';
 import { maybeCheckListInvariants } from '../../src/dev-invariants.js';
 import { _resetCoverageNoticeForTests } from '../../src/dev-signal.js';
-import { _resetWarningOptionsForTests, devFlag } from '../../src/dev-warn-config.js';
+import {
+  _resetWarningOptionsForTests,
+  devFlag,
+} from '../../src/dev-warn-config.js';
 import type { ListBinding } from '../../src/list-binding.js';
 import { defineStore } from '../../src/store.js';
 
-const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+const env = (
+  globalThis as { process: { env: Record<string, string | undefined> } }
+).process.env;
 
 let warnSpy: MockInstance<typeof console.warn>;
 
@@ -29,7 +42,9 @@ let warnSpy: MockInstance<typeof console.warn>;
 function narrowSettingStore(): { setA: (a: number) => void } {
   const store = defineStore({
     initial: () => ({ a: 1, b: 2 }),
-    actions: (set) => ({ setA: (a: number) => set({ a } as { a: number; b: number }) }),
+    actions: (set) => ({
+      setA: (a: number) => set({ a } as { a: number; b: number }),
+    }),
   });
   return store.actions;
 }
@@ -53,7 +68,9 @@ describe('enableWarnings() — the in-code switch', () => {
     enableWarnings({ narrowSet: true });
     narrowSettingStore().setA(9);
     expect(warnSpy).toHaveBeenCalledOnce();
-    expect(String(warnSpy.mock.calls[0][0])).toMatch(/keys missing from the current state/);
+    expect(String(warnSpy.mock.calls[0][0])).toMatch(
+      /keys missing from the current state/,
+    );
   });
 
   it('leaves everything it was not asked about alone', () => {
@@ -70,7 +87,9 @@ describe('enableWarnings() — the in-code switch', () => {
   });
 
   it('ignores a key it does not recognize instead of throwing', () => {
-    expect(() => enableWarnings({ notARealWarning: true } as never)).not.toThrow();
+    expect(() =>
+      enableWarnings({ notARealWarning: true } as never),
+    ).not.toThrow();
   });
 
   it('ignores an explicitly-undefined value, so a spread of optional flags is safe', () => {
@@ -89,15 +108,18 @@ describe('enableWarnings() — the in-code switch', () => {
     marker.remove(); // corrupt it: the marker left the tree
 
     enableWarnings({ invariants: 'throw' });
-    expect(() => maybeCheckListInvariants(root, new Map([['0', binding]])))
-      .toThrow(/kerf invariant violated after reconcile/);
+    expect(() =>
+      maybeCheckListInvariants(root, new Map([['0', binding]])),
+    ).toThrow(/kerf invariant violated after reconcile/);
     document.body.innerHTML = '';
   });
 
   it('prints the untracked-signal coverage boundary once when that one is enabled', () => {
     enableWarnings({ untrackedSignals: true });
     expect(warnSpy).toHaveBeenCalledOnce();
-    expect(String(warnSpy.mock.calls[0][0])).toMatch(/only covers signals created AFTER/);
+    expect(String(warnSpy.mock.calls[0][0])).toMatch(
+      /only covers signals created AFTER/,
+    );
     enableWarnings({ untrackedSignals: true });
     expect(warnSpy).toHaveBeenCalledOnce(); // one-shot
   });
@@ -237,7 +259,9 @@ describe('browser shape — no `process` object at all (the KF-434 defect)', () 
 
   it('and the env-var path is genuinely unavailable there — which is why it exists', () => {
     const realProcess = (globalThis as { process?: unknown }).process;
-    (realProcess as { env: Record<string, string | undefined> }).env.KERF_DEV_WARN_NARROW_SET = '1';
+    (
+      realProcess as { env: Record<string, string | undefined> }
+    ).env.KERF_DEV_WARN_NARROW_SET = '1';
     delete (globalThis as { process?: unknown }).process;
     try {
       narrowSettingStore().setA(9);

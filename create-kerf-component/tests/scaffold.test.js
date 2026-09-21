@@ -24,7 +24,12 @@ function scaffold(name) {
   const dir = mkdtempSync(join(tmpdir(), 'ckc-'));
   const target = join(dir, name);
   const stdout = execFileSync('node', [CLI, target], { encoding: 'utf8' });
-  return { dir, target, stdout, read: (f) => readFileSync(join(target, f), 'utf8') };
+  return {
+    dir,
+    target,
+    stdout,
+    read: (f) => readFileSync(join(target, f), 'utf8'),
+  };
 }
 
 // Run the CLI once and assert on the result. Cleanup happens regardless.
@@ -52,7 +57,10 @@ test('scaffolds the expected file tree', () => {
       assert.ok(existsSync(join(target, f)), `missing ${f}`);
     }
     // The dotfile placeholder must be renamed, not shipped verbatim.
-    assert.ok(!existsSync(join(target, '_gitignore')), '_gitignore should be renamed to .gitignore');
+    assert.ok(
+      !existsSync(join(target, '_gitignore')),
+      '_gitignore should be renamed to .gitignore',
+    );
   });
 });
 
@@ -63,7 +71,10 @@ test('replaces the package-name token everywhere', () => {
     }
     assert.equal(JSON.parse(read('package.json')).name, 'my-widgets');
     assert.match(read('README.md'), /my-widgets/);
-    assert.match(read('LICENSE'), /^MIT License\n\nCopyright \(c\) The my-widgets contributors$/m);
+    assert.match(
+      read('LICENSE'),
+      /^MIT License\n\nCopyright \(c\) The my-widgets contributors$/m,
+    );
   });
 });
 
@@ -72,9 +83,18 @@ test('package.json keeps kerfjs a peerDependency (never bundled), with ESM + sub
     const pkg = JSON.parse(read('package.json'));
     assert.equal(pkg.type, 'module');
     assert.ok(pkg.peerDependencies?.kerfjs, 'kerfjs must be a peerDependency');
-    assert.ok(!pkg.dependencies?.kerfjs, 'kerfjs must NOT be a regular dependency');
-    assert.ok(pkg.devDependencies?.kerfjs, 'kerfjs should be a devDependency for local dev');
-    assert.deepEqual(pkg.exports['.'], { types: './dist/index.d.ts', import: './dist/index.js' });
+    assert.ok(
+      !pkg.dependencies?.kerfjs,
+      'kerfjs must NOT be a regular dependency',
+    );
+    assert.ok(
+      pkg.devDependencies?.kerfjs,
+      'kerfjs should be a devDependency for local dev',
+    );
+    assert.deepEqual(pkg.exports['.'], {
+      types: './dist/index.d.ts',
+      import: './dist/index.js',
+    });
     assert.ok(pkg.exports['./counter'], 'subpath export missing');
     assert.ok(pkg.files.includes('dist'), 'files must ship dist');
     assert.ok(pkg.files.includes('LICENSE'), 'files must ship LICENSE');
@@ -84,7 +104,11 @@ test('package.json keeps kerfjs a peerDependency (never bundled), with ESM + sub
 test('tsup build keeps kerfjs external and emits ESM + TypeScript 6-compatible dts', () => {
   withScaffold('my-widgets', ({ read }) => {
     const tsup = read('tsup.config.ts');
-    assert.match(tsup, /external:\s*\[\s*['"]kerfjs['"]/, 'kerfjs must be external in the build');
+    assert.match(
+      tsup,
+      /external:\s*\[\s*['"]kerfjs['"]/,
+      'kerfjs must be external in the build',
+    );
     assert.match(tsup, /dts:\s*\{/);
     assert.match(tsup, /ignoreDeprecations:\s*['"]6\.0['"]/);
     assert.match(tsup, /versionMajorMinor\.startsWith\(['"]6\.['"]\)/);
@@ -103,12 +127,24 @@ test('tsconfig sets jsxImportSource to kerfjs', () => {
 test('example component shows the factory + wire patterns and no inline handlers', () => {
   withScaffold('my-widgets', ({ read }) => {
     const counter = read('src/counter.tsx');
-    assert.match(counter, /export function createCounter/, 'factory pattern missing');
-    assert.match(counter, /export function wireCounter/, 'wire() disposer missing');
+    assert.match(
+      counter,
+      /export function createCounter/,
+      'factory pattern missing',
+    );
+    assert.match(
+      counter,
+      /export function wireCounter/,
+      'wire() disposer missing',
+    );
     assert.match(counter, /delegate\(/, 'must wire events via delegate()');
     assert.match(counter, /data-action/, 'must emit delegation hooks');
     // Check code only — the comments intentionally name `onClick={...}` as the anti-pattern.
-    assert.doesNotMatch(stripComments(counter), /\bon[A-Z][a-zA-Z]*=\{/, 'no inline JSX event handlers');
+    assert.doesNotMatch(
+      stripComments(counter),
+      /\bon[A-Z][a-zA-Z]*=\{/,
+      'no inline JSX event handlers',
+    );
     assert.match(counter, /store\.state\.value/, 'reads store via state.value');
   });
 });
@@ -151,9 +187,18 @@ test('with no arg, takes the target from piped stdin (the prompt fallback)', () 
   // from stdin. Run from a temp cwd so the scaffold lands there.
   const dir = mkdtempSync(join(tmpdir(), 'ckc-'));
   try {
-    const stdout = execFileSync('node', [CLI], { cwd: dir, input: 'piped-widget\n', encoding: 'utf8' });
+    const stdout = execFileSync('node', [CLI], {
+      cwd: dir,
+      input: 'piped-widget\n',
+      encoding: 'utf8',
+    });
     assert.match(stdout, /Scaffolded kerf component package "piped-widget"/);
-    assert.equal(JSON.parse(readFileSync(join(dir, 'piped-widget', 'package.json'), 'utf8')).name, 'piped-widget');
+    assert.equal(
+      JSON.parse(
+        readFileSync(join(dir, 'piped-widget', 'package.json'), 'utf8'),
+      ).name,
+      'piped-widget',
+    );
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
@@ -176,7 +221,11 @@ test('rejects an existing non-empty target directory', () => {
 test('rejects an invalid package name', () => {
   const dir = mkdtempSync(join(tmpdir(), 'ckc-'));
   try {
-    assert.throws(() => execFileSync('node', [CLI, join(dir, 'Bad Name')], { stdio: 'pipe' }), /Command failed/);
+    assert.throws(
+      () =>
+        execFileSync('node', [CLI, join(dir, 'Bad Name')], { stdio: 'pipe' }),
+      /Command failed/,
+    );
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }

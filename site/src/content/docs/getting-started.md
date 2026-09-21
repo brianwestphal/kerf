@@ -21,18 +21,18 @@ Point your `tsconfig.json` at kerf's JSX runtime:
 {
   "compilerOptions": {
     "jsx": "react-jsx",
-    "jsxImportSource": "kerfjs"
-  }
+    "jsxImportSource": "kerfjs",
+  },
 }
 ```
 
 And write the counter from the animation:
 
 ```tsx
-import { signal, mount, delegate } from 'kerfjs';
+import { signal, mount, delegate } from "kerfjs";
 
 const count = signal(0);
-const root = document.getElementById('app')!;
+const root = document.getElementById("app")!;
 
 mount(root, () => (
   <button class="btn" data-action="inc">
@@ -40,13 +40,13 @@ mount(root, () => (
   </button>
 ));
 
-delegate(root, 'click', '[data-action="inc"]', () => count.value++);
+delegate(root, "click", '[data-action="inc"]', () => count.value++);
 ```
 
 Three things to notice, because they're the whole mental model:
 
-- **`{count}` is the signal itself, not `count.value`.** That makes it a *bound hole* — a click updates that one text node directly, with no render re-run. Values bind; structure re-renders. (The edit in the animation does the same for an attribute: `class={cls}` binds a `computed` that flips the button's look at the fifth click.)
-- **`mount()` re-runs the render only when a signal it *read* changes.** This render reads nothing, so it runs exactly once.
+- **`{count}` is the signal itself, not `count.value`.** That makes it a _bound hole_ — a click updates that one text node directly, with no render re-run. Values bind; structure re-renders. (The edit in the animation does the same for an attribute: `class={cls}` binds a `computed` that flips the button's look at the fifth click.)
+- **`mount()` re-runs the render only when a signal it _read_ changes.** This render reads nothing, so it runs exactly once.
 - **`delegate()` is one listener on the root**, dispatched by selector — no per-element handlers, nothing to unbind when the DOM changes.
 
 ## Where to go next

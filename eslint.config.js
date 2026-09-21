@@ -52,7 +52,10 @@ export default [
       'simple-import-sort/imports': 'error',
       'simple-import-sort/exports': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
       '@typescript-eslint/no-explicit-any': 'warn',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
       // TypeScript function overloads are legitimate redeclarations; tsc --noEmit
@@ -61,7 +64,12 @@ export default [
     },
   },
   {
-    files: ['tests/**/*.ts', 'tests/**/*.tsx', 'src/**/*.test.ts', 'src/**/*.test.tsx'],
+    files: [
+      'tests/**/*.ts',
+      'tests/**/*.tsx',
+      'src/**/*.test.ts',
+      'src/**/*.test.tsx',
+    ],
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
@@ -71,7 +79,11 @@ export default [
     // Playwright real-browser tests run in a Node test runner that drives a
     // browser via `page.evaluate`. Both globals are available in their
     // respective execution contexts; we silence undef + console-info here.
-    files: ['tests/browser/**/*.ts', 'tests/browser/**/*.tsx', 'tests/browser/**/*.mjs'],
+    files: [
+      'tests/browser/**/*.ts',
+      'tests/browser/**/*.tsx',
+      'tests/browser/**/*.mjs',
+    ],
     languageOptions: {
       globals: {
         performance: 'readonly',

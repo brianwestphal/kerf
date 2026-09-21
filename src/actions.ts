@@ -40,7 +40,10 @@ const DEFAULT_ACTION_ATTR = 'data-action';
  * matched element (walk-up `closest()` match by default) — the same shape as a
  * `delegate()` handler.
  */
-export type ActionHandler<E extends Element = Element> = (event: Event, el: E) => void;
+export type ActionHandler<E extends Element = Element> = (
+  event: Event,
+  el: E,
+) => void;
 
 /**
  * `action(value)` — an {@link AttrSpec} on `data-action`. A thin specialization

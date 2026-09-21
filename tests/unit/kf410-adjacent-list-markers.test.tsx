@@ -39,11 +39,15 @@ describe('KF-410: adjacent list markers do not cross-pair', () => {
   it('showing an empty conditional list while inserting into a sibling keeps the sibling', () => {
     const cond = signal(true);
     const a = arraySignal<{ id: string }>([]); // empty, keyed, inside the conditional
-    const b = arraySignal([{ id: 's0i0' }]);   // sibling
+    const b = arraySignal([{ id: 's0i0' }]); // sibling
     const dispose = mount(root, () => (
       <div>
-        {cond.value ? each(a, (r) => <li data-a={r.id}>{r.id}</li>, { key: 'L0' }) : ''}
-        {each(b, (r) => <li data-b={r.id}>{r.id}</li>)}
+        {cond.value
+          ? each(a, (r) => <li data-a={r.id}>{r.id}</li>, { key: 'L0' })
+          : ''}
+        {each(b, (r) => (
+          <li data-b={r.id}>{r.id}</li>
+        ))}
       </div>
     ));
     // Drive cond to false (three toggles from true), so the batch below turns
@@ -68,13 +72,23 @@ describe('KF-410: adjacent list markers do not cross-pair', () => {
     const b = arraySignal([{ id: 'one' }]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value ? each(a, (r) => <li data-a={r.id}>{r.id}</li>, { key: 'L0' }) : ''}
-        {each(b, (r) => <li data-b={r.id}>{r.id}</li>)}
+        {cond.value
+          ? each(a, (r) => <li data-a={r.id}>{r.id}</li>, { key: 'L0' })
+          : ''}
+        {each(b, (r) => (
+          <li data-b={r.id}>{r.id}</li>
+        ))}
       </div>
     ));
-    batch(() => { b.insert(0, { id: 'two' }); cond.value = true; });   // A appears
+    batch(() => {
+      b.insert(0, { id: 'two' });
+      cond.value = true;
+    }); // A appears
     expect(bRows()).toEqual(['two', 'one']);
-    batch(() => { b.insert(0, { id: 'three' }); cond.value = false; }); // A disappears
+    batch(() => {
+      b.insert(0, { id: 'three' });
+      cond.value = false;
+    }); // A disappears
     expect(bRows()).toEqual(['three', 'two', 'one']);
     dispose();
   });
@@ -85,14 +99,23 @@ describe('KF-410: adjacent list markers do not cross-pair', () => {
     const b = arraySignal([{ id: 'b1' }]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value ? each(a, (r) => <li data-a={r.id}>{r.id}</li>, { key: 'L0' }) : ''}
-        {each(b, (r) => <li data-b={r.id}>{r.id}</li>)}
+        {cond.value
+          ? each(a, (r) => <li data-a={r.id}>{r.id}</li>, { key: 'L0' })
+          : ''}
+        {each(b, (r) => (
+          <li data-b={r.id}>{r.id}</li>
+        ))}
       </div>
     ));
-    batch(() => { b.insert(0, { id: 'b0' }); cond.value = true; });
+    batch(() => {
+      b.insert(0, { id: 'b0' });
+      cond.value = true;
+    });
     // A is now shown and empty; push to it and confirm it — and B — are correct.
     a.push({ id: 'a1' });
-    expect(Array.from(root.querySelectorAll('[data-a]')).map((el) => el.textContent)).toEqual(['a1']);
+    expect(
+      Array.from(root.querySelectorAll('[data-a]')).map((el) => el.textContent),
+    ).toEqual(['a1']);
     expect(bRows()).toEqual(['b0', 'b1']);
     dispose();
   });
@@ -102,7 +125,10 @@ describe('KF-410: adjacent list markers do not cross-pair', () => {
     // state and must keep pairing positionally so its text updates in place.
     const label = signal('first');
     const dispose = mount(root, () => (
-      <div>{`before`}<span>{label.value}</span></div>
+      <div>
+        {`before`}
+        <span>{label.value}</span>
+      </div>
     ));
     // Inject a raw comment the way a consumer might, then re-render.
     const span = root.querySelector('span') as Element;

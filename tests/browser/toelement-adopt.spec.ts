@@ -20,14 +20,20 @@ import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
-  await page.waitForFunction(() => (window as unknown as { kerfReady: boolean }).kerfReady === true);
+  await page.waitForFunction(
+    () => (window as unknown as { kerfReady: boolean }).kerfReady === true,
+  );
 });
 
-test('toElement() returns nodes owned by the live document, not a <template>/DOMParser inert doc', async ({ page }) => {
+test('toElement() returns nodes owned by the live document, not a <template>/DOMParser inert doc', async ({
+  page,
+}) => {
   const result = await page.evaluate(() => {
     const { toElement } = (window as any).kerf;
     const htmlEl = toElement('<div class="card"></div>');
-    const svgEl = toElement('<svg xmlns="http://www.w3.org/2000/svg"><circle r="1"/></svg>');
+    const svgEl = toElement(
+      '<svg xmlns="http://www.w3.org/2000/svg"><circle r="1"/></svg>',
+    );
     const orphan = toElement('<path d="M0 0"/>');
     const frag = toElement('<span>a</span><span>b</span>');
     return {
@@ -37,7 +43,9 @@ test('toElement() returns nodes owned by the live document, not a <template>/DOM
       orphanSame: orphan.ownerDocument === document,
       orphanNS: orphan.namespaceURI,
       fragSame: frag.ownerDocument === document,
-      fragChildrenSame: (Array.from(frag.children) as Element[]).every((c) => c.ownerDocument === document),
+      fragChildrenSame: (Array.from(frag.children) as Element[]).every(
+        (c) => c.ownerDocument === document,
+      ),
     };
   });
   expect(result.htmlSame).toBe(true);
@@ -49,7 +57,9 @@ test('toElement() returns nodes owned by the live document, not a <template>/DOM
   expect(result.fragChildrenSame).toBe(true);
 });
 
-test('mounting many toElement() cards before insertion paints each from its OWN state — no stale/foreign DOM (WebKit repro shape)', async ({ page }) => {
+test('mounting many toElement() cards before insertion paints each from its OWN state — no stale/foreign DOM (WebKit repro shape)', async ({
+  page,
+}) => {
   const glitches = await page.evaluate(() => {
     const { toElement, mount } = (window as any).kerf;
     // Mirror the LingoGist feed: rapidly create many detached cards, each
@@ -61,10 +71,13 @@ test('mounting many toElement() cards before insertion paints each from its OWN 
     for (let i = 0; i < 400; i++) {
       const answered = i % 3 === 0; // some answered, some not — distinct shapes
       const card = toElement('<div class="probe"></div>') as HTMLElement;
-      mount(card, () =>
-        `<button class="opt${answered ? ' selected' : ''}"${answered ? ' disabled' : ''}>Yes</button>`,
+      mount(
+        card,
+        () =>
+          `<button class="opt${answered ? ' selected' : ''}"${answered ? ' disabled' : ''}>Yes</button>`,
       );
-      const looksAnswered = card.querySelector('.selected, button[disabled]') !== null;
+      const looksAnswered =
+        card.querySelector('.selected, button[disabled]') !== null;
       if (looksAnswered !== answered) bad.push(i); // DOM disagrees with this card's state
       document.body.appendChild(card);
     }

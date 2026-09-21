@@ -64,18 +64,27 @@ function findMarkers(path) {
   const lines = readFileSync(path, 'utf8').split('\n');
   lines.forEach((line, i) => {
     const found = line.match(TICKET_RE);
-    if (found) hits.push({ line: i + 1, text: line.trim(), markers: [...new Set(found)] });
+    if (found)
+      hits.push({
+        line: i + 1,
+        text: line.trim(),
+        markers: [...new Set(found)],
+      });
   });
   return hits;
 }
 
 function main() {
-  const files = [...publishedSourceDocs(), ...walkMarkdown(SITE_DOCS_DIR)].sort();
+  const files = [
+    ...publishedSourceDocs(),
+    ...walkMarkdown(SITE_DOCS_DIR),
+  ].sort();
 
   const offenders = [];
   for (const path of files) {
     const hits = findMarkers(path);
-    if (hits.length > 0) offenders.push({ path: relative(REPO_ROOT, path), hits });
+    if (hits.length > 0)
+      offenders.push({ path: relative(REPO_ROOT, path), hits });
   }
 
   if (offenders.length === 0) {
@@ -94,11 +103,11 @@ function main() {
     }
   }
   console.error(
-    '\nHot Sheet is local-only, so a bare KF-NN is unlookable for a site reader.\n'
-    + 'Replace each marker with the self-contained summary it stands for (usually\n'
-    + 'the surrounding prose already says it, so the marker is a straight deletion).\n'
-    + 'If the offender is a generated file under site/src/content/docs/, fix the\n'
-    + 'source doc and re-run `node site/scripts/sync-docs.mjs`.\n',
+    '\nHot Sheet is local-only, so a bare KF-NN is unlookable for a site reader.\n' +
+      'Replace each marker with the self-contained summary it stands for (usually\n' +
+      'the surrounding prose already says it, so the marker is a straight deletion).\n' +
+      'If the offender is a generated file under site/src/content/docs/, fix the\n' +
+      'source doc and re-run `node site/scripts/sync-docs.mjs`.\n',
   );
   process.exit(1);
 }

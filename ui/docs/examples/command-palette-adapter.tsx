@@ -26,17 +26,57 @@ export function mountCommandPaletteAdapter(
   const query = signal('');
   const render = () => {
     const needle = query.value.trim().toLocaleLowerCase();
-    const matches = commands.filter((command) => !needle ||
-      [command.label, ...(command.keywords ?? [])].some((value) => value.toLocaleLowerCase().includes(needle)));
-    return <section class="app-command-palette kui-content" aria-label="Command palette">
-      <div class="kui-content-item"><label for="app-command-query">Search commands</label><input id="app-command-query" type="search" value={query.value} autocomplete="off" data-command-query /></div>
-      <p class="kui-content-item" aria-live="polite">{matches.length} matching commands</p>
-      <ul class="kui-content-item" aria-label="Matching commands">{matches.map((command) => <li><button type="button" data-action="run-command" data-command-id={command.id}>{command.label}</button></li>)}</ul>
-      <footer class="kui-control-cluster kui-content-item" aria-label="Command palette actions">
-        <button type="button" data-action="clear-query">Clear search</button>
-        <button type="button" data-action="close-palette">Close</button>
-      </footer>
-    </section>;
+    const matches = commands.filter(
+      (command) =>
+        !needle ||
+        [command.label, ...(command.keywords ?? [])].some((value) =>
+          value.toLocaleLowerCase().includes(needle),
+        ),
+    );
+    return (
+      <section
+        class="app-command-palette kui-content"
+        aria-label="Command palette"
+      >
+        <div class="kui-content-item">
+          <label for="app-command-query">Search commands</label>
+          <input
+            id="app-command-query"
+            type="search"
+            value={query.value}
+            autocomplete="off"
+            data-command-query
+          />
+        </div>
+        <p class="kui-content-item" aria-live="polite">
+          {matches.length} matching commands
+        </p>
+        <ul class="kui-content-item" aria-label="Matching commands">
+          {matches.map((command) => (
+            <li>
+              <button
+                type="button"
+                data-action="run-command"
+                data-command-id={command.id}
+              >
+                {command.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <footer
+          class="kui-control-cluster kui-content-item"
+          aria-label="Command palette actions"
+        >
+          <button type="button" data-action="clear-query">
+            Clear search
+          </button>
+          <button type="button" data-action="close-palette">
+            Close
+          </button>
+        </footer>
+      </section>
+    );
   };
 
   const stopMount = mount(root, render);
@@ -52,12 +92,22 @@ export function mountCommandPaletteAdapter(
     },
     'close-palette': onClose,
   });
-  const stopInput = delegate<HTMLInputElement>(root, 'input', '[data-command-query]', (_event, input) => {
-    query.value = input.value;
-  });
-  const stopEscape = delegate(root, 'keydown', '[data-command-query]', (event) => {
-    if ((event as KeyboardEvent).key === 'Escape') onClose();
-  });
+  const stopInput = delegate<HTMLInputElement>(
+    root,
+    'input',
+    '[data-command-query]',
+    (_event, input) => {
+      query.value = input.value;
+    },
+  );
+  const stopEscape = delegate(
+    root,
+    'keydown',
+    '[data-command-query]',
+    (event) => {
+      if ((event as KeyboardEvent).key === 'Escape') onClose();
+    },
+  );
   let disposed = false;
   return () => {
     if (disposed) return;

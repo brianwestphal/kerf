@@ -19,7 +19,7 @@ The naive parser path breaks for SVG fragments WITHOUT an `<svg>` wrapper:
 
 ```ts
 const path = '<path d="M 0 0 L 10 10" />';
-const t = document.createElement('template');
+const t = document.createElement("template");
 t.innerHTML = path;
 const el = t.content.firstElementChild;
 // el is HTMLUnknownElement, not SVGPathElement.
@@ -28,6 +28,7 @@ const el = t.content.firstElementChild;
 ```
 
 You hit this when:
+
 - Generating an SVG fragment server-side and inserting it into an existing `<svg>` parent.
 - Building reusable SVG icon helpers that return just a `<g>` group.
 - Composing SVG fragments dynamically.
@@ -37,13 +38,13 @@ You hit this when:
 `toElement(jsx)` from kerf detects SVG content and routes through `DOMParser` with the `image/svg+xml` MIME, which guarantees correct namespacing for all descendants:
 
 ```ts
-import { toElement } from 'kerfjs';
+import { toElement } from "kerfjs";
 
 const path = toElement('<path d="M 0 0 L 10 10" />');
 //   ↑ now an SVGPathElement, namespaced correctly.
 
-const svgRoot = document.querySelector('svg')!;
-svgRoot.appendChild(path);   // paints correctly
+const svgRoot = document.querySelector("svg")!;
+svgRoot.appendChild(path); // paints correctly
 ```
 
 ## 7.3 What `toElement` does in detail
@@ -66,7 +67,7 @@ If you're not sure which you need, default to `mount()`. The vast majority of SV
 
 ### Security: `toElement`/`morph` on SVG strings run trusted markup only
 
-`toElement()` (and `morph()` with a string template) parse their input into live DOM with **no escaping and no sanitization** — the same trust model as `innerHTML` / `raw()`. For SVG this bites harder than for HTML: SVG is **active content**. A top-level `<svg><script>…</script></svg>`, an SVG event attribute (`onload`, `<animate onbegin="…">`), an `xlink:href="javascript:…"` on `<a>`/`<use>`, and HTML inside `<foreignObject>` all **execute** once the parsed node is inserted into the live document — whereas an HTML-string `<script>` you pass to `toElement()` is inert (the HTML path parses through `<template>.innerHTML`, which never runs scripts). The strict XML re-parse rejects *malformed* SVG, but well-formed malicious SVG passes through untouched.
+`toElement()` (and `morph()` with a string template) parse their input into live DOM with **no escaping and no sanitization** — the same trust model as `innerHTML` / `raw()`. For SVG this bites harder than for HTML: SVG is **active content**. A top-level `<svg><script>…</script></svg>`, an SVG event attribute (`onload`, `<animate onbegin="…">`), an `xlink:href="javascript:…"` on `<a>`/`<use>`, and HTML inside `<foreignObject>` all **execute** once the parsed node is inserted into the live document — whereas an HTML-string `<script>` you pass to `toElement()` is inert (the HTML path parses through `<template>.innerHTML`, which never runs scripts). The strict XML re-parse rejects _malformed_ SVG, but well-formed malicious SVG passes through untouched.
 
 So: only pass `toElement()`/`morph()` SVG (or HTML) markup you trust — authored in your own JSX, or sanitized upstream with an **SVG-aware** sanitizer (e.g. DOMPurify with SVG profiles). Never hand it unsanitized user input. If you need to render user-supplied SVG, sanitize first, then `raw()` it.
 

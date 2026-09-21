@@ -24,7 +24,10 @@ import { arraySignal } from '../../src/array-signal.js';
 import { html } from '../../src/html.js';
 import { computed, each, mount, signal } from '../../src/index.js';
 
-interface Item { id: string; label: string }
+interface Item {
+  id: string;
+  label: string;
+}
 const ROWS: Item[] = [
   { id: 'a', label: 'A' },
   { id: 'b', label: 'B' },
@@ -39,16 +42,21 @@ beforeEach(() => {
 });
 
 function labels(scope: HTMLElement = root): string[] {
-  return Array.from(scope.querySelectorAll('li:not(.hd)')).map((li) => li.textContent ?? '');
+  return Array.from(scope.querySelectorAll('li:not(.hd)')).map(
+    (li) => li.textContent ?? '',
+  );
 }
 
 describe('KF-387 html`` seam: conditional siblings around a keyed list (KF-377/KF-381/KF-382 shapes)', () => {
   it('html template: a conditional sibling before a keyed list survives the round trip with row identity', () => {
     const banner = signal(false);
-    const dispose = mount(root, () => html`<div>
+    const dispose = mount(
+      root,
+      () => html`<div>
       ${banner.value ? html`<div class="banner">warn</div>` : ''}
       <ul>${each(ROWS, (r) => html`<li data-key="${r.id}">${r.label}</li>`)}</ul>
-    </div>`);
+    </div>`,
+    );
     expect(labels()).toEqual(['A', 'B']);
     const rowA = root.querySelector('li[data-key="a"]');
 
@@ -66,7 +74,11 @@ describe('KF-387 html`` seam: conditional siblings around a keyed list (KF-377/K
   it('html template: a conditional header INSIDE the list parent before the marker keeps rows single and identical', () => {
     // KF-381 shape 1 / KF-382 marker unit-move, authored via html``.
     const hd = signal(true);
-    const dispose = mount(root, () => html`<ul>${hd.value ? html`<li class="hd">header</li>` : ''}${each(ROWS, (r) => html`<li data-key="${r.id}">${r.label}</li>`)}</ul>`);
+    const dispose = mount(
+      root,
+      () =>
+        html`<ul>${hd.value ? html`<li class="hd">header</li>` : ''}${each(ROWS, (r) => html`<li data-key="${r.id}">${r.label}</li>`)}</ul>`,
+    );
     expect(labels()).toEqual(['A', 'B']);
     const rowA = root.querySelector('li[data-key="a"]');
 
@@ -83,17 +95,29 @@ describe('KF-387 html`` seam: conditional siblings around a keyed list (KF-377/K
     // The KF-382 wedge shape via html``: rows must still precede the trailing
     // button after the header toggles off.
     const hd = signal(true);
-    const dispose = mount(root, () => html`<ul>${hd.value ? html`<li class="hd">header</li>` : ''}${each(ROWS, (r) => html`<li data-key="${r.id}">${r.label}</li>`)}<button class="more">more</button></ul>`);
+    const dispose = mount(
+      root,
+      () =>
+        html`<ul>${hd.value ? html`<li class="hd">header</li>` : ''}${each(ROWS, (r) => html`<li data-key="${r.id}">${r.label}</li>`)}<button class="more">more</button></ul>`,
+    );
     expect(labels()).toEqual(['A', 'B']);
     hd.value = false;
     expect(labels()).toEqual(['A', 'B']);
-    const tags = Array.from((root.querySelector('ul') as HTMLElement).children)
-      .map((el) => el.tagName.toLowerCase() + (el.className ? `.${el.className}` : ''));
+    const tags = Array.from(
+      (root.querySelector('ul') as HTMLElement).children,
+    ).map(
+      (el) =>
+        el.tagName.toLowerCase() + (el.className ? `.${el.className}` : ''),
+    );
     expect(tags).toEqual(['li', 'li', 'button.more']);
     hd.value = true; // round trip: header re-inserts BEFORE the marker again
     expect(labels()).toEqual(['A', 'B']);
-    const tagsBack = Array.from((root.querySelector('ul') as HTMLElement).children)
-      .map((el) => el.tagName.toLowerCase() + (el.className ? `.${el.className}` : ''));
+    const tagsBack = Array.from(
+      (root.querySelector('ul') as HTMLElement).children,
+    ).map(
+      (el) =>
+        el.tagName.toLowerCase() + (el.className ? `.${el.className}` : ''),
+    );
     expect(tagsBack).toEqual(['li.hd', 'li', 'li', 'button.more']);
     dispose();
   });
@@ -102,10 +126,13 @@ describe('KF-387 html`` seam: conditional siblings around a keyed list (KF-377/K
     // The KF-383 documented escape hatch, exercised through html`` (static
     // attributes in the template chunk, not JSX attrs).
     const banner = signal(true);
-    const dispose = mount(root, () => html`<div>
+    const dispose = mount(
+      root,
+      () => html`<div>
       ${banner.value ? html`<ul class="banner"><li class="hd">warn</li></ul>` : ''}
       <ul class="list" data-key="the-list">${each(ROWS, (r) => html`<li data-key="${r.id}">${r.label}</li>`)}</ul>
-    </div>`);
+    </div>`,
+    );
     expect(labels()).toEqual(['A', 'B']);
     const rowA = root.querySelector('li[data-key="a"]');
 
@@ -122,10 +149,13 @@ describe('KF-387 html`` seam: conditional siblings around a keyed list (KF-377/K
   it('html template: an arraySignal list stays granular-patchable after both toggle directions', () => {
     const banner = signal(false);
     const rows = arraySignal<Item>([...ROWS]);
-    const dispose = mount(root, () => html`<div>
+    const dispose = mount(
+      root,
+      () => html`<div>
       ${banner.value ? html`<div class="banner">warn</div>` : ''}
       <ul>${each(rows, (r) => html`<li data-key="${r.id}">${r.label}</li>`)}</ul>
-    </div>`);
+    </div>`,
+    );
     banner.value = true;
     rows.push({ id: 'c', label: 'C' }); // granular insert after the morph
     expect(labels()).toEqual(['A', 'B', 'C']);
@@ -145,18 +175,30 @@ describe('KF-387 html`` seam: fine-grained holes × structural morphs (KF-374 sh
     // must re-wire with the CURRENT signal value, not the initial one.
     const banner = signal(false);
     const v = signal('0:01');
-    const dispose = mount(root, () => html`<div>${banner.value ? html`<p class="b">warn</p>` : ''}<div class="time">${v} / 0:05</div></div>`);
+    const dispose = mount(
+      root,
+      () =>
+        html`<div>${banner.value ? html`<p class="b">warn</p>` : ''}<div class="time">${v} / 0:05</div></div>`,
+    );
     const t = root.querySelector('.time') as HTMLElement;
     expect(t.textContent).toBe('0:01 / 0:05');
 
     banner.value = true; // structural insert before the hole's parent
-    expect((root.querySelector('.time') as HTMLElement).textContent).toBe('0:01 / 0:05');
+    expect((root.querySelector('.time') as HTMLElement).textContent).toBe(
+      '0:01 / 0:05',
+    );
     v.value = '0:02'; // binding still live after the morph
-    expect((root.querySelector('.time') as HTMLElement).textContent).toBe('0:02 / 0:05');
+    expect((root.querySelector('.time') as HTMLElement).textContent).toBe(
+      '0:02 / 0:05',
+    );
     banner.value = false; // the shift-left direction
-    expect((root.querySelector('.time') as HTMLElement).textContent).toBe('0:02 / 0:05');
+    expect((root.querySelector('.time') as HTMLElement).textContent).toBe(
+      '0:02 / 0:05',
+    );
     v.value = '0:03';
-    expect((root.querySelector('.time') as HTMLElement).textContent).toBe('0:03 / 0:05');
+    expect((root.querySelector('.time') as HTMLElement).textContent).toBe(
+      '0:03 / 0:05',
+    );
     dispose();
   });
 
@@ -186,12 +228,19 @@ describe('KF-387 html`` seam: fine-grained holes × structural morphs (KF-374 sh
   it('html template: row-scoped holes stay live across surrounds toggles and a granular re-wire', () => {
     const banner = signal(false);
     const unit = signal('ms');
-    const rows = arraySignal([{ id: 1, label: 'lat' }, { id: 2, label: 'p95' }]);
-    const dispose = mount(root, () => html`<div>
+    const rows = arraySignal([
+      { id: 1, label: 'lat' },
+      { id: 2, label: 'p95' },
+    ]);
+    const dispose = mount(
+      root,
+      () => html`<div>
       ${banner.value ? html`<div class="banner">warn</div>` : ''}
       <ul>${each(rows, (r) => html`<li data-key="${String(r.id)}">${computed(() => r.label)} in ${unit}</li>`)}</ul>
-    </div>`);
-    const li = (i: number): HTMLElement => root.querySelectorAll('li')[i] as HTMLElement;
+    </div>`,
+    );
+    const li = (i: number): HTMLElement =>
+      root.querySelectorAll('li')[i] as HTMLElement;
     expect(li(0).textContent).toBe('lat in ms');
     banner.value = true; // surrounds morph with owned rows present
     unit.value = 's'; // row holes still live after the morph

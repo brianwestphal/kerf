@@ -21,10 +21,18 @@
  * Internal to kerf — re-exported via `list-reconcile.ts`'s `reconcileList`.
  */
 
-import { type Binding, carryOrRewireRowBindings, disposeRowBindings, wireRowBindings } from './bindings.js';
+import {
+  type Binding,
+  carryOrRewireRowBindings,
+  disposeRowBindings,
+  wireRowBindings,
+} from './bindings.js';
 import { devHooks } from './dev-hooks.js';
 import { type BoundItem, endAnchor, type ListBinding } from './list-binding.js';
-import { tryAttributeOnlyFastPath, tryTextContentFastPath } from './list-reconcile-fast-paths.js';
+import {
+  tryAttributeOnlyFastPath,
+  tryTextContentFastPath,
+} from './list-reconcile-fast-paths.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { _morphElement } from './morph.js';
 import type { InsertPatch, ListSegment, UpdatePatch } from './segment.js';
@@ -87,17 +95,26 @@ export function reconcileGranular(
       // their HTML in a single `template.innerHTML` call, followed by a
       // single `insertBefore(fragment, anchor)`.
       let runEnd = i + 1;
-      while (runEnd < patches.length
-          && patches[runEnd].type === 'insert'
-          && (patches[runEnd] as InsertPatch).index
-            === (patches[runEnd - 1] as InsertPatch).index + 1) {
+      while (
+        runEnd < patches.length &&
+        patches[runEnd].type === 'insert' &&
+        (patches[runEnd] as InsertPatch).index ===
+          (patches[runEnd - 1] as InsertPatch).index + 1
+      ) {
         runEnd += 1;
       }
       const runLen = runEnd - i;
       if (runLen === 1) {
         applySingleInsert(liveParent, items, patch, endAnchor(binding));
       } else {
-        applyBulkInsert(liveParent, items, patches, i, runEnd, endAnchor(binding));
+        applyBulkInsert(
+          liveParent,
+          items,
+          patches,
+          i,
+          runEnd,
+          endAnchor(binding),
+        );
       }
       i = runEnd;
       continue;
@@ -117,8 +134,9 @@ export function reconcileGranular(
       // Compute the anchor BEFORE we splice, so the index references the
       // pre-move state.
       let anchorIdx = patch.to;
-      if (patch.from < patch.to) anchorIdx += 1;  // account for upcoming splice removal
-      const anchor = anchorIdx < items.length ? items[anchorIdx].node : endAnchor(binding);
+      if (patch.from < patch.to) anchorIdx += 1; // account for upcoming splice removal
+      const anchor =
+        anchorIdx < items.length ? items[anchorIdx].node : endAnchor(binding);
       // A move patch relocates an existing (connected) row, so `moveNode` takes
       // the state-preserving `moveBefore` path where supported.
       moveNode(liveParent, moved.node, anchor);
@@ -144,10 +162,14 @@ function applySingleInsert(
 ): void {
   const { html } = patch;
   const newNode = parseSingleRow(html, patch.index, liveParent);
-  const anchor = patch.index < items.length ? items[patch.index].node : tailAnchor;
+  const anchor =
+    patch.index < items.length ? items[patch.index].node : tailAnchor;
   liveParent.insertBefore(newNode, anchor);
   items.splice(patch.index, 0, {
-    ref: patch.item, cacheKey: undefined, html, node: newNode,
+    ref: patch.item,
+    cacheKey: undefined,
+    html,
+    node: newNode,
     bindings: patch.bindings,
     // KF-294: wire the inserted row's fine-grained bindings to its new node.
     bindingDisposers: wireRowIfBound(newNode, patch.bindings),
@@ -155,8 +177,13 @@ function applySingleInsert(
 }
 
 /** Wire a fresh row's bindings if it has any; undefined otherwise. */
-function wireRowIfBound(node: Element, bindings: Binding[] | undefined): Array<() => void> | undefined {
-  return bindings !== undefined && bindings.length > 0 ? wireRowBindings(node, bindings) : undefined;
+function wireRowIfBound(
+  node: Element,
+  bindings: Binding[] | undefined,
+): Array<() => void> | undefined {
+  return bindings !== undefined && bindings.length > 0
+    ? wireRowBindings(node, bindings)
+    : undefined;
 }
 
 function applySingleUpdate(
@@ -181,8 +208,10 @@ function applySingleUpdate(
   // directly to the live row, skipping the parse + morph entirely. They
   // bail conservatively on anything that could be unsafe and fall through
   // to the existing _morphElement / replaceChild routes below.
-  if (tryAttributeOnlyFastPath(oldEntry.node, oldEntry.html, html)
-      || tryTextContentFastPath(oldEntry.node, oldEntry.html, html)) {
+  if (
+    tryAttributeOnlyFastPath(oldEntry.node, oldEntry.html, html) ||
+    tryTextContentFastPath(oldEntry.node, oldEntry.html, html)
+  ) {
     items[patch.index] = reuseBound(patch, html, oldEntry);
     return;
   }
@@ -211,11 +240,15 @@ function applyParsedRowUpdate(
     _morphElement(oldEntry.node, newNode);
     items[patch.index] = reuseBound(patch, html, oldEntry);
   } else {
-    disposeRowBindings(oldEntry.bindingDisposers);  // KF-294: old node discarded
+    disposeRowBindings(oldEntry.bindingDisposers); // KF-294: old node discarded
     liveParent.replaceChild(newNode, oldEntry.node);
     items[patch.index] = {
-      ref: patch.item, cacheKey: undefined, html, node: newNode,
-      bindings: patch.bindings, bindingDisposers: wireRowIfBound(newNode, patch.bindings),
+      ref: patch.item,
+      cacheKey: undefined,
+      html,
+      node: newNode,
+      bindings: patch.bindings,
+      bindingDisposers: wireRowIfBound(newNode, patch.bindings),
     };
   }
 }
@@ -237,11 +270,18 @@ function reuseBound(
   oldEntry: BoundItem,
 ): BoundItem {
   const kept = carryOrRewireRowBindings(
-    oldEntry.node, oldEntry.bindings, oldEntry.bindingDisposers, patch.bindings,
+    oldEntry.node,
+    oldEntry.bindings,
+    oldEntry.bindingDisposers,
+    patch.bindings,
   );
   return {
-    ref: patch.item, cacheKey: undefined, html, node: oldEntry.node,
-    bindings: kept.bindings, bindingDisposers: kept.bindingDisposers,
+    ref: patch.item,
+    cacheKey: undefined,
+    html,
+    node: oldEntry.node,
+    bindings: kept.bindings,
+    bindingDisposers: kept.bindingDisposers,
   };
 }
 
@@ -262,7 +302,10 @@ function applyBulkUpdate(
   // Patches already carry pre-rendered HTML (KF-99). One pass over the run:
   // skip no-ops, try the KF-198 / KF-206 fast paths (apply in place when
   // they fire), and collect everything else for one bulk parse + morph.
-  interface Change { patchIdx: number; html: string }
+  interface Change {
+    patchIdx: number;
+    html: string;
+  }
   const morphChanges: Change[] = [];
   for (let k = start; k < end; k++) {
     const p = patches[k] as UpdatePatch;
@@ -274,9 +317,11 @@ function applyBulkUpdate(
       items[p.index] = reuseBound(p, p.html, oldEntry);
       continue;
     }
-    if (tryAttributeOnlyFastPath(oldEntry.node, oldEntry.html, p.html)
-        || tryTextContentFastPath(oldEntry.node, oldEntry.html, p.html)) {
-      items[p.index] = reuseBound(p, p.html, oldEntry);  // KF-294: node reused
+    if (
+      tryAttributeOnlyFastPath(oldEntry.node, oldEntry.html, p.html) ||
+      tryTextContentFastPath(oldEntry.node, oldEntry.html, p.html)
+    ) {
+      items[p.index] = reuseBound(p, p.html, oldEntry); // KF-294: node reused
       continue;
     }
     morphChanges.push({ patchIdx: k, html: p.html });
@@ -284,7 +329,10 @@ function applyBulkUpdate(
   if (morphChanges.length === 0) return;
 
   // Bulk-parse only the rows the fast paths couldn't handle.
-  const { content, count } = parseRowTemplate(morphChanges.map((c) => c.html).join(''), liveParent);
+  const { content, count } = parseRowTemplate(
+    morphChanges.map((c) => c.html).join(''),
+    liveParent,
+  );
   if (count !== morphChanges.length) {
     throw findOffendingChange(patches, morphChanges, liveParent);
   }
@@ -333,7 +381,10 @@ function applyBulkInsert(
   for (let k = 0; k < newEntries.length; k++) {
     const p = patches[start + k] as InsertPatch;
     newEntries[k] = {
-      ref: p.item, cacheKey: undefined, html: htmls[k], node: newNodes[k],
+      ref: p.item,
+      cacheKey: undefined,
+      html: htmls[k],
+      node: newNodes[k],
       bindings: p.bindings,
       // Every fresh row needs its fine-grained holes wired to the newly parsed
       // node; otherwise later signal writes would target no live DOM binding.
@@ -357,11 +408,17 @@ function findOffendingInsert(
     // Parse in the live parent's namespace so the per-row count matches the bulk
     // parse (KF-420) — a namespace mismatch would otherwise miss the offender.
     if (parseRowTemplate(htmls[i], liveParent).count !== 1) {
-      return rowContractError((patches[start + i] as InsertPatch).index, htmls[i], liveParent);
+      return rowContractError(
+        (patches[start + i] as InsertPatch).index,
+        htmls[i],
+        liveParent,
+      );
     }
   }
   /* c8 ignore start — unreachable: same-namespace per-row parse ⇒ a bulk mismatch has an offender. */
-  return new Error('each(): bulk-insert mismatch with no per-row offender (kerf bug).');
+  return new Error(
+    'each(): bulk-insert mismatch with no per-row offender (kerf bug).',
+  );
 }
 /* c8 ignore stop */
 
@@ -378,10 +435,16 @@ function findOffendingChange(
     // Parse in the live parent's namespace so the per-row count matches the bulk
     // parse (KF-420) — a namespace mismatch would otherwise miss the offender.
     if (parseRowTemplate(c.html, liveParent).count !== 1) {
-      return rowContractError((patches[c.patchIdx] as UpdatePatch).index, c.html, liveParent);
+      return rowContractError(
+        (patches[c.patchIdx] as UpdatePatch).index,
+        c.html,
+        liveParent,
+      );
     }
   }
   /* c8 ignore start — unreachable: same-namespace per-row parse ⇒ a bulk mismatch has an offender. */
-  return new Error('each(): bulk-update mismatch with no per-row offender (kerf bug).');
+  return new Error(
+    'each(): bulk-update mismatch with no per-row offender (kerf bug).',
+  );
 }
 /* c8 ignore stop */

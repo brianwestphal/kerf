@@ -5,13 +5,13 @@ description: eslint-plugin-kerfjs — AST-only rules enforcing kerf's hard rules
 
 `eslint-plugin-kerfjs` is a companion ESLint plugin that catches kerf hard-rule violations at edit time, before they reach `tsc` or the runtime dev-warns. It sits alongside two earlier defense layers shipped by kerf:
 
-| Layer | Catches | When |
-|---|---|---|
-| `tsc --noEmit` with strict typings | Most type-shaped bugs (e.g. partial-set against multi-key store state) | Build time |
-| Opt-in dev-warns (`KERF_DEV_WARN_*`) | Rebuilt listeners, untracked signals, narrow set | Runtime |
-| **`eslint-plugin-kerfjs`** | Inline JSX handlers, missing `data-key`, nested `mount()`, global JSX augmentation | **Edit time** |
+| Layer                                | Catches                                                                            | When          |
+| ------------------------------------ | ---------------------------------------------------------------------------------- | ------------- |
+| `tsc --noEmit` with strict typings   | Most type-shaped bugs (e.g. partial-set against multi-key store state)             | Build time    |
+| Opt-in dev-warns (`KERF_DEV_WARN_*`) | Rebuilt listeners, untracked signals, narrow set                                   | Runtime       |
+| **`eslint-plugin-kerfjs`**           | Inline JSX handlers, missing `data-key`, nested `mount()`, global JSX augmentation | **Edit time** |
 
-The rules are AST-only — no `@typescript-eslint/parser` *service* dependency is required by the plugin (consumers configure their own parser). This keeps consumer setup trivial and the plugin's release cadence independent of TypeScript-ESLint major upgrades.
+The rules are AST-only — no `@typescript-eslint/parser` _service_ dependency is required by the plugin (consumers configure their own parser). This keeps consumer setup trivial and the plugin's release cadence independent of TypeScript-ESLint major upgrades.
 
 ## Install
 
@@ -23,12 +23,12 @@ npm install --save-dev eslint-plugin-kerfjs
 
 ```js
 // eslint.config.js
-import kerfjs from 'eslint-plugin-kerfjs';
-import tsParser from '@typescript-eslint/parser';
+import kerfjs from "eslint-plugin-kerfjs";
+import tsParser from "@typescript-eslint/parser";
 
 export default [
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ["**/*.ts", "**/*.tsx"],
     languageOptions: {
       parser: tsParser,
       parserOptions: { ecmaFeatures: { jsx: true } },
@@ -71,10 +71,10 @@ Require `data-key` (or `id`) on the root element returned from an `each()` row r
 
 ```tsx
 // ❌
-each(items, (item) => <li>{item.name}</li>)
+each(items, (item) => <li>{item.name}</li>);
 
 // ✅
-each(items, (item) => <li data-key={item.id}>{item.name}</li>)
+each(items, (item) => <li data-key={item.id}>{item.name}</li>);
 ```
 
 ### `kerfjs/no-nested-mount`
@@ -101,14 +101,18 @@ Disallow declaration-merging `JSX.IntrinsicElements` into the global namespace. 
 // ❌
 declare global {
   namespace JSX {
-    interface IntrinsicElements { 'my-tag': { foo?: string } }
+    interface IntrinsicElements {
+      "my-tag": { foo?: string };
+    }
   }
 }
 
 // ✅
-declare module 'kerfjs/jsx-runtime' {
+declare module "kerfjs/jsx-runtime" {
   namespace JSX {
-    interface IntrinsicElements { 'my-tag': KerfCustomElement & { foo?: string } }
+    interface IntrinsicElements {
+      "my-tag": KerfCustomElement & { foo?: string };
+    }
   }
 }
 ```
@@ -119,13 +123,13 @@ When `delegate()` / `delegateCapture()` is called with a literal `[name="value"]
 
 ```tsx
 // ❌ — JSX attribute and selector string are independent literals
-<button data-action="toggle">Toggle</button>
-delegate(root, 'click', '[data-action="toggle"]', handler);
+<button data-action="toggle">Toggle</button>;
+delegate(root, "click", '[data-action="toggle"]', handler);
 
 // ✅ — one typed constant drives both
-const TOGGLE = attr('data-action', 'toggle');
-<button {...TOGGLE.attrs}>Toggle</button>
-delegate(root, 'click', TOGGLE.selector, handler);
+const TOGGLE = attr("data-action", "toggle");
+<button {...TOGGLE.attrs}>Toggle</button>;
+delegate(root, "click", TOGGLE.selector, handler);
 ```
 
 ## Why these rules, and not more

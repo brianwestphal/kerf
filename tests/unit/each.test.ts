@@ -45,29 +45,37 @@ describe('each — basics (no mount context)', () => {
     each(items, render);
     expect(render).toHaveBeenCalledTimes(2);
     each(items, render);
-    expect(render).toHaveBeenCalledTimes(4);  // re-runs every call — no cache outside mount
+    expect(render).toHaveBeenCalledTimes(4); // re-runs every call — no cache outside mount
   });
 
   it('throws a descriptive error for primitive items', () => {
-    expect(() => each([1, 2, 3] as unknown as object[], (item) => `<li>${String(item)}</li>`))
-      .toThrow(/each\(\): items must be objects.*got number at index 0/s);
-    expect(() => each(['a'] as unknown as object[], () => '<li/>'))
-      .toThrow(/got string at index 0/);
-    expect(() => each([null] as unknown as object[], () => '<li/>'))
-      .toThrow(/got null at index 0/);
+    expect(() =>
+      each(
+        [1, 2, 3] as unknown as object[],
+        (item) => `<li>${String(item)}</li>`,
+      ),
+    ).toThrow(/each\(\): items must be objects.*got number at index 0/s);
+    expect(() => each(['a'] as unknown as object[], () => '<li/>')).toThrow(
+      /got string at index 0/,
+    );
+    expect(() => each([null] as unknown as object[], () => '<li/>')).toThrow(
+      /got null at index 0/,
+    );
   });
 
   it('throws when the same object reference appears at multiple indices', () => {
     const obj = { id: 7 };
-    expect(() => each([obj, obj], (it) => `<li>${it.id}</li>`))
-      .toThrow(/same object reference appears at multiple indices.*again at index 1/s);
+    expect(() => each([obj, obj], (it) => `<li>${it.id}</li>`)).toThrow(
+      /same object reference appears at multiple indices.*again at index 1/s,
+    );
   });
 
   it('throws when a duplicate reference appears mid-list', () => {
     const a = { id: 1 };
     const b = { id: 2 };
-    expect(() => each([a, b, a], (it) => `<li>${it.id}</li>`))
-      .toThrow(/again at index 2/);
+    expect(() => each([a, b, a], (it) => `<li>${it.id}</li>`)).toThrow(
+      /again at index 2/,
+    );
   });
 
   it('does NOT collide across two each() calls with different render fns over the same items (KF-73 / KF-87)', () => {
@@ -102,15 +110,15 @@ describe('each — caching (inside a real mount)', () => {
     const tick = signal(0);
     const renders = { count: 0 };
     mount(root, () => {
-      void tick.value;  // signal read for re-render trigger
+      void tick.value; // signal read for re-render trigger
       return each(items, (item: { id: number }) => {
         renders.count += 1;
         return `<li data-key="${item.id}">${item.id}</li>`;
       });
     });
-    expect(renders.count).toBe(2);  // initial render runs once per item
+    expect(renders.count).toBe(2); // initial render runs once per item
     tick.value = 1;
-    expect(renders.count).toBe(2);  // cache hit — render not called for unchanged items
+    expect(renders.count).toBe(2); // cache hit — render not called for unchanged items
   });
 
   it('re-renders only items that changed across renders (partial-update perf)', () => {
@@ -128,7 +136,7 @@ describe('each — caching (inside a real mount)', () => {
     // Replace just `b` with a fresh object — `a` stays identity-stable.
     const bPrime = { id: 2, label: 'b!' };
     itemsSig.value = [a, bPrime];
-    expect(renders.count).toBe(3);  // only the new b' triggers a render
+    expect(renders.count).toBe(3); // only the new b' triggers a render
   });
 
   it('re-renders an item when its optional cache key changes (selection-flip pattern)', () => {
@@ -168,13 +176,25 @@ describe('each — caching (inside a real mount)', () => {
     let lastA = '';
     let lastB = '';
     mount(root, () => {
-      const a = each(items, (it: { id: number }) => `<li data-key="a-${it.id}" class="A">${it.id}</li>`);
-      const b = each(items, (it: { id: number }) => `<li data-key="b-${it.id}" class="B">${it.id}</li>`);
+      const a = each(
+        items,
+        (it: { id: number }) =>
+          `<li data-key="a-${it.id}" class="A">${it.id}</li>`,
+      );
+      const b = each(
+        items,
+        (it: { id: number }) =>
+          `<li data-key="b-${it.id}" class="B">${it.id}</li>`,
+      );
       lastA = a.toString();
       lastB = b.toString();
       return raw(a.toString() + b.toString());
     });
-    expect(lastA).toBe('<li data-key="a-1" class="A">1</li><li data-key="a-2" class="A">2</li>');
-    expect(lastB).toBe('<li data-key="b-1" class="B">1</li><li data-key="b-2" class="B">2</li>');
+    expect(lastA).toBe(
+      '<li data-key="a-1" class="A">1</li><li data-key="a-2" class="A">2</li>',
+    );
+    expect(lastB).toBe(
+      '<li data-key="b-1" class="B">1</li><li data-key="b-2" class="B">2</li>',
+    );
   });
 });

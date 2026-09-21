@@ -4,10 +4,10 @@
 free components and the Kerf/Hot Sheet 2 design system.
 
 ```ts
-import type {} from '@kerfjs/ui/webawesome';
-import '@kerfjs/ui/webawesome.css';
-import '@awesome.me/webawesome/dist/components/button/button.js';
-import '@awesome.me/webawesome/dist/components/input/input.js';
+import type {} from "@kerfjs/ui/webawesome";
+import "@kerfjs/ui/webawesome.css";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/input/input.js";
 ```
 
 The type-only package import augments `kerfjs/jsx-runtime` with the 70
@@ -138,12 +138,12 @@ subtree, or for one instance after the theme import:
 
 ```css
 :root {
-  --wa-tooltip-arrow-size: .375rem;
-  --kui-wa-popover-arrow-size: .375rem;
+  --wa-tooltip-arrow-size: 0.375rem;
+  --kui-wa-popover-arrow-size: 0.375rem;
 }
 
 .pointed-popover {
-  --arrow-size: .5rem;
+  --arrow-size: 0.5rem;
 }
 ```
 
@@ -244,7 +244,7 @@ smallest subtree that needs a different identity:
 :root {
   --wa-color-brand-fill-loud: #7540a8;
   --wa-color-focus: #7540a8;
-  --wa-form-control-border-radius: .5rem;
+  --wa-form-control-border-radius: 0.5rem;
 }
 
 .billing-workspace {

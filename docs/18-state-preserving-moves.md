@@ -12,7 +12,7 @@ emits a `move` patch, `bindList` re-windows, or `morph()` relocates a keyed
 element the template moved. Every one of those has, until now, been an
 `insertBefore()` call.
 
-`insertBefore()` on a node that is *already in the document* is not a move — it
+`insertBefore()` on a node that is _already in the document_ is not a move — it
 is a **remove followed by a re-insert**. The node is briefly disconnected, and
 the browser resets everything that is tied to a node staying connected:
 
@@ -26,7 +26,7 @@ the browser resets everything that is tied to a node staying connected:
 kerf already carried a partial fix for the first two: `list-reconcile-focus.ts`
 snapshots the active element + selection range before a move pass and re-applies
 them after (see [`docs/4-render.md`](4-render.md) §4.4). That snapshot is a
-best-effort *restoration* — it can only put back focus and a text-selection
+best-effort _restoration_ — it can only put back focus and a text-selection
 range, and only for the elements it knows how to read. It cannot restore a
 running animation, a media position, or an `<iframe>`'s scroll and form state.
 
@@ -37,7 +37,7 @@ other engines) performs the move **atomically**: the node is never disconnected
 from the document. It is the platform finally offering the operation kerf
 always wanted — "put this live node over there, unchanged."
 
-Where it runs, `moveBefore()` preserves *more* than the focus snapshot ever
+Where it runs, `moveBefore()` preserves _more_ than the focus snapshot ever
 could. The snapshot remains necessary for interoperable text selection,
 however: Firefox can keep a contenteditable focused while retargeting its live
 Selection (and a cloned Range) to the list parent during the move.
@@ -50,7 +50,7 @@ A single internal helper, `src/utils/moveNode.ts`, wraps the choice:
 export function moveNode(parent: Node, node: Node, ref: Node | null): void {
   const move = (parent as Partial<MoveBeforeCapable>).moveBefore;
   if (move !== undefined && node.isConnected) {
-    move.call(parent, node, ref);   // atomic, state-preserving
+    move.call(parent, node, ref); // atomic, state-preserving
   } else {
     parent.insertBefore(node, ref); // fallback — kerf's prior behavior exactly
   }
@@ -69,7 +69,7 @@ Two guards, each load-bearing:
    the reconciler places it, so it is `isConnected === false` and correctly
    falls back to `insertBefore()` — there is no live state to preserve anyway.
 
-The second guard is what lets a *mixed* call site — a reverse pass that both
+The second guard is what lets a _mixed_ call site — a reverse pass that both
 inserts new rows and relocates surviving ones in one loop — route per node
 without the caller branching. Pure-insert sites (a fresh row, a cloned node)
 keep calling `insertBefore()` directly; routing them through `moveNode` would
@@ -77,17 +77,17 @@ only add a guard that is always false.
 
 ### The call sites
 
-| File | Site | Node kind |
-| --- | --- | --- |
-| `list-reconcile-snapshot.ts` | `applyMoves` reverse pass | mixed (reused move / fresh insert) |
-| `list-reconcile-granular.ts` | `move` patch | connected move |
-| `list.ts` | `bindList` reverse pass | mixed |
-| `list.ts` | `bindList` `move` patch | connected move |
-| `morph.ts` | keyed match relocation | connected move |
-| `morph.ts` | positional-lookahead relocation | connected move |
-| `morph.ts` | list-marker run relocation | connected move |
+| File                         | Site                            | Node kind                          |
+| ---------------------------- | ------------------------------- | ---------------------------------- |
+| `list-reconcile-snapshot.ts` | `applyMoves` reverse pass       | mixed (reused move / fresh insert) |
+| `list-reconcile-granular.ts` | `move` patch                    | connected move                     |
+| `list.ts`                    | `bindList` reverse pass         | mixed                              |
+| `list.ts`                    | `bindList` `move` patch         | connected move                     |
+| `morph.ts`                   | keyed match relocation          | connected move                     |
+| `morph.ts`                   | positional-lookahead relocation | connected move                     |
+| `morph.ts`                   | list-marker run relocation      | connected move                     |
 
-The invariant kerf relies on: at every `moveNode` call site, a *connected*
+The invariant kerf relies on: at every `moveNode` call site, a _connected_
 node's current parent **is** `parent` (a live row being relocated within its own
 list / container), so it is in the same document as `parent` and `moveBefore()`
 cannot throw.

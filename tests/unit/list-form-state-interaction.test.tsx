@@ -17,10 +17,10 @@
  * The rest pin documented claims verified true by execution (the KF-383
  * lesson: run the claim, don't read the code).
  */
-import { beforeEach,describe,expect,it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { each,mount } from '../../src/index.js';
+import { each, mount } from '../../src/index.js';
 
 let root: HTMLElement;
 
@@ -38,7 +38,14 @@ describe('KF-387 seam: form-state sync × list reconcile', () => {
     // fast path bails and _morphElement runs.
     const rows = arraySignal([{ id: 'a', done: false, label: 'one' }]);
     const dispose = mount(root, () => (
-      <div>{each(rows, (r) => <label data-key={r.id}><input type="checkbox" checked={r.done} />{r.label}</label>)}</div>
+      <div>
+        {each(rows, (r) => (
+          <label data-key={r.id}>
+            <input type="checkbox" checked={r.done} />
+            {r.label}
+          </label>
+        ))}
+      </div>
     ));
     const box = root.querySelector('input') as HTMLInputElement;
     box.checked = true; // user checks — control is dirty
@@ -61,7 +68,11 @@ describe('KF-387 seam: form-state sync × list reconcile', () => {
     // between "no mutation" and "mutation without sync" stays explicit.
     const rows = arraySignal([{ id: 'a', done: false }]);
     const dispose = mount(root, () => (
-      <div>{each(rows, (r) => <input type="checkbox" data-key={r.id} checked={r.done} />)}</div>
+      <div>
+        {each(rows, (r) => (
+          <input type="checkbox" data-key={r.id} checked={r.done} />
+        ))}
+      </div>
     ));
     const box = root.querySelector('input') as HTMLInputElement;
     box.checked = true; // user checks — control is dirty
@@ -78,7 +89,11 @@ describe('KF-387 seam: form-state sync × list reconcile', () => {
     // must carry the property along, exactly as the morph route does.
     const rows = arraySignal([{ id: 'a', done: true }]);
     const dispose = mount(root, () => (
-      <div>{each(rows, (r) => <input type="checkbox" data-key={r.id} checked={r.done} />)}</div>
+      <div>
+        {each(rows, (r) => (
+          <input type="checkbox" data-key={r.id} checked={r.done} />
+        ))}
+      </div>
     ));
     const box = root.querySelector('input') as HTMLInputElement;
     box.checked = false;
@@ -97,7 +112,11 @@ describe('KF-387 seam: form-state sync × list reconcile', () => {
     // route.
     const rows = arraySignal([{ id: 'a', v: 'one' }]);
     const dispose = mount(root, () => (
-      <div>{each(rows, (r) => <input data-key={r.id} value={r.v} />)}</div>
+      <div>
+        {each(rows, (r) => (
+          <input data-key={r.id} value={r.v} />
+        ))}
+      </div>
     ));
     const inp = root.querySelector('input') as HTMLInputElement;
     inp.value = 'user-typed'; // dirty, not focused

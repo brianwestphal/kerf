@@ -10,7 +10,9 @@ import { expect, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
-  await page.waitForFunction(() => (window as unknown as { kerfReady: boolean }).kerfReady === true);
+  await page.waitForFunction(
+    () => (window as unknown as { kerfReady: boolean }).kerfReady === true,
+  );
   // A list of three rows, each holding an <input>, a <textarea>, and a
   // [contenteditable], plus an unrelated counter that re-renders on its own.
   await page.evaluate(() => {
@@ -54,7 +56,9 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test('focused <input> in a row keeps value + caret across an unrelated re-render and a keyed reorder', async ({ page }) => {
+test('focused <input> in a row keeps value + caret across an unrelated re-render and a keyed reorder', async ({
+  page,
+}) => {
   const input = page.locator('li[data-key="b"] .inp');
   await input.click();
   await input.pressSequentially('hello');
@@ -63,28 +67,41 @@ test('focused <input> in a row keeps value + caret across an unrelated re-render
   const assertIntact = async () => {
     const live = page.locator('li[data-key="b"] .inp');
     expect(await live.inputValue()).toBe('hello');
-    expect(await live.evaluate((el: HTMLInputElement) => el.selectionStart)).toBe(2);
-    expect(await live.evaluate((el: HTMLInputElement) => el.selectionEnd)).toBe(4);
-    expect(await live.evaluate((el) => document.activeElement === el)).toBe(true);
+    expect(
+      await live.evaluate((el: HTMLInputElement) => el.selectionStart),
+    ).toBe(2);
+    expect(await live.evaluate((el: HTMLInputElement) => el.selectionEnd)).toBe(
+      4,
+    );
+    expect(await live.evaluate((el) => document.activeElement === el)).toBe(
+      true,
+    );
   };
 
-  await page.evaluate(() => { (window as any)._tick.value++; }); // unrelated morph
+  await page.evaluate(() => {
+    (window as any)._tick.value++;
+  }); // unrelated morph
   await assertIntact();
 
-  await page.evaluate(() => { // keyed reorder — row b moves to the middle-of-a-reverse
+  await page.evaluate(() => {
+    // keyed reorder — row b moves to the middle-of-a-reverse
     const { a, b, c } = (window as any)._order;
     (window as any)._rows.value = [c, b, a];
   });
   await assertIntact();
 });
 
-test('focused <textarea> in a moved row keeps its in-progress edit + caret', async ({ page }) => {
+test('focused <textarea> in a moved row keeps its in-progress edit + caret', async ({
+  page,
+}) => {
   const ta = page.locator('li[data-key="b"] .ta');
   await ta.click();
   await ta.pressSequentially('line one');
   await ta.evaluate((el: HTMLTextAreaElement) => el.setSelectionRange(4, 4)); // "line| one"
 
-  await page.evaluate(() => { (window as any)._tick.value++; });
+  await page.evaluate(() => {
+    (window as any)._tick.value++;
+  });
   await page.evaluate(() => {
     const { a, b, c } = (window as any)._order;
     (window as any)._rows.value = [c, b, a];
@@ -92,11 +109,15 @@ test('focused <textarea> in a moved row keeps its in-progress edit + caret', asy
 
   const live = page.locator('li[data-key="b"] .ta');
   expect(await live.inputValue()).toBe('line one');
-  expect(await live.evaluate((el: HTMLTextAreaElement) => el.selectionStart)).toBe(4);
+  expect(
+    await live.evaluate((el: HTMLTextAreaElement) => el.selectionStart),
+  ).toBe(4);
   expect(await live.evaluate((el) => document.activeElement === el)).toBe(true);
 });
 
-test('focused [contenteditable] in a moved row keeps its typed content + caret', async ({ page }) => {
+test('focused [contenteditable] in a moved row keeps its typed content + caret', async ({
+  page,
+}) => {
   const ce = page.locator('li[data-key="b"] .ce');
   await ce.click();
   await ce.pressSequentially('rich text');
@@ -113,20 +134,28 @@ test('focused [contenteditable] in a moved row keeps its typed content + caret',
   const assertIntact = async () => {
     const live = page.locator('li[data-key="b"] .ce');
     expect((await live.textContent())?.trim()).toBe('rich text');
-    expect(await live.evaluate((el) => document.activeElement === el)).toBe(true);
-    expect(await live.evaluate((el) => {
-      const selection = window.getSelection();
-      return selection !== null
-        && selection.rangeCount === 1
-        && selection.isCollapsed
-        && selection.anchorNode === el.firstChild
-        && selection.anchorOffset === 4
-        && selection.focusNode === el.firstChild
-        && selection.focusOffset === 4;
-    })).toBe(true);
+    expect(await live.evaluate((el) => document.activeElement === el)).toBe(
+      true,
+    );
+    expect(
+      await live.evaluate((el) => {
+        const selection = window.getSelection();
+        return (
+          selection !== null &&
+          selection.rangeCount === 1 &&
+          selection.isCollapsed &&
+          selection.anchorNode === el.firstChild &&
+          selection.anchorOffset === 4 &&
+          selection.focusNode === el.firstChild &&
+          selection.focusOffset === 4
+        );
+      }),
+    ).toBe(true);
   };
 
-  await page.evaluate(() => { (window as any)._tick.value++; });
+  await page.evaluate(() => {
+    (window as any)._tick.value++;
+  });
   await assertIntact();
 
   await page.evaluate(() => {
@@ -137,7 +166,9 @@ test('focused [contenteditable] in a moved row keeps its typed content + caret',
   await assertIntact();
 });
 
-test('bindList preserves an exact contenteditable caret through a keyed move', async ({ page }) => {
+test('bindList preserves an exact contenteditable caret through a keyed move', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     const { signal } = (window as any).kerf;
     const { bindList } = (window as any).kerfList;
@@ -185,11 +216,15 @@ test('bindList preserves an exact contenteditable caret through a keyed move', a
   const live = page.locator('#bind-list [data-key="b"] .bind-ce');
   expect(await live.textContent()).toBe('bind text');
   expect(await live.evaluate((el) => document.activeElement === el)).toBe(true);
-  expect(await live.evaluate((el) => {
-    const selection = window.getSelection();
-    return selection !== null
-      && selection.isCollapsed
-      && selection.anchorNode === el.firstChild
-      && selection.anchorOffset === 3;
-  })).toBe(true);
+  expect(
+    await live.evaluate((el) => {
+      const selection = window.getSelection();
+      return (
+        selection !== null &&
+        selection.isCollapsed &&
+        selection.anchorNode === el.firstChild &&
+        selection.anchorOffset === 3
+      );
+    }),
+  ).toBe(true);
 });

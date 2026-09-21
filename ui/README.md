@@ -23,45 +23,59 @@ npm install kerfjs @kerfjs/ui
 ```
 
 ```tsx
-import { ListItem } from '@kerfjs/ui/list-item';
-import { ListHeader } from '@kerfjs/ui/list-header';
-import { ListActionRow } from '@kerfjs/ui/list-action-row';
-import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
-import { ToolbarText } from '@kerfjs/ui/toolbar-text';
+import { ListItem } from "@kerfjs/ui/list-item";
+import { ListHeader } from "@kerfjs/ui/list-header";
+import { ListActionRow } from "@kerfjs/ui/list-action-row";
+import { Toolbar } from "@kerfjs/ui/toolbar";
+import { ToolbarControlGroup } from "@kerfjs/ui/toolbar-control-group";
+import { ToolbarText } from "@kerfjs/ui/toolbar-text";
 
-mount(root, () => <>
-  <Toolbar label="Document" leading={<ToolbarControlGroup appearance="borderless" single><ToolbarText text="Notes" /></ToolbarControlGroup>} />
-  <section>
-    <ListHeader
-      label="Workspace"
-      action="show-workspace-actions"
-      actionLabel="Workspace actions"
-      rootAttributes={{ 'data-section-id': 'workspace' }}
-      triggerAttributes={{
-        popoverTarget: 'workspace-actions',
-        popoverTargetAction: 'toggle',
-        'aria-controls': 'workspace-actions',
-        'aria-haspopup': 'dialog',
-      }}
+mount(root, () => (
+  <>
+    <Toolbar
+      label="Document"
+      leading={
+        <ToolbarControlGroup appearance="borderless" single>
+          <ToolbarText text="Notes" />
+        </ToolbarControlGroup>
+      }
     />
-    <ListItem
-      action="open-notes"
-      label="Notes"
-      selected
-      rootAttributes={{ 'data-command-color': 'blue', 'data-drop-status': 'ready' }}
-    />
-    <ListActionRow
-      action="open-file"
-      itemId="src/main.ts"
-      label="src/main.ts"
-      trailingAction="open-file-actions"
-      trailingActionLabel="Actions for src/main.ts"
-      trailingActionIcon={moreIcon}
-    />
-    <div id="workspace-actions" popover="auto">Application-owned actions</div>
-  </section>
-</>);
+    <section>
+      <ListHeader
+        label="Workspace"
+        action="show-workspace-actions"
+        actionLabel="Workspace actions"
+        rootAttributes={{ "data-section-id": "workspace" }}
+        triggerAttributes={{
+          popoverTarget: "workspace-actions",
+          popoverTargetAction: "toggle",
+          "aria-controls": "workspace-actions",
+          "aria-haspopup": "dialog",
+        }}
+      />
+      <ListItem
+        action="open-notes"
+        label="Notes"
+        selected
+        rootAttributes={{
+          "data-command-color": "blue",
+          "data-drop-status": "ready",
+        }}
+      />
+      <ListActionRow
+        action="open-file"
+        itemId="src/main.ts"
+        label="src/main.ts"
+        trailingAction="open-file-actions"
+        trailingActionLabel="Actions for src/main.ts"
+        trailingActionIcon={moreIcon}
+      />
+      <div id="workspace-actions" popover="auto">
+        Application-owned actions
+      </div>
+    </section>
+  </>
+));
 ```
 
 Components return Kerf `SafeHtml`. They do not own application state or attach transient listeners. Actions are stable `data-action` hooks; the application wires them once with `delegate()` or `delegateActions()` and retains the disposer.
@@ -92,35 +106,35 @@ as a `New` marker.
 
 ## Component subpaths
 
-| Component | Browser import (includes reachable CSS) | Manual CSS export |
-| --- | --- | --- |
-| `LucideIcon` | `@kerfjs/ui/lucide-icon` | `@kerfjs/ui/lucide-icon.css` |
-| `DisclosureArrow` | `@kerfjs/ui/disclosure-arrow` | `@kerfjs/ui/disclosure-arrow.css` |
-| `Toolbar` | `@kerfjs/ui/toolbar` | `@kerfjs/ui/toolbar.css` |
-| `ToolbarControlGroup` | `@kerfjs/ui/toolbar-control-group` | `@kerfjs/ui/toolbar-control-group.css` |
-| `FloatingToolbar` | `@kerfjs/ui/floating-toolbar` | `@kerfjs/ui/floating-toolbar.css` |
-| `ToolbarText` | `@kerfjs/ui/toolbar-text` | `@kerfjs/ui/toolbar-text.css` |
-| `ListActionRow` | `@kerfjs/ui/list-action-row` | `@kerfjs/ui/list-action-row.css` |
-| `ListItem` | `@kerfjs/ui/list-item` | `@kerfjs/ui/list-item.css` |
-| `ListHeader` | `@kerfjs/ui/list-header` | `@kerfjs/ui/list-header.css` |
-| `ListInsetControl` | `@kerfjs/ui/list-inset-control` | `@kerfjs/ui/list-inset-control.css` |
-| `ListInsetText` | `@kerfjs/ui/list-inset-text` | `@kerfjs/ui/list-inset-text.css` |
-| Pane, content, and navigation composition | — | `@kerfjs/ui/layout.css` |
-| `ResizableRegion` | `@kerfjs/ui/resizable-region` | `@kerfjs/ui/resizable-region.css` |
-| `wireResizableRegions` | `@kerfjs/ui/wire-resizable-regions` | — |
-| `AppTab` | `@kerfjs/ui/app-tab` | `@kerfjs/ui/app-tab.css` |
-| `TabBar` | `@kerfjs/ui/tab-bar` | `@kerfjs/ui/tab-bar.css` |
-| `wireTabBars`, `reorderTabs` | `@kerfjs/ui/wire-tab-bars` | — |
-| `LoadingSpinner` | `@kerfjs/ui/loading-spinner` | `@kerfjs/ui/loading-spinner.css` |
-| `Skeleton` | `@kerfjs/ui/skeleton` | `@kerfjs/ui/skeleton.css` |
-| `Select` | `@kerfjs/ui/select` | `@kerfjs/ui/select.css` |
-| `SegmentedControl` | `@kerfjs/ui/segmented-control` | `@kerfjs/ui/segmented-control.css` |
-| `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | `@kerfjs/ui/token-search-field` | `@kerfjs/ui/token-search-field.css` |
-| `wireTokenSearchFields` | `@kerfjs/ui/wire-token-search-fields` | — |
-| `StateBanner` | `@kerfjs/ui/state-banner` | `@kerfjs/ui/state-banner.css` |
-| `EmptyState` | `@kerfjs/ui/empty-state` | `@kerfjs/ui/empty-state.css` |
-| `PanelHeader` | `@kerfjs/ui/panel-header` | `@kerfjs/ui/panel-header.css` |
-| `ValueTable`, `ValueTableRow` | `@kerfjs/ui/value-table` | `@kerfjs/ui/value-table.css` |
+| Component                                                           | Browser import (includes reachable CSS) | Manual CSS export                      |
+| ------------------------------------------------------------------- | --------------------------------------- | -------------------------------------- |
+| `LucideIcon`                                                        | `@kerfjs/ui/lucide-icon`                | `@kerfjs/ui/lucide-icon.css`           |
+| `DisclosureArrow`                                                   | `@kerfjs/ui/disclosure-arrow`           | `@kerfjs/ui/disclosure-arrow.css`      |
+| `Toolbar`                                                           | `@kerfjs/ui/toolbar`                    | `@kerfjs/ui/toolbar.css`               |
+| `ToolbarControlGroup`                                               | `@kerfjs/ui/toolbar-control-group`      | `@kerfjs/ui/toolbar-control-group.css` |
+| `FloatingToolbar`                                                   | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`      |
+| `ToolbarText`                                                       | `@kerfjs/ui/toolbar-text`               | `@kerfjs/ui/toolbar-text.css`          |
+| `ListActionRow`                                                     | `@kerfjs/ui/list-action-row`            | `@kerfjs/ui/list-action-row.css`       |
+| `ListItem`                                                          | `@kerfjs/ui/list-item`                  | `@kerfjs/ui/list-item.css`             |
+| `ListHeader`                                                        | `@kerfjs/ui/list-header`                | `@kerfjs/ui/list-header.css`           |
+| `ListInsetControl`                                                  | `@kerfjs/ui/list-inset-control`         | `@kerfjs/ui/list-inset-control.css`    |
+| `ListInsetText`                                                     | `@kerfjs/ui/list-inset-text`            | `@kerfjs/ui/list-inset-text.css`       |
+| Pane, content, and navigation composition                           | —                                       | `@kerfjs/ui/layout.css`                |
+| `ResizableRegion`                                                   | `@kerfjs/ui/resizable-region`           | `@kerfjs/ui/resizable-region.css`      |
+| `wireResizableRegions`                                              | `@kerfjs/ui/wire-resizable-regions`     | —                                      |
+| `AppTab`                                                            | `@kerfjs/ui/app-tab`                    | `@kerfjs/ui/app-tab.css`               |
+| `TabBar`                                                            | `@kerfjs/ui/tab-bar`                    | `@kerfjs/ui/tab-bar.css`               |
+| `wireTabBars`, `reorderTabs`                                        | `@kerfjs/ui/wire-tab-bars`              | —                                      |
+| `LoadingSpinner`                                                    | `@kerfjs/ui/loading-spinner`            | `@kerfjs/ui/loading-spinner.css`       |
+| `Skeleton`                                                          | `@kerfjs/ui/skeleton`                   | `@kerfjs/ui/skeleton.css`              |
+| `Select`                                                            | `@kerfjs/ui/select`                     | `@kerfjs/ui/select.css`                |
+| `SegmentedControl`                                                  | `@kerfjs/ui/segmented-control`          | `@kerfjs/ui/segmented-control.css`     |
+| `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | `@kerfjs/ui/token-search-field`         | `@kerfjs/ui/token-search-field.css`    |
+| `wireTokenSearchFields`                                             | `@kerfjs/ui/wire-token-search-fields`   | —                                      |
+| `StateBanner`                                                       | `@kerfjs/ui/state-banner`               | `@kerfjs/ui/state-banner.css`          |
+| `EmptyState`                                                        | `@kerfjs/ui/empty-state`                | `@kerfjs/ui/empty-state.css`           |
+| `PanelHeader`                                                       | `@kerfjs/ui/panel-header`               | `@kerfjs/ui/panel-header.css`          |
+| `ValueTable`, `ValueTableRow`                                       | `@kerfjs/ui/value-table`                | `@kerfjs/ui/value-table.css`           |
 
 `PanelHeader` is a plain `Toolbar` used as a panel, dialog, or page heading: an
 optional icon control group (given a brand fill with a matching border), the
@@ -240,10 +254,10 @@ Apps using Web Awesome's free components can opt into the same visual universe
 with one CSS import:
 
 ```ts
-import type {} from '@kerfjs/ui/webawesome';
-import '@kerfjs/ui/webawesome.css';
-import '@awesome.me/webawesome/dist/components/button/button.js';
-import '@awesome.me/webawesome/dist/components/input/input.js';
+import type {} from "@kerfjs/ui/webawesome";
+import "@kerfjs/ui/webawesome.css";
+import "@awesome.me/webawesome/dist/components/button/button.js";
+import "@awesome.me/webawesome/dist/components/input/input.js";
 ```
 
 The type-only `@kerfjs/ui/webawesome` import adds Kerf JSX intrinsic-element
@@ -269,7 +283,7 @@ classes for explicit appearance boundaries:
 ```css
 :root {
   --wa-color-brand-fill-loud: #7540a8;
-  --wa-form-control-border-radius: .5rem;
+  --wa-form-control-border-radius: 0.5rem;
 }
 ```
 
@@ -309,8 +323,8 @@ standalone `filled`/`outlined` appearance with `shape="rounded"` or
   appearance="toolbar"
   shape="pill"
   choices={[
-    { value: 'list', label: 'List' },
-    { value: 'columns', label: 'Columns' },
+    { value: "list", label: "List" },
+    { value: "columns", label: "Columns" },
   ]}
 />
 ```
@@ -364,8 +378,8 @@ close button retains all close interaction.
 `Select` uses Web Awesome but does not register anything by itself. Install the optional peer, import the shared theme if desired, and explicitly import the registration entry in the application:
 
 ```ts
-import '@kerfjs/ui/webawesome.css';
-import '@kerfjs/ui/select/register';
+import "@kerfjs/ui/webawesome.css";
+import "@kerfjs/ui/select/register";
 ```
 
 That boundary keeps Web Awesome and its custom-element side effects out of bundles that use unrelated components. Automated consumer-bundle tests enforce it.
@@ -400,8 +414,9 @@ than default patterns. The detailed rationale lives in the theme contract.
 
 Run `npm run dev` from this directory for the category-grouped master/detail catalog. Every public visual component has a focused route; all 70 free Web Awesome 3.12 components have focused routes under the collapsible ecosystem section. Every detail visibly links its first-party demo source and existing guidance while showing the repository-relative paths; first-party components also link their implementation source, and Web Awesome entries label local guidance as Kerf integration guidance. One grouped `Related components` selector contains derived `Uses` / `Used by` navigation across both sets. Run `npm run check` for static/unit/bundle gates and `npm run test:e2e` for the real-browser suite.
 
-Run `npm run format:css` after editing styles. The normal `npm run check` gate
-uses Prettier to reject unformatted CSS in `src/` and `ux-demo/`.
+Run `npm run format` after editing source or structured content. The narrower
+`npm run format:css` command remains available for style-only work. The normal
+`npm run lint` and `npm run check` gates use Prettier to reject formatting drift.
 
 For dimensions that should scale with the root font size, author pixels with
 `remify()`: `gap: remify(17px)` builds to `gap: 1.0625rem` using a fixed 16px

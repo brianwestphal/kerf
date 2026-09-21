@@ -20,7 +20,10 @@ import { bench, describe } from 'vitest';
 
 import { _setRenderContext, each, type RenderContext } from '../../src/each.js';
 
-interface Row { id: number; label: string }
+interface Row {
+  id: number;
+  label: string;
+}
 
 const ITEMS_1K: Row[] = Array.from({ length: 1000 }, (_, i) => ({
   id: i,

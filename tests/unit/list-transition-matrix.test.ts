@@ -1,10 +1,13 @@
-import { afterEach,describe,expect,it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
 import { batch } from '../../src/index.js';
 import { bindList } from '../../src/list.js';
 
-interface Item { id: number; label: string }
+interface Item {
+  id: number;
+  label: string;
+}
 
 afterEach(() => {
   document.body.innerHTML = '';
@@ -23,8 +26,9 @@ function harness(initial: Item[]) {
 }
 
 function expectWholeState(parent: HTMLElement, items: readonly Item[]): void {
-  expect(Array.from(parent.children, (row) => row.textContent))
-    .toEqual(items.map((item) => item.label));
+  expect(Array.from(parent.children, (row) => row.textContent)).toEqual(
+    items.map((item) => item.label),
+  );
 }
 
 describe('bindList() — adversarial transition matrix', () => {

@@ -105,7 +105,8 @@ const BUDGETS = [
   {
     name: 'actions',
     budgetKb: 1.2,
-    description: 'the delegated action-table subpath (action + delegateActions)',
+    description:
+      'the delegated action-table subpath (action + delegateActions)',
     entry: `
       import { action, delegateActions } from '${DIST}/actions.js';
       globalThis.__k = [action, delegateActions];
@@ -123,7 +124,8 @@ const BUDGETS = [
     // KF-3HYK5B adds BYO-dialog slot validation; KF-P0AB45 adds fallback
     // overlay stack arbitration so one dismissal affects only the topmost.
     budgetKb: 16.7,
-    description: 'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
+    description:
+      'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
       import { overlay, confirm, prompt, form, choice, popover, tooltip, positionAnchored, autoReposition, toast } from '${DIST}/overlay.js';
       globalThis.__k = [overlay, confirm, prompt, form, choice, popover, tooltip, positionAnchored, autoReposition, toast];
@@ -136,7 +138,8 @@ const BUDGETS = [
     // growth.
     name: 'scope',
     budgetKb: 10.9,
-    description: 'the dispose-scope subpath (disposeScope + disposeSubtree + observeRemovals) — includes shared core',
+    description:
+      'the dispose-scope subpath (disposeScope + disposeSubtree + observeRemovals) — includes shared core',
     entry: `
       import { disposeScope, disposeSubtree, observeRemovals } from '${DIST}/scope.js';
       globalThis.__k = [disposeScope, disposeSubtree, observeRemovals];
@@ -145,7 +148,8 @@ const BUDGETS = [
   {
     name: 'async',
     budgetKb: 2.3,
-    description: 'the async-state subpath (resource) — signals only, no render core',
+    description:
+      'the async-state subpath (resource) — signals only, no render core',
     entry: `
       import { resource } from '${DIST}/async.js';
       globalThis.__k = resource;
@@ -161,7 +165,8 @@ const BUDGETS = [
     // KF-Z2CHG2 duplicate-key preflight and recovery before DOM mutation; +0.1
     // for KF-04QBM0 focused keyed-row and virtualization controllers.
     budgetKb: 12.7,
-    description: 'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
+    description:
+      'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `
       import { bindList } from '${DIST}/list.js';
       globalThis.__k = bindList;
@@ -173,7 +178,8 @@ const BUDGETS = [
     // with the barrel via code-splitting, so the marginal cost is smaller.
     name: 'router',
     budgetKb: 6.7, // dominated by the shared jsx-runtime chunk (the outlet builds jsx) + signals; the router's own code is ~2.7 KB pre-gzip. Marginal cost for an app already using kerf is small.
-    description: 'the router subpath (createRouter — the postcard router) — signals + jsx + delegate, no mount',
+    description:
+      'the router subpath (createRouter — the postcard router) — signals + jsx + delegate, no mount',
     entry: `
       import { createRouter } from '${DIST}/router.js';
       globalThis.__k = createRouter;
@@ -184,7 +190,8 @@ const BUDGETS = [
     // pulls in signals only (no render core), so the whole subpath is tiny.
     name: 'timing',
     budgetKb: 2.0,
-    description: 'the timing subpath (debounce + throttle + debouncedSignal) — signals only, no render core',
+    description:
+      'the timing subpath (debounce + throttle + debouncedSignal) — signals only, no render core',
     entry: `
       import { debounce, throttle, debouncedSignal } from '${DIST}/timing.js';
       globalThis.__k = [debounce, throttle, debouncedSignal];
@@ -195,7 +202,8 @@ const BUDGETS = [
     // render core; marginal cost for an app already using kerf is ~1 KB.
     name: 'remount',
     budgetKb: 10.4,
-    description: 'the remount subpath (remountOn — keyed subtree replacement) — includes shared core',
+    description:
+      'the remount subpath (remountOn — keyed subtree replacement) — includes shared core',
     entry: `
       import { remountOn } from '${DIST}/remount.js';
       globalThis.__k = remountOn;
@@ -208,7 +216,8 @@ const BUDGETS = [
     // lifecycle support, including insertion into an existing shadow root.
     name: 'attach',
     budgetKb: 0.5,
-    description: 'the attach subpath (attach — node-lifecycle adapter) — DOM only, no core',
+    description:
+      'the attach subpath (attach — node-lifecycle adapter) — DOM only, no core',
     entry: `
       import { attach } from '${DIST}/attach.js';
       globalThis.__k = attach;
@@ -220,8 +229,14 @@ const BUDGETS = [
     // above would catch a large regression; this catches any at all.
     name: 'main-no-dev-code',
     budgetKb: 12.6,
-    description: 'same as `main`, and asserts zero dev-diagnostic code leaked in',
-    forbid: ['KERF_DEV_WARN', 'devReadonlyProxy', 'MutationObserver', 'data-key` attribute'],
+    description:
+      'same as `main`, and asserts zero dev-diagnostic code leaked in',
+    forbid: [
+      'KERF_DEV_WARN',
+      'devReadonlyProxy',
+      'MutationObserver',
+      'data-key` attribute',
+    ],
     entry: `
       import { signal, computed, effect, batch, mount, each, delegate } from '${DIST}/index.js';
       globalThis.__k = { signal, computed, effect, batch, mount, each, delegate };
@@ -265,37 +280,132 @@ const CLAIM_TOLERANCE_KB = 0.55;
  * and `ai/cursorrules` (from the root files, gated by check-ai-bundle) and
  * `site/public/llms.txt` (from `llms.txt`, via site/scripts/gen-llms-txt.mjs).
  */
-const MIGRATION_PAGES = ['vue', 'alpine', 'solid', 'preact', 'lit', 'react', 'jquery', 'vanjs', 'svelte']
-  .map((name) => ({
-    file: `site/src/content/docs/migrating/${name}.md`,
-    // The kerf row of each page's bundle-delta table.
-    pattern: /\|\s*`kerfjs` \(incl\. signals\)\s*\|\s*~([\d.]+) KB\s*\|/,
-    figure: 'main',
-  }));
+const MIGRATION_PAGES = [
+  'vue',
+  'alpine',
+  'solid',
+  'preact',
+  'lit',
+  'react',
+  'jquery',
+  'vanjs',
+  'svelte',
+].map((name) => ({
+  file: `site/src/content/docs/migrating/${name}.md`,
+  // The kerf row of each page's bundle-delta table.
+  pattern: /\|\s*`kerfjs` \(incl\. signals\)\s*\|\s*~([\d.]+) KB\s*\|/,
+  figure: 'main',
+}));
 
 const DOC_CLAIMS = [
-  { file: 'README.md', pattern: /^> ~([\d.]+) KB\. No virtual DOM\./m, figure: 'main' },
-  { file: 'README.md', pattern: /\*\*~[\d.]+ KB, one dependency\.\*\* ~([\d.]+) KB minified \+ gzipped/, figure: 'main' },
-  { file: 'README.md', pattern: /minified \+ gzipped including `@preact\/signals-core` \(~([\d.]+) KB with `arraySignal`\)/, figure: 'withArraySignal' },
+  {
+    file: 'README.md',
+    pattern: /^> ~([\d.]+) KB\. No virtual DOM\./m,
+    figure: 'main',
+  },
+  {
+    file: 'README.md',
+    pattern:
+      /\*\*~[\d.]+ KB, one dependency\.\*\* ~([\d.]+) KB minified \+ gzipped/,
+    figure: 'main',
+  },
+  {
+    file: 'README.md',
+    pattern:
+      /minified \+ gzipped including `@preact\/signals-core` \(~([\d.]+) KB with `arraySignal`\)/,
+    figure: 'withArraySignal',
+  },
   { file: 'README.md', pattern: /min%2Bgzip-~([\d.]+)%20KB/, figure: 'main' },
-  { file: 'CLAUDE.md', pattern: /roughly ([\d.]+) KB minified \+ gzipped without `arraySignal`/, figure: 'main' },
-  { file: 'CLAUDE.md', pattern: /without `arraySignal`, ([\d.]+) KB with it/, figure: 'withArraySignal' },
-  { file: 'llms.txt', pattern: /A tiny \(~([\d.]+) KB minified \+ gzipped/, figure: 'main' },
-  { file: 'llms.txt', pattern: /~([\d.]+) KB with `arraySignal`\)/, figure: 'withArraySignal' },
-  { file: 'docs/1-overview.md', pattern: /Roughly ([\d.]+) KB minified \+ gzipped/, figure: 'main' },
-  { file: 'docs/1-overview.md', pattern: /~([\d.]+) KB if you also import `arraySignal`/, figure: 'withArraySignal' },
-  { file: 'docs/ai/usage-guide.md', pattern: /An ~([\d.]+) KB reactive UI framework/, figure: 'main' },
-  { file: 'docs/ai/usage-guide.md', pattern: /switching cost outweighs the bundle size gain \(~([\d.]+) KB\)/, figure: 'main' },
-  { file: 'docs/ai/requirements-summary.md', pattern: /tiny reactive UI framework, ~([\d.]+) KB/, figure: 'main' },
-  { file: 'docs/ai/code-summary.md', pattern: /~([\d.]+) KB min\+gz including `@preact\/signals-core`/, figure: 'main' },
-  { file: 'kerf.claude-skill.md', pattern: /kerf is a ~([\d.]+) KB reactive UI framework/, figure: 'main' },
-  { file: 'kerf.cursorrules', pattern: /a ~([\d.]+) KB reactive framework/, figure: 'main' },
-  { file: 'site/src/content/docs/why-kerf.md', pattern: /\*\*~([\d.]+) KB minified \+ gzipped, signals included\.\*\*/, figure: 'main' },
-  { file: 'site/src/content/docs/use-cases.md', pattern: /Adding ~([\d.]+) KB is reasonable/, figure: 'main' },
-  { file: 'site/src/content/docs/migrating/astro.md', pattern: /\| Per-island runtime cost \|[^|]*\| ~([\d.]+) KB \|/, figure: 'main' },
-  { file: 'site/src/content/docs/migrating/angular.md', pattern: /\*\*Kerf\*\* is a ~([\d.]+) KB reactive runtime/, figure: 'main' },
-  { file: 'site/src/content/docs/migrating/lit.md', pattern: /is lighter than kerf \(~([\d.]+) KB\)/, figure: 'main' },
-  { file: 'site/src/content/docs/migrating/svelte.md', pattern: /land well below kerf's ~([\d.]+) KB/, figure: 'main' },
+  {
+    file: 'CLAUDE.md',
+    pattern: /roughly ([\d.]+) KB minified \+ gzipped without `arraySignal`/,
+    figure: 'main',
+  },
+  {
+    file: 'CLAUDE.md',
+    pattern: /without `arraySignal`, ([\d.]+) KB with it/,
+    figure: 'withArraySignal',
+  },
+  {
+    file: 'llms.txt',
+    pattern: /A tiny \(~([\d.]+) KB minified \+ gzipped/,
+    figure: 'main',
+  },
+  {
+    file: 'llms.txt',
+    pattern: /~([\d.]+) KB with `arraySignal`\)/,
+    figure: 'withArraySignal',
+  },
+  {
+    file: 'docs/1-overview.md',
+    pattern: /Roughly ([\d.]+) KB minified \+ gzipped/,
+    figure: 'main',
+  },
+  {
+    file: 'docs/1-overview.md',
+    pattern: /~([\d.]+) KB if you also import `arraySignal`/,
+    figure: 'withArraySignal',
+  },
+  {
+    file: 'docs/ai/usage-guide.md',
+    pattern: /An ~([\d.]+) KB reactive UI framework/,
+    figure: 'main',
+  },
+  {
+    file: 'docs/ai/usage-guide.md',
+    pattern: /switching cost outweighs the bundle size gain \(~([\d.]+) KB\)/,
+    figure: 'main',
+  },
+  {
+    file: 'docs/ai/requirements-summary.md',
+    pattern: /tiny reactive UI framework, ~([\d.]+) KB/,
+    figure: 'main',
+  },
+  {
+    file: 'docs/ai/code-summary.md',
+    pattern: /~([\d.]+) KB min\+gz including `@preact\/signals-core`/,
+    figure: 'main',
+  },
+  {
+    file: 'kerf.claude-skill.md',
+    pattern: /kerf is a ~([\d.]+) KB reactive UI framework/,
+    figure: 'main',
+  },
+  {
+    file: 'kerf.cursorrules',
+    pattern: /a ~([\d.]+) KB reactive framework/,
+    figure: 'main',
+  },
+  {
+    file: 'site/src/content/docs/why-kerf.md',
+    pattern: /\*\*~([\d.]+) KB minified \+ gzipped, signals included\.\*\*/,
+    figure: 'main',
+  },
+  {
+    file: 'site/src/content/docs/use-cases.md',
+    pattern: /Adding ~([\d.]+) KB is reasonable/,
+    figure: 'main',
+  },
+  {
+    file: 'site/src/content/docs/migrating/astro.md',
+    pattern: /\|\s*Per-island runtime cost\s*\|[^|]*\|\s*~([\d.]+) KB\s*\|/,
+    figure: 'main',
+  },
+  {
+    file: 'site/src/content/docs/migrating/angular.md',
+    pattern: /\*\*Kerf\*\* is a ~([\d.]+) KB reactive runtime/,
+    figure: 'main',
+  },
+  {
+    file: 'site/src/content/docs/migrating/lit.md',
+    pattern: /is lighter than kerf \(~([\d.]+) KB\)/,
+    figure: 'main',
+  },
+  {
+    file: 'site/src/content/docs/migrating/svelte.md',
+    pattern: /land well below kerf's ~([\d.]+) KB/,
+    figure: 'main',
+  },
   ...MIGRATION_PAGES,
 ];
 
@@ -315,7 +425,16 @@ const DOC_CLAIMS = [
  * because Svelte's compiled output varies per app), so there is nothing to
  * check. `astro` states a per-island cost rather than a delta.
  */
-const DELTA_PAGES = ['alpine', 'jquery', 'lit', 'preact', 'react', 'solid', 'vanjs', 'vue'];
+const DELTA_PAGES = [
+  'alpine',
+  'jquery',
+  'lit',
+  'preact',
+  'react',
+  'solid',
+  'vanjs',
+  'vue',
+];
 
 /** Rounding slack — a stated delta is rounded, and both operands are too. */
 const DELTA_TOLERANCE_KB = 0.6;
@@ -337,14 +456,16 @@ function checkMigrationDeltas() {
 
     const deltaRow = /\|\s*\*\*Delta[^|]*\*\*\s*\|([^|]*)\|/.exec(text);
     if (deltaRow === null) {
-      problems.push(`${file}: no **Delta** row found — update DELTA_PAGES if the table was restructured.`);
+      problems.push(
+        `${file}: no **Delta** row found — update DELTA_PAGES if the table was restructured.`,
+      );
       continue;
     }
     const stated = /~([\d.]+) KB/.exec(deltaRow[1]);
     if (stated === null) {
       problems.push(
-        `${file}: the Delta row states no number (${deltaRow[1].trim()}).\n`
-        + '      If it became qualitative on purpose, drop this page from DELTA_PAGES.',
+        `${file}: the Delta row states no number (${deltaRow[1].trim()}).\n` +
+          '      If it became qualitative on purpose, drop this page from DELTA_PAGES.',
       );
       continue;
     }
@@ -355,17 +476,27 @@ function checkMigrationDeltas() {
     const kerfRow = rows.find((r) => r.label.includes('kerfjs'));
     const others = rows.filter((r) => r !== kerfRow);
     if (kerfRow === undefined || others.length === 0) {
-      problems.push(`${file}: could not read both a kerf row and a comparison row from the bundle table.`);
+      problems.push(
+        `${file}: could not read both a kerf row and a comparison row from the bundle table.`,
+      );
       continue;
     }
 
     const statedKb = Number(stated[1]);
-    const matches = others.some((o) => Math.abs(Math.abs(o.kb - kerfRow.kb) - statedKb) <= DELTA_TOLERANCE_KB);
+    const matches = others.some(
+      (o) =>
+        Math.abs(Math.abs(o.kb - kerfRow.kb) - statedKb) <= DELTA_TOLERANCE_KB,
+    );
     if (!matches) {
-      const options = others.map((o) => `${o.label.trim()} ${o.kb} KB -> ${Math.abs(o.kb - kerfRow.kb).toFixed(1)}`).join('; ');
+      const options = others
+        .map(
+          (o) =>
+            `${o.label.trim()} ${o.kb} KB -> ${Math.abs(o.kb - kerfRow.kb).toFixed(1)}`,
+        )
+        .join('; ');
       problems.push(
-        `${file}: states a delta of ~${statedKb} KB, which matches no row against kerf's ${kerfRow.kb} KB.\n`
-        + `      candidates: ${options}`,
+        `${file}: states a delta of ~${statedKb} KB, which matches no row against kerf's ${kerfRow.kb} KB.\n` +
+          `      candidates: ${options}`,
       );
     }
   }
@@ -387,15 +518,17 @@ async function checkDocClaims(measured) {
   for (const claim of DOC_CLAIMS) {
     const path = resolve(ROOT, claim.file);
     if (!existsSync(path)) {
-      problems.push(`${claim.file}: file not found — update DOC_CLAIMS in ${'scripts/check-bundle-size.mjs'}.`);
+      problems.push(
+        `${claim.file}: file not found — update DOC_CLAIMS in ${'scripts/check-bundle-size.mjs'}.`,
+      );
       continue;
     }
     const match = claim.pattern.exec(readFileSync(path, 'utf8'));
     if (match === null) {
       problems.push(
-        `${claim.file}: no size claim matched ${claim.pattern}.\n`
-        + '      The prose was reworded, or the claim was removed. Update the pattern in DOC_CLAIMS — '
-        + 'a claim that stops being checked is how this drifted in the first place.',
+        `${claim.file}: no size claim matched ${claim.pattern}.\n` +
+          '      The prose was reworded, or the claim was removed. Update the pattern in DOC_CLAIMS — ' +
+          'a claim that stops being checked is how this drifted in the first place.',
       );
       continue;
     }
@@ -403,8 +536,8 @@ async function checkDocClaims(measured) {
     const actual = measured[claim.figure];
     if (Math.abs(claimed - actual) > CLAIM_TOLERANCE_KB) {
       problems.push(
-        `${claim.file}: advertises ~${claimed} KB, but ${claim.figure} measures ${actual.toFixed(2)} KB.\n`
-        + `      ${match[0].trim()}`,
+        `${claim.file}: advertises ~${claimed} KB, but ${claim.figure} measures ${actual.toFixed(2)} KB.\n` +
+          `      ${match[0].trim()}`,
       );
     }
   }
@@ -425,7 +558,11 @@ async function measure(spec, { metafile = false } = {}) {
     define: { 'process.env.NODE_ENV': '"production"' },
   });
   const code = result.outputFiles[0].text;
-  return { code, gzipKb: gzipSync(Buffer.from(code)).length / 1024, metafile: result.metafile };
+  return {
+    code,
+    gzipKb: gzipSync(Buffer.from(code)).length / 1024,
+    metafile: result.metafile,
+  };
 }
 
 async function main() {
@@ -434,7 +571,9 @@ async function main() {
   const whyIndex = args.indexOf('--why');
 
   if (!existsSync(resolve(DIST, 'index.js'))) {
-    console.error('[check-bundle-size] dist/ not found — run `npm run build` first.');
+    console.error(
+      '[check-bundle-size] dist/ not found — run `npm run build` first.',
+    );
     process.exit(1);
   }
 
@@ -442,7 +581,9 @@ async function main() {
     const name = args[whyIndex + 1];
     const spec = BUDGETS.find((b) => b.name === name);
     if (!spec) {
-      console.error(`[check-bundle-size] unknown entry "${name}". Known: ${BUDGETS.map((b) => b.name).join(', ')}`);
+      console.error(
+        `[check-bundle-size] unknown entry "${name}". Known: ${BUDGETS.map((b) => b.name).join(', ')}`,
+      );
       process.exit(1);
     }
     const { metafile } = await measure(spec, { metafile: true });
@@ -451,7 +592,9 @@ async function main() {
       .map(([file, info]) => [file, info.bytesInOutput])
       .filter(([, bytes]) => bytes > 0)
       .sort((a, b) => b[1] - a[1]);
-    console.log(`[check-bundle-size] "${name}" weight by module (bytes in output, pre-gzip):\n`);
+    console.log(
+      `[check-bundle-size] "${name}" weight by module (bytes in output, pre-gzip):\n`,
+    );
     for (const [file, bytes] of rows) {
       console.log(`  ${String(bytes).padStart(7)}  ${file}`);
     }
@@ -467,8 +610,8 @@ async function main() {
     const delta = gzipKb - spec.budgetKb;
     const status = delta > 0 ? 'OVER' : 'ok';
     console.log(
-      `  ${spec.name.padEnd(18)} ${gzipKb.toFixed(2).padStart(6)} KB  / ${String(spec.budgetKb).padStart(5)} KB budget  ${status}`
-      + `   ${spec.description}`,
+      `  ${spec.name.padEnd(18)} ${gzipKb.toFixed(2).padStart(6)} KB  / ${String(spec.budgetKb).padStart(5)} KB budget  ${status}` +
+        `   ${spec.description}`,
     );
 
     if (delta > 0) {
@@ -477,16 +620,16 @@ async function main() {
       );
     } else if (-delta > SLACK_KB) {
       wins.push(
-        `${spec.name}: ${gzipKb.toFixed(2)} KB is ${(-delta).toFixed(2)} KB under its ${spec.budgetKb} KB budget `
-        + `— lower the budget to ~${(gzipKb + 0.1).toFixed(1)} so the win can't erode.`,
+        `${spec.name}: ${gzipKb.toFixed(2)} KB is ${(-delta).toFixed(2)} KB under its ${spec.budgetKb} KB budget ` +
+          `— lower the budget to ~${(gzipKb + 0.1).toFixed(1)} so the win can't erode.`,
       );
     }
 
     for (const needle of spec.forbid ?? []) {
       if (code.includes(needle)) {
         failures.push(
-          `${spec.name}: production bundle contains ${JSON.stringify(needle)} — dev-only code leaked into the main entry. `
-          + 'Core must reach diagnostics through a `devHooks` slot, never by importing a `dev-*` module.',
+          `${spec.name}: production bundle contains ${JSON.stringify(needle)} — dev-only code leaked into the main entry. ` +
+            'Core must reach diagnostics through a `devHooks` slot, never by importing a `dev-*` module.',
         );
       }
     }
@@ -495,24 +638,30 @@ async function main() {
   // The advertised numbers, measured the same way as the budgets above.
   const advertised = {
     main: (await measure({ entry: ADVERTISED.main })).gzipKb,
-    withArraySignal: (await measure({ entry: ADVERTISED.withArraySignal })).gzipKb,
+    withArraySignal: (await measure({ entry: ADVERTISED.withArraySignal }))
+      .gzipKb,
   };
   console.log(
-    `\n[check-bundle-size] advertised figures: main ${advertised.main.toFixed(2)} KB, `
-    + `with arraySignal ${advertised.withArraySignal.toFixed(2)} KB`,
+    `\n[check-bundle-size] advertised figures: main ${advertised.main.toFixed(2)} KB, ` +
+      `with arraySignal ${advertised.withArraySignal.toFixed(2)} KB`,
   );
 
   if (reportOnly) return;
 
-  const claimProblems = [...(await checkDocClaims(advertised)), ...checkMigrationDeltas()];
+  const claimProblems = [
+    ...(await checkDocClaims(advertised)),
+    ...checkMigrationDeltas(),
+  ];
   if (claimProblems.length > 0) {
-    console.error('\n[check-bundle-size] docs advertise a size the bundle does not weigh:\n');
+    console.error(
+      '\n[check-bundle-size] docs advertise a size the bundle does not weigh:\n',
+    );
     for (const p of claimProblems) console.error(`  - ${p}`);
     console.error(
-      `\nRound to the nearest KB, and round UP rather than down — understating is the worse\n`
-      + 'direction to be wrong in. Then update every surface: `grep -rn "KB" README.md CLAUDE.md\n'
-      + 'llms.txt docs/ site/src/content/docs/`. The migration pages also carry a Delta row\n'
-      + "computed against kerf's size, which needs recalculating by hand.\n",
+      `\nRound to the nearest KB, and round UP rather than down — understating is the worse\n` +
+        'direction to be wrong in. Then update every surface: `grep -rn "KB" README.md CLAUDE.md\n' +
+        'llms.txt docs/ site/src/content/docs/`. The migration pages also carry a Delta row\n' +
+        "computed against kerf's size, which needs recalculating by hand.\n",
     );
     process.exit(1);
   }
@@ -525,17 +674,17 @@ async function main() {
     console.error('\n[check-bundle-size] FAILED:\n');
     for (const f of failures) console.error(`  - ${f}`);
     console.error(
-      '\nIf the growth is intentional, raise the budget in scripts/check-bundle-size.mjs in the SAME commit '
-      + 'and say why in the message. Otherwise run `node scripts/check-bundle-size.mjs --why <entry>` to see '
-      + 'which modules got pulled in.',
+      '\nIf the growth is intentional, raise the budget in scripts/check-bundle-size.mjs in the SAME commit ' +
+        'and say why in the message. Otherwise run `node scripts/check-bundle-size.mjs --why <entry>` to see ' +
+        'which modules got pulled in.',
     );
     process.exit(1);
   }
   if (wins.length > 0) process.exit(1);
 
   console.log(
-    `\n[check-bundle-size] OK — every entry within budget, and ${DOC_CLAIMS.length} advertised `
-    + `size claims match what the bundle weighs, and ${DELTA_PAGES.length} migration deltas add up.`,
+    `\n[check-bundle-size] OK — every entry within budget, and ${DOC_CLAIMS.length} advertised ` +
+      `size claims match what the bundle weighs, and ${DELTA_PAGES.length} migration deltas add up.`,
   );
 }
 

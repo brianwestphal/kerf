@@ -4,7 +4,9 @@ import { jsx } from './jsx-runtime.js';
 import { overlay, type OverlayContent } from './overlay-core.js';
 
 /** Validate a single field's value. */
-export type FieldValidator = (value: string) => string | null | undefined | void;
+export type FieldValidator = (
+  value: string,
+) => string | null | undefined | void;
 
 /** Options for {@link prompt}. */
 export interface PromptOptions {
@@ -31,7 +33,10 @@ export interface PromptRenderSlots {
 }
 
 /** A promise-based `window.prompt` replacement. */
-export function prompt(message: string, options: PromptOptions = {}): Promise<string | null> {
+export function prompt(
+  message: string,
+  options: PromptOptions = {},
+): Promise<string | null> {
   const {
     container,
     className = 'kerf-overlay',
@@ -53,35 +58,46 @@ export function prompt(message: string, options: PromptOptions = {}): Promise<st
     ...(placeholder !== undefined ? { placeholder } : {}),
   };
 
-  const body: OverlayContent = render !== undefined
-    ? render({
-      message,
-      input: inputAttrs,
-      error: { 'data-prompt-error': '' },
-      ok: { 'data-prompt': 'ok' },
-      cancel: { 'data-prompt': 'cancel' },
-    })
-    : jsx('div', {
-      class: 'kerf-prompt',
-      children: [
-        title !== undefined ? jsx('h2', { class: 'kerf-prompt__title', children: title }) : '',
-        jsx('label', { class: 'kerf-prompt__message', children: message }),
-        jsx('input', { class: 'kerf-prompt__input', ...inputAttrs }),
-        jsx('p', { class: 'kerf-prompt__error', 'data-prompt-error': '', children: '' }),
-        jsx('div', {
-          class: 'kerf-prompt__actions',
+  const body: OverlayContent =
+    render !== undefined
+      ? render({
+          message,
+          input: inputAttrs,
+          error: { 'data-prompt-error': '' },
+          ok: { 'data-prompt': 'ok' },
+          cancel: { 'data-prompt': 'cancel' },
+        })
+      : jsx('div', {
+          class: 'kerf-prompt',
           children: [
-            jsx('button', { type: 'button', 'data-prompt': 'cancel', children: cancelText }),
-            jsx('button', {
-              type: 'button',
-              'data-prompt': 'ok',
-              class: 'kerf-prompt__ok',
-              children: okText,
+            title !== undefined
+              ? jsx('h2', { class: 'kerf-prompt__title', children: title })
+              : '',
+            jsx('label', { class: 'kerf-prompt__message', children: message }),
+            jsx('input', { class: 'kerf-prompt__input', ...inputAttrs }),
+            jsx('p', {
+              class: 'kerf-prompt__error',
+              'data-prompt-error': '',
+              children: '',
+            }),
+            jsx('div', {
+              class: 'kerf-prompt__actions',
+              children: [
+                jsx('button', {
+                  type: 'button',
+                  'data-prompt': 'cancel',
+                  children: cancelText,
+                }),
+                jsx('button', {
+                  type: 'button',
+                  'data-prompt': 'ok',
+                  class: 'kerf-prompt__ok',
+                  children: okText,
+                }),
+              ],
             }),
           ],
-        }),
-      ],
-    });
+        });
 
   const handle = overlay(body, {
     container,
@@ -92,7 +108,9 @@ export function prompt(message: string, options: PromptOptions = {}): Promise<st
     native,
   });
 
-  const input = handle.el.querySelector<HTMLInputElement>('input[data-prompt-input]');
+  const input = handle.el.querySelector<HTMLInputElement>(
+    'input[data-prompt-input]',
+  );
   if (input === null) {
     handle.close(null);
     throw new Error('prompt(): render missing <input data-prompt-input>.');
@@ -127,5 +145,7 @@ export function prompt(message: string, options: PromptOptions = {}): Promise<st
     }
   });
 
-  return handle.result.then((value) => (typeof value === 'string' ? value : null));
+  return handle.result.then((value) =>
+    typeof value === 'string' ? value : null,
+  );
 }

@@ -12,9 +12,18 @@
  * "something differs" while a targeted failure says what. Both are worth having.
  */
 import { mount } from '../../../src/index.js';
-import { type Liveness, liveness, makeRender, makeWorld, sourceItems, type World } from './model.js';
+import {
+  type Liveness,
+  liveness,
+  makeRender,
+  makeWorld,
+  sourceItems,
+  type World,
+} from './model.js';
 
-const env = (globalThis as { process: { env: Record<string, string | undefined> } }).process.env;
+const env = (
+  globalThis as { process: { env: Record<string, string | undefined> } }
+).process.env;
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const ELEMENT_NODE = 1;
@@ -23,7 +32,9 @@ const COMMENT_NODE = 8;
 
 /** Binding and list-marker ids are allocation order, not meaning — erase them. */
 function normalizeIds(text: string): string {
-  return text.replace(/\b(kfb|kfbr|kf-list):\d+/g, '$1:#').replace(/^\d+(,\d+)*$/, '#');
+  return text
+    .replace(/\b(kfb|kfbr|kf-list):\d+/g, '$1:#')
+    .replace(/^\d+(,\d+)*$/, '#');
 }
 
 /**
@@ -59,7 +70,10 @@ export function snapshot(root: Element): string {
         text += child.nodeValue ?? '';
         continue;
       }
-      if (text !== '') { out.push(`${pad}#text ${JSON.stringify(text)}`); text = ''; }
+      if (text !== '') {
+        out.push(`${pad}#text ${JSON.stringify(text)}`);
+        text = '';
+      }
       walk(child, depth);
     }
     if (text !== '') out.push(`${pad}#text ${JSON.stringify(text)}`);
@@ -70,11 +84,18 @@ export function snapshot(root: Element): string {
 
 /** Copy a world's live state onto a second world instantiated from the same spec. */
 function cloneState(from: World, to: World): void {
-  from.sigs.forEach((s, i) => { to.sigs[i].value = s.value; });
-  from.conds.forEach((c, i) => { to.conds[i].value = c.value; });
+  from.sigs.forEach((s, i) => {
+    to.sigs[i].value = s.value;
+  });
+  from.conds.forEach((c, i) => {
+    to.conds[i].value = c.value;
+  });
   from.sources.forEach((src, i) => {
     const items = src.value.map((it) => ({ ...it }));
-    const target = to.sources[i] as { replace?: (v: readonly unknown[]) => void; value: unknown };
+    const target = to.sources[i] as {
+      replace?: (v: readonly unknown[]) => void;
+      value: unknown;
+    };
     if (typeof target.replace === 'function') target.replace(items);
     else target.value = items;
   });
@@ -93,13 +114,19 @@ export interface Violation {
 }
 
 const withoutListMarkers = (snap: string): string =>
-  snap.split('\n').filter((line) => !line.trimStart().startsWith('<!--kf-list:')).join('\n');
+  snap
+    .split('\n')
+    .filter((line) => !line.trimStart().startsWith('<!--kf-list:'))
+    .join('\n');
 
 /**
  * Property: incremental reconcile == from-scratch render, for the same state.
  * Returns a diff description, or null when they agree.
  */
-export function differentialSnapshot(live: Element, world: World): Violation | null {
+export function differentialSnapshot(
+  live: Element,
+  world: World,
+): Violation | null {
   const fresh = document.createElement('div');
   document.body.appendChild(fresh);
   let dispose: (() => void) | null = null;
@@ -113,13 +140,15 @@ export function differentialSnapshot(live: Element, world: World): Violation | n
     // Everything except where the list markers sit? Then the rendered result is
     // right and only the region bookkeeping drifted — a materially different
     // (and less severe) finding than rows being wrong, so classify it apart.
-    const kind: ViolationClass = withoutListMarkers(got) === withoutListMarkers(want)
-      ? 'marker-drift'
-      : 'structure';
+    const kind: ViolationClass =
+      withoutListMarkers(got) === withoutListMarkers(want)
+        ? 'marker-drift'
+        : 'structure';
     return {
       kind,
-      message: `incremental DOM differs from a from-scratch render of the same state`
-        + ` (${kind})\n--- from-scratch (expected)\n${want}\n--- incremental (actual)\n${got}`,
+      message:
+        `incremental DOM differs from a from-scratch render of the same state` +
+        ` (${kind})\n--- from-scratch (expected)\n${want}\n--- incremental (actual)\n${got}`,
     };
   } finally {
     dispose?.();
@@ -132,7 +161,10 @@ function rowsOf(root: Element, list: number): Element[] {
 }
 
 /** Every row node currently in the tree, indexed by `list/key`. */
-export function rowIdentityMap(root: Element, world: World): Map<string, Element> {
+export function rowIdentityMap(
+  root: Element,
+  world: World,
+): Map<string, Element> {
   const map = new Map<string, Element>();
   world.spec.lists.forEach((_, list) => {
     for (const row of rowsOf(root, list)) {
@@ -142,16 +174,24 @@ export function rowIdentityMap(root: Element, world: World): Map<string, Element
   return map;
 }
 
-function checkLists(root: Element, world: World, live: Liveness): string | null {
+function checkLists(
+  root: Element,
+  world: World,
+  live: Liveness,
+): string | null {
   for (let list = 0; list < world.spec.lists.length; list++) {
     const spec = world.spec.lists[list];
     const rows = rowsOf(root, list);
-    const expected = live.lists.has(list) ? sourceItems(world, spec.source) : [];
+    const expected = live.lists.has(list)
+      ? sourceItems(world, spec.source)
+      : [];
 
     if (rows.length !== expected.length) {
-      return `list ${list}: expected ${expected.length} rows, found ${rows.length}`
-        + ` [${rows.map((r) => r.getAttribute('data-key')).join(',')}]`
-        + ` vs [${expected.map((i) => i.id).join(',')}]`;
+      return (
+        `list ${list}: expected ${expected.length} rows, found ${rows.length}` +
+        ` [${rows.map((r) => r.getAttribute('data-key')).join(',')}]` +
+        ` vs [${expected.map((i) => i.id).join(',')}]`
+      );
     }
     for (let i = 0; i < rows.length; i++) {
       const key = rows[i].getAttribute('data-key');
@@ -159,18 +199,23 @@ function checkLists(root: Element, world: World, live: Liveness): string | null 
       if (key !== wantKey) {
         return `list ${list} row ${i}: key "${key}" but source says "${wantKey}"`;
       }
-      const rowSigValue = spec.rowSig === null ? '' : world.sigs[spec.rowSig].value;
+      const rowSigValue =
+        spec.rowSig === null ? '' : world.sigs[spec.rowSig].value;
       const want = expected[i].t + rowSigValue;
       if (rows[i].textContent !== want) {
-        return `list ${list} row ${i} (${key}): text ${JSON.stringify(rows[i].textContent)}`
-          + ` but expected ${JSON.stringify(want)}`;
+        return (
+          `list ${list} row ${i} (${key}): text ${JSON.stringify(rows[i].textContent)}` +
+          ` but expected ${JSON.stringify(want)}`
+        );
       }
     }
     if (live.svgLists.has(list)) {
       for (const row of rows) {
         if (row.namespaceURI !== SVG_NS) {
-          return `list ${list}: row <${row.tagName}> inside <svg> has namespace `
-            + `${String(row.namespaceURI)}, expected the SVG namespace`;
+          return (
+            `list ${list}: row <${row.tagName}> inside <svg> has namespace ` +
+            `${String(row.namespaceURI)}, expected the SVG namespace`
+          );
         }
       }
     }
@@ -178,28 +223,38 @@ function checkLists(root: Element, world: World, live: Liveness): string | null 
   return null;
 }
 
-function checkHoles(root: Element, world: World, live: Liveness): string | null {
+function checkHoles(
+  root: Element,
+  world: World,
+  live: Liveness,
+): string | null {
   const seen = new Set<string>();
   for (const [id, sig] of live.holes) {
     const el = root.querySelector(`[data-hole="${id}"]`);
     if (el === null) return `bound text hole ${id} is missing from the DOM`;
     seen.add(String(id));
     if (el.textContent !== world.sigs[sig].value) {
-      return `bound text hole ${id}: ${JSON.stringify(el.textContent)}`
-        + ` but signal holds ${JSON.stringify(world.sigs[sig].value)}`;
+      return (
+        `bound text hole ${id}: ${JSON.stringify(el.textContent)}` +
+        ` but signal holds ${JSON.stringify(world.sigs[sig].value)}`
+      );
     }
   }
   for (const el of Array.from(root.querySelectorAll('[data-hole]'))) {
     const id = el.getAttribute('data-hole') ?? '';
-    if (!seen.has(id)) return `bound text hole ${id} is in the DOM but its branch is not rendered`;
+    if (!seen.has(id))
+      return `bound text hole ${id} is in the DOM but its branch is not rendered`;
   }
 
   for (const [id, sig] of live.attrs) {
     const el = root.querySelector(`[data-battr="${id}"]`);
-    if (el === null) return `bound attribute host ${id} is missing from the DOM`;
+    if (el === null)
+      return `bound attribute host ${id} is missing from the DOM`;
     if (el.getAttribute('class') !== world.sigs[sig].value) {
-      return `bound attribute ${id}: class=${JSON.stringify(el.getAttribute('class'))}`
-        + ` but signal holds ${JSON.stringify(world.sigs[sig].value)}`;
+      return (
+        `bound attribute ${id}: class=${JSON.stringify(el.getAttribute('class'))}` +
+        ` but signal holds ${JSON.stringify(world.sigs[sig].value)}`
+      );
     }
   }
   return null;
@@ -209,8 +264,10 @@ function checkSvgNamespaces(root: Element): string | null {
   for (const svg of Array.from(root.querySelectorAll('svg'))) {
     for (const el of Array.from(svg.querySelectorAll('*'))) {
       if (el.namespaceURI !== SVG_NS) {
-        return `<${el.tagName}> under an <svg> has namespace ${String(el.namespaceURI)},`
-          + ' expected the SVG namespace';
+        return (
+          `<${el.tagName}> under an <svg> has namespace ${String(el.namespaceURI)},` +
+          ' expected the SVG namespace'
+        );
       }
     }
   }
@@ -224,9 +281,10 @@ function checkSvgNamespaces(root: Element): string | null {
  */
 export function checkInvariants(root: Element, world: World): Violation | null {
   const live = liveness(world);
-  const targeted = checkLists(root, world, live)
-    ?? checkHoles(root, world, live)
-    ?? checkSvgNamespaces(root);
+  const targeted =
+    checkLists(root, world, live) ??
+    checkHoles(root, world, live) ??
+    checkSvgNamespaces(root);
   if (targeted !== null) return { kind: 'content', message: targeted };
   // Triage knob: `KERF_FUZZ_DIFF=0` drops the differential check and leaves only
   // the user-visible ones, which answers "is this structural drift or does it

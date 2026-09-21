@@ -65,7 +65,8 @@ export function attach(node: Element, setup: AttachSetup): () => void {
     while (current !== null) {
       if (current === candidate) return true;
       const root = current.getRootNode();
-      current = current.parentNode ?? (root instanceof ShadowRoot ? root.host : null);
+      current =
+        current.parentNode ?? (root instanceof ShadowRoot ? root.host : null);
     }
     return false;
   };
@@ -79,7 +80,8 @@ export function attach(node: Element, setup: AttachSetup): () => void {
       // it becomes connected; only a later disconnection is a teardown event.
       if (!node.isConnected) {
         const connectedAndRemovedInBatch = records.some((record) =>
-          [...record.addedNodes].some(addedWithin));
+          [...record.addedNodes].some(addedWithin),
+        );
         if (!connectedAndRemovedInBatch) return;
         hasConnected = true;
         finish();

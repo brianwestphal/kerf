@@ -13,7 +13,7 @@
 
 /* Eyebrow above the value-first H1. */
 :root .hero h1[data-page-title]::before {
-  content: 'Introducing Kerf';
+  content: "Introducing Kerf";
   display: block;
   margin-bottom: 0.5rem;
   font-size: var(--sl-text-sm);

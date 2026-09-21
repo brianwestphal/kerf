@@ -66,8 +66,8 @@ export function srcToDistPlugin(): Plugin {
       if (!resolved.startsWith(`${SRC}/`) && resolved !== SRC) return null;
 
       const moduleName = resolved
-        .slice(SRC.length + 1)        // strip leading "src/"
-        .replace(/\.js$/, '');         // strip .js
+        .slice(SRC.length + 1) // strip leading "src/"
+        .replace(/\.js$/, ''); // strip .js
 
       // Skip internal helpers — they have no public dist entry, and
       // the test suite shouldn't be reaching them in the first place.
@@ -80,15 +80,15 @@ export function srcToDistPlugin(): Plugin {
       // start for those, keep the bare-directory (`utils`) import, and
       // still catch any hypothetical nested `.../utils/*` dir.
       if (
-        moduleName === 'utils'
-        || moduleName.startsWith('utils/')
-        || moduleName.includes('/utils/')
+        moduleName === 'utils' ||
+        moduleName.startsWith('utils/') ||
+        moduleName.includes('/utils/')
       ) {
         throw new Error(
-          `dist-full mode: refused to remap private helper "${source}" `
-          + `imported by ${importer}. Tests run against dist must use `
-          + `the public API surface only. Move this assertion to a `
-          + `src-only test, or expose the helper.`,
+          `dist-full mode: refused to remap private helper "${source}" ` +
+            `imported by ${importer}. Tests run against dist must use ` +
+            `the public API surface only. Move this assertion to a ` +
+            `src-only test, or expose the helper.`,
         );
       }
 
@@ -116,10 +116,7 @@ export default defineConfig({
     setupFiles: ['./tests/setup-dev-hooks.ts'],
     environment: 'happy-dom',
     globals: false,
-    include: [
-      'tests/unit/**/*.test.ts',
-      'tests/integration/**/*.test.ts',
-    ],
+    include: ['tests/unit/**/*.test.ts', 'tests/integration/**/*.test.ts'],
     // Default exclude blocks `**/dist/**`. We need the include glob to
     // match files we actually have (under `tests/unit/` and
     // `tests/integration/`), so the default is fine — but we explicitly

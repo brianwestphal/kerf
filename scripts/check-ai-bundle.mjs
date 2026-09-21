@@ -46,12 +46,14 @@ if (drifted.length === 0) {
   process.exit(0);
 }
 
-console.error('\nai/ bundle is out of sync with the source-of-truth root files:\n');
+console.error(
+  '\nai/ bundle is out of sync with the source-of-truth root files:\n',
+);
 for (const { path, reason } of drifted) {
   console.error(`  - ${path} (${reason})`);
 }
 console.error(
-  '\nRun `node scripts/sync-ai-bundle.mjs` to regenerate, then commit the result.\n'
-  + 'See docs/12-ai-assistant-configs.md for the bundle contract.\n',
+  '\nRun `node scripts/sync-ai-bundle.mjs` to regenerate, then commit the result.\n' +
+    'See docs/12-ai-assistant-configs.md for the bundle contract.\n',
 );
 process.exit(1);

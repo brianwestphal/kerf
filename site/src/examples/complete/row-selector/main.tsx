@@ -32,7 +32,13 @@ interface Host {
 
 const KINDS = ['web', 'api', 'db', 'cache', 'worker'];
 const REGIONS = ['us-east', 'us-west', 'eu-central', 'ap-south'];
-const STATUSES: Host['status'][] = ['healthy', 'healthy', 'healthy', 'degraded', 'down'];
+const STATUSES: Host['status'][] = [
+  'healthy',
+  'healthy',
+  'healthy',
+  'degraded',
+  'down',
+];
 
 // Deterministic PRNG so the demo, its capture, and the browser smoke test are
 // stable across runs (no Math.random).
@@ -64,7 +70,9 @@ const SELECT = attr('data-select');
 
 const hosts = signal<Host[]>(genHosts(120));
 const selectedId = signal<string | null>(null);
-const selected = computed<Host | null>(() => hosts.value.find((h) => h.id === selectedId.value) ?? null);
+const selected = computed<Host | null>(
+  () => hosts.value.find((h) => h.id === selectedId.value) ?? null,
+);
 
 // Detail-pane fields, created once and bound into text holes — they update
 // fine-grained when the selection changes, without a render re-run.
@@ -91,14 +99,18 @@ mount(root, () => {
       <div class="rs-main">
         <div class="rs-listhead">
           <span>{rows.length} hosts</span>
-          <span class="rs-renders">list renders: <b data-renders>{listRenders}</b></span>
+          <span class="rs-renders">
+            list renders: <b data-renders>{listRenders}</b>
+          </span>
           <button {...ACTIONS.regenerate.attrs}>Regenerate</button>
         </div>
         <ul class="rs-list" data-list>
           {rows.map((h) => (
             <li
               {...SELECT(h.id)}
-              class={computed(() => (h.id === selectedId.value ? 'rs-row rs-row-on' : 'rs-row'))}
+              class={computed(() =>
+                h.id === selectedId.value ? 'rs-row rs-row-on' : 'rs-row',
+              )}
             >
               <span class={`rs-dot rs-${h.status}`}></span>
               <span class="rs-name">{h.name}</span>
@@ -111,10 +123,14 @@ mount(root, () => {
       <aside class="rs-detail" data-detail>
         <h2 data-d-name>{dName}</h2>
         <dl>
-          <dt>Region</dt><dd data-d-region>{dRegion}</dd>
-          <dt>IP</dt><dd data-d-ip>{dIp}</dd>
-          <dt>CPU</dt><dd data-d-cpu>{dCpu}</dd>
-          <dt>Status</dt><dd data-d-status>{dStatus}</dd>
+          <dt>Region</dt>
+          <dd data-d-region>{dRegion}</dd>
+          <dt>IP</dt>
+          <dd data-d-ip>{dIp}</dd>
+          <dt>CPU</dt>
+          <dd data-d-cpu>{dCpu}</dd>
+          <dt>Status</dt>
+          <dd data-d-status>{dStatus}</dd>
         </dl>
       </aside>
     </div>
@@ -127,6 +143,6 @@ void delegate(root, 'click', '[data-select]', (_e, el) => {
   selectedId.value = (el as HTMLElement).dataset.select ?? null;
 });
 void delegate(root, 'click', ACTIONS.regenerate.selector, () => {
-  selectedId.value = null;      // clears the selection (fine-grained; not a re-render)
-  hosts.value = genHosts(120);  // the one write that re-renders the list
+  selectedId.value = null; // clears the selection (fine-grained; not a re-render)
+  hosts.value = genHosts(120); // the one write that re-renders the list
 });

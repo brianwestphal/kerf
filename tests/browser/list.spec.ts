@@ -5,14 +5,16 @@
  */
 import { expect, test } from '@playwright/test';
 
- 
-
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
-  await page.waitForFunction(() => (window as unknown as { kerfReady: boolean }).kerfReady === true);
+  await page.waitForFunction(
+    () => (window as unknown as { kerfReady: boolean }).kerfReady === true,
+  );
 });
 
-test('virtualization: only the viewport window renders, and it shifts on real scroll', async ({ page }) => {
+test('virtualization: only the viewport window renders, and it shifts on real scroll', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     // Only the scroll host needs CSS; bindList sizes the rows itself (rowHeight).
     const style = document.createElement('style');
@@ -25,7 +27,9 @@ test('virtualization: only the viewport window renders, and it shifts on real sc
 
     const { bindList } = (window as any).kerfList;
     const { signal } = (window as any).kerf;
-    const items = signal(Array.from({ length: 1000 }, (_, i) => ({ id: i, label: `row-${i}` })));
+    const items = signal(
+      Array.from({ length: 1000 }, (_, i) => ({ id: i, label: `row-${i}` })),
+    );
     (window as any)._dispose = bindList(parent, items, {
       key: (i: any) => i.id,
       tag: 'div',
@@ -62,7 +66,11 @@ test('virtualization: only the viewport window renders, and it shifts on real sc
 
   // Padding on the inner sizer keeps scrollHeight honest (total ≈ 1000 * 20 = 20000).
   const padTop = await page.evaluate(
-    () => ((document.getElementById('vlist') as HTMLElement).firstElementChild as HTMLElement).style.paddingTop,
+    () =>
+      (
+        (document.getElementById('vlist') as HTMLElement)
+          .firstElementChild as HTMLElement
+      ).style.paddingTop,
   );
   expect(Number(padTop.replace('px', ''))).toBeGreaterThan(3000);
 
@@ -70,7 +78,9 @@ test('virtualization: only the viewport window renders, and it shifts on real sc
   await expect(rows).toHaveCount(0);
 });
 
-test('measured virtualization: observeRowHeights sizes rows from real layout', async ({ page }) => {
+test('measured virtualization: observeRowHeights sizes rows from real layout', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     const style = document.createElement('style');
     style.textContent = '#mlist{height:200px;overflow:auto}';
@@ -111,10 +121,13 @@ test('measured virtualization: observeRowHeights sizes rows from real layout', a
   // After the ResizeObserver reports the real heights, the sizer's scrollHeight
   // reflects measured rows (≈40) rather than the 20px estimate — it grows.
   await page.waitForFunction(() => {
-    const sizer = (document.getElementById('mlist') as HTMLElement).firstElementChild as HTMLElement;
+    const sizer = (document.getElementById('mlist') as HTMLElement)
+      .firstElementChild as HTMLElement;
     return parseFloat(sizer.style.paddingBottom || '0') > 0;
   });
-  const scrollHeight = await page.evaluate(() => (document.getElementById('mlist') as HTMLElement).scrollHeight);
+  const scrollHeight = await page.evaluate(
+    () => (document.getElementById('mlist') as HTMLElement).scrollHeight,
+  );
   expect(scrollHeight).toBeGreaterThan(500 * 20); // beyond the pure-estimate baseline
 
   // The window still shifts on scroll.
@@ -135,7 +148,9 @@ test('measured virtualization: observeRowHeights sizes rows from real layout', a
   await expect(rows).toHaveCount(0);
 });
 
-test('content-visibility mode: EVERY row stays in the DOM (findable), off-screen rows are layout-skipped', async ({ page }) => {
+test('content-visibility mode: EVERY row stays in the DOM (findable), off-screen rows are layout-skipped', async ({
+  page,
+}) => {
   await page.evaluate(() => {
     const style = document.createElement('style');
     style.textContent = '#cvlist{height:200px;overflow:auto}';
@@ -147,7 +162,9 @@ test('content-visibility mode: EVERY row stays in the DOM (findable), off-screen
 
     const { bindList } = (window as any).kerfList;
     const { signal } = (window as any).kerf;
-    const items = signal(Array.from({ length: 1000 }, (_, i) => ({ id: i, label: `row-${i}` })));
+    const items = signal(
+      Array.from({ length: 1000 }, (_, i) => ({ id: i, label: `row-${i}` })),
+    );
     (window as any)._dispose = bindList(parent, items, {
       key: (i: any) => i.id,
       tag: 'div',
@@ -168,7 +185,10 @@ test('content-visibility mode: EVERY row stays in the DOM (findable), off-screen
   // The two CSS properties are set on each row.
   const css = await page.evaluate(() => {
     const first = document.querySelector('#cvlist > div > div') as HTMLElement;
-    return { cv: first.style.contentVisibility, cis: first.style.containIntrinsicSize };
+    return {
+      cv: first.style.contentVisibility,
+      cis: first.style.containIntrinsicSize,
+    };
   });
   expect(css.cv).toBe('auto');
   // The engine normalizes the CSSOM value (Chromium reads `0 20px` back as
@@ -181,12 +201,19 @@ test('content-visibility mode: EVERY row stays in the DOM (findable), off-screen
   // element as not visible. Assert only where the engine implements the flag.
   const skip = await page.evaluate(() => {
     const first = document.querySelector('#cvlist > div > div') as HTMLElement;
-    const last = document.querySelector('#cvlist > div > div:last-child') as HTMLElement;
+    const last = document.querySelector(
+      '#cvlist > div > div:last-child',
+    ) as HTMLElement;
     // Feature-detect meaningfully: on an engine without the flag both read the
     // same, so we can't distinguish — report unsupported and skip the assertion.
-    if (typeof first.checkVisibility !== 'function') return { supported: false };
-    const onScreen = first.checkVisibility({ contentVisibilityAuto: true } as any);
-    const offScreen = last.checkVisibility({ contentVisibilityAuto: true } as any);
+    if (typeof first.checkVisibility !== 'function')
+      return { supported: false };
+    const onScreen = first.checkVisibility({
+      contentVisibilityAuto: true,
+    } as any);
+    const offScreen = last.checkVisibility({
+      contentVisibilityAuto: true,
+    } as any);
     return { supported: onScreen !== offScreen, onScreen, offScreen };
   });
   if (skip.supported) {

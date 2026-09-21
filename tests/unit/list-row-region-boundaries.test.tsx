@@ -17,10 +17,18 @@
  *
  * Every regression test asserts the shipped behavior (never `.skip`).
  */
-import { afterEach,beforeEach,describe,expect,it,type MockInstance,vi } from 'vitest';
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  type MockInstance,
+  vi,
+} from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { batch,each,mount,signal } from '../../src/index.js';
+import { batch, each, mount, signal } from '../../src/index.js';
 
 let root: HTMLElement;
 let warnSpy: MockInstance<typeof console.warn>;
@@ -46,7 +54,13 @@ describe('KF-393: row-region bounds and cross-fix interactions', () => {
     const dispose = mount(root, () => (
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
-        {each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'main' })}
+        {each(
+          rows,
+          (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ),
+          { key: 'main' },
+        )}
         <button class="more">more</button>
       </ul>
     ));
@@ -60,12 +74,16 @@ describe('KF-393: row-region bounds and cross-fix interactions', () => {
     expect(root.querySelector('li[data-key="a"]')).toBe(rowA);
     // Rows precede the trailing button; the interloper stays where the
     // consumer put it (between marker and rows).
-    const order = Array.from(ul.children).map((c) => c.tagName + (c.className ? `.${c.className}` : ''));
+    const order = Array.from(ul.children).map(
+      (c) => c.tagName + (c.className ? `.${c.className}` : ''),
+    );
     expect(order).toEqual(['DIV', 'LI', 'LI', 'BUTTON.more']);
 
     hd.value = true;
     expect(root.querySelector('li[data-key="a"]')).toBe(rowA);
-    const order2 = Array.from(ul.children).map((c) => c.tagName + (c.className ? `.${c.className}` : ''));
+    const order2 = Array.from(ul.children).map(
+      (c) => c.tagName + (c.className ? `.${c.className}` : ''),
+    );
     expect(order2).toEqual(['LI.hd', 'DIV', 'LI', 'LI', 'BUTTON.more']);
     dispose();
   });
@@ -77,8 +95,24 @@ describe('KF-393: row-region bounds and cross-fix interactions', () => {
     const dispose = mount(root, () => (
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
-        {each(a, (r) => <li data-key={r.id} class="la">{r.id}</li>, { key: 'a' })}
-        {each(b, (r) => <li data-key={r.id} class="lb">{r.id}</li>, { key: 'b' })}
+        {each(
+          a,
+          (r) => (
+            <li data-key={r.id} class="la">
+              {r.id}
+            </li>
+          ),
+          { key: 'a' },
+        )}
+        {each(
+          b,
+          (r) => (
+            <li data-key={r.id} class="lb">
+              {r.id}
+            </li>
+          ),
+          { key: 'b' },
+        )}
         <button>tail</button>
       </ul>
     ));
@@ -87,15 +121,21 @@ describe('KF-393: row-region bounds and cross-fix interactions', () => {
     hd.value = false;
     expect(root.querySelector('li[data-key="a1"]')).toBe(a1);
     expect(root.querySelector('li[data-key="b1"]')).toBe(b1);
-    const classes = Array.from((root.querySelector('ul') as Element).querySelectorAll('li'))
-      .map((l) => l.className);
+    const classes = Array.from(
+      (root.querySelector('ul') as Element).querySelectorAll('li'),
+    ).map((l) => l.className);
     expect(classes).toEqual(['la', 'la', 'lb']); // a-rows first, then b-rows
     // Both lists still reconcile against their own signals after the move.
-    batch(() => { a.push({ id: 'a3' }); b.push({ id: 'b2' }); });
-    expect(Array.from(root.querySelectorAll('li.la')).map((l) => l.textContent))
-      .toEqual(a.value.map((r) => r.id));
-    expect(Array.from(root.querySelectorAll('li.lb')).map((l) => l.textContent))
-      .toEqual(b.value.map((r) => r.id));
+    batch(() => {
+      a.push({ id: 'a3' });
+      b.push({ id: 'b2' });
+    });
+    expect(
+      Array.from(root.querySelectorAll('li.la')).map((l) => l.textContent),
+    ).toEqual(a.value.map((r) => r.id));
+    expect(
+      Array.from(root.querySelectorAll('li.lb')).map((l) => l.textContent),
+    ).toEqual(b.value.map((r) => r.id));
     dispose();
   });
 
@@ -107,14 +147,24 @@ describe('KF-393: row-region bounds and cross-fix interactions', () => {
     const dispose = mount(root, () => (
       <ul>
         {hd.value ? <li class="hd">header</li> : ''}
-        {each(a, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'a' })}
+        {each(
+          a,
+          (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ),
+          { key: 'a' },
+        )}
       </ul>
     ));
     hd.value = false;
     a.push({ id: 'x' });
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['x']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['x']);
     hd.value = true;
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent)).toEqual(['header', 'x']);
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(['header', 'x']);
     dispose();
   });
 
@@ -123,14 +173,23 @@ describe('KF-393: row-region bounds and cross-fix interactions', () => {
     // NEXT granular op applies to the rebuilt binding without drift.
     const rows = arraySignal([{ id: 'a' }]);
     const dispose = mount(root, () => (
-      <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'r' })}</ul>
+      <ul>
+        {each(
+          rows,
+          (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ),
+          { key: 'r' },
+        )}
+      </ul>
     ));
     rows.replace([{ id: 'b' }, { id: 'c' }]);
     const rowB = root.querySelector('li[data-key="b"]');
     rows.push({ id: 'd' });
     expect(root.querySelector('li[data-key="b"]')).toBe(rowB); // granular kept identity
-    expect(Array.from(root.querySelectorAll('li')).map((l) => l.textContent))
-      .toEqual(rows.value.map((r) => r.id));
+    expect(
+      Array.from(root.querySelectorAll('li')).map((l) => l.textContent),
+    ).toEqual(rows.value.map((r) => r.id));
     dispose();
   });
 });

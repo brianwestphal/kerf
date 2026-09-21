@@ -7,15 +7,22 @@ import { expect, type Page, test } from '@playwright/test';
 
 const RECIPE = '/?component=recipe-collapsible-sidebar';
 
-const railPanel = (page: Page) => page.locator('[data-collapsible-panel="sidebar-rail"]');
-const drawerPanel = (page: Page) => page.locator('[data-collapsible-panel="sidebar-console"]');
+const railPanel = (page: Page) =>
+  page.locator('[data-collapsible-panel="sidebar-rail"]');
+const drawerPanel = (page: Page) =>
+  page.locator('[data-collapsible-panel="sidebar-console"]');
 // The reveal toggle lives in the always-visible main header (distinct from the
 // identically-named collapse toggle inside the rail).
-const revealToggle = (page: Page) => page.locator('.recipe-collapsible-sidebar__reveal');
-const railInnerToggle = (page: Page) => railPanel(page).locator('.kui-collapsible-panel__toggle');
-const backdrop = (page: Page) => page.locator('.kui-collapsible-panel__backdrop');
+const revealToggle = (page: Page) =>
+  page.locator('.recipe-collapsible-sidebar__reveal');
+const railInnerToggle = (page: Page) =>
+  railPanel(page).locator('.kui-collapsible-panel__toggle');
+const backdrop = (page: Page) =>
+  page.locator('.kui-collapsible-panel__backdrop');
 
-test('collapses and expands the rail, moving focus in and restoring it', async ({ page }) => {
+test('collapses and expands the rail, moving focus in and restoring it', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1200, height: 820 });
   await page.goto(RECIPE);
 
@@ -32,7 +39,9 @@ test('collapses and expands the rail, moving focus in and restoring it', async (
   await expect(railInnerToggle(page)).toBeFocused();
 });
 
-test('expands and collapses the bottom drawer independently', async ({ page }) => {
+test('expands and collapses the bottom drawer independently', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1200, height: 820 });
   await page.goto(RECIPE);
 
@@ -46,7 +55,9 @@ test('expands and collapses the bottom drawer independently', async ({ page }) =
   await expect(drawerPanel(page)).toHaveAttribute('data-collapsed', 'true');
 });
 
-test('presents a compact overlay dismissed by Escape and the backdrop', async ({ page }) => {
+test('presents a compact overlay dismissed by Escape and the backdrop', async ({
+  page,
+}) => {
   await page.setViewportSize({ width: 1200, height: 820 });
   await page.goto(RECIPE);
   const canvas = page.locator('.kui-catalog__canvas');
@@ -85,5 +96,7 @@ test('traps Tab focus within the open compact overlay', async ({ page }) => {
 
   // Shift+Tab from the first control wraps to the last.
   await page.keyboard.press('Shift+Tab');
-  await expect(railPanel(page).getByRole('button', { name: 'Shared with me' })).toBeFocused();
+  await expect(
+    railPanel(page).getByRole('button', { name: 'Shared with me' }),
+  ).toBeFocused();
 });

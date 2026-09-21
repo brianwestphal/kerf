@@ -36,7 +36,9 @@ beforeEach(() => {
 });
 
 const at = (sel: string): string[] =>
-  Array.from(root.querySelectorAll(sel)).map((el) => el.getAttribute('data-key') ?? '');
+  Array.from(root.querySelectorAll(sel)).map(
+    (el) => el.getAttribute('data-key') ?? '',
+  );
 
 describe('KF-403: an identity shift rebuilds, and never renders another list’s rows', () => {
   it('the surviving list renders its OWN rows when a conditional list ahead of it disappears', () => {
@@ -44,8 +46,20 @@ describe('KF-403: an identity shift rebuilds, and never renders another list’s
     const s = arraySignal([{ id: 'a' }]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value ? each(s, (r) => <li data-list="0" data-key={`L0_${r.id}`}>{r.id}</li>) : ''}
-        <p>{each(s, (r) => <li data-list="1" data-key={`L1_${r.id}`}>{r.id}</li>)}</p>
+        {cond.value
+          ? each(s, (r) => (
+              <li data-list="0" data-key={`L0_${r.id}`}>
+                {r.id}
+              </li>
+            ))
+          : ''}
+        <p>
+          {each(s, (r) => (
+            <li data-list="1" data-key={`L1_${r.id}`}>
+              {r.id}
+            </li>
+          ))}
+        </p>
       </div>
     ));
     expect(at('[data-list="0"]')).toEqual(['L0_a']);
@@ -68,8 +82,20 @@ describe('KF-403: an identity shift rebuilds, and never renders another list’s
     const s = arraySignal([{ id: 'a' }, { id: 'b' }]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value ? each(s, (r) => <li data-list="0" data-key={`L0_${r.id}`}>{r.id}</li>) : ''}
-        <p>{each(s, (r) => <li data-list="1" data-key={`L1_${r.id}`}>{r.id}</li>)}</p>
+        {cond.value
+          ? each(s, (r) => (
+              <li data-list="0" data-key={`L0_${r.id}`}>
+                {r.id}
+              </li>
+            ))
+          : ''}
+        <p>
+          {each(s, (r) => (
+            <li data-list="1" data-key={`L1_${r.id}`}>
+              {r.id}
+            </li>
+          ))}
+        </p>
       </div>
     ));
     for (let i = 0; i < 4; i++) {
@@ -85,8 +111,20 @@ describe('KF-403: an identity shift rebuilds, and never renders another list’s
     const s = arraySignal([{ id: 'a' }]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value ? each(s, (r) => <li data-list="0" data-key={`L0_${r.id}`}>{r.id}</li>) : ''}
-        <p>{each(s, (r) => <li data-list="1" data-key={`L1_${r.id}`}>{r.id}</li>)}</p>
+        {cond.value
+          ? each(s, (r) => (
+              <li data-list="0" data-key={`L0_${r.id}`}>
+                {r.id}
+              </li>
+            ))
+          : ''}
+        <p>
+          {each(s, (r) => (
+            <li data-list="1" data-key={`L1_${r.id}`}>
+              {r.id}
+            </li>
+          ))}
+        </p>
       </div>
     ));
     batch(() => {
@@ -104,8 +142,20 @@ describe('KF-403: an identity shift rebuilds, and never renders another list’s
     const b = [{ id: 'b1' }, { id: 'b2' }];
     const dispose = mount(root, () => (
       <div>
-        {cond.value ? <ul class="first">{each(a, (r) => <li data-key={r.id}>{r.id}</li>)}</ul> : ''}
-        <ul class="second">{each(b, (r) => <li data-key={r.id}>{r.id}</li>)}</ul>
+        {cond.value ? (
+          <ul class="first">
+            {each(a, (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ))}
+          </ul>
+        ) : (
+          ''
+        )}
+        <ul class="second">
+          {each(b, (r) => (
+            <li data-key={r.id}>{r.id}</li>
+          ))}
+        </ul>
       </div>
     ));
     cond.value = false;
@@ -122,10 +172,24 @@ describe('KF-403: an identity shift rebuilds, and never renders another list’s
     const b = arraySignal([{ id: 'b1' }]);
     const dispose = mount(root, () => (
       <div>
-        {cond.value
-          ? <ul data-key="ca">{each(a, (r) => <li data-key={r.id}>{r.id}</li>)}</ul>
-          : ''}
-        <ul data-key="cb">{each(b, (r) => <li data-key={r.id}>{r.id}</li>, { key: 'B' })}</ul>
+        {cond.value ? (
+          <ul data-key="ca">
+            {each(a, (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ))}
+          </ul>
+        ) : (
+          ''
+        )}
+        <ul data-key="cb">
+          {each(
+            b,
+            (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ),
+            { key: 'B' },
+          )}
+        </ul>
       </div>
     ));
     const row = root.querySelector('ul[data-key="cb"] li[data-key="b1"]');
@@ -145,7 +209,11 @@ describe('KF-403: an identity shift rebuilds, and never renders another list’s
       return (
         <div>
           <p>{String(bump.value)}</p>
-          <ul>{each(rows, (r) => <li data-key={r.id}>{r.id}</li>)}</ul>
+          <ul>
+            {each(rows, (r) => (
+              <li data-key={r.id}>{r.id}</li>
+            ))}
+          </ul>
         </div>
       );
     });

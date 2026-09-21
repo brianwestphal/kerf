@@ -28,9 +28,13 @@ import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { computed, signal } from '../../src/reactive.js';
 
-interface Row { id: number; label: string }
+interface Row {
+  id: number;
+  label: string;
+}
 const N = 1000;
-const makeRows = (): Row[] => Array.from({ length: N }, (_, i) => ({ id: i, label: `row ${i}` }));
+const makeRows = (): Row[] =>
+  Array.from({ length: N }, (_, i) => ({ id: i, label: `row ${i}` }));
 
 describe('select-row flip on 1k rows', () => {
   // --- coarse: read selectedId in render + cacheKey ---
@@ -40,17 +44,20 @@ describe('select-row flip on 1k rows', () => {
     const root = document.createElement('div');
     document.body.appendChild(root);
     mount(root, () =>
-      jsx('table', { children: jsx('tbody', { children:
-        each(
-          rows,
-          (r) => jsx('tr', {
-            'data-key': r.id,
-            class: r.id === selectedId.value ? 'danger' : '',
-            children: jsx('td', { children: String(r.id) }),
-          }),
-          (r) => r.id === selectedId.value,
-        ),
-      }) }),
+      jsx('table', {
+        children: jsx('tbody', {
+          children: each(
+            rows,
+            (r) =>
+              jsx('tr', {
+                'data-key': r.id,
+                class: r.id === selectedId.value ? 'danger' : '',
+                children: jsx('td', { children: String(r.id) }),
+              }),
+            (r) => r.id === selectedId.value,
+          ),
+        }),
+      }),
     );
     let t = 0;
     bench('coarse (cacheKey): re-render + reconcile', () => {
@@ -65,17 +72,22 @@ describe('select-row flip on 1k rows', () => {
     const root = document.createElement('div');
     document.body.appendChild(root);
     mount(root, () =>
-      jsx('table', { children: jsx('tbody', { children:
-        each(
-          rows,
-          (r) => jsx('tr', {
-            'data-key': r.id,
-            class: computed(() => (r.id === selectedId.value ? 'danger' : '')),
-            children: jsx('td', { children: String(r.id) }),
-          }),
-          (r) => r.id,
-        ),
-      }) }),
+      jsx('table', {
+        children: jsx('tbody', {
+          children: each(
+            rows,
+            (r) =>
+              jsx('tr', {
+                'data-key': r.id,
+                class: computed(() =>
+                  r.id === selectedId.value ? 'danger' : '',
+                ),
+                children: jsx('td', { children: String(r.id) }),
+              }),
+            (r) => r.id,
+          ),
+        }),
+      }),
     );
     let t = 0;
     bench('fine (binding): effects only, no re-render', () => {
@@ -90,11 +102,20 @@ describe('create 1k rows (mount + dispose)', () => {
   bench('coarse (static class)', () => {
     const root = document.createElement('div');
     const dispose = mount(root, () =>
-      jsx('table', { children: jsx('tbody', { children:
-        each(rows, (r) => jsx('tr', {
-          'data-key': r.id, class: '', children: jsx('td', { children: String(r.id) }),
-        }), (r) => r.id),
-      }) }),
+      jsx('table', {
+        children: jsx('tbody', {
+          children: each(
+            rows,
+            (r) =>
+              jsx('tr', {
+                'data-key': r.id,
+                class: '',
+                children: jsx('td', { children: String(r.id) }),
+              }),
+            (r) => r.id,
+          ),
+        }),
+      }),
     );
     dispose();
   });
@@ -103,13 +124,22 @@ describe('create 1k rows (mount + dispose)', () => {
     const selectedId = signal<number | null>(null);
     const root = document.createElement('div');
     const dispose = mount(root, () =>
-      jsx('table', { children: jsx('tbody', { children:
-        each(rows, (r) => jsx('tr', {
-          'data-key': r.id,
-          class: computed(() => (r.id === selectedId.value ? 'danger' : '')),
-          children: jsx('td', { children: String(r.id) }),
-        }), (r) => r.id),
-      }) }),
+      jsx('table', {
+        children: jsx('tbody', {
+          children: each(
+            rows,
+            (r) =>
+              jsx('tr', {
+                'data-key': r.id,
+                class: computed(() =>
+                  r.id === selectedId.value ? 'danger' : '',
+                ),
+                children: jsx('td', { children: String(r.id) }),
+              }),
+            (r) => r.id,
+          ),
+        }),
+      }),
     );
     dispose();
   });

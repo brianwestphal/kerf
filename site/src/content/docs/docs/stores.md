@@ -1,6 +1,6 @@
 ---
-title: 'Stores'
-description: 'defineStore — composable, testable state.'
+title: "Stores"
+description: "defineStore — composable, testable state."
 ---
 
 A store is a thin convention layered on top of [signals](/kerf/docs/reactivity/). It earns its keep when:
@@ -12,7 +12,7 @@ A store is a thin convention layered on top of [signals](/kerf/docs/reactivity/)
 The factory:
 
 ```ts
-import { defineStore } from 'kerfjs';
+import { defineStore } from "kerfjs";
 
 const counter = defineStore({
   initial: () => ({ count: 0 }),
@@ -32,7 +32,7 @@ const counter = defineStore({
 ## Reading state
 
 ```ts
-counter.state.value.count;     // direct read (not auto-tracked unless inside an effect/computed)
+counter.state.value.count; // direct read (not auto-tracked unless inside an effect/computed)
 ```
 
 Inside an `effect()` or a `mount()` render fn, `state.value` reads ARE tracked — that's how `mount` knows to re-render when actions mutate the store.
@@ -40,8 +40,8 @@ Inside an `effect()` or a `mount()` render fn, `state.value` reads ARE tracked �
 ## Calling actions
 
 ```ts
-counter.actions.inc();         // → state.value === { count: 1 }
-counter.actions.dec();         // → state.value === { count: 0 }
+counter.actions.inc(); // → state.value === { count: 1 }
+counter.actions.dec(); // → state.value === { count: 0 }
 ```
 
 Actions are plain methods — call them from event handlers, async flows, anywhere.
@@ -49,18 +49,19 @@ Actions are plain methods — call them from event handlers, async flows, anywhe
 ## Resetting
 
 ```ts
-counter.reset();               // back to { count: 0 }
+counter.reset(); // back to { count: 0 }
 ```
 
 Per-store reset is useful in tests. There's also a global hook:
 
 ```ts
-import { resetAllStores } from 'kerfjs';
+import { resetAllStores } from "kerfjs";
 
-resetAllStores();              // resets EVERY store created via defineStore()
+resetAllStores(); // resets EVERY store created via defineStore()
 ```
 
 Use cases:
+
 - Test setup: `beforeEach(() => resetAllStores())`.
 - App lifecycle: project switch / sign-out / route reset where every piece of state should return to its initial shape.
 
@@ -133,7 +134,7 @@ This runtime guard is active only when the development diagnostics are installed
 A store doesn't need a `derived` field built into it; derive via `computed()` next to the store:
 
 ```ts
-import { computed } from 'kerfjs';
+import { computed } from "kerfjs";
 
 export const cartTotal = computed(() =>
   cart.state.value.items.reduce((sum, i) => sum + i.price, 0),
@@ -145,7 +146,7 @@ export const cartTotal = computed(() =>
 ## The `Store<TState, TActions>` type
 
 ```ts
-import type { Store } from 'kerfjs';
+import type { Store } from "kerfjs";
 
 function makeWidget(store: Store<{ open: boolean }, { toggle(): void }>) {
   // ...
@@ -158,22 +159,24 @@ Useful when you pass a store as an argument or store it on a class.
 
 A store **is** its state: `defineStore()` returns a module-scope singleton holding a `signal` and its actions. That makes it a singleton within **one module graph** — which is exactly what you want, until a build splits your app into several.
 
-**The constraint.** If your build emits a **separate bundle per entry point** and inlines shared modules into each (an islands setup — e.g. esbuild with several entry points and no shared chunking), the store's module is *duplicated*: each bundle ships its own instance, with its own `signal`. A write in one bundle's store is invisible to the other's. Unlike `SafeHtml` and `arraySignal` — value types that carry a `Symbol.for(...)` brand so multiple copies interoperate — a store **cannot** be reconciled by identity, because two instances are two separate states. The duplication itself is the problem.
+**The constraint.** If your build emits a **separate bundle per entry point** and inlines shared modules into each (an islands setup — e.g. esbuild with several entry points and no shared chunking), the store's module is _duplicated_: each bundle ships its own instance, with its own `signal`. A write in one bundle's store is invisible to the other's. Unlike `SafeHtml` and `arraySignal` — value types that carry a `Symbol.for(...)` brand so multiple copies interoperate — a store **cannot** be reconciled by identity, because two instances are two separate states. The duplication itself is the problem.
 
-**The fix: keep it one instance.** The right answer for most apps is to stop the duplication at the build. Configure the bundler so the store's module is *shared*, not inlined per entry — a shared code-split chunk, or marking it external and injecting it once. Then every entry imports the same store and state is shared for free, with no runtime machinery.
+**The fix: keep it one instance.** The right answer for most apps is to stop the duplication at the build. Configure the bundler so the store's module is _shared_, not inlined per entry — a shared code-split chunk, or marking it external and injecting it once. Then every entry imports the same store and state is shared for free, with no runtime machinery.
 
 **When you truly can't share the module** (genuinely independent bundles on the same page), mirror writes across the copies with a `BroadcastChannel` (or a `storage` event), guarding against the echo:
 
 ```ts
-import { defineStore, effect } from 'kerfjs';
+import { defineStore, effect } from "kerfjs";
 
 export const prefs = defineStore({
-  initial: () => ({ theme: 'light' as 'light' | 'dark' }),
-  actions: (set, get) => ({ setTheme: (theme: 'light' | 'dark') => set({ ...get(), theme }) }),
+  initial: () => ({ theme: "light" as "light" | "dark" }),
+  actions: (set, get) => ({
+    setTheme: (theme: "light" | "dark") => set({ ...get(), theme }),
+  }),
 });
 
 // One channel per logical store, shared by name across bundle copies.
-const channel = new BroadcastChannel('prefs');
+const channel = new BroadcastChannel("prefs");
 let applying = false;
 
 // Broadcast local changes…

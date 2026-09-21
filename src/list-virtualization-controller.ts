@@ -1,11 +1,11 @@
-import type { BindListOptions,ListKey } from './list.js';
+import type { BindListOptions, ListKey } from './list.js';
 import type { ListRowController } from './list-row-controller.js';
 
 interface ListVirtualizationController<T> {
   readonly contentVisibility: boolean;
   render: (items: readonly T[]) => void;
   start: () => void;
-  setHeight: (key: ListKey,height: number) => void;
+  setHeight: (key: ListKey, height: number) => void;
   onRender: (callback: () => void) => () => void;
   dispose: () => void;
 }
@@ -22,14 +22,14 @@ interface ListVirtualizationControllerOptions<T> {
 export function createListVirtualizationController<T>(
   options: ListVirtualizationControllerOptions<T>,
 ): ListVirtualizationController<T> {
-  const { parent,container,virtualize,key,rows } = options;
+  const { parent, container, virtualize, key, rows } = options;
   const overscan = virtualize.overscan ?? 3;
-  const { minRows,rowHeight } = virtualize;
+  const { minRows, rowHeight } = virtualize;
   const contentVisibility = virtualize.mode === 'content-visibility';
   const fixedHeight = typeof rowHeight === 'number' ? rowHeight : null;
   const measuring = typeof rowHeight === 'object' && rowHeight !== null;
-  const measured = new Map<ListKey,number>();
-  const indexByKey = new Map<ListKey,number>();
+  const measured = new Map<ListKey, number>();
+  const indexByKey = new Map<ListKey, number>();
   const renderSubscribers = new Set<() => void>();
   let items: readonly T[] = [];
   let offsets: number[] = [0];
@@ -39,15 +39,24 @@ export function createListVirtualizationController<T>(
   let disposed = false;
 
   const estimateAt = (index: number): number => {
-    const estimate = (rowHeight as { estimate: number | ((item: T,index: number) => number) }).estimate;
-    return typeof estimate === 'function' ? estimate(items[index],index) : estimate;
+    const estimate = (
+      rowHeight as { estimate: number | ((item: T, index: number) => number) }
+    ).estimate;
+    return typeof estimate === 'function'
+      ? estimate(items[index], index)
+      : estimate;
   };
   const variableHeightAt: ((index: number) => number) | null =
     fixedHeight !== null
       ? null
       : measuring
-        ? (index): number => measured.get(key(items[index])) ?? estimateAt(index)
-        : (index): number => (rowHeight as (item: T,index: number) => number)(items[index],index);
+        ? (index): number =>
+            measured.get(key(items[index])) ?? estimateAt(index)
+        : (index): number =>
+            (rowHeight as (item: T, index: number) => number)(
+              items[index],
+              index,
+            );
   const intrinsicSizeAt = (index: number): number =>
     fixedHeight ?? (variableHeightAt as (index: number) => number)(index);
 
@@ -58,7 +67,7 @@ export function createListVirtualizationController<T>(
     if (measuring) indexByKey.clear();
     for (let index = 0; index < items.length; index++) {
       offsets[index + 1] = offsets[index] + heightAt(index);
-      if (measuring) indexByKey.set(key(items[index]),index);
+      if (measuring) indexByKey.set(key(items[index]), index);
     }
     if (measuring) {
       for (const rowKey of measured.keys()) {
@@ -67,7 +76,7 @@ export function createListVirtualizationController<T>(
     }
   };
 
-  const findStart = (target: number,total: number): number => {
+  const findStart = (target: number, total: number): number => {
     let low = 0;
     let high = total;
     while (low < high) {
@@ -78,7 +87,7 @@ export function createListVirtualizationController<T>(
     return low;
   };
 
-  const findEnd = (target: number,total: number): number => {
+  const findEnd = (target: number, total: number): number => {
     let low = 0;
     let high = total;
     while (low < high) {
@@ -93,7 +102,8 @@ export function createListVirtualizationController<T>(
     if (measuring) return;
     for (let index = 0; index < rows.order.length; index++) {
       const absoluteIndex = start + index;
-      const height = fixedHeight ?? offsets[absoluteIndex + 1] - offsets[absoluteIndex];
+      const height =
+        fixedHeight ?? offsets[absoluteIndex + 1] - offsets[absoluteIndex];
       rows.order[index].el.style.height = `${height}px`;
     }
   };
@@ -125,22 +135,25 @@ export function createListVirtualizationController<T>(
       padBottom = 0;
     } else if (fixedHeight !== null) {
       const viewportBottom = parent.scrollTop + parent.clientHeight;
-      start = Math.max(0,Math.floor(parent.scrollTop / fixedHeight) - overscan);
-      end = Math.min(total,Math.ceil(viewportBottom / fixedHeight) + overscan);
+      start = Math.max(
+        0,
+        Math.floor(parent.scrollTop / fixedHeight) - overscan,
+      );
+      end = Math.min(total, Math.ceil(viewportBottom / fixedHeight) + overscan);
       padTop = start * fixedHeight;
-      padBottom = Math.max(0,total - end) * fixedHeight;
+      padBottom = Math.max(0, total - end) * fixedHeight;
     } else {
       if (heightsDirty) {
         rebuildOffsets();
         heightsDirty = false;
       }
       const viewportBottom = parent.scrollTop + parent.clientHeight;
-      start = Math.max(0,findStart(parent.scrollTop,total) - overscan);
-      end = Math.min(total,findEnd(viewportBottom,total) + overscan);
+      start = Math.max(0, findStart(parent.scrollTop, total) - overscan);
+      end = Math.min(total, findEnd(viewportBottom, total) + overscan);
       padTop = offsets[start];
       padBottom = offsets[total] - offsets[end];
     }
-    rows.sync(items.slice(start,end));
+    rows.sync(items.slice(start, end));
     sizeRows(start);
     container.style.paddingTop = `${padTop}px`;
     container.style.paddingBottom = `${padBottom}px`;
@@ -167,24 +180,26 @@ export function createListVirtualizationController<T>(
     });
   };
 
-  const resizeObserver = !contentVisibility && globalThis.ResizeObserver !== undefined
-    ? new globalThis.ResizeObserver(scheduleRender)
-    : undefined;
+  const resizeObserver =
+    !contentVisibility && globalThis.ResizeObserver !== undefined
+      ? new globalThis.ResizeObserver(scheduleRender)
+      : undefined;
 
   const start = (): void => {
     if (contentVisibility) return;
-    parent.addEventListener('scroll',scheduleRender);
+    parent.addEventListener('scroll', scheduleRender);
     resizeObserver?.observe(parent);
   };
 
-  const setHeight = (rowKey: ListKey,height: number): void => {
+  const setHeight = (rowKey: ListKey, height: number): void => {
     if (!measuring || contentVisibility) return;
     const index = indexByKey.get(rowKey);
     if (index === undefined) return;
     const oldHeight = measured.get(rowKey) ?? estimateAt(index);
     if (height === oldHeight) return;
-    measured.set(rowKey,height);
-    if (offsets[index + 1] <= parent.scrollTop) pendingAnchorDelta += height - oldHeight;
+    measured.set(rowKey, height);
+    if (offsets[index + 1] <= parent.scrollTop)
+      pendingAnchorDelta += height - oldHeight;
     heightsDirty = true;
     scheduleRender();
   };
@@ -196,10 +211,10 @@ export function createListVirtualizationController<T>(
 
   const dispose = (): void => {
     disposed = true;
-    parent.removeEventListener('scroll',scheduleRender);
+    parent.removeEventListener('scroll', scheduleRender);
     resizeObserver?.disconnect();
     renderSubscribers.clear();
   };
 
-  return { contentVisibility,render,start,setHeight,onRender,dispose };
+  return { contentVisibility, render, start, setHeight, onRender, dispose };
 }

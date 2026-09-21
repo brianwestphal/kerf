@@ -1,6 +1,6 @@
 ---
-title: 'Dev-mode warnings (opt-in)'
-description: 'Explicitly installed runtime diagnostics, with individually switched warnings and always-on correctness guards.'
+title: "Dev-mode warnings (opt-in)"
+description: "Explicitly installed runtime diagnostics, with individually switched warnings and always-on correctness guards."
 ---
 
 A family of runtime diagnostics that surface common kerf misuse at the moment
@@ -31,7 +31,7 @@ non-trivial false-positive surface in real codebases:
   `reset()` that drops keys, a feature-flag-driven schema change).
 
 A warning that fires on every render in a real project is a warning that
-gets disabled and ignored. Opt-in lets CI and dev environments that *want*
+gets disabled and ignored. Opt-in lets CI and dev environments that _want_
 the diagnostic enable it explicitly while leaving the rest of the world
 untouched.
 
@@ -106,7 +106,7 @@ signals-core's `SignalOptions.watched` callback to set a per-instance
 `__hasSubscriber` flag — fired the first time any subscriber attaches.
 Writes to `.value` check the flag; if it's still false on the first write,
 the one-shot warning fires. The flag is sticky — once set, it never
-clears, so a signal that *was* subscribed at some point won't warn even
+clears, so a signal that _was_ subscribed at some point won't warn even
 after its subscribers detach.
 
 **Why opt-in.** Purely imperative signals (used as mutable cells with no
@@ -116,13 +116,13 @@ penalising data-pipeline-shaped projects.
 
 **Coverage boundary — this is the one warning whose reach depends on
 install order.** Because the constructor is chosen when the signal is
-*created*, only signals created after `kerfjs/dev` is installed can ever
+_created_, only signals created after `kerfjs/dev` is installed can ever
 warn. Static imports are hoisted above a top-level `await import()`, so in
 the common layout
 
 ```js
-import { counter } from './store.js';                 // created HERE
-if (import.meta.env.DEV) await import('kerfjs/dev');  // ...installs after
+import { counter } from "./store.js"; // created HERE
+if (import.meta.env.DEV) await import("kerfjs/dev"); // ...installs after
 ```
 
 the module-scope signals this warning most wants to catch are created
@@ -209,7 +209,7 @@ fine-grained binding re-wiring are both skipped) and a GLOBAL (static-surround)
 hole registers a **different signal instance** than the one currently wired.
 **What it catches:** the silently-stale-binding pattern documented in
 the reactivity guide — `class={cond ? sigA : sigB}` (switching which
-signal *instance* a hole binds while the surrounds string is unchanged). On the
+signal _instance_ a hole binds while the surrounds string is unchanged). On the
 fast path kerf keeps the original binding effect bound to `sigA` and never
 re-binds to `sigB`, so the hole freezes: no error, the UI just stops updating.
 
@@ -229,7 +229,7 @@ warning is off.
 switched hole, not one per render pass.
 
 **Why opt-in.** The comparison is raw signal identity, so a global hole bound
-with a *fresh inline* `computed(() => …)` — a new instance every render, but
+with a _fresh inline_ `computed(() => …)` — a new instance every render, but
 reading the same signals, hence safe — would also differ on the fast path and
 warn. Binding a stable signal / computed reference for global holes (the
 idiomatic shape) avoids that; the opt-in gate keeps the diagnostic available
@@ -239,14 +239,14 @@ removal, so they never reach this warner.)
 
 ### `KERF_DEV_WARN_VALUE_ONLY_RERENDER=1`
 
-**Trigger:** a `mount()` re-render whose static-surrounds HTML *changed* (the byte-compare failed, so the full morph pass runs) but where every difference is confined to **text content and attribute values** — no element added, removed, moved, or retagged.
+**Trigger:** a `mount()` re-render whose static-surrounds HTML _changed_ (the byte-compare failed, so the full morph pass runs) but where every difference is confined to **text content and attribute values** — no element added, removed, moved, or retagged.
 **What it catches:** value holes written as `.value` reads that could have been fine-grained bindings. Under the "values bind, structure re-renders" idiom (see the reactivity guide), a value-only re-render means the whole render + parse + morph pass was avoidable: passing the signal/computed itself (`{count}`, `class={sig}`) updates just the changed nodes — and a mount whose render reads no `.value` never re-renders at all.
 
-**Mechanism.** On a surrounds-changed render with the gate open, `mount()` calls `maybeWarnValueOnlyRerender(prevHtml, nextHtml, ctx)`, which parses both strings into detached `<template>`s and walks the two trees in lockstep. Text data and element attributes (names *and* values — a boolean attribute appearing/disappearing is a value change, since falsy attributes are omitted) may differ; any change of child count, node type, tag name, or comment data classifies the render as structural and nothing fires. Conservative by construction: false negatives are acceptable, false positives would erode trust in the guidance.
+**Mechanism.** On a surrounds-changed render with the gate open, `mount()` calls `maybeWarnValueOnlyRerender(prevHtml, nextHtml, ctx)`, which parses both strings into detached `<template>`s and walks the two trees in lockstep. Text data and element attributes (names _and_ values — a boolean attribute appearing/disappearing is a value change, since falsy attributes are omitted) may differ; any change of child count, node type, tag name, or comment data classifies the render as structural and nothing fires. Conservative by construction: false negatives are acceptable, false positives would erode trust in the guidance.
 
 **Dedup scope.** Once per mount (a per-mount context object), not per render.
 
-**Why opt-in.** Re-rendering on `.value` reads is *correct* — this is a migration aid for adopting the bound-first idiom, not a lint on broken code. The parse-and-compare also has real (dev-only) cost, so it runs only when asked, and only on the already-slow surrounds-changed path; the per-warning switch short-circuits everything else.
+**Why opt-in.** Re-rendering on `.value` reads is _correct_ — this is a migration aid for adopting the bound-first idiom, not a lint on broken code. The parse-and-compare also has real (dev-only) cost, so it runs only when asked, and only on the already-slow surrounds-changed path; the per-warning switch short-circuits everything else.
 
 ### `KERF_DEV_WARN_LIST_REBIND=1`
 
@@ -256,18 +256,18 @@ marker is no longer inside the mount root, meaning the morph rebuilt the
 list's container this render and cloned a fresh marker. Two shapes reach it:
 an ancestor's tag changed, so `replaceChild` swapped the whole subtree; or a
 same-tag sibling positionally took the container's place (a `<ul>` banner
-rendered before a `<ul>` list). A conditional element *inside* the list parent
+rendered before a `<ul>` list). A conditional element _inside_ the list parent
 that merely shifts the marker does NOT reach it — the morph's marker-aware
 lookahead moves the marker and its rows up as a unit, so the binding survives
 and no rows are re-created.
 **What it catches:** the lossy-recovery pattern. The self-heal makes the
-rebuild *correct* — the stale binding is dropped, its still-live stranded rows
+rebuild _correct_ — the stale binding is dropped, its still-live stranded rows
 are removed, the list re-binds against the fresh marker, and the next
 reconcile repopulates the rows — but the rows are re-created from scratch, so
 focus, scroll positions, in-progress IME composition, and any imperative
 listeners on the old row nodes are silently discarded. An author who didn't
 intend the rebuild gets no other signal that their rows are being churned.
-(A conditional sibling merely appearing or disappearing *before* the list's
+(A conditional sibling merely appearing or disappearing _before_ the list's
 container does NOT fire this — the morph's positional lookahead preserves the
 container in place for that shape.)
 
@@ -279,7 +279,7 @@ per-warning switch is off; (2) checks a module-level `warnedIds` Set for dedup; 
 loss, and pointing at the fix: give the **list's own container** a stable
 `id`/`data-key` (which makes it both un-hijackable positionally and findable
 by key), plus stable ancestor tags. The message explicitly steers away from
-keying the *conditional sibling*, which only helps in the removal direction —
+keying the _conditional sibling_, which only helps in the removal direction —
 when the sibling reappears its key has no live counterpart, the diff falls
 back to position, and the unkeyed container is taken over anyway.
 
@@ -307,6 +307,7 @@ right.
 
 **Mechanism.** The row memo (`CacheEntry`) records the index each entry was
 rendered at. Two sites detect a shift:
+
 - **Snapshot path** (`eachSnapshotById`): on a cache HIT, if the entry's stored
   index differs from the row's current index, warn (a plain-array reorder).
 - **Granular path** (`eachGranular`): the applied `arraySignal` patches are
@@ -341,9 +342,9 @@ kerf renders JSX to an HTML string and lets the parser build the DOM, so the par
 <p><section>head</section><ul>{each(rows, …)}</ul></p>
 ```
 
-parses as `<p></p><section>head</section><ul>…</ul>` — an empty `<p>`, with every child hoisted to be its *sibling*.
+parses as `<p></p><section>head</section><ul>…</ul>` — an empty `<p>`, with every child hoisted to be its _sibling_.
 
-**What it costs, precisely.** Less than it looks. kerf reconciles the tree the parser actually produced, and does so consistently: updates, list inserts and conditional toggles all behave correctly afterwards. Nothing is corrupted in the ordinary case. What you lose is the *shape you wrote* — your `<p>` is empty, your children are elsewhere, and any CSS or `querySelector` that assumed the nesting quietly stops matching.
+**What it costs, precisely.** Less than it looks. kerf reconciles the tree the parser actually produced, and does so consistently: updates, list inserts and conditional toggles all behave correctly afterwards. Nothing is corrupted in the ordinary case. What you lose is the _shape you wrote_ — your `<p>` is empty, your children are elsewhere, and any CSS or `querySelector` that assumed the nesting quietly stops matching.
 
 **Why it warrants a warning rather than a doc note:** distance. The symptom is "my list isn't inside the element I put it in", three levels away from the `<p>` that caused it, and nothing in the JSX looks wrong. The fix is a one-liner (use a `<div>`, or move the block content out) once you know which tag pair to look at.
 
@@ -354,7 +355,7 @@ Related: the `each()` row contract already throws for the `<table>`/implicit-`<t
 ### List identity shift (always-on, not opt-in)
 
 **Trigger:** `eachGranular` finds that a list id's recorded data source has
-changed — i.e. this call-order id is now a *different* list than it was last
+changed — i.e. this call-order id is now a _different_ list than it was last
 render.
 **What it catches:** the silent cost of unkeyed list identity. A list without
 an explicit key is identified by its call order, so any render that changes how
@@ -363,7 +364,7 @@ rebuilt from scratch and its rows lose DOM identity, focus, scroll position and
 in-progress IME composition, at O(rows) instead of O(changes). See
 the list-identity guide.
 
-**Mechanism.** `eachGranular` records an unkeyed list id as a *candidate* when
+**Mechanism.** `eachGranular` records an unkeyed list id as a _candidate_ when
 its recorded data source changed; `mount()` reports candidates at the end of
 the render, and only when the render's `each()` call count ALSO changed —
 which is what an id shift actually requires. A changed source on its own is
@@ -373,7 +374,7 @@ code. Keyed lists are excluded entirely, since a key is the identity. It runs on
 the dev entry is installed (core reaches it through the `listIdShift` hook slot),
 dedups on a per-render-context `warnedIds` Set, and names the fix:
 `each(items, render, { key: 'my-list' })` — plus the non-obvious part, that
-keying the *conditional* list is usually enough, because a keyed list does not
+keying the _conditional_ list is usually enough, because a keyed list does not
 occupy a call-order slot.
 
 **Dedup scope.** Per list id, **per mount** — the set lives on the render
@@ -382,7 +383,7 @@ to warn for id `'0'` silenced every other mount's genuine shift forever.
 
 **Why always-on rather than env-gated.** Same reasoning as the missing-row-key
 warning: it fires only when kerf is about to silently discard row state, it has
-no legitimate-use false-positive surface (an author never *wants* a list rebuilt
+no legitimate-use false-positive surface (an author never _wants_ a list rebuilt
 by accident), and it names a one-line fix. Opting into a warning you would
 always want is friction with no benefit.
 
@@ -393,7 +394,7 @@ unconditional in every build, dev entry or not, because it throws on a
 structural error rather than warning about a pattern.
 
 **Known blind spots.** Two shapes stay invisible: a shift between two `each()`
-calls over the *same* `arraySignal` (indistinguishable by source), and two
+calls over the _same_ `arraySignal` (indistinguishable by source), and two
 unkeyed lists swapping order at a constant call count. Both are the price of a
 conservative trigger, and keys close both by construction — which is what the
 message asks for.
@@ -438,23 +439,23 @@ imported.
 
 **Mechanism.** The attribute is always **dropped** (omitted from the string / removed from the live node). How the drop is reported depends on the mode: in **dev** the screen **throws an `Error`** with the diagnostic; in **prod** it `console.warn`s and drops. Mode comes from whether the diagnostics are installed: `kerfjs/dev` fills the `urlScreenThrow` hook slot, so importing it selects the throwing behavior and omitting it selects warn+drop. kerf no longer probes the environment to decide — which also fixes the case where a production browser bundle inferred DEVELOPMENT and threw on attacker-influenced data. `raw()` / `SafeHtml` values are the documented bypass in both modes.
 
-**Like the double-mount guard, this is always-on (unconditional), not opt-in** — there is no env var to silence it, only the mode split. A dropped-but-silent dangerous URL in dev is the exact failure mode the throw fixes (nobody reads the console; the attribute just quietly vanishes). Production keeps the non-crashing warn+drop so attacker-influenced data can never take down a shipped app — **production output is byte-identical to before this split.** This is the one place kerf changes behavior between dev and prod for the *same* input; it's justified because the dev throw only ever fires on input a correct app would never produce (a dangerous URL that isn't wrapped in `raw()`).
+**Like the double-mount guard, this is always-on (unconditional), not opt-in** — there is no env var to silence it, only the mode split. A dropped-but-silent dangerous URL in dev is the exact failure mode the throw fixes (nobody reads the console; the attribute just quietly vanishes). Production keeps the non-crashing warn+drop so attacker-influenced data can never take down a shipped app — **production output is byte-identical to before this split.** This is the one place kerf changes behavior between dev and prod for the _same_ input; it's justified because the dev throw only ever fires on input a correct app would never produce (a dangerous URL that isn't wrapped in `raw()`).
 
 ### Structural invariant checks (`KERF_DEV_INVARIANTS`)
 
-**Trigger:** a list binding disagrees with the live DOM. **What it catches:** the *state* that precedes a wrong render, at the render that created it.
+**Trigger:** a list binding disagrees with the live DOM. **What it catches:** the _state_ that precedes a wrong render, at the render that created it.
 
 Unlike everything else in this family, this one does not describe a pattern the author should change — it reports a **kerf bug**. It exists because every reconciler defect found so far shared one property: kerf kept running happily in a corrupt state, and the damage surfaced several operations later as a wrong render, far from its cause. Each check below is the negation of a defect that actually shipped:
 
-| Check | The defect it would have caught |
-| --- | --- |
-| **marker-live** | a binding whose marker left the tree — every later reconcile mutates a detached parent |
-| **marker-id** | an id carried by a *different* marker node, which pointed an arriving list at the previous occupant's container |
-| **row-parent / row-live** | a binding holding rows that are detached or attached elsewhere — the "stranded rows" shape |
-| **row-order** | rows that no longer follow their own marker in document order |
-| **row-alias** | one row node claimed by two bindings |
-| **region-overlap** | two lists in one parent interleaving their rows |
-| **row-count** | a binding holding a different number of rows than the data it rendered from. Every other check is *internal* — it confirms the binding agrees with the live DOM — so a list that reconciled to the wrong count still passes them if it's self-consistent. Comparing against the source length is the one check that catches a list rendering too few or too many rows; it is what would have caught the self-healed-empty-binding defect — a binding that was internally perfect and externally blank — at the render that caused it. Supplied per-list by `mount()` only when the checks are enabled, so production pays nothing. |
+| Check                     | The defect it would have caught                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **marker-live**           | a binding whose marker left the tree — every later reconcile mutates a detached parent                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| **marker-id**             | an id carried by a _different_ marker node, which pointed an arriving list at the previous occupant's container                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **row-parent / row-live** | a binding holding rows that are detached or attached elsewhere — the "stranded rows" shape                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| **row-order**             | rows that no longer follow their own marker in document order                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| **row-alias**             | one row node claimed by two bindings                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| **region-overlap**        | two lists in one parent interleaving their rows                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| **row-count**             | a binding holding a different number of rows than the data it rendered from. Every other check is _internal_ — it confirms the binding agrees with the live DOM — so a list that reconciled to the wrong count still passes them if it's self-consistent. Comparing against the source length is the one check that catches a list rendering too few or too many rows; it is what would have caught the self-healed-empty-binding defect — a binding that was internally perfect and externally blank — at the render that caused it. Supplied per-list by `mount()` only when the checks are enabled, so production pays nothing. |
 
 **Modes.** `KERF_DEV_INVARIANTS=1` warns; `KERF_DEV_INVARIANTS=throw` throws. Unset (the default) is a complete no-op — the DOM is never walked. The `throw` mode exists because a warning inside a passing test is invisible. Consumers debugging a suspected reconciler bug want `1` first.
 
@@ -559,7 +560,7 @@ warner module, the whole family is unreachable and a bundler drops it. The
 consumer's own dev flag is what makes this work:
 
 ```js
-if (import.meta.env.DEV) await import('kerfjs/dev');
+if (import.meta.env.DEV) await import("kerfjs/dev");
 ```
 
 In a production build that condition folds to `false`, so the statement is
@@ -579,8 +580,8 @@ not try to find out. **Importing `kerfjs/dev` is the development signal.**
 
 ```js
 // Your entry file. YOUR flag, YOUR bundler, YOUR build.
-if (import.meta.env.DEV) await import('kerfjs/dev');                   // Vite
-if (process.env.NODE_ENV !== 'production') await import('kerfjs/dev'); // webpack / Node
+if (import.meta.env.DEV) await import("kerfjs/dev"); // Vite
+if (process.env.NODE_ENV !== "production") await import("kerfjs/dev"); // webpack / Node
 ```
 
 A no-build/CDN app imports it unconditionally from its development page and
@@ -592,7 +593,7 @@ line directly under its imports, so the idiom is visible in the
 first screen of any example a reader opens. The no-build app is the deliberate
 counter-example: `live-poll` maps `kerfjs/dev` in its importmap but never
 imports it, because what that page serves is the production app — see
-the no-build example doc. A component *package* must not install the
+the no-build example doc. A component _package_ must not install the
 diagnostics at all; that decision belongs to the consuming app
 ([building reusable component packages](/kerf/docs/component-packages/)).
 
@@ -602,19 +603,19 @@ support it for `format: 'esm'`; an `iife`/`cjs` build fails to emit). And it
 needs `import.meta.env` to be typed — real apps get that from
 `/// <reference types="vite/client" />`.
 
-**Install ordering.** Every hook except one is read at *call* time — render,
+**Install ordering.** Every hook except one is read at _call_ time — render,
 reconcile, `set()`, `delegate()` — so installation only needs to precede the
 operation you want diagnosed. Existing stores observe later installation on
 their next `get()` or `set()`; render diagnostics observe it on the next render.
 The exception is `signal()`, which picks its constructor
-when the signal is *created*. Static imports are hoisted above a top-level
+when the signal is _created_. Static imports are hoisted above a top-level
 `await import()`, so module-scope signals in imported modules are created
 before the dev entry runs and `KERF_DEV_WARN_UNTRACKED_SIGNALS` will not see
 them. To cover those, make `import 'kerfjs/dev'` the first static import of a
 dev-only entry file, or load your app through a dynamic import after it.
 
 **Two layers, not one.** Installation decides whether the diagnostics are
-*present*; each opt-in warner then reads its own switch through
+_present_; each opt-in warner then reads its own switch through
 `devFlag(name)`, where an `enableWarnings()` override wins over the matching
 `KERF_DEV_WARN_*` environment variable. Always-on hooks skip that second
 layer. Installing the dev entry does not flood the console — it makes the

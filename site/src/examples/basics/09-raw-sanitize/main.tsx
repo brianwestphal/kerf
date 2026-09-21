@@ -21,7 +21,9 @@ mount(root, () => (
           class="kerf-mono"
           rows={12}
           style="resize: vertical;"
-        >{source.value}</textarea>
+        >
+          {source.value}
+        </textarea>
       </div>
       <div>
         <p class="kerf-section-label">Rendered</p>

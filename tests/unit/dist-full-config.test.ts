@@ -28,9 +28,9 @@ const ROOT = resolve(HERE, '..', '..');
 /** Invoke the plugin's `resolveId` hook directly (it ignores `this`). */
 function resolveId(source: string, importer: string | undefined) {
   const hook = srcToDistPlugin().resolveId as
-    | ((this: unknown, source: string, importer?: string) => unknown)
-    | undefined;
-  if (typeof hook !== 'function') throw new Error('resolveId is not a function');
+    ((this: unknown, source: string, importer?: string) => unknown) | undefined;
+  if (typeof hook !== 'function')
+    throw new Error('resolveId is not a function');
   return hook.call(null, source, importer);
 }
 

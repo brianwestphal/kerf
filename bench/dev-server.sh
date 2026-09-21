@@ -44,4 +44,3 @@ EOF
 
 cd "${UPSTREAM_DIR}"
 exec npm start
-</content>

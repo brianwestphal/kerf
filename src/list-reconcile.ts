@@ -49,7 +49,10 @@ import type { ListSegment } from './segment.js';
  *   plain-array `each()`, empty binding (`empty`), post-`replace()`,
  *   post-drift recovery. Runs the keyed classify/build/move algorithm.
  */
-export function reconcileList(binding: ListBinding, listSeg: ListSegment): void {
+export function reconcileList(
+  binding: ListBinding,
+  listSeg: ListSegment,
+): void {
   if (listSeg.patches !== undefined && binding.items.length > 0) {
     reconcileGranular(binding, listSeg.patches);
     return;

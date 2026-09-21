@@ -15,7 +15,14 @@ export type FocusSnapshot = [
   el: HTMLElement,
   selStart: number | null,
   selEnd: number | null,
-  domSelection: [anchorNode: Node, anchorOffset: number, focusNode: Node, focusOffset: number] | null,
+  domSelection:
+    | [
+        anchorNode: Node,
+        anchorOffset: number,
+        focusNode: Node,
+        focusOffset: number,
+      ]
+    | null,
 ];
 
 /**
@@ -42,7 +49,11 @@ export function captureFocus(liveParent: Element): FocusSnapshot | null {
   }
   if (el.isContentEditable) {
     const selection = document.getSelection();
-    if (selection !== null && selection.anchorNode !== null && selection.focusNode !== null) {
+    if (
+      selection !== null &&
+      selection.anchorNode !== null &&
+      selection.focusNode !== null
+    ) {
       // Keep the live boundary-node references and numeric offsets. Firefox's
       // moveBefore() can retarget both Selection and cloned Range boundaries
       // to the row's parent during a keyed move, so neither object is a safe
@@ -73,12 +84,9 @@ export function restoreFocus(snap: FocusSnapshot): void {
   const [anchorNode, anchorOffset, focusNode, focusOffset] = domSelection;
   try {
     // Preserve selection direction where the engine supports the direct API.
-    document.getSelection()?.setBaseAndExtent(
-      anchorNode,
-      anchorOffset,
-      focusNode,
-      focusOffset,
-    );
+    document
+      .getSelection()
+      ?.setBaseAndExtent(anchorNode, anchorOffset, focusNode, focusOffset);
   } catch {
     // A caller may have mutated the editable subtree during reconciliation.
   }

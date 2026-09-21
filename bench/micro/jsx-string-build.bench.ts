@@ -19,7 +19,11 @@ import { bench, describe } from 'vitest';
 
 import { jsx } from '../../src/jsx-runtime.js';
 
-interface Row { id: number; label: string; danger: boolean }
+interface Row {
+  id: number;
+  label: string;
+  danger: boolean;
+}
 
 const ROW: Row = { id: 1, label: 'pretty red house', danger: false };
 
@@ -29,8 +33,25 @@ function renderRowJsx(r: Row): string {
     className: r.danger ? 'danger' : '',
     children: [
       jsx('td', { className: 'col-md-1', children: String(r.id) }),
-      jsx('td', { className: 'col-md-4', children: jsx('a', { className: 'lbl', 'data-id': String(r.id), children: r.label }) }),
-      jsx('td', { className: 'col-md-1', children: jsx('a', { className: 'remove', 'data-id': String(r.id), children: jsx('span', { className: 'glyphicon glyphicon-remove', 'aria-hidden': 'true' }) }) }),
+      jsx('td', {
+        className: 'col-md-4',
+        children: jsx('a', {
+          className: 'lbl',
+          'data-id': String(r.id),
+          children: r.label,
+        }),
+      }),
+      jsx('td', {
+        className: 'col-md-1',
+        children: jsx('a', {
+          className: 'remove',
+          'data-id': String(r.id),
+          children: jsx('span', {
+            className: 'glyphicon glyphicon-remove',
+            'aria-hidden': 'true',
+          }),
+        }),
+      }),
       jsx('td', { className: 'col-md-6' }),
     ],
   });
@@ -38,12 +59,14 @@ function renderRowJsx(r: Row): string {
 }
 
 function renderRowStringConcat(r: Row): string {
-  return `<tr data-key="${r.id}" class="${r.danger ? 'danger' : ''}">`
-    + `<td class="col-md-1">${r.id}</td>`
-    + `<td class="col-md-4"><a class="lbl" data-id="${r.id}">${r.label}</a></td>`
-    + `<td class="col-md-1"><a class="remove" data-id="${r.id}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>`
-    + `<td class="col-md-6"></td>`
-    + `</tr>`;
+  return (
+    `<tr data-key="${r.id}" class="${r.danger ? 'danger' : ''}">` +
+    `<td class="col-md-1">${r.id}</td>` +
+    `<td class="col-md-4"><a class="lbl" data-id="${r.id}">${r.label}</a></td>` +
+    `<td class="col-md-1"><a class="remove" data-id="${r.id}"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></a></td>` +
+    `<td class="col-md-6"></td>` +
+    `</tr>`
+  );
 }
 
 describe('jsx-string-build: row HTML construction', () => {

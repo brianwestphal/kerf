@@ -61,7 +61,10 @@ export function Counter({ store, label = 'Count' }: CounterProps): SafeHtml {
  * single listener survives every re-render. Returns the disposer `delegate()`
  * hands back — call it when the host unmounts.
  */
-export function wireCounter(root: HTMLElement, store: CounterStore): () => void {
+export function wireCounter(
+  root: HTMLElement,
+  store: CounterStore,
+): () => void {
   return delegate(root, 'click', '[data-action^="counter:"]', (_event, el) => {
     const action = el.getAttribute('data-action');
     if (action === 'counter:inc') store.actions.inc();

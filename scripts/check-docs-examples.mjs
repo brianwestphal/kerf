@@ -39,19 +39,32 @@
  */
 
 import { execSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { dirname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, '..');
 const migratingDir = resolve(repoRoot, 'site/src/content/docs/migrating');
-const exampleDocsDir = resolve(repoRoot, 'site/src/content/docs/examples/complete');
+const exampleDocsDir = resolve(
+  repoRoot,
+  'site/src/content/docs/examples/complete',
+);
 const exampleSrcDir = resolve(repoRoot, 'site/src/examples/complete');
 const siteContentDir = resolve(repoRoot, 'site/src/content/docs');
 const buildExamplesPath = resolve(repoRoot, 'site/scripts/build-examples.mjs');
 const browserSpecPath = resolve(repoRoot, 'tests/browser/example-apps.spec.ts');
-const distTypingTsconfig = resolve(repoRoot, 'tests/dist/jsx-typing/tsconfig.json');
+const distTypingTsconfig = resolve(
+  repoRoot,
+  'tests/dist/jsx-typing/tsconfig.json',
+);
 
 function fail(msg) {
   // eslint-disable-next-line no-console
@@ -67,7 +80,9 @@ function ok(msg) {
 // --- Discover the known-good sets ---------------------------------------
 
 const buildExamplesSrc = readFileSync(buildExamplesPath, 'utf8');
-const completeAppsMatch = buildExamplesSrc.match(/const COMPLETE_APPS = \[([\s\S]*?)\];/);
+const completeAppsMatch = buildExamplesSrc.match(
+  /const COMPLETE_APPS = \[([\s\S]*?)\];/,
+);
 if (!completeAppsMatch) {
   fail(`could not find COMPLETE_APPS in ${buildExamplesPath}`);
   process.exit(1);
@@ -81,7 +96,9 @@ const completeApps = new Set(
 
 const browserSpecSrc = readFileSync(browserSpecPath, 'utf8');
 const describedApps = new Set(
-  [...browserSpecSrc.matchAll(/test\.describe\(\s*['"]([^'"]+)['"]/g)].map((m) => m[1]),
+  [...browserSpecSrc.matchAll(/test\.describe\(\s*['"]([^'"]+)['"]/g)].map(
+    (m) => m[1],
+  ),
 );
 
 // --- Walk migration pages -----------------------------------------------
@@ -92,7 +109,8 @@ const docFiles = readdirSync(migratingDir)
 
 const linkRe = /\/kerf\/run\/([a-z0-9-]+)\/?/g;
 const codeBlockRe = /```(tsx|ts)\n([\s\S]*?)```/g;
-const publishedDocLinkRe = /\]\((\/kerf\/(?:api|docs\/[^)#?]+)\/?(?:#[^)]+)?)\)/g;
+const publishedDocLinkRe =
+  /\]\((\/kerf\/(?:api|docs\/[^)#?]+)\/?(?:#[^)]+)?)\)/g;
 
 function githubHeadingSlug(heading) {
   return heading
@@ -131,7 +149,8 @@ function sourceForPublishedRoute(target) {
 }
 
 const scratchDir = resolve(repoRoot, 'tests/.docs-examples-scratch');
-if (existsSync(scratchDir)) rmSync(scratchDir, { recursive: true, force: true });
+if (existsSync(scratchDir))
+  rmSync(scratchDir, { recursive: true, force: true });
 mkdirSync(scratchDir, { recursive: true });
 
 let totalLinks = 0;
@@ -212,10 +231,15 @@ ok(`${totalLinks} /kerf/run/ links resolve to built+tested examples`);
  *  `import { ... } from 'kerfjs[/subpath]'` statement in `src`. */
 function extractKerfImports(src) {
   const out = new Set();
-  const re = /import\s*(?:type\s+)?\{\s*([^}]+)\s*\}\s*from\s*['"]kerfjs(?:\/[a-z-]+)?['"]/g;
+  const re =
+    /import\s*(?:type\s+)?\{\s*([^}]+)\s*\}\s*from\s*['"]kerfjs(?:\/[a-z-]+)?['"]/g;
   for (const m of src.matchAll(re)) {
     for (const raw of m[1].split(',')) {
-      const name = raw.trim().replace(/^type\s+/, '').split(/\s+as\s+/)[0].trim();
+      const name = raw
+        .trim()
+        .replace(/^type\s+/, '')
+        .split(/\s+as\s+/)[0]
+        .trim();
       if (name) out.add(name);
     }
   }
@@ -224,7 +248,9 @@ function extractKerfImports(src) {
 
 let totalExamplePairs = 0;
 const exampleDocFiles = existsSync(exampleDocsDir)
-  ? readdirSync(exampleDocsDir).filter((f) => f.endsWith('.md') && f !== 'index.md')
+  ? readdirSync(exampleDocsDir).filter(
+      (f) => f.endsWith('.md') && f !== 'index.md',
+    )
   : [];
 
 for (const docFile of exampleDocFiles) {
@@ -234,22 +260,28 @@ for (const docFile of exampleDocFiles) {
   totalExamplePairs++;
 
   const srcImports = extractKerfImports(readFileSync(srcPath, 'utf8'));
-  const docImports = extractKerfImports(readFileSync(resolve(exampleDocsDir, docFile), 'utf8'));
+  const docImports = extractKerfImports(
+    readFileSync(resolve(exampleDocsDir, docFile), 'utf8'),
+  );
 
   const missing = [...srcImports].filter((i) => !docImports.has(i));
   if (missing.length > 0) {
     fail(
       `${docFile}: paired source examples/complete/${baseName}/main.tsx imports ` +
-      `[${missing.join(', ')}] from kerfjs, but the doc excerpt never mentions ` +
-      `${missing.length === 1 ? 'it' : 'them'}. Update the doc to reflect the canonical pattern.`,
+        `[${missing.join(', ')}] from kerfjs, but the doc excerpt never mentions ` +
+        `${missing.length === 1 ? 'it' : 'them'}. Update the doc to reflect the canonical pattern.`,
     );
   }
 }
 if (process.exitCode === 1) {
-  ok(`${totalExamplePairs} example doc/source pairs — drift detected, see errors above`);
+  ok(
+    `${totalExamplePairs} example doc/source pairs — drift detected, see errors above`,
+  );
   process.exit(1);
 }
-ok(`${totalExamplePairs} example doc/source pairs have matching kerfjs imports`);
+ok(
+  `${totalExamplePairs} example doc/source pairs have matching kerfjs imports`,
+);
 
 // --- Check 4: complete-example links target published docs ----------------
 
@@ -262,23 +294,31 @@ for (const docFile of exampleDocFiles) {
     const { url, sourcePath } = sourceForPublishedRoute(target);
     totalPublishedDocLinks++;
     if (!sourcePath) {
-      fail(`${docFile}: ${target} does not map to a published site content route`);
+      fail(
+        `${docFile}: ${target} does not map to a published site content route`,
+      );
       continue;
     }
     if (url.hash) {
       const anchor = decodeURIComponent(url.hash.slice(1));
       const headings = publishedHeadings(readFileSync(sourcePath, 'utf8'));
       if (!headings.has(anchor)) {
-        fail(`${docFile}: ${target} names no published heading in ${relative(repoRoot, sourcePath)}`);
+        fail(
+          `${docFile}: ${target} names no published heading in ${relative(repoRoot, sourcePath)}`,
+        );
       }
     }
   }
 }
 if (process.exitCode === 1) {
-  ok(`${totalPublishedDocLinks} published documentation links — see errors above`);
+  ok(
+    `${totalPublishedDocLinks} published documentation links — see errors above`,
+  );
   process.exit(1);
 }
-ok(`${totalPublishedDocLinks} published documentation links resolve to source routes and headings`);
+ok(
+  `${totalPublishedDocLinks} published documentation links resolve to source routes and headings`,
+);
 
 // --- Compile self-contained blocks via tsc ------------------------------
 
@@ -298,7 +338,10 @@ const tsconfig = {
   include: ['./**/*.ts', './**/*.tsx'],
   exclude: ['node_modules'],
 };
-writeFileSync(resolve(scratchDir, 'tsconfig.json'), JSON.stringify(tsconfig, null, 2));
+writeFileSync(
+  resolve(scratchDir, 'tsconfig.json'),
+  JSON.stringify(tsconfig, null, 2),
+);
 
 for (const { srcFile, idx, body, lang } of blocksToCompile) {
   const name = `${srcFile.replace(/\.[^.]+$/, '')}-block-${idx}.${lang}`;
@@ -307,16 +350,24 @@ for (const { srcFile, idx, body, lang } of blocksToCompile) {
 }
 
 if (totalCompiledBlocks === 0) {
-  ok(`no self-contained kerf code blocks to compile (${totalSkippedBlocks} blocks skipped as fragments)`);
+  ok(
+    `no self-contained kerf code blocks to compile (${totalSkippedBlocks} blocks skipped as fragments)`,
+  );
   rmSync(scratchDir, { recursive: true, force: true });
   process.exit(0);
 }
 
 try {
-  execSync(`node node_modules/typescript7/bin/tsc -p ${scratchDir}`, { stdio: 'inherit' });
-  ok(`${totalCompiledBlocks} self-contained kerf code blocks compile clean (${totalSkippedBlocks} fragments skipped)`);
+  execSync(`node node_modules/typescript7/bin/tsc -p ${scratchDir}`, {
+    stdio: 'inherit',
+  });
+  ok(
+    `${totalCompiledBlocks} self-contained kerf code blocks compile clean (${totalSkippedBlocks} fragments skipped)`,
+  );
   rmSync(scratchDir, { recursive: true, force: true });
 } catch {
-  fail(`${totalCompiledBlocks} self-contained kerf code blocks attempted; tsc failed above. Scratch dir kept at ${scratchDir} for inspection.`);
+  fail(
+    `${totalCompiledBlocks} self-contained kerf code blocks attempted; tsc failed above. Scratch dir kept at ${scratchDir} for inspection.`,
+  );
   process.exit(1);
 }

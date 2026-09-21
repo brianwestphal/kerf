@@ -30,8 +30,8 @@ npm install kerfjs @kerfjs/ui
 ```
 
 ```ts
-import { AppTab } from '@kerfjs/ui/app-tab';
-import { Toolbar } from '@kerfjs/ui/toolbar';
+import { AppTab } from "@kerfjs/ui/app-tab";
+import { Toolbar } from "@kerfjs/ui/toolbar";
 ```
 
 Every component has an ESM/type subpath and every stylesheet has an explicit CSS
@@ -93,9 +93,9 @@ For an app that also uses Web Awesome's free component set, one optional import
 provides Web Awesome's base stylesheet plus Kerf's Hot Sheet 2-aligned theme:
 
 ```ts
-import type {} from '@kerfjs/ui/webawesome';
-import '@kerfjs/ui/webawesome.css';
-import '@awesome.me/webawesome/dist/components/button/button.js';
+import type {} from "@kerfjs/ui/webawesome";
+import "@kerfjs/ui/webawesome.css";
+import "@awesome.me/webawesome/dist/components/button/button.js";
 ```
 
 The type-only package subpath supplies Kerf JSX declarations for every
@@ -131,19 +131,19 @@ instead of retaining stale content.
 
 ## 21.3 Initial component set
 
-| Family | Exports | Responsibility |
-| --- | --- | --- |
-| Icons | `LucideIcon` | Render Lucide icon-node data; decorative by default, labeled on request |
-| Toolbars | `Toolbar`, `ToolbarControlGroup`, `ToolbarText` | Leading/center/trailing structure and grouped controls |
-| Menus | `ListItem`, `ListActionRow`, `ListHeader` | Navigation/action rows, sibling primary/trailing row actions, and section headings with semantic count/countLabel pills, plus narrow typed `data-*` and popover-relationship extension slots but no domain commands |
-| Tabs | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs` | Controlled tab/close markup with runtime-safe domain metadata and an optional decorative close glyph, fixed rails, horizontal overflow, edge autoscroll, pointer/keyboard reorder, and focus restoration; the app owns state and persistence |
-| Layout | `PanelHeader`, `ValueTable`, `ValueTableRow` | Panel/dialog/page headings as plain toolbars with an optional bordered icon group, an extra-large title, trailing controls, and an optional subtitle; and typed semantic definition-list rows with optional leading icons |
-| Resize | `ResizableRegion`, `wireResizableRegions` | Pointer-captured resize plus arrows, Shift acceleration, Home, End, and an optional decorative handle glyph |
-| Choice controls | `SegmentedControl`, `Select` | Controlled exclusive buttons with toolbar/rounded/pill presentation; grouped Web Awesome popup choices with optional Lucide icons |
-| Search | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `wireTokenSearchFields` | DOM-owned free text plus controlled ordered atomic filter chips; optional animated standalone or toolbar-group collapse; DOM reading, Enter submission, and caret-preserving keyboard deletion without application query grammar |
-| Feedback | `StateBanner`, `EmptyState`, `LoadingSpinner`, `Skeleton` | Status/alert, empty/busy, meaningful/decorative progress, and a subtle unanimated loading-placeholder block |
-| Loading placeholder | a component's `placeholder` prop | Value-bearing components (`Select`, `ListHeader`, `ListItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`, `AppTab`, `ToolbarText`, `ListActionRow`) render their real chrome with value slots as `Skeleton` blocks and interactivity disabled, so a parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding markup |
-| Component catalog shell | `Catalog` + `wireCatalog` (`@kerfjs/ui/catalog`) | An opt-in, subpath-only whole-screen shell — collapsible category sidebar + titled preview stage + resources footer + related-entry selector — for building a component gallery from your own entries; controlled/stateless (the app owns `active`/`collapsed`/`theme` and computes the preview `content`). See `ui/docs/catalog.md` |
+| Family                  | Exports                                                                                      | Responsibility                                                                                                                                                                                                                                                                                                                                                        |
+| ----------------------- | -------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Icons                   | `LucideIcon`                                                                                 | Render Lucide icon-node data; decorative by default, labeled on request                                                                                                                                                                                                                                                                                               |
+| Toolbars                | `Toolbar`, `ToolbarControlGroup`, `ToolbarText`                                              | Leading/center/trailing structure and grouped controls                                                                                                                                                                                                                                                                                                                |
+| Menus                   | `ListItem`, `ListActionRow`, `ListHeader`                                                    | Navigation/action rows, sibling primary/trailing row actions, and section headings with semantic count/countLabel pills, plus narrow typed `data-*` and popover-relationship extension slots but no domain commands                                                                                                                                                   |
+| Tabs                    | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs`                                             | Controlled tab/close markup with runtime-safe domain metadata and an optional decorative close glyph, fixed rails, horizontal overflow, edge autoscroll, pointer/keyboard reorder, and focus restoration; the app owns state and persistence                                                                                                                          |
+| Layout                  | `PanelHeader`, `ValueTable`, `ValueTableRow`                                                 | Panel/dialog/page headings as plain toolbars with an optional bordered icon group, an extra-large title, trailing controls, and an optional subtitle; and typed semantic definition-list rows with optional leading icons                                                                                                                                             |
+| Resize                  | `ResizableRegion`, `wireResizableRegions`                                                    | Pointer-captured resize plus arrows, Shift acceleration, Home, End, and an optional decorative handle glyph                                                                                                                                                                                                                                                           |
+| Choice controls         | `SegmentedControl`, `Select`                                                                 | Controlled exclusive buttons with toolbar/rounded/pill presentation; grouped Web Awesome popup choices with optional Lucide icons                                                                                                                                                                                                                                     |
+| Search                  | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `wireTokenSearchFields` | DOM-owned free text plus controlled ordered atomic filter chips; optional animated standalone or toolbar-group collapse; DOM reading, Enter submission, and caret-preserving keyboard deletion without application query grammar                                                                                                                                      |
+| Feedback                | `StateBanner`, `EmptyState`, `LoadingSpinner`, `Skeleton`                                    | Status/alert, empty/busy, meaningful/decorative progress, and a subtle unanimated loading-placeholder block                                                                                                                                                                                                                                                           |
+| Loading placeholder     | a component's `placeholder` prop                                                             | Value-bearing components (`Select`, `ListHeader`, `ListItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`, `AppTab`, `ToolbarText`, `ListActionRow`) render their real chrome with value slots as `Skeleton` blocks and interactivity disabled, so a parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding markup |
+| Component catalog shell | `Catalog` + `wireCatalog` (`@kerfjs/ui/catalog`)                                             | An opt-in, subpath-only whole-screen shell — collapsible category sidebar + titled preview stage + resources footer + related-entry selector — for building a component gallery from your own entries; controlled/stateless (the app owns `active`/`collapsed`/`theme` and computes the preview `content`). See `ui/docs/catalog.md`                                  |
 
 ## 21.4 Accessibility contract
 

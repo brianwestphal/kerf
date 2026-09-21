@@ -34,16 +34,22 @@ describe('actions — full pipeline', () => {
 
     const seen: number[] = [];
     const dispose = delegateActions(root, 'click', {
-      inc: () => { seen.push(count.value); count.value++; },
-      reset: () => { count.value = 0; },
+      inc: () => {
+        seen.push(count.value);
+        count.value++;
+      },
+      reset: () => {
+        count.value = 0;
+      },
     });
 
-    const inc = () => (root.querySelector('[data-action="inc"]') as HTMLElement).click();
+    const inc = () =>
+      (root.querySelector('[data-action="inc"]') as HTMLElement).click();
     const readCount = () => root.querySelector('.count')?.textContent;
 
-    inc();                       // 0 -> 1, tree re-renders
-    inc();                       // 1 -> 2, button node survived the morph — still fires
-    inc();                       // 2 -> 3
+    inc(); // 0 -> 1, tree re-renders
+    inc(); // 1 -> 2, button node survived the morph — still fires
+    inc(); // 2 -> 3
     expect(seen).toEqual([0, 1, 2]);
     expect(readCount()).toBe('3');
 

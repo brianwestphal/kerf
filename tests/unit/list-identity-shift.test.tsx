@@ -17,10 +17,10 @@
  * The rest pin documented claims verified true by execution (the KF-383
  * lesson: run the claim, don't read the code).
  */
-import { beforeEach,describe,expect,it } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import { batch,each,mount,signal } from '../../src/index.js';
+import { batch, each, mount, signal } from '../../src/index.js';
 
 let root: HTMLElement;
 
@@ -31,13 +31,24 @@ beforeEach(() => {
 });
 
 describe('KF-387 seam: each() list identity across a varying call count', () => {
-  interface Row { id: string; t: string }
-  const A_ROWS = (): Row[] => [{ id: 'a1', t: 'A1' }, { id: 'a2', t: 'A2' }];
-  const B_ROWS = (): Row[] => [{ id: 'b1', t: 'B1' }, { id: 'b2', t: 'B2' }];
+  interface Row {
+    id: string;
+    t: string;
+  }
+  const A_ROWS = (): Row[] => [
+    { id: 'a1', t: 'A1' },
+    { id: 'a2', t: 'A2' },
+  ];
+  const B_ROWS = (): Row[] => [
+    { id: 'b1', t: 'B1' },
+    { id: 'b2', t: 'B2' },
+  ];
   const bLabels = (): string[] =>
-    Array.from(root.querySelectorAll('ul.b li')).map((li) => li.textContent ?? '');
+    Array.from(root.querySelectorAll('ul.b li')).map(
+      (li) => li.textContent ?? '',
+    );
 
-  it('a batched conditional-toggle + granular patch renders its own list\'s rows', () => {
+  it("a batched conditional-toggle + granular patch renders its own list's rows", () => {
     // KF-388 (fixed): hiding the panel makes list B the render's FIRST each()
     // call, so it inherits list A's id — and A's binding, whose recorded count
     // used to make B's queued insert patch pass the drift check. The granular
@@ -49,8 +60,20 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
     const b = arraySignal(B_ROWS());
     const dispose = mount(root, () => (
       <div>
-        {cond.value ? <ul class="a">{each(a, (r) => <li data-key={r.id}>{r.t}</li>)}</ul> : ''}
-        <ul class="b">{each(b, (r) => <li data-key={r.id}>{r.t}</li>)}</ul>
+        {cond.value ? (
+          <ul class="a">
+            {each(a, (r) => (
+              <li data-key={r.id}>{r.t}</li>
+            ))}
+          </ul>
+        ) : (
+          ''
+        )}
+        <ul class="b">
+          {each(b, (r) => (
+            <li data-key={r.id}>{r.t}</li>
+          ))}
+        </ul>
       </div>
     ));
     expect(bLabels()).toEqual(['B1', 'B2']);
@@ -62,7 +85,7 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
     dispose();
   });
 
-  it('a batched conditional-toggle + granular update keeps the two lists\' rows separate', () => {
+  it("a batched conditional-toggle + granular update keeps the two lists' rows separate", () => {
     // KF-388 (fixed), update flavor: ul.b used to end up ['B1-upd', 'A2'] —
     // the updated B row patched over A's row 0, with A's row 1 kept.
     const cond = signal(true);
@@ -70,8 +93,20 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
     const b = arraySignal(B_ROWS());
     const dispose = mount(root, () => (
       <div>
-        {cond.value ? <ul class="a">{each(a, (r) => <li data-key={r.id}>{r.t}</li>)}</ul> : ''}
-        <ul class="b">{each(b, (r) => <li data-key={r.id}>{r.t}</li>)}</ul>
+        {cond.value ? (
+          <ul class="a">
+            {each(a, (r) => (
+              <li data-key={r.id}>{r.t}</li>
+            ))}
+          </ul>
+        ) : (
+          ''
+        )}
+        <ul class="b">
+          {each(b, (r) => (
+            <li data-key={r.id}>{r.t}</li>
+          ))}
+        </ul>
       </div>
     ));
     batch(() => {
@@ -92,8 +127,20 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
     const b = B_ROWS();
     const dispose = mount(root, () => (
       <div>
-        {cond.value ? <ul class="a">{each(a, (r) => <li data-key={r.id}>{r.t}</li>)}</ul> : ''}
-        <ul class="b">{each(b, (r) => <li data-key={r.id}>{r.t}</li>)}</ul>
+        {cond.value ? (
+          <ul class="a">
+            {each(a, (r) => (
+              <li data-key={r.id}>{r.t}</li>
+            ))}
+          </ul>
+        ) : (
+          ''
+        )}
+        <ul class="b">
+          {each(b, (r) => (
+            <li data-key={r.id}>{r.t}</li>
+          ))}
+        </ul>
       </div>
     ));
     const b1 = root.querySelector('ul.b li[data-key="b1"]');
@@ -121,9 +168,15 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
     // the same refs in the same order are morphed in place. Identity survives.
     // (Nested-in-row lists themselves still flatten to static HTML — the inner
     // marker never reaches the segment tree — which is a separate boundary.)
-    interface Outer { id: string; subs: { id: string; t: string }[] }
+    interface Outer {
+      id: string;
+      subs: { id: string; t: string }[];
+    }
     const outer: Outer[] = [{ id: 'o1', subs: [{ id: 's1', t: 'S1' }] }];
-    const others = [{ id: 'x1', t: 'X1' }, { id: 'x2', t: 'X2' }];
+    const others = [
+      { id: 'x1', t: 'X1' },
+      { id: 'x2', t: 'X2' },
+    ];
     const bump = signal(0);
     const dispose = mount(root, () => (
       <div>
@@ -131,16 +184,26 @@ describe('KF-387 seam: each() list identity across a varying call count', () => 
         <ul class="outer">
           {each(outer, (o) => (
             <li data-key={o.id}>
-              <ol>{each(o.subs, (s) => <li data-key={s.id}>{s.t}</li>)}</ol>
+              <ol>
+                {each(o.subs, (s) => (
+                  <li data-key={s.id}>{s.t}</li>
+                ))}
+              </ol>
             </li>
           ))}
         </ul>
-        <ul class="second">{each(others, (r) => <li data-key={r.id}>{r.t}</li>)}</ul>
+        <ul class="second">
+          {each(others, (r) => (
+            <li data-key={r.id}>{r.t}</li>
+          ))}
+        </ul>
       </div>
     ));
     const x1 = root.querySelector('ul.second li[data-key="x1"]');
     bump.value = 1; // outer rows cache-hit → inner each() not called → ids shift
-    const second = Array.from(root.querySelectorAll('ul.second li')).map((li) => li.textContent);
+    const second = Array.from(root.querySelectorAll('ul.second li')).map(
+      (li) => li.textContent,
+    );
     expect(second).toEqual(['X1', 'X2']); // content correct
     // …and the unrelated sibling list kept its row nodes.
     expect(root.querySelector('ul.second li[data-key="x1"]')).toBe(x1);

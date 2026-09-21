@@ -20,21 +20,20 @@
  * Plus assorted contract pins (effect throwing, nested batch, diamond
  * computed) that the audit flagged.
  */
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { arraySignal } from '../../src/array-signal.js';
-import {
-batch,
-each,
-mount,
-raw,
-signal
-} from '../../src/index.js';
+import { batch, each, mount, raw, signal } from '../../src/index.js';
 
 describe('Audit gap coverage', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   describe('each() row contract (KF-103)', () => {
     it('row render producing zero top-level elements throws with row index (first render)', () => {
@@ -42,7 +41,11 @@ describe('Audit gap coverage', () => {
       expect(() => {
         mount(root, () => (
           <ul>
-            {each(items, () => raw('   '), (item) => String(item.id))}
+            {each(
+              items,
+              () => raw('   '),
+              (item) => String(item.id),
+            )}
           </ul>
         ));
       }).toThrow(/row render at index 0 produced no top-level element/i);
@@ -56,11 +59,15 @@ describe('Audit gap coverage', () => {
       const items = signal<{ id: number }[]>([{ id: 0 }]);
       mount(root, () => (
         <ul>
-          {each(items.value, (it) => {
-            if (it.id === 0) return <li data-key="0">ok0</li>;
-            if (it.id === 1) return <li data-key="1">ok1</li>;
-            return raw('<li>x</li><li>y</li>');
-          }, (item) => String(item.id))}
+          {each(
+            items.value,
+            (it) => {
+              if (it.id === 0) return <li data-key="0">ok0</li>;
+              if (it.id === 1) return <li data-key="1">ok1</li>;
+              return raw('<li>x</li><li>y</li>');
+            },
+            (item) => String(item.id),
+          )}
         </ul>
       ));
       expect(() => {
@@ -72,9 +79,13 @@ describe('Audit gap coverage', () => {
       const rows = arraySignal([{ id: 0, valid: true }]);
       mount(root, () => (
         <ul>
-          {each(rows, (r) => r.valid
-            ? <li data-key={String(r.id)}>{String(r.id)}</li>
-            : raw('<li>x</li><li>y</li>'))}
+          {each(rows, (r) =>
+            r.valid ? (
+              <li data-key={String(r.id)}>{String(r.id)}</li>
+            ) : (
+              raw('<li>x</li><li>y</li>')
+            ),
+          )}
         </ul>
       ));
       // Three contiguous inserts: 1 and 2 valid, 3 multi-root. findOffendingInsert
@@ -91,13 +102,19 @@ describe('Audit gap coverage', () => {
 
     it('error message pinpoints multi-root update when earlier updates are valid (granular)', () => {
       const rows = arraySignal([
-        { id: 0, valid: true }, { id: 1, valid: true }, { id: 2, valid: true },
+        { id: 0, valid: true },
+        { id: 1, valid: true },
+        { id: 2, valid: true },
       ]);
       mount(root, () => (
         <ul>
-          {each(rows, (r) => r.valid
-            ? <li data-key={String(r.id)}>row{String(r.id)}</li>
-            : raw('<li>x</li><li>y</li>'))}
+          {each(rows, (r) =>
+            r.valid ? (
+              <li data-key={String(r.id)}>row{String(r.id)}</li>
+            ) : (
+              raw('<li>x</li><li>y</li>')
+            ),
+          )}
         </ul>
       ));
       expect(() => {
@@ -115,7 +132,11 @@ describe('Audit gap coverage', () => {
       expect(() => {
         mount(root, () => (
           <ul>
-            {each(items, () => raw(longHtml), (item) => String(item.id))}
+            {each(
+              items,
+              () => raw(longHtml),
+              (item) => String(item.id),
+            )}
           </ul>
         ));
       }).toThrow(/Got HTML: ".+…"/);
@@ -128,7 +149,11 @@ describe('Audit gap coverage', () => {
       const items = signal<{ id: number }[]>([]);
       mount(root, () => (
         <ul>
-          {each(items.value, () => raw(longHtml), (item) => String(item.id))}
+          {each(
+            items.value,
+            () => raw(longHtml),
+            (item) => String(item.id),
+          )}
         </ul>
       ));
       expect(() => {
@@ -145,7 +170,11 @@ describe('Audit gap coverage', () => {
       const items = [{ id: 1 }];
       mount(root, () => (
         <ul>
-          {each(items, (item) => raw(`<li data-key="${item.id}"><br/></li>`), (item) => String(item.id))}
+          {each(
+            items,
+            (item) => raw(`<li data-key="${item.id}"><br/></li>`),
+            (item) => String(item.id),
+          )}
         </ul>
       ));
       expect(root.querySelectorAll('li').length).toBe(1);
@@ -158,13 +187,14 @@ describe('Audit gap coverage', () => {
       const rows = arraySignal([{ id: 0, broken: false }]);
       mount(root, () => (
         <ul>
-          {each(rows, (r) => r.broken
-            ? raw(longHtml)
-            : <li data-key={String(r.id)}>ok</li>)}
+          {each(rows, (r) =>
+            r.broken ? raw(longHtml) : <li data-key={String(r.id)}>ok</li>,
+          )}
         </ul>
       ));
-      expect(() => rows.update(0, (r) => ({ ...r, broken: true })))
-        .toThrow(/Got HTML: ".+…"/);
+      expect(() => rows.update(0, (r) => ({ ...r, broken: true }))).toThrow(
+        /Got HTML: ".+…"/,
+      );
     });
 
     it('first-render mixed valid+empty rows reports the empty row', () => {
@@ -176,7 +206,11 @@ describe('Audit gap coverage', () => {
       expect(() => {
         mount(root, () => (
           <ul>
-            {each(items, (it) => it.id === 1 ? raw('') : <li data-key="2">b</li>, (item) => String(item.id))}
+            {each(
+              items,
+              (it) => (it.id === 1 ? raw('') : <li data-key="2">b</li>),
+              (item) => String(item.id),
+            )}
           </ul>
         ));
       }).toThrow(/row render at index 0 produced no top-level element/i);
@@ -187,7 +221,11 @@ describe('Audit gap coverage', () => {
       expect(() => {
         mount(root, () => (
           <ul>
-            {each(items, () => raw('<li>a</li><li>b</li>'), (item) => String(item.id))}
+            {each(
+              items,
+              () => raw('<li>a</li><li>b</li>'),
+              (item) => String(item.id),
+            )}
           </ul>
         ));
       }).toThrow(/index 0.*2 top-level elements.*exactly one/i);
@@ -197,10 +235,16 @@ describe('Audit gap coverage', () => {
       const items = signal<{ id: number }[]>([{ id: 0 }]);
       mount(root, () => (
         <ul>
-          {each(items.value, (it) => it.id === 0
-            ? <li data-key="0">ok</li>
-            : raw('<li>a</li><li>b</li>'),
-          (it) => String(it.id))}
+          {each(
+            items.value,
+            (it) =>
+              it.id === 0 ? (
+                <li data-key="0">ok</li>
+              ) : (
+                raw('<li>a</li><li>b</li>')
+              ),
+            (it) => String(it.id),
+          )}
         </ul>
       ));
       expect(() => {
@@ -216,13 +260,17 @@ describe('Audit gap coverage', () => {
       const item = { id: 42, label: 'cached' };
       mount(root, () => (
         <ul>
-          {each([item], (it) => <li data-key={String(it.id)}>{it.label}</li>)}
+          {each([item], (it) => (
+            <li data-key={String(it.id)}>{it.label}</li>
+          ))}
         </ul>
       ));
       // Trigger another render with the same item ref — cache hit.
       mount(document.createElement('div'), () => (
         <ul>
-          {each([item], (it) => <li data-key={String(it.id)}>{it.label}</li>)}
+          {each([item], (it) => (
+            <li data-key={String(it.id)}>{it.label}</li>
+          ))}
         </ul>
       ));
       // Two mounts; both rendered without exception.
@@ -233,9 +281,13 @@ describe('Audit gap coverage', () => {
       const rows = arraySignal([{ id: 1, label: 'good' }]);
       mount(root, () => (
         <ul>
-          {each(rows, (r) => r.id === 666
-            ? raw('<li>x</li><li>y</li>')
-            : <li data-key={String(r.id)}>{r.label}</li>)}
+          {each(rows, (r) =>
+            r.id === 666 ? (
+              raw('<li>x</li><li>y</li>')
+            ) : (
+              <li data-key={String(r.id)}>{r.label}</li>
+            ),
+          )}
         </ul>
       ));
       expect(() => {
@@ -253,6 +305,4 @@ describe('Audit gap coverage', () => {
       expect(html).toBe('<li>a</li><li>b</li>');
     });
   });
-
-
 });

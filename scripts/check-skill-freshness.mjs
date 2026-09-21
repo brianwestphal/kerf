@@ -47,7 +47,11 @@ function skillFiles() {
     } catch {
       continue;
     }
-    out.push({ name: entry.name, path: `.claude/skills/${entry.name}/SKILL.md`, text: readFileSync(path, 'utf8') });
+    out.push({
+      name: entry.name,
+      path: `.claude/skills/${entry.name}/SKILL.md`,
+      text: readFileSync(path, 'utf8'),
+    });
   }
   return out;
 }
@@ -59,12 +63,16 @@ const add = (file, claim, found, expected, fix) =>
 // --- The values, re-derived from whoever owns them ------------------------
 
 const vitestConfig = read('vitest.config.ts');
-const thresholdBlock = /thresholds:\s*\{([\s\S]*?)\}/.exec(vitestConfig)?.[1] ?? '';
+const thresholdBlock =
+  /thresholds:\s*\{([\s\S]*?)\}/.exec(vitestConfig)?.[1] ?? '';
 const branchesThreshold = /branches:\s*(\d+)/.exec(thresholdBlock)?.[1];
 
 const tsupConfig = read('tsup.config.ts');
-const entryNames = [...(/entry:\s*\[([^\]]*)\]/.exec(tsupConfig)?.[1] ?? '').matchAll(/src\/([\w-]+)\.ts/g)]
-  .map((m) => m[1]);
+const entryNames = [
+  ...(/entry:\s*\[([^\]]*)\]/.exec(tsupConfig)?.[1] ?? '').matchAll(
+    /src\/([\w-]+)\.ts/g,
+  ),
+].map((m) => m[1]);
 
 const linesThreshold = /lines:\s*(\d+)/.exec(thresholdBlock)?.[1];
 
@@ -98,7 +106,10 @@ const NUMERIC_CLAIMS = [
     // cover both metrics, which is wrong whenever the two differ.
     pattern: /(\d{2,3})%\s+lines\s*[/,]\s*branches/gi,
     // Only honest if the two thresholds are actually equal.
-    expected: () => (linesThreshold === branchesThreshold ? linesThreshold : `separate values — lines ${linesThreshold}, branches ${branchesThreshold}`),
+    expected: () =>
+      linesThreshold === branchesThreshold
+        ? linesThreshold
+        : `separate values — lines ${linesThreshold}, branches ${branchesThreshold}`,
     owner: 'vitest.config.ts coverage.thresholds',
     fix: 'lines and branches have different thresholds; state them separately or point at vitest.config.ts.',
   },
@@ -110,7 +121,13 @@ for (const skill of skillFiles()) {
     if (expected === undefined) continue; // couldn't derive; don't guess
     for (const match of skill.text.matchAll(claim.pattern)) {
       if (match[1] !== expected) {
-        add(skill.path, claim.label, match[0], `${expected} (per ${claim.owner})`, claim.fix);
+        add(
+          skill.path,
+          claim.label,
+          match[0],
+          `${expected} (per ${claim.owner})`,
+          claim.fix,
+        );
       }
     }
   }
@@ -135,7 +152,13 @@ for (const skill of skillFiles()) {
     try {
       statSync(join(ROOT, match[1]));
     } catch {
-      add(skill.path, 'source path', match[1], 'a file that exists', 'Update the path, or drop the reference.');
+      add(
+        skill.path,
+        'source path',
+        match[1],
+        'a file that exists',
+        'Update the path, or drop the reference.',
+      );
     }
   }
 }
@@ -144,18 +167,20 @@ if (problems.length > 0) {
   console.error('\nStale claims in project skill files:\n');
   for (const p of problems) {
     console.error(`  ${p.file}`);
-    console.error(`    ${p.claim}: skill says ${JSON.stringify(p.found)}, expected ${p.expected}`);
+    console.error(
+      `    ${p.claim}: skill says ${JSON.stringify(p.found)}, expected ${p.expected}`,
+    );
     console.error(`    fix: ${p.fix}\n`);
   }
   console.error(
-    'A skill that restates a rule is a copy that silently rots — the agent running it\n'
-    + 'then reports findings that are not real. Prefer referencing the source of truth\n'
-    + 'over quoting it.\n',
+    'A skill that restates a rule is a copy that silently rots — the agent running it\n' +
+      'then reports findings that are not real. Prefer referencing the source of truth\n' +
+      'over quoting it.\n',
   );
   process.exit(1);
 }
 
 console.log(
-  `[check-skill-freshness] OK — ${skillFiles().length} skill file(s); `
-  + 'no contradicting thresholds, dist entries, or source paths.',
+  `[check-skill-freshness] OK — ${skillFiles().length} skill file(s); ` +
+    'no contradicting thresholds, dist entries, or source paths.',
 );

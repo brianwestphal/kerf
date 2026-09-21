@@ -60,17 +60,22 @@ const AUDITED_ACTIONS = {
     sha: 'fc324d3547104276b827a68afc52ff2a11cc49c9',
     version: 'v5.0.0',
     runtime: 'composite',
-    source: 'https://github.com/actions/upload-pages-artifact/releases/tag/v5.0.0',
+    source:
+      'https://github.com/actions/upload-pages-artifact/releases/tag/v5.0.0',
   },
   'softprops/action-gh-release': {
     sha: 'efb35369e0ad2afab669f228072c1b0d510eae64',
     version: 'v3.0.3',
     runtime: 'node24',
-    source: 'https://github.com/softprops/action-gh-release/releases/tag/v3.0.3',
+    source:
+      'https://github.com/softprops/action-gh-release/releases/tag/v3.0.3',
   },
 } satisfies Record<string, AuditedAction>;
 
-const workflowDirectory = resolve(import.meta.dirname, '../../.github/workflows');
+const workflowDirectory = resolve(
+  import.meta.dirname,
+  '../../.github/workflows',
+);
 const workflowFiles = readdirSync(workflowDirectory)
   .filter((file) => file.endsWith('.yml') || file.endsWith('.yaml'))
   .sort();
@@ -89,16 +94,24 @@ describe('GitHub Actions inventory', () => {
         const match = line.match(
           /^\s*(?:-\s*)?uses:\s+([^@\s]+)@([0-9a-f]{40})\s+#\s+(v\d+\.\d+\.\d+)\s*$/,
         );
-        expect(match, `${file}: expected a full SHA and release comment: ${line.trim()}`).not.toBeNull();
+        expect(
+          match,
+          `${file}: expected a full SHA and release comment: ${line.trim()}`,
+        ).not.toBeNull();
 
         const [, name, sha, version] = match!;
         const audited = AUDITED_ACTIONS[name as keyof typeof AUDITED_ACTIONS];
-        expect(audited, `${file}: ${name} is missing from AUDITED_ACTIONS`).toBeDefined();
+        expect(
+          audited,
+          `${file}: ${name} is missing from AUDITED_ACTIONS`,
+        ).toBeDefined();
         expect({ sha, version }, `${file}: ${name}`).toEqual({
           sha: audited.sha,
           version: audited.version,
         });
-        expect(audited.runtime, `${name}: ${audited.source}`).not.toMatch(/^node(?:12|16|20)$/);
+        expect(audited.runtime, `${name}: ${audited.source}`).not.toMatch(
+          /^node(?:12|16|20)$/,
+        );
         seen.add(name);
       }
     }

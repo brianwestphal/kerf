@@ -20,19 +20,19 @@
  * Plus assorted contract pins (effect throwing, nested batch, diamond
  * computed) that the audit flagged.
  */
-import { afterEach,beforeEach,describe,expect,it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import {
-batch,
-computed,
-effect,
-signal
-} from '../../src/index.js';
+import { batch, computed, effect, signal } from '../../src/index.js';
 
 describe('Audit gap coverage', () => {
   let root: HTMLElement;
-  beforeEach(() => { root = document.createElement('div'); document.body.appendChild(root); });
-  afterEach(() => { document.body.innerHTML = ''; });
+  beforeEach(() => {
+    root = document.createElement('div');
+    document.body.appendChild(root);
+  });
+  afterEach(() => {
+    document.body.innerHTML = '';
+  });
 
   describe('reactivity contract pins', () => {
     it('effect throwing leaves subsequent dependency notifications working', () => {
@@ -48,7 +48,9 @@ describe('Audit gap coverage', () => {
       expect(lastSeen).toBe(0);
       // The throw happens inside effect()'s body; it's surfaced by signals-core
       // via the propagating mutation but the subscription is preserved.
-      expect(() => { a.value = 1; }).toThrow();
+      expect(() => {
+        a.value = 1;
+      }).toThrow();
       expect(lastSeen).toBe(1);
       // Subsequent mutation should still trigger the effect (the subscription
       // graph survives the prior throw).
@@ -61,7 +63,11 @@ describe('Audit gap coverage', () => {
       const a = signal(0);
       const b = signal(0);
       let runs = 0;
-      effect(() => { void a.value; void b.value; runs++; });
+      effect(() => {
+        void a.value;
+        void b.value;
+        runs++;
+      });
       expect(runs).toBe(1);
       batch(() => {
         a.value = 1;

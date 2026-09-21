@@ -8,6 +8,18 @@ export interface ValueTableProps {
   children: SafeHtml | readonly SafeHtml[];
 }
 
-export function ValueTable({ label, className = '', children }: ValueTableProps) {
-  return <dl class={`kui-value-table ${className}`.trim()} data-component="value-table" aria-label={label}>{children}</dl>;
+export function ValueTable({
+  label,
+  className = '',
+  children,
+}: ValueTableProps) {
+  return (
+    <dl
+      class={`kui-value-table ${className}`.trim()}
+      data-component="value-table"
+      aria-label={label}
+    >
+      {children}
+    </dl>
+  );
 }

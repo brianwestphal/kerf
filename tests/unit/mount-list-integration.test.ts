@@ -4,10 +4,10 @@
  * keyed list reorders, and the data-morph-skip escape hatch.
  */
 
-import { afterEach,beforeEach,describe,expect,it,vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { each } from '../../src/each.js';
-import { jsx,raw } from '../../src/jsx-runtime.js';
+import { jsx, raw } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
 
@@ -24,15 +24,25 @@ afterEach(() => {
 
 describe('mount() — focus and selection preservation', () => {
   describe('each() inside mount', () => {
-    interface Row { id: number; label: string }
+    interface Row {
+      id: number;
+      label: string;
+    }
     const makeRows = (count: number): Row[] =>
-      Array.from({ length: count }, (_, i) => ({ id: i + 1, label: `r${i + 1}` }));
+      Array.from({ length: count }, (_, i) => ({
+        id: i + 1,
+        label: `r${i + 1}`,
+      }));
 
     it('renders an initial list', () => {
       const rows = signal<Row[]>(makeRows(3));
-      mount(root, () => jsx('ul', {
-        children: each(rows.value, (r) => jsx('li', { children: r.label, 'data-key': r.id })),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(rows.value, (r) =>
+            jsx('li', { children: r.label, 'data-key': r.id }),
+          ),
+        }),
+      );
       // The `<!--kf-list:0-->` marker stays in the live DOM (KF-102 round 2)
       // as a permanent anchor for the list region — items live AFTER the
       // marker, surrounding non-list siblings live OUTSIDE it. This lets
@@ -48,9 +58,13 @@ describe('mount() — focus and selection preservation', () => {
 
     it('preserves identity for unchanged rows on partial update', () => {
       const rows = signal<Row[]>(makeRows(5));
-      mount(root, () => jsx('ul', {
-        children: each(rows.value, (r) => jsx('li', { children: r.label, 'data-key': r.id })),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(rows.value, (r) =>
+            jsx('li', { children: r.label, 'data-key': r.id }),
+          ),
+        }),
+      );
       const before = Array.from(root.querySelectorAll('li'));
 
       // Replace only row 2 (index 1) with a new object whose label changed.
@@ -72,9 +86,13 @@ describe('mount() — focus and selection preservation', () => {
 
     it('moves existing nodes when the list reorders', () => {
       const rows = signal<Row[]>(makeRows(3));
-      mount(root, () => jsx('ul', {
-        children: each(rows.value, (r) => jsx('li', { children: r.label, 'data-key': r.id })),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(rows.value, (r) =>
+            jsx('li', { children: r.label, 'data-key': r.id }),
+          ),
+        }),
+      );
       const original = Array.from(root.querySelectorAll('li'));
 
       // Reorder: [r1, r2, r3] → [r3, r1, r2]
@@ -87,23 +105,34 @@ describe('mount() — focus and selection preservation', () => {
       expect(reordered[2]).toBe(original[1]);
     });
 
-    it('keeps focus on a moved row\'s descendant input across a reorder (KF-65)', () => {
+    it("keeps focus on a moved row's descendant input across a reorder (KF-65)", () => {
       const rows = signal<Row[]>(makeRows(3));
-      mount(root, () => jsx('ul', {
-        children: each(
-          rows.value,
-          (r) => jsx('li', {
-            'data-key': r.id,
-            children: jsx('input', { id: `inp-${r.id}`, type: 'text', value: r.label }),
-          }),
-          (r) => r.id,
-        ),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(
+            rows.value,
+            (r) =>
+              jsx('li', {
+                'data-key': r.id,
+                children: jsx('input', {
+                  id: `inp-${r.id}`,
+                  type: 'text',
+                  value: r.label,
+                }),
+              }),
+            (r) => r.id,
+          ),
+        }),
+      );
 
       const inp = root.querySelector<HTMLInputElement>('#inp-2')!;
       inp.value = 'partial';
       inp.focus();
-      try { inp.setSelectionRange(3, 3); } catch { /* happy-dom may no-op */ }
+      try {
+        inp.setSelectionRange(3, 3);
+      } catch {
+        /* happy-dom may no-op */
+      }
       expect(document.activeElement).toBe(inp);
 
       // Reverse: every row moves; the row owning the focused input ends up at
@@ -119,16 +148,23 @@ describe('mount() — focus and selection preservation', () => {
 
     it('keeps focus when an unrelated new row is inserted at the top', () => {
       const rows = signal<Row[]>(makeRows(2));
-      mount(root, () => jsx('ul', {
-        children: each(
-          rows.value,
-          (r) => jsx('li', {
-            'data-key': r.id,
-            children: jsx('input', { id: `inp-${r.id}`, type: 'text', value: r.label }),
-          }),
-          (r) => r.id,
-        ),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(
+            rows.value,
+            (r) =>
+              jsx('li', {
+                'data-key': r.id,
+                children: jsx('input', {
+                  id: `inp-${r.id}`,
+                  type: 'text',
+                  value: r.label,
+                }),
+              }),
+            (r) => r.id,
+          ),
+        }),
+      );
 
       const inp = root.querySelector<HTMLInputElement>('#inp-2')!;
       inp.focus();
@@ -147,16 +183,23 @@ describe('mount() — focus and selection preservation', () => {
       // should leave focus where the engine puts it (typically <body>) and
       // not throw.
       const rows = signal<Row[]>(makeRows(2));
-      mount(root, () => jsx('ul', {
-        children: each(
-          rows.value,
-          (r) => jsx('li', {
-            'data-key': r.id,
-            children: jsx('input', { id: `inp-${r.id}`, type: 'text', value: r.label }),
-          }),
-          (r) => r.id,
-        ),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(
+            rows.value,
+            (r) =>
+              jsx('li', {
+                'data-key': r.id,
+                children: jsx('input', {
+                  id: `inp-${r.id}`,
+                  type: 'text',
+                  value: r.label,
+                }),
+              }),
+            (r) => r.id,
+          ),
+        }),
+      );
 
       const inp = root.querySelector<HTMLInputElement>('#inp-2')!;
       inp.focus();
@@ -169,16 +212,22 @@ describe('mount() — focus and selection preservation', () => {
 
     it('keeps focus on a non-text element (button) inside a moved row — no selection branch', () => {
       const rows = signal<Row[]>(makeRows(2));
-      mount(root, () => jsx('ul', {
-        children: each(
-          rows.value,
-          (r) => jsx('li', {
-            'data-key': r.id,
-            children: jsx('button', { id: `btn-${r.id}`, children: r.label }),
-          }),
-          (r) => r.id,
-        ),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(
+            rows.value,
+            (r) =>
+              jsx('li', {
+                'data-key': r.id,
+                children: jsx('button', {
+                  id: `btn-${r.id}`,
+                  children: r.label,
+                }),
+              }),
+            (r) => r.id,
+          ),
+        }),
+      );
 
       const btn = root.querySelector<HTMLButtonElement>('#btn-2')!;
       btn.focus();
@@ -192,21 +241,30 @@ describe('mount() — focus and selection preservation', () => {
     });
 
     it('does not throw if selection APIs reject mid-restore (KF-65)', () => {
-      const setSel = vi.spyOn(HTMLInputElement.prototype, 'setSelectionRange').mockImplementation(() => {
-        throw new Error('selection unsupported');
-      });
+      const setSel = vi
+        .spyOn(HTMLInputElement.prototype, 'setSelectionRange')
+        .mockImplementation(() => {
+          throw new Error('selection unsupported');
+        });
 
       const rows = signal<Row[]>(makeRows(2));
-      mount(root, () => jsx('ul', {
-        children: each(
-          rows.value,
-          (r) => jsx('li', {
-            'data-key': r.id,
-            children: jsx('input', { id: `inp-${r.id}`, type: 'text', value: r.label }),
-          }),
-          (r) => r.id,
-        ),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(
+            rows.value,
+            (r) =>
+              jsx('li', {
+                'data-key': r.id,
+                children: jsx('input', {
+                  id: `inp-${r.id}`,
+                  type: 'text',
+                  value: r.label,
+                }),
+              }),
+            (r) => r.id,
+          ),
+        }),
+      );
 
       const inp = root.querySelector<HTMLInputElement>('#inp-2')!;
       inp.focus();
@@ -221,21 +279,30 @@ describe('mount() — focus and selection preservation', () => {
     it('does not throw if selection capture rejects (e.g. type=number)', () => {
       // selectionStart on a number input throws in some engines. The capture
       // must swallow it and continue without selection state.
-      const getSel = vi.spyOn(HTMLInputElement.prototype, 'selectionStart', 'get').mockImplementation(() => {
-        throw new Error('selection unavailable');
-      });
+      const getSel = vi
+        .spyOn(HTMLInputElement.prototype, 'selectionStart', 'get')
+        .mockImplementation(() => {
+          throw new Error('selection unavailable');
+        });
 
       const rows = signal<Row[]>(makeRows(2));
-      mount(root, () => jsx('ul', {
-        children: each(
-          rows.value,
-          (r) => jsx('li', {
-            'data-key': r.id,
-            children: jsx('input', { id: `inp-${r.id}`, type: 'text', value: r.label }),
-          }),
-          (r) => r.id,
-        ),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(
+            rows.value,
+            (r) =>
+              jsx('li', {
+                'data-key': r.id,
+                children: jsx('input', {
+                  id: `inp-${r.id}`,
+                  type: 'text',
+                  value: r.label,
+                }),
+              }),
+            (r) => r.id,
+          ),
+        }),
+      );
 
       const inp = root.querySelector<HTMLInputElement>('#inp-2')!;
       inp.focus();
@@ -258,9 +325,13 @@ describe('mount() — focus and selection preservation', () => {
       document.body.appendChild(external);
 
       const rows = signal<Row[]>(makeRows(2));
-      mount(root, () => jsx('ul', {
-        children: each(rows.value, (r) => jsx('li', { 'data-key': r.id, children: r.label })),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(rows.value, (r) =>
+            jsx('li', { 'data-key': r.id, children: r.label }),
+          ),
+        }),
+      );
 
       external.focus();
       expect(document.activeElement).toBe(external);
@@ -273,9 +344,13 @@ describe('mount() — focus and selection preservation', () => {
 
     it('removes nodes that disappeared from the array', () => {
       const rows = signal<Row[]>(makeRows(3));
-      mount(root, () => jsx('ul', {
-        children: each(rows.value, (r) => jsx('li', { children: r.label, 'data-key': r.id })),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(rows.value, (r) =>
+            jsx('li', { children: r.label, 'data-key': r.id }),
+          ),
+        }),
+      );
       rows.value = [rows.value[0], rows.value[2]];
       const after = Array.from(root.querySelectorAll('li'));
       expect(after.length).toBe(2);
@@ -284,9 +359,13 @@ describe('mount() — focus and selection preservation', () => {
 
     it('inserts brand-new rows', () => {
       const rows = signal<Row[]>(makeRows(2));
-      mount(root, () => jsx('ul', {
-        children: each(rows.value, (r) => jsx('li', { children: r.label, 'data-key': r.id })),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(rows.value, (r) =>
+            jsx('li', { children: r.label, 'data-key': r.id }),
+          ),
+        }),
+      );
       const before = Array.from(root.querySelectorAll('li'));
       rows.value = [...rows.value, { id: 3, label: 'r3' }];
       const after = Array.from(root.querySelectorAll('li'));
@@ -298,9 +377,13 @@ describe('mount() — focus and selection preservation', () => {
 
     it('clears the list when given an empty array', () => {
       const rows = signal<Row[]>(makeRows(3));
-      mount(root, () => jsx('ul', {
-        children: each(rows.value, (r) => jsx('li', { children: r.label, 'data-key': r.id })),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(rows.value, (r) =>
+            jsx('li', { children: r.label, 'data-key': r.id }),
+          ),
+        }),
+      );
       rows.value = [];
       expect(root.querySelectorAll('li').length).toBe(0);
     });
@@ -308,17 +391,20 @@ describe('mount() — focus and selection preservation', () => {
     it('uses key() to invalidate one row when external state flips', () => {
       const rows = signal<Row[]>(makeRows(3));
       const selected = signal<number>(-1);
-      mount(root, () => jsx('ul', {
-        children: each(
-          rows.value,
-          (r) => jsx('li', {
-            children: r.label,
-            'data-key': r.id,
-            class: r.id === selected.value ? 'on' : '',
-          }),
-          (r) => r.id === selected.value ? 1 : 0,
-        ),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(
+            rows.value,
+            (r) =>
+              jsx('li', {
+                children: r.label,
+                'data-key': r.id,
+                class: r.id === selected.value ? 'on' : '',
+              }),
+            (r) => (r.id === selected.value ? 1 : 0),
+          ),
+        }),
+      );
       const before = Array.from(root.querySelectorAll('li'));
       selected.value = 2;
       const after = Array.from(root.querySelectorAll('li'));
@@ -334,9 +420,13 @@ describe('mount() — focus and selection preservation', () => {
 
     it('replaces the whole list when every item is a new object', () => {
       const rows = signal<Row[]>(makeRows(3));
-      mount(root, () => jsx('ul', {
-        children: each(rows.value, (r) => jsx('li', { children: r.label, 'data-key': r.id })),
-      }));
+      mount(root, () =>
+        jsx('ul', {
+          children: each(rows.value, (r) =>
+            jsx('li', { children: r.label, 'data-key': r.id }),
+          ),
+        }),
+      );
       const before = Array.from(root.querySelectorAll('li'));
       // New keys entirely.
       rows.value = [
@@ -353,15 +443,25 @@ describe('mount() — focus and selection preservation', () => {
 
     it('throws if a row render produces no top-level element', () => {
       const rows = signal<Row[]>([{ id: 1, label: 'r1' }]);
-      expect(() => mount(root, () => jsx('ul', {
-        children: each(rows.value, () => raw('')),
-      }))).toThrow(/each\(\): row render at index 0 produced no top-level element/);
+      expect(() =>
+        mount(root, () =>
+          jsx('ul', {
+            children: each(rows.value, () => raw('')),
+          }),
+        ),
+      ).toThrow(
+        /each\(\): row render at index 0 produced no top-level element/,
+      );
     });
   });
 
   it('outside mount(), each() falls back to a flattened SafeHtml without binding', () => {
-    const list = each([{ id: 1 }, { id: 2 }], (r) => raw(`<li data-key="${r.id}">${r.id}</li>`));
-    expect(list.toString()).toBe('<li data-key="1">1</li><li data-key="2">2</li>');
+    const list = each([{ id: 1 }, { id: 2 }], (r) =>
+      raw(`<li data-key="${r.id}">${r.id}</li>`),
+    );
+    expect(list.toString()).toBe(
+      '<li data-key="1">1</li><li data-key="2">2</li>',
+    );
   });
 
   it('accepts a SafeHtml with only __html (cross-bundle shim) as the render result', () => {
@@ -372,21 +472,35 @@ describe('mount() — focus and selection preservation', () => {
     const shim = {
       __html: '<p>shim</p>',
       [BRAND]: true,
-      toString(): string { return this.__html; },
+      toString(): string {
+        return this.__html;
+      },
     };
-    mount(root, () => shim as unknown as Parameters<typeof mount>[1] extends () => infer R ? R : never);
+    mount(
+      root,
+      () =>
+        shim as unknown as Parameters<typeof mount>[1] extends () => infer R
+          ? R
+          : never,
+    );
     expect(root.innerHTML).toBe('<p>shim</p>');
   });
 
   it('non-kerf comment nodes in the rendered output are left alone', () => {
-    interface Row { id: number }
+    interface Row {
+      id: number;
+    }
     const rows = signal<Row[]>([{ id: 1 }, { id: 2 }]);
-    mount(root, () => jsx('ul', {
-      children: [
-        raw('<!-- a user-supplied note -->'),
-        each(rows.value, (r) => jsx('li', { children: String(r.id), 'data-key': r.id })),
-      ],
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        children: [
+          raw('<!-- a user-supplied note -->'),
+          each(rows.value, (r) =>
+            jsx('li', { children: String(r.id), 'data-key': r.id }),
+          ),
+        ],
+      }),
+    );
     // The user's comment survives both first render and re-render.
     expect(root.innerHTML).toContain('a user-supplied note');
     rows.value = [...rows.value, { id: 3 }];
@@ -404,7 +518,9 @@ describe('mount() — focus and selection preservation', () => {
     mount(root, () => {
       if (!showList.value) return jsx('div', { children: 'no list yet' });
       return jsx('ul', {
-        children: each(items.value, (r) => jsx('li', { children: String(r.id), 'data-key': r.id })),
+        children: each(items.value, (r) =>
+          jsx('li', { children: String(r.id), 'data-key': r.id }),
+        ),
       });
     });
     expect(root.innerHTML).toBe('<div>no list yet</div>');
@@ -416,18 +532,24 @@ describe('mount() — focus and selection preservation', () => {
   });
 
   it('handles non-element siblings (text/comment) between marker and items on first render', () => {
-    interface Row { id: number }
+    interface Row {
+      id: number;
+    }
     const rows = signal<Row[]>([{ id: 1 }, { id: 2 }]);
-    mount(root, () => jsx('ul', {
-      // Inject a stray comment alongside the list inside the parent. After
-      // innerHTML the marker comment is followed by another comment, then by
-      // the list elements — the binding walker should skip past non-element
-      // siblings to find the list rows.
-      children: [
-        raw('<!-- stray -->'),
-        each(rows.value, (r) => jsx('li', { children: String(r.id), 'data-key': r.id })),
-      ],
-    }));
+    mount(root, () =>
+      jsx('ul', {
+        // Inject a stray comment alongside the list inside the parent. After
+        // innerHTML the marker comment is followed by another comment, then by
+        // the list elements — the binding walker should skip past non-element
+        // siblings to find the list rows.
+        children: [
+          raw('<!-- stray -->'),
+          each(rows.value, (r) =>
+            jsx('li', { children: String(r.id), 'data-key': r.id }),
+          ),
+        ],
+      }),
+    );
     expect(root.querySelectorAll('li').length).toBe(2);
     // Trigger a re-render to confirm the binding survived the stray comment.
     rows.value = [{ id: 1 }, { id: 2 }, { id: 3 }];

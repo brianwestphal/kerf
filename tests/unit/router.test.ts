@@ -18,10 +18,24 @@ afterEach(() => {
 });
 
 const routes = [
-  { path: '/', component: () => jsx('div', { class: 'home', children: 'Home' }) },
-  { path: '/users/:id', component: (p: Record<string, string>) => jsx('div', { class: 'user', children: `User ${p.id}` }) },
-  { path: '/files/*rest', component: (p: Record<string, string>) => jsx('div', { class: 'file', children: p.rest }) },
-  { path: '*', component: () => jsx('div', { class: 'nf', children: 'Not found' }) },
+  {
+    path: '/',
+    component: () => jsx('div', { class: 'home', children: 'Home' }),
+  },
+  {
+    path: '/users/:id',
+    component: (p: Record<string, string>) =>
+      jsx('div', { class: 'user', children: `User ${p.id}` }),
+  },
+  {
+    path: '/files/*rest',
+    component: (p: Record<string, string>) =>
+      jsx('div', { class: 'file', children: p.rest }),
+  },
+  {
+    path: '*',
+    component: () => jsx('div', { class: 'nf', children: 'Not found' }),
+  },
 ];
 
 describe('createRouter() — matching + route signal', () => {
@@ -89,7 +103,9 @@ describe('createRouter() — matching + route signal', () => {
   });
 
   it('an unmatched path with no catch-all leaves params empty and matched null (outlet renders nothing)', () => {
-    router = createRouter({ routes: [{ path: '/', component: () => jsx('div', { children: 'H' }) }] });
+    router = createRouter({
+      routes: [{ path: '/', component: () => jsx('div', { children: 'H' }) }],
+    });
     router.navigate('/missing');
     expect(router.outlet()).toBeNull();
   });
@@ -156,7 +172,12 @@ describe('createRouter() — link interception', () => {
     return a;
   }
   const leftClick = (init: MouseEventInit = {}) =>
-    new MouseEvent('click', { bubbles: true, cancelable: true, button: 0, ...init });
+    new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      button: 0,
+      ...init,
+    });
 
   it('intercepts a same-origin left-click and navigates instead of reloading', () => {
     goto('/');
@@ -242,12 +263,20 @@ describe('createRouter() — edge coverage', () => {
     return a;
   }
   const leftClick = (init: MouseEventInit = {}) =>
-    new MouseEvent('click', { bubbles: true, cancelable: true, button: 0, ...init });
+    new MouseEvent('click', {
+      bubbles: true,
+      cancelable: true,
+      button: 0,
+      ...init,
+    });
 
   it('back() / forward() delegate to history without throwing', () => {
     goto('/');
     router = createRouter({ routes });
-    expect(() => { router!.back(); router!.forward(); }).not.toThrow();
+    expect(() => {
+      router!.back();
+      router!.forward();
+    }).not.toThrow();
   });
 
   it('navigate() normalizes a relative path (no leading slash) in both modes', () => {
@@ -262,7 +291,11 @@ describe('createRouter() — edge coverage', () => {
   });
 
   it('a bare "*" wildcard segment matches without capturing a param', () => {
-    router = createRouter({ routes: [{ path: '/files/*', component: () => jsx('div', { children: 'f' }) }] });
+    router = createRouter({
+      routes: [
+        { path: '/files/*', component: () => jsx('div', { children: 'f' }) },
+      ],
+    });
     router.navigate('/files/a/b');
     expect(router.route.value.params).toEqual({});
   });

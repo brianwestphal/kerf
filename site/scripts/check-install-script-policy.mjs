@@ -1,7 +1,11 @@
 import { readFile } from 'node:fs/promises';
 
-const packageJson = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
-const packageLock = JSON.parse(await readFile(new URL('../package-lock.json', import.meta.url), 'utf8'));
+const packageJson = JSON.parse(
+  await readFile(new URL('../package.json', import.meta.url), 'utf8'),
+);
+const packageLock = JSON.parse(
+  await readFile(new URL('../package-lock.json', import.meta.url), 'utf8'),
+);
 
 const expectedPolicy = {
   esbuild: true,
@@ -10,19 +14,30 @@ const expectedPolicy = {
 };
 const actualPolicy = packageJson.allowScripts ?? {};
 if (JSON.stringify(actualPolicy) !== JSON.stringify(expectedPolicy)) {
-  throw new Error(`site allowScripts must be ${JSON.stringify(expectedPolicy)}`);
+  throw new Error(
+    `site allowScripts must be ${JSON.stringify(expectedPolicy)}`,
+  );
 }
 
 const expectedInstallers = ['esbuild@0.28.2', 'fsevents@2.3.3'];
 const installers = Object.entries(packageLock.packages)
   // The root package has this preinstall script by definition; only audit
   // dependency installers that npm may execute after the policy check.
-  .filter(([path, entry]) => path.startsWith('node_modules/') && entry.hasInstallScript)
-  .map(([path, entry]) => `${path.split('node_modules/').at(-1)}@${entry.version}`)
+  .filter(
+    ([path, entry]) =>
+      path.startsWith('node_modules/') && entry.hasInstallScript,
+  )
+  .map(
+    ([path, entry]) => `${path.split('node_modules/').at(-1)}@${entry.version}`,
+  )
   .sort();
 
 if (JSON.stringify(installers) !== JSON.stringify(expectedInstallers)) {
-  throw new Error(`site install-script packages changed; review and update the policy: ${installers.join(', ')}`);
+  throw new Error(
+    `site install-script packages changed; review and update the policy: ${installers.join(', ')}`,
+  );
 }
 
-console.log(`Site install-script policy: approved ${expectedInstallers.join(', ')}; denied local Kerf prepare script`);
+console.log(
+  `Site install-script policy: approved ${expectedInstallers.join(', ')}; denied local Kerf prepare script`,
+);

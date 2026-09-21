@@ -13,6 +13,31 @@ export interface ToolbarControlGroupProps {
   shape?: 'pill' | 'rounded';
 }
 
-export function ToolbarControlGroup({ children, label, className = '', expanded = false, single = false, appearance = 'contained', tone = 'default', buttonAppearance = 'plain', shape = 'pill' }: ToolbarControlGroupProps) {
-  return <div class={`kui-toolbar-control-group ${className}`.trim()} data-component="toolbar-control-group" role={label ? 'group' : undefined} aria-label={label} data-appearance={appearance} data-tone={tone} data-button-appearance={buttonAppearance} data-expanded={String(expanded)} data-single={String(single)} data-shape={shape}>{children}</div>;
+export function ToolbarControlGroup({
+  children,
+  label,
+  className = '',
+  expanded = false,
+  single = false,
+  appearance = 'contained',
+  tone = 'default',
+  buttonAppearance = 'plain',
+  shape = 'pill',
+}: ToolbarControlGroupProps) {
+  return (
+    <div
+      class={`kui-toolbar-control-group ${className}`.trim()}
+      data-component="toolbar-control-group"
+      role={label ? 'group' : undefined}
+      aria-label={label}
+      data-appearance={appearance}
+      data-tone={tone}
+      data-button-appearance={buttonAppearance}
+      data-expanded={String(expanded)}
+      data-single={String(single)}
+      data-shape={shape}
+    >
+      {children}
+    </div>
+  );
 }
