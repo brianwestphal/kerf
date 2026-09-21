@@ -8,6 +8,7 @@ import {
   type CatalogSection,
 } from '../../src/catalog.js';
 import {
+  revealCatalogEntry,
   wireCatalog,
   wireCatalogGeometryOverlay,
 } from '../../src/wire-catalog.js';
@@ -302,6 +303,7 @@ describe('CatalogExample', () => {
 describe('wireCatalog', () => {
   afterEach(() => {
     document.body.replaceChildren();
+    vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
 
@@ -311,6 +313,83 @@ describe('wireCatalog', () => {
     document.body.append(root);
     return root;
   }
+
+  function stubAnimationFrames(): {
+    run: (id: number) => void;
+    cancel: ReturnType<typeof vi.fn>;
+  } {
+    let nextId = 0;
+    const frames = new Map<number, FrameRequestCallback>();
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => {
+      const id = ++nextId;
+      frames.set(id, callback);
+      return id;
+    });
+    const cancel = vi
+      .spyOn(window, 'cancelAnimationFrame')
+      .mockImplementation((id) => frames.delete(id));
+    return {
+      run: (id) => {
+        const callback = frames.get(id);
+        frames.delete(id);
+        callback?.(0);
+      },
+      cancel,
+    };
+  }
+
+  it('reveals an exact sidebar id after render without moving focus', () => {
+    vi.spyOn(window, 'matchMedia').mockReturnValue({
+      matches: true,
+    } as MediaQueryList);
+    const frames = stubAnimationFrames();
+    const root = mountShell(
+      '<button autofocus>Focus owner</button><button data-item-id="entry">Other</button><button data-item-id="entry&quot;]">Target</button>',
+    );
+    const target = root.querySelectorAll<HTMLElement>('[data-item-id]')[1]!;
+    const scrollIntoView = vi.fn();
+    target.scrollIntoView = scrollIntoView;
+    const focusOwner = root.querySelector<HTMLElement>('[autofocus]')!;
+    focusOwner.focus();
+
+    revealCatalogEntry(root, 'entry"]', {
+      block: 'center',
+      inline: 'end',
+      behavior: 'smooth',
+    });
+    expect(scrollIntoView).not.toHaveBeenCalled();
+    frames.run(1);
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      block: 'center',
+      inline: 'end',
+      behavior: 'smooth',
+    });
+    expect(document.activeElement).toBe(focusOwner);
+  });
+
+  it('honors the compact media guard and permits an explicit all-size reveal', () => {
+    vi.spyOn(window, 'matchMedia').mockReturnValue({
+      matches: false,
+    } as MediaQueryList);
+    const frames = stubAnimationFrames();
+    const root = mountShell('<button data-item-id="button">Button</button>');
+    const item = root.querySelector<HTMLElement>('[data-item-id]')!;
+    const scrollIntoView = vi.fn();
+    item.scrollIntoView = scrollIntoView;
+
+    const cancelSuppressedReveal = revealCatalogEntry(root, 'button');
+    cancelSuppressedReveal();
+    frames.run(1);
+    expect(scrollIntoView).not.toHaveBeenCalled();
+
+    revealCatalogEntry(root, 'button', { media: false });
+    frames.run(1);
+    expect(scrollIntoView).toHaveBeenCalledWith({
+      block: 'nearest',
+      inline: 'nearest',
+      behavior: 'auto',
+    });
+  });
 
   it('reports sidebar selection and mirrors it into the URL', () => {
     const root = mountShell(
@@ -333,6 +412,38 @@ describe('wireCatalog', () => {
     expect(onSelect).toHaveBeenCalledWith('select');
     expect(new URL(location.href).searchParams.get('component')).toBe('select');
     stop();
+  });
+
+  it('cancels stale and disposed selection reveals during rapid changes', () => {
+    vi.spyOn(window, 'matchMedia').mockReturnValue({
+      matches: true,
+    } as MediaQueryList);
+    const frames = stubAnimationFrames();
+    const root = mountShell(
+      asHtml(
+        Catalog({
+          brand: { title: 'X' },
+          sections,
+          active: 'button',
+          content: raw('<b/>'),
+        }),
+      ),
+    );
+    const stop = wireCatalog(root, {
+      onSelect: vi.fn(),
+      revealSelection: true,
+    });
+
+    root
+      .querySelector<HTMLElement>('[data-item-id="select"]')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    root
+      .querySelector<HTMLElement>('[data-item-id="button"]')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(frames.cancel).toHaveBeenCalledWith(1);
+
+    stop();
+    expect(frames.cancel).toHaveBeenLastCalledWith(2);
   });
 
   it('reports collapse and theme toggles, and related-entry selection', () => {

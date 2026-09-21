@@ -1074,11 +1074,34 @@ interface WireCatalogOptions {
     onToggleSecondary?: () => void;
     /** When set, `?<urlParam>=<id>` is written on select via `history.replaceState`. */
     urlParam?: string;
+    /**
+     * Reveal the chosen sidebar row after selection. `true` uses desktop-safe
+     * defaults; pass options to customize scroll alignment or the media guard.
+     */
+    revealSelection?: boolean | CatalogRevealOptions;
     selectAction?: string;
     toggleSidebarAction?: string;
     toggleThemeAction?: string;
     toggleSecondaryAction?: string;
 }
+interface CatalogRevealOptions {
+    /** Scroll alignment within the sidebar. Default `'nearest'`. */
+    block?: ScrollLogicalPosition;
+    /** Cross-axis alignment. Default `'nearest'`. */
+    inline?: ScrollLogicalPosition;
+    /** Scroll behavior. Default `'auto'`. */
+    behavior?: ScrollBehavior;
+    /**
+     * Only reveal when this media query matches. Defaults to the Catalog's
+     * desktop layout; pass `false` to reveal at every viewport size.
+     */
+    media?: string | false;
+}
+/**
+ * Reveal one Catalog sidebar entry after the controlled render settles without
+ * moving focus. Returns a cancellation function for rapid selection changes.
+ */
+declare function revealCatalogEntry(root: HTMLElement, id: string, { block, inline, behavior, media, }?: CatalogRevealOptions): () => void;
 /**
  * Keep a Catalog's opt-in geometry overlay synchronized with its preview.
  * Transparent specimens receive a dashed outer bound and positive margins use
@@ -1092,9 +1115,9 @@ declare function wireCatalogGeometryOverlay(root: HTMLElement): () => void;
  * them in the callbacks; optionally mirror the active id into the URL via `urlParam`.
  * Returns a disposer.
  */
-declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleSecondary, urlParam, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, }: WireCatalogOptions): () => void;
+declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleSecondary, urlParam, revealSelection, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, }: WireCatalogOptions): () => void;
 
-export { type WireCatalogOptions, wireCatalog, wireCatalogGeometryOverlay };
+export { type CatalogRevealOptions, type WireCatalogOptions, revealCatalogEntry, wireCatalog, wireCatalogGeometryOverlay };
 ```
 
 ## `@kerfjs/ui/segmented-control`

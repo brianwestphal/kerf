@@ -14,6 +14,7 @@ import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import {
+  revealCatalogEntry,
   wireCatalog,
   wireCatalogGeometryOverlay,
 } from '@kerfjs/ui/wire-catalog';
@@ -277,19 +278,6 @@ function selectDemo(id: string): void {
   url.searchParams.set('component', id);
   history.replaceState(null, '', url);
   actionLog.value = `Showing ${id}`;
-  revealSelectedSidebarItem(id);
-}
-
-function revealSelectedSidebarItem(
-  id: CatalogId,
-  block: ScrollLogicalPosition = 'nearest',
-): void {
-  if (!window.matchMedia('(min-width: 52.01rem)').matches) return;
-  window.requestAnimationFrame(() =>
-    document
-      .querySelector(`[data-item-id="${CSS.escape(id)}"]`)
-      ?.scrollIntoView({ block }),
-  );
 }
 
 mount(app, () => {
@@ -405,7 +393,7 @@ mount(app, () => {
 });
 
 if (findCatalogEntry(initialDemo)?.source === 'webawesome')
-  revealSelectedSidebarItem(initialDemo, 'center');
+  revealCatalogEntry(app, initialDemo, { block: 'center' });
 
 const stopActions = delegateActions(app, 'click', {
   'toggle-disclosure': () => {
@@ -830,6 +818,7 @@ const stopCatalog = wireCatalog(app, {
   toggleSidebarAction: 'toggle-catalog-sidebar',
   toggleThemeAction: 'toggle-theme',
   toggleSecondaryAction: 'toggle-webawesome-catalog',
+  revealSelection: true,
 });
 const stopGeometryOverlay = wireCatalogGeometryOverlay(app);
 const stopResize = wireResizableRegions(app, {

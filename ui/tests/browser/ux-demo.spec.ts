@@ -1518,6 +1518,73 @@ test('applies shared pane and content-item geometry across responsive and 200% z
   );
 });
 
+test('reveals controlled Catalog selections only in the desktop sidebar without moving focus', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    const state = window as Window & { __catalogRevealCalls?: string[] };
+    state.__catalogRevealCalls = [];
+    const scrollIntoView = Element.prototype.scrollIntoView;
+    Element.prototype.scrollIntoView = function (options): void {
+      state.__catalogRevealCalls!.push(
+        (this as HTMLElement).dataset.itemId ?? '',
+      );
+      scrollIntoView.call(this, options);
+    };
+  });
+  await page.setViewportSize({ width: 1200, height: 600 });
+  await page.goto('/?component=wa-zoomable-frame');
+
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as Window & { __catalogRevealCalls?: string[] })
+            .__catalogRevealCalls ?? [],
+      ),
+    )
+    .toContain('wa-zoomable-frame');
+  const theme = page.locator('[data-action="toggle-theme"]');
+  await theme.focus();
+  await page
+    .locator('[data-item-id="toolbar"]')
+    .evaluate((element) =>
+      element.dispatchEvent(new MouseEvent('click', { bubbles: true })),
+    );
+  await expect(page.locator('[data-item-id="toolbar"]')).toHaveAttribute(
+    'aria-current',
+    'page',
+  );
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          (window as Window & { __catalogRevealCalls?: string[] })
+            .__catalogRevealCalls ?? [],
+      ),
+    )
+    .toContain('toolbar');
+  await expect(theme).toBeFocused();
+
+  await page.setViewportSize({ width: 800, height: 600 });
+  await page.goto('/?component=wa-zoomable-frame');
+  await page.evaluate(
+    () =>
+      new Promise<void>((resolve) =>
+        window.requestAnimationFrame(() =>
+          window.requestAnimationFrame(() => resolve()),
+        ),
+      ),
+  );
+  expect(
+    await page.evaluate(
+      () =>
+        (window as Window & { __catalogRevealCalls?: string[] })
+          .__catalogRevealCalls ?? [],
+    ),
+  ).toEqual([]);
+});
+
 test('routes the generated application-layout composition at wide and narrow sizes', async ({
   page,
   browserName,

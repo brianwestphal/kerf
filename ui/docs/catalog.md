@@ -17,7 +17,7 @@ npm install @kerfjs/ui # kerfjs is a peer; @kerfjs/ui/select/register is needed 
 - `wireCatalog(root, options)` wires the interactions (sidebar selection, the
   related-entry popup menu, and the collapse/theme toggles) with one delegated
   listener set and returns a disposer; it can also mirror the active id into the
-  URL.
+  URL and reveal the active sidebar row after a controlled render.
 
 ## What you supply
 
@@ -107,12 +107,27 @@ contract and can start from the checked
 [`component-catalog-extension.json`](./examples/component-catalog-extension.json)
 example; provide those entries beside Kerf's shipped catalog to AI tools.
 
+## Selection reveal
+
+Set `revealSelection: true` on `wireCatalog` for a long desktop sidebar. After
+`onSelect` updates controlled state, the helper waits one animation frame, finds
+the exact matching `data-item-id`, and scrolls it into view without changing
+focus. A newer selection or disposal cancels the pending reveal. The default
+media guard is the Catalog desktop layout (`min-width: 52.01rem`), so compact
+layouts keep their existing scroll position.
+
+Pass an options object instead of `true` to customize `block`, `inline`,
+`behavior`, or `media`; `media: false` deliberately enables the behavior at all
+sizes. For an initial deep link that did not come through `wireCatalog`, call
+`revealCatalogEntry(app, initialId, { block: "center" })` after the first mount.
+
 ## Complete example
 
 ```tsx
 import { mount, signal } from "kerfjs";
 import { Catalog, type CatalogSection } from "@kerfjs/ui/catalog";
 import {
+  revealCatalogEntry,
   wireCatalog,
   wireCatalogGeometryOverlay,
 } from "@kerfjs/ui/wire-catalog";
@@ -191,8 +206,12 @@ wireCatalog(app, {
     document.documentElement.dataset.theme = theme.value; // apply your theme however you like
   },
   urlParam: "c", // mirror the active id into ?c=<id>
+  revealSelection: true, // reveal long desktop sidebars without moving focus
 });
 wireCatalogGeometryOverlay(app);
+
+// Optional for an initial deep link whose row may start outside the viewport.
+revealCatalogEntry(app, initial, { block: "center" });
 ```
 
 ## Ownership boundary

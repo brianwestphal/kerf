@@ -136,7 +136,8 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
   `@kerfjs/ui/catalog` is another opt-in shell — a
   `Catalog` component + `wireCatalog` helper for building a component-gallery catalog
   (collapsible category sidebar + preview stage + resources footer, with an opt-in
-  transparent-bound and margin geometry overlay) from your own
+  transparent-bound and margin geometry overlay plus focus-preserving active-row
+  reveal for long desktop sidebars) from your own
   entries; controlled/stateless like the layouts. `@kerfjs/ui/webawesome` is a
   type-only boundary for `wa-*` JSX; `@kerfjs/ui/select/register` and the CSS are the
   declared side effects.

@@ -11,10 +11,57 @@ export interface WireCatalogOptions {
   onToggleSecondary?: () => void;
   /** When set, `?<urlParam>=<id>` is written on select via `history.replaceState`. */
   urlParam?: string;
+  /**
+   * Reveal the chosen sidebar row after selection. `true` uses desktop-safe
+   * defaults; pass options to customize scroll alignment or the media guard.
+   */
+  revealSelection?: boolean | CatalogRevealOptions;
   selectAction?: string;
   toggleSidebarAction?: string;
   toggleThemeAction?: string;
   toggleSecondaryAction?: string;
+}
+
+export interface CatalogRevealOptions {
+  /** Scroll alignment within the sidebar. Default `'nearest'`. */
+  block?: ScrollLogicalPosition;
+  /** Cross-axis alignment. Default `'nearest'`. */
+  inline?: ScrollLogicalPosition;
+  /** Scroll behavior. Default `'auto'`. */
+  behavior?: ScrollBehavior;
+  /**
+   * Only reveal when this media query matches. Defaults to the Catalog's
+   * desktop layout; pass `false` to reveal at every viewport size.
+   */
+  media?: string | false;
+}
+
+const catalogDesktopMedia = '(min-width: 52.01rem)';
+
+/**
+ * Reveal one Catalog sidebar entry after the controlled render settles without
+ * moving focus. Returns a cancellation function for rapid selection changes.
+ */
+export function revealCatalogEntry(
+  root: HTMLElement,
+  id: string,
+  {
+    block = 'nearest',
+    inline = 'nearest',
+    behavior = 'auto',
+    media = catalogDesktopMedia,
+  }: CatalogRevealOptions = {},
+): () => void {
+  const view = root.ownerDocument.defaultView;
+  if (!view || (media && !view.matchMedia(media).matches)) return () => {};
+  const frame = view.requestAnimationFrame(() => {
+    for (const item of root.querySelectorAll<HTMLElement>('[data-item-id]')) {
+      if (item.dataset.itemId !== id) continue;
+      item.scrollIntoView({ block, inline, behavior });
+      break;
+    }
+  });
+  return () => view.cancelAnimationFrame(frame);
 }
 
 function pixels(value: string): number {
@@ -212,12 +259,14 @@ export function wireCatalog(
     onToggleTheme,
     onToggleSecondary,
     urlParam,
+    revealSelection,
     selectAction = 'catalog-select',
     toggleSidebarAction = 'catalog-toggle-sidebar',
     toggleThemeAction = 'catalog-toggle-theme',
     toggleSecondaryAction = 'catalog-toggle-secondary',
   }: WireCatalogOptions,
 ): () => void {
+  let cancelReveal: (() => void) | undefined;
   const select = (id: string) => {
     onSelect(id);
     const view = root.ownerDocument.defaultView;
@@ -225,6 +274,14 @@ export function wireCatalog(
       const url = new URL(view.location.href);
       url.searchParams.set(urlParam, id);
       view.history.replaceState(null, '', url);
+    }
+    if (revealSelection) {
+      cancelReveal?.();
+      cancelReveal = revealCatalogEntry(
+        root,
+        id,
+        revealSelection === true ? undefined : revealSelection,
+      );
     }
   };
 
@@ -263,6 +320,7 @@ export function wireCatalog(
     );
   }
   return () => {
+    cancelReveal?.();
     for (const dispose of disposers.splice(0)) dispose();
   };
 }
