@@ -145,8 +145,6 @@ jobs:
         working-directory: .
         run: npm run build
       - run: npm ci
-      - run: npm run build
-      - run: npm run check
       - name: Cache UI Playwright browsers
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
@@ -155,6 +153,8 @@ jobs:
           restore-keys: |
             playwright-ui-${{ runner.os }}-
       - run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run build
+      - run: npm run check
       - run: npm run test:e2e
       # KF-MCM28T: re-render every design template in the browser and fail on
       # visual drift (a component changed but its template was not regenerated) —

@@ -84,6 +84,7 @@ describe('package metadata', () => {
 
     expectOrderedRunSteps(workflowRunSteps(ciUiJob), [
       { run: 'npm ci' },
+      { run: 'npx playwright install --with-deps chromium firefox webkit' },
       { run: 'npm run build' },
       { run: 'npm run check' },
     ]);
