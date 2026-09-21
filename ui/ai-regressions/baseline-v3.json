@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "suiteId": "kerf-ui-authoring-v3",
+  "status": "unmeasured",
+  "asOf": "2026-09-21",
+  "reason": "No repository-local responses exist for the new contextual cases. Historical suite-v2 responses used isolated tasks and cannot be relabeled or rescored as suite-v3 evidence.",
+  "historicalAnchor": {
+    "suiteId": "kerf-ui-authoring-v2",
+    "results": "ai-regressions/results/2026-09-13-v2",
+    "measuredRuns": 1,
+    "modelIdentities": 1,
+    "scope": "Static structural and non-executing compile evidence only; not a suite-v3 baseline."
+  },
+  "requiredFollowUp": "KF-PX9NKZ"
+}

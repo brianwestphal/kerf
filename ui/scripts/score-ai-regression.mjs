@@ -19,6 +19,10 @@ if (!caseId || !responsePath) {
   );
   process.exit(2);
 }
+if (suiteVersion === 3)
+  throw new Error(
+    'Suite v3 uses separate static, compile, browser, and human-visual evidence records; it has no single structural score command.',
+  );
 if (suiteVersion !== 1 && suiteVersion !== 2)
   throw new Error(`Unknown AI regression suite: ${suiteVersion}`);
 const [corpus, catalog, response, overrides] = await Promise.all([

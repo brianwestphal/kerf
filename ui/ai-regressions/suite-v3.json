@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 3,
+  "id": "kerf-ui-authoring-v3",
+  "contract": "ai-regressions/quality-contract-v3.json",
+  "contractSchema": "ai-regressions/quality-contract-v3.schema.json",
+  "corpus": "ai-regressions/corpus-v3.json",
+  "corpusSchema": "ai-regressions/corpus-v3.schema.json",
+  "conditions": "ai-regressions/conditions-v2.json",
+  "conditionsSchema": "ai-regressions/conditions-v2.schema.json",
+  "catalog": "ai/component-catalog.json",
+  "publicApiSignatures": "ai/public-api-signatures-v1.md",
+  "responseSchema": "ai-regressions/response-v3.schema.json",
+  "evidenceSchema": "ai-regressions/evidence-v3.schema.json",
+  "runSchema": "ai-regressions/run-v3.schema.json",
+  "baseline": "ai-regressions/baseline-v3.json"
+}

@@ -9,6 +9,10 @@ import {
 } from './lib/ai-regression-context.mjs';
 import { scoreAiRegression } from './lib/ai-regression-score.mjs';
 import { scoreAiRegressionV2 } from './lib/ai-regression-score-v2.mjs';
+import {
+  validateAiRegressionEvidenceV3,
+  validateAiRegressionResponseV3,
+} from './lib/ai-regression-contract-v3.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const readJson = async (path) =>
@@ -29,6 +33,15 @@ const [
   expected,
   catalog,
   packageJson,
+  suiteV3,
+  contractV3,
+  contractV3Schema,
+  corpusV3,
+  corpusV3Schema,
+  responseV3Schema,
+  evidenceV3Schema,
+  runV3Schema,
+  baselineV3,
 ] = await Promise.all([
   readJson('ai-regressions/corpus.json'),
   readJson('ai-regressions/corpus.schema.json'),
@@ -45,6 +58,15 @@ const [
   readJson('ai-regressions/fixtures/expected-scores.json'),
   readJson('ai/component-catalog.json'),
   readJson('package.json'),
+  readJson('ai-regressions/suite-v3.json'),
+  readJson('ai-regressions/quality-contract-v3.json'),
+  readJson('ai-regressions/quality-contract-v3.schema.json'),
+  readJson('ai-regressions/corpus-v3.json'),
+  readJson('ai-regressions/corpus-v3.schema.json'),
+  readJson('ai-regressions/response-v3.schema.json'),
+  readJson('ai-regressions/evidence-v3.schema.json'),
+  readJson('ai-regressions/run-v3.schema.json'),
+  readJson('ai-regressions/baseline-v3.json'),
 ]);
 const failures = [];
 const fail = (message) => failures.push(message);
@@ -98,6 +120,42 @@ if (
   fail(
     'compile evidence schema must pin version 1 and reject unknown root fields',
   );
+if (
+  contractV3.schemaVersion !== 3 ||
+  contractV3Schema.properties?.schemaVersion?.const !== 3 ||
+  corpusV3.schemaVersion !== 3 ||
+  corpusV3Schema.properties?.schemaVersion?.const !== 3 ||
+  runV3Schema.properties?.schemaVersion?.const !== 3 ||
+  evidenceV3Schema.properties?.schemaVersion?.const !== 3
+)
+  fail('suite-v3 contracts and schemas must pin version 3');
+if (
+  responseV3Schema.additionalProperties !== false ||
+  responseV3Schema.properties?.run
+)
+  fail('suite-v3 responses must stay separate from run evidence');
+if (
+  !runV3Schema.properties?.executor?.$ref ||
+  !runV3Schema.$defs?.executor?.required?.includes('conditionSessions') ||
+  runV3Schema.$defs?.executor?.properties?.conditionSession
+)
+  fail('suite-v3 runs must preserve one isolated session per condition');
+for (const field of ['sessionId', 'requestPath', 'requestSha256']) {
+  if (!runV3Schema.$defs?.result?.required?.includes(field))
+    fail(`suite-v3 results must preserve ${field}`);
+}
+for (const field of [
+  'contractSchemaSha256',
+  'corpusSchemaSha256',
+  'conditionsSchemaSha256',
+  'catalogSchemaSha256',
+  'publicApiSignaturesSha256',
+  'typescriptVersion',
+  'packageVersions',
+]) {
+  if (!runV3Schema.$defs?.harness?.required?.includes(field))
+    fail(`suite-v3 harness must preserve ${field}`);
+}
 if (corpus.schemaVersion !== 1 || !Array.isArray(corpus.cases))
   fail('corpus must declare schemaVersion 1 and cases');
 if (
@@ -131,6 +189,120 @@ if (
   )
 )
   fail('package scripts must expose the opt-in compile probe');
+
+if (suiteV3.id !== 'kerf-ui-authoring-v3')
+  fail('suite-v3 descriptor must pin its id');
+for (const [key, expectedPath] of Object.entries({
+  contract: 'ai-regressions/quality-contract-v3.json',
+  contractSchema: 'ai-regressions/quality-contract-v3.schema.json',
+  corpus: 'ai-regressions/corpus-v3.json',
+  corpusSchema: 'ai-regressions/corpus-v3.schema.json',
+  conditions: 'ai-regressions/conditions-v2.json',
+  conditionsSchema: 'ai-regressions/conditions-v2.schema.json',
+  catalog: 'ai/component-catalog.json',
+  publicApiSignatures: 'ai/public-api-signatures-v1.md',
+  responseSchema: 'ai-regressions/response-v3.schema.json',
+  evidenceSchema: 'ai-regressions/evidence-v3.schema.json',
+  runSchema: 'ai-regressions/run-v3.schema.json',
+  baseline: 'ai-regressions/baseline-v3.json',
+})) {
+  if (suiteV3[key] !== expectedPath)
+    fail(`suite-v3 descriptor has stale ${key}`);
+}
+const expectedStages = ['static', 'compile', 'browser', 'human-visual'];
+if (
+  JSON.stringify(contractV3.evidenceStages.map(({ id }) => id)) !==
+  JSON.stringify(expectedStages)
+)
+  fail(
+    'suite-v3 must keep static, compile, browser, and human-visual evidence separate',
+  );
+if (
+  JSON.stringify(contractV3.browserMatrix.map(({ id }) => id)) !==
+  JSON.stringify(['wide', 'intermediate', 'narrow', 'zoom-200'])
+)
+  fail(
+    'suite-v3 browser matrix must pin wide, intermediate, narrow, and 200% zoom',
+  );
+const diagnosticCodes = contractV3.diagnostics.map(({ code }) => code);
+if (new Set(diagnosticCodes).size !== diagnosticCodes.length)
+  fail('suite-v3 diagnostic codes must be unique');
+for (const requiredCode of [
+  'static.component-selection',
+  'static.consumer-reuse',
+  'static.public-api',
+  'static.wiring-cleanup',
+  'static.composition',
+  'static.geometry-ownership',
+  'static.accessibility',
+  'compile.types',
+  'browser.interaction',
+  'browser.keyboard',
+  'browser.responsive',
+  'visual.hierarchy',
+  'visual.rhythm',
+  'visual.density',
+  'visual.alignment',
+  'visual.scroll-ownership',
+]) {
+  if (!diagnosticCodes.includes(requiredCode))
+    fail(`suite-v3 is missing stable diagnostic ${requiredCode}`);
+}
+if (
+  contractV3.thresholds.minimumRunsPerCondition < 3 ||
+  contractV3.thresholds.minimumModelIdentities < 2
+)
+  fail(
+    'suite-v3 measured conclusions require 3 runs per condition and 2 model identities',
+  );
+if (
+  baselineV3.status !== 'unmeasured' ||
+  baselineV3.requiredFollowUp !== 'KF-PX9NKZ'
+)
+  fail('suite-v3 baseline must disclose its unmeasured follow-up boundary');
+
+const v3CaseIds = new Set();
+for (const testCase of corpusV3.cases) {
+  if (v3CaseIds.has(testCase.id))
+    fail(`duplicate suite-v3 case ${testCase.id}`);
+  v3CaseIds.add(testCase.id);
+  const prompt = await readFile(
+    resolve(root, 'ai-regressions', testCase.prompt),
+    'utf8',
+  );
+  if (/\b(?:password|api[_ -]?key|secret|token)\s*[:=]/i.test(prompt))
+    fail(`${testCase.id} suite-v3 prompt appears to contain a secret`);
+  if (
+    !testCase.editableFiles.every((path) =>
+      testCase.contextFiles.includes(path),
+    )
+  )
+    fail(`${testCase.id} editable files must be present in its context`);
+  for (const path of testCase.contextFiles)
+    await readFile(resolve(root, path), 'utf8');
+  for (const code of testCase.requiredDiagnostics)
+    if (!diagnosticCodes.includes(code))
+      fail(`${testCase.id} references unknown diagnostic ${code}`);
+}
+
+const evidenceProbe = {
+  schemaVersion: 3,
+  suiteId: 'kerf-ui-authoring-v3',
+  stage: 'static',
+  records: [
+    { code: 'static.component-selection', outcome: 'pass', detail: 'fixture' },
+  ],
+};
+if (validateAiRegressionEvidenceV3(contractV3, evidenceProbe).length)
+  fail('suite-v3 evidence validator rejects its deterministic probe');
+const firstV3Case = corpusV3.cases[0];
+if (
+  validateAiRegressionResponseV3(firstV3Case, {
+    caseId: firstV3Case.id,
+    files: { [firstV3Case.editableFiles[0]]: 'fixture' },
+  }).length
+)
+  fail('suite-v3 response validator rejects an in-context edit');
 
 const catalogIds = new Set(catalog.entries.map(({ id }) => id));
 for (const testCase of corpus.cases) {

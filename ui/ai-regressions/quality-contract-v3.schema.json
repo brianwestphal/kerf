@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kerf AI-first UI quality contract v3",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "id",
+    "goal",
+    "diagnostics",
+    "evidenceStages",
+    "browserMatrix",
+    "thresholds"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 3 },
+    "id": { "const": "kerf-ui-quality-v3" },
+    "goal": { "type": "string", "minLength": 1 },
+    "diagnostics": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["code", "stage", "dimension", "definition", "kind"],
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "type": "string",
+            "pattern": "^(static|compile|browser|visual)\\.[a-z][a-z0-9-]*$"
+          },
+          "stage": { "enum": ["static", "compile", "browser", "human-visual"] },
+          "dimension": { "type": "string", "minLength": 1 },
+          "definition": { "type": "string", "minLength": 1 },
+          "kind": { "enum": ["hard", "quality"] }
+        }
+      }
+    },
+    "evidenceStages": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["id", "deterministic", "record"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "enum": ["static", "compile", "browser", "human-visual"] },
+          "deterministic": { "type": "boolean" },
+          "record": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "browserMatrix": {
+      "type": "array",
+      "minItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["id", "width", "height", "zoom"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "width": { "type": "integer", "minimum": 1 },
+          "height": { "type": "integer", "minimum": 1 },
+          "zoom": { "type": "number", "minimum": 1 }
+        }
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "required": [
+        "minimumRunsPerCondition",
+        "minimumModelIdentities",
+        "hardGate",
+        "staticHardPassRate",
+        "compilePassRate",
+        "browserPassRate",
+        "visualMeanMinimum",
+        "visualDimensionMinimum",
+        "visualScale"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "minimumRunsPerCondition": { "type": "integer", "minimum": 3 },
+        "minimumModelIdentities": { "type": "integer", "minimum": 2 },
+        "hardGate": { "type": "string", "minLength": 1 },
+        "staticHardPassRate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "compilePassRate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "browserPassRate": { "type": "number", "minimum": 0, "maximum": 1 },
+        "visualMeanMinimum": { "type": "number", "minimum": 0, "maximum": 2 },
+        "visualDimensionMinimum": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "visualScale": {
+          "type": "object",
+          "required": ["minimum", "maximum"],
+          "additionalProperties": false,
+          "properties": { "minimum": { "const": 0 }, "maximum": { "const": 2 } }
+        }
+      }
+    }
+  }
+}

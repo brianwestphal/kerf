@@ -1,0 +1,1 @@
+Extend the existing workspace application with a “Starred” destination in its navigation. It must participate in the existing selection and announcement behavior, remain usable from the keyboard, and preserve the current desktop and narrow-pane behavior. Return complete contents only for files you changed; do not replace existing application-owned abstractions with parallel ones.

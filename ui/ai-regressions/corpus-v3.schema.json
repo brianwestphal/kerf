@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kerf contextual AI authoring corpus v3",
+  "type": "object", "required": ["schemaVersion", "cases"], "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 3 },
+    "cases": {
+      "type": "array", "minItems": 3,
+      "items": {
+        "type": "object", "required": ["id", "prompt", "contextFiles", "editableFiles", "consumerOwnedSymbols", "requiredDiagnostics"], "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]+$" },
+          "prompt": { "type": "string", "pattern": "^prompts-v3/.+\\.md$" },
+          "contextFiles": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+          "editableFiles": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+          "consumerOwnedSymbols": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+          "requiredDiagnostics": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+        }
+      }
+    }
+  }
+}

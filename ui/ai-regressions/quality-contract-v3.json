@@ -1,0 +1,158 @@
+{
+  "schemaVersion": 3,
+  "id": "kerf-ui-quality-v3",
+  "goal": "An AI-authored change should fit an existing Kerf application correctly on its first submitted attempt.",
+  "diagnostics": [
+    {
+      "code": "static.component-selection",
+      "stage": "static",
+      "dimension": "componentSelection",
+      "definition": "Uses the documented Kerf component or platform primitive that owns the requested concept; does not substitute a merely similar control.",
+      "kind": "hard"
+    },
+    {
+      "code": "static.consumer-reuse",
+      "stage": "static",
+      "dimension": "consumerReuse",
+      "definition": "Extends the supplied application-owned data, components, state, and handlers instead of creating parallel replacements.",
+      "kind": "hard"
+    },
+    {
+      "code": "static.public-api",
+      "stage": "static",
+      "dimension": "publicApi",
+      "definition": "Uses only exported package subpaths, types, props, custom-element attributes, CSS classes, parts, and tokens.",
+      "kind": "hard"
+    },
+    {
+      "code": "static.wiring-cleanup",
+      "stage": "static",
+      "dimension": "wiringCleanup",
+      "definition": "Connects the new behavior to the existing event flow and retains or invokes every required cleanup/disposer.",
+      "kind": "hard"
+    },
+    {
+      "code": "static.composition",
+      "stage": "static",
+      "dimension": "composition",
+      "definition": "Places components in documented legal parent, child, slot, and mutually exclusive prop combinations.",
+      "kind": "hard"
+    },
+    {
+      "code": "static.geometry-ownership",
+      "stage": "static",
+      "dimension": "geometryOwnership",
+      "definition": "Keeps inset, gap, sizing, overflow, and scrolling on one documented owner at each boundary without private descendant styling.",
+      "kind": "hard"
+    },
+    {
+      "code": "static.accessibility",
+      "stage": "static",
+      "dimension": "accessibility",
+      "definition": "Provides names, relationships, states, live announcements, and semantic controls required by the frozen case oracle.",
+      "kind": "hard"
+    },
+    {
+      "code": "compile.types",
+      "stage": "compile",
+      "dimension": "publicApi",
+      "definition": "All returned TypeScript and TSX compile against the pinned declaration set with no diagnostics.",
+      "kind": "hard"
+    },
+    {
+      "code": "browser.interaction",
+      "stage": "browser",
+      "dimension": "wiringCleanup",
+      "definition": "The frozen user scenario reaches the requested states and repeated mount/unmount leaves no duplicate handlers or stale behavior.",
+      "kind": "hard"
+    },
+    {
+      "code": "browser.keyboard",
+      "stage": "browser",
+      "dimension": "accessibility",
+      "definition": "The frozen keyboard scenario completes in logical focus order with visible focus and correct announcements.",
+      "kind": "hard"
+    },
+    {
+      "code": "browser.responsive",
+      "stage": "browser",
+      "dimension": "responsive",
+      "definition": "At every frozen viewport and 200% zoom, actions remain reachable with no unintended clipping, page overflow, or competing scroll owners.",
+      "kind": "hard"
+    },
+    {
+      "code": "visual.hierarchy",
+      "stage": "human-visual",
+      "dimension": "hierarchy",
+      "definition": "0 unclear scope; 1 usable with competing emphasis; 2 clear application, page, and section priority.",
+      "kind": "quality"
+    },
+    {
+      "code": "visual.rhythm",
+      "stage": "human-visual",
+      "dimension": "rhythm",
+      "definition": "0 arbitrary or doubled spacing; 1 isolated inconsistencies; 2 one coherent semantic spacing system.",
+      "kind": "quality"
+    },
+    {
+      "code": "visual.density",
+      "stage": "human-visual",
+      "dimension": "density",
+      "definition": "0 clipped or undersized controls; 1 usable but uneven; 2 compact and consistently operable.",
+      "kind": "quality"
+    },
+    {
+      "code": "visual.alignment",
+      "stage": "human-visual",
+      "dimension": "alignment",
+      "definition": "0 visibly broken columns or edges; 1 minor drift; 2 shared columns and intentional edges.",
+      "kind": "quality"
+    },
+    {
+      "code": "visual.scroll-ownership",
+      "stage": "human-visual",
+      "dimension": "scrollOwnership",
+      "definition": "0 competing or misplaced scroll regions; 1 usable with an awkward boundary; 2 one obvious scroll owner per pane.",
+      "kind": "quality"
+    }
+  ],
+  "evidenceStages": [
+    {
+      "id": "static",
+      "deterministic": true,
+      "record": "Machine diagnostics over the submitted files and frozen case oracle."
+    },
+    {
+      "id": "compile",
+      "deterministic": true,
+      "record": "TypeScript diagnostics against pinned package declarations; generated code is not executed."
+    },
+    {
+      "id": "browser",
+      "deterministic": true,
+      "record": "Recorded assertions from the frozen browser scenario, viewport matrix, and package build."
+    },
+    {
+      "id": "human-visual",
+      "deterministic": false,
+      "record": "Named-reviewer 0–2 ratings with viewport screenshots and written rationale."
+    }
+  ],
+  "browserMatrix": [
+    { "id": "wide", "width": 1440, "height": 900, "zoom": 1 },
+    { "id": "intermediate", "width": 900, "height": 768, "zoom": 1 },
+    { "id": "narrow", "width": 390, "height": 844, "zoom": 1 },
+    { "id": "zoom-200", "width": 720, "height": 450, "zoom": 2 }
+  ],
+  "thresholds": {
+    "minimumRunsPerCondition": 3,
+    "minimumModelIdentities": 2,
+    "hardGate": "Every applicable hard diagnostic passes for a case.",
+    "staticHardPassRate": 0.9,
+    "compilePassRate": 0.9,
+    "browserPassRate": 0.85,
+    "visualMeanMinimum": 1.5,
+    "visualDimensionMinimum": 1.25,
+    "visualScale": { "minimum": 0, "maximum": 2 }
+  }
+}

@@ -8,6 +8,11 @@ import {
   AI_REGRESSION_V1_CONTEXT_SNAPSHOTS,
   buildAiRegressionContext,
 } from '../../scripts/lib/ai-regression-context.mjs';
+import {
+  summarizeAiRegressionEvidenceV3,
+  validateAiRegressionEvidenceV3,
+  validateAiRegressionResponseV3,
+} from '../../scripts/lib/ai-regression-contract-v3.mjs';
 import { scoreAiRegression } from '../../scripts/lib/ai-regression-score.mjs';
 import { scoreAiRegressionV2 } from '../../scripts/lib/ai-regression-score-v2.mjs';
 
@@ -377,5 +382,98 @@ describe('local AI regression foundation', () => {
         files: { '../escape.ts': 'export {}' },
       }),
     ).rejects.toThrow('Unsafe or unsupported response file path');
+  });
+
+  it('keeps suite-v3 evidence stages distinct and applies bounded visual thresholds', async () => {
+    const contract = await readJson('ai-regressions/quality-contract-v3.json');
+    const common = {
+      schemaVersion: 3 as const,
+      suiteId: 'kerf-ui-authoring-v3' as const,
+      caseId: 'extend-application-navigation',
+      condition: 'revised-recipes-catalog',
+      responseSha256: 'a'.repeat(64),
+      recordedAt: '2026-09-21T00:00:00Z',
+    };
+    const staticEvidence = {
+      ...common,
+      stage: 'static' as const,
+      records: [
+        {
+          code: 'static.component-selection',
+          outcome: 'pass' as const,
+          detail: 'Uses the selected public primitive.',
+        },
+      ],
+    };
+    const visualEvidence = {
+      ...common,
+      stage: 'human-visual' as const,
+      reviewer: 'reviewer-1',
+      artifacts: [{ path: 'wide.png', sha256: 'b'.repeat(64) }],
+      records: contract.diagnostics
+        .filter(({ stage }: { stage: string }) => stage === 'human-visual')
+        .map(({ code }: { code: string }) => ({
+          code,
+          outcome: 'pass' as const,
+          rating: 1.5,
+          detail: 'Meets the recorded v3 baseline threshold.',
+        })),
+    };
+    expect(validateAiRegressionEvidenceV3(contract, staticEvidence)).toEqual(
+      [],
+    );
+    expect(validateAiRegressionEvidenceV3(contract, visualEvidence)).toEqual(
+      [],
+    );
+    expect(
+      validateAiRegressionEvidenceV3(contract, {
+        ...staticEvidence,
+        records: [
+          {
+            code: 'visual.hierarchy',
+            outcome: 'pass',
+            rating: 2,
+            detail: 'Wrong evidence stage.',
+          },
+        ],
+      }),
+    ).toEqual(
+      expect.arrayContaining([
+        'visual.hierarchy belongs to human-visual, not static',
+      ]),
+    );
+    expect(
+      summarizeAiRegressionEvidenceV3(contract, [
+        staticEvidence,
+        visualEvidence,
+      ]),
+    ).toMatchObject({
+      hardPass: true,
+      hardChecks: 1,
+      visualMean: 1.5,
+      visualPass: true,
+    });
+  });
+
+  it('rejects suite-v3 edits outside the frozen application context', () => {
+    const definition = {
+      id: 'contextual-case',
+      editableFiles: ['existing/app.tsx', 'existing/app.css'],
+    };
+    expect(
+      validateAiRegressionResponseV3(definition, {
+        caseId: 'contextual-case',
+        files: { 'existing/app.tsx': 'export const changed = true;\n' },
+      }),
+    ).toEqual([]);
+    expect(
+      validateAiRegressionResponseV3(definition, {
+        caseId: 'wrong-case',
+        files: { 'replacement.tsx': 'export {};\n' },
+      }),
+    ).toEqual([
+      'response.caseId must be contextual-case',
+      'replacement.tsx is not editable in contextual-case',
+    ]);
   });
 });

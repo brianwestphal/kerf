@@ -1,0 +1,1 @@
+Extend the existing update composer with a visible draft-status affordance. It should distinguish unchanged, edited, saving, saved, and failed states; allow retry after failure; announce asynchronous status changes; and remain clear at narrow widths. Return complete contents only for files you changed; keep the existing controlled-field and submission behavior intact.

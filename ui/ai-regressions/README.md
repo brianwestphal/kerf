@@ -78,6 +78,56 @@ public signature context. Audit selects the matching immutable context snapshot
 and oracle from each manifest's schema version, so later guidance and measured
 evidence cannot rewrite old raw responses or conclusions.
 
+## Suite v3: contextual first-attempt quality
+
+Suite v3 is a new, parallel contract. It does not rescore or relabel v1/v2
+responses. `suite-v3.json` binds the versioned quality contract, contextual
+corpus, response/evidence/run schemas, guidance conditions, catalog, public API
+signatures, and baseline disclosure. Its cases ask for changes inside complete
+existing recipe files and identify which files may be returned. The prepared
+request hashes and includes those case sources in addition to the independently
+selected guidance condition:
+
+```bash
+npm run --silent ai:regressions:prepare -- \
+  --suite 3 --case extend-application-navigation \
+  --condition revised-recipes-catalog
+```
+
+The stable diagnostic registry in `quality-contract-v3.json` covers component
+selection, reuse of consumer-owned symbols, public API accuracy, wiring and
+cleanup, composition legality, geometry ownership, static accessibility,
+compile compatibility, browser interaction/keyboard/responsiveness, and five
+bounded visual dimensions. Static, compile, browser, and human-visual records
+are separate `evidence-v3.schema.json` documents tied to the same response
+hash. A browser pass cannot erase a compile failure; a visual rating cannot be
+substituted for a hard diagnostic. The helper validator also rejects unknown,
+duplicate, or cross-stage diagnostic codes and ratings outside the 0–2 visual
+scale.
+
+Thresholds are targets for future tooling and measured cohorts, not CI claims:
+all applicable hard diagnostics must pass per case, with suite targets of 90%
+static hard passes, 90% compile passes, 85% browser passes, a 1.5 overall
+visual mean, and no visual dimension below 1.25. Conclusions still require at
+least three isolated runs per condition and two model/version identities.
+Generation and human review remain opt-in and outside CI; deterministic checks
+may replay checked-in responses and evidence.
+
+Each measured run records a distinct session identity for every guidance
+condition. Each result repeats the matching session id and hashes the complete
+prepared request as well as its prompt, application context, guidance context,
+response, and four evidence records. The manifest also pins every suite/schema
+input, public signatures, TypeScript version, and installed package versions;
+results from different condition sessions must never be represented as sharing
+one context.
+
+`baseline-v3.json` intentionally records the current suite-v3 baseline as
+unmeasured. The repository contains no responses to the contextual prompts, so
+the isolated suite-v2 cohort cannot be reused as v3 evidence. `KF-PX9NKZ`
+tracks the required measured multi-run, multi-model execution and recording of
+compile, browser, and human-visual artifacts. Until that work exists, do not
+state a v3 improvement or compare conditions using v2 numbers.
+
 To add static TypeScript evidence for a saved response without executing any
 generated source:
 
@@ -171,3 +221,9 @@ Geometry, overflow, hit-target, focus, and scroll-owner assertions may be
 machine checks. The five visual scores require recorded human review and never
 gate pull requests. Preserve screenshots and reviewer notes as internal ticket
 evidence, not public comparative marketing.
+
+Suite v3 records hierarchy, rhythm, density, alignment, and scroll ownership
+on this same 0–2 scale. Responsive behavior is instead a deterministic browser
+diagnostic across the frozen wide/intermediate/narrow/200%-zoom matrix. Every
+human-visual record names its reviewer, hashes its screenshots, and includes a
+written rationale; it remains non-CI evidence.
