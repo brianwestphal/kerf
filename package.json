@@ -191,6 +191,9 @@
     "typescript7": "npm:typescript@^7.0.2",
     "vitest": "^4.1.11"
   },
+  "overrides": {
+    "esbuild": "0.28.2"
+  },
   "gitgist": {
     "exclude": [
       "site/public/demos/*.svg",
