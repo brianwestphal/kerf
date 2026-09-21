@@ -1,0 +1,5 @@
+import { Catalog } from '@kerfjs/ui/catalog';
+
+export function Shell({ content }) {
+  return <Catalog geometryOverlay={true} content={<div>{content}</div>} />;
+}

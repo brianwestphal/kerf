@@ -14,12 +14,14 @@ import { ListInsetTextDemo } from './list-inset-text.js';
 import { ListItemDemo } from './list-item.js';
 import { LoadingSpinnerDemo } from './loading-spinner.js';
 import { LucideIconDemo } from './lucide-icon.js';
+import { PaneDemo } from './pane.js';
 import { PanelHeaderDemo } from './panel-header.js';
 import { ResizeDemo } from './resize.js';
 import { SegmentedControlDemo } from './segmented-control.js';
 import { SelectDemo } from './select.js';
 import { SkeletonDemo } from './skeleton.js';
 import { StateBannerDemo } from './state-banner.js';
+import { SunkenPanelDemo } from './sunken-panel.js';
 import { TabBarDemo } from './tab-bar.js';
 import { TabsDemo } from './tabs.js';
 import { TokenSearchFieldDemo } from './token-search-field.js';
@@ -50,11 +52,13 @@ export const demos = {
   'tab-bar': TabBarDemo,
   headers: HeadersDemo,
   'panel-header': PanelHeaderDemo,
+  pane: PaneDemo,
   'value-table': ValueTableDemo,
   resize: ResizeDemo,
   select: SelectDemo,
   feedback: FeedbackDemo,
   'state-banner': StateBannerDemo,
+  'sunken-panel': SunkenPanelDemo,
   'empty-state': EmptyStateDemo,
   'loading-spinner': LoadingSpinnerDemo,
   skeleton: SkeletonDemo,

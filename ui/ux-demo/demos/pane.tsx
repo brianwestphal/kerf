@@ -1,0 +1,47 @@
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { Pane } from '@kerfjs/ui/pane';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
+
+export function PaneDemo() {
+  return (
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'pane' }}>
+      <CatalogExample
+        label="Pane structure and separators"
+        note="The header and footer stay fixed while the primary vertical content slot owns scrolling."
+      >
+        <Pane
+          element="section"
+          label="Pane anatomy"
+          className="demo-pane"
+          separators={[
+            'block-start',
+            'block-end',
+            'inline-start',
+            'inline-end',
+          ]}
+          header={
+            <>
+              <Toolbar
+                label="Pane header"
+                divider={false}
+                leading={<ToolbarText text="Pane header" size="large" />}
+              />
+              <p class="demo-pane__secondary">Optional secondary header row</p>
+            </>
+          }
+          footer={
+            <Toolbar
+              label="Pane footer"
+              divider={false}
+              leading={<ToolbarText text="Optional footer" size="small" />}
+            />
+          }
+        >
+          <div class="kui-content-item">First content group</div>
+          <div class="kui-content-item">Second content group</div>
+        </Pane>
+      </CatalogExample>
+    </CatalogExampleStack>
+  );
+}

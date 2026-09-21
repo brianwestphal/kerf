@@ -50,16 +50,14 @@ toolbar groups use 8px. Rows and actions keep 44px targets.
 Use the package composition so the geometry has one owner:
 
 ```tsx
-<aside class="kui-pane">
-  <nav class="kui-pane__content kui-content">
+<Pane element="aside" contentElement="nav" label="Workspace" contentLabel="Workspace pages">
     <section>
       <ListHeader label="Workspace" />
       <ListItem action="open" label="Inbox" icon={inboxIcon} />
       <ListItem action="open" label="Drafts" />
     </section>
     <div class="kui-content-item">Panel contents</div>
-  </nav>
-</aside>
+</Pane>
 ```
 
 Do not pad the pane and then pad every wrapper. That duplicates the geometry

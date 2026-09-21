@@ -22,6 +22,11 @@ conditional geometry inspection, skip behavior, and metadata ownership. The
 versioned `ui/ai/catalog-authoring.json` companion makes that contract and its
 exact API context discoverable without adding authoring rules to the per-entry
 component inventory.
+An AST conformance gate now enforces public helpers and package imports,
+`rootAttributes` metadata, nonempty specimens, private-structure boundaries,
+and component-only overlay routing across every first-party demo. Its explicit
+exception manifest permits only reviewed helper/metadata waivers and rejects
+malformed, unused, or stale entries.
 The UI package also has an internal deterministic AI-regression foundation,
 including frozen versioned contexts, generated public declaration signatures,
 and an opt-in non-executing TypeScript compile-evidence sidecar.

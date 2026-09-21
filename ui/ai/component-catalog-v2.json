@@ -1,0 +1,4082 @@
+{
+  "$schema": "./component-catalog-v2.schema.json",
+  "schemaVersion": 2,
+  "package": "@kerfjs/ui",
+  "compatibility": {
+    "v1Catalog": "./component-catalog.json",
+    "identity": "package:id"
+  },
+  "entries": [
+    {
+      "key": "@kerfjs/ui:lucide-icon",
+      "package": "@kerfjs/ui",
+      "id": "lucide-icon",
+      "name": "LucideIcon",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "icon choice", "owner": "application", "required": false },
+        { "id": "meaningful label", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["foundation"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Decorative icons are aria-hidden; meaningful icons require a label."
+        ]
+      },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:disclosure-arrow",
+      "package": "@kerfjs/ui",
+      "id": "disclosure-arrow",
+      "name": "DisclosureArrow",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "open state", "owner": "application", "required": false },
+        { "id": "interaction", "owner": "application", "required": false },
+        {
+          "id": "accessible control label",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["foundation"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": {
+        "obligations": [
+          "The arrow is decorative; expose expanded state through aria-expanded on its owning control and keep that control's accessible name stable."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": ["kui-disclosure-arrow"],
+        "publicTokens": [
+          "--kui-disclosure-arrow-duration",
+          "--kui-disclosure-arrow-size"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:webawesome-theme",
+      "package": "@kerfjs/ui",
+      "id": "webawesome-theme",
+      "name": "Web Awesome theme",
+      "kind": "composition",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "individual component registration",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "semantic token overrides",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["foundation"],
+        "geometry": { "margin": "child", "border": "child", "padding": "child" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Preserve Web Awesome semantics and Kerf focus/contrast tokens."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [],
+        "publicTokens": [
+          "--kui-disclosure-icon-scale",
+          "--kui-wa-carousel-control-size",
+          "--kui-wa-carousel-dot-hit-size",
+          "--kui-wa-carousel-dot-size",
+          "--kui-wa-carousel-icon-size",
+          "--kui-wa-popover-arrow-size"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:layout",
+      "package": "@kerfjs/ui",
+      "id": "layout",
+      "name": "Application layout",
+      "kind": "composition",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "layout hierarchy", "owner": "application", "required": false },
+        { "id": "reading width", "owner": "application", "required": false },
+        {
+          "id": "responsive relocation",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "pane visibility and matching collapse/restore controls",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["foundation"],
+        "geometry": { "margin": "child", "border": "child", "padding": "child" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Keep reading and focus order coherent when controls wrap or panes relocate, and preserve one scroll owner per pane.",
+          "When collapse replaces one control with its counterpart in another toolbar, move focus to the newly rendered restore or collapse control."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-content",
+          "kui-content-item",
+          "kui-content-item--pill",
+          "kui-control-cluster",
+          "kui-inline-metadata",
+          "kui-scroll-owner"
+        ],
+        "publicTokens": [
+          "--kui-layout-control-gap",
+          "--kui-layout-content-gap",
+          "--kui-layout-inline-margin",
+          "--kui-layout-item-border-width",
+          "--kui-layout-item-padding",
+          "--kui-layout-metadata-gap",
+          "--kui-layout-pill-radius",
+          "--kui-layout-rounded-radius"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:pane",
+      "package": "@kerfjs/ui",
+      "id": "pane",
+      "name": "Pane",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "root and content semantics",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "accessible labels",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "header, content, and footer children",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "which logical boundaries show separators",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "responsive placement and visibility",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "child",
+          "border": "conditional",
+          "padding": "child",
+          "notes": [
+            "The pane is unpadded; separators are independently opt-in on logical edges and default off."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Choose semantic root and content elements that match the region and provide labels for landmark elements.",
+          "Keep fixed header/footer chrome outside the single scrolling content slot so reading and focus order remain coherent."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-pane",
+          "kui-pane__content",
+          "kui-pane__footer",
+          "kui-pane__header",
+          "kui-pane__toolbar"
+        ],
+        "publicTokens": [
+          "--kui-pane-separator-color",
+          "--kui-pane-separator-width"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:sunken-panel",
+      "package": "@kerfjs/ui",
+      "id": "sunken-panel",
+      "name": "SunkenPanel",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "region semantics and accessible name",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "scroll ownership", "owner": "application", "required": false },
+        {
+          "id": "child ordering and content",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "self",
+          "notes": [
+            "The root owns one 8px inset and vertical gap; children own their borders and internal geometry."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Pass ariaLabel only when the surface is a distinct named region; otherwise it remains a non-landmark grouping."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": ["kui-sunken-panel"],
+        "publicTokens": [
+          "--kui-sunken-panel-background",
+          "--kui-sunken-panel-foreground",
+          "--kui-sunken-panel-gap",
+          "--kui-sunken-panel-padding",
+          "--kui-sunken-panel-radius"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:toolbar",
+      "package": "@kerfjs/ui",
+      "id": "toolbar",
+      "name": "Toolbar",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-chrome", "panel-header"],
+      "zones": [
+        {
+          "id": "leading",
+          "accepts": ["toolbar-text", "toolbar-control-group"],
+          "cardinality": { "min": 0, "max": "unbounded" },
+          "exclusiveWith": []
+        },
+        {
+          "id": "center",
+          "accepts": ["toolbar-text", "toolbar-control-group"],
+          "cardinality": { "min": 0, "max": "unbounded" },
+          "exclusiveWith": []
+        },
+        {
+          "id": "trailing",
+          "accepts": ["toolbar-text", "toolbar-control-group"],
+          "cardinality": { "min": 0, "max": "unbounded" },
+          "exclusiveWith": []
+        }
+      ],
+      "children": {
+        "mode": "listed",
+        "concepts": ["toolbar-text", "toolbar-control-group"],
+        "requiredConcepts": []
+      },
+      "state": [
+        { "id": "actions", "owner": "application", "required": false },
+        {
+          "id": "command availability",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "responsive relocation",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "conditional",
+          "padding": "self",
+          "notes": [
+            "Padding belongs to the toolbar; the optional divider variant also owns its border."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Supply a label when the toolbar needs an accessible name."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-toolbar",
+          "kui-toolbar__center",
+          "kui-toolbar__leading",
+          "kui-toolbar__trailing"
+        ],
+        "publicTokens": ["--kui-color-border", "--kui-font-sans"]
+      },
+      "diagnostics": [
+        {
+          "id": "KUI-C101",
+          "severity": "error",
+          "when": "a direct zone child is neither ToolbarText nor ToolbarControlGroup",
+          "message": "Wrap toolbar controls in ToolbarControlGroup; only ToolbarText and ToolbarControlGroup are direct zone children."
+        }
+      ],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/component-selection.md#toolbar-composition"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:toolbar-control-group",
+      "package": "@kerfjs/ui",
+      "id": "toolbar-control-group",
+      "name": "ToolbarControlGroup",
+      "kind": "component",
+      "source": "kerf",
+      "parents": {
+        "mode": "listed",
+        "entries": ["@kerfjs/ui:toolbar", "@kerfjs/ui:panel-header"]
+      },
+      "contexts": ["toolbar-zone"],
+      "zones": [
+        {
+          "id": "controls",
+          "accepts": ["control"],
+          "cardinality": { "min": 1, "max": "unbounded" },
+          "exclusiveWith": []
+        }
+      ],
+      "children": {
+        "mode": "listed",
+        "concepts": ["control"],
+        "requiredConcepts": ["control"]
+      },
+      "state": [
+        { "id": "actions", "owner": "application", "required": false },
+        { "id": "pressed state", "owner": "application", "required": false },
+        { "id": "expanded state", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Name the group when its relationship is not evident from context."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": ["kui-toolbar-control-group"],
+        "publicTokens": [
+          "--kui-color-brand-on-quiet",
+          "--kui-color-neutral-border-loud",
+          "--kui-color-neutral-border-normal",
+          "--kui-color-neutral-fill-loud",
+          "--kui-color-neutral-fill-normal",
+          "--kui-color-neutral-on-loud",
+          "--kui-color-neutral-on-quiet",
+          "--kui-color-surface",
+          "--kui-focus-ring",
+          "--kui-shadow-s",
+          "--kui-toolbar-control-background",
+          "--kui-toolbar-control-border",
+          "--kui-toolbar-control-color",
+          "--kui-toolbar-control-dark-border",
+          "--kui-toolbar-control-hover-background",
+          "--kui-toolbar-control-pressed-background",
+          "--kui-toolbar-control-pressed-border",
+          "--kui-toolbar-control-pressed-color",
+          "--kui-toolbar-control-selected-background",
+          "--kui-toolbar-control-selected-color",
+          "--kui-toolbar-control-selected-shadow"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/component-selection.md#toolbar-composition"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:floating-toolbar",
+      "package": "@kerfjs/ui",
+      "id": "floating-toolbar",
+      "name": "FloatingToolbar",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "controls", "owner": "application", "required": false },
+        { "id": "position", "owner": "application", "required": false },
+        { "id": "visibility", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Give the toolbar an accessible name (label is required — it exposes role=\"toolbar\")."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": ["kui-floating-toolbar"],
+        "publicTokens": [
+          "--kui-floating-toolbar-inset",
+          "--kui-space-m",
+          "--kui-space-xs"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:toolbar-text",
+      "package": "@kerfjs/ui",
+      "id": "toolbar-text",
+      "name": "ToolbarText",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "text", "owner": "application", "required": false },
+        {
+          "id": "responsive priority",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": ["kui-toolbar-text"],
+        "publicTokens": [
+          "--kui-color-neutral-on-quiet",
+          "--kui-font-m",
+          "--kui-font-mono",
+          "--kui-font-s",
+          "--kui-font-xs"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:headers",
+      "package": "@kerfjs/ui",
+      "id": "headers",
+      "name": "Header composition",
+      "kind": "composition",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "scope hierarchy", "owner": "application", "required": false },
+        { "id": "copy", "owner": "application", "required": false },
+        { "id": "actions", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": { "margin": "child", "border": "child", "padding": "child" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Preserve heading and description relationships for the containing surface."
+        ]
+      },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:panel-header",
+      "package": "@kerfjs/ui",
+      "id": "panel-header",
+      "name": "PanelHeader",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["page-header", "panel-header", "dialog-header"],
+      "zones": [
+        {
+          "id": "title",
+          "accepts": ["text"],
+          "cardinality": { "min": 1, "max": 1 },
+          "exclusiveWith": []
+        },
+        {
+          "id": "subtitle",
+          "accepts": ["text"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        },
+        {
+          "id": "controls",
+          "accepts": ["control"],
+          "cardinality": { "min": 0, "max": "unbounded" },
+          "exclusiveWith": []
+        }
+      ],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "placeholder", "owner": "controlled", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Connect the title id and any provided summary id to the dialog or panel host.",
+          "Pass the trailing actions as a labeled ToolbarControlGroup when the group needs an accessible name.",
+          "For a page/view title pass headingLevel (usually 1) so the title exposes role=heading + aria-level as a heading landmark; omit it for a dialog title, which is referenced via aria-labelledby to titleId."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-panel-header",
+          "kui-panel-header__icon",
+          "kui-panel-header__summary"
+        ],
+        "publicTokens": [
+          "--kui-color-brand-fill-quiet",
+          "--kui-color-brand-on-quiet",
+          "--kui-color-text-quiet",
+          "--kui-panel-header-icon-background",
+          "--kui-panel-header-icon-border",
+          "--kui-panel-header-icon-foreground"
+        ]
+      },
+      "diagnostics": [
+        {
+          "id": "KUI-C102",
+          "severity": "error",
+          "when": "the title is absent",
+          "message": "PanelHeader requires a title that names its page, panel, or dialog."
+        }
+      ],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:value-table",
+      "package": "@kerfjs/ui",
+      "id": "value-table",
+      "name": "ValueTable",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "values", "owner": "application", "required": false },
+        { "id": "formatting", "owner": "application", "required": false },
+        { "id": "empty policy", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": { "margin": "self", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Name ValueTable with its label; ValueTableRow supplies dt/dd semantics, and row icons stay decorative unless meaning requires an accessible label."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-value-table",
+          "kui-value-table__row",
+          "kui-value-table__icon",
+          "kui-value-table__label"
+        ],
+        "publicTokens": [
+          "--kui-color-border",
+          "--kui-color-surface-lowered",
+          "--kui-color-text",
+          "--kui-color-text-quiet",
+          "--kui-font-weight-semibold",
+          "--kui-layout-inline-margin",
+          "--kui-layout-item-gap",
+          "--kui-layout-item-padding",
+          "--kui-space-2xs",
+          "--kui-value-table-background",
+          "--kui-value-table-border",
+          "--kui-value-table-icon-size"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:list",
+      "package": "@kerfjs/ui",
+      "id": "list",
+      "name": "List composition",
+      "kind": "composition",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["navigation-list"],
+      "zones": [
+        {
+          "id": "rows",
+          "accepts": ["list-header", "list-item", "list-action-row"],
+          "cardinality": { "min": 1, "max": "unbounded" },
+          "exclusiveWith": []
+        }
+      ],
+      "children": {
+        "mode": "listed",
+        "concepts": ["list-header", "list-item", "list-action-row"],
+        "requiredConcepts": []
+      },
+      "state": [
+        {
+          "id": "information architecture",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "routing", "owner": "application", "required": false },
+        {
+          "id": "responsive shell behavior",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "child", "border": "child", "padding": "child" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Use native links for link navigation, retain ListItem button semantics for actions, and keep standalone header and toolbar actions at least 44px square.",
+          "A ListHeader disclosure controls real content, keeps a stable accessible name and aria-expanded state, and uses the production DisclosureArrow visual."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": ["kui-content", "kui-content-item"],
+        "publicTokens": [
+          "--kui-layout-content-gap",
+          "--kui-layout-inline-margin",
+          "--kui-layout-item-padding",
+          "--kui-layout-rounded-radius"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/component-selection.md#correct-composition-and-duplicated-markup-trap"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:list-header",
+      "package": "@kerfjs/ui",
+      "id": "list-header",
+      "name": "ListHeader",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["navigation-list"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [{ "id": "expanded", "owner": "controlled", "required": false }],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "self", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "When toggle mode is used, the application reveals matching content and keeps expanded state synchronized.",
+          "The owning control retains a stable accessible name."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-list-header",
+          "kui-list-header__action",
+          "kui-list-header__action-layer",
+          "kui-list-header__badge",
+          "kui-list-header__count",
+          "kui-list-header__label",
+          "kui-list-header__title",
+          "kui-list-header__toggle"
+        ],
+        "publicTokens": [
+          "--kui-color-neutral-border-quiet",
+          "--kui-color-neutral-fill-quiet",
+          "--kui-color-neutral-on-quiet",
+          "--kui-focus-ring",
+          "--kui-font-xs",
+          "--kui-list-header-action-icon-size",
+          "--kui-list-header-color",
+          "--kui-layout-inline-margin",
+          "--kui-layout-item-gap",
+          "--kui-layout-item-padding",
+          "--kui-layout-pill-radius",
+          "--kui-list-header-count-font-size",
+          "--kui-list-header-hover-background"
+        ]
+      },
+      "diagnostics": [
+        {
+          "id": "KUI-C103",
+          "severity": "error",
+          "when": "toggle mode does not reveal matching controlled content",
+          "message": "ListHeader expanded state must match real revealed content."
+        }
+      ],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/accessibility.md#shared-rules"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:list-action-row",
+      "package": "@kerfjs/ui",
+      "id": "list-action-row",
+      "name": "ListActionRow",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "routing", "owner": "application", "required": false },
+        { "id": "selection", "owner": "application", "required": false },
+        { "id": "action handling", "owner": "application", "required": false },
+        {
+          "id": "domain data attributes",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "popover or context-menu policy",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "self", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "The noninteractive root contains two sibling native buttons in primary-then-trailing focus order; each button has its own action, item identity, accessible name, and disabled state.",
+          "Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in ListItem.trailing."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-list-action-row",
+          "kui-list-action-row__icon",
+          "kui-list-action-row__label",
+          "kui-list-action-row__primary",
+          "kui-list-action-row__trailing-action"
+        ],
+        "publicTokens": [
+          "--kui-color-brand-border-quiet",
+          "--kui-color-brand-fill-normal",
+          "--kui-color-neutral-border-normal",
+          "--kui-color-neutral-fill-normal",
+          "--kui-color-neutral-fill-quiet",
+          "--kui-color-neutral-on-normal",
+          "--kui-focus-ring",
+          "--kui-layout-inline-margin",
+          "--kui-layout-item-gap",
+          "--kui-layout-item-padding",
+          "--kui-layout-rounded-radius",
+          "--kui-radius-pill",
+          "--kui-list-action-row-background",
+          "--kui-list-action-row-border",
+          "--kui-list-action-row-color",
+          "--kui-list-action-row-hover-background",
+          "--kui-list-action-row-hover-border",
+          "--kui-list-action-row-selected-background",
+          "--kui-list-action-row-selected-border",
+          "--kui-list-action-row-selected-color",
+          "--kui-list-action-row-trailing-hover-background"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:list-item",
+      "package": "@kerfjs/ui",
+      "id": "list-item",
+      "name": "ListItem",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "routing", "owner": "application", "required": false },
+        { "id": "selection", "owner": "application", "required": false },
+        { "id": "permissions", "owner": "application", "required": false },
+        { "id": "action handling", "owner": "application", "required": false },
+        {
+          "id": "domain data attributes",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "self", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Uses native button activation; selected maps to aria-current and pressed to aria-pressed; rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-list-item",
+          "kui-list-item__icon",
+          "kui-list-item__label",
+          "kui-list-item__trailing"
+        ],
+        "publicTokens": [
+          "--kui-color-brand-fill-normal",
+          "--kui-color-neutral-fill-quiet",
+          "--kui-color-neutral-on-normal",
+          "--kui-color-neutral-on-quiet",
+          "--kui-focus-ring",
+          "--kui-list-item-color",
+          "--kui-list-item-hover-background",
+          "--kui-list-item-selected-background",
+          "--kui-list-item-selected-color",
+          "--kui-layout-inline-margin",
+          "--kui-layout-item-gap",
+          "--kui-layout-item-padding",
+          "--kui-layout-rounded-radius"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:list-inset-control",
+      "package": "@kerfjs/ui",
+      "id": "list-inset-control",
+      "name": "ListInsetControl",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the wrapped control and its behavior",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": { "margin": "self", "border": "child", "padding": "child" }
+      },
+      "accessibility": {
+        "obligations": [
+          "A layout wrapper only; it adds no role or name — the wrapped control keeps its own."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": ["kui-list-inset-control"],
+        "publicTokens": ["--kui-layout-inline-margin"]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:list-inset-text",
+      "package": "@kerfjs/ui",
+      "id": "list-inset-text",
+      "name": "ListInsetText",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "the text content", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": { "margin": "self", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": ["A layout wrapper only; it adds no role or name."]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-list-inset-text",
+          "kui-list-inset-text--horizontal"
+        ],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:tabs",
+      "package": "@kerfjs/ui",
+      "id": "tabs",
+      "name": "AppTab",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "tab identity", "owner": "application", "required": false },
+        { "id": "selection", "owner": "application", "required": false },
+        { "id": "close policy", "owner": "application", "required": false },
+        { "id": "content", "owner": "application", "required": false },
+        {
+          "id": "application data attribute values",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Compose in a tablist and pair with an application-owned tabpanel.",
+          "Keep closeIcon decorative and free of interactive descendants; the owning close button supplies its accessible name and interaction.",
+          "Use rootAttributes only for application data-* metadata; component-owned identity, state, action, and role semantics are protected at runtime."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-app-tab",
+          "kui-app-tab__close",
+          "kui-app-tab__close-icon",
+          "kui-app-tab__name",
+          "kui-app-tab__select",
+          "kui-app-tab__trailing"
+        ],
+        "publicTokens": [
+          "--kui-app-tab-color",
+          "--kui-app-tab-drop-indicator",
+          "--kui-app-tab-hover-background",
+          "--kui-app-tab-selected-background",
+          "--kui-app-tab-selected-border",
+          "--kui-app-tab-selected-color",
+          "--kui-color-brand-border-normal",
+          "--kui-color-brand-on-quiet",
+          "--kui-color-neutral-border-normal",
+          "--kui-color-neutral-on-quiet",
+          "--kui-color-surface",
+          "--kui-color-text",
+          "--kui-focus-ring",
+          "--kui-font-xs",
+          "--kui-radius-pill",
+          "--kui-shadow-s",
+          "--kui-space-2xs",
+          "--kui-space-xs"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:tab-bar",
+      "package": "@kerfjs/ui",
+      "id": "tab-bar",
+      "name": "TabBar",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["tabpanel-navigation"],
+      "zones": [
+        {
+          "id": "tabs",
+          "accepts": ["app-tab"],
+          "cardinality": { "min": 1, "max": "unbounded" },
+          "exclusiveWith": []
+        }
+      ],
+      "children": {
+        "mode": "listed",
+        "concepts": ["app-tab"],
+        "requiredConcepts": ["app-tab"]
+      },
+      "state": [
+        { "id": "selected-tab", "owner": "controlled", "required": true }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireTabBars"],
+        "obligations": [
+          "Retain and invoke the disposer.",
+          "Apply onReorder to application-owned order."
+        ]
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Each tab controls a matching tabpanel.",
+          "Selection and focus behavior follow the configured activation mode."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-tab-bar",
+          "kui-tab-bar__leading",
+          "kui-tab-bar__tabs",
+          "kui-tab-bar__trailing"
+        ],
+        "publicTokens": ["--kui-tab-bar-background", "--kui-tab-bar-border"]
+      },
+      "diagnostics": [
+        {
+          "id": "KUI-C104",
+          "severity": "error",
+          "when": "wireTabBars is absent",
+          "message": "TabBar requires wireTabBars for keyboard and reorder behavior."
+        }
+      ],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/accessibility.md#tabs"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:segmented-control",
+      "package": "@kerfjs/ui",
+      "id": "segmented-control",
+      "name": "SegmentedControl",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["compact-exclusive-choice"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [{ "id": "value", "owner": "controlled", "required": true }],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Every enabled choice remains in sequential tab order.",
+          "Every choice has a meaningful label."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-segmented-control",
+          "kui-segmented-control__item"
+        ],
+        "publicTokens": [
+          "--kui-color-brand-on-quiet",
+          "--kui-color-neutral-border-normal",
+          "--kui-color-neutral-fill-normal",
+          "--kui-color-neutral-on-quiet",
+          "--kui-color-surface",
+          "--kui-focus-ring",
+          "--kui-font-2xs",
+          "--kui-font-weight-semibold",
+          "--kui-font-xs",
+          "--kui-segmented-background",
+          "--kui-segmented-border",
+          "--kui-segmented-foreground",
+          "--kui-segmented-hover-background",
+          "--kui-segmented-item-radius",
+          "--kui-segmented-radius",
+          "--kui-segmented-selected-background",
+          "--kui-segmented-selected-border",
+          "--kui-segmented-selected-foreground",
+          "--kui-segmented-selected-shadow",
+          "--kui-shadow-s",
+          "--kui-toolbar-control-color",
+          "--kui-toolbar-control-hover-background",
+          "--kui-toolbar-control-selected-background",
+          "--kui-toolbar-control-selected-color",
+          "--kui-toolbar-control-selected-shadow"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/accessibility.md#segmentedcontrol"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:token-search-field",
+      "package": "@kerfjs/ui",
+      "id": "token-search-field",
+      "name": "TokenSearchField",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["structured-search-editor"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "tokens", "owner": "controlled", "required": true },
+        { "id": "text", "owner": "component", "required": true },
+        { "id": "expanded", "owner": "controlled", "required": false }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireTokenSearchFields"],
+        "obligations": [
+          "Retain and invoke the disposer.",
+          "Use readTokenSearchField for DOM-owned text."
+        ]
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Announce result changes when useful and keep tokens atomic during editing.",
+          "Keep leading and trailing controls aligned to the first text line while content wraps.",
+          "Wire Enter to submit without inserting a contenteditable line break and preserve focus plus the text-relative caret across controlled keyboard chip deletion; visual wrapping remains available.",
+          "In collapsible mode, wireTokenSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-token-search",
+          "kui-token-search__clear",
+          "kui-token-search__editor",
+          "kui-token-search__expand",
+          "kui-token-search__leading",
+          "kui-token-search__token",
+          "kui-token-search__token-edit",
+          "kui-token-search__token-remove",
+          "kui-token-search__trailing"
+        ],
+        "publicTokens": [
+          "--kui-color-accent",
+          "--kui-color-accent-text",
+          "--kui-color-border",
+          "--kui-color-text-link",
+          "--kui-color-surface",
+          "--kui-color-text",
+          "--kui-color-text-quiet",
+          "--kui-focus-ring",
+          "--kui-font-s",
+          "--kui-font-xs",
+          "--kui-radius-pill",
+          "--kui-token-search-background",
+          "--kui-token-search-border",
+          "--kui-token-search-line-size",
+          "--kui-token-search-token-background",
+          "--kui-token-search-token-foreground",
+          "--kui-token-search-expanded-width"
+        ]
+      },
+      "diagnostics": [
+        {
+          "id": "KUI-C105",
+          "severity": "error",
+          "when": "wireTokenSearchFields is absent",
+          "message": "TokenSearchField requires its public wiring helper for keyboard and collapsible behavior."
+        }
+      ],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/accessibility.md#tokensearchfield"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:resize",
+      "package": "@kerfjs/ui",
+      "id": "resize",
+      "name": "ResizableRegion",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["adjustable-pane-boundary"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [{ "id": "size", "owner": "controlled", "required": true }],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireResizableRegions"],
+        "obligations": [
+          "Retain and invoke the disposer.",
+          "Persist committed size in the application when persistence is required."
+        ]
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": {
+          "margin": "none",
+          "border": "conditional",
+          "padding": "conditional",
+          "notes": [
+            "The region delegates visible separator geometry and hit-area padding to its orientation-specific handle."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Preserve separator naming, value ARIA, and keyboard behavior.",
+          "Keep handleIcon decorative and free of interactive descendants; the separator owns focus, naming, and pointer/keyboard interaction."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-resizable-region",
+          "kui-resizable-region__content",
+          "kui-resizable-region__handle",
+          "kui-resizable-region__handle-icon"
+        ],
+        "publicTokens": [
+          "--kui-color-border",
+          "--kui-color-neutral-on-quiet",
+          "--kui-color-text-link",
+          "--kui-focus-ring",
+          "--kui-radius-s",
+          "--kui-resizable-region-handle-active-color",
+          "--kui-resizable-region-handle-color",
+          "--kui-resizable-region-separator-color",
+          "--kui-resizable-region-size"
+        ]
+      },
+      "diagnostics": [
+        {
+          "id": "KUI-C106",
+          "severity": "error",
+          "when": "wireResizableRegions is absent",
+          "message": "ResizableRegion requires wireResizableRegions for pointer and keyboard operation."
+        }
+      ],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/accessibility.md#resizableregion"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:select",
+      "package": "@kerfjs/ui",
+      "id": "select",
+      "name": "Select",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["controlled-value-selection"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [{ "id": "value", "owner": "controlled", "required": true }],
+      "wiring": {
+        "required": true,
+        "helpers": ["@kerfjs/ui/select/register"],
+        "obligations": [
+          "Import the registration module once in the application."
+        ]
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Verify the live value, standard events, focus, and rendered output."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-select",
+          "kui-select--custom-selected",
+          "kui-select--fit-menu",
+          "kui-select__custom-selected",
+          "kui-select__group",
+          "kui-select__group--separated",
+          "kui-select__group-title",
+          "kui-select__icon"
+        ],
+        "publicTokens": [
+          "--kui-color-brand-fill-normal",
+          "--kui-color-brand-on-fill",
+          "--kui-color-neutral-border-quiet",
+          "--kui-color-neutral-on-quiet",
+          "--kui-disclosure-icon-scale",
+          "--kui-font-2xs"
+        ]
+      },
+      "diagnostics": [
+        {
+          "id": "KUI-C107",
+          "severity": "error",
+          "when": "the registration import is absent",
+          "message": "Select requires @kerfjs/ui/select/register once per application."
+        }
+      ],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "README.md#web-awesome-theme"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:feedback",
+      "package": "@kerfjs/ui",
+      "id": "feedback",
+      "name": "Feedback composition",
+      "kind": "composition",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "state mapping", "owner": "application", "required": false },
+        { "id": "message lifetime", "owner": "application", "required": false },
+        { "id": "recovery policy", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "child", "border": "child", "padding": "child" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Choose polite status versus assertive alert deliberately."
+        ]
+      },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:state-banner",
+      "package": "@kerfjs/ui",
+      "id": "state-banner",
+      "name": "StateBanner",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "state mapping", "owner": "application", "required": false },
+        { "id": "message lifetime", "owner": "application", "required": false },
+        { "id": "retry behavior", "owner": "application", "required": false },
+        { "id": "copy", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "self", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Use alert urgency only for an attention-requiring failure."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-state-banner",
+          "kui-state-banner__action",
+          "kui-state-banner__copy",
+          "kui-state-banner__icon"
+        ],
+        "publicTokens": [
+          "--kui-color-brand-border-quiet",
+          "--kui-color-brand-fill-quiet",
+          "--kui-color-brand-on-fill",
+          "--kui-color-danger-border-quiet",
+          "--kui-color-danger-fill-quiet",
+          "--kui-color-danger-on-quiet",
+          "--kui-color-neutral-border-normal",
+          "--kui-color-neutral-fill-quiet",
+          "--kui-color-neutral-on-normal",
+          "--kui-color-success-border-normal",
+          "--kui-color-success-fill-quiet",
+          "--kui-color-success-on-fill",
+          "--kui-color-surface",
+          "--kui-color-text-link",
+          "--kui-color-warning-border-normal",
+          "--kui-color-warning-fill-quiet",
+          "--kui-color-warning-on-fill",
+          "--kui-font-2xs",
+          "--kui-font-xs",
+          "--kui-radius-pill",
+          "--kui-state-banner-action-background",
+          "--kui-state-banner-action-hover-background",
+          "--kui-state-banner-background",
+          "--kui-state-banner-border",
+          "--kui-state-banner-danger-background",
+          "--kui-state-banner-danger-border",
+          "--kui-state-banner-danger-foreground",
+          "--kui-state-banner-detail",
+          "--kui-state-banner-foreground",
+          "--kui-state-banner-info-background",
+          "--kui-state-banner-info-border",
+          "--kui-state-banner-info-foreground",
+          "--kui-state-banner-neutral-background",
+          "--kui-state-banner-neutral-border",
+          "--kui-state-banner-neutral-foreground",
+          "--kui-state-banner-success-background",
+          "--kui-state-banner-success-border",
+          "--kui-state-banner-success-foreground",
+          "--kui-state-banner-warning-background",
+          "--kui-state-banner-warning-border",
+          "--kui-state-banner-warning-foreground"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:empty-state",
+      "package": "@kerfjs/ui",
+      "id": "empty-state",
+      "name": "EmptyState",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "empty/busy policy",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "recovery action", "owner": "application", "required": false },
+        { "id": "copy", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "self", "border": "self", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Busy state uses aria-busy; the illustration never supplies the only label."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": [
+          "kui-empty-state",
+          "kui-empty-state__action",
+          "kui-empty-state__icon"
+        ],
+        "publicTokens": [
+          "--kui-color-neutral-on-quiet",
+          "--kui-color-text",
+          "--kui-empty-state-foreground",
+          "--kui-empty-state-title",
+          "--kui-font-l",
+          "--kui-font-s",
+          "--kui-space-xl",
+          "--kui-space-xs"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:loading-spinner",
+      "package": "@kerfjs/ui",
+      "id": "loading-spinner",
+      "name": "LoadingSpinner",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "loading lifecycle",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "adjacent status copy",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Labeled spinners use role img; decorative spinners are hidden and stop for reduced motion."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": ["kui-loading-spinner"],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:skeleton",
+      "package": "@kerfjs/ui",
+      "id": "skeleton",
+      "name": "Skeleton",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "loading lifecycle",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "which slots are unknown",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "announcing the loading region",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Decorative by default (aria-hidden); pass label to announce it as an image. A component in placeholder mode marks itself aria-busy and disables its own controls."
+        ]
+      },
+      "boundaries": {
+        "publicClasses": ["kui-skeleton", "kui-skeleton-lines"],
+        "publicTokens": ["--kui-skeleton-radius"]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-button",
+      "package": "@kerfjs/ui",
+      "id": "wa-button",
+      "name": "Button",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["actions"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-button-group",
+      "package": "@kerfjs/ui",
+      "id": "wa-button-group",
+      "name": "Button Group",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["actions"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-copy-button",
+      "package": "@kerfjs/ui",
+      "id": "wa-copy-button",
+      "name": "Copy Button",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["actions"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-dropdown",
+      "package": "@kerfjs/ui",
+      "id": "wa-dropdown",
+      "name": "Dropdown",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["actions"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-dropdown-item",
+      "package": "@kerfjs/ui",
+      "id": "wa-dropdown-item",
+      "name": "Dropdown Item",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["actions"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-checkbox",
+      "package": "@kerfjs/ui",
+      "id": "wa-checkbox",
+      "name": "Checkbox",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-checkbox-group",
+      "package": "@kerfjs/ui",
+      "id": "wa-checkbox-group",
+      "name": "Checkbox Group",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "self", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-color-picker",
+      "package": "@kerfjs/ui",
+      "id": "wa-color-picker",
+      "name": "Color Picker",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-input",
+      "package": "@kerfjs/ui",
+      "id": "wa-input",
+      "name": "Input",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-known-date",
+      "package": "@kerfjs/ui",
+      "id": "wa-known-date",
+      "name": "Known Date",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-number-input",
+      "package": "@kerfjs/ui",
+      "id": "wa-number-input",
+      "name": "Number Input",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-option",
+      "package": "@kerfjs/ui",
+      "id": "wa-option",
+      "name": "Option",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-otp-input",
+      "package": "@kerfjs/ui",
+      "id": "wa-otp-input",
+      "name": "OTP Input",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-radio",
+      "package": "@kerfjs/ui",
+      "id": "wa-radio",
+      "name": "Radio",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-radio-group",
+      "package": "@kerfjs/ui",
+      "id": "wa-radio-group",
+      "name": "Radio Group",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [
+        {
+          "id": "options",
+          "accepts": ["wa-radio"],
+          "cardinality": { "min": 1, "max": "unbounded" },
+          "exclusiveWith": []
+        }
+      ],
+      "children": {
+        "mode": "listed",
+        "concepts": ["wa-radio"],
+        "requiredConcepts": ["wa-radio"]
+      },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "self", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-rating",
+      "package": "@kerfjs/ui",
+      "id": "wa-rating",
+      "name": "Rating",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-select",
+      "package": "@kerfjs/ui",
+      "id": "wa-select",
+      "name": "Select",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [
+        {
+          "id": "options",
+          "accepts": ["wa-option"],
+          "cardinality": { "min": 1, "max": "unbounded" },
+          "exclusiveWith": []
+        }
+      ],
+      "children": {
+        "mode": "listed",
+        "concepts": ["wa-option"],
+        "requiredConcepts": ["wa-option"]
+      },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-slider",
+      "package": "@kerfjs/ui",
+      "id": "wa-slider",
+      "name": "Slider",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "self", "border": "none", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-switch",
+      "package": "@kerfjs/ui",
+      "id": "wa-switch",
+      "name": "Switch",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-textarea",
+      "package": "@kerfjs/ui",
+      "id": "wa-textarea",
+      "name": "Textarea",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-time-input",
+      "package": "@kerfjs/ui",
+      "id": "wa-time-input",
+      "name": "Time Input",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["forms"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-accordion",
+      "package": "@kerfjs/ui",
+      "id": "wa-accordion",
+      "name": "Accordion",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [
+        {
+          "id": "items",
+          "accepts": ["wa-accordion-item"],
+          "cardinality": { "min": 1, "max": "unbounded" },
+          "exclusiveWith": []
+        }
+      ],
+      "children": {
+        "mode": "listed",
+        "concepts": ["wa-accordion-item"],
+        "requiredConcepts": ["wa-accordion-item"]
+      },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["layout"],
+        "geometry": { "margin": "self", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-accordion-item",
+      "package": "@kerfjs/ui",
+      "id": "wa-accordion-item",
+      "name": "Accordion Item",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["layout"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-card",
+      "package": "@kerfjs/ui",
+      "id": "wa-card",
+      "name": "Card",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["layout"],
+        "geometry": { "margin": "self", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-details",
+      "package": "@kerfjs/ui",
+      "id": "wa-details",
+      "name": "Details",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["layout"],
+        "geometry": { "margin": "self", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-dialog",
+      "package": "@kerfjs/ui",
+      "id": "wa-dialog",
+      "name": "Dialog",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["layout"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-divider",
+      "package": "@kerfjs/ui",
+      "id": "wa-divider",
+      "name": "Divider",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["layout"],
+        "geometry": { "margin": "parent", "border": "self", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-drawer",
+      "package": "@kerfjs/ui",
+      "id": "wa-drawer",
+      "name": "Drawer",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["layout"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-page",
+      "package": "@kerfjs/ui",
+      "id": "wa-page",
+      "name": "Page",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["layout"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-scroller",
+      "package": "@kerfjs/ui",
+      "id": "wa-scroller",
+      "name": "Scroller",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["layout"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-split-panel",
+      "package": "@kerfjs/ui",
+      "id": "wa-split-panel",
+      "name": "Split Panel",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["layout"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-breadcrumb",
+      "package": "@kerfjs/ui",
+      "id": "wa-breadcrumb",
+      "name": "Breadcrumb",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-breadcrumb-item",
+      "package": "@kerfjs/ui",
+      "id": "wa-breadcrumb-item",
+      "name": "Breadcrumb Item",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-pagination",
+      "package": "@kerfjs/ui",
+      "id": "wa-pagination",
+      "name": "Pagination",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-tab",
+      "package": "@kerfjs/ui",
+      "id": "wa-tab",
+      "name": "Tab",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-tab-group",
+      "package": "@kerfjs/ui",
+      "id": "wa-tab-group",
+      "name": "Tab Group",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [
+        {
+          "id": "tabs",
+          "accepts": ["wa-tab"],
+          "cardinality": { "min": 1, "max": "unbounded" },
+          "exclusiveWith": []
+        },
+        {
+          "id": "panels",
+          "accepts": ["wa-tab-panel"],
+          "cardinality": { "min": 1, "max": "unbounded" },
+          "exclusiveWith": []
+        }
+      ],
+      "children": {
+        "mode": "listed",
+        "concepts": ["wa-tab", "wa-tab-panel"],
+        "requiredConcepts": ["wa-tab", "wa-tab-panel"]
+      },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [
+        {
+          "id": "KUI-C108",
+          "severity": "error",
+          "when": "tab and panel name sets differ",
+          "message": "Every wa-tab must identify a matching wa-tab-panel and vice versa."
+        }
+      ],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/webawesome-theme.md#coverage"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-tab-panel",
+      "package": "@kerfjs/ui",
+      "id": "wa-tab-panel",
+      "name": "Tab Panel",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "conditional",
+          "notes": [
+            "Container-mode tab panels own the themed container inset; uncontained panels do not."
+          ]
+        }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-tree",
+      "package": "@kerfjs/ui",
+      "id": "wa-tree",
+      "name": "Tree",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-tree-item",
+      "package": "@kerfjs/ui",
+      "id": "wa-tree-item",
+      "name": "Tree Item",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-badge",
+      "package": "@kerfjs/ui",
+      "id": "wa-badge",
+      "name": "Badge",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-callout",
+      "package": "@kerfjs/ui",
+      "id": "wa-callout",
+      "name": "Callout",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "self", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-progress-bar",
+      "package": "@kerfjs/ui",
+      "id": "wa-progress-bar",
+      "name": "Progress Bar",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-progress-ring",
+      "package": "@kerfjs/ui",
+      "id": "wa-progress-ring",
+      "name": "Progress Ring",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-skeleton",
+      "package": "@kerfjs/ui",
+      "id": "wa-skeleton",
+      "name": "Skeleton",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-spinner",
+      "package": "@kerfjs/ui",
+      "id": "wa-spinner",
+      "name": "Spinner",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-tag",
+      "package": "@kerfjs/ui",
+      "id": "wa-tag",
+      "name": "Tag",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-toast",
+      "package": "@kerfjs/ui",
+      "id": "wa-toast",
+      "name": "Toast",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-toast-item",
+      "package": "@kerfjs/ui",
+      "id": "wa-toast-item",
+      "name": "Toast Item",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-tooltip",
+      "package": "@kerfjs/ui",
+      "id": "wa-tooltip",
+      "name": "Tooltip",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["feedback"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-animated-image",
+      "package": "@kerfjs/ui",
+      "id": "wa-animated-image",
+      "name": "Animated Image",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["media"],
+        "geometry": { "margin": "none", "border": "self", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-avatar",
+      "package": "@kerfjs/ui",
+      "id": "wa-avatar",
+      "name": "Avatar",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["media"],
+        "geometry": { "margin": "none", "border": "self", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-carousel",
+      "package": "@kerfjs/ui",
+      "id": "wa-carousel",
+      "name": "Carousel",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["media"],
+        "geometry": { "margin": "none", "border": "self", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-carousel-item",
+      "package": "@kerfjs/ui",
+      "id": "wa-carousel-item",
+      "name": "Carousel Item",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["media"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-comparison",
+      "package": "@kerfjs/ui",
+      "id": "wa-comparison",
+      "name": "Comparison",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["media"],
+        "geometry": { "margin": "none", "border": "self", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-icon",
+      "package": "@kerfjs/ui",
+      "id": "wa-icon",
+      "name": "Icon",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["media"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-markdown",
+      "package": "@kerfjs/ui",
+      "id": "wa-markdown",
+      "name": "Markdown",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["media"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-qr-code",
+      "package": "@kerfjs/ui",
+      "id": "wa-qr-code",
+      "name": "QR Code",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["media"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-zoomable-frame",
+      "package": "@kerfjs/ui",
+      "id": "wa-zoomable-frame",
+      "name": "Zoomable Frame",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["media"],
+        "geometry": { "margin": "none", "border": "self", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-animation",
+      "package": "@kerfjs/ui",
+      "id": "wa-animation",
+      "name": "Animation",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["helpers"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-format-bytes",
+      "package": "@kerfjs/ui",
+      "id": "wa-format-bytes",
+      "name": "Format Bytes",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["helpers"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-format-date",
+      "package": "@kerfjs/ui",
+      "id": "wa-format-date",
+      "name": "Format Date",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["helpers"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-format-number",
+      "package": "@kerfjs/ui",
+      "id": "wa-format-number",
+      "name": "Format Number",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["helpers"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-include",
+      "package": "@kerfjs/ui",
+      "id": "wa-include",
+      "name": "Include",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["helpers"],
+        "geometry": { "margin": "self", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-intersection-observer",
+      "package": "@kerfjs/ui",
+      "id": "wa-intersection-observer",
+      "name": "Intersection Observer",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["helpers"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-mutation-observer",
+      "package": "@kerfjs/ui",
+      "id": "wa-mutation-observer",
+      "name": "Mutation Observer",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["helpers"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-popover",
+      "package": "@kerfjs/ui",
+      "id": "wa-popover",
+      "name": "Popover",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["helpers"],
+        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-popup",
+      "package": "@kerfjs/ui",
+      "id": "wa-popup",
+      "name": "Popup",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["helpers"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-random-content",
+      "package": "@kerfjs/ui",
+      "id": "wa-random-content",
+      "name": "Random Content",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["helpers"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-relative-time",
+      "package": "@kerfjs/ui",
+      "id": "wa-relative-time",
+      "name": "Relative Time",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["helpers"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:wa-resize-observer",
+      "package": "@kerfjs/ui",
+      "id": "wa-resize-observer",
+      "name": "Resize Observer",
+      "kind": "component",
+      "source": "webawesome",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["helpers"],
+        "geometry": { "margin": "none", "border": "none", "padding": "none" }
+      },
+      "accessibility": { "obligations": [] },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:recipe-app-shell",
+      "package": "@kerfjs/ui",
+      "id": "recipe-app-shell",
+      "name": "Desktop application shell",
+      "kind": "recipe",
+      "source": "kerf",
+      "parents": { "mode": "root", "entries": [] },
+      "contexts": ["application-reference"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "routing", "owner": "application", "required": false },
+        { "id": "pane visibility", "owner": "application", "required": false },
+        {
+          "id": "pane sizes and persistence",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "workspace data", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "application", "behaviors": [] },
+      "layout": {
+        "roles": ["reference-composition"],
+        "geometry": {
+          "margin": "composed",
+          "border": "composed",
+          "padding": "composed"
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Each pane has one scroll owner and each resize handle keeps its separator keyboard contract."
+        ]
+      },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:recipe-navigation-sidebar",
+      "package": "@kerfjs/ui",
+      "id": "recipe-navigation-sidebar",
+      "name": "Navigation sidebar",
+      "kind": "recipe",
+      "source": "kerf",
+      "parents": { "mode": "root", "entries": [] },
+      "contexts": ["application-reference"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "information architecture",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "routing", "owner": "application", "required": false },
+        { "id": "permissions", "owner": "application", "required": false },
+        { "id": "disclosure state", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "application", "behaviors": [] },
+      "layout": {
+        "roles": ["reference-composition"],
+        "geometry": {
+          "margin": "composed",
+          "border": "composed",
+          "padding": "composed"
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Native buttons retain names, current state, sequential focus, and disclosure state; rows and standalone footer actions remain at least 44px tall."
+        ]
+      },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:recipe-workspace-header",
+      "package": "@kerfjs/ui",
+      "id": "recipe-workspace-header",
+      "name": "Workspace header",
+      "kind": "recipe",
+      "source": "kerf",
+      "parents": { "mode": "root", "entries": [] },
+      "contexts": ["application-reference"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "authorization", "owner": "application", "required": false },
+        { "id": "command behavior", "owner": "application", "required": false },
+        { "id": "breadcrumbs", "owner": "application", "required": false },
+        { "id": "product copy", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "application", "behaviors": [] },
+      "layout": {
+        "roles": ["reference-composition"],
+        "geometry": {
+          "margin": "composed",
+          "border": "composed",
+          "padding": "composed"
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Heading order and action focus order remain stable when controls wrap."
+        ]
+      },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:recipe-list-detail-dialog",
+      "package": "@kerfjs/ui",
+      "id": "recipe-list-detail-dialog",
+      "name": "List-detail dialog",
+      "kind": "recipe",
+      "source": "kerf",
+      "parents": { "mode": "root", "entries": [] },
+      "contexts": ["application-reference"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "open state", "owner": "application", "required": false },
+        { "id": "selected record", "owner": "application", "required": false },
+        { "id": "dismiss policy", "owner": "application", "required": false },
+        { "id": "record actions", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "application", "behaviors": [] },
+      "layout": {
+        "roles": ["reference-composition"],
+        "geometry": {
+          "margin": "composed",
+          "border": "composed",
+          "padding": "composed"
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Web Awesome owns modal focus and Escape; the application adapter restores the invoking control after hide, and PanelHeader supplies the visible hierarchy."
+        ]
+      },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:recipe-composer-form",
+      "package": "@kerfjs/ui",
+      "id": "recipe-composer-form",
+      "name": "Composer form",
+      "kind": "recipe",
+      "source": "kerf",
+      "parents": { "mode": "root", "entries": [] },
+      "contexts": ["application-reference"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "validation rules", "owner": "application", "required": false },
+        {
+          "id": "draft persistence",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "permissions", "owner": "application", "required": false },
+        { "id": "transport", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "application", "behaviors": [] },
+      "layout": {
+        "roles": ["reference-composition"],
+        "geometry": {
+          "margin": "composed",
+          "border": "composed",
+          "padding": "composed"
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The form references PanelHeader's title and summary ids; production fields own labels and help; invalid submission creates an assertive persistent StateBanner while successful submission creates a polite persistent banner."
+        ]
+      },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:recipe-list-workspace-states",
+      "package": "@kerfjs/ui",
+      "id": "recipe-list-workspace-states",
+      "name": "List workspace states",
+      "kind": "recipe",
+      "source": "kerf",
+      "parents": { "mode": "root", "entries": [] },
+      "contexts": ["application-reference"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "fetching", "owner": "application", "required": false },
+        { "id": "cache age", "owner": "application", "required": false },
+        { "id": "retry policy", "owner": "application", "required": false },
+        { "id": "domain rows", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "application", "behaviors": [] },
+      "layout": {
+        "roles": ["reference-composition"],
+        "geometry": {
+          "margin": "composed",
+          "border": "composed",
+          "padding": "composed"
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Busy, polite, and assertive states use the appropriate production feedback semantics."
+        ]
+      },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:recipe-compact-toolbar",
+      "package": "@kerfjs/ui",
+      "id": "recipe-compact-toolbar",
+      "name": "Compact toolbar choices and actions",
+      "kind": "recipe",
+      "source": "kerf",
+      "parents": { "mode": "root", "entries": [] },
+      "contexts": ["application-reference"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "controlled values",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "actions", "owner": "application", "required": false },
+        { "id": "persistence", "owner": "application", "required": false },
+        {
+          "id": "responsive priority",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "application", "behaviors": [] },
+      "layout": {
+        "roles": ["reference-composition"],
+        "geometry": {
+          "margin": "composed",
+          "border": "composed",
+          "padding": "composed"
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Each control retains its own native name, pressed/value state, and keyboard contract."
+        ]
+      },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:recipe-navigation-stack",
+      "package": "@kerfjs/ui",
+      "id": "recipe-navigation-stack",
+      "name": "Navigation stack",
+      "kind": "recipe",
+      "source": "kerf",
+      "parents": { "mode": "root", "entries": [] },
+      "contexts": ["application-reference"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the stack (a signal of views)",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "selection", "owner": "application", "required": false },
+        { "id": "routing", "owner": "application", "required": false },
+        { "id": "data", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "application", "behaviors": [] },
+      "layout": {
+        "roles": ["reference-composition"],
+        "geometry": {
+          "margin": "composed",
+          "border": "composed",
+          "padding": "composed"
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "The back control is a real button; reduced motion collapses the slide to instant."
+        ]
+      },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:recipe-loading-inspector",
+      "package": "@kerfjs/ui",
+      "id": "recipe-loading-inspector",
+      "name": "Loading inspector",
+      "kind": "recipe",
+      "source": "kerf",
+      "parents": { "mode": "root", "entries": [] },
+      "contexts": ["application-reference"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "loading lifecycle",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "which values are unknown",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "fetching, transport, and domain data",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "application", "behaviors": [] },
+      "layout": {
+        "roles": ["reference-composition"],
+        "geometry": {
+          "margin": "composed",
+          "border": "composed",
+          "padding": "composed"
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Each component marks itself aria-busy and disables its own controls while loading; the composition keeps labels and structure stable across the transition."
+        ]
+      },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:recipe-collapsible-sidebar",
+      "package": "@kerfjs/ui",
+      "id": "recipe-collapsible-sidebar",
+      "name": "Collapsible sidebar",
+      "kind": "recipe",
+      "source": "kerf",
+      "parents": { "mode": "root", "entries": [] },
+      "contexts": ["application-reference"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "each panel's collapsed signal",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "panel sizes", "owner": "application", "required": false },
+        {
+          "id": "routing and selection",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "content", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "application", "behaviors": [] },
+      "layout": {
+        "roles": ["reference-composition"],
+        "geometry": {
+          "margin": "composed",
+          "border": "composed",
+          "padding": "composed"
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Each panel is a labeled aside that is aria-hidden while collapsed; toggles carry aria-expanded and the standard per-side glyph; while compact an open panel is an overlay with a backdrop, Escape and backdrop-click dismiss, and a trapped Tab ring."
+        ]
+      },
+      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    }
+  ]
+}

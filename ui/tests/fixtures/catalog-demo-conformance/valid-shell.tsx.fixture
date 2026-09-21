@@ -1,0 +1,20 @@
+import { Catalog } from '@kerfjs/ui/catalog';
+
+export function Shell({ selected, content }) {
+  return (
+    <Catalog
+      geometryOverlay={
+        selected.source === 'kerf' && selected.kind === 'component'
+      }
+      content={
+        <div
+          data-demo-mode={
+            selected.kind === 'component' ? 'component' : 'composition'
+          }
+        >
+          {content}
+        </div>
+      }
+    />
+  );
+}

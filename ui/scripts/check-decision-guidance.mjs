@@ -119,7 +119,17 @@ for (const phrase of requiredPhrases) {
 }
 
 const menuEntry = componentCatalog.entries.find((entry) => entry.id === 'list');
-for (const className of ['kui-pane', 'kui-content', 'kui-content-item']) {
+const paneEntry = componentCatalog.entries.find((entry) => entry.id === 'pane');
+for (const className of [
+  'kui-pane',
+  'kui-pane__header',
+  'kui-pane__content',
+  'kui-pane__footer',
+]) {
+  if (!paneEntry?.publicClasses.includes(className))
+    fail(`pane catalog entry is missing public class ${className}`);
+}
+for (const className of ['kui-content', 'kui-content-item']) {
   if (!menuEntry?.publicClasses.includes(className))
     fail(`list catalog entry is missing public class ${className}`);
 }

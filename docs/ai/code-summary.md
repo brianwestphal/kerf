@@ -19,6 +19,12 @@ canonical layout ownership for a recurring concept the package does not export.
 `ui/scripts/check-recipes.mjs` keeps those sources,
 canonical `ui/ai/component-catalog.json` facts, package imports, docs, and
 stable catalog routes synchronized.
+`ui/scripts/check-catalog-demo-conformance.mjs` applies an AST-based authoring
+gate to every first-party demo: public package imports, focused public example
+helpers and `rootAttributes`, nonempty specimens, private-markup exclusion, and
+the shell's component-only overlay mode. Narrow structural exceptions live in
+the schema-checked `ui/ux-demo/catalog-conformance-exceptions.json` manifest and
+fail when malformed, unused, or stale.
 The same typed projection derives repository-relative paths for focused demo,
 recipe, Web Awesome, and first-party component source, then pairs them with canonical
 guidance paths in visible, deploy-safe detail links.

@@ -7,6 +7,7 @@ kerf-ui-skill-version: 1.36.0
 # Building with @kerfjs/ui
 
 Read `../docs/component-selection.md` first, then `./component-catalog.json`,
+`./component-catalog-v2.json`,
 `./public-api-signatures-v1.md`, `./webawesome-jsx-signatures-v1.md`,
 `../docs/recipes.md`, `../README.md`,
 `../docs/component-contract.md`, and `../docs/accessibility.md` before changing
@@ -23,6 +24,13 @@ their composition boundary. When a consuming project has reusable visual
 components but no extension, generate and maintain one from
 `../docs/examples/component-catalog-extension.json`; do not infer their geometry
 from rendered appearance alone.
+
+Use v1 for selection, delivery, and compatibility. Use v2 when evaluating
+composition. Join catalogs by `key` (`package:id`), never bare `id`. Treat
+`generated-permissive-default` composition provenance as unknown/allowed, not
+as a prohibition. Emit a diagnostic only after mechanically establishing its
+exact `when` condition; subjective guidance stays prose. App entries use the
+v2 extension schema and retain their own package identity across Kerf edges.
 
 Choose from the need, not from visual resemblance:
 

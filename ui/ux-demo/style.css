@@ -129,6 +129,18 @@ button {
 .demo-frame {
   gap: 0;
 }
+.demo-example-cluster {
+  display: grid;
+  width: calc(100% - var(--kui-catalog-example-align, 0px));
+  min-width: 0;
+  gap: var(--kui-space-xs);
+}
+.demo-example-readout {
+  margin: 0;
+  padding-inline: var(--kui-layout-item-padding, remify(8px));
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+}
 /* The Toolbar demo stacks two toolbars — separate them by one spacing unit. */
 [data-demo="toolbar"].demo-frame {
   row-gap: remify(8px);
@@ -290,6 +302,17 @@ button {
 }
 .demo-layout {
   width: min(100%, remify(736px));
+}
+.demo-pane {
+  width: min(100%, remify(640px));
+  height: remify(360px);
+  background: var(--kui-color-surface);
+}
+.demo-pane__secondary {
+  margin: 0;
+  padding: 0 var(--kui-space-xs) var(--kui-space-xs);
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
 }
 .demo-layout__surface {
   --kui-content-item-border: var(--kui-color-border);

@@ -1,0 +1,326 @@
+{
+  "@kerfjs/ui:toolbar": {
+    "_source": "docs/component-selection.md#toolbar-composition",
+    "contexts": ["application-chrome", "panel-header"],
+    "zones": [
+      {
+        "id": "leading",
+        "accepts": ["toolbar-text", "toolbar-control-group"],
+        "cardinality": { "min": 0, "max": "unbounded" },
+        "exclusiveWith": []
+      },
+      {
+        "id": "center",
+        "accepts": ["toolbar-text", "toolbar-control-group"],
+        "cardinality": { "min": 0, "max": "unbounded" },
+        "exclusiveWith": []
+      },
+      {
+        "id": "trailing",
+        "accepts": ["toolbar-text", "toolbar-control-group"],
+        "cardinality": { "min": 0, "max": "unbounded" },
+        "exclusiveWith": []
+      }
+    ],
+    "children": {
+      "mode": "listed",
+      "concepts": ["toolbar-text", "toolbar-control-group"],
+      "requiredConcepts": []
+    },
+    "diagnostics": [
+      {
+        "id": "KUI-C101",
+        "severity": "error",
+        "when": "a direct zone child is neither ToolbarText nor ToolbarControlGroup",
+        "message": "Wrap toolbar controls in ToolbarControlGroup; only ToolbarText and ToolbarControlGroup are direct zone children."
+      }
+    ]
+  },
+  "@kerfjs/ui:toolbar-control-group": {
+    "_source": "docs/component-selection.md#toolbar-composition",
+    "parents": {
+      "mode": "listed",
+      "entries": ["@kerfjs/ui:toolbar", "@kerfjs/ui:panel-header"]
+    },
+    "contexts": ["toolbar-zone"],
+    "zones": [
+      {
+        "id": "controls",
+        "accepts": ["control"],
+        "cardinality": { "min": 1, "max": "unbounded" },
+        "exclusiveWith": []
+      }
+    ],
+    "children": {
+      "mode": "listed",
+      "concepts": ["control"],
+      "requiredConcepts": ["control"]
+    }
+  },
+  "@kerfjs/ui:panel-header": {
+    "_source": "docs/component-selection.md#problem-to-component-matrix",
+    "contexts": ["page-header", "panel-header", "dialog-header"],
+    "zones": [
+      {
+        "id": "title",
+        "accepts": ["text"],
+        "cardinality": { "min": 1, "max": 1 },
+        "exclusiveWith": []
+      },
+      {
+        "id": "subtitle",
+        "accepts": ["text"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      },
+      {
+        "id": "controls",
+        "accepts": ["control"],
+        "cardinality": { "min": 0, "max": "unbounded" },
+        "exclusiveWith": []
+      }
+    ],
+    "state": [
+      { "id": "placeholder", "owner": "controlled", "required": false }
+    ],
+    "diagnostics": [
+      {
+        "id": "KUI-C102",
+        "severity": "error",
+        "when": "the title is absent",
+        "message": "PanelHeader requires a title that names its page, panel, or dialog."
+      }
+    ]
+  },
+  "@kerfjs/ui:list": {
+    "_source": "docs/component-selection.md#correct-composition-and-duplicated-markup-trap",
+    "contexts": ["navigation-list"],
+    "children": {
+      "mode": "listed",
+      "concepts": ["list-header", "list-item", "list-action-row"],
+      "requiredConcepts": []
+    },
+    "zones": [
+      {
+        "id": "rows",
+        "accepts": ["list-header", "list-item", "list-action-row"],
+        "cardinality": { "min": 1, "max": "unbounded" },
+        "exclusiveWith": []
+      }
+    ]
+  },
+  "@kerfjs/ui:list-header": {
+    "_source": "docs/accessibility.md#shared-rules",
+    "contexts": ["navigation-list"],
+    "state": [{ "id": "expanded", "owner": "controlled", "required": false }],
+    "accessibility": {
+      "obligations": [
+        "When toggle mode is used, the application reveals matching content and keeps expanded state synchronized.",
+        "The owning control retains a stable accessible name."
+      ]
+    },
+    "diagnostics": [
+      {
+        "id": "KUI-C103",
+        "severity": "error",
+        "when": "toggle mode does not reveal matching controlled content",
+        "message": "ListHeader expanded state must match real revealed content."
+      }
+    ]
+  },
+  "@kerfjs/ui:tab-bar": {
+    "_source": "docs/accessibility.md#tabs",
+    "contexts": ["tabpanel-navigation"],
+    "children": {
+      "mode": "listed",
+      "concepts": ["app-tab"],
+      "requiredConcepts": ["app-tab"]
+    },
+    "zones": [
+      {
+        "id": "tabs",
+        "accepts": ["app-tab"],
+        "cardinality": { "min": 1, "max": "unbounded" },
+        "exclusiveWith": []
+      }
+    ],
+    "state": [
+      { "id": "selected-tab", "owner": "controlled", "required": true }
+    ],
+    "wiring": {
+      "required": true,
+      "helpers": ["wireTabBars"],
+      "obligations": [
+        "Retain and invoke the disposer.",
+        "Apply onReorder to application-owned order."
+      ]
+    },
+    "accessibility": {
+      "obligations": [
+        "Each tab controls a matching tabpanel.",
+        "Selection and focus behavior follow the configured activation mode."
+      ]
+    },
+    "diagnostics": [
+      {
+        "id": "KUI-C104",
+        "severity": "error",
+        "when": "wireTabBars is absent",
+        "message": "TabBar requires wireTabBars for keyboard and reorder behavior."
+      }
+    ]
+  },
+  "@kerfjs/ui:segmented-control": {
+    "_source": "docs/accessibility.md#segmentedcontrol",
+    "contexts": ["compact-exclusive-choice"],
+    "state": [{ "id": "value", "owner": "controlled", "required": true }],
+    "accessibility": {
+      "obligations": [
+        "Every enabled choice remains in sequential tab order.",
+        "Every choice has a meaningful label."
+      ]
+    }
+  },
+  "@kerfjs/ui:token-search-field": {
+    "_source": "docs/accessibility.md#tokensearchfield",
+    "contexts": ["structured-search-editor"],
+    "state": [
+      { "id": "tokens", "owner": "controlled", "required": true },
+      { "id": "text", "owner": "component", "required": true },
+      { "id": "expanded", "owner": "controlled", "required": false }
+    ],
+    "wiring": {
+      "required": true,
+      "helpers": ["wireTokenSearchFields"],
+      "obligations": [
+        "Retain and invoke the disposer.",
+        "Use readTokenSearchField for DOM-owned text."
+      ]
+    },
+    "diagnostics": [
+      {
+        "id": "KUI-C105",
+        "severity": "error",
+        "when": "wireTokenSearchFields is absent",
+        "message": "TokenSearchField requires its public wiring helper for keyboard and collapsible behavior."
+      }
+    ]
+  },
+  "@kerfjs/ui:resize": {
+    "_source": "docs/accessibility.md#resizableregion",
+    "contexts": ["adjustable-pane-boundary"],
+    "state": [{ "id": "size", "owner": "controlled", "required": true }],
+    "wiring": {
+      "required": true,
+      "helpers": ["wireResizableRegions"],
+      "obligations": [
+        "Retain and invoke the disposer.",
+        "Persist committed size in the application when persistence is required."
+      ]
+    },
+    "diagnostics": [
+      {
+        "id": "KUI-C106",
+        "severity": "error",
+        "when": "wireResizableRegions is absent",
+        "message": "ResizableRegion requires wireResizableRegions for pointer and keyboard operation."
+      }
+    ]
+  },
+  "@kerfjs/ui:select": {
+    "_source": "README.md#web-awesome-theme",
+    "contexts": ["controlled-value-selection"],
+    "state": [{ "id": "value", "owner": "controlled", "required": true }],
+    "wiring": {
+      "required": true,
+      "helpers": ["@kerfjs/ui/select/register"],
+      "obligations": ["Import the registration module once in the application."]
+    },
+    "diagnostics": [
+      {
+        "id": "KUI-C107",
+        "severity": "error",
+        "when": "the registration import is absent",
+        "message": "Select requires @kerfjs/ui/select/register once per application."
+      }
+    ]
+  },
+  "@kerfjs/ui:wa-accordion": {
+    "_source": "docs/webawesome-theme.md#coverage",
+    "children": {
+      "mode": "listed",
+      "concepts": ["wa-accordion-item"],
+      "requiredConcepts": ["wa-accordion-item"]
+    },
+    "zones": [
+      {
+        "id": "items",
+        "accepts": ["wa-accordion-item"],
+        "cardinality": { "min": 1, "max": "unbounded" },
+        "exclusiveWith": []
+      }
+    ]
+  },
+  "@kerfjs/ui:wa-radio-group": {
+    "_source": "docs/webawesome-theme.md#coverage",
+    "children": {
+      "mode": "listed",
+      "concepts": ["wa-radio"],
+      "requiredConcepts": ["wa-radio"]
+    },
+    "zones": [
+      {
+        "id": "options",
+        "accepts": ["wa-radio"],
+        "cardinality": { "min": 1, "max": "unbounded" },
+        "exclusiveWith": []
+      }
+    ]
+  },
+  "@kerfjs/ui:wa-select": {
+    "_source": "docs/webawesome-theme.md#coverage",
+    "children": {
+      "mode": "listed",
+      "concepts": ["wa-option"],
+      "requiredConcepts": ["wa-option"]
+    },
+    "zones": [
+      {
+        "id": "options",
+        "accepts": ["wa-option"],
+        "cardinality": { "min": 1, "max": "unbounded" },
+        "exclusiveWith": []
+      }
+    ]
+  },
+  "@kerfjs/ui:wa-tab-group": {
+    "_source": "docs/webawesome-theme.md#coverage",
+    "children": {
+      "mode": "listed",
+      "concepts": ["wa-tab", "wa-tab-panel"],
+      "requiredConcepts": ["wa-tab", "wa-tab-panel"]
+    },
+    "zones": [
+      {
+        "id": "tabs",
+        "accepts": ["wa-tab"],
+        "cardinality": { "min": 1, "max": "unbounded" },
+        "exclusiveWith": []
+      },
+      {
+        "id": "panels",
+        "accepts": ["wa-tab-panel"],
+        "cardinality": { "min": 1, "max": "unbounded" },
+        "exclusiveWith": []
+      }
+    ],
+    "diagnostics": [
+      {
+        "id": "KUI-C108",
+        "severity": "error",
+        "when": "tab and panel name sets differ",
+        "message": "Every wa-tab must identify a matching wa-tab-panel and vice versa."
+      }
+    ]
+  }
+}

@@ -95,7 +95,7 @@ describe('UX catalog metadata', () => {
     expect(artifact.entries.map(({ id }) => id)).toEqual(
       catalog.map(({ id }) => id),
     );
-    expect(artifact.entries).toHaveLength(108);
+    expect(artifact.entries).toHaveLength(110);
     expect(findCatalogEntry('recipe-command-palette')).toBeUndefined();
     expect(isCatalogId('recipe-command-palette')).toBe(false);
     expect(
@@ -297,6 +297,8 @@ describe('UX catalog metadata', () => {
     ).toEqual([
       'LucideIcon',
       'DisclosureArrow',
+      'Pane',
+      'SunkenPanel',
       'Toolbar',
       'ToolbarControlGroup',
       'FloatingToolbar',

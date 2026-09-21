@@ -1,0 +1,62 @@
+.kui-pane {
+  --kui-pane-separator-block-start-width: 0;
+  --kui-pane-separator-block-end-width: 0;
+  --kui-pane-separator-inline-start-width: 0;
+  --kui-pane-separator-inline-end-width: 0;
+
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  box-sizing: border-box;
+  border: 0 solid var(--kui-pane-separator-color, var(--kui-color-border));
+  border-block-start-width: var(--kui-pane-separator-block-start-width);
+  border-block-end-width: var(--kui-pane-separator-block-end-width);
+  border-inline-start-width: var(--kui-pane-separator-inline-start-width);
+  border-inline-end-width: var(--kui-pane-separator-inline-end-width);
+  grid-template-areas:
+    "header"
+    "content"
+    "footer";
+  grid-template-rows: auto minmax(0, 1fr) auto;
+}
+
+.kui-pane[data-separator-block-start="true"] {
+  --kui-pane-separator-block-start-width: var(--kui-pane-separator-width, 1px);
+}
+
+.kui-pane[data-separator-block-end="true"] {
+  --kui-pane-separator-block-end-width: var(--kui-pane-separator-width, 1px);
+}
+
+.kui-pane[data-separator-inline-start="true"] {
+  --kui-pane-separator-inline-start-width: var(--kui-pane-separator-width, 1px);
+}
+
+.kui-pane[data-separator-inline-end="true"] {
+  --kui-pane-separator-inline-end-width: var(--kui-pane-separator-width, 1px);
+}
+
+.kui-pane__header,
+.kui-pane__toolbar {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  grid-area: header;
+}
+
+.kui-pane__content {
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  overflow: auto;
+  grid-area: content;
+  overscroll-behavior: contain;
+}
+
+.kui-pane__footer {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  grid-area: footer;
+}

@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url';
 
 import ts from 'typescript';
 
+import { validateCatalogV2 } from './component-catalog-v2-validation.mjs';
+
 const root = fileURLToPath(new URL('..', import.meta.url));
 const [
   artifactSource,
@@ -19,6 +21,10 @@ const [
   extensionExampleSource,
   catalogAuthoringSource,
   catalogAuthoringSchemaSource,
+  catalogV2Source,
+  catalogV2SchemaSource,
+  consumerV2SchemaSource,
+  consumerV2ExampleSource,
 ] = await Promise.all([
   readFile(resolve(root, 'ai/component-catalog.json'), 'utf8'),
   readFile(resolve(root, 'ai/component-catalog.schema.json'), 'utf8'),
@@ -42,6 +48,16 @@ const [
   ),
   readFile(resolve(root, 'ai/catalog-authoring.json'), 'utf8'),
   readFile(resolve(root, 'ai/catalog-authoring.schema.json'), 'utf8'),
+  readFile(resolve(root, 'ai/component-catalog-v2.json'), 'utf8'),
+  readFile(resolve(root, 'ai/component-catalog-v2.schema.json'), 'utf8'),
+  readFile(
+    resolve(root, 'ai/component-catalog-extension-v2.schema.json'),
+    'utf8',
+  ),
+  readFile(
+    resolve(root, 'docs/examples/component-catalog-extension-v2.json'),
+    'utf8',
+  ),
 ]);
 const artifact = JSON.parse(artifactSource);
 const schema = JSON.parse(schemaSource);
@@ -51,6 +67,10 @@ const extensionSchema = JSON.parse(extensionSchemaSource);
 const extensionExample = JSON.parse(extensionExampleSource);
 const catalogAuthoring = JSON.parse(catalogAuthoringSource);
 const catalogAuthoringSchema = JSON.parse(catalogAuthoringSchemaSource);
+const catalogV2 = JSON.parse(catalogV2Source);
+const catalogV2Schema = JSON.parse(catalogV2SchemaSource);
+const consumerV2Schema = JSON.parse(consumerV2SchemaSource);
+const consumerV2Example = JSON.parse(consumerV2ExampleSource);
 const failures = [];
 
 function fail(message) {
@@ -112,7 +132,13 @@ function validateSchema(value, rule, path = '$', activeSchema = schema) {
       value.forEach((item, index) =>
         validateSchema(item, rule.items, `${path}[${index}]`, activeSchema),
       );
-  } else if (rule.type && typeof value !== rule.type) {
+  } else if (rule.type === 'integer' && !Number.isInteger(value)) {
+    fail(`${path} must be an integer`);
+  } else if (
+    rule.type &&
+    rule.type !== 'integer' &&
+    typeof value !== rule.type
+  ) {
     fail(`${path} must be a ${rule.type}`);
   } else if (
     rule.type === 'string' &&
@@ -130,6 +156,21 @@ validateSchema(
   '$extension',
   extensionSchema,
 );
+validateSchema(catalogV2, catalogV2Schema, '$v2', catalogV2Schema);
+validateSchema(
+  consumerV2Example,
+  catalogV2Schema,
+  '$consumerV2',
+  catalogV2Schema,
+);
+for (const failure of validateCatalogV2(catalogV2, { v1: artifact }))
+  fail(`v2: ${failure}`);
+for (const failure of validateCatalogV2(consumerV2Example))
+  fail(`consumer v2 example: ${failure}`);
+if (catalogV2Schema.properties?.schemaVersion?.const !== 2)
+  fail('v2 schema must require schemaVersion 2');
+if (consumerV2Schema.allOf?.[0]?.$ref !== './component-catalog-v2.schema.json')
+  fail('consumer v2 schema must reuse the shipped v2 composition contract');
 validateSchema(
   catalogAuthoring,
   catalogAuthoringSchema,
@@ -174,6 +215,12 @@ if (packageJson.exports['./ai/*'] !== './ai/*')
 if (!readme.includes('[`catalog-authoring.json`](./ai/catalog-authoring.json)'))
   fail('README must link the Catalog authoring discovery artifact');
 if (
+  !readme.includes(
+    '[`component-catalog-v2.json`](./ai/component-catalog-v2.json)',
+  )
+)
+  fail('README must link the v2 composition catalog');
+if (
   !llms.includes(
     '[Machine-readable component catalog](./ai/component-catalog.json)',
   )
@@ -185,6 +232,8 @@ if (
   )
 )
   fail('llms.txt must link the consumer catalog extension schema');
+if (!llms.includes('[Composition catalog v2](./ai/component-catalog-v2.json)'))
+  fail('llms.txt must link the v2 composition catalog');
 
 const entries = artifact.entries ?? [];
 const ids = entries.map((entry) => entry.id);
@@ -417,6 +466,14 @@ for (const entry of entries) {
   for (const key of ['documentation', 'recipe']) {
     await validateDocumentLink(entry.id, key, entry.links[key]);
   }
+}
+for (const entry of catalogV2.entries) {
+  if (entry.provenance.composition !== 'generated-permissive-default')
+    await validateDocumentLink(
+      entry.key,
+      'composition provenance',
+      entry.provenance.composition,
+    );
 }
 await validateDocumentLink(
   'Catalog authoring discovery',

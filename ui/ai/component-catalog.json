@@ -303,10 +303,6 @@
         "kui-content-item--pill",
         "kui-control-cluster",
         "kui-inline-metadata",
-        "kui-pane",
-        "kui-pane__content",
-        "kui-pane__footer",
-        "kui-pane__toolbar",
         "kui-scroll-owner"
       ],
       "publicTokens": [
@@ -323,6 +319,155 @@
         "catalogRoute": "?component=layout",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/layout.md#public-roles-and-tokens"
+      }
+    },
+    {
+      "id": "pane",
+      "name": "Pane",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "An unpadded application column with optional vertical header/footer slots, one scrolling vertical content stack, and independent logical-edge separators.",
+      "uses": [],
+      "purpose": "Organize a sidebar, main area, inspector, or dialog column into fixed vertical header/footer chrome around one scrolling content owner.",
+      "publicExports": [
+        "Pane"
+      ],
+      "useWhen": [
+        "An application column needs shared header, content, and optional footer organization with exactly one scrolling content owner.",
+        "A pane boundary needs an opt-in separator on any combination of logical sides."
+      ],
+      "avoidWhen": [
+        "Do not use Pane as a padded card or add a competing scroll owner around its content slot.",
+        "Do not enable separators merely as decoration; use them only where the pane owns a real boundary."
+      ],
+      "alternatives": [
+        {
+          "id": "layout",
+          "relationship": "composes-with",
+          "when": "Use the layout content-item and control classes inside Pane when children need shared geometry."
+        }
+      ],
+      "appOwns": [
+        "root and content semantics",
+        "accessible labels",
+        "header, content, and footer children",
+        "which logical boundaries show separators",
+        "responsive placement and visibility"
+      ],
+      "variants": [
+        "content only",
+        "header + content",
+        "header + content + footer",
+        "block-start separator",
+        "block-end separator",
+        "inline-start separator",
+        "inline-end separator"
+      ],
+      "accessibility": [
+        "Choose semantic root and content elements that match the region and provide labels for landmark elements.",
+        "Keep fixed header/footer chrome outside the single scrolling content slot so reading and focus order remain coherent."
+      ],
+      "geometry": {
+        "margin": "child",
+        "border": "conditional",
+        "padding": "child",
+        "notes": [
+          "The pane is unpadded; separators are independently opt-in on logical edges and default off."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/pane",
+        "manualCssImport": "@kerfjs/ui/pane.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-pane",
+        "kui-pane__content",
+        "kui-pane__footer",
+        "kui-pane__header",
+        "kui-pane__toolbar"
+      ],
+      "publicTokens": [
+        "--kui-pane-separator-color",
+        "--kui-pane-separator-width"
+      ],
+      "links": {
+        "catalogRoute": "?component=pane",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/layout.md#anatomy"
+      }
+    },
+    {
+      "id": "sunken-panel",
+      "name": "SunkenPanel",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A lowered application surface with one compact inset and a vertical content stack.",
+      "uses": [],
+      "purpose": "Group a vertical list of application content on a visually lowered surface with one owned 8px inset.",
+      "publicExports": [
+        "SunkenPanel"
+      ],
+      "useWhen": [
+        "A main content region or nested work area needs a darker/lowered background and one compact inset around a vertical stack."
+      ],
+      "avoidWhen": [
+        "Do not use it merely to add padding, as a substitute for Pane anatomy, or around children that already own the same outer surface."
+      ],
+      "alternatives": [
+        {
+          "id": "layout",
+          "relationship": "composes-with",
+          "when": "Use layout roles for pane, toolbar, scroll, and ordinary content-stack ownership."
+        }
+      ],
+      "appOwns": [
+        "region semantics and accessible name",
+        "scroll ownership",
+        "child ordering and content"
+      ],
+      "variants": [
+        "unnamed surface",
+        "named region"
+      ],
+      "accessibility": [
+        "Pass ariaLabel only when the surface is a distinct named region; otherwise it remains a non-landmark grouping."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "self",
+        "notes": [
+          "The root owns one 8px inset and vertical gap; children own their borders and internal geometry."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/sunken-panel",
+        "manualCssImport": "@kerfjs/ui/sunken-panel.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-sunken-panel"
+      ],
+      "publicTokens": [
+        "--kui-sunken-panel-background",
+        "--kui-sunken-panel-foreground",
+        "--kui-sunken-panel-gap",
+        "--kui-sunken-panel-padding",
+        "--kui-sunken-panel-radius"
+      ],
+      "links": {
+        "catalogRoute": "?component=sunken-panel",
+        "documentation": "docs/sunken-panel.md",
+        "recipe": "docs/sunken-panel.md#ownership"
       }
     },
     {
@@ -894,8 +1039,7 @@
       "wiring": [],
       "publicClasses": [
         "kui-content",
-        "kui-content-item",
-        "kui-pane"
+        "kui-content-item"
       ],
       "publicTokens": [
         "--kui-layout-content-gap",

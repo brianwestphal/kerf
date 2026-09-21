@@ -1,0 +1,12 @@
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ListItem } from '../../../src/list-item.js';
+
+export function PrivateImportDemo() {
+  return (
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'private-import' }}>
+      <CatalogExample>
+        <ListItem label="Private import" />
+      </CatalogExample>
+    </CatalogExampleStack>
+  );
+}

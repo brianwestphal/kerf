@@ -127,7 +127,8 @@ as a `New` marker.
 | `ListHeader`                                                        | `@kerfjs/ui/list-header`                | `@kerfjs/ui/list-header.css`           |
 | `ListInsetControl`                                                  | `@kerfjs/ui/list-inset-control`         | `@kerfjs/ui/list-inset-control.css`    |
 | `ListInsetText`                                                     | `@kerfjs/ui/list-inset-text`            | `@kerfjs/ui/list-inset-text.css`       |
-| Pane, content, and navigation composition                           | —                                       | `@kerfjs/ui/layout.css`                |
+| `Pane`                                                              | `@kerfjs/ui/pane`                       | `@kerfjs/ui/pane.css`                  |
+| Content and navigation composition                                  | —                                       | `@kerfjs/ui/layout.css`                |
 | `ResizableRegion`                                                   | `@kerfjs/ui/resizable-region`           | `@kerfjs/ui/resizable-region.css`      |
 | `wireResizableRegions`                                              | `@kerfjs/ui/wire-resizable-regions`     | —                                      |
 | `AppTab`                                                            | `@kerfjs/ui/app-tab`                    | `@kerfjs/ui/app-tab.css`               |
@@ -135,6 +136,7 @@ as a `New` marker.
 | `wireTabBars`, `reorderTabs`                                        | `@kerfjs/ui/wire-tab-bars`              | —                                      |
 | `LoadingSpinner`                                                    | `@kerfjs/ui/loading-spinner`            | `@kerfjs/ui/loading-spinner.css`       |
 | `Skeleton`                                                          | `@kerfjs/ui/skeleton`                   | `@kerfjs/ui/skeleton.css`              |
+| `SunkenPanel`                                                       | `@kerfjs/ui/sunken-panel`               | `@kerfjs/ui/sunken-panel.css`          |
 | `Select`                                                            | `@kerfjs/ui/select`                     | `@kerfjs/ui/select.css`                |
 | `SegmentedControl`                                                  | `@kerfjs/ui/segmented-control`          | `@kerfjs/ui/segmented-control.css`     |
 | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | `@kerfjs/ui/token-search-field`         | `@kerfjs/ui/token-search-field.css`    |
@@ -189,6 +191,17 @@ the exact API-signature context, public imports/helpers, and sanctioned metadata
 slot. Keeping this as a companion artifact prevents per-entry selection facts
 from duplicating presentation rules.
 
+Tools that evaluate composition may additionally load
+[`component-catalog-v2.json`](./ai/component-catalog-v2.json). It is a
+deterministic, package-qualified projection of every v1 entry with formal
+parent/context, zone/cardinality, child, state ownership, wiring, responsive,
+layout, accessibility, public-boundary, and stable-diagnostic fields. V1
+remains the selection and delivery compatibility surface. V2 defaults are
+deliberately permissive; only documented objective rules receive an
+authoritative override and enforceable diagnostic. The adjacent schema and
+[`component-catalog-v2.d.ts`](./ai/component-catalog-v2.d.ts) types describe
+the same contract.
+
 Applications and downstream design systems should publish the same facts for
 their own components. Start from the reusable
 [`component-catalog-extension.schema.json`](./ai/component-catalog-extension.schema.json)
@@ -200,6 +213,13 @@ guidance, public hooks, and explicit geometry ownership; then concatenate its
 identity alongside each input when ids could collide. This makes a combined
 tool reason about both sides of a composition using one vocabulary without
 pretending app-local components are `@kerfjs/ui` exports.
+
+Composition-aware consumers use
+[`component-catalog-extension-v2.schema.json`](./ai/component-catalog-extension-v2.schema.json),
+its shipped TypeScript types, and the checked
+[`component-catalog-extension-v2.json`](./docs/examples/component-catalog-extension-v2.json)
+example. Preserve each catalog's package and qualify every identity and
+cross-catalog reference as `package:id`; never merge entries by bare id.
 
 For code generation, pair catalog selection guidance with the checked-in
 [`public-api-signatures-v1.md`](./ai/public-api-signatures-v1.md) declaration

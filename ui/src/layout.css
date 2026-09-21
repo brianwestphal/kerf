@@ -1,24 +1,6 @@
-/* Shared application geometry: unpadded panes containing toolbars and content. */
-.kui-pane {
-  display: grid;
-  min-width: 0;
-  min-height: 0;
-  padding: 0;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-}
+@import "./pane.css";
 
-.kui-pane__toolbar,
-.kui-pane__footer {
-  min-width: 0;
-}
-
-.kui-pane__content {
-  min-width: 0;
-  min-height: 0;
-  padding: 0;
-  overflow: auto;
-  overscroll-behavior: contain;
-}
+/* Shared application content geometry for Pane children and standalone stacks. */
 
 .kui-content {
   display: flex;

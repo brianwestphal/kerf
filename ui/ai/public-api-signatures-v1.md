@@ -604,6 +604,60 @@ declare function SplitView({ id, label, list, detail, compact, detailActive, lis
 export { SplitView, type SplitViewProps, type SplitViewResizable };
 ```
 
+## `@kerfjs/ui/pane`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+/** Logical sides that can show a {@link Pane} separator. */
+type PaneSeparatorSide = 'block-start' | 'block-end' | 'inline-start' | 'inline-end';
+/** Semantic root elements supported by {@link Pane}. */
+type PaneElement = 'article' | 'aside' | 'div' | 'main' | 'section';
+/** Semantic elements supported by the scrolling content slot. */
+type PaneContentElement = 'div' | 'main' | 'nav' | 'section';
+type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-separator-block-start'?: never;
+    'data-separator-block-end'?: never;
+    'data-separator-inline-start'?: never;
+    'data-separator-inline-end'?: never;
+}>;
+interface PaneProps {
+    /** Optional fixed chrome above the scrolling content, arranged vertically. */
+    header?: SafeHtml | readonly SafeHtml[];
+    /** The pane's primary vertical, scrolling content stack. */
+    children?: SafeHtml | readonly SafeHtml[];
+    /** Optional fixed chrome below the scrolling content. */
+    footer?: SafeHtml | readonly SafeHtml[];
+    /** Root semantics. Defaults to `div`. */
+    element?: PaneElement;
+    /** Scrolling content semantics. Defaults to `div`. */
+    contentElement?: PaneContentElement;
+    /** Independent logical-edge separator lines. Defaults to none. */
+    separators?: readonly PaneSeparatorSide[];
+    id?: string;
+    /** Accessible name for a landmark root such as `aside` or `main`. */
+    label?: string;
+    /** Accessible name for a landmark scrolling slot such as `nav`. */
+    contentLabel?: string;
+    className?: string;
+    headerClassName?: string;
+    contentClassName?: string;
+    footerClassName?: string;
+    /** Safe `data-*` metadata; Pane-owned structural attributes remain protected. */
+    rootAttributes?: PaneRootAttributes;
+}
+/**
+ * An unpadded application column with optional fixed header/footer slots and one
+ * scrolling vertical content owner. Separator lines are independently opt-in on
+ * each logical edge, so the same component works as a sidebar, main area,
+ * inspector, or dialog column.
+ */
+declare function Pane({ header, children, footer, element, contentElement, separators, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, }: PaneProps): SafeHtml;
+
+export { Pane, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
+```
+
 ## `@kerfjs/ui/workbench`
 
 ```ts
@@ -1289,6 +1343,27 @@ interface SkeletonProps {
 declare function Skeleton({ width, height, radius, lines, label, className, }: SkeletonProps): kerfjs.SafeHtml;
 
 export { Skeleton, type SkeletonProps };
+```
+
+## `@kerfjs/ui/sunken-panel`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+interface SunkenPanelProps {
+    children?: SafeHtml | readonly SafeHtml[];
+    /** Optional accessible landmark name for a distinct application region. */
+    ariaLabel?: string;
+    className?: string;
+}
+/**
+ * A lowered application surface with one compact inset and a vertical content
+ * stack. The panel owns its background and padding; children own their own
+ * borders and internal geometry.
+ */
+declare function SunkenPanel({ children, ariaLabel, className, }: SunkenPanelProps): SafeHtml;
+
+export { SunkenPanel, type SunkenPanelProps };
 ```
 
 ## `@kerfjs/ui/token-search-field`

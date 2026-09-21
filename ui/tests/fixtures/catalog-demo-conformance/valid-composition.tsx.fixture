@@ -1,0 +1,12 @@
+import { ListItem } from '@kerfjs/ui/list-item';
+import { StateBanner } from '@kerfjs/ui/state-banner';
+
+export function CompositionDemo() {
+  return (
+    <section data-demo="composition" class="fixture-border">
+      <StateBanner tone="info" title="Together">
+        <ListItem label="Nested component" />
+      </StateBanner>
+    </section>
+  );
+}

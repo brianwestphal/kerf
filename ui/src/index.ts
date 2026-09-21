@@ -24,6 +24,13 @@ export {
   type LucideIconProps,
   type LucideNode,
 } from './lucide-icon.js';
+export {
+  Pane,
+  type PaneContentElement,
+  type PaneElement,
+  type PaneProps,
+  type PaneSeparatorSide,
+} from './pane.js';
 export { PanelHeader, type PanelHeaderProps } from './panel-header.js';
 export {
   clampRegionSize,
@@ -49,6 +56,7 @@ export {
   type StateBannerProps,
   type StateBannerTone,
 } from './state-banner.js';
+export { SunkenPanel, type SunkenPanelProps } from './sunken-panel.js';
 export { TabBar, type TabBarProps } from './tab-bar.js';
 export {
   placeTokenSearchCaret,

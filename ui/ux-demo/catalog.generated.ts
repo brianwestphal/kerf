@@ -120,6 +120,30 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "pane",
+    "name": "Pane",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Organize a sidebar, main area, inspector, or dialog column into fixed vertical header/footer chrome around one scrolling content owner.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/pane.tsx",
+    "componentSource": "ui/src/pane.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
+    "id": "sunken-panel",
+    "name": "SunkenPanel",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Group a vertical list of application content on a visually lowered surface with one owned 8px inset.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/sunken-panel.tsx",
+    "componentSource": "ui/src/sunken-panel.tsx",
+    "documentation": "ui/docs/sunken-panel.md"
+  },
+  {
     "id": "toolbar",
     "name": "Toolbar",
     "category": "Structure",

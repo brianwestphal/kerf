@@ -1,0 +1,18 @@
+.kui-sunken-panel {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  padding: var(--kui-sunken-panel-padding, remify(8px));
+  box-sizing: border-box;
+  border-radius: var(
+    --kui-sunken-panel-radius,
+    var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
+  );
+  color: var(--kui-sunken-panel-foreground, var(--kui-color-text));
+  background: var(
+    --kui-sunken-panel-background,
+    var(--kui-color-surface-lowered)
+  );
+  flex-direction: column;
+  gap: var(--kui-sunken-panel-gap, remify(8px));
+}

@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-catalog-extension-v2.schema.json",
+  "title": "Kerf UI consumer composition catalog extension v2",
+  "allOf": [{ "$ref": "./component-catalog-v2.schema.json" }],
+  "description": "Consumer catalogs use the v2 entry contract with their own non-empty package identity; keys are always package:id."
+}

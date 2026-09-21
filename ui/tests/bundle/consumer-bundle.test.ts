@@ -352,6 +352,20 @@ describe('consumer bundle boundaries', () => {
     expect(css).toContain('var(--kui-layout-inline-margin, 0.5rem)');
   });
 
+  it('ships Pane through an isolated styled browser subpath', async () => {
+    const result = await bundle(
+      "import { Pane } from '@kerfjs/ui/pane'; console.log(String(Pane({ children: 'Content' })));",
+    );
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const css = output(result, '.css');
+    expect(inputs).toContain('dist/browser/pane.js');
+    expect(inputs).toContain('dist/styles/pane.css');
+    expect(inputs).not.toContain('dist/styles/layout.css');
+    expect(css).toContain('.kui-pane');
+    expect(css).toContain('[data-separator-inline-end=true]');
+    expect(css).not.toContain('.kui-content-item');
+  });
+
   it('declares only style delivery and custom-element registration as side effects', async () => {
     const pkg = JSON.parse(
       await readFile(new URL('../../package.json', import.meta.url), 'utf8'),
@@ -425,6 +439,12 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./split-view.css']).toBe(
       './dist/styles/split-view.css',
     );
+    expect(pkg.exports['./pane']).toMatchObject({
+      types: './dist/pane.d.ts',
+      browser: './dist/browser/pane.js',
+      import: './dist/pane.js',
+    });
+    expect(pkg.exports['./pane.css']).toBe('./dist/styles/pane.css');
     expect(pkg.exports['./workbench']).toMatchObject({
       types: './dist/workbench.d.ts',
       import: './dist/workbench.js',
@@ -454,6 +474,14 @@ describe('consumer bundle boundaries', () => {
     );
     expect(pkg.exports['./token-search-field.css']).toBe(
       './dist/styles/token-search-field.css',
+    );
+    expect(pkg.exports['./sunken-panel']).toMatchObject({
+      types: './dist/sunken-panel.d.ts',
+      browser: './dist/browser/sunken-panel.js',
+      import: './dist/sunken-panel.js',
+    });
+    expect(pkg.exports['./sunken-panel.css']).toBe(
+      './dist/styles/sunken-panel.css',
     );
     expect(pkg.files).not.toContain('src/*.css');
   });

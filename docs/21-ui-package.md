@@ -272,6 +272,16 @@ browser/CSS/registration paths, relationships, Web Awesome's installed custom
 elements manifest, AI coverage, renderer routes, public CSS hooks, and links.
 The package's JavaScript and side-effect boundaries do not change.
 
+`ui/ai/component-catalog-v2.json` is a deterministic composition projection
+over the v1 inventory. It gives every entry a package-qualified identity and
+formal parent/context, zone/cardinality, child, state, wiring, responsive,
+layout, accessibility, styling-boundary, diagnostic, and provenance sections.
+Permissive defaults avoid invented restrictions; documented objective rules
+live in a small override registry. The v2 schema and consumer types ship beside
+the artifact, while the matching consumer extension schema/example preserves
+application package identity. The catalog gate checks v1/v2 completeness and
+drift plus adversarial invalid contracts.
+
 Each catalog entry's `publicClasses` array is the exact stable CSS-anatomy
 boundary. Applications should prefer an equivalent component prop or semantic
 token; composition-specific selectors may join cataloged public classes, but

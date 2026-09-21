@@ -18,6 +18,32 @@ package delivery paths, Web Awesome's installed manifest, AI guidance, and
 documentation links. Nuanced prose in this contract and the selection guide
 remains authored rather than generated.
 
+### Composition catalog v2
+
+[`component-catalog-v2.json`](../ai/component-catalog-v2.json) adds a formal,
+machine-evaluable composition layer without changing the v1 selection and
+delivery contract. Every v1 entry projects once, in order, under the stable
+qualified key `package:id`. Each v2 entry explicitly covers parents/contexts,
+named zones and cardinality, child concepts, state ownership, required wiring,
+responsive ownership, layout and geometry, accessibility obligations, public
+CSS boundaries, diagnostics, and provenance.
+
+The generator starts with permissive defaults. An `any` mode records that the
+catalog has no defensible prohibition; it does not claim every composition is
+recommended. Objective rules live in
+`component-catalog-v2-overrides.json` and may carry stable `KUI-C###`
+diagnostics. A tool reports a diagnostic only after proving its exact `when`
+condition. Subjective choice, product policy, and visual taste remain prose.
+
+V1 consumers continue unchanged. V2 consumers read v1 for selection/delivery
+and v2 for composition. `npm run catalog:sync` projects every new component,
+recipe, and supported Web Awesome entry, and the completeness gate prevents
+silent omissions. Downstream catalogs use the v2 extension schema and types,
+retain their own package identity, and qualify cross-catalog references. See
+the checked
+[`component-catalog-extension-v2.json`](./examples/component-catalog-extension-v2.json)
+application-owned example.
+
 Catalog detail footers use one standard resource vocabulary and order. Build
 them with `catalogResources()` from `@kerfjs/ui/catalog-resources`: `Demo source`
 first, optional `Component source` and `Design template`, then `Guidance`.
@@ -141,9 +167,12 @@ separator with a compact grip that appears on hover or keyboard focus. Override
 `--kui-resizable-region-handle-active-color` on a region when its containing
 surface needs a different contrast level.
 
-`@kerfjs/ui/layout.css` defines one structural model for sidebars, main areas,
-inspectors, and dialogs. `.kui-pane` is unpadded and contains an optional
-toolbar, one scrolling `.kui-pane__content`, and an optional footer.
+`Pane` defines one structural model for sidebars, main areas, inspectors, and
+dialogs. Its `.kui-pane` root is unpadded and contains an optional vertical
+header, one scrolling vertical `.kui-pane__content`, and an optional footer.
+Logical-edge separator lines are independently opt-in and default off.
+`@kerfjs/ui/layout.css` retains the pane roles and supplies the related content
+geometry classes.
 `.kui-content` gives major children 24px vertical separation.
 `.kui-content-item` gives one child 8px inline margin, a real 1px border,
 8px padding, and 12px corners; border and background may be transparent without

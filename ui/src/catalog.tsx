@@ -12,6 +12,7 @@ import { filterDataAttributes } from './extension-attributes.js';
 import { ListHeader } from './list-header.js';
 import { ListItem } from './list-item.js';
 import { LucideIcon } from './lucide-icon.js';
+import { Pane } from './pane.js';
 import { Toolbar } from './toolbar.js';
 import { ToolbarControlGroup } from './toolbar-control-group.js';
 
@@ -199,49 +200,53 @@ export function Catalog({
         geometryOverlay === undefined ? undefined : String(geometryOverlay)
       }
     >
-      <aside
-        class="kui-catalog__sidebar kui-pane"
-        aria-label={`${brand.title} catalog`}
-      >
-        <header class="kui-catalog__brand kui-pane__toolbar">
-          <Toolbar
-            label={`${brand.title} catalog header`}
-            divider={false}
-            leading={
-              <ToolbarControlGroup
-                appearance="borderless"
-                className="kui-catalog__identity"
-              >
-                {brand.logoUrl ? (
-                  <img class="kui-catalog__mark" src={brand.logoUrl} alt="" />
-                ) : (
-                  <></>
-                )}
-                <h1>{brand.title}</h1>
-              </ToolbarControlGroup>
-            }
-            trailing={
-              <ToolbarControlGroup appearance="borderless" single>
-                <button
-                  type="button"
-                  data-action={toggleSidebarAction}
-                  aria-label={`Collapse ${brand.title} catalog`}
+      <Pane
+        element="aside"
+        className="kui-catalog__sidebar"
+        label={`${brand.title} catalog`}
+        contentElement="nav"
+        contentLabel={`${brand.title} components`}
+        separators={['inline-end']}
+        headerClassName="kui-catalog__brand"
+        header={
+          <>
+            <Toolbar
+              label={`${brand.title} catalog header`}
+              divider={false}
+              leading={
+                <ToolbarControlGroup
+                  appearance="borderless"
+                  className="kui-catalog__identity"
                 >
-                  <LucideIcon icon={PanelLeftClose} name="panel-left-close" />
-                </button>
-              </ToolbarControlGroup>
-            }
-          />
-          {brand.subtitle ? (
-            <p class="kui-catalog__subtitle">{brand.subtitle}</p>
-          ) : (
-            <></>
-          )}
-        </header>
-        <nav
-          class="kui-pane__content kui-content"
-          aria-label={`${brand.title} components`}
-        >
+                  {brand.logoUrl ? (
+                    <img class="kui-catalog__mark" src={brand.logoUrl} alt="" />
+                  ) : (
+                    <></>
+                  )}
+                  <h1>{brand.title}</h1>
+                </ToolbarControlGroup>
+              }
+              trailing={
+                <ToolbarControlGroup appearance="borderless" single>
+                  <button
+                    type="button"
+                    data-action={toggleSidebarAction}
+                    aria-label={`Collapse ${brand.title} catalog`}
+                  >
+                    <LucideIcon icon={PanelLeftClose} name="panel-left-close" />
+                  </button>
+                </ToolbarControlGroup>
+              }
+            />
+            {brand.subtitle ? (
+              <p class="kui-catalog__subtitle">{brand.subtitle}</p>
+            ) : (
+              <></>
+            )}
+          </>
+        }
+      >
+        <>
           {sections.map((section) => (
             <section class="kui-catalog__group">
               <ListHeader label={section.category} />
@@ -306,162 +311,175 @@ export function Catalog({
           ) : (
             <></>
           )}
-          {sidebarFooter}
-        </nav>
-      </aside>
-      <article class="kui-catalog__detail kui-pane">
-        <header class="kui-catalog__header kui-pane__toolbar">
-          <Toolbar
-            label={`${name} header`}
-            divider={false}
-            leading={
-              <>
-                {collapsed ? (
-                  <ToolbarControlGroup appearance="borderless" single>
-                    <button
-                      type="button"
-                      data-action={toggleSidebarAction}
-                      aria-label={`Expand ${brand.title} catalog`}
-                    >
-                      <LucideIcon icon={PanelLeftOpen} name="panel-left-open" />
-                    </button>
-                  </ToolbarControlGroup>
-                ) : (
-                  <></>
-                )}
-                <ToolbarControlGroup
-                  appearance="borderless"
-                  className="kui-catalog__title"
-                >
-                  <h2>{name}</h2>
-                </ToolbarControlGroup>
-              </>
-            }
-            trailing={
-              <div class="kui-catalog__header-actions">
-                {headerActions}
-                {theme ? (
+          {sidebarFooter ?? <></>}
+        </>
+      </Pane>
+      <Pane
+        element="article"
+        className="kui-catalog__detail"
+        contentElement="section"
+        contentLabel={`${name} preview`}
+        contentClassName="kui-catalog__stage"
+        headerClassName="kui-catalog__header"
+        header={
+          <>
+            <Toolbar
+              label={`${name} header`}
+              divider={false}
+              leading={
+                <>
+                  {collapsed ? (
+                    <ToolbarControlGroup appearance="borderless" single>
+                      <button
+                        type="button"
+                        data-action={toggleSidebarAction}
+                        aria-label={`Expand ${brand.title} catalog`}
+                      >
+                        <LucideIcon
+                          icon={PanelLeftOpen}
+                          name="panel-left-open"
+                        />
+                      </button>
+                    </ToolbarControlGroup>
+                  ) : (
+                    <></>
+                  )}
                   <ToolbarControlGroup
-                    className="kui-catalog__settings"
-                    label="Catalog display"
+                    appearance="borderless"
+                    className="kui-catalog__title"
                   >
-                    <button
-                      type="button"
-                      data-action={toggleThemeAction}
-                      aria-label={`Use ${nextTheme} theme`}
-                      data-theme-preview={theme}
-                    >
-                      {nextTheme === 'dark' ? (
-                        <LucideIcon icon={Moon} name="moon" />
-                      ) : (
-                        <LucideIcon icon={Sun} name="sun" />
-                      )}
-                      <span>{nextTheme === 'dark' ? 'Dark' : 'Light'}</span>
-                    </button>
+                    <h2>{name}</h2>
                   </ToolbarControlGroup>
-                ) : (
-                  <></>
-                )}
-              </div>
-            }
-          />
-          {selected?.description ? (
-            <p class="kui-catalog__description kui-content-item">
-              {selected.description}
-            </p>
-          ) : (
-            <></>
-          )}
-        </header>
-        <section
-          class="kui-catalog__stage kui-pane__content"
-          aria-label={`${name} preview`}
-        >
-          <div class="kui-catalog__canvas">
-            {content}
-            {geometryOverlay !== undefined ? (
-              <div
-                class="kui-catalog__geometry-overlay"
-                data-catalog-geometry-overlay
-                data-morph-skip-children
-                aria-hidden="true"
-              />
+                </>
+              }
+              trailing={
+                <div class="kui-catalog__header-actions">
+                  {headerActions}
+                  {theme ? (
+                    <ToolbarControlGroup
+                      className="kui-catalog__settings"
+                      label="Catalog display"
+                    >
+                      <button
+                        type="button"
+                        data-action={toggleThemeAction}
+                        aria-label={`Use ${nextTheme} theme`}
+                        data-theme-preview={theme}
+                      >
+                        {nextTheme === 'dark' ? (
+                          <LucideIcon icon={Moon} name="moon" />
+                        ) : (
+                          <LucideIcon icon={Sun} name="sun" />
+                        )}
+                        <span>{nextTheme === 'dark' ? 'Dark' : 'Light'}</span>
+                      </button>
+                    </ToolbarControlGroup>
+                  ) : (
+                    <></>
+                  )}
+                </div>
+              }
+            />
+            {selected?.description ? (
+              <p class="kui-catalog__description kui-content-item">
+                {selected.description}
+              </p>
             ) : (
               <></>
             )}
-          </div>
-        </section>
-        <footer class="kui-catalog__footer kui-pane__footer">
-          {status ? <div class="kui-catalog__status">{status}</div> : <></>}
-          <Toolbar
-            label={`${name} resources`}
-            divider={false}
-            leading={
-              resources.length > 0 ? (
-                <nav
-                  class="kui-catalog__resources"
-                  aria-label={`${name} resources`}
-                >
-                  <ToolbarControlGroup
-                    className="kui-catalog__resource-group"
-                    label={`${name} resources`}
+          </>
+        }
+        footerClassName="kui-catalog__footer"
+        footer={
+          <>
+            {status ? <div class="kui-catalog__status">{status}</div> : <></>}
+            <Toolbar
+              label={`${name} resources`}
+              divider={false}
+              leading={
+                resources.length > 0 ? (
+                  <nav
+                    class="kui-catalog__resources"
+                    aria-label={`${name} resources`}
                   >
-                    {resources.map((resource) => (
-                      <a
-                        class="kui-catalog__resource"
-                        href={resource.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`${name}: ${resource.label} (opens in new tab)`}
-                      >
-                        <LucideIcon icon={ExternalLink} name="external-link" />
-                        <span>{resource.label}</span>
-                        {resource.detail ? (
-                          <code>{resource.detail}</code>
-                        ) : (
-                          <></>
-                        )}
-                      </a>
-                    ))}
-                  </ToolbarControlGroup>
-                </nav>
-              ) : (
-                <></>
-              )
-            }
-            trailing={
-              related.length > 0 ? (
-                <div class="kui-catalog__related" data-catalog-related>
-                  <ToolbarControlGroup
-                    single
-                    className="kui-catalog__related-group"
-                    label="Related entries"
-                  >
-                    <wa-dropdown
-                      class="kui-catalog__related-menu"
-                      placement="top-end"
-                      data-key={`kui-catalog-related-${active}`}
-                      data-morph-skip-children
+                    <ToolbarControlGroup
+                      className="kui-catalog__resource-group"
+                      label={`${name} resources`}
                     >
-                      <wa-button slot="trigger" appearance="plain" with-caret>
-                        <span class="kui-catalog__related-trigger">
-                          <LucideIcon icon={Waypoints} name="waypoints" />
-                          <span class="kui-catalog__related-label">
-                            Component
+                      {resources.map((resource) => (
+                        <a
+                          class="kui-catalog__resource"
+                          href={resource.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`${name}: ${resource.label} (opens in new tab)`}
+                        >
+                          <LucideIcon
+                            icon={ExternalLink}
+                            name="external-link"
+                          />
+                          <span>{resource.label}</span>
+                          {resource.detail ? (
+                            <code>{resource.detail}</code>
+                          ) : (
+                            <></>
+                          )}
+                        </a>
+                      ))}
+                    </ToolbarControlGroup>
+                  </nav>
+                ) : (
+                  <></>
+                )
+              }
+              trailing={
+                related.length > 0 ? (
+                  <div class="kui-catalog__related" data-catalog-related>
+                    <ToolbarControlGroup
+                      single
+                      className="kui-catalog__related-group"
+                      label="Related entries"
+                    >
+                      <wa-dropdown
+                        class="kui-catalog__related-menu"
+                        placement="top-end"
+                        data-key={`kui-catalog-related-${active}`}
+                        data-morph-skip-children
+                      >
+                        <wa-button slot="trigger" appearance="plain" with-caret>
+                          <span class="kui-catalog__related-trigger">
+                            <LucideIcon icon={Waypoints} name="waypoints" />
+                            <span class="kui-catalog__related-label">
+                              Component
+                            </span>
                           </span>
-                        </span>
-                      </wa-button>
-                      {relatedMenuItems(related, selectAction)}
-                    </wa-dropdown>
-                  </ToolbarControlGroup>
-                </div>
-              ) : (
-                <></>
-              )
-            }
-          />
-        </footer>
-      </article>
+                        </wa-button>
+                        {relatedMenuItems(related, selectAction)}
+                      </wa-dropdown>
+                    </ToolbarControlGroup>
+                  </div>
+                ) : (
+                  <></>
+                )
+              }
+            />
+          </>
+        }
+      >
+        <div class="kui-catalog__canvas">
+          {content}
+          {geometryOverlay !== undefined ? (
+            <div
+              class="kui-catalog__geometry-overlay"
+              data-catalog-geometry-overlay
+              data-morph-skip-children
+              aria-hidden="true"
+            />
+          ) : (
+            <></>
+          )}
+        </div>
+      </Pane>
     </main>
   );
 }

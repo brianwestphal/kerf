@@ -1,0 +1,7 @@
+export function ExceptionalDemo() {
+  return (
+    <div data-demo="exceptional" data-catalog-geometry-overlay-skip>
+      Purpose-built stage geometry
+    </div>
+  );
+}

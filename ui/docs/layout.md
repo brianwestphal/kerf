@@ -1,26 +1,39 @@
 # Pane and content layout
 
-Import `@kerfjs/ui/layout.css` for the shared geometry used by sidebars, main
-areas, inspectors, and dialogs. The vocabulary deliberately describes structure
-rather than location: the same pane can be placed anywhere.
+Import `Pane` from `@kerfjs/ui/pane`. Browser-aware bundlers receive its CSS
+automatically; other consumers can import `@kerfjs/ui/pane.css`. Import
+`@kerfjs/ui/layout.css` as well when using the related content-item and control
+layout classes. The vocabulary deliberately describes structure rather than
+location: the same pane can be placed anywhere.
 
 ## Anatomy
 
 ```tsx
-<aside class="kui-pane">
-  <div class="kui-pane__toolbar"><Toolbar label="Workspace" ... /></div>
-  <div class="kui-pane__content kui-content">
+<Pane
+  element="aside"
+  label="Workspace"
+  contentElement="nav"
+  contentLabel="Workspace pages"
+  separators={["inline-end"]}
+  header={<Toolbar label="Workspace" ... />}
+  footer={<Toolbar label="Actions" ... />}
+>
     <section>...</section>
     <section>...</section>
-  </div>
-  <footer class="kui-pane__footer"><Toolbar label="Actions" ... /></footer>
-</aside>
+</Pane>
 ```
 
-`.kui-pane` has no padding. It reserves rows for an optional toolbar, one
-scrolling content area, and an optional footer. A main area or dialog often
-omits the footer; a navigation pane commonly uses all three. Fixed chrome stays
-outside `.kui-pane__content`, which is the pane's scroll owner.
+`Pane` has no padding. It reserves rows for an optional vertical header, one
+scrolling vertical content area, and an optional footer. A header may contain a
+top toolbar followed by secondary toolbar or status rows. A main area or dialog
+often omits the footer; a navigation pane commonly uses all three. Fixed chrome
+stays outside `.kui-pane__content`, which is the pane's only scroll owner.
+
+Pass any combination of logical sides to `separators`: `block-start`,
+`block-end`, `inline-start`, and `inline-end`. Every line is off by default and
+each enabled side uses `--kui-pane-separator-width` (1px) and
+`--kui-pane-separator-color` (`--kui-color-border`). Logical sides keep pane
+boundaries correct in both left-to-right and right-to-left layouts.
 
 `.kui-content` is a vertical stack with a 24px gap between major children.
 Sections may contain adjacent `ListItem` rows without adding another major gap.
@@ -51,16 +64,17 @@ semantic status.
 
 ## Public roles and tokens
 
-| Need                                      | Class                     | Token / default                       |
-| ----------------------------------------- | ------------------------- | ------------------------------------- |
-| Unpadded toolbar/content/footer structure | `.kui-pane`               | —                                     |
-| Scrolling pane content                    | `.kui-pane__content`      | —                                     |
-| Major vertical rhythm                     | `.kui-content`            | `--kui-layout-content-gap: 24px`      |
-| Self-contained child geometry             | `.kui-content-item`       | 8px margin + 1px border + 8px padding |
-| Pill child                                | `.kui-content-item--pill` | `--kui-layout-pill-radius: 22px`      |
-| Related controls                          | `.kui-control-cluster`    | `--kui-layout-control-gap: 8px`       |
-| Inline metadata                           | `.kui-inline-metadata`    | `--kui-layout-metadata-gap: 4px`      |
-| Explicit scroll owner outside a pane      | `.kui-scroll-owner`       | `overflow: auto`                      |
+| Need                                     | Class                     | Token / default                       |
+| ---------------------------------------- | ------------------------- | ------------------------------------- |
+| Unpadded header/content/footer structure | `Pane`, `.kui-pane`       | —                                     |
+| Scrolling pane content                   | `.kui-pane__content`      | —                                     |
+| Optional logical-edge separators         | `Pane.separators`         | `--kui-pane-separator-width: 1px`     |
+| Major vertical rhythm                    | `.kui-content`            | `--kui-layout-content-gap: 24px`      |
+| Self-contained child geometry            | `.kui-content-item`       | 8px margin + 1px border + 8px padding |
+| Pill child                               | `.kui-content-item--pill` | `--kui-layout-pill-radius: 22px`      |
+| Related controls                         | `.kui-control-cluster`    | `--kui-layout-control-gap: 8px`       |
+| Inline metadata                          | `.kui-inline-metadata`    | `--kui-layout-metadata-gap: 4px`      |
+| Explicit scroll owner outside a pane     | `.kui-scroll-owner`       | `overflow: auto`                      |
 
 The component layer applies the same contract to `Toolbar`, `ListHeader`,
 `ListItem`, `PanelHeader`, `StateBanner`, `ValueTable`,

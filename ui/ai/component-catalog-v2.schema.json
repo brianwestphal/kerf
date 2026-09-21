@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-catalog-v2.schema.json",
+  "title": "Kerf UI composition catalog v2",
+  "type": "object",
+  "required": ["schemaVersion", "package", "compatibility", "entries"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 2 },
+    "package": { "type": "string", "minLength": 1 },
+    "compatibility": {
+      "type": "object",
+      "required": ["v1Catalog", "identity"],
+      "properties": {
+        "v1Catalog": { "type": "string", "minLength": 1 },
+        "identity": { "const": "package:id" }
+      },
+      "additionalProperties": false
+    },
+    "entries": { "type": "array", "items": { "$ref": "#/$defs/entry" } }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "stringList": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "cardinality": {
+      "type": "object",
+      "required": ["min", "max"],
+      "properties": {
+        "min": { "type": "integer", "minimum": 0 },
+        "max": {
+          "anyOf": [
+            { "type": "integer", "minimum": 1 },
+            { "const": "unbounded" }
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "zone": {
+      "type": "object",
+      "required": ["id", "accepts", "cardinality", "exclusiveWith"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "accepts": { "$ref": "#/$defs/stringList" },
+        "cardinality": { "$ref": "#/$defs/cardinality" },
+        "exclusiveWith": { "$ref": "#/$defs/stringList" }
+      },
+      "additionalProperties": false
+    },
+    "state": {
+      "type": "object",
+      "required": ["id", "owner", "required"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "owner": { "enum": ["application", "controlled", "component"] },
+        "required": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "diagnostic": {
+      "type": "object",
+      "required": ["id", "severity", "when", "message"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^KUI-C[0-9]{3}$" },
+        "severity": { "enum": ["error", "warning"] },
+        "when": { "type": "string", "minLength": 1 },
+        "message": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "entry": {
+      "type": "object",
+      "required": [
+        "key",
+        "package",
+        "id",
+        "name",
+        "kind",
+        "source",
+        "parents",
+        "contexts",
+        "zones",
+        "children",
+        "state",
+        "wiring",
+        "responsive",
+        "layout",
+        "accessibility",
+        "boundaries",
+        "diagnostics",
+        "provenance"
+      ],
+      "properties": {
+        "key": { "type": "string", "minLength": 3 },
+        "package": { "type": "string", "minLength": 1 },
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "kind": { "enum": ["component", "composition", "recipe"] },
+        "source": { "type": "string", "minLength": 1 },
+        "parents": {
+          "type": "object",
+          "required": ["mode", "entries"],
+          "properties": {
+            "mode": { "enum": ["any", "root", "listed"] },
+            "entries": { "$ref": "#/$defs/stringList" }
+          },
+          "additionalProperties": false
+        },
+        "contexts": { "$ref": "#/$defs/stringList" },
+        "zones": { "type": "array", "items": { "$ref": "#/$defs/zone" } },
+        "children": {
+          "type": "object",
+          "required": ["mode", "concepts", "requiredConcepts"],
+          "properties": {
+            "mode": { "enum": ["any", "none", "listed"] },
+            "concepts": { "$ref": "#/$defs/stringList" },
+            "requiredConcepts": { "$ref": "#/$defs/stringList" }
+          },
+          "additionalProperties": false
+        },
+        "state": { "type": "array", "items": { "$ref": "#/$defs/state" } },
+        "wiring": {
+          "type": "object",
+          "required": ["required", "helpers", "obligations"],
+          "properties": {
+            "required": { "type": "boolean" },
+            "helpers": { "$ref": "#/$defs/stringList" },
+            "obligations": { "$ref": "#/$defs/stringList" }
+          },
+          "additionalProperties": false
+        },
+        "responsive": {
+          "type": "object",
+          "required": ["owner", "behaviors"],
+          "properties": {
+            "owner": {
+              "enum": ["application", "component", "shared", "not-applicable"]
+            },
+            "behaviors": { "$ref": "#/$defs/stringList" }
+          },
+          "additionalProperties": false
+        },
+        "layout": {
+          "type": "object",
+          "required": ["roles", "geometry"],
+          "properties": {
+            "roles": { "$ref": "#/$defs/stringList" },
+            "geometry": {
+              "type": "object",
+              "required": ["margin", "border", "padding"],
+              "properties": {
+                "margin": {
+                  "enum": [
+                    "self",
+                    "parent",
+                    "child",
+                    "none",
+                    "conditional",
+                    "composed"
+                  ]
+                },
+                "border": {
+                  "enum": [
+                    "self",
+                    "parent",
+                    "child",
+                    "none",
+                    "conditional",
+                    "composed"
+                  ]
+                },
+                "padding": {
+                  "enum": [
+                    "self",
+                    "parent",
+                    "child",
+                    "none",
+                    "conditional",
+                    "composed"
+                  ]
+                },
+                "notes": { "$ref": "#/$defs/stringList" }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        "accessibility": {
+          "type": "object",
+          "required": ["obligations"],
+          "properties": { "obligations": { "$ref": "#/$defs/stringList" } },
+          "additionalProperties": false
+        },
+        "boundaries": {
+          "type": "object",
+          "required": ["publicClasses", "publicTokens"],
+          "properties": {
+            "publicClasses": { "$ref": "#/$defs/stringList" },
+            "publicTokens": { "$ref": "#/$defs/stringList" }
+          },
+          "additionalProperties": false
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/diagnostic" }
+        },
+        "provenance": {
+          "type": "object",
+          "required": ["selection", "composition"],
+          "properties": {
+            "selection": { "type": "string", "minLength": 1 },
+            "composition": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

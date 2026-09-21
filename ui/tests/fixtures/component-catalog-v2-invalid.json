@@ -1,0 +1,58 @@
+[
+  {
+    "name": "unqualified identity",
+    "path": "entries.0.key",
+    "value": "lucide-icon",
+    "message": "key must equal package:id"
+  },
+  {
+    "name": "duplicate identity",
+    "path": "entries.1.key",
+    "copyFrom": "entries.0.key",
+    "message": "key must be unique"
+  },
+  {
+    "name": "empty listed parents",
+    "path": "entries.0.parents",
+    "value": { "mode": "listed", "entries": [] },
+    "message": "listed parents require"
+  },
+  {
+    "name": "impossible cardinality",
+    "path": "entries.0.zones",
+    "value": [
+      {
+        "id": "content",
+        "accepts": ["any"],
+        "cardinality": { "min": 2, "max": 1 },
+        "exclusiveWith": []
+      }
+    ],
+    "message": "cardinality.max"
+  },
+  {
+    "name": "required wiring without helper",
+    "path": "entries.0.wiring",
+    "value": { "required": true, "helpers": [], "obligations": [] },
+    "message": "required wiring must name"
+  },
+  {
+    "name": "unstable diagnostic id",
+    "path": "entries.0.diagnostics",
+    "value": [
+      {
+        "id": "toolbar-child",
+        "severity": "error",
+        "when": "always",
+        "message": "bad"
+      }
+    ],
+    "message": "invalid diagnostic id"
+  },
+  {
+    "name": "missing provenance",
+    "path": "entries.0.provenance",
+    "value": { "selection": "", "composition": "" },
+    "message": "must declare selection"
+  }
+]

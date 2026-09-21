@@ -1,0 +1,9 @@
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+
+export function EmptyDemo() {
+  return (
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'empty' }}>
+      <CatalogExample label="Nothing here"></CatalogExample>
+    </CatalogExampleStack>
+  );
+}

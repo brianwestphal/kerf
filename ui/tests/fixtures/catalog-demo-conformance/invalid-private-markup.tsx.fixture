@@ -1,0 +1,11 @@
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+
+export function PrivateMarkupDemo() {
+  return (
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'private-markup' }}>
+      <CatalogExample>
+        <p class="kui-catalog-example__note">Copied private structure</p>
+      </CatalogExample>
+    </CatalogExampleStack>
+  );
+}

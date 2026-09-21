@@ -1,0 +1,23 @@
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ListItem } from '@kerfjs/ui/list-item';
+
+export function FocusedDemo() {
+  return (
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'focused' }}>
+      <CatalogExample label="Nested specimen">
+        <div
+          class="fixture-margin fixture-border"
+          style="margin: 8px; border: 1px solid transparent"
+        >
+          <ListItem label="Parent" />
+          <ListItem label="Nested child" />
+        </div>
+      </CatalogExample>
+      <CatalogExample
+        rootAttributes={{ 'data-catalog-geometry-overlay-skip': '' }}
+      >
+        <p>Explanatory specimen intentionally skipped.</p>
+      </CatalogExample>
+    </CatalogExampleStack>
+  );
+}

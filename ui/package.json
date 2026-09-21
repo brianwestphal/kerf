@@ -145,6 +145,11 @@
       "types": "./dist/split-view.d.ts",
       "import": "./dist/split-view.js"
     },
+    "./pane": {
+      "types": "./dist/pane.d.ts",
+      "browser": "./dist/browser/pane.js",
+      "import": "./dist/pane.js"
+    },
     "./workbench": {
       "types": "./dist/workbench.d.ts",
       "import": "./dist/workbench.js"
@@ -179,6 +184,11 @@
       "types": "./dist/skeleton.d.ts",
       "browser": "./dist/browser/skeleton.js",
       "import": "./dist/skeleton.js"
+    },
+    "./sunken-panel": {
+      "types": "./dist/sunken-panel.d.ts",
+      "browser": "./dist/browser/sunken-panel.js",
+      "import": "./dist/sunken-panel.js"
     },
     "./segmented-control": {
       "types": "./dist/segmented-control.d.ts",
@@ -247,12 +257,14 @@
     "./tab-bar.css": "./dist/styles/tab-bar.css",
     "./nav-stack.css": "./dist/styles/nav-stack.css",
     "./split-view.css": "./dist/styles/split-view.css",
+    "./pane.css": "./dist/styles/pane.css",
     "./workbench.css": "./dist/styles/workbench.css",
     "./collapsible-panel.css": "./dist/styles/collapsible-panel.css",
     "./tab-scaffold.css": "./dist/styles/tab-scaffold.css",
     "./loading-spinner.css": "./dist/styles/loading-spinner.css",
     "./select.css": "./dist/styles/select.css",
     "./skeleton.css": "./dist/styles/skeleton.css",
+    "./sunken-panel.css": "./dist/styles/sunken-panel.css",
     "./segmented-control.css": "./dist/styles/segmented-control.css",
     "./token-search-field.css": "./dist/styles/token-search-field.css",
     "./state-banner.css": "./dist/styles/state-banner.css",
@@ -279,8 +291,10 @@
     "format": "prettier --write . --ignore-unknown",
     "format:css": "prettier --write \"src/**/*.css\" \"ux-demo/**/*.css\"",
     "check:format": "prettier --check . --ignore-unknown",
-    "catalog:sync": "node scripts/sync-component-catalog.mjs",
-    "check:catalog": "node scripts/sync-component-catalog.mjs --check && node scripts/check-component-catalog.mjs",
+    "catalog:sync": "node scripts/sync-component-catalog.mjs && node scripts/sync-component-catalog-v2.mjs",
+    "catalog:v2:sync": "node scripts/sync-component-catalog-v2.mjs",
+    "check:catalog": "node scripts/sync-component-catalog.mjs --check && node scripts/sync-component-catalog-v2.mjs --check && node scripts/check-component-catalog.mjs",
+    "check:demo-conformance": "node scripts/check-catalog-demo-conformance.mjs",
     "check:recipes": "node scripts/check-recipes.mjs",
     "check:ai-regressions": "node scripts/check-ai-regressions.mjs && node scripts/audit-ai-regression-results.mjs",
     "check:ai-signatures": "node scripts/sync-ai-public-signatures.mjs --check",
@@ -298,7 +312,7 @@
     "test:bundle": "npm run build && vitest run tests/bundle",
     "test:consumer-types": "npm run build && node node_modules/typescript7/bin/tsc -p tests/consumer-types/webawesome/tsconfig.json",
     "test:e2e": "npm run demo:build && playwright test",
-    "check": "npm run check:catalog && npm run check:recipes && npm run check:guidance && npm run check:ai-regressions && npm run lint && npm run typecheck && npm test && npm run test:consumer-types && npm run check:ai-signatures && npm run demo:build && npm run check:design-templates && npm pack --dry-run",
+    "check": "npm run check:catalog && npm run check:demo-conformance && npm run check:recipes && npm run check:guidance && npm run check:ai-regressions && npm run lint && npm run typecheck && npm test && npm run test:consumer-types && npm run check:ai-signatures && npm run demo:build && npm run check:design-templates && npm pack --dry-run",
     "prepublishOnly": "npm run check",
     "check:design-templates": "node scripts/check-design-templates.mjs",
     "check:design-templates:drift": "node scripts/check-design-templates-drift.mjs",

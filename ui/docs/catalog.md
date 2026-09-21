@@ -169,6 +169,36 @@ contract and can start from the checked
 [`component-catalog-extension.json`](./examples/component-catalog-extension.json)
 example; provide those entries beside Kerf's shipped catalog to AI tools.
 
+### Automated conformance and reviewed exceptions
+
+Run `npm run check:demo-conformance` after changing a first-party demo, its
+catalog kind, or the shell's overlay logic. The TypeScript-AST gate verifies
+facts that source can prove without guessing at rendered intent:
+
+- focused component routes import and use `CatalogExampleStack` and
+  `CatalogExample` from the public package;
+- focused route metadata uses the helpers' `rootAttributes` slot, example rows
+  are not empty, and composition routes do not add redundant skip markers;
+- every `@kerfjs/ui` import is a published package export and relative imports
+  do not reach into `ui/src`;
+- demo JSX does not copy private `kui-catalog-*` structural classes; and
+- the shell derives both geometry-overlay enablement and documented demo mode
+  from the active entry's source and kind.
+
+The gate deliberately does not infer component ownership from arbitrary class
+names, margins, borders, or nested descendants. Runtime selection and geometry
+remain the browser suite's job.
+
+A focused route may bypass the two public layout helpers only when the route's
+stage geometry is itself the reviewed specimen. Add the narrow waiver to
+[`catalog-conformance-exceptions.json`](../ux-demo/catalog-conformance-exceptions.json)
+with the exact route, source file, stable diagnostic ids, a substantive reason,
+and the reviewing `KF-*` ticket. Only helper/metadata rules are waivable;
+private imports, private markup, empty examples, composition overlay drift, and
+shell-mode drift always fail. The gate rejects duplicate, malformed, unused,
+and stale exceptions, so delete a waiver when its route adopts the standard
+helpers.
+
 ## Selection reveal
 
 Set `revealSelection: true` on `wireCatalog` for a long desktop sidebar. After

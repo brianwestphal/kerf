@@ -1,0 +1,77 @@
+{
+  "$schema": "../../ai/component-catalog-extension-v2.schema.json",
+  "schemaVersion": 2,
+  "package": "@acme/ui",
+  "compatibility": {
+    "v1Catalog": "./component-catalog-extension.json",
+    "identity": "package:id"
+  },
+  "entries": [
+    {
+      "key": "@acme/ui:inspector",
+      "package": "@acme/ui",
+      "id": "inspector",
+      "name": "Inspector",
+      "kind": "composition",
+      "source": "application",
+      "parents": { "mode": "listed", "entries": ["@kerfjs/ui:layout"] },
+      "contexts": ["record-detail"],
+      "zones": [
+        {
+          "id": "header",
+          "accepts": ["@kerfjs/ui:panel-header"],
+          "cardinality": { "min": 1, "max": 1 },
+          "exclusiveWith": []
+        },
+        {
+          "id": "facts",
+          "accepts": ["@kerfjs/ui:value-table"],
+          "cardinality": { "min": 1, "max": 1 },
+          "exclusiveWith": []
+        }
+      ],
+      "children": {
+        "mode": "listed",
+        "concepts": ["@kerfjs/ui:panel-header", "@kerfjs/ui:value-table"],
+        "requiredConcepts": [
+          "@kerfjs/ui:panel-header",
+          "@kerfjs/ui:value-table"
+        ]
+      },
+      "state": [
+        { "id": "selected-record", "owner": "application", "required": true }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": {
+        "owner": "application",
+        "behaviors": [
+          "May move between inline-end pane and dialog at the application breakpoint."
+        ]
+      },
+      "layout": {
+        "roles": ["inspector"],
+        "geometry": {
+          "margin": "parent",
+          "border": "child",
+          "padding": "child"
+        }
+      },
+      "accessibility": {
+        "obligations": ["The header names the inspector region."]
+      },
+      "boundaries": { "publicClasses": ["acme-inspector"], "publicTokens": [] },
+      "diagnostics": [
+        {
+          "id": "KUI-C901",
+          "severity": "error",
+          "when": "the header or facts zone is absent",
+          "message": "Inspector requires exactly one header and one facts region."
+        }
+      ],
+      "provenance": {
+        "selection": "docs/inspector.md",
+        "composition": "docs/inspector.md#composition-contract"
+      }
+    }
+  ]
+}

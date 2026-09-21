@@ -26,18 +26,20 @@ export function TokenSearchFieldDemo() {
         }
         align="inline-control"
       >
-        <TokenSearchField
-          id="catalog-search"
-          label="Search tickets"
-          query={tokenSearchQuery.value}
-          tokens={tokenSearchTokens.value}
-          autofocus
-          editorAttributes={{ 'data-demo-token-search': 'true' }}
-        />
-        <output aria-live="polite" class="kui-catalog-example__note">
-          {tokenSearchTokens.value.length} filters ·{' '}
-          {tokenSearchQuery.value || 'No free text'}
-        </output>
+        <div class="demo-example-cluster">
+          <TokenSearchField
+            id="catalog-search"
+            label="Search tickets"
+            query={tokenSearchQuery.value}
+            tokens={tokenSearchTokens.value}
+            autofocus
+            editorAttributes={{ 'data-demo-token-search': 'true' }}
+          />
+          <output aria-live="polite" class="demo-example-readout">
+            {tokenSearchTokens.value.length} filters ·{' '}
+            {tokenSearchQuery.value || 'No free text'}
+          </output>
+        </div>
       </CatalogExample>
       <CatalogExample
         label="Collapsible"
@@ -130,7 +132,7 @@ export function TokenSearchFieldDemo() {
           </ul>
           <output
             aria-live="polite"
-            class="kui-catalog-example__note"
+            class="demo-example-readout"
             data-demo-adoption-readout
           >
             {adoptionReadout.value}
