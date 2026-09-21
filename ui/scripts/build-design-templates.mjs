@@ -766,6 +766,11 @@ body { margin: 0; padding: 20px; background: ${theme.pageBackground}; font-famil
 .dt-icon-button svg { width: 18px; height: 18px; }
 `;
 
+// `ui-monospace` resolves to different fonts on developer and hosted macOS
+// machines. Keep the public component fallback unchanged, but pin the capture
+// fixture to a font shipped by macOS so its text metrics are reproducible.
+const captureCss = `:root { --kui-font-mono: "Courier New", monospace; }`;
+
 async function buildComponent(domotion, name, spec) {
   const cssText = (
     await Promise.all(
@@ -786,7 +791,7 @@ async function buildComponent(domotion, name, spec) {
   for (const variant of spec.variants) {
     const themed = {};
     for (const theme of THEMES) {
-      const page = `<!doctype html><html><head><meta charset="utf-8"><style>${frameCss(theme)}${cssText}</style></head><body><div id="frame" style="width:${frameWidth};display:inline-block">${html(variant.render())}</div></body></html>`;
+      const page = `<!doctype html><html><head><meta charset="utf-8"><style>${frameCss(theme)}${cssText}${captureCss}</style></head><body><div id="frame" style="width:${frameWidth};display:inline-block">${html(variant.render())}</div></body></html>`;
       const pagePath = resolve(dir, `${variant.id}${theme.suffix}.html`);
       const svgPath = resolve(dir, `${variant.id}${theme.suffix}.svg`);
       await writeFile(pagePath, page);

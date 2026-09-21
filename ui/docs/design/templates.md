@@ -88,6 +88,8 @@ is caught by `npm run check:design-templates:drift`, a CI-only gate (it runs in 
 dedicated macOS browser job, **not** in the offline `npm run check`). The committed
 templates use system-font text, whose layout metrics differ by operating system, so
 macOS is the canonical exact-render environment for both generation and comparison.
+The capture fixture also pins its monospace token to `Courier New`; otherwise
+`ui-monospace` resolves to different fonts on developer and hosted macOS machines.
 The gate regenerates every template into a throwaway directory and fails if any
 regenerated SVG differs from the committed one, after normalizing the bits that
 legitimately vary between runs (XML comments and the auto-minted element ids / font
