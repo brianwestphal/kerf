@@ -24,6 +24,7 @@ import { loadApplicationUiProfile } from '../ai/application-ui-profile.mjs';
 import { analyzeUiProject, UI_ANALYSIS_RULES } from '../analyzer/index.mjs';
 import { evaluateUi, UI_EVALUATION_RULES } from '../evaluator/index.mjs';
 import { isForeignRuleDefinitionDiagnostic } from './eslint-diagnostics.mjs';
+import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
 
 export const UI_DOCTOR_SCHEMA_VERSION = 1;
 export const UI_DOCTOR_EXIT = Object.freeze({
@@ -54,14 +55,6 @@ const sourceExtensions = new Set([
   '.mts',
   '.cts',
   '.css',
-]);
-const ignoredDirectories = new Set([
-  '.git',
-  '.kerf-cache',
-  'coverage',
-  'dist',
-  'kerf-ui-evidence',
-  'node_modules',
 ]);
 const defaultStages = Object.freeze({
   catalog: true,
@@ -362,6 +355,7 @@ export async function resolveUiDoctorPackage(root, selector) {
 async function collectInputs(root, paths) {
   const result = [];
   const visit = async (path) => {
+    if (isUiTraversalExcluded(root, path)) return;
     let details;
     try {
       details = await stat(path);
@@ -382,7 +376,6 @@ async function collectInputs(root, paths) {
       return;
     }
     for (const entry of await readdir(path, { withFileTypes: true })) {
-      if (entry.isDirectory() && ignoredDirectories.has(entry.name)) continue;
       await visit(resolve(path, entry.name));
     }
   };
@@ -778,6 +771,9 @@ async function runTypeScript({ packageRoot, paths }) {
     { ...ts.default.sys, onUnRecoverableConfigFileDiagnostic: () => {} },
   );
   if (!parsed) throw new Error('TypeScript could not parse tsconfig.json.');
+  parsed.fileNames = parsed.fileNames.filter(
+    (file) => !isUiTraversalExcluded(packageRoot, file),
+  );
   if (paths?.length) {
     const selected = new Set(paths.map((path) => resolve(packageRoot, path)));
     parsed.fileNames = parsed.fileNames.filter((file) => selected.has(file));
@@ -851,7 +847,7 @@ async function runEslint({
       },
     },
   };
-  const configs = [base];
+  const configs = [{ ignores: ['**/.claude/worktrees/**'] }, base];
   if (usesTypeScript) {
     const parserModule = await importFrom(
       packageRoot,

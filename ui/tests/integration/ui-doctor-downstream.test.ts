@@ -66,7 +66,7 @@ test('a downstream app moves from broken to clean using the supported doctor loo
           moduleResolution: 'bundler',
           target: 'es2022',
         },
-        include: ['src'],
+        include: ['**/*'],
       }),
     );
     await writeFile(
@@ -99,6 +99,17 @@ test('a downstream app moves from broken to clean using the supported doctor loo
     await writeFile(
       resolve(root, 'kerf.components.json'),
       '{"schemaVersion":1,"components":"not-an-array"}\n',
+    );
+    await mkdir(resolve(root, '.claude/worktrees/generated/src'), {
+      recursive: true,
+    });
+    await writeFile(
+      resolve(root, '.claude/worktrees/generated/src/copied.tsx'),
+      'export const copied = missingFromGeneratedCheckout;\n',
+    );
+    await writeFile(
+      resolve(root, '.claude/worktrees/generated/src/copied.css'),
+      '.copied { color: var(--kui-not-public); padding: 7px; }\n',
     );
     await writeFile(
       resolve(root, '.kerf-ui-profile.json'),
@@ -167,6 +178,7 @@ test('a downstream app moves from broken to clean using the supported doctor loo
       ),
     ).toBe(false);
     expect(JSON.stringify(broken.report)).not.toContain(root);
+    expect(JSON.stringify(broken.report)).not.toContain('.claude/worktrees');
 
     await writeFile(
       resolve(root, 'package.json'),
@@ -184,6 +196,7 @@ test('a downstream app moves from broken to clean using the supported doctor loo
     await expect(lintTypeScriptFixture(root)).resolves.toMatchObject({
       stderr: '',
     });
+    expect(JSON.stringify(clean.report)).not.toContain('.claude/worktrees');
     expect(
       clean.report.diagnostics.some(
         (item: { id: string }) => item.id === 'KUI-L090',

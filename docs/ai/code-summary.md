@@ -465,7 +465,10 @@ violations plus conservative review findings. Its public report schema and unit,
 bundle, and downstream-command tests pin deterministic diagnostics, exact
 profile suppression, sibling-package isolation, changed-file import traversal,
 shared-stylesheet multi-consumer policy, quoted and unquoted recursive imports,
-exit behavior, and a zero-false-positive repository fixture.
+exit behavior, nested `.claude/worktrees` exclusion, and a zero-false-positive
+repository fixture. `ui/traversal-exclusions.mjs` is the shared internal
+directory boundary used by analyzer discovery and every doctor static/cache
+traversal.
 
 `ui/doctor/` provides the shipped `kerf-ui-doctor` repair-loop API and CLI. Its
 ESLint stage runs an isolated Kerf preset, discards only missing-definition

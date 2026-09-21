@@ -25,6 +25,11 @@ An unavailable or failed stage does not prevent independent stages from reportin
 
 `--full` is the default and analyzes the selected package. `--changed` reads tracked and untracked paths from Git unless one or more `--path` values are supplied. An empty changed set is a configuration error instead of a false-clean success. With `--package`, workspace-relative Git paths are converted to package-relative paths before TypeScript, ESLint, and analyzer selection; paths outside the selected package are ignored.
 
+Full traversal treats nested `.claude/worktrees` checkouts as tool-owned
+repositories rather than application source. Their files are excluded
+consistently from TypeScript, ESLint, analyzer discovery, and cache inputs, even
+when the nested checkout lives below another application directory.
+
 TypeScript constructs the selected package's program so compiler options retain their real meaning, while its root inputs are narrowed to changed source files. Use `--full` for release gates.
 
 ## Configuration and suppressions

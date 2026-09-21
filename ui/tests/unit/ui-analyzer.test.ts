@@ -172,6 +172,38 @@ export const App = () => <StateBanner title="Ready" />;`,
     ]);
   });
 
+  it('excludes nested Claude worktrees from recursive source discovery', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-worktrees-'));
+    await mkdir(join(root, 'src'), { recursive: true });
+    await mkdir(join(root, 'tools/.claude/worktrees/generated/src'), {
+      recursive: true,
+    });
+    await mkdir(join(root, 'tools/worktrees'), { recursive: true });
+    await writeFile(
+      join(root, 'src/app.css'),
+      '.app { padding: var(--kui-layout-item-padding); }',
+    );
+    await writeFile(
+      join(root, 'tools/.claude/worktrees/generated/src/copied.css'),
+      '.copied { color: var(--kui-not-public); padding: 7px; }',
+    );
+    await writeFile(
+      join(root, 'tools/worktrees/kept.css'),
+      '.kept { padding: var(--kui-layout-item-padding); }',
+    );
+
+    const report = await analyzeUiProject({ root });
+
+    expect(report.files).toEqual(['src/app.css', 'tools/worktrees/kept.css']);
+    expect(report.diagnostics).toEqual([]);
+    const explicitlyTargeted = await analyzeUiProject({
+      root,
+      paths: ['tools/.claude/worktrees/generated/src/copied.css'],
+    });
+    expect(explicitlyTargeted.files).toEqual([]);
+    expect(explicitlyTargeted.diagnostics).toEqual([]);
+  });
+
   it('accepts an individual source path and enforces the five-step spacing scale', async () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-file-'));
     await mkdir(join(root, 'src'));

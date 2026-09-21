@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed `kerf-ui-doctor` and `kerf-ui-analyze` recursive discovery so nested
+  `.claude/worktrees` checkouts are excluded from source diagnostics, doctor
+  cache inputs, TypeScript, and ESLint.
 - Added `npx kerfjs setup` and the `kerfjs/setup` automation API for safe,
   AI-first initialization and migration of core and UI projects. The command
   provides bounded dry-run diffs, explicit per-conflict keep/Kerf choices,

@@ -305,6 +305,14 @@ describe('Kerf UI doctor', () => {
 
   it('uses a content-addressed cache and redacts local roots', async () => {
     const root = await fixture();
+    await mkdir(resolve(root, '.claude/worktrees/generated/src'), {
+      recursive: true,
+    });
+    const generated = resolve(
+      root,
+      '.claude/worktrees/generated/src/copied.tsx',
+    );
+    await writeFile(generated, 'export const copied = 1;\n');
     let calls = 0;
     const options = {
       root,
@@ -331,6 +339,10 @@ describe('Kerf UI doctor', () => {
     expect(second.stages).toContainEqual(
       expect.objectContaining({ id: 'analyzer', status: 'cached' }),
     );
+    await writeFile(generated, 'export const copied = 2;\n');
+    const afterGeneratedChange = await runUiDoctor(options as never);
+    expect(calls).toBe(1);
+    expect(afterGeneratedChange.cache.hit).toBe(true);
     await writeFile(
       resolve(root, 'package-lock.json'),
       '{"lockfileVersion":3}\n',

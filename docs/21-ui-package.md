@@ -321,6 +321,9 @@ Text, versioned JSON, and SARIF outputs use repository-relative locations and
 exact path-scoped profile exceptions. Errors fail by default; CI can opt into
 `--fail-on-review`. The analyzer is deliberately conservative: it reports only
 mechanically established problems and routes ambiguous composition to review.
+Recursive discovery excludes nested `.claude/worktrees` checkouts so generated
+or tool-owned repositories cannot leak duplicate source and policy into the
+containing application.
 See `ui/docs/ui-analyzer.md` for the CLI and rule contract.
 
 `kerf-ui-evaluate` is the browser-backed downstream evaluator. Given a running
@@ -343,7 +346,9 @@ explicitly enabled browser evaluation into one versioned, repository-relative
 report. Full and changed modes, workspace-package selection, exact reasoned
 suppressions, a dependency-aware cache, path redaction, and deterministic
 clean/findings/configuration/cancelled exits prevent partial or empty runs from
-appearing clean. Static stages do not import application modules; only the
+appearing clean. Full traversal applies the same nested `.claude/worktrees`
+exclusion to TypeScript, ESLint, analyzer, and cache inputs. Static stages do
+not import application modules; only the
 explicit browser stage executes a running app. See `ui/docs/ui-doctor.md`.
 
 Each catalog entry's `publicClasses` array is the exact stable CSS-anatomy

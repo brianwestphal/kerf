@@ -28,6 +28,11 @@ its reachable project-local styles into the report, including quoted or
 unquoted `url()` imports; external package styles remain outside the consumer
 boundary.
 
+Recursive discovery excludes generated and tool-owned trees, including any
+nested `.claude/worktrees` checkout. Those checkouts are separate repositories,
+not application source, and cannot contribute files, diagnostics, profile
+policy, or analysis inputs to the containing application.
+
 ## Diagnostics and exit behavior
 
 | Rule       | Kind   | Meaning                                                           |

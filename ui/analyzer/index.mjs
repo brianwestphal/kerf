@@ -13,6 +13,7 @@ import postcss from 'postcss';
 import ts from 'typescript';
 
 import { loadApplicationUiProfile } from '../ai/application-ui-profile.mjs';
+import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
 
 export const UI_ANALYSIS_SCHEMA_VERSION = 1;
 
@@ -36,16 +37,10 @@ const spacingProperties = /^(?:margin|padding|gap|inset)(?:-|$)/;
 const dimensionProperties =
   /^(?:width|height|min-width|max-width|min-height|max-height)$/;
 const approvedSpacing = new Set([0, 4, 8, 16, 24]);
-const ignoredDirectories = new Set([
-  '.git',
-  'coverage',
-  'dist',
-  'node_modules',
-]);
-
 async function collectFiles(root, paths) {
   const files = [];
   const visit = async (path) => {
+    if (isUiTraversalExcluded(root, path)) return;
     const details = await stat(path);
     if (details.isFile()) {
       if (sourceExtensions.has(extname(path)) || path.endsWith('.css'))
@@ -54,7 +49,6 @@ async function collectFiles(root, paths) {
     }
     const entries = await readdir(path, { withFileTypes: true });
     for (const entry of entries) {
-      if (entry.isDirectory() && ignoredDirectories.has(entry.name)) continue;
       const child = resolve(path, entry.name);
       if (entry.isDirectory()) await visit(child);
       else if (
