@@ -60,8 +60,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   retained across a controlled editor replacement before or after
   `beforeinput`. It is captured before propagation can be stopped and
   invalidated by selection-moving keys, pointer input, blur, or another edit.
+  The explicit shortcut-to-delete transition is handled deterministically:
+  the helper prevents the unreliable mixed-contenteditable native mutation,
+  canonicalizes the empty editor, and emits the corresponding bubbling input
+  event so controlled application state clears before it can restore a chip.
   A browser can no longer preserve a controlled chip merely because its range
-  shape differs.
+  shape or native deletion timing differs.
 - Added a `horizontalOnly` prop to `@kerfjs/ui`'s `ListInsetText`. When true it keeps the horizontal geometry (8px inline margin, 1px left/right border, 8px left/right padding — so the text edge still lands at the 17px inset) but drops the vertical margin, border, and padding, for tight text layout that still aligns with bordered items. It applies a `kui-list-inset-text--horizontal` modifier class; the default (vertical box space intact) is unchanged. The UX catalog gains a horizontal-only example.
 - Fixed a WCAG AA color-contrast failure on `@kerfjs/ui`'s selected list rows. The selected `ListItem` and `ListActionRow` used the brand accent (`brand-on-quiet`, `#1e6ef4`) for their text, which resolved to only **3.77:1** over the selected `brand-fill-normal` background (`#d6ecff`) — below the 4.5:1 minimum for normal text (flagged by axe downstream). Both now use the normal neutral foreground over the brand-tinted fill, so selection is carried by the fill and border while the text stays readable in light and dark themes. Computed-ratio browser tests pin both selected rows at ≥4.5:1 in both themes across all three engines.
 - Fixed the same brand-accent contrast failure on `@kerfjs/ui`'s info `StateBanner` tone and `Select`'s current option, where the blue is a semantic (not a selection cue), so the text stays blue rather than going neutral: a new darker `--kui-color-brand-on-fill` token (`#1a5dcf` light; the compliant `#8acbff` in dark) replaces `brand-on-quiet` for brand text placed directly on a brand fill. The info banner (was 4.15:1) now clears ~5.4:1 and the current Select option (was 3.77:1) ~4.9:1. Computed-ratio browser assertions guard both.

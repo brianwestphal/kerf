@@ -85,8 +85,22 @@ describe('wireTokenSearchFields', () => {
         isComposing: true,
       }),
     );
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'a',
+        ctrlKey: true,
+        bubbles: true,
+      }),
+    );
+    const disabledDelete = new KeyboardEvent('keydown', {
+      key: 'Delete',
+      bubbles: true,
+      cancelable: true,
+    });
+    editor.dispatchEvent(disabledDelete);
 
     expect(onSubmit).not.toHaveBeenCalled();
+    expect(disabledDelete.defaultPrevented).toBe(false);
     stop();
   });
 
@@ -221,7 +235,52 @@ describe('wireTokenSearchFields', () => {
     stop();
   });
 
-  it('consumes keyboard select-all intent when a platform range omits an atomic chip', () => {
+  it.each([
+    ['Delete', 'deleteContentForward'],
+    ['Backspace', 'deleteContentBackward'],
+  ] as const)(
+    'owns Ctrl+A then %s so controlled state observes a deterministic empty edit',
+    (key, inputType) => {
+      const root = document.createElement('div');
+      document.body.append(root);
+      root.innerHTML =
+        '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before </span><span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><span data-token-search-text> after</span></div></div>';
+      const editor = root.querySelector<HTMLElement>(
+        '[data-token-search-editor]',
+      )!;
+      const onEdit = vi.fn();
+      const stop = wireTokenSearchFields(root, { onEdit });
+
+      editor.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'a',
+          ctrlKey: true,
+          bubbles: true,
+          cancelable: true,
+        }),
+      );
+      const deletion = new KeyboardEvent('keydown', {
+        key,
+        bubbles: true,
+        cancelable: true,
+      });
+      editor.dispatchEvent(deletion);
+
+      expect(deletion.defaultPrevented).toBe(true);
+      expect(
+        editor.querySelectorAll('[data-component="token-search-token"]'),
+      ).toHaveLength(0);
+      expect(
+        editor.firstElementChild!.matches('[data-token-search-text]'),
+      ).toBe(true);
+      expect(editor.textContent).toBe('');
+      expect(onEdit).toHaveBeenCalledOnce();
+      expect(onEdit.mock.calls[0]![0].event.inputType).toBe(inputType);
+      stop();
+    },
+  );
+
+  it('preserves a full-delete snapshot across a controlled editor replacement', () => {
     const root = document.createElement('div');
     document.body.append(root);
     root.innerHTML =
@@ -229,50 +288,13 @@ describe('wireTokenSearchFields', () => {
     const editor = root.querySelector<HTMLElement>(
       '[data-token-search-editor]',
     )!;
-    const firstText = editor.querySelector(
-      '[data-token-search-text]',
-    )!.firstChild!;
-    focusAt(editor, firstText, 0);
     const stop = wireTokenSearchFields(root);
-
-    editor.dispatchEvent(
-      new KeyboardEvent('keydown', {
-        key: 'a',
-        ctrlKey: true,
-        bubbles: true,
-      }),
-    );
-    // Preserve Linux CI's failure shape: no usable beforeinput reaches the
-    // helper, and the native deletion leaves the atomic chip behind.
-    editor.innerHTML =
-      '<span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span>';
-    editor.dispatchEvent(inputEvent('input'));
-
-    expect(
-      editor.querySelectorAll('[data-component="token-search-token"]'),
-    ).toHaveLength(0);
-    expect(editor.textContent).toBe('');
-    stop();
-  });
-
-  it('preserves captured select-all intent across propagation stops and a controlled editor replacement', () => {
-    const root = document.createElement('div');
-    document.body.append(root);
-    root.innerHTML =
-      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before </span><span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><span data-token-search-text> after</span></div></div>';
-    const editor = root.querySelector<HTMLElement>(
-      '[data-token-search-editor]',
-    )!;
-    const stop = wireTokenSearchFields(root);
-    editor.addEventListener('keydown', (event) => event.stopPropagation());
-
-    editor.dispatchEvent(
-      new KeyboardEvent('keydown', {
-        key: 'a',
-        ctrlKey: true,
-        bubbles: true,
-      }),
-    );
+    const selection = document.getSelection()!;
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    editor.focus();
     editor.dispatchEvent(inputEvent('beforeinput'));
     const replacement = editor.cloneNode(false) as HTMLElement;
     replacement.innerHTML =
@@ -311,9 +333,14 @@ describe('wireTokenSearchFields', () => {
     editor.dispatchEvent(
       new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
     );
-    editor.dispatchEvent(inputEvent('beforeinput'));
-    editor.dispatchEvent(inputEvent('input'));
+    const deletion = new KeyboardEvent('keydown', {
+      key: 'Delete',
+      bubbles: true,
+      cancelable: true,
+    });
+    editor.dispatchEvent(deletion);
 
+    expect(deletion.defaultPrevented).toBe(false);
     expect(
       editor.querySelectorAll('[data-component="token-search-token"]'),
     ).toHaveLength(1);

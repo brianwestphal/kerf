@@ -387,14 +387,10 @@ export function wireTokenSearchFields(
   };
 
   const pending = new Map<string, PendingTokenDeletion>();
-  // Key by the stable field id rather than the editor node: controlled renders
-  // may replace the contenteditable between the shortcut and its delete input.
-  const selectAllIntents = new Set<string>();
+  const selectAllIntents = new WeakSet<HTMLElement>();
   // editorFromEvent's selector guarantees this data attribute is present.
   const intentId = (editor: HTMLElement): string =>
     editor.dataset.tokenSearchEditor!;
-  const consumeSelectAllIntent = (editor: HTMLElement): boolean =>
-    selectAllIntents.delete(intentId(editor));
   const onBeforeInput = (event: Event) => {
     const inputEvent = event as InputEvent;
     const editor = editorFromEvent(root, event);
@@ -417,8 +413,7 @@ export function wireTokenSearchFields(
       tokenCount: editor.querySelectorAll(
         '[data-component="token-search-token"]',
       ).length,
-      selectedAll:
-        consumeSelectAllIntent(editor) || selectionCoversEditor(editor),
+      selectedAll: selectionCoversEditor(editor),
     });
   };
   const onInput = (event: Event) => {
@@ -426,10 +421,8 @@ export function wireTokenSearchFields(
     if (!editor) return;
     const editorId = intentId(editor);
     const deletion = pending.get(editorId);
-    const selectedAll = deletion?.selectedAll ?? consumeSelectAllIntent(editor);
-    consumeSelectAllIntent(editor);
     if ((event as InputEvent).inputType?.startsWith('delete'))
-      normalizeEmptiedEditor(editor, selectedAll);
+      normalizeEmptiedEditor(editor, deletion?.selectedAll);
     if (onEdit) {
       const field = editor.closest<HTMLElement>(
         '[data-component="token-search-field"]',
@@ -463,22 +456,43 @@ export function wireTokenSearchFields(
 
   const clearSelectAllIntent = (event: Event) => {
     const editor = editorFromEvent(root, event);
-    if (editor) consumeSelectAllIntent(editor);
+    if (editor) selectAllIntents.delete(editor);
   };
   const trackSelectAllIntent = (event: Event) => {
     const keyboardEvent = event as KeyboardEvent;
     const editor = editorFromEvent(root, event);
     if (!editor || keyboardEvent.isComposing) return;
-    const id = intentId(editor);
+    const fullDeletionInputType =
+      keyboardEvent.key === 'Backspace'
+        ? 'deleteContentBackward'
+        : keyboardEvent.key === 'Delete'
+          ? 'deleteContentForward'
+          : undefined;
     if (
       keyboardEvent.key.toLowerCase() === 'a' &&
       (keyboardEvent.ctrlKey || keyboardEvent.metaKey) &&
       !keyboardEvent.altKey &&
       !keyboardEvent.shiftKey
     ) {
-      // Capture this before target/bubble handlers can stop propagation. Some
-      // controlled renders also replace the editor before the delete input.
-      selectAllIntents.add(id);
+      // Capture this before target/bubble handlers can stop propagation.
+      selectAllIntents.add(editor);
+      return;
+    }
+    if (fullDeletionInputType && selectAllIntents.delete(editor)) {
+      if (editor.parentElement?.dataset.disabled === 'true') return;
+      // Native mixed-contenteditable deletion is not reliable: Linux engines
+      // can leave contenteditable=false chips behind, and a controlled render
+      // then restores them from application state. The preceding shortcut is
+      // an unambiguous full-delete request, so own that transition and publish
+      // the same bubbling input contract the native edit would have produced.
+      keyboardEvent.preventDefault();
+      normalizeEmptiedEditor(editor, true);
+      editor.dispatchEvent(
+        new InputEvent('input', {
+          bubbles: true,
+          inputType: fullDeletionInputType,
+        }),
+      );
       return;
     }
     if (
@@ -491,7 +505,7 @@ export function wireTokenSearchFields(
       keyboardEvent.key === 'PageUp' ||
       keyboardEvent.key === 'PageDown'
     )
-      selectAllIntents.delete(id);
+      selectAllIntents.delete(editor);
   };
   root.addEventListener('keydown', trackSelectAllIntent, true);
   root.addEventListener('pointerdown', clearSelectAllIntent, true);
