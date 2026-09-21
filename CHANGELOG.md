@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Updated the `@kerfjs/ui` SVG design-template generator to `domotion-svg`
+  0.30.1 and enabled `--flatten-nested-svg`, so inline component icons are
+  emitted as Sketch-compatible groups without changing their browser rendering.
+  The offline template gate now rejects variant captures that reintroduce nested
+  `<svg>` elements.
 - Fixed `kerf-ui-doctor` and `kerf-ui-analyze` recursive discovery so nested
   `.claude/worktrees` checkouts are excluded from source diagnostics, doctor
   cache inputs, TypeScript, and ESLint.
