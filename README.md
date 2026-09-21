@@ -51,6 +51,18 @@ Here's the whole development loop — write a component, run the dev server, cli
 npm install kerfjs
 ```
 
+For an existing project, install the AI guidance, strict TypeScript/ESLint
+feedback, and package scripts with a reviewed dry run:
+
+```bash
+npx kerfjs setup                 # inspect a value-level plan
+npx kerfjs setup --write --yes   # apply it
+```
+
+The command detects core versus `@kerfjs/ui`, supports explicit monorepo
+package selection, and never adds UI to a core-only project. See
+[`docs/24-ai-first-setup.md`](./docs/24-ai-first-setup.md).
+
 ```jsonc
 // tsconfig.json — point JSX at kerf
 { "compilerOptions": { "jsx": "react-jsx", "jsxImportSource": "kerfjs" } }

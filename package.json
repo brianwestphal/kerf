@@ -35,6 +35,9 @@
   },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "bin": {
+    "kerfjs": "./setup/cli.mjs"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -100,11 +103,17 @@
       "types": "./dist/attach.d.ts",
       "import": "./dist/attach.js"
     },
-    "./ai/*": "./ai/*"
+    "./ai/*": "./ai/*",
+    "./setup": {
+      "types": "./setup/index.d.mts",
+      "import": "./setup/index.mjs"
+    },
+    "./setup/state.schema.json": "./setup/state.schema.json"
   },
   "files": [
     "dist",
     "ai",
+    "setup",
     "llms.txt",
     "README.md",
     "CHANGELOG.md",

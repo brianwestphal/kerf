@@ -100,6 +100,18 @@ test('generates deterministic schema-valid v2 metadata and checks drift', () => 
   });
 });
 
+test('generates a valid empty catalog for a newly initialized consumer app', () => {
+  withScaffold(({ target }) => {
+    const value = metadata(target);
+    value.components = [];
+    writeMetadata(target, value);
+    const [result] = runCatalogCommand({ root: target });
+    assert.deepEqual(result.catalog.entries, []);
+    assert.deepEqual(validateCatalogV2(result.catalog), []);
+    assert.doesNotThrow(() => runCatalogCommand({ root: target, check: true }));
+  });
+});
+
 test('reports renamed public exports instead of guessing replacements', () => {
   withScaffold(({ target }) => {
     const value = metadata(target);

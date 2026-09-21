@@ -33,6 +33,11 @@ independent improvements:
    the canonical section (above the marker), leaving the consumer's
    append zone untouched.
 
+Consumers normally install and update this contract with `npx kerfjs setup`.
+The safe planner also configures the matching TypeScript/ESLint feedback and,
+for UI projects, catalog/profile/doctor discovery. See
+[`docs/24-ai-first-setup.md`](./24-ai-first-setup.md).
+
 Any single piece in isolation is weaker:
 
 - Bundling without the rule is just a moved file — no nudge to

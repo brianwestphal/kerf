@@ -76,3 +76,8 @@ The package also exposes `kerf-component-catalog`. It accepts `--write` (the
 default), `--check`, and `--root <path>`. A root package with npm `workspaces`
 generates every child package that declares `package.json#kerfComponentCatalog`,
 in deterministic package and component order.
+
+Application projects do not need this package scaffold. `npx kerfjs setup
+--ui` creates an empty, schema-valid author metadata file, wires this catalog
+command, and publishes the generated app catalog through the workspace UI
+profile.

@@ -14,6 +14,17 @@ delegation, form/dialog forwarding, resize commits, and idempotent disposal.
 `ui/ux-demo/demo-theme.ts` derives the effective operating-system light/dark
 appearance and applies the catalog's mutually exclusive explicit theme
 overrides.
+The published `setup/` entry (`kerfjs/setup` and the `kerfjs setup` bin)
+contains the pure AI-first project planner, bounded/redacted plan formatter,
+transactional applier, CLI, declarations, and versioned state schema. It
+detects core/UI source or dependency use, selects one workspace package,
+performs state-backed three-way structural merges, and wires the shipped
+guidance plus TypeScript/ESLint/catalog/doctor feedback without generating an
+application.
+`tests/unit/setup.test.ts` covers detection, merges, conflict choices,
+state-backed upgrades, safety/rollback transitions, redaction, and adversarial
+inputs. `tests/integration/setup-downstream.test.ts` packs the shipped packages
+and proves the CLI through minimal-core and selected-UI-monorepo consumer flows.
 The application-local `ui/docs/examples/command-palette-adapter.tsx` demonstrates
 canonical layout ownership for a recurring concept the package does not export.
 `ui/scripts/check-recipes.mjs` keeps those sources,

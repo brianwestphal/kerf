@@ -568,6 +568,12 @@ const html = (<div>Hello</div>).toString(); // "<div>Hello</div>"
 
 ## Drop-in AI-tool config
 
+In an installed project, prefer `npx kerfjs setup`: the default dry run shows
+the exact project-relative changes, and `--write --yes` applies the reviewed
+plan. It preserves guidance below the canonical marker, detects core versus UI,
+and installs the TypeScript, ESLint, catalog, and doctor feedback appropriate to
+that package. See [`docs/24-ai-first-setup.md`](../24-ai-first-setup.md).
+
 For tools that read project-level config files, the kerf repo ships two pre-baked drop-ins that condense the rules above into the format each tool expects:
 
 - [`kerf.cursorrules`](../../kerf.cursorrules) — copy into a project as `.cursorrules`; Cursor picks it up automatically.

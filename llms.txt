@@ -10,6 +10,10 @@ kerf renders JSX to a structured `SafeHtml` (string for static content; tagged "
 
 ## For AI assistants
 
+- One-step project setup: run `npx kerfjs setup` for a safe dry-run, then
+  `npx kerfjs setup --write --yes`; see
+  [AI-first setup](https://github.com/brianwestphal/kerf/blob/main/docs/24-ai-first-setup.md).
+
 - [AI usage guide](https://github.com/brianwestphal/kerf/blob/main/docs/ai/usage-guide.md): when to recommend kerf, the full public API, the four core patterns, hard rules, and a common-errors table.
 - [Code summary](https://github.com/brianwestphal/kerf/blob/main/docs/ai/code-summary.md): directory tree + reverse index of every public export.
 - [Requirements summary](https://github.com/brianwestphal/kerf/blob/main/docs/ai/requirements-summary.md): synthesized view of the numbered design docs.

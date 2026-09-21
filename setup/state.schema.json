@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/setup/state.schema.json",
+  "title": "Kerf AI setup state",
+  "type": "object",
+  "required": ["schemaVersion", "setupVersion", "packageManager", "packages"],
+  "properties": {
+    "schemaVersion": { "const": 2 },
+    "setupVersion": { "type": "string", "minLength": 1 },
+    "packageManager": { "enum": ["npm", "pnpm", "yarn"] },
+    "packageManagerVersion": { "type": "string", "minLength": 1 },
+    "packages": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "mode",
+          "package",
+          "packagePath",
+          "managed",
+          "resolutions"
+        ],
+        "properties": {
+          "mode": { "enum": ["core", "ui"] },
+          "package": { "type": "string", "minLength": 1 },
+          "packagePath": { "type": "string", "minLength": 1 },
+          "managed": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "object",
+              "required": ["sha256"],
+              "properties": {
+                "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+              },
+              "additionalProperties": false
+            }
+          },
+          "resolutions": {
+            "type": "object",
+            "additionalProperties": { "enum": ["keep", "kerf"] }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
