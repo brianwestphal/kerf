@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Refreshed the standalone reactivity demo lockfile to Vite 6.4.3, PostCSS 8.5.28, and nanoid 3.3.19, clearing its development-toolchain audit advisories.
 - Overrode the development toolchain's transitive esbuild dependency to 0.28.2, resolving GHSA-g7r4-m6w7-qqqr while current tsup still constrains its declared range to 0.27.x.
 - Added repository-wide Prettier formatting for TypeScript, JavaScript, Astro, shell, CSS, HTML, Markdown, YAML, and JSON source and structured-content files. Root and `@kerfjs/ui` lint gates now reject formatting drift, while generated, binary, and parser-incompatible fixtures remain explicitly excluded.
 - Added reusable sidebar tags to `@kerfjs/ui` Catalog entries and marked the 15 Web Awesome components superseded by preferred Kerf patterns or reserved for exceptional cases as `Discouraged` in the UX catalog. The tag is deterministically projected from the canonical recommendation metadata; Popup remains an available conditional positioning primitive.
