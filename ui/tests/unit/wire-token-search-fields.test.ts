@@ -255,6 +255,38 @@ describe('wireTokenSearchFields', () => {
     stop();
   });
 
+  it('preserves captured select-all intent across propagation stops and a controlled editor replacement', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before </span><span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><span data-token-search-text> after</span></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    const stop = wireTokenSearchFields(root);
+    editor.addEventListener('keydown', (event) => event.stopPropagation());
+
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'a',
+        ctrlKey: true,
+        bubbles: true,
+      }),
+    );
+    editor.dispatchEvent(inputEvent('beforeinput'));
+    const replacement = editor.cloneNode(false) as HTMLElement;
+    replacement.innerHTML =
+      '<span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span>';
+    editor.replaceWith(replacement);
+    replacement.dispatchEvent(inputEvent('input'));
+
+    expect(
+      replacement.querySelectorAll('[data-component="token-search-token"]'),
+    ).toHaveLength(0);
+    expect(replacement.textContent).toBe('');
+    stop();
+  });
+
   it('expires keyboard select-all intent after caret navigation', () => {
     const root = document.createElement('div');
     document.body.append(root);
