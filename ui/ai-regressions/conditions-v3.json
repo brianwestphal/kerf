@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 3,
+  "guidance": {
+    "description": "Frozen Kerf UI authoring guidance shared byte-for-byte by every feedback policy.",
+    "sourcePaths": [
+      "ai/skill.md",
+      "ai/public-api-signatures-v1.md",
+      "docs/component-selection.md",
+      "docs/layout.md",
+      "docs/accessibility.md",
+      "ai/component-catalog.json",
+      "docs/recipes.md"
+    ]
+  },
+  "maxAttempts": 3,
+  "conditions": [
+    {
+      "id": "guidance-only",
+      "description": "Frozen guidance with no machine feedback returned to the authoring model.",
+      "feedbackStages": []
+    },
+    {
+      "id": "guidance-static",
+      "description": "Frozen guidance plus normalized static and compile diagnostics between attempts.",
+      "feedbackStages": ["static", "compile"]
+    },
+    {
+      "id": "guidance-static-browser",
+      "description": "Frozen guidance plus normalized static, compile, and browser diagnostics between attempts.",
+      "feedbackStages": ["static", "compile", "browser"]
+    }
+  ]
+}

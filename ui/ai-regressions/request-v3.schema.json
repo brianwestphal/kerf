@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kerf contextual AI regression request envelope v3",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "suiteId",
+    "caseId",
+    "condition",
+    "attempt",
+    "modelInput",
+    "modelInputSha256"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 3 },
+    "suiteId": { "const": "kerf-ui-authoring-v3" },
+    "caseId": { "type": "string", "minLength": 1 },
+    "condition": { "$ref": "#/$defs/condition" },
+    "attempt": { "type": "integer", "minimum": 1 },
+    "modelInput": {
+      "type": "object",
+      "required": [
+        "prompt",
+        "guidanceContext",
+        "caseContext",
+        "responseContract",
+        "responseSchema"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "prompt": { "type": "string", "minLength": 1 },
+        "guidanceContext": { "$ref": "#/$defs/context" },
+        "caseContext": { "$ref": "#/$defs/context" },
+        "responseContract": { "type": "string", "minLength": 1 },
+        "responseSchema": { "type": "object" },
+        "repair": {
+          "type": "object",
+          "required": ["priorResponseSha256", "currentFiles", "feedback"],
+          "additionalProperties": false,
+          "properties": {
+            "priorResponseSha256": { "$ref": "#/$defs/digest" },
+            "currentFiles": {
+              "type": "object",
+              "additionalProperties": { "type": "string" }
+            },
+            "feedback": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["id", "severity", "stage", "message"],
+                "additionalProperties": false,
+                "properties": {
+                  "id": { "type": "string", "minLength": 1 },
+                  "severity": {
+                    "enum": ["error", "warning", "review", "info"]
+                  },
+                  "stage": { "enum": ["static", "compile", "browser"] },
+                  "message": { "type": "string", "minLength": 1 },
+                  "location": { "type": "object" },
+                  "action": { "type": "string" },
+                  "documentation": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "modelInputSha256": { "$ref": "#/$defs/digest" }
+  },
+  "$defs": {
+    "condition": {
+      "enum": ["guidance-only", "guidance-static", "guidance-static-browser"]
+    },
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "source": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "content": { "type": "string" },
+        "editable": { "type": "boolean" }
+      }
+    },
+    "context": {
+      "type": "object",
+      "required": ["sha256", "sources"],
+      "additionalProperties": false,
+      "properties": {
+        "sha256": { "$ref": "#/$defs/digest" },
+        "sources": { "type": "array", "items": { "$ref": "#/$defs/source" } },
+        "text": { "type": "string" },
+        "sourceRevision": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

@@ -39,6 +39,10 @@ export function validateAiRegressionEvidenceV3(contract, evidence) {
   if (!stagePrefix[evidence.stage]) errors.push('evidence.stage is unknown');
   if (!Array.isArray(evidence.records) || evidence.records.length === 0)
     errors.push('evidence.records must not be empty');
+  if (!Number.isInteger(evidence.attempt) || evidence.attempt < 1)
+    errors.push('evidence.attempt must be a positive integer');
+  if (!evidence.sourceTool?.name)
+    errors.push('evidence.sourceTool must identify its producer');
   const seen = new Set();
   for (const record of evidence.records ?? []) {
     if (seen.has(record.code))
@@ -49,6 +53,17 @@ export function validateAiRegressionEvidenceV3(contract, evidence) {
       errors.push(`unknown diagnostic ${record.code}`);
       continue;
     }
+    if (!Array.isArray(record.diagnosticIds))
+      errors.push(`${record.code} must record source diagnostic ids`);
+    if (
+      ['true-positive', 'false-positive', 'disputed'].includes(
+        record.adjudication,
+      ) &&
+      (!record.adjudicator || !record.rationale)
+    )
+      errors.push(
+        `${record.code} adjudication requires reviewer and rationale`,
+      );
     if (diagnostic.stage !== evidence.stage)
       errors.push(
         `${record.code} belongs to ${diagnostic.stage}, not ${evidence.stage}`,
@@ -73,13 +88,63 @@ export function validateAiRegressionEvidenceV3(contract, evidence) {
     }
   }
   if (evidence.stage === 'human-visual') {
-    if (!evidence.reviewer)
+    if (!evidence.reviewer?.trim())
       errors.push('human-visual evidence requires reviewer');
-    if (!evidence.artifacts?.length)
-      errors.push('human-visual evidence requires screenshot artifacts');
+    if (
+      !evidence.artifacts ||
+      evidence.artifacts.length < contract.browserMatrix.length
+    )
+      errors.push(
+        `human-visual evidence requires ${contract.browserMatrix.length} viewport screenshots`,
+      );
+    const expectedContexts = contract.browserMatrix.map(({ id }) => id).sort();
+    const actualContexts = (evidence.artifacts ?? [])
+      .map(({ context }) => context)
+      .sort();
+    if (JSON.stringify(actualContexts) !== JSON.stringify(expectedContexts))
+      errors.push(
+        'human-visual screenshots must map exactly once to wide, intermediate, narrow, and zoom-200',
+      );
+    if (
+      new Set((evidence.artifacts ?? []).map(({ path }) => path)).size !==
+        (evidence.artifacts ?? []).length ||
+      new Set((evidence.artifacts ?? []).map(({ sha256 }) => sha256)).size !==
+        (evidence.artifacts ?? []).length
+    )
+      errors.push('human-visual screenshots must have unique paths and hashes');
+    const visualDiagnostics = contract.diagnostics.filter(
+      ({ stage }) => stage === 'human-visual',
+    );
+    for (const { code } of visualDiagnostics) {
+      const records = (evidence.records ?? []).filter(
+        (record) => record.code === code,
+      );
+      if (records.length !== 1)
+        errors.push(
+          `human-visual evidence requires exactly one ${code} rating`,
+        );
+      const record = records[0];
+      if (
+        record &&
+        (typeof record.rating !== 'number' || !record.rationale?.trim())
+      )
+        errors.push(`${code} requires a rating and written rationale`);
+    }
+    if (
+      !(evidence.artifacts ?? []).every(({ path }) =>
+        /\.(?:png|jpe?g|webp)$/i.test(path),
+      )
+    )
+      errors.push('human-visual artifacts must be screenshots');
   } else if (evidence.reviewer) {
     errors.push(`${evidence.stage} evidence cannot name a human reviewer`);
   }
+  if (
+    evidence.stage === 'browser' &&
+    (!Array.isArray(evidence.browserAssertions) ||
+      evidence.browserAssertions.length === 0)
+  )
+    errors.push('browser evidence requires case-specific assertions');
   return errors;
 }
 
@@ -122,5 +187,28 @@ export function summarizeAiRegressionEvidenceV3(contract, evidenceRecords) {
       visualValues.every(
         (value) => value >= contract.thresholds.visualDimensionMinimum,
       ),
+  };
+}
+
+export function summarizeAiRegressionCaseV3(
+  contract,
+  caseDefinition,
+  evidenceRecords,
+) {
+  const errors = evidenceRecords.flatMap((evidence) =>
+    validateAiRegressionEvidenceV3(contract, evidence),
+  );
+  const records = evidenceRecords.flatMap(({ records }) => records);
+  for (const code of caseDefinition.requiredDiagnostics) {
+    const matches = records.filter((record) => record.code === code);
+    if (matches.length !== 1)
+      errors.push(`${caseDefinition.id} requires exactly one ${code} record`);
+  }
+  for (const record of records)
+    if (!caseDefinition.requiredDiagnostics.includes(record.code))
+      errors.push(`${caseDefinition.id} does not require ${record.code}`);
+  return {
+    errors,
+    ...summarizeAiRegressionEvidenceV3(contract, evidenceRecords),
   };
 }

@@ -7,32 +7,59 @@
     "suiteId",
     "caseId",
     "condition",
+    "attempt",
+    "requestSha256",
     "responseSha256",
     "stage",
     "recordedAt",
+    "sourceTool",
+    "durationMs",
+    "environmentId",
     "records"
   ],
   "additionalProperties": false,
   "properties": {
     "schemaVersion": { "const": 3 },
     "suiteId": { "const": "kerf-ui-authoring-v3" },
-    "caseId": { "type": "string", "minLength": 1 },
+    "caseId": { "type": "string" },
     "condition": {
-      "enum": ["none", "current-guidance", "revised-recipes-catalog"]
+      "enum": ["guidance-only", "guidance-static", "guidance-static-browser"]
     },
+    "attempt": { "type": "integer", "minimum": 1 },
+    "requestSha256": { "$ref": "#/$defs/digest" },
     "responseSha256": { "$ref": "#/$defs/digest" },
     "stage": { "enum": ["static", "compile", "browser", "human-visual"] },
     "recordedAt": { "type": "string", "format": "date-time" },
-    "environment": { "type": "object" },
+    "sourceTool": {
+      "type": "object",
+      "required": ["name", "packageVersion", "reportVersion", "schemaVersion"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "packageVersion": { "type": "string" },
+        "reportVersion": { "type": "integer", "minimum": 1 },
+        "schemaVersion": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "rawReport": { "$ref": "#/$defs/ref" },
+    "normalizedReport": { "$ref": "#/$defs/ref" },
+    "durationMs": { "type": "integer", "minimum": 0 },
+    "environmentId": { "type": "string" },
     "artifacts": {
       "type": "array",
+      "items": { "$ref": "#/$defs/artifactRef" }
+    },
+    "browserAssertions": {
+      "type": "array",
+      "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["path", "sha256"],
+        "required": ["id", "outcome", "detail"],
         "additionalProperties": false,
         "properties": {
-          "path": { "type": "string", "minLength": 1 },
-          "sha256": { "$ref": "#/$defs/digest" }
+          "id": { "type": "string" },
+          "outcome": { "enum": ["pass", "fail"] },
+          "detail": { "type": "string" }
         }
       }
     },
@@ -41,7 +68,7 @@
       "minItems": 1,
       "items": {
         "type": "object",
-        "required": ["code", "outcome", "detail"],
+        "required": ["code", "outcome", "detail", "diagnosticIds"],
         "additionalProperties": false,
         "properties": {
           "code": {
@@ -52,17 +79,83 @@
             "enum": ["pass", "fail", "not-applicable", "not-recorded"]
           },
           "rating": { "type": "number", "minimum": 0, "maximum": 2 },
-          "detail": { "type": "string", "minLength": 1 }
+          "detail": { "type": "string" },
+          "diagnosticIds": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string" }
+          },
+          "adjudication": {
+            "enum": [
+              "true-positive",
+              "false-positive",
+              "disputed",
+              "not-reviewed"
+            ]
+          },
+          "adjudicator": { "type": "string" },
+          "rationale": { "type": "string" }
         }
       }
     },
-    "reviewer": { "type": "string", "minLength": 1 }
+    "reviewer": { "type": "string" }
   },
-  "$defs": { "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" } },
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "ref": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "sha256": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "screenshotRef": {
+      "type": "object",
+      "required": ["path", "sha256", "context"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "context": {
+          "enum": ["wide", "intermediate", "narrow", "zoom-200"]
+        }
+      }
+    },
+    "artifactRef": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "context": {
+          "enum": ["wide", "intermediate", "narrow", "zoom-200"]
+        }
+      }
+    }
+  },
   "allOf": [
     {
       "if": { "properties": { "stage": { "const": "human-visual" } } },
-      "then": { "required": ["reviewer", "artifacts"] }
+      "then": {
+        "required": ["reviewer", "artifacts"],
+        "properties": {
+          "reviewer": { "type": "string", "minLength": 1 },
+          "artifacts": {
+            "type": "array",
+            "minItems": 4,
+            "maxItems": 4,
+            "items": { "$ref": "#/$defs/screenshotRef" }
+          },
+          "records": { "type": "array", "minItems": 5 }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "stage": { "const": "browser" } } },
+      "then": { "required": ["browserAssertions"] }
     },
     {
       "if": {

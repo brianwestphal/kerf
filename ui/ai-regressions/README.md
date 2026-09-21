@@ -80,19 +80,29 @@ evidence cannot rewrite old raw responses or conclusions.
 
 ## Suite v3: contextual first-attempt quality
 
-Suite v3 is a new, parallel contract. It does not rescore or relabel v1/v2
-responses. `suite-v3.json` binds the versioned quality contract, contextual
-corpus, response/evidence/run schemas, guidance conditions, catalog, public API
-signatures, and baseline disclosure. Its cases ask for changes inside complete
-existing recipe files and identify which files may be returned. The prepared
-request hashes and includes those case sources in addition to the independently
-selected guidance condition:
+Suite v3 is a new, parallel repair-loop contract. It does not rescore or relabel
+v1/v2 responses. `suite-v3.json` binds the versioned quality, request,
+response, evidence, run, compatibility, contextual-corpus, and feedback-policy
+contracts. Its cases ask for changes inside complete existing recipe files and
+identify which files may be returned. All three policies receive the exact same
+attempt-one `modelInput`; the condition and feedback policy live outside that
+model-visible value. The preparer records one shared model-input digest so a
+condition cannot accidentally gain different initial guidance:
 
 ```bash
 npm run --silent ai:regressions:prepare -- \
   --suite 3 --case extend-application-navigation \
-  --condition revised-recipes-catalog
+  --condition guidance-static-browser
 ```
+
+The policies are `guidance-only` (one response, no feedback),
+`guidance-static` (static and compile feedback), and
+`guidance-static-browser` (static, compile, and browser feedback). A fresh
+session is required for every case × condition × replicate cell; repair
+attempts within that cell retain its session. The default protocol permits at
+most three attempts. Final static, compile, browser, and bounded human review
+measure every condition, but a stage is returned to the model only when the
+policy permits it.
 
 The stable diagnostic registry in `quality-contract-v3.json` covers component
 selection, reuse of consumer-owned symbols, public API accuracy, wiring and
@@ -113,13 +123,28 @@ least three isolated runs per condition and two model/version identities.
 Generation and human review remain opt-in and outside CI; deterministic checks
 may replay checked-in responses and evidence.
 
-Each measured run records a distinct session identity for every guidance
-condition. Each result repeats the matching session id and hashes the complete
-prepared request as well as its prompt, application context, guidance context,
-response, and four evidence records. The manifest also pins every suite/schema
-input, public signatures, TypeScript version, and installed package versions;
-results from different condition sessions must never be represented as sharing
-one context.
+Each run records ordered attempts, raw and parsed response hashes, provider and
+model identity, settings, timing, token usage (or an explicit unavailable
+reason), serialized context bytes, evidence/report hashes, terminal reason,
+residual diagnostics, and diagnostic adjudication. The compatibility matrix
+pins catalog/profile/report schema versions, the four explicit light-mode
+browser contexts, the five visual dimensions used by this suite, and replay
+rules. Doctor execution must use `cache: false`; browser execution must record
+its URL, the explicit contexts, and AbortSignal forwarding. Browser evidence
+also contains frozen case-specific interaction, keyboard, announcement, and
+remount assertions; a generic evaluator pass alone is insufficient.
+
+Canonical replay verifies every artifact hash, rejects absolute/traversing
+paths and symlinks, validates requests, responses, evidence, and runs against
+their pinned schemas, requires every frozen case diagnostic exactly once,
+recalculates metrics, verifies current suite/compatibility/registry hashes, and
+normalizes recorded timestamps.
+Static evidence replays exactly. Browser artifact comparison is claimed only
+when Node, platform, architecture, TypeScript, Playwright, browser engines, and
+lockfile digest match; another environment reports `incompatible-environment`
+instead of clean. See [workflow-v3.md](workflow-v3.md) for the recording layout,
+metrics, compatibility, and release gates. The checked-in canned repair loop
+exercises this protocol but is not model evidence.
 
 `baseline-v3.json` intentionally records the current suite-v3 baseline as
 unmeasured. The repository contains no responses to the contextual prompts, so

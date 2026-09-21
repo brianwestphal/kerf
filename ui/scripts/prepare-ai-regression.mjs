@@ -12,6 +12,20 @@ import {
 const root = fileURLToPath(new URL('..', import.meta.url));
 const readJson = async (path) =>
   JSON.parse(await readFile(resolve(root, path), 'utf8'));
+const canonicalize = (value) => {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value && typeof value === 'object')
+    return Object.fromEntries(
+      Object.keys(value)
+        .sort()
+        .map((key) => [key, canonicalize(value[key])]),
+    );
+  return value;
+};
+const digestJson = (value) =>
+  createHash('sha256')
+    .update(`${JSON.stringify(canonicalize(value))}\n`)
+    .digest('hex');
 const valueAfter = (flag) => {
   const index = process.argv.indexOf(flag);
   return index >= 0 ? process.argv[index + 1] : undefined;
@@ -26,9 +40,11 @@ const [corpus, conditions, responseSchema, suite] = await Promise.all([
       : 'ai-regressions/corpus.json',
   ),
   readJson(
-    suiteVersion >= 2
-      ? 'ai-regressions/conditions-v2.json'
-      : 'ai-regressions/conditions.json',
+    suiteVersion === 3
+      ? 'ai-regressions/conditions-v3.json'
+      : suiteVersion === 2
+        ? 'ai-regressions/conditions-v2.json'
+        : 'ai-regressions/conditions.json',
   ),
   readJson(
     suiteVersion === 3
@@ -72,20 +88,17 @@ for (const testCase of selectedCases) {
         )
       : null;
   for (const condition of selectedConditions) {
-    const context = await buildAiRegressionContext(root, condition, {
+    const guidanceDefinition =
+      suiteVersion === 3 ? conditions.guidance : condition;
+    const context = await buildAiRegressionContext(root, guidanceDefinition, {
       snapshotPath: (suiteVersion === 1
         ? AI_REGRESSION_V1_CONTEXT_SNAPSHOTS
         : AI_REGRESSION_V2_CONTEXT_SNAPSHOTS
       ).get(condition.id),
     });
-    requests.push({
-      schemaVersion: suiteVersion,
-      ...(suite ? { suite: { id: suite.id } } : {}),
-      caseId: testCase.id,
-      condition: condition.id,
+    const modelInput = {
       prompt,
-      promptSha256: createHash('sha256').update(prompt).digest('hex'),
-      context: {
+      guidanceContext: {
         sourceRevision: context.sourceRevision,
         sources: context.sources,
         sha256: context.sha256,
@@ -113,7 +126,36 @@ for (const testCase of selectedCases) {
           ? 'Return only JSON matching responseSchema. Put the complete contents of every changed editable file in files, keyed by its original repository-relative path. Do not return unchanged files or prose outside JSON.'
           : 'Return only JSON matching responseSchema. Put every proposed TypeScript, TSX, and CSS file in files. Do not include prose outside JSON.',
       responseSchema,
-    });
+    };
+    requests.push(
+      suiteVersion === 3
+        ? {
+            schemaVersion: 3,
+            suiteId: suite.id,
+            caseId: testCase.id,
+            condition: condition.id,
+            attempt: 1,
+            modelInput,
+            modelInputSha256: digestJson(modelInput),
+          }
+        : {
+            schemaVersion: suiteVersion,
+            ...(suite ? { suite: { id: suite.id } } : {}),
+            caseId: testCase.id,
+            condition: condition.id,
+            prompt,
+            promptSha256: createHash('sha256').update(prompt).digest('hex'),
+            context: {
+              sourceRevision: context.sourceRevision,
+              sources: context.sources,
+              sha256: context.sha256,
+              text: context.text,
+            },
+            responseContract:
+              'Return only JSON matching responseSchema. Put every proposed TypeScript, TSX, and CSS file in files. Do not include prose outside JSON.',
+            responseSchema,
+          },
+    );
   }
 }
 console.log(

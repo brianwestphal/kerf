@@ -1,0 +1,134 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kerf AI regression suite-v3 compatibility matrix",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "suiteId",
+    "contracts",
+    "toolVersions",
+    "artifactDigests",
+    "browserContexts",
+    "visualDimensions",
+    "replayPolicy"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 3 },
+    "suiteId": { "const": "kerf-ui-authoring-v3" },
+    "contracts": {
+      "type": "object",
+      "required": [
+        "quality",
+        "conditions",
+        "corpus",
+        "request",
+        "response",
+        "evidence",
+        "run",
+        "applicationProfile",
+        "selectionCatalog",
+        "behaviorCatalog",
+        "diagnosticRegistry",
+        "doctorReport",
+        "analyzerReport",
+        "evaluatorReport"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "quality": { "const": 3 },
+        "conditions": { "const": 3 },
+        "corpus": { "const": 3 },
+        "request": { "const": 3 },
+        "response": { "const": 3 },
+        "evidence": { "const": 3 },
+        "run": { "const": 3 },
+        "applicationProfile": { "const": 1 },
+        "selectionCatalog": { "const": 1 },
+        "behaviorCatalog": { "const": 2 },
+        "diagnosticRegistry": { "const": 1 },
+        "doctorReport": { "const": 1 },
+        "analyzerReport": { "const": 1 },
+        "evaluatorReport": { "const": 1 }
+      }
+    },
+    "toolVersions": {
+      "type": "object",
+      "required": ["@kerfjs/ui", "eslint-plugin-kerfjs"],
+      "additionalProperties": false,
+      "properties": {
+        "@kerfjs/ui": { "type": "string", "minLength": 1 },
+        "eslint-plugin-kerfjs": { "type": "string", "minLength": 1 }
+      }
+    },
+    "artifactDigests": {
+      "type": "object",
+      "required": [
+        "selectionCatalog",
+        "behaviorCatalog",
+        "diagnosticRegistry",
+        "qualityContract",
+        "guidanceContext"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "selectionCatalog": { "$ref": "#/$defs/digest" },
+        "behaviorCatalog": { "$ref": "#/$defs/digest" },
+        "diagnosticRegistry": { "$ref": "#/$defs/digest" },
+        "qualityContract": { "$ref": "#/$defs/digest" },
+        "guidanceContext": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "browserContexts": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "width",
+          "height",
+          "zoom",
+          "colorScheme",
+          "reducedMotion"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "enum": ["wide", "intermediate", "narrow", "zoom-200"] },
+          "width": { "type": "integer", "minimum": 1 },
+          "height": { "type": "integer", "minimum": 1 },
+          "zoom": { "type": "number", "minimum": 1 },
+          "colorScheme": { "const": "light" },
+          "reducedMotion": { "const": "no-preference" }
+        }
+      }
+    },
+    "visualDimensions": {
+      "const": [
+        "hierarchy",
+        "rhythm",
+        "density",
+        "alignment",
+        "scrollOwnership"
+      ]
+    },
+    "replayPolicy": {
+      "type": "object",
+      "required": [
+        "canonicalJson",
+        "doctorCache",
+        "normalizeRecordedAt",
+        "exactBrowserArtifactsRequireEnvironmentMatch"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "canonicalJson": { "const": "recursive-key-sort-utf8-lf-v1" },
+        "doctorCache": { "const": false },
+        "normalizeRecordedAt": { "const": true },
+        "exactBrowserArtifactsRequireEnvironmentMatch": { "const": true }
+      }
+    }
+  },
+  "$defs": { "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" } }
+}
