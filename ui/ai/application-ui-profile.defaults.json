@@ -1,0 +1,41 @@
+{
+  "$schema": "./application-ui-profile.schema.json",
+  "schemaVersion": 1,
+  "scope": "package",
+  "catalogs": [
+    {
+      "package": "@kerfjs/ui",
+      "selection": { "path": "./component-catalog.json", "schemaVersion": 1 },
+      "composition": {
+        "path": "./component-catalog-v2.json",
+        "schemaVersion": 2
+      }
+    }
+  ],
+  "preferences": {
+    "application-shell": { "preferred": "@kerfjs/ui:recipe-app-shell" },
+    "exclusive-choice": {
+      "preferred": "@kerfjs/ui:segmented-control",
+      "avoid": ["@kerfjs/ui:wa-button-group"]
+    },
+    "navigation-row": { "preferred": "@kerfjs/ui:list-item" },
+    "panel-heading": { "preferred": "@kerfjs/ui:panel-header" },
+    "structured-search": { "preferred": "@kerfjs/ui:token-search-field" }
+  },
+  "theme": {
+    "colorScheme": "light",
+    "allowedColorSchemes": ["light", "dark", "invert"],
+    "density": "standard",
+    "allowedDensities": ["standard"]
+  },
+  "tokens": {},
+  "layout": {
+    "shell": "@kerfjs/ui:recipe-app-shell",
+    "pane": "@kerfjs/ui:pane",
+    "responsiveStrategy": "device-class",
+    "compactNavigation": "nav-stack",
+    "scrollOwnership": "one-per-pane",
+    "spacingScale": "kerf-five-step"
+  },
+  "exceptions": []
+}

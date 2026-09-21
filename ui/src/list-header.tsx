@@ -38,24 +38,51 @@ type ListHeaderTriggerAttributes = Readonly<
 
 interface ListHeaderBaseProps {
   label: string;
-  action?: string;
-  actionLabel?: string;
-  actionIcon?: SafeHtml;
-  actionDisabled?: boolean;
-  disabledReason?: string;
-  expanded?: boolean;
-  toggle?: boolean;
   /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
   placeholder?: boolean;
   rootAttributes?: ListHeaderRootAttributes;
   triggerAttributes?: ListHeaderTriggerAttributes;
 }
 
+type ListHeaderModeProps =
+  | {
+      /** Render the title as a controlled disclosure trigger. */
+      toggle: true;
+      action: string;
+      expanded: boolean;
+      actionIcon?: SafeHtml;
+      actionLabel?: never;
+      actionDisabled?: boolean;
+      disabledReason?: string;
+    }
+  | {
+      /** Render a separately named trailing action. */
+      toggle?: false;
+      action: string;
+      actionLabel: string;
+      actionIcon: SafeHtml;
+      expanded?: never;
+      actionDisabled?: boolean;
+      disabledReason?: string;
+    }
+  | {
+      /** Render a passive section heading. */
+      toggle?: false;
+      action?: never;
+      actionLabel?: never;
+      actionIcon?: never;
+      expanded?: never;
+      actionDisabled?: never;
+      disabledReason?: never;
+    };
+
 type ListHeaderIndicatorProps =
   | { count: number; countLabel: string; badge?: never }
   | { count?: never; countLabel?: never; badge?: SafeHtml };
 
-export type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps;
+export type ListHeaderProps = ListHeaderBaseProps &
+  ListHeaderIndicatorProps &
+  ListHeaderModeProps;
 
 export function ListHeader({
   label,
@@ -130,7 +157,8 @@ export function ListHeader({
           type="button"
           class="kui-list-header__title kui-list-header__toggle"
           data-action={placeholder ? undefined : action}
-          disabled={placeholder || undefined}
+          title={actionDisabled ? disabledReason : undefined}
+          disabled={actionDisabled || placeholder || undefined}
           aria-label={accessibleLabel}
           aria-expanded={String(Boolean(expanded))}
         >

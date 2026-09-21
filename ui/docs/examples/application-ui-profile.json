@@ -1,0 +1,60 @@
+{
+  "$schema": "../../ai/application-ui-profile.schema.json",
+  "schemaVersion": 1,
+  "scope": "workspace",
+  "catalogs": [
+    {
+      "package": "@kerfjs/ui",
+      "selection": {
+        "path": "../../ai/component-catalog.json",
+        "schemaVersion": 1
+      },
+      "composition": {
+        "path": "../../ai/component-catalog-v2.json",
+        "schemaVersion": 2
+      }
+    },
+    {
+      "package": "@acme/ui",
+      "composition": {
+        "path": "./component-catalog-extension-v2.json",
+        "schemaVersion": 2
+      }
+    }
+  ],
+  "preferences": {
+    "application-shell": {
+      "preferred": "@kerfjs/ui:recipe-app-shell",
+      "rationale": "The workspace uses the standard resizable three-region shell."
+    },
+    "record-inspector": {
+      "preferred": "@acme/ui:inspector",
+      "rationale": "The application-owned inspector maps record policy onto Kerf panel primitives."
+    }
+  },
+  "theme": {
+    "colorScheme": "light",
+    "allowedColorSchemes": ["light", "dark"],
+    "density": "standard",
+    "allowedDensities": ["standard"]
+  },
+  "tokens": {
+    "--kui-color-brand-fill-normal": "oklch(0.62 0.16 255)"
+  },
+  "layout": {
+    "shell": "@kerfjs/ui:recipe-app-shell",
+    "pane": "@kerfjs/ui:pane",
+    "responsiveStrategy": "device-class",
+    "compactNavigation": "nav-stack",
+    "scrollOwnership": "one-per-pane",
+    "spacingScale": "kerf-five-step"
+  },
+  "exceptions": [
+    {
+      "id": "legacy-report-grid",
+      "rules": ["KUI-C101"],
+      "target": "src/features/legacy-report/report-grid.tsx",
+      "rationale": "The embedded report engine owns this isolated toolbar-compatible control row."
+    }
+  ]
+}

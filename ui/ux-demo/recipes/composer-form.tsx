@@ -82,7 +82,7 @@ export const createRecipe: RecipeFactory = (announce) => {
           with-count
           value={body.value}
         ></wa-textarea>
-        <Select
+        <Select<string>
           name="recipe-audience"
           value={audience.value}
           label="Audience"

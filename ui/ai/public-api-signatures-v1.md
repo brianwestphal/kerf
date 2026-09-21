@@ -47,7 +47,7 @@ import * as kerfjs from 'kerfjs';
 type ToolbarTextSize = 'xlarge' | 'large' | 'default' | 'small';
 /** ARIA heading level for a title exposed as a heading landmark. */
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
-interface ToolbarTextProps {
+interface ToolbarTextBaseProps {
     text: string;
     size?: ToolbarTextSize;
     className?: string;
@@ -62,22 +62,21 @@ interface ToolbarTextProps {
     /** Render the text as an unanimated loading skeleton instead of its value. */
     placeholder?: boolean;
     /**
-     * Wrap onto multiple lines when the text does not fit, instead of the default
-     * single line. Combine with `maxLines` to cap the number of lines. Default false.
-     */
-    wrap?: boolean;
-    /**
      * Show a trailing ellipsis (…) where the text is truncated — on the single line
      * (default), or at the `maxLines` boundary when wrapping. Set false to hard-clip
      * instead. Default true.
      */
     ellipsis?: boolean;
-    /**
-     * Cap wrapped text to this many lines, truncating past it. Only takes effect with
-     * `wrap`; ignored on a single line. `null`/omitted wraps without a line cap. Default null.
-     */
-    maxLines?: number | null;
 }
+type ToolbarTextWrappingProps = {
+    /** Wrap onto multiple lines; combine with `maxLines` to cap them. */
+    wrap: true;
+    maxLines?: number | null;
+} | {
+    wrap?: false;
+    maxLines?: never;
+};
+type ToolbarTextProps = ToolbarTextBaseProps & ToolbarTextWrappingProps;
 declare function ToolbarText({ text, size, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, }: ToolbarTextProps): kerfjs.SafeHtml;
 
 export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarTextSize };
@@ -88,21 +87,25 @@ export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarText
 ```ts
 import { SafeHtml } from 'kerfjs';
 
+type ToolbarControlGroupAppearance = 'contained' | 'borderless';
+type ToolbarControlGroupTone = 'default' | 'dark';
+type ToolbarControlGroupButtonAppearance = 'plain' | 'push';
+type ToolbarControlGroupShape = 'pill' | 'rounded';
 interface ToolbarControlGroupProps {
     children: SafeHtml | SafeHtml[];
     label?: string;
     className?: string;
     expanded?: boolean;
     single?: boolean;
-    appearance?: 'contained' | 'borderless';
-    tone?: 'default' | 'dark';
-    buttonAppearance?: 'plain' | 'push';
+    appearance?: ToolbarControlGroupAppearance;
+    tone?: ToolbarControlGroupTone;
+    buttonAppearance?: ToolbarControlGroupButtonAppearance;
     /** Corner shape: fully round `pill` (default) or a softer `rounded` rectangle. */
-    shape?: 'pill' | 'rounded';
+    shape?: ToolbarControlGroupShape;
 }
 declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, }: ToolbarControlGroupProps): SafeHtml;
 
-export { ToolbarControlGroup, type ToolbarControlGroupProps };
+export { ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupProps, type ToolbarControlGroupShape, type ToolbarControlGroupTone };
 ```
 
 ## `@kerfjs/ui/floating-toolbar`
@@ -159,18 +162,39 @@ type ListHeaderTriggerAttributes = Readonly<Record<`data-${string}`, string | un
 }>;
 interface ListHeaderBaseProps {
     label: string;
-    action?: string;
-    actionLabel?: string;
-    actionIcon?: SafeHtml;
-    actionDisabled?: boolean;
-    disabledReason?: string;
-    expanded?: boolean;
-    toggle?: boolean;
     /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
     placeholder?: boolean;
     rootAttributes?: ListHeaderRootAttributes;
     triggerAttributes?: ListHeaderTriggerAttributes;
 }
+type ListHeaderModeProps = {
+    /** Render the title as a controlled disclosure trigger. */
+    toggle: true;
+    action: string;
+    expanded: boolean;
+    actionIcon?: SafeHtml;
+    actionLabel?: never;
+    actionDisabled?: boolean;
+    disabledReason?: string;
+} | {
+    /** Render a separately named trailing action. */
+    toggle?: false;
+    action: string;
+    actionLabel: string;
+    actionIcon: SafeHtml;
+    expanded?: never;
+    actionDisabled?: boolean;
+    disabledReason?: string;
+} | {
+    /** Render a passive section heading. */
+    toggle?: false;
+    action?: never;
+    actionLabel?: never;
+    actionIcon?: never;
+    expanded?: never;
+    actionDisabled?: never;
+    disabledReason?: never;
+};
 type ListHeaderIndicatorProps = {
     count: number;
     countLabel: string;
@@ -180,7 +204,7 @@ type ListHeaderIndicatorProps = {
     countLabel?: never;
     badge?: SafeHtml;
 };
-type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps;
+type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHeaderModeProps;
 declare function ListHeader({ label, count, countLabel, badge, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, }: ListHeaderProps): SafeHtml;
 
 export { ListHeader, type ListHeaderProps };
@@ -338,11 +362,9 @@ export { ListInsetText, type ListInsetTextProps };
 import { SafeHtml } from 'kerfjs';
 import { HeadingLevel } from './toolbar-text.js';
 
-interface PanelHeaderProps {
+interface PanelHeaderBaseProps {
     title: string;
     titleId: string;
-    summary?: string;
-    summaryId?: string;
     icon?: SafeHtml;
     iconClassName?: string;
     actions?: SafeHtml;
@@ -356,6 +378,14 @@ interface PanelHeaderProps {
     /** Render the title and summary as unanimated loading skeletons, keeping the icon and actions. */
     placeholder?: boolean;
 }
+type PanelHeaderSummaryProps = {
+    summary: string;
+    summaryId?: string;
+} | {
+    summary?: never;
+    summaryId?: never;
+};
+type PanelHeaderProps = PanelHeaderBaseProps & PanelHeaderSummaryProps;
 /**
  * The heading of a panel, dialog, or page: a plain `Toolbar` whose leading zone
  * holds an optional icon control group and the title as extra-large `ToolbarText`,
@@ -438,6 +468,7 @@ export { AppTab, type AppTabProps };
 ```ts
 import { SafeHtml } from 'kerfjs';
 
+type TabActivation = 'automatic' | 'manual';
 interface TabBarProps {
     id: string;
     label: string;
@@ -451,17 +482,20 @@ interface TabBarProps {
      * selects on arrow / Home / End; `'manual'` moves roving focus only and the user
      * selects with Enter / Space / click — use it when selecting a tab is a heavy action.
      */
-    activation?: 'automatic' | 'manual';
+    activation?: TabActivation;
 }
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
 declare function TabBar({ id, label, children, leading, trailing, className, activation, }: TabBarProps): SafeHtml;
 
-export { TabBar, type TabBarProps };
+export { type TabActivation, TabBar, type TabBarProps };
 ```
 
 ## `@kerfjs/ui/wire-tab-bars`
 
 ```ts
+import { TabActivation } from './tab-bar.js';
+import 'kerfjs';
+
 type TabReorderSource = 'pointer' | 'keyboard';
 type TabDropPosition = 'before' | 'after';
 interface TabReorder {
@@ -471,7 +505,7 @@ interface TabReorder {
     position: TabDropPosition;
     source: TabReorderSource;
 }
-type TabActivation = 'automatic' | 'manual';
+
 interface WireTabBarsOptions {
     onReorder: (change: TabReorder) => void;
     /**
@@ -491,7 +525,7 @@ declare function reorderTabs<T>(items: readonly T[], getId: (item: T) => string,
 /** Wire reordering and keyboard navigation while leaving controlled state in the application. */
 declare function wireTabBars(root: HTMLElement | Document, { onReorder, activation }: WireTabBarsOptions): () => void;
 
-export { type TabActivation, type TabDropPosition, type TabReorder, type TabReorderSource, type WireTabBarsOptions, reorderTabs, wireTabBars };
+export { TabActivation, type TabDropPosition, type TabReorder, type TabReorderSource, type WireTabBarsOptions, reorderTabs, wireTabBars };
 ```
 
 ## `@kerfjs/ui/nav-stack`
@@ -820,21 +854,21 @@ export { type SidebarStorage, type WireSidebarOptions, type WireSidebarPanel, wi
 ```ts
 import { SafeHtml } from 'kerfjs';
 
-interface TabScaffoldTab {
-    id: string;
+interface TabScaffoldTab<Id extends string = string> {
+    id: Id;
     label: string;
     /** Decorative icon shown above the label in the bottom bar. */
     icon?: SafeHtml;
     /** The tab's content — typically a `NavStack` so each tab keeps its own stack. */
     content: SafeHtml;
 }
-interface TabScaffoldProps {
+interface TabScaffoldProps<Id extends string = string> {
     id: string;
     /** Accessible name for the tab bar. */
     label: string;
-    tabs: TabScaffoldTab[];
+    tabs: readonly TabScaffoldTab<Id>[];
     /** The controlled active tab id (the app owns selection). */
-    active: string;
+    active: NoInfer<Id>;
     className?: string;
 }
 /**
@@ -845,7 +879,7 @@ interface TabScaffoldProps {
  * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
-declare function TabScaffold({ id, label, tabs, active, className, }: TabScaffoldProps): SafeHtml;
+declare function TabScaffold<Id extends string>({ id, label, tabs, active, className, }: TabScaffoldProps<Id>): SafeHtml;
 
 export { TabScaffold, type TabScaffoldProps, type TabScaffoldTab };
 ```
@@ -1144,6 +1178,7 @@ import 'kerfjs';
  * choices in the same vocabulary.
  */
 type CatalogResourceKind = 'demoSource' | 'componentSource' | 'designTemplate' | 'guidance' | 'integrationGuidance';
+type CatalogGuidanceKind = 'guidance' | 'integrationGuidance';
 interface CatalogResourceTarget {
     href: string;
     /** Optional monospace detail, normally the repository-relative source path. */
@@ -1159,7 +1194,7 @@ interface CatalogResourcesInput {
     /** Required UI or integration guidance. */
     guidance: CatalogResourceTarget;
     /** Use `integrationGuidance` when the component implementation is upstream. */
-    guidanceKind?: 'guidance' | 'integrationGuidance';
+    guidanceKind?: CatalogGuidanceKind;
 }
 /**
  * Build the standard catalog resource group in its canonical order: demo,
@@ -1167,7 +1202,7 @@ interface CatalogResourcesInput {
  */
 declare function catalogResources(input: CatalogResourcesInput): CatalogResource[];
 
-export { type CatalogResourceKind, type CatalogResourceTarget, type CatalogResourcesInput, catalogResources };
+export { type CatalogGuidanceKind, type CatalogResourceKind, type CatalogResourceTarget, type CatalogResourcesInput, catalogResources };
 ```
 
 ## `@kerfjs/ui/wire-catalog`
@@ -1239,18 +1274,18 @@ type SegmentedControlAppearance = 'filled' | 'outlined' | 'toolbar';
 type SegmentedControlShape = 'rounded' | 'pill';
 type SegmentedControlSize = 'small' | 'default';
 type SegmentedControlLayout = 'content' | 'equal';
-interface SegmentedControlChoice {
-    value: string;
+interface SegmentedControlChoice<Value extends string = string> {
+    value: Value;
     label: string;
     content?: SafeHtml;
     title?: string;
     disabled?: boolean;
 }
-interface SegmentedControlProps {
+interface SegmentedControlProps<Value extends string = string> {
     id: string;
     label: string;
-    value: string;
-    choices: readonly SegmentedControlChoice[];
+    value: NoInfer<Value>;
+    choices: readonly SegmentedControlChoice<Value>[];
     action?: string;
     appearance?: SegmentedControlAppearance;
     shape?: SegmentedControlShape;
@@ -1260,9 +1295,51 @@ interface SegmentedControlProps {
     /** Render as an unanimated loading skeleton, disabling every segment. */
     placeholder?: boolean;
 }
-declare function SegmentedControl({ id, label, value, choices, action, appearance, shape, size, layout, className, placeholder, }: SegmentedControlProps): SafeHtml;
+declare function SegmentedControl<Value extends string>({ id, label, value, choices, action, appearance, shape, size, layout, className, placeholder, }: SegmentedControlProps<Value>): SafeHtml;
 
 export { SegmentedControl, type SegmentedControlAppearance, type SegmentedControlChoice, type SegmentedControlLayout, type SegmentedControlProps, type SegmentedControlShape, type SegmentedControlSize };
+```
+
+## `@kerfjs/ui/select`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+import { LucideNode } from './lucide-icon.js';
+import 'lucide';
+
+interface SelectChoice<Value extends string = string> {
+    value: Value;
+    label: string;
+    icon?: LucideNode;
+    iconName?: string;
+    color?: string;
+    group?: string;
+    separatorBefore?: boolean;
+}
+type SelectAccessibleName = {
+    label: string;
+    ariaLabel?: string;
+} | {
+    label?: never;
+    ariaLabel: string;
+};
+interface SelectBaseProps<Value extends string = string> {
+    name: string;
+    value: NoInfer<Value>;
+    choices: readonly SelectChoice<Value>[];
+    className?: string;
+    /** Empty-value hint text shown in the closed control (the native select placeholder). */
+    placeholderText?: string;
+    disabled?: boolean;
+    fitMenu?: boolean;
+    renderSelected?: (choice: SelectChoice<Value>) => SafeHtml;
+    /** Render as an unanimated loading skeleton: the label above a static, empty control box. */
+    placeholder?: boolean;
+}
+type SelectProps<Value extends string = string> = SelectBaseProps<Value> & SelectAccessibleName;
+declare function Select<Value extends string>({ name, value, label, ariaLabel, choices, className, placeholderText, disabled, fitMenu, renderSelected, placeholder, }: SelectProps<Value>): SafeHtml;
+
+export { Select, type SelectChoice, type SelectProps };
 ```
 
 ## `@kerfjs/ui/state-banner`
@@ -1271,20 +1348,21 @@ export { SegmentedControl, type SegmentedControlAppearance, type SegmentedContro
 import { SafeHtml } from 'kerfjs';
 
 type StateBannerTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger';
+type StateBannerUrgency = 'status' | 'alert';
 interface StateBannerProps {
     title: string;
     detail?: string;
     icon?: SafeHtml;
     action?: SafeHtml;
     tone?: StateBannerTone;
-    urgency?: 'status' | 'alert';
+    urgency?: StateBannerUrgency;
     className?: string;
     /** Render the title and detail as unanimated loading skeletons, keeping the icon and tone. */
     placeholder?: boolean;
 }
 declare function StateBanner({ title, detail, icon, action, tone, urgency, className, placeholder, }: StateBannerProps): SafeHtml;
 
-export { StateBanner, type StateBannerProps, type StateBannerTone };
+export { StateBanner, type StateBannerProps, type StateBannerTone, type StateBannerUrgency };
 ```
 
 ## `@kerfjs/ui/empty-state`
@@ -1381,7 +1459,15 @@ interface TokenSearchToken {
     offset?: number;
     accessibleLabel?: string;
 }
-interface TokenSearchFieldProps {
+type TokenSearchEditorAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-key'?: never;
+    'data-morph-skip'?: never;
+    'data-token-search-editor'?: never;
+    'data-token-count'?: never;
+    'data-placeholder'?: never;
+}>;
+interface TokenSearchFieldBaseProps {
     id: string;
     label: string;
     query?: string;
@@ -1390,12 +1476,6 @@ interface TokenSearchFieldProps {
     tokenPlaceholder?: string;
     disabled?: boolean;
     autofocus?: boolean;
-    /** Allow an empty field to render as one iconic action. */
-    collapsible?: boolean;
-    /** Keep an empty collapsible field open while the application owns focus. */
-    expanded?: boolean;
-    expandAction?: string;
-    expandLabel?: string;
     leading?: SafeHtml;
     trailing?: SafeHtml;
     editAction?: string;
@@ -1403,8 +1483,22 @@ interface TokenSearchFieldProps {
     clearAction?: string;
     clearLabel?: string;
     className?: string;
-    editorAttributes?: Readonly<Record<`data-${string}`, string>>;
+    editorAttributes?: TokenSearchEditorAttributes;
 }
+type TokenSearchCollapsibleProps = {
+    /** Allow an empty field to render as one iconic action. */
+    collapsible: true;
+    /** Keep an empty collapsible field open while the application owns focus. */
+    expanded?: boolean;
+    expandAction?: string;
+    expandLabel?: string;
+} | {
+    collapsible?: false;
+    expanded?: never;
+    expandAction?: never;
+    expandLabel?: never;
+};
+type TokenSearchFieldProps = TokenSearchFieldBaseProps & TokenSearchCollapsibleProps;
 interface TokenSearchFieldValue {
     query: string;
     tokens: TokenSearchToken[];
@@ -1415,7 +1509,7 @@ declare function readTokenSearchField(editor: HTMLElement, knownTokens?: readonl
 /** Focus an editor and place its caret at a text offset, skipping atomic token chips. */
 declare function placeTokenSearchCaret(editor: HTMLElement, offset?: number): void;
 
-export { TokenSearchField, type TokenSearchFieldProps, type TokenSearchFieldValue, type TokenSearchToken, placeTokenSearchCaret, readTokenSearchField };
+export { type TokenSearchEditorAttributes, TokenSearchField, type TokenSearchFieldProps, type TokenSearchFieldValue, type TokenSearchToken, placeTokenSearchCaret, readTokenSearchField };
 ```
 
 ## `@kerfjs/ui/wire-token-search-fields`
@@ -1452,21 +1546,26 @@ interface TokenSearchTokenRemoval {
  * for the caller to apply, while caret movement past a chip is a pure ephemeral
  * mechanic the helper performs itself.
  */
-interface TokenSearchKeyboardOptions {
+interface TokenSearchKeyboardBaseOptions {
     /**
      * From a collapsed caret with no selection, Backspace removes the token
      * immediately before it and Delete the token immediately after — reported via
      * `onRemoveToken` — instead of deleting a character. Default: true.
      */
-    removeAdjacentToken?: boolean;
     /**
      * ArrowRight moves the caret past a trailing atomic token so text typed next
      * lands after the chip. Default: true.
      */
     moveCaretPastToken?: boolean;
-    /** Apply the reported removal to your controlled state, then re-render. */
-    onRemoveToken?: (removal: TokenSearchTokenRemoval) => void;
 }
+type TokenSearchKeyboardOptions = TokenSearchKeyboardBaseOptions & ({
+    removeAdjacentToken?: true;
+    /** Apply the reported removal to your controlled state, then re-render. */
+    onRemoveToken: (removal: TokenSearchTokenRemoval) => void;
+} | {
+    removeAdjacentToken: false;
+    onRemoveToken?: never;
+});
 /**
  * Managed collapsible behavior for the iconic TokenSearchField. Every piece is on
  * by default; disable a specific one to own it in the app. Provide `signals` to
@@ -1499,8 +1598,8 @@ interface WireTokenSearchFieldsOptions {
     onEdit?: (edit: TokenSearchEdit) => void;
     /** Managed collapsible transient behavior. `true`/omitted = on with defaults; `false` = fully off. */
     collapsible?: boolean | TokenSearchCollapsibleOptions;
-    /** Opt-in atomic-chip keyboard behavior (off by default). `true` = on with defaults. */
-    keyboard?: boolean | TokenSearchKeyboardOptions;
+    /** Opt-in atomic-chip keyboard behavior (off by default). */
+    keyboard?: false | TokenSearchKeyboardOptions;
 }
 /**
  * The value returned from {@link wireTokenSearchFields}: call it (or `dispose()`) to

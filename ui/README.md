@@ -221,6 +221,82 @@ its shipped TypeScript types, and the checked
 example. Preserve each catalog's package and qualify every identity and
 cross-catalog reference as `package:id`; never merge entries by bare id.
 
+[`compile-time-contracts-v1.json`](./ai/compile-time-contracts-v1.json) is the
+matching declaration contract: stable `KUI-T###` ids identify the invalid prop,
+state, identity, accessibility, and protected-attribute combinations TypeScript
+rejects. The package gate compiles one positive/negative consumer fixture against
+both source and declarations extracted from the real packed tarball. The
+[compile-time contract guide](./docs/type-contracts.md) documents migrations and
+the dynamic DOM/children relationships that remain runtime or catalog checks.
+Packages scaffolded by `create-kerf-component` maintain this v2 input from
+`kerf.components.json`: `npm run catalog:generate` emits the catalog and
+`npm run catalog:check` verifies source files, named public exports, explicit
+author decisions, and byte-for-byte drift. Tools index the generated consumer
+entries and this catalog by full key, reject duplicate full keys, search the
+consumer package first, and retain package identity across every reference.
+They must not infer missing semantics or geometry from rendered appearance.
+
+### Application UI profile
+
+Applications can check in `.kerf-ui-profile.json` so tools do not have to infer
+project-wide UI policy. Start from the shipped
+[`application-ui-profile.defaults.json`](./ai/application-ui-profile.defaults.json)
+and the checked
+[`application-ui-profile.json`](./docs/examples/application-ui-profile.json)
+workspace example. The versioned
+[`application-ui-profile.schema.json`](./ai/application-ui-profile.schema.json)
+and [`application-ui-profile.d.ts`](./ai/application-ui-profile.d.ts) cover
+catalog locations, concept preferences, allowed theme/density choices, semantic
+token overrides, layout/responsive conventions, and narrow rule exceptions.
+Profiles contain policy only—never product records, user data, or broad styling
+waivers.
+
+Catalog declarations always provide a v2 `composition` location. Consumer
+packages generated with composition-only metadata omit `selection`;
+`@kerfjs/ui` continues to require its v1 selection catalog.
+
+Node-based AI and static-analysis tools may import the shipped discovery API
+from `@kerfjs/ui/ai/application-ui-profile.mjs`. It discovers package defaults,
+then the workspace profile, then directory profiles from parent to child;
+`mergeApplicationUiProfiles()` applies later scalar/map values, replaces a
+catalog by package and an exception by id, and preserves source provenance.
+`loadApplicationUiProfile()` resolves catalogs and returns diagnostics with the
+originating file plus JSON path. Unknown/stale components, tokens, rules, and
+catalog locations are errors. Every layer is checked against its then-effective
+catalogs, including parent references and catalog paths later overridden by a
+child profile. Synchronous integrations can require the shipped
+`application-ui-profile-sync.cjs` projection and call
+`loadApplicationUiProfileSync()` with already-discovered layers. Consumers that define additional stable
+diagnostics pass their ids through the additive `knownRules` option; those ids
+are merged with catalog diagnostics before exception validation.
+
+### Static CSS and layout ownership analysis
+
+Run `kerf-ui-analyze --root . src` (or import
+`@kerfjs/ui/analyzer`) to evaluate cross-file integration facts against the
+composition catalogs and application profile. It catches provable private
+selector reach-through, unknown tokens, competing geometry owners, and nested
+scroll owners; it reports forced dimensions, repeated insets, off-scale literal
+spacing, and dynamic classes separately as review findings. Text, versioned JSON,
+and SARIF outputs carry stable `KUI-L###` ids, repository-relative locations,
+evidence, and ownership chains. See the [analyzer guide](./docs/ui-analyzer.md).
+
+### Browser-backed integration evaluation
+
+Run `kerf-ui-evaluate --url <running-app>` (or import
+`@kerfjs/ui/evaluator`) after the static analyzer. Its Playwright-backed
+wide/intermediate/narrow/200%-zoom, light/dark, and reduced-motion matrix checks
+rendered overflow, clipping, reachability, focus/keyboard behavior, accessible
+names, contrast, hit targets, scrolling, alignment, and cataloged runtime
+geometry. The versioned report carries stable `KUI-B###` diagnostics, focused
+DOM/computed-style evidence, hashed screenshot artifacts, explicit timeout and
+retention policy, and a separate unscored human-visual rubric. See the
+[browser evaluator guide](./docs/ui-evaluator.md).
+
+### Unified repair-loop doctor
+
+Use `kerf-ui-doctor` for the supported application repair loop across profile/catalog validation, TypeScript, the Kerf UI ESLint preset, static layout analysis, and an optional explicitly authorized browser evaluation. It emits one portable versioned JSON report with deterministic exit codes, exact suppressions, monorepo package selection, changed/full modes, caching, and local-path redaction. See the [UI doctor guide](./docs/ui-doctor.md).
+
 For code generation, pair catalog selection guidance with the checked-in
 [`public-api-signatures-v1.md`](./ai/public-api-signatures-v1.md) declaration
 snapshot. It is generated from the emitted `@kerfjs/ui` declarations and the

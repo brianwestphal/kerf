@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Evaluator passing fixture</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; }
+      body { background: white; color: black; font: 16px/1.5 system-ui; }
+      main { max-width: 40rem; margin: 0 auto; }
+      button {
+        min-width: 44px;
+        min-height: 44px;
+        border: 2px solid currentColor;
+        background: white;
+        color: black;
+      }
+      button:focus-visible, input:focus-visible {
+        outline: 0;
+        border-color: #005fcc;
+        background: #dbeafe;
+      }
+      input { min-width: 44px; min-height: 44px; color: black; background: white; }
+      [data-kui-align-group] { display: grid; gap: 8px; }
+      [data-kui-align-edge] { margin: 0; }
+      @media (prefers-color-scheme: dark) {
+        body { background: black; color: white; }
+        button, input { background: black; color: white; }
+        button:focus-visible, input:focus-visible { background: #172554; }
+      }
+      @media (prefers-reduced-motion: no-preference) {
+        button { transition: color 100ms linear; }
+      }
+    </style>
+  </head>
+  <body>
+    <main data-kui-align-group>
+      <h1 data-kui-align-edge>Account</h1>
+      <p data-kui-align-edge>Representative application fixture.</p>
+      <button id="save" type="button" data-kui-evaluator-action>Save</button>
+      <button class="repeated-control" type="button">
+        First repeated control
+      </button>
+      <button class="repeated-control" type="button">
+        Second repeated control
+      </button>
+      <input type="submit" value="Apply" />
+    </main>
+  </body>
+</html>

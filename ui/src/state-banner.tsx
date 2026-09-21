@@ -4,6 +4,7 @@ import { Skeleton } from './skeleton.js';
 
 export type StateBannerTone =
   'neutral' | 'info' | 'success' | 'warning' | 'danger';
+export type StateBannerUrgency = 'status' | 'alert';
 
 export interface StateBannerProps {
   title: string;
@@ -11,7 +12,7 @@ export interface StateBannerProps {
   icon?: SafeHtml;
   action?: SafeHtml;
   tone?: StateBannerTone;
-  urgency?: 'status' | 'alert';
+  urgency?: StateBannerUrgency;
   className?: string;
   /** Render the title and detail as unanimated loading skeletons, keeping the icon and tone. */
   placeholder?: boolean;

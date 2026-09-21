@@ -16,13 +16,21 @@
   },
   "files": [
     "dist",
+    "component-catalog-v2.json",
+    "kerf.components.json",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "build": "tsup",
+    "catalog:generate": "node scripts/kerf-component-catalog.mjs --write",
+    "catalog:check": "node scripts/kerf-component-catalog.mjs --check",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run catalog:check && npm run build"
+  },
+  "kerfComponentCatalog": {
+    "source": "./kerf.components.json",
+    "output": "./component-catalog-v2.json"
   },
   "peerDependencies": {
     "kerfjs": "^4.0.0"

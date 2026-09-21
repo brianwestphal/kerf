@@ -26,15 +26,22 @@
     "node": ">=18.0.0"
   },
   "bin": {
-    "create-kerf-component": "index.js"
+    "create-kerf-component": "index.js",
+    "kerf-component-catalog": "catalog.js"
   },
   "files": [
     "index.js",
+    "catalog.js",
+    "component-metadata.schema.json",
+    "component-catalog-v2.schema.json",
     "template",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
     "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "typescript": "^5.0.0 || ^6.0.0"
   }
 }

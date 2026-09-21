@@ -1,0 +1,101 @@
+{
+  "$schema": "./compile-time-contracts-v1.schema.json",
+  "schemaVersion": 1,
+  "package": "@kerfjs/ui",
+  "fixture": "tests/consumer-types/contracts/consumer.ts",
+  "contracts": [
+    {
+      "id": "KUI-T001",
+      "catalogKey": "@kerfjs/ui:list-header",
+      "publicImport": "@kerfjs/ui/list-header",
+      "symbols": ["ListHeaderProps"],
+      "kind": "discriminated-union",
+      "summary": "ListHeader passive, trailing-action, and disclosure modes require only the inputs their rendered behavior uses."
+    },
+    {
+      "id": "KUI-T002",
+      "catalogKey": "@kerfjs/ui:select",
+      "publicImport": "@kerfjs/ui/select",
+      "symbols": ["SelectProps"],
+      "kind": "accessible-name",
+      "summary": "Select requires either a visible label or an explicit ARIA label."
+    },
+    {
+      "id": "KUI-T003",
+      "catalogKey": "@kerfjs/ui:select",
+      "publicImport": "@kerfjs/ui/select",
+      "symbols": ["SelectChoice", "SelectProps"],
+      "kind": "literal-identity",
+      "summary": "Literal Select values are constrained to the declared choice values; dynamic integrations may widen the generic to string."
+    },
+    {
+      "id": "KUI-T004",
+      "catalogKey": "@kerfjs/ui:segmented-control",
+      "publicImport": "@kerfjs/ui/segmented-control",
+      "symbols": ["SegmentedControlChoice", "SegmentedControlProps"],
+      "kind": "literal-identity",
+      "summary": "Literal SegmentedControl values are constrained to the declared choice values; dynamic integrations may widen the generic to string."
+    },
+    {
+      "id": "KUI-T005",
+      "catalogKey": "@kerfjs/ui:token-search-field",
+      "publicImport": "@kerfjs/ui/token-search-field",
+      "symbols": ["TokenSearchFieldProps"],
+      "kind": "discriminated-union",
+      "summary": "Expanded state and expand-action inputs exist only for collapsible TokenSearchField variants."
+    },
+    {
+      "id": "KUI-T006",
+      "catalogKey": "@kerfjs/ui:token-search-field",
+      "publicImport": "@kerfjs/ui/token-search-field",
+      "symbols": ["TokenSearchEditorAttributes"],
+      "kind": "protected-attributes",
+      "summary": "TokenSearchField editor metadata cannot replace component-owned identity, morph, count, or placeholder attributes."
+    },
+    {
+      "id": "KUI-T007",
+      "catalogKey": "@kerfjs/ui:panel-header",
+      "publicImport": "@kerfjs/ui/panel-header",
+      "symbols": ["PanelHeaderProps"],
+      "kind": "conditional-property",
+      "summary": "PanelHeader summaryId cannot be supplied without rendered summary content."
+    },
+    {
+      "id": "KUI-T008",
+      "catalogKey": "@kerfjs/ui:toolbar-text",
+      "publicImport": "@kerfjs/ui/toolbar-text",
+      "symbols": ["ToolbarTextProps"],
+      "kind": "conditional-property",
+      "summary": "ToolbarText maxLines is accepted only when wrapping is enabled."
+    },
+    {
+      "id": "KUI-T009",
+      "publicImport": "@kerfjs/ui/tab-scaffold",
+      "symbols": ["TabScaffoldTab", "TabScaffoldProps"],
+      "kind": "literal-identity",
+      "summary": "Literal TabScaffold active ids are constrained to the declared tab ids; dynamic integrations may widen the generic to string."
+    },
+    {
+      "id": "KUI-T010",
+      "catalogKey": "@kerfjs/ui:token-search-field",
+      "publicImport": "@kerfjs/ui/wire-token-search-fields",
+      "symbols": ["TokenSearchKeyboardOptions", "WireTokenSearchFieldsOptions"],
+      "kind": "controlled-callback",
+      "summary": "Adjacent-token removal requires the callback that commits removal to application-owned state."
+    },
+    {
+      "id": "KUI-T011",
+      "publicImport": "@kerfjs/ui",
+      "symbols": [
+        "StateBannerUrgency",
+        "TabActivation",
+        "ToolbarControlGroupAppearance",
+        "ToolbarControlGroupButtonAppearance",
+        "ToolbarControlGroupShape",
+        "ToolbarControlGroupTone"
+      ],
+      "kind": "finite-vocabulary",
+      "summary": "Finite public variant vocabularies are named exported unions rather than anonymous string sets."
+    }
+  ]
+}

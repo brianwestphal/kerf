@@ -3,14 +3,22 @@
 // published bin) into a temp dir and inspects the output.
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  symlinkSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
+import process from 'node:process';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const CLI = join(dirname(fileURLToPath(import.meta.url)), '..', 'index.js');
+const REPOSITORY_NODE_MODULES = join(dirname(CLI), '..', 'node_modules');
 
 // Strip `/* */` and `//` comments so we can JSON.parse JSONC (tsconfig) and so
 // the no-inline-handler check inspects code, not the explanatory comments (which
@@ -53,6 +61,11 @@ test('scaffolds the expected file tree', () => {
       '.gitignore',
       'src/index.ts',
       'src/counter.tsx',
+      'kerf.components.json',
+      'component-catalog-v2.json',
+      'scripts/kerf-component-catalog.mjs',
+      'scripts/component-metadata.schema.json',
+      'scripts/component-catalog-v2.schema.json',
     ]) {
       assert.ok(existsSync(join(target, f)), `missing ${f}`);
     }
@@ -65,7 +78,7 @@ test('scaffolds the expected file tree', () => {
 });
 
 test('replaces the package-name token everywhere', () => {
-  withScaffold('my-widgets', ({ target, read }) => {
+  withScaffold('my-widgets', ({ read }) => {
     for (const f of ['package.json', 'README.md', 'LICENSE', 'src/index.ts']) {
       assert.ok(!read(f).includes('__PKG_NAME__'), `token left in ${f}`);
     }
@@ -96,7 +109,22 @@ test('package.json keeps kerfjs a peerDependency (never bundled), with ESM + sub
       import: './dist/index.js',
     });
     assert.ok(pkg.exports['./counter'], 'subpath export missing');
+    assert.deepEqual(pkg.kerfComponentCatalog, {
+      source: './kerf.components.json',
+      output: './component-catalog-v2.json',
+    });
+    assert.equal(
+      pkg.scripts['catalog:generate'],
+      'node scripts/kerf-component-catalog.mjs --write',
+    );
+    assert.equal(
+      pkg.scripts['catalog:check'],
+      'node scripts/kerf-component-catalog.mjs --check',
+    );
+    assert.match(pkg.scripts.prepublishOnly, /catalog:check/);
     assert.ok(pkg.files.includes('dist'), 'files must ship dist');
+    assert.ok(pkg.files.includes('component-catalog-v2.json'));
+    assert.ok(pkg.files.includes('kerf.components.json'));
     assert.ok(pkg.files.includes('LICENSE'), 'files must ship LICENSE');
   });
 });
@@ -162,6 +190,31 @@ test('prints next-steps guidance on success', () => {
     assert.match(stdout, /Scaffolded kerf component package "my-widgets"/);
     assert.match(stdout, /npm install/);
     assert.match(stdout, /npm run build/);
+    assert.match(stdout, /npm run catalog:check/);
+  });
+});
+
+test('scaffolded local catalog script verifies generated metadata end to end', () => {
+  withScaffold('my-widgets', ({ target }) => {
+    assert.throws(
+      () =>
+        execFileSync(
+          process.execPath,
+          [join(target, 'scripts/kerf-component-catalog.mjs'), '--check'],
+          { cwd: target, encoding: 'utf8', stdio: 'pipe' },
+        ),
+      (error) =>
+        error.stderr.includes(
+          'TypeScript is required for syntax-aware export verification; run npm install',
+        ),
+    );
+    symlinkSync(REPOSITORY_NODE_MODULES, join(target, 'node_modules'), 'dir');
+    const output = execFileSync(
+      process.execPath,
+      [join(target, 'scripts/kerf-component-catalog.mjs'), '--check'],
+      { cwd: target, encoding: 'utf8' },
+    );
+    assert.match(output, /verified component-catalog-v2\.json/);
   });
 });
 

@@ -6,6 +6,10 @@ import preferAttrSelector from './lib/rules/prefer-attr-selector.js';
 import preferModuleJsxAugmentation from './lib/rules/prefer-module-jsx-augmentation.js';
 import requireDataKeyInEach from './lib/rules/require-data-key-in-each.js';
 import requireDelegateDisposer from './lib/rules/require-delegate-disposer.js';
+import uiComposition from './lib/rules/ui-composition.js';
+import uiPreferences from './lib/rules/ui-preferences.js';
+import uiPublicBoundaries from './lib/rules/ui-public-boundaries.js';
+import uiWiring from './lib/rules/ui-wiring.js';
 
 const plugin = {
   meta: { name: 'eslint-plugin-kerfjs', version: '4.4.1' },
@@ -18,6 +22,10 @@ const plugin = {
     'prefer-module-jsx-augmentation': preferModuleJsxAugmentation,
     'prefer-attr-selector': preferAttrSelector,
     'ai-assistant-configs': aiAssistantConfigs,
+    'ui-composition': uiComposition,
+    'ui-preferences': uiPreferences,
+    'ui-public-boundaries': uiPublicBoundaries,
+    'ui-wiring': uiWiring,
   },
   configs: {},
 };
@@ -49,6 +57,25 @@ const recommendedRules = {
 plugin.configs.recommended = {
   plugins: { kerfjs: plugin },
   rules: recommendedRules,
+};
+const recommendedUiRules = {
+  ...recommendedRules,
+  'kerfjs/ui-public-boundaries': 'error',
+  'kerfjs/ui-composition': 'error',
+  'kerfjs/ui-preferences': 'warn',
+  'kerfjs/ui-wiring': 'warn',
+};
+plugin.configs['recommended-ui'] = {
+  plugins: { kerfjs: plugin },
+  rules: recommendedUiRules,
+};
+plugin.configs['strict-ui'] = {
+  plugins: { kerfjs: plugin },
+  rules: {
+    ...recommendedUiRules,
+    'kerfjs/ui-preferences': 'error',
+    'kerfjs/ui-wiring': 'error',
+  },
 };
 plugin.configs.all = plugin.configs.recommended;
 

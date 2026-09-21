@@ -415,10 +415,44 @@ kerf/
 ├── kerf.cursorrules              ← KF-128 — drop-in Cursor rules; copy into a project as `.cursorrules`
 ├── kerf.claude-skill.md          ← KF-128 — drop-in Claude Code skill; copy into `~/.claude/skills/kerf-app/SKILL.md`
 ├── eslint-plugin/                ← KF-214 — `eslint-plugin-kerfjs` sub-package (own package.json + node_modules, published separately). Eight AST-only rules — `no-inline-jsx-event-handlers` / `require-data-key-in-each` / `no-nested-mount` / `prefer-module-jsx-augmentation` at error, plus `require-delegate-disposer` / `prefer-attr-selector` / `no-raw-with-dynamic-arg` / `ai-assistant-configs` at warn — paired with the dev-warn family in `src/dev-*.ts` to enforce the hard rules at edit time. Tests via `npm test` in that directory (`node --test` + ESLint `RuleTester` + `@typescript-eslint/parser`). Ignored by the root `eslint.config.js`.
-├── create-kerf-component/        ← KF-255 — `create-kerf-component` initializer sub-package (own package.json + package-lock, published in lockstep with kerfjs). `index.js` is the zero-dependency CLI (`npm create kerf-component@latest <dir>`); `template/` is the scaffolded component package encoding the docs/13 hard rules (kerfjs peerDependency + tsup `external`, ESM + `.d.ts`, `jsxImportSource: "kerfjs"`, subpath exports, an example `Counter` with a factory + `wire(root)` disposer); `_gitignore` is renamed to `.gitignore` on scaffold. Tests via `npm test` (`node --test tests/scaffold.test.js`), while `tests/unit/release-package.test.ts` packs the initializer and performs real generated-package builds under supported TypeScript majors, including TypeScript 6. The template's `src/` is typechecked against built `dist/` by `tests/dist/scaffold-typing/tsconfig.json` (the living-proof gate). CI job in `ci.yml`; release via `.github/workflows/release-create-kerf-component.yml`; version bumped in lockstep by `scripts/release.sh`.
+├── create-kerf-component/        ← `create-kerf-component` initializer sub-package (own package.json + package-lock, published in lockstep with kerfjs). `index.js` is the scaffold CLI; `catalog.js` is the `kerf-component-catalog` generator/checker and uses the installed TypeScript compiler for syntax-aware TS/TSX named-export discovery. The template encodes the docs/13 packaging rules and starts with author-owned `kerf.components.json`; its copied author/output schemas reject unknown or mistyped fields at exact JSON paths, while the syntax tree prevents JSX text, nested scopes, comments, strings, templates, or regex literals from impersonating exports. Deterministic `component-catalog-v2.json` output also verifies source files, composition/geometry decisions, tokens, accessibility, links, duplicate ids, and drift across one package or npm workspaces. `_gitignore` is renamed to `.gitignore` on scaffold. Package tests cover the CLI, adversarial metadata/source syntax, workspaces, deterministic output, missing-install guidance, and packed/publish dry runs; root release tests still pack and build generated packages under supported TypeScript majors. CI job in `ci.yml`; release via `.github/workflows/release-create-kerf-component.yml`; version bumped in lockstep by `scripts/release.sh`.
 ├── ui/                           ← `@kerfjs/ui`, the fourth lockstep sibling package. `src/` holds generic SafeHtml primitives, including `list-action-row.tsx`/`.css` for a noninteractive full-width row with sibling primary/trailing native buttons, a controlled toolbar/rounded/pill SegmentedControl, a controlled TokenSearchField with DOM read/caret helpers, a controlled reorderable/overflowing TabBar + wiring, and Hot Sheet 2-compatible overridable semantic CSS authored with `remify(<px>)`; `extension-attributes.ts` runtime-filters typed application metadata and protected control relationships; `scripts/remify-css.mjs` provides the PostCSS transform and `scripts/build-css.mjs` emits standard CSS to `dist/styles/`; `src/layout.css` plus `docs/layout.md` define the responsive application-spacing roles, one-scroll-owner contract, and pane-control relocation rule (visible pane owns collapse; hidden inline-start/inline-end pane restores from the main toolbar's leading/trailing edge without an empty rail); every JS/type/CSS path is explicitly exported; `webawesome.ts` emits the side-effect-free consumer JSX declaration boundary synchronized with all 70 supported custom elements; `scripts/build-browser-entries.mjs` derives each component's reachable CSS from source imports and emits conditional `dist/browser/` wrappers, while the root/unstyled/Node entries stay CSS-free; `select-register.ts` is the custom-element registration boundary; `ai/component-catalog.json` plus its schema are the shipped canonical component/decision metadata and exact `publicClasses` CSS-anatomy boundary, `scripts/sync-component-catalog.mjs` projects it deterministically into the typed `ux-demo/catalog.generated.ts`, and `scripts/check-component-catalog.mjs` gates exports, delivery paths, relationships, Web Awesome manifest/declaration coverage, routes, CSS hooks, AI coverage, and links; `ux-demo/` is the production-backed catalog and lazy recipe library whose shell uses the real Kerf logo and PanelHeader-like separate subtitle geometry; `ai-regressions/` plus `scripts/{prepare,score,check}-ai-regression*.mjs` provide the internal provider-neutral task corpus, catalog-aware AST/CSS/layout scorer, and model-free CI replay with legacy boundary mode for the hashes and conclusions recorded by historical measured runs; unit + bundle + three-engine browser suites live under `tests/`.
 └── README.md
 ```
+
+Within `ui/ai/`, the compatible selection catalog and package-qualified v2
+composition projection are joined by `application-ui-profile.*`: shipped
+package defaults, schema/types, asynchronous Node discovery, and synchronous
+ESLint-compatible merge/validation APIs for workspace and directory policy.
+The profile gate checks each layer against its then-effective catalog before
+merge, preserving overridden parent catalog/reference failures, deterministic
+source provenance, preference conflicts, and narrow exception scope.
+
+`ui/ai/compile-time-contracts-v1.json` and its schema map stable `KUI-T###`
+diagnostics to catalog identities, public imports, and emitted symbols. The one
+positive/negative consumer fixture under `ui/tests/consumer-types/contracts/`
+is compiled against source and again against declarations extracted from a real
+`npm pack` tarball by `ui/scripts/check-packed-type-contracts.mjs`; the catalog
+gate rejects missing imports/catalog keys/signatures or fixture drift.
+
+`ui/analyzer/` provides the shipped `kerf-ui-analyze` static evaluator. It
+combines per-source directory profile discovery with catalog boundaries and a
+project-local relative CSS import graph, then emits portable text, JSON, or
+SARIF `KUI-L###` findings for objective selector/token/layout ownership
+violations plus conservative review findings. Its public report schema and unit,
+bundle, and downstream-command tests pin deterministic diagnostics, exact
+profile suppression, sibling-package isolation, changed-file import traversal,
+shared-stylesheet multi-consumer policy, quoted and unquoted recursive imports,
+exit behavior, and a zero-false-positive repository fixture.
+
+`ui/evaluator/` provides the shipped `kerf-ui-evaluate` browser evaluator and
+`@kerfjs/ui/evaluator` API. It resolves the same project profile/catalogs, runs
+six deterministic contexts in selected Playwright engines, and records stable
+`KUI-B###` overflow, clipping, reachability, focus, keyboard, naming, contrast,
+target-size, scrolling, alignment, and geometry diagnostics. Its v1 schema
+separates hashed/retained screenshots and focused DOM/style evidence from the
+suite-v3 human-visual rubric. Unit tests pin matrix/report/contrast logic; the
+good/bad downstream fixtures run through Chromium, Firefox, and WebKit.
 
 `resource().run()` applies its stale-generation guard to both promise rejections and synchronous fetcher throws; either failure form updates the current run to `failed` and resolves the returned promise with `undefined`.
 
@@ -429,6 +463,15 @@ History-router base stripping and link interception share an exact-or-segment-bo
 Router named and wildcard captures decode through a fail-closed helper: malformed percent escapes return no-match so resolution can continue to a fallback without throwing.
 
 `ai-assistant-configs` reports filesystem drift during plain lint without writing; its unusual cross-file installer/updater runs only for an explicit CLI `--fix`, with real ESLint API regression coverage for both modes.
+
+The plugin's additive `recommended-ui` and `strict-ui` flat presets load the
+installed `@kerfjs/ui` selection/composition catalogs and application profile
+defaults. Their four UI rules enforce public CSS boundaries, cataloged
+parent/Toolbar-zone composition, profile preferences, and required wiring.
+Toolbar accepts/cardinality facts come from catalog v2; wiring import aliases,
+root/subpath namespaces, and valid helper sources come from catalog v1. The
+ESLint 9/10 matrix also installs packed plugin/UI tarballs into a downstream
+fixture so default asset resolution is tested outside the source tree.
 Before updating a stale section, it validates the consumer's canonical hash against the manifest history for that exact version. Known untouched versions remain fixable; edited or historically unknown versions are forked and never overwritten. `scripts/ai-canonical-history.json` is the committed source ledger, and bundle sync carries its current hashes into `ai/manifest.json`.
 
 `bindList` preflights every source snapshot for unique keys before reconciliation. Duplicate-key errors name the key and both indices; rejected `arraySignal` patches are drained and force the next valid state through snapshot recovery before granular patching resumes. A granular row-render exception also latches snapshot recovery for the next source notification, repairing a partially applied batch before patches resume.

@@ -1,5 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
+export type TabActivation = 'automatic' | 'manual';
+
 export interface TabBarProps {
   id: string;
   label: string;
@@ -13,7 +15,7 @@ export interface TabBarProps {
    * selects on arrow / Home / End; `'manual'` moves roving focus only and the user
    * selects with Enter / Space / click — use it when selecting a tab is a heavy action.
    */
-  activation?: 'automatic' | 'manual';
+  activation?: TabActivation;
 }
 
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */

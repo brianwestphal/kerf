@@ -15,6 +15,9 @@ export interface CatalogCompositionEntryV2 {
   id: string;
   name: string;
   kind: 'component' | 'composition' | 'recipe';
+  purpose?: string;
+  publicExports?: Array<{ name: string; subpath: string }>;
+  sourceLinks?: string[];
   source: string;
   parents: { mode: 'any' | 'root' | 'listed'; entries: CatalogQualifiedKey[] };
   contexts: string[];
@@ -47,7 +50,11 @@ export interface CatalogCompositionEntryV2 {
     > & { notes?: string[] };
   };
   accessibility: { obligations: string[] };
-  boundaries: { publicClasses: string[]; publicTokens: string[] };
+  boundaries: {
+    rootClass: string | null;
+    publicClasses: string[];
+    publicTokens: string[];
+  };
   diagnostics: CatalogDiagnostic[];
   provenance: { selection: string; composition: string };
 }

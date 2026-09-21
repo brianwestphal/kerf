@@ -33,10 +33,35 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
    wiring, responsive/layout/accessibility rules, and public boundaries. V1
    remains compatible; v2 joins catalogs by `package:id`. Consumer v2 catalogs
    use [the v2 extension schema](./ai/component-catalog-extension-v2.schema.json).
+   Load [compile-time contracts](./ai/compile-time-contracts-v1.json) for stable
+   `KUI-T###` ids, exact declaration symbols, and the boundary between rejected
+   source states and relationships that still require runtime/catalog checks.
+   Before generating application UI, discover `.kerf-ui-profile.json` with the
+   shipped [application profile API](./ai/application-ui-profile.mjs). Merge
+   package defaults, workspace policy, then parent-to-child directory policy;
+   honor its package-qualified preferences, approved theme/density, semantic
+   tokens, layout conventions, and narrow source-located exceptions. Validation
+   is catalog-aware per layer, including parent values later overridden by a
+   child; synchronous hosts use [application-ui-profile-sync.cjs](./ai/application-ui-profile-sync.cjs).
+   See the
+   [workspace profile example](./docs/examples/application-ui-profile.json).
 4. **When authoring a component gallery**, load
    [catalog-authoring.json](./ai/catalog-authoring.json), then follow its
    authoritative [Catalog demo authoring contract](./docs/catalog.md#catalog-demo-authoring-contract).
 5. **Apply the rules below and in** [skill.md](./ai/skill.md).
+6. **Before calling an integration complete**, run
+   [`kerf-ui-doctor`](./docs/ui-doctor.md). Its portable JSON report merges
+   profile/catalog, TypeScript, Kerf ESLint, and static analyzer diagnostics;
+   repair source-located errors until exit 0. Use full mode for release gates.
+   [`kerf-ui-analyze`](./docs/ui-analyzer.md) remains available when only static
+   layout diagnostics are wanted; its review findings are a bounded human/AI
+   review queue rather than an objective aesthetic score.
+7. **Evaluate the running application** by explicitly enabling the doctor's
+   browser stage or directly invoking
+   [`kerf-ui-evaluate`](./docs/ui-evaluator.md). Preserve its `KUI-B###`
+   browser evidence and screenshots; record hierarchy/rhythm/density/aesthetic
+   ratings separately with a named reviewer rather than presenting them as
+   objective assertions.
 
 ## Core rules (do the right thing)
 
@@ -164,4 +189,5 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
 - [app-layouts.md](./docs/app-layouts.md): choosing `NavStack`/`SplitView`/`Workbench`/`TabScaffold` by data + interaction + device, and dialog presentation.
 - [webawesome-theme.md](./docs/webawesome-theme.md): the optional Web Awesome theme; catalog coverage means themed-and-supported, not preferred (prefer the Kerf primitive when one exists). The UX sidebar visibly tags superseded and exceptional Web Awesome choices as `Discouraged`; Popup remains an available conditional positioning primitive.
 - [component-catalog.json](./ai/component-catalog.json) + [component-catalog-extension.schema.json](./ai/component-catalog-extension.schema.json) + [catalog-authoring.json](./ai/catalog-authoring.json) + [public-api-signatures-v1.md](./ai/public-api-signatures-v1.md) + [webawesome-jsx-signatures-v1.md](./ai/webawesome-jsx-signatures-v1.md): machine-readable selection facts, a reusable app-component extension contract, Catalog authoring discovery, and exact signatures.
+- [compile-time-contracts-v1.json](./ai/compile-time-contracts-v1.json) + [type-contracts.md](./docs/type-contracts.md): stable compile diagnostics, packed-declaration proof, migrations, and explicit non-goals.
 - [README.md](./README.md): package overview and the component subpath table.

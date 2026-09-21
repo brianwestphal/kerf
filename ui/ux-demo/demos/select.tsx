@@ -13,7 +13,7 @@ export function SelectDemo() {
     >
       <CatalogExample label="Rendering balance" align="inline-control">
         <div class="demo-example-cluster">
-          <Select
+          <Select<string>
             name="rendering-balance"
             value={selectedChoice.value}
             ariaLabel="Rendering balance"

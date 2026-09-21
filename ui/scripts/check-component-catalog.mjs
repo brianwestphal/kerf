@@ -25,6 +25,10 @@ const [
   catalogV2SchemaSource,
   consumerV2SchemaSource,
   consumerV2ExampleSource,
+  compileTimeContractsSource,
+  compileTimeContractsSchemaSource,
+  compileTimeFixtureSource,
+  publicApiSignaturesSource,
 ] = await Promise.all([
   readFile(resolve(root, 'ai/component-catalog.json'), 'utf8'),
   readFile(resolve(root, 'ai/component-catalog.schema.json'), 'utf8'),
@@ -58,6 +62,10 @@ const [
     resolve(root, 'docs/examples/component-catalog-extension-v2.json'),
     'utf8',
   ),
+  readFile(resolve(root, 'ai/compile-time-contracts-v1.json'), 'utf8'),
+  readFile(resolve(root, 'ai/compile-time-contracts-v1.schema.json'), 'utf8'),
+  readFile(resolve(root, 'tests/consumer-types/contracts/consumer.ts'), 'utf8'),
+  readFile(resolve(root, 'ai/public-api-signatures-v1.md'), 'utf8'),
 ]);
 const artifact = JSON.parse(artifactSource);
 const schema = JSON.parse(schemaSource);
@@ -71,6 +79,8 @@ const catalogV2 = JSON.parse(catalogV2Source);
 const catalogV2Schema = JSON.parse(catalogV2SchemaSource);
 const consumerV2Schema = JSON.parse(consumerV2SchemaSource);
 const consumerV2Example = JSON.parse(consumerV2ExampleSource);
+const compileTimeContracts = JSON.parse(compileTimeContractsSource);
+const compileTimeContractsSchema = JSON.parse(compileTimeContractsSchemaSource);
 const failures = [];
 
 function fail(message) {
@@ -162,6 +172,12 @@ validateSchema(
   catalogV2Schema,
   '$consumerV2',
   catalogV2Schema,
+);
+validateSchema(
+  compileTimeContracts,
+  compileTimeContractsSchema,
+  '$compileTimeContracts',
+  compileTimeContractsSchema,
 );
 for (const failure of validateCatalogV2(catalogV2, { v1: artifact }))
   fail(`v2: ${failure}`);
@@ -358,6 +374,48 @@ function packageSubpath(specifier) {
   return specifier === '@kerfjs/ui'
     ? '.'
     : `.${specifier.slice('@kerfjs/ui'.length)}`;
+}
+
+const typeContractIds = compileTimeContracts.contracts.map(({ id }) => id);
+if (new Set(typeContractIds).size !== typeContractIds.length)
+  fail('compile-time contract ids must be unique');
+if (
+  typeContractIds.some(
+    (id, index) => id !== `KUI-T${String(index + 1).padStart(3, '0')}`,
+  )
+)
+  fail('compile-time contract ids must be contiguous KUI-T001..KUI-TNNN');
+if (
+  compileTimeContracts.fixture !== 'tests/consumer-types/contracts/consumer.ts'
+)
+  fail(
+    'compile-time contract artifact must name the checked source/packed fixture',
+  );
+for (const contract of compileTimeContracts.contracts) {
+  if (
+    contract.catalogKey &&
+    !catalogV2.entries.some(({ key }) => key === contract.catalogKey)
+  )
+    fail(
+      `${contract.id} references missing catalog entry ${contract.catalogKey}`,
+    );
+  const subpath = packageSubpath(contract.publicImport);
+  if (!(subpath in packageJson.exports))
+    fail(
+      `${contract.id} references unexported package import ${contract.publicImport}`,
+    );
+  for (const symbol of contract.symbols)
+    if (!publicApiSignaturesSource.includes(symbol))
+      fail(
+        `${contract.id} names ${symbol}, absent from emitted public signatures`,
+      );
+  const fixtureMentions = compileTimeFixtureSource.match(
+    new RegExp(contract.id, 'g'),
+  )?.length;
+  if (!fixtureMentions || fixtureMentions < 2)
+    fail(`${contract.id} requires positive and negative fixture coverage`);
+  if (!compileTimeFixtureSource.includes(`@ts-expect-error ${contract.id}`))
+    fail(`${contract.id} requires a negative @ts-expect-error assertion`);
 }
 for (const entry of entries) {
   for (const key of [

@@ -1,16 +1,21 @@
 import type { SafeHtml } from 'kerfjs';
 
+export type ToolbarControlGroupAppearance = 'contained' | 'borderless';
+export type ToolbarControlGroupTone = 'default' | 'dark';
+export type ToolbarControlGroupButtonAppearance = 'plain' | 'push';
+export type ToolbarControlGroupShape = 'pill' | 'rounded';
+
 export interface ToolbarControlGroupProps {
   children: SafeHtml | SafeHtml[];
   label?: string;
   className?: string;
   expanded?: boolean;
   single?: boolean;
-  appearance?: 'contained' | 'borderless';
-  tone?: 'default' | 'dark';
-  buttonAppearance?: 'plain' | 'push';
+  appearance?: ToolbarControlGroupAppearance;
+  tone?: ToolbarControlGroupTone;
+  buttonAppearance?: ToolbarControlGroupButtonAppearance;
   /** Corner shape: fully round `pill` (default) or a softer `rounded` rectangle. */
-  shape?: 'pill' | 'rounded';
+  shape?: ToolbarControlGroupShape;
 }
 
 export function ToolbarControlGroup({

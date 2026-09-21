@@ -59,7 +59,11 @@
       "accessibility": {
         "obligations": ["The header names the inspector region."]
       },
-      "boundaries": { "publicClasses": ["acme-inspector"], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": "acme-inspector",
+        "publicClasses": ["acme-inspector"],
+        "publicTokens": []
+      },
       "diagnostics": [
         {
           "id": "KUI-C901",

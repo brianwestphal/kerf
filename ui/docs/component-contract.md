@@ -44,6 +44,59 @@ the checked
 [`component-catalog-extension-v2.json`](./examples/component-catalog-extension-v2.json)
 application-owned example.
 
+### Compile-time contract boundary
+
+The versioned
+[`compile-time-contracts-v1.json`](../ai/compile-time-contracts-v1.json)
+artifact maps stable `KUI-T###` ids to public imports, emitted symbols, and
+catalog identities. Its positive/negative fixture compiles against both source
+and a freshly packed package, so source declarations and shipped declarations
+cannot silently diverge. See [Compile-time contracts](./type-contracts.md) for
+the full audit, migration guidance, and the relationships deliberately left to
+runtime/catalog checks because TypeScript cannot prove them.
+
+### Application UI profile
+
+The component catalogs describe what packages provide; an application profile
+describes which supported choices a project has approved. A workspace may
+check in `.kerf-ui-profile.json` conforming to
+[`application-ui-profile.schema.json`](../ai/application-ui-profile.schema.json).
+Keep package-qualified catalog locations and recurring-concept preferences,
+allowed color schemes and density, public semantic-token overrides,
+layout/responsive conventions, and narrow rule exceptions there. Product
+records, copy, permissions, user preferences, and transport state do not belong
+in this policy file.
+
+Every catalog location names a v2 composition artifact. `selection` is optional
+for consumer packages whose generated metadata declares v1 selection guidance
+not applicable; `@kerfjs/ui` retains its required v1 selection artifact. This
+lets a generated `component-catalog-v2.json` participate directly without a
+fabricated compatibility file.
+
+Discovery and precedence are deterministic:
+
+1. Load `application-ui-profile.defaults.json` from `@kerfjs/ui`.
+2. Load `.kerf-ui-profile.json` at the workspace root when present.
+3. Walk from the workspace root toward the target directory and load each
+   directory-local profile in parent-to-child order.
+
+Later scalar and object-map values win. Catalogs merge by package; preferences
+and token overrides merge by key; exceptions merge by stable id. Lists such as
+allowed themes/densities replace the earlier list rather than accumulating.
+Every resolved field retains its source file. The shipped
+`application-ui-profile.mjs` API implements discovery, merge, loading, and
+validation and reports actionable originating file + JSON-path diagnostics for stale
+catalogs, unknown component/rule/token references, preference conflicts, and
+broad exceptions. Each raw layer is validated against the catalogs effective at
+that exact precedence point before merge, so a broken parent catalog, stale
+parent reference, invalid value, or unknown field cannot disappear merely
+because a child profile replaces it. The shipped
+`application-ui-profile-sync.cjs` projects the same merge and validation contract
+for synchronous hosts such as ESLint rules; it deliberately performs no async
+I/O.
+See the
+[`application-ui-profile.json`](./examples/application-ui-profile.json) example.
+
 Catalog detail footers use one standard resource vocabulary and order. Build
 them with `catalogResources()` from `@kerfjs/ui/catalog-resources`: `Demo source`
 first, optional `Component source` and `Design template`, then `Guidance`.
@@ -128,6 +181,11 @@ anatomy boundary. A scoped selector may join documented public classes, such as
 layout cannot be expressed by a prop or token. A class being public does not
 make copied component markup an invocation or transfer state and accessibility
 ownership to the application.
+
+The v2 composition catalog additionally requires `boundaries.rootClass` to be
+either one exact member of `publicClasses` or `null` when the entry has no
+rendered class root. Runtime geometry tooling uses this explicit field; array
+order never implies root ownership.
 
 Do not select a component's descendant by element name, id, attribute alone, or
 an unlisted implementation class. Selectors such as `.kui-state-banner span`,

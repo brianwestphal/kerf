@@ -63,6 +63,10 @@ describe('component catalog v2 composition contract', () => {
           entry.layout &&
           entry.accessibility &&
           entry.boundaries &&
+          (entry.boundaries.rootClass === null ||
+            entry.boundaries.publicClasses.includes(
+              entry.boundaries.rootClass,
+            )) &&
           entry.provenance,
       ),
     ).toBe(true);
@@ -126,5 +130,27 @@ describe('component catalog v2 composition contract', () => {
     expect(typedConsumer.package).toBe('@acme/ui');
     expect(consumer.entries[0].key).toBe('@acme/ui:inspector');
     expect(consumer.entries[0].parents.entries).toContain('@kerfjs/ui:layout');
+  });
+
+  it('validates generated consumer selection and source metadata when present', async () => {
+    const consumer = await readJson<ComponentCatalogV2>(
+      '../../docs/examples/component-catalog-extension-v2.json',
+    );
+    const entry = consumer.entries[0];
+    entry.purpose = 'Compose the record inspector.';
+    entry.publicExports = [{ name: 'Inspector', subpath: './inspector' }];
+    entry.sourceLinks = ['docs/inspector.md'];
+    expect(validateCatalogV2(consumer)).toEqual([]);
+
+    entry.purpose = '';
+    entry.publicExports.push({ name: 'Inspector', subpath: './inspector' });
+    entry.sourceLinks.push('docs/inspector.md');
+    expect(validateCatalogV2(consumer)).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('purpose must be a non-empty string'),
+        expect.stringContaining('public exports must be unique'),
+        expect.stringContaining('sourceLinks must be a unique string list'),
+      ]),
+    );
   });
 });

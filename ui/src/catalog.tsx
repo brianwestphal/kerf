@@ -267,20 +267,16 @@ export function Catalog({
           ))}
           {secondarySections ? (
             <section class="kui-catalog__group kui-catalog__group--secondary">
-              <ListHeader
-                label={secondarySections.label}
-                toggle={secondarySections.collapsible}
-                expanded={
-                  secondarySections.collapsible
-                    ? Boolean(secondarySections.expanded)
-                    : undefined
-                }
-                action={
-                  secondarySections.collapsible
-                    ? toggleSecondaryAction
-                    : undefined
-                }
-              />
+              {secondarySections.collapsible ? (
+                <ListHeader
+                  label={secondarySections.label}
+                  toggle
+                  expanded={Boolean(secondarySections.expanded)}
+                  action={toggleSecondaryAction}
+                />
+              ) : (
+                <ListHeader label={secondarySections.label} />
+              )}
               {!secondarySections.collapsible || secondarySections.expanded ? (
                 <div class="kui-catalog__secondary" data-catalog-secondary>
                   {secondarySections.sections.map((section) => (

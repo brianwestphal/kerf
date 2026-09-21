@@ -209,6 +209,34 @@ For exhaustive tool retrieval, load the shipped
 [`ui/ai/component-catalog.json`](../../ui/ai/component-catalog.json); its
 versioned schema and drift gate keep public exports, delivery paths,
 relationships, catalog routes, and current documentation links synchronized.
+Load
+[`ui/ai/component-catalog-v2.json`](../../ui/ai/component-catalog-v2.json)
+when mechanically evaluating composition. Before choosing for a specific app,
+use the shipped `ui/ai/application-ui-profile.mjs` discovery API to resolve
+package defaults, workspace `.kerf-ui-profile.json`, and parent-to-child
+directory policy. The resolved profile supplies package-qualified preferences,
+approved theme/density, public token overrides, layout/responsive conventions,
+and narrow exceptions; diagnostics identify the originating file and JSON path.
+Every raw layer is validated against the catalogs effective at that precedence
+point, so do not assume a child override hides invalid parent policy. ESLint
+uses the packaged synchronous projection and reports contract failures as
+`KUI-L090`.
+The schema, types, and
+[`workspace example`](../../ui/docs/examples/application-ui-profile.json) are
+shipped with `@kerfjs/ui`.
+
+Before accepting a UI integration, run `kerf-ui-doctor --full`. Its one
+versioned repair report joins profile/catalog validation, TypeScript, the Kerf
+UI ESLint preset, and static analysis without executing application modules.
+Enable its browser stage with an explicit running-app URL (or invoke
+`kerf-ui-evaluate --url <app>` directly) to exercise the
+responsive/zoom/theme/motion matrix across Playwright engines and retain
+repair-oriented `KUI-B###` screenshot and DOM/style evidence. Treat those
+objective checks as a gate; use the separate 0–2
+hierarchy/rhythm/density/alignment/scroll rubric only through a named human or
+AI visual review with written rationale. See
+[`ui/docs/ui-doctor.md`](../../ui/docs/ui-doctor.md) and
+[`ui/docs/ui-evaluator.md`](../../ui/docs/ui-evaluator.md).
 
 Maintainers can regression-test that routing without a live model through
 `ui/ai-regressions/`: its neutral prompts, private oracles, and adversarial
@@ -384,6 +412,9 @@ mount(rootEl, () => (
 
 Five of these rules also have edit-time enforcement via
 [`eslint-plugin-kerfjs`](../../eslint-plugin/README.md) — Rules 2, 5, 6, 10, 12.
+Applications using `@kerfjs/ui` should add its `recommended-ui` flat preset (or
+`strict-ui` when preference and wiring findings must fail CI); it resolves the
+installed catalogs/profile defaults without source-tree settings.
 The plugin also ships `kerfjs/no-raw-with-dynamic-arg` (warns on every
 dynamic `raw()` argument — XSS audit trail) and `kerfjs/ai-assistant-configs`
 (warns when bundled AI configs are missing or stale). Adding the plugin to a

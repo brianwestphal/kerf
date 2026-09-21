@@ -1,7 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
-export interface TabScaffoldTab {
-  id: string;
+export interface TabScaffoldTab<Id extends string = string> {
+  id: Id;
   label: string;
   /** Decorative icon shown above the label in the bottom bar. */
   icon?: SafeHtml;
@@ -9,13 +9,13 @@ export interface TabScaffoldTab {
   content: SafeHtml;
 }
 
-export interface TabScaffoldProps {
+export interface TabScaffoldProps<Id extends string = string> {
   id: string;
   /** Accessible name for the tab bar. */
   label: string;
-  tabs: TabScaffoldTab[];
+  tabs: readonly TabScaffoldTab<Id>[];
   /** The controlled active tab id (the app owns selection). */
-  active: string;
+  active: NoInfer<Id>;
   className?: string;
 }
 
@@ -27,13 +27,13 @@ export interface TabScaffoldProps {
  * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
-export function TabScaffold({
+export function TabScaffold<Id extends string>({
   id,
   label,
   tabs,
   active,
   className = '',
-}: TabScaffoldProps) {
+}: TabScaffoldProps<Id>) {
   return (
     <section
       class={`kui-tab-scaffold ${className}`.trim()}

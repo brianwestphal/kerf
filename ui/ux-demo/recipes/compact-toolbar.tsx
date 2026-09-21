@@ -31,7 +31,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         }
         center={
           <ToolbarControlGroup>
-            <SegmentedControl
+            <SegmentedControl<string>
               id="recipe-view"
               label="View"
               value={view.value}
@@ -49,7 +49,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         }
         trailing={
           <div class="kui-control-cluster">
-            <Select
+            <Select<string>
               name="recipe-sort"
               value={sort.value}
               ariaLabel="Sort tasks"

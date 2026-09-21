@@ -1,3 +1,5 @@
+import type { TabActivation } from './tab-bar.js';
+
 export type TabReorderSource = 'pointer' | 'keyboard';
 export type TabDropPosition = 'before' | 'after';
 
@@ -9,7 +11,7 @@ export interface TabReorder {
   source: TabReorderSource;
 }
 
-export type TabActivation = 'automatic' | 'manual';
+export type { TabActivation } from './tab-bar.js';
 
 export interface WireTabBarsOptions {
   onReorder: (change: TabReorder) => void;

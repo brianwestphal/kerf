@@ -12,6 +12,8 @@ export type CatalogResourceKind =
   | 'guidance'
   | 'integrationGuidance';
 
+export type CatalogGuidanceKind = 'guidance' | 'integrationGuidance';
+
 export interface CatalogResourceTarget {
   href: string;
   /** Optional monospace detail, normally the repository-relative source path. */
@@ -28,7 +30,7 @@ export interface CatalogResourcesInput {
   /** Required UI or integration guidance. */
   guidance: CatalogResourceTarget;
   /** Use `integrationGuidance` when the component implementation is upstream. */
-  guidanceKind?: 'guidance' | 'integrationGuidance';
+  guidanceKind?: CatalogGuidanceKind;
 }
 
 /**

@@ -52,6 +52,26 @@ function output(
 }
 
 describe('consumer bundle boundaries', () => {
+  it('ships the static analyzer as an explicit Node-only subpath', async () => {
+    const result = await nodeBundle(
+      "import { analyzeUiProject, formatUiAnalysisSarif } from '@kerfjs/ui/analyzer'; console.log(analyzeUiProject, formatUiAnalysisSarif);",
+    );
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    expect(inputs).toContain('analyzer/index.mjs');
+    expect(output(result, '.js')).toContain('analyzeUiProject');
+    expect(output(result, '.css')).toBe('');
+  });
+
+  it('exports the static analyzer report schema', async () => {
+    const schema = await import('@kerfjs/ui/analyzer/report.schema.json', {
+      with: { type: 'json' },
+    });
+    expect(schema.default).toMatchObject({
+      title: 'Kerf UI static analysis report',
+      properties: { schemaVersion: { const: 1 } },
+    });
+  });
+
   it('ships clean generated JavaScript shims', async () => {
     const dist = new URL('../../dist/', import.meta.url);
     const files = (await readdir(dist)).filter((file) => file.endsWith('.js'));

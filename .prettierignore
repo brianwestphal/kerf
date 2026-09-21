@@ -18,6 +18,7 @@ site/public/
 site/scripts/demo-captures/
 ui/ai/component-catalog.json
 ui/ai/component-catalog.schema.json
+create-kerf-component/template/component-catalog-v2.json
 ui/ai/public-api-signatures-v1.md
 ui/ai/webawesome-jsx-signatures-v1.md
 ui/ai-regressions/conditions*.json

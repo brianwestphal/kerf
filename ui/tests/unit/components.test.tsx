@@ -19,7 +19,7 @@ import {
   resizeRegionFromPointer,
 } from '../../src/resizable-region.js';
 import { SegmentedControl } from '../../src/segmented-control.js';
-import { Select } from '../../src/select.js';
+import { Select, type SelectChoice } from '../../src/select.js';
 import { StateBanner } from '../../src/state-banner.js';
 import { TabBar } from '../../src/tab-bar.js';
 import { Toolbar } from '../../src/toolbar.js';
@@ -270,6 +270,18 @@ describe('production UI primitives', () => {
     expect(openToggle).toContain(
       'data-open="true" data-direction="down" aria-hidden="true"',
     );
+    const disabledToggle = asHtml(
+      ListHeader({
+        label: 'Locked tools',
+        action: 'toggle',
+        expanded: false,
+        toggle: true,
+        actionDisabled: true,
+        disabledReason: 'Unavailable',
+      }),
+    );
+    expect(disabledToggle).toContain('title="Unavailable"');
+    expect(disabledToggle).toContain(' disabled');
     const customToggle = asHtml(
       ListHeader({
         label: 'Custom tools',
@@ -941,9 +953,14 @@ describe('production UI primitives', () => {
     expect(capped).toContain('data-max-lines="2"');
     expect(capped).toContain('--kui-toolbar-text-max-lines:2');
     // maxLines without wrap is ignored (single line), and a non-positive value is dropped.
-    expect(asHtml(ToolbarText({ text: 'No wrap', maxLines: 3 }))).not.toContain(
-      'data-max-lines',
-    );
+    expect(
+      asHtml(
+        ToolbarText({
+          text: 'No wrap',
+          maxLines: 3,
+        } as unknown as Parameters<typeof ToolbarText>[0]),
+      ),
+    ).not.toContain('data-max-lines');
     expect(
       asHtml(ToolbarText({ text: 'Zero', wrap: true, maxLines: 0 })),
     ).not.toContain('data-max-lines');
@@ -1083,7 +1100,8 @@ describe('production UI primitives', () => {
         Select({
           name: 'none',
           value: 'missing',
-          choices: [{ value: 'one', label: 'One' }],
+          ariaLabel: 'No selected choice',
+          choices: [{ value: 'one', label: 'One' }] as SelectChoice[],
         }),
       ),
     ).not.toContain('slot="start"');
@@ -1091,6 +1109,7 @@ describe('production UI primitives', () => {
       Select({
         name: 'grouped',
         value: 'plain',
+        ariaLabel: 'Grouped choices',
         choices: [{ value: 'plain', label: 'Plain', group: 'Only' }],
       }),
     );

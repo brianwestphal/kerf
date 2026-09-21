@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/doctor/config.schema.json",
+  "title": "Kerf UI doctor configuration",
+  "type": "object",
+  "required": ["schemaVersion"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "mode": { "enum": ["full", "changed"] },
+    "package": { "type": "string", "minLength": 1 },
+    "stages": {
+      "type": "object",
+      "properties": {
+        "catalog": { "type": "boolean" },
+        "typescript": { "type": "boolean" },
+        "eslint": { "type": "boolean" },
+        "analyzer": { "type": "boolean" },
+        "browser": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "browser": {
+      "type": "object",
+      "required": ["url"],
+      "properties": {
+        "url": { "type": "string", "pattern": "^https?://" },
+        "browsers": {
+          "type": "array",
+          "items": { "enum": ["chromium", "firefox", "webkit"] },
+          "uniqueItems": true
+        },
+        "retention": { "enum": ["always", "on-failure", "never"] },
+        "outputDirectory": { "$ref": "#/$defs/path" },
+        "reportPath": { "$ref": "#/$defs/path" }
+      },
+      "additionalProperties": false
+    },
+    "cache": { "type": "boolean" },
+    "suppressions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "rules", "target", "rationale"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]*$" },
+          "rules": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "target": { "$ref": "#/$defs/path" },
+          "rationale": { "type": "string", "minLength": 12 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(^|/)\\.\\.(/|$))(?!.*[?*]).+"
+    }
+  }
+}

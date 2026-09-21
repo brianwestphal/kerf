@@ -10,7 +10,18 @@ export interface TokenSearchToken {
   accessibleLabel?: string;
 }
 
-export interface TokenSearchFieldProps {
+export type TokenSearchEditorAttributes = Readonly<
+  Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-key'?: never;
+    'data-morph-skip'?: never;
+    'data-token-search-editor'?: never;
+    'data-token-count'?: never;
+    'data-placeholder'?: never;
+  }
+>;
+
+interface TokenSearchFieldBaseProps {
   id: string;
   label: string;
   query?: string;
@@ -19,12 +30,6 @@ export interface TokenSearchFieldProps {
   tokenPlaceholder?: string;
   disabled?: boolean;
   autofocus?: boolean;
-  /** Allow an empty field to render as one iconic action. */
-  collapsible?: boolean;
-  /** Keep an empty collapsible field open while the application owns focus. */
-  expanded?: boolean;
-  expandAction?: string;
-  expandLabel?: string;
   leading?: SafeHtml;
   trailing?: SafeHtml;
   editAction?: string;
@@ -32,8 +37,27 @@ export interface TokenSearchFieldProps {
   clearAction?: string;
   clearLabel?: string;
   className?: string;
-  editorAttributes?: Readonly<Record<`data-${string}`, string>>;
+  editorAttributes?: TokenSearchEditorAttributes;
 }
+
+type TokenSearchCollapsibleProps =
+  | {
+      /** Allow an empty field to render as one iconic action. */
+      collapsible: true;
+      /** Keep an empty collapsible field open while the application owns focus. */
+      expanded?: boolean;
+      expandAction?: string;
+      expandLabel?: string;
+    }
+  | {
+      collapsible?: false;
+      expanded?: never;
+      expandAction?: never;
+      expandLabel?: never;
+    };
+
+export type TokenSearchFieldProps = TokenSearchFieldBaseProps &
+  TokenSearchCollapsibleProps;
 
 export interface TokenSearchFieldValue {
   query: string;

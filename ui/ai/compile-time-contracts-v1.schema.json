@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/compile-time-contracts-v1.schema.json",
+  "title": "Kerf UI compile-time contracts",
+  "type": "object",
+  "required": ["schemaVersion", "package", "fixture", "contracts"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "schemaVersion": { "const": 1 },
+    "package": { "const": "@kerfjs/ui" },
+    "fixture": { "type": "string", "minLength": 1 },
+    "contracts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "publicImport", "symbols", "kind", "summary"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^KUI-T[0-9]{3}$" },
+          "catalogKey": { "type": "string", "minLength": 1 },
+          "publicImport": {
+            "type": "string",
+            "pattern": "^@kerfjs/ui(?:/[-a-z]+)?$"
+          },
+          "symbols": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1 }
+          },
+          "kind": {
+            "enum": [
+              "accessible-name",
+              "conditional-property",
+              "controlled-callback",
+              "discriminated-union",
+              "finite-vocabulary",
+              "literal-identity",
+              "protected-attributes"
+            ]
+          },
+          "summary": { "type": "string", "minLength": 1 }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

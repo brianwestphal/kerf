@@ -55,12 +55,14 @@ export {
   StateBanner,
   type StateBannerProps,
   type StateBannerTone,
+  type StateBannerUrgency,
 } from './state-banner.js';
 export { SunkenPanel, type SunkenPanelProps } from './sunken-panel.js';
-export { TabBar, type TabBarProps } from './tab-bar.js';
+export { type TabActivation, TabBar, type TabBarProps } from './tab-bar.js';
 export {
   placeTokenSearchCaret,
   readTokenSearchField,
+  type TokenSearchEditorAttributes,
   TokenSearchField,
   type TokenSearchFieldProps,
   type TokenSearchFieldValue,
@@ -69,7 +71,11 @@ export {
 export { Toolbar, type ToolbarProps } from './toolbar.js';
 export {
   ToolbarControlGroup,
+  type ToolbarControlGroupAppearance,
+  type ToolbarControlGroupButtonAppearance,
   type ToolbarControlGroupProps,
+  type ToolbarControlGroupShape,
+  type ToolbarControlGroupTone,
 } from './toolbar-control-group.js';
 export {
   type HeadingLevel,

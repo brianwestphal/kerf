@@ -18,6 +18,7 @@
 // initializer is plain Node so `npm create` runs it with zero install latency.
 
 import {
+  copyFileSync,
   cpSync,
   existsSync,
   mkdirSync,
@@ -27,6 +28,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
+import process from 'node:process';
 import { createInterface } from 'node:readline/promises';
 import { fileURLToPath } from 'node:url';
 
@@ -127,6 +129,19 @@ async function main(argv) {
   // verbatim (`_gitignore` → `.gitignore`).
   mkdirSync(targetDir, { recursive: true });
   cpSync(TEMPLATE_DIR, targetDir, { recursive: true });
+  mkdirSync(join(targetDir, 'scripts'), { recursive: true });
+  copyFileSync(
+    join(dirname(fileURLToPath(import.meta.url)), 'catalog.js'),
+    join(targetDir, 'scripts', 'kerf-component-catalog.mjs'),
+  );
+  for (const schema of [
+    'component-metadata.schema.json',
+    'component-catalog-v2.schema.json',
+  ])
+    copyFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), schema),
+      join(targetDir, 'scripts', schema),
+    );
 
   for (const file of walk(targetDir)) {
     const text = readFileSync(file, 'utf8');
@@ -146,8 +161,9 @@ async function main(argv) {
       cdHint +
       '  npm install\n' +
       '  npm run build      # tsup → ESM + .d.ts (kerfjs stays external)\n' +
+      '  npm run catalog:check # verify AI metadata and public exports\n' +
       '  npm run typecheck\n\n' +
-      'Edit src/counter.tsx, then publish with `npm publish --access public`.\n',
+      'Edit src/counter.tsx and kerf.components.json, then publish with `npm publish --access public`.\n',
   );
 }
 

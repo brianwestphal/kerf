@@ -66,6 +66,7 @@ function defaultEntry(entry) {
     },
     accessibility: { obligations: entry.accessibility ?? [] },
     boundaries: {
+      rootClass: entry.publicClasses?.[0] ?? null,
       publicClasses: entry.publicClasses ?? [],
       publicTokens: entry.publicTokens ?? [],
     },

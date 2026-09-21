@@ -56,7 +56,7 @@ export function SegmentedControlDemo() {
         note={<>An equal-width inspector switcher with labels.</>}
         align="inline-control"
       >
-        <SegmentedControl
+        <SegmentedControl<string>
           id="inspector-section"
           label="Inspector section"
           value={inspectorSection.value}
@@ -131,7 +131,7 @@ export function SegmentedControlDemo() {
         }
         align="inline-control"
       >
-        <SegmentedControl
+        <SegmentedControl<string>
           id="segmented-placeholder"
           label="Loading view mode"
           value=""

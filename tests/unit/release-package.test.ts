@@ -46,6 +46,9 @@ beforeAll(() => {
     'eslint-plugin/index.js',
     'create-kerf-component/package.json',
     'create-kerf-component/index.js',
+    'create-kerf-component/catalog.js',
+    'create-kerf-component/component-metadata.schema.json',
+    'create-kerf-component/component-catalog-v2.schema.json',
     'create-kerf-component/template',
     'ui/package.json',
     'ui/ai/public-api-signatures-v1.md',
@@ -121,6 +124,17 @@ describe('release package preparation', () => {
     );
     expect(template.peerDependencies.kerfjs).toBe('^5.0.0-0');
     expect(template.devDependencies.kerfjs).toBe(`^${betaVersion}`);
+    expect(packedText(createTarball, 'catalog.js')).toContain(
+      'runCatalogCommand',
+    );
+    expect(
+      JSON.parse(packedText(createTarball, 'component-metadata.schema.json'))
+        .title,
+    ).toBe('Kerf consumer component metadata source');
+    expect(
+      JSON.parse(packedText(createTarball, 'component-catalog-v2.schema.json'))
+        .title,
+    ).toBe('Kerf UI composition catalog v2');
 
     const uiTarball = tarballs.get('@kerfjs/ui')!;
     const uiManifest = JSON.parse(packedText(uiTarball, 'package.json'));
@@ -166,6 +180,22 @@ describe('release package preparation', () => {
 
     expect(() =>
       execFileSync('npm', ['run', 'build'], {
+        cwd: generatedRoot,
+        stdio: 'pipe',
+        env: {
+          ...process.env,
+          npm_config_cache: join(fixtureRoot, 'npm-cache'),
+        },
+      }),
+    ).not.toThrow();
+    expect(() =>
+      execFileSync('npm', ['run', 'catalog:check'], {
+        cwd: generatedRoot,
+        stdio: 'pipe',
+      }),
+    ).not.toThrow();
+    expect(() =>
+      execFileSync('npm', ['publish', '--dry-run', '--json'], {
         cwd: generatedRoot,
         stdio: 'pipe',
         env: {

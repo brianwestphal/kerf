@@ -37,21 +37,29 @@ export interface TokenSearchTokenRemoval {
  * for the caller to apply, while caret movement past a chip is a pure ephemeral
  * mechanic the helper performs itself.
  */
-export interface TokenSearchKeyboardOptions {
+interface TokenSearchKeyboardBaseOptions {
   /**
    * From a collapsed caret with no selection, Backspace removes the token
    * immediately before it and Delete the token immediately after — reported via
    * `onRemoveToken` — instead of deleting a character. Default: true.
    */
-  removeAdjacentToken?: boolean;
   /**
    * ArrowRight moves the caret past a trailing atomic token so text typed next
    * lands after the chip. Default: true.
    */
   moveCaretPastToken?: boolean;
   /** Apply the reported removal to your controlled state, then re-render. */
-  onRemoveToken?: (removal: TokenSearchTokenRemoval) => void;
 }
+
+export type TokenSearchKeyboardOptions = TokenSearchKeyboardBaseOptions &
+  (
+    | {
+        removeAdjacentToken?: true;
+        /** Apply the reported removal to your controlled state, then re-render. */
+        onRemoveToken: (removal: TokenSearchTokenRemoval) => void;
+      }
+    | { removeAdjacentToken: false; onRemoveToken?: never }
+  );
 
 /**
  * Managed collapsible behavior for the iconic TokenSearchField. Every piece is on
@@ -86,8 +94,8 @@ export interface WireTokenSearchFieldsOptions {
   onEdit?: (edit: TokenSearchEdit) => void;
   /** Managed collapsible transient behavior. `true`/omitted = on with defaults; `false` = fully off. */
   collapsible?: boolean | TokenSearchCollapsibleOptions;
-  /** Opt-in atomic-chip keyboard behavior (off by default). `true` = on with defaults. */
-  keyboard?: boolean | TokenSearchKeyboardOptions;
+  /** Opt-in atomic-chip keyboard behavior (off by default). */
+  keyboard?: false | TokenSearchKeyboardOptions;
 }
 
 /**
@@ -320,12 +328,12 @@ export function wireTokenSearchFields(
   const manageFocus = managed && (config.manageFocus ?? true);
   const keepOpenOn = config.keepOpenOn;
   const keyboardOn = keyboard !== false;
-  const keyboardConfig = typeof keyboard === 'object' ? keyboard : {};
+  const keyboardConfig = typeof keyboard === 'object' ? keyboard : undefined;
   const removeAdjacentToken =
-    keyboardOn && (keyboardConfig.removeAdjacentToken ?? true);
+    keyboardOn && (keyboardConfig?.removeAdjacentToken ?? true);
   const moveCaretPastToken =
-    keyboardOn && (keyboardConfig.moveCaretPastToken ?? true);
-  const onRemoveToken = keyboardConfig.onRemoveToken;
+    keyboardOn && (keyboardConfig?.moveCaretPastToken ?? true);
+  const onRemoveToken = keyboardConfig?.onRemoveToken;
   const adopted = config.signals ?? {};
   const created = new Map<string, Signal<boolean>>();
 

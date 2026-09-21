@@ -26,6 +26,30 @@ export function validateCatalogV2(catalog, options = {}) {
     keys.add(entry?.key);
     if (!['component', 'composition', 'recipe'].includes(entry?.kind))
       fail(`${at} has invalid kind`);
+    if (
+      'purpose' in entry &&
+      (typeof entry.purpose !== 'string' || !entry.purpose)
+    )
+      fail(`${at} purpose must be a non-empty string`);
+    if ('publicExports' in entry) {
+      if (!Array.isArray(entry.publicExports) || !entry.publicExports.length)
+        fail(`${at} publicExports must be a non-empty array`);
+      const publicExports = new Set();
+      for (const publicExport of entry.publicExports ?? []) {
+        const exportKey = `${publicExport?.subpath}:${publicExport?.name}`;
+        if (
+          !publicExport?.name ||
+          typeof publicExport?.subpath !== 'string' ||
+          !publicExport.subpath.startsWith('.')
+        )
+          fail(`${at} has an invalid public export`);
+        if (publicExports.has(exportKey))
+          fail(`${at} public exports must be unique`);
+        publicExports.add(exportKey);
+      }
+    }
+    if ('sourceLinks' in entry && !isStringList(entry.sourceLinks))
+      fail(`${at} sourceLinks must be a unique string list`);
     if (!['any', 'root', 'listed'].includes(entry?.parents?.mode))
       fail(`${at} has invalid parents.mode`);
     if (!isStringList(entry?.parents?.entries))
@@ -121,6 +145,12 @@ export function validateCatalogV2(catalog, options = {}) {
       !isStringList(entry?.boundaries?.publicTokens)
     )
       fail(`${at} public boundaries must be unique string lists`);
+    if (
+      entry?.boundaries?.rootClass !== null &&
+      (typeof entry?.boundaries?.rootClass !== 'string' ||
+        !entry.boundaries.publicClasses.includes(entry.boundaries.rootClass))
+    )
+      fail(`${at} rootClass must be null or name one publicClasses entry`);
     if (!Array.isArray(entry?.diagnostics))
       fail(`${at} diagnostics must be an array`);
     for (const diagnostic of entry?.diagnostics ?? []) {

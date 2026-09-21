@@ -282,6 +282,70 @@ the artifact, while the matching consumer extension schema/example preserves
 application package identity. The catalog gate checks v1/v2 completeness and
 drift plus adversarial invalid contracts.
 
+`ui/ai/compile-time-contracts-v1.json` is the declaration-facing companion:
+stable `KUI-T###` ids map provable invalid states to public imports, emitted
+symbols, and catalog identities. Its positive/negative consumer fixture is
+compiled once through source path mappings and again through declarations
+extracted from the actual packed tarball. This covers conditional prop modes,
+accessible naming, literal controlled identity, protected attribute slots, and
+required controlled callbacks without claiming TypeScript can inspect
+`SafeHtml` children, live DOM relationships, disposer invocation, or dynamic
+datasets. Migration guidance lives in `ui/docs/type-contracts.md`.
+
+`ui/ai/application-ui-profile.defaults.json` and its schema/types/API define
+the project-policy layer above the catalogs. A checked-in
+`.kerf-ui-profile.json` locates Kerf and consumer catalogs, chooses preferred
+components/recipes for recurring concepts, constrains theme and density,
+records public semantic-token overrides and layout/responsive conventions, and
+allows only narrow path-scoped rule exceptions with rationale. Discovery merges
+package defaults, workspace policy, and parent-to-child directory policy with
+source provenance. The profile gate rejects stale catalogs, unknown
+components/tokens/rules, preference conflicts, and broad exemptions at every
+layer before later overrides are applied. ESLint consumes the shipped
+synchronous projection of the same contract and maps load or validation
+failures to `KUI-L090`.
+
+`kerf-ui-analyze` is the package's static integration evaluator. It joins the
+resolved profile with Kerf and consumer catalog boundaries, parses CSS and
+TSX/JSX without executing application code, and emits stable `KUI-L###`
+diagnostics for private selectors, unknown tokens, competing geometry owners,
+repeated insets, forced component dimensions, off-scale literal spacing,
+nested scroll owners, and dynamic class expressions needing human review.
+Each source resolves its own parent-to-child directory profile and only receives
+facts from its reachable relative CSS import graph, so sibling monorepo apps do
+not leak policy or same-named class behavior into one another. Shared stylesheet
+diagnostics are evaluated under every importing source policy and deduplicated;
+an exception cannot hide a violation from a sibling consumer that has not made
+the same narrow policy decision.
+Text, versioned JSON, and SARIF outputs use repository-relative locations and
+exact path-scoped profile exceptions. Errors fail by default; CI can opt into
+`--fail-on-review`. The analyzer is deliberately conservative: it reports only
+mechanically established problems and routes ambiguous composition to review.
+See `ui/docs/ui-analyzer.md` for the CLI and rule contract.
+
+`kerf-ui-evaluate` is the browser-backed downstream evaluator. Given a running
+application and the resolved project profile, it uses Playwright to cover wide,
+intermediate, narrow, 200%-zoom-equivalent, light, dark, and reduced-motion
+contexts across Chromium, Firefox, and WebKit. Stable `KUI-B###` diagnostics
+cover rendered overflow/clipping/reachability, focus and representative keyboard
+operation, accessible names, contrast, 44px targets, scroll ownership, declared
+alignment edges, and cataloged runtime geometry. Its versioned JSON report
+contains focused DOM/computed-style evidence and SHA-256-addressed screenshots
+under an explicit retention policy. The suite-v3 hierarchy, rhythm, density,
+alignment, aesthetic-fit, and perceived scroll-quality rubric remains a
+separate named-reviewer record; the evaluator never manufactures those ratings.
+See `ui/docs/ui-evaluator.md` for CI and AI-agent usage.
+
+`kerf-ui-doctor` is the unified application repair-loop command above those
+focused tools. It merges profile/catalog and local generated-metadata checks,
+TypeScript, the installed Kerf UI ESLint preset, static analysis, and an
+explicitly enabled browser evaluation into one versioned, repository-relative
+report. Full and changed modes, workspace-package selection, exact reasoned
+suppressions, a dependency-aware cache, path redaction, and deterministic
+clean/findings/configuration/cancelled exits prevent partial or empty runs from
+appearing clean. Static stages do not import application modules; only the
+explicit browser stage executes a running app. See `ui/docs/ui-doctor.md`.
+
 Each catalog entry's `publicClasses` array is the exact stable CSS-anatomy
 boundary. Applications should prefer an equivalent component prop or semantic
 token; composition-specific selectors may join cataloged public classes, but

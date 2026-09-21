@@ -1,0 +1,118 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/doctor/report.schema.json",
+  "title": "Kerf UI doctor report",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "tool",
+    "mode",
+    "root",
+    "package",
+    "paths",
+    "stages",
+    "diagnostics",
+    "suppressions",
+    "summary",
+    "exitCode",
+    "cache"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "tool": { "const": { "name": "@kerfjs/ui/doctor", "reportVersion": 1 } },
+    "mode": { "enum": ["full", "changed"] },
+    "root": { "const": "." },
+    "package": { "type": "string" },
+    "paths": { "type": "array", "items": { "type": "string" } },
+    "stages": { "type": "array", "items": { "$ref": "#/$defs/stage" } },
+    "diagnostics": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/diagnostic" }
+    },
+    "suppressions": {
+      "type": "array",
+      "items": {
+        "allOf": [
+          { "$ref": "#/$defs/diagnostic" },
+          {
+            "type": "object",
+            "required": ["suppression"],
+            "properties": {
+              "suppression": {
+                "type": "object",
+                "required": ["id", "rationale"],
+                "properties": {
+                  "id": { "type": "string" },
+                  "rationale": { "type": "string" }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        ]
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["errors", "warnings", "review", "suppressed"],
+      "properties": {
+        "errors": { "type": "integer", "minimum": 0 },
+        "warnings": { "type": "integer", "minimum": 0 },
+        "review": { "type": "integer", "minimum": 0 },
+        "suppressed": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "exitCode": { "enum": [0, 1, 2, 130] },
+    "cache": {
+      "type": "object",
+      "required": ["hit", "key"],
+      "properties": {
+        "hit": { "type": "boolean" },
+        "key": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "stage": {
+      "type": "object",
+      "required": ["id", "status"],
+      "properties": {
+        "id": { "type": "string" },
+        "status": {
+          "enum": [
+            "ran",
+            "cached",
+            "skipped",
+            "unavailable",
+            "failed",
+            "cancelled"
+          ]
+        },
+        "detail": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "diagnostic": {
+      "type": "object",
+      "required": ["id", "severity", "stage", "message"],
+      "properties": {
+        "id": { "type": "string" },
+        "severity": { "enum": ["error", "warning", "review", "info"] },
+        "stage": { "type": "string" },
+        "message": { "type": "string" },
+        "location": { "type": "object" },
+        "dom": { "type": "object" },
+        "evidence": {},
+        "catalogFacts": {},
+        "documentation": { "type": "string" },
+        "action": { "type": "string" },
+        "sources": { "type": "array", "items": { "type": "string" } },
+        "suppression": { "type": "object" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

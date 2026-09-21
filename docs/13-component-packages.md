@@ -25,6 +25,7 @@ npm create kerf-component@latest my-widgets
 cd my-widgets
 npm install
 npm run build # tsup → ESM + .d.ts; kerfjs stays external
+npm run catalog:check
 ```
 
 Pass `.` to scaffold into the current directory. The rest of this doc explains
@@ -262,3 +263,49 @@ requirement — `@kerfjs/ui` is scoped; the other three publish unscoped. See
 - [ ] Library-owned subtrees use `data-morph-skip` plus a create/dispose pair.
 - [ ] Build emits ESM + `.d.ts`; `tsconfig` sets `jsxImportSource: "kerfjs"`.
 - [ ] `src/` never imports `kerfjs/dev` — installing the diagnostics is the consuming app's call; keep it in your demo/test harness.
+
+## 13.7 Generated AI component metadata
+
+Reusable packages should ship a generated composition catalog beside their
+code. `create-kerf-component` starts with an explicit `kerf.components.json`
+source manifest and these scripts:
+
+```json
+{
+  "scripts": {
+    "catalog:generate": "node scripts/kerf-component-catalog.mjs --write",
+    "catalog:check": "node scripts/kerf-component-catalog.mjs --check"
+  },
+  "kerfComponentCatalog": {
+    "source": "./kerf.components.json",
+    "output": "./component-catalog-v2.json"
+  }
+}
+```
+
+The source manifest requires the package author to decide purpose, named public
+exports and subpaths, parent/child composition, zones, state and wiring owners,
+responsive behavior, margin/border/padding ownership, public classes and
+tokens, accessibility obligations, and source/provenance links. The generator
+does not inspect screenshots or CSS to guess those decisions. Missing decisions,
+missing source files, stale named exports, duplicate ids, and stale generated
+output produce path-specific errors. Both author metadata and generated output
+are validated against the shipped, `additionalProperties: false` schemas;
+unknown fields and wrong types are rejected at their exact JSON path. Named
+export discovery walks the TypeScript/TSX syntax tree, so JSX text, nested
+scopes, comments, and string/template/regular-expression literals cannot
+masquerade as a public API. The scaffold declares TypeScript as a development
+dependency; install dependencies before running the copied local checker.
+Commit both files and keep `catalog:check` in the publishing gate.
+
+At a workspace root, `kerf-component-catalog --root .` follows npm `workspaces`
+and processes every package with `kerfComponentCatalog` configuration. Output
+is sorted by package path and component id, so identical inputs are byte-for-byte
+deterministic.
+
+AI tools merge catalogs as separate package-owned inputs: index entries by the
+full `package:id` key, reject duplicate full keys, search the consuming package's
+entries before the generic Kerf catalog, and preserve package identity on every
+parent, child, and zone reference. Never merge by bare `id`. The generated
+`purpose`, `publicExports`, and `sourceLinks` fields answer selection and source
+questions; the v2 composition fields answer whether and how two entries fit.

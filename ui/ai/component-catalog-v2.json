@@ -33,7 +33,11 @@
           "Decorative icons are aria-hidden; meaningful icons require a label."
         ]
       },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -72,6 +76,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-disclosure-arrow",
         "publicClasses": ["kui-disclosure-arrow"],
         "publicTokens": [
           "--kui-disclosure-arrow-duration",
@@ -119,6 +124,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": null,
         "publicClasses": [],
         "publicTokens": [
           "--kui-disclosure-icon-scale",
@@ -173,6 +179,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-content",
         "publicClasses": [
           "kui-content",
           "kui-content-item",
@@ -256,6 +263,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-pane",
         "publicClasses": [
           "kui-pane",
           "kui-pane__content",
@@ -317,6 +325,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-sunken-panel",
         "publicClasses": ["kui-sunken-panel"],
         "publicTokens": [
           "--kui-sunken-panel-background",
@@ -398,6 +407,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-toolbar",
         "publicClasses": [
           "kui-toolbar",
           "kui-toolbar__center",
@@ -461,6 +471,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-toolbar-control-group",
         "publicClasses": ["kui-toolbar-control-group"],
         "publicTokens": [
           "--kui-color-brand-on-quiet",
@@ -520,6 +531,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-floating-toolbar",
         "publicClasses": ["kui-floating-toolbar"],
         "publicTokens": [
           "--kui-floating-toolbar-inset",
@@ -564,6 +576,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-toolbar-text",
         "publicClasses": ["kui-toolbar-text"],
         "publicTokens": [
           "--kui-color-neutral-on-quiet",
@@ -606,7 +619,11 @@
           "Preserve heading and description relationships for the containing surface."
         ]
       },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -660,6 +677,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-panel-header",
         "publicClasses": [
           "kui-panel-header",
           "kui-panel-header__icon",
@@ -715,6 +733,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-value-table",
         "publicClasses": [
           "kui-value-table",
           "kui-value-table__row",
@@ -790,6 +809,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-content",
         "publicClasses": ["kui-content", "kui-content-item"],
         "publicTokens": [
           "--kui-layout-content-gap",
@@ -829,6 +849,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-list-header",
         "publicClasses": [
           "kui-list-header",
           "kui-list-header__action",
@@ -907,6 +928,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-list-action-row",
         "publicClasses": [
           "kui-list-action-row",
           "kui-list-action-row__icon",
@@ -978,6 +1000,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-list-item",
         "publicClasses": [
           "kui-list-item",
           "kui-list-item__icon",
@@ -1036,6 +1059,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-list-inset-control",
         "publicClasses": ["kui-list-inset-control"],
         "publicTokens": ["--kui-layout-inline-margin"]
       },
@@ -1069,6 +1093,7 @@
         "obligations": ["A layout wrapper only; it adds no role or name."]
       },
       "boundaries": {
+        "rootClass": "kui-list-inset-text",
         "publicClasses": [
           "kui-list-inset-text",
           "kui-list-inset-text--horizontal"
@@ -1117,6 +1142,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-app-tab",
         "publicClasses": [
           "kui-app-tab",
           "kui-app-tab__close",
@@ -1197,6 +1223,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-tab-bar",
         "publicClasses": [
           "kui-tab-bar",
           "kui-tab-bar__leading",
@@ -1243,6 +1270,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-segmented-control",
         "publicClasses": [
           "kui-segmented-control",
           "kui-segmented-control__item"
@@ -1319,6 +1347,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-token-search",
         "publicClasses": [
           "kui-token-search",
           "kui-token-search__clear",
@@ -1402,6 +1431,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-resizable-region",
         "publicClasses": [
           "kui-resizable-region",
           "kui-resizable-region__content",
@@ -1463,6 +1493,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-select",
         "publicClasses": [
           "kui-select",
           "kui-select--custom-selected",
@@ -1522,7 +1553,11 @@
           "Choose polite status versus assertive alert deliberately."
         ]
       },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -1558,6 +1593,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-state-banner",
         "publicClasses": [
           "kui-state-banner",
           "kui-state-banner__action",
@@ -1646,6 +1682,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-empty-state",
         "publicClasses": [
           "kui-empty-state",
           "kui-empty-state__action",
@@ -1703,6 +1740,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-loading-spinner",
         "publicClasses": ["kui-loading-spinner"],
         "publicTokens": []
       },
@@ -1752,6 +1790,7 @@
         ]
       },
       "boundaries": {
+        "rootClass": "kui-skeleton",
         "publicClasses": ["kui-skeleton", "kui-skeleton-lines"],
         "publicTokens": ["--kui-skeleton-radius"]
       },
@@ -1780,7 +1819,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -1806,7 +1849,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -1832,7 +1879,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -1858,7 +1909,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -1884,7 +1939,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -1910,7 +1969,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -1936,7 +1999,11 @@
         "geometry": { "margin": "self", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -1962,7 +2029,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -1988,7 +2059,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2014,7 +2089,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2040,7 +2119,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2066,7 +2149,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2092,7 +2179,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2118,7 +2209,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2155,7 +2250,11 @@
         "geometry": { "margin": "self", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2181,7 +2280,11 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2218,7 +2321,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2244,7 +2351,11 @@
         "geometry": { "margin": "self", "border": "none", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2270,7 +2381,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2296,7 +2411,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2322,7 +2441,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2359,7 +2482,11 @@
         "geometry": { "margin": "self", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2385,7 +2512,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2411,7 +2542,11 @@
         "geometry": { "margin": "self", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2437,7 +2572,11 @@
         "geometry": { "margin": "self", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2463,7 +2602,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2489,7 +2632,11 @@
         "geometry": { "margin": "parent", "border": "self", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2515,7 +2662,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2541,7 +2692,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2567,7 +2722,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2593,7 +2752,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2619,7 +2782,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2645,7 +2812,11 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2671,7 +2842,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2697,7 +2872,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2740,7 +2919,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [
         {
           "id": "KUI-C108",
@@ -2780,7 +2963,11 @@
         }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2806,7 +2993,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2832,7 +3023,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2858,7 +3053,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2884,7 +3083,11 @@
         "geometry": { "margin": "self", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2910,7 +3113,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2936,7 +3143,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2962,7 +3173,11 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -2988,7 +3203,11 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3014,7 +3233,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3040,7 +3263,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3066,7 +3293,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3092,7 +3323,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3118,7 +3353,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3144,7 +3383,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3170,7 +3413,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3196,7 +3443,11 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3222,7 +3473,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3248,7 +3503,11 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3274,7 +3533,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3300,7 +3563,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3326,7 +3593,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3352,7 +3623,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3378,7 +3653,11 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3404,7 +3683,11 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3430,7 +3713,11 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3456,7 +3743,11 @@
         "geometry": { "margin": "self", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3482,7 +3773,11 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3508,7 +3803,11 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3534,7 +3833,11 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3560,7 +3863,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3586,7 +3893,11 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3612,7 +3923,11 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3638,7 +3953,11 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3681,7 +4000,11 @@
           "Each pane has one scroll owner and each resize handle keeps its separator keyboard contract."
         ]
       },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3724,7 +4047,11 @@
           "Native buttons retain names, current state, sequential focus, and disclosure state; rows and standalone footer actions remain at least 44px tall."
         ]
       },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3763,7 +4090,11 @@
           "Heading order and action focus order remain stable when controls wrap."
         ]
       },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3802,7 +4133,11 @@
           "Web Awesome owns modal focus and Escape; the application adapter restores the invoking control after hide, and PanelHeader supplies the visible hierarchy."
         ]
       },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3845,7 +4180,11 @@
           "The form references PanelHeader's title and summary ids; production fields own labels and help; invalid submission creates an assertive persistent StateBanner while successful submission creates a polite persistent banner."
         ]
       },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3884,7 +4223,11 @@
           "Busy, polite, and assertive states use the appropriate production feedback semantics."
         ]
       },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3931,7 +4274,11 @@
           "Each control retains its own native name, pressed/value state, and keyboard contract."
         ]
       },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -3974,7 +4321,11 @@
           "The back control is a real button; reduced motion collapses the slide to instant."
         ]
       },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -4024,7 +4375,11 @@
           "Each component marks itself aria-busy and disables its own controls while loading; the composition keeps labels and structure stable across the transition."
         ]
       },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
@@ -4071,7 +4426,11 @@
           "Each panel is a labeled aside that is aria-hidden while collapsed; toggles carry aria-expanded and the standard per-side glyph; while compact an open panel is an overlay with a backdrop, Escape and backdrop-click dismiss, and a trapped Tab ring."
         ]
       },
-      "boundaries": { "publicClasses": [], "publicTokens": [] },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",

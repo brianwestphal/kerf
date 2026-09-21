@@ -5,7 +5,7 @@ export type ToolbarTextSize = 'xlarge' | 'large' | 'default' | 'small';
 /** ARIA heading level for a title exposed as a heading landmark. */
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
-export interface ToolbarTextProps {
+interface ToolbarTextBaseProps {
   text: string;
   size?: ToolbarTextSize;
   className?: string;
@@ -20,11 +20,6 @@ export interface ToolbarTextProps {
   /** Render the text as an unanimated loading skeleton instead of its value. */
   placeholder?: boolean;
   /**
-   * Wrap onto multiple lines when the text does not fit, instead of the default
-   * single line. Combine with `maxLines` to cap the number of lines. Default false.
-   */
-  wrap?: boolean;
-  /**
    * Show a trailing ellipsis (…) where the text is truncated — on the single line
    * (default), or at the `maxLines` boundary when wrapping. Set false to hard-clip
    * instead. Default true.
@@ -34,8 +29,17 @@ export interface ToolbarTextProps {
    * Cap wrapped text to this many lines, truncating past it. Only takes effect with
    * `wrap`; ignored on a single line. `null`/omitted wraps without a line cap. Default null.
    */
-  maxLines?: number | null;
 }
+
+type ToolbarTextWrappingProps =
+  | {
+      /** Wrap onto multiple lines; combine with `maxLines` to cap them. */
+      wrap: true;
+      maxLines?: number | null;
+    }
+  | { wrap?: false; maxLines?: never };
+
+export type ToolbarTextProps = ToolbarTextBaseProps & ToolbarTextWrappingProps;
 
 export function ToolbarText({
   text,

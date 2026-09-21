@@ -1,0 +1,142 @@
+{
+  "$schema": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-catalog-extension-v2.schema.json",
+  "schemaVersion": 2,
+  "package": "__PKG_NAME__",
+  "compatibility": {
+    "v1Catalog": "not-applicable",
+    "identity": "package:id"
+  },
+  "entries": [
+    {
+      "key": "__PKG_NAME__:counter",
+      "package": "__PKG_NAME__",
+      "id": "counter",
+      "name": "Counter",
+      "kind": "component",
+      "purpose": "Render a controlled counter with delegated increment and decrement actions.",
+      "publicExports": [
+        {
+          "name": "Counter",
+          "subpath": "."
+        },
+        {
+          "name": "CounterProps",
+          "subpath": "."
+        },
+        {
+          "name": "CounterState",
+          "subpath": "."
+        },
+        {
+          "name": "CounterStore",
+          "subpath": "."
+        },
+        {
+          "name": "createCounter",
+          "subpath": "."
+        },
+        {
+          "name": "wireCounter",
+          "subpath": "."
+        },
+        {
+          "name": "Counter",
+          "subpath": "./counter"
+        },
+        {
+          "name": "CounterProps",
+          "subpath": "./counter"
+        },
+        {
+          "name": "CounterState",
+          "subpath": "./counter"
+        },
+        {
+          "name": "CounterStore",
+          "subpath": "./counter"
+        },
+        {
+          "name": "createCounter",
+          "subpath": "./counter"
+        },
+        {
+          "name": "wireCounter",
+          "subpath": "./counter"
+        }
+      ],
+      "sourceLinks": [
+        "README.md#use-it",
+        "src/counter.tsx"
+      ],
+      "source": "src/counter.tsx",
+      "parents": {
+        "mode": "any",
+        "entries": []
+      },
+      "contexts": [
+        "controlled-counter"
+      ],
+      "zones": [],
+      "children": {
+        "mode": "listed",
+        "concepts": [
+          "decrement-control",
+          "value",
+          "increment-control"
+        ],
+        "requiredConcepts": [
+          "decrement-control",
+          "value",
+          "increment-control"
+        ]
+      },
+      "state": [
+        {
+          "id": "count",
+          "owner": "controlled",
+          "required": true
+        }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": [
+          "wireCounter"
+        ],
+        "obligations": [
+          "Retain and call the disposer returned by wireCounter."
+        ]
+      },
+      "responsive": {
+        "owner": "not-applicable",
+        "behaviors": []
+      },
+      "layout": {
+        "roles": [
+          "counter"
+        ],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none"
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Keep increment and decrement controls named and expose the current count as output."
+        ]
+      },
+      "boundaries": {
+        "rootClass": "kerf-counter",
+        "publicClasses": [
+          "kerf-counter"
+        ],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "README.md#use-it",
+        "composition": "README.md#the-rules-this-package-follows"
+      }
+    }
+  ]
+}

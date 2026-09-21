@@ -8,11 +8,16 @@ kerf-ui-skill-version: 1.36.0
 
 Read `../docs/component-selection.md` first, then `./component-catalog.json`,
 `./component-catalog-v2.json`,
-`./public-api-signatures-v1.md`, `./webawesome-jsx-signatures-v1.md`,
+`./public-api-signatures-v1.md`, `./compile-time-contracts-v1.json`,
+`./webawesome-jsx-signatures-v1.md`,
 `../docs/recipes.md`, `../README.md`,
 `../docs/component-contract.md`, and `../docs/accessibility.md` before changing
 a consuming interface. Use the signature snapshot for exact props, callbacks,
 return values, and supported import paths; do not infer them from examples.
+Treat each `KUI-T###` contract as an exact declaration guarantee, including its
+documented dynamic-data widening. Do not extend those diagnostics to child
+markup, live DOM relationships, disposer invocation, or other conditions that
+TypeScript cannot prove from one call.
 Read `../docs/webawesome-theme.md` when using Web Awesome components or changing
 shared theme tokens.
 
@@ -21,9 +26,12 @@ conforms to `./component-catalog-extension.schema.json`. Treat its entries as a
 second, package-qualified input beside `./component-catalog.json`: search both,
 preserve their source identity, and use the shared `geometry` vocabulary across
 their composition boundary. When a consuming project has reusable visual
-components but no extension, generate and maintain one from
-`../docs/examples/component-catalog-extension.json`; do not infer their geometry
-from rendered appearance alone.
+components, prefer its generated `component-catalog-v2.json`. A package
+scaffolded by `create-kerf-component` owns the decisions in
+`kerf.components.json`; run `npm run catalog:check` before using its output. If
+no generated extension exists, start from the checked examples and require the
+author to supply missing semantic and geometry decisions; never infer them from
+rendered appearance.
 
 Use v1 for selection, delivery, and compatibility. Use v2 when evaluating
 composition. Join catalogs by `key` (`package:id`), never bare `id`. Treat
@@ -31,6 +39,19 @@ composition. Join catalogs by `key` (`package:id`), never bare `id`. Treat
 as a prohibition. Emit a diagnostic only after mechanically establishing its
 exact `when` condition; subjective guidance stays prose. App entries use the
 v2 extension schema and retain their own package identity across Kerf edges.
+
+Before selecting for an application, call the Node-side discovery API in
+`./application-ui-profile.mjs` (or implement its documented filename/order)
+from the workspace root and target directory. Apply package defaults first,
+then workspace policy, then directory-local profiles parent-to-child. Honor the
+resolved profile's preferences, theme/density allowlists, tokens, layout, and
+responsive policy. Treat only its exact, narrow exception targets as waived;
+never generalize an exception to siblings or infer product data into a profile.
+Surface every returned source file + JSON-path diagnostic before generating UI.
+Each layer is checked against its then-effective catalogs; later overrides do
+not excuse broken catalogs or stale references in a parent layer. Synchronous
+ESLint integrations use `./application-ui-profile-sync.cjs` and surface any
+failure as `KUI-L090`.
 
 Choose from the need, not from visual resemblance:
 
@@ -61,6 +82,13 @@ reference in [`docs/recipes.md`](../docs/recipes.md). Preserve its production
 primitives and semantic ownership; replace application state, policy, and copy.
 
 The concise human decision matrix is in [`component-selection.md`](../docs/component-selection.md). For exhaustive tool retrieval, load [`component-catalog.json`](./component-catalog.json), the canonical metadata for every public component/helper, composition, and supported Web Awesome entry. Its `geometry` object identifies who owns margin, border, and padding; use that contract to avoid double-insetting or wrapping an already complete surface. Use its linked current recipes instead of inferring behavior from CSS.
+
+Before presenting an integration as complete, run `kerf-ui-analyze --root <workspace>`.
+Treat its error diagnostics as required fixes and review each review-level finding
+against the resolved application profile. Use `--format sarif` in code-scanning
+workflows and `--fail-on-review` when the project requires a zero-review budget.
+Do not suppress a finding in source; add only a narrowly targeted, justified
+profile exception when the deviation is deliberate.
 
 Hard rules:
 

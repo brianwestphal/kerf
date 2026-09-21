@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Evaluator failing fixture</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; }
+      body { width: 1200px; background: white; color: #aaa; font: 16px/1.5 system-ui; }
+      button { appearance: none; width: 20px; height: 20px; color: #aaa; background: white; border: 0; }
+      button:focus-visible { outline: 0; }
+      .clip { width: 10px; height: 24px; overflow: hidden; }
+      .outer-scroll { width: 180px; height: 100px; overflow: auto; padding: 4px; }
+      .inner-scroll { width: 240px; height: 140px; overflow: auto; }
+      .inner-scroll::after { content: ''; display: block; height: 300px; }
+      [data-kui-align-edge]:last-child { margin-left: 12px; }
+      .covered-wrap { position: relative; width: 44px; height: 44px; }
+      .covered-wrap button { width: 44px; height: 44px; }
+      .cover { position: absolute; inset: 0; background: white; }
+      .duplicate { width: 44px; height: 44px; color: black; }
+      .duplicate:focus-visible { background: #dbeafe; }
+      .duplicate + .duplicate:focus-visible { background: white; }
+      .offscreen { position: fixed; left: -200px; top: 0; width: 44px; height: 44px; }
+      .alpha-contrast { color: rgba(0, 0, 0, 0.1); width: 120px; height: 44px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="clip"><button id="unnamed" tabindex="2"></button></div>
+      <div id="fake" role="button">Fake control</div>
+      <div id="switch" role="switch" aria-label="Airplane mode">Off</div>
+      <button class="duplicate" tabindex="0">First duplicate</button>
+      <button class="duplicate" tabindex="0">Second duplicate</button>
+      <button class="offscreen">Offscreen action</button>
+      <button class="alpha-contrast">Faint action</button>
+      <button id="aria-hidden-name">
+        <span aria-hidden="true">Decorative only</span>
+      </button>
+      <div class="covered-wrap">
+        <button id="covered">Covered</button>
+        <div class="cover"></div>
+      </div>
+      <div id="keyboard" role="button" tabindex="0" data-kui-evaluator-action>
+        Keyboard action
+      </div>
+      <section class="kui-pane outer-scroll">
+        <div class="inner-scroll">Nested scrolling</div>
+      </section>
+      <div data-kui-align-group>
+        <p data-kui-align-edge>First edge</p>
+        <p data-kui-align-edge>Second edge</p>
+      </div>
+    </main>
+  </body>
+</html>

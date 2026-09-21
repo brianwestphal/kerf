@@ -14,11 +14,12 @@ export interface SelectChoice<Value extends string = string> {
   separatorBefore?: boolean;
 }
 
-export interface SelectProps<Value extends string = string> {
+type SelectAccessibleName =
+  { label: string; ariaLabel?: string } | { label?: never; ariaLabel: string };
+
+interface SelectBaseProps<Value extends string = string> {
   name: string;
-  value: Value;
-  label?: string;
-  ariaLabel?: string;
+  value: NoInfer<Value>;
   choices: readonly SelectChoice<Value>[];
   className?: string;
   /** Empty-value hint text shown in the closed control (the native select placeholder). */
@@ -29,6 +30,9 @@ export interface SelectProps<Value extends string = string> {
   /** Render as an unanimated loading skeleton: the label above a static, empty control box. */
   placeholder?: boolean;
 }
+
+export type SelectProps<Value extends string = string> =
+  SelectBaseProps<Value> & SelectAccessibleName;
 
 export function Select<Value extends string>({
   name,

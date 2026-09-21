@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TokenSearchField } from '../../src/token-search-field.js';
 import {
   type TokenSearchCollapsibleOptions,
+  type TokenSearchKeyboardOptions,
   wireTokenSearchFields,
 } from '../../src/wire-token-search-fields.js';
 
@@ -953,7 +954,9 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
 
   it('ArrowRight moves the caret past a trailing chip', () => {
     const { root, editor, lead, chip } = tokenedField();
-    const handle = wireTokenSearchFields(root, { keyboard: true });
+    const handle = wireTokenSearchFields(root, {
+      keyboard: { removeAdjacentToken: false },
+    });
 
     focusAt(editor, lead, lead.length);
     const event = keydown('ArrowRight');
@@ -978,7 +981,9 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
 
   it('ArrowRight is inert when no chip follows the caret', () => {
     const { root, editor, tail } = tokenedField();
-    const handle = wireTokenSearchFields(root, { keyboard: true });
+    const handle = wireTokenSearchFields(root, {
+      keyboard: { removeAdjacentToken: false },
+    });
 
     focusAt(editor, tail, 1);
     const event = keydown('ArrowRight');
@@ -989,12 +994,10 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
 
   it('respects per-behavior opt-out within keyboard', () => {
     const { root, editor, tail, lead } = tokenedField();
-    const onRemoveToken = vi.fn();
     const handle = wireTokenSearchFields(root, {
       keyboard: {
         removeAdjacentToken: false,
         moveCaretPastToken: false,
-        onRemoveToken,
       },
     });
 
@@ -1002,7 +1005,6 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
     const back = keydown('Backspace');
     editor.dispatchEvent(back);
     expect(back.defaultPrevented).toBe(false);
-    expect(onRemoveToken).not.toHaveBeenCalled();
 
     focusAt(editor, lead, lead.length);
     const arrow = keydown('ArrowRight');
@@ -1013,7 +1015,9 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
 
   it('does nothing without a caret range', () => {
     const { root, editor } = tokenedField();
-    const handle = wireTokenSearchFields(root, { keyboard: true });
+    const handle = wireTokenSearchFields(root, {
+      keyboard: true as unknown as TokenSearchKeyboardOptions,
+    });
     editor.focus();
     document.getSelection()!.removeAllRanges();
 
@@ -1222,7 +1226,9 @@ describe('wireTokenSearchFields — opt-in chip keyboard', () => {
     )!;
     const lead = editor.querySelector('[data-token-search-text]')!
       .firstChild as Text;
-    const handle = wireTokenSearchFields(root, { keyboard: true });
+    const handle = wireTokenSearchFields(root, {
+      keyboard: { removeAdjacentToken: false },
+    });
 
     focusAt(editor, lead, lead.length);
     const event = keydown('ArrowRight');

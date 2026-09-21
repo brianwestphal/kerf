@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/analyzer/report.schema.json",
+  "title": "Kerf UI static analysis report",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "tool",
+    "root",
+    "files",
+    "profile",
+    "diagnostics",
+    "summary"
+  ],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "tool": {
+      "type": "object",
+      "required": ["name", "version"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "integer" }
+      },
+      "additionalProperties": false
+    },
+    "root": { "type": "string" },
+    "files": { "type": "array", "items": { "type": "string" } },
+    "profile": { "type": "object" },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["ruleId", "severity", "message", "location"],
+        "properties": {
+          "ruleId": { "pattern": "^KUI-L[0-9]{3}$" },
+          "severity": { "enum": ["error", "review"] },
+          "message": { "type": "string" },
+          "location": {
+            "type": "object",
+            "required": ["file", "line", "column"],
+            "properties": {
+              "file": { "type": "string" },
+              "line": { "type": "integer", "minimum": 1 },
+              "column": { "type": "integer", "minimum": 1 }
+            },
+            "additionalProperties": false
+          },
+          "evidence": {},
+          "chain": {}
+        },
+        "additionalProperties": false
+      }
+    },
+    "summary": {
+      "type": "object",
+      "required": ["errors", "review", "suppressed"],
+      "properties": {
+        "errors": { "type": "integer", "minimum": 0 },
+        "review": { "type": "integer", "minimum": 0 },
+        "suppressed": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

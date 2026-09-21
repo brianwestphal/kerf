@@ -9,6 +9,7 @@ scaffolded with `create-kerf-component`.
 npm install
 npm run build # tsup → dist/ (ESM + .d.ts); kerfjs stays external
 npm run typecheck
+npm run catalog:check # verify component-catalog-v2.json is current
 ```
 
 ## Use it
@@ -56,4 +57,29 @@ have to:
 npm publish --access public
 ```
 
-`prepublishOnly` runs the build first; `files` ships only `dist/` + docs.
+`prepublishOnly` checks the catalog and runs the build; `files` ships `dist/`,
+the metadata/catalog pair, the README, and the license.
+
+## AI component metadata
+
+`kerf.components.json` is the author-owned source for the component's purpose,
+public exports, composition rules, geometry ownership, tokens, accessibility,
+and source links. `boundaries.rootClass` explicitly names the public class that
+owns runtime geometry (or is `null` when none does); `publicClasses` order has no
+semantic meaning. Keep decisions explicit: the generator deliberately does not
+derive semantic or geometry ownership from rendered appearance. It validates
+both this source and the generated catalog against the schema copies beside the
+checker, including rejection of unknown fields. Named exports must exist in
+the TypeScript/TSX syntax tree; JSX text, nested scopes, comments, and literals
+are not exports. The checker uses this package's installed TypeScript compiler,
+so run `npm install` before the first local catalog command.
+
+```bash
+npm run catalog:generate # write component-catalog-v2.json
+npm run catalog:check    # no writes; fail when metadata, source, or output drift
+```
+
+The generated catalog ships with the package. AI tools join each entry to
+Kerf's catalog by its `package:id` key, search this package first for
+application-specific concepts, and retain both packages' identities when
+following cross-catalog composition references.

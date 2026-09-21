@@ -289,7 +289,7 @@ describe('component placeholder mode', () => {
 
   it('Select still emits its placeholder hint text when not loading', () => {
     const html = asHtml(
-      Select({
+      Select<string>({
         name: 'status',
         value: '',
         ariaLabel: 'Status',

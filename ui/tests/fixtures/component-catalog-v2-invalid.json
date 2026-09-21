@@ -54,5 +54,11 @@
     "path": "entries.0.provenance",
     "value": { "selection": "", "composition": "" },
     "message": "must declare selection"
+  },
+  {
+    "name": "geometry root outside public anatomy",
+    "path": "entries.0.boundaries.rootClass",
+    "value": "private-root",
+    "message": "rootClass must be null or name one publicClasses entry"
   }
 ]

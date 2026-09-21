@@ -19,6 +19,7 @@ All but one rule are AST-only — no `@typescript-eslint/parser` _service_ depen
 
 ```bash
 npm install --save-dev eslint-plugin-kerfjs
+npm install @kerfjs/ui
 ```
 
 ### Supported ESLint versions
@@ -48,6 +49,36 @@ export default [
 ];
 ```
 
+Applications using the UI catalog can select one of two additive flat configs:
+
+```js
+export default [
+  // parser/files configuration as above
+  kerfjs.configs['recommended-ui'], // preferences and wiring are warnings
+  // or kerfjs.configs['strict-ui']  // all four UI contracts are errors
+];
+```
+
+The UI rules resolve the installed `@kerfjs/ui` v1 selection catalog, v2 composition catalog, and application profile defaults. They then merge `.kerf-ui-profile.json` files from the workspace root toward the linted file. Package authors and monorepos can provide explicit artifacts without duplicating their facts:
+
+```js
+settings: {
+  kerfjs: {
+    ui: {
+      workspaceRoot: import.meta.dirname,
+      catalogPath: './vendor/component-catalog-v2.json',
+      selectionCatalogPath: './vendor/component-catalog.json',
+      profileDefaultsPath: './vendor/application-ui-profile.defaults.json',
+      profileContractPath: './vendor/application-ui-profile-sync.cjs',
+    },
+  },
+}
+```
+
+For deterministic generated configs, the same settings accept parsed `catalog`, `selectionCatalog`, and `profile` objects. File-based precedence is package defaults, then workspace profile, then root-to-leaf directory profiles. The rules load `application-ui-profile-sync.cjs` from the installed `@kerfjs/ui` package by default because ESLint rule creation is synchronous; `profileContractPath` is only needed when artifacts are vendored. Every raw layer is schema- and catalog-reference-validated before merge, so a child cannot hide malformed or stale parent policy. Exceptions use exact `KUI-L*` diagnostic ids and repository-relative file or directory targets.
+
+`KUI-L090` is reserved for catalog/profile loading and configuration failures; it does not collide with the static analyzer's `KUI-L001`–`KUI-L009` findings. The supported-ESLint matrix installs real packed `eslint-plugin-kerfjs` and `@kerfjs/ui` tarballs in a downstream flat-config fixture, ensuring these defaults resolve from the consumer rather than this repository's source tree.
+
 ## Legacy `.eslintrc` configs are not supported
 
 The package is ESM-only. ESLint's `.eslintrc` system loads plugins with `require()`, which cannot load an ESM package, so `extends: ["plugin:kerfjs/legacy-recommended"]` fails with _"couldn't find the config to extend from"_ on ESLint 8 **and** on ESLint 9's legacy mode.
@@ -66,6 +97,10 @@ Use flat config (`eslint.config.js`), shown above. The `legacy-recommended` expo
 | [`prefer-attr-selector`](docs/rules/prefer-attr-selector.md)                     | — (rename-safety nudge for `delegate()` selectors)   | `warn`                 |
 | [`no-raw-with-dynamic-arg`](docs/rules/no-raw-with-dynamic-arg.md)               | — (XSS audit trail)                                  | `warn`                 |
 | [`ai-assistant-configs`](docs/rules/ai-assistant-configs.md)                     | — (project hygiene)                                  | `warn`                 |
+| [`ui-public-boundaries`](docs/rules/ui-public-boundaries.md)                     | — (cataloged CSS boundaries)                         | `error`                |
+| [`ui-composition`](docs/rules/ui-composition.md)                                 | — (cataloged parents and zones)                      | `error`                |
+| [`ui-preferences`](docs/rules/ui-preferences.md)                                 | — (application component choices)                    | `warn`                 |
+| [`ui-wiring`](docs/rules/ui-wiring.md)                                           | — (required setup and cleanup)                       | `warn`                 |
 
 The "Hard Rule" column refers to the numbered rules in [`docs/ai/usage-guide.md`](../docs/ai/usage-guide.md) on the main kerf repo. `no-raw-with-dynamic-arg` and `ai-assistant-configs` don't map to numbered Hard Rules — the former creates an audit trail for every dynamic `raw()` call site (potential XSS); the latter checks that the bundled AI-assistant configs are installed and current. See [`docs/12-ai-assistant-configs.md`](../docs/12-ai-assistant-configs.md) on the main kerf repo for the AI-configs design.
 

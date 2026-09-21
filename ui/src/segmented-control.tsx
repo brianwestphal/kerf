@@ -7,19 +7,19 @@ export type SegmentedControlShape = 'rounded' | 'pill';
 export type SegmentedControlSize = 'small' | 'default';
 export type SegmentedControlLayout = 'content' | 'equal';
 
-export interface SegmentedControlChoice {
-  value: string;
+export interface SegmentedControlChoice<Value extends string = string> {
+  value: Value;
   label: string;
   content?: SafeHtml;
   title?: string;
   disabled?: boolean;
 }
 
-export interface SegmentedControlProps {
+export interface SegmentedControlProps<Value extends string = string> {
   id: string;
   label: string;
-  value: string;
-  choices: readonly SegmentedControlChoice[];
+  value: NoInfer<Value>;
+  choices: readonly SegmentedControlChoice<Value>[];
   action?: string;
   appearance?: SegmentedControlAppearance;
   shape?: SegmentedControlShape;
@@ -30,7 +30,7 @@ export interface SegmentedControlProps {
   placeholder?: boolean;
 }
 
-export function SegmentedControl({
+export function SegmentedControl<Value extends string>({
   id,
   label,
   value,
@@ -42,7 +42,7 @@ export function SegmentedControl({
   layout = 'content',
   className = '',
   placeholder = false,
-}: SegmentedControlProps) {
+}: SegmentedControlProps<Value>) {
   return (
     <div
       class={`kui-segmented-control ${className}`.trim()}

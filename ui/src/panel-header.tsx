@@ -5,11 +5,9 @@ import { Toolbar } from './toolbar.js';
 import { ToolbarControlGroup } from './toolbar-control-group.js';
 import { type HeadingLevel, ToolbarText } from './toolbar-text.js';
 
-export interface PanelHeaderProps {
+interface PanelHeaderBaseProps {
   title: string;
   titleId: string;
-  summary?: string;
-  summaryId?: string;
   icon?: SafeHtml;
   iconClassName?: string;
   actions?: SafeHtml;
@@ -23,6 +21,12 @@ export interface PanelHeaderProps {
   /** Render the title and summary as unanimated loading skeletons, keeping the icon and actions. */
   placeholder?: boolean;
 }
+
+type PanelHeaderSummaryProps =
+  | { summary: string; summaryId?: string }
+  | { summary?: never; summaryId?: never };
+
+export type PanelHeaderProps = PanelHeaderBaseProps & PanelHeaderSummaryProps;
 
 /**
  * The heading of a panel, dialog, or page: a plain `Toolbar` whose leading zone
