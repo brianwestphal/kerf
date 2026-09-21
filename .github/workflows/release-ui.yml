@@ -39,6 +39,9 @@ jobs:
       - run: npm run build
       - run: npm ci
         working-directory: ui
+      - name: Install Playwright browsers required by the UI check
+        run: npx playwright install --with-deps chromium firefox webkit
+        working-directory: ui
       - run: npm run build
         working-directory: ui
       - run: npm run check

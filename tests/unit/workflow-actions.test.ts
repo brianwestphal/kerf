@@ -118,4 +118,26 @@ describe('GitHub Actions inventory', () => {
 
     expect([...seen].sort()).toEqual(Object.keys(AUDITED_ACTIONS).sort());
   });
+
+  it('installs every UI evaluator browser before release validation', () => {
+    const source = readFileSync(
+      join(workflowDirectory, 'release-ui.yml'),
+      'utf8',
+    );
+    const uiInstall = source.indexOf(
+      '      - run: npm ci\n        working-directory: ui',
+    );
+    const browserInstall = source.indexOf(
+      '      - name: Install Playwright browsers required by the UI check\n' +
+        '        run: npx playwright install --with-deps chromium firefox webkit\n' +
+        '        working-directory: ui',
+    );
+    const uiCheck = source.indexOf(
+      '      - run: npm run check\n        working-directory: ui',
+    );
+
+    expect(uiInstall).toBeGreaterThan(-1);
+    expect(browserInstall).toBeGreaterThan(uiInstall);
+    expect(uiCheck).toBeGreaterThan(browserInstall);
+  });
 });
