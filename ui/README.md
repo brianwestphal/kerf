@@ -331,9 +331,10 @@ that convenience import, also import `@kerfjs/ui/styles.css`, which deliberately
 contains the complete layer. Non-browser/SSR tools resolve the pure `import`
 condition automatically; `@kerfjs/ui/unstyled` is the explicit CSS-free root
 entry for a browser build with a custom styling pipeline. The exported
-`foundation.css` and component CSS paths remain available for fully manual
-delivery. Load application overrides after package styles, or scope `--kui-*`
-variables directly on a component instance.
+`@kerfjs/ui/foundation.css` and component CSS paths remain available for fully
+manual delivery. Its complete supported `--kui-*` token surface is cataloged
+under the `foundation` entry. Load application overrides after package styles,
+or scope variables directly on a component instance.
 
 ## Pane and content geometry
 

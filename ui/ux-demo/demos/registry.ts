@@ -4,6 +4,7 @@ import { DisclosureArrowDemo } from './disclosure-arrow.js';
 import { EmptyStateDemo } from './empty-state.js';
 import { FeedbackDemo } from './feedback.js';
 import { FloatingToolbarDemo } from './floating-toolbar.js';
+import { FoundationDemo } from './foundation.js';
 import { HeadersDemo } from './headers.js';
 import { LayoutDemo } from './layout.js';
 import { ListDemo } from './list.js';
@@ -35,6 +36,7 @@ export const demos = {
   'lucide-icon': LucideIconDemo,
   'disclosure-arrow': DisclosureArrowDemo,
   'webawesome-theme': WebAwesomeThemeDemo,
+  foundation: FoundationDemo,
   layout: LayoutDemo,
   toolbar: ToolbarDemo,
   'toolbar-control-group': ToolbarControlGroupDemo,

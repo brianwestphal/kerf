@@ -1,0 +1,46 @@
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+
+const tones = [
+  ['Brand', 'brand'],
+  ['Success', 'success'],
+  ['Warning', 'warning'],
+  ['Danger', 'danger'],
+] as const;
+
+export function FoundationDemo() {
+  return (
+    <CatalogExampleStack
+      label="Foundation token examples"
+      className="demo-foundation"
+      rootAttributes={{ 'data-demo': 'foundation' }}
+    >
+      <CatalogExample
+        label="Semantic palette"
+        note="Foundation roles stay readable in the active light or dark theme."
+        align="none"
+      >
+        <div class="demo-foundation__tones">
+          {tones.map(([label, tone]) => (
+            <div class={`demo-foundation__tone demo-foundation__tone--${tone}`}>
+              <strong>{label}</strong>
+              <span>Quiet semantic surface</span>
+            </div>
+          ))}
+        </div>
+      </CatalogExample>
+      <CatalogExample
+        label="Type and spacing"
+        note="The public scale keeps application-owned composition aligned with component defaults."
+        align="none"
+      >
+        <div class="demo-foundation__rhythm">
+          <strong>Application heading</strong>
+          <span>
+            Body copy uses the shared sans-serif and standard group gap.
+          </span>
+          <code>--kui-space-xs · --kui-font-s</code>
+        </div>
+      </CatalogExample>
+    </CatalogExampleStack>
+  );
+}

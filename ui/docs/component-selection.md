@@ -24,6 +24,18 @@ fix the surrounding layout instead of overriding a control. See
 [`design-philosophy.md`](./design-philosophy.md) "Reach for the primitive, not for
 CSS".
 
+## Foundation tokens
+
+Import `@kerfjs/ui/foundation.css` when application-owned composition CSS needs
+the same semantic typography, spacing, device breakpoints, geometry, radii,
+colors, focus ring, or shadows as Kerf components. Its complete supported
+`--kui-*` surface is cataloged by the `foundation` entry; tools may treat that
+entry as the public allowlist rather than inferring stability from CSS text.
+Override these tokens globally for an application theme or on the narrowest
+useful subtree. Prefer a component prop or component-specific token when the
+change belongs to one component or instance, and preserve the documented
+foreground/background contrast relationships and visible focus ring.
+
 ## Production recipes
 
 Use the [complete recipe guide](./recipes.md) when several primitives form one

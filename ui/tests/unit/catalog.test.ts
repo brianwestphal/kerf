@@ -77,6 +77,7 @@ describe('UX catalog metadata', () => {
         kind: 'component' | 'composition' | 'recipe';
         recommendation?: string;
         publicExports?: string[];
+        publicTokens?: string[];
         useWhen: string[];
         avoidWhen: string[];
         geometry?: {
@@ -95,9 +96,23 @@ describe('UX catalog metadata', () => {
     expect(artifact.entries.map(({ id }) => id)).toEqual(
       catalog.map(({ id }) => id),
     );
-    expect(artifact.entries).toHaveLength(110);
+    expect(artifact.entries).toHaveLength(111);
     expect(findCatalogEntry('recipe-command-palette')).toBeUndefined();
     expect(isCatalogId('recipe-command-palette')).toBe(false);
+    const foundationSource = await readFile(
+      resolve(import.meta.dirname, '../../src/foundation.css'),
+      'utf8',
+    );
+    const foundationTokens = [
+      ...new Set(
+        [...foundationSource.matchAll(/^\s*(--kui-[a-z0-9-]+)\s*:/gm)].map(
+          (match) => match[1],
+        ),
+      ),
+    ];
+    expect(
+      artifact.entries.find(({ id }) => id === 'foundation')?.publicTokens,
+    ).toEqual(foundationTokens);
     expect(
       artifact.entries.every(
         (entry) => entry.useWhen.length > 0 && entry.avoidWhen.length > 0,
@@ -325,7 +340,14 @@ describe('UX catalog metadata', () => {
       kerfCatalog
         .filter((entry) => entry.kind === 'composition')
         .map((entry) => entry.id),
-    ).toEqual(['webawesome-theme', 'layout', 'headers', 'list', 'feedback']);
+    ).toEqual([
+      'webawesome-theme',
+      'foundation',
+      'layout',
+      'headers',
+      'list',
+      'feedback',
+    ]);
     expect(webAwesomeCatalog).toHaveLength(70);
     expect(
       webAwesomeCatalog.every(

@@ -44,4 +44,43 @@ describe('kerf-ui-analyze downstream command', () => {
       ]),
     });
   });
+
+  it('accepts every public token shipped by foundation.css', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-foundation-tokens-'));
+    await mkdir(join(root, 'src'));
+    const foundation = await readFile(
+      resolve(import.meta.dirname, '../../src/foundation.css'),
+      'utf8',
+    );
+    const tokens = [
+      ...new Set(
+        [...foundation.matchAll(/^\s*(--kui-[a-z0-9-]+)\s*:/gm)].map(
+          (match) => match[1],
+        ),
+      ),
+    ];
+    await writeFile(
+      join(root, 'src/app.css'),
+      `.app {\n${tokens.map((token, index) => `  --app-token-${index}: var(${token});`).join('\n')}\n}\n`,
+    );
+    const cli = resolve(import.meta.dirname, '../../analyzer/cli.mjs');
+
+    await expect(
+      execFileAsync(process.execPath, [
+        cli,
+        '--root',
+        root,
+        '--format',
+        'json',
+        '--output',
+        'report.json',
+      ]),
+    ).resolves.toBeDefined();
+    const report = JSON.parse(
+      await readFile(join(root, 'report.json'), 'utf8'),
+    );
+    expect(report.diagnostics).not.toEqual(
+      expect.arrayContaining([expect.objectContaining({ ruleId: 'KUI-L002' })]),
+    );
+  });
 });

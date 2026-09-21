@@ -10,9 +10,10 @@ const limits = {
   // Grows as demos are added: 260.59 kB (collapsible-sidebar recipe) → 261.13 kB
   // (TokenSearchField adoption knobs) → 262.10 kB (FloatingToolbar demo) → 263.21 kB
   // (ToolbarText overflow examples) → 264.00 kB (atomic-chip deletion hardening)
-  // → 265.24 kB (Pane + SunkenPanel focused demos and catalog metadata v2).
+  // → 265.24 kB (Pane + SunkenPanel focused demos and catalog metadata v2)
+  // → 265.78 kB (public foundation-token catalog route and metadata).
   // Keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 265_500,
+  totalJavaScriptGzip: 266_000,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) =>

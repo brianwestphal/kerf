@@ -29,6 +29,7 @@ const [
   compileTimeContractsSchemaSource,
   compileTimeFixtureSource,
   publicApiSignaturesSource,
+  foundationSource,
 ] = await Promise.all([
   readFile(resolve(root, 'ai/component-catalog.json'), 'utf8'),
   readFile(resolve(root, 'ai/component-catalog.schema.json'), 'utf8'),
@@ -66,6 +67,7 @@ const [
   readFile(resolve(root, 'ai/compile-time-contracts-v1.schema.json'), 'utf8'),
   readFile(resolve(root, 'tests/consumer-types/contracts/consumer.ts'), 'utf8'),
   readFile(resolve(root, 'ai/public-api-signatures-v1.md'), 'utf8'),
+  readFile(resolve(root, 'src/foundation.css'), 'utf8'),
 ]);
 const artifact = JSON.parse(artifactSource);
 const schema = JSON.parse(schemaSource);
@@ -255,6 +257,22 @@ const entries = artifact.entries ?? [];
 const ids = entries.map((entry) => entry.id);
 const idSet = new Set(ids);
 if (idSet.size !== ids.length) fail('entry ids must be unique');
+
+const foundationTokens = [
+  ...new Set(
+    [...foundationSource.matchAll(/^\s*(--kui-[a-z0-9-]+)\s*:/gm)].map(
+      (match) => match[1],
+    ),
+  ),
+];
+const catalogedFoundationTokens =
+  entries.find(({ id }) => id === 'foundation')?.publicTokens ?? [];
+if (
+  JSON.stringify(catalogedFoundationTokens) !== JSON.stringify(foundationTokens)
+)
+  fail(
+    'foundation publicTokens must exactly match the --kui-* properties defined by src/foundation.css',
+  );
 
 const geometryOwners = new Set([
   'self',

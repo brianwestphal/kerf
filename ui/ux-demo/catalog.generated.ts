@@ -109,6 +109,17 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "foundation",
+    "name": "Foundation tokens",
+    "category": "Foundation",
+    "kind": "composition",
+    "source": "kerf",
+    "description": "Provide the shared semantic token foundation for application themes and every styled Kerf UI component.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/foundation.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "layout",
     "name": "Application layout",
     "category": "Foundation",
