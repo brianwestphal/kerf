@@ -1761,24 +1761,27 @@ test('aligns a PanelHeader trailing action with the following content-item borde
 }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=layout');
-  const geometry = await page
-    .locator('[data-demo="layout"]')
-    .evaluate((demo) => {
-      const action = demo
-        .querySelector<HTMLElement>(
-          '.kui-panel-header .kui-toolbar__trailing button',
-        )!
-        .getBoundingClientRect();
-      const following = demo
-        .querySelector<HTMLElement>(
-          '.kui-panel-header + .kui-pane__content .kui-content-item',
-        )!
-        .getBoundingClientRect();
-      return { actionRight: action.right, followingRight: following.right };
-    });
+  const demo = page.locator('[data-demo="layout"]');
+  const action = demo.locator(
+    ':scope > .kui-pane__header .kui-panel-header .kui-toolbar__trailing button',
+  );
+  const following = demo.locator(
+    ':scope > .kui-pane__header + .kui-pane__content > .kui-content-item',
+  );
+  await expect(action).toHaveCount(1);
+  await expect(following).toHaveCount(2);
+  const [actionBox, followingBox] = await Promise.all([
+    action.boundingBox(),
+    following.first().boundingBox(),
+  ]);
+  expect(actionBox).not.toBeNull();
+  expect(followingBox).not.toBeNull();
   // The toolbar's 8px trailing padding and the content-item's 8px inline margin
   // both land the right edge at the pane edge minus 8px, so they align.
-  expect(geometry.actionRight).toBeCloseTo(geometry.followingRight, 0);
+  expect(actionBox!.x + actionBox!.width).toBeCloseTo(
+    followingBox!.x + followingBox!.width,
+    0,
+  );
 });
 
 test('renders the header composition as two panel headers over a value table', async ({
