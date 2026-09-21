@@ -2070,7 +2070,10 @@ test('token-search select-all + Delete empties cleanly without a stray newline',
   // Plain text: type fresh content, select all, Delete. A contenteditable host
   // leaves a bogus <br> here in every engine (renders as a newline, reads back
   // as a space); the wiring must strip it back to the canonical empty span.
-  await editor.click();
+  // Focus the editing host directly: a center-point click can land on one of
+  // its descendant token action buttons and mutate controlled state before
+  // the keyboard sequence begins.
+  await editor.focus();
   await page.keyboard.press(selectAll);
   await page.keyboard.press('Delete');
   await editor.type('hello world');
@@ -2096,7 +2099,7 @@ test('token-search select-all + Delete empties cleanly without a stray newline',
   // Tokened: select-all + Delete also removes every chip and leaves no artifact.
   await page.goto('/?component=token-search-field');
   const editor2 = demo.getByRole('searchbox', { name: 'Search tickets' });
-  await editor2.click();
+  await editor2.focus();
   await page.keyboard.press(selectAll);
   await page.keyboard.press('Delete');
   await expect
