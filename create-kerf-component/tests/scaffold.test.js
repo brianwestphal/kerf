@@ -18,7 +18,7 @@ import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
 const CLI = join(dirname(fileURLToPath(import.meta.url)), '..', 'index.js');
-const REPOSITORY_NODE_MODULES = join(dirname(CLI), '..', 'node_modules');
+const PACKAGE_NODE_MODULES = join(dirname(CLI), 'node_modules');
 
 // Strip `/* */` and `//` comments so we can JSON.parse JSONC (tsconfig) and so
 // the no-inline-handler check inspects code, not the explanatory comments (which
@@ -103,6 +103,10 @@ test('package.json keeps kerfjs a peerDependency (never bundled), with ESM + sub
     assert.ok(
       pkg.devDependencies?.kerfjs,
       'kerfjs should be a devDependency for local dev',
+    );
+    assert.ok(
+      pkg.devDependencies?.typescript,
+      'TypeScript must be installed for syntax-aware catalog verification',
     );
     assert.deepEqual(pkg.exports['.'], {
       types: './dist/index.d.ts',
@@ -208,7 +212,14 @@ test('scaffolded local catalog script verifies generated metadata end to end', (
           'TypeScript is required for syntax-aware export verification; run npm install',
         ),
     );
-    symlinkSync(REPOSITORY_NODE_MODULES, join(target, 'node_modules'), 'dir');
+    assert.ok(
+      existsSync(join(PACKAGE_NODE_MODULES, 'typescript', 'package.json')),
+      'the initializer package must install its declared TypeScript dependency',
+    );
+    // Model the generated package after `npm install` using only the
+    // initializer package's own dependency tree. Pointing at the repository
+    // root hid missing package-local dependencies in isolated release jobs.
+    symlinkSync(PACKAGE_NODE_MODULES, join(target, 'node_modules'), 'dir');
     const output = execFileSync(
       process.execPath,
       [join(target, 'scripts/kerf-component-catalog.mjs'), '--check'],
