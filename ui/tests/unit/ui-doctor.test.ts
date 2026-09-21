@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 import Ajv from 'ajv';
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { isForeignRuleDefinitionDiagnostic } from '../../doctor/eslint-diagnostics.mjs';
 import {
   formatUiDoctorText,
   resolveUiDoctorPackage,
@@ -238,6 +239,28 @@ describe('Kerf UI doctor', () => {
         expect.objectContaining({ id: 'analyzer', status: 'ran' }),
       ]),
     );
+  });
+
+  it('ignores only foreign rule definitions missing from the isolated Kerf preset', () => {
+    expect(
+      isForeignRuleDefinitionDiagnostic({
+        ruleId: '@typescript-eslint/no-empty-object-type',
+        message:
+          "Definition for rule '@typescript-eslint/no-empty-object-type' was not found.",
+      }),
+    ).toBe(true);
+    expect(
+      isForeignRuleDefinitionDiagnostic({
+        ruleId: 'kerfjs/not-a-rule',
+        message: "Definition for rule 'kerfjs/not-a-rule' was not found.",
+      }),
+    ).toBe(false);
+    expect(
+      isForeignRuleDefinitionDiagnostic({
+        ruleId: '@typescript-eslint/no-empty-object-type',
+        message: 'An actual consumer rule finding.',
+      }),
+    ).toBe(false);
   });
 
   it('cancels the explicit browser stage deterministically and does not cache a partial run', async () => {

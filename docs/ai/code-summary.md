@@ -467,6 +467,11 @@ profile suppression, sibling-package isolation, changed-file import traversal,
 shared-stylesheet multi-consumer policy, quoted and unquoted recursive imports,
 exit behavior, and a zero-false-positive repository fixture.
 
+`ui/doctor/` provides the shipped `kerf-ui-doctor` repair-loop API and CLI. Its
+ESLint stage runs an isolated Kerf preset, discards only missing-definition
+diagnostics for consumer-owned plugin directives, and retains unknown
+`kerfjs/*` directives and all substantive lint findings.
+
 `ui/evaluator/` provides the shipped `kerf-ui-evaluate` browser evaluator and
 `@kerfjs/ui/evaluator` API. It resolves the same project profile/catalogs, runs
 six deterministic contexts in selected Playwright engines, and records stable

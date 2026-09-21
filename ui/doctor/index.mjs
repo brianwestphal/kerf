@@ -23,6 +23,7 @@ import { createRequire } from 'node:module';
 import { loadApplicationUiProfile } from '../ai/application-ui-profile.mjs';
 import { analyzeUiProject, UI_ANALYSIS_RULES } from '../analyzer/index.mjs';
 import { evaluateUi, UI_EVALUATION_RULES } from '../evaluator/index.mjs';
+import { isForeignRuleDefinitionDiagnostic } from './eslint-diagnostics.mjs';
 
 export const UI_DOCTOR_SCHEMA_VERSION = 1;
 export const UI_DOCTOR_EXIT = Object.freeze({
@@ -879,6 +880,7 @@ async function runEslint({
   const diagnostics = [];
   for (const result of results)
     for (const item of result.messages) {
+      if (isForeignRuleDefinitionDiagnostic(item)) continue;
       const code = item.message.match(/\bKUI-[A-Z]\d{3}\b/)?.[0];
       diagnostics.push(
         normalizedDiagnostic({

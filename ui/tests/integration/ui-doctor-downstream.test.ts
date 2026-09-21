@@ -39,6 +39,14 @@ async function doctor(root: string) {
   }
 }
 
+async function lintTypeScriptFixture(root: string) {
+  return execFileAsync(
+    process.execPath,
+    [resolve(uiRoot, 'node_modules/eslint/bin/eslint.js'), 'src/model.ts'],
+    { cwd: root },
+  );
+}
+
 test('a downstream app moves from broken to clean using the supported doctor loop', async () => {
   const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-downstream-'));
   try {
@@ -70,6 +78,25 @@ test('a downstream app moves from broken to clean using the supported doctor loo
       '.view { color: var(--kui-not-public); }\n',
     );
     await writeFile(
+      resolve(root, 'src/model.ts'),
+      '// eslint-disable-next-line @typescript-eslint/no-empty-object-type\n' +
+        'export interface Model {}\n',
+    );
+    await writeFile(
+      resolve(root, 'eslint.config.js'),
+      [
+        "import tseslint from '@typescript-eslint/eslint-plugin';",
+        "import tsParser from '@typescript-eslint/parser';",
+        'export default [{',
+        "  files: ['**/*.ts'],",
+        "  plugins: { '@typescript-eslint': tseslint },",
+        '  languageOptions: { parser: tsParser },',
+        "  rules: { '@typescript-eslint/no-empty-object-type': 'error' },",
+        '}];',
+        '',
+      ].join('\n'),
+    );
+    await writeFile(
       resolve(root, 'kerf.components.json'),
       '{"schemaVersion":1,"components":"not-an-array"}\n',
     );
@@ -92,6 +119,16 @@ test('a downstream app moves from broken to clean using the supported doctor loo
     await link(root, 'eslint', resolve(uiRoot, 'node_modules/eslint'));
     await link(
       root,
+      '@typescript-eslint/eslint-plugin',
+      resolve(uiRoot, 'node_modules/@typescript-eslint/eslint-plugin'),
+    );
+    await link(
+      root,
+      '@typescript-eslint/parser',
+      resolve(uiRoot, 'node_modules/@typescript-eslint/parser'),
+    );
+    await link(
+      root,
       'eslint-plugin-kerfjs',
       resolve(repositoryRoot, 'eslint-plugin'),
     );
@@ -101,6 +138,10 @@ test('a downstream app moves from broken to clean using the supported doctor loo
       resolve(repositoryRoot, 'create-kerf-component'),
     );
     await link(root, '@kerfjs/ui', uiRoot);
+
+    await expect(lintTypeScriptFixture(root)).resolves.toMatchObject({
+      stderr: '',
+    });
 
     const broken = await doctor(root);
     expect(broken.status).toBe(1);
@@ -119,6 +160,12 @@ test('a downstream app moves from broken to clean using the supported doctor loo
         (item: { id: string }) => item.id === 'KUI-P022',
       ),
     ).toBe(false);
+    expect(
+      broken.report.diagnostics.some(
+        (item: { id: string }) =>
+          item.id === 'eslint:@typescript-eslint/no-empty-object-type',
+      ),
+    ).toBe(false);
     expect(JSON.stringify(broken.report)).not.toContain(root);
 
     await writeFile(
@@ -134,6 +181,9 @@ test('a downstream app moves from broken to clean using the supported doctor loo
     const clean = await doctor(root);
     expect(clean.status).toBe(0);
     expect(clean.report.summary.errors).toBe(0);
+    await expect(lintTypeScriptFixture(root)).resolves.toMatchObject({
+      stderr: '',
+    });
     expect(
       clean.report.diagnostics.some(
         (item: { id: string }) => item.id === 'KUI-L090',
