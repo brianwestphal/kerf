@@ -575,7 +575,11 @@ export interface CatalogExampleStackProps {
   children?: SafeHtml | readonly SafeHtml[];
 }
 
-/** A vertically-stacked group of {@link CatalogExample}s with the catalog's example rhythm. */
+/**
+ * A vertically-stacked group of {@link CatalogExample}s with the catalog's
+ * example rhythm. The semantic `section` becomes a named `region` when `label`
+ * is supplied; an unlabeled stack remains an ordinary grouping.
+ */
 export function CatalogExampleStack({
   label,
   rootAttributes = {},
@@ -587,13 +591,13 @@ export function CatalogExampleStack({
     catalogExampleProtectedAttributes,
   );
   return (
-    <div
+    <section
       {...safeRootAttributes}
       class={`kui-catalog-example-stack ${className}`.trim()}
       data-catalog-example-stack
       aria-label={label}
     >
       {children}
-    </div>
+    </section>
   );
 }

@@ -1122,7 +1122,11 @@ interface CatalogExampleStackProps {
     className?: string;
     children?: SafeHtml | readonly SafeHtml[];
 }
-/** A vertically-stacked group of {@link CatalogExample}s with the catalog's example rhythm. */
+/**
+ * A vertically-stacked group of {@link CatalogExample}s with the catalog's
+ * example rhythm. The semantic `section` becomes a named `region` when `label`
+ * is supplied; an unlabeled stack remains an ordinary grouping.
+ */
 declare function CatalogExampleStack({ label, rootAttributes, className, children, }: CatalogExampleStackProps): SafeHtml;
 
 export { Catalog, type CatalogBrand, type CatalogEntry, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, type CatalogProps, type CatalogRelated, type CatalogResource, type CatalogSecondaryGroup, type CatalogSection };

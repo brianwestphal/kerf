@@ -40,6 +40,9 @@ test('published guidance produces the sanctioned focused-component structure', a
   await expect(stack).toHaveCount(1);
   await expect(stack).toHaveAttribute('data-demo', 'status');
   await expect(stack).toHaveAttribute('aria-label', 'Status banner states');
+  await expect(
+    catalog.getByRole('region', { name: 'Status banner states' }),
+  ).toHaveCount(1);
 
   const rows = stack.locator(':scope > [data-catalog-example]');
   await expect(rows).toHaveCount(2);

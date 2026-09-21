@@ -295,6 +295,7 @@ describe('CatalogExample', () => {
       CatalogExampleStack({ label: 'Variants', children: raw('<section/>') }),
     );
     expect(html).toContain('data-catalog-example-stack');
+    expect(html).toContain('<section');
     expect(html).toContain('aria-label="Variants"');
     expect(html).toContain('<section/>');
   });
@@ -320,7 +321,7 @@ describe('CatalogExample', () => {
       }),
     );
     expect(stack).toContain(
-      '<div data-demo="buttons" class="kui-catalog-example-stack" data-catalog-example-stack>',
+      '<section data-demo="buttons" class="kui-catalog-example-stack" data-catalog-example-stack>',
     );
   });
 

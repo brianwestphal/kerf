@@ -69,6 +69,9 @@ own overlay implementation.
   active preview through `content`.
 - `CatalogExampleStack` is the group for one preview's rows. Put route/test
   metadata such as `data-demo` on its rendered root through `rootAttributes`.
+  Pass `label` when the stack needs an accessible name: the rendered `section`
+  is then exposed as a named region. An unlabeled stack remains an ordinary
+  grouping rather than adding an unnecessary landmark.
 - `CatalogExample` is one row: optional generated `ListHeader` label, optional
   generated note, then one specimen or one intentionally coupled specimen
   cluster. Use one row per variant/state; do not hand-author the helper's private

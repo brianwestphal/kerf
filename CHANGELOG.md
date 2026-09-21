@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed `CatalogExampleStack` accessible labels: the helper now renders a semantic `section`, so a supplied `label` exposes the documented named region to assistive technology while an unlabeled stack remains an ordinary grouping.
 - Added first-class `Pane` and `SunkenPanel` primitives to `@kerfjs/ui`. `Pane` standardizes semantic header/content/footer columns, explicit logical-edge separators, and one content scroll owner; `SunkenPanel` supplies one lowered surface with an 8px inset and vertical rhythm. The Catalog shell now dogfoods `Pane`, and both components ship focused demos, catalog metadata, documentation, and three-engine browser coverage.
 - Added the package-qualified component catalog v2 alongside the compatible v1 artifact. Its schema and generated metadata formalize child zones, cardinality, exclusivity, wiring, state, responsive behavior, layout and accessibility boundaries, stable validation diagnostics, provenance, and consumer extension catalogs, so AI tools can join Kerf and application components without guessing composition contracts.
 - Added an AST-based Catalog demo conformance gate. It checks every first-party demo for public helper usage, package imports, focused specimen structure, geometry-overlay metadata, and reviewed schema-checked exceptions, with adversarial fixtures and authoring guidance that makes the same contract available to downstream AI tools.
