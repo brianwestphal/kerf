@@ -221,6 +221,75 @@ describe('wireTokenSearchFields', () => {
     stop();
   });
 
+  it('consumes keyboard select-all intent when a platform range omits an atomic chip', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before </span><span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><span data-token-search-text> after</span></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    const firstText = editor.querySelector(
+      '[data-token-search-text]',
+    )!.firstChild!;
+    focusAt(editor, firstText, 0);
+    const stop = wireTokenSearchFields(root);
+
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'a',
+        ctrlKey: true,
+        bubbles: true,
+      }),
+    );
+    // Preserve Linux CI's failure shape: the live range does not describe the
+    // whole value, and the native deletion leaves the atomic chip behind.
+    editor.dispatchEvent(inputEvent('beforeinput'));
+    editor.innerHTML =
+      '<span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span>';
+    editor.dispatchEvent(inputEvent('input'));
+
+    expect(
+      editor.querySelectorAll('[data-component="token-search-token"]'),
+    ).toHaveLength(0);
+    expect(editor.textContent).toBe('');
+    stop();
+  });
+
+  it('expires keyboard select-all intent after caret navigation', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before </span><span data-component="token-search-token" data-token-value="tag:x" contenteditable="false">tag:x</span><span data-token-search-text> after</span></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    const firstText = editor.querySelector(
+      '[data-token-search-text]',
+    )!.firstChild!;
+    focusAt(editor, firstText, 0);
+    const stop = wireTokenSearchFields(root);
+
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'a',
+        ctrlKey: true,
+        bubbles: true,
+      }),
+    );
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+    );
+    editor.dispatchEvent(inputEvent('beforeinput'));
+    editor.dispatchEvent(inputEvent('input'));
+
+    expect(
+      editor.querySelectorAll('[data-component="token-search-token"]'),
+    ).toHaveLength(1);
+    expect(editor.textContent).toContain('before');
+    stop();
+  });
+
   it('drops a stray <br> around surviving chips without wiping the field', () => {
     const root = document.createElement('div');
     document.body.append(root);

@@ -387,6 +387,7 @@ export function wireTokenSearchFields(
   };
 
   const pending = new WeakMap<HTMLElement, PendingTokenDeletion>();
+  const selectAllIntents = new WeakSet<HTMLElement>();
   const onBeforeInput = (event: Event) => {
     const inputEvent = event as InputEvent;
     const editor = editorFromEvent(root, event);
@@ -409,13 +410,15 @@ export function wireTokenSearchFields(
       tokenCount: editor.querySelectorAll(
         '[data-component="token-search-token"]',
       ).length,
-      selectedAll: selectionCoversEditor(editor),
+      selectedAll:
+        selectAllIntents.delete(editor) || selectionCoversEditor(editor),
     });
   };
   const onInput = (event: Event) => {
     const editor = editorFromEvent(root, event);
     if (!editor) return;
     const deletion = pending.get(editor);
+    selectAllIntents.delete(editor);
     if ((event as InputEvent).inputType?.startsWith('delete'))
       normalizeEmptiedEditor(editor, deletion?.selectedAll);
     if (onEdit) {
@@ -449,9 +452,18 @@ export function wireTokenSearchFields(
   root.addEventListener('beforeinput', onBeforeInput, true);
   root.addEventListener('input', onInput, true);
 
+  const clearSelectAllIntent = (event: Event) => {
+    const editor = editorFromEvent(root, event);
+    if (editor) selectAllIntents.delete(editor);
+  };
+  root.addEventListener('pointerdown', clearSelectAllIntent, true);
+  root.addEventListener('focusout', clearSelectAllIntent, true);
+
   const disposers: Array<() => void> = [
     () => root.removeEventListener('beforeinput', onBeforeInput, true),
     () => root.removeEventListener('input', onInput, true),
+    () => root.removeEventListener('pointerdown', clearSelectAllIntent, true),
+    () => root.removeEventListener('focusout', clearSelectAllIntent, true),
   ];
 
   disposers.push(
@@ -463,6 +475,30 @@ export function wireTokenSearchFields(
         const keyboardEvent = event as KeyboardEvent;
         const editor = element as HTMLElement;
         if (keyboardEvent.isComposing) return;
+        if (
+          keyboardEvent.key.toLowerCase() === 'a' &&
+          (keyboardEvent.ctrlKey || keyboardEvent.metaKey) &&
+          !keyboardEvent.altKey &&
+          !keyboardEvent.shiftKey
+        ) {
+          // On some Linux browser builds, the range produced by Ctrl+A does not
+          // clone every atomic contenteditable=false chip even though the user
+          // selected the whole editor. Remember the explicit shortcut until
+          // the next mutation, selection-moving key, pointer action, or blur.
+          selectAllIntents.add(editor);
+          return;
+        }
+        if (
+          keyboardEvent.key === 'ArrowLeft' ||
+          keyboardEvent.key === 'ArrowRight' ||
+          keyboardEvent.key === 'ArrowUp' ||
+          keyboardEvent.key === 'ArrowDown' ||
+          keyboardEvent.key === 'Home' ||
+          keyboardEvent.key === 'End' ||
+          keyboardEvent.key === 'PageUp' ||
+          keyboardEvent.key === 'PageDown'
+        )
+          selectAllIntents.delete(editor);
         const field = editor.closest<HTMLElement>(
           '[data-component="token-search-field"]',
         );
