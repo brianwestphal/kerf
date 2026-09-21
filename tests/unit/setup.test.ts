@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import {
   mkdir,
   mkdtemp,
@@ -37,6 +38,297 @@ afterEach(async () => {
 });
 
 describe('AI-first setup planner', () => {
+  it('preserves JSONC comments, trailing commas, extends, and authored includes', async () => {
+    const tsconfig = `{
+  // Keep the shared base and its formatting.
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "target": "ES2022", // a URL-like comment: https://example.test/a/*b*/
+    "strict": true,
+  },
+  "include": ["src", "generated",],
+}
+`;
+    const root = await fixture(
+      { name: 'core-app', dependencies: { kerfjs: '4.4.1' } },
+      { 'tsconfig.json': tsconfig },
+    );
+    const plan = await planKerfSetup({ root, version: '4.4.1' });
+    expect(plan.conflicts).toEqual([]);
+    await applyKerfSetup(plan, { install: false });
+    const output = await readFile(join(root, 'tsconfig.json'), 'utf8');
+    expect(output).toContain('// Keep the shared base and its formatting.');
+    expect(output).toContain(
+      '// a URL-like comment: https://example.test/a/*b*/',
+    );
+    expect(output).toContain('"extends": "./tsconfig.base.json"');
+    expect(output).toContain('"include": ["src", "generated",],');
+    expect(output).toContain('"moduleResolution": "Bundler"');
+    expect(output).toMatch(/"jsxImportSource": "kerfjs",?\n\s*}/);
+    expect(
+      (await planKerfSetup({ root, version: '4.4.1' })).actions.find(
+        ({ path }) => path === 'tsconfig.json',
+      ),
+    ).toBeUndefined();
+  });
+
+  it('upgrades state-managed JSONC fields without disturbing surrounding text', async () => {
+    const root = await fixture(
+      { name: 'core-app', dependencies: { kerfjs: '4.4.1' } },
+      {
+        'tsconfig.json': `{
+  "compilerOptions": {
+    // Previous setup recommendation.
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "jsx": "react-jsx",
+    "jsxImportSource": "kerfjs",
+  },
+  "include": ["src",],
+}
+`,
+      },
+    );
+    const hash = createHash('sha256')
+      .update(JSON.stringify('ES2020'), 'utf8')
+      .digest('hex');
+    await writeFile(
+      join(root, '.kerf-ai-setup.json'),
+      `${JSON.stringify({
+        schemaVersion: 2,
+        setupVersion: '4.3.0',
+        packageManager: 'npm',
+        packages: {
+          '.': {
+            mode: 'core',
+            package: 'core-app',
+            packagePath: '.',
+            managed: {
+              'tsconfig.json#compilerOptions.target': { sha256: hash },
+            },
+            resolutions: {},
+          },
+        },
+      })}\n`,
+    );
+    const plan = await planKerfSetup({ root, version: '4.4.1' });
+    expect(plan.conflicts).toEqual([]);
+    await applyKerfSetup(plan, { install: false });
+    const output = await readFile(join(root, 'tsconfig.json'), 'utf8');
+    expect(output).toContain('// Previous setup recommendation.');
+    expect(output).toContain('"target": "ES2022",');
+    expect(output).toContain('"include": ["src",],');
+  });
+
+  it('requires explicit keep or kerf for a malformed JSONC compilerOptions container', async () => {
+    const source = `{
+  // This is authored, though structurally invalid for setup.
+  "compilerOptions": [],
+}
+`;
+    const root = await fixture(
+      { name: 'core-app', dependencies: { kerfjs: '4.4.1' } },
+      { 'tsconfig.json': source },
+    );
+    const id = 'tsconfig.json#compilerOptions';
+    expect((await planKerfSetup({ root, version: '4.4.1' })).conflicts).toEqual(
+      expect.arrayContaining([expect.objectContaining({ id })]),
+    );
+    const keep = await planKerfSetup({
+      root,
+      version: '4.4.1',
+      resolutions: { [id]: 'keep' },
+    });
+    await applyKerfSetup(keep, { install: false });
+    expect(await readFile(join(root, 'tsconfig.json'), 'utf8')).toContain(
+      '"compilerOptions": []',
+    );
+    const keptAgain = await planKerfSetup({ root, version: '4.4.1' });
+    expect(keptAgain.conflicts).toEqual([]);
+    expect(
+      keptAgain.actions.find(({ path }) => path === 'tsconfig.json'),
+    ).toBeUndefined();
+
+    const kerfRoot = await fixture(
+      { name: 'core-app', dependencies: { kerfjs: '4.4.1' } },
+      { 'tsconfig.json': source },
+    );
+    await applyKerfSetup(
+      await planKerfSetup({
+        root: kerfRoot,
+        version: '4.4.1',
+        resolutions: { [id]: 'kerf' },
+      }),
+      { install: false },
+    );
+    const replaced = await readFile(join(kerfRoot, 'tsconfig.json'), 'utf8');
+    expect(replaced).toContain('// This is authored');
+    expect(replaced).toContain('"compilerOptions": {');
+    expect(replaced).toContain('"strict": true');
+    expect(
+      (await planKerfSetup({ root: kerfRoot, version: '4.4.1' })).actions.find(
+        ({ path }) => path === 'tsconfig.json',
+      ),
+    ).toBeUndefined();
+  });
+
+  it('preserves JSONC around explicit field-level keep and kerf decisions', async () => {
+    const source = `{
+  "compilerOptions": {
+    // Deliberate local policy.
+    "strict": false,
+  },
+}
+`;
+    const id = 'tsconfig.json#compilerOptions.strict';
+    const keepRoot = await fixture(
+      { name: 'core-app', dependencies: { kerfjs: '4.4.1' } },
+      { 'tsconfig.json': source },
+    );
+    await applyKerfSetup(
+      await planKerfSetup({
+        root: keepRoot,
+        version: '4.4.1',
+        resolutions: { [id]: 'keep' },
+      }),
+      { install: false },
+    );
+    const kept = await readFile(join(keepRoot, 'tsconfig.json'), 'utf8');
+    expect(kept).toContain('// Deliberate local policy.');
+    expect(kept).toContain('"strict": false,');
+
+    const kerfRoot = await fixture(
+      { name: 'core-app', dependencies: { kerfjs: '4.4.1' } },
+      { 'tsconfig.json': source },
+    );
+    await applyKerfSetup(
+      await planKerfSetup({
+        root: kerfRoot,
+        version: '4.4.1',
+        resolutions: { [id]: 'kerf' },
+      }),
+      { install: false },
+    );
+    const replaced = await readFile(join(kerfRoot, 'tsconfig.json'), 'utf8');
+    expect(replaced).toContain('// Deliberate local policy.');
+    expect(replaced).toContain('"strict": true,');
+  });
+
+  it('preserves CRLF, block-comment tokens, escaped strings, and comment-only objects', async () => {
+    const source = [
+      '{',
+      '  "compilerOptions": {',
+      '    /* Deliberate tokens: } ] " // and an escaped-looking \\u007d. */',
+      '  },',
+      '  "note": "escaped \\" // /* text",',
+      '}',
+      '',
+    ].join('\r\n');
+    const root = await fixture(
+      { name: 'core-app', dependencies: { kerfjs: '4.4.1' } },
+      { 'tsconfig.json': source },
+    );
+    const plan = await planKerfSetup({ root, version: '4.4.1' });
+    expect(plan.conflicts).toEqual([]);
+    await applyKerfSetup(plan, { install: false });
+    const output = await readFile(join(root, 'tsconfig.json'), 'utf8');
+    expect(output).toContain(
+      '/* Deliberate tokens: } ] " // and an escaped-looking \\u007d. */',
+    );
+    expect(output).toContain('"note": "escaped \\" // /* text",');
+    expect(output).toContain('"target": "ES2022"');
+    expect(output.replaceAll('\r\n', '')).not.toContain('\n');
+    expect(
+      (await planKerfSetup({ root, version: '4.4.1' })).actions.find(
+        ({ path }) => path === 'tsconfig.json',
+      ),
+    ).toBeUndefined();
+  });
+
+  it('fails closed on malformed JSONC without changing its bytes', async () => {
+    const source = '{\n  /* unterminated\n  "compilerOptions": {}\n}\n';
+    const root = await fixture(
+      { name: 'core-app', dependencies: { kerfjs: '4.4.1' } },
+      { 'tsconfig.json': source },
+    );
+    await expect(planKerfSetup({ root, version: '4.4.1' })).rejects.toThrow(
+      'tsconfig.json is invalid JSONC',
+    );
+    expect(await readFile(join(root, 'tsconfig.json'), 'utf8')).toBe(source);
+  });
+
+  it('requires explicit keep or kerf when the JSONC root is not an object', async () => {
+    const source = '/* authored root */\n["local",]\n';
+    const id = 'tsconfig.json';
+    const keepRoot = await fixture(
+      { name: 'core-app', dependencies: { kerfjs: '4.4.1' } },
+      { 'tsconfig.json': source },
+    );
+    expect(
+      (await planKerfSetup({ root: keepRoot, version: '4.4.1' })).conflicts,
+    ).toEqual(expect.arrayContaining([expect.objectContaining({ id })]));
+    await applyKerfSetup(
+      await planKerfSetup({
+        root: keepRoot,
+        version: '4.4.1',
+        resolutions: { [id]: 'keep' },
+      }),
+      { install: false },
+    );
+    expect(await readFile(join(keepRoot, 'tsconfig.json'), 'utf8')).toBe(
+      source,
+    );
+    expect(
+      (await planKerfSetup({ root: keepRoot, version: '4.4.1' })).conflicts,
+    ).toEqual([]);
+
+    const kerfRoot = await fixture(
+      { name: 'core-app', dependencies: { kerfjs: '4.4.1' } },
+      { 'tsconfig.json': source },
+    );
+    await applyKerfSetup(
+      await planKerfSetup({
+        root: kerfRoot,
+        version: '4.4.1',
+        resolutions: { [id]: 'kerf' },
+      }),
+      { install: false },
+    );
+    expect(
+      JSON.parse(await readFile(join(kerfRoot, 'tsconfig.json'), 'utf8')),
+    ).toMatchObject({
+      compilerOptions: { target: 'ES2022', strict: true },
+      include: ['src'],
+    });
+    expect(
+      (await planKerfSetup({ root: kerfRoot, version: '4.4.1' })).actions.find(
+        ({ path }) => path === 'tsconfig.json',
+      ),
+    ).toBeUndefined();
+  });
+
+  it('redacts URL credentials exposed by JSONC value conflicts', async () => {
+    const root = await fixture(
+      { name: 'core-app', dependencies: { kerfjs: '4.4.1' } },
+      {
+        'tsconfig.json': `{
+  "compilerOptions": {
+    "target": "https://alice:hunter2@example.test/target",
+  },
+}
+`,
+      },
+    );
+    const output = formatSetupPlan(
+      await planKerfSetup({ root, version: '4.4.1' }),
+    );
+    expect(output).not.toContain('alice');
+    expect(output).not.toContain('hunter2');
+    expect(output).toContain('<redacted>');
+  });
+
   it('plans, explicitly applies, preserves canonical append content, and becomes a no-op', async () => {
     const root = await fixture({
       name: 'core-app',

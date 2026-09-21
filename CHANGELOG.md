@@ -12,7 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   package-scoped hash-backed upgrades, monorepo selection, transactional
   rollback, shipped guidance, strict TypeScript/ESLint, and UI catalog/profile
   and doctor discovery. Empty application component metadata now emits a valid
-  empty v2 catalog.
+  empty v2 catalog. Existing JSONC TypeScript configuration is structurally
+  merged without discarding comments, trailing commas, authored fields, or line
+  endings; malformed roots and compiler-option containers require an explicit
+  keep/Kerf decision.
 - Added `@kerfjs/ui/doctor` and the `kerf-ui-doctor` command: a versioned, redacted repair-loop report that merges catalog/profile validation, TypeScript, Kerf UI ESLint, static analysis, and opt-in browser evaluation with changed/full modes, monorepo selection, reasoned suppressions, caching, and deterministic exits.
 - Added the public Playwright-backed `kerf-ui-evaluate` CLI and `@kerfjs/ui/evaluator` Node API. It resolves application profiles and composition catalogs, exercises wide/intermediate/narrow/200%-zoom, light/dark, and reduced-motion contexts across Chromium, Firefox, and WebKit, and emits versioned repair-oriented `KUI-B###` diagnostics plus focused DOM/style evidence and hashed screenshots. Subjective visual quality remains an explicitly separate unrecorded reviewer rubric.
 - Added `kerf-ui-analyze`, a profile- and catalog-aware static evaluator for Kerf UI integrations. It resolves directory policy per source, follows project-local CSS import graphs without cross-package class leakage, and evaluates shared stylesheets against every consuming source policy before deduplicating findings. Stable portable text, JSON, or SARIF diagnostics cover private selectors, unknown tokens, competing geometry/scroll owners, repeated insets, forced dimensions, off-scale spacing, and dynamic-class review, with exact scoped profile exceptions, a public report schema, and configurable CI review failure.

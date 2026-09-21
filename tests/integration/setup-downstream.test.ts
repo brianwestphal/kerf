@@ -147,6 +147,17 @@ describe('packed AI-first setup', () => {
       resolve(root, 'src/index.ts'),
       'export const ready = true;\n',
     );
+    await writeFile(
+      resolve(root, 'tsconfig.json'),
+      `{
+  // Packed consumers commonly start from JSONC.
+  "compilerOptions": {
+    "strict": true,
+  },
+  "include": ["src",],
+}
+`,
+    );
     await prepareModules(root);
     await exec(
       resolve(root, 'node_modules/.bin/kerfjs'),
@@ -158,6 +169,14 @@ describe('packed AI-first setup', () => {
     expect(
       await readFile(resolve(root, '.claude/skills/kerf-app/SKILL.md'), 'utf8'),
     ).toContain('kerf-skill-version:');
+    const configuredTsconfig = await readFile(
+      resolve(root, 'tsconfig.json'),
+      'utf8',
+    );
+    expect(configuredTsconfig).toContain(
+      '// Packed consumers commonly start from JSONC.',
+    );
+    expect(configuredTsconfig).toContain('"include": ["src",],');
     const { stdout } = await exec(
       resolve(root, 'node_modules/.bin/kerfjs'),
       ['--core'],

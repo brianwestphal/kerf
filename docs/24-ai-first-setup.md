@@ -38,6 +38,13 @@ npx kerfjs setup \
 `keep` records the project decision; `kerf` applies the recommendation.
 Unknown, stale, or invalid decisions fail. There is no blanket force flag.
 
+Existing `tsconfig.json` files are parsed as JSONC. Structural setup edits keep
+comments, trailing commas, authored fields such as `extends` and `include`, and
+the file's line endings while adding or updating only recommended compiler
+options. Malformed JSONC fails closed. A non-object document root or
+`compilerOptions` container is never guessed: it receives its own stable
+conflict and must be resolved with `keep` or `kerf`.
+
 ## 24.2 Managed and authored content
 
 `.kerf-ai-setup.json` schema v2 stores package-scoped hashes for managed fields

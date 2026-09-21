@@ -18,6 +18,13 @@ import process from 'node:process';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 
+import {
+  applyJsoncEdits,
+  jsoncInsertProperties,
+  jsoncValueEdit,
+  parseJsoncDocument,
+} from './jsonc.mjs';
+
 const execFileAsync = promisify(execFile);
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const marker = '<!-- KERF-APP-CANONICAL-END · your customizations below -->';
@@ -691,23 +698,108 @@ export async function planKerfSetup({
   await addAction(packagePath, stableJson(nextManifest), 'json');
 
   const tsconfigPath = resolve(selected.directory, 'tsconfig.json');
-  const tsconfig = (await readJson(tsconfigPath)) ?? {};
-  tsconfig.compilerOptions ??= {};
-  addMapValues(
-    tsconfig.compilerOptions,
-    {
-      target: 'ES2022',
-      module: 'ESNext',
-      moduleResolution: 'Bundler',
-      strict: true,
-      jsx: 'react-jsx',
-      jsxImportSource: 'kerfjs',
-    },
-    'tsconfig.json#compilerOptions',
-    context,
-  );
-  tsconfig.include ??= ['src'];
-  await addAction(tsconfigPath, stableJson(tsconfig), 'json');
+  const tsconfigSource = await readText(tsconfigPath);
+  const tsconfigRecommendations = {
+    target: 'ES2022',
+    module: 'ESNext',
+    moduleResolution: 'Bundler',
+    strict: true,
+    jsx: 'react-jsx',
+    jsxImportSource: 'kerfjs',
+  };
+  if (tsconfigSource === null) {
+    const tsconfig = { compilerOptions: {}, include: ['src'] };
+    addMapValues(
+      tsconfig.compilerOptions,
+      tsconfigRecommendations,
+      'tsconfig.json#compilerOptions',
+      context,
+    );
+    await addAction(tsconfigPath, stableJson(tsconfig), 'json');
+  } else {
+    const parsed = parseJsoncDocument(tsconfigSource, 'tsconfig.json');
+    const rootId = 'tsconfig.json';
+    if (parsed.root.type !== 'object') {
+      knownResolutionIds.add(rootId);
+      activeConflictIds.add(rootId);
+      if (!resolutions[rootId])
+        conflicts.push({ id: rootId, message: 'root value must be an object' });
+      else if (resolutions[rootId] === 'kerf') {
+        const replacement = {
+          compilerOptions: { ...tsconfigRecommendations },
+          include: ['src'],
+        };
+        for (const [key, value] of Object.entries(tsconfigRecommendations))
+          managedAfter[`tsconfig.json#compilerOptions.${key}`] = {
+            sha256: hashValue(value),
+          };
+        await addAction(tsconfigPath, stableJson(replacement), 'json');
+      }
+    } else {
+      const edits = [];
+      const rootInsertions = [];
+      const compilerProperty = parsed.root.properties.get('compilerOptions');
+      if (compilerProperty && compilerProperty.valueNode.type !== 'object') {
+        const id = 'tsconfig.json#compilerOptions';
+        knownResolutionIds.add(id);
+        activeConflictIds.add(id);
+        if (!resolutions[id])
+          conflicts.push({ id, message: 'existing value must be an object' });
+        else if (resolutions[id] === 'kerf') {
+          edits.push(
+            jsoncValueEdit(
+              compilerProperty.valueNode,
+              tsconfigRecommendations,
+              tsconfigSource,
+            ),
+          );
+          for (const [key, value] of Object.entries(tsconfigRecommendations))
+            managedAfter[`tsconfig.json#compilerOptions.${key}`] = {
+              sha256: hashValue(value),
+            };
+        }
+      } else {
+        const compilerOptions = compilerProperty?.valueNode.value ?? {};
+        const before = { ...compilerOptions };
+        addMapValues(
+          compilerOptions,
+          tsconfigRecommendations,
+          'tsconfig.json#compilerOptions',
+          context,
+        );
+        if (compilerProperty) {
+          const missing = [];
+          for (const [key, value] of Object.entries(compilerOptions)) {
+            const property = compilerProperty.valueNode.properties.get(key);
+            if (!property) missing.push([key, value]);
+            else if (before[key] !== value)
+              edits.push(
+                jsoncValueEdit(property.valueNode, value, tsconfigSource),
+              );
+          }
+          edits.push(
+            ...jsoncInsertProperties(
+              tsconfigSource,
+              compilerProperty.valueNode,
+              missing,
+            ),
+          );
+        } else {
+          rootInsertions.push(['compilerOptions', compilerOptions]);
+        }
+      }
+      if (!parsed.root.properties.has('include'))
+        rootInsertions.push(['include', ['src']]);
+      edits.push(
+        ...jsoncInsertProperties(tsconfigSource, parsed.root, rootInsertions),
+      );
+      await addAction(
+        tsconfigPath,
+        applyJsoncEdits(tsconfigSource, edits),
+        'jsonc',
+      );
+    }
+  }
 
   const eslintNames = [
     'eslint.config.js',
@@ -881,11 +973,23 @@ export function formatSetupPlan(plan) {
       `${action.before === null ? 'CREATE' : 'UPDATE'} ${action.path}`,
     );
     if (shown >= 120) continue;
-    if (action.kind === 'json' || action.kind === 'state') {
+    if (
+      action.kind === 'json' ||
+      action.kind === 'jsonc' ||
+      action.kind === 'state'
+    ) {
       const before = leaves(
-        action.before === null ? {} : JSON.parse(action.before),
+        action.before === null
+          ? {}
+          : action.kind === 'jsonc'
+            ? parseJsoncDocument(action.before, action.path).value
+            : JSON.parse(action.before),
       );
-      const after = leaves(JSON.parse(action.after));
+      const after = leaves(
+        action.kind === 'jsonc'
+          ? parseJsoncDocument(action.after, action.path).value
+          : JSON.parse(action.after),
+      );
       const keys = new Set([...before.keys(), ...after.keys()]);
       for (const key of keys) {
         if (action.kind === 'state' && key.includes('.managed.')) continue;
