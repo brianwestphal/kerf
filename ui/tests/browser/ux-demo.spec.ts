@@ -5530,7 +5530,7 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl variants', 
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=segmented-control');
-  const demo = page.getByRole('region', { name: 'SegmentedControl variants' });
+  const demo = page.locator('[data-demo="segmented-control"]');
   const controls = demo.locator(
     '[data-component="segmented-control"]:not([data-placeholder="true"])',
   );
@@ -5566,6 +5566,24 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl variants', 
   expect(radii[0]).toBeLessThan(20);
   expect(radii[1]).toBeGreaterThanOrEqual(21);
   expect(radii[1]).toBeLessThanOrEqual(23);
+  const roundedCornerGeometry = await rounded.evaluate((control) => {
+    const item = control.querySelector<HTMLElement>(
+      '.kui-segmented-control__item',
+    );
+    if (!item) throw new Error('Missing rounded SegmentedControl item');
+    const controlStyle = window.getComputedStyle(control);
+    const itemStyle = window.getComputedStyle(item);
+    return {
+      controlRadius: parseFloat(controlStyle.borderTopLeftRadius),
+      itemRadius: parseFloat(itemStyle.borderTopLeftRadius),
+      itemInset:
+        parseFloat(controlStyle.borderLeftWidth) +
+        parseFloat(controlStyle.paddingLeft),
+    };
+  });
+  expect(
+    roundedCornerGeometry.controlRadius - roundedCornerGeometry.itemRadius,
+  ).toBeCloseTo(roundedCornerGeometry.itemInset, 5);
   const widths = await rounded
     .getByRole('button')
     .evaluateAll((buttons) =>

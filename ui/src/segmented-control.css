@@ -12,9 +12,9 @@
     --kui-layout-rounded-radius,
     calc(1px + remify(11px))
   );
-  --kui-segmented-item-radius: var(
-    --kui-layout-rounded-radius,
-    calc(1px + remify(11px))
+  --kui-segmented-item-radius: max(
+    0px,
+    calc(var(--kui-segmented-radius) - 2px)
   );
   display: inline-flex;
   max-width: 100%;
@@ -79,10 +79,6 @@
 
 .kui-segmented-control[data-shape="pill"] {
   --kui-segmented-radius: var(
-    --kui-layout-pill-radius,
-    calc(1px + remify(21px))
-  );
-  --kui-segmented-item-radius: var(
     --kui-layout-pill-radius,
     calc(1px + remify(21px))
   );
