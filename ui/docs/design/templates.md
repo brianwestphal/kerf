@@ -123,3 +123,8 @@ starting point and:
 
 Maintaining these next to the components — and reviewing the captured SVGs on
 every component change — keeps the design source of truth honest.
+
+ListItem templates retain the shared 18px leading icon and 44px row target;
+regenerate both themes and library sheets when that geometry changes. The browser
+pane/sidebar geometry checks cover the resulting 43px icon-label offset from the
+section edge (17px content inset + 18px icon + 8px gap).

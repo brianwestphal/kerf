@@ -700,8 +700,8 @@ test('supports keyboard shell/sidebar controls and controlled toolbar interactio
     });
   expect(await sidebarGeometry()).toEqual({
     iconStart: 17,
-    iconWidth: 24,
-    iconLabelStart: 49,
+    iconWidth: 18,
+    iconLabelStart: 43,
     plainStart: 17,
     surfaceStart: 17,
     footerTargets: [
@@ -717,8 +717,8 @@ test('supports keyboard shell/sidebar controls and controlled toolbar interactio
   await expect(projects).toHaveAttribute('aria-expanded', 'true');
   expect(await sidebarGeometry()).toEqual({
     iconStart: 17,
-    iconWidth: 24,
-    iconLabelStart: 49,
+    iconWidth: 18,
+    iconLabelStart: 43,
     plainStart: 17,
     surfaceStart: 17,
     footerTargets: [

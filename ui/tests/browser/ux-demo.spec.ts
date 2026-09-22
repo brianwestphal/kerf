@@ -5095,8 +5095,8 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     ] as const)
       near(name, geometry[name], 17);
     near('toolbarTextStart', geometry.toolbarTextStart, 10);
-    near('iconLabelStart', geometry.iconLabelStart, 49);
-    near('iconWidth', geometry.iconWidth, 24);
+    near('iconLabelStart', geometry.iconLabelStart, 43);
+    near('iconWidth', geometry.iconWidth, 18);
     near('surfacePadding', geometry.surfacePadding, 8);
     near('surfaceBorder', geometry.surfaceBorder, 1);
     for (const name of ['toolbarActionWidth', 'toolbarActionHeight'] as const)
