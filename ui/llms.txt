@@ -145,7 +145,8 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   replacement focus after controlled automatic tab activation,
   `wireResizableRegions` the live drag preview; they report committed changes via
   callbacks. Managed TokenSearchField clear also preserves open state and replacement
-  editor focus for continued typing. Select All deletion does the same; deletion
+  editor focus before the next input task, so shortcut-letter typing stays in search.
+  Select All deletion does the same; deletion
   restoration finishes before the next keystroke rather than on a delayed frame.
   Persist both query and remaining tokens read from an edited field. The one richer case is `wireTokenSearchFields`, which manages the
   collapsible field's expand/collapse/focus by default (on, per-behavior opt-out) and

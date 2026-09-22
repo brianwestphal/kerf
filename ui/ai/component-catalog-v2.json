@@ -1885,7 +1885,7 @@
       "accessibility": {
         "obligations": [
           "Announce result changes when useful and keep tokens atomic during editing.",
-          "Keep leading and trailing controls aligned to the first text line while content wraps.",
+          "Keep leading and trailing controls aligned to the first text line while content wraps. Managed Clear restores replacement focus before the next input task, preserving immediate typing and later focus handoffs without a frame delay.",
           "Wire Enter to submit without inserting a contenteditable line break and preserve focus plus the text-relative caret across controlled keyboard chip deletion before the next keystroke. Select All deletion preserves managed open state and replacement focus; persist both edited query and tokens. Visual wrapping remains available.",
           "In collapsible mode, wireTokenSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out."
         ]

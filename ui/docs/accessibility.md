@@ -199,8 +199,10 @@ originating `InputEvent` so a caller can gate on `inputType`/`data` — fires on
 owns query parsing and result-count/loading announcements.
 
 Managed clear captures the action before application handlers run, keeps the adopted
-expanded signal open during editor replacement, and focuses the current editor after
-rendering so typing can continue. The app still owns clearing query/tokens and emptying
+expanded signal open during editor replacement, and restores focus at the actual
+mutation checkpoint before the next input task. It also returns keyboard activation
+from the clear button to a surviving editor immediately. No animation frame owns
+clear focus, so fast typing cannot escape to page shortcuts or lose its first letter. The app still owns clearing query/tokens and emptying
 DOM-owned text. This focus step respects `manageFocus: false`, disposal, removed fields,
 and focus deliberately moved to another control; no app-level reopen callback is needed.
 

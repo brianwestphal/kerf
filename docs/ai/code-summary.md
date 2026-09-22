@@ -655,7 +655,8 @@ Unit coverage in `ui/tests/unit/wire-tab-bars.test.ts` and the real-browser
 `ui/tests/browser/tab-bar-controlled-focus.spec.ts` cover repeated Arrow/Home/End
 transitions and duplicate tab IDs in independent bars.
 `wireTokenSearchFields` captures managed clear before app handlers, suppresses the
-transient replacement blur, and restores the current editor without app reopen code.
+transient replacement blur, and restores the current editor at its mutation checkpoint
+before the next input task, without app reopen code or frame-delayed focus.
 Its unit suite covers repeated clear/refill, focus opt-outs, disposal, and removal;
 `ui/tests/browser/token-search-adoption-demo.spec.ts` drives clear-and-type plus
 repeated mixed-token Select All deletion and refill in real browsers at wide and

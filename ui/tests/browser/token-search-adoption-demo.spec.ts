@@ -175,52 +175,96 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
   expect(chipBehindCaret).toBe(true);
 });
 
-test('managed clear preserves the controlled editor for immediate continued typing', async ({
+test('managed clear keeps immediate typing and later focus ownership before delayed frames', async ({
   page,
   browserName,
-}) => {
-  await page.setViewportSize({ width: 1100, height: 800 });
+}, testInfo) => {
   await page.goto('/?component=token-search-field');
-  const field = page.locator(
-    '.token-search-adoption [data-component="token-search-field"]',
-  );
+  const demo = page.locator('.token-search-adoption');
+  const field = demo.locator('[data-component="token-search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Filter records' });
   const clear = field.getByRole('button', { name: 'Clear search' });
-  for (const query of ['first', 'second']) {
-    await page
-      .locator('.token-search-adoption__suggestion', { hasText: 'status:open' })
-      .click();
-    await expect(
-      field.locator('[data-component="token-search-token"]'),
-    ).toHaveCount(1);
-    await editor.focus();
-    await clear.click();
-    await expect(field).toHaveAttribute('data-expanded', 'true');
-    await expect(editor).toBeFocused();
-    await expect(
-      field.locator('[data-component="token-search-token"]'),
-    ).toHaveCount(0);
-    await page.keyboard.type(query);
-    await expect(editor).toContainText(query);
-    await expect(page.locator('[data-demo-adoption-readout]')).toContainText(
-      query,
+  const outside = page.locator('[data-action="toggle-theme"]').first();
+  // Exercise next-input-before-frame deterministically without slowing input or
+  // waiting for the helper to focus. Native pointer delivery is unchanged.
+  await page.evaluate(() => {
+    const request = window.requestAnimationFrame.bind(window);
+    const cancel = window.cancelAnimationFrame.bind(window);
+    const pending = new Map<number, FrameRequestCallback>();
+    let clearing = false;
+    let sequence = 0;
+    document.addEventListener(
+      'click',
+      (event) => {
+        clearing =
+          event.target instanceof Element &&
+          Boolean(event.target.closest('.kui-token-search__clear'));
+      },
+      true,
     );
-    await clear.click();
-    await expect(editor).toBeFocused();
+    window.addEventListener('click', () => {
+      clearing = false;
+    });
+    window.requestAnimationFrame = (callback) => {
+      if (!clearing) return request(callback);
+      pending.set(--sequence, callback);
+      return sequence;
+    };
+    window.cancelAnimationFrame = (id) => {
+      if (!pending.delete(id)) cancel(id);
+    };
+    Object.assign(window, {
+      flushClearFrames: () => {
+        const callbacks = [...pending.values()];
+        pending.clear();
+        for (const callback of callbacks) callback(performance.now());
+      },
+    });
+  });
+  const flushFrames = () =>
+    page.evaluate(() => {
+      (window as unknown as { flushClearFrames(): void }).flushClearFrames();
+    });
+  for (const width of [1100, 390, 1100]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const query of ['continued', 'create', 'continued again']) {
+      await demo
+        .getByRole('button', { name: 'status:open', exact: true })
+        .click();
+      await expect(
+        editor.locator('[data-component="token-search-token"]'),
+      ).toHaveCount(1);
+      await editor.focus();
+      await clear.click();
+      await page.keyboard.type(query);
+      expect(
+        await editor.evaluate((node) => ({
+          focused: document.activeElement === node,
+          text: node.textContent,
+        })),
+      ).toEqual({ focused: true, text: query });
+      await expect(field).toHaveAttribute('data-expanded', 'true');
+      await expect(
+        editor.locator('[data-component="token-search-token"]'),
+      ).toHaveCount(0);
+      await expect(page.locator('[data-demo-adoption-readout]')).toContainText(
+        `"${query}" · 0 filters`,
+      );
+      await page.keyboard.press('ControlOrMeta+A');
+      await flushFrames();
+      await page.keyboard.type('replacement');
+      await expect(editor).toHaveText('replacement');
+      if (browserName === 'chromium')
+        await demo.screenshot({
+          path: testInfo.outputPath(`clear-focus-${width}.png`),
+          animations: 'disabled',
+        });
+      // A real handoff after clear owns focus even when old frames finally run.
+      await clear.click();
+      await outside.focus();
+      await flushFrames();
+      await expect(outside).toBeFocused();
+      await expect(field).toHaveAttribute('data-expanded', 'false');
+    }
   }
-  if (browserName === 'chromium')
-    await page
-      .locator('.token-search-adoption')
-      .screenshot({ path: 'test-results/token-search-clear-focus-wide.png' });
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.keyboard.type('narrow');
-  await expect(editor).toContainText('narrow');
-  if (browserName === 'chromium')
-    await page
-      .locator('.token-search-adoption')
-      .screenshot({ path: 'test-results/token-search-clear-focus-narrow.png' });
-  await clear.click();
-  await expect(editor).toBeFocused();
-  await page.locator('[data-action="toggle-theme"]').first().focus();
-  await expect(field).toHaveAttribute('data-expanded', 'false');
 });

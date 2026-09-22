@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed managed `TokenSearchField` Clear focus before the next input task, so
+  immediate typing stays in the replacement editor instead of triggering page
+  shortcuts; genuine later focus handoffs and selections remain untouched.
+
 - Fixed animated `ResizableRegion` overlays so remembered desktop dimensions
   cannot make their content overflow the responsive panel cap on narrow screens.
 - Added configuration-first application-panel policies across `ResizableRegion`,

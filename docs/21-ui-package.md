@@ -194,7 +194,8 @@ slot without mixing authoring rules into the per-entry component catalog.
   `wireTokenSearchFields` restores focus and the text-relative caret when
   keyboard chip deletion causes controlled rendering to replace the editor. Managed
   clear also keeps an adopted field open and restores the replacement editor for
-  continued typing, while respecting disposal and focus moved elsewhere. Its leading
+  continued typing before the next input task, without a frame-delayed gap that could
+  route a shortcut letter to the page, while respecting disposal and focus moved elsewhere. Its leading
   icon, first text line, clear action, and trailing slot share a fixed vertical
   center and remain pinned there as content wraps. Its optional `collapsible`
   mode owns an animated iconic closed state, works standalone or inside a

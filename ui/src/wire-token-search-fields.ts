@@ -388,7 +388,7 @@ export function wireTokenSearchFields(
     if (manageFocus) focusAfterRender(id, '.kui-token-search__expand');
   };
 
-  const clearing = new Set<string>();
+  const clearing = new Map<string, () => void>();
   const pending = new Map<string, PendingTokenDeletion>();
   const deleting = new Map<string, () => void>();
   const selectAllIntents = new WeakSet<HTMLElement>();
@@ -628,7 +628,9 @@ export function wireTokenSearchFields(
 
   if (manageFocus) {
     disposers.push(
-      () => clearing.clear(),
+      () => {
+        for (const stop of clearing.values()) stop();
+      },
       delegateCapture(
         root,
         'click',
@@ -645,24 +647,39 @@ export function wireTokenSearchFields(
           )
             return;
           const editor = replacementEditor(root, id);
-          // Capture before the application's clear handler empties and replaces the
-          // editor. A replacement blur must not collapse the adopted open signal.
-          clearing.add(id);
-          setExpanded(id, true);
-          view().requestAnimationFrame(() => {
-            if (!clearing.delete(id)) return;
-            const replacement = replacementEditor(root, id);
+          clearing.get(id)?.();
+          const stop = () => {
+            observer.disconnect();
+            view().clearTimeout(timeout);
+            clearing.delete(id);
+          };
+          const ownsFocus = (replacement: HTMLElement) => {
             const active = root.ownerDocument.activeElement;
-            if (
-              !replacement ||
-              (active !== editor &&
-                active !== element &&
-                active !== replacement &&
-                active !== root.ownerDocument.body)
-            )
-              return;
-            placeTokenSearchCaret(replacement);
+            return (
+              active === editor ||
+              active === element ||
+              active === replacement ||
+              active === root.ownerDocument.body
+            );
+          };
+          const observer = new MutationObserver(() => {
+            const replacement = replacementEditor(root, id);
+            if (!replacement || replacement === editor) return;
+            stop();
+            if (ownsFocus(replacement)) placeTokenSearchCaret(replacement);
           });
+          // Native clicks can drain microtasks between capture and bubble listeners.
+          // Observe the actual controlled replacement before the app clears; a frame
+          // is too late because the next shortcut-letter input may reach the page.
+          observer.observe(root, { childList: true, subtree: true });
+          const timeout = view().setTimeout(stop, 0);
+          clearing.set(id, stop);
+          setExpanded(id, true);
+          const current = replacementEditor(root, id);
+          // Keyboard activation may start on the clear button. Own the current
+          // editor now, and its replacement at the mutation checkpoint. Expiration
+          // only disconnects observation; it never moves a later caret or focus.
+          if (current && ownsFocus(current)) placeTokenSearchCaret(current);
         },
       ),
     );

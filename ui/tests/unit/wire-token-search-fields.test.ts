@@ -813,7 +813,7 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     handle();
   });
 
-  it('keeps an adopted field open and refocuses its replacement after repeated controlled clears', async () => {
+  it('keeps an adopted field open and refocuses repeated controlled clears before the next input task', async () => {
     const expanded = signal(false);
     const tokens = signal([{ value: 'tag:client', label: 'Client' }]);
     const root = document.createElement('div');
@@ -849,7 +849,6 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
         .click();
       await micro();
       expect(expanded.value).toBe(true);
-      await raf();
       expect(editor()).not.toBe(previous);
       expect(document.activeElement).toBe(editor());
       editor().textContent = 'next query';
@@ -858,6 +857,82 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     }
     handle();
     unmount();
+  });
+
+  it('returns keyboard clear activation to an editor that survives the clear', async () => {
+    const field = mountCollapsibleField(signal(true));
+    field.query.value = 'query';
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    const clear = field.root.querySelector<HTMLButtonElement>(
+      '.kui-token-search__clear',
+    )!;
+    field.root.addEventListener('click', () => {
+      editor.textContent = '';
+      field.query.value = '';
+    });
+    clear.focus();
+    clear.click();
+    expect(document.activeElement).toBe(editor);
+    await micro();
+    expect(field.editor()).toBe(editor);
+    editor.textContent = 'continued';
+    await raf();
+    expect(editor.textContent).toBe('continued');
+    handle();
+  });
+
+  it.each(['latest', 'dispose', 'outside', 'removed', 'unmanaged'] as const)(
+    'pending clear replacement respects %s ownership before any frame',
+    async (transition) => {
+      const field = mountCollapsibleField(signal(true));
+      field.query.value = 'query';
+      const handle = wireCollapsible(field, {
+        signals: { find: field.expandedSignal },
+        manageFocus: transition !== 'unmanaged',
+      });
+      const editor = field.editor()!;
+      const outside = document.createElement('button');
+      document.body.append(outside);
+      editor.focus();
+      const clear = field.root.querySelector<HTMLButtonElement>(
+        '.kui-token-search__clear',
+      )!;
+      clear.click();
+      // Coalesce another clear in the same task without letting old cleanup own it.
+      if (transition === 'latest') clear.click();
+      if (transition === 'dispose') handle();
+      if (transition === 'outside') outside.focus();
+      const replacement = editor.cloneNode(true) as HTMLElement;
+      replacement.textContent = '';
+      editor.replaceWith(replacement);
+      if (transition === 'removed') field.root.replaceChildren();
+      await micro();
+      expect(document.activeElement).toBe(
+        transition === 'latest'
+          ? replacement
+          : transition === 'outside'
+            ? outside
+            : document.body,
+      );
+      handle();
+    },
+  );
+
+  it('expires an unused clear observer without claiming a later replacement', async () => {
+    const field = mountCollapsibleField(signal(true));
+    field.query.value = 'query';
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    editor.focus();
+    field.root
+      .querySelector<HTMLButtonElement>('.kui-token-search__clear')!
+      .click();
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    editor.replaceWith(editor.cloneNode(true));
+    await micro();
+    expect(document.activeElement).toBe(document.body);
+    handle();
   });
 
   it.each(['Backspace', 'Delete', 'native'])(

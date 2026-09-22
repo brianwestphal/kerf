@@ -114,7 +114,7 @@ popover or context-menu lifecycle. Its `label`, `icon`, and
 
 Use `wireTokenSearchFields` for managed search focus, including controlled clear
 and Select All deletion. Persist both query and tokens from `readTokenSearchField`
-on input. The helper keeps the replacement editor open and restores deletion
+on input. The helper keeps the replacement editor open and restores clear/deletion
 focus before the next keystroke; do not add an application reopen callback or
 a delayed animation-frame caret reset.
 
