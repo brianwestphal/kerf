@@ -529,7 +529,9 @@ That boundary keeps Web Awesome and its custom-element side effects out of bundl
 Use `label` for a visible label or `ariaLabel` for a visually hidden name. A
 nonempty visible label takes precedence when both are supplied. Kerf names the
 actual shadow combobox without adding visible label spacing; this also works
-with `renderSelected`, and needs no application shadow-DOM patch.
+with `renderSelected`, and needs no application shadow-DOM patch. Use `hint`
+for persistent supporting text below the control and `placeholderText` for the
+empty value inside the closed control. Loading placeholders preserve the hint.
 
 `Select` also owns the Kerf/Web Awesome reconciliation boundary: option icons
 keep stable slotted elements across rerenders, and `renderSelected` content is

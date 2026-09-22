@@ -244,6 +244,7 @@ describe('component placeholder mode', () => {
         name: 'status',
         value: 'open',
         label: 'Status',
+        hint: 'Current workflow state.',
         choices: [{ value: 'open', label: 'Open' }],
         placeholder: true,
       }),
@@ -253,6 +254,9 @@ describe('component placeholder mode', () => {
     expect(html).toContain('Status');
     expect(html).toContain('kui-skeleton');
     expect(html).toContain('kui-select__placeholder-chevron');
+    expect(html).toContain(
+      '<span class="kui-select__placeholder-hint">Current workflow state.</span>',
+    );
     expect(html).not.toContain('<wa-select');
   });
 

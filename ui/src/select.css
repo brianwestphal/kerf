@@ -136,6 +136,14 @@
 .kui-select__placeholder-box .kui-skeleton {
   max-width: remify(160px);
 }
+.kui-select__placeholder-hint {
+  display: block;
+  margin-block-start: remify(4px);
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-xs);
+  line-height: 1.4;
+}
 .kui-select__placeholder-chevron {
   display: inline-flex;
   width: remify(16px);

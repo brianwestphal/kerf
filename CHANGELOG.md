@@ -17,6 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Fixed `Select` controls using only `ariaLabel` being unnamed to assistive
   technology. Ordinary and custom selected content retain their geometry while
   the actual shadow combobox receives its accessible name.
+- Added first-class `Select` hint text below interactive and loading-placeholder
+  controls while keeping empty-value `placeholderText` semantically distinct.
 
 - Changed the Web Awesome Dialog theme to use 8px body padding and 16px footer
   padding, independently of the component's shared `--spacing` value.

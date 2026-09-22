@@ -1291,6 +1291,8 @@ interface SelectBaseProps<Value extends string = string> {
     className?: string;
     /** Empty-value hint text shown in the closed control (the native select placeholder). */
     placeholderText?: string;
+    /** Supporting text shown below the control and associated with its combobox. */
+    hint?: string;
     disabled?: boolean;
     fitMenu?: boolean;
     renderSelected?: (choice: SelectChoice<Value>) => SafeHtml;
@@ -1298,7 +1300,7 @@ interface SelectBaseProps<Value extends string = string> {
     placeholder?: boolean;
 }
 type SelectProps<Value extends string = string> = SelectBaseProps<Value> & SelectAccessibleName;
-declare function Select<Value extends string>({ name, value, label, ariaLabel, choices, className, placeholderText, disabled, fitMenu, renderSelected, placeholder, }: SelectProps<Value>): SafeHtml;
+declare function Select<Value extends string>({ name, value, label, ariaLabel, choices, className, placeholderText, hint, disabled, fitMenu, renderSelected, placeholder, }: SelectProps<Value>): SafeHtml;
 
 export { Select, type SelectChoice, type SelectProps };
 ```

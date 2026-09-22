@@ -21,6 +21,28 @@ test('names plain and custom Select comboboxes without adding visible label geom
   await expect(custom).toHaveValue('Balanced');
   await expect(plain).toHaveValue('Balanced');
   await expect(labeled).toHaveValue('Balanced');
+  const labeledHost = demo.locator(
+    'wa-select[name="labeled-rendering-balance"]',
+  );
+  await expect(labeledHost.locator('[part~="hint"]')).toHaveText(
+    'Controls how much rendering detail is shown.',
+  );
+  await expect(demo.getByText('Loading selection options.')).toBeVisible();
+  expect(
+    await labeledHost.evaluate((element) => {
+      const input = element.shadowRoot!.querySelector('[role="combobox"]')!;
+      const hint = element.shadowRoot!.querySelector('[part~="hint"]')!;
+      return {
+        describedBy: input.getAttribute('aria-describedby'),
+        hintId: hint.id,
+        hintText: hint.textContent?.trim(),
+      };
+    }),
+  ).toEqual({
+    describedBy: 'hint',
+    hintId: 'hint',
+    hintText: 'Controls how much rendering detail is shown.',
+  });
 
   for (const name of ['rendering-balance', 'plain-rendering-balance']) {
     const control = demo.locator(`wa-select[name="${name}"]`);

@@ -2484,13 +2484,13 @@
       "category": "Controls",
       "kind": "component",
       "source": "kerf",
-      "description": "Controlled Web Awesome select with grouped choices and rerender-stable icon slots.",
+      "description": "Controlled Web Awesome select with grouped choices, supporting hint text, and rerender-stable icon slots.",
       "uses": [
         "lucide-icon",
         "wa-select",
         "wa-option"
       ],
-      "purpose": "Controlled Web Awesome select with grouped choices and rerender-stable icon slots.",
+      "purpose": "Controlled Web Awesome select with grouped choices, supporting hint text, and rerender-stable icon slots.",
       "publicExports": [
         "Select"
       ],
@@ -2518,6 +2518,7 @@
         "value",
         "validation",
         "choices",
+        "hint copy",
         "domain mapping"
       ],
       "variants": [
@@ -2526,11 +2527,13 @@
         "fit menu",
         "grouped",
         "custom selected content",
+        "hint text",
         "placeholder (loading)"
       ],
       "accessibility": [
         "Verify the live value, standard events, focus, and rendered output.",
-        "A nonempty label names the internal combobox; otherwise ariaLabel supplies a visually hidden label without adding control height, including custom selected content."
+        "A nonempty label names the internal combobox; otherwise ariaLabel supplies a visually hidden label without adding control height, including custom selected content.",
+        "Hint text is visible below the control through Web Awesome's native hint relationship; placeholderText remains the empty value inside the closed control."
       ],
       "geometry": {
         "margin": "none",

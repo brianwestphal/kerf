@@ -638,6 +638,9 @@ content is replaced when the controlled selection changes.
 Web Awesome’s internal combobox name. The ariaLabel-only label is visually
 hidden without adding geometry, also with custom selected content. See
 [`ui/docs/accessibility.md`](../../ui/docs/accessibility.md#select).
+`hint` renders persistent supporting text below the control through Web
+Awesome's native hint relationship; `placeholderText` remains the empty value
+inside the closed control, and loading placeholders retain the visible hint.
 `AppTab.rootAttributes` uses the shared extension filter to accept only domain
 `data-*` values while protecting component/action/identity/selection and
 wire-owned drag/drop markers case-insensitively. `AppTab.closeIcon` and

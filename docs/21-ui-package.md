@@ -130,7 +130,10 @@ keyed by the controlled value, so it is replaced when the selection changes
 instead of retaining stale content. A nonempty `label`, or otherwise `ariaLabel`,
 names the actual shadow combobox. The ariaLabel-only label is visually hidden by
 the package without adding height, including with `renderSelected`; host ARIA
-attributes alone are not sufficient. Unit name-projection coverage lives in
+attributes alone are not sufficient. `hint` supplies persistent supporting text
+below the control through Web Awesome's native hint relationship, while
+`placeholderText` remains the empty value inside the closed control; loading
+placeholders preserve the visible hint. Unit name-projection coverage lives in
 `ui/tests/unit/components.test.tsx`; the three-engine accessible-name, keyboard,
 rerender, and geometry regression is
 `ui/tests/browser/select-accessibility.spec.ts`.

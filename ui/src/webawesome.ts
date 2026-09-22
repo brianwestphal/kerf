@@ -26,6 +26,7 @@ declare module 'kerfjs/jsx-runtime' {
         'aria-label'?: string;
         value?: string;
         placeholder?: string;
+        hint?: string;
         disabled?: boolean;
       };
       'wa-option': KerfCustomElement & { value?: string };

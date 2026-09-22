@@ -82,6 +82,7 @@ export function SelectDemo() {
           name="labeled-rendering-balance"
           value={selectedChoice.value}
           label="Rendering preference"
+          hint="Controls how much rendering detail is shown."
           choices={[
             { value: 'quiet', label: 'Quiet' },
             { value: 'balanced', label: 'Balanced' },
@@ -104,6 +105,7 @@ export function SelectDemo() {
           value=""
           label="Rendering balance"
           ariaLabel="Rendering balance"
+          hint="Loading selection options."
           choices={[]}
           placeholder
         />

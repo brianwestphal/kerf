@@ -28,10 +28,17 @@ adding height or spacing. This also applies to `renderSelected`: selected conten
 stays separate from the control's stable accessible name. Applications do not
 need shadow-DOM patches or extra label styling.
 
+Use `hint` for persistent supporting text below the control; use
+`placeholderText` only for the empty value shown inside the closed control.
+Kerf passes hint text through Web Awesome's form-control contract, which renders
+the hint part and connects the shadow combobox to it with `aria-describedby`.
+Loading placeholders keep the same visible hint while replacing the interactive
+control with inert chrome.
+
 `tests/unit/components.test.tsx` covers name projection and visible/hidden label
 variants. `tests/browser/select-accessibility.spec.ts` verifies actual accessible
 names, unchanged unlabeled geometry, keyboard selection, controlled rerenders,
-and wide/narrow presentation in Chromium, Firefox, and WebKit.
+native hint wiring, and wide/narrow presentation in Chromium, Firefox, and WebKit.
 
 ## ListActionRow
 

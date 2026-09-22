@@ -159,6 +159,9 @@ content when the controlled value changes.
 Web Awesome’s internal combobox name. The ariaLabel-only label is visually
 hidden without adding geometry, also with custom selected content. See
 [`ui/docs/accessibility.md`](../../ui/docs/accessibility.md#select).
+Use `hint` for persistent supporting text below the control and
+`placeholderText` only for the empty value inside the closed control; loading
+placeholders retain the visible hint.
 
 Use `SegmentedControl` for a small exclusive choice set. Pick
 `appearance="toolbar"` when nesting it in `ToolbarControlGroup`; standalone

@@ -1041,12 +1041,13 @@ describe('production UI primitives', () => {
         value: 'one',
         ariaLabel: 'Plain',
         placeholderText: 'Choose',
+        hint: 'Choose the primary option.',
         disabled: true,
         choices: [{ value: 'one', label: 'One', icon: Plus }],
       }),
     );
     expect(plain).toContain(
-      'aria-label="Plain" value="one" placeholder="Choose" disabled',
+      'aria-label="Plain" value="one" placeholder="Choose" hint="Choose the primary option." disabled',
     );
     expect(plain).toContain(
       'data-key="plain:one:selected" data-morph-skip slot="start" class="kui-select__icon kui-select__icon--selected"',

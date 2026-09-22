@@ -24,6 +24,8 @@ interface SelectBaseProps<Value extends string = string> {
   className?: string;
   /** Empty-value hint text shown in the closed control (the native select placeholder). */
   placeholderText?: string;
+  /** Supporting text shown below the control and associated with its combobox. */
+  hint?: string;
   disabled?: boolean;
   fitMenu?: boolean;
   renderSelected?: (choice: SelectChoice<Value>) => SafeHtml;
@@ -42,6 +44,7 @@ export function Select<Value extends string>({
   choices,
   className = '',
   placeholderText,
+  hint,
   disabled = false,
   fitMenu = false,
   renderSelected,
@@ -66,6 +69,7 @@ export function Select<Value extends string>({
             <LucideIcon icon={ChevronDown} name="chevron-down" />
           </span>
         </span>
+        {hint && <span class="kui-select__placeholder-hint">{hint}</span>}
       </div>
     );
   }
@@ -116,6 +120,7 @@ export function Select<Value extends string>({
       aria-label={ariaLabel}
       value={value}
       placeholder={placeholderText}
+      hint={hint}
       disabled={disabled}
     >
       {selected &&
