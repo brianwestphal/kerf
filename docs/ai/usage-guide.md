@@ -171,7 +171,10 @@ Use `SegmentedControl` for a small exclusive choice set. Pick
 `appearance="toolbar"` when nesting it in `ToolbarControlGroup`; standalone
 controls support filled or outlined surfaces and rounded or pill shapes. Handle
 its action at the root, read `data-segment-value`, update the controlled value,
-and keep all choices in normal Tab order.
+and keep all choices in normal Tab order. Inset hover and selection surfaces
+inherit the owning control's shape and subtract the shared
+`--kui-layout-highlight-inset` from its outer radius; do not override the inner
+highlight with an independent radius.
 
 When several primitives form a shell, sidebar, workspace header,
 list-detail dialog, composer, list-state surface, or mixed-control toolbar,

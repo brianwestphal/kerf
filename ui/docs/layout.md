@@ -50,10 +50,12 @@ Use `.kui-content-item--pill` for the 22px pill radius expressed as
 changing its geometry by setting `--kui-content-item-border` and
 `--kui-content-item-background`.
 
-Nested rounded edges stay concentric by subtracting their full inset from the
-outer radius. For example, `SegmentedControl` places each item behind a 1px
-control border and 1px control padding, so its default rounded-rectangle radius
-is 10px inside the control's 12px radius.
+Nested selection and hover highlights stay concentric and match their owning
+control's shape. Their inner radius is the outer radius minus the full inset,
+expressed by the shared `--kui-layout-highlight-inset` token (2px by default).
+For example, `SegmentedControl` and `ToolbarControlGroup` place each highlight
+behind a 1px control border and 1px control padding, so a rounded control's 12px
+outer radius produces a 10px highlight radius; a 22px pill produces 20px.
 
 A visible parent surface does not make every child another visible card. The
 composer recipe keeps its form as the single surface, uses a heading `Toolbar` for

@@ -10,16 +10,24 @@
   --kui-toolbar-control-pressed-background: var(--kui-color-neutral-fill-loud);
   --kui-toolbar-control-pressed-border: var(--kui-color-neutral-border-loud);
   --kui-toolbar-control-pressed-color: var(--kui-color-neutral-on-loud);
+  --kui-toolbar-group-radius: var(
+    --kui-layout-pill-radius,
+    calc(1px + remify(21px))
+  );
+  --kui-control-highlight-radius: max(
+    0px,
+    calc(
+      var(--kui-toolbar-group-radius) - var(--kui-layout-highlight-inset, 2px)
+    )
+  );
+  --kui-toolbar-item-radius: var(--kui-control-highlight-radius);
   display: inline-flex;
   height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   min-width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   padding: 1px;
   box-sizing: border-box;
   border: 1px solid var(--kui-toolbar-control-border);
-  border-radius: var(
-    --kui-toolbar-group-radius,
-    var(--kui-layout-pill-radius, calc(1px + remify(21px)))
-  );
+  border-radius: var(--kui-toolbar-group-radius);
   color: var(--kui-toolbar-control-color);
   background: var(--kui-toolbar-control-background);
   align-items: center;
@@ -28,14 +36,10 @@
 }
 
 /* `shape="rounded"` swaps the default pill radius for the design system's softer
-   rounded-rectangle radius on both the group and its items (custom properties
-   inherit to the item rules that read them). */
+   rounded rectangle. The shared highlight contract derives every inner hover or
+   selected surface from this outer radius and the group's full inset. */
 .kui-toolbar-control-group[data-shape="rounded"] {
   --kui-toolbar-group-radius: var(
-    --kui-layout-rounded-radius,
-    calc(1px + remify(11px))
-  );
-  --kui-toolbar-item-radius: var(
     --kui-layout-rounded-radius,
     calc(1px + remify(11px))
   );

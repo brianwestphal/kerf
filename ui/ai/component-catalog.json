@@ -317,6 +317,7 @@
         "--kui-layout-content-gap",
         "--kui-layout-control-gap",
         "--kui-layout-metadata-gap",
+        "--kui-layout-highlight-inset",
         "--kui-layout-rounded-radius",
         "--kui-layout-pill-radius",
         "--kui-toolbar-group-inner-size",

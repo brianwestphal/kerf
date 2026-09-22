@@ -127,6 +127,10 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   `--kui-space-none`, `4px` `--kui-space-2xs`, `8px` `--kui-space-xs` (inside a
   group), `16px` `--kui-space-m`, `24px` `--kui-space-l` (between major differing
   regions). 12px/32px are off-scale exceptions.
+- **Keep nested highlight corners concentric.** Inset hover and selection surfaces
+  follow the owning control's pill or rounded shape; their radius is the outer
+  radius minus `--kui-layout-highlight-inset`. Do not give an inner highlight an
+  unrelated radius.
 - **Panes share one child-owned geometry.** Sidebars, main areas, inspectors, and
   dialogs all use an unpadded `.kui-pane` (optional `.kui-pane__toolbar`, one
   scrolling `.kui-pane__content`, optional `.kui-pane__footer`). A visible pane owns

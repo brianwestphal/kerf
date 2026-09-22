@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   shortcuts; genuine later focus handoffs and selections remain untouched.
 - Fixed `@kerfjs/ui/tab-scaffold` bottom-tab labels being vertically clipped by
   flex shrinkage while retaining horizontal ellipsis for long labels.
+- Made inset selection and hover highlights follow their owning control's pill
+  or rounded shape, with concentric inner radii derived from the full inset.
 - Fixed animated `ResizableRegion` overlays so remembered desktop dimensions
   cannot make their content overflow the responsive panel cap on narrow screens.
 - Added configuration-first application-panel policies across `ResizableRegion`,

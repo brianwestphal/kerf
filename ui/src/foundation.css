@@ -58,6 +58,7 @@
   --kui-layout-content-gap: var(--kui-space-l);
   --kui-layout-control-gap: var(--kui-space-xs);
   --kui-layout-metadata-gap: var(--kui-space-2xs);
+  --kui-layout-highlight-inset: 2px;
   --kui-layout-rounded-radius: calc(1px + remify(11px));
   --kui-layout-pill-radius: calc(1px + remify(21px));
   --kui-toolbar-group-inner-size: remify(42px);

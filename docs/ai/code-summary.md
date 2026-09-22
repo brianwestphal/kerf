@@ -678,6 +678,11 @@ Heading recipes compose `Toolbar`, direct `ToolbarText`, and optional
 supporting copy on a separate row. Page and section titles opt into heading
 semantics through `ToolbarText.headingLevel`.
 
+Inset hover and selection surfaces use the foundation
+`--kui-layout-highlight-inset` contract: component CSS subtracts the full inset
+from the owning outer radius, and nested toolbar SegmentedControl choices use
+the group's derived highlight radius so pill and rounded corners stay concentric.
+
 `DisclosureArrow` ships an 18px root-scaled default through compiled
 `remify(18px)` CSS and retains `--kui-disclosure-arrow-size` for scoped consumer
 overrides. Kerf `Select` keeps its independent Web Awesome expand-glyph scale

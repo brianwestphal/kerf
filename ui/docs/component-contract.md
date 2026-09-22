@@ -224,6 +224,13 @@ segmented-control, app-tab, and tab-bar colors likewise use their public
 hover, and selected-state variables, so rounded, pill, and toolbar presentations
 remain opinionated but locally overridable.
 
+Inset hover and selection surfaces follow the outer control shape instead of
+choosing an independent radius. `--kui-layout-highlight-inset` is the full
+distance between those edges; the inner radius is the outer radius minus that
+inset. `ToolbarControlGroup` publishes its derived radius to nested toolbar
+`SegmentedControl` choices, keeping both direct buttons and exclusive-choice
+highlights concentric when the group switches between pill and rounded shapes.
+
 `ResizableRegion` owns the Hot Sheet 2 split treatment: a persistent 1px
 separator with a compact grip that appears on hover or keyboard focus. Override
 `--kui-resizable-region-separator-color`,
