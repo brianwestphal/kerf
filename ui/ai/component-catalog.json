@@ -1973,11 +1973,11 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Roving-tabindex-ready tabs with protected application metadata and customizable close affordances.",
+      "description": "Roving-tabindex-ready tabs with typed compact, segmented, icon-only, and truncating-label presentations.",
       "uses": [
         "lucide-icon"
       ],
-      "purpose": "Roving-tabindex-ready tabs with protected application metadata and customizable close affordances.",
+      "purpose": "Roving-tabindex-ready tabs with typed compact, segmented, icon-only, and truncating-label presentations.",
       "publicExports": [
         "AppTab"
       ],
@@ -1998,7 +1998,8 @@
         "selection",
         "close policy",
         "content",
-        "application data attribute values"
+        "application data attribute values",
+        "outer placement"
       ],
       "variants": [
         "selected",
@@ -2007,7 +2008,11 @@
         "leading",
         "trailing",
         "custom close icon",
-        "root metadata"
+        "root metadata",
+        "compact size",
+        "segmented presentation",
+        "icon-only accessible presentation",
+        "label maximum width and truncation"
       ],
       "accessibility": [
         "Compose in a tablist and pair with an application-owned tabpanel.",
@@ -2067,12 +2072,12 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Controlled, reorderable tab strips with horizontal overflow.",
+      "description": "Controlled tab strips with typed rail, segmented, and inspector presentation plus intrinsic or fill allocation.",
       "uses": [
         "tabs",
         "toolbar-control-group"
       ],
-      "purpose": "Controlled, reorderable tab strips with horizontal overflow.",
+      "purpose": "Controlled tab strips with typed rail, segmented, and inspector presentation plus intrinsic or fill allocation.",
       "publicExports": [
         "TabBar",
         "wireTabBars",
@@ -2103,13 +2108,17 @@
         "selection",
         "panels",
         "routing",
-        "persistence"
+        "persistence",
+        "outer placement"
       ],
       "variants": [
         "leading",
         "trailing",
         "overflow",
-        "reorderable"
+        "reorderable",
+        "rail, segmented, and inspector presentation",
+        "intrinsic or fill allocation",
+        "separate or adjacent trailing action"
       ],
       "accessibility": [
         "Keep exactly one selected tab at tabindex 0 and preserve the wiring keyboard model."

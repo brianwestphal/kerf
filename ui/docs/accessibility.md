@@ -98,6 +98,13 @@ and — via `position` and `--kui-floating-toolbar-inset` — where it sits.
 
 `AppTab` renders one controlled tab. `TabBar` supplies the containing tab list,
 fixed leading/trailing regions, and a horizontally scrollable strip.
+Use `TabBar.presentation` for rail, segmented, or inspector chrome,
+`allocation="fill"` when peers should divide the strip, and
+`trailingPlacement="adjacent"` when an action belongs beside the final tab.
+`AppTab` provides compact 32px, segmented, truncating-label, and icon-only
+presentations. Icon-only tabs keep the required `name` as the tab button's
+accessible name while visually hiding the duplicate label. These props own
+component appearance only; the application still owns the bar's outer placement.
 `AppTab.rootAttributes` accepts application `data-*` metadata only; runtime
 filtering rejects roles plus case variants of component- or wiring-owned
 action, identity, selection, drag, drop, and component attributes. An optional

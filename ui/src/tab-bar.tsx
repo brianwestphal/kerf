@@ -1,6 +1,9 @@
 import type { SafeHtml } from 'kerfjs';
 
 export type TabActivation = 'automatic' | 'manual';
+export type TabBarAllocation = 'intrinsic' | 'fill';
+export type TabBarPresentation = 'rail' | 'segmented' | 'inspector';
+export type TabBarTrailingPlacement = 'separate' | 'adjacent';
 
 export interface TabBarProps {
   id: string;
@@ -16,6 +19,12 @@ export interface TabBarProps {
    * selects with Enter / Space / click — use it when selecting a tab is a heavy action.
    */
   activation?: TabActivation;
+  /** How available strip width is allocated across child AppTabs. */
+  allocation?: TabBarAllocation;
+  /** Named strip chrome for application rails, segmented tabs, or inspectors. */
+  presentation?: TabBarPresentation;
+  /** Keep a trailing action beside the final tab or at the far edge of the bar. */
+  trailingPlacement?: TabBarTrailingPlacement;
 }
 
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
@@ -27,6 +36,9 @@ export function TabBar({
   trailing,
   className = '',
   activation,
+  allocation = 'intrinsic',
+  presentation = 'rail',
+  trailingPlacement = 'separate',
 }: TabBarProps) {
   return (
     <nav
@@ -34,6 +46,9 @@ export function TabBar({
       data-component="tab-bar"
       data-tab-bar-id={id}
       data-tab-activation={activation}
+      data-allocation={allocation}
+      data-presentation={presentation}
+      data-trailing-placement={trailingPlacement}
       aria-label={label}
     >
       {leading && <div class="kui-tab-bar__leading">{leading}</div>}

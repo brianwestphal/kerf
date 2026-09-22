@@ -1596,7 +1596,8 @@
           "id": "application data attribute values",
           "owner": "application",
           "required": false
-        }
+        },
+        { "id": "outer placement", "owner": "application", "required": false }
       ],
       "wiring": { "required": false, "helpers": [], "obligations": [] },
       "responsive": { "owner": "not-applicable", "behaviors": [] },

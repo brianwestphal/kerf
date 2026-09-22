@@ -396,6 +396,8 @@ type AppTabRootAttributes = Readonly<Record<`data-${string}`, string | undefined
     'data-tab-dragging'?: never;
     'data-tab-drop-position'?: never;
 }>;
+type AppTabPresentation = 'pill' | 'segmented' | 'icon-only';
+type AppTabSize = 'default' | 'compact';
 interface AppTabProps {
     id: string;
     name: string;
@@ -404,6 +406,12 @@ interface AppTabProps {
     draggable?: boolean;
     leading?: SafeHtml;
     trailing?: SafeHtml;
+    /** Visual treatment within a TabBar. Icon-only tabs retain `name` as their accessible name. */
+    presentation?: AppTabPresentation;
+    /** Compact tabs use the 32px application-rail height. */
+    size?: AppTabSize;
+    /** Maximum visible label width in CSS pixels before ellipsis. */
+    labelMaxWidth?: number;
     /** Decorative dormant content for the close button. Must not contain interactive descendants. */
     closeIcon?: SafeHtml;
     selectAction?: string;
@@ -413,9 +421,9 @@ interface AppTabProps {
     placeholder?: boolean;
     rootAttributes?: AppTabRootAttributes;
 }
-declare function AppTab({ id, name, selected, closable, draggable, leading, trailing, closeIcon, selectAction, closeAction, className, placeholder, rootAttributes, }: AppTabProps): SafeHtml;
+declare function AppTab({ id, name, selected, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, closeIcon, selectAction, closeAction, className, placeholder, rootAttributes, }: AppTabProps): SafeHtml;
 
-export { AppTab, type AppTabProps };
+export { AppTab, type AppTabPresentation, type AppTabProps, type AppTabSize };
 ```
 
 ## `@kerfjs/ui/tab-bar`
@@ -424,6 +432,9 @@ export { AppTab, type AppTabProps };
 import { SafeHtml } from 'kerfjs';
 
 type TabActivation = 'automatic' | 'manual';
+type TabBarAllocation = 'intrinsic' | 'fill';
+type TabBarPresentation = 'rail' | 'segmented' | 'inspector';
+type TabBarTrailingPlacement = 'separate' | 'adjacent';
 interface TabBarProps {
     id: string;
     label: string;
@@ -438,11 +449,17 @@ interface TabBarProps {
      * selects with Enter / Space / click — use it when selecting a tab is a heavy action.
      */
     activation?: TabActivation;
+    /** How available strip width is allocated across child AppTabs. */
+    allocation?: TabBarAllocation;
+    /** Named strip chrome for application rails, segmented tabs, or inspectors. */
+    presentation?: TabBarPresentation;
+    /** Keep a trailing action beside the final tab or at the far edge of the bar. */
+    trailingPlacement?: TabBarTrailingPlacement;
 }
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
-declare function TabBar({ id, label, children, leading, trailing, className, activation, }: TabBarProps): SafeHtml;
+declare function TabBar({ id, label, children, leading, trailing, className, activation, allocation, presentation, trailingPlacement, }: TabBarProps): SafeHtml;
 
-export { type TabActivation, TabBar, type TabBarProps };
+export { type TabActivation, TabBar, type TabBarAllocation, type TabBarPresentation, type TabBarProps, type TabBarTrailingPlacement };
 ```
 
 ## `@kerfjs/ui/wire-tab-bars`

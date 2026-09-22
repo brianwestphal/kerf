@@ -23,6 +23,9 @@ type AppTabRootAttributes = Readonly<
   }
 >;
 
+export type AppTabPresentation = 'pill' | 'segmented' | 'icon-only';
+export type AppTabSize = 'default' | 'compact';
+
 export interface AppTabProps {
   id: string;
   name: string;
@@ -31,6 +34,12 @@ export interface AppTabProps {
   draggable?: boolean;
   leading?: SafeHtml;
   trailing?: SafeHtml;
+  /** Visual treatment within a TabBar. Icon-only tabs retain `name` as their accessible name. */
+  presentation?: AppTabPresentation;
+  /** Compact tabs use the 32px application-rail height. */
+  size?: AppTabSize;
+  /** Maximum visible label width in CSS pixels before ellipsis. */
+  labelMaxWidth?: number;
   /** Decorative dormant content for the close button. Must not contain interactive descendants. */
   closeIcon?: SafeHtml;
   selectAction?: string;
@@ -65,6 +74,9 @@ export function AppTab({
   draggable = false,
   leading,
   trailing,
+  presentation = 'pill',
+  size = 'default',
+  labelMaxWidth,
   closeIcon,
   selectAction = 'select-tab',
   closeAction = 'close-tab',
@@ -89,9 +101,16 @@ export function AppTab({
       data-component="app-tab"
       data-tab-id={id}
       data-selected={String(selected)}
+      data-presentation={presentation}
+      data-size={size}
       data-placeholder={placeholder ? 'true' : undefined}
       draggable={placeholder ? 'false' : draggable ? 'true' : 'false'}
       aria-busy={placeholder ? 'true' : undefined}
+      style={
+        labelMaxWidth === undefined
+          ? undefined
+          : `--kui-app-tab-label-max-width:${labelMaxWidth}px`
+      }
     >
       {closable && (
         <button
@@ -114,6 +133,7 @@ export function AppTab({
         class="kui-app-tab__select"
         role="tab"
         aria-selected={String(selected)}
+        aria-label={presentation === 'icon-only' ? name : undefined}
         aria-keyshortcuts={placeholder ? undefined : keyshortcuts || undefined}
         data-action={placeholder ? undefined : selectAction}
         data-tab-id={id}
@@ -121,7 +141,10 @@ export function AppTab({
         tabindex={placeholder ? '-1' : selected ? '0' : '-1'}
       >
         {leading}
-        <span class="kui-app-tab__name">
+        <span
+          class="kui-app-tab__name"
+          aria-hidden={presentation === 'icon-only' ? 'true' : undefined}
+        >
           {placeholder ? <Skeleton width="7em" /> : name}
         </span>
         {closable || trailing ? (

@@ -58,6 +58,58 @@ export function TabBarDemo() {
               {tabBarTabs.value.map((tab) => tab.name).join(' · ')}
             </strong>
           </p>
+          <TabBar
+            id="inspector-tabs"
+            label="Inspector sections"
+            presentation="inspector"
+            allocation="fill"
+            trailingPlacement="adjacent"
+            trailing={
+              <button type="button" aria-label="Add inspector section">
+                {icon(Plus, 'plus')}
+              </button>
+            }
+          >
+            <AppTab
+              id="details"
+              name="Details with a deliberately long label"
+              selected
+              closable={false}
+              presentation="segmented"
+              size="compact"
+              labelMaxWidth={120}
+            />
+            <AppTab
+              id="activity"
+              name="Activity"
+              closable={false}
+              presentation="segmented"
+              size="compact"
+            />
+          </TabBar>
+          <TabBar
+            id="drawer-tabs"
+            label="Drawer views"
+            presentation="segmented"
+          >
+            <AppTab
+              id="navigation"
+              name="Navigation"
+              selected
+              closable={false}
+              leading={icon(PanelLeft, 'panel-left')}
+              presentation="icon-only"
+              size="compact"
+            />
+            <AppTab
+              id="create"
+              name="Create item"
+              closable={false}
+              leading={icon(Plus, 'plus')}
+              presentation="icon-only"
+              size="compact"
+            />
+          </TabBar>
         </div>
       </CatalogExample>
     </CatalogExampleStack>

@@ -783,10 +783,18 @@ describe('production UI primitives', () => {
         selectAction: 'pick',
         closeAction: 'dismiss',
         className: 'document',
+        presentation: 'segmented',
+        size: 'compact',
+        labelMaxWidth: 144,
         rootAttributes: widenedRootAttributes,
       }),
     );
-    expect(selected).toContain('data-selected="true" draggable="true"');
+    expect(selected).toContain('data-selected="true"');
+    expect(selected).toContain('draggable="true"');
+    expect(selected).toContain(
+      'data-presentation="segmented" data-size="compact"',
+    );
+    expect(selected).toContain('style="--kui-app-tab-label-max-width:144px"');
     expect(selected).toContain('data-project-id="project-one"');
     expect(selected).toContain('data-tab-id="first"');
     expect(selected).not.toContain('ignored-case-variant');
@@ -828,14 +836,30 @@ describe('production UI primitives', () => {
         label: 'Open work',
         leading: icon,
         trailing: icon,
+        allocation: 'fill',
+        presentation: 'inspector',
+        trailingPlacement: 'adjacent',
         children: [AppTab({ id: 'first', name: 'First', selected: true })],
       }),
     );
     expect(bar).toContain(
-      'data-component="tab-bar" data-tab-bar-id="work" aria-label="Open work"',
+      'data-component="tab-bar" data-tab-bar-id="work" data-allocation="fill" data-presentation="inspector" data-trailing-placement="adjacent" aria-label="Open work"',
     );
     expect(bar).toContain(
       'class="kui-tab-bar__tabs" role="tablist" aria-label="Open work" data-kui-tab-list',
+    );
+    const iconOnly = asHtml(
+      AppTab({
+        id: 'icon',
+        name: 'Activity',
+        leading: icon,
+        closable: false,
+        presentation: 'icon-only',
+      }),
+    );
+    expect(iconOnly).toContain('aria-label="Activity"');
+    expect(iconOnly).toContain(
+      'class="kui-app-tab__name" aria-hidden="true">Activity</span>',
     );
 
     AppTab({

@@ -31,6 +31,30 @@
   gap: 0;
   overscroll-behavior-inline: contain;
 }
+.kui-tab-bar[data-presentation="segmented"],
+.kui-tab-bar[data-presentation="inspector"] {
+  --kui-tab-bar-background: var(--kui-color-neutral-fill-quiet);
+  --kui-tab-bar-border: var(--kui-color-neutral-border-quiet);
+}
+.kui-tab-bar[data-presentation="inspector"] {
+  min-height: remify(34px);
+  padding: 0;
+}
+.kui-tab-bar[data-presentation="inspector"] .kui-tab-bar__tabs {
+  height: remify(34px);
+  border-radius: var(--kui-radius-s);
+}
+.kui-tab-bar[data-allocation="fill"] [data-component="app-tab"] {
+  min-width: 0;
+  flex: 1 1 0;
+}
+.kui-tab-bar[data-allocation="fill"] [data-component="app-tab"] > [role="tab"] {
+  width: 100%;
+  justify-content: center;
+}
+.kui-tab-bar[data-trailing-placement="adjacent"] .kui-tab-bar__tabs {
+  flex: 0 1 auto;
+}
 
 .kui-tab-bar__tabs::-webkit-scrollbar {
   display: none;

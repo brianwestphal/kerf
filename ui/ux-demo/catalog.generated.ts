@@ -402,7 +402,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
-    "description": "Roving-tabindex-ready tabs with protected application metadata and customizable close affordances.",
+    "description": "Roving-tabindex-ready tabs with typed compact, segmented, icon-only, and truncating-label presentations.",
     "uses": [
       "lucide-icon"
     ],
@@ -416,7 +416,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
-    "description": "Controlled, reorderable tab strips with horizontal overflow.",
+    "description": "Controlled tab strips with typed rail, segmented, and inspector presentation plus intrinsic or fill allocation.",
     "uses": [
       "tabs",
       "toolbar-control-group"
