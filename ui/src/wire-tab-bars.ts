@@ -352,11 +352,21 @@ export function wireTabBars(
     const perBar = bar.dataset.tabActivation;
     const mode: TabActivation =
       perBar === 'manual' || perBar === 'automatic' ? perBar : activation;
-    tabs[next]?.focus();
+    const target = tabs[next]!;
+    target.focus();
     // Manual activation moves roving focus only; the user selects with Enter / Space
     // (native on the tab <button>) or click. Automatic also selects the focused tab.
-    if (mode === 'automatic') tabs[next]?.click();
-    reveal(tabs[next]);
+    if (mode === 'automatic') {
+      target.click();
+      // Activation can synchronously replace the controlled strip. Resolve the
+      // logical tab again after rendering instead of leaving focus on a dead node.
+      if (!target.isConnected)
+        afterControlledRender(
+          bar.dataset.tabBarId!,
+          tabRoot(target)!.dataset.tabId!,
+        );
+    }
+    reveal(target);
   };
   const onFocusIn = (event: Event) => {
     const tab =

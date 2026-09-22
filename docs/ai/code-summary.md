@@ -622,7 +622,11 @@ content is replaced when the controlled selection changes.
 wire-owned drag/drop markers case-insensitively. `AppTab.closeIcon` and
 `ResizableRegion.handleIcon` replace decorative SafeHtml content without
 moving interaction or lifecycle ownership out of their existing controls and
-disposer-returning wiring.
+disposer-returning wiring. `wireTabBars` resolves replacement focus by logical
+bar/tab identity after automatic keyboard activation synchronously rerenders a strip.
+Unit coverage in `ui/tests/unit/wire-tab-bars.test.ts` and the real-browser
+`ui/tests/browser/tab-bar-controlled-focus.spec.ts` cover repeated Arrow/Home/End
+transitions and duplicate tab IDs in independent bars.
 `CatalogExample.rootAttributes` and `CatalogExampleStack.rootAttributes` use the
 same runtime filter for catalog-authoring `data-*` metadata while protecting
 their structure and alignment markers.

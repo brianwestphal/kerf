@@ -77,6 +77,49 @@ describe('TabBar wiring', () => {
     );
   });
 
+  it('restores automatic activation focus after a controlled strip replacement', async () => {
+    const root = bar();
+    const other = bar('other');
+    const stop = wireTabBars(document, { onReorder: vi.fn() });
+    root.addEventListener('click', (event) => {
+      const target = event.target as HTMLElement;
+      if (!target.matches('[role="tab"]')) return;
+      const id = target.closest<HTMLElement>('[data-component="app-tab"]')!
+        .dataset.tabId;
+      for (const button of root.querySelectorAll('[role="tab"]'))
+        button.setAttribute('aria-selected', String(button === target));
+      root.replaceChildren(
+        ...Array.from(root.childNodes, (node) => node.cloneNode(true)),
+      );
+      expect(
+        root.querySelector(
+          `[data-component="app-tab"][data-tab-id="${id}"] [role="tab"]`,
+        ),
+      ).not.toBe(target);
+    });
+    root.querySelector<HTMLElement>('[role="tab"]')!.focus();
+    for (const [key, id] of [
+      ['ArrowRight', 'two'],
+      ['End', 'three'],
+      ['ArrowRight', 'one'],
+      ['ArrowLeft', 'three'],
+      ['Home', 'one'],
+      ['ArrowRight', 'two'],
+    ]) {
+      document.activeElement!.dispatchEvent(
+        new KeyboardEvent('keydown', { key, bubbles: true }),
+      );
+      await Promise.resolve();
+      const replacement = root.querySelector<HTMLElement>(
+        `[data-component="app-tab"][data-tab-id="${id}"] [role="tab"]`,
+      )!;
+      expect(document.activeElement).toBe(replacement);
+      expect(replacement.getAttribute('aria-selected')).toBe('true');
+      expect(other.contains(document.activeElement)).toBe(false);
+    }
+    stop();
+  });
+
   it('navigates, closes, and reports keyboard reorder while preserving tab focus', async () => {
     const root = bar();
     const onReorder = vi.fn();

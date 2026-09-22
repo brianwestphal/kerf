@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed `@kerfjs/ui` automatic TabBar keyboard activation losing focus when a
+  controlled selection replaces the strip; navigation restores the same logical tab.
+
 - Updated the published setup runtime to patched `minimatch` 9.0.9 and `yaml`
   2.9.1 releases, resolving the known regular-expression denial-of-service and
   deeply nested YAML denial-of-service advisories without narrowing Kerf's

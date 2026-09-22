@@ -86,7 +86,8 @@ stops on drop/drag end/disposal, and does not change keyboard behavior. It
 returns a disposer.
 
 Arrow / Home / End follow the ARIA Tabs **automatic-activation** pattern by
-default: they move roving focus and select the focused tab. Pass
+default: they move roving focus and select the focused tab. If selection synchronously
+replaces the strip, focus returns to the replacement with the same bar and tab IDs. Pass
 `activation: 'manual'` (or set `data-tab-activation="manual"` on a strip via the
 `TabBar` `activation` prop, which overrides the option per bar) for
 **manual activation**: arrow keys move roving focus only and the user selects

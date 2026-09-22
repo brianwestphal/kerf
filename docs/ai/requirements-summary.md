@@ -287,7 +287,9 @@ end while its visible glyph defaults to 18px.
 component and transient drag/drop attributes case-insensitively; its optional
 close glyph and `ResizableRegion`'s optional handle glyph remain decorative
 slots, leaving close, reorder, resize, persistence, and disposal ownership on
-the existing controls, wiring, and application state.
+the existing controls, wiring, and application state. Automatic TabBar
+activation preserves logical tab focus when controlled selection replaces the
+strip.
 
 The UX catalog detail projects visible, repository-relative `View demo source`
 and existing guidance links for every canonical entry, adds `View component

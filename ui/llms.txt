@@ -129,7 +129,8 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   navigation stacks, tab selection and order, pane sizes, and `collapsed`/`expanded`
   disclosure flags in the app — they are data or persisted layout, and the app reads
   them to render. The `wire…` helpers own the _ephemeral_ parts: `wireNavStack` the
-  push/pop animation, `wireTabBars` the overflow autoscroll and drag preview,
+  push/pop animation, `wireTabBars` the overflow autoscroll, drag preview, and
+  replacement focus after controlled automatic tab activation,
   `wireResizableRegions` the live drag preview; they report committed changes via
   callbacks. The one richer case is `wireTokenSearchFields`, which manages the
   collapsible field's expand/collapse/focus by default (on, per-behavior opt-out) and

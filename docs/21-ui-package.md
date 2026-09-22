@@ -190,7 +190,8 @@ slot without mixing authoring rules into the per-entry component catalog.
   button. `TabBar` provides the containing list and scroll owner;
   `wireTabBars` provides arrows/Home/End, close activation, pointer reorder,
   proximity-based horizontal edge autoscroll, `Alt+Shift+Arrow` reorder, focus
-  restoration, and a disposer. The app applies changes and owns order,
+  restoration after reorder or automatic activation replaces the strip, and a
+  disposer. The app applies changes and owns order,
   selection, panels, routing, close policy, and persistence.
 - A `ListItem` is a native button, not an isolated `role="menuitem"`; callers
   should add a full menu widget only when they also implement its complete
