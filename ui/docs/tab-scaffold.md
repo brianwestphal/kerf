@@ -46,5 +46,7 @@ const dispose = wireTabScaffold(root, {
 
 Each `TabScaffoldTab` has an `id`, `label`, optional `icon`, and `content`. The
 bottom bar respects the home-indicator safe area (`env(safe-area-inset-bottom)`)
-and keeps 44px targets. On larger device classes, promote the tab set to a
+and keeps 44px targets. Its single-line labels preserve their full line box and
+truncate horizontally with an ellipsis when a destination name exceeds its
+share of the bar. On larger device classes, promote the tab set to a
 `Workbench` rail or a persistent sidebar instead of a bottom bar.

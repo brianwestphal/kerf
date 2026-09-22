@@ -76,6 +76,7 @@
 }
 
 .kui-tab-scaffold__tab-label {
+  flex: none;
   max-width: 100%;
   overflow: hidden;
   font-size: var(--kui-font-2xs);
