@@ -366,7 +366,8 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Keep a selectable primary row action and an independently named trailing action as sibling native controls inside one noninteractive visual row.",
     "uses": [
-      "lucide-icon"
+      "lucide-icon",
+      "loading-spinner"
     ],
     "demoSource": "ui/ux-demo/demos/list-action-row.tsx",
     "componentSource": "ui/src/list-action-row.tsx",
@@ -381,7 +382,8 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Selectable, disabled, trailing, and multiline navigation rows.",
     "uses": [
-      "lucide-icon"
+      "lucide-icon",
+      "loading-spinner"
     ],
     "demoSource": "ui/ux-demo/demos/list-item.tsx",
     "componentSource": "ui/src/list-item.tsx",

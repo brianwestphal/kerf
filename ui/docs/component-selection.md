@@ -173,6 +173,21 @@ own DOM.
 </ToolbarControlGroup>
 ```
 
+## Configuring recurring list rows
+
+Configure the List family instead of selecting its descendant classes. Use
+`density="compact"` for result-heavy panes, `description` for the secondary
+label line, `status` for dormant state text, and `busy` for known progress that
+keeps current content visible. `divider` marks group boundaries without an
+app-owned separator rule. `ListHeader.indicatorTone` gives count, badge, or
+status content neutral, accent, or danger attention.
+
+When a row needs a context action, use `ListActionRow`; its two native buttons
+remain siblings. `trailingActionVisibility="interaction"` keeps the action
+available on hover and keyboard focus and automatically leaves it visible on
+non-hover devices. These props own presentation only—the application still
+owns labels, status meaning, action policy, selection, and domain metadata.
+
 ## Correct composition and duplicated-markup trap
 
 Correct: let the pane stay unpadded while its children own the shared 8/1/8

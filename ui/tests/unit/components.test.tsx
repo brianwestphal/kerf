@@ -274,6 +274,11 @@ describe('production UI primitives', () => {
         accessibleLabel: 'Open projects',
         title: 'Projects',
         multiline: true,
+        description: 'Supporting detail',
+        status: 'Ready',
+        busy: true,
+        density: 'compact',
+        divider: 'both',
         state: 'ready',
         tabIndex: -1,
         rootAttributes: {
@@ -286,6 +291,13 @@ describe('production UI primitives', () => {
     expect(item).toContain('data-item-id="projects"');
     expect(item).toContain('data-has-icon="true"');
     expect(item).toContain('data-multiline="true"');
+    expect(item).toContain('data-density="compact"');
+    expect(item).toContain('data-divider="both"');
+    expect(item).toContain('data-busy="true"');
+    expect(item).toContain('aria-busy="true"');
+    expect(item).toContain('kui-list-item__description">Supporting detail');
+    expect(item).toContain('kui-list-item__status">Ready');
+    expect(item).toContain('data-component="loading-spinner"');
     expect(item).toContain('data-state="ready"');
     expect(item).toContain('data-command-color="#123456"');
     expect(item).not.toContain('data-action="ignored"');
@@ -403,6 +415,19 @@ describe('production UI primitives', () => {
     );
     expect(badge).toContain('data-has-badge="true" data-has-count="false"');
     expect(badge).toContain('class="kui-list-header__badge"><span>New</span>');
+    const status = asHtml(
+      ListHeader({
+        label: 'Blocked',
+        status: <span>3 blocked</span>,
+        indicatorTone: 'danger',
+        density: 'compact',
+        divider: 'before',
+      }),
+    );
+    expect(status).toContain('data-density="compact"');
+    expect(status).toContain('data-divider="before"');
+    expect(status).toContain('data-indicator-tone="danger"');
+    expect(status).toContain('class="kui-list-header__badge"');
     expect(
       asHtml(
         ListHeader({
@@ -465,6 +490,13 @@ describe('production UI primitives', () => {
       label: 'Badge with count label',
       countLabel: '2 items',
       badge: <span>New</span>,
+    });
+    // @ts-expect-error Status and count indicators are mutually exclusive.
+    ListHeader({
+      label: 'Competing status',
+      count: 2,
+      countLabel: '2 items',
+      status: <span>Blocked</span>,
     });
     ListHeader({
       label: 'Unsafe count presence',
@@ -688,6 +720,11 @@ describe('production UI primitives', () => {
     const html = asHtml(
       ListActionRow({
         label: <span>src/main.ts</span>,
+        description: 'Modified recently',
+        status: 'Syncing',
+        busy: true,
+        density: 'compact',
+        divider: 'after',
         icon,
         action: 'select-file',
         itemId: 'src/main.ts',
@@ -698,6 +735,7 @@ describe('production UI primitives', () => {
         trailingAction: 'open-file-actions',
         trailingActionLabel: 'Actions for src/main.ts',
         trailingActionIcon: icon,
+        trailingActionVisibility: 'interaction',
         rootAttributes: widenedRootAttributes,
         trailingActionAttributes: widenedTrailingAttributes,
       }),
@@ -724,6 +762,17 @@ describe('production UI primitives', () => {
     expect(root?.getAttribute('data-action')).toBeNull();
     expect(root?.dataset.pressed).toBe('true');
     expect(root?.dataset.state).toBe('modified');
+    expect(root?.dataset.density).toBe('compact');
+    expect(root?.dataset.divider).toBe('after');
+    expect(root?.dataset.busy).toBe('true');
+    expect(root?.dataset.trailingVisibility).toBe('interaction');
+    expect(root?.getAttribute('aria-busy')).toBe('true');
+    expect(
+      root?.querySelector('.kui-list-action-row__description')?.textContent,
+    ).toBe('Modified recently');
+    expect(
+      root?.querySelector('.kui-list-action-row__status')?.textContent,
+    ).toContain('Syncing');
     expect(controls).toHaveLength(2);
     expect(primary?.querySelector('button, a, [role="button"]')).toBeNull();
     expect(trailing?.querySelector('button, a, [role="button"]')).toBeNull();

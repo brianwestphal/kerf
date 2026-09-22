@@ -12,6 +12,26 @@ export function ListItemDemo() {
     >
       <CatalogExample align="none">
         <ListItem
+          action="log-projects"
+          itemId="status"
+          label="Build checks"
+          description="Updated a moment ago"
+          status="Passing"
+          density="compact"
+          divider="before"
+        />
+      </CatalogExample>
+      <CatalogExample align="none">
+        <ListItem
+          action="log-projects"
+          itemId="busy"
+          label="Refreshing results"
+          description="Keeping the current result visible"
+          busy
+        />
+      </CatalogExample>
+      <CatalogExample align="none">
+        <ListItem
           action="log-inbox"
           itemId="selected"
           label="Selected item"

@@ -12,6 +12,15 @@ export function ListHeaderDemo() {
     >
       <CatalogExample align="none">
         <ListHeader
+          label="Needs attention"
+          status={<span>3 blocked</span>}
+          indicatorTone="danger"
+          density="compact"
+          divider="before"
+        />
+      </CatalogExample>
+      <CatalogExample align="none">
+        <ListHeader
           label="Attachments"
           count={12}
           countLabel="12 attachments"

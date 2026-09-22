@@ -12,6 +12,22 @@ export function ListActionRowDemo() {
     >
       <CatalogExample align="none">
         <ListActionRow
+          label="generated-report.json"
+          description="Ready to review"
+          status="3 warnings"
+          density="compact"
+          divider="before"
+          action="select-list-action-row"
+          itemId="status-action"
+          trailingAction="open-list-action-row-actions"
+          trailingActionLabel="Actions for generated report"
+          trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')}
+          trailingActionVisibility="interaction"
+          rootAttributes={{ 'data-demo-action-row': 'status' }}
+        />
+      </CatalogExample>
+      <CatalogExample align="none">
+        <ListActionRow
           label="src/main.ts"
           icon={icon(Folder, 'folder')}
           action="select-list-action-row"

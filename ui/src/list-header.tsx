@@ -12,6 +12,9 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-action',
   'data-has-badge',
   'data-has-count',
+  'data-density',
+  'data-divider',
+  'data-indicator-tone',
   'data-toggle',
 ]);
 const PROTECTED_TRIGGER_DATA_ATTRIBUTES = new Set(['data-action']);
@@ -22,6 +25,9 @@ type ListHeaderRootAttributes = Readonly<
     'data-action'?: never;
     'data-has-badge'?: never;
     'data-has-count'?: never;
+    'data-density'?: never;
+    'data-divider'?: never;
+    'data-indicator-tone'?: never;
     'data-toggle'?: never;
   }
 >;
@@ -38,6 +44,9 @@ type ListHeaderTriggerAttributes = Readonly<
 
 interface ListHeaderBaseProps {
   label: string;
+  density?: 'standard' | 'compact';
+  divider?: 'none' | 'before' | 'after' | 'both';
+  indicatorTone?: 'neutral' | 'accent' | 'danger';
   /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
   placeholder?: boolean;
   rootAttributes?: ListHeaderRootAttributes;
@@ -77,8 +86,9 @@ type ListHeaderModeProps =
     };
 
 type ListHeaderIndicatorProps =
-  | { count: number; countLabel: string; badge?: never }
-  | { count?: never; countLabel?: never; badge?: SafeHtml };
+  | { count: number; countLabel: string; badge?: never; status?: never }
+  | { count?: never; countLabel?: never; badge: SafeHtml; status?: never }
+  | { count?: never; countLabel?: never; badge?: never; status?: SafeHtml };
 
 export type ListHeaderProps = ListHeaderBaseProps &
   ListHeaderIndicatorProps &
@@ -89,6 +99,10 @@ export function ListHeader({
   count,
   countLabel,
   badge,
+  status,
+  density = 'standard',
+  divider = 'none',
+  indicatorTone = 'neutral',
   action,
   actionLabel,
   actionIcon,
@@ -118,7 +132,8 @@ export function ListHeader({
       : typeof countLabel === 'string' && countLabel.trim()
         ? countLabel
         : String(normalizedCount);
-  const renderedBadge = normalizedCount === undefined ? badge : undefined;
+  const renderedBadge =
+    normalizedCount === undefined ? (status ?? badge) : undefined;
   const renderedActionIcon =
     actionIcon ??
     (toggle ? <DisclosureArrow open={Boolean(expanded)} /> : undefined);
@@ -148,6 +163,9 @@ export function ListHeader({
         data-component="list-header"
         data-has-badge={String(Boolean(renderedBadge))}
         data-has-count={String(normalizedCount !== undefined)}
+        data-density={density}
+        data-divider={divider}
+        data-indicator-tone={indicatorTone}
         data-toggle="true"
         data-placeholder={placeholder ? 'true' : undefined}
         aria-busy={busy}
@@ -180,6 +198,9 @@ export function ListHeader({
       data-component="list-header"
       data-has-badge={String(Boolean(renderedBadge))}
       data-has-count={String(normalizedCount !== undefined)}
+      data-density={density}
+      data-divider={divider}
+      data-indicator-tone={indicatorTone}
       data-toggle="false"
       data-placeholder={placeholder ? 'true' : undefined}
       aria-busy={busy}

@@ -1399,7 +1399,11 @@
           "--kui-layout-item-padding",
           "--kui-layout-pill-radius",
           "--kui-list-header-count-font-size",
-          "--kui-list-header-hover-background"
+          "--kui-list-header-hover-background",
+          "--kui-list-group-divider-color",
+          "--kui-color-brand-on-normal",
+          "--kui-color-danger-fill-normal",
+          "--kui-color-danger-on-normal"
         ]
       },
       "diagnostics": [
@@ -1459,6 +1463,9 @@
           "kui-list-action-row",
           "kui-list-action-row__icon",
           "kui-list-action-row__label",
+          "kui-list-action-row__primary-label",
+          "kui-list-action-row__description",
+          "kui-list-action-row__status",
           "kui-list-action-row__primary",
           "kui-list-action-row__trailing-action"
         ],
@@ -1469,6 +1476,8 @@
           "--kui-color-neutral-fill-normal",
           "--kui-color-neutral-fill-quiet",
           "--kui-color-neutral-on-normal",
+          "--kui-color-neutral-on-quiet",
+          "--kui-color-neutral-border-quiet",
           "--kui-focus-ring",
           "--kui-layout-inline-margin",
           "--kui-layout-item-gap",
@@ -1483,7 +1492,9 @@
           "--kui-list-action-row-selected-background",
           "--kui-list-action-row-selected-border",
           "--kui-list-action-row-selected-color",
-          "--kui-list-action-row-trailing-hover-background"
+          "--kui-list-action-row-trailing-hover-background",
+          "--kui-list-group-divider-color",
+          "--kui-font-xs"
         ]
       },
       "diagnostics": [],
@@ -1531,6 +1542,9 @@
           "kui-list-item",
           "kui-list-item__icon",
           "kui-list-item__label",
+          "kui-list-item__primary-label",
+          "kui-list-item__description",
+          "kui-list-item__status",
           "kui-list-item__trailing"
         ],
         "publicTokens": [
@@ -1538,11 +1552,14 @@
           "--kui-color-neutral-fill-quiet",
           "--kui-color-neutral-on-normal",
           "--kui-color-neutral-on-quiet",
+          "--kui-color-neutral-border-quiet",
           "--kui-focus-ring",
           "--kui-list-item-color",
           "--kui-list-item-hover-background",
           "--kui-list-item-selected-background",
           "--kui-list-item-selected-color",
+          "--kui-list-group-divider-color",
+          "--kui-font-xs",
           "--kui-layout-inline-margin",
           "--kui-layout-item-gap",
           "--kui-layout-item-padding",

@@ -1683,7 +1683,7 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Full-width section headings with a semantic neutral count pill or non-count badge, a logical-end action, disclosure states, and protected native-popover trigger metadata.",
+      "description": "Configurable section headings with semantic count/status indicators, density, group dividers, a logical-end action, disclosure states, and protected native-popover trigger metadata.",
       "uses": [
         "lucide-icon",
         "disclosure-arrow"
@@ -1720,7 +1720,10 @@
         "badge",
         "action",
         "toggle",
-        "placeholder (loading)"
+        "placeholder (loading)",
+        "compact density",
+        "neutral, accent, or danger indicator tone",
+        "before, after, or paired group divider"
       ],
       "accessibility": [
         "A valid count is hidden as duplicate visual text and its required localized countLabel joins the owned heading or disclosure-button accessible name; zero remains visible.",
@@ -1762,7 +1765,11 @@
         "--kui-layout-item-padding",
         "--kui-layout-pill-radius",
         "--kui-list-header-count-font-size",
-        "--kui-list-header-hover-background"
+        "--kui-list-header-hover-background",
+        "--kui-list-group-divider-color",
+        "--kui-color-brand-on-normal",
+        "--kui-color-danger-fill-normal",
+        "--kui-color-danger-on-normal"
       ],
       "links": {
         "catalogRoute": "?component=list-header",
@@ -1776,9 +1783,10 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Full-width navigation rows with sibling primary and trailing native-button actions.",
+      "description": "Configurable navigation rows with structured labels, status/busy metadata, density, group dividers, and sibling primary/trailing native-button actions.",
       "uses": [
-        "lucide-icon"
+        "lucide-icon",
+        "loading-spinner"
       ],
       "purpose": "Keep a selectable primary row action and an independently named trailing action as sibling native controls inside one noninteractive visual row.",
       "publicExports": [
@@ -1815,7 +1823,12 @@
         "disabled primary",
         "disabled trailing action",
         "multiline",
-        "placeholder (loading)"
+        "placeholder (loading)",
+        "compact density",
+        "description and status",
+        "busy while retaining content",
+        "interaction-revealed trailing action",
+        "before, after, or paired group divider"
       ],
       "accessibility": [
         "The noninteractive root contains two sibling native buttons in primary-then-trailing focus order; each button has its own action, item identity, accessible name, and disabled state.",
@@ -1838,6 +1851,9 @@
         "kui-list-action-row",
         "kui-list-action-row__icon",
         "kui-list-action-row__label",
+        "kui-list-action-row__primary-label",
+        "kui-list-action-row__description",
+        "kui-list-action-row__status",
         "kui-list-action-row__primary",
         "kui-list-action-row__trailing-action"
       ],
@@ -1848,6 +1864,8 @@
         "--kui-color-neutral-fill-normal",
         "--kui-color-neutral-fill-quiet",
         "--kui-color-neutral-on-normal",
+        "--kui-color-neutral-on-quiet",
+        "--kui-color-neutral-border-quiet",
         "--kui-focus-ring",
         "--kui-layout-inline-margin",
         "--kui-layout-item-gap",
@@ -1862,7 +1880,9 @@
         "--kui-list-action-row-selected-background",
         "--kui-list-action-row-selected-border",
         "--kui-list-action-row-selected-color",
-        "--kui-list-action-row-trailing-hover-background"
+        "--kui-list-action-row-trailing-hover-background",
+        "--kui-list-group-divider-color",
+        "--kui-font-xs"
       ],
       "links": {
         "catalogRoute": "?component=list-action-row",
@@ -1876,9 +1896,10 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Selectable, disabled, trailing, and multiline native-button navigation rows with protected domain metadata hooks.",
+      "description": "Configurable native-button navigation rows with structured labels, status/busy metadata, density, group dividers, and protected domain metadata hooks.",
       "uses": [
-        "lucide-icon"
+        "lucide-icon",
+        "loading-spinner"
       ],
       "purpose": "Selectable, disabled, trailing, and multiline navigation rows.",
       "publicExports": [
@@ -1910,7 +1931,11 @@
         "disabled",
         "trailing",
         "multiline",
-        "placeholder (loading)"
+        "placeholder (loading)",
+        "compact density",
+        "description and status",
+        "busy while retaining content",
+        "before, after, or paired group divider"
       ],
       "accessibility": [
         "Uses native button activation; selected maps to aria-current and pressed to aria-pressed; rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls."
@@ -1932,6 +1957,9 @@
         "kui-list-item",
         "kui-list-item__icon",
         "kui-list-item__label",
+        "kui-list-item__primary-label",
+        "kui-list-item__description",
+        "kui-list-item__status",
         "kui-list-item__trailing"
       ],
       "publicTokens": [
@@ -1939,11 +1967,14 @@
         "--kui-color-neutral-fill-quiet",
         "--kui-color-neutral-on-normal",
         "--kui-color-neutral-on-quiet",
+        "--kui-color-neutral-border-quiet",
         "--kui-focus-ring",
         "--kui-list-item-color",
         "--kui-list-item-hover-background",
         "--kui-list-item-selected-background",
         "--kui-list-item-selected-color",
+        "--kui-list-group-divider-color",
+        "--kui-font-xs",
         "--kui-layout-inline-margin",
         "--kui-layout-item-gap",
         "--kui-layout-item-padding",

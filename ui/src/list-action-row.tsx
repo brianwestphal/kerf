@@ -4,6 +4,7 @@ import {
   filterControlAttributes,
   filterDataAttributes,
 } from './extension-attributes.js';
+import { LoadingSpinner } from './loading-spinner.js';
 import { Skeleton } from './skeleton.js';
 
 const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
@@ -12,6 +13,10 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-item-id',
   'data-has-icon',
   'data-multiline',
+  'data-density',
+  'data-divider',
+  'data-busy',
+  'data-trailing-visibility',
   'data-state',
   'data-selected',
   'data-pressed',
@@ -29,6 +34,10 @@ type ListActionRowRootAttributes = Readonly<
     'data-item-id'?: never;
     'data-has-icon'?: never;
     'data-multiline'?: never;
+    'data-density'?: never;
+    'data-divider'?: never;
+    'data-busy'?: never;
+    'data-trailing-visibility'?: never;
     'data-state'?: never;
     'data-selected'?: never;
     'data-pressed'?: never;
@@ -50,6 +59,11 @@ type ListActionRowTrailingAttributes = Readonly<
 export interface ListActionRowProps {
   /** Visible dormant content for the primary button. Must not contain interactive descendants. */
   label: string | SafeHtml;
+  description?: string | SafeHtml;
+  status?: string | SafeHtml;
+  busy?: boolean;
+  density?: 'standard' | 'compact';
+  divider?: 'none' | 'before' | 'after' | 'both';
   /** Decorative dormant content for the primary button. Must not contain interactive descendants. */
   icon?: SafeHtml;
   action: string;
@@ -70,6 +84,7 @@ export interface ListActionRowProps {
   trailingActionIcon: SafeHtml;
   trailingActionDisabled?: boolean;
   trailingActionTitle?: string;
+  trailingActionVisibility?: 'always' | 'interaction';
   className?: string;
   style?: string;
   rootAttributes?: ListActionRowRootAttributes;
@@ -78,6 +93,11 @@ export interface ListActionRowProps {
 
 export function ListActionRow({
   label,
+  description,
+  status,
+  busy = false,
+  density = 'standard',
+  divider = 'none',
   icon,
   action,
   itemId,
@@ -95,6 +115,7 @@ export function ListActionRow({
   trailingActionIcon,
   trailingActionDisabled = false,
   trailingActionTitle,
+  trailingActionVisibility = 'always',
   className = '',
   style,
   rootAttributes = {},
@@ -118,11 +139,15 @@ export function ListActionRow({
       data-item-id={itemId}
       data-has-icon={String(Boolean(icon))}
       data-multiline={multiline ? 'true' : undefined}
+      data-density={density}
+      data-divider={divider}
+      data-busy={busy ? 'true' : undefined}
+      data-trailing-visibility={trailingActionVisibility}
       data-state={state}
       data-selected={String(selected)}
       data-pressed={pressed === undefined ? undefined : String(pressed)}
       data-placeholder={placeholder ? 'true' : undefined}
-      aria-busy={placeholder ? 'true' : undefined}
+      aria-busy={placeholder || busy ? 'true' : undefined}
     >
       <button
         type="button"
@@ -142,7 +167,18 @@ export function ListActionRow({
           </span>
         )}
         <span class="kui-list-action-row__label">
-          {placeholder ? <Skeleton width="9em" /> : label}
+          <span class="kui-list-action-row__primary-label">
+            {placeholder ? <Skeleton width="9em" /> : label}
+          </span>
+          {!placeholder && description && (
+            <span class="kui-list-action-row__description">{description}</span>
+          )}
+          {!placeholder && (busy || status) && (
+            <span class="kui-list-action-row__status">
+              {busy && <LoadingSpinner />}
+              {status}
+            </span>
+          )}
         </span>
       </button>
       <button

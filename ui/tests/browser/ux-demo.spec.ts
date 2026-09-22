@@ -4270,6 +4270,68 @@ test('preserves menu extension metadata without surrendering native semantics', 
   }
 });
 
+test('renders configured List family density, status, busy, dividers, and interaction actions', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=list-item');
+  const statusItem = page.locator('[data-item-id="status"]');
+  await expect(statusItem).toHaveAttribute('data-density', 'compact');
+  await expect(statusItem).toHaveAttribute('data-divider', 'before');
+  await expect(statusItem.locator('.kui-list-item__description')).toHaveText(
+    'Updated a moment ago',
+  );
+  await expect(statusItem.locator('.kui-list-item__status')).toHaveText(
+    'Passing',
+  );
+  const busyItem = page.locator('[data-item-id="busy"]');
+  await expect(busyItem).toHaveAttribute('aria-busy', 'true');
+  await expect(
+    busyItem.locator('[data-component="loading-spinner"]'),
+  ).toBeVisible();
+
+  await page.goto('/?component=list-header');
+  const attention = page.locator('.kui-list-header', {
+    hasText: 'Needs attention',
+  });
+  await expect(attention).toHaveAttribute('data-density', 'compact');
+  await expect(attention).toHaveAttribute('data-indicator-tone', 'danger');
+  await expect(attention.locator('.kui-list-header__badge')).toHaveText(
+    '3 blocked',
+  );
+
+  await page.goto('/?component=list-action-row');
+  const actionRow = page.locator('[data-demo-action-row="status"]');
+  const trailing = actionRow.getByRole('button', {
+    name: 'Actions for generated report',
+  });
+  await expect(
+    actionRow.locator('.kui-list-action-row__description'),
+  ).toHaveText('Ready to review');
+  await expect(actionRow.locator('.kui-list-action-row__status')).toHaveText(
+    '3 warnings',
+  );
+  await expect(trailing).toHaveCSS('opacity', '0');
+  await actionRow
+    .getByRole('button', { name: 'generated-report.json' })
+    .focus();
+  await expect(trailing).toHaveCSS('opacity', '1');
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/list-family-configured-variants-wide.png',
+      fullPage: true,
+    });
+  if (browserName === 'chromium') {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await actionRow.scrollIntoViewIfNeeded();
+    await page.screenshot({
+      path: 'test-results/list-family-configured-variants-narrow.png',
+      fullPage: true,
+    });
+  }
+});
+
 test('keeps ListActionRow primary and trailing controls independent across interaction and layout states', async ({
   page,
   browserName,

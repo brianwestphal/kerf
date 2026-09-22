@@ -1,4 +1,5 @@
 .kui-list-action-row {
+  --kui-list-group-divider-color: var(--kui-color-neutral-border-quiet);
   --kui-list-action-row-color: var(--kui-color-neutral-on-normal);
   --kui-list-action-row-border: transparent;
   --kui-list-action-row-background: transparent;
@@ -19,6 +20,29 @@
   background: var(--kui-list-action-row-background);
   box-shadow: inset 0 0 0 1px var(--kui-list-action-row-border);
   align-items: stretch;
+}
+
+.kui-list-action-row[data-density="compact"] {
+  min-height: remify(36px);
+}
+
+.kui-list-action-row[data-density="compact"]
+  :is(.kui-list-action-row__primary, .kui-list-action-row__trailing-action) {
+  min-height: remify(36px);
+}
+
+.kui-list-action-row[data-divider="before"],
+.kui-list-action-row[data-divider="both"] {
+  border-block-start: 1px solid var(--kui-list-group-divider-color);
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+}
+
+.kui-list-action-row[data-divider="after"],
+.kui-list-action-row[data-divider="both"] {
+  border-block-end: 1px solid var(--kui-list-group-divider-color);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
 }
 
 .kui-list-action-row:has(.kui-list-action-row__primary:hover) {
@@ -104,6 +128,26 @@
   align-items: center;
 }
 
+.kui-list-action-row__primary-label,
+.kui-list-action-row__description,
+.kui-list-action-row__status {
+  min-width: 0;
+}
+
+.kui-list-action-row__description,
+.kui-list-action-row__status {
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-xs);
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.kui-list-action-row__status {
+  display: inline-flex;
+  align-items: center;
+  gap: remify(4px);
+}
+
 .kui-list-action-row[data-has-icon="true"] .kui-list-action-row__label {
   margin-inline-start: calc(
     remify(24px) + var(--kui-layout-item-gap, remify(8px))
@@ -129,6 +173,26 @@
   min-width: remify(44px);
   border-radius: var(--kui-radius-pill);
   place-items: center;
+}
+
+.kui-list-action-row[data-trailing-visibility="interaction"]
+  .kui-list-action-row__trailing-action {
+  opacity: 0;
+}
+
+.kui-list-action-row[data-trailing-visibility="interaction"]:is(
+    :hover,
+    :focus-within
+  )
+  .kui-list-action-row__trailing-action {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .kui-list-action-row[data-trailing-visibility="interaction"]
+    .kui-list-action-row__trailing-action {
+    opacity: 1;
+  }
 }
 
 .kui-list-action-row__trailing-action:hover:not(:disabled) {

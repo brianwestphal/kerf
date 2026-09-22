@@ -167,6 +167,9 @@ type ListHeaderRootAttributes = Readonly<Record<`data-${string}`, string | undef
     'data-action'?: never;
     'data-has-badge'?: never;
     'data-has-count'?: never;
+    'data-density'?: never;
+    'data-divider'?: never;
+    'data-indicator-tone'?: never;
     'data-toggle'?: never;
 }>;
 type ListHeaderTriggerAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
@@ -178,6 +181,9 @@ type ListHeaderTriggerAttributes = Readonly<Record<`data-${string}`, string | un
 }>;
 interface ListHeaderBaseProps {
     label: string;
+    density?: 'standard' | 'compact';
+    divider?: 'none' | 'before' | 'after' | 'both';
+    indicatorTone?: 'neutral' | 'accent' | 'danger';
     /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
     placeholder?: boolean;
     rootAttributes?: ListHeaderRootAttributes;
@@ -215,13 +221,20 @@ type ListHeaderIndicatorProps = {
     count: number;
     countLabel: string;
     badge?: never;
+    status?: never;
 } | {
     count?: never;
     countLabel?: never;
-    badge?: SafeHtml;
+    badge: SafeHtml;
+    status?: never;
+} | {
+    count?: never;
+    countLabel?: never;
+    badge?: never;
+    status?: SafeHtml;
 };
 type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHeaderModeProps;
-declare function ListHeader({ label, count, countLabel, badge, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, }: ListHeaderProps): SafeHtml;
+declare function ListHeader({ label, count, countLabel, badge, status, density, divider, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, }: ListHeaderProps): SafeHtml;
 
 export { ListHeader, type ListHeaderProps };
 ```
@@ -237,6 +250,10 @@ type ListActionRowRootAttributes = Readonly<Record<`data-${string}`, string | un
     'data-item-id'?: never;
     'data-has-icon'?: never;
     'data-multiline'?: never;
+    'data-density'?: never;
+    'data-divider'?: never;
+    'data-busy'?: never;
+    'data-trailing-visibility'?: never;
     'data-state'?: never;
     'data-selected'?: never;
     'data-pressed'?: never;
@@ -253,6 +270,11 @@ type ListActionRowTrailingAttributes = Readonly<Record<`data-${string}`, string 
 interface ListActionRowProps {
     /** Visible dormant content for the primary button. Must not contain interactive descendants. */
     label: string | SafeHtml;
+    description?: string | SafeHtml;
+    status?: string | SafeHtml;
+    busy?: boolean;
+    density?: 'standard' | 'compact';
+    divider?: 'none' | 'before' | 'after' | 'both';
     /** Decorative dormant content for the primary button. Must not contain interactive descendants. */
     icon?: SafeHtml;
     action: string;
@@ -273,12 +295,13 @@ interface ListActionRowProps {
     trailingActionIcon: SafeHtml;
     trailingActionDisabled?: boolean;
     trailingActionTitle?: string;
+    trailingActionVisibility?: 'always' | 'interaction';
     className?: string;
     style?: string;
     rootAttributes?: ListActionRowRootAttributes;
     trailingActionAttributes?: ListActionRowTrailingAttributes;
 }
-declare function ListActionRow({ label, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, className, style, rootAttributes, trailingActionAttributes, }: ListActionRowProps): SafeHtml;
+declare function ListActionRow({ label, description, status, busy, density, divider, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, trailingActionVisibility, className, style, rootAttributes, trailingActionAttributes, }: ListActionRowProps): SafeHtml;
 
 export { ListActionRow, type ListActionRowProps };
 ```
@@ -294,12 +317,23 @@ type ListItemRootAttributes = Readonly<Record<`data-${string}`, string | undefin
     'data-item-id'?: never;
     'data-has-icon'?: never;
     'data-multiline'?: never;
+    'data-density'?: never;
+    'data-divider'?: never;
+    'data-busy'?: never;
     'data-state'?: never;
 }>;
 interface ListItemProps {
     label: string | SafeHtml;
+    /** App-owned supporting text rendered in the component's stable label stack. */
+    description?: string | SafeHtml;
     icon?: SafeHtml;
     trailing?: SafeHtml;
+    /** Dormant status metadata rendered before trailing content. */
+    status?: string | SafeHtml;
+    /** Show a progress indicator and expose the row as busy without replacing its content. */
+    busy?: boolean;
+    density?: 'standard' | 'compact';
+    divider?: 'none' | 'before' | 'after' | 'both';
     selected?: boolean;
     action: string;
     itemId?: string;
@@ -316,7 +350,7 @@ interface ListItemProps {
     placeholder?: boolean;
     rootAttributes?: ListItemRootAttributes;
 }
-declare function ListItem({ label, icon, trailing, selected, action, itemId, className, style, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, rootAttributes, }: ListItemProps): SafeHtml;
+declare function ListItem({ label, description, icon, trailing, status, busy, density, divider, selected, action, itemId, className, style, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, rootAttributes, }: ListItemProps): SafeHtml;
 
 export { ListItem, type ListItemProps };
 ```

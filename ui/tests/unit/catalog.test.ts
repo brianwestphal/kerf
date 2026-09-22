@@ -474,7 +474,13 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('missing')).toBeUndefined();
     expect(
       catalogEntriesUsing('loading-spinner').map((entry) => entry.id),
-    ).toEqual(['feedback', 'empty-state', 'recipe-list-workspace-states']);
+    ).toEqual([
+      'list-action-row',
+      'list-item',
+      'feedback',
+      'empty-state',
+      'recipe-list-workspace-states',
+    ]);
     expect(catalogEntriesUsing('resize').map((entry) => entry.id)).toEqual([
       'split-view',
       'recipe-app-shell',
@@ -502,7 +508,10 @@ describe('UX catalog metadata', () => {
     expect(findCatalogEntry('token-search-field')?.uses).toEqual([
       'lucide-icon',
     ]);
-    expect(findCatalogEntry('list-action-row')?.uses).toEqual(['lucide-icon']);
+    expect(findCatalogEntry('list-action-row')?.uses).toEqual([
+      'lucide-icon',
+      'loading-spinner',
+    ]);
     expect(
       catalogEntriesUsing('list-action-row').map((entry) => entry.id),
     ).toEqual(['list']);
