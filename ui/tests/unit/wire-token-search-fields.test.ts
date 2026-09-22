@@ -348,6 +348,36 @@ describe('wireTokenSearchFields', () => {
     stop();
   });
 
+  it('expires keyboard select-all intent after replacement typing', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    root.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before</span></div></div>';
+    const editor = root.querySelector<HTMLElement>(
+      '[data-token-search-editor]',
+    )!;
+    const stop = wireTokenSearchFields(root);
+
+    editor.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key: 'a',
+        ctrlKey: true,
+        bubbles: true,
+      }),
+    );
+    editor.dispatchEvent(inputEvent('input', 'insertText'));
+    const deletion = new KeyboardEvent('keydown', {
+      key: 'Backspace',
+      bubbles: true,
+      cancelable: true,
+    });
+    editor.dispatchEvent(deletion);
+
+    expect(deletion.defaultPrevented).toBe(false);
+    expect(editor.textContent).toBe('before');
+    stop();
+  });
+
   it('drops a stray <br> around surviving chips without wiping the field', () => {
     const root = document.createElement('div');
     document.body.append(root);

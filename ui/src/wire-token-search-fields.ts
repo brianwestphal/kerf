@@ -423,8 +423,10 @@ export function wireTokenSearchFields(
     const editor = editorFromEvent(root, event);
     if (!editor) return;
     const editorId = intentId(editor);
+    const inputType = (event as InputEvent).inputType;
+    if (!inputType.startsWith('delete')) selectAllIntents.delete(editor);
     const deletion = pending.get(editorId);
-    if ((event as InputEvent).inputType?.startsWith('delete'))
+    if (inputType.startsWith('delete'))
       normalizeEmptiedEditor(editor, deletion?.selectedAll);
     if (onEdit) {
       const field = editor.closest<HTMLElement>(
@@ -499,17 +501,10 @@ export function wireTokenSearchFields(
       );
       return;
     }
-    if (
-      keyboardEvent.key === 'ArrowLeft' ||
-      keyboardEvent.key === 'ArrowRight' ||
-      keyboardEvent.key === 'ArrowUp' ||
-      keyboardEvent.key === 'ArrowDown' ||
-      keyboardEvent.key === 'Home' ||
-      keyboardEvent.key === 'End' ||
-      keyboardEvent.key === 'PageUp' ||
-      keyboardEvent.key === 'PageDown'
-    )
-      selectAllIntents.delete(editor);
+    // Any intervening keyboard action consumes the shortcut intent. Printable
+    // replacement typing clears it here before the browser's input event; the
+    // input listener also covers paste, drop, and other non-keyboard edits.
+    if (!fullDeletionInputType) selectAllIntents.delete(editor);
   };
   root.addEventListener('keydown', trackSelectAllIntent, true);
   root.addEventListener('pointerdown', clearSelectAllIntent, true);

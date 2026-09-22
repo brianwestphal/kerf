@@ -1979,6 +1979,22 @@ test('token-search select-all + Delete empties cleanly without a stray newline',
     )
     .toBe('x');
 
+  // Replacement typing consumes the select-all intent. A later Backspace is a
+  // normal character deletion, not the synthetic whole-editor deletion path.
+  await page.keyboard.press(selectAll);
+  await page.keyboard.type('hello');
+  await expect
+    .poll(() =>
+      editor.evaluate((el) => (el.textContent ?? '').replaceAll('​', '')),
+    )
+    .toBe('hello');
+  await page.keyboard.press('Backspace');
+  await expect
+    .poll(() =>
+      editor.evaluate((el) => (el.textContent ?? '').replaceAll('​', '')),
+    )
+    .toBe('hell');
+
   // Tokened: select-all + Delete also removes every chip and leaves no artifact.
   await page.goto('/?component=token-search-field');
   const editor2 = demo.getByRole('searchbox', { name: 'Search tickets' });

@@ -483,7 +483,9 @@ Call `wireTokenSearchFields()` once at a stable root to make Enter submit throug
 `onSubmit` without inserting a contenteditable line break and to preserve focus
 plus the text-relative caret when keyboard deletion of a chip causes controlled
 rendering to replace the editor. A select-all deletion is normalized to a truly
-empty editor even when the browser leaves an atomic chip or line break behind.
+empty editor even when the browser leaves an atomic chip or line break behind;
+replacement typing consumes that intent so a later Backspace/Delete remains an
+ordinary character edit.
 Text still wraps visually when it reaches the field edge.
 Clear actions should empty the editor's `textContent` before clearing app state.
 The leading icon, first text line, clear action, and trailing slot share one
