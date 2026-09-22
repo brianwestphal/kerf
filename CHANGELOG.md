@@ -9,6 +9,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Documented and demonstrated list-first dialog bodies: use `List` with
   `bodyInset="none"`, and wrap bare dialog copy in `ListInsetText` so content
   shares the standard list gutter without double-insetting.
+- Fixed `@kerfjs/ui`'s collapsible `TokenSearchField` keep-open ownership in
+  WebKit: when `focusout.relatedTarget` is missing during pointer activation of
+  an external `data-token-search-keep-open` surface, the helper now uses the
+  actual pointer target instead of collapsing and removing the target before
+  its click handler runs.
 - Fixed managed `TokenSearchField` Clear focus before the next input task, so
   immediate typing stays in the replacement editor instead of triggering page
   shortcuts; genuine later focus handoffs and selections remain untouched.

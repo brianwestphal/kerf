@@ -344,12 +344,28 @@ export function wireTokenSearchFields(
   const adopted = config.signals ?? {};
   const created = new Map<string, Signal<boolean>>();
   let disposed = false;
+  let pointerActivationTarget: Element | null = null;
 
   /** True when focus moving to `element` should keep an empty field expanded. */
   const isExemptTarget = (element: Element | null): boolean => {
     if (!element) return false;
     if (element.closest('[data-token-search-keep-open]')) return true;
     return keepOpenOn ? keepOpenOn(element) : false;
+  };
+
+  // WebKit can report `focusout.relatedTarget === null` while a pointer is
+  // moving focus into a sibling button. Preserve the actual activation target
+  // across that focus transition so a keep-open surface cannot be collapsed
+  // (and removed) between pointerdown and click.
+  const trackPointerActivation = (event: Event) => {
+    pointerActivationTarget =
+      event.target instanceof Element ? event.target : null;
+  };
+  const clearPointerActivation = () => {
+    pointerActivationTarget = null;
+  };
+  const clearPointerActivationAfterDefault = () => {
+    view().queueMicrotask(clearPointerActivation);
   };
 
   const signalFor = (id: string): Signal<boolean> => {
@@ -686,6 +702,48 @@ export function wireTokenSearchFields(
   }
 
   if (collapseOnEmptyBlur) {
+    root.ownerDocument.addEventListener(
+      'pointerdown',
+      trackPointerActivation,
+      true,
+    );
+    root.ownerDocument.addEventListener(
+      'pointerup',
+      clearPointerActivationAfterDefault,
+      true,
+    );
+    root.ownerDocument.addEventListener(
+      'pointercancel',
+      clearPointerActivation,
+      true,
+    );
+    root.ownerDocument.addEventListener('click', clearPointerActivation, true);
+    disposers.push(
+      () =>
+        root.ownerDocument.removeEventListener(
+          'pointerdown',
+          trackPointerActivation,
+          true,
+        ),
+      () =>
+        root.ownerDocument.removeEventListener(
+          'pointerup',
+          clearPointerActivationAfterDefault,
+          true,
+        ),
+      () =>
+        root.ownerDocument.removeEventListener(
+          'pointercancel',
+          clearPointerActivation,
+          true,
+        ),
+      () =>
+        root.ownerDocument.removeEventListener(
+          'click',
+          clearPointerActivation,
+          true,
+        ),
+    );
     // Pressing an in-field control (clear, trailing, token, or the trigger) must not
     // blur the editor — otherwise the transient blur would collapse the field before
     // the control's own handler runs. Keeping focus also keeps the click firing.
@@ -716,7 +774,11 @@ export function wireTokenSearchFields(
             field.dataset.disabled === 'true'
           )
             return;
-          const next = (event as FocusEvent).relatedTarget;
+          const relatedTarget = (event as FocusEvent).relatedTarget;
+          const next =
+            relatedTarget instanceof Element
+              ? relatedTarget
+              : pointerActivationTarget;
           if (!next && (clearing.has(id) || (manageFocus && deleting.has(id))))
             return;
           if (next instanceof Node && field.contains(next)) return;

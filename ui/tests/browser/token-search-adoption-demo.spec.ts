@@ -127,12 +127,21 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
   await page.locator('[data-action="toggle-theme"]').first().focus();
   await expect(field).toHaveAttribute('data-expanded', 'false');
 
-  // Clicking a suggestion adds a chip (and re-expands via the token).
+  // Consecutive native suggestion activations stay owned by the keep-open
+  // surface even when WebKit omits focusout.relatedTarget. Repeat the exact
+  // empty-editor transition so a collapse between pointerdown and click cannot
+  // pass once and hide as timing noise.
   await field.getByRole('button', { name: 'Open filter' }).click();
-  await suggestion('status:open').click();
-  await expect(chips).toHaveCount(1);
-  await suggestion('owner:me').click();
-  await expect(chips).toHaveCount(2);
+  for (let repetition = 0; repetition < 5; repetition += 1) {
+    if (repetition > 0) {
+      await field.getByRole('button', { name: 'Clear search' }).click();
+      await expect(chips).toHaveCount(0);
+    }
+    await suggestion('status:open').click();
+    await expect(chips).toHaveCount(1);
+    await suggestion('owner:me').click();
+    await expect(chips).toHaveCount(2);
+  }
 
   // Chip keyboard: caret at the end (after the last chip) → Backspace removes it.
   await editor.evaluate((element) => {

@@ -1307,6 +1307,27 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     handle();
   });
 
+  it('uses the pointer target when focusout omits its related target', async () => {
+    const field = mountCollapsibleField(signal(true));
+    const handle = wireCollapsible(field);
+    const editor = field.editor()!;
+    const suggestions = document.createElement('div');
+    suggestions.setAttribute('data-token-search-keep-open', '');
+    const option = document.createElement('button');
+    suggestions.append(option);
+    document.body.append(suggestions);
+
+    editor.focus();
+    option.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    editor.dispatchEvent(focusoutEvent(null));
+    await micro();
+
+    expect(field.expandedSignal.value).toBe(true);
+    option.dispatchEvent(new Event('pointerup', { bubbles: true }));
+    await micro();
+    handle();
+  });
+
   it('keeps an empty field open when keepOpenOn approves the focus target, else collapses', async () => {
     const field = mountCollapsibleField(signal(true));
     const picker = document.createElement('button');

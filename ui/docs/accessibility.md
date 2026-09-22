@@ -188,7 +188,10 @@ transient state is false. Width animation is disabled under reduced motion.
 When the field is composed with a caller-owned surface rendered outside it — a
 suggestions listbox, date picker, or help popover — mark that surface (or wrap
 it) with `data-token-search-keep-open`, or pass `collapsible.keepOpenOn(target)`,
-so focus moving into it does not collapse an empty field. `wireTokenSearchFields`
+so focus or pointer activation moving into it does not collapse an empty field.
+The helper preserves the pointer target when a browser omits
+`focusout.relatedTarget`, preventing the field or target from disappearing
+between pointerdown and click. `wireTokenSearchFields`
 can also, opt-in via `keyboard`, own atomic-chip editing keys: from a collapsed
 caret with no selection, Backspace removes the token before the caret and Delete
 the token after it (reported through `onRemoveToken` for the app to apply to its
