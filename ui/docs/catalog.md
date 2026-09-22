@@ -109,9 +109,10 @@ const buttonPreview = (
 );
 ```
 
-The overlay selects every immediate child of a `CatalogExample` except the
-helper-generated label and note. It does not recursively promote a nested child
-to be the specimen. Outside an example row, it selects only top-level
+The overlay selects every immediate child of a `CatalogExample`; the helper
+marks its generated label and note so they are excluded automatically. It does
+not recursively promote a nested child to be the specimen. Outside an example
+row, it selects only top-level
 `[data-component]` roots in the canvas and ignores nested component descendants.
 These rules keep a row's label/group scaffolding out of the measurement and make
 the authored nesting determine exactly what is inspected.
@@ -138,15 +139,19 @@ Pass the conditional `geometryOverlay` boolean to `Catalog`, then call
 `wireCatalogGeometryOverlay(root)` once after the first render and retain its
 disposer alongside `wireCatalog`'s.
 
-| Overlay mark            | Meaning                                                                                              | It is not                                                                              |
-| ----------------------- | ---------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Orange translucent band | A positive computed margin on the selected specimen, after subtracting the helper's alignment inset. | Padding, gap, or empty content. Zero and negative margins are not drawn.               |
-| Quiet dashed outline    | The border-box outer bound of a selected specimen whose computed background is transparent.          | A real CSS border, focus ring, padding edge, or proof that the specimen owns its size. |
+| Overlay mark            | Meaning                                                                                              | It is not                                                                |
+| ----------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Orange translucent band | A positive computed margin on the selected specimen, after subtracting the helper's alignment inset. | Padding, gap, or empty content. Zero and negative margins are not drawn. |
+| Accent solid edge       | The selected specimen's computed border widths and radius, except `none`/`hidden` styles.            | A focus ring, outline, child border, or metadata ownership claim.        |
+| Quiet dashed outline    | The border-box bound of a transparent selected specimen with no visible border.                      | A real CSS border, padding edge, or proof that the specimen owns size.   |
 
-The overlay does not visualize padding, borders, gaps, negative/zero margins,
-scroll overflow, hit targets, nested descendants, or geometry ownership. Inspect
-computed styles and the machine-readable `geometry` metadata for those facts.
-Opaque specimens do not receive the transparent-bound outline.
+The overlay recomputes from live rendered styles when specimens resize, preview
+markup changes, theme/root attributes change, or loaded/inline stylesheets
+change. Component CSS is therefore the source of truth; do not duplicate margin
+or border values in demo data. The overlay does not visualize padding, gaps,
+negative/zero margins, scroll overflow, hit targets, or nested descendants.
+Inspect computed styles and the machine-readable `geometry` metadata for those
+facts. Opaque borderless specimens do not receive the dashed bound.
 
 ```tsx
 <Catalog

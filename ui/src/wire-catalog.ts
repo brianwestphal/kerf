@@ -77,34 +77,17 @@ function isTransparent(color: string): boolean {
   );
 }
 
-function isExampleLabel(element: Element): boolean {
-  const parent = element.parentElement;
-  if (
-    !element.classList.contains('kui-list-header') ||
-    !parent?.classList.contains('kui-catalog-example') ||
-    element !== parent.firstElementChild
-  )
-    return false;
-  for (
-    let sibling = element.nextElementSibling;
-    sibling;
-    sibling = sibling.nextElementSibling
-  )
-    if (!sibling.classList.contains('kui-catalog-example__note')) return true;
-  return false;
-}
-
 function geometrySpecimens(canvas: HTMLElement): Element[] {
   const result: Element[] = [];
   for (const example of canvas.querySelectorAll<HTMLElement>(
-    '.kui-catalog-example',
+    '[data-catalog-example]',
   )) {
     if (example.closest('[data-catalog-geometry-overlay-skip]')) continue;
     for (const child of example.children) {
       if (
         child.matches('[data-catalog-geometry-overlay]') ||
-        child.classList.contains('kui-catalog-example__note') ||
-        isExampleLabel(child)
+        child.matches('[data-catalog-example-label]') ||
+        child.matches('[data-catalog-example-note]')
       )
         continue;
       result.push(child);
@@ -143,10 +126,16 @@ function geometryBox(
   return element;
 }
 
+function effectiveBorderWidth(width: string, style: string): number {
+  return style === 'none' || style === 'hidden' ? 0 : pixels(width);
+}
+
 /**
  * Keep a Catalog's opt-in geometry overlay synchronized with its preview.
- * Transparent specimens receive a dashed outer bound and positive margins use
- * devtools-style orange bands. Returns a disposer.
+ * Specimens receive computed border highlights (or a dashed bound when they
+ * have no border and are transparent), while positive computed margins use
+ * devtools-style orange bands. CSS/stylesheet-only changes are observed too.
+ * Returns a disposer.
  */
 export function wireCatalogGeometryOverlay(root: HTMLElement): () => void {
   const catalog = root.matches('[data-component="catalog"]')
@@ -163,9 +152,14 @@ export function wireCatalogGeometryOverlay(root: HTMLElement): () => void {
   const render = (): void => {
     frame = 0;
     layer.replaceChildren();
-    if (catalog.dataset.geometryOverlay !== 'true') return;
+    if (catalog.dataset.geometryOverlay !== 'true') {
+      syncObservedSpecimens([]);
+      return;
+    }
     const base = canvas.getBoundingClientRect();
-    for (const element of geometrySpecimens(canvas)) {
+    const specimens = geometrySpecimens(canvas);
+    syncObservedSpecimens(specimens);
+    for (const [specimenIndex, element] of specimens.entries()) {
       const rect = element.getBoundingClientRect();
       const style = view.getComputedStyle(element);
       const align = pixels(
@@ -183,35 +177,68 @@ export function wireCatalogGeometryOverlay(root: HTMLElement): () => void {
       );
       const x = rect.left - base.left + canvas.scrollLeft;
       const y = rect.top - base.top + canvas.scrollTop;
-      if (isTransparent(style.backgroundColor))
-        layer.append(
-          geometryBox(
-            root.ownerDocument,
-            'kui-catalog__geometry-bound',
-            x,
-            y,
-            rect.width,
-            rect.height,
-          ),
-        );
-      const margins = [
-        [top, x - left, y - top, rect.width + left + right, top],
-        [bottom, x - left, y + rect.height, rect.width + left + right, bottom],
-        [left, x - left, y, left, rect.height],
-        [right, x + rect.width, y, right, rect.height],
+      const borderWidths = [
+        effectiveBorderWidth(style.borderTopWidth, style.borderTopStyle),
+        effectiveBorderWidth(style.borderRightWidth, style.borderRightStyle),
+        effectiveBorderWidth(style.borderBottomWidth, style.borderBottomStyle),
+        effectiveBorderWidth(style.borderLeftWidth, style.borderLeftStyle),
       ];
-      for (const [size, marginX, marginY, width, height] of margins) {
-        if (size <= 0) continue;
-        layer.append(
-          geometryBox(
-            root.ownerDocument,
-            'kui-catalog__geometry-margin',
-            marginX,
-            marginY,
-            width,
-            height,
-          ),
+      if (borderWidths.some((width) => width > 0)) {
+        const border = geometryBox(
+          root.ownerDocument,
+          'kui-catalog__geometry-border',
+          x,
+          y,
+          rect.width,
+          rect.height,
         );
+        border.dataset.catalogGeometrySpecimen = String(specimenIndex);
+        border.style.borderTopWidth = `${borderWidths[0]}px`;
+        border.style.borderRightWidth = `${borderWidths[1]}px`;
+        border.style.borderBottomWidth = `${borderWidths[2]}px`;
+        border.style.borderLeftWidth = `${borderWidths[3]}px`;
+        border.style.borderRadius = style.borderRadius;
+        layer.append(border);
+      } else if (isTransparent(style.backgroundColor)) {
+        const bound = geometryBox(
+          root.ownerDocument,
+          'kui-catalog__geometry-bound',
+          x,
+          y,
+          rect.width,
+          rect.height,
+        );
+        bound.dataset.catalogGeometrySpecimen = String(specimenIndex);
+        layer.append(bound);
+      }
+      const margins: Array<
+        readonly [string, number, number, number, number, number]
+      > = [
+        ['top', top, x - left, y - top, rect.width + left + right, top],
+        [
+          'bottom',
+          bottom,
+          x - left,
+          y + rect.height,
+          rect.width + left + right,
+          bottom,
+        ],
+        ['left', left, x - left, y, left, rect.height],
+        ['right', right, x + rect.width, y, right, rect.height],
+      ];
+      for (const [side, size, marginX, marginY, width, height] of margins) {
+        if (size <= 0) continue;
+        const margin = geometryBox(
+          root.ownerDocument,
+          'kui-catalog__geometry-margin',
+          marginX,
+          marginY,
+          width,
+          height,
+        );
+        margin.dataset.catalogGeometrySpecimen = String(specimenIndex);
+        margin.dataset.catalogGeometrySide = side;
+        layer.append(margin);
       }
     }
   };
@@ -220,6 +247,20 @@ export function wireCatalogGeometryOverlay(root: HTMLElement): () => void {
   };
   const resizeObserver = new view.ResizeObserver(schedule);
   resizeObserver.observe(canvas);
+  const observedSpecimens = new Set<Element>();
+  const syncObservedSpecimens = (specimens: Element[]): void => {
+    const next = new Set(specimens);
+    for (const specimen of observedSpecimens) {
+      if (next.has(specimen)) continue;
+      resizeObserver.unobserve(specimen);
+      observedSpecimens.delete(specimen);
+    }
+    for (const specimen of next) {
+      if (observedSpecimens.has(specimen)) continue;
+      resizeObserver.observe(specimen);
+      observedSpecimens.add(specimen);
+    }
+  };
   const mutationObserver = new view.MutationObserver((records) => {
     if (
       records.some(
@@ -233,12 +274,26 @@ export function wireCatalogGeometryOverlay(root: HTMLElement): () => void {
     childList: true,
     subtree: true,
   });
+  mutationObserver.observe(root.ownerDocument.documentElement, {
+    attributes: true,
+  });
+  const documentHead = root.ownerDocument.head;
+  if (documentHead)
+    mutationObserver.observe(documentHead, {
+      attributes: true,
+      characterData: true,
+      childList: true,
+      subtree: true,
+    });
+  const stylesheetLoaded = (): void => schedule();
+  documentHead?.addEventListener('load', stylesheetLoaded, true);
   view.addEventListener('resize', schedule);
   render();
   return () => {
     if (frame) view.cancelAnimationFrame(frame);
     resizeObserver.disconnect();
     mutationObserver.disconnect();
+    documentHead?.removeEventListener('load', stylesheetLoaded, true);
     view.removeEventListener('resize', schedule);
     layer.replaceChildren();
   };

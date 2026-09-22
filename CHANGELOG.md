@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Made the Catalog geometry overlay derive both margin bands and border
+  edges/radii from each live specimen's computed CSS. Public example helpers now
+  mark their generated labels and notes for automatic exclusion, and stylesheet,
+  theme, DOM, and resize changes refresh the overlay without duplicated demo
+  measurements.
 - Updated the `@kerfjs/ui` SVG design-template generator to `domotion-svg`
   0.30.1 and enabled `--flatten-nested-svg`, so inline component icons are
   emitted as Sketch-compatible groups without changing their browser rendering.

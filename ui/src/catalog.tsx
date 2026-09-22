@@ -89,10 +89,10 @@ export interface CatalogProps {
   /** Status line content shown at the start of the detail footer. */
   status?: SafeHtml;
   /**
-   * Whether to highlight transparent specimens' outer bounds and non-zero
-   * margins. Pass a boolean (rather than omitting the prop) when the active
-   * entry can switch between component and composition previews;
-   * `wireCatalogGeometryOverlay` keeps the overlay synchronized.
+   * Whether to highlight specimens' computed borders (or transparent outer
+   * bounds) and non-zero margins. Pass a boolean (rather than omitting the
+   * prop) when the active entry can switch between component and composition
+   * previews; `wireCatalogGeometryOverlay` keeps the overlay synchronized.
    */
   geometryOverlay?: boolean;
   selectAction?: string;
@@ -492,6 +492,8 @@ export type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
 const catalogExampleProtectedAttributes = new Set([
   'data-catalog-example',
   'data-catalog-example-stack',
+  'data-catalog-example-label',
+  'data-catalog-example-note',
   'data-align',
 ]);
 
@@ -499,6 +501,8 @@ type CatalogExampleRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-catalog-example'?: never;
     'data-catalog-example-stack'?: never;
+    'data-catalog-example-label'?: never;
+    'data-catalog-example-note'?: never;
     'data-align'?: never;
   }
 >;
@@ -507,6 +511,8 @@ type CatalogExampleStackRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-catalog-example'?: never;
     'data-catalog-example-stack'?: never;
+    'data-catalog-example-label'?: never;
+    'data-catalog-example-note'?: never;
     'data-align'?: never;
   }
 >;
@@ -551,9 +557,18 @@ export function CatalogExample({
       data-catalog-example
       data-align={align}
     >
-      {label !== undefined ? <ListHeader label={label} /> : <></>}
+      {label !== undefined ? (
+        <ListHeader
+          label={label}
+          rootAttributes={{ 'data-catalog-example-label': '' }}
+        />
+      ) : (
+        <></>
+      )}
       {note !== undefined ? (
-        <p class="kui-catalog-example__note">{note}</p>
+        <p class="kui-catalog-example__note" data-catalog-example-note>
+          {note}
+        </p>
       ) : (
         <></>
       )}

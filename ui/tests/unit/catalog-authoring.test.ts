@@ -121,8 +121,11 @@ describe('Catalog demo authoring guidance', () => {
       '`CatalogExample` is one row',
       'immediate child of `CatalogExample`',
       'positive computed margin',
-      'border-box outer bound',
-      'does not visualize padding, borders, gaps, negative/zero margins',
+      'computed border widths and radius',
+      'border-box bound',
+      'does not visualize padding, gaps',
+      'negative/zero margins',
+      'Component CSS is therefore the source of truth',
       'every descendant from selection',
       '### Metadata ownership',
     ])

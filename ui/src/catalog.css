@@ -325,8 +325,8 @@
 }
 
 /* Optional devtools-style geometry overlay. `wireCatalogGeometryOverlay` draws
-   a quiet dashed outer bound for transparent specimens and orange bands for
-   non-zero margins. */
+   computed border edges, a quiet dashed bound for transparent borderless
+   specimens, and orange bands for non-zero margins. */
 .kui-catalog__geometry-overlay {
   position: absolute;
   z-index: 3;
@@ -335,6 +335,7 @@
 }
 
 .kui-catalog__geometry-bound,
+.kui-catalog__geometry-border,
 .kui-catalog__geometry-margin {
   position: absolute;
   top: 0;
@@ -344,6 +345,11 @@
 
 .kui-catalog__geometry-bound {
   border: 1px dashed color-mix(in srgb, var(--kui-color-text) 40%, transparent);
+}
+
+.kui-catalog__geometry-border {
+  border: 0 solid
+    color-mix(in srgb, var(--kui-color-accent-text) 72%, transparent);
 }
 
 .kui-catalog__geometry-margin {

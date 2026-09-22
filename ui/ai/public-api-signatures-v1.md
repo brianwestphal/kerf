@@ -1087,10 +1087,10 @@ interface CatalogProps {
     /** Status line content shown at the start of the detail footer. */
     status?: SafeHtml;
     /**
-     * Whether to highlight transparent specimens' outer bounds and non-zero
-     * margins. Pass a boolean (rather than omitting the prop) when the active
-     * entry can switch between component and composition previews;
-     * `wireCatalogGeometryOverlay` keeps the overlay synchronized.
+     * Whether to highlight specimens' computed borders (or transparent outer
+     * bounds) and non-zero margins. Pass a boolean (rather than omitting the
+     * prop) when the active entry can switch between component and composition
+     * previews; `wireCatalogGeometryOverlay` keeps the overlay synchronized.
      */
     geometryOverlay?: boolean;
     selectAction?: string;
@@ -1120,11 +1120,15 @@ type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
 type CatalogExampleRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-catalog-example'?: never;
     'data-catalog-example-stack'?: never;
+    'data-catalog-example-label'?: never;
+    'data-catalog-example-note'?: never;
     'data-align'?: never;
 }>;
 type CatalogExampleStackRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-catalog-example'?: never;
     'data-catalog-example-stack'?: never;
+    'data-catalog-example-label'?: never;
+    'data-catalog-example-note'?: never;
     'data-align'?: never;
 }>;
 interface CatalogExampleProps {
@@ -1249,8 +1253,10 @@ interface CatalogRevealOptions {
 declare function revealCatalogEntry(root: HTMLElement, id: string, { block, inline, behavior, media, }?: CatalogRevealOptions): () => void;
 /**
  * Keep a Catalog's opt-in geometry overlay synchronized with its preview.
- * Transparent specimens receive a dashed outer bound and positive margins use
- * devtools-style orange bands. Returns a disposer.
+ * Specimens receive computed border highlights (or a dashed bound when they
+ * have no border and are transparent), while positive computed margins use
+ * devtools-style orange bands. CSS/stylesheet-only changes are observed too.
+ * Returns a disposer.
  */
 declare function wireCatalogGeometryOverlay(root: HTMLElement): () => void;
 /**
