@@ -55,6 +55,42 @@ describe('CollapsiblePanel', () => {
     expect(drawer).toContain('--kui-collapsible-panel-height: 240px');
   });
 
+  it('projects panel policies and renders a collapsed safe-area restore control', () => {
+    const drawer = html(
+      CollapsiblePanel({
+        id: 'console',
+        side: 'bottom',
+        collapsed: true,
+        separator: 'hidden',
+        collapseMotion: 'fade-slide',
+        contentOverflow: 'visible',
+        presentation: 'overlay',
+        restoreControl: raw('<button>Show console</button>'),
+        children: raw('<x/>'),
+      }),
+    );
+    expect(drawer).toContain('data-separator="hidden"');
+    expect(drawer).toContain('data-collapse-motion="fade-slide"');
+    expect(drawer).toContain('data-content-overflow="visible"');
+    expect(drawer).toContain('data-presentation="overlay"');
+    expect(drawer).toContain(
+      'class="kui-collapsible-panel__restore" data-panel-restore="console" data-position="bottom-end"',
+    );
+    const replacement = html(
+      CollapsiblePanel({
+        id: 'nav',
+        side: 'left',
+        collapsed: true,
+        presentation: 'hidden',
+        restoreControl: raw('<button>Suppressed</button>'),
+        restorePosition: 'bottom-end',
+      }),
+    );
+    expect(replacement).toContain('data-presentation="hidden"');
+    expect(replacement).toContain('aria-hidden="true"');
+    expect(replacement).not.toContain('Suppressed');
+  });
+
   it('picks the standard per-side collapse/expand glyph', () => {
     expect(collapsiblePanelToggleIcon('left', false).name).toBe(
       'panel-left-close',

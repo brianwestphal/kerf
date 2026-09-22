@@ -876,7 +876,12 @@
         "right rail",
         "bottom drawer",
         "all panels",
-        "independently collapsed panels"
+        "independently collapsed panels",
+        "hidden separator",
+        "slide, fade-slide, or instant content",
+        "clipped, scrolling, or popup-visible content",
+        "inline, overlay, or hidden responsive presentation",
+        "safe-area restore control"
       ],
       "accessibility": [
         "Give the Workbench and each meaningful rail or drawer an accessible label.",
@@ -903,14 +908,21 @@
         "kui-workbench__rail",
         "kui-workbench__rail--left",
         "kui-workbench__rail--right",
+        "kui-workbench__drawer",
         "kui-workbench__center",
         "kui-workbench__main",
-        "kui-workbench__drawer",
-        "kui-workbench__panel-content"
+        "kui-workbench__panel-content",
+        "kui-workbench__restore"
       ],
       "publicTokens": [
         "--kui-workbench-rail-width",
-        "--kui-workbench-drawer-height"
+        "--kui-workbench-drawer-height",
+        "--kui-workbench-popup-z",
+        "--kui-workbench-overlay-z",
+        "--kui-workbench-overlay-max-width",
+        "--kui-workbench-overlay-max-height",
+        "--kui-workbench-restore-z",
+        "--kui-workbench-restore-inset"
       ],
       "links": {
         "catalogRoute": "?component=workbench",
@@ -969,7 +981,12 @@
         "right rail",
         "bottom drawer",
         "collapsed",
-        "compact overlay"
+        "compact overlay",
+        "compact responsive replacement",
+        "hidden separator",
+        "slide, fade-slide, or instant content",
+        "clipped, scrolling, or popup-visible content",
+        "safe-area restore control"
       ],
       "accessibility": [
         "Give the panel region and every collapse or restore control an accessible label.",
@@ -1003,13 +1020,17 @@
         "kui-collapsible-panel--right",
         "kui-collapsible-panel--bottom",
         "kui-collapsible-panel__content",
+        "kui-collapsible-panel__restore",
         "kui-collapsible-panel__backdrop",
         "kui-collapsible-panel__toggle"
       ],
       "publicTokens": [
         "--kui-collapsible-panel-width",
         "--kui-collapsible-panel-height",
+        "--kui-collapsible-panel-popup-z",
         "--kui-collapsible-panel-overlay-z",
+        "--kui-collapsible-panel-restore-z",
+        "--kui-collapsible-panel-restore-inset",
         "--kui-collapsible-panel-backdrop-z"
       ],
       "links": {
@@ -2502,7 +2523,12 @@
         "start edge",
         "end edge",
         "collapsed",
-        "custom handle icon"
+        "custom handle icon",
+        "hidden separator",
+        "slide, fade-slide, or instant content",
+        "clipped, scrolling, or popup-visible content",
+        "inline, overlay, or hidden responsive presentation",
+        "safe-area restore control"
       ],
       "accessibility": [
         "Preserve separator naming, value ARIA, and keyboard behavior.",
@@ -2544,7 +2570,8 @@
         "kui-resizable-region",
         "kui-resizable-region__content",
         "kui-resizable-region__handle",
-        "kui-resizable-region__handle-icon"
+        "kui-resizable-region__handle-icon",
+        "kui-resizable-region__restore"
       ],
       "publicTokens": [
         "--kui-color-border",
@@ -2554,6 +2581,10 @@
         "--kui-radius-s",
         "--kui-resizable-region-handle-active-color",
         "--kui-resizable-region-handle-color",
+        "--kui-resizable-region-overlay-z",
+        "--kui-resizable-region-popup-z",
+        "--kui-resizable-region-restore-inset",
+        "--kui-resizable-region-restore-z",
         "--kui-resizable-region-separator-color",
         "--kui-resizable-region-size"
       ],

@@ -86,4 +86,76 @@ describe('Workbench', () => {
       ),
     ).toContain('kui-workbench flush');
   });
+
+  it('projects reusable panel policies and safe-area restore controls', () => {
+    const html = String(
+      Workbench({
+        id: 'wb',
+        label: 'Studio',
+        main,
+        bottomDrawer: {
+          content: panel('console'),
+          collapsed: true,
+          separator: 'hidden',
+          collapseMotion: 'fade-slide',
+          contentOverflow: 'visible',
+          presentation: 'overlay',
+          restoreControl: raw('<button>Show console</button>'),
+        },
+      }),
+    );
+    expect(html).toContain('data-separator="hidden"');
+    expect(html).toContain('data-collapse-motion="fade-slide"');
+    expect(html).toContain('data-content-overflow="visible"');
+    expect(html).toContain('data-presentation="overlay"');
+    expect(html).toContain(
+      'class="kui-workbench__restore" data-panel="bottom" data-position="bottom-end"',
+    );
+    expect(html).toContain('<button>Show console</button>');
+  });
+
+  it('supports per-edge restore positions and hidden responsive replacements', () => {
+    const html = String(
+      Workbench({
+        id: 'wb',
+        label: 'Studio',
+        main,
+        leftRail: {
+          content: panel('nav'),
+          collapsed: true,
+          restoreControl: raw('<button>Show nav</button>'),
+        },
+        rightRail: {
+          content: panel('inspector'),
+          collapsed: true,
+          restoreControl: raw('<button>Show inspector</button>'),
+        },
+        bottomDrawer: {
+          content: panel('console'),
+          collapsed: true,
+          presentation: 'hidden',
+          restoreControl: raw('<button>Suppressed</button>'),
+        },
+      }),
+    );
+    expect(html).toContain(
+      'data-panel="left" data-position="bottom-start"><button>Show nav</button>',
+    );
+    expect(html).toContain(
+      'data-panel="right" data-position="bottom-end"><button>Show inspector</button>',
+    );
+    expect(html).toContain('data-presentation="hidden" aria-hidden="true"');
+    expect(html).not.toContain('Suppressed');
+
+    const hiddenRails = String(
+      Workbench({
+        id: 'hidden',
+        label: 'Compact replacement',
+        main,
+        leftRail: { content: panel('nav'), presentation: 'hidden' },
+        rightRail: { content: panel('inspector'), presentation: 'hidden' },
+      }),
+    );
+    expect(hiddenRails.match(/aria-hidden="true"/g)).toHaveLength(2);
+  });
 });

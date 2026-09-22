@@ -47,7 +47,54 @@ const navCollapsed = signal(false);
 Each `WorkbenchPanel` takes `content`, an optional `collapsed`, an optional
 `size` (rail width or drawer height in px, overriding the CSS default —
 `--kui-workbench-rail-width` 280px, `--kui-workbench-drawer-height` 220px), and
-an optional `label`.
+an optional `label`. Common shell behavior is configured rather than restyled:
+
+- `separator: "auto" | "hidden"` controls the owned dock-edge separator;
+- `collapseMotion: "slide" | "fade-slide" | "none"` keeps the track change
+  instant while choosing composited content motion;
+- `contentOverflow: "clip" | "auto" | "visible"` lets a drawer temporarily
+  expose an open popup without a descendant override;
+- `presentation: "inline" | "overlay" | "hidden"` supports compact overlays
+  or a responsive replacement;
+- `restoreControl` places an application-owned restore affordance in a
+  safe-area-aware viewport corner (`restorePosition` chooses the corner).
+
+The same policy props are available on `ResizableRegion` and
+`CollapsiblePanel`, so a resizable application shell does not need to reach
+into `.kui-resizable-region__content`.
+
+## Resizable application-shell migration
+
+An application such as Hot Sheet can replace its shell descendant overrides
+with state-derived props:
+
+```tsx
+<ResizableRegion
+  id="terminal-drawer"
+  label="Terminal drawer"
+  axis="vertical"
+  edge="start"
+  size={drawerSize.value}
+  min={180}
+  max={520}
+  collapsed={!drawerVisible.value}
+  separator={magnified.value ? "hidden" : "auto"}
+  collapseMotion="fade-slide"
+  contentOverflow={createMenuOpen.value ? "visible" : "clip"}
+  presentation={mobile.value ? "overlay" : "inline"}
+  restoreControl={<button data-action="show-drawer">Show terminals</button>}
+>
+  <TerminalDrawer />
+</ResizableRegion>
+```
+
+`wireResizableRegions` marks the active region with `data-resizing` and the
+package CSS suppresses content motion during pointer resize. A collapsed,
+overlay, or hidden region is not resizeable. Together these policies replace
+app CSS for separator suppression, instant-track/composited-content collapse,
+popup overflow, mobile overlay/hidden replacement, resize-transition guards,
+and safe-area restore placement. The app still owns the signals and decides
+when each policy applies.
 
 ## Public styling boundary
 
@@ -57,7 +104,7 @@ Workbench instance. The supported composition classes are `.kui-workbench`,
 `.kui-workbench__rail`, `.kui-workbench__rail--left`,
 `.kui-workbench__rail--right`, `.kui-workbench__center`,
 `.kui-workbench__main`, `.kui-workbench__drawer`, and
-`.kui-workbench__panel-content`; these exact hooks are cataloged for tools that
+`.kui-workbench__panel-content`, and `.kui-workbench__restore`; these exact hooks are cataloged for tools that
 must classify public application selectors. Prefer the component props and two
 size tokens before selecting internal anatomy, and do not target its data
 attributes or descendant tags as styling contracts.

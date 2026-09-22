@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added configuration-first application-panel policies across `ResizableRegion`,
+  `Workbench`, and `CollapsiblePanel`: separator visibility, instant-track
+  collapse with optional composited content motion, popup-safe overflow,
+  inline/overlay/hidden responsive presentations, and safe-area restore-control
+  placement. `wireResizableRegions` now suppresses motion during pointer drags
+  and ignores unavailable regions; `wireSidebar` supports hidden compact
+  replacements and exclusive overlays.
 - Added typed `TabBar` allocation/presentation/action-placement and `AppTab`
   presentation/size/label-width variants for segmented inspector strips,
   compact drawer tabs, icon-only accessible tabs, and truncating labels.

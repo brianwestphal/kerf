@@ -71,6 +71,14 @@ export function WorkbenchDemo() {
             label: 'Console',
             content: region('Console', 'Still mounted'),
             collapsed: true,
+            separator: 'hidden',
+            collapseMotion: 'fade-slide',
+            contentOverflow: 'visible',
+            restoreControl: (
+              <button type="button" aria-label="Show collapsed console">
+                Show console
+              </button>
+            ),
           }}
         />
       </CatalogExample>

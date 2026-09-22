@@ -546,7 +546,11 @@ Awesome Tabs, `LucideIcon` over Web Awesome Icon, and `ResizableRegion` over
 Split Panel. `ResizableRegion` includes Hot Sheet 2's 1px separator and
 hover/focus grip. Its optional `handleIcon` replaces only the decorative glyph;
 the component and `wireResizableRegions()` retain separator semantics and
-pointer/keyboard behavior. Consider Web Awesome Popup when its anchored-positioning
+pointer/keyboard behavior. Typed policies cover separator visibility,
+instant-track/composited-content collapse, popup-safe overflow,
+inline/overlay/hidden responsive presentation, and safe-area restore controls;
+the same policies are available on `Workbench` and `CollapsiblePanel`. Consider
+Web Awesome Popup when its anchored-positioning
 engine removes custom placement code; treat Tree, Animated Image, Comparison,
 Zoomable Frame, and the displaced alternatives above as exceptional rather
 than default patterns. The detailed rationale lives in the theme contract.

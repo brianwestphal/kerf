@@ -45,6 +45,8 @@ function regionState(handle: Element): RegionState | undefined {
   const size = Number(handle.getAttribute('aria-valuenow'));
   if (
     !id ||
+    region.dataset.collapsed === 'true' ||
+    region.dataset.presentation !== 'inline' ||
     (axis !== 'horizontal' && axis !== 'vertical') ||
     (edge !== 'start' && edge !== 'end') ||
     !Number.isFinite(min) ||
@@ -145,10 +147,12 @@ export function wireResizableRegions(
         root.removeEventListener('pointerup', finish);
         root.removeEventListener('pointercancel', finish);
         stopPointer = undefined;
+        delete state.region.dataset.resizing;
         onCommit({ id: state.id, size: next, source: 'pointer' });
       };
       stopPointer?.();
       stopPointer = finish;
+      state.region.dataset.resizing = 'true';
       root.addEventListener('pointermove', move);
       root.addEventListener('pointerup', finish, { once: true });
       root.addEventListener('pointercancel', finish, { once: true });

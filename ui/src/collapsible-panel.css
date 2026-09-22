@@ -33,6 +33,19 @@
   border: 0;
 }
 
+.kui-collapsible-panel[data-separator="hidden"] {
+  border-color: transparent;
+}
+
+.kui-collapsible-panel[data-content-overflow="auto"] {
+  overflow: auto;
+}
+
+.kui-collapsible-panel[data-content-overflow="visible"] {
+  z-index: var(--kui-collapsible-panel-popup-z, 5);
+  overflow: visible;
+}
+
 .kui-collapsible-panel--left[data-collapsed="true"],
 .kui-collapsible-panel--right[data-collapsed="true"] {
   width: 0;
@@ -59,6 +72,16 @@
   height: var(--kui-collapsible-panel-height, remify(220px));
 }
 
+.kui-collapsible-panel[data-collapse-motion="none"]
+  .kui-collapsible-panel__content {
+  transition: none;
+}
+
+.kui-collapsible-panel[data-collapse-motion="fade-slide"][data-collapsed="true"]
+  .kui-collapsible-panel__content {
+  opacity: 0;
+}
+
 .kui-collapsible-panel--left[data-collapsed="true"]
   .kui-collapsible-panel__content {
   transform: translateX(-100%);
@@ -77,25 +100,64 @@
 /* Compact presentation: wireSidebar marks the host so the panel floats over the
    content as an overlay with a dismissable backdrop instead of taking layout
    space. The panel is fixed to its edge and slides in from off-screen. */
-[data-collapsible-overlay="true"] .kui-collapsible-panel {
+[data-collapsible-overlay="true"] .kui-collapsible-panel,
+.kui-collapsible-panel[data-presentation="overlay"] {
   position: fixed;
   z-index: var(--kui-collapsible-panel-overlay-z, 40);
   box-shadow: var(--kui-shadow-l, 0 8px 32px rgb(0 0 0 / 24%));
 }
 
-[data-collapsible-overlay="true"] .kui-collapsible-panel--left {
+[data-collapsible-overlay="true"] .kui-collapsible-panel--left,
+.kui-collapsible-panel--left[data-presentation="overlay"] {
   inset-block: 0;
   inset-inline-start: 0;
 }
 
-[data-collapsible-overlay="true"] .kui-collapsible-panel--right {
+[data-collapsible-overlay="true"] .kui-collapsible-panel--right,
+.kui-collapsible-panel--right[data-presentation="overlay"] {
   inset-block: 0;
   inset-inline-end: 0;
 }
 
-[data-collapsible-overlay="true"] .kui-collapsible-panel--bottom {
+[data-collapsible-overlay="true"] .kui-collapsible-panel--bottom,
+.kui-collapsible-panel--bottom[data-presentation="overlay"] {
   inset-inline: 0;
   inset-block-end: 0;
+}
+
+.kui-collapsible-panel[data-presentation="overlay"][data-collapsed="true"] {
+  pointer-events: none;
+}
+
+.kui-collapsible-panel[data-presentation="hidden"] {
+  display: none;
+}
+
+[data-collapsible-responsive="hidden"] .kui-collapsible-panel {
+  display: none;
+}
+
+.kui-collapsible-panel__restore {
+  position: fixed;
+  z-index: var(--kui-collapsible-panel-restore-z, 42);
+  inset-block-end: calc(
+    var(--kui-collapsible-panel-restore-inset, remify(16px)) +
+      var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+}
+
+.kui-collapsible-panel__restore[data-position="bottom-start"] {
+  inset-inline-start: calc(
+    var(--kui-collapsible-panel-restore-inset, remify(16px)) +
+      var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+  );
+}
+
+.kui-collapsible-panel__restore[data-position="bottom-end"] {
+  inset-inline-end: calc(
+    var(--kui-collapsible-panel-restore-inset, remify(16px)) +
+      var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+  );
 }
 
 .kui-collapsible-panel__backdrop {

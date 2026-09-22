@@ -124,6 +124,10 @@ describe('wireResizableRegions', () => {
         bubbles: true,
       }),
     );
+    expect(
+      root.querySelector<HTMLElement>('[data-component="resizable-region"]')!
+        .dataset.resizing,
+    ).toBe('true');
     handle.dispatchEvent(
       new PointerEvent('pointermove', {
         pointerId: 3,
@@ -145,6 +149,41 @@ describe('wireResizableRegions', () => {
       size: 235,
       source: 'pointer',
     });
+    expect(
+      root.querySelector<HTMLElement>('[data-component="resizable-region"]')!
+        .dataset.resizing,
+    ).toBeUndefined();
+    stop();
+  });
+
+  it('does not resize collapsed, overlay, or responsive-replacement regions', () => {
+    const { root, handle } = region();
+    const host = root.querySelector<HTMLElement>(
+      '[data-component="resizable-region"]',
+    )!;
+    const onCommit = vi.fn();
+    const stop = wireResizableRegions(root, { onCommit });
+    for (const configure of [
+      () => {
+        host.dataset.collapsed = 'true';
+      },
+      () => {
+        host.dataset.collapsed = 'false';
+        host.dataset.presentation = 'overlay';
+      },
+      () => {
+        host.dataset.presentation = 'hidden';
+      },
+    ]) {
+      configure();
+      handle.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Home', bubbles: true }),
+      );
+      handle.dispatchEvent(
+        new PointerEvent('pointerdown', { button: 0, bubbles: true }),
+      );
+    }
+    expect(onCommit).not.toHaveBeenCalled();
     stop();
   });
 

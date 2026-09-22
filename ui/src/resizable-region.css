@@ -27,6 +27,132 @@
   min-height: 0;
   overflow: hidden;
 }
+.kui-resizable-region[data-content-overflow="auto"]
+  > .kui-resizable-region__content {
+  overflow: auto;
+}
+.kui-resizable-region[data-content-overflow="visible"] {
+  z-index: var(--kui-resizable-region-popup-z, 5);
+  overflow: visible;
+}
+.kui-resizable-region[data-content-overflow="visible"]
+  > .kui-resizable-region__content {
+  overflow: visible;
+}
+.kui-resizable-region[data-separator="hidden"] {
+  --kui-resizable-region-separator-color: transparent;
+}
+.kui-resizable-region[data-collapsed="true"] > .kui-resizable-region__handle,
+.kui-resizable-region:not([data-presentation="inline"])
+  > .kui-resizable-region__handle {
+  display: none;
+}
+
+/* The track always snaps to its new size. Motion is isolated to the fixed-size
+   content so a large sibling workspace incurs one reflow, not one per frame. */
+.kui-resizable-region[data-collapse-motion="slide"]
+  > .kui-resizable-region__content,
+.kui-resizable-region[data-collapse-motion="fade-slide"]
+  > .kui-resizable-region__content {
+  transition:
+    opacity 160ms ease,
+    transform 200ms ease;
+}
+.kui-resizable-region[data-axis="horizontal"][data-collapse-motion]:not(
+    [data-collapse-motion="none"]
+  )
+  > .kui-resizable-region__content {
+  width: var(--kui-resizable-region-expanded-size);
+  min-width: var(--kui-resizable-region-expanded-size);
+}
+.kui-resizable-region[data-axis="vertical"][data-collapse-motion]:not(
+    [data-collapse-motion="none"]
+  )
+  > .kui-resizable-region__content {
+  height: var(--kui-resizable-region-expanded-size);
+  min-height: var(--kui-resizable-region-expanded-size);
+}
+.kui-resizable-region[data-axis="horizontal"][data-edge="end"][data-collapsed="true"]
+  > .kui-resizable-region__content {
+  transform: translateX(-100%);
+}
+.kui-resizable-region[data-axis="horizontal"][data-edge="start"][data-collapsed="true"]
+  > .kui-resizable-region__content {
+  transform: translateX(100%);
+}
+.kui-resizable-region[data-axis="vertical"][data-edge="end"][data-collapsed="true"]
+  > .kui-resizable-region__content {
+  transform: translateY(-100%);
+}
+.kui-resizable-region[data-axis="vertical"][data-edge="start"][data-collapsed="true"]
+  > .kui-resizable-region__content {
+  transform: translateY(100%);
+}
+.kui-resizable-region[data-collapse-motion="fade-slide"][data-collapsed="true"]
+  > .kui-resizable-region__content {
+  opacity: 0;
+}
+.kui-resizable-region[data-resizing="true"] > .kui-resizable-region__content {
+  transition: none;
+}
+
+/* Responsive replacement policies. Overlay regions stay on their logical edge
+   and stop participating in the parent's flex tracks; hidden regions are fully
+   replaced by application-owned compact UI. */
+.kui-resizable-region[data-presentation="overlay"] {
+  position: absolute;
+  z-index: var(--kui-resizable-region-overlay-z, 41);
+  max-width: var(--kui-resizable-region-overlay-max-width, 85vw);
+  max-height: var(--kui-resizable-region-overlay-max-height, 85vh);
+  box-shadow: var(--kui-shadow-l, 0 8px 32px rgb(0 0 0 / 24%));
+}
+.kui-resizable-region[data-presentation="overlay"][data-axis="horizontal"] {
+  inset-block: 0;
+}
+.kui-resizable-region[data-presentation="overlay"][data-axis="horizontal"][data-edge="end"] {
+  inset-inline-start: 0;
+}
+.kui-resizable-region[data-presentation="overlay"][data-axis="horizontal"][data-edge="start"] {
+  inset-inline-end: 0;
+}
+.kui-resizable-region[data-presentation="overlay"][data-axis="vertical"] {
+  inset-inline: 0;
+}
+.kui-resizable-region[data-presentation="overlay"][data-axis="vertical"][data-edge="end"] {
+  inset-block-start: 0;
+}
+.kui-resizable-region[data-presentation="overlay"][data-axis="vertical"][data-edge="start"] {
+  inset-block-end: 0;
+}
+.kui-resizable-region[data-presentation="overlay"][data-collapsed="true"] {
+  pointer-events: none;
+}
+.kui-resizable-region[data-presentation="hidden"] {
+  display: none;
+}
+
+/* A collapsed panel can supply its own affordance while Kerf owns consistent,
+   safe-area-aware viewport placement. */
+.kui-resizable-region__restore {
+  position: fixed;
+  z-index: var(--kui-resizable-region-restore-z, 42);
+  inset-block-end: calc(
+    var(--kui-resizable-region-restore-inset, remify(16px)) +
+      var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+}
+.kui-resizable-region__restore[data-position="bottom-start"] {
+  inset-inline-start: calc(
+    var(--kui-resizable-region-restore-inset, remify(16px)) +
+      var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+  );
+}
+.kui-resizable-region__restore[data-position="bottom-end"] {
+  inset-inline-end: calc(
+    var(--kui-resizable-region-restore-inset, remify(16px)) +
+      var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+  );
+}
 .kui-resizable-region__handle {
   position: absolute;
   z-index: 3;
@@ -108,4 +234,10 @@
 .kui-resizable-region__handle:hover .kui-resizable-region__handle-icon,
 .kui-resizable-region__handle:focus-visible .kui-resizable-region__handle-icon {
   opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-resizable-region > .kui-resizable-region__content {
+    transition: none;
+  }
 }

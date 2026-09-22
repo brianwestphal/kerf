@@ -682,6 +682,7 @@ export { Pane, type PaneContentElement, type PaneElement, type PaneProps, type P
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 
 /** A collapsible Workbench panel — a side rail or the bottom drawer. */
 interface WorkbenchPanel {
@@ -692,6 +693,13 @@ interface WorkbenchPanel {
     size?: number;
     /** Accessible name for the panel region. */
     label?: string;
+    separator?: ResizableRegionSeparator;
+    collapseMotion?: ResizableRegionCollapseMotion;
+    contentOverflow?: ResizableRegionContentOverflow;
+    presentation?: ResizableRegionPresentation;
+    /** Control shown in a safe-area-aware viewport corner while collapsed. */
+    restoreControl?: SafeHtml;
+    restorePosition?: ResizableRegionRestorePosition;
 }
 interface WorkbenchProps {
     id: string;
@@ -721,6 +729,7 @@ export { Workbench, type WorkbenchPanel, type WorkbenchProps };
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { LucideIcon } from './lucide-icon.js';
+import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import 'lucide';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
@@ -770,6 +779,13 @@ interface CollapsiblePanelProps {
     label?: string;
     /** Panel content. */
     children?: SafeHtml | readonly SafeHtml[];
+    separator?: ResizableRegionSeparator;
+    collapseMotion?: ResizableRegionCollapseMotion;
+    contentOverflow?: ResizableRegionContentOverflow;
+    presentation?: ResizableRegionPresentation;
+    /** Control shown in a safe-area-aware viewport corner while collapsed. */
+    restoreControl?: SafeHtml;
+    restorePosition?: ResizableRegionRestorePosition;
     className?: string;
 }
 /**
@@ -782,7 +798,7 @@ interface CollapsiblePanelProps {
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
  * affordance. See `docs/24-collapsible-panel.md`.
  */
-declare function CollapsiblePanel({ id, side, collapsed, size, label, children, className, }: CollapsiblePanelProps): SafeHtml;
+declare function CollapsiblePanel({ id, side, collapsed, size, label, children, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, className, }: CollapsiblePanelProps): SafeHtml;
 
 export { CollapsiblePanel, type CollapsiblePanelProps, type CollapsiblePanelSide, CollapsiblePanelToggle, type CollapsiblePanelToggleProps, collapsiblePanelToggleIcon };
 ```
@@ -820,6 +836,11 @@ interface WireSidebarOptions {
      * is always inline.
      */
     deviceClass?: ReadonlySignal<DeviceClass>;
+    /** Compact devices either overlay the panels (default) or hide them in favor
+     *  of an application-owned responsive replacement. */
+    compactPresentation?: 'overlay' | 'hidden';
+    /** Collapse the other panels when one opens in compact overlay mode. */
+    exclusiveCompact?: boolean;
     /** Persistence store (default `globalThis.localStorage`, if present). */
     storage?: SidebarStorage;
 }
@@ -830,7 +851,7 @@ interface WireSidebarOptions {
  * persistence hook. The app owns each `collapsed` signal and the layout; this wire
  * owns the interaction. Returns a disposer. See `docs/24-collapsible-panel.md`.
  */
-declare function wireSidebar(root: HTMLElement, { panels, deviceClass, storage }: WireSidebarOptions): () => void;
+declare function wireSidebar(root: HTMLElement, { panels, deviceClass, compactPresentation, exclusiveCompact, storage, }: WireSidebarOptions): () => void;
 
 export { type SidebarStorage, type WireSidebarOptions, type WireSidebarPanel, wireSidebar };
 ```
@@ -893,6 +914,11 @@ import { SafeHtml } from 'kerfjs';
 
 type ResizableRegionAxis = 'horizontal' | 'vertical';
 type ResizableRegionEdge = 'start' | 'end';
+type ResizableRegionSeparator = 'auto' | 'hidden';
+type ResizableRegionCollapseMotion = 'none' | 'slide' | 'fade-slide';
+type ResizableRegionContentOverflow = 'clip' | 'auto' | 'visible';
+type ResizableRegionPresentation = 'inline' | 'overlay' | 'hidden';
+type ResizableRegionRestorePosition = 'bottom-start' | 'bottom-end';
 interface ResizableRegionProps {
     id: string;
     label: string;
@@ -903,15 +929,27 @@ interface ResizableRegionProps {
     edge?: ResizableRegionEdge;
     collapsed?: boolean;
     transitioning?: boolean;
+    /** Whether the separator line is painted. The resize hit target remains available. */
+    separator?: ResizableRegionSeparator;
+    /** Keep the track change instant while optionally sliding the fixed-size content. */
+    collapseMotion?: ResizableRegionCollapseMotion;
+    /** Overflow policy for content such as an open popup inside a bottom drawer. */
+    contentOverflow?: ResizableRegionContentOverflow;
+    /** Inline layout, an edge overlay, or a responsive replacement that removes the region. */
+    presentation?: ResizableRegionPresentation;
+    /** Always-available control rendered while collapsed, outside the clipped region. */
+    restoreControl?: SafeHtml;
+    /** Safe-area-aware viewport corner for `restoreControl`. */
+    restorePosition?: ResizableRegionRestorePosition;
     /** Decorative dormant content for the separator handle. Must not contain interactive descendants. */
     handleIcon?: SafeHtml;
     children: SafeHtml | SafeHtml[];
 }
 declare const clampRegionSize: (size: number, min: number, max: number) => number;
 declare const resizeRegionFromPointer: (startSize: number, delta: number, edge: ResizableRegionEdge) => number;
-declare function ResizableRegion({ id, label, size, min, max, axis, edge, collapsed, transitioning, handleIcon, children, }: ResizableRegionProps): SafeHtml;
+declare function ResizableRegion({ id, label, size, min, max, axis, edge, collapsed, transitioning, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, handleIcon, children, }: ResizableRegionProps): SafeHtml;
 
-export { ResizableRegion, type ResizableRegionAxis, type ResizableRegionEdge, type ResizableRegionProps, clampRegionSize, resizeRegionFromPointer };
+export { ResizableRegion, type ResizableRegionAxis, type ResizableRegionCollapseMotion, type ResizableRegionContentOverflow, type ResizableRegionEdge, type ResizableRegionPresentation, type ResizableRegionProps, type ResizableRegionRestorePosition, type ResizableRegionSeparator, clampRegionSize, resizeRegionFromPointer };
 ```
 
 ## `@kerfjs/ui/wire-resizable-regions`

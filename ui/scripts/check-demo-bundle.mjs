@@ -20,8 +20,9 @@ const limits = {
   // → 269.99 kB (typed AppTab and TabBar presentation specimens).
   // → 270.44 kB (typed ToolbarControlGroup content/chrome specimens).
   // → 270.93 kB (dialog and popup surface scaffold route).
+  // → 271.67 kB (configuration-first application panel policies).
   // Keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 271_150,
+  totalJavaScriptGzip: 271_900,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) =>

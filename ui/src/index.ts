@@ -36,8 +36,13 @@ export {
   clampRegionSize,
   ResizableRegion,
   type ResizableRegionAxis,
+  type ResizableRegionCollapseMotion,
+  type ResizableRegionContentOverflow,
   type ResizableRegionEdge,
+  type ResizableRegionPresentation,
   type ResizableRegionProps,
+  type ResizableRegionRestorePosition,
+  type ResizableRegionSeparator,
   resizeRegionFromPointer,
 } from './resizable-region.js';
 export {

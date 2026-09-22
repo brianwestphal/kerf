@@ -133,6 +133,61 @@ describe('wireSidebar', () => {
     stop();
   });
 
+  it('supports a hidden compact replacement without overlay focus or backdrop', () => {
+    const root = mount(false);
+    const collapsed = signal(true);
+    const device = signal<DeviceClass>(classifyViewport(390, 'portrait'));
+    const stop = wireSidebar(root, {
+      panels: [{ id: 'nav', collapsed, toggleAction: 'toggle-nav' }],
+      deviceClass: device,
+      compactPresentation: 'hidden',
+    });
+    expect(root.dataset.collapsibleResponsive).toBe('hidden');
+    expect(root.dataset.collapsibleOverlay).toBe('false');
+    expect(root.querySelector('.kui-collapsible-panel__backdrop')).toBeNull();
+    root
+      .querySelector<HTMLElement>('[data-action="toggle-nav"]')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(collapsed.value).toBe(false);
+    expect(document.activeElement).not.toBe(root.querySelector('#a'));
+    device.value = classifyViewport(1440, 'landscape');
+    expect(root.dataset.collapsibleResponsive).toBe('inline');
+    stop();
+    expect(root.dataset.collapsibleResponsive).toBeUndefined();
+  });
+
+  it('keeps compact overlays exclusive when another panel opens', () => {
+    const root = mount(false);
+    root.insertAdjacentHTML(
+      'beforeend',
+      '<button data-action="toggle-inspector">Inspector</button>',
+    );
+    const nav = signal(false);
+    const inspector = signal(true);
+    const device = signal<DeviceClass>(classifyViewport(390, 'portrait'));
+    const stop = wireSidebar(root, {
+      panels: [
+        { id: 'nav', collapsed: nav, toggleAction: 'toggle-nav' },
+        {
+          id: 'inspector',
+          collapsed: inspector,
+          toggleAction: 'toggle-inspector',
+        },
+      ],
+      deviceClass: device,
+    });
+    root
+      .querySelector<HTMLElement>('[data-action="toggle-inspector"]')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(inspector.value).toBe(false);
+    expect(nav.value).toBe(true);
+    root
+      .querySelector<HTMLElement>('.kui-collapsible-panel__backdrop')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(inspector.value).toBe(true);
+    stop();
+  });
+
   it('traps Tab focus within the open compact overlay panel', () => {
     const root = mount(false);
     const collapsed = signal(false);

@@ -9,6 +9,13 @@ import {
 } from 'lucide';
 
 import { LucideIcon } from './lucide-icon.js';
+import type {
+  ResizableRegionCollapseMotion,
+  ResizableRegionContentOverflow,
+  ResizableRegionPresentation,
+  ResizableRegionRestorePosition,
+  ResizableRegionSeparator,
+} from './resizable-region.js';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
 export type CollapsiblePanelSide = 'left' | 'right' | 'bottom';
@@ -95,6 +102,13 @@ export interface CollapsiblePanelProps {
   label?: string;
   /** Panel content. */
   children?: SafeHtml | readonly SafeHtml[];
+  separator?: ResizableRegionSeparator;
+  collapseMotion?: ResizableRegionCollapseMotion;
+  contentOverflow?: ResizableRegionContentOverflow;
+  presentation?: ResizableRegionPresentation;
+  /** Control shown in a safe-area-aware viewport corner while collapsed. */
+  restoreControl?: SafeHtml;
+  restorePosition?: ResizableRegionRestorePosition;
   className?: string;
 }
 
@@ -115,6 +129,12 @@ export function CollapsiblePanel({
   size,
   label,
   children,
+  separator = 'auto',
+  collapseMotion = 'slide',
+  contentOverflow = 'clip',
+  presentation = 'inline',
+  restoreControl,
+  restorePosition = side === 'left' ? 'bottom-start' : 'bottom-end',
   className = '',
 }: CollapsiblePanelProps) {
   const sizeVar =
@@ -122,17 +142,34 @@ export function CollapsiblePanel({
       ? '--kui-collapsible-panel-height'
       : '--kui-collapsible-panel-width';
   return (
-    <aside
-      class={`kui-collapsible-panel kui-collapsible-panel--${side} ${className}`.trim()}
-      data-component="collapsible-panel"
-      data-collapsible-panel={id}
-      data-side={side}
-      data-collapsed={String(collapsed)}
-      aria-label={label || undefined}
-      aria-hidden={collapsed ? 'true' : undefined}
-      style={size ? `${sizeVar}: ${size}px` : undefined}
-    >
-      <div class="kui-collapsible-panel__content">{children}</div>
-    </aside>
+    <>
+      <aside
+        class={`kui-collapsible-panel kui-collapsible-panel--${side} ${className}`.trim()}
+        data-component="collapsible-panel"
+        data-collapsible-panel={id}
+        data-side={side}
+        data-collapsed={String(collapsed)}
+        data-separator={separator}
+        data-collapse-motion={collapseMotion}
+        data-content-overflow={contentOverflow}
+        data-presentation={presentation}
+        aria-label={label || undefined}
+        aria-hidden={
+          collapsed || presentation === 'hidden' ? 'true' : undefined
+        }
+        style={size ? `${sizeVar}: ${size}px` : undefined}
+      >
+        <div class="kui-collapsible-panel__content">{children}</div>
+      </aside>
+      {collapsed && restoreControl && presentation !== 'hidden' && (
+        <div
+          class="kui-collapsible-panel__restore"
+          data-panel-restore={id}
+          data-position={restorePosition}
+        >
+          {restoreControl}
+        </div>
+      )}
+    </>
   );
 }

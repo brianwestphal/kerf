@@ -117,6 +117,13 @@ an upstream component or recipe request.
 - `TabBar` changes tabpanels and supports overflow/reorder; `SegmentedControl` chooses among a few compact views; `Select` handles a longer value list.
 - `StateBanner` persists beside affected work; `EmptyState` replaces absent content; `wa-callout` is contextual ecosystem content; `wa-toast` and `wa-toast-item` are transient and must not carry the only copy of important state.
 - `ResizableRegion` is an interactive controlled pane. CSS grid is the right answer when columns do not need a user-operable separator.
+- Configure application panels through the shared `separator`, `collapseMotion`,
+  `contentOverflow`, `presentation`, `restoreControl`, and `restorePosition`
+  props on `ResizableRegion`, `Workbench` panels, and `CollapsiblePanel`. These
+  cover separator suppression, one-reflow collapse with composited motion,
+  bottom-drawer popups, compact overlays or replacements, and safe-area restore
+  placement without descendant `.kui-*` overrides. `wireSidebar` also accepts a
+  hidden compact replacement and keeps compact overlays exclusive by default.
 - `TokenSearchField` is a structured editor. A native input or `wa-input` is the right answer for ordinary text.
 
 ## Toolbar composition

@@ -20,6 +20,9 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   the fixed-size content slides out via `transform` (composited, clipped) — never
   a per-frame width/height animation. The app owns the `collapsed` signal; `size`
   overrides the CSS default width/height.
+  Reusable shell policies are typed props: `separator`, `collapseMotion`,
+  `contentOverflow`, and `presentation`. A collapsed panel may also receive a
+  `restoreControl`, which Kerf places at the safe-area-aware `restorePosition`.
 - **`CollapsiblePanelToggle({ side, collapsed, action, panelId?, label? })`** and
   **`collapsiblePanelToggleIcon(side, collapsed)`** — the standard toggle
   affordance and its icon convention, so every sidebar reads the same: `PanelLeft*`
@@ -38,6 +41,10 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
     `deviceClass()` signal): the open panel floats over the content with a
     dismissable backdrop, Escape and backdrop-click collapse it, and Tab is trapped
     within the panel (the ARIA dialog pattern);
+  - accepts `compactPresentation: "hidden"` when a compact application replaces
+    the panel with different navigation instead of overlaying it;
+  - keeps compact overlays exclusive by default, collapsing another open panel
+    when a new one opens (`exclusiveCompact: false` opts out);
   - **persists** the collapsed state to `storage` (default `localStorage`) under
     `storageKey`, seeding the signal on wire-up.
 

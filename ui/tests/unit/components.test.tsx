@@ -1290,6 +1290,11 @@ describe('production UI primitives', () => {
         edge: 'start',
         collapsed: true,
         transitioning: true,
+        separator: 'hidden',
+        collapseMotion: 'fade-slide',
+        contentOverflow: 'visible',
+        presentation: 'overlay',
+        restoreControl: <button>Show drawer</button>,
         children: icon,
       }),
     );
@@ -1299,5 +1304,28 @@ describe('production UI primitives', () => {
     expect(vertical).toContain('aria-orientation="horizontal"');
     expect(vertical).toContain('aria-valuemin="0"');
     expect(vertical).toContain('aria-valuenow="0"');
+    expect(vertical).toContain('data-separator="hidden"');
+    expect(vertical).toContain('data-collapse-motion="fade-slide"');
+    expect(vertical).toContain('data-content-overflow="visible"');
+    expect(vertical).toContain('data-presentation="overlay"');
+    expect(vertical).toContain(
+      'class="kui-resizable-region__restore" data-region-restore="drawer" data-position="bottom-end"',
+    );
+    expect(vertical).toContain('tabindex="-1"');
+    const hidden = asHtml(
+      ResizableRegion({
+        id: 'replacement',
+        label: 'Responsive replacement',
+        size: 200,
+        min: 100,
+        max: 300,
+        presentation: 'hidden',
+        restoreControl: <button>Suppressed</button>,
+        children: icon,
+      }),
+    );
+    expect(hidden).toContain('data-presentation="hidden"');
+    expect(hidden).toContain('aria-hidden="true"');
+    expect(hidden).not.toContain('Suppressed');
   });
 });

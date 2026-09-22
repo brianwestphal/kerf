@@ -31,6 +31,11 @@ export interface WireSidebarOptions {
    * is always inline.
    */
   deviceClass?: ReadonlySignal<DeviceClass>;
+  /** Compact devices either overlay the panels (default) or hide them in favor
+   *  of an application-owned responsive replacement. */
+  compactPresentation?: 'overlay' | 'hidden';
+  /** Collapse the other panels when one opens in compact overlay mode. */
+  exclusiveCompact?: boolean;
   /** Persistence store (default `globalThis.localStorage`, if present). */
   storage?: SidebarStorage;
 }
@@ -62,7 +67,13 @@ function defaultStorage(): SidebarStorage | undefined {
  */
 export function wireSidebar(
   root: HTMLElement,
-  { panels, deviceClass, storage = defaultStorage() }: WireSidebarOptions,
+  {
+    panels,
+    deviceClass,
+    compactPresentation = 'overlay',
+    exclusiveCompact = true,
+    storage = defaultStorage(),
+  }: WireSidebarOptions,
 ): () => void {
   const ownerDocument = root.ownerDocument;
   const byAction = new Map(panels.map((panel) => [panel.toggleAction, panel]));
@@ -97,7 +108,17 @@ export function wireSidebar(
       const panel = byAction.get(trigger.dataset.action ?? '');
       if (!panel) return;
       returnFocus.set(panel.id, trigger);
-      panel.collapsed.value = !panel.collapsed.value;
+      const next = !panel.collapsed.value;
+      panel.collapsed.value = next;
+      if (
+        !next &&
+        exclusiveCompact &&
+        deviceClass?.value.compact &&
+        compactPresentation === 'overlay'
+      ) {
+        for (const other of panels)
+          if (other !== panel) other.collapsed.value = true;
+      }
     }),
   );
 
@@ -110,7 +131,9 @@ export function wireSidebar(
         if (collapsed === previous) return;
         previous = collapsed;
         const element = panelElement(panel.id);
-        if (!collapsed && element) {
+        const replaced =
+          deviceClass?.value.compact && compactPresentation === 'hidden';
+        if (!collapsed && element && !replaced) {
           (focusables(element)[0] ?? element).focus();
         } else if (collapsed) {
           returnFocus.get(panel.id)?.focus();
@@ -132,15 +155,22 @@ export function wireSidebar(
     disposers.push(
       effect(() => {
         const compact = deviceClass.value.compact;
-        const open = compact ? openPanel() : undefined;
-        root.dataset.collapsibleOverlay = String(compact);
-        if (compact && open) {
+        const overlay = compact && compactPresentation === 'overlay';
+        const open = overlay ? openPanel() : undefined;
+        root.dataset.collapsibleResponsive = compact
+          ? compactPresentation
+          : 'inline';
+        root.dataset.collapsibleOverlay = String(overlay);
+        if (overlay && open) {
           if (!backdrop) {
             backdrop = ownerDocument.createElement('button');
             backdrop.type = 'button';
             backdrop.className = 'kui-collapsible-panel__backdrop';
             backdrop.setAttribute('aria-label', 'Close');
-            backdrop.addEventListener('click', () => collapse(open));
+            backdrop.addEventListener('click', () => {
+              const current = openPanel();
+              if (current) collapse(current);
+            });
             const element = panelElement(open.id);
             element?.parentElement?.insertBefore(backdrop, element);
           }
@@ -152,7 +182,8 @@ export function wireSidebar(
     );
 
     const onKeydown = (event: KeyboardEvent): void => {
-      if (!deviceClass.value.compact) return;
+      if (!deviceClass.value.compact || compactPresentation !== 'overlay')
+        return;
       const open = openPanel();
       if (!open) return;
       if (event.key === 'Escape') {
@@ -186,5 +217,6 @@ export function wireSidebar(
   return () => {
     for (const dispose of disposers.splice(0)) dispose();
     delete root.dataset.collapsibleOverlay;
+    delete root.dataset.collapsibleResponsive;
   };
 }

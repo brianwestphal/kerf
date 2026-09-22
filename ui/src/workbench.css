@@ -1,4 +1,5 @@
 .kui-workbench {
+  position: relative;
   display: flex;
   min-width: 0;
   min-height: 0;
@@ -30,6 +31,11 @@
   border-inline: 0;
 }
 
+.kui-workbench__rail[data-separator="hidden"],
+.kui-workbench__drawer[data-separator="hidden"] {
+  border-color: transparent;
+}
+
 .kui-workbench__center {
   display: flex;
   flex: 1;
@@ -59,6 +65,17 @@
   border-block-start: 0;
 }
 
+.kui-workbench__rail[data-content-overflow="auto"],
+.kui-workbench__drawer[data-content-overflow="auto"] {
+  overflow: auto;
+}
+
+.kui-workbench__rail[data-content-overflow="visible"],
+.kui-workbench__drawer[data-content-overflow="visible"] {
+  z-index: var(--kui-workbench-popup-z, 5);
+  overflow: visible;
+}
+
 /* The fixed-size sliding content. The rail/drawer keeps a definite size on its
    content so the transform reads as a slide, not a squeeze. */
 .kui-workbench__rail .kui-workbench__panel-content {
@@ -73,6 +90,19 @@
   transition: transform 200ms ease;
 }
 
+.kui-workbench__rail[data-collapse-motion="none"] .kui-workbench__panel-content,
+.kui-workbench__drawer[data-collapse-motion="none"]
+  .kui-workbench__panel-content {
+  transition: none;
+}
+
+.kui-workbench__rail[data-collapse-motion="fade-slide"][data-collapsed="true"]
+  .kui-workbench__panel-content,
+.kui-workbench__drawer[data-collapse-motion="fade-slide"][data-collapsed="true"]
+  .kui-workbench__panel-content {
+  opacity: 0;
+}
+
 .kui-workbench__rail--left[data-collapsed="true"]
   .kui-workbench__panel-content {
   transform: translateX(-100%);
@@ -85,6 +115,65 @@
 
 .kui-workbench__drawer[data-collapsed="true"] .kui-workbench__panel-content {
   transform: translateY(100%);
+}
+
+.kui-workbench__rail[data-presentation="overlay"],
+.kui-workbench__drawer[data-presentation="overlay"] {
+  position: absolute;
+  z-index: var(--kui-workbench-overlay-z, 41);
+  max-width: var(--kui-workbench-overlay-max-width, 85vw);
+  max-height: var(--kui-workbench-overlay-max-height, 85vh);
+  box-shadow: var(--kui-shadow-l, 0 8px 32px rgb(0 0 0 / 24%));
+}
+
+.kui-workbench__rail[data-presentation="overlay"] {
+  inset-block: 0;
+}
+
+.kui-workbench__rail--left[data-presentation="overlay"] {
+  inset-inline-start: 0;
+}
+
+.kui-workbench__rail--right[data-presentation="overlay"] {
+  inset-inline-end: 0;
+}
+
+.kui-workbench__drawer[data-presentation="overlay"] {
+  inset-inline: 0;
+  inset-block-end: 0;
+}
+
+.kui-workbench__rail[data-presentation="overlay"][data-collapsed="true"],
+.kui-workbench__drawer[data-presentation="overlay"][data-collapsed="true"] {
+  pointer-events: none;
+}
+
+.kui-workbench__rail[data-presentation="hidden"],
+.kui-workbench__drawer[data-presentation="hidden"] {
+  display: none;
+}
+
+.kui-workbench__restore {
+  position: fixed;
+  z-index: var(--kui-workbench-restore-z, 42);
+  inset-block-end: calc(
+    var(--kui-workbench-restore-inset, remify(16px)) +
+      var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+}
+
+.kui-workbench__restore[data-position="bottom-start"] {
+  inset-inline-start: calc(
+    var(--kui-workbench-restore-inset, remify(16px)) +
+      var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+  );
+}
+
+.kui-workbench__restore[data-position="bottom-end"] {
+  inset-inline-end: calc(
+    var(--kui-workbench-restore-inset, remify(16px)) +
+      var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+  );
 }
 
 @media (prefers-reduced-motion: reduce) {

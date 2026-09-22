@@ -24,6 +24,23 @@ test('catalogs Workbench public geometry and controlled collapse', async ({
     'height',
     '0px',
   );
+  const configuredDrawer = collapsed.locator('[data-workbench-drawer]');
+  await expect(configuredDrawer).toHaveAttribute('data-separator', 'hidden');
+  await expect(configuredDrawer).toHaveAttribute(
+    'data-collapse-motion',
+    'fade-slide',
+  );
+  await expect(configuredDrawer).toHaveAttribute(
+    'data-content-overflow',
+    'visible',
+  );
+  await expect(
+    configuredDrawer.locator('.kui-workbench__panel-content'),
+  ).toHaveCSS('opacity', '0');
+  const restore = collapsed.locator('.kui-workbench__restore');
+  await expect(restore).toBeVisible();
+  await expect(restore).toHaveCSS('position', 'fixed');
+  await expect(restore).toHaveCSS('bottom', '16px');
   await expect
     .poll(() =>
       demo.evaluate((element) => element.scrollWidth <= element.clientWidth),
