@@ -19,10 +19,11 @@
 #      releases publish via GitHub Actions' NPM_TOKEN in release.yml, not the
 #      local user's credentials, so a local npm login isn't required for the
 #      tag-and-push path.)
-#   2. Read the target version. Beta tags target the upcoming stable version;
-#      CI (release.yml) bumps package.json ephemerally at publish time. If the
-#      current package.json version is already a stable tag, target next-minor;
-#      otherwise package.json IS the upcoming target. Override with --version.
+#   2. Read the target version. Continue the highest active beta series at or
+#      beyond the package-derived target; otherwise, if package.json is already
+#      a stable tag, target next-minor, or use package.json directly when it is
+#      already ahead. CI applies that version ephemerally. Override with
+#      --version.
 #   3. Draft release notes with gitgist (the same tool release.sh uses) over
 #      `<lastTag>..HEAD`: AI draft, then gitgist `--no-ai` deterministic
 #      grouping, then a `git log` pointer. Override with `--notes <file>` /
@@ -127,37 +128,28 @@ preflight() {
 
 # --- Steps ---
 read_version() {
-  # Betas target the upcoming X.Y.0 release, not the current X.Y.Z. Explicit
-  # override via `--version X.Y.Z` for the rare case where the upcoming release
-  # is a patch / major / custom.
-  #
-  # If package.json points at a version that hasn't shipped as a stable tag
-  # yet, package.json IS the upcoming target. Otherwise next-minor.
-  if [[ -n "${OVERRIDE_VERSION:-}" ]]; then
-    VERSION="$OVERRIDE_VERSION"
-    info "Target version (from --version): ${BOLD}${VERSION}${RESET}"
-    return
-  fi
-
   local current
   current=$(node -p "require('./package.json').version")
-
-  local target
+  local current_is_stable="false"
   if git rev-parse "v${current}" > /dev/null 2>&1; then
-    # Current is already a stable tag — package.json hasn't been bumped yet.
-    # Pick next-minor.
-    local major minor patch
-    IFS='.' read -r major minor patch <<< "$current"
-    target="${major}.$((minor + 1)).0"
-    info "Current package.json (${current}) is already a stable tag — targeting next minor: ${BOLD}${target}${RESET}"
-  else
-    # Current isn't a stable tag yet — package.json IS the upcoming target.
-    target="$current"
-    info "Current package.json (${target}) is not yet a stable tag — targeting it directly"
+    current_is_stable="true"
   fi
 
-  VERSION="$target"
-  info "Beta tag will be ${BOLD}v${VERSION}-beta.N${RESET} for the next free N"
+  local plan source previous_beta_tag
+  plan=$(git tag --list 'v*-beta.*' | node scripts/lib/release-beta-plan.mjs "$current" "$current_is_stable" "${OVERRIDE_VERSION:-}")
+  IFS=$'\t' read -r VERSION BETA_TAG source previous_beta_tag <<< "$plan"
+
+  if [[ "$source" == "override" ]]; then
+    info "Target version (from --version): ${BOLD}${VERSION}${RESET}"
+  elif [[ "$source" == "active-beta-series" ]]; then
+    info "Active prerelease series ${previous_beta_tag} is current — continuing target: ${BOLD}${VERSION}${RESET}"
+  elif [[ "$source" == "next-minor" ]]; then
+    info "Current package.json (${current}) is already a stable tag — targeting next minor: ${BOLD}${VERSION}${RESET}"
+  else
+    info "Current package.json (${VERSION}) is not yet a stable tag — targeting it directly"
+  fi
+
+  info "Next beta tag will be ${BOLD}${BETA_TAG}${RESET}"
 }
 
 # Prefer the locally-installed binary (devDependency), then a PATH gitgist.
@@ -247,12 +239,7 @@ run_local_checks() {
 }
 
 tag_and_push() {
-  # Same auto-increment logic as release.sh::step_beta_tag_and_push.
-  local n=1
-  while git rev-parse "v${VERSION}-beta.${n}" > /dev/null 2>&1; do
-    n=$((n + 1))
-  done
-  BETA_TAG="v${VERSION}-beta.${n}"
+  local n="${BETA_TAG##*.}"
 
   if [[ "${DRY_RUN:-false}" == "true" ]]; then
     echo ""
@@ -359,10 +346,10 @@ while [[ $# -gt 0 ]]; do
 Usage: bash scripts/release-beta-auto.sh [--version X.Y.Z] [--skip-checks] [--dry-run] [--notes <file> | --notes-stdin]
 
 Non-interactive beta release for kerf. Matches \`npm run release:beta\` without
-prompts. By default targets the upcoming X.Y.0 (next minor from current
-package.json) unless package.json is already ahead of the latest stable tag, in
-which case the current version is used directly. Override with --version to
-point at an explicit upcoming release.
+prompts. By default it continues the highest active beta series at or beyond
+the package-derived target. With no such series it targets the upcoming X.Y.0
+(next minor from a released package.json), unless package.json is already ahead
+of its stable tag. Override with --version to point at an explicit release.
 
 The local gate is \`npm run check\` (the same pre-commit gate: lint, typecheck,
 doc/coverage checks, unit + integration tests, build, bundle-size, both dist

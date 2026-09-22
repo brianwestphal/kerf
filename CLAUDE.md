@@ -444,6 +444,12 @@ npm run release:beta # tag-only: tags v{ver}-beta.{N}, publishes with --tag beta
 
 The release scripts mirror Hot Sheet's flow and keep all four packages (`kerfjs`, `eslint-plugin-kerfjs`, `create-kerf-component`, and `@kerfjs/ui`) on one version/tag. `scripts/sync-lockstep-versions.mjs` also derives the plugin-reported version and component-scaffold/docs ranges; its `--check` mode runs in `npm run check`. Beta releases skip the version-file bump and changelog write. In CI, `scripts/prepare-release-package.mjs` applies the tag version plus package-specific embedded metadata (AI manifests/signatures, plugin-reported version, and Kerf peer/scaffold ranges), then a tokenless job creates the final tarball. The OIDC-token job only downloads and publishes those already-packed bytes; it never checks out or executes repository code.
 
+The non-interactive beta command continues the highest existing prerelease
+series that is at or beyond the package-derived next target, then chooses one
+more than that series' highest beta number. For example, stable `4.4.1` plus
+tags through `v5.0.0-beta.23` produces `v5.0.0-beta.24`, not a new
+`v4.5.0-beta.1` line. `--version X.Y.Z` remains the explicit override.
+
 `scripts/release.sh` drafts the notes with [gitgist](https://github.com/brianwestphal/gitgist) (`gitgist <last-tag>..HEAD`), and `npm run commit:msg` uses it for commit messages. **Since 1.2.0 gitgist reads the range's actual code diff**, not just the commit log, which makes what it is _allowed_ to read matter for this repo — a lot of what changes here is generated.
 
 The `gitgist.exclude` list in `package.json` holds those back (they still show as changed files, just without a diff body). Its built-in list already covers lockfiles, maps, and `dist/`; the entries added here are kerf-specific:

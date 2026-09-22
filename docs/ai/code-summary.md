@@ -227,6 +227,7 @@ kerf/
 │   │   ├── site-config.test.ts ← guards the dependency-free redirect contract and its Astro wiring, including a clean-environment import regression with no site/node_modules
 │   │   ├── site-build-output.test.ts ← exercises the PR site's captured-output gate through its real stdin/exit-code CLI boundary, proving clean or unrelated-warning builds pass while static routes, dynamic SSR routes, and Astro's future-hard-error collision warning fail
 │   │   ├── release-package.test.ts ← packs all four packages at a synthetic beta version and inspects the tarballs for synchronized manifests, core AI metadata, plugin-reported version, scaffold/UI prerelease-compatible Kerf ranges, and UI AI signature versions; also guards that preparation/packing precede the OIDC jobs, which only download and publish tarballs
+│   │   ├── release-beta-plan.test.ts ← beta target matrix: follows the highest active prerelease line, rejects stale lines below the stable fallback, increments the maximum beta across gaps, and preserves explicit version overrides
 │   │   ├── workflow-actions.test.ts ← inventories every SHA-pinned GitHub Action used by the workflows, requires exact release comments, rejects unknown actions, and prevents deprecated action runtimes from returning unnoticed
 │   │   ├── dist-full-config.test.ts ← KF-344 — unit-tests the `srcToDistPlugin` resolver from `vitest.config.dist-full.ts`: pins that a top-level `src/utils/*` (plus bare `utils` and nested `.../utils/*`) import throws the loud "refused to remap private helper" error, and that non-source imports pass through. Guards against the regressed `.includes('/utils/')` check that never matched the leading-slash-free, `src/`-relative `moduleName`.
 │   │   ├── diagnostic-error-audit.test.tsx ← KF-169 — one test per Hard Rule pinning the runtime behavior callers see on violation (introduced when the `/ai-evidence/diagnostics/` page existed; that page was removed in KF-211 but the runtime contract these tests pin still matters as a UX gate)
@@ -298,6 +299,7 @@ kerf/
 │   │   ├── toElement.test.ts
 │   │   └── url-screen-corpus.internal.test.ts ← KF-437 — the dangerous-URL screen's two corpora (must-block AND must-pass) exercised against every screened attribute. The must-pass list is the standing guard against a FALSE POSITIVE, which a suite that only tests attacks is structurally blind to — that is the gap `javascript:void(0)` fell into
 │   ├── integration/
+│   │   ├── release-beta-auto.test.ts ← runs the release helper end to end in a temporary git repository and proves stable 4.4.1 plus v5.0.0-beta.23 selects v5.0.0-beta.24
 │   │   ├── dev-row-key-warning.internal.test.ts ← full-pipeline missing-row-key warning wiring across initial, snapshot, granular, and in-place reconciliation; source-only because it installs internal dev hooks directly
 │   │   ├── full-pipeline.test.ts ← end-to-end cart UI exercising every primitive
 │   │   ├── actions.test.ts       ← kerfjs/actions through the pipeline: delegateActions handlers keep firing across mount() re-renders (morph)

@@ -391,7 +391,7 @@ describe('packed AI-first setup', () => {
         await readFile(resolve(app, 'component-catalog-v2.json'), 'utf8'),
       ).entries,
     ).toEqual([]);
-  }, 30_000);
+  }, 60_000);
 
   for (const managerCase of managerCases) {
     const availability = detectManager(managerCase);

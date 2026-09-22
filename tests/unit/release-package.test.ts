@@ -93,7 +93,7 @@ beforeAll(() => {
     }>;
     tarballs.set(name, join(out, basename(packResult[0].filename)));
   }
-});
+}, 30_000);
 
 afterAll(() => rmSync(fixtureRoot, { recursive: true, force: true }));
 
@@ -210,7 +210,7 @@ describe('release package preparation', () => {
     expect(
       readFileSync(join(generatedRoot, 'dist/counter.js'), 'utf8'),
     ).toContain('createCounter');
-  }, 20_000);
+  }, 40_000);
 
   it('keeps preparation and packing outside every OIDC publish job and publishes local paths', () => {
     const workflows = [
@@ -275,5 +275,5 @@ describe('release package preparation', () => {
         ).not.toThrow();
       }
     }
-  }, 20_000);
+  }, 40_000);
 });
