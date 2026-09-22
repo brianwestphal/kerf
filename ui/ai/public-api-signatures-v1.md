@@ -1438,10 +1438,13 @@ export { Skeleton, type SkeletonProps };
 ```ts
 import { SafeHtml } from 'kerfjs';
 
+type SunkenPanelShape = 'rounded' | 'square';
 interface SunkenPanelProps {
     children?: SafeHtml | readonly SafeHtml[];
     /** Optional accessible landmark name for a distinct application region. */
     ariaLabel?: string;
+    /** Corner shape: a rounded rectangle (default) or square corners. */
+    shape?: SunkenPanelShape;
     className?: string;
 }
 /**
@@ -1449,9 +1452,9 @@ interface SunkenPanelProps {
  * stack. The panel owns its background and padding; children own their own
  * borders and internal geometry.
  */
-declare function SunkenPanel({ children, ariaLabel, className, }: SunkenPanelProps): SafeHtml;
+declare function SunkenPanel({ children, ariaLabel, shape, className, }: SunkenPanelProps): SafeHtml;
 
-export { SunkenPanel, type SunkenPanelProps };
+export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape };
 ```
 
 ## `@kerfjs/ui/token-search-field`

@@ -48,7 +48,7 @@ ordinary source/type gates:
   `SegmentedControl`, `TokenSearchField`, `PanelHeader`, and `ValueTable`;
 - finite variants exported or represented as literal props on `DisclosureArrow`,
   `FloatingToolbar`, `Pane`, `ResizableRegion`, `SegmentedControl`, `StateBanner`,
-  `ToolbarText`, `CollapsiblePanel`, `Catalog`, and the wire helpers;
+  `SunkenPanel`, `ToolbarText`, `CollapsiblePanel`, `Catalog`, and the wire helpers;
 - required controlled-state callbacks on `wireResizableRegions`, `wireTabBars`,
   and `wireTabScaffold`;
 - mutually exclusive count/badge metadata on `ListHeader`; and
@@ -58,7 +58,7 @@ ordinary source/type gates:
 
 The remaining components (`LucideIcon`, `DisclosureArrow`, `Toolbar`,
 `ToolbarControlGroup`, `ListInsetControl`, `ListInsetText`, `LoadingSpinner`,
-`Skeleton`, `SunkenPanel`, `EmptyState`, `StateBanner`, `ValueTableRow`, and the
+`Skeleton`, `EmptyState`, `StateBanner`, `ValueTableRow`, and the
 pure helpers) have independent props with no further conditional invalid state
 that TypeScript can truthfully remove. Optional labels on decorative icons and
 unnamed non-landmark surfaces are intentional variants, not missing contracts.

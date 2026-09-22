@@ -14,6 +14,15 @@ import { SunkenPanel } from '@kerfjs/ui/sunken-panel';
 </SunkenPanel>;
 ```
 
+The default `shape="rounded"` uses the shared rounded-rectangle radius. Choose
+`shape="square"` for a flush or edge-to-edge area that needs `border-radius: 0`:
+
+```tsx
+<SunkenPanel shape="square">
+  <Workspace />
+</SunkenPanel>
+```
+
 ## Ownership
 
 The root owns its lowered background, 8px padding, and 8px vertical gap.
@@ -40,4 +49,5 @@ Override the public properties at the composition boundary:
 - `--kui-sunken-panel-radius`
 
 The public root class is `.kui-sunken-panel`. Prefer the properties above over
-styling descendants.
+styling descendants. The `square` shape deliberately overrides the radius
+property with zero; use `rounded` when customizing the radius token.

@@ -16,3 +16,7 @@
   flex-direction: column;
   gap: var(--kui-sunken-panel-gap, remify(8px));
 }
+
+.kui-sunken-panel[data-shape="square"] {
+  border-radius: 0;
+}

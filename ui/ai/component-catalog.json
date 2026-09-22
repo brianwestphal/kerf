@@ -644,14 +644,15 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "A lowered application surface with one compact inset and a vertical content stack.",
+      "description": "A rounded or square-corner lowered application surface with one compact inset and a vertical content stack.",
       "uses": [],
-      "purpose": "Group a vertical list of application content on a visually lowered surface with one owned 8px inset.",
+      "purpose": "Group a vertical list of application content on a visually lowered surface with one owned 8px inset and an explicit rounded or square-corner shape.",
       "publicExports": [
         "SunkenPanel"
       ],
       "useWhen": [
-        "A main content region or nested work area needs a darker/lowered background and one compact inset around a vertical stack."
+        "A main content region or nested work area needs a darker/lowered background and one compact inset around a vertical stack.",
+        "Use the default rounded shape for an inset surface; choose square for a flush or edge-to-edge application area."
       ],
       "avoidWhen": [
         "Do not use it merely to add padding, as a substitute for Pane anatomy, or around children that already own the same outer surface."
@@ -665,10 +666,13 @@
       ],
       "appOwns": [
         "region semantics and accessible name",
+        "corner shape",
         "scroll ownership",
         "child ordering and content"
       ],
       "variants": [
+        "rounded surface",
+        "square-corner surface",
         "unnamed surface",
         "named region"
       ],

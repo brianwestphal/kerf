@@ -7,6 +7,7 @@ import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner, type StateBannerUrgency } from '@kerfjs/ui/state-banner';
+import { SunkenPanel, type SunkenPanelShape } from '@kerfjs/ui/sunken-panel';
 import { type TabActivation, TabBar } from '@kerfjs/ui/tab-bar';
 import { TabScaffold } from '@kerfjs/ui/tab-scaffold';
 import {
@@ -195,6 +196,7 @@ const appearance: ToolbarControlGroupAppearance = 'borderless';
 const tone: ToolbarControlGroupTone = 'dark';
 const buttonAppearance: ToolbarControlGroupButtonAppearance = 'push';
 const shape: ToolbarControlGroupShape = 'rounded';
+const sunkenPanelShape: SunkenPanelShape = 'square';
 TabBar({ id: 'tabs', label: 'Tabs', activation, children: icon });
 StateBanner({ title: 'Failed', urgency });
 ToolbarControlGroup({
@@ -204,6 +206,10 @@ ToolbarControlGroup({
   buttonAppearance,
   shape,
 });
+SunkenPanel({ shape: sunkenPanelShape });
 // @ts-expect-error KUI-T011 arbitrary activation strings are rejected.
 const invalidActivation: TabActivation = 'eager';
 void invalidActivation;
+// @ts-expect-error KUI-T011 SunkenPanel uses square, not the ambiguous flat surface term.
+const invalidSunkenPanelShape: SunkenPanelShape = 'flat';
+void invalidSunkenPanelShape;

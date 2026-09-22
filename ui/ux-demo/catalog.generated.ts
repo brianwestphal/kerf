@@ -160,7 +160,7 @@ export const generatedKerfCatalog = [
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
-    "description": "Group a vertical list of application content on a visually lowered surface with one owned 8px inset.",
+    "description": "Group a vertical list of application content on a visually lowered surface with one owned 8px inset and an explicit rounded or square-corner shape.",
     "uses": [],
     "demoSource": "ui/ux-demo/demos/sunken-panel.tsx",
     "componentSource": "ui/src/sunken-panel.tsx",

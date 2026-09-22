@@ -522,6 +522,7 @@
           "owner": "application",
           "required": false
         },
+        { "id": "corner shape", "owner": "application", "required": false },
         { "id": "scroll ownership", "owner": "application", "required": false },
         {
           "id": "child ordering and content",

@@ -12,7 +12,7 @@ describe('SunkenPanel', () => {
     );
 
     expect(html).toContain(
-      'class="kui-sunken-panel workspace" data-component="sunken-panel"',
+      'class="kui-sunken-panel workspace" data-component="sunken-panel" data-shape="rounded"',
     );
     expect(html).not.toContain('role=');
     expect(html).not.toContain('aria-label=');
@@ -28,5 +28,11 @@ describe('SunkenPanel', () => {
         }),
       ),
     ).toContain('role="region" aria-label="Release workspace"');
+  });
+
+  it('renders the explicit square-corner shape', () => {
+    expect(String(SunkenPanel({ shape: 'square' }))).toContain(
+      'data-shape="square"',
+    );
   });
 });

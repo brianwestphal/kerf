@@ -57,7 +57,11 @@ export {
   type StateBannerTone,
   type StateBannerUrgency,
 } from './state-banner.js';
-export { SunkenPanel, type SunkenPanelProps } from './sunken-panel.js';
+export {
+  SunkenPanel,
+  type SunkenPanelProps,
+  type SunkenPanelShape,
+} from './sunken-panel.js';
 export { type TabActivation, TabBar, type TabBarProps } from './tab-bar.js';
 export {
   placeTokenSearchCaret,

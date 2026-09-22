@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added a typed `shape` option to `SunkenPanel`: `rounded` remains the default,
+  while `square` produces a lowered surface with `border-radius: 0` for flush or
+  edge-to-edge application areas. Both shapes now appear in the UX catalog.
 - Made the Catalog geometry overlay derive both margin bands and border
   edges/radii from each live specimen's computed CSS. Public example helpers now
   mark their generated labels and notes for automatic exclusion, and stylesheet,

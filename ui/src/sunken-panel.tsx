@@ -1,9 +1,13 @@
 import type { SafeHtml } from 'kerfjs';
 
+export type SunkenPanelShape = 'rounded' | 'square';
+
 export interface SunkenPanelProps {
   children?: SafeHtml | readonly SafeHtml[];
   /** Optional accessible landmark name for a distinct application region. */
   ariaLabel?: string;
+  /** Corner shape: a rounded rectangle (default) or square corners. */
+  shape?: SunkenPanelShape;
   className?: string;
 }
 
@@ -15,12 +19,14 @@ export interface SunkenPanelProps {
 export function SunkenPanel({
   children,
   ariaLabel,
+  shape = 'rounded',
   className = '',
 }: SunkenPanelProps) {
   return (
     <div
       class={`kui-sunken-panel ${className}`.trim()}
       data-component="sunken-panel"
+      data-shape={shape}
       role={ariaLabel ? 'region' : undefined}
       aria-label={ariaLabel}
     >
