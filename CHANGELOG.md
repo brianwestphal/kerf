@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed animated `ResizableRegion` overlays so remembered desktop dimensions
+  cannot make their content overflow the responsive panel cap on narrow screens.
 - Added configuration-first application-panel policies across `ResizableRegion`,
   `Workbench`, and `CollapsiblePanel`: separator visibility, instant-track
   collapse with optional composited content motion, popup-safe overflow,

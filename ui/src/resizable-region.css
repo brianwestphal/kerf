@@ -127,6 +127,32 @@
 .kui-resizable-region[data-presentation="overlay"][data-collapsed="true"] {
   pointer-events: none;
 }
+.kui-resizable-region[data-presentation="overlay"][data-axis="horizontal"][data-collapse-motion]:not(
+    [data-collapse-motion="none"]
+  )
+  > .kui-resizable-region__content {
+  width: min(
+    var(--kui-resizable-region-expanded-size),
+    var(--kui-resizable-region-overlay-max-width, 85vw)
+  );
+  min-width: min(
+    var(--kui-resizable-region-expanded-size),
+    var(--kui-resizable-region-overlay-max-width, 85vw)
+  );
+}
+.kui-resizable-region[data-presentation="overlay"][data-axis="vertical"][data-collapse-motion]:not(
+    [data-collapse-motion="none"]
+  )
+  > .kui-resizable-region__content {
+  height: min(
+    var(--kui-resizable-region-expanded-size),
+    var(--kui-resizable-region-overlay-max-height, 85vh)
+  );
+  min-height: min(
+    var(--kui-resizable-region-expanded-size),
+    var(--kui-resizable-region-overlay-max-height, 85vh)
+  );
+}
 .kui-resizable-region[data-presentation="hidden"] {
   display: none;
 }

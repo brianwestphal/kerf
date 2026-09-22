@@ -117,6 +117,9 @@ an upstream component or recipe request.
 - `TabBar` changes tabpanels and supports overflow/reorder; `SegmentedControl` chooses among a few compact views; `Select` handles a longer value list.
 - `StateBanner` persists beside affected work; `EmptyState` replaces absent content; `wa-callout` is contextual ecosystem content; `wa-toast` and `wa-toast-item` are transient and must not carry the only copy of important state.
 - `ResizableRegion` is an interactive controlled pane. CSS grid is the right answer when columns do not need a user-operable separator.
+- A `ResizableRegion` overlay automatically clamps both its track and fixed-size
+  animated content to the responsive overlay maximum. Set the policy and maximum
+  on the component instead of adding application descendant width/height fixes.
 - Configure application panels through the shared `separator`, `collapseMotion`,
   `contentOverflow`, `presentation`, `restoreControl`, and `restorePosition`
   props on `ResizableRegion`, `Workbench` panels, and `CollapsiblePanel`. These

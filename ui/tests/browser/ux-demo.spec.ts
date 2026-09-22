@@ -5392,6 +5392,44 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
   expect(lightNarrow.shellScrollWidth).toBeLessThanOrEqual(
     lightNarrow.shellClientWidth + 1,
   );
+  const overlayGeometry = await shell.evaluate((element) => {
+    element.style.position = 'relative';
+    const region = element.querySelector<HTMLElement>(
+        '[data-component="resizable-region"]',
+      )!,
+      content = region.querySelector<HTMLElement>(
+        '.kui-resizable-region__content',
+      )!;
+    region.dataset.presentation = 'overlay';
+    region.style.setProperty('--kui-resizable-region-size', '352px');
+    region.style.setProperty('--kui-resizable-region-expanded-size', '352px');
+    const regionRect = region.getBoundingClientRect(),
+      contentRect = content.getBoundingClientRect();
+    return {
+      contentInsideRegion:
+        contentRect.left >= regionRect.left - 1 &&
+        contentRect.right <= regionRect.right + 1,
+      contentWidth: contentRect.width,
+      regionWidth: regionRect.width,
+      viewportWidth: window.innerWidth,
+    };
+  });
+  expect(overlayGeometry).toMatchObject({
+    contentInsideRegion: true,
+    contentWidth: overlayGeometry.regionWidth,
+    viewportWidth: 390,
+  });
+  expect(overlayGeometry.regionWidth).toBeLessThanOrEqual(390 * 0.85 + 1);
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/resizable-region-overlay-narrow.png',
+      fullPage: true,
+    });
+  await region.evaluate((element) => {
+    element.dataset.presentation = 'inline';
+    element.style.removeProperty('--kui-resizable-region-size');
+    element.style.removeProperty('--kui-resizable-region-expanded-size');
+  });
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/resizable-region-layout-light-narrow.png',

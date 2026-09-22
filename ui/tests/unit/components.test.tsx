@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { Check, Circle, Folder, Plus } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
@@ -1376,5 +1379,18 @@ describe('production UI primitives', () => {
     expect(hidden).toContain('data-presentation="hidden"');
     expect(hidden).toContain('aria-hidden="true"');
     expect(hidden).not.toContain('Suppressed');
+  });
+
+  it('clamps fixed-size overlay content to the responsive panel bounds', () => {
+    const resizableRegionCss = readFileSync(
+      resolve(import.meta.dirname, '../../src/resizable-region.css'),
+      'utf8',
+    );
+    expect(resizableRegionCss).toMatch(
+      /data-presentation="overlay"\]\[data-axis="horizontal"\][\s\S]*--kui-resizable-region-overlay-max-width, 85vw/,
+    );
+    expect(resizableRegionCss).toMatch(
+      /data-presentation="overlay"\]\[data-axis="vertical"\][\s\S]*--kui-resizable-region-overlay-max-height, 85vh/,
+    );
   });
 });

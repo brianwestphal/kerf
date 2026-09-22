@@ -23,6 +23,9 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   Reusable shell policies are typed props: `separator`, `collapseMotion`,
   `contentOverflow`, and `presentation`. A collapsed panel may also receive a
   `restoreControl`, which Kerf places at the safe-area-aware `restorePosition`.
+  Overlay presentation also clamps fixed-size animated content to the configured
+  responsive overlay maximum, so a remembered desktop size cannot escape a narrow
+  viewport.
 - **`CollapsiblePanelToggle({ side, collapsed, action, panelId?, label? })`** and
   **`collapsiblePanelToggleIcon(side, collapsed)`** — the standard toggle
   affordance and its icon convention, so every sidebar reads the same: `PanelLeft*`

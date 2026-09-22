@@ -55,7 +55,8 @@ an optional `label`. Common shell behavior is configured rather than restyled:
 - `contentOverflow: "clip" | "auto" | "visible"` lets a drawer temporarily
   expose an open popup without a descendant override;
 - `presentation: "inline" | "overlay" | "hidden"` supports compact overlays
-  or a responsive replacement;
+  or a responsive replacement. Overlay panels clamp both their track and fixed-size
+  animated content to the configured viewport-relative maximum;
 - `restoreControl` places an application-owned restore affordance in a
   safe-area-aware viewport corner (`restorePosition` chooses the corner).
 
