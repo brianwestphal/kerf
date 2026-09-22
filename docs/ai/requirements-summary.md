@@ -236,6 +236,9 @@ slot aligned to one fixed row as content wraps. The catalog demonstrates
 first-class empty-and-unfocused toolbar collapse, populated persistence,
 and focus transfer. Managed clear preserves open state and replacement focus
 for continued typing, including when the app supplies the expanded signal.
+Select All deletion also preserves that managed open state and replacement focus;
+deletion caret restoration finishes before the next keystroke, preserving later
+selections even when animation frames are delayed.
 
 Panel, dialog, and page headings are plain `Toolbar` compositions: an optional
 icon `ToolbarControlGroup`, a direct extra-large `ToolbarText`, and grouped

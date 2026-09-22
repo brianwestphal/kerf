@@ -486,6 +486,9 @@ rendering to replace the editor. A select-all deletion is normalized to a truly
 empty editor even when the browser leaves an atomic chip or line break behind;
 replacement typing consumes that intent so a later Backspace/Delete remains an
 ordinary character edit.
+Managed deletion keeps a collapsible replacement editor open and focused before
+the next keystroke; applications must persist both query and tokens from the DOM
+read. Genuine outside focus and Escape still collapse an empty field.
 Text still wraps visually when it reaches the field edge.
 Clear actions should empty the editor's `textContent` before clearing app state.
 The leading icon, first text line, clear action, and trailing slot share one

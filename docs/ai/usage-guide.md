@@ -112,6 +112,12 @@ focus, and click ownership while the application controls selection and any
 popover or context-menu lifecycle. Its `label`, `icon`, and
 `trailingActionIcon` SafeHtml slots are dormant and must not contain controls.
 
+Use `wireTokenSearchFields` for managed search focus, including controlled clear
+and Select All deletion. Persist both query and tokens from `readTokenSearchField`
+on input. The helper keeps the replacement editor open and restores deletion
+focus before the next keystroke; do not add an application reopen callback or
+a delayed animation-frame caret reset.
+
 Compose a panel, dialog, or page heading with a plain `Toolbar`: the leading zone
 holds an optional icon `ToolbarControlGroup` and a direct extra-large
 `ToolbarText`; grouped actions belong in the trailing zone. Keep optional

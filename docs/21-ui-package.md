@@ -169,6 +169,9 @@ slot without mixing authoring rules into the per-entry component catalog.
 - `SegmentedControl` labels a group of native pressed buttons. Every enabled
   choice stays in sequential Tab order; the app handles its action and owns the
   selected value.
+- Managed Select All deletion keeps the controlled replacement editor open and
+  focused before the next keystroke. Applications persist both query and remaining
+  tokens from the DOM read; outside blur and empty Escape retain normal collapse.
 - `TokenSearchField` exposes a named contenteditable searchbox, atomic chips
   with named edit/remove buttons, and a named clear action. The application
   owns parsing, suggestions, result feedback, and state; editable text remains

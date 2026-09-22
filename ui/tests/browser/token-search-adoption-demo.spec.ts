@@ -1,5 +1,79 @@
 import { expect, test } from '@playwright/test';
 
+test('select-all deletion keeps a controlled search open before delayed frames and across refills', async ({
+  page,
+  browserName,
+}, testInfo) => {
+  await page.goto('/?component=token-search-field');
+  const demo = page.locator('.token-search-adoption');
+  const field = demo.locator('[data-component="token-search-field"]');
+  const editor = field.getByRole('searchbox', { name: 'Filter records' });
+  const chips = editor.locator('[data-component="token-search-token"]');
+  const outside = page.locator('[data-action="toggle-theme"]').first();
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const key of ['Backspace', 'Delete']) {
+      // A chip can open the field while the adopted transient signal is false.
+      if (await editor.isVisible()) await editor.focus();
+      await outside.focus();
+      await expect(field).toHaveAttribute('data-expanded', 'false');
+      await demo
+        .getByRole('button', { name: 'status:open', exact: true })
+        .click();
+      await expect(editor).toBeFocused();
+      await page.keyboard.type(' between ');
+      await demo.getByRole('button', { name: 'owner:me', exact: true }).click();
+      await expect(editor).toBeFocused();
+      await page.keyboard.type(' after');
+      await expect(chips).toHaveCount(2);
+      await page.evaluate(() => {
+        const requestFrame = window.requestAnimationFrame.bind(window);
+        const callbacks: FrameRequestCallback[] = [];
+        window.requestAnimationFrame = (callback) => -callbacks.push(callback);
+        Object.assign(window, {
+          flushTokenSearchFrames: () => {
+            window.requestAnimationFrame = requestFrame;
+            for (const callback of callbacks) callback(performance.now());
+          },
+        });
+      });
+      await editor.press('ControlOrMeta+A');
+      await page.keyboard.press(key);
+      await expect(field).toHaveAttribute('data-expanded', 'true');
+      await expect(editor).toBeFocused();
+      await expect(chips).toHaveCount(0);
+      await expect(editor).toHaveText('');
+      await page.keyboard.type('refilled');
+      await expect(editor).toHaveText('refilled');
+      // Flushing old frames cannot collapse a new select-all range into a caret.
+      await editor.press('ControlOrMeta+A');
+      await page.evaluate(() => {
+        (
+          window as unknown as { flushTokenSearchFrames(): void }
+        ).flushTokenSearchFrames();
+      });
+      await page.keyboard.type('replacement');
+      await expect(editor).toHaveText('replacement');
+      await expect(page.locator('[data-demo-adoption-readout]')).toContainText(
+        '"replacement" · 0 filters',
+      );
+      if (browserName === 'chromium')
+        await demo.screenshot({
+          path: testInfo.outputPath(`select-all-${width}-${key}.png`),
+          animations: 'disabled',
+        });
+      await editor.press('ControlOrMeta+A');
+      await page.keyboard.press(key);
+      await expect(editor).toBeFocused();
+      await expect(editor).toHaveText('');
+      await editor.press('Escape');
+      await expect(
+        field.getByRole('button', { name: 'Open filter' }),
+      ).toBeFocused();
+    }
+  }
+});
+
 // KF-17GS8R: the "Adoption knobs" TokenSearchField demo exercises the opt-in
 // wireTokenSearchFields hooks a real app reaches for — a focusout keep-open
 // exception, the atomic-chip keyboard, and the onEdit readout — across all three

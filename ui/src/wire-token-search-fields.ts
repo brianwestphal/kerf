@@ -390,24 +390,18 @@ export function wireTokenSearchFields(
 
   const clearing = new Set<string>();
   const pending = new Map<string, PendingTokenDeletion>();
+  const deleting = new Map<string, () => void>();
   const selectAllIntents = new WeakSet<HTMLElement>();
   // editorFromEvent's selector guarantees this data attribute is present.
   const intentId = (editor: HTMLElement): string =>
     editor.dataset.tokenSearchEditor!;
-  const onBeforeInput = (event: Event) => {
-    const inputEvent = event as InputEvent;
-    const editor = editorFromEvent(root, event);
-    if (
-      !editor ||
-      !inputEvent.inputType.startsWith('delete') ||
-      editor.ownerDocument.activeElement !== editor
-    )
-      return;
+  const captureDeletion = (editor: HTMLElement, selectedAll?: boolean) => {
+    if (editor.ownerDocument.activeElement !== editor) return;
     const field = editor.closest<HTMLElement>(
       '[data-component="token-search-field"]',
     );
     const id = field?.dataset.tokenSearchId;
-    const offset = caretQueryOffset(editor);
+    const offset = selectedAll ? 0 : caretQueryOffset(editor);
     if (!id || offset === undefined || field?.dataset.disabled === 'true')
       return;
     pending.set(id, {
@@ -416,8 +410,45 @@ export function wireTokenSearchFields(
       tokenCount: editor.querySelectorAll(
         '[data-component="token-search-token"]',
       ).length,
-      selectedAll: selectionCoversEditor(editor),
+      selectedAll: selectedAll ?? selectionCoversEditor(editor),
     });
+  };
+  const onBeforeInput = (event: Event) => {
+    const editor = editorFromEvent(root, event);
+    if (editor && (event as InputEvent).inputType.startsWith('delete'))
+      captureDeletion(editor);
+  };
+  const restoreDeletion = (
+    editor: HTMLElement,
+    deletion: PendingTokenDeletion,
+  ) => {
+    deleting.get(deletion.id)?.();
+    const stop = () => {
+      observer.disconnect();
+      view().clearTimeout(timeout);
+      deleting.delete(deletion.id);
+    };
+    const restore = () => {
+      const replacement = replacementEditor(root, deletion.id);
+      // A native input can drain microtasks between capture and bubble listeners.
+      // Wait for the actual replacement, including one rendered by a later listener.
+      if (!replacement || replacement === editor) return;
+      stop();
+      const active = replacement.ownerDocument.activeElement;
+      if (
+        active !== editor &&
+        active !== replacement &&
+        active !== replacement.ownerDocument.body
+      )
+        return;
+      placeTokenSearchCaret(replacement, deletion.offset);
+    };
+    const observer = new MutationObserver(restore);
+    observer.observe(root, { childList: true, subtree: true });
+    // The input task owns synchronous controlled rendering. Expiration only
+    // disconnects observation; it cannot move a later selection or steal focus.
+    const timeout = view().setTimeout(stop, 0);
+    deleting.set(deletion.id, stop);
   };
   const onInput = (event: Event) => {
     const editor = editorFromEvent(root, event);
@@ -428,6 +459,21 @@ export function wireTokenSearchFields(
     const deletion = pending.get(editorId);
     if (inputType.startsWith('delete'))
       normalizeEmptiedEditor(editor, deletion?.selectedAll);
+    const restore =
+      deletion &&
+      (deletion.selectedAll ||
+        editor.querySelectorAll(TOKEN_SELECTOR).length < deletion.tokenCount);
+    // Own the replacement before application listeners synchronously render.
+    // A populated field can be visually open while its adopted signal is false.
+    if (restore) {
+      restoreDeletion(editor, deletion);
+      if (
+        manageFocus &&
+        editor.closest<HTMLElement>('[data-component="token-search-field"]')
+          ?.dataset.collapsible === 'true'
+      )
+        setExpanded(editorId, true);
+    }
     if (onEdit) {
       const field = editor.closest<HTMLElement>(
         '[data-component="token-search-field"]',
@@ -437,25 +483,6 @@ export function wireTokenSearchFields(
         onEdit({ id, editor, event: event as InputEvent });
     }
     pending.delete(editorId);
-    if (
-      !deletion ||
-      editor.querySelectorAll('[data-component="token-search-token"]').length >=
-        deletion.tokenCount
-    )
-      return;
-    editor.ownerDocument.defaultView!.requestAnimationFrame(() => {
-      if (disposed) return;
-      const replacement = replacementEditor(root, deletion.id);
-      if (!replacement) return;
-      const active = replacement.ownerDocument.activeElement;
-      if (
-        active !== editor &&
-        active !== replacement &&
-        active !== replacement.ownerDocument.body
-      )
-        return;
-      placeTokenSearchCaret(replacement, deletion.offset);
-    });
   };
   root.addEventListener('beforeinput', onBeforeInput, true);
   root.addEventListener('input', onInput, true);
@@ -492,6 +519,7 @@ export function wireTokenSearchFields(
       // an unambiguous full-delete request, so own that transition and publish
       // the same bubbling input contract the native edit would have produced.
       keyboardEvent.preventDefault();
+      captureDeletion(editor, true);
       normalizeEmptiedEditor(editor, true);
       editor.dispatchEvent(
         new InputEvent('input', {
@@ -511,6 +539,10 @@ export function wireTokenSearchFields(
   root.addEventListener('focusout', clearSelectAllIntent, true);
 
   const disposers: Array<() => void> = [
+    () => {
+      pending.clear();
+      for (const stop of deleting.values()) stop();
+    },
     () => root.removeEventListener('beforeinput', onBeforeInput, true),
     () => root.removeEventListener('input', onInput, true),
     () => root.removeEventListener('keydown', trackSelectAllIntent, true),
@@ -668,7 +700,8 @@ export function wireTokenSearchFields(
           )
             return;
           const next = (event as FocusEvent).relatedTarget;
-          if (!next && clearing.has(id)) return;
+          if (!next && (clearing.has(id) || (manageFocus && deleting.has(id))))
+            return;
           if (next instanceof Node && field.contains(next)) return;
           if (isExemptTarget(next instanceof Element ? next : null)) return;
           if (!editorIsEmpty(editor)) return;

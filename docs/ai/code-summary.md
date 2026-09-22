@@ -647,7 +647,11 @@ transitions and duplicate tab IDs in independent bars.
 `wireTokenSearchFields` captures managed clear before app handlers, suppresses the
 transient replacement blur, and restores the current editor without app reopen code.
 Its unit suite covers repeated clear/refill, focus opt-outs, disposal, and removal;
-`ui/tests/browser/token-search-adoption-demo.spec.ts` drives clear-and-type in real browsers.
+`ui/tests/browser/token-search-adoption-demo.spec.ts` drives clear-and-type plus
+repeated mixed-token Select All deletion and refill in real browsers at wide and
+narrow widths. Deletion capture covers native beforeinput and synthetic shortcut
+input, protects replacement blur, and observes the controlled replacement at its
+mutation checkpoint before later user input. The adoption demo persists both query and token edits.
 `CatalogExample.rootAttributes` and `CatalogExampleStack.rootAttributes` use the
 same runtime filter for catalog-authoring `data-*` metadata while protecting
 their structure and alignment markers.

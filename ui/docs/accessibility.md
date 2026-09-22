@@ -126,7 +126,12 @@ and `placeTokenSearchCaret()` to restore a text caret without landing inside a
 chip. Call `wireTokenSearchFields()` once at a stable root so Enter submits
 without inserting a contenteditable line break and keyboard chip deletion
 restores focus plus the text-relative caret after controlled rendering replaces
-the editor; the editor still wraps text visually at its inline edge. Editable text is DOM-owned between token changes; a clear handler empties
+the editor. Restoration finishes after synchronous input listeners and before
+another keystroke; it does not wait for an animation frame that could overwrite
+a later selection. Select All + Backspace/Delete shares that replacement path
+and keeps the adopted expanded signal open while managed focus is enabled.
+Real outside focus, empty Escape, disposal, and removed fields retain their usual
+behavior. The editor still wraps text visually at its inline edge. Editable text is DOM-owned between token changes; a clear handler empties
 the editor's `textContent` before updating application state. Leading and
 trailing controls share the first text line's fixed vertical center and remain
 there as the editor wraps. In `collapsible` mode, the closed state is one named

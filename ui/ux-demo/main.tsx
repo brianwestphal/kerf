@@ -1007,7 +1007,10 @@ const stopAdoptionKeyboardEffect = effect(() => {
       collapsible: false,
       onEdit: ({ editor, event }) => {
         const value = readTokenSearchField(editor, adoptionTokens.value);
-        adoptionQuery.value = value.query;
+        batch(() => {
+          adoptionQuery.value = value.query;
+          adoptionTokens.value = value.tokens;
+        });
         // The originating InputEvent lets the app gate on how the edit happened
         // (typed vs. pasted, whitespace-terminated, …) without a second listener.
         adoptionReadout.value = `Editing: ${value.query ? `"${value.query}"` : 'empty'} · ${adoptionTokens.value.length} filters · ${event.inputType}`;

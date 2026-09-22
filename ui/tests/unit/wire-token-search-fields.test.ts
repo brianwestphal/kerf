@@ -1,7 +1,11 @@
-import { mount, type Signal, signal } from 'kerfjs';
+import { batch, mount, type Signal, signal } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
-import { TokenSearchField } from '../../src/token-search-field.js';
+import {
+  readTokenSearchField,
+  TokenSearchField,
+  type TokenSearchToken,
+} from '../../src/token-search-field.js';
 import {
   type TokenSearchCollapsibleOptions,
   type TokenSearchKeyboardOptions,
@@ -122,6 +126,9 @@ describe('wireTokenSearchFields', () => {
     editor.dispatchEvent(inputEvent('beforeinput'));
     editor.querySelector('[data-component="token-search-token"]')!.remove();
     editor.dispatchEvent(inputEvent('input'));
+    // Browsers may checkpoint microtasks between native capture and bubble.
+    // The later app listener has not replaced the editor at this point.
+    await micro();
     root.innerHTML =
       '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="false"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>NOT  AND parser</span></div></div>';
     await new Promise((resolve) => window.requestAnimationFrame(resolve));
@@ -483,11 +490,51 @@ describe('wireTokenSearchFields', () => {
     editor.querySelector('[data-component="token-search-token"]')!.remove();
     editor.dispatchEvent(inputEvent('input'));
     elsewhere.focus();
+    editor.replaceWith(editor.cloneNode(true));
     await new Promise((resolve) => window.requestAnimationFrame(resolve));
 
     expect(document.activeElement).toBe(elsewhere);
     stop();
   });
+
+  it.each(['latest', 'dispose'] as const)(
+    'coalesces synchronous deletion restoration and respects %s ownership',
+    async (transition) => {
+      const root = document.createElement('div');
+      document.body.append(root);
+      root.innerHTML =
+        '<div data-component="token-search-field" data-token-search-id="tickets"><div data-token-search-editor="tickets" contenteditable="true"><span data-token-search-text>before</span><span data-component="token-search-token" contenteditable="false">first</span><span data-component="token-search-token" contenteditable="false">second</span></div></div>';
+      const editor = root.querySelector<HTMLElement>(
+        '[data-token-search-editor]',
+      )!;
+      const text = editor.querySelector(
+        '[data-token-search-text]',
+      )!.firstChild!;
+      const stop = wireTokenSearchFields(root);
+      for (const offset of [6, 2]) {
+        focusAt(editor, text, offset);
+        editor.dispatchEvent(inputEvent('beforeinput'));
+        editor.querySelector('[data-component="token-search-token"]')!.remove();
+        editor.dispatchEvent(inputEvent('input'));
+      }
+      if (transition === 'dispose') {
+        stop();
+      }
+      const replacement = editor.cloneNode(true) as HTMLElement;
+      editor.replaceWith(replacement);
+      if (transition === 'dispose')
+        focusAt(
+          replacement,
+          replacement.querySelector('[data-token-search-text]')!.firstChild!,
+          4,
+        );
+      await micro();
+      expect(document.getSelection()!.anchorOffset).toBe(
+        transition === 'latest' ? 2 : 4,
+      );
+      stop();
+    },
+  );
 
   it('ignores unrelated input and missing deletion context', async () => {
     const root = document.createElement('div');
@@ -812,6 +859,101 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     handle();
     unmount();
   });
+
+  it.each(['Backspace', 'Delete', 'native'])(
+    'keeps controlled select-all %s deletion open through empty/refill transitions before the next frame',
+    async (key) => {
+      const expanded = signal(false);
+      const query = signal('before  after');
+      const tokens = signal<TokenSearchToken[]>([
+        { value: 'tag:client', label: 'Client', offset: 7 },
+      ]);
+      const root = document.createElement('div');
+      document.body.append(root);
+      const unmount = mount(root, () =>
+        TokenSearchField({
+          id: 'find',
+          label: 'Find',
+          collapsible: true,
+          expanded: expanded.value,
+          query: query.value,
+          tokens: tokens.value,
+        }),
+      );
+      const editor = () =>
+        root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+      const handle = wireTokenSearchFields(root, {
+        collapsible: { signals: { find: expanded } },
+        onEdit: ({ editor: previous }) => {
+          const value = readTokenSearchField(previous, tokens.value);
+          // Model the null-relatedTarget blur emitted as controlled markup is replaced.
+          previous.dispatchEvent(focusoutEvent(null));
+          batch(() => {
+            query.value = value.query;
+            tokens.value = value.tokens;
+          });
+        },
+      });
+      for (let attempt = 0; attempt < 3; attempt += 1) {
+        const previous = editor();
+        previous.focus();
+        if (key === 'native') {
+          const range = document.createRange();
+          range.selectNodeContents(previous);
+          document.getSelection()!.removeAllRanges();
+          document.getSelection()!.addRange(range);
+          previous.dispatchEvent(inputEvent('beforeinput'));
+          previous.innerHTML = '<br>';
+          previous.dispatchEvent(inputEvent('input'));
+        } else {
+          previous.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'a',
+              metaKey: true,
+              bubbles: true,
+            }),
+          );
+          previous.dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key,
+              bubbles: true,
+              cancelable: true,
+            }),
+          );
+        }
+        await micro();
+        expect(expanded.value).toBe(true);
+        expect(editor()).not.toBe(previous);
+        expect(document.activeElement).toBe(editor());
+        expect(readTokenSearchField(editor())).toEqual({
+          query: '',
+          tokens: [],
+        });
+        editor().textContent = 'refilled';
+        editor().dispatchEvent(inputEvent('input', 'insertText'));
+        expect(query.value).toBe('refilled');
+        batch(() => {
+          query.value = 'before  after';
+          tokens.value = [{ value: 'tag:client', label: 'Client', offset: 7 }];
+        });
+      }
+      // A real focus handoff still collapses an empty field after a deletion.
+      batch(() => {
+        query.value = '';
+        tokens.value = [];
+      });
+      const outside = document.createElement('button');
+      document.body.append(outside);
+      editor().focus();
+      outside.focus();
+      editor().dispatchEvent(focusoutEvent(outside));
+      await micro();
+      expect(expanded.value).toBe(false);
+      expect(document.activeElement).toBe(outside);
+      handle();
+      unmount();
+    },
+  );
 
   it.each(['dispose', 'remove', 'outside'] as const)(
     'does not reclaim clear focus after %s',
