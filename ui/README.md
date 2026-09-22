@@ -129,6 +129,7 @@ as a `New` marker.
 | `ListInsetControl`                                                  | `@kerfjs/ui/list-inset-control`         | `@kerfjs/ui/list-inset-control.css`    |
 | `ListInsetText`                                                     | `@kerfjs/ui/list-inset-text`            | `@kerfjs/ui/list-inset-text.css`       |
 | `Pane`                                                              | `@kerfjs/ui/pane`                       | `@kerfjs/ui/pane.css`                  |
+| `SplitView`                                                         | `@kerfjs/ui/split-view`                 | `@kerfjs/ui/split-view.css`            |
 | Content and navigation composition                                  | —                                       | `@kerfjs/ui/layout.css`                |
 | `ResizableRegion`                                                   | `@kerfjs/ui/resizable-region`           | `@kerfjs/ui/resizable-region.css`      |
 | `wireResizableRegions`                                              | `@kerfjs/ui/wire-resizable-regions`     | —                                      |

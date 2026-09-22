@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Cataloged `SplitView` and its documented
+  `--kui-split-view-list-width` override so `kerf-ui-doctor --full` accepts the
+  public token in downstream application stylesheets.
+
 - Added the first-class `List` vertical-layout component with gap, flex, scroll,
   and multi-edge divider options; `Toolbar` now uses the same typed
   `dividerSides` contract instead of a boolean divider.

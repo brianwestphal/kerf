@@ -143,6 +143,20 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "split-view",
+    "name": "SplitView",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Present a selectable list and its detail together when space permits, with a one-pane drill-down replacement on compact devices.",
+    "uses": [
+      "resize"
+    ],
+    "demoSource": "ui/ux-demo/demos/split-view.tsx",
+    "componentSource": "ui/src/split-view.tsx",
+    "documentation": "ui/docs/split-view.md"
+  },
+  {
     "id": "workbench",
     "name": "Workbench",
     "category": "Structure",

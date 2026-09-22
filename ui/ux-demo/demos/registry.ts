@@ -21,6 +21,7 @@ import { ResizeDemo } from './resize.js';
 import { SegmentedControlDemo } from './segmented-control.js';
 import { SelectDemo } from './select.js';
 import { SkeletonDemo } from './skeleton.js';
+import { SplitViewDemo } from './split-view.js';
 import { StateBannerDemo } from './state-banner.js';
 import { SunkenPanelDemo } from './sunken-panel.js';
 import { TabBarDemo } from './tab-bar.js';
@@ -56,6 +57,7 @@ export const demos = {
   headers: HeadersDemo,
   'panel-header': PanelHeaderDemo,
   pane: PaneDemo,
+  'split-view': SplitViewDemo,
   workbench: WorkbenchDemo,
   'value-table': ValueTableDemo,
   resize: ResizeDemo,

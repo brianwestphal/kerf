@@ -101,7 +101,7 @@ describe('UX catalog metadata', () => {
     expect(artifact.entries.map(({ id }) => id)).toEqual(
       catalog.map(({ id }) => id),
     );
-    expect(artifact.entries).toHaveLength(112);
+    expect(artifact.entries).toHaveLength(113);
     expect(findCatalogEntry('recipe-command-palette')).toBeUndefined();
     expect(isCatalogId('recipe-command-palette')).toBe(false);
     const foundationSource = await readFile(
@@ -143,6 +143,16 @@ describe('UX catalog metadata', () => {
           ),
         ),
       ],
+    });
+    expect(
+      artifact.entries.find(({ id }) => id === 'split-view'),
+    ).toMatchObject({
+      publicExports: ['SplitView', 'SplitViewProps', 'SplitViewResizable'],
+      publicTokens: ['--kui-split-view-list-width'],
+      delivery: {
+        moduleImport: '@kerfjs/ui/split-view',
+        manualCssImport: '@kerfjs/ui/split-view.css',
+      },
     });
     expect(
       artifact.entries.every(
@@ -344,6 +354,7 @@ describe('UX catalog metadata', () => {
       'LucideIcon',
       'DisclosureArrow',
       'Pane',
+      'SplitView',
       'Workbench',
       'SunkenPanel',
       'Toolbar',
@@ -406,6 +417,7 @@ describe('UX catalog metadata', () => {
       catalogEntriesUsing('loading-spinner').map((entry) => entry.id),
     ).toEqual(['feedback', 'empty-state', 'recipe-list-workspace-states']);
     expect(catalogEntriesUsing('resize').map((entry) => entry.id)).toEqual([
+      'split-view',
       'recipe-app-shell',
     ]);
     expect(findCatalogEntry('wa-select')?.uses).toEqual([

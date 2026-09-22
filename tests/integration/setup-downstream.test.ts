@@ -365,6 +365,10 @@ describe('packed AI-first setup', () => {
       resolve(app, 'src/index.ts'),
       'export const ready = true;\n',
     );
+    await writeFile(
+      resolve(app, 'src/index.css'),
+      '.split-view { --kui-split-view-list-width: 22rem; }\n',
+    );
     await prepareModules(root);
     await exec(
       resolve(root, 'node_modules/.bin/kerfjs'),

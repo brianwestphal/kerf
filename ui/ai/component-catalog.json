@@ -556,6 +556,102 @@
       }
     },
     {
+      "id": "split-view",
+      "name": "SplitView",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A responsive list-detail layout that shows both panes on roomy device classes and collapses to a navigation stack on compact classes.",
+      "uses": [
+        "resize"
+      ],
+      "purpose": "Present a selectable list and its detail together when space permits, with a one-pane drill-down replacement on compact devices.",
+      "publicExports": [
+        "SplitView",
+        "SplitViewProps",
+        "SplitViewResizable"
+      ],
+      "useWhen": [
+        "Selection in a primary list updates a related detail pane and both should remain visible on roomy device classes.",
+        "The same list-detail flow must become a navigation stack on a handset or portrait tablet."
+      ],
+      "avoidWhen": [
+        "Do not use SplitView for a single linear flow; use NavStack.",
+        "Do not use it for a complex desktop tool with multiple peripheral panels; use Workbench."
+      ],
+      "alternatives": [
+        {
+          "id": "recipe-navigation-stack",
+          "relationship": "responsive-alternative",
+          "when": "SplitView renders the one-pane navigation-stack form on compact device classes."
+        },
+        {
+          "id": "workbench",
+          "relationship": "nearest",
+          "when": "Use Workbench when a desktop-class tool needs more than the list and detail regions."
+        }
+      ],
+      "appOwns": [
+        "device-class policy",
+        "selected item and detail-active state",
+        "list and detail content",
+        "optional list width and persistence",
+        "back action"
+      ],
+      "variants": [
+        "fixed roomy split",
+        "resizable roomy split",
+        "compact list",
+        "compact detail"
+      ],
+      "accessibility": [
+        "Give the overall split and both meaningful panes accessible labels.",
+        "Wire the compact back action and optional separator keyboard behavior, and restore focus when controlled navigation replaces a view."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "child",
+        "notes": [
+          "The root owns the two-column split and the list pane owns its separator; list and detail content own their internal padding and scroll behavior."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/split-view",
+        "manualCssImport": "@kerfjs/ui/split-view.css",
+        "sideEffects": [
+          "manual-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireResizableRegions",
+          "import": "@kerfjs/ui/wire-resizable-regions",
+          "required": false
+        },
+        {
+          "export": "wireNavStack",
+          "import": "@kerfjs/ui/wire-nav-stack",
+          "required": true
+        }
+      ],
+      "publicClasses": [
+        "kui-split-view",
+        "kui-split-view__list",
+        "kui-resizable-region",
+        "kui-split-view__detail",
+        "kui-split-view--compact"
+      ],
+      "publicTokens": [
+        "--kui-split-view-list-width"
+      ],
+      "links": {
+        "catalogRoute": "?component=split-view",
+        "documentation": "docs/split-view.md",
+        "recipe": "docs/app-layouts.md#decision-matrix"
+      }
+    },
+    {
       "id": "workbench",
       "name": "Workbench",
       "category": "Structure",

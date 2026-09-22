@@ -31,6 +31,7 @@ safety/rollback transitions, redaction, and adversarial inputs.
 `tests/integration/setup-downstream.test.ts` packs the shipped packages and
 proves the CLI through minimal-core and selected-UI-monorepo consumer flows,
 including a commented/trailing-comma tsconfig that still builds and lints plus
+the packed UI doctor accepting SplitView's cataloged public list-width token and
 one shared real packed local-tarball hit/missing-artifact rollback flow for npm,
 pnpm, Yarn Classic, and Yarn Berry. Each manager case runs only when its exact
 pinned binary/version is detected; otherwise its non-empty test is skipped with

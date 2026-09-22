@@ -434,6 +434,80 @@
       }
     },
     {
+      "key": "@kerfjs/ui:split-view",
+      "package": "@kerfjs/ui",
+      "id": "split-view",
+      "name": "SplitView",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "device-class policy",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "selected item and detail-active state",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "list and detail content",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "optional list width and persistence",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "back action", "owner": "application", "required": false }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireResizableRegions", "wireNavStack"],
+        "obligations": ["Use wireNavStack as documented."]
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "child",
+          "notes": [
+            "The root owns the two-column split and the list pane owns its separator; list and detail content own their internal padding and scroll behavior."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Give the overall split and both meaningful panes accessible labels.",
+          "Wire the compact back action and optional separator keyboard behavior, and restore focus when controlled navigation replaces a view."
+        ]
+      },
+      "boundaries": {
+        "rootClass": "kui-split-view",
+        "publicClasses": [
+          "kui-split-view",
+          "kui-split-view__list",
+          "kui-resizable-region",
+          "kui-split-view__detail",
+          "kui-split-view--compact"
+        ],
+        "publicTokens": ["--kui-split-view-list-width"]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:workbench",
       "package": "@kerfjs/ui",
       "id": "workbench",

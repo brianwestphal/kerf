@@ -15,8 +15,9 @@ const limits = {
   // → 266.53 kB (Workbench focused route and catalog contract)
   // → 267.04 kB (controlled TabBar focus restoration).
   // → 267.13 kB (managed clear replacement focus and adoption demo).
+  // → 267.93 kB (first-class SplitView catalog route and metadata).
   // Keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 267_600,
+  totalJavaScriptGzip: 268_400,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) =>
