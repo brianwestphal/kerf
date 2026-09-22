@@ -16,8 +16,9 @@ const limits = {
   // → 267.04 kB (controlled TabBar focus restoration).
   // → 267.13 kB (managed clear replacement focus and adoption demo).
   // → 267.93 kB (first-class SplitView catalog route and metadata).
+  // → 269.37 kB (NavStack, TabScaffold, and CollapsiblePanel focused routes).
   // Keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 268_400,
+  totalJavaScriptGzip: 269_800,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) =>

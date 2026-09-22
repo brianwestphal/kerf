@@ -1,5 +1,6 @@
 import type { KerfCatalogId } from '../catalog.js';
 import type { RecipeId } from '../recipes/loaders.js';
+import { CollapsiblePanelDemo } from './collapsible-panel.js';
 import { DisclosureArrowDemo } from './disclosure-arrow.js';
 import { EmptyStateDemo } from './empty-state.js';
 import { FeedbackDemo } from './feedback.js';
@@ -15,6 +16,7 @@ import { ListInsetTextDemo } from './list-inset-text.js';
 import { ListItemDemo } from './list-item.js';
 import { LoadingSpinnerDemo } from './loading-spinner.js';
 import { LucideIconDemo } from './lucide-icon.js';
+import { NavStackDemo } from './nav-stack.js';
 import { PaneDemo } from './pane.js';
 import { ResizeDemo } from './resize.js';
 import { SegmentedControlDemo } from './segmented-control.js';
@@ -24,6 +26,7 @@ import { SplitViewDemo } from './split-view.js';
 import { StateBannerDemo } from './state-banner.js';
 import { SunkenPanelDemo } from './sunken-panel.js';
 import { TabBarDemo } from './tab-bar.js';
+import { TabScaffoldDemo } from './tab-scaffold.js';
 import { TabsDemo } from './tabs.js';
 import { TokenSearchFieldDemo } from './token-search-field.js';
 import { ToolbarDemo } from './toolbar.js';
@@ -55,8 +58,11 @@ export const demos = {
   'tab-bar': TabBarDemo,
   headers: HeadersDemo,
   pane: PaneDemo,
+  'nav-stack': NavStackDemo,
   'split-view': SplitViewDemo,
+  'tab-scaffold': TabScaffoldDemo,
   workbench: WorkbenchDemo,
+  'collapsible-panel': CollapsiblePanelDemo,
   'value-table': ValueTableDemo,
   resize: ResizeDemo,
   select: SelectDemo,

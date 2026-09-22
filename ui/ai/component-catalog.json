@@ -556,6 +556,102 @@
       }
     },
     {
+      "id": "nav-stack",
+      "name": "NavStack",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A controlled one-pane navigation stack that keeps prior views mounted and animates push and pop transitions.",
+      "uses": [
+        "toolbar-text"
+      ],
+      "purpose": "Present a single linear or drill-down flow while preserving each prior view's state, scroll position, and place in the stack.",
+      "publicExports": [
+        "NavStackView",
+        "NavStackProps",
+        "NavStack"
+      ],
+      "useWhen": [
+        "A compact surface shows one view at a time and navigation pushes into details or pops back.",
+        "A simple single-pane screen needs the same stable app-layout contract without any nested navigation."
+      ],
+      "avoidWhen": [
+        "Do not use NavStack when a list and detail should remain visible together; use SplitView.",
+        "Do not use it for co-equal top-level destinations on compact devices; wrap one stack per destination in TabScaffold."
+      ],
+      "alternatives": [
+        {
+          "id": "split-view",
+          "relationship": "roomy-alternative",
+          "when": "Promote a list-to-detail stack to SplitView once both regions fit together."
+        },
+        {
+          "id": "tab-scaffold",
+          "relationship": "composes-with",
+          "when": "Use one NavStack as each TabScaffold tab's persistent content."
+        }
+      ],
+      "appOwns": [
+        "ordered view stack and stable keys",
+        "view content and titles",
+        "push and pop actions",
+        "focus restoration policy",
+        "optional persistent bottom toolbar"
+      ],
+      "variants": [
+        "single root view",
+        "pushed detail view",
+        "toolbar hidden",
+        "persistent bottom toolbar"
+      ],
+      "accessibility": [
+        "Give the stack region an accessible label and every back control a stable action label.",
+        "Wire pop behavior and restore focus to the control that opened the departing view after the controlled rerender."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "conditional",
+        "padding": "child",
+        "notes": [
+          "The stack owns its full-height chrome and viewport; each view owns its internal content padding and scrollable content."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/nav-stack",
+        "manualCssImport": "@kerfjs/ui/nav-stack.css",
+        "sideEffects": [
+          "manual-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireNavStack",
+          "import": "@kerfjs/ui/wire-nav-stack",
+          "required": true
+        }
+      ],
+      "publicClasses": [
+        "kui-nav-stack",
+        "kui-nav-stack__chrome",
+        "kui-nav-stack__lead",
+        "kui-nav-stack__back",
+        "kui-nav-stack__back-icon",
+        "kui-nav-stack__title",
+        "kui-nav-stack__actions",
+        "kui-nav-stack__viewport",
+        "kui-nav-stack__view",
+        "kui-nav-stack__view--entering",
+        "kui-nav-stack__view--exiting",
+        "kui-nav-stack__bottom"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=nav-stack",
+        "documentation": "docs/nav-stack.md",
+        "recipe": "docs/app-layouts.md#decision-matrix"
+      }
+    },
+    {
       "id": "split-view",
       "name": "SplitView",
       "category": "Structure",
@@ -563,6 +659,7 @@
       "source": "kerf",
       "description": "A responsive list-detail layout that shows both panes on roomy device classes and collapses to a navigation stack on compact classes.",
       "uses": [
+        "nav-stack",
         "resize"
       ],
       "purpose": "Present a selectable list and its detail together when space permits, with a one-pane drill-down replacement on compact devices.",
@@ -652,6 +749,93 @@
       }
     },
     {
+      "id": "tab-scaffold",
+      "name": "TabScaffold",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A controlled compact-device bottom tab scaffold that keeps every tab scene mounted so its navigation and scroll state survive selection changes.",
+      "uses": [],
+      "purpose": "Switch among two to five co-equal top-level destinations on compact devices while preserving each destination's independent content state.",
+      "publicExports": [
+        "TabScaffoldTab",
+        "TabScaffoldProps",
+        "TabScaffold"
+      ],
+      "useWhen": [
+        "A handset or portrait-tablet app has two to five co-equal top-level destinations.",
+        "Each destination must stay mounted so its NavStack and scroll position survive tab switches."
+      ],
+      "avoidWhen": [
+        "Do not use TabScaffold for document tabs or reorderable work items; use TabBar.",
+        "Do not retain the bottom bar on desktop when the same destinations should be promoted to a Workbench rail or sidebar."
+      ],
+      "alternatives": [
+        {
+          "id": "tabs",
+          "relationship": "semantic-alternative",
+          "when": "Use TabBar and AppTab for document-style tabpanels, overflow, closing, or reordering."
+        },
+        {
+          "id": "workbench",
+          "relationship": "roomy-alternative",
+          "when": "Promote top-level destinations to a rail or sidebar on desktop-class layouts."
+        }
+      ],
+      "appOwns": [
+        "controlled active tab id",
+        "tab labels, icons, and content",
+        "routing and persistence",
+        "responsive replacement on larger device classes"
+      ],
+      "variants": [
+        "text-only tabs",
+        "icon and text tabs",
+        "one NavStack per tab"
+      ],
+      "accessibility": [
+        "Give the tablist an accessible label and keep exactly the active tab in the sequential focus order.",
+        "Wire selection through the controlled active id while leaving inactive scenes mounted and hidden."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "The scaffold owns the full-height scene region and safe-area-aware bottom bar; scene content owns its internal geometry."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/tab-scaffold",
+        "manualCssImport": "@kerfjs/ui/tab-scaffold.css",
+        "sideEffects": [
+          "manual-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireTabScaffold",
+          "import": "@kerfjs/ui/wire-tab-scaffold",
+          "required": true
+        }
+      ],
+      "publicClasses": [
+        "kui-tab-scaffold",
+        "kui-tab-scaffold__scenes",
+        "kui-tab-scaffold__scene",
+        "kui-tab-scaffold__bar",
+        "kui-tab-scaffold__tab",
+        "kui-tab-scaffold__tab-icon",
+        "kui-tab-scaffold__tab-label"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=tab-scaffold",
+        "documentation": "docs/tab-scaffold.md",
+        "recipe": "docs/app-layouts.md#decision-matrix"
+      }
+    },
+    {
       "id": "workbench",
       "name": "Workbench",
       "category": "Structure",
@@ -732,6 +916,106 @@
         "catalogRoute": "?component=workbench",
         "documentation": "docs/workbench.md",
         "recipe": "docs/workbench.md#state-lives-in-the-app"
+      }
+    },
+    {
+      "id": "collapsible-panel",
+      "name": "CollapsiblePanel",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A standalone controlled left or right rail or bottom drawer with standard collapse icons and optional compact-overlay behavior through wireSidebar.",
+      "uses": [
+        "lucide-icon"
+      ],
+      "purpose": "Add one independently collapsible peripheral panel without adopting the complete multi-panel Workbench shell.",
+      "publicExports": [
+        "CollapsiblePanelSide",
+        "collapsiblePanelToggleIcon",
+        "CollapsiblePanelToggleProps",
+        "CollapsiblePanelToggle",
+        "CollapsiblePanelProps",
+        "CollapsiblePanel"
+      ],
+      "useWhen": [
+        "An application needs one collapsible side rail or bottom drawer outside a full Workbench.",
+        "The panel should become a dismissable, focus-managed overlay on compact devices."
+      ],
+      "avoidWhen": [
+        "Do not use CollapsiblePanel for a complete editor shell with multiple coordinated rails and a drawer; use Workbench.",
+        "Do not preserve an empty icon-only rail when collapsed; move the restore control into adjacent visible chrome."
+      ],
+      "alternatives": [
+        {
+          "id": "workbench",
+          "relationship": "larger-composition",
+          "when": "Use Workbench when the central work area coordinates multiple peripheral panels."
+        },
+        {
+          "id": "recipe-collapsible-sidebar",
+          "relationship": "recipe",
+          "when": "Use the production recipe for collapse, restore, compact overlay, focus, and persistence ownership."
+        }
+      ],
+      "appOwns": [
+        "controlled collapsed state",
+        "panel content and size",
+        "toggle placement",
+        "persistence policy",
+        "compact-device policy"
+      ],
+      "variants": [
+        "left rail",
+        "right rail",
+        "bottom drawer",
+        "collapsed",
+        "compact overlay"
+      ],
+      "accessibility": [
+        "Give the panel region and every collapse or restore control an accessible label.",
+        "Keep the restore control outside the disappearing panel and use wireSidebar for focus transfer, Escape, backdrop dismissal, and compact focus trapping."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "child",
+        "notes": [
+          "The panel owns its dock-edge separator and size track; its child content owns internal padding and scrolling."
+        ]
+      },
+      "delivery": {
+        "moduleImport": "@kerfjs/ui/collapsible-panel",
+        "manualCssImport": "@kerfjs/ui/collapsible-panel.css",
+        "sideEffects": [
+          "manual-css"
+        ]
+      },
+      "wiring": [
+        {
+          "export": "wireSidebar",
+          "import": "@kerfjs/ui/wire-sidebar",
+          "required": true
+        }
+      ],
+      "publicClasses": [
+        "kui-collapsible-panel",
+        "kui-collapsible-panel--left",
+        "kui-collapsible-panel--right",
+        "kui-collapsible-panel--bottom",
+        "kui-collapsible-panel__content",
+        "kui-collapsible-panel__backdrop",
+        "kui-collapsible-panel__toggle"
+      ],
+      "publicTokens": [
+        "--kui-collapsible-panel-width",
+        "--kui-collapsible-panel-height",
+        "--kui-collapsible-panel-overlay-z",
+        "--kui-collapsible-panel-backdrop-z"
+      ],
+      "links": {
+        "catalogRoute": "?component=collapsible-panel",
+        "documentation": "docs/collapsible-panel.md",
+        "recipe": "docs/collapsible-panel.md#recipe-and-coverage"
       }
     },
     {

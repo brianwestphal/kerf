@@ -434,6 +434,91 @@
       }
     },
     {
+      "key": "@kerfjs/ui:nav-stack",
+      "package": "@kerfjs/ui",
+      "id": "nav-stack",
+      "name": "NavStack",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "ordered view stack and stable keys",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "view content and titles",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "push and pop actions",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "focus restoration policy",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "optional persistent bottom toolbar",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireNavStack"],
+        "obligations": ["Use wireNavStack as documented."]
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "conditional",
+          "padding": "child",
+          "notes": [
+            "The stack owns its full-height chrome and viewport; each view owns its internal content padding and scrollable content."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Give the stack region an accessible label and every back control a stable action label.",
+          "Wire pop behavior and restore focus to the control that opened the departing view after the controlled rerender."
+        ]
+      },
+      "boundaries": {
+        "rootClass": "kui-nav-stack",
+        "publicClasses": [
+          "kui-nav-stack",
+          "kui-nav-stack__chrome",
+          "kui-nav-stack__lead",
+          "kui-nav-stack__back",
+          "kui-nav-stack__back-icon",
+          "kui-nav-stack__title",
+          "kui-nav-stack__actions",
+          "kui-nav-stack__viewport",
+          "kui-nav-stack__view",
+          "kui-nav-stack__view--entering",
+          "kui-nav-stack__view--exiting",
+          "kui-nav-stack__bottom"
+        ],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:split-view",
       "package": "@kerfjs/ui",
       "id": "split-view",
@@ -508,6 +593,81 @@
       }
     },
     {
+      "key": "@kerfjs/ui:tab-scaffold",
+      "package": "@kerfjs/ui",
+      "id": "tab-scaffold",
+      "name": "TabScaffold",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "controlled active tab id",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "tab labels, icons, and content",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "routing and persistence",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "responsive replacement on larger device classes",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireTabScaffold"],
+        "obligations": ["Use wireTabScaffold as documented."]
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "The scaffold owns the full-height scene region and safe-area-aware bottom bar; scene content owns its internal geometry."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Give the tablist an accessible label and keep exactly the active tab in the sequential focus order.",
+          "Wire selection through the controlled active id while leaving inactive scenes mounted and hidden."
+        ]
+      },
+      "boundaries": {
+        "rootClass": "kui-tab-scaffold",
+        "publicClasses": [
+          "kui-tab-scaffold",
+          "kui-tab-scaffold__scenes",
+          "kui-tab-scaffold__scene",
+          "kui-tab-scaffold__bar",
+          "kui-tab-scaffold__tab",
+          "kui-tab-scaffold__tab-icon",
+          "kui-tab-scaffold__tab-label"
+        ],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:workbench",
       "package": "@kerfjs/ui",
       "id": "workbench",
@@ -571,6 +731,87 @@
         "publicTokens": [
           "--kui-workbench-rail-width",
           "--kui-workbench-drawer-height"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:collapsible-panel",
+      "package": "@kerfjs/ui",
+      "id": "collapsible-panel",
+      "name": "CollapsiblePanel",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "controlled collapsed state",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "panel content and size",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "toggle placement", "owner": "application", "required": false },
+        {
+          "id": "persistence policy",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "compact-device policy",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": true,
+        "helpers": ["wireSidebar"],
+        "obligations": ["Use wireSidebar as documented."]
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "child",
+          "notes": [
+            "The panel owns its dock-edge separator and size track; its child content owns internal padding and scrolling."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Give the panel region and every collapse or restore control an accessible label.",
+          "Keep the restore control outside the disappearing panel and use wireSidebar for focus transfer, Escape, backdrop dismissal, and compact focus trapping."
+        ]
+      },
+      "boundaries": {
+        "rootClass": "kui-collapsible-panel",
+        "publicClasses": [
+          "kui-collapsible-panel",
+          "kui-collapsible-panel--left",
+          "kui-collapsible-panel--right",
+          "kui-collapsible-panel--bottom",
+          "kui-collapsible-panel__content",
+          "kui-collapsible-panel__backdrop",
+          "kui-collapsible-panel__toggle"
+        ],
+        "publicTokens": [
+          "--kui-collapsible-panel-width",
+          "--kui-collapsible-panel-height",
+          "--kui-collapsible-panel-overlay-z",
+          "--kui-collapsible-panel-backdrop-z"
         ]
       },
       "diagnostics": [],

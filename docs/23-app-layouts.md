@@ -6,9 +6,9 @@ layout-selection guidance are implemented as opt-in `@kerfjs/ui` subpaths. This
 document remains the design source of truth; the ratified public names and the
 declarative + wire model below match what shipped. The consumer-facing decision
 guide is [`ui/docs/app-layouts.md`](../ui/docs/app-layouts.md), and each layout
-has its own consumer doc under `ui/docs/`. Still open: the UX-demo recipes +
-three-engine Playwright coverage and the AI-catalog promotion decision (tracked
-as a follow-up).
+has its own consumer doc under `ui/docs/`. Every shipped application-layout
+component is represented in the machine-readable catalog with a focused UX-demo
+route and three-engine browser coverage.
 
 ## 1. Motivation
 
@@ -262,8 +262,8 @@ CSS import. See [`ui/docs/collapsible-panel.md`](../../ui/docs/collapsible-panel
 recipe: a left rail + bottom drawer with toggles, compact overlay, and persistence)
 and three-engine Playwright coverage of collapse/expand, focus move/restore, the
 compact overlay + Escape/backdrop dismiss, and Tab trap shipped in KF-JP6KVY
-(`ui/tests/browser/collapsible-sidebar-recipe.spec.ts`). The whole-screen layouts'
-own recipes + e2e remain pending.
+(`ui/tests/browser/collapsible-sidebar-recipe.spec.ts`). The whole-screen layouts
+also ship focused component demos and three-engine catalog coverage.
 
 ## 4. Responsive presentation matrix
 
@@ -330,10 +330,9 @@ bundle/CSS tree-shaking gates extend to cover the new subpaths.
    `@kerfjs/ui/responsive` umbrella can still be introduced later if more
    responsive helpers appear.
 
-Still open (follow-up, not blocking): the UX-demo recipes + three-engine
-Playwright coverage for the layouts, and whether to promote them into the
-machine-readable component catalog (they currently ship as non-barrel,
-manual-CSS subpaths, which the catalog gates do not require).
+The shipped layouts are represented in the machine-readable component catalog,
+including explicit manual-CSS delivery metadata, focused UX-demo routes, and
+three-engine Playwright coverage.
 
 These are recorded on the implementation tickets so they are resolved as each
 lands rather than blocking the design.

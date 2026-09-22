@@ -125,7 +125,14 @@ as a `New` marker.
 | `ListInsetControl`                                                  | `@kerfjs/ui/list-inset-control`         | `@kerfjs/ui/list-inset-control.css`    |
 | `ListInsetText`                                                     | `@kerfjs/ui/list-inset-text`            | `@kerfjs/ui/list-inset-text.css`       |
 | `Pane`                                                              | `@kerfjs/ui/pane`                       | `@kerfjs/ui/pane.css`                  |
+| `NavStack`                                                          | `@kerfjs/ui/nav-stack`                  | `@kerfjs/ui/nav-stack.css`             |
+| `wireNavStack`                                                      | `@kerfjs/ui/wire-nav-stack`             | —                                      |
 | `SplitView`                                                         | `@kerfjs/ui/split-view`                 | `@kerfjs/ui/split-view.css`            |
+| `TabScaffold`                                                       | `@kerfjs/ui/tab-scaffold`               | `@kerfjs/ui/tab-scaffold.css`          |
+| `wireTabScaffold`                                                   | `@kerfjs/ui/wire-tab-scaffold`          | —                                      |
+| `Workbench`                                                         | `@kerfjs/ui/workbench`                  | `@kerfjs/ui/workbench.css`             |
+| `CollapsiblePanel`, `CollapsiblePanelToggle`                        | `@kerfjs/ui/collapsible-panel`          | `@kerfjs/ui/collapsible-panel.css`     |
+| `wireSidebar`                                                       | `@kerfjs/ui/wire-sidebar`               | —                                      |
 | Content and navigation composition                                  | —                                       | `@kerfjs/ui/layout.css`                |
 | `ResizableRegion`                                                   | `@kerfjs/ui/resizable-region`           | `@kerfjs/ui/resizable-region.css`      |
 | `wireResizableRegions`                                              | `@kerfjs/ui/wire-resizable-regions`     | —                                      |
@@ -143,12 +150,13 @@ as a `New` marker.
 | `EmptyState`                                                        | `@kerfjs/ui/empty-state`                | `@kerfjs/ui/empty-state.css`           |
 | `ValueTable`, `ValueTableRow`                                       | `@kerfjs/ui/value-table`                | `@kerfjs/ui/value-table.css`           |
 
-Opt-in application layouts keep JavaScript and CSS explicit. For the
-desktop-class multi-panel shell, import `Workbench` from
-`@kerfjs/ui/workbench` and load `@kerfjs/ui/workbench.css`; its supported
-classes and size tokens are cataloged under the `workbench` entry. See
-[`docs/workbench.md`](./docs/workbench.md) for panel ownership and responsive
-replacement guidance.
+Opt-in application layouts keep JavaScript and CSS explicit. Import each
+layout from its component subpath, load the matching manual CSS export, and
+add its wire subpath when the layout has interactive behavior. The catalog
+entries for `nav-stack`, `split-view`, `tab-scaffold`, `workbench`, and
+`collapsible-panel` document their selection rules, ownership boundaries,
+public classes, tokens, and focused demos. See
+[`docs/app-layouts.md`](./docs/app-layouts.md) for the layout decision matrix.
 
 Compose panel, dialog, and page headings directly with `Toolbar`: put an optional
 icon in a `ToolbarControlGroup`, use a direct extra-large `ToolbarText` for the

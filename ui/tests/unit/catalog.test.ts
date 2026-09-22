@@ -101,7 +101,7 @@ describe('UX catalog metadata', () => {
     expect(artifact.entries.map(({ id }) => id)).toEqual(
       catalog.map(({ id }) => id),
     );
-    expect(artifact.entries).toHaveLength(112);
+    expect(artifact.entries).toHaveLength(115);
     expect(findCatalogEntry('recipe-command-palette')).toBeUndefined();
     expect(isCatalogId('recipe-command-palette')).toBe(false);
     const foundationSource = await readFile(
@@ -154,6 +154,62 @@ describe('UX catalog metadata', () => {
         manualCssImport: '@kerfjs/ui/split-view.css',
       },
     });
+    const appLayouts = [
+      {
+        id: 'nav-stack',
+        exports: ['NavStackView', 'NavStackProps', 'NavStack'],
+      },
+      {
+        id: 'split-view',
+        exports: ['SplitView', 'SplitViewProps', 'SplitViewResizable'],
+      },
+      {
+        id: 'tab-scaffold',
+        exports: ['TabScaffoldTab', 'TabScaffoldProps', 'TabScaffold'],
+      },
+      {
+        id: 'workbench',
+        exports: ['Workbench', 'WorkbenchPanel', 'WorkbenchProps'],
+      },
+      {
+        id: 'collapsible-panel',
+        exports: [
+          'CollapsiblePanelSide',
+          'collapsiblePanelToggleIcon',
+          'CollapsiblePanelToggleProps',
+          'CollapsiblePanelToggle',
+          'CollapsiblePanelProps',
+          'CollapsiblePanel',
+        ],
+      },
+    ] as const;
+    for (const layout of appLayouts) {
+      const entry = artifact.entries.find(({ id }) => id === layout.id);
+      const css = await readFile(
+        resolve(import.meta.dirname, `../../src/${layout.id}.css`),
+        'utf8',
+      );
+      expect(entry).toMatchObject({
+        publicExports: [...layout.exports],
+        delivery: {
+          moduleImport: `@kerfjs/ui/${layout.id}`,
+          manualCssImport: `@kerfjs/ui/${layout.id}.css`,
+        },
+        publicClasses: [
+          ...new Set(
+            [...css.matchAll(/\.(kui-[a-z0-9_-]+)/g)].map((match) => match[1]),
+          ),
+        ],
+        publicTokens: [
+          ...new Set(
+            [
+              ...css.matchAll(new RegExp(`--kui-${layout.id}-[a-z0-9-]+`, 'g')),
+            ].map((match) => match[0]),
+          ),
+        ],
+        links: { catalogRoute: `?component=${layout.id}` },
+      });
+    }
     expect(
       artifact.entries.every(
         (entry) => entry.useWhen.length > 0 && entry.avoidWhen.length > 0,
@@ -354,8 +410,11 @@ describe('UX catalog metadata', () => {
       'LucideIcon',
       'DisclosureArrow',
       'Pane',
+      'NavStack',
       'SplitView',
+      'TabScaffold',
       'Workbench',
+      'CollapsiblePanel',
       'SunkenPanel',
       'Toolbar',
       'ToolbarControlGroup',

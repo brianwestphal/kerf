@@ -21,6 +21,7 @@ import {
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
+import { wireTabScaffold } from '@kerfjs/ui/wire-tab-scaffold';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import {
   batch,
@@ -53,6 +54,7 @@ import {
   oppositeDemoTheme,
   preferredDemoTheme,
 } from './demo-theme.js';
+import { popNavStackDemo, resetNavStackDemo } from './demos/nav-stack.js';
 import { demos } from './demos/registry.js';
 import {
   activeTab,
@@ -84,6 +86,10 @@ import {
   toolbarGroupSearchOpen,
   toolbarGroupShape,
 } from './demos/state.js';
+import {
+  resetTabScaffoldDemo,
+  selectTabScaffoldDemo,
+} from './demos/tab-scaffold.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
 import type { RecipeController } from './recipes/types.js';
 
@@ -870,6 +876,30 @@ const stopRecipeNavEffect = effect(() => {
     }
   });
 });
+// Focused app-layout routes use the same public wiring consumers do. Reset each
+// controlled specimen when its route becomes active so repeated catalog visits
+// always begin in the documented state.
+let stopFocusedLayout: (() => void) | null = null;
+const stopFocusedLayoutEffect = effect(() => {
+  const id = selectedDemo.value;
+  if (id === 'nav-stack') resetNavStackDemo();
+  if (id === 'tab-scaffold') resetTabScaffoldDemo();
+  window.requestAnimationFrame(() => {
+    stopFocusedLayout?.();
+    stopFocusedLayout = null;
+    const canvas = document.querySelector<HTMLElement>('.kui-catalog__canvas');
+    if (!canvas) return;
+    if (id === 'nav-stack') {
+      stopFocusedLayout = wireNavStack(canvas, {
+        onBack: popNavStackDemo,
+      });
+    } else if (id === 'tab-scaffold') {
+      stopFocusedLayout = wireTabScaffold(canvas, {
+        onSelect: selectTabScaffoldDemo,
+      });
+    }
+  });
+});
 // Wire the active recipe's own imperative helpers (e.g. `wireSidebar` for the
 // collapsible-sidebar recipe: toggle, focus, compact overlay, persistence). Like
 // the nav-stack wiring, the recipe root persists across the recipe's own state
@@ -1159,6 +1189,8 @@ window.addEventListener(
     stopSelect();
     stopRecipeNav?.();
     stopRecipeNavEffect();
+    stopFocusedLayout?.();
+    stopFocusedLayoutEffect();
     stopRecipeWire?.();
     stopRecipeWireEffect();
     stopRecipeChanges();

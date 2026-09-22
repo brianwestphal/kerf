@@ -143,6 +143,20 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "nav-stack",
+    "name": "NavStack",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Present a single linear or drill-down flow while preserving each prior view's state, scroll position, and place in the stack.",
+    "uses": [
+      "toolbar-text"
+    ],
+    "demoSource": "ui/ux-demo/demos/nav-stack.tsx",
+    "componentSource": "ui/src/nav-stack.tsx",
+    "documentation": "ui/docs/nav-stack.md"
+  },
+  {
     "id": "split-view",
     "name": "SplitView",
     "category": "Structure",
@@ -150,11 +164,24 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Present a selectable list and its detail together when space permits, with a one-pane drill-down replacement on compact devices.",
     "uses": [
+      "nav-stack",
       "resize"
     ],
     "demoSource": "ui/ux-demo/demos/split-view.tsx",
     "componentSource": "ui/src/split-view.tsx",
     "documentation": "ui/docs/split-view.md"
+  },
+  {
+    "id": "tab-scaffold",
+    "name": "TabScaffold",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Switch among two to five co-equal top-level destinations on compact devices while preserving each destination's independent content state.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/tab-scaffold.tsx",
+    "componentSource": "ui/src/tab-scaffold.tsx",
+    "documentation": "ui/docs/tab-scaffold.md"
   },
   {
     "id": "workbench",
@@ -167,6 +194,20 @@ export const generatedKerfCatalog = [
     "demoSource": "ui/ux-demo/demos/workbench.tsx",
     "componentSource": "ui/src/workbench.tsx",
     "documentation": "ui/docs/workbench.md"
+  },
+  {
+    "id": "collapsible-panel",
+    "name": "CollapsiblePanel",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Add one independently collapsible peripheral panel without adopting the complete multi-panel Workbench shell.",
+    "uses": [
+      "lucide-icon"
+    ],
+    "demoSource": "ui/ux-demo/demos/collapsible-panel.tsx",
+    "componentSource": "ui/src/collapsible-panel.tsx",
+    "documentation": "ui/docs/collapsible-panel.md"
   },
   {
     "id": "sunken-panel",

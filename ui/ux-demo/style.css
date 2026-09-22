@@ -357,6 +357,27 @@ button {
   height: remify(360px);
   background: var(--kui-color-surface);
 }
+.demo-nav-stack,
+.demo-tab-scaffold {
+  width: min(100%, remify(440px));
+  height: remify(360px);
+}
+.demo-nav-stack .kui-content-item,
+.demo-tab-scaffold .kui-content-item,
+.demo-collapsible-panel .kui-content-item {
+  display: grid;
+  align-content: start;
+  gap: var(--kui-layout-metadata-gap);
+}
+.demo-nav-stack .kui-content-item span,
+.demo-tab-scaffold .kui-content-item span,
+.demo-collapsible-panel .kui-content-item span {
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+}
+.demo-collapsible-panel--rail {
+  height: remify(220px);
+}
 [data-demo="split-view"] .demo-split-view {
   width: 100%;
   height: remify(320px);
