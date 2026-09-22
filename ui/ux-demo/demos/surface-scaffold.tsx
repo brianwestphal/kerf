@@ -1,4 +1,6 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { List } from '@kerfjs/ui/list';
+import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { DialogSurface, PopupSurface } from '@kerfjs/ui/surface-scaffold';
 
 export function SurfaceScaffoldDemo() {
@@ -11,12 +13,16 @@ export function SurfaceScaffoldDemo() {
         <DialogSurface
           size="medium"
           presentation="modal"
-          bodyInset="compact"
+          bodyInset="none"
           footerInset="comfortable"
         >
           <wa-button data-action="show-wa-dialog">Open dialog</wa-button>
           <wa-dialog id="catalog-wa-dialog" label="Edit workspace">
-            <p>Dialog content uses the compact body inset.</p>
+            <List>
+              <ListInsetText>
+                Dialog content uses list-owned item geometry.
+              </ListInsetText>
+            </List>
             <wa-button slot="footer" data-action="hide-wa-dialog">
               Cancel
             </wa-button>

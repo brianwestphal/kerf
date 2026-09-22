@@ -1298,10 +1298,12 @@
         "PopupSurface"
       ],
       "useWhen": [
-        "A Web Awesome dialog or dropdown needs a standard size, presentation, body/footer inset, or list-compatible menu inset."
+        "A Web Awesome dialog or dropdown needs a standard size, presentation, body/footer inset, or list-compatible menu inset.",
+        "A dialog body should compose rows, sections, or aligned bare prose through List and ListInsetText."
       ],
       "avoidWhen": [
-        "Do not use it as a generic layout wrapper or to replace application-owned modal state and focus lifecycle."
+        "Do not use it as a generic layout wrapper or to replace application-owned modal state and focus lifecycle.",
+        "Do not stack a dialog body inset around children that already own List or content-item geometry; use bodyInset none."
       ],
       "alternatives": [],
       "appOwns": [

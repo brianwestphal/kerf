@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Documented and demonstrated list-first dialog bodies: use `List` with
+  `bodyInset="none"`, and wrap bare dialog copy in `ListInsetText` so content
+  shares the standard list gutter without double-insetting.
 - Fixed managed `TokenSearchField` Clear focus before the next input task, so
   immediate typing stays in the replacement editor instead of triggering page
   shortcuts; genuine later focus handoffs and selections remain untouched.

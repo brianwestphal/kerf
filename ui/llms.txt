@@ -169,6 +169,10 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   markup. Use the standalone `Skeleton` for a custom slot. Prefer it over `wa-skeleton`
   (the pure-Kerf primitives avoid Web Awesome), and never animate it — use
   `LoadingSpinner` for known busy activity instead.
+- **Dialog bodies are lists by default.** Compose rows and sections in `List`,
+  use `DialogSurface bodyInset="none"` when those children own their geometry,
+  and wrap bare prose in `ListInsetText` so it shares the standard list gutter
+  without stacking a second body inset.
 - **Use a StateBanner badge only for compact supporting status.** Pass the
   optional string `badge` for a terse count or status beside the title. It
   inherits the banner tone and is announced with the banner, so keep its text

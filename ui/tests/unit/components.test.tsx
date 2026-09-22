@@ -50,6 +50,23 @@ describe('production UI primitives', () => {
       'class="kui-dialog-surface editor" data-component="dialog-surface" data-size="large" data-presentation="side-sheet" data-body-inset="none" data-footer-inset="compact"',
     );
     expect(dialog).toContain('<wa-dialog label="Edit">Body</wa-dialog>');
+    const listBody = asHtml(
+      DialogSurface({
+        bodyInset: 'none',
+        children: (
+          <wa-dialog label="Edit">
+            <List>
+              <ListInsetText>Aligned dialog copy</ListInsetText>
+            </List>
+          </wa-dialog>
+        ),
+      }),
+    );
+    expect(listBody).toContain('data-body-inset="none"');
+    expect(listBody).toContain('data-component="list"');
+    expect(listBody).toContain(
+      'class="kui-list-inset-text" data-component="list-inset-text">Aligned dialog copy</div>',
+    );
     const popup = asHtml(
       PopupSurface({
         inset: 'list-zero',

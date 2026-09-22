@@ -23,11 +23,78 @@ test('applies typed dialog and popup surface geometry', async ({
     };
   });
   expect(dialogGeometry.width).toBeLessThanOrEqual(560);
-  expect(dialogGeometry.bodyPadding).toBe('8px');
+  expect(dialogGeometry.bodyPadding).toBe('0px');
   expect(dialogGeometry.footerPadding).toBe('16px');
+  const dialogList = dialog.locator('[data-component="list"]');
+  const dialogText = dialog.locator('[data-component="list-inset-text"]');
+  await expect(dialogList).toBeVisible();
+  await expect(dialogText).toHaveText(
+    'Dialog content uses list-owned item geometry.',
+  );
+  const listGeometry = await dialogText.evaluate((element) => {
+    const style = window.getComputedStyle(element);
+    return {
+      marginInline: [style.marginInlineStart, style.marginInlineEnd],
+      paddingInline: [style.paddingInlineStart, style.paddingInlineEnd],
+      borderInline: [style.borderInlineStartWidth, style.borderInlineEndWidth],
+    };
+  });
+  expect(listGeometry).toEqual({
+    marginInline: ['8px', '8px'],
+    paddingInline: ['8px', '8px'],
+    borderInline: ['1px', '1px'],
+  });
+  const wideClip = await dialog.evaluate((element) => {
+    const rect = element
+      .shadowRoot!.querySelector('[part~="dialog"]')!
+      .getBoundingClientRect();
+    const inset = 16;
+    return {
+      x: Math.max(0, rect.left - inset),
+      y: Math.max(0, rect.top - inset),
+      width: Math.min(window.innerWidth, rect.width + inset * 2),
+      height: Math.min(window.innerHeight, rect.height + inset * 2),
+    };
+  });
   await page.screenshot({
-    path: testInfo.outputPath('dialog-surface.png'),
-    fullPage: true,
+    path: testInfo.outputPath('dialog-surface-wide.png'),
+    clip: wideClip,
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  const narrowGeometry = await dialog.evaluate((element) => {
+    const panel = element.shadowRoot!.querySelector('[part~="dialog"]')!;
+    const text = element.querySelector('[data-component="list-inset-text"]')!;
+    const panelRect = panel.getBoundingClientRect();
+    const textRect = text.getBoundingClientRect();
+    return {
+      panelLeft: Math.round(panelRect.left),
+      panelRight: Math.round(panelRect.right),
+      textLeft: Math.round(textRect.left),
+      textRight: Math.round(textRect.right),
+      bodyScrollWidth: document.body.scrollWidth,
+      viewportWidth: window.innerWidth,
+    };
+  });
+  expect(narrowGeometry.textLeft).toBeGreaterThan(narrowGeometry.panelLeft);
+  expect(narrowGeometry.textRight).toBeLessThan(narrowGeometry.panelRight);
+  expect(narrowGeometry.bodyScrollWidth).toBeLessThanOrEqual(
+    narrowGeometry.viewportWidth,
+  );
+  const narrowClip = await dialog.evaluate((element) => {
+    const rect = element
+      .shadowRoot!.querySelector('[part~="dialog"]')!
+      .getBoundingClientRect();
+    const inset = 16;
+    return {
+      x: Math.max(0, rect.left - inset),
+      y: Math.max(0, rect.top - inset),
+      width: Math.min(window.innerWidth, rect.width + inset * 2),
+      height: Math.min(window.innerHeight, rect.height + inset * 2),
+    };
+  });
+  await page.screenshot({
+    path: testInfo.outputPath('dialog-surface-narrow.png'),
+    clip: narrowClip,
   });
   await dialog.getByRole('button', { name: 'Cancel' }).click();
   await expect(dialog).not.toHaveAttribute('open', '');

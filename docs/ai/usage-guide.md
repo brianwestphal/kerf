@@ -143,6 +143,10 @@ outside body insets; avoid doubled padding, one-off compensation, arbitrary
 centering, and competing document/pane/list scrollers. The task-oriented table
 and examples are in [`ui/docs/layout.md`](../../ui/docs/layout.md).
 
+Compose a dialog body as a `List` by default. Give a list-owned dialog
+`bodyInset="none"`, and wrap bare prose in `ListInsetText`; list rows and inset
+text then own one shared gutter instead of stacking dialog and child padding.
+
 The package keeps app policy outside components: wire emitted `data-action`
 hooks at the mount root, retain every disposer, and let the app own menu/tab
 state, routing, and persistence. `wireResizableRegions(root, { onCommit })` and
