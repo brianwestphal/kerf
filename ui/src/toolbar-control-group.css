@@ -55,6 +55,58 @@
     transparent
   );
 }
+.kui-toolbar-control-group[data-size="compact"] {
+  --kui-toolbar-group-size: remify(34px);
+}
+.kui-toolbar-control-group[data-density="tight"] {
+  --kui-layout-item-padding: remify(5px);
+}
+.kui-toolbar-control-group[data-content="text"] > :is(button, wa-button),
+.kui-toolbar-control-group[data-content="mixed"] > :is(button, wa-button) {
+  min-width: max-content;
+}
+.kui-toolbar-control-group[data-content="mixed"] > button {
+  display: flex;
+  gap: var(--kui-space-xs);
+}
+.kui-toolbar-control-group[data-content="mixed"] {
+  gap: remify(8px);
+}
+.kui-toolbar-control-group[data-content="mixed"] > wa-dropdown {
+  padding-inline-start: remify(6px);
+  border-inline-start: 1px solid var(--kui-toolbar-control-border);
+}
+.kui-toolbar-control-group[data-content="avatar"] img {
+  width: remify(24px);
+  height: remify(24px);
+  border-radius: var(--kui-radius-pill);
+  object-fit: cover;
+}
+.kui-toolbar-control-group[data-content="avatar"][data-scrim="true"] {
+  --kui-toolbar-control-background: color-mix(
+    in srgb,
+    var(--kui-color-neutral-fill-loud) 64%,
+    transparent
+  );
+  --kui-toolbar-control-color: var(--kui-color-neutral-on-loud);
+}
+.kui-toolbar-control-group[data-selected-tone="neutral"] {
+  --kui-toolbar-control-selected-color: var(--kui-color-neutral-on-normal);
+  --kui-toolbar-control-selected-background: var(
+    --kui-color-neutral-fill-normal
+  );
+}
+.kui-toolbar-control-group[data-selected-chrome="filled"] {
+  --kui-toolbar-control-selected-shadow: none;
+  --kui-toolbar-control-selected-border: transparent;
+  --kui-toolbar-control-selected-background: var(--kui-color-brand-fill-normal);
+  --kui-toolbar-control-selected-color: var(--kui-color-brand-on-normal);
+}
+.kui-toolbar-control-group[data-selected-chrome="outline"] {
+  --kui-toolbar-control-selected-shadow: none;
+  --kui-toolbar-control-selected-background: transparent;
+  --kui-toolbar-control-selected-border: var(--kui-color-brand-border-normal);
+}
 
 .kui-toolbar-control-group[data-appearance="borderless"] {
   /* A borderless group has no base fill to lift from, so the default
@@ -71,6 +123,9 @@
 
 .kui-toolbar-control-group > :is(button, wa-button, wa-dropdown) {
   flex: 0 0 auto;
+}
+.kui-toolbar-control-group > wa-dropdown {
+  display: inline-flex;
 }
 
 .kui-toolbar-control-group > button {
@@ -110,6 +165,23 @@
 .kui-toolbar-control-group > wa-dropdown > wa-button::part(base) {
   min-width: remify(40px);
   height: remify(40px);
+}
+.kui-toolbar-control-group[data-size="compact"] > button,
+.kui-toolbar-control-group[data-size="compact"] > wa-button,
+.kui-toolbar-control-group[data-size="compact"] > wa-dropdown,
+.kui-toolbar-control-group[data-size="compact"] > wa-dropdown > wa-button,
+.kui-toolbar-control-group[data-size="compact"]
+  > wa-dropdown
+  > wa-button::part(base),
+.kui-toolbar-control-group[data-size="compact"][data-nested-dropdown="true"]
+  wa-dropdown
+  wa-button,
+.kui-toolbar-control-group[data-size="compact"][data-nested-dropdown="true"]
+  wa-dropdown
+  wa-button::part(base) {
+  min-width: remify(32px);
+  height: remify(32px);
+  min-height: remify(32px);
 }
 
 .kui-toolbar-control-group[data-single="true"] > wa-dropdown,

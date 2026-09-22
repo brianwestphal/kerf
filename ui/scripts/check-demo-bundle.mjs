@@ -18,8 +18,9 @@ const limits = {
   // → 267.93 kB (first-class SplitView catalog route and metadata).
   // → 269.37 kB (NavStack, TabScaffold, and CollapsiblePanel focused routes).
   // → 269.99 kB (typed AppTab and TabBar presentation specimens).
+  // → 270.44 kB (typed ToolbarControlGroup content/chrome specimens).
   // Keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 270_200,
+  totalJavaScriptGzip: 270_650,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) =>

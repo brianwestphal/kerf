@@ -4,6 +4,11 @@ export type ToolbarControlGroupAppearance = 'contained' | 'borderless';
 export type ToolbarControlGroupTone = 'default' | 'dark';
 export type ToolbarControlGroupButtonAppearance = 'plain' | 'push';
 export type ToolbarControlGroupShape = 'pill' | 'rounded';
+export type ToolbarControlGroupSize = 'default' | 'compact';
+export type ToolbarControlGroupDensity = 'comfortable' | 'tight';
+export type ToolbarControlGroupContent = 'icon' | 'text' | 'mixed' | 'avatar';
+export type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
+export type ToolbarControlGroupSelectedTone = 'brand' | 'neutral';
 
 export interface ToolbarControlGroupProps {
   children: SafeHtml | SafeHtml[];
@@ -16,6 +21,15 @@ export interface ToolbarControlGroupProps {
   buttonAppearance?: ToolbarControlGroupButtonAppearance;
   /** Corner shape: fully round `pill` (default) or a softer `rounded` rectangle. */
   shape?: ToolbarControlGroupShape;
+  size?: ToolbarControlGroupSize;
+  density?: ToolbarControlGroupDensity;
+  content?: ToolbarControlGroupContent;
+  selectedChrome?: ToolbarControlGroupSelectedChrome;
+  selectedTone?: ToolbarControlGroupSelectedTone;
+  /** Size a nested Web Awesome dropdown trigger as part of this group. */
+  nestedDropdown?: boolean;
+  /** Add contrast behind photo-backed avatar content. */
+  scrim?: boolean;
 }
 
 export function ToolbarControlGroup({
@@ -28,6 +42,13 @@ export function ToolbarControlGroup({
   tone = 'default',
   buttonAppearance = 'plain',
   shape = 'pill',
+  size = 'default',
+  density = 'comfortable',
+  content = 'icon',
+  selectedChrome = 'raised',
+  selectedTone = 'brand',
+  nestedDropdown = false,
+  scrim = false,
 }: ToolbarControlGroupProps) {
   return (
     <div
@@ -41,6 +62,13 @@ export function ToolbarControlGroup({
       data-expanded={String(expanded)}
       data-single={String(single)}
       data-shape={shape}
+      data-size={size}
+      data-density={density}
+      data-content={content}
+      data-selected-chrome={selectedChrome}
+      data-selected-tone={selectedTone}
+      data-nested-dropdown={String(nestedDropdown)}
+      data-scrim={String(scrim)}
     >
       {children}
     </div>

@@ -93,6 +93,11 @@ type ToolbarControlGroupAppearance = 'contained' | 'borderless';
 type ToolbarControlGroupTone = 'default' | 'dark';
 type ToolbarControlGroupButtonAppearance = 'plain' | 'push';
 type ToolbarControlGroupShape = 'pill' | 'rounded';
+type ToolbarControlGroupSize = 'default' | 'compact';
+type ToolbarControlGroupDensity = 'comfortable' | 'tight';
+type ToolbarControlGroupContent = 'icon' | 'text' | 'mixed' | 'avatar';
+type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
+type ToolbarControlGroupSelectedTone = 'brand' | 'neutral';
 interface ToolbarControlGroupProps {
     children: SafeHtml | SafeHtml[];
     label?: string;
@@ -104,10 +109,19 @@ interface ToolbarControlGroupProps {
     buttonAppearance?: ToolbarControlGroupButtonAppearance;
     /** Corner shape: fully round `pill` (default) or a softer `rounded` rectangle. */
     shape?: ToolbarControlGroupShape;
+    size?: ToolbarControlGroupSize;
+    density?: ToolbarControlGroupDensity;
+    content?: ToolbarControlGroupContent;
+    selectedChrome?: ToolbarControlGroupSelectedChrome;
+    selectedTone?: ToolbarControlGroupSelectedTone;
+    /** Size a nested Web Awesome dropdown trigger as part of this group. */
+    nestedDropdown?: boolean;
+    /** Add contrast behind photo-backed avatar content. */
+    scrim?: boolean;
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, }: ToolbarControlGroupProps): SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, selectedChrome, selectedTone, nestedDropdown, scrim, }: ToolbarControlGroupProps): SafeHtml;
 
-export { ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupProps, type ToolbarControlGroupShape, type ToolbarControlGroupTone };
+export { ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupTone };
 ```
 
 ## `@kerfjs/ui/floating-toolbar`

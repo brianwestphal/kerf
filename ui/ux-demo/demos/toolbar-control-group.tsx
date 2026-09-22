@@ -23,6 +23,11 @@ import {
   toolbarGroupShape,
 } from './state.js';
 
+const profileImageUrl = new URL(
+  '../../../assets/logo.svg?no-inline',
+  import.meta.url,
+).href;
+
 export function ToolbarControlGroupDemo() {
   const shape = toolbarGroupShape.value;
   return (
@@ -182,6 +187,41 @@ export function ToolbarControlGroupDemo() {
           </button>
           <button type="button" aria-label="Next" data-action="log-next">
             {icon(ChevronRight, 'chevron-right')}
+          </button>
+        </ToolbarControlGroup>
+      </CatalogExample>
+      <CatalogExample label="Compact mixed controls" align="inline-control">
+        <ToolbarControlGroup
+          label="Compact formatting"
+          size="compact"
+          density="tight"
+          content="mixed"
+          selectedChrome="filled"
+          nestedDropdown
+          shape={shape}
+        >
+          <button type="button" aria-pressed="true">
+            {icon(Star, 'star')} Favorite
+          </button>
+          <wa-dropdown placement="bottom-start" data-morph-skip-children>
+            <wa-button slot="trigger" appearance="plain" with-caret>
+              More
+            </wa-button>
+            <wa-dropdown-item>Archive</wa-dropdown-item>
+          </wa-dropdown>
+        </ToolbarControlGroup>
+      </CatalogExample>
+      <CatalogExample label="Avatar profile" align="inline-control">
+        <ToolbarControlGroup
+          label="Profile"
+          content="avatar"
+          selectedTone="neutral"
+          scrim
+          single
+          shape={shape}
+        >
+          <button type="button" aria-label="Open Brian profile">
+            <img src={profileImageUrl} alt="" />
           </button>
         </ToolbarControlGroup>
       </CatalogExample>

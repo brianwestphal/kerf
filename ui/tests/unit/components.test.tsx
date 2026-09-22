@@ -123,6 +123,13 @@ describe('production UI primitives', () => {
       appearance: 'borderless',
       tone: 'dark',
       buttonAppearance: 'push',
+      size: 'compact',
+      density: 'tight',
+      content: 'mixed',
+      selectedChrome: 'outline',
+      selectedTone: 'neutral',
+      nestedDropdown: true,
+      scrim: true,
       className: 'extra',
     });
     const html = asHtml(
@@ -141,6 +148,9 @@ describe('production UI primitives', () => {
     );
     expect(asHtml(group)).toContain(
       'role="group" aria-label="View" data-appearance="borderless" data-tone="dark" data-button-appearance="push" data-expanded="true" data-single="true"',
+    );
+    expect(asHtml(group)).toContain(
+      'data-size="compact" data-density="tight" data-content="mixed" data-selected-chrome="outline" data-selected-tone="neutral" data-nested-dropdown="true" data-scrim="true"',
     );
     expect(
       asHtml(

@@ -5057,14 +5057,44 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Push button, resting',
     'Push button, pressed',
     'Dark group',
+    'Compact mixed controls',
+    'Avatar profile',
     'Collapsible search',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  await expect(groups).toHaveCount(10);
-  const heights = await groups.evaluateAll((nodes) =>
+  await expect(groups).toHaveCount(12);
+  const standardGroups = demo.locator(
+    '[data-component="toolbar-control-group"]:not([data-size="compact"])',
+  );
+  const heights = await standardGroups.evaluateAll((nodes) =>
     nodes.map((node) => node.getBoundingClientRect().height),
   );
   expect(new Set(heights).size).toBe(1);
+  const compact = demo.getByRole('group', { name: 'Compact formatting' });
+  await expect(compact).toHaveAttribute('data-content', 'mixed');
+  expect(
+    Math.round(
+      await compact.evaluate((node) => node.getBoundingClientRect().height),
+    ),
+  ).toBe(34);
+  const compactSpacing = await compact.evaluate((node) => {
+    const button = node
+      .querySelector(':scope > button')!
+      .getBoundingClientRect();
+    const dropdown = node
+      .querySelector(':scope > wa-dropdown')!
+      .getBoundingClientRect();
+    return {
+      gap: dropdown.left - button.right,
+      declaredGap: window.getComputedStyle(node).gap,
+    };
+  });
+  expect(compactSpacing.declaredGap).toBe('8px');
+  expect(compactSpacing.gap).toBeGreaterThanOrEqual(7.9);
+  await expect(demo.getByRole('group', { name: 'Profile' })).toHaveAttribute(
+    'data-scrim',
+    'true',
+  );
   await demo.getByRole('button', { name: 'Columns view' }).click();
   await expect(
     demo.getByRole('button', { name: 'Columns view' }),
@@ -5073,7 +5103,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'color',
     'rgb(30, 110, 244)',
   );
-  const dropdown = demo.locator('wa-dropdown');
+  const dropdown = demo.locator('wa-dropdown').first();
   const dropdownItems = dropdown.locator('wa-dropdown-item');
   await expect(dropdown).toHaveAttribute('data-morph-skip-children', '');
   await expect(dropdownItems).toHaveCount(2);
@@ -5116,8 +5146,16 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       path: 'test-results/toolbar-control-groups-wide.png',
       fullPage: true,
     });
+  if (browserName === 'chromium') {
+    await compact.screenshot({
+      path: 'test-results/toolbar-control-group-compact-mixed.png',
+    });
+    await demo
+      .getByRole('group', { name: 'Profile' })
+      .screenshot({ path: 'test-results/toolbar-control-group-avatar.png' });
+  }
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(groups).toHaveCount(10);
+  await expect(groups).toHaveCount(12);
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/toolbar-control-groups-narrow.png',

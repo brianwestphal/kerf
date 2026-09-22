@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added typed `TabBar` allocation/presentation/action-placement and `AppTab`
   presentation/size/label-width variants for segmented inspector strips,
   compact drawer tabs, icon-only accessible tabs, and truncating labels.
+- Added typed `ToolbarControlGroup` size, density, content anatomy, selected
+  chrome/tone, nested-dropdown, and avatar scrim variants.
 - **Breaking (`@kerfjs/ui`):** removed `PanelHeader` and its subpath/CSS export.
   Compose page, panel, and dialog headings directly with `Toolbar`, a direct
   extra-large `ToolbarText`, and optional `ToolbarControlGroup` icon/action zones;

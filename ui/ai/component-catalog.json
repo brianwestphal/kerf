@@ -1166,12 +1166,12 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "Contained, borderless, pressed, and single-control toolbar groups.",
+      "description": "Typed toolbar groups for compact, mixed, selected, dropdown, and avatar controls.",
       "uses": [
         "lucide-icon",
         "segmented-control"
       ],
-      "purpose": "Contained, borderless, pressed, and single-control toolbar groups.",
+      "purpose": "Typed toolbar groups for compact, mixed, selected, dropdown, and avatar controls.",
       "publicExports": [
         "ToolbarControlGroup"
       ],
@@ -1202,7 +1202,14 @@
         "contained",
         "borderless",
         "pressed",
-        "single"
+        "single",
+        "default or compact size",
+        "comfortable or tight density",
+        "icon, text, mixed, or avatar content",
+        "raised, filled, or outline selected chrome",
+        "brand or neutral selected tone",
+        "nested dropdown trigger",
+        "avatar scrim"
       ],
       "accessibility": [
         "Name the group when its relationship is not evident from context."

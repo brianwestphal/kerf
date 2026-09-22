@@ -243,7 +243,7 @@ export const generatedKerfCatalog = [
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
-    "description": "Contained, borderless, pressed, and single-control toolbar groups.",
+    "description": "Typed toolbar groups for compact, mixed, selected, dropdown, and avatar controls.",
     "uses": [
       "lucide-icon",
       "segmented-control"
