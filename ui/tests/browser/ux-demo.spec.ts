@@ -3152,15 +3152,19 @@ test('disclosure and breadcrumb chevrons match the Kerf Select scale', async ({
   }
 
   await page.goto('/?component=select');
-  const selectTransform = await page
+  const selectTransforms = await page
     .locator('[data-demo="select"] wa-select')
-    .evaluate((element) => {
-      const icon = element.shadowRoot?.querySelector<HTMLElement>(
-        '[part~="expand-icon"]',
-      );
-      return icon ? window.getComputedStyle(icon).transform : '';
-    });
-  expect(selectTransform).toMatch(/^matrix\(0\.5, 0, 0, 0\.5,/);
+    .evaluateAll((elements) =>
+      elements.map((element) => {
+        const icon = element.shadowRoot?.querySelector<HTMLElement>(
+          '[part~="expand-icon"]',
+        );
+        return icon ? window.getComputedStyle(icon).transform : '';
+      }),
+    );
+  expect(selectTransforms).toHaveLength(3);
+  for (const transform of selectTransforms)
+    expect(transform).toMatch(/^matrix\(0\.5, 0, 0, 0\.5,/);
 });
 
 test('preserves Select option icons across Kerf rerenders and replaces selected content by value', async ({
