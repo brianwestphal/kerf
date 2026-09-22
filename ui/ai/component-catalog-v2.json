@@ -1049,6 +1049,51 @@
       }
     },
     {
+      "key": "@kerfjs/ui:surface-scaffold",
+      "package": "@kerfjs/ui",
+      "id": "surface-scaffold",
+      "name": "Surface scaffolds",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "open state", "owner": "application", "required": false },
+        { "id": "focus lifecycle", "owner": "application", "required": false },
+        { "id": "dismissal policy", "owner": "application", "required": false },
+        { "id": "content", "owner": "application", "required": false },
+        { "id": "outer placement", "owner": "application", "required": false }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": { "margin": "parent", "border": "child", "padding": "self" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Supply the wrapped wa-dialog label and retain Web Awesome's native modal and focus behavior.",
+          "Use popup surfaces only for real dropdown menus with named triggers."
+        ]
+      },
+      "boundaries": {
+        "rootClass": "kui-dialog-surface",
+        "publicClasses": ["kui-dialog-surface", "kui-popup-surface"],
+        "publicTokens": [
+          "--kui-radius-l",
+          "--kui-wa-container-inset",
+          "--kui-wa-surface-inset"
+        ]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:floating-toolbar",
       "package": "@kerfjs/ui",
       "id": "floating-toolbar",

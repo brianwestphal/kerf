@@ -101,7 +101,7 @@ describe('UX catalog metadata', () => {
     expect(artifact.entries.map(({ id }) => id)).toEqual(
       catalog.map(({ id }) => id),
     );
-    expect(artifact.entries).toHaveLength(115);
+    expect(artifact.entries).toHaveLength(116);
     expect(findCatalogEntry('recipe-command-palette')).toBeUndefined();
     expect(isCatalogId('recipe-command-palette')).toBe(false);
     const foundationSource = await readFile(
@@ -418,6 +418,7 @@ describe('UX catalog metadata', () => {
       'SunkenPanel',
       'Toolbar',
       'ToolbarControlGroup',
+      'Surface scaffolds',
       'FloatingToolbar',
       'ToolbarText',
       'ValueTable',

@@ -64,6 +64,11 @@
       "browser": "./dist/browser/toolbar-control-group.js",
       "import": "./dist/toolbar-control-group.js"
     },
+    "./surface-scaffold": {
+      "types": "./dist/surface-scaffold.d.ts",
+      "browser": "./dist/browser/surface-scaffold.js",
+      "import": "./dist/surface-scaffold.js"
+    },
     "./floating-toolbar": {
       "types": "./dist/floating-toolbar.d.ts",
       "browser": "./dist/browser/floating-toolbar.js",
@@ -265,6 +270,7 @@
     "./disclosure-arrow.css": "./dist/styles/disclosure-arrow.css",
     "./toolbar.css": "./dist/styles/toolbar.css",
     "./toolbar-control-group.css": "./dist/styles/toolbar-control-group.css",
+    "./surface-scaffold.css": "./dist/styles/surface-scaffold.css",
     "./floating-toolbar.css": "./dist/styles/floating-toolbar.css",
     "./toolbar-text.css": "./dist/styles/toolbar-text.css",
     "./list.css": "./dist/styles/list.css",

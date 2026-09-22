@@ -6,6 +6,7 @@ const entries = [
   'disclosure-arrow',
   'toolbar',
   'toolbar-control-group',
+  'surface-scaffold',
   'toolbar-text',
   'floating-toolbar',
   'list',

@@ -21,6 +21,7 @@ import {
 import { SegmentedControl } from '../../src/segmented-control.js';
 import { Select, type SelectChoice } from '../../src/select.js';
 import { StateBanner } from '../../src/state-banner.js';
+import { DialogSurface, PopupSurface } from '../../src/surface-scaffold.js';
 import { TabBar } from '../../src/tab-bar.js';
 import { Toolbar } from '../../src/toolbar.js';
 import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
@@ -31,6 +32,32 @@ const asHtml = (value: unknown) => String(value);
 const icon = LucideIcon({ icon: Circle, name: 'circle' });
 
 describe('production UI primitives', () => {
+  it('configures dialog and popup surface geometry without changing native behavior', () => {
+    const dialog = asHtml(
+      DialogSurface({
+        size: 'large',
+        presentation: 'side-sheet',
+        bodyInset: 'none',
+        footerInset: 'compact',
+        className: 'editor',
+        children: <wa-dialog label="Edit">Body</wa-dialog>,
+      }),
+    );
+    expect(dialog).toContain(
+      'class="kui-dialog-surface editor" data-component="dialog-surface" data-size="large" data-presentation="side-sheet" data-body-inset="none" data-footer-inset="compact"',
+    );
+    expect(dialog).toContain('<wa-dialog label="Edit">Body</wa-dialog>');
+    const popup = asHtml(
+      PopupSurface({
+        inset: 'list-zero',
+        children: <wa-dropdown aria-label="Views"></wa-dropdown>,
+      }),
+    );
+    expect(popup).toContain(
+      'data-component="popup-surface" data-inset="list-zero"',
+    );
+    expect(popup).toContain('<wa-dropdown aria-label="Views"></wa-dropdown>');
+  });
   it('renders decorative and meaningfully labeled Lucide-compatible icons', () => {
     expect(asHtml(icon)).toContain('data-lucide="circle" aria-hidden="true"');
     const labeled = asHtml(

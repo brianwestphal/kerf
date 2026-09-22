@@ -13,6 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   chrome/tone, nested-dropdown, and avatar scrim variants.
 - Added typed `Select` form, borderless-toolbar, intrinsic-navigation, compact,
   icon-only-selected, truncation, and composed focus-ring variants.
+- Added `DialogSurface` and `PopupSurface` composition APIs for standard dialog
+  sizes/presentations, independent body/footer insets, and list-compatible popup
+  menu insets without consumer `::part()` overrides.
 - **Breaking (`@kerfjs/ui`):** removed `PanelHeader` and its subpath/CSS export.
   Compose page, panel, and dialog headings directly with `Toolbar`, a direct
   extra-large `ToolbarText`, and optional `ToolbarControlGroup` icon/action zones;

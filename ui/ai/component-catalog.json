@@ -1260,6 +1260,75 @@
       }
     },
     {
+      "id": "surface-scaffold",
+      "name": "Surface scaffolds",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Typed Web Awesome dialog and popup surface sizing, presentation, and inset composition.",
+      "uses": [
+        "wa-dialog",
+        "wa-dropdown",
+        "wa-dropdown-item"
+      ],
+      "purpose": "Configure recurring dialog and popup geometry without consumer ::part() overrides.",
+      "publicExports": [
+        "DialogSurface",
+        "PopupSurface"
+      ],
+      "useWhen": [
+        "A Web Awesome dialog or dropdown needs a standard size, presentation, body/footer inset, or list-compatible menu inset."
+      ],
+      "avoidWhen": [
+        "Do not use it as a generic layout wrapper or to replace application-owned modal state and focus lifecycle."
+      ],
+      "alternatives": [],
+      "appOwns": [
+        "open state",
+        "focus lifecycle",
+        "dismissal policy",
+        "content",
+        "outer placement"
+      ],
+      "variants": [
+        "small, medium, or large dialog",
+        "modal, side-sheet, or fullscreen dialog",
+        "none, compact, or comfortable body and footer inset",
+        "standard, compact, or zero-inset popup menu"
+      ],
+      "accessibility": [
+        "Supply the wrapped wa-dialog label and retain Web Awesome's native modal and focus behavior.",
+        "Use popup surfaces only for real dropdown menus with named triggers."
+      ],
+      "geometry": {
+        "margin": "parent",
+        "border": "child",
+        "padding": "self"
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/surface-scaffold",
+        "manualCssImport": "@kerfjs/ui/surface-scaffold.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-dialog-surface",
+        "kui-popup-surface"
+      ],
+      "publicTokens": [
+        "--kui-radius-l",
+        "--kui-wa-container-inset",
+        "--kui-wa-surface-inset"
+      ],
+      "links": {
+        "catalogRoute": "?component=surface-scaffold",
+        "documentation": "docs/surface-scaffold.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "floating-toolbar",
       "name": "FloatingToolbar",
       "category": "Structure",

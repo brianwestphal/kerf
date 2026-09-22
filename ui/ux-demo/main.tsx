@@ -188,6 +188,14 @@ function ensureRecipe(id: RecipeId): Promise<void> {
   return load;
 }
 
+function needsWebAwesome(entry: CatalogEntry): boolean {
+  return (
+    entry.source === 'webawesome' ||
+    entry.id === 'webawesome-theme' ||
+    (entry.uses?.some((id) => id.startsWith('wa-')) ?? false)
+  );
+}
+
 function Stage() {
   const selected = findCatalogEntry(selectedDemo.value)!;
   if (isRecipeId(selected.id)) {
@@ -199,11 +207,7 @@ function Stage() {
     }
     return controller.render();
   }
-  const needsWebAwesome =
-    selected.source === 'webawesome' ||
-    selected.id === 'webawesome-theme' ||
-    selected.id === 'toolbar-control-group';
-  if (needsWebAwesome && !webAwesomeReady.value) {
+  if (needsWebAwesome(selected) && !webAwesomeReady.value) {
     void ensureWebAwesomeDemos();
     return <LoadingSpinner label={`Loading ${selected.name} preview`} />;
   }
@@ -277,8 +281,7 @@ const kuiWebAwesomeSections = toKuiSections(webAwesomeCatalogSections);
 function selectDemo(id: string): void {
   if (!isCatalogId(id)) return;
   const selected = findCatalogEntry(id)!;
-  if (selected.source === 'webawesome' || selected.id === 'webawesome-theme')
-    void ensureWebAwesomeDemos();
+  if (needsWebAwesome(selected)) void ensureWebAwesomeDemos();
   if (isRecipeId(selected.id)) void ensureRecipe(selected.id);
   selectedDemo.value = id;
   recipeNotesVisible.value = false;

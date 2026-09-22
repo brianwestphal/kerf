@@ -62,6 +62,16 @@ export {
   type SunkenPanelProps,
   type SunkenPanelShape,
 } from './sunken-panel.js';
+export {
+  DialogSurface,
+  type DialogSurfacePresentation,
+  type DialogSurfaceProps,
+  type DialogSurfaceSize,
+  PopupSurface,
+  type PopupSurfaceInset,
+  type PopupSurfaceProps,
+  type SurfaceInset,
+} from './surface-scaffold.js';
 export { type TabActivation, TabBar, type TabBarProps } from './tab-bar.js';
 export {
   placeTokenSearchCaret,

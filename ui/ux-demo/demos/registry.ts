@@ -25,6 +25,7 @@ import { SkeletonDemo } from './skeleton.js';
 import { SplitViewDemo } from './split-view.js';
 import { StateBannerDemo } from './state-banner.js';
 import { SunkenPanelDemo } from './sunken-panel.js';
+import { SurfaceScaffoldDemo } from './surface-scaffold.js';
 import { TabBarDemo } from './tab-bar.js';
 import { TabScaffoldDemo } from './tab-scaffold.js';
 import { TabsDemo } from './tabs.js';
@@ -68,6 +69,7 @@ export const demos = {
   select: SelectDemo,
   feedback: FeedbackDemo,
   'state-banner': StateBannerDemo,
+  'surface-scaffold': SurfaceScaffoldDemo,
   'sunken-panel': SunkenPanelDemo,
   'empty-state': EmptyStateDemo,
   'loading-spinner': LoadingSpinnerDemo,

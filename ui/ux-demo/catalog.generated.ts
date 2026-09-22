@@ -254,6 +254,22 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "surface-scaffold",
+    "name": "Surface scaffolds",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Configure recurring dialog and popup geometry without consumer ::part() overrides.",
+    "uses": [
+      "wa-dialog",
+      "wa-dropdown",
+      "wa-dropdown-item"
+    ],
+    "demoSource": "ui/ux-demo/demos/surface-scaffold.tsx",
+    "componentSource": "ui/src/surface-scaffold.tsx",
+    "documentation": "ui/docs/surface-scaffold.md"
+  },
+  {
     "id": "floating-toolbar",
     "name": "FloatingToolbar",
     "category": "Structure",

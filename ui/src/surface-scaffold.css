@@ -1,0 +1,51 @@
+.kui-dialog-surface > wa-dialog {
+  --width: min(remify(560px), calc(100vw - remify(32px)));
+}
+.kui-dialog-surface[data-size="small"] > wa-dialog {
+  --width: min(remify(400px), calc(100vw - remify(32px)));
+}
+.kui-dialog-surface[data-size="large"] > wa-dialog {
+  --width: min(remify(800px), calc(100vw - remify(32px)));
+}
+.kui-dialog-surface[data-body-inset="none"] > wa-dialog::part(body),
+.kui-dialog-surface[data-footer-inset="none"] > wa-dialog::part(footer) {
+  padding: 0;
+}
+.kui-dialog-surface[data-body-inset="compact"] > wa-dialog::part(body),
+.kui-dialog-surface[data-footer-inset="compact"] > wa-dialog::part(footer) {
+  padding: var(--kui-wa-surface-inset, remify(8px));
+}
+.kui-dialog-surface[data-body-inset="comfortable"] > wa-dialog::part(body),
+.kui-dialog-surface[data-footer-inset="comfortable"] > wa-dialog::part(footer) {
+  padding: var(--kui-wa-container-inset, remify(16px));
+}
+.kui-dialog-surface[data-presentation="side-sheet"] > wa-dialog::part(dialog) {
+  width: min(remify(480px), 100vw);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin-inline-end: 0;
+  border-radius: var(--kui-radius-l) 0 0 var(--kui-radius-l);
+}
+.kui-dialog-surface[data-presentation="fullscreen"] > wa-dialog {
+  --width: 100vw;
+}
+.kui-dialog-surface[data-presentation="fullscreen"] > wa-dialog::part(dialog) {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  border-radius: 0;
+}
+.kui-popup-surface {
+  display: inline-flex;
+}
+.kui-popup-surface[data-inset="standard"] > wa-dropdown::part(menu) {
+  padding: var(--kui-wa-surface-inset, remify(8px));
+}
+.kui-popup-surface[data-inset="compact"] > wa-dropdown::part(menu) {
+  padding: remify(4px);
+}
+.kui-popup-surface[data-inset="list-zero"] > wa-dropdown::part(menu) {
+  padding: 0;
+}
