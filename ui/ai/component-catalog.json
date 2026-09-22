@@ -823,17 +823,12 @@
         "Toolbar"
       ],
       "useWhen": [
-        "Compose persistent application chrome with leading, center, and trailing regions."
+        "Compose application chrome or a page, panel, or dialog heading with leading, center, and trailing regions."
       ],
       "avoidWhen": [
-        "Do not use for a page title or dialog heading."
+        "Do not use it as a generic wrapper when no toolbar or heading relationship exists."
       ],
-      "alternatives": [
-        {
-          "id": "panel-header",
-          "relationship": "nearest"
-        }
-      ],
+      "alternatives": [],
       "appOwns": [
         "actions",
         "command availability",
@@ -1053,17 +1048,12 @@
         "ToolbarText"
       ],
       "useWhen": [
-        "Render toolbar identity text at a supported hierarchy size."
+        "Render toolbar identity or heading text at a supported hierarchy size; pass headingLevel for heading semantics."
       ],
       "avoidWhen": [
-        "Do not substitute it for document heading semantics."
+        "Do not omit headingLevel when the text is the page or section heading."
       ],
-      "alternatives": [
-        {
-          "id": "panel-header",
-          "relationship": "nearest"
-        }
-      ],
+      "alternatives": [],
       "appOwns": [
         "text",
         "responsive priority"
@@ -1114,7 +1104,9 @@
       "source": "kerf",
       "description": "Page, dialog, and definition-list hierarchy.",
       "uses": [
-        "panel-header",
+        "toolbar",
+        "toolbar-control-group",
+        "toolbar-text",
         "value-table"
       ],
       "purpose": "Page, dialog, and definition-list hierarchy.",
@@ -1125,16 +1117,7 @@
       "avoidWhen": [
         "Do not reuse one header primitive only because its typography looks similar."
       ],
-      "alternatives": [
-        {
-          "id": "toolbar",
-          "relationship": "nearest"
-        },
-        {
-          "id": "panel-header",
-          "relationship": "nearest"
-        }
-      ],
+      "alternatives": [],
       "appOwns": [
         "scope hierarchy",
         "copy",
@@ -1163,91 +1146,6 @@
       "publicTokens": [],
       "links": {
         "catalogRoute": "?component=headers",
-        "documentation": "docs/component-selection.md",
-        "recipe": "docs/component-selection.md#ambiguous-choices"
-      }
-    },
-    {
-      "id": "panel-header",
-      "name": "PanelHeader",
-      "category": "Structure",
-      "kind": "component",
-      "source": "kerf",
-      "description": "A plain Toolbar as a panel, dialog, or page heading: optional icon group, an extra-large title, trailing actions, and an optional subtitle row.",
-      "uses": [
-        "lucide-icon",
-        "toolbar",
-        "toolbar-control-group",
-        "toolbar-text"
-      ],
-      "purpose": "A plain Toolbar as a panel, dialog, or page heading: optional icon group, an extra-large title, trailing actions, and an optional subtitle row.",
-      "publicExports": [
-        "PanelHeader"
-      ],
-      "useWhen": [
-        "Give a panel, dialog, or page a heading with an extra-large title, optional icon and subtitle, and trailing actions."
-      ],
-      "avoidWhen": [
-        "Do not use it as persistent application chrome; use Toolbar. It supplies header structure, not modal behavior."
-      ],
-      "alternatives": [
-        {
-          "id": "toolbar",
-          "relationship": "nearest"
-        },
-        {
-          "id": "wa-dialog",
-          "relationship": "prefer-over"
-        }
-      ],
-      "appOwns": [
-        "open state",
-        "focus lifecycle",
-        "dismissal",
-        "copy",
-        "the trailing action controls"
-      ],
-      "variants": [
-        "title",
-        "optional summary",
-        "icon",
-        "actions",
-        "placeholder (loading)",
-        "page heading (headingLevel)"
-      ],
-      "accessibility": [
-        "Connect the title id and any provided summary id to the dialog or panel host.",
-        "Pass the trailing actions as a labeled ToolbarControlGroup when the group needs an accessible name.",
-        "For a page/view title pass headingLevel (usually 1) so the title exposes role=heading + aria-level as a heading landmark; omit it for a dialog title, which is referenced via aria-labelledby to titleId."
-      ],
-      "geometry": {
-        "margin": "none",
-        "border": "child",
-        "padding": "child"
-      },
-      "delivery": {
-        "browserImport": "@kerfjs/ui/panel-header",
-        "manualCssImport": "@kerfjs/ui/panel-header.css",
-        "sideEffects": [
-          "browser-condition-css"
-        ]
-      },
-      "wiring": [],
-      "publicClasses": [
-        "kui-panel-header",
-        "kui-panel-header__icon",
-        "kui-panel-header__summary"
-      ],
-      "publicTokens": [
-        "--kui-color-brand-fill-quiet",
-        "--kui-color-brand-on-quiet",
-        "--kui-color-text-quiet",
-        "--kui-panel-header-icon-background",
-        "--kui-panel-header-icon-border",
-        "--kui-panel-header-icon-foreground"
-      ],
-      "links": {
-        "catalogRoute": "?component=panel-header",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#ambiguous-choices"
       }
@@ -1422,7 +1320,7 @@
       ],
       "alternatives": [
         {
-          "id": "panel-header",
+          "id": "toolbar",
           "relationship": "nearest"
         }
       ],
@@ -5520,7 +5418,6 @@
         "toolbar-control-group",
         "list-header",
         "list-item",
-        "panel-header",
         "resize",
         "value-table",
         "layout"
@@ -5598,7 +5495,9 @@
       "source": "kerf",
       "purpose": "Page identity with primary, secondary, and overflow actions that relocate at narrow widths.",
       "uses": [
-        "panel-header",
+        "toolbar",
+        "toolbar-control-group",
+        "toolbar-text",
         "state-banner",
         "layout"
       ],
@@ -5606,7 +5505,7 @@
         "A workspace page needs one primary heading and a small prioritized action set."
       ],
       "avoidWhen": [
-        "Use Toolbar for persistent application chrome or PanelHeader for a focused modal task."
+        "Use a smaller local heading when the page does not need actions or persistent identity."
       ],
       "appOwns": [
         "authorization",
@@ -5634,9 +5533,11 @@
       "category": "Recipes",
       "kind": "recipe",
       "source": "kerf",
-      "purpose": "Production modal containing a PanelHeader, navigable record master list, and ValueTable detail.",
+      "purpose": "Production modal containing a Toolbar heading, navigable record master list, and ValueTable detail.",
       "uses": [
-        "panel-header",
+        "toolbar",
+        "toolbar-control-group",
+        "toolbar-text",
         "list-header",
         "list-item",
         "value-table",
@@ -5656,7 +5557,7 @@
         "record actions"
       ],
       "accessibility": [
-        "Web Awesome owns modal focus and Escape; the application adapter restores the invoking control after hide, and PanelHeader supplies the visible hierarchy."
+        "Web Awesome owns modal focus and Escape; the application adapter restores the invoking control after hide, and Toolbar plus ToolbarText supply the visible hierarchy."
       ],
       "delivery": {
         "sideEffects": [
@@ -5676,9 +5577,11 @@
       "category": "Recipes",
       "kind": "recipe",
       "source": "kerf",
-      "purpose": "One visible publishing-form surface with PanelHeader hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
+      "purpose": "One visible publishing-form surface with Toolbar heading hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
       "uses": [
-        "panel-header",
+        "toolbar",
+        "toolbar-control-group",
+        "toolbar-text",
         "select",
         "state-banner",
         "wa-input",
@@ -5699,7 +5602,7 @@
         "transport"
       ],
       "accessibility": [
-        "The form references PanelHeader's title and summary ids; production fields own labels and help; invalid submission creates an assertive persistent StateBanner while successful submission creates a polite persistent banner."
+        "The form references its ToolbarText title and supporting-summary ids; production fields own labels and help; invalid submission creates an assertive persistent StateBanner while successful submission creates a polite persistent banner."
       ],
       "delivery": {
         "sideEffects": [
@@ -5721,7 +5624,9 @@
       "source": "kerf",
       "purpose": "Deterministic loading, empty, populated, stale refresh, and error states around one stable list workspace.",
       "uses": [
-        "panel-header",
+        "toolbar",
+        "toolbar-control-group",
+        "toolbar-text",
         "state-banner",
         "empty-state",
         "loading-spinner",
@@ -5842,7 +5747,9 @@
       "source": "kerf",
       "purpose": "A record inspector whose per-record values load asynchronously — every value-bearing component takes a shared placeholder flag, so the same chrome renders a faithful loading state and then the populated record.",
       "uses": [
-        "panel-header",
+        "toolbar",
+        "toolbar-control-group",
+        "toolbar-text",
         "value-table",
         "select",
         "segmented-control",
@@ -5885,7 +5792,6 @@
       "source": "kerf",
       "purpose": "A mini app frame whose left navigation rail and bottom activity drawer are standalone CollapsiblePanels driven by wireSidebar: per-side collapse/expand toggles, focus move-in and restore, a dismissable compact overlay, and per-panel persistence.",
       "uses": [
-        "panel-header",
         "list-header",
         "list-item",
         "toolbar",

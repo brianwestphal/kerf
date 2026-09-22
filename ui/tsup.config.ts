@@ -43,7 +43,6 @@ const entries = [
   'webawesome',
   'state-banner',
   'empty-state',
-  'panel-header',
   'value-table',
 ];
 

@@ -4,10 +4,13 @@ import './recipes.css';
 
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
+import { Skeleton } from '@kerfjs/ui/skeleton';
 import { StateBanner } from '@kerfjs/ui/state-banner';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { signal } from 'kerfjs';
 import { Columns3, FileText, Inbox, List } from 'lucide';
@@ -35,25 +38,43 @@ export const createRecipe: RecipeFactory = (announce) => {
         data-recipe="recipe-loading-inspector"
         data-inspector-loading={String(p)}
       >
-        <PanelHeader
-          title="Ticket · KF-2048"
-          titleId="recipe-inspector-title"
-          summary="Restore keyboard focus after a dialog closes"
-          summaryId="recipe-inspector-summary"
-          icon={icon(FileText, 'file-text')}
-          placeholder={p}
-          actions={
-            <button
-              class="kui-recipe__button"
-              data-primary="true"
-              type="button"
-              data-action="recipe-action"
-              data-recipe-command="toggle"
-            >
-              {p ? 'Show loaded' : 'Show loading'}
-            </button>
+        <Toolbar
+          label="Ticket inspector"
+          dividerSides=""
+          leading={
+            <>
+              <ToolbarControlGroup appearance="borderless" single>
+                {icon(FileText, 'file-text')}
+              </ToolbarControlGroup>
+              <ToolbarText
+                text="Ticket · KF-2048"
+                size="xlarge"
+                id="recipe-inspector-title"
+                placeholder={p}
+              />
+            </>
+          }
+          trailing={
+            <ToolbarControlGroup appearance="borderless" single>
+              <button
+                class="kui-recipe__button"
+                data-primary="true"
+                type="button"
+                data-action="recipe-action"
+                data-recipe-command="toggle"
+              >
+                {p ? 'Show loaded' : 'Show loading'}
+              </button>
+            </ToolbarControlGroup>
           }
         />
+        <p class="kui-recipe__heading-summary" id="recipe-inspector-summary">
+          {p ? (
+            <Skeleton width="18em" />
+          ) : (
+            'Restore keyboard focus after a dialog closes'
+          )}
+        </p>
         <div class="recipe-inspector__body kui-pane__content kui-content">
           <section>
             <ValueTable label="Ticket details">

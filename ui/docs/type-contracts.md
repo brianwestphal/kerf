@@ -19,11 +19,10 @@ public-signature artifact.
 | `KUI-T004` | A literal `SegmentedControl.value` belongs to its literal `choices`.                                                                                                                   |
 | `KUI-T005` | `expanded`, `expandAction`, and `expandLabel` exist only on `TokenSearchField({ collapsible: true })`.                                                                                 |
 | `KUI-T006` | `TokenSearchEditorAttributes` accepts application `data-*` metadata but rejects component-owned identity, morph, count, and placeholder attributes.                                    |
-| `KUI-T007` | `PanelHeader.summaryId` cannot exist without rendered `summary` content.                                                                                                               |
-| `KUI-T008` | `ToolbarText.maxLines` requires `wrap: true`; it is never silently ignored in typed code.                                                                                              |
-| `KUI-T009` | A literal `TabScaffold.active` id belongs to its literal `tabs`.                                                                                                                       |
-| `KUI-T010` | Adjacent-token keyboard removal requires `onRemoveToken`; disabling removal rejects the now-meaningless callback.                                                                      |
-| `KUI-T011` | Finite public variants have named exported union types, including divider sides, tab activation, banner urgency, and all ToolbarControlGroup presentation axes.                        |
+| `KUI-T007` | `ToolbarText.maxLines` requires `wrap: true`; it is never silently ignored in typed code.                                                                                              |
+| `KUI-T008` | A literal `TabScaffold.active` id belongs to its literal `tabs`.                                                                                                                       |
+| `KUI-T009` | Adjacent-token keyboard removal requires `onRemoveToken`; disabling removal rejects the now-meaningless callback.                                                                      |
+| `KUI-T010` | Finite public variants have named exported union types, including divider sides, tab activation, banner urgency, and all ToolbarControlGroup presentation axes.                        |
 
 Literal identity inference is intentionally additive for dynamic applications.
 When choices or ids arrive at runtime and the state signal is correctly typed as
@@ -45,7 +44,7 @@ ordinary source/type gates:
 
 - required identity or accessible-name inputs on `AppTab`, `FloatingToolbar`,
   `NavStack`, `SplitView`, `Workbench`, `TabBar`, `ResizableRegion`,
-  `SegmentedControl`, `TokenSearchField`, `PanelHeader`, and `ValueTable`;
+  `SegmentedControl`, `TokenSearchField`, and `ValueTable`;
 - finite variants exported or represented as literal props on `DisclosureArrow`,
   `FloatingToolbar`, `Pane`, `ResizableRegion`, `SegmentedControl`, `StateBanner`,
   `SunkenPanel`, `ToolbarText`, `CollapsiblePanel`, `Catalog`, and the wire helpers;
@@ -92,8 +91,7 @@ move errors into casts without making the integration safer.
   `{ keyboard: { onRemoveToken } }` or
   `{ keyboard: { removeAdjacentToken: false } }` when only caret navigation is
   wanted.
-- Remove orphaned `summaryId`, or render the matching `summary`; add
-  `wrap: true` anywhere `ToolbarText.maxLines` is used.
+- Add `wrap: true` anywhere `ToolbarText.maxLines` is used.
 - Replace `Toolbar({ divider: false })` with `dividerSides: ''`; the default
   remains a bottom divider, while canonical combinations such as `tr` and
   `trbl` select more physical edges.

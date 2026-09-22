@@ -23,7 +23,7 @@
 }
 
 .kui-toolbar-text[data-size="xlarge"] {
-  /* Matches the page/panel title: the same responsive clamp so a PanelHeader
+  /* Matches page/panel titles: the same responsive clamp so a heading toolbar
      title reads at the page-title scale without a bespoke override. Height grows
      to the larger text (the fixed 40px would clip its ascenders). */
   height: auto;

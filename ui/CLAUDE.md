@@ -22,7 +22,7 @@ and check: is the component/pane/content-item already handling this?
 probably wrong:**
 
 - `padding` / `margin` on a wrapper around a `.kui-content-item`, a pane, a
-  `ListItem`, `StateBanner`, `PanelHeader`, etc. — they own their own 8px inset.
+  `ListItem`, `StateBanner`, `Toolbar`, etc. — they own their own 8px inset.
   Adding more **double-insets** it (the single most-repeated bug).
 - `width` / `height` on a component to make it "the right size" — components size
   to their content and tokens. A forced box leaves a halo or a stretched oval
@@ -32,8 +32,8 @@ probably wrong:**
   or region "look contained." Hierarchy comes from alignment, spacing, and type
   first; a border must mark a _real_ distinction. A component sitting directly on
   the surface is usually correct.
-- A **fixed heading row** you hand-built — use `PanelHeader` (a plain Toolbar with
-  an xl `ToolbarText` title). Do not restyle a toolbar to make a header.
+- A **fixed heading row** with custom geometry — compose a plain `Toolbar` with a
+  direct xl `ToolbarText` title and grouped controls. Do not restyle the toolbar.
 
 ## Pre-flight checklist (the mistakes to not repeat)
 
@@ -45,9 +45,10 @@ probably wrong:**
 - **Trust the defaults.** Render a component at its natural size and color; a
   LucideIcon is 24px by design, not 16px. If it looks wrong at the default, the
   fix is usually the surrounding layout, not an override.
-- **One heading primitive.** `PanelHeader` is _the_ panel/dialog/page heading.
-  There is no separate page-header vs dialog-header. It overrides no Toolbar
-  styles; its only bespoke CSS is the icon group's fill/border and the subtitle.
+- **One heading composition.** Panel/dialog/page headings are plain `Toolbar`
+  compositions: a direct xl `ToolbarText`, optional grouped icon, and grouped
+  trailing controls. Set `headingLevel` for page/section landmarks. Supporting
+  copy is app-owned content below the toolbar.
 - **Toolbars hold only `ToolbarText` and `ToolbarControlGroup`.** Never a bare
   button, input, link, or loose markup in a zone. A title is `ToolbarText`, not an
   `<h2>`. (Popup menu = a `single` ToolbarControlGroup around a `wa-dropdown`.)
@@ -69,7 +70,8 @@ recipe-specific grid, a product arrangement of panes — and even then it may on
 - override documented `--kui-*` tokens at the narrowest real composition boundary.
 
 It is **not** for spacing (use the scale / content-item), sizing a component (use
-its props/tokens), giving something a heading (use `PanelHeader`), laying out a
+its props/tokens), giving something a heading (use the standard Toolbar +
+ToolbarText composition), laying out a
 toolbar (use Toolbar zones + groups), or making a region look contained (use a
 `.kui-content-item`, or nothing). If a diff is mostly `padding`/`margin`/`width`/
 `height`/`border` on kerf elements, treat it as a smell and re-derive from the

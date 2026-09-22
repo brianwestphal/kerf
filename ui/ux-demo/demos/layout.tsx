@@ -1,5 +1,7 @@
 import { Pane } from '@kerfjs/ui/pane';
-import { PanelHeader } from '@kerfjs/ui/panel-header';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 
 import { button } from './state.js';
 
@@ -10,10 +12,21 @@ export function LayoutDemo() {
       contentElement="section"
       rootAttributes={{ 'data-demo': 'layout' }}
       header={
-        <PanelHeader
-          title="Semantic layout"
-          titleId="layout-title"
-          actions={button('New item', 'log-add')}
+        <Toolbar
+          label="Semantic layout"
+          dividerSides=""
+          leading={
+            <ToolbarText
+              text="Semantic layout"
+              size="xlarge"
+              id="layout-title"
+            />
+          }
+          trailing={
+            <ToolbarControlGroup appearance="borderless" single>
+              {button('New item', 'log-add')}
+            </ToolbarControlGroup>
+          }
         />
       }
     >

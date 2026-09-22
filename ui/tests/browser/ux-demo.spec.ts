@@ -1028,163 +1028,6 @@ test('loads component-reachable package CSS through browser subpaths', async ({
   ).toHaveCSS('display', 'block');
 });
 
-test('aligns PanelHeader identity, actions, and subtitle across layout, theme, and scale', async ({
-  page,
-  browserName,
-}) => {
-  const layouts = [
-    {
-      name: 'wide',
-      width: 1100,
-      height: 760,
-      rootFontSize: '100%',
-      dark: false,
-      scale: 1,
-    },
-    {
-      name: 'narrow',
-      width: 390,
-      height: 844,
-      rootFontSize: '100%',
-      dark: false,
-      scale: 1,
-    },
-    {
-      name: 'dark',
-      width: 1100,
-      height: 760,
-      rootFontSize: '100%',
-      dark: true,
-      scale: 1,
-    },
-    {
-      name: 'zoom-200',
-      width: 720,
-      height: 900,
-      rootFontSize: '200%',
-      dark: false,
-      scale: 2,
-    },
-  ] as const;
-
-  for (const layout of layouts) {
-    await page.setViewportSize({ width: layout.width, height: layout.height });
-    await page.goto('/?component=panel-header');
-    await page.locator('html').evaluate((element, fontSize) => {
-      element.style.fontSize = fontSize;
-    }, layout.rootFontSize);
-    if (layout.dark) await page.locator('[data-action="toggle-theme"]').click();
-
-    // The second example is the panel/dialog heading with an icon, subtitle, and action.
-    const preferred = page.locator(
-      '[data-component="panel-header"]:not([data-placeholder="true"])',
-      { has: page.locator('.kui-panel-header__icon') },
-    );
-    const toolbar = preferred.locator(':scope > [data-component="toolbar"]');
-    const icon = toolbar.locator(
-      ':scope > .kui-toolbar__leading > .kui-panel-header__icon',
-    );
-    const glyph = icon.locator('svg');
-    const title = toolbar.locator(
-      ':scope > .kui-toolbar__leading > .kui-panel-header__title',
-    );
-    const action = toolbar
-      .locator(':scope > .kui-toolbar__trailing')
-      .getByRole('button', { name: 'Done' });
-    const summary = preferred.locator(':scope > .kui-panel-header__summary');
-
-    await expect(toolbar).not.toHaveAttribute('divider-sides');
-    expect(await toolbar.evaluate((element) => element.tagName)).toBe('HEADER');
-    // The icon is a normal (bordered) control group — not borderless — and the
-    // title is extra-large toolbar text.
-    await expect(icon).toHaveAttribute(
-      'data-component',
-      'toolbar-control-group',
-    );
-    expect(await icon.getAttribute('data-appearance')).not.toBe('borderless');
-    await expect(glyph).toBeVisible();
-    await expect(title).toHaveAttribute('data-component', 'toolbar-text');
-    await expect(title).toHaveAttribute('data-size', 'xlarge');
-    await expect(title).toBeVisible();
-    await expect(title).toHaveText('Package details');
-    await expect(title).toHaveAttribute('id', 'panel-standalone-title');
-    await expect(action).toBeVisible();
-    await action.focus();
-    await expect(action).toBeFocused();
-    await expect(summary).toHaveAttribute('id', 'panel-standalone-summary');
-    await expect(summary).toHaveText(
-      'Production-backed primitives with explicit contracts.',
-    );
-
-    const geometry = await preferred.evaluate((element) => {
-      const el = (selector: string) =>
-        element.querySelector<HTMLElement>(selector)!;
-      const bounds = (selector: string) => el(selector).getBoundingClientRect();
-      const iconBounds = bounds('.kui-panel-header__icon');
-      const glyphBounds = bounds('.kui-panel-header__icon svg');
-      const titleElement = el('.kui-panel-header__title');
-      const titleBounds = titleElement.getBoundingClientRect();
-      const titleTextLeft =
-        titleBounds.left +
-        Number.parseFloat(
-          window.getComputedStyle(titleElement).paddingInlineStart,
-        );
-      const actionBounds = element
-        .querySelector<HTMLElement>('.kui-toolbar__trailing button')!
-        .getBoundingClientRect();
-      const summaryElement = el('.kui-panel-header__summary');
-      const summaryBounds = summaryElement.getBoundingClientRect();
-      const summaryTextLeft =
-        summaryBounds.left +
-        Number.parseFloat(
-          window.getComputedStyle(summaryElement).paddingInlineStart,
-        );
-      return {
-        actionCenter: actionBounds.top + actionBounds.height / 2,
-        documentOverflow:
-          document.documentElement.scrollWidth -
-          document.documentElement.clientWidth,
-        glyphHeight: glyphBounds.height,
-        glyphWidth: glyphBounds.width,
-        iconCenter: iconBounds.top + iconBounds.height / 2,
-        iconHeight: iconBounds.height,
-        iconWidth: iconBounds.width,
-        summaryTextLeft,
-        summaryTop: summaryBounds.top,
-        titleBottom: titleBounds.bottom,
-        titleCenter: titleBounds.top + titleBounds.height / 2,
-        titleTextLeft,
-      };
-    });
-    // The icon control group sits at the toolbar control size with a 22px glyph.
-    expect(geometry.iconWidth).toBeCloseTo(2 + 42 * layout.scale, 4);
-    expect(geometry.iconHeight).toBeCloseTo(2 + 42 * layout.scale, 4);
-    expect(geometry.glyphWidth).toBeCloseTo(22 * layout.scale, 4);
-    expect(geometry.glyphHeight).toBeCloseTo(22 * layout.scale, 4);
-    // Icon, title, and action share one vertical center in the toolbar row.
-    expect(geometry.iconCenter).toBeCloseTo(geometry.actionCenter, 3);
-    expect(geometry.titleCenter).toBeCloseTo(geometry.actionCenter, 3);
-    // The summary text left-aligns with the title text, on its own row below it.
-    expect(geometry.summaryTextLeft).toBeCloseTo(geometry.titleTextLeft, 4);
-    expect(geometry.summaryTop).toBeGreaterThanOrEqual(
-      geometry.titleBottom - 0.1,
-    );
-    expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
-
-    if (browserName === 'chromium') {
-      await page.screenshot({
-        path: `test-results/panel-header-${layout.name}.png`,
-        fullPage: true,
-      });
-      if (layout.name === 'wide') {
-        await page.locator('[data-demo="panel-header"]').screenshot({
-          path: 'test-results/panel-header-reference-after.png',
-        });
-      }
-    }
-  }
-});
-
 test('sizes and rotates the first-class disclosure arrow while Select keeps its independent half scale', async ({
   page,
   browserName,
@@ -1796,14 +1639,14 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
   }
 });
 
-test('aligns a PanelHeader trailing action with the following content-item border', async ({
+test('aligns a heading-toolbar trailing action with the following content-item border', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=layout');
   const demo = page.locator('[data-demo="layout"]');
   const action = demo.locator(
-    ':scope > .kui-pane__header .kui-panel-header .kui-toolbar__trailing button',
+    ':scope > .kui-pane__header .kui-toolbar__trailing [data-component="toolbar-control-group"]',
   );
   const following = demo.locator(
     ':scope > .kui-pane__header + .kui-pane__content > .kui-content-item',
@@ -1817,14 +1660,14 @@ test('aligns a PanelHeader trailing action with the following content-item borde
   expect(actionBox).not.toBeNull();
   expect(followingBox).not.toBeNull();
   // The toolbar's 8px trailing padding and the content-item's 8px inline margin
-  // both land the right edge at the pane edge minus 8px, so they align.
+  // align the control-group and content-item outer borders.
   expect(actionBox!.x + actionBox!.width).toBeCloseTo(
     followingBox!.x + followingBox!.width,
     0,
   );
 });
 
-test('renders the header composition as two panel headers over a value table', async ({
+test('renders the header composition as two toolbars over a value table', async ({
   page,
   browserName,
 }) => {
@@ -1872,20 +1715,20 @@ test('renders the header composition as two panel headers over a value table', a
     }, layout);
 
     const demo = page.locator('[data-demo="headers"]');
-    // Two PanelHeaders (a page-style heading and an icon+subtitle panel heading)
+    // Two heading toolbars (a page title and an icon+subtitle panel heading)
     // and one value table, each within the frame and with no page overflow.
-    await expect(demo.locator('[data-component="panel-header"]')).toHaveCount(
-      2,
-    );
+    await expect(demo.locator('[data-component="toolbar"]')).toHaveCount(2);
     await expect(
-      demo.locator('[data-component="panel-header"] .kui-panel-header__icon'),
+      demo.locator(
+        '.kui-toolbar__leading > [data-component="toolbar-control-group"] svg',
+      ),
     ).toHaveCount(1);
     await expect(demo.locator('.kui-value-table')).toHaveCount(1);
     const geometry = await demo.evaluate((element) => {
       const frame = element.getBoundingClientRect();
       const children = [
         ...element.querySelectorAll<HTMLElement>(
-          '[data-component="panel-header"], .kui-value-table',
+          '[data-component="toolbar"], .kui-value-table',
         ),
       ].map((child) => child.getBoundingClientRect());
       return {

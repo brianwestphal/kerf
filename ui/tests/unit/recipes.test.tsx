@@ -101,7 +101,7 @@ describe('production composition recipes', () => {
     expect(html(toolbar.render())).toContain('data-value="board"');
   });
 
-  it('gives the composer PanelHeader hierarchy and direct shared-gutter controls', () => {
+  it('gives the composer toolbar heading and direct shared-gutter controls', () => {
     const form = createComposerForm(() => {});
     const template = document.createElement('template');
     template.innerHTML = html(form.render());
@@ -114,7 +114,7 @@ describe('production composition recipes', () => {
       'recipe-composer-summary',
     );
     expect(
-      root.querySelector(':scope > [data-component="panel-header"]'),
+      root.querySelector(':scope > [data-component="toolbar"]'),
     ).not.toBeNull();
     expect(root.querySelector('#recipe-composer-title')?.textContent).toBe(
       'Publish workspace update',

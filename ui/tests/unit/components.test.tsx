@@ -13,7 +13,6 @@ import { ListInsetText } from '../../src/list-inset-text.js';
 import { ListItem } from '../../src/list-item.js';
 import { LoadingSpinner } from '../../src/loading-spinner.js';
 import { LucideIcon } from '../../src/lucide-icon.js';
-import { PanelHeader } from '../../src/panel-header.js';
 import {
   clampRegionSize,
   ResizableRegion,
@@ -865,67 +864,7 @@ describe('production UI primitives', () => {
     });
   });
 
-  it('renders panel-header hierarchy plus a semantic value table', () => {
-    // PanelHeader is a plain Toolbar: an optional icon group (a normal, bordered
-    // control group — not borderless), the title as extra-large ToolbarText, the
-    // actions passed straight into the trailing zone, and an optional subtitle.
-    const panel = asHtml(
-      PanelHeader({
-        title: 'Details',
-        titleId: 'details-title',
-        summary: 'Current state',
-        summaryId: 'details-summary',
-        icon,
-        iconClassName: 'accent',
-        actions: icon,
-      }),
-    );
-    expect(panel).toContain('data-has-icon="true"');
-    const panelHost = document.createElement('div');
-    panelHost.innerHTML = panel;
-    const panelRoot = panelHost.querySelector<HTMLElement>(
-      '[data-component="panel-header"]',
-    )!;
-    const toolbar = panelRoot.querySelector<HTMLElement>(
-      ':scope > [data-component="toolbar"]',
-    )!;
-    expect(panelRoot.tagName).toBe('DIV');
-    expect(toolbar.tagName).toBe('HEADER');
-    expect(toolbar.hasAttribute('divider-sides')).toBe(false);
-    const iconGroup = toolbar.querySelector<HTMLElement>(
-      ':scope > .kui-toolbar__leading > .kui-panel-header__icon.accent[data-component="toolbar-control-group"]',
-    )!;
-    expect(iconGroup).not.toBeNull();
-    expect(iconGroup.dataset.appearance).not.toBe('borderless'); // a normal bordered group, not borderless
-    const panelTitle = toolbar.querySelector<HTMLElement>(
-      ':scope > .kui-toolbar__leading > .kui-panel-header__title',
-    )!;
-    expect(panelTitle.dataset.component).toBe('toolbar-text');
-    expect(panelTitle.dataset.size).toBe('xlarge');
-    expect(panelTitle.id).toBe('details-title');
-    expect(panelTitle.textContent).toBe('Details');
-    // Default (dialog-style) title is a plain span, referenced via aria-labelledby, not a heading.
-    expect(panelTitle.getAttribute('role')).toBeNull();
-    expect(panelTitle.hasAttribute('aria-level')).toBe(false);
-    // The actions ride straight in the trailing zone — no wrapper group of PanelHeader's own.
-    expect(
-      toolbar.querySelector(':scope > .kui-toolbar__trailing > [data-lucide]'),
-    ).not.toBeNull();
-    expect(panel).not.toContain('kui-panel-header__actions');
-    expect(
-      panelRoot.querySelector(':scope > .kui-panel-header__summary')?.outerHTML,
-    ).toBe(
-      '<p class="kui-panel-header__summary" id="details-summary">Current state</p>',
-    );
-
-    const plain = asHtml(
-      PanelHeader({ title: 'Plain', titleId: 'plain-title' }),
-    );
-    expect(plain).toContain(
-      'data-has-icon="false" data-has-actions="false" data-has-summary="false"',
-    );
-    expect(plain).not.toContain('kui-panel-header__icon');
-    expect(plain).not.toContain('kui-panel-header__summary');
+  it('renders a semantic value table', () => {
     const plainRow = ValueTableRow({ label: 'Version', value: '4' });
     const iconRow = asHtml(
       ValueTableRow({
@@ -997,23 +936,6 @@ describe('production UI primitives', () => {
     expect(
       asHtml(ToolbarText({ text: 'Zero', wrap: true, maxLines: 0 })),
     ).not.toContain('data-max-lines');
-
-    // PanelHeader forwards headingLevel to its title so a page keeps a heading landmark.
-    const pageHost = document.createElement('div');
-    pageHost.innerHTML = asHtml(
-      PanelHeader({
-        title: 'Dashboard',
-        titleId: 'page-title',
-        headingLevel: 1,
-      }),
-    );
-    const pageTitle = pageHost.querySelector<HTMLElement>(
-      '.kui-panel-header__title',
-    )!;
-    expect(pageTitle.getAttribute('role')).toBe('heading');
-    expect(pageTitle.getAttribute('aria-level')).toBe('1');
-    expect(pageTitle.id).toBe('page-title');
-    expect(pageTitle.textContent).toBe('Dashboard');
   });
 
   it('renders labeled or decorative progress and generic feedback', () => {

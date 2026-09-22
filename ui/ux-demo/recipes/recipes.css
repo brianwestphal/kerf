@@ -139,8 +139,13 @@
   --spacing: 0;
   --width: min(62rem, calc(100vw - 2rem));
 }
-.recipe-dialog .kui-panel-header {
-  margin-inline: 0;
+.kui-recipe__heading-summary {
+  min-width: 0;
+  margin: 0 var(--kui-layout-inline-margin, remify(8px));
+  overflow: hidden;
+  color: var(--kui-color-text-quiet);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .recipe-form {

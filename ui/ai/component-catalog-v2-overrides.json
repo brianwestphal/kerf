@@ -1,7 +1,12 @@
 {
   "@kerfjs/ui:toolbar": {
     "_source": "docs/component-selection.md#toolbar-composition",
-    "contexts": ["application-chrome", "panel-header"],
+    "contexts": [
+      "application-chrome",
+      "page-header",
+      "panel-header",
+      "dialog-header"
+    ],
     "zones": [
       {
         "id": "leading",
@@ -40,7 +45,7 @@
     "_source": "docs/component-selection.md#toolbar-composition",
     "parents": {
       "mode": "listed",
-      "entries": ["@kerfjs/ui:toolbar", "@kerfjs/ui:panel-header"]
+      "entries": ["@kerfjs/ui:toolbar"]
     },
     "contexts": ["toolbar-zone"],
     "zones": [
@@ -56,41 +61,6 @@
       "concepts": ["control"],
       "requiredConcepts": ["control"]
     }
-  },
-  "@kerfjs/ui:panel-header": {
-    "_source": "docs/component-selection.md#problem-to-component-matrix",
-    "contexts": ["page-header", "panel-header", "dialog-header"],
-    "zones": [
-      {
-        "id": "title",
-        "accepts": ["text"],
-        "cardinality": { "min": 1, "max": 1 },
-        "exclusiveWith": []
-      },
-      {
-        "id": "subtitle",
-        "accepts": ["text"],
-        "cardinality": { "min": 0, "max": 1 },
-        "exclusiveWith": []
-      },
-      {
-        "id": "controls",
-        "accepts": ["control"],
-        "cardinality": { "min": 0, "max": "unbounded" },
-        "exclusiveWith": []
-      }
-    ],
-    "state": [
-      { "id": "placeholder", "owner": "controlled", "required": false }
-    ],
-    "diagnostics": [
-      {
-        "id": "KUI-C102",
-        "severity": "error",
-        "when": "the title is absent",
-        "message": "PanelHeader requires a title that names its page, panel, or dialog."
-      }
-    ]
   },
   "@kerfjs/ui:list": {
     "_source": "docs/component-selection.md#problem-to-component-matrix",

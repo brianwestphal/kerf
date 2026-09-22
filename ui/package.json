@@ -248,11 +248,6 @@
       "browser": "./dist/browser/empty-state.js",
       "import": "./dist/empty-state.js"
     },
-    "./panel-header": {
-      "types": "./dist/panel-header.d.ts",
-      "browser": "./dist/browser/panel-header.js",
-      "import": "./dist/panel-header.js"
-    },
     "./value-table": {
       "types": "./dist/value-table.d.ts",
       "browser": "./dist/browser/value-table.js",
@@ -296,7 +291,6 @@
     "./token-search-field.css": "./dist/styles/token-search-field.css",
     "./state-banner.css": "./dist/styles/state-banner.css",
     "./empty-state.css": "./dist/styles/empty-state.css",
-    "./panel-header.css": "./dist/styles/panel-header.css",
     "./value-table.css": "./dist/styles/value-table.css",
     "./ai/*": "./ai/*",
     "./docs/*": "./docs/*"

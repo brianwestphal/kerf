@@ -56,7 +56,7 @@ control border and 1px control padding, so its default rounded-rectangle radius
 is 10px inside the control's 12px radius.
 
 A visible parent surface does not make every child another visible card. The
-composer recipe keeps its form as the single surface, uses `PanelHeader` for
+composer recipe keeps its form as the single surface, uses a heading `Toolbar` for
 its task hierarchy, and places field and action control edges on the shared 8px
 inline gutter instead of nesting them inside another padded content item. A
 conditional `StateBanner` remains visibly distinct because it communicates
@@ -77,7 +77,7 @@ semantic status.
 | Explicit scroll owner outside a pane     | `.kui-scroll-owner`       | `overflow: auto`                      |
 
 The component layer applies the same contract to `Toolbar`, `ListHeader`,
-`ListItem`, `PanelHeader`, `StateBanner`, `ValueTable`,
+`ListItem`, `Toolbar`, `StateBanner`, `ValueTable`,
 `ValueTableRow`, tabs, and form controls. A value-table row separator starts at
 the row's 8px content inset, or at 40px when the row contains its 24px leading
 icon and 8px gap, and always ends 8px from the right edge. Each value-table row
@@ -85,13 +85,11 @@ also keeps 8px of root-scaled block padding independently of its semantic inline
 inset. Most interactive rows and toolbar groups are 44px tall.
 Toolbar groups reserve a real 1px outer border around a 42px inner area, even
 when their border and background are transparent.
-`PanelHeader` is a plain top `Toolbar` used as a panel, dialog, or page heading
-and overrides no Toolbar styles. The leading zone holds the optional icon (a
-normal bordered `ToolbarControlGroup` given a brand fill with a matching border,
-a 22px glyph) and the title as extra-large `ToolbarText`; the app's trailing
-controls go straight into the trailing zone, and the icon group is omitted when
-no icon is passed. The optional subtitle is a separate row below the toolbar, its
-text left-aligned with the title text.
+Panel, dialog, and page headings are plain `Toolbar` compositions. The leading
+zone holds an optional icon `ToolbarControlGroup` and a direct extra-large
+`ToolbarText`; actions belong in a trailing group. Omit empty groups. Supporting
+copy is app-owned content below the toolbar and aligns with the intended content
+edge.
 
 ## Spacing scale
 

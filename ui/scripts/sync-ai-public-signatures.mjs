@@ -21,7 +21,6 @@ const entries = [
   ['@kerfjs/ui/list-item', 'dist/list-item.d.ts'],
   ['@kerfjs/ui/list-inset-control', 'dist/list-inset-control.d.ts'],
   ['@kerfjs/ui/list-inset-text', 'dist/list-inset-text.d.ts'],
-  ['@kerfjs/ui/panel-header', 'dist/panel-header.d.ts'],
   ['@kerfjs/ui/value-table', 'dist/value-table.d.ts'],
   ['@kerfjs/ui/app-tab', 'dist/app-tab.d.ts'],
   ['@kerfjs/ui/tab-bar', 'dist/tab-bar.d.ts'],

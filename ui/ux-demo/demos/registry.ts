@@ -16,7 +16,6 @@ import { ListItemDemo } from './list-item.js';
 import { LoadingSpinnerDemo } from './loading-spinner.js';
 import { LucideIconDemo } from './lucide-icon.js';
 import { PaneDemo } from './pane.js';
-import { PanelHeaderDemo } from './panel-header.js';
 import { ResizeDemo } from './resize.js';
 import { SegmentedControlDemo } from './segmented-control.js';
 import { SelectDemo } from './select.js';
@@ -55,7 +54,6 @@ export const demos = {
   tabs: TabsDemo,
   'tab-bar': TabBarDemo,
   headers: HeadersDemo,
-  'panel-header': PanelHeaderDemo,
   pane: PaneDemo,
   'split-view': SplitViewDemo,
   workbench: WorkbenchDemo,

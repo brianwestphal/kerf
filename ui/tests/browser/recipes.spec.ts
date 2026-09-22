@@ -133,7 +133,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
       await content.press('Enter');
       await expect(content).toBeFocused();
       await expect(
-        recipe.locator('.kui-panel-header__title', {
+        recipe.locator('[data-component="toolbar-text"]', {
           hasText: 'Active projects',
         }),
       ).toBeVisible();
@@ -275,7 +275,7 @@ test('keeps project dialog content on intentional wide and narrow gutters', asyn
       const titleRange = document.createRange();
       titleRange.selectNodeContents(title);
       const pane = bounds('.recipe-dialog__pane');
-      const header = bounds('.kui-panel-header');
+      const header = bounds('.recipe-list-detail__detail > .kui-toolbar');
       const masterDetail = bounds('.recipe-list-detail');
       const detail = bounds('.recipe-list-detail__detail');
       const table = bounds('.kui-value-table');
@@ -320,7 +320,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
       const rootBounds = root.getBoundingClientRect();
       const rootStyle = window.getComputedStyle(root);
       const header = root.querySelector<HTMLElement>(
-        ':scope > [data-component="panel-header"]',
+        ':scope > [data-component="toolbar"]',
       )!;
       const fields = root.querySelector<HTMLElement>(
         ':scope > .recipe-form__fields',
@@ -436,7 +436,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
       'recipe-composer-summary',
     );
     await expect(
-      form.locator(':scope > [data-component="panel-header"]'),
+      form.locator(':scope > [data-component="toolbar"]'),
     ).toHaveCount(1);
     await expect(form.locator('#recipe-composer-title')).toHaveText(
       'Publish workspace update',
@@ -448,7 +448,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
     await expect(form.locator(':scope > .kui-content-item')).toHaveCount(0);
     await expect(
       form.locator(
-        ':scope > :not([data-component="panel-header"]):not(.recipe-form__section):not([data-component="state-banner"])',
+        ':scope > :not([data-component="toolbar"]):not(.kui-recipe__heading-summary):not(.recipe-form__section):not([data-component="state-banner"])',
       ),
     ).toHaveCount(0);
     const banner = form.locator(':scope > [data-component="state-banner"]');
@@ -483,8 +483,8 @@ test('keeps the composer on one labeled surface with shared field and action gut
       measured.footerEnd,
     ])
       expect(inset).toBeCloseTo(1 + 8 * scale, 0);
-    // The redesigned PanelHeader is a flush toolbar and no longer replicates the
-    // content-item gutter, so it sits at the surface edge rather than the 9px inset.
+    // The heading toolbar is flush with the surface rather than using the
+    // content-item gutter, so it sits at the edge rather than the 9px inset.
     expect(measured.headerStart).toBeLessThanOrEqual(1 + 2 * scale);
     expect(measured.headerEnd).toBeLessThanOrEqual(1 + 2 * scale);
     for (const padding of [

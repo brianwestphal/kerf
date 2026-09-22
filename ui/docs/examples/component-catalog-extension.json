@@ -36,7 +36,7 @@
         "border": "child",
         "padding": "child",
         "notes": [
-          "The embedding pane positions the inspector; PanelHeader, ValueTable, and action groups retain their own geometry."
+          "The embedding pane positions the inspector; Toolbar, ValueTable, and action groups retain their own geometry."
         ]
       },
       "documentation": "docs/inspector.md"

@@ -137,12 +137,12 @@ instead of retaining stale content.
 | Toolbars                | `Toolbar`, `ToolbarControlGroup`, `ToolbarText`                                              | Leading/center/trailing structure and grouped controls                                                                                                                                                                                                                                                                                                                         |
 | Lists and menus         | `List`, `ListItem`, `ListActionRow`, `ListHeader`                                            | Stretch-aligned vertical layout with optional gap/flex/scroll/divider ownership; navigation/action rows, sibling primary/trailing row actions, and section headings with semantic count/countLabel pills, plus narrow typed `data-*` and popover-relationship extension slots but no domain commands                                                                           |
 | Tabs                    | `AppTab`, `TabBar`, `wireTabBars`, `reorderTabs`                                             | Controlled tab/close markup with runtime-safe domain metadata and an optional decorative close glyph, fixed rails, horizontal overflow, edge autoscroll, pointer/keyboard reorder, and focus restoration; the app owns state and persistence                                                                                                                                   |
-| Layout                  | `PanelHeader`, `ValueTable`, `ValueTableRow`                                                 | Panel/dialog/page headings as plain toolbars with an optional bordered icon group, an extra-large title, trailing controls, and an optional subtitle; and typed semantic definition-list rows with optional leading icons                                                                                                                                                      |
+| Layout                  | `Toolbar`, `ToolbarText`, `ToolbarControlGroup`, `ValueTable`, `ValueTableRow`               | Panel/dialog/page headings composed as plain toolbars with an optional icon group, an extra-large title, grouped trailing controls, and app-owned supporting copy; and typed semantic definition-list rows with optional leading icons                                                                                                                                         |
 | Resize                  | `ResizableRegion`, `wireResizableRegions`                                                    | Pointer-captured resize plus arrows, Shift acceleration, Home, End, and an optional decorative handle glyph                                                                                                                                                                                                                                                                    |
 | Choice controls         | `SegmentedControl`, `Select`                                                                 | Controlled exclusive buttons with toolbar/rounded/pill presentation; grouped Web Awesome popup choices with optional Lucide icons                                                                                                                                                                                                                                              |
 | Search                  | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `wireTokenSearchFields` | DOM-owned free text plus controlled ordered atomic filter chips; optional animated standalone or toolbar-group collapse; DOM reading, Enter submission, and caret-preserving keyboard deletion without application query grammar                                                                                                                                               |
 | Feedback                | `StateBanner`, `EmptyState`, `LoadingSpinner`, `Skeleton`                                    | Status/alert with an optional terse tone-tinted badge, empty/busy, meaningful/decorative progress, and a subtle unanimated loading-placeholder block                                                                                                                                                                                                                           |
-| Loading placeholder     | a component's `placeholder` prop                                                             | Value-bearing components (`Select`, `ListHeader`, `ListItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`, `AppTab`, `ToolbarText`, `ListActionRow`) render their real chrome with value slots as `Skeleton` blocks and interactivity disabled, so a parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding markup          |
+| Loading placeholder     | a component's `placeholder` prop                                                             | Value-bearing components (`Select`, `ListHeader`, `ListItem`, `ValueTableRow`, `SegmentedControl`, `StateBanner`, `AppTab`, `ToolbarText`, `ListActionRow`) render their real chrome with value slots as `Skeleton` blocks and interactivity disabled, so a parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding markup                         |
 | Component catalog shell | `Catalog`, `CatalogExample`, `CatalogExampleStack` + `wireCatalog` (`@kerfjs/ui/catalog`)    | An opt-in, subpath-only whole-screen shell — collapsible category sidebar + titled preview stage + resources footer + related-entry selector — with public preview-layout helpers whose safe `rootAttributes` carry authoring `data-*` metadata; controlled/stateless (the app owns `active`/`collapsed`/`theme` and computes the preview `content`). See `ui/docs/catalog.md` |
 
 Catalog demos follow the single
@@ -158,10 +158,11 @@ slot without mixing authoring rules into the per-entry component catalog.
 - `StateBanner` defaults to polite `status`; callers opt into assertive `alert`
   only for immediate action. Keep an optional badge terse; its text is announced
   as part of the banner, and its tone must not be the only conveyed meaning.
-- `PanelHeader` is a plain top toolbar: an optional bordered icon group and an
-  extra-large title in the leading zone, the app's trailing controls in the
-  trailing zone, and an optional summary/id below the title. Its title carries
-  no heading role, so the app links `titleId`/`summaryId` to the dialog or panel.
+- Panel, dialog, and page headings use a plain top `Toolbar`: an optional icon
+  group and a direct extra-large `ToolbarText` in the leading zone, grouped
+  controls in the trailing zone, and optional app-owned supporting copy below.
+  The app links title/supporting-copy ids to a dialog or panel and sets
+  `headingLevel` when a page or section title needs a heading landmark.
 - `ResizableRegion` renders a focusable ARIA separator with orientation and live
   min/max/current values. Its wiring returns a disposer. `handleIcon` replaces
   dormant decoration only; it does not replace separator semantics or wiring.
@@ -372,8 +373,8 @@ composer form, list-state lifecycle, and compact mixed-control toolbar. They
 are lazy catalog modules rather than new runtime exports. Each uses public
 component subpaths plus `layout.css`, declares what the recipe
 owns versus application policy, and has a stable `?component=recipe-*` route.
-The composer reference keeps one visible form surface with `PanelHeader`
-title/summary hierarchy, fields and actions on the shared 8px control gutter,
+The composer reference keeps one visible form surface with toolbar title and
+supporting-copy hierarchy, fields and actions on the shared 8px control gutter,
 and 24px major rhythm; only its conditional `StateBanner` adds another semantic
 surface. Its controlled Reset synchronizes
 the upgraded Web Awesome fields' live value properties with their rendered

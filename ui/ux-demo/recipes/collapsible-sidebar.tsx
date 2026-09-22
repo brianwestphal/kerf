@@ -10,7 +10,6 @@ import { deviceClass } from '@kerfjs/ui/device-class';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -119,17 +118,28 @@ export const createRecipe: RecipeFactory = (announce) => {
         </nav>
       </CollapsiblePanel>
       <main class="recipe-collapsible-sidebar__main kui-pane">
-        <PanelHeader
-          title={
-            selected.value === 'projects'
-              ? 'Projects'
-              : selected.value === 'shared'
-                ? 'Shared with me'
-                : 'Inbox'
+        <Toolbar
+          label="Current navigation view"
+          dividerSides=""
+          leading={
+            <>
+              <ToolbarControlGroup appearance="borderless" single>
+                {railToggle(false)}
+              </ToolbarControlGroup>
+              <ToolbarText
+                text={
+                  selected.value === 'projects'
+                    ? 'Projects'
+                    : selected.value === 'shared'
+                      ? 'Shared with me'
+                      : 'Inbox'
+                }
+                size="xlarge"
+                id="recipe-collapsible-main-title"
+              />
+            </>
           }
-          titleId="recipe-collapsible-main-title"
-          icon={railToggle(false)}
-          actions={
+          trailing={
             <ToolbarControlGroup appearance="borderless" single>
               {drawerToggle()}
             </ToolbarControlGroup>
@@ -161,11 +171,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         <Toolbar
           label="Activity"
           dividerSides="b"
-          leading={
-            <ToolbarControlGroup appearance="borderless" single>
-              <ToolbarText text="Activity" size="small" />
-            </ToolbarControlGroup>
-          }
+          leading={<ToolbarText text="Activity" size="small" />}
           trailing={
             <ToolbarControlGroup appearance="borderless" single>
               {drawerToggle()}

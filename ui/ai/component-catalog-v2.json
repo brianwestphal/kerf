@@ -647,7 +647,12 @@
       "kind": "component",
       "source": "kerf",
       "parents": { "mode": "any", "entries": [] },
-      "contexts": ["application-chrome", "panel-header"],
+      "contexts": [
+        "application-chrome",
+        "page-header",
+        "panel-header",
+        "dialog-header"
+      ],
       "zones": [
         {
           "id": "leading",
@@ -738,10 +743,7 @@
       "name": "ToolbarControlGroup",
       "kind": "component",
       "source": "kerf",
-      "parents": {
-        "mode": "listed",
-        "entries": ["@kerfjs/ui:toolbar", "@kerfjs/ui:panel-header"]
-      },
+      "parents": { "mode": "listed", "entries": ["@kerfjs/ui:toolbar"] },
       "contexts": ["toolbar-zone"],
       "zones": [
         {
@@ -930,81 +932,6 @@
       "provenance": {
         "selection": "ai/component-catalog.json",
         "composition": "generated-permissive-default"
-      }
-    },
-    {
-      "key": "@kerfjs/ui:panel-header",
-      "package": "@kerfjs/ui",
-      "id": "panel-header",
-      "name": "PanelHeader",
-      "kind": "component",
-      "source": "kerf",
-      "parents": { "mode": "any", "entries": [] },
-      "contexts": ["page-header", "panel-header", "dialog-header"],
-      "zones": [
-        {
-          "id": "title",
-          "accepts": ["text"],
-          "cardinality": { "min": 1, "max": 1 },
-          "exclusiveWith": []
-        },
-        {
-          "id": "subtitle",
-          "accepts": ["text"],
-          "cardinality": { "min": 0, "max": 1 },
-          "exclusiveWith": []
-        },
-        {
-          "id": "controls",
-          "accepts": ["control"],
-          "cardinality": { "min": 0, "max": "unbounded" },
-          "exclusiveWith": []
-        }
-      ],
-      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
-      "state": [
-        { "id": "placeholder", "owner": "controlled", "required": false }
-      ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
-      "responsive": { "owner": "not-applicable", "behaviors": [] },
-      "layout": {
-        "roles": ["structure"],
-        "geometry": { "margin": "none", "border": "child", "padding": "child" }
-      },
-      "accessibility": {
-        "obligations": [
-          "Connect the title id and any provided summary id to the dialog or panel host.",
-          "Pass the trailing actions as a labeled ToolbarControlGroup when the group needs an accessible name.",
-          "For a page/view title pass headingLevel (usually 1) so the title exposes role=heading + aria-level as a heading landmark; omit it for a dialog title, which is referenced via aria-labelledby to titleId."
-        ]
-      },
-      "boundaries": {
-        "rootClass": "kui-panel-header",
-        "publicClasses": [
-          "kui-panel-header",
-          "kui-panel-header__icon",
-          "kui-panel-header__summary"
-        ],
-        "publicTokens": [
-          "--kui-color-brand-fill-quiet",
-          "--kui-color-brand-on-quiet",
-          "--kui-color-text-quiet",
-          "--kui-panel-header-icon-background",
-          "--kui-panel-header-icon-border",
-          "--kui-panel-header-icon-foreground"
-        ]
-      },
-      "diagnostics": [
-        {
-          "id": "KUI-C102",
-          "severity": "error",
-          "when": "the title is absent",
-          "message": "PanelHeader requires a title that names its page, panel, or dialog."
-        }
-      ],
-      "provenance": {
-        "selection": "ai/component-catalog.json",
-        "composition": "docs/component-selection.md#problem-to-component-matrix"
       }
     },
     {
@@ -4438,7 +4365,7 @@
       },
       "accessibility": {
         "obligations": [
-          "Web Awesome owns modal focus and Escape; the application adapter restores the invoking control after hide, and PanelHeader supplies the visible hierarchy."
+          "Web Awesome owns modal focus and Escape; the application adapter restores the invoking control after hide, and Toolbar plus ToolbarText supply the visible hierarchy."
         ]
       },
       "boundaries": {
@@ -4485,7 +4412,7 @@
       },
       "accessibility": {
         "obligations": [
-          "The form references PanelHeader's title and summary ids; production fields own labels and help; invalid submission creates an assertive persistent StateBanner while successful submission creates a polite persistent banner."
+          "The form references its ToolbarText title and supporting-summary ids; production fields own labels and help; invalid submission creates an assertive persistent StateBanner while successful submission creates a polite persistent banner."
         ]
       },
       "boundaries": {

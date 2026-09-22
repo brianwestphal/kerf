@@ -49,7 +49,6 @@ test('every placeholder-supporting component demos its placeholder case', async 
     'list-header',
     'list-action-row',
     'list-item',
-    'panel-header',
     'value-table',
     'select',
     'state-banner',
@@ -80,10 +79,14 @@ test('the Loading inspector recipe composes placeholder chrome and swaps to load
   await expect(inspector).toHaveAttribute('data-inspector-loading', 'true');
   await expect(
     inspector.locator(
-      '[data-component="panel-header"][data-placeholder="true"]',
+      '[data-component="toolbar-text"][data-placeholder="true"]',
     ),
   ).toBeVisible();
-  await expect(inspector.locator('.kui-panel-header__icon')).toBeVisible();
+  await expect(
+    inspector.locator(
+      '.kui-toolbar__leading [data-component="toolbar-control-group"]',
+    ),
+  ).toBeVisible();
   const rows = inspector.locator(
     '.kui-value-table__row[data-placeholder="true"]',
   );

@@ -113,10 +113,11 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   popup menu. A toolbar popup menu is a `single` `ToolbarControlGroup` around a
   `wa-dropdown` (its `slot="trigger"` `wa-button` is the toolbar button, kept under
   `data-morph-skip-children`).
-- **`PanelHeader` is _the_ panel/dialog/page heading.** A plain toolbar with an
-  optional bordered icon group, an extra-large `ToolbarText` title, the trailing
-  controls you pass, and an optional subtitle below — do not hand-build a heading
-  row or restyle a toolbar into one.
+- **Use one direct toolbar composition for panel/dialog/page headings.** Put an
+  optional icon in a `ToolbarControlGroup`, an extra-large `ToolbarText` directly
+  in the leading zone, and actions in a trailing group. Supporting copy is
+  app-owned content below. Do not create a private heading wrapper or restyle the
+  toolbar.
 - **Space by the five-step scale, by relationship not by eye.** `0`
   `--kui-space-none`, `4px` `--kui-space-2xs`, `8px` `--kui-space-xs` (inside a
   group), `16px` `--kui-space-m`, `24px` `--kui-space-l` (between major differing
@@ -153,7 +154,7 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   boilerplate while still owning parsing and controlled token state.
 - **Placeholder loading state, don't rebuild it.** For a value or component that is
   still loading, set `placeholder` on the component (`Select`, `ListHeader`,
-  `ListItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`,
+  `ListItem`, `ValueTableRow`, `SegmentedControl`, `StateBanner`,
   `AppTab`, `ToolbarText`, `ListActionRow`): it renders its real chrome with value
   slots as subtle **unanimated** skeleton blocks and interactivity disabled, so a
   parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding
@@ -168,7 +169,7 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 ## Public exports
 
 `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `FloatingToolbar`, `ToolbarText`,
-`PanelHeader`, `ListItem`, `ListActionRow`, `ListHeader`, `ListInsetControl`,
+`ListItem`, `ListActionRow`, `ListHeader`, `ListInsetControl`,
 `ListInsetText`, `SegmentedControl`,
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,
 `wireTokenSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),

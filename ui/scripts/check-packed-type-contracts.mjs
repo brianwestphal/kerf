@@ -70,7 +70,7 @@ try {
     readFileSync(join(packageRoot, 'package.json'), 'utf8'),
   );
   console.log(
-    `[check-packed-type-contracts] OK — ${packedManifest.name}@${packedManifest.version} declarations preserve KUI-T001..KUI-T011.`,
+    `[check-packed-type-contracts] OK — ${packedManifest.name}@${packedManifest.version} declarations preserve 10 active KUI-T contracts.`,
   );
 } finally {
   rmSync(temporary, { recursive: true, force: true });

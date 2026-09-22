@@ -112,15 +112,15 @@ focus, and click ownership while the application controls selection and any
 popover or context-menu lifecycle. Its `label`, `icon`, and
 `trailingActionIcon` SafeHtml slots are dormant and must not contain controls.
 
-Use `PanelHeader` for a panel, dialog, or page heading. It is a plain top
-toolbar (overriding no toolbar styles): the leading zone holds an optional icon
-(a normal bordered `ToolbarControlGroup` given a brand fill with a matching
-border) and the title as extra-large `ToolbarText`, and the app's trailing
-controls (typically a `ToolbarControlGroup`) go straight through `actions` into
-the trailing zone. Omit `icon` to drop the icon group, and connect `titleId`
-plus the optional `summaryId` to the dialog or panel host. Omit `summary` when no
-subtitle is needed; the component omits that row entirely. The app still owns
-modal focus, dismissal, command policy, and action handling.
+Compose a panel, dialog, or page heading with a plain `Toolbar`: the leading zone
+holds an optional icon `ToolbarControlGroup` and a direct extra-large
+`ToolbarText`; grouped actions belong in the trailing zone. Keep optional
+supporting copy below the toolbar as app-owned content and connect ids from the
+host's `aria-labelledby`/`aria-describedby`. The icon may use a normal bordered
+`ToolbarControlGroup` with a matching brand fill and border. Set `headingLevel`
+on `ToolbarText` for page or section landmarks; omit it for a dialog title named
+through `aria-labelledby`. The app owns modal focus, dismissal, command policy,
+ids, supporting copy, and action handling.
 
 Prefer an equivalent component prop or semantic token before writing an
 anatomy selector. When composition-specific layout still needs one, the
@@ -161,8 +161,8 @@ list-detail dialog, composer, list-state surface, or mixed-control toolbar,
 start from `ui/docs/recipes.md`. The runnable recipes use only public production
 subpaths and semantic layout owners. Preserve the included primitives and
 replace only application copy, state, permissions, persistence, and transport.
-For the composer form, preserve one visible form surface, use `PanelHeader`
-title/summary ids to label and describe it, align field and action control edges
+For the composer form, preserve one visible form surface, use toolbar title and
+supporting-copy ids to label and describe it, align field and action control edges
 to the shared 8px gutter, retain 24px major rhythm, and keep a conditional
 `StateBanner` as the only nested semantic surface. When resetting upgraded Web Awesome fields,
 synchronize their live `value` properties together with controlled rendered

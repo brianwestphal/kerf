@@ -101,7 +101,7 @@ describe('UX catalog metadata', () => {
     expect(artifact.entries.map(({ id }) => id)).toEqual(
       catalog.map(({ id }) => id),
     );
-    expect(artifact.entries).toHaveLength(113);
+    expect(artifact.entries).toHaveLength(112);
     expect(findCatalogEntry('recipe-command-palette')).toBeUndefined();
     expect(isCatalogId('recipe-command-palette')).toBe(false);
     const foundationSource = await readFile(
@@ -361,7 +361,6 @@ describe('UX catalog metadata', () => {
       'ToolbarControlGroup',
       'FloatingToolbar',
       'ToolbarText',
-      'PanelHeader',
       'ValueTable',
       'List',
       'ListHeader',
@@ -444,12 +443,6 @@ describe('UX catalog metadata', () => {
       'lucide-icon',
     ]);
     expect(findCatalogEntry('list-action-row')?.uses).toEqual(['lucide-icon']);
-    expect(findCatalogEntry('panel-header')?.uses).toEqual([
-      'lucide-icon',
-      'toolbar',
-      'toolbar-control-group',
-      'toolbar-text',
-    ]);
     expect(
       catalogEntriesUsing('list-action-row').map((entry) => entry.id),
     ).toEqual(['list']);

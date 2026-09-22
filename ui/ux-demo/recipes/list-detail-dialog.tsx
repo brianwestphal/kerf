@@ -7,7 +7,9 @@ import './recipes.css';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { PanelHeader } from '@kerfjs/ui/panel-header';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { signal } from 'kerfjs';
 import { FileText } from 'lucide';
@@ -89,22 +91,36 @@ export const createRecipe: RecipeFactory = (announce) => {
               </div>
             </nav>
             <section class="recipe-list-detail__detail kui-pane">
-              <PanelHeader
-                title="Project details"
-                titleId="recipe-dialog-title"
-                summary="Compare delivery state without leaving the workspace."
-                summaryId="recipe-dialog-summary"
-                icon={<LucideIcon icon={FileText} name="file-text" />}
-                actions={
-                  <wa-button
-                    appearance="plain"
-                    data-action="recipe-action"
-                    data-recipe-command="close"
-                  >
-                    Close
-                  </wa-button>
+              <Toolbar
+                label="Project details"
+                dividerSides=""
+                leading={
+                  <>
+                    <ToolbarControlGroup appearance="borderless" single>
+                      <LucideIcon icon={FileText} name="file-text" />
+                    </ToolbarControlGroup>
+                    <ToolbarText
+                      text="Project details"
+                      size="xlarge"
+                      id="recipe-dialog-title"
+                    />
+                  </>
+                }
+                trailing={
+                  <ToolbarControlGroup appearance="borderless" single>
+                    <wa-button
+                      appearance="plain"
+                      data-action="recipe-action"
+                      data-recipe-command="close"
+                    >
+                      Close
+                    </wa-button>
+                  </ToolbarControlGroup>
                 }
               />
+              <p class="kui-recipe__heading-summary" id="recipe-dialog-summary">
+                Compare delivery state without leaving the workspace.
+              </p>
               <div
                 class="recipe-list-detail__body kui-pane__content kui-content"
                 aria-live="polite"

@@ -56,7 +56,7 @@ no custom `actionIcon` is needed; ordinary navigation rows stay chevron-free.
 
 [Open the recipe](../ux-demo/?component=recipe-workspace-header) · [TSX source](../ux-demo/recipes/workspace-header.tsx)
 
-`PanelHeader` owns the page heading while one control cluster holds secondary,
+The page heading is a direct `Toolbar`/`ToolbarText` composition while one control cluster holds secondary,
 overflow, and primary actions. The app owns authorization and command policy;
 controls relocate without changing focus order.
 
@@ -66,10 +66,10 @@ controls relocate without changing focus order.
 
 The production Web Awesome dialog owns modal focus and Escape; the thin recipe
 adapter restores the invoking control consistently after the hide event.
-`PanelHeader`, `ListHeader`, `ListItem`, and `ValueTable` own their included
+`Toolbar`, `ListHeader`, `ListItem`, and `ValueTable` own their included
 anatomy. The application owns open state, selection, dismissal policy, and
-record actions. `PanelHeader` places the trailing controls the app passes
-directly into its top toolbar's trailing zone.
+record actions. A `ToolbarControlGroup` places the app's trailing controls in
+the top toolbar's trailing zone.
 The header sits on the dialog edge while retaining its internal control inset;
 the selected title receives the full content gutter, the metadata table fills
 the available detail width between the usual outer margins, and the action
@@ -80,8 +80,9 @@ Do not rebuild the dialog or reach into private shadow parts.
 
 [Open the recipe](../ux-demo/?component=recipe-composer-form) · [TSX source](../ux-demo/recipes/composer-form.tsx)
 
-`PanelHeader` supplies the task title and summary, with their ids referenced
-by the form. Production fields own labels, help, and native focus. The field
+A direct `ToolbarText` supplies the task title, with app-owned supporting copy
+below; their ids are referenced by the form. Production fields own labels, help,
+and native focus. The field
 and footer control edges sit directly on the shared 8px inline gutter rather
 than acquiring a second content-item padding inset; major children remain 24px
 apart and related controls use 8px gaps. The app owns
@@ -126,7 +127,7 @@ settles the chrome (reduced motion collapses the slide to instant). A live
 [Open the recipe](../ux-demo/?component=recipe-loading-inspector) · [TSX source](../ux-demo/recipes/loading-inspector.tsx)
 
 A record inspector whose per-record values load asynchronously. Every
-value-bearing component (`PanelHeader`, `ValueTable`/`ValueTableRow`, `Select`,
+value-bearing component (`ToolbarText`, `ValueTable`/`ValueTableRow`, `Select`,
 `SegmentedControl`, `ListItem`, `StateBanner`) takes its `placeholder` from one
 loading flag, so the same real chrome renders a faithful loading state and then
 the populated record — no separate skeleton markup. The composition is the point;

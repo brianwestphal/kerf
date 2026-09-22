@@ -19,7 +19,7 @@
       "avoid": ["@kerfjs/ui:wa-button-group"]
     },
     "navigation-row": { "preferred": "@kerfjs/ui:list-item" },
-    "panel-heading": { "preferred": "@kerfjs/ui:panel-header" },
+    "panel-heading": { "preferred": "@kerfjs/ui:toolbar" },
     "structured-search": { "preferred": "@kerfjs/ui:token-search-field" }
   },
   "theme": {

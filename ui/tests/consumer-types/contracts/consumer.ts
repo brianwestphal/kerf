@@ -4,7 +4,6 @@ import {
 } from '@kerfjs/ui/evaluator';
 import { type DividerSides, List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
-import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner, type StateBannerUrgency } from '@kerfjs/ui/state-banner';
@@ -135,26 +134,12 @@ TokenSearchField({
   },
 });
 
-// KUI-T007 positive: a summary id cannot exist without summary content.
-PanelHeader({
-  title: 'Details',
-  titleId: 'details-title',
-  summary: 'Current selection',
-  summaryId: 'details-summary',
-});
-// @ts-expect-error KUI-T007 summaryId would reference no rendered summary.
-PanelHeader({
-  title: 'Details',
-  titleId: 'details-title',
-  summaryId: 'orphan',
-});
-
-// KUI-T008 positive: line caps require wrapping.
+// KUI-T007 positive: line caps require wrapping.
 ToolbarText({ text: 'Long title', wrap: true, maxLines: 2 });
-// @ts-expect-error KUI-T008 maxLines is ignored unless wrap is enabled.
+// @ts-expect-error KUI-T007 maxLines is ignored unless wrap is enabled.
 ToolbarText({ text: 'Long title', maxLines: 2 });
 
-// KUI-T009 positive: a literal active tab names a declared tab.
+// KUI-T008 positive: a literal active tab names a declared tab.
 TabScaffold({
   id: 'app',
   label: 'Sections',
@@ -167,12 +152,12 @@ TabScaffold({
 TabScaffold({
   id: 'app',
   label: 'Sections',
-  // @ts-expect-error KUI-T009 a literal active id must name a declared tab.
+  // @ts-expect-error KUI-T008 a literal active id must name a declared tab.
   active: 'missing',
   tabs: [{ id: 'home', label: 'Home', content: icon }],
 });
 
-// KUI-T010 positive: adjacent-token removal requires a controlled-state callback.
+// KUI-T009 positive: adjacent-token removal requires a controlled-state callback.
 wireTokenSearchFields(document.body, {
   keyboard: { onRemoveToken: () => undefined },
 });
@@ -180,18 +165,18 @@ wireTokenSearchFields(document.body, {
   keyboard: { removeAdjacentToken: false, moveCaretPastToken: true },
 });
 wireTokenSearchFields(document.body, {
-  // @ts-expect-error KUI-T010 `true` cannot supply the required removal callback.
+  // @ts-expect-error KUI-T009 `true` cannot supply the required removal callback.
   keyboard: true,
 });
 wireTokenSearchFields(document.body, {
   keyboard: {
     removeAdjacentToken: false,
-    // @ts-expect-error KUI-T010 a removal callback is invalid when removal is disabled.
+    // @ts-expect-error KUI-T009 a removal callback is invalid when removal is disabled.
     onRemoveToken: () => undefined,
   },
 });
 
-// KUI-T011 positive: finite public vocabularies are importable exact unions.
+// KUI-T010 positive: finite public vocabularies are importable exact unions.
 const activation: TabActivation = 'manual';
 const urgency: StateBannerUrgency = 'alert';
 const appearance: ToolbarControlGroupAppearance = 'borderless';
@@ -218,13 +203,13 @@ List({
   dividerSides,
 });
 Toolbar({ leading: icon, dividerSides });
-// @ts-expect-error KUI-T011 divider sides use canonical t/r/b/l order.
+// @ts-expect-error KUI-T010 divider sides use canonical t/r/b/l order.
 List({ dividerSides: 'rt' });
-// @ts-expect-error KUI-T011 Toolbar's former boolean divider prop was replaced by dividerSides.
+// @ts-expect-error KUI-T010 Toolbar's former boolean divider prop was replaced by dividerSides.
 Toolbar({ leading: icon, divider: true });
-// @ts-expect-error KUI-T011 arbitrary activation strings are rejected.
+// @ts-expect-error KUI-T010 arbitrary activation strings are rejected.
 const invalidActivation: TabActivation = 'eager';
 void invalidActivation;
-// @ts-expect-error KUI-T011 SunkenPanel uses square, not the ambiguous flat surface term.
+// @ts-expect-error KUI-T010 SunkenPanel uses square, not the ambiguous flat surface term.
 const invalidSunkenPanelShape: SunkenPanelShape = 'flat';
 void invalidSunkenPanelShape;

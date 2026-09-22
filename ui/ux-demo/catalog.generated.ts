@@ -245,28 +245,12 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Page, dialog, and definition-list hierarchy.",
     "uses": [
-      "panel-header",
+      "toolbar",
+      "toolbar-control-group",
+      "toolbar-text",
       "value-table"
     ],
     "demoSource": "ui/ux-demo/demos/headers.tsx",
-    "documentation": "ui/docs/component-selection.md"
-  },
-  {
-    "id": "panel-header",
-    "name": "PanelHeader",
-    "category": "Structure",
-    "kind": "component",
-    "source": "kerf",
-    "description": "A plain Toolbar as a panel, dialog, or page heading: optional icon group, an extra-large title, trailing actions, and an optional subtitle row.",
-    "uses": [
-      "lucide-icon",
-      "toolbar",
-      "toolbar-control-group",
-      "toolbar-text"
-    ],
-    "demoSource": "ui/ux-demo/demos/panel-header.tsx",
-    "componentSource": "ui/src/panel-header.tsx",
-    "designTemplate": "ui/docs/design/templates/panel-header.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {
@@ -545,7 +529,6 @@ export const generatedKerfCatalog = [
       "toolbar-control-group",
       "list-header",
       "list-item",
-      "panel-header",
       "resize",
       "value-table",
       "layout"
@@ -577,7 +560,9 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Page identity with primary, secondary, and overflow actions that relocate at narrow widths.",
     "uses": [
-      "panel-header",
+      "toolbar",
+      "toolbar-control-group",
+      "toolbar-text",
       "state-banner",
       "layout"
     ],
@@ -590,9 +575,11 @@ export const generatedKerfCatalog = [
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
-    "description": "Production modal containing a PanelHeader, navigable record master list, and ValueTable detail.",
+    "description": "Production modal containing a Toolbar heading, navigable record master list, and ValueTable detail.",
     "uses": [
-      "panel-header",
+      "toolbar",
+      "toolbar-control-group",
+      "toolbar-text",
       "list-header",
       "list-item",
       "value-table",
@@ -608,9 +595,11 @@ export const generatedKerfCatalog = [
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
-    "description": "One visible publishing-form surface with PanelHeader hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
+    "description": "One visible publishing-form surface with Toolbar heading hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
     "uses": [
-      "panel-header",
+      "toolbar",
+      "toolbar-control-group",
+      "toolbar-text",
       "select",
       "state-banner",
       "wa-input",
@@ -629,7 +618,9 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Deterministic loading, empty, populated, stale refresh, and error states around one stable list workspace.",
     "uses": [
-      "panel-header",
+      "toolbar",
+      "toolbar-control-group",
+      "toolbar-text",
       "state-banner",
       "empty-state",
       "loading-spinner",
@@ -680,7 +671,9 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "A record inspector whose per-record values load asynchronously — every value-bearing component takes a shared placeholder flag, so the same chrome renders a faithful loading state and then the populated record.",
     "uses": [
-      "panel-header",
+      "toolbar",
+      "toolbar-control-group",
+      "toolbar-text",
       "value-table",
       "select",
       "segmented-control",
@@ -700,7 +693,6 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "A mini app frame whose left navigation rail and bottom activity drawer are standalone CollapsiblePanels driven by wireSidebar: per-side collapse/expand toggles, focus move-in and restore, a dismissable compact overlay, and per-panel persistence.",
     "uses": [
-      "panel-header",
       "list-header",
       "list-item",
       "toolbar",

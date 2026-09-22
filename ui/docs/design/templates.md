@@ -9,7 +9,7 @@ component picture without running the app.
 
 ## Coverage
 
-Templated components (each with light + dark variants): `PanelHeader`,
+Templated components (each with light + dark variants):
 `ToolbarControlGroup`, `Toolbar`, `ToolbarText`, `List`, `ListItem`, `ListHeader`,
 `ListActionRow`, `ValueTable`, `StateBanner`, `EmptyState`, `Skeleton`,
 `SegmentedControl`, `TabBar`/`AppTab`, and `TokenSearchField`.
@@ -27,11 +27,9 @@ catalog and the app-layouts docs cover those.
 
 ```
 docs/design/templates/
-  panel-header.svg              ← library: every variant, composed (light)
-  panel-header-dark.svg         ← library: dark theme
-  panel-header/
-    icon-summary-actions.svg    ← one self-contained variant (light)
-    icon-summary-actions-dark.svg ← the same variant, dark theme
+  toolbar.svg                   ← library: every variant, composed (light)
+  toolbar-dark.svg              ← library: dark theme
+  toolbar/
     icon-actions.svg
     icon-actions-dark.svg
     …
@@ -74,7 +72,7 @@ not have to interpret nested `<svg>` elements.
 
 **Keep the templates current as components change.** The variants live in the
 `COMPONENTS` manifest in `scripts/build-design-templates.mjs` — when a component
-gains or changes a presentation combination (e.g. a new `PanelHeader` slot), add
+gains or changes a presentation combination (e.g. a new `Toolbar` slot), add
 or adjust its variant there and re-run the build. Cover the common cases: if a
 component can render with or without an icon, include both.
 

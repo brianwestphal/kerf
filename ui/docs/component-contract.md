@@ -263,14 +263,11 @@ into the section label. Do not add padding to pane shells,
 double child-owned geometry with wrapper insets, or create competing scroll
 owners. The [layout contract](./layout.md) lists the public roles and tokens.
 
-`PanelHeader` is a plain top `Toolbar` used as a panel, dialog, or page heading;
-it overrides no Toolbar styles. The leading zone holds an optional icon (a normal
-bordered `ToolbarControlGroup` given a brand fill with a matching border) and the
-title as extra-large `ToolbarText`, and the app's `actions` go straight into the
-trailing zone (typically as a `ToolbarControlGroup`). The icon group is omitted
-when no icon is passed. The optional summary is a separate row aligned below the
-title, so it cannot pull the icon group out of vertical alignment with the
-title and action row.
+Panel, dialog, and page headings are direct `Toolbar` compositions. The leading
+zone holds an optional icon `ToolbarControlGroup` and a direct extra-large
+`ToolbarText`; app actions belong in a trailing `ToolbarControlGroup`. Omit the
+icon group when it has no content. Supporting copy is app-owned content below
+the toolbar so it cannot pull the icon or actions out of alignment.
 
 `ValueTable` composes typed `ValueTableRow` entries. A row owns its `dt`/`dd`
 semantics and may receive a leading `SafeHtml` icon. Every row keeps 8px of

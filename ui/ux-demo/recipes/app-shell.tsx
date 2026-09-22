@@ -4,7 +4,6 @@ import './recipes.css';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -30,11 +29,7 @@ export const createRecipe: RecipeFactory = (announce) => {
     >
       <Toolbar
         label="Atlas workspace"
-        leading={
-          <ToolbarControlGroup appearance="borderless" single>
-            <ToolbarText text="Atlas" />
-          </ToolbarControlGroup>
-        }
+        leading={<ToolbarText text="Atlas" />}
         trailing={
           <div class="recipe-shell__toolbar-actions">
             <ToolbarControlGroup
@@ -134,21 +129,32 @@ export const createRecipe: RecipeFactory = (announce) => {
           </ResizableRegion>
         </div>
         <main id="recipe-shell-content" class="recipe-shell__main kui-pane">
-          <PanelHeader
-            title={
-              selected.value === 'inbox' ? 'Inbox triage' : 'Active projects'
+          <Toolbar
+            label="Current workspace view"
+            dividerSides=""
+            leading={
+              <ToolbarText
+                text={
+                  selected.value === 'inbox'
+                    ? 'Inbox triage'
+                    : 'Active projects'
+                }
+                size="xlarge"
+                id="recipe-shell-main-title"
+              />
             }
-            titleId="recipe-shell-main-title"
-            actions={
-              <button
-                class="kui-recipe__button"
-                data-primary="true"
-                type="button"
-                data-action="recipe-action"
-                data-recipe-command="new"
-              >
-                New task
-              </button>
+            trailing={
+              <ToolbarControlGroup appearance="borderless" single>
+                <button
+                  class="kui-recipe__button"
+                  data-primary="true"
+                  type="button"
+                  data-action="recipe-action"
+                  data-recipe-command="new"
+                >
+                  New task
+                </button>
+              </ToolbarControlGroup>
             }
           />
           <div class="recipe-shell__main-body kui-pane__content kui-content">
@@ -183,9 +189,16 @@ export const createRecipe: RecipeFactory = (announce) => {
             edge="start"
           >
             <aside class="recipe-shell__inspector kui-pane">
-              <PanelHeader
-                title="Inspector"
-                titleId="recipe-shell-inspector-title"
+              <Toolbar
+                label="Inspector"
+                dividerSides=""
+                leading={
+                  <ToolbarText
+                    text="Inspector"
+                    size="xlarge"
+                    id="recipe-shell-inspector-title"
+                  />
+                }
               />
               <div class="recipe-shell__inspector-body kui-pane__content kui-content">
                 <ValueTable label="Selected task">

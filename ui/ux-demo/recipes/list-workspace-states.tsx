@@ -3,8 +3,10 @@ import './recipes.css';
 
 import { EmptyState } from '@kerfjs/ui/empty-state';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
-import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { StateBanner } from '@kerfjs/ui/state-banner';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 
 import type { RecipeFactory } from './types.js';
@@ -122,11 +124,18 @@ export const createRecipe: RecipeFactory = (announce) => {
       data-recipe="recipe-list-workspace-states"
       data-list-state={state.value}
     >
-      <PanelHeader
-        title="Release tasks"
-        titleId="recipe-list-title"
-        actions={
-          <div class="kui-control-cluster">
+      <Toolbar
+        label="Release tasks"
+        dividerSides=""
+        leading={
+          <ToolbarText
+            text="Release tasks"
+            size="xlarge"
+            id="recipe-list-title"
+          />
+        }
+        trailing={
+          <ToolbarControlGroup appearance="borderless">
             <button
               class="kui-recipe__button"
               type="button"
@@ -152,7 +161,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             >
               Refresh
             </button>
-          </div>
+          </ToolbarControlGroup>
         }
       />
       <div class="recipe-list__body kui-pane__content kui-content">

@@ -15,7 +15,7 @@ For connective application patterns, use the seven [production composition
 recipes](./docs/recipes.md). Each has a stable catalog route, runnable state,
 public-subpath source, semantic layout ownership, and explicit application
 customization boundaries. The composer recipe demonstrates one coherent form
-surface with `PanelHeader` hierarchy and field/action controls aligned to the
+surface with a `Toolbar`/`ToolbarText` heading and field/action controls aligned to the
 shared 8px gutter; only persistent feedback adds a nested semantic
 `StateBanner` surface.
 
@@ -41,11 +41,7 @@ mount(root, () => (
   <>
     <Toolbar
       label="Document"
-      leading={
-        <ToolbarControlGroup appearance="borderless" single>
-          <ToolbarText text="Notes" />
-        </ToolbarControlGroup>
-      }
+      leading={<ToolbarText text="Notes" />}
     />
     <section>
       <ListHeader
@@ -145,7 +141,6 @@ as a `New` marker.
 | `wireTokenSearchFields`                                             | `@kerfjs/ui/wire-token-search-fields`   | —                                      |
 | `StateBanner`                                                       | `@kerfjs/ui/state-banner`               | `@kerfjs/ui/state-banner.css`          |
 | `EmptyState`                                                        | `@kerfjs/ui/empty-state`                | `@kerfjs/ui/empty-state.css`           |
-| `PanelHeader`                                                       | `@kerfjs/ui/panel-header`               | `@kerfjs/ui/panel-header.css`          |
 | `ValueTable`, `ValueTableRow`                                       | `@kerfjs/ui/value-table`                | `@kerfjs/ui/value-table.css`           |
 
 Opt-in application layouts keep JavaScript and CSS explicit. For the
@@ -155,12 +150,12 @@ classes and size tokens are cataloged under the `workbench` entry. See
 [`docs/workbench.md`](./docs/workbench.md) for panel ownership and responsive
 replacement guidance.
 
-`PanelHeader` is a plain `Toolbar` used as a panel, dialog, or page heading: an
-optional icon control group (given a brand fill with a matching border), the
-title as extra-large `ToolbarText`, the app's trailing action controls, and an
-optional subtitle on a separate row below the title. It overrides no toolbar
-styles — the app passes its own trailing controls (typically a
-`ToolbarControlGroup`).
+Compose panel, dialog, and page headings directly with `Toolbar`: put an optional
+icon in a `ToolbarControlGroup`, use a direct extra-large `ToolbarText` for the
+title, and put actions in the trailing zone inside their own control group. Set
+`headingLevel` for page or section headings. Supporting copy is app-owned content
+below the toolbar and should be connected to its host with `aria-describedby`
+when it adds useful context.
 
 `DisclosureArrow` defaults to an 18px root-scaled decorative visual. Override
 `--kui-disclosure-arrow-size` at the narrowest useful scope when a consumer

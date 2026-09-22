@@ -45,21 +45,21 @@ The handle exposes separator role, orientation, name, minimum, maximum, and curr
 
 The application owns persistence and collapsed/expanded policy. Keep the last expanded size outside the component and restore it when reopening. An optional `handleIcon` replaces only decorative dormant content; it must not contain controls or interactive roles because the separator remains the sole focus and interaction owner.
 
-## PanelHeader
+## Toolbar headings
 
-`PanelHeader` is a plain `Toolbar` heading. Its leading zone holds an optional
-icon (a normal bordered `ToolbarControlGroup`) and the title as extra-large
-`ToolbarText`, and the app's trailing controls go straight into the trailing
-zone. By default the title carries no native heading role, so for a **dialog or
-panel** the application connects `titleId` and an optional `summaryId` to the
-owning host through `aria-labelledby` and `aria-describedby`. For a **page or
-view** title, pass `headingLevel` (usually `1`): the title then exposes
+Compose panel, dialog, and page headings as a plain `Toolbar`. Its leading zone
+holds an optional icon `ToolbarControlGroup` and a direct extra-large
+`ToolbarText`; controls belong in a trailing `ToolbarControlGroup`. By default
+the title carries no native heading role, so for a **dialog or panel** the
+application connects the title id and optional supporting-copy id to the owning
+host through `aria-labelledby` and `aria-describedby`. For a **page or view**
+title, pass `headingLevel` (usually `1`) to `ToolbarText`: it then exposes
 `role="heading"` with a matching `aria-level`, giving the view a heading landmark
 so screen-reader heading navigation and "main heading" semantics work — the same
-role/level pair `ToolbarText` exposes when it is given `headingLevel` directly.
-Keep the levels meaningful and non-skipping within a view. Pass the trailing
+role/level pair used throughout Kerf UI. Keep the levels meaningful and
+non-skipping within a view. Pass trailing
 controls as a labeled `ToolbarControlGroup` when that group needs an accessible
-name.
+name. Keep supporting copy as app-owned content below the toolbar.
 
 ## FloatingToolbar
 

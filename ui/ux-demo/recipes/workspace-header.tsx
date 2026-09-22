@@ -1,8 +1,10 @@
 import '@kerfjs/ui/layout.css';
 import './recipes.css';
 
-import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { StateBanner } from '@kerfjs/ui/state-banner';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 
 import type { RecipeFactory } from './types.js';
 
@@ -17,11 +19,19 @@ export const createRecipe: RecipeFactory = (announce) => ({
         <span>·</span>
         <span>Product planning</span>
       </p>
-      <PanelHeader
-        title="Accessibility readiness and responsive navigation rollout"
-        titleId="recipe-workspace-title"
-        actions={
-          <div class="kui-control-cluster">
+      <Toolbar
+        label="Workspace heading"
+        dividerSides=""
+        leading={
+          <ToolbarText
+            text="Accessibility readiness and responsive navigation rollout"
+            size="xlarge"
+            id="recipe-workspace-title"
+            headingLevel={1}
+          />
+        }
+        trailing={
+          <ToolbarControlGroup appearance="borderless">
             <button
               class="kui-recipe__button"
               type="button"
@@ -47,7 +57,7 @@ export const createRecipe: RecipeFactory = (announce) => ({
             >
               Publish update
             </button>
-          </div>
+          </ToolbarControlGroup>
         }
       />
       <StateBanner

@@ -6,9 +6,10 @@ import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
 import './recipes.css';
 
-import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner } from '@kerfjs/ui/state-banner';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 
 import type { RecipeFactory } from './types.js';
@@ -44,12 +45,20 @@ export const createRecipe: RecipeFactory = (announce) => {
       aria-describedby="recipe-composer-summary"
       noValidate
     >
-      <PanelHeader
-        title="Publish workspace update"
-        titleId="recipe-composer-title"
-        summary="Share a concise, actionable update with collaborators."
-        summaryId="recipe-composer-summary"
+      <Toolbar
+        label="Publish workspace update"
+        dividerSides=""
+        leading={
+          <ToolbarText
+            text="Publish workspace update"
+            size="xlarge"
+            id="recipe-composer-title"
+          />
+        }
       />
+      <p class="kui-recipe__heading-summary" id="recipe-composer-summary">
+        Share a concise, actionable update with collaborators.
+      </p>
       {status.value === 'error' && (
         <StateBanner
           title="Add a title before publishing"

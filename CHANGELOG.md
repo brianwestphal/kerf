@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Breaking (`@kerfjs/ui`):** removed `PanelHeader` and its subpath/CSS export.
+  Compose page, panel, and dialog headings directly with `Toolbar`, a direct
+  extra-large `ToolbarText`, and optional `ToolbarControlGroup` icon/action zones;
+  keep supporting copy as app-owned content below the toolbar.
+
 - Changed the Web Awesome Dialog theme to use 8px body padding and 16px footer
   padding, independently of the component's shared `--spacing` value.
 

@@ -32,7 +32,6 @@ export {
   type PaneProps,
   type PaneSeparatorSide,
 } from './pane.js';
-export { PanelHeader, type PanelHeaderProps } from './panel-header.js';
 export {
   clampRegionSize,
   ResizableRegion,

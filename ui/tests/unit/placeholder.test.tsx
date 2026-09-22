@@ -6,7 +6,6 @@ import { ListActionRow } from '../../src/list-action-row.js';
 import { ListHeader } from '../../src/list-header.js';
 import { ListItem } from '../../src/list-item.js';
 import { LucideIcon } from '../../src/lucide-icon.js';
-import { PanelHeader } from '../../src/panel-header.js';
 import { SegmentedControl } from '../../src/segmented-control.js';
 import { Select } from '../../src/select.js';
 import { Skeleton } from '../../src/skeleton.js';
@@ -79,23 +78,6 @@ describe('component placeholder mode', () => {
     expect(html).toContain('Owner');
     expect(html).toContain('kui-skeleton');
     expect(html).not.toContain('Jordan');
-  });
-
-  it('PanelHeader keeps the icon and skeletons the title and summary', () => {
-    const html = asHtml(
-      PanelHeader({
-        title: 'Ticket',
-        titleId: 't',
-        summary: 'A concise summary',
-        summaryId: 's',
-        icon,
-        placeholder: true,
-      }),
-    );
-    expect(html).toContain('data-placeholder="true"');
-    expect(html).toContain('kui-panel-header__icon');
-    expect(html).toContain('kui-skeleton');
-    expect(html).not.toContain('A concise summary');
   });
 
   it('ListItem disables the button, drops its action, and skeletons label + icon', () => {

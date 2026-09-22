@@ -57,7 +57,6 @@ import { ListActionRow } from '../dist/list-action-row.js';
 import { ListHeader } from '../dist/list-header.js';
 import { ListItem } from '../dist/list-item.js';
 import { LucideIcon } from '../dist/lucide-icon.js';
-import { PanelHeader } from '../dist/panel-header.js';
 import { SegmentedControl } from '../dist/segmented-control.js';
 import { Skeleton } from '../dist/skeleton.js';
 import { StateBanner } from '../dist/state-banner.js';
@@ -157,82 +156,6 @@ export const COMPONENTS = {
                 icon: glyph(ListIcon, 'list'),
               }),
             ],
-          }),
-      },
-    ],
-  },
-  'panel-header': {
-    // PanelHeader composes a Toolbar with a ToolbarText title.
-    // toolbar-control-group is required: PanelHeader's icon is a
-    // `.kui-toolbar-control-group` tile, and its size feeds the title/subtitle
-    // inset — without it the icon group collapses and the subtitle misaligns.
-    css: [
-      'foundation',
-      'layout',
-      'toolbar',
-      'toolbar-control-group',
-      'toolbar-text',
-      'panel-header',
-    ],
-    selector: '#frame',
-    width: 720,
-    frameWidth: 640,
-    variants: [
-      {
-        id: 'icon-summary-actions',
-        label: 'Icon, summary, and action',
-        height: 96,
-        render: () =>
-          PanelHeader({
-            title: 'Northstar migration',
-            titleId: 't',
-            summary: 'In review · updated today',
-            summaryId: 's',
-            icon: LucideIcon({ icon: FileText, name: 'file-text' }),
-            actions: raw(pushButton('Open')),
-          }),
-      },
-      {
-        id: 'icon-actions',
-        label: 'Icon and action, no summary',
-        height: 72,
-        render: () =>
-          PanelHeader({
-            title: 'Package details',
-            titleId: 't',
-            icon: LucideIcon({ icon: Folder, name: 'folder' }),
-            actions: raw(pushButton('Done')),
-          }),
-      },
-      {
-        id: 'no-icon',
-        label: 'No icon, summary and action',
-        height: 96,
-        render: () =>
-          PanelHeader({
-            title: 'Workspace settings',
-            titleId: 't',
-            summary: 'Manage members, billing, and integrations.',
-            summaryId: 's',
-            actions: raw(pushButton('New')),
-          }),
-      },
-      {
-        id: 'title-only',
-        label: 'Title only',
-        height: 64,
-        render: () => PanelHeader({ title: 'Recent activity', titleId: 't' }),
-      },
-      {
-        id: 'page-heading',
-        label: 'Page heading (h1) with action',
-        height: 72,
-        render: () =>
-          PanelHeader({
-            title: 'UI foundations',
-            titleId: 't',
-            headingLevel: 1,
-            actions: raw(pushButton('New pattern')),
           }),
       },
     ],

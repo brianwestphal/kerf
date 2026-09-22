@@ -358,53 +358,6 @@ declare function ListInsetText({ children, horizontalOnly, className, }: ListIns
 export { ListInsetText, type ListInsetTextProps };
 ```
 
-## `@kerfjs/ui/panel-header`
-
-```ts
-import { SafeHtml } from 'kerfjs';
-import { HeadingLevel } from './toolbar-text.js';
-
-interface PanelHeaderBaseProps {
-    title: string;
-    titleId: string;
-    icon?: SafeHtml;
-    iconClassName?: string;
-    actions?: SafeHtml;
-    /**
-     * Expose the title as a heading landmark (`role="heading"` + `aria-level`). Set it
-     * for a PAGE or view heading so screen-reader heading navigation works and the view
-     * has a primary heading; omit it (the default) for a dialog title, which is instead
-     * referenced via `aria-labelledby={titleId}` and needs no heading landmark.
-     */
-    headingLevel?: HeadingLevel;
-    /** Render the title and summary as unanimated loading skeletons, keeping the icon and actions. */
-    placeholder?: boolean;
-}
-type PanelHeaderSummaryProps = {
-    summary: string;
-    summaryId?: string;
-} | {
-    summary?: never;
-    summaryId?: never;
-};
-type PanelHeaderProps = PanelHeaderBaseProps & PanelHeaderSummaryProps;
-/**
- * The heading of a panel, dialog, or page: a plain `Toolbar` whose leading zone
- * holds an optional icon control group and the title as extra-large `ToolbarText`,
- * whose trailing zone holds the app's action controls, and with an optional
- * subtitle on its own row, left-aligned with the title.
- *
- * PanelHeader overrides no Toolbar styles — it is just a Toolbar with an xl title.
- * The only styling it adds is the icon group's fill/border color and the subtitle.
- * When no icon is provided, the icon group is omitted entirely. The `actions` slot
- * is passed straight into the toolbar's trailing zone; the app supplies whatever
- * trailing controls it needs (typically a `ToolbarControlGroup`).
- */
-declare function PanelHeader({ title, titleId, summary, summaryId, icon, iconClassName, actions, headingLevel, placeholder, }: PanelHeaderProps): SafeHtml;
-
-export { PanelHeader, type PanelHeaderProps };
-```
-
 ## `@kerfjs/ui/value-table`
 
 ```ts

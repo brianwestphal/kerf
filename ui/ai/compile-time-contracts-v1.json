@@ -54,14 +54,6 @@
     },
     {
       "id": "KUI-T007",
-      "catalogKey": "@kerfjs/ui:panel-header",
-      "publicImport": "@kerfjs/ui/panel-header",
-      "symbols": ["PanelHeaderProps"],
-      "kind": "conditional-property",
-      "summary": "PanelHeader summaryId cannot be supplied without rendered summary content."
-    },
-    {
-      "id": "KUI-T008",
       "catalogKey": "@kerfjs/ui:toolbar-text",
       "publicImport": "@kerfjs/ui/toolbar-text",
       "symbols": ["ToolbarTextProps"],
@@ -69,14 +61,14 @@
       "summary": "ToolbarText maxLines is accepted only when wrapping is enabled."
     },
     {
-      "id": "KUI-T009",
+      "id": "KUI-T008",
       "publicImport": "@kerfjs/ui/tab-scaffold",
       "symbols": ["TabScaffoldTab", "TabScaffoldProps"],
       "kind": "literal-identity",
       "summary": "Literal TabScaffold active ids are constrained to the declared tab ids; dynamic integrations may widen the generic to string."
     },
     {
-      "id": "KUI-T010",
+      "id": "KUI-T009",
       "catalogKey": "@kerfjs/ui:token-search-field",
       "publicImport": "@kerfjs/ui/wire-token-search-fields",
       "symbols": ["TokenSearchKeyboardOptions", "WireTokenSearchFieldsOptions"],
@@ -84,7 +76,7 @@
       "summary": "Adjacent-token removal requires the callback that commits removal to application-owned state."
     },
     {
-      "id": "KUI-T011",
+      "id": "KUI-T010",
       "publicImport": "@kerfjs/ui",
       "symbols": [
         "DividerSides",
