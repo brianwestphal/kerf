@@ -526,6 +526,11 @@ import "@kerfjs/ui/select/register";
 ```
 
 That boundary keeps Web Awesome and its custom-element side effects out of bundles that use unrelated components. Automated consumer-bundle tests enforce it.
+Use `label` for a visible label or `ariaLabel` for a visually hidden name. A
+nonempty visible label takes precedence when both are supplied. Kerf names the
+actual shadow combobox without adding visible label spacing; this also works
+with `renderSelected`, and needs no application shadow-DOM patch.
+
 `Select` also owns the Kerf/Web Awesome reconciliation boundary: option icons
 keep stable slotted elements across rerenders, and `renderSelected` content is
 replaced when the controlled value changes. Consumers do not need to add

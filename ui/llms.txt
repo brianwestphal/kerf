@@ -99,6 +99,9 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   with field values at the shared 9px border-plus-padding inset. OTP Input's
   label uses the same uppercase xs/650 treatment and its label and hint share
   that 9px alignment.
+- `Select` requires a visible `label` or an `ariaLabel` for a visually hidden
+  accessible name. The package names the internal combobox, including custom
+  selected content; consumers do not need shadow-DOM naming workarounds.
 - **Trust the defaults.** Render a control at its natural size and color (a
   `LucideIcon` is 24px); if it looks wrong, fix the surrounding layout, not the
   control. Never force a component's width/height to size it — that leaves a halo

@@ -17,6 +17,22 @@ These are normative contracts for package components and consuming applications.
 - `DisclosureArrow` is an 18px root-scaled decorative visual by default, not an interaction target. Its owning native control supplies a stable accessible name, pointer and keyboard interaction, and `aria-expanded`; multiple arrows keep independently controlled state. Consumers may override `--kui-disclosure-arrow-size` without changing that ownership. Configured directions animate over the shortest path; a 180-degree closed-to-open tie uses counterclockwise rotation.
 - `List` is layout-only and adds no `list` role. Children own their native or ARIA semantics. Give a scrollable List a bounded block size, avoid nested scroll owners, and keep focused children visible while scrolling.
 
+## Select
+
+Supply a visible `label`, or `ariaLabel` when the surrounding interface already
+provides visual context. A nonempty `label` takes precedence when both are
+supplied. Kerf forwards that name through Web Awesome's internal label contract;
+an `aria-label` on the custom-element host alone cannot name its shadow
+combobox. With `ariaLabel` alone, Kerf visually hides the internal label without
+adding height or spacing. This also applies to `renderSelected`: selected content
+stays separate from the control's stable accessible name. Applications do not
+need shadow-DOM patches or extra label styling.
+
+`tests/unit/components.test.tsx` covers name projection and visible/hidden label
+variants. `tests/browser/select-accessibility.spec.ts` verifies actual accessible
+names, unchanged unlabeled geometry, keyboard selection, controlled rerenders,
+and wide/narrow presentation in Chromium, Firefox, and WebKit.
+
 ## ListActionRow
 
 `ListActionRow` renders a noninteractive visual root containing primary and

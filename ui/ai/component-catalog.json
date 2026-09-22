@@ -2529,7 +2529,8 @@
         "placeholder (loading)"
       ],
       "accessibility": [
-        "Verify the live value, standard events, focus, and rendered output."
+        "Verify the live value, standard events, focus, and rendered output.",
+        "A nonempty label names the internal combobox; otherwise ariaLabel supplies a visually hidden label without adding control height, including custom selected content."
       ],
       "geometry": {
         "margin": "none",
@@ -2549,6 +2550,7 @@
         "kui-select",
         "kui-select--custom-selected",
         "kui-select--fit-menu",
+        "kui-select--label-hidden",
         "kui-select__custom-selected",
         "kui-select__group",
         "kui-select__group--separated",

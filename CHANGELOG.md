@@ -14,6 +14,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   editor: managed deletion keeps the adopted open signal and restores replacement
   focus before another keystroke, without a stale animation-frame caret reset.
   The adoption demo now persists both edited text and remaining tokens.
+- Fixed `Select` controls using only `ariaLabel` being unnamed to assistive
+  technology. Ordinary and custom selected content retain their geometry while
+  the actual shadow combobox receives its accessible name.
 
 - Changed the Web Awesome Dialog theme to use 8px body padding and 16px footer
   padding, independently of the component's shared `--spacing` value.

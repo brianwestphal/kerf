@@ -155,6 +155,10 @@ custom-element side effect and Web Awesome is otherwise optional. Supply
 icon-bearing choices and `renderSelected` output directly: `Select` preserves
 the Web Awesome option slots across Kerf rerenders and replaces custom selected
 content when the controlled value changes.
+`@kerfjs/ui` Select projects a nonempty `label`, or otherwise `ariaLabel`, to
+Web Awesome’s internal combobox name. The ariaLabel-only label is visually
+hidden without adding geometry, also with custom selected content. See
+[`ui/docs/accessibility.md`](../../ui/docs/accessibility.md#select).
 
 Use `SegmentedControl` for a small exclusive choice set. Pick
 `appearance="toolbar"` when nesting it in `ToolbarControlGroup`; standalone

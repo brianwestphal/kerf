@@ -634,6 +634,10 @@ until `@kerfjs/ui/select/register` is imported. `Select` also owns the morph
 boundary for its upgraded Web Awesome markup: stable skipped option-icon keys
 retain slotted elements across rerenders, while value-keyed custom selected
 content is replaced when the controlled selection changes.
+`@kerfjs/ui` Select projects a nonempty `label`, or otherwise `ariaLabel`, to
+Web Awesome’s internal combobox name. The ariaLabel-only label is visually
+hidden without adding geometry, also with custom selected content. See
+[`ui/docs/accessibility.md`](../../ui/docs/accessibility.md#select).
 `AppTab.rootAttributes` uses the shared extension filter to accept only domain
 `data-*` values while protecting component/action/identity/selection and
 wire-owned drag/drop markers case-insensitively. `AppTab.closeIcon` and

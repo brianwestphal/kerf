@@ -105,12 +105,14 @@ export function Select<Value extends string>({
     ),
   ];
   const ungrouped = choices.filter((choice) => !choice.group);
+  // Web Awesome names its shadow combobox from the label, not the host's
+  // aria-label. Keep ariaLabel-only names available without visible chrome.
   return (
     <wa-select
-      class={`kui-select${renderSelected ? ' kui-select--custom-selected' : ''}${fitMenu ? ' kui-select--fit-menu' : ''} ${className}`.trim()}
+      class={`kui-select${renderSelected ? ' kui-select--custom-selected' : ''}${fitMenu ? ' kui-select--fit-menu' : ''}${!label ? ' kui-select--label-hidden' : ''} ${className}`.trim()}
       data-component="select"
       name={name}
-      label={label}
+      label={label || ariaLabel}
       aria-label={ariaLabel}
       value={value}
       placeholder={placeholderText}

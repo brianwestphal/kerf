@@ -1076,6 +1076,53 @@ describe('production UI primitives', () => {
     expect(onlyGrouped).toContain('class="kui-select__group" role="group"');
   });
 
+  it('forwards Select names to the internal label contract without showing ariaLabel-only labels', () => {
+    const render = (
+      name: { label: string; ariaLabel?: string } | { ariaLabel: string },
+      custom = false,
+    ) => {
+      const host = document.createElement('div');
+      host.innerHTML = asHtml(
+        Select({
+          name: 'named',
+          value: 'one',
+          choices: [{ value: 'one', label: 'One' }],
+          ...name,
+          ...(custom
+            ? {
+                renderSelected: (choice: SelectChoice) => (
+                  <strong>{choice.label}</strong>
+                ),
+              }
+            : {}),
+        }),
+      );
+      return host.querySelector('wa-select')!;
+    };
+    for (const custom of [false, true]) {
+      const hidden = render({ ariaLabel: 'Project' }, custom);
+      expect(hidden.getAttribute('label')).toBe('Project');
+      expect(hidden.classList.contains('kui-select--label-hidden')).toBe(true);
+      expect(hidden.getAttribute('value')).toBe('one');
+      const visible = render({ label: 'Visible project' }, custom);
+      expect(visible.getAttribute('label')).toBe('Visible project');
+      expect(visible.classList.contains('kui-select--label-hidden')).toBe(
+        false,
+      );
+      const both = render(
+        { label: 'Visible project', ariaLabel: 'Fallback' },
+        custom,
+      );
+      expect(both.getAttribute('label')).toBe('Visible project');
+      expect(both.classList.contains('kui-select--label-hidden')).toBe(false);
+      expect(
+        render({ label: '', ariaLabel: 'Fallback' }, custom).getAttribute(
+          'label',
+        ),
+      ).toBe('Fallback');
+    }
+  });
+
   it('renders controlled segmented choices with stable action and presentation hooks', () => {
     const control = asHtml(
       SegmentedControl({

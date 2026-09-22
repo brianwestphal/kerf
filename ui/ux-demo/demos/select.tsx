@@ -63,6 +63,33 @@ export function SelectDemo() {
         </div>
       </CatalogExample>
       <CatalogExample
+        label="Accessible name without a visible label"
+        align="inline-control"
+      >
+        <Select<string>
+          name="plain-rendering-balance"
+          value={selectedChoice.value}
+          ariaLabel="Plain rendering balance"
+          choices={[
+            { value: 'quiet', label: 'Quiet' },
+            { value: 'balanced', label: 'Balanced' },
+            { value: 'explicit', label: 'Explicit' },
+          ]}
+        />
+      </CatalogExample>
+      <CatalogExample label="Visible label" align="inline-control">
+        <Select<string>
+          name="labeled-rendering-balance"
+          value={selectedChoice.value}
+          label="Rendering preference"
+          choices={[
+            { value: 'quiet', label: 'Quiet' },
+            { value: 'balanced', label: 'Balanced' },
+            { value: 'explicit', label: 'Explicit' },
+          ]}
+        />
+      </CatalogExample>
+      <CatalogExample
         label="Placeholder"
         note={
           <>
