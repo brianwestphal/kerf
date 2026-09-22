@@ -1,4 +1,9 @@
-export { AppTab, type AppTabProps } from './app-tab.js';
+export {
+  AppTab,
+  type AppTabPresentation,
+  type AppTabProps,
+  type AppTabSize,
+} from './app-tab.js';
 export {
   DisclosureArrow,
   type DisclosureArrowProps,
@@ -54,7 +59,15 @@ export {
   type SegmentedControlShape,
   type SegmentedControlSize,
 } from './segmented-control.js';
-export { Select, type SelectChoice, type SelectProps } from './select.js';
+export {
+  Select,
+  type SelectChoice,
+  type SelectFocusRingOwner,
+  type SelectPresentation,
+  type SelectProps,
+  type SelectSelectedPresentation,
+  type SelectSize,
+} from './select.js';
 export { Skeleton, type SkeletonProps } from './skeleton.js';
 export {
   StateBanner,
@@ -77,7 +90,14 @@ export {
   type PopupSurfaceProps,
   type SurfaceInset,
 } from './surface-scaffold.js';
-export { type TabActivation, TabBar, type TabBarProps } from './tab-bar.js';
+export {
+  type TabActivation,
+  TabBar,
+  type TabBarAllocation,
+  type TabBarPresentation,
+  type TabBarProps,
+  type TabBarTrailingPlacement,
+} from './tab-bar.js';
 export {
   placeTokenSearchCaret,
   readTokenSearchField,
@@ -92,8 +112,13 @@ export {
   ToolbarControlGroup,
   type ToolbarControlGroupAppearance,
   type ToolbarControlGroupButtonAppearance,
+  type ToolbarControlGroupContent,
+  type ToolbarControlGroupDensity,
   type ToolbarControlGroupProps,
+  type ToolbarControlGroupSelectedChrome,
+  type ToolbarControlGroupSelectedTone,
   type ToolbarControlGroupShape,
+  type ToolbarControlGroupSize,
   type ToolbarControlGroupTone,
 } from './toolbar-control-group.js';
 export {

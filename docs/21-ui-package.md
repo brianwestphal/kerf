@@ -50,7 +50,10 @@ without making every stylesheet a side effect. Pair it with `styles.css` only
 when the complete component layer is wanted. Node and SSR use the pure `import`
 condition; `@kerfjs/ui/unstyled` is an explicit CSS-free root for custom browser
 pipelines. `foundation.css` and every component stylesheet remain exported for
-manual delivery. `foundation.css` defines Web Awesome-compatible semantic
+manual delivery. Type-only imports from the root include the named AppTab,
+TabBar, ToolbarControlGroup, and Select presentation axes, matching their
+explicit component subpaths without adding runtime code. `foundation.css`
+defines Web Awesome-compatible semantic
 defaults for neutral, brand/info, success, warning, and danger roles. Stateful
 components expose scoped custom properties, so an application may override the
 complete theme, one semantic tone, or one instance.

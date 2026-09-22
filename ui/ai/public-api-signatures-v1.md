@@ -1387,6 +1387,10 @@ type SelectAccessibleName = {
     label?: never;
     ariaLabel: string;
 };
+type SelectPresentation = 'form' | 'toolbar-borderless' | 'navigation';
+type SelectSize = 'default' | 'compact';
+type SelectSelectedPresentation = 'label' | 'icon-only';
+type SelectFocusRingOwner = 'select' | 'group';
 interface SelectBaseProps<Value extends string = string> {
     name: string;
     value: NoInfer<Value>;
@@ -1402,19 +1406,19 @@ interface SelectBaseProps<Value extends string = string> {
     /** Render as an unanimated loading skeleton: the label above a static, empty control box. */
     placeholder?: boolean;
     /** Form (default), borderless toolbar, or intrinsic navigation chrome. */
-    presentation?: 'form' | 'toolbar-borderless' | 'navigation';
-    size?: 'default' | 'compact';
+    presentation?: SelectPresentation;
+    size?: SelectSize;
     /** Show only the selected choice icon while retaining the Select's accessible name. */
-    selectedPresentation?: 'label' | 'icon-only';
+    selectedPresentation?: SelectSelectedPresentation;
     /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */
-    focusRingOwner?: 'select' | 'group';
+    focusRingOwner?: SelectFocusRingOwner;
     /** Maximum closed-control label width in CSS pixels before ellipsis. */
     labelMaxWidth?: number;
 }
 type SelectProps<Value extends string = string> = SelectBaseProps<Value> & SelectAccessibleName;
 declare function Select<Value extends string>({ name, value, label, ariaLabel, choices, className, placeholderText, hint, disabled, fitMenu, renderSelected, placeholder, presentation, size, selectedPresentation, focusRingOwner, labelMaxWidth, }: SelectProps<Value>): SafeHtml;
 
-export { Select, type SelectChoice, type SelectProps };
+export { Select, type SelectChoice, type SelectFocusRingOwner, type SelectPresentation, type SelectProps, type SelectSelectedPresentation, type SelectSize };
 ```
 
 ## `@kerfjs/ui/state-banner`

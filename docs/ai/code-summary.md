@@ -630,7 +630,10 @@ optional Web Awesome stay external; explicit CSS subpaths and the deliberate
 full `styles.css` layer export compiled output, while source styles are not
 published. The package's consumer-bundle gate proves those CSS boundaries,
 root-barrel JavaScript tree-shaking, and that `Select` stays registration-free
-until `@kerfjs/ui/select/register` is imported. `Select` also owns the morph
+until `@kerfjs/ui/select/register` is imported. The root declaration barrel
+also re-exports every named AppTab, TabBar, ToolbarControlGroup, and Select
+presentation axis; the source and packed consumer contract compile the same
+type-only import fixture. `Select` also owns the morph
 boundary for its upgraded Web Awesome markup: stable skipped option-icon keys
 retain slotted elements across rerenders, while value-keyed custom selected
 content is replaced when the controlled selection changes.

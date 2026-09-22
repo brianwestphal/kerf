@@ -17,6 +17,11 @@ export interface SelectChoice<Value extends string = string> {
 type SelectAccessibleName =
   { label: string; ariaLabel?: string } | { label?: never; ariaLabel: string };
 
+export type SelectPresentation = 'form' | 'toolbar-borderless' | 'navigation';
+export type SelectSize = 'default' | 'compact';
+export type SelectSelectedPresentation = 'label' | 'icon-only';
+export type SelectFocusRingOwner = 'select' | 'group';
+
 interface SelectBaseProps<Value extends string = string> {
   name: string;
   value: NoInfer<Value>;
@@ -32,12 +37,12 @@ interface SelectBaseProps<Value extends string = string> {
   /** Render as an unanimated loading skeleton: the label above a static, empty control box. */
   placeholder?: boolean;
   /** Form (default), borderless toolbar, or intrinsic navigation chrome. */
-  presentation?: 'form' | 'toolbar-borderless' | 'navigation';
-  size?: 'default' | 'compact';
+  presentation?: SelectPresentation;
+  size?: SelectSize;
   /** Show only the selected choice icon while retaining the Select's accessible name. */
-  selectedPresentation?: 'label' | 'icon-only';
+  selectedPresentation?: SelectSelectedPresentation;
   /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */
-  focusRingOwner?: 'select' | 'group';
+  focusRingOwner?: SelectFocusRingOwner;
   /** Maximum closed-control label width in CSS pixels before ellipsis. */
   labelMaxWidth?: number;
 }

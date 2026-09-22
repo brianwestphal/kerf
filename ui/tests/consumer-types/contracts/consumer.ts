@@ -1,3 +1,19 @@
+import type {
+  AppTabPresentation,
+  AppTabSize,
+  SelectFocusRingOwner,
+  SelectPresentation,
+  SelectSelectedPresentation,
+  SelectSize,
+  TabBarAllocation,
+  TabBarPresentation,
+  TabBarTrailingPlacement,
+  ToolbarControlGroupContent,
+  ToolbarControlGroupDensity,
+  ToolbarControlGroupSelectedChrome,
+  ToolbarControlGroupSelectedTone,
+  ToolbarControlGroupSize,
+} from '@kerfjs/ui';
 import {
   buildEvaluationContexts,
   type UiEvaluationContext,
@@ -30,6 +46,41 @@ const icon = ToolbarText({ text: 'Icon' });
 
 const evaluationContexts: UiEvaluationContext[] = buildEvaluationContexts();
 void evaluationContexts;
+
+// KUI-T010 positive: every finite presentation axis is available from the
+// convenience root barrel in both source and packed declarations.
+const rootBarrelPresentationTypes: [
+  AppTabPresentation,
+  AppTabSize,
+  TabBarAllocation,
+  TabBarPresentation,
+  TabBarTrailingPlacement,
+  ToolbarControlGroupSize,
+  ToolbarControlGroupDensity,
+  ToolbarControlGroupContent,
+  ToolbarControlGroupSelectedChrome,
+  ToolbarControlGroupSelectedTone,
+  SelectPresentation,
+  SelectSize,
+  SelectSelectedPresentation,
+  SelectFocusRingOwner,
+] = [
+  'segmented',
+  'compact',
+  'fill',
+  'inspector',
+  'adjacent',
+  'compact',
+  'tight',
+  'mixed',
+  'outline',
+  'neutral',
+  'navigation',
+  'compact',
+  'icon-only',
+  'group',
+];
+void rootBarrelPresentationTypes;
 
 // KUI-T001 positive: every ListHeader mode carries its complete contract.
 ListHeader({ label: 'Passive' });
