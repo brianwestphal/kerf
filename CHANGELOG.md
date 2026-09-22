@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed `kerf-ui-doctor --full` so its isolated ESLint stage shares the same
+  generated-directory exclusions as TypeScript, static analysis, and cache
+  hashing; populated `dist`, `coverage`, dependency, cache, evidence, and nested
+  worktree directories no longer produce application diagnostics.
 - Changed `@kerfjs/ui` component-library design templates to compose their
   individual variant SVGs through HTML and `domotion capture
 --flatten-nested-svg`, eliminating the hand-built nested-SVG compositor and

@@ -1,12 +1,18 @@
 import { relative, sep } from 'node:path';
 
-const ignoredDirectoryNames = new Set([
+export const UI_TRAVERSAL_IGNORED_DIRECTORY_NAMES = Object.freeze([
   '.git',
   '.kerf-cache',
   'coverage',
   'dist',
   'kerf-ui-evidence',
   'node_modules',
+]);
+const ignoredDirectoryNames = new Set(UI_TRAVERSAL_IGNORED_DIRECTORY_NAMES);
+
+export const UI_TRAVERSAL_ESLINT_IGNORES = Object.freeze([
+  ...UI_TRAVERSAL_IGNORED_DIRECTORY_NAMES.map((name) => `**/${name}/**`),
+  '**/.claude/worktrees/**',
 ]);
 
 export function isUiTraversalExcluded(root, candidate) {

@@ -111,6 +111,16 @@ test('a downstream app moves from broken to clean using the supported doctor loo
       resolve(root, '.claude/worktrees/generated/src/copied.css'),
       '.copied { color: var(--kui-not-public); padding: 7px; }\n',
     );
+    for (const [directory, token] of [
+      ['dist/client', '--kui-toolbar-text-max-lines'],
+      ['coverage/unit/lcov-report', '--kui-catalog-example-align'],
+    ]) {
+      await mkdir(resolve(root, directory), { recursive: true });
+      await writeFile(
+        resolve(root, directory, 'generated.global.js'),
+        `export const generatedStyle = ${JSON.stringify(token)};\nexport const brokenGeneratedReference = missingGeneratedName;\n`,
+      );
+    }
     await writeFile(
       resolve(root, '.kerf-ui-profile.json'),
       JSON.stringify({
@@ -179,6 +189,13 @@ test('a downstream app moves from broken to clean using the supported doctor loo
     ).toBe(false);
     expect(JSON.stringify(broken.report)).not.toContain(root);
     expect(JSON.stringify(broken.report)).not.toContain('.claude/worktrees');
+    expect(JSON.stringify(broken.report)).not.toContain('generated.global.js');
+    expect(JSON.stringify(broken.report)).not.toContain(
+      '--kui-toolbar-text-max-lines',
+    );
+    expect(JSON.stringify(broken.report)).not.toContain(
+      '--kui-catalog-example-align',
+    );
 
     await writeFile(
       resolve(root, 'package.json'),
@@ -197,6 +214,7 @@ test('a downstream app moves from broken to clean using the supported doctor loo
       stderr: '',
     });
     expect(JSON.stringify(clean.report)).not.toContain('.claude/worktrees');
+    expect(JSON.stringify(clean.report)).not.toContain('generated.global.js');
     expect(
       clean.report.diagnostics.some(
         (item: { id: string }) => item.id === 'KUI-L090',

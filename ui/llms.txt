@@ -52,7 +52,9 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 6. **Before calling an integration complete**, run
    [`kerf-ui-doctor`](./docs/ui-doctor.md). Its portable JSON report merges
    profile/catalog, TypeScript, Kerf ESLint, and static analyzer diagnostics;
-   repair source-located errors until exit 0. Use full mode for release gates.
+   repair source-located errors until exit 0. Use full mode for release gates;
+   generated `dist`/`coverage`, dependency, cache, evidence, and nested-worktree
+   directories are excluded consistently from every static stage.
    [`kerf-ui-analyze`](./docs/ui-analyzer.md) remains available when only static
    layout diagnostics are wanted; its review findings are a bounded human/AI
    review queue rather than an objective aesthetic score.

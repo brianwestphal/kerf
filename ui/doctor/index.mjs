@@ -24,7 +24,10 @@ import { loadApplicationUiProfile } from '../ai/application-ui-profile.mjs';
 import { analyzeUiProject, UI_ANALYSIS_RULES } from '../analyzer/index.mjs';
 import { evaluateUi, UI_EVALUATION_RULES } from '../evaluator/index.mjs';
 import { isForeignRuleDefinitionDiagnostic } from './eslint-diagnostics.mjs';
-import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
+import {
+  isUiTraversalExcluded,
+  UI_TRAVERSAL_ESLINT_IGNORES,
+} from '../traversal-exclusions.mjs';
 
 export const UI_DOCTOR_SCHEMA_VERSION = 1;
 export const UI_DOCTOR_EXIT = Object.freeze({
@@ -847,7 +850,7 @@ async function runEslint({
       },
     },
   };
-  const configs = [{ ignores: ['**/.claude/worktrees/**'] }, base];
+  const configs = [{ ignores: UI_TRAVERSAL_ESLINT_IGNORES }, base];
   if (usesTypeScript) {
     const parserModule = await importFrom(
       packageRoot,

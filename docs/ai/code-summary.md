@@ -465,15 +465,19 @@ violations plus conservative review findings. Its public report schema and unit,
 bundle, and downstream-command tests pin deterministic diagnostics, exact
 profile suppression, sibling-package isolation, changed-file import traversal,
 shared-stylesheet multi-consumer policy, quoted and unquoted recursive imports,
-exit behavior, nested `.claude/worktrees` exclusion, and a zero-false-positive
-repository fixture. `ui/traversal-exclusions.mjs` is the shared internal
-directory boundary used by analyzer discovery and every doctor static/cache
-traversal.
+exit behavior, generated/tool-owned directory exclusion, and a
+zero-false-positive repository fixture. `ui/traversal-exclusions.mjs` is the
+shared internal directory boundary used by analyzer discovery and every doctor
+static/cache traversal, including ESLint global-ignore patterns derived from
+the same directory-name source.
 
 `ui/doctor/` provides the shipped `kerf-ui-doctor` repair-loop API and CLI. Its
 ESLint stage runs an isolated Kerf preset, discards only missing-definition
 diagnostics for consumer-owned plugin directives, and retains unknown
-`kerfjs/*` directives and all substantive lint findings.
+`kerfjs/*` directives and all substantive lint findings. Its full-project pass
+shares the analyzer/TypeScript/cache exclusion boundary, so generated `dist`,
+coverage, dependency, cache, evidence, and nested worktree output cannot create
+application diagnostics.
 
 `ui/evaluator/` provides the shipped `kerf-ui-evaluate` browser evaluator and
 `@kerfjs/ui/evaluator` API. It resolves the same project profile/catalogs, runs

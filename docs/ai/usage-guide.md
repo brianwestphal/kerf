@@ -231,7 +231,9 @@ UI ESLint preset, and static analysis without executing application modules.
 The doctor ESLint stage is an isolated Kerf pass: it preserves failures for
 unknown `kerfjs/*` directives but ignores unresolved directives owned by the
 consumer's other plugins. Run the application's normal ESLint command as the
-authority for those non-Kerf rules.
+authority for those non-Kerf rules. Full mode consistently excludes generated
+`dist`/`coverage`, dependency, cache, evidence, and nested-worktree directories
+from TypeScript, Kerf ESLint, static analysis, and cache inputs.
 Enable its browser stage with an explicit running-app URL (or invoke
 `kerf-ui-evaluate --url <app>` directly) to exercise the
 responsive/zoom/theme/motion matrix across Playwright engines and retain

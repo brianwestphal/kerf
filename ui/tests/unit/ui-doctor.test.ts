@@ -12,6 +12,15 @@ import {
   runUiDoctor,
   validateUiDoctorConfig,
 } from '../../doctor/index.mjs';
+// Shared build-tool module; no public declaration file is needed.
+// @ts-expect-error JavaScript-only internal module
+import * as traversalExclusions from '../../traversal-exclusions.mjs';
+
+const {
+  isUiTraversalExcluded,
+  UI_TRAVERSAL_ESLINT_IGNORES,
+  UI_TRAVERSAL_IGNORED_DIRECTORY_NAMES,
+} = traversalExclusions;
 
 const temporary: string[] = [];
 afterEach(async () =>
@@ -50,6 +59,26 @@ const diagnostic = (stage: string, message = 'Broken') => ({
 });
 
 describe('Kerf UI doctor', () => {
+  it('projects every shared traversal exclusion into the ESLint boundary', () => {
+    const root = resolve('/workspace/app');
+    for (const name of UI_TRAVERSAL_IGNORED_DIRECTORY_NAMES) {
+      expect(
+        isUiTraversalExcluded(root, resolve(root, name, 'output.js')),
+      ).toBe(true);
+      expect(UI_TRAVERSAL_ESLINT_IGNORES).toContain(`**/${name}/**`);
+    }
+    expect(
+      isUiTraversalExcluded(
+        root,
+        resolve(root, 'packages/app/.claude/worktrees/generated/source.ts'),
+      ),
+    ).toBe(true);
+    expect(UI_TRAVERSAL_ESLINT_IGNORES).toContain('**/.claude/worktrees/**');
+    expect(isUiTraversalExcluded(root, resolve(root, 'src/view.tsx'))).toBe(
+      false,
+    );
+  });
+
   it('publishes schemas that accept the runtime config and report', async () => {
     const root = await fixture();
     const config = {

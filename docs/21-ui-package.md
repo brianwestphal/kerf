@@ -346,9 +346,10 @@ explicitly enabled browser evaluation into one versioned, repository-relative
 report. Full and changed modes, workspace-package selection, exact reasoned
 suppressions, a dependency-aware cache, path redaction, and deterministic
 clean/findings/configuration/cancelled exits prevent partial or empty runs from
-appearing clean. Full traversal applies the same nested `.claude/worktrees`
-exclusion to TypeScript, ESLint, analyzer, and cache inputs. Static stages do
-not import application modules; only the
+appearing clean. Full traversal applies the same generated-directory boundary
+(`dist`, `coverage`, dependency/cache/evidence directories, and nested
+`.claude/worktrees`) to TypeScript, ESLint, analyzer, and cache inputs. Static
+stages do not import application modules; only the
 explicit browser stage executes a running app. See `ui/docs/ui-doctor.md`.
 
 Each catalog entry's `publicClasses` array is the exact stable CSS-anatomy
