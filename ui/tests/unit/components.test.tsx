@@ -992,6 +992,7 @@ describe('production UI primitives', () => {
       StateBanner({
         title: 'Offline',
         detail: 'Reconnect',
+        badge: '3',
         icon,
         action: icon,
         tone: 'danger',
@@ -1001,6 +1002,10 @@ describe('production UI primitives', () => {
     );
     expect(banner).toContain(
       'data-tone="danger" role="alert" aria-live="assertive"',
+    );
+    expect(banner).toContain('class="kui-state-banner__badge">3</span>');
+    expect(banner).toContain(
+      'class="kui-state-banner__detail">Reconnect</span>',
     );
     expect(asHtml(StateBanner({ title: 'Ready' }))).toContain(
       'data-tone="info" role="status" aria-live="polite"',

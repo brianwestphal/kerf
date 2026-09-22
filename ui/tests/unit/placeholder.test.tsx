@@ -244,14 +244,16 @@ describe('component placeholder mode', () => {
       StateBanner({
         title: 'Syncing',
         detail: 'Fetching the latest',
+        badge: '4',
         icon,
         placeholder: true,
       }),
     );
     expect(html).toContain('data-placeholder="true"');
     expect(html).toContain('kui-state-banner__icon');
-    expect(html).toContain('kui-skeleton');
+    expect(html.match(/class="kui-skeleton"/g)).toHaveLength(3);
     expect(html).not.toContain('Fetching the latest');
+    expect(html).not.toContain('>4</span>');
   });
 
   it('Select renders a static control box instead of the interactive wa-select', () => {

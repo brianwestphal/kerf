@@ -198,7 +198,7 @@ const buttonAppearance: ToolbarControlGroupButtonAppearance = 'push';
 const shape: ToolbarControlGroupShape = 'rounded';
 const sunkenPanelShape: SunkenPanelShape = 'square';
 TabBar({ id: 'tabs', label: 'Tabs', activation, children: icon });
-StateBanner({ title: 'Failed', urgency });
+StateBanner({ title: 'Failed', badge: '3', urgency });
 ToolbarControlGroup({
   children: icon,
   appearance,

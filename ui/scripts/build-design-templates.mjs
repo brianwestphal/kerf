@@ -447,6 +447,19 @@ export const COMPONENTS = {
           }),
       },
       {
+        id: 'info-badge',
+        label: 'Info with badge',
+        height: 76,
+        render: () =>
+          StateBanner({
+            tone: 'info',
+            icon: glyph(CircleAlert, 'circle-alert'),
+            title: 'Unanswered questions',
+            badge: '1',
+            action: raw(pushButton('Answer')),
+          }),
+      },
+      {
         id: 'success',
         label: 'Success',
         height: 76,

@@ -5703,8 +5703,11 @@ test('ships semantic banner palettes with scoped overrides', async ({
   const articles = page.locator(
     '[data-demo="state-banner"] .kui-catalog-example:not(:has([data-placeholder="true"]))',
   );
+  const badges = banners.locator('.kui-state-banner__badge');
   await expect(banners).toHaveCount(6);
   await expect(articles).toHaveCount(6);
+  await expect(badges).toHaveCount(5);
+  await expect(badges).toHaveText(['1', '2', '3', '4', '5']);
   const labelIconOffsets = () =>
     articles.evaluateAll((nodes) =>
       nodes.map((node) => {
@@ -5739,6 +5742,28 @@ test('ships semantic banner palettes with scoped overrides', async ({
   ).toBe(5);
   expect(new Set(styles.slice(0, 5).map(({ border }) => border)).size).toBe(5);
   expect(styles[5]!.color).toBe('rgb(109, 63, 156)');
+  const badgeStyles = await badges.evaluateAll((nodes) =>
+    nodes.map((node) => {
+      const style = window.getComputedStyle(node);
+      const bounds = node.getBoundingClientRect();
+      return {
+        width: bounds.width,
+        height: bounds.height,
+        radius: Number.parseFloat(style.borderRadius),
+        color: style.color,
+        background: style.backgroundColor,
+      };
+    }),
+  );
+  expect(
+    badgeStyles.every(({ width, height }) => width >= 20 && height >= 20),
+  ).toBe(true);
+  expect(
+    badgeStyles.every(
+      ({ width, height, radius }) => radius >= Math.min(width, height) / 2,
+    ),
+  ).toBe(true);
+  expect(new Set(badgeStyles.map(({ background }) => background)).size).toBe(5);
   // The info/success/warning tones use darker on-fill accents so their text clears
   // WCAG AA over the tinted banner fills (brand/success/warning-on-quiet resolved
   // to 4.15/4.05/4.39:1 there). Assert every tone's text clears 4.5:1 in both themes.
@@ -5778,17 +5803,72 @@ test('ships semantic banner palettes with scoped overrides', async ({
         }),
       );
     });
+  const minBadgeContrast = () =>
+    badges.evaluateAll((nodes) => {
+      const context = document.createElement('canvas').getContext('2d');
+      const luminance = (color: string): number => {
+        if (!context) return 0;
+        context.canvas.width = 1;
+        context.canvas.height = 1;
+        context.fillStyle = color;
+        context.fillRect(0, 0, 1, 1);
+        const channels = [
+          ...context.getImageData(0, 0, 1, 1).data.slice(0, 3),
+        ].map((channel) => {
+          const value = channel / 255;
+          return value <= 0.04045
+            ? value / 12.92
+            : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return (
+          0.2126 * (channels[0] ?? 0) +
+          0.7152 * (channels[1] ?? 0) +
+          0.0722 * (channels[2] ?? 0)
+        );
+      };
+      return Math.min(
+        ...nodes.map((node) => {
+          const styleMap = window.getComputedStyle(node);
+          const foreground = luminance(styleMap.color);
+          const background = luminance(styleMap.backgroundColor);
+          return (
+            (Math.max(foreground, background) + 0.05) /
+            (Math.min(foreground, background) + 0.05)
+          );
+        }),
+      );
+    });
   await expect
     .poll(minToneContrast, 'light StateBanner tone contrast (min across tones)')
+    .toBeGreaterThanOrEqual(4.5);
+  await expect
+    .poll(
+      minBadgeContrast,
+      'light StateBanner badge contrast (min across tones)',
+    )
     .toBeGreaterThanOrEqual(4.5);
   await page.locator('[data-action="toggle-theme"]').click();
   await expect(page.locator('html')).toHaveClass(/demo-dark/);
   await expect
     .poll(minToneContrast, 'dark StateBanner tone contrast (min across tones)')
     .toBeGreaterThanOrEqual(4.5);
+  await expect
+    .poll(
+      minBadgeContrast,
+      'dark StateBanner badge contrast (min across tones)',
+    )
+    .toBeGreaterThanOrEqual(4.5);
+  if (browserName === 'chromium')
+    await banners.nth(1).screenshot({
+      path: 'test-results/state-banner-badge-dark.png',
+    });
   await page.locator('[data-action="toggle-theme"]').click();
   await expect(page.locator('html')).not.toHaveClass(/demo-dark/);
   expect(await labelIconOffsets()).toEqual(Array(6).fill(0));
+  if (browserName === 'chromium')
+    await banners.nth(1).screenshot({
+      path: 'test-results/state-banner-badge-wide.png',
+    });
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/state-banner-type-label-alignment-after.png',
@@ -5797,6 +5877,17 @@ test('ships semantic banner palettes with scoped overrides', async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(banners.last()).toBeVisible();
   expect(await labelIconOffsets()).toEqual(Array(6).fill(0));
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    )
+    .toBe(true);
+  if (browserName === 'chromium')
+    await banners.nth(1).screenshot({
+      path: 'test-results/state-banner-badge-narrow.png',
+    });
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/state-banner-type-label-alignment-after-narrow.png',

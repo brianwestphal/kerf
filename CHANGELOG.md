@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added an optional tone-tinted pill badge beside `StateBanner` titles, including
+  loading skeleton behavior and per-instance badge color overrides.
+
 - Fixed pending `wireTabBars` and `wireTokenSearchFields` controlled-render
   callbacks moving focus after their owning wiring had been disposed.
 

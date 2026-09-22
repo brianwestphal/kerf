@@ -2389,6 +2389,7 @@
         }
       ],
       "appOwns": [
+        "badge content",
         "state mapping",
         "message lifetime",
         "retry behavior",
@@ -2402,10 +2403,12 @@
         "danger",
         "status",
         "alert",
+        "badge",
         "placeholder (loading)"
       ],
       "accessibility": [
-        "Use alert urgency only for an attention-requiring failure."
+        "Use alert urgency only for an attention-requiring failure.",
+        "Keep optional badge content terse and do not rely on its tone alone for meaning."
       ],
       "geometry": {
         "margin": "self",
@@ -2423,7 +2426,9 @@
       "publicClasses": [
         "kui-state-banner",
         "kui-state-banner__action",
+        "kui-state-banner__badge",
         "kui-state-banner__copy",
+        "kui-state-banner__detail",
         "kui-state-banner__icon"
       ],
       "publicTokens": [
@@ -2450,6 +2455,8 @@
         "--kui-state-banner-action-background",
         "--kui-state-banner-action-hover-background",
         "--kui-state-banner-background",
+        "--kui-state-banner-badge-background",
+        "--kui-state-banner-badge-foreground",
         "--kui-state-banner-border",
         "--kui-state-banner-danger-background",
         "--kui-state-banner-danger-border",

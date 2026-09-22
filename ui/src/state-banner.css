@@ -21,6 +21,14 @@
     )
   );
   --_kui-state-banner-detail: var(--kui-state-banner-detail, currentColor);
+  --_kui-state-banner-badge-background: var(
+    --kui-state-banner-badge-background,
+    var(--_kui-state-banner-foreground)
+  );
+  --_kui-state-banner-badge-foreground: var(
+    --kui-state-banner-badge-foreground,
+    var(--kui-color-surface)
+  );
   --_kui-state-banner-action-background: var(
     --kui-state-banner-action-background,
     color-mix(in srgb, var(--kui-color-surface) 52%, transparent)
@@ -129,7 +137,23 @@
 .kui-state-banner__copy strong {
   font-size: var(--kui-font-xs);
 }
-.kui-state-banner__copy span {
+.kui-state-banner__badge {
+  display: inline-grid;
+  min-width: remify(20px);
+  min-height: remify(20px);
+  padding-inline: remify(5.6px);
+  box-sizing: border-box;
+  border-radius: var(--kui-radius-pill);
+  color: var(--_kui-state-banner-badge-foreground);
+  background: var(--_kui-state-banner-badge-background);
+  place-items: center;
+  flex: none;
+  font-size: var(--kui-font-2xs);
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+}
+.kui-state-banner__detail {
   overflow: hidden;
   color: var(--_kui-state-banner-detail);
   font-size: var(--kui-font-2xs);
@@ -162,6 +186,13 @@
 @media (max-width: remify(576px)) {
   .kui-state-banner__copy {
     display: grid;
+    grid-template-columns: auto 1fr;
     gap: remify(0.8px);
+  }
+  .kui-state-banner__badge {
+    justify-self: start;
+  }
+  .kui-state-banner__detail {
+    grid-column: 1 / -1;
   }
 }

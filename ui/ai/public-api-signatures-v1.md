@@ -1358,15 +1358,17 @@ type StateBannerUrgency = 'status' | 'alert';
 interface StateBannerProps {
     title: string;
     detail?: string;
+    /** Optional compact status or count shown beside the title. */
+    badge?: string;
     icon?: SafeHtml;
     action?: SafeHtml;
     tone?: StateBannerTone;
     urgency?: StateBannerUrgency;
     className?: string;
-    /** Render the title and detail as unanimated loading skeletons, keeping the icon and tone. */
+    /** Render the title, badge, and detail as unanimated loading skeletons, keeping the icon and tone. */
     placeholder?: boolean;
 }
-declare function StateBanner({ title, detail, icon, action, tone, urgency, className, placeholder, }: StateBannerProps): SafeHtml;
+declare function StateBanner({ title, detail, badge, icon, action, tone, urgency, className, placeholder, }: StateBannerProps): SafeHtml;
 
 export { StateBanner, type StateBannerProps, type StateBannerTone, type StateBannerUrgency };
 ```

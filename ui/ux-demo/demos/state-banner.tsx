@@ -18,12 +18,13 @@ export function StateBannerDemo() {
       rootAttributes={{ 'data-demo': 'state-banner' }}
     >
       <>
-        {specimens.map(({ tone, title }) => (
+        {specimens.map(({ tone, title }, index) => (
           <CatalogExample label={tone} align="none">
             <StateBanner
               tone={tone}
               urgency={tone === 'danger' ? 'alert' : 'status'}
               title={title}
+              badge={String(index + 1)}
               detail="Semantic defaults remain overridable."
               icon={
                 tone === 'danger'

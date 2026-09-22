@@ -214,7 +214,9 @@ glyph defaults to 18px through `--kui-list-header-action-icon-size`.
 
 `StateBanner` exposes instance-level `--kui-state-banner-background`,
 `--kui-state-banner-border`, `--kui-state-banner-foreground`,
-`--kui-state-banner-detail`, and action background variables. Its five built-in
+`--kui-state-banner-detail`, `--kui-state-banner-badge-background`,
+`--kui-state-banner-badge-foreground`, and action background variables. Its optional
+badge is a compact pill beside the title and follows the banner tone by default. Its five built-in
 tones can be rethemed globally with
 `--kui-state-banner-{tone}-{background|border|foreground}`. Toolbar control,
 segmented-control, app-tab, and tab-bar colors likewise use their public

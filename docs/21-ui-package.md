@@ -141,7 +141,7 @@ instead of retaining stale content.
 | Resize                  | `ResizableRegion`, `wireResizableRegions`                                                    | Pointer-captured resize plus arrows, Shift acceleration, Home, End, and an optional decorative handle glyph                                                                                                                                                                                                                                                                    |
 | Choice controls         | `SegmentedControl`, `Select`                                                                 | Controlled exclusive buttons with toolbar/rounded/pill presentation; grouped Web Awesome popup choices with optional Lucide icons                                                                                                                                                                                                                                              |
 | Search                  | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `wireTokenSearchFields` | DOM-owned free text plus controlled ordered atomic filter chips; optional animated standalone or toolbar-group collapse; DOM reading, Enter submission, and caret-preserving keyboard deletion without application query grammar                                                                                                                                               |
-| Feedback                | `StateBanner`, `EmptyState`, `LoadingSpinner`, `Skeleton`                                    | Status/alert, empty/busy, meaningful/decorative progress, and a subtle unanimated loading-placeholder block                                                                                                                                                                                                                                                                    |
+| Feedback                | `StateBanner`, `EmptyState`, `LoadingSpinner`, `Skeleton`                                    | Status/alert with an optional terse tone-tinted badge, empty/busy, meaningful/decorative progress, and a subtle unanimated loading-placeholder block                                                                                                                                                                                                                           |
 | Loading placeholder     | a component's `placeholder` prop                                                             | Value-bearing components (`Select`, `ListHeader`, `ListItem`, `ValueTableRow`, `PanelHeader`, `SegmentedControl`, `StateBanner`, `AppTab`, `ToolbarText`, `ListActionRow`) render their real chrome with value slots as `Skeleton` blocks and interactivity disabled, so a parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding markup          |
 | Component catalog shell | `Catalog`, `CatalogExample`, `CatalogExampleStack` + `wireCatalog` (`@kerfjs/ui/catalog`)    | An opt-in, subpath-only whole-screen shell — collapsible category sidebar + titled preview stage + resources footer + related-entry selector — with public preview-layout helpers whose safe `rootAttributes` carry authoring `data-*` metadata; controlled/stateless (the app owns `active`/`collapsed`/`theme` and computes the preview `content`). See `ui/docs/catalog.md` |
 
@@ -156,7 +156,8 @@ slot without mixing authoring rules into the per-entry component catalog.
 - All interactive elements retain visible `:focus-visible` treatment and usable
   target sizes. Icons are `aria-hidden` unless they carry a supplied label.
 - `StateBanner` defaults to polite `status`; callers opt into assertive `alert`
-  only for immediate action.
+  only for immediate action. Keep an optional badge terse; its text is announced
+  as part of the banner, and its tone must not be the only conveyed meaning.
 - `PanelHeader` is a plain top toolbar: an optional bordered icon group and an
   extra-large title in the leading zone, the app's trailing controls in the
   trailing zone, and an optional summary/id below the title. Its title carries
@@ -229,12 +230,14 @@ dedicated gallery spans Web Awesome actions, forms, structure/navigation,
 feedback, media, and formatting. The catalog includes every ToolbarControlGroup
 variant, a responsive toolbar find composition, toolbar/rounded/pill
 SegmentedControl variants, editable, disabled, single-line, and multiline
-TokenSearchField states, all StateBanner tones
+TokenSearchField states, all StateBanner tones with optional title badges
 plus a scoped palette override, reorderable overflowing tabs, light and dark
 themes, contrast, motion, selection, resize, and feedback states.
 The tone labels above the StateBanner examples are catalog-only specimen chrome;
 they derive the shared 8px margin + 1px border + 8px padding inset so their text
 aligns with each banner's leading icon without adding a component API.
+The numbered pills beside the banner titles exercise the production `badge`
+option and inherit each banner tone.
 The catalog sidebar header uses the Kerf logo with a vertically centered title
 and a separately aligned subtitle row. Its visible pane owns the collapse
 control; once hidden, the pane disappears completely and its restore control

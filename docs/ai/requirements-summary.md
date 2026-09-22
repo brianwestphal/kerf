@@ -265,7 +265,9 @@ Accordion margin owned once by the connected group.
 
 StateBanner tone labels are catalog-only specimen chrome and derive the shared
 8px margin + 1px border + 8px padding inset, aligning their text with each
-banner's leading icon without expanding the component API.
+banner's leading icon. Its optional production `badge` is separate inline title
+content: keep that text terse, let it inherit the banner tone, and never depend
+on color alone for meaning.
 
 `DisclosureArrow` uses an overridable 18px root-scaled default, while Kerf
 `Select` retains an independent `.5` scale for its intrinsic Web Awesome expand
