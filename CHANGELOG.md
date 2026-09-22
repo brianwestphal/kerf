@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Updated the published setup runtime to patched `minimatch` 9.0.9 and `yaml`
+  2.9.1 releases, resolving the known regular-expression denial-of-service and
+  deeply nested YAML denial-of-service advisories without narrowing Kerf's
+  supported Node.js range.
 - Fixed `kerf-ui-doctor --full` so its isolated ESLint stage shares the same
   generated-directory exclusions as TypeScript, static analysis, and cache
   hashing; populated `dist`, `coverage`, dependency, cache, evidence, and nested
