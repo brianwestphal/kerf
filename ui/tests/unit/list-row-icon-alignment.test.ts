@@ -26,6 +26,21 @@ async function declarationsFor(file: string, selector: string) {
 }
 
 describe('menu row icon alignment contract', () => {
+  it('sizes the ListItem leading icon and its SVG to 18px', async () => {
+    await expect(
+      declarationsFor('list-item.css', '.kui-list-item__icon'),
+    ).resolves.toMatchObject({
+      width: 'remify(18px)',
+      height: 'remify(18px)',
+    });
+    await expect(
+      declarationsFor('list-item.css', '.kui-list-item__icon svg'),
+    ).resolves.toMatchObject({
+      width: 'remify(18px)',
+      height: 'remify(18px)',
+    });
+  });
+
   it('aligns a multiline ListItem icon to the first inherited line box', async () => {
     await expect(
       declarationsFor(
@@ -34,7 +49,7 @@ describe('menu row icon alignment contract', () => {
       ),
     ).resolves.toEqual({
       'align-self': 'start',
-      'margin-block-start': 'calc((1lh - remify(24px)) / 2)',
+      'margin-block-start': 'calc((1lh - remify(18px)) / 2)',
     });
   });
 

@@ -26,7 +26,7 @@
 }
 
 .kui-list-item[data-has-icon="true"] {
-  grid-template-columns: remify(24px) minmax(0, 1fr) auto;
+  grid-template-columns: remify(18px) minmax(0, 1fr) auto;
 }
 
 .kui-list-item[data-has-icon="true"] .kui-list-item__icon {
@@ -75,16 +75,16 @@
 
 .kui-list-item__icon {
   display: grid;
-  width: remify(24px);
-  height: remify(24px);
+  width: remify(18px);
+  height: remify(18px);
   color: currentColor;
   place-items: center;
 }
 
 .kui-list-item__icon svg {
   display: block;
-  width: remify(24px);
-  height: remify(24px);
+  width: remify(18px);
+  height: remify(18px);
 }
 
 .kui-list-item__label {
@@ -106,7 +106,7 @@
 
 .kui-list-item[data-multiline="true"] .kui-list-item__icon {
   align-self: start;
-  margin-block-start: calc((1lh - remify(24px)) / 2);
+  margin-block-start: calc((1lh - remify(18px)) / 2);
 }
 
 .kui-list-item__trailing {

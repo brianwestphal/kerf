@@ -91,6 +91,14 @@ test('aligns multiline ListItem and ListActionRow icons with the first text line
     '.kui-list-item__label',
     { width: 390, height: 844 },
   );
+  await expect
+    .poll(async () =>
+      menuItem.locator('.kui-list-item__icon').evaluate((element) => ({
+        width: element.getBoundingClientRect().width,
+        height: element.getBoundingClientRect().height,
+      })),
+    )
+    .toEqual({ width: 18, height: 18 });
   if (browserName === 'chromium') {
     await menuItem.hover();
     await menuItem.screenshot({

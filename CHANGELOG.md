@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Changed the default `ListItem` leading icon visual from 24px to a root-scaled
+  18px while retaining the row's 44px minimum target and first-line alignment.
+
 - Fixed managed `TokenSearchField` clear losing focus or collapsing when an
   application replaces its controlled editor; continued typing now works without
   an application reopen callback.

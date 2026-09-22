@@ -193,6 +193,10 @@ an unlisted implementation class. Selectors such as `.kui-state-banner span`,
 private structure. If no prop, token, or cataloged class expresses a recurring
 need, request a supported hook instead of inferring one from rendered markup.
 
+`ListItem` renders its leading icon and nested SVG at a root-scaled 18px by
+default while retaining the row's 44px minimum interactive target. Multiline
+rows align that 18px visual with the first inherited text line.
+
 `DisclosureArrow` uses an 18px root-scaled visual by default. Override
 `--kui-disclosure-arrow-size` on the component or its containing scope when a
 consumer needs another size. Kerf `Select` uses a separate Web Awesome expand
