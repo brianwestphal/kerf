@@ -140,7 +140,7 @@ claim Kerf delivery paths for them.
 - Applications own signals/stores, product copy, domain-state mapping, persistence, routing, permissions, and transport.
 - Actions are `data-action` strings. Wire them at a stable root with `delegate()` or `delegateActions()` and retain the disposer.
 - A reusable component never owns per-instance mutable module state.
-- Consumers style through `--kui-*` semantic tokens and public component classes. Foundation tokens provide opinionated neutral, brand/info, success, warning, and danger fill/border/foreground roles. Stateful components expose local override variables; prefer an equivalent prop or token before writing a selector.
+- Consumers style through `--kui-*` semantic tokens and public component classes. Foundation tokens provide opinionated neutral, brand/info, non-status pop, success, warning, and danger fill/border/foreground roles. Stateful components expose local override variables; prefer an equivalent prop or token before writing a selector.
 
 `ListItem.rootAttributes`, `ListActionRow.rootAttributes`,
 `ListHeader.rootAttributes`, `AppTab.rootAttributes`,

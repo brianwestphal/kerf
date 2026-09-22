@@ -328,6 +328,10 @@ button {
   color: var(--kui-color-brand-on-fill);
   background: var(--kui-color-brand-fill-quiet);
 }
+.demo-foundation__tone--pop {
+  color: var(--kui-color-pop-on-fill);
+  background: var(--kui-color-pop-fill-quiet);
+}
 .demo-foundation__tone--success {
   color: var(--kui-color-success-on-fill);
   background: var(--kui-color-success-fill-quiet);

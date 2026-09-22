@@ -8,7 +8,7 @@ test('catalogs the public foundation token surface without overflow', async ({
 
   const demo = page.locator('[data-demo="foundation"]');
   await expect(demo).toBeVisible();
-  await expect(demo.locator('.demo-foundation__tone')).toHaveCount(4);
+  await expect(demo.locator('.demo-foundation__tone')).toHaveCount(5);
   await expect(demo.locator('.demo-foundation__tone--brand')).toHaveCSS(
     'color',
     'rgb(26, 93, 207)',

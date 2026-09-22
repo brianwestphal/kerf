@@ -187,6 +187,35 @@
      value matches brand-on-quiet, which already passes over the dark fills. */
   --kui-color-brand-on-fill: light-dark(#1a5dcf, #8acbff);
 
+  /* Pop is attractive emphasis without status meaning: use it for featured,
+     novel, or celebratory content, never as a success/danger substitute. */
+  --kui-color-pop-fill-loud: light-dark(#af34d4, #da8fff);
+  --kui-color-pop-fill-quiet: color-mix(
+    in srgb,
+    var(--kui-color-pop-fill-loud) 10%,
+    var(--kui-color-surface)
+  );
+  --kui-color-pop-fill-normal: color-mix(
+    in srgb,
+    var(--kui-color-pop-fill-loud) 18%,
+    var(--kui-color-surface)
+  );
+  --kui-color-pop-border-quiet: color-mix(
+    in srgb,
+    var(--kui-color-pop-fill-loud) 36%,
+    var(--kui-color-surface)
+  );
+  --kui-color-pop-border-normal: color-mix(
+    in srgb,
+    var(--kui-color-pop-fill-loud) 58%,
+    var(--kui-color-surface)
+  );
+  --kui-color-pop-border-loud: var(--kui-color-pop-fill-loud);
+  --kui-color-pop-on-quiet: light-dark(#792498, #e8a5ff);
+  --kui-color-pop-on-normal: var(--kui-color-pop-on-quiet);
+  --kui-color-pop-on-loud: light-dark(#fff, #241126);
+  --kui-color-pop-on-fill: var(--kui-color-pop-on-quiet);
+
   --kui-color-success-fill-loud: var(--wa-color-success-fill-loud, #34c759);
   --kui-color-success-fill-quiet: var(
     --wa-color-success-fill-quiet,
@@ -338,6 +367,8 @@
   --kui-color-border-quiet: var(--kui-color-neutral-border-quiet);
   --kui-color-accent: var(--kui-color-brand-fill-normal);
   --kui-color-accent-text: var(--kui-color-brand-on-quiet);
+  --kui-color-pop: var(--kui-color-pop-fill-quiet);
+  --kui-color-pop-text: var(--kui-color-pop-on-fill);
   --kui-color-success: var(--kui-color-success-fill-quiet);
   --kui-color-success-text: var(--kui-color-success-on-quiet);
   --kui-color-warning: var(--kui-color-warning-fill-quiet);
@@ -357,6 +388,18 @@
 
 @media (prefers-contrast: more) {
   :root {
+    --kui-color-pop-fill-quiet: Canvas;
+    --kui-color-pop-fill-normal: Canvas;
+    --kui-color-pop-fill-loud: Highlight;
+    --kui-color-pop-border-quiet: currentColor;
+    --kui-color-pop-border-normal: currentColor;
+    --kui-color-pop-border-loud: currentColor;
+    --kui-color-pop-on-quiet: currentColor;
+    --kui-color-pop-on-normal: currentColor;
+    --kui-color-pop-on-loud: HighlightText;
+    --kui-color-pop-on-fill: currentColor;
+    --kui-color-pop: Canvas;
+    --kui-color-pop-text: currentColor;
     --kui-color-border: currentColor;
     --kui-focus-ring: 3px solid currentColor;
   }

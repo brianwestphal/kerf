@@ -46,7 +46,7 @@ interface ListHeaderBaseProps {
   label: string;
   density?: 'standard' | 'compact';
   divider?: 'none' | 'before' | 'after' | 'both';
-  indicatorTone?: 'neutral' | 'accent' | 'danger';
+  indicatorTone?: 'neutral' | 'accent' | 'pop' | 'danger';
   /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
   placeholder?: boolean;
   rootAttributes?: ListHeaderRootAttributes;

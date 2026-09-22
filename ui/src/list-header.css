@@ -112,6 +112,12 @@
   background: var(--kui-color-brand-fill-normal);
 }
 
+.kui-list-header[data-indicator-tone="pop"]
+  :is(.kui-list-header__count, .kui-list-header__badge) {
+  color: var(--kui-color-pop-on-normal);
+  background: var(--kui-color-pop-fill-normal);
+}
+
 .kui-list-header[data-indicator-tone="danger"]
   :is(.kui-list-header__count, .kui-list-header__badge) {
   color: var(--kui-color-danger-on-normal);

@@ -8,6 +8,7 @@ export function StateBannerDemo() {
   const specimens = [
     { tone: 'neutral', title: 'Standing by' },
     { tone: 'info', title: 'Connecting to server' },
+    { tone: 'pop', title: 'Featured workspace' },
     { tone: 'success', title: 'Everything is connected' },
     { tone: 'warning', title: 'Connection interrupted' },
     { tone: 'danger', title: 'Authentication required' },

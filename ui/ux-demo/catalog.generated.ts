@@ -525,7 +525,7 @@ export const generatedKerfCatalog = [
     "category": "Feedback",
     "kind": "component",
     "source": "kerf",
-    "description": "Polite status and assertive alert feedback with semantic tones.",
+    "description": "Present persistent inline feedback or attractive non-status emphasis with a named semantic tone.",
     "uses": [
       "lucide-icon"
     ],

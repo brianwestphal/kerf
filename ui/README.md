@@ -427,8 +427,10 @@ classes for explicit appearance boundaries:
 ```
 
 `foundation.css` follows Hot Sheet 2's Web Awesome-compatible semantic palette.
-Brand, neutral, success, warning, and danger each expose fill, border, and
-foreground roles through `--kui-color-*`; stateful components also expose
+Brand, pop, neutral, success, warning, and danger each expose fill, border, and
+foreground roles through `--kui-color-*`. Pop is attractive, non-status emphasis
+for featured, novel, or celebratory content; it never substitutes for success,
+warning, or danger. Stateful components also expose
 component variables such as `--kui-state-banner-background`. Override the
 foundation for an application theme, a tone variable for one semantic state, or
 a component variable on one instance without replacing component selectors.
@@ -437,8 +439,8 @@ needs a selector, the component catalog's `publicClasses` arrays define the
 exact stable anatomy: public-class-to-public-class selectors are supported;
 descendant tag, id, attribute-only, and unlisted-class selectors are not.
 
-`StateBanner` has opinionated `neutral`, `info`, `success`, `warning`, and
-`danger` palettes. Override an individual banner with
+`StateBanner` has opinionated `neutral`, `info`, `pop`, `success`, `warning`,
+and `danger` palettes. Override an individual banner with
 `--kui-state-banner-background`, `--kui-state-banner-border`,
 `--kui-state-banner-foreground`, `--kui-state-banner-detail`,
 `--kui-state-banner-action-background`, and

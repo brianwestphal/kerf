@@ -29,7 +29,7 @@ export const tokenSearchTokens = signal<TokenSearchToken[]>([
   { value: 'is:active', label: 'is:active', offset: 4 },
 ]);
 export const bannerTone = signal<
-  'neutral' | 'info' | 'success' | 'warning' | 'danger'
+  'neutral' | 'info' | 'pop' | 'success' | 'warning' | 'danger'
 >('info');
 export const toolbarChoice = signal<'list' | 'columns' | 'settings'>('list');
 export const toolbarFindQuery = signal('');

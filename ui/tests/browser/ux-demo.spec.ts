@@ -5126,13 +5126,14 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Borderless group',
     'Push button, resting',
     'Push button, pressed',
+    'Pop selected tone',
     'Dark group',
     'Compact mixed controls',
     'Avatar profile',
     'Collapsible search',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  await expect(groups).toHaveCount(12);
+  await expect(groups).toHaveCount(13);
   const standardGroups = demo.locator(
     '[data-component="toolbar-control-group"]:not([data-size="compact"])',
   );
@@ -5225,7 +5226,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       .screenshot({ path: 'test-results/toolbar-control-group-avatar.png' });
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(groups).toHaveCount(12);
+  await expect(groups).toHaveCount(13);
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/toolbar-control-groups-narrow.png',
@@ -5768,10 +5769,10 @@ test('ships semantic banner palettes with scoped overrides', async ({
     '[data-demo="state-banner"] .kui-catalog-example:not(:has([data-placeholder="true"]))',
   );
   const badges = banners.locator('.kui-state-banner__badge');
-  await expect(banners).toHaveCount(6);
-  await expect(articles).toHaveCount(6);
-  await expect(badges).toHaveCount(5);
-  await expect(badges).toHaveText(['1', '2', '3', '4', '5']);
+  await expect(banners).toHaveCount(7);
+  await expect(articles).toHaveCount(7);
+  await expect(badges).toHaveCount(6);
+  await expect(badges).toHaveText(['1', '2', '3', '4', '5', '6']);
   const labelIconOffsets = () =>
     articles.evaluateAll((nodes) =>
       nodes.map((node) => {
@@ -5794,18 +5795,19 @@ test('ships semantic banner palettes with scoped overrides', async ({
       };
     }),
   );
-  expect(styles.slice(0, 5).map(({ color }) => color)).toEqual([
+  expect(styles.slice(0, 6).map(({ color }) => color)).toEqual([
     'rgb(29, 29, 31)',
     'rgb(26, 93, 207)',
+    'rgb(121, 36, 152)',
     'rgb(0, 121, 44)',
     'rgb(143, 94, 0)',
     'rgb(194, 11, 32)',
   ]);
   expect(
-    new Set(styles.slice(0, 5).map(({ background }) => background)).size,
-  ).toBe(5);
-  expect(new Set(styles.slice(0, 5).map(({ border }) => border)).size).toBe(5);
-  expect(styles[5]!.color).toBe('rgb(109, 63, 156)');
+    new Set(styles.slice(0, 6).map(({ background }) => background)).size,
+  ).toBe(6);
+  expect(new Set(styles.slice(0, 6).map(({ border }) => border)).size).toBe(6);
+  expect(styles[6]!.color).toBe('rgb(109, 63, 156)');
   const badgeStyles = await badges.evaluateAll((nodes) =>
     nodes.map((node) => {
       const style = window.getComputedStyle(node);
@@ -5827,7 +5829,7 @@ test('ships semantic banner palettes with scoped overrides', async ({
       ({ width, height, radius }) => radius >= Math.min(width, height) / 2,
     ),
   ).toBe(true);
-  expect(new Set(badgeStyles.map(({ background }) => background)).size).toBe(5);
+  expect(new Set(badgeStyles.map(({ background }) => background)).size).toBe(6);
   // The info/success/warning tones use darker on-fill accents so their text clears
   // WCAG AA over the tinted banner fills (brand/success/warning-on-quiet resolved
   // to 4.15/4.05/4.39:1 there). Assert every tone's text clears 4.5:1 in both themes.
@@ -5928,7 +5930,7 @@ test('ships semantic banner palettes with scoped overrides', async ({
     });
   await page.locator('[data-action="toggle-theme"]').click();
   await expect(page.locator('html')).not.toHaveClass(/demo-dark/);
-  expect(await labelIconOffsets()).toEqual(Array(6).fill(0));
+  expect(await labelIconOffsets()).toEqual(Array(7).fill(0));
   if (browserName === 'chromium')
     await banners.nth(1).screenshot({
       path: 'test-results/state-banner-badge-wide.png',
@@ -5940,7 +5942,7 @@ test('ships semantic banner palettes with scoped overrides', async ({
     });
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(banners.last()).toBeVisible();
-  expect(await labelIconOffsets()).toEqual(Array(6).fill(0));
+  expect(await labelIconOffsets()).toEqual(Array(7).fill(0));
   await expect
     .poll(() =>
       page.evaluate(

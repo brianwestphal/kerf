@@ -88,8 +88,10 @@ Reuse a component when surfaces share its purpose, anatomy, state model, and int
 Color, type, spacing, radius, elevation, and motion express semantic roles. Prefer package tokens over raw values in consuming code. State is never communicated by color alone.
 
 The default vocabulary is opinionated rather than empty: neutral, brand/info,
-success, warning, and danger provide quiet/normal/loud fills, borders, and
-foregrounds compatible with Hot Sheet 2 and Web Awesome. Consumers may replace
+pop, success, warning, and danger provide quiet/normal/loud fills, borders, and
+foregrounds compatible with Hot Sheet 2 and Web Awesome. Pop is vibrant,
+non-status emphasis for featured, novel, or celebratory content; never use it as
+a success, warning, or danger substitute. Consumers may replace
 the global palette, one semantic role, or one component instance through
 documented custom properties without rewriting component CSS.
 

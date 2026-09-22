@@ -8,7 +8,7 @@ export type ToolbarControlGroupSize = 'default' | 'compact';
 export type ToolbarControlGroupDensity = 'comfortable' | 'tight';
 export type ToolbarControlGroupContent = 'icon' | 'text' | 'mixed' | 'avatar';
 export type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
-export type ToolbarControlGroupSelectedTone = 'brand' | 'neutral';
+export type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 
 export interface ToolbarControlGroupProps {
   children: SafeHtml | SafeHtml[];

@@ -3,7 +3,7 @@ import type { SafeHtml } from 'kerfjs';
 import { Skeleton } from './skeleton.js';
 
 export type StateBannerTone =
-  'neutral' | 'info' | 'success' | 'warning' | 'danger';
+  'neutral' | 'info' | 'pop' | 'success' | 'warning' | 'danger';
 export type StateBannerUrgency = 'status' | 'alert';
 
 export interface StateBannerProps {

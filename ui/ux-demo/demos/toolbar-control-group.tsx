@@ -176,6 +176,23 @@ export function ToolbarControlGroupDemo() {
           </button>
         </ToolbarControlGroup>
       </CatalogExample>
+      <CatalogExample label="Pop selected tone" align="inline-control">
+        <ToolbarControlGroup
+          label="Featured action"
+          selectedChrome="filled"
+          selectedTone="pop"
+          shape={shape}
+        >
+          <button
+            type="button"
+            aria-label="Featured"
+            aria-pressed="true"
+            data-action="log-featured"
+          >
+            {icon(Star, 'star')}
+          </button>
+        </ToolbarControlGroup>
+      </CatalogExample>
       <CatalogExample label="Dark group" align="inline-control">
         <ToolbarControlGroup label="Dark navigation" tone="dark" shape={shape}>
           <button

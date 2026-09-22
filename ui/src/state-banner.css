@@ -63,6 +63,20 @@
     var(--kui-state-banner-info-foreground, var(--kui-color-brand-on-fill))
   );
 }
+.kui-state-banner[data-tone="pop"] {
+  --_kui-state-banner-background: var(
+    --kui-state-banner-background,
+    var(--kui-state-banner-pop-background, var(--kui-color-pop-fill-quiet))
+  );
+  --_kui-state-banner-border: var(
+    --kui-state-banner-border,
+    var(--kui-state-banner-pop-border, var(--kui-color-pop-border-normal))
+  );
+  --_kui-state-banner-foreground: var(
+    --kui-state-banner-foreground,
+    var(--kui-state-banner-pop-foreground, var(--kui-color-pop-on-fill))
+  );
+}
 .kui-state-banner[data-tone="success"] {
   --_kui-state-banner-background: var(
     --kui-state-banner-background,

@@ -174,7 +174,7 @@ describe('production UI primitives', () => {
       density: 'tight',
       content: 'mixed',
       selectedChrome: 'outline',
-      selectedTone: 'neutral',
+      selectedTone: 'pop',
       nestedDropdown: true,
       scrim: true,
       className: 'extra',
@@ -197,7 +197,7 @@ describe('production UI primitives', () => {
       'role="group" aria-label="View" data-appearance="borderless" data-tone="dark" data-button-appearance="push" data-expanded="true" data-single="true"',
     );
     expect(asHtml(group)).toContain(
-      'data-size="compact" data-density="tight" data-content="mixed" data-selected-chrome="outline" data-selected-tone="neutral" data-nested-dropdown="true" data-scrim="true"',
+      'data-size="compact" data-density="tight" data-content="mixed" data-selected-chrome="outline" data-selected-tone="pop" data-nested-dropdown="true" data-scrim="true"',
     );
     expect(
       asHtml(
@@ -435,6 +435,15 @@ describe('production UI primitives', () => {
     );
     expect(badge).toContain('data-has-badge="true" data-has-count="false"');
     expect(badge).toContain('class="kui-list-header__badge"><span>New</span>');
+    expect(
+      asHtml(
+        ListHeader({
+          label: 'Featured',
+          badge: <span>New</span>,
+          indicatorTone: 'pop',
+        }),
+      ),
+    ).toContain('data-indicator-tone="pop"');
     const status = asHtml(
       ListHeader({
         label: 'Blocked',
@@ -1098,6 +1107,7 @@ describe('production UI primitives', () => {
     for (const tone of [
       'neutral',
       'info',
+      'pop',
       'success',
       'warning',
       'danger',

@@ -271,7 +271,8 @@
       ],
       "variants": [
         "light",
-        "dark"
+        "dark",
+        "increased contrast"
       ],
       "accessibility": [
         "Preserve semantic contrast relationships and the visible focus ring when overriding foundation colors."
@@ -354,6 +355,16 @@
         "--kui-color-brand-on-normal",
         "--kui-color-brand-on-loud",
         "--kui-color-brand-on-fill",
+        "--kui-color-pop-fill-loud",
+        "--kui-color-pop-fill-quiet",
+        "--kui-color-pop-fill-normal",
+        "--kui-color-pop-border-quiet",
+        "--kui-color-pop-border-normal",
+        "--kui-color-pop-border-loud",
+        "--kui-color-pop-on-quiet",
+        "--kui-color-pop-on-normal",
+        "--kui-color-pop-on-loud",
+        "--kui-color-pop-on-fill",
         "--kui-color-success-fill-loud",
         "--kui-color-success-fill-quiet",
         "--kui-color-success-fill-normal",
@@ -387,6 +398,8 @@
         "--kui-color-border-quiet",
         "--kui-color-accent",
         "--kui-color-accent-text",
+        "--kui-color-pop",
+        "--kui-color-pop-text",
         "--kui-color-success",
         "--kui-color-success-text",
         "--kui-color-warning",
@@ -1229,7 +1242,7 @@
         "comfortable or tight density",
         "icon, text, mixed, or avatar content",
         "raised, filled, or outline selected chrome",
-        "brand or neutral selected tone",
+        "brand, neutral, or pop selected tone",
         "nested dropdown trigger",
         "avatar scrim"
       ],
@@ -1254,6 +1267,10 @@
       ],
       "publicTokens": [
         "--kui-color-brand-on-quiet",
+        "--kui-color-pop-border-normal",
+        "--kui-color-pop-fill-normal",
+        "--kui-color-pop-on-normal",
+        "--kui-color-pop-on-quiet",
         "--kui-color-neutral-border-loud",
         "--kui-color-neutral-border-normal",
         "--kui-color-neutral-fill-loud",
@@ -1725,7 +1742,7 @@
         "toggle",
         "placeholder (loading)",
         "compact density",
-        "neutral, accent, or danger indicator tone",
+        "neutral, accent, pop, or danger indicator tone",
         "before, after, or paired group divider"
       ],
       "accessibility": [
@@ -1771,6 +1788,8 @@
         "--kui-list-header-hover-background",
         "--kui-list-group-divider-color",
         "--kui-color-brand-on-normal",
+        "--kui-color-pop-fill-normal",
+        "--kui-color-pop-on-normal",
         "--kui-color-danger-fill-normal",
         "--kui-color-danger-on-normal"
       ],
@@ -2807,11 +2826,11 @@
       "category": "Feedback",
       "kind": "component",
       "source": "kerf",
-      "description": "Polite status and assertive alert feedback with semantic tones.",
+      "description": "Polite status and assertive alert feedback with semantic tones, plus non-status pop emphasis for featured or novel content.",
       "uses": [
         "lucide-icon"
       ],
-      "purpose": "Polite status and assertive alert feedback with semantic tones.",
+      "purpose": "Present persistent inline feedback or attractive non-status emphasis with a named semantic tone.",
       "publicExports": [
         "StateBanner"
       ],
@@ -2819,7 +2838,8 @@
         "Place persistent inline semantic status beside affected work."
       ],
       "avoidWhen": [
-        "Do not use for an absent-content screen or transient confirmation."
+        "Do not use for an absent-content screen or transient confirmation.",
+        "Do not use pop as a substitute for success, warning, or danger."
       ],
       "alternatives": [
         {
@@ -2845,6 +2865,7 @@
       "variants": [
         "neutral",
         "info",
+        "pop",
         "success",
         "warning",
         "danger",
@@ -2882,6 +2903,9 @@
         "--kui-color-brand-border-quiet",
         "--kui-color-brand-fill-quiet",
         "--kui-color-brand-on-fill",
+        "--kui-color-pop-border-normal",
+        "--kui-color-pop-fill-quiet",
+        "--kui-color-pop-on-fill",
         "--kui-color-danger-border-quiet",
         "--kui-color-danger-fill-quiet",
         "--kui-color-danger-on-quiet",
@@ -2913,6 +2937,9 @@
         "--kui-state-banner-info-background",
         "--kui-state-banner-info-border",
         "--kui-state-banner-info-foreground",
+        "--kui-state-banner-pop-background",
+        "--kui-state-banner-pop-border",
+        "--kui-state-banner-pop-foreground",
         "--kui-state-banner-neutral-background",
         "--kui-state-banner-neutral-border",
         "--kui-state-banner-neutral-foreground",

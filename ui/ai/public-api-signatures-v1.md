@@ -97,7 +97,7 @@ type ToolbarControlGroupSize = 'default' | 'compact';
 type ToolbarControlGroupDensity = 'comfortable' | 'tight';
 type ToolbarControlGroupContent = 'icon' | 'text' | 'mixed' | 'avatar';
 type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
-type ToolbarControlGroupSelectedTone = 'brand' | 'neutral';
+type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 interface ToolbarControlGroupProps {
     children: SafeHtml | SafeHtml[];
     label?: string;
@@ -183,7 +183,7 @@ interface ListHeaderBaseProps {
     label: string;
     density?: 'standard' | 'compact';
     divider?: 'none' | 'before' | 'after' | 'both';
-    indicatorTone?: 'neutral' | 'accent' | 'danger';
+    indicatorTone?: 'neutral' | 'accent' | 'pop' | 'danger';
     /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
     placeholder?: boolean;
     rootAttributes?: ListHeaderRootAttributes;
@@ -1426,7 +1426,7 @@ export { Select, type SelectChoice, type SelectFocusRingOwner, type SelectPresen
 ```ts
 import { SafeHtml } from 'kerfjs';
 
-type StateBannerTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger';
+type StateBannerTone = 'neutral' | 'info' | 'pop' | 'success' | 'warning' | 'danger';
 type StateBannerUrgency = 'status' | 'alert';
 interface StateBannerProps {
     title: string;

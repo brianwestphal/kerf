@@ -12,6 +12,13 @@ export function ListHeaderDemo() {
     >
       <CatalogExample align="none">
         <ListHeader
+          label="Featured"
+          badge={<span>New</span>}
+          indicatorTone="pop"
+        />
+      </CatalogExample>
+      <CatalogExample align="none">
+        <ListHeader
           label="Needs attention"
           status={<span>3 blocked</span>}
           indicatorTone="danger"

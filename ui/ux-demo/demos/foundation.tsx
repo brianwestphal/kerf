@@ -2,6 +2,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 
 const tones = [
   ['Brand', 'brand'],
+  ['Pop', 'pop'],
   ['Success', 'success'],
   ['Warning', 'warning'],
   ['Danger', 'danger'],

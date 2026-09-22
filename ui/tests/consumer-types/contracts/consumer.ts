@@ -22,7 +22,11 @@ import { type DividerSides, List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
-import { StateBanner, type StateBannerUrgency } from '@kerfjs/ui/state-banner';
+import {
+  StateBanner,
+  type StateBannerTone,
+  type StateBannerUrgency,
+} from '@kerfjs/ui/state-banner';
 import { SunkenPanel, type SunkenPanelShape } from '@kerfjs/ui/sunken-panel';
 import { type TabActivation, TabBar } from '@kerfjs/ui/tab-bar';
 import { TabScaffold } from '@kerfjs/ui/tab-scaffold';
@@ -74,7 +78,7 @@ const rootBarrelPresentationTypes: [
   'tight',
   'mixed',
   'outline',
-  'neutral',
+  'pop',
   'navigation',
   'compact',
   'icon-only',
@@ -84,6 +88,7 @@ void rootBarrelPresentationTypes;
 
 // KUI-T001 positive: every ListHeader mode carries its complete contract.
 ListHeader({ label: 'Passive' });
+ListHeader({ label: 'Featured', badge: icon, indicatorTone: 'pop' });
 ListHeader({
   label: 'Action',
   action: 'add',
@@ -230,6 +235,7 @@ wireTokenSearchFields(document.body, {
 // KUI-T010 positive: finite public vocabularies are importable exact unions.
 const activation: TabActivation = 'manual';
 const urgency: StateBannerUrgency = 'alert';
+const stateBannerTone: StateBannerTone = 'pop';
 const appearance: ToolbarControlGroupAppearance = 'borderless';
 const tone: ToolbarControlGroupTone = 'dark';
 const buttonAppearance: ToolbarControlGroupButtonAppearance = 'push';
@@ -237,13 +243,14 @@ const shape: ToolbarControlGroupShape = 'rounded';
 const sunkenPanelShape: SunkenPanelShape = 'square';
 const dividerSides: DividerSides = 'tr';
 TabBar({ id: 'tabs', label: 'Tabs', activation, children: icon });
-StateBanner({ title: 'Failed', badge: '3', urgency });
+StateBanner({ title: 'Featured', badge: '3', tone: stateBannerTone, urgency });
 ToolbarControlGroup({
   children: icon,
   appearance,
   tone,
   buttonAppearance,
   shape,
+  selectedTone: 'pop',
 });
 SunkenPanel({ shape: sunkenPanelShape });
 List({

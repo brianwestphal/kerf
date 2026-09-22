@@ -700,7 +700,14 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = 'Find cleared';
   },
   'cycle-tone': () => {
-    const tones = ['neutral', 'info', 'success', 'warning', 'danger'] as const;
+    const tones = [
+      'neutral',
+      'info',
+      'pop',
+      'success',
+      'warning',
+      'danger',
+    ] as const;
     bannerTone.value =
       tones[(tones.indexOf(bannerTone.value) + 1) % tones.length]!;
     actionLog.value = `Banner tone: ${bannerTone.value}`;
