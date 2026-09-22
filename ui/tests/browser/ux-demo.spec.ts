@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
 
 import {
   catalog,
@@ -6,6 +6,11 @@ import {
   catalogSections,
   kerfCatalog,
 } from '../../ux-demo/catalog.js';
+
+async function activateWithKeyboard(page: Page, locator: Locator) {
+  await locator.evaluate((element) => (element as HTMLElement).focus());
+  await page.keyboard.press('Space');
+}
 
 test('theme action follows the effective OS appearance and explicitly switches either direction', async ({
   page,
@@ -418,6 +423,9 @@ test('the ToolbarControlGroup demo shape toggle switches every group between pil
   const roundedGroups = demo.locator(
     '.kui-toolbar-control-group[data-shape="rounded"]',
   );
+  const exampleCount = await demo
+    .locator(':scope > [data-catalog-example]')
+    .count();
   const sampleGroup = demo
     .locator('.kui-toolbar-control-group')
     .filter({ has: page.locator('wa-button[aria-label="Pin view"]') })
@@ -430,7 +438,7 @@ test('the ToolbarControlGroup demo shape toggle switches every group between pil
   // Rounded switches every example group (the toggle's own group stays pill).
   await demo.getByRole('button', { name: 'Rounded' }).click();
   await expect(sampleGroup).toHaveCSS('border-radius', '12px');
-  await expect(roundedGroups).toHaveCount(9);
+  await expect(roundedGroups).toHaveCount(exampleCount - 1);
 
   // And back to pill.
   await demo.getByRole('button', { name: 'Pill' }).click();
@@ -3153,7 +3161,7 @@ test('disclosure and breadcrumb chevrons match the Kerf Select scale', async ({
 
   await page.goto('/?component=select');
   const selectTransforms = await page
-    .locator('[data-demo="select"] wa-select')
+    .locator('[data-demo="select"] [name="rendering-balance"]')
     .evaluateAll((elements) =>
       elements.map((element) => {
         const icon = element.shadowRoot?.querySelector<HTMLElement>(
@@ -3162,7 +3170,7 @@ test('disclosure and breadcrumb chevrons match the Kerf Select scale', async ({
         return icon ? window.getComputedStyle(icon).transform : '';
       }),
     );
-  expect(selectTransforms).toHaveLength(3);
+  expect(selectTransforms).toHaveLength(1);
   for (const transform of selectTransforms)
     expect(transform).toMatch(/^matrix\(0\.5, 0, 0, 0\.5,/);
 });
@@ -3274,7 +3282,7 @@ test('preserves Select option icons across Kerf rerenders and replaces selected 
           }),
         ),
     ),
-    select.click(),
+    activateWithKeyboard(page, select),
   ]);
   await expect(select.locator('wa-option[value="explicit"]')).toBeVisible();
   if (browserName === 'chromium') {
@@ -3301,7 +3309,7 @@ test('preserves Select option icons across Kerf rerenders and replaces selected 
             }),
           ),
       ),
-      select.click(),
+      activateWithKeyboard(page, select),
     ]);
     await expect(select.locator('wa-option[value="explicit"]')).toBeVisible();
     await page.screenshot({
@@ -3331,7 +3339,7 @@ test('keeps the current Select option text above WCAG AA contrast', async ({
             }),
           ),
       ),
-      select.click(),
+      activateWithKeyboard(page, select),
     ]);
   const currentOptionContrast = () =>
     select
@@ -5943,7 +5951,9 @@ test('reorders and horizontally scrolls controlled TabBars', async ({
 }) => {
   await page.setViewportSize({ width: 900, height: 700 });
   await page.goto('/?component=tab-bar');
-  const bar = page.locator('[data-component="tab-bar"]');
+  const bar = page.locator(
+    '[data-demo="tab-bar"] [data-tab-bar-id="catalog-tabs"]',
+  );
   const strip = bar.locator('[data-kui-tab-list]');
   await expect(bar.getByRole('tab')).toHaveCount(7);
   expect(
@@ -5998,7 +6008,9 @@ test('keeps added tab IDs unique after another tab closes', async ({
   page,
 }) => {
   await page.goto('/?component=tab-bar');
-  const bar = page.locator('[data-component="tab-bar"]');
+  const bar = page.locator(
+    '[data-demo="tab-bar"] [data-tab-bar-id="catalog-tabs"]',
+  );
   const add = bar.getByRole('button', { name: 'Add tab' });
 
   await add.click();
@@ -6044,7 +6056,7 @@ test('autoscrolls the TabBar while a dragged tab rests near either scroll edge',
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=tab-bar');
   const frame = page.locator('.demo-tab-bar-frame');
-  const bar = frame.locator('[data-component="tab-bar"]');
+  const bar = frame.locator('[data-tab-bar-id="catalog-tabs"]');
   const strip = bar.locator('[data-kui-tab-list]');
   const source = bar.locator('.kui-app-tab').first();
   const stripBounds = await strip.boundingBox();

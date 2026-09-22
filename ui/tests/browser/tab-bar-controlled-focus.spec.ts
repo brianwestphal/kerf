@@ -6,7 +6,7 @@ test('automatic tab activation retains focus when a controlled consumer replaces
 }) => {
   await page.setViewportSize({ width: 900, height: 700 });
   await page.goto('/?component=tab-bar');
-  const bar = page.locator('[data-component="tab-bar"]');
+  const bar = page.locator('[data-tab-bar-id="catalog-tabs"]');
   await expect(bar.getByRole('tab')).toHaveCount(7);
   // Model a consumer whose controlled activation renders a new strip. The demo's
   // real select handler runs first and updates selection; replacement follows it.
@@ -35,14 +35,14 @@ test('automatic tab activation retains focus when a controlled consumer replaces
     );
   }
   if (browserName === 'chromium')
-    await page.locator('.demo-example-cluster').screenshot({
+    await bar.locator('..').screenshot({
       path: 'test-results/tab-bar-controlled-focus-wide.png',
     });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.keyboard.press('End');
   await expect(bar.getByRole('tab').last()).toBeFocused();
   if (browserName === 'chromium')
-    await page.locator('.demo-example-cluster').screenshot({
+    await bar.locator('..').screenshot({
       path: 'test-results/tab-bar-controlled-focus-narrow.png',
     });
 });
@@ -57,7 +57,7 @@ test('disposing the demo wiring cancels pending tab focus restoration', async ({
     await page.goto('/?component=tab-bar');
     await page.evaluate((kind) => {
       const bar = document.querySelector<HTMLElement>(
-        '[data-component="tab-bar"]',
+        '[data-tab-bar-id="catalog-tabs"]',
       )!;
       if (kind === 'automatic-activation') {
         document.addEventListener('click', (event) => {
