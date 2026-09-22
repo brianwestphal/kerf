@@ -46,3 +46,44 @@ test('automatic tab activation retains focus when a controlled consumer replaces
       path: 'test-results/tab-bar-controlled-focus-narrow.png',
     });
 });
+
+test('disposing the demo wiring cancels pending tab focus restoration', async ({
+  page,
+}) => {
+  for (const transition of [
+    'automatic-activation',
+    'keyboard-reorder',
+  ] as const) {
+    await page.goto('/?component=tab-bar');
+    await page.evaluate((kind) => {
+      const bar = document.querySelector<HTMLElement>(
+        '[data-component="tab-bar"]',
+      )!;
+      if (kind === 'automatic-activation') {
+        document.addEventListener('click', (event) => {
+          if (!(event.target instanceof Element)) return;
+          const strip = event.target.closest('[data-component="tab-bar"]');
+          if (strip) strip.replaceWith(strip.cloneNode(true));
+        });
+      }
+      const source = bar.querySelector<HTMLElement>('[role="tab"]')!;
+      source.focus();
+      source.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'ArrowRight',
+          altKey: kind === 'keyboard-reorder',
+          shiftKey: kind === 'keyboard-reorder',
+          bubbles: true,
+        }),
+      );
+      window.dispatchEvent(new PageTransitionEvent('pagehide'));
+      document
+        .querySelector<HTMLElement>('[data-action="toggle-theme"]')!
+        .focus();
+    }, transition);
+    await page.evaluate(() => Promise.resolve());
+    await expect(
+      page.locator('[data-action="toggle-theme"]').first(),
+    ).toBeFocused();
+  }
+});

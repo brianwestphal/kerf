@@ -52,3 +52,53 @@ test('the TokenSearchField demo shows and drives the collapsible state', async (
   await expect(trigger).toBeVisible();
   await expect(editor).toBeHidden();
 });
+
+test('disposing the demo wiring cancels pending collapsible focus restoration', async ({
+  page,
+}) => {
+  for (const transition of ['open', 'close'] as const) {
+    await page.goto('/?component=token-search-field');
+    const field = page.locator(
+      '.token-search-demo__collapsible [data-component="token-search-field"]',
+    );
+    if (transition === 'close') {
+      await field.getByRole('button', { name: 'Open find' }).click();
+      await expect(
+        field.getByRole('searchbox', { name: 'Find records' }),
+      ).toBeFocused();
+    }
+    await page.evaluate((kind) => {
+      const container = document.querySelector<HTMLElement>(
+        '.token-search-demo__collapsible',
+      )!;
+      if (kind === 'open') {
+        container
+          .querySelector<HTMLElement>('.kui-token-search__expand')!
+          .click();
+      } else {
+        container
+          .querySelector<HTMLElement>('[data-token-search-editor]')!
+          .dispatchEvent(
+            new KeyboardEvent('keydown', {
+              key: 'Escape',
+              bubbles: true,
+              cancelable: true,
+            }),
+          );
+      }
+      window.dispatchEvent(new PageTransitionEvent('pagehide'));
+      document
+        .querySelector<HTMLElement>('[data-action="toggle-theme"]')!
+        .focus();
+    }, transition);
+    await page.evaluate(
+      () =>
+        new Promise((resolve) =>
+          window.requestAnimationFrame(() => resolve(null)),
+        ),
+    );
+    await expect(
+      page.locator('[data-action="toggle-theme"]').first(),
+    ).toBeFocused();
+  }
+});

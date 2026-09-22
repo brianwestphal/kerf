@@ -120,6 +120,44 @@ describe('TabBar wiring', () => {
     stop();
   });
 
+  it.each(['automatic-activation', 'keyboard-reorder'] as const)(
+    'does not restore focus after disposal with pending %s',
+    async (transition) => {
+      const root = bar();
+      const outside = document.createElement('button');
+      document.body.append(outside);
+      const stop = wireTabBars(root, {
+        onReorder: () => {
+          root.replaceChildren(
+            ...Array.from(root.childNodes, (node) => node.cloneNode(true)),
+          );
+        },
+      });
+      if (transition === 'automatic-activation') {
+        root.addEventListener('click', (event) => {
+          if (!(event.target as Element).matches('[role="tab"]')) return;
+          root.replaceChildren(
+            ...Array.from(root.childNodes, (node) => node.cloneNode(true)),
+          );
+        });
+      }
+      const source = root.querySelector<HTMLButtonElement>('[role="tab"]')!;
+      source.focus();
+      source.dispatchEvent(
+        new KeyboardEvent('keydown', {
+          key: 'ArrowRight',
+          altKey: transition === 'keyboard-reorder',
+          shiftKey: transition === 'keyboard-reorder',
+          bubbles: true,
+        }),
+      );
+      stop();
+      outside.focus();
+      await Promise.resolve();
+      expect(document.activeElement).toBe(outside);
+    },
+  );
+
   it('navigates, closes, and reports keyboard reorder while preserving tab focus', async () => {
     const root = bar();
     const onReorder = vi.fn();

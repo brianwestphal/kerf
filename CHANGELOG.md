@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed pending `wireTabBars` and `wireTokenSearchFields` controlled-render
+  callbacks moving focus after their owning wiring had been disposed.
+
 - Changed the default `ListItem` leading icon visual from 24px to a root-scaled
   18px while retaining the row's 44px minimum target and first-line alignment.
 

@@ -343,6 +343,7 @@ export function wireTokenSearchFields(
   const onRemoveToken = keyboardConfig?.onRemoveToken;
   const adopted = config.signals ?? {};
   const created = new Map<string, Signal<boolean>>();
+  let disposed = false;
 
   /** True when focus moving to `element` should keep an empty field expanded. */
   const isExemptTarget = (element: Element | null): boolean => {
@@ -368,6 +369,7 @@ export function wireTokenSearchFields(
   const view = () => root.ownerDocument.defaultView!;
   const focusAfterRender = (id: string, selector: string) => {
     view().requestAnimationFrame(() => {
+      if (disposed) return;
       const target = root.querySelector<HTMLElement>(
         `[data-component="token-search-field"][data-token-search-id="${CSS.escape(id)}"] ${selector}`,
       );
@@ -440,6 +442,7 @@ export function wireTokenSearchFields(
     )
       return;
     editor.ownerDocument.defaultView!.requestAnimationFrame(() => {
+      if (disposed) return;
       const replacement = replacementEditor(root, deletion.id);
       if (!replacement) return;
       const active = replacement.ownerDocument.activeElement;
@@ -685,16 +688,17 @@ export function wireTokenSearchFields(
   }
 
   const dispose = () => {
+    disposed = true;
     for (const stop of disposers.splice(0)) stop();
   };
   const handle = (() => dispose()) as TokenSearchFieldsHandle;
   handle.dispose = dispose;
   handle.expanded = (id) => (managed ? signalFor(id) : undefined);
   handle.open = (id) => {
-    if (managed) openField(id);
+    if (managed && !disposed) openField(id);
   };
   handle.close = (id) => {
-    if (managed) closeField(id);
+    if (managed && !disposed) closeField(id);
   };
   return handle;
 }

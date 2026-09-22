@@ -596,6 +596,38 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     handle();
   });
 
+  it.each(['open', 'close'] as const)(
+    'does not move focus after disposal with a pending %s',
+    async (transition) => {
+      const field = mountCollapsibleField(signal(transition === 'close'));
+      const handle = wireCollapsible(field);
+      const outside = document.createElement('button');
+      document.body.append(outside);
+      if (transition === 'open') {
+        field
+          .trigger()!
+          .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      } else {
+        field.editor()!.focus();
+        field.editor()!.dispatchEvent(
+          new KeyboardEvent('keydown', {
+            key: 'Escape',
+            bubbles: true,
+            cancelable: true,
+          }),
+        );
+      }
+      handle.dispose();
+      outside.focus();
+      await raf();
+      expect(document.activeElement).toBe(outside);
+      const state = field.expandedSignal.value;
+      handle.open('find');
+      handle.close('find');
+      expect(field.expandedSignal.value).toBe(state);
+    },
+  );
+
   it('collapses an empty field on Escape and returns focus to the trigger', async () => {
     const field = mountCollapsibleField(signal(true));
     const handle = wireCollapsible(field);

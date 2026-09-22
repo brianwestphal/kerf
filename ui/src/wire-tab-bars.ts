@@ -199,8 +199,10 @@ export function wireTabBars(
         delete tab.dataset.tabDropPosition;
       });
   };
+  let disposed = false;
   const afterControlledRender = (sourceBarId: string, sourceTabId: string) =>
     globalThis.queueMicrotask(() => {
+      if (disposed) return;
       const tab = [
         ...root.querySelectorAll<TabRoot>('[data-component="app-tab"]'),
       ].find((candidate) => {
@@ -390,6 +392,7 @@ export function wireTabBars(
     .forEach(reveal);
 
   return () => {
+    disposed = true;
     clear();
     root.removeEventListener('dragstart', onDragStart);
     root.removeEventListener('dragover', onDragOver);
