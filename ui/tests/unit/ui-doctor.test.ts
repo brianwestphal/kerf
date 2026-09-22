@@ -5,7 +5,10 @@ import { resolve } from 'node:path';
 import Ajv from 'ajv';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { isForeignRuleDefinitionDiagnostic } from '../../doctor/eslint-diagnostics.mjs';
+import {
+  isForeignRuleDefinitionDiagnostic,
+  projectConsumerCoreConfig,
+} from '../../doctor/eslint-diagnostics.mjs';
 import {
   formatUiDoctorText,
   resolveUiDoctorPackage,
@@ -290,6 +293,31 @@ describe('Kerf UI doctor', () => {
         message: 'An actual consumer rule finding.',
       }),
     ).toBe(false);
+  });
+
+  it('projects consumer core ESLint rules and suppression options without plugin rules', () => {
+    expect(
+      projectConsumerCoreConfig(
+        {
+          rules: {
+            'no-empty-pattern': 'error',
+            '@typescript-eslint/no-empty-object-type': 'warn',
+          },
+          linterOptions: { reportUnusedDisableDirectives: 'error' },
+        },
+        'src/playwright.spec.js',
+      ),
+    ).toEqual({
+      files: ['src/playwright.spec.js'],
+      rules: { 'no-empty-pattern': 'error' },
+      linterOptions: { reportUnusedDisableDirectives: 'error' },
+    });
+    expect(
+      projectConsumerCoreConfig(
+        { rules: { '@typescript-eslint/no-empty-object-type': 'warn' } },
+        'src/view.ts',
+      ),
+    ).toBeUndefined();
   });
 
   it('cancels the explicit browser stage deterministically and does not cache a partial run', async () => {

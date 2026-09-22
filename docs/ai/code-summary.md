@@ -31,7 +31,8 @@ safety/rollback transitions, redaction, and adversarial inputs.
 `tests/integration/setup-downstream.test.ts` packs the shipped packages and
 proves the CLI through minimal-core and selected-UI-monorepo consumer flows,
 including a commented/trailing-comma tsconfig that still builds and lints plus
-the packed UI doctor accepting SplitView's cataloged public list-width token and
+the packed UI doctor accepting SplitView's cataloged public list-width token,
+preserving a Playwright fixture's applicable core-rule suppression semantics, and
 one shared real packed local-tarball hit/missing-artifact rollback flow for npm,
 pnpm, Yarn Classic, and Yarn Berry. Each manager case runs only when its exact
 pinned binary/version is detected; otherwise its non-empty test is skipped with
@@ -475,7 +476,8 @@ static/cache traversal, including ESLint global-ignore patterns derived from
 the same directory-name source.
 
 `ui/doctor/` provides the shipped `kerf-ui-doctor` repair-loop API and CLI. Its
-ESLint stage runs an isolated Kerf preset, discards only missing-definition
+ESLint stage runs an isolated Kerf preset, projects each file's applicable
+consumer core rules and `linterOptions`, discards only missing-definition
 diagnostics for consumer-owned plugin directives, and retains unknown
 `kerfjs/*` directives and all substantive lint findings. Its full-project pass
 shares the analyzer/TypeScript/cache exclusion boundary, so generated `dist`,

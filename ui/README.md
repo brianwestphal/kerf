@@ -304,7 +304,7 @@ retention policy, and a separate unscored human-visual rubric. See the
 
 ### Unified repair-loop doctor
 
-Use `kerf-ui-doctor` for the supported application repair loop across profile/catalog validation, TypeScript, the Kerf UI ESLint preset, static layout analysis, and an optional explicitly authorized browser evaluation. It emits one portable versioned JSON report with deterministic exit codes, exact suppressions, monorepo package selection, changed/full modes, caching, and local-path redaction. See the [UI doctor guide](./docs/ui-doctor.md).
+Use `kerf-ui-doctor` for the supported application repair loop across profile/catalog validation, TypeScript, the Kerf UI ESLint preset, static layout analysis, and an optional explicitly authorized browser evaluation. Its isolated Kerf lint pass preserves each file's applicable core-rule and suppression settings without executing consumer plugin rules. It emits one portable versioned JSON report with deterministic exit codes, exact suppressions, monorepo package selection, changed/full modes, caching, and local-path redaction. See the [UI doctor guide](./docs/ui-doctor.md).
 
 For code generation, pair catalog selection guidance with the checked-in
 [`public-api-signatures-v1.md`](./ai/public-api-signatures-v1.md) declaration

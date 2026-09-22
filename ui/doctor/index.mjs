@@ -23,7 +23,10 @@ import { createRequire } from 'node:module';
 import { loadApplicationUiProfile } from '../ai/application-ui-profile.mjs';
 import { analyzeUiProject, UI_ANALYSIS_RULES } from '../analyzer/index.mjs';
 import { evaluateUi, UI_EVALUATION_RULES } from '../evaluator/index.mjs';
-import { isForeignRuleDefinitionDiagnostic } from './eslint-diagnostics.mjs';
+import {
+  isForeignRuleDefinitionDiagnostic,
+  projectConsumerCoreConfig,
+} from './eslint-diagnostics.mjs';
 import {
   isUiTraversalExcluded,
   UI_TRAVERSAL_ESLINT_IGNORES,
@@ -869,6 +872,18 @@ async function runEslint({
     });
   }
   configs.push(preset);
+  const consumerEslint = new ESLint({ cwd: packageRoot });
+  if (await consumerEslint.findConfigFile()) {
+    const consumerCoreConfigs = await Promise.all(
+      inputs.map(async (file) =>
+        projectConsumerCoreConfig(
+          await consumerEslint.calculateConfigForFile(file),
+          portablePath(packageRoot, file),
+        ),
+      ),
+    );
+    configs.push(...consumerCoreConfigs.filter(Boolean));
+  }
   const eslint = new ESLint({
     cwd: packageRoot,
     overrideConfigFile: true,

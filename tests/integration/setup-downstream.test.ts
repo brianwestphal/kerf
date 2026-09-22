@@ -375,7 +375,28 @@ describe('packed AI-first setup', () => {
       ['--package', '@acme/ui-app', '--write', '--yes', '--no-install'],
       { cwd: root },
     );
+    await writeFile(
+      resolve(app, 'eslint.config.js'),
+      "export default [{ files: ['**/*.{js,ts}'], rules: { 'no-empty-pattern': 'error' } }];\n",
+    );
+    await writeFile(
+      resolve(app, 'src/playwright.spec.js'),
+      [
+        "import { test } from '@playwright/test';",
+        '',
+        "test('empty fixture', async (",
+        '  // eslint-disable-next-line no-empty-pattern',
+        '  {},',
+        ') => {});',
+        '',
+      ].join('\n'),
+    );
     await run('npm', ['run', 'build'], app);
+    await run(
+      resolve(root, 'node_modules/.bin/eslint'),
+      ['src/playwright.spec.js'],
+      app,
+    );
     await run('npm', ['run', 'catalog:generate'], app);
     await run('npm', ['run', 'catalog:check'], app);
     await run('npm', ['run', 'kerf:check'], app);
