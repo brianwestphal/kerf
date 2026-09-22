@@ -133,9 +133,11 @@ the package without adding height, including with `renderSelected`; host ARIA
 attributes alone are not sufficient. `hint` supplies persistent supporting text
 below the control through Web Awesome's native hint relationship, while
 `placeholderText` remains the empty value inside the closed control; loading
-placeholders preserve the visible hint. Unit name-projection coverage lives in
-`ui/tests/unit/components.test.tsx`; the three-engine accessible-name, keyboard,
-rerender, and geometry regression is
+placeholders preserve the visible hint. The accessible description belongs to
+the shadow `combobox`, not the `wa-select` wrapper; both Web Awesome's hint
+attribute and explicit hint slot resolve there without an application patch.
+Unit name-projection coverage lives in `ui/tests/unit/components.test.tsx`; the
+three-engine accessible-name/description, keyboard, rerender, and geometry regression is
 `ui/tests/browser/select-accessibility.spec.ts`.
 
 ## 21.3 Initial component set

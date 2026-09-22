@@ -67,6 +67,9 @@ test('names plain and custom Select comboboxes without adding visible label geom
   await expect(labeledHost.locator('[part~="hint"]')).toHaveText(
     'Controls how much rendering detail is shown.',
   );
+  await expect(labeled).toHaveAccessibleDescription(
+    'Controls how much rendering detail is shown.',
+  );
   await expect(demo.getByText('Loading selection options.')).toBeVisible();
   expect(
     await labeledHost.evaluate((element) => {
@@ -83,6 +86,31 @@ test('names plain and custom Select comboboxes without adding visible label geom
     hintId: 'hint',
     hintText: 'Controls how much rendering detail is shown.',
   });
+
+  // Web Awesome's explicit hint-slot path resolves on the same accessible
+  // combobox. The custom-element host itself is only a wrapper and therefore
+  // is not the node whose computed description should be inspected.
+  await labeledHost.evaluate((element) => {
+    const slotted = document.createElement('wa-select');
+    slotted.setAttribute('name', 'slotted-hint');
+    slotted.setAttribute('label', 'Slotted hint example');
+    slotted.setAttribute('value', 'one');
+    slotted.setAttribute('with-hint', '');
+    const option = document.createElement('wa-option');
+    option.setAttribute('value', 'one');
+    option.textContent = 'One';
+    const hint = document.createElement('span');
+    hint.slot = 'hint';
+    hint.textContent = 'Supporting text from the explicit hint slot.';
+    slotted.append(option, hint);
+    element.after(slotted);
+  });
+  await expect(
+    demo.getByRole('combobox', {
+      name: 'Slotted hint example',
+      exact: true,
+    }),
+  ).toHaveAccessibleDescription('Supporting text from the explicit hint slot.');
 
   for (const name of ['rendering-balance', 'plain-rendering-balance']) {
     const control = demo.locator(`wa-select[name="${name}"]`);

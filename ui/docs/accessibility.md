@@ -40,6 +40,11 @@ Use `hint` for persistent supporting text below the control; use
 `placeholderText` only for the empty value shown inside the closed control.
 Kerf passes hint text through Web Awesome's form-control contract, which renders
 the hint part and connects the shadow combobox to it with `aria-describedby`.
+The accessible control is that shadow combobox, not the `wa-select` wrapper;
+inspect or test the element returned by the `combobox` role. Both the `hint`
+attribute used by Kerf and Web Awesome's explicit `hint` slot produce a computed
+accessible description in Chromium, Firefox, and WebKit, so applications do not
+need an `aria-description` mirror or a shadow-DOM patch.
 Loading placeholders keep the same visible hint while replacing the interactive
 control with inert chrome.
 
