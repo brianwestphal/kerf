@@ -54,6 +54,26 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toContain('no `wa-menu-item`');
   });
 
+  it('assigns dialog body and footer to their distinct inset tiers', () => {
+    const css = readFileSync(
+      resolve(import.meta.dirname, '../../src/webawesome.css'),
+      'utf8',
+    );
+    const guidance = readFileSync(
+      resolve(import.meta.dirname, '../../docs/webawesome-theme.md'),
+      'utf8',
+    );
+
+    expect(css).toMatch(
+      /wa-dialog::part\(body\)\s*{\s*padding: var\(--kui-wa-surface-inset\)/,
+    );
+    expect(css).toMatch(
+      /wa-dialog::part\(footer\)\s*{\s*padding: var\(--kui-wa-container-inset\)/,
+    );
+    expect(guidance).toMatch(/Dialog body uses\s+the 8px surface inset/);
+    expect(guidance).toMatch(/footer uses the 16px container inset/);
+  });
+
   it('keeps unbordered group and color-picker control regions on the shared inline inset', () => {
     const css = readFileSync(
       resolve(import.meta.dirname, '../../src/webawesome.css'),

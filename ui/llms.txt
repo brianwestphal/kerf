@@ -86,8 +86,10 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   `--kui-wa-control-inset` (8px controls/items) and
   `--kui-wa-surface-margin` / `--kui-wa-surface-inset` (8px around/inside
   Accordion, Card, Details, Callout, and Include), while
-  `--kui-wa-container-inset` keeps Tab Panel at 16px. Override the tier at the
-  narrowest useful scope instead of restyling individual shadow parts.
+  `--kui-wa-container-inset` keeps Tab Panel at 16px. Dialog body and footer use
+  the surface (8px) and container (16px) tiers respectively, independent of the
+  dialog's shared `--spacing`. Override the tier at the narrowest useful scope
+  instead of restyling individual shadow parts.
   Checkbox and Radio Group option regions also receive the shared 8px inline
   outer inset because those groups have no bordered field shell. The Color
   Picker trigger receives the same inset for the same unbordered geometry.

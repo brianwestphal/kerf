@@ -98,7 +98,10 @@ tiers:
   once to the group rather than separating connected items; Card's header,
   body, and footer all receive the full inset.
 - `--kui-wa-container-inset` defaults to the 16px homogeneous-group step. Tab
-  Panel retains this roomier tier for unframed panel content.
+  Panel retains this roomier tier for unframed panel content. Dialog body uses
+  the 8px surface inset, while its footer uses the 16px container inset so
+  content stays compact and the action group has a clearer boundary. These two
+  parts do not inherit the dialog's shared `--spacing` value.
 
 Badge remains intentionally compact at Web Awesome's intrinsic `0.375em` block /
 `0.625em` inline padding (4.5px / 7.5px at its default 12px text size): it is a

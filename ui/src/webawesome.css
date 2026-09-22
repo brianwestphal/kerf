@@ -290,6 +290,18 @@
     padding: var(--kui-wa-surface-inset);
   }
 
+  /* Dialog content follows the compact surface inset, while its action region
+     retains the roomier homogeneous-group step. Keep these independent of
+     Web Awesome's shared --spacing property so applications can tune the
+     header without accidentally moving body or footer content. */
+  wa-dialog::part(body) {
+    padding: var(--kui-wa-surface-inset);
+  }
+
+  wa-dialog::part(footer) {
+    padding: var(--kui-wa-container-inset);
+  }
+
   wa-callout {
     padding: var(--kui-wa-surface-inset) !important;
   }

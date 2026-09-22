@@ -2774,6 +2774,28 @@ test('renders and operates representative focused Web Awesome specimens', async 
   await page.goto('/?component=wa-dialog');
   await page.getByRole('button', { name: 'Open dialog' }).click();
   await expect(page.locator('#catalog-wa-dialog')).toHaveAttribute('open', '');
+  await expect
+    .poll(() =>
+      page.locator('#catalog-wa-dialog').evaluate((element) => {
+        const padding = (part: string) => {
+          const target = element.shadowRoot!.querySelector<HTMLElement>(
+            `[part~="${part}"]`,
+          )!;
+          const style = window.getComputedStyle(target);
+          return [
+            style.paddingTop,
+            style.paddingRight,
+            style.paddingBottom,
+            style.paddingLeft,
+          ];
+        };
+        return { body: padding('body'), footer: padding('footer') };
+      }),
+    )
+    .toEqual({
+      body: ['8px', '8px', '8px', '8px'],
+      footer: ['16px', '16px', '16px', '16px'],
+    });
   await page.screenshot({
     path: 'test-results/webawesome-dialog-open-wide.png',
     fullPage: true,

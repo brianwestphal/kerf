@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Changed the Web Awesome Dialog theme to use 8px body padding and 16px footer
+  padding, independently of the component's shared `--spacing` value.
+
 - Fixed `kerf-ui-doctor` so its isolated Kerf ESLint pass preserves applicable
   consumer core rules and suppression reporting options. Playwright's required
   `no-empty-pattern` fixture suppression no longer becomes a false unused

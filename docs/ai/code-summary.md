@@ -446,6 +446,11 @@ kerf/
 └── README.md
 ```
 
+The optional `ui/src/webawesome.css` bridge maps Dialog body padding to the 8px
+surface tier and footer padding to the 16px container tier independently of
+Web Awesome's shared `--spacing`, with static guidance and real-browser
+computed-style coverage.
+
 Within `ui/ai/`, the compatible selection catalog and package-qualified v2
 composition projection are joined by `application-ui-profile.*`: shipped
 package defaults, schema/types, asynchronous Node discovery, and synchronous
