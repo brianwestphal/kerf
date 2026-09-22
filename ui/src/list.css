@@ -1,0 +1,43 @@
+.kui-list {
+  --kui-list-divider-color: var(--kui-color-border);
+  --kui-list-gap: var(--kui-layout-item-gap, remify(8px));
+  --_kui-list-divider-top: transparent;
+  --_kui-list-divider-right: transparent;
+  --_kui-list-divider-bottom: transparent;
+  --_kui-list-divider-left: transparent;
+
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  flex: var(--_kui-list-flex, initial);
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--_kui-list-gap, 0);
+  box-shadow:
+    inset 0 1px var(--_kui-list-divider-top),
+    inset -1px 0 var(--_kui-list-divider-right),
+    inset 0 -1px var(--_kui-list-divider-bottom),
+    inset 1px 0 var(--_kui-list-divider-left);
+}
+
+.kui-list[data-scrollable="true"] {
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+}
+
+.kui-list[divider-sides*="t"] {
+  --_kui-list-divider-top: var(--kui-list-divider-color);
+}
+
+.kui-list[divider-sides*="r"] {
+  --_kui-list-divider-right: var(--kui-list-divider-color);
+}
+
+.kui-list[divider-sides*="b"] {
+  --_kui-list-divider-bottom: var(--kui-list-divider-color);
+}
+
+.kui-list[divider-sides*="l"] {
+  --_kui-list-divider-left: var(--kui-list-divider-color);
+}

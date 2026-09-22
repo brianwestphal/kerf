@@ -24,7 +24,7 @@ export function PaneDemo() {
             <>
               <Toolbar
                 label="Pane header"
-                divider={false}
+                dividerSides=""
                 leading={<ToolbarText text="Pane header" size="large" />}
               />
               <p class="demo-pane__secondary">Optional secondary header row</p>
@@ -33,7 +33,7 @@ export function PaneDemo() {
           footer={
             <Toolbar
               label="Pane footer"
-              divider={false}
+              dividerSides=""
               leading={<ToolbarText text="Optional footer" size="small" />}
             />
           }

@@ -352,6 +352,7 @@ describe('UX catalog metadata', () => {
       'ToolbarText',
       'PanelHeader',
       'ValueTable',
+      'List',
       'ListHeader',
       'ListActionRow',
       'ListItem',
@@ -377,7 +378,6 @@ describe('UX catalog metadata', () => {
       'foundation',
       'layout',
       'headers',
-      'list',
       'feedback',
     ]);
     expect(webAwesomeCatalog).toHaveLength(70);

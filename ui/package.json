@@ -74,6 +74,11 @@
       "browser": "./dist/browser/toolbar-text.js",
       "import": "./dist/toolbar-text.js"
     },
+    "./list": {
+      "types": "./dist/list.d.ts",
+      "browser": "./dist/browser/list.js",
+      "import": "./dist/list.js"
+    },
     "./list-action-row": {
       "types": "./dist/list-action-row.d.ts",
       "browser": "./dist/browser/list-action-row.js",
@@ -267,6 +272,7 @@
     "./toolbar-control-group.css": "./dist/styles/toolbar-control-group.css",
     "./floating-toolbar.css": "./dist/styles/floating-toolbar.css",
     "./toolbar-text.css": "./dist/styles/toolbar-text.css",
+    "./list.css": "./dist/styles/list.css",
     "./list-action-row.css": "./dist/styles/list-action-row.css",
     "./list-item.css": "./dist/styles/list-item.css",
     "./list-header.css": "./dist/styles/list-header.css",

@@ -87,6 +87,7 @@
       "id": "KUI-T011",
       "publicImport": "@kerfjs/ui",
       "symbols": [
+        "DividerSides",
         "StateBannerUrgency",
         "TabActivation",
         "ToolbarControlGroupAppearance",
@@ -95,7 +96,7 @@
         "ToolbarControlGroupTone"
       ],
       "kind": "finite-vocabulary",
-      "summary": "Finite public variant vocabularies are named exported unions rather than anonymous string sets."
+      "summary": "Finite public variant vocabularies, including canonical divider-edge combinations, are named exported unions rather than anonymous string sets."
     }
   ]
 }

@@ -272,17 +272,19 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "list",
-    "name": "List composition",
+    "name": "List",
     "category": "Navigation",
-    "kind": "composition",
+    "kind": "component",
     "source": "kerf",
-    "description": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application, including a controlled ListHeader disclosure only when it reveals real content.",
+    "description": "Standardize vertical component layout and its scroll/divider ownership instead of repeating ad-hoc flex-column wrappers.",
     "uses": [
       "list-header",
       "list-action-row",
       "list-item"
     ],
     "demoSource": "ui/ux-demo/demos/list.tsx",
+    "componentSource": "ui/src/list.tsx",
+    "designTemplate": "ui/docs/design/templates/list.svg",
     "documentation": "ui/docs/component-selection.md"
   },
   {

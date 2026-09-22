@@ -744,8 +744,9 @@
         "responsive relocation"
       ],
       "variants": [
-        "divider",
-        "no divider",
+        "bottom divider (default)",
+        "no dividers",
+        "top/right/bottom/left divider combinations",
         "centered content"
       ],
       "accessibility": [
@@ -756,7 +757,7 @@
         "border": "conditional",
         "padding": "self",
         "notes": [
-          "Padding belongs to the toolbar; the optional divider variant also owns its border."
+          "Padding belongs to the toolbar; dividerSides selects any canonical combination of its physical top, right, bottom, and left edges."
         ]
       },
       "delivery": {
@@ -775,7 +776,8 @@
       ],
       "publicTokens": [
         "--kui-color-border",
-        "--kui-font-sans"
+        "--kui-font-sans",
+        "--kui-toolbar-divider-color"
       ],
       "links": {
         "catalogRoute": "?component=toolbar",
@@ -1230,63 +1232,69 @@
     },
     {
       "id": "list",
-      "name": "List composition",
+      "name": "List",
       "category": "Navigation",
-      "kind": "composition",
+      "kind": "component",
       "source": "kerf",
-      "description": "Navigation rows and section headers composed as ordinary content items inside a pane.",
+      "description": "A stretch-aligned vertical stack with optional gap, flex growth, vertical scrolling, and independently selectable divider edges.",
       "uses": [
         "list-header",
         "list-action-row",
         "list-item"
       ],
-      "purpose": "Compose navigation with the same pane, content stack, item, and toolbar geometry used throughout the application, including a controlled ListHeader disclosure only when it reveals real content.",
-      "publicExports": [],
+      "purpose": "Standardize vertical component layout and its scroll/divider ownership instead of repeating ad-hoc flex-column wrappers.",
+      "publicExports": [
+        "List"
+      ],
       "useWhen": [
-        "Compose navigation sections in a .kui-content stack, using ListHeader, ListItem, and ListActionRow children plus optional .kui-content-item surfaces."
+        "Arrange component rows or sections in a vertical stretch-aligned stack.",
+        "Let one bounded list own vertical scrolling, flex growth, or one or more physical-edge dividers."
       ],
       "avoidWhen": [
-        "Do not add sidebar-specific wrapper padding or use the pattern for unrelated inline controls.",
-        "Do not place a disclosure chevron on navigation that does not expand content."
+        "Do not use List as semantic list markup; use ul/ol when list semantics are required and apply layout deliberately.",
+        "Do not create nested scroll owners or use divider sides as a substitute for meaningful grouping."
       ],
       "alternatives": [],
       "appOwns": [
-        "information architecture",
-        "routing",
-        "responsive shell behavior"
+        "child semantics and content",
+        "the bounded height needed for scrolling",
+        "gap, flex, and divider choices"
       ],
       "variants": [
-        "section",
-        "icon rows",
-        "iconless rows",
-        "content item",
-        "pane toolbar or footer"
+        "no gap",
+        "standard or custom gap",
+        "boolean or custom flex",
+        "scrollable",
+        "top/right/bottom/left divider combinations"
       ],
       "accessibility": [
-        "Use native links for link navigation, retain ListItem button semantics for actions, and keep standalone header and toolbar actions at least 44px square.",
-        "A ListHeader disclosure controls real content, keeps a stable accessible name and aria-expanded state, and uses the production DisclosureArrow visual."
+        "List adds layout only and no list role; children retain responsibility for their native or ARIA semantics.",
+        "Give a scrollable List a bounded block size and keep keyboard focus visible as its contents scroll."
       ],
       "geometry": {
-        "margin": "child",
-        "border": "child",
-        "padding": "child"
+        "margin": "none",
+        "border": "conditional",
+        "padding": "none",
+        "notes": [
+          "List adds no margin or padding; dividerSides draws only the selected physical edges without changing box geometry."
+        ]
       },
       "delivery": {
-        "manualCssImport": "@kerfjs/ui/layout.css",
+        "browserImport": "@kerfjs/ui/list",
+        "manualCssImport": "@kerfjs/ui/list.css",
         "sideEffects": [
-          "css"
+          "browser-condition-css"
         ]
       },
       "wiring": [],
       "publicClasses": [
-        "kui-content",
-        "kui-content-item"
+        "kui-list"
       ],
       "publicTokens": [
-        "--kui-layout-content-gap",
-        "--kui-layout-inline-margin",
-        "--kui-layout-item-padding",
-        "--kui-layout-rounded-radius"
+        "--kui-color-border",
+        "--kui-layout-item-gap",
+        "--kui-list-divider-color",
+        "--kui-list-gap"
       ],
       "links": {
         "catalogRoute": "?component=list",

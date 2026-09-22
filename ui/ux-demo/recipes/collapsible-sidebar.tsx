@@ -160,7 +160,7 @@ export const createRecipe: RecipeFactory = (announce) => {
       >
         <Toolbar
           label="Activity"
-          divider
+          dividerSides="b"
           leading={
             <ToolbarControlGroup appearance="borderless" single>
               <ToolbarText text="Activity" size="small" />

@@ -10,6 +10,7 @@ export {
   type FloatingToolbarPosition,
   type FloatingToolbarProps,
 } from './floating-toolbar.js';
+export { type DividerSides, List, type ListProps } from './list.js';
 export { ListActionRow, type ListActionRowProps } from './list-action-row.js';
 export { ListHeader, type ListHeaderProps } from './list-header.js';
 export {

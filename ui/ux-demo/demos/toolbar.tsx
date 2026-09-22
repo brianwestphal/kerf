@@ -57,7 +57,7 @@ export function ToolbarDemo() {
       />
       <Toolbar
         label="Compact toolbar"
-        divider={false}
+        dividerSides="trbl"
         leading={
           <ToolbarControlGroup appearance="borderless" single>
             <ToolbarText text="Borderless" size="small" />

@@ -32,7 +32,7 @@ export function FloatingToolbarDemo() {
         <div class="floating-toolbar-demo__stage">
           <Toolbar
             label="Work area"
-            divider
+            dividerSides="b"
             leading={
               <ToolbarControlGroup appearance="borderless" single>
                 <ToolbarText text="Terminals" size="small" />

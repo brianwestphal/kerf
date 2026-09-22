@@ -40,7 +40,7 @@ import {
   Filter,
   Folder,
   Inbox,
-  List,
+  List as ListIcon,
   Pencil,
   Plus,
   Rocket,
@@ -52,6 +52,7 @@ import {
 
 import { AppTab } from '../dist/app-tab.js';
 import { EmptyState } from '../dist/empty-state.js';
+import { List } from '../dist/list.js';
 import { ListActionRow } from '../dist/list-action-row.js';
 import { ListHeader } from '../dist/list-header.js';
 import { ListItem } from '../dist/list-item.js';
@@ -103,6 +104,63 @@ const pushButton = (label) =>
 
 // Representative sample data — realistic placeholders, never lorem ipsum.
 export const COMPONENTS = {
+  list: {
+    css: ['foundation', 'layout', 'list', 'list-header', 'list-item'],
+    selector: '#frame',
+    width: 420,
+    frameWidth: 340,
+    variants: [
+      {
+        id: 'stack',
+        label: 'Standard gap and four dividers',
+        height: 190,
+        render: () =>
+          List({
+            gap: true,
+            dividerSides: 'trbl',
+            children: [
+              ListHeader({
+                label: 'Workspace',
+                count: 2,
+                countLabel: '2 items',
+              }),
+              ListItem({
+                action: 'open-inbox',
+                label: 'Inbox',
+                icon: glyph(Inbox, 'inbox'),
+                selected: true,
+              }),
+              ListItem({
+                action: 'open-projects',
+                label: 'Projects',
+                icon: glyph(Folder, 'folder'),
+              }),
+            ],
+          }),
+      },
+      {
+        id: 'compact',
+        label: 'Compact, no gap',
+        height: 150,
+        render: () =>
+          List({
+            dividerSides: 'lr',
+            children: [
+              ListItem({
+                action: 'open-priority',
+                label: 'Priority',
+                icon: glyph(Star, 'star'),
+              }),
+              ListItem({
+                action: 'open-all',
+                label: 'All work',
+                icon: glyph(ListIcon, 'list'),
+              }),
+            ],
+          }),
+      },
+    ],
+  },
   'panel-header': {
     // PanelHeader composes a Toolbar with a ToolbarText title.
     // toolbar-control-group is required: PanelHeader's icon is a
@@ -199,7 +257,7 @@ export const COMPONENTS = {
           ToolbarControlGroup({
             label: 'View',
             children: raw(
-              iconButton(List, 'list', 'List') +
+              iconButton(ListIcon, 'list', 'List') +
                 iconButton(Columns3, 'columns-3', 'Columns') +
                 iconButton(Settings, 'settings', 'Settings'),
             ),
@@ -237,7 +295,7 @@ export const COMPONENTS = {
           ToolbarControlGroup({
             buttonAppearance: 'push',
             children: raw(
-              iconButton(List, 'list', 'List') +
+              iconButton(ListIcon, 'list', 'List') +
                 iconButton(Columns3, 'columns-3', 'Columns'),
             ),
           }),
@@ -710,7 +768,7 @@ export const COMPONENTS = {
             trailing: ToolbarControlGroup({
               label: 'View',
               children: raw(
-                iconButton(List, 'list', 'List') +
+                iconButton(ListIcon, 'list', 'List') +
                   iconButton(Columns3, 'columns-3', 'Columns') +
                   iconButton(Settings, 'settings', 'Settings'),
               ),

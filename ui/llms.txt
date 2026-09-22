@@ -78,6 +78,10 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   own the geometry (8px inline margin + 1px border + 8px padding). Do not add a
   container padding on top of a content-item's own margin — pick one owner. Use
   `.kui-content` for 24px major vertical rhythm.
+- **Use `List` for vertical layout.** It supplies a stretch-aligned column plus
+  optional standard/custom `gap`, `flex`, vertical scrolling, and canonical
+  `dividerSides` (`t`/`r`/`b`/`l` order). It adds no list semantics; children own
+  those, and only one bounded region should own scrolling.
 - **Keep Web Awesome on the shared inset tiers.** `webawesome.css` uses
   `--kui-wa-control-inset` (8px controls/items) and
   `--kui-wa-surface-margin` / `--kui-wa-surface-inset` (8px around/inside

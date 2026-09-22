@@ -5,6 +5,7 @@ import { AppTab } from '../../src/app-tab.js';
 import { DisclosureArrow } from '../../src/disclosure-arrow.js';
 import { EmptyState } from '../../src/empty-state.js';
 import { FloatingToolbar } from '../../src/floating-toolbar.js';
+import { List } from '../../src/list.js';
 import { ListActionRow } from '../../src/list-action-row.js';
 import { ListHeader, type ListHeaderProps } from '../../src/list-header.js';
 import { ListInsetControl } from '../../src/list-inset-control.js';
@@ -131,13 +132,13 @@ describe('production UI primitives', () => {
         center: ToolbarText({ text: 'Center' }),
         trailing: group,
         label: 'Tools',
-        divider: false,
+        dividerSides: 'tr',
         className: 'wide',
       }),
     );
     expect(html).toContain('class="kui-toolbar wide"');
     expect(html).toContain(
-      'data-divider="false" data-has-center="true" aria-label="Tools"',
+      'divider-sides="tr" data-has-center="true" aria-label="Tools"',
     );
     expect(asHtml(group)).toContain(
       'role="group" aria-label="View" data-appearance="borderless" data-tone="dark" data-button-appearance="push" data-expanded="true" data-single="true"',
@@ -166,6 +167,38 @@ describe('production UI primitives', () => {
     expect(
       asHtml(ToolbarControlGroup({ children: icon, shape: 'rounded' })),
     ).toContain('data-shape="rounded"');
+  });
+
+  it('composes stretch-aligned lists with gap, flex, scroll, and dividers', () => {
+    const html = asHtml(
+      List({
+        children: [<span>One</span>, <span>Two</span>],
+        gap: '12px',
+        flex: '2 1 20rem',
+        scrollable: true,
+        dividerSides: 'trbl',
+        className: 'results',
+      }),
+    );
+    expect(html).toContain('class="kui-list results"');
+    expect(html).toContain(
+      'data-component="list" data-gap="true" data-flex="true" data-scrollable="true" divider-sides="trbl"',
+    );
+    expect(html).toContain(
+      'style="--_kui-list-gap:12px;--_kui-list-flex:2 1 20rem"',
+    );
+    expect(html).toContain('<span>One</span><span>Two</span>');
+
+    const defaults = asHtml(List({ children: <span>Only</span> }));
+    expect(defaults).toContain(
+      'data-gap="false" data-flex="false" data-scrollable="false"',
+    );
+    expect(defaults).not.toContain('divider-sides');
+    expect(defaults).not.toContain('style=');
+
+    expect(asHtml(List({ gap: true, flex: true }))).toContain(
+      'style="--_kui-list-gap:var(--kui-list-gap);--_kui-list-flex:1 1 auto"',
+    );
   });
 
   it('renders a labeled floating toolbar with a default and custom position', () => {
@@ -858,7 +891,7 @@ describe('production UI primitives', () => {
     )!;
     expect(panelRoot.tagName).toBe('DIV');
     expect(toolbar.tagName).toBe('HEADER');
-    expect(toolbar.dataset.divider).toBe('false');
+    expect(toolbar.hasAttribute('divider-sides')).toBe(false);
     const iconGroup = toolbar.querySelector<HTMLElement>(
       ':scope > .kui-toolbar__leading > .kui-panel-header__icon.accent[data-component="toolbar-control-group"]',
     )!;

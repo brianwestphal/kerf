@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added the first-class `List` vertical-layout component with gap, flex, scroll,
+  and multi-edge divider options; `Toolbar` now uses the same typed
+  `dividerSides` contract instead of a boolean divider.
+
 - Added an optional tone-tinted pill badge beside `StateBanner` titles, including
   loading skeleton behavior and per-instance badge color overrides.
 

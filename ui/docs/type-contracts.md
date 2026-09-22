@@ -23,7 +23,7 @@ public-signature artifact.
 | `KUI-T008` | `ToolbarText.maxLines` requires `wrap: true`; it is never silently ignored in typed code.                                                                                              |
 | `KUI-T009` | A literal `TabScaffold.active` id belongs to its literal `tabs`.                                                                                                                       |
 | `KUI-T010` | Adjacent-token keyboard removal requires `onRemoveToken`; disabling removal rejects the now-meaningless callback.                                                                      |
-| `KUI-T011` | Finite public variants have named exported union types, including tab activation, banner urgency, and all ToolbarControlGroup presentation axes.                                       |
+| `KUI-T011` | Finite public variants have named exported union types, including divider sides, tab activation, banner urgency, and all ToolbarControlGroup presentation axes.                        |
 
 Literal identity inference is intentionally additive for dynamic applications.
 When choices or ids arrive at runtime and the state signal is correctly typed as
@@ -94,6 +94,9 @@ move errors into casts without making the integration safer.
   wanted.
 - Remove orphaned `summaryId`, or render the matching `summary`; add
   `wrap: true` anywhere `ToolbarText.maxLines` is used.
+- Replace `Toolbar({ divider: false })` with `dividerSides: ''`; the default
+  remains a bottom divider, while canonical combinations such as `tr` and
+  `trbl` select more physical edges.
 
 JavaScript runtime behavior remains defensive for previously emitted calls, but
 new TypeScript builds report these invalid or ignored combinations.

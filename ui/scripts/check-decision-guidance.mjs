@@ -118,7 +118,9 @@ for (const phrase of requiredPhrases) {
     );
 }
 
-const menuEntry = componentCatalog.entries.find((entry) => entry.id === 'list');
+const layoutEntry = componentCatalog.entries.find(
+  (entry) => entry.id === 'layout',
+);
 const paneEntry = componentCatalog.entries.find((entry) => entry.id === 'pane');
 for (const className of [
   'kui-pane',
@@ -130,8 +132,8 @@ for (const className of [
     fail(`pane catalog entry is missing public class ${className}`);
 }
 for (const className of ['kui-content', 'kui-content-item']) {
-  if (!menuEntry?.publicClasses.includes(className))
-    fail(`list catalog entry is missing public class ${className}`);
+  if (!layoutEntry?.publicClasses.includes(className))
+    fail(`layout catalog entry is missing public class ${className}`);
 }
 for (const token of [
   '--kui-layout-content-gap',
@@ -139,8 +141,8 @@ for (const token of [
   '--kui-layout-item-padding',
   '--kui-layout-rounded-radius',
 ]) {
-  if (!menuEntry?.publicTokens.includes(token))
-    fail(`list catalog entry is missing public token ${token}`);
+  if (!layoutEntry?.publicTokens.includes(token))
+    fail(`layout catalog entry is missing public token ${token}`);
 }
 const layoutGuidance = `${selection}\n${await readFile(resolve(root, 'ai/skill.md'), 'utf8')}\n${await readFile(resolve(root, 'README.md'), 'utf8')}`;
 for (const phrase of ['24px', '8px', '44px', 'content item']) {

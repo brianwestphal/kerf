@@ -2,6 +2,7 @@ import {
   buildEvaluationContexts,
   type UiEvaluationContext,
 } from '@kerfjs/ui/evaluator';
+import { type DividerSides, List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { PanelHeader } from '@kerfjs/ui/panel-header';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
@@ -14,6 +15,7 @@ import {
   type TokenSearchEditorAttributes,
   TokenSearchField,
 } from '@kerfjs/ui/token-search-field';
+import { Toolbar } from '@kerfjs/ui/toolbar';
 import {
   ToolbarControlGroup,
   type ToolbarControlGroupAppearance,
@@ -197,6 +199,7 @@ const tone: ToolbarControlGroupTone = 'dark';
 const buttonAppearance: ToolbarControlGroupButtonAppearance = 'push';
 const shape: ToolbarControlGroupShape = 'rounded';
 const sunkenPanelShape: SunkenPanelShape = 'square';
+const dividerSides: DividerSides = 'tr';
 TabBar({ id: 'tabs', label: 'Tabs', activation, children: icon });
 StateBanner({ title: 'Failed', badge: '3', urgency });
 ToolbarControlGroup({
@@ -207,6 +210,18 @@ ToolbarControlGroup({
   shape,
 });
 SunkenPanel({ shape: sunkenPanelShape });
+List({
+  children: icon,
+  gap: true,
+  flex: '1 1 0',
+  scrollable: true,
+  dividerSides,
+});
+Toolbar({ leading: icon, dividerSides });
+// @ts-expect-error KUI-T011 divider sides use canonical t/r/b/l order.
+List({ dividerSides: 'rt' });
+// @ts-expect-error KUI-T011 Toolbar's former boolean divider prop was replaced by dividerSides.
+Toolbar({ leading: icon, divider: true });
 // @ts-expect-error KUI-T011 arbitrary activation strings are rejected.
 const invalidActivation: TabActivation = 'eager';
 void invalidActivation;

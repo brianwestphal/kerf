@@ -92,7 +92,7 @@ export const createRecipe: RecipeFactory = (announce) => {
       <footer class="recipe-sidebar__footer kui-pane__footer">
         <Toolbar
           label="Sidebar actions"
-          divider={false}
+          dividerSides=""
           leading={
             <ToolbarControlGroup appearance="borderless" single>
               <button

@@ -81,7 +81,7 @@ export function PanelHeader({
       data-has-summary={String(Boolean(summary))}
       data-placeholder={placeholder ? 'true' : undefined}
     >
-      <Toolbar leading={identity} trailing={actions} divider={false} />
+      <Toolbar leading={identity} trailing={actions} dividerSides="" />
       {summary && (
         <p class="kui-panel-header__summary" id={summaryId}>
           {placeholder ? <Skeleton width="18em" /> : summary}

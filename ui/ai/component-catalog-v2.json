@@ -621,7 +621,7 @@
           "border": "conditional",
           "padding": "self",
           "notes": [
-            "Padding belongs to the toolbar; the optional divider variant also owns its border."
+            "Padding belongs to the toolbar; dividerSides selects any canonical combination of its physical top, right, bottom, and left edges."
           ]
         }
       },
@@ -638,7 +638,11 @@
           "kui-toolbar__leading",
           "kui-toolbar__trailing"
         ],
-        "publicTokens": ["--kui-color-border", "--kui-font-sans"]
+        "publicTokens": [
+          "--kui-color-border",
+          "--kui-font-sans",
+          "--kui-toolbar-divider-color"
+        ]
       },
       "diagnostics": [
         {
@@ -989,33 +993,26 @@
       "key": "@kerfjs/ui:list",
       "package": "@kerfjs/ui",
       "id": "list",
-      "name": "List composition",
-      "kind": "composition",
+      "name": "List",
+      "kind": "component",
       "source": "kerf",
       "parents": { "mode": "any", "entries": [] },
-      "contexts": ["navigation-list"],
-      "zones": [
-        {
-          "id": "rows",
-          "accepts": ["list-header", "list-item", "list-action-row"],
-          "cardinality": { "min": 1, "max": "unbounded" },
-          "exclusiveWith": []
-        }
-      ],
-      "children": {
-        "mode": "listed",
-        "concepts": ["list-header", "list-item", "list-action-row"],
-        "requiredConcepts": []
-      },
+      "contexts": ["application-ui", "navigation-list", "vertical-layout"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [
         {
-          "id": "information architecture",
+          "id": "child semantics and content",
           "owner": "application",
           "required": false
         },
-        { "id": "routing", "owner": "application", "required": false },
         {
-          "id": "responsive shell behavior",
+          "id": "the bounded height needed for scrolling",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "gap, flex, and divider choices",
           "owner": "application",
           "required": false
         }
@@ -1024,28 +1021,35 @@
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
-        "geometry": { "margin": "child", "border": "child", "padding": "child" }
+        "geometry": {
+          "margin": "none",
+          "border": "conditional",
+          "padding": "none",
+          "notes": [
+            "List adds no margin or padding; dividerSides draws only the selected physical edges without changing box geometry."
+          ]
+        }
       },
       "accessibility": {
         "obligations": [
-          "Use native links for link navigation, retain ListItem button semantics for actions, and keep standalone header and toolbar actions at least 44px square.",
-          "A ListHeader disclosure controls real content, keeps a stable accessible name and aria-expanded state, and uses the production DisclosureArrow visual."
+          "List adds layout only and no list role; children retain responsibility for their native or ARIA semantics.",
+          "Give a scrollable List a bounded block size and keep keyboard focus visible as its contents scroll."
         ]
       },
       "boundaries": {
-        "rootClass": "kui-content",
-        "publicClasses": ["kui-content", "kui-content-item"],
+        "rootClass": "kui-list",
+        "publicClasses": ["kui-list"],
         "publicTokens": [
-          "--kui-layout-content-gap",
-          "--kui-layout-inline-margin",
-          "--kui-layout-item-padding",
-          "--kui-layout-rounded-radius"
+          "--kui-color-border",
+          "--kui-layout-item-gap",
+          "--kui-list-divider-color",
+          "--kui-list-gap"
         ]
       },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
-        "composition": "docs/component-selection.md#correct-composition-and-duplicated-markup-trap"
+        "composition": "docs/component-selection.md#problem-to-component-matrix"
       }
     },
     {

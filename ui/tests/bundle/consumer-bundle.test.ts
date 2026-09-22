@@ -121,6 +121,21 @@ describe('consumer bundle boundaries', () => {
     expect(css).not.toContain('remify(');
   });
 
+  it('loads only List CSS from the List browser subpath', async () => {
+    const result = await bundle(
+      "import { List } from '@kerfjs/ui/list'; console.log(String(List({ gap: true, dividerSides: 'tr' }))); ",
+    );
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const css = output(result, '.css');
+    expect(inputs).toContain('dist/browser/list.js');
+    expect(inputs).toContain('dist/styles/list.css');
+    expect(css).toContain('.kui-list');
+    expect(css).toContain('[divider-sides*=t]');
+    expect(css).not.toContain('.kui-list-item');
+    expect(css).not.toContain('.kui-toolbar');
+    expect(css).not.toContain('remify(');
+  });
+
   it('ships PanelHeader with its reachable toolbar and group styles', async () => {
     const result = await bundle(
       "import { PanelHeader } from '@kerfjs/ui/panel-header'; console.log(String(PanelHeader({ title: 'Details', titleId: 'details-title' }))); ",
@@ -404,6 +419,10 @@ describe('consumer bundle boundaries', () => {
       browser: './dist/browser/toolbar.js',
       import: './dist/toolbar.js',
     });
+    expect(pkg.exports['./list']).toMatchObject({
+      browser: './dist/browser/list.js',
+      import: './dist/list.js',
+    });
     expect(pkg.exports['./list-action-row']).toMatchObject({
       browser: './dist/browser/list-action-row.js',
       import: './dist/list-action-row.js',
@@ -483,6 +502,7 @@ describe('consumer bundle boundaries', () => {
       import: './dist/wire-tab-scaffold.js',
     });
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
+    expect(pkg.exports['./list.css']).toBe('./dist/styles/list.css');
     expect(pkg.exports['./list-action-row.css']).toBe(
       './dist/styles/list-action-row.css',
     );

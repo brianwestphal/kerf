@@ -237,6 +237,13 @@ header, one scrolling vertical `.kui-pane__content`, and an optional footer.
 Logical-edge separator lines are independently opt-in and default off.
 `@kerfjs/ui/layout.css` retains the pane roles and supplies the related content
 geometry classes.
+`List` is the corresponding layout-only vertical stack: its children stretch by
+default, while `gap`, `flex`, and `scrollable` opt into standard/custom spacing,
+flex growth, and vertical scroll ownership. `dividerSides` accepts canonical
+physical top/right/bottom/left combinations such as `tr` and `trbl`; the stack
+adds no list semantics, margin, or padding of its own. String props receive
+browser CSS, so use `gap="var(--kui-space-2xs)"` for the root-scaled 4px token or
+`gap="0.25rem"`; source-only `remify(4px)` is not valid at runtime.
 `.kui-content` gives major children 24px vertical separation.
 `.kui-content-item` gives one child 8px inline margin, a real 1px border,
 8px padding, and 12px corners; border and background may be transparent without

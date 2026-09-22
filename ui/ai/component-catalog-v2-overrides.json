@@ -93,21 +93,14 @@
     ]
   },
   "@kerfjs/ui:list": {
-    "_source": "docs/component-selection.md#correct-composition-and-duplicated-markup-trap",
-    "contexts": ["navigation-list"],
+    "_source": "docs/component-selection.md#problem-to-component-matrix",
+    "contexts": ["application-ui", "navigation-list", "vertical-layout"],
     "children": {
-      "mode": "listed",
-      "concepts": ["list-header", "list-item", "list-action-row"],
+      "mode": "any",
+      "concepts": [],
       "requiredConcepts": []
     },
-    "zones": [
-      {
-        "id": "rows",
-        "accepts": ["list-header", "list-item", "list-action-row"],
-        "cardinality": { "min": 1, "max": "unbounded" },
-        "exclusiveWith": []
-      }
-    ]
+    "zones": []
   },
   "@kerfjs/ui:list-header": {
     "_source": "docs/accessibility.md#shared-rules",

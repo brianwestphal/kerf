@@ -8,6 +8,7 @@ const entries = [
   'toolbar-control-group',
   'toolbar-text',
   'floating-toolbar',
+  'list',
   'list-action-row',
   'list-item',
   'list-header',

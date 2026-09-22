@@ -10,7 +10,7 @@ component picture without running the app.
 ## Coverage
 
 Templated components (each with light + dark variants): `PanelHeader`,
-`ToolbarControlGroup`, `Toolbar`, `ToolbarText`, `ListItem`, `ListHeader`,
+`ToolbarControlGroup`, `Toolbar`, `ToolbarText`, `List`, `ListItem`, `ListHeader`,
 `ListActionRow`, `ValueTable`, `StateBanner`, `EmptyState`, `Skeleton`,
 `SegmentedControl`, `TabBar`/`AppTab`, and `TokenSearchField`.
 

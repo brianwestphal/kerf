@@ -122,6 +122,7 @@ as a `New` marker.
 | `ToolbarControlGroup`                                               | `@kerfjs/ui/toolbar-control-group`      | `@kerfjs/ui/toolbar-control-group.css` |
 | `FloatingToolbar`                                                   | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`      |
 | `ToolbarText`                                                       | `@kerfjs/ui/toolbar-text`               | `@kerfjs/ui/toolbar-text.css`          |
+| `List`                                                              | `@kerfjs/ui/list`                       | `@kerfjs/ui/list.css`                  |
 | `ListActionRow`                                                     | `@kerfjs/ui/list-action-row`            | `@kerfjs/ui/list-action-row.css`       |
 | `ListItem`                                                          | `@kerfjs/ui/list-item`                  | `@kerfjs/ui/list-item.css`             |
 | `ListHeader`                                                        | `@kerfjs/ui/list-header`                | `@kerfjs/ui/list-header.css`           |

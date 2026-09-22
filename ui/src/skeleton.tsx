@@ -1,5 +1,5 @@
 export interface SkeletonProps {
-  /** Width as any CSS length (e.g. `remify(120px)`, `60%`). Defaults to filling its slot. */
+  /** Width as any browser CSS length (e.g. `7.5rem`, `60%`). Defaults to filling its slot. */
   width?: string;
   /** Height as any CSS length. Defaults to a single text line. */
   height?: string;

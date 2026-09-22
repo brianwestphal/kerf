@@ -25,18 +25,20 @@ export { DisclosureArrow, type DisclosureArrowProps, type DisclosureDirection };
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { D as DividerSides } from './divider-sides-267FA7sY.js';
 
 interface ToolbarProps {
     leading?: SafeHtml;
     center?: SafeHtml;
     trailing?: SafeHtml;
     label?: string;
-    divider?: boolean;
+    /** Physical divider edges in canonical top/right/bottom/left order. Defaults to bottom. */
+    dividerSides?: DividerSides;
     className?: string;
 }
-declare function Toolbar({ leading, center, trailing, label, divider, className, }: ToolbarProps): SafeHtml;
+declare function Toolbar({ leading, center, trailing, label, dividerSides, className, }: ToolbarProps): SafeHtml;
 
-export { Toolbar, type ToolbarProps };
+export { DividerSides, Toolbar, type ToolbarProps };
 ```
 
 ## `@kerfjs/ui/toolbar-text`
@@ -1412,7 +1414,7 @@ export { LoadingSpinner, type LoadingSpinnerProps };
 import * as kerfjs from 'kerfjs';
 
 interface SkeletonProps {
-    /** Width as any CSS length (e.g. `remify(120px)`, `60%`). Defaults to filling its slot. */
+    /** Width as any browser CSS length (e.g. `7.5rem`, `60%`). Defaults to filling its slot. */
     width?: string;
     /** Height as any CSS length. Defaults to a single text line. */
     height?: string;

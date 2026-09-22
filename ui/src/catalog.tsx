@@ -9,6 +9,7 @@ import {
 } from 'lucide';
 
 import { filterDataAttributes } from './extension-attributes.js';
+import { List } from './list.js';
 import { ListHeader } from './list-header.js';
 import { ListItem } from './list-item.js';
 import { LucideIcon } from './lucide-icon.js';
@@ -212,7 +213,7 @@ export function Catalog({
           <>
             <Toolbar
               label={`${brand.title} catalog header`}
-              divider={false}
+              dividerSides=""
               leading={
                 <ToolbarControlGroup
                   appearance="borderless"
@@ -250,7 +251,7 @@ export function Catalog({
           {sections.map((section) => (
             <section class="kui-catalog__group">
               <ListHeader label={section.category} />
-              <div class="kui-catalog__items">
+              <List className="kui-catalog__items">
                 {section.entries.map((entry) => (
                   <ListItem
                     action={selectAction}
@@ -262,7 +263,7 @@ export function Catalog({
                     multiline
                   />
                 ))}
-              </div>
+              </List>
             </section>
           ))}
           {secondarySections ? (
@@ -284,7 +285,7 @@ export function Catalog({
                       <h3 class="kui-catalog__secondary-heading">
                         {section.category}
                       </h3>
-                      <div class="kui-catalog__items">
+                      <List className="kui-catalog__items">
                         {section.entries.map((entry) => (
                           <ListItem
                             action={selectAction}
@@ -296,7 +297,7 @@ export function Catalog({
                             multiline
                           />
                         ))}
-                      </div>
+                      </List>
                     </section>
                   ))}
                 </div>
@@ -321,7 +322,7 @@ export function Catalog({
           <>
             <Toolbar
               label={`${name} header`}
-              divider={false}
+              dividerSides=""
               leading={
                 <>
                   {collapsed ? (
@@ -391,7 +392,7 @@ export function Catalog({
             {status ? <div class="kui-catalog__status">{status}</div> : <></>}
             <Toolbar
               label={`${name} resources`}
-              divider={false}
+              dividerSides=""
               leading={
                 resources.length > 0 ? (
                   <nav

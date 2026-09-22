@@ -710,9 +710,10 @@ test('computes component geometry overlays from live CSS and leaves composition 
     .poll(() => overlay.locator('.kui-catalog__geometry-margin').count())
     .toBe(0);
 
-  // A composition demo keeps its layout and gets no overlay.
+  // List is a focused component demo, so its immediate List specimen gets an
+  // automatically computed geometry overlay.
   await page.goto('/?component=list');
-  await expect(stageInner).toHaveAttribute('data-demo-mode', 'composition');
+  await expect(stageInner).toHaveAttribute('data-demo-mode', 'component');
   await expect
     .poll(() =>
       overlay
@@ -721,7 +722,7 @@ test('computes component geometry overlays from live CSS and leaves composition 
         )
         .count(),
     )
-    .toBe(0);
+    .toBeGreaterThan(0);
 });
 
 test('keeps a toolbar trailing zone flush right when leading and center are empty', async ({
@@ -1092,7 +1093,7 @@ test('aligns PanelHeader identity, actions, and subtitle across layout, theme, a
       .getByRole('button', { name: 'Done' });
     const summary = preferred.locator(':scope > .kui-panel-header__summary');
 
-    await expect(toolbar).toHaveAttribute('data-divider', 'false');
+    await expect(toolbar).not.toHaveAttribute('divider-sides');
     expect(await toolbar.evaluate((element) => element.tagName)).toBe('HEADER');
     // The icon is a normal (bordered) control group — not borderless — and the
     // title is extra-large toolbar text.
@@ -4975,7 +4976,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
   const paneGeometry = () =>
     menu.evaluate((node) => {
       const content = node
-        .querySelector<HTMLElement>('[data-content-stack]')!
+        .querySelector<HTMLElement>('.demo-list__content')!
         .getBoundingClientRect();
       const toolbar = node
         .querySelector<HTMLElement>('.kui-pane__footer .kui-toolbar')!
@@ -5038,9 +5039,20 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
         .getBoundingClientRect();
       return {
         contentGap: parseFloat(
-          window.getComputedStyle(node.querySelector('[data-content-stack]')!)
+          window.getComputedStyle(node.querySelector('.demo-list__content')!)
             .rowGap,
         ),
+        list: (() => {
+          const list = node.querySelector<HTMLElement>('.demo-list__content')!;
+          const style = window.getComputedStyle(list);
+          return {
+            alignItems: style.alignItems,
+            display: style.display,
+            dividerSides: list.getAttribute('divider-sides'),
+            flex: style.flex,
+            overflowY: style.overflowY,
+          };
+        })(),
         rowStart: start(content, row),
         rowEnd: end(content, row),
         rowHeight: row.height,
@@ -5077,6 +5089,13 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
   const expectPaneGeometry = (
     geometry: Awaited<ReturnType<typeof paneGeometry>>,
   ) => {
+    expect(geometry.list).toEqual({
+      alignItems: 'stretch',
+      display: 'flex',
+      dividerSides: 'r',
+      flex: '1 1 auto',
+      overflowY: 'auto',
+    });
     near('contentGap', geometry.contentGap, 24);
     for (const name of [
       'rowStart',
