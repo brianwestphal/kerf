@@ -46,12 +46,29 @@ policy, or analysis inputs to the containing application.
 | `KUI-L007` | error  | A declared scroll owner is nested inside another scroll owner.    |
 | `KUI-L008` | review | A dynamic class expression cannot be classified soundly.          |
 | `KUI-L009` | error  | A stylesheet cannot be parsed.                                    |
+| `KUI-L010` | error  | A selector reaches a private Kerf descendant from a public root.  |
+| `KUI-L011` | error  | A `::part()` target is not cataloged as a public extension point. |
+| `KUI-L012` | error  | CSS assigns a Kerf token without a public configuration contract. |
 
 Errors are provable contract violations and make the command exit 1. Review
 findings are deliberately heuristic and do not fail by default; pass
 `--fail-on-review` when a project has reviewed its baseline and wants them to
 gate CI. Text, versioned JSON, and SARIF carry the same stable rule ids,
 source locations, evidence, and ownership chain.
+
+For staged adoption, pass `--adoption`. Ownership-boundary diagnostics are
+reported as review findings so a team can inventory and migrate its baseline;
+combine it with the exact file-and-rule exceptions below for intentional legacy
+integrations. Remove `--adoption` to make unsupported overrides blocking.
+
+Catalog `boundaries.publicClasses` and `boundaries.publicTokens` are explicit
+CSS extension points. A component catalog may additionally list shadow-part
+names in `boundaries.publicParts`; all other `::part()` targets are private.
+Part names are scoped to that entry's `boundaries.rootClass`, so an extension
+point on one component does not authorize the same-named part on another.
+Parent-owned placement and selectors for application-owned content remain
+allowed because the analyzer only reserves `.kui-*`, `--kui-*`, and cataloged
+shadow boundaries.
 
 The JSON report schema is exported as
 `@kerfjs/ui/analyzer/report.schema.json`.
@@ -82,5 +99,6 @@ validator.
 ```
 
 Review findings remain visible until explicitly suppressed. Avoid suppressing
-`KUI-L001`, `KUI-L002`, `KUI-L003`, `KUI-L007`, or `KUI-L009`: those indicate a
+`KUI-L001`, `KUI-L002`, `KUI-L003`, `KUI-L007`, `KUI-L009`, `KUI-L010`,
+`KUI-L011`, or `KUI-L012`: those indicate a
 definite boundary or parsing failure rather than an aesthetic judgment.

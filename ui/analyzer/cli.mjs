@@ -24,13 +24,16 @@ const format = take('--format') ?? 'text';
 const output = take('--output');
 const profile = take('--profile');
 const failOnReview = args.includes('--fail-on-review');
-const paths = args.filter((argument) => !argument.startsWith('--'));
+const adoption = args.includes('--adoption');
+const paths = args.filter(
+  (argument) => !argument.startsWith('--') && argument !== '--adoption',
+);
 
 if (!['text', 'json', 'sarif'].includes(format)) {
   console.error(`Unknown --format ${format}; expected text, json, or sarif.`);
   process.exitCode = 2;
 } else {
-  const report = await analyzeUiProject({ root, paths, profile });
+  const report = await analyzeUiProject({ root, paths, profile, adoption });
   const rendered =
     format === 'text'
       ? formatUiAnalysisText(report)

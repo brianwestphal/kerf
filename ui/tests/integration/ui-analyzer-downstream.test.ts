@@ -83,4 +83,37 @@ describe('kerf-ui-analyze downstream command', () => {
       expect.arrayContaining([expect.objectContaining({ ruleId: 'KUI-L002' })]),
     );
   });
+
+  it('offers a non-blocking adoption pass for unsupported overrides', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-adoption-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'src/app.css'),
+      '.kui-state-banner .kui-private { color: red; }\nwa-dialog::part(body) { color: red; }',
+    );
+    const cli = resolve(import.meta.dirname, '../../analyzer/cli.mjs');
+
+    await expect(
+      execFileAsync(process.execPath, [
+        cli,
+        '--root',
+        root,
+        '--adoption',
+        '--format',
+        'json',
+        '--output',
+        'report.json',
+      ]),
+    ).resolves.toBeDefined();
+    const report = JSON.parse(
+      await readFile(join(root, 'report.json'), 'utf8'),
+    );
+    expect(report.summary).toMatchObject({ errors: 0, review: 2 });
+    expect(report.diagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ ruleId: 'KUI-L010', severity: 'review' }),
+        expect.objectContaining({ ruleId: 'KUI-L011', severity: 'review' }),
+      ]),
+    );
+  });
 });

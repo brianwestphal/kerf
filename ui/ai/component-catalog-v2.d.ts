@@ -54,6 +54,7 @@ export interface CatalogCompositionEntryV2 {
     rootClass: string | null;
     publicClasses: string[];
     publicTokens: string[];
+    publicParts?: string[];
   };
   diagnostics: CatalogDiagnostic[];
   provenance: { selection: string; composition: string };

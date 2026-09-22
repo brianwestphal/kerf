@@ -222,7 +222,8 @@
               ]
             },
             "publicClasses": { "$ref": "#/$defs/stringList" },
-            "publicTokens": { "$ref": "#/$defs/stringList" }
+            "publicTokens": { "$ref": "#/$defs/stringList" },
+            "publicParts": { "$ref": "#/$defs/stringList" }
           },
           "additionalProperties": false
         },

@@ -39,6 +39,7 @@ export function analyzeUiProject(options?: {
   paths?: string[];
   profile?: string;
   knownRules?: Iterable<string>;
+  adoption?: boolean;
 }): Promise<UiAnalysisReport>;
 
 export function formatUiAnalysisText(report: UiAnalysisReport): string;

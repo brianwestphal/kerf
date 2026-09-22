@@ -32,8 +32,10 @@ async function fixture({ suppressSpacing = false } = {}) {
   );
   await writeFile(
     join(root, 'src/app.css'),
-    `.kui-toolbar__private { color: red; }
-.app { --kui-does-not-exist: red; padding: 7px; }
+    `.kui-toolbar__private { color: var(--kui-does-not-exist); }
+.kui-state-banner .kui-state-banner__private { color: red; }
+wa-dialog::part(body) { color: red; }
+.app { --kui-private-setting: red; padding: 7px; }
 .kui-state-banner { width: 320px; }
 .scroll-a, .scroll-b { overflow: auto; }
 .inset-a, .inset-b { padding: 8px; }
@@ -79,6 +81,9 @@ describe('Kerf UI static analyzer', () => {
         'KUI-L006',
         'KUI-L007',
         'KUI-L008',
+        'KUI-L010',
+        'KUI-L011',
+        'KUI-L012',
       ]),
     );
     expect(report.summary.errors).toBeGreaterThanOrEqual(4);
@@ -105,6 +110,66 @@ describe('Kerf UI static analyzer', () => {
       expect.arrayContaining([expect.objectContaining({ ruleId: 'KUI-L006' })]),
     );
     expect(first.summary.suppressed).toBe(1);
+  });
+
+  it('supports staged adoption and cataloged shadow-part extension points', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-parts-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'component-catalog-v2.json'),
+      JSON.stringify({
+        schemaVersion: 2,
+        package: '@acme/ui',
+        entries: [
+          {
+            key: '@acme/ui:widget',
+            name: 'Widget',
+            boundaries: {
+              rootClass: 'acme-widget',
+              publicClasses: ['acme-widget'],
+              publicTokens: [],
+              publicParts: ['label'],
+            },
+          },
+        ],
+      }),
+    );
+    await writeFile(
+      join(root, '.kerf-ui-profile.json'),
+      JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        catalogs: [
+          {
+            package: '@acme/ui',
+            composition: {
+              path: './component-catalog-v2.json',
+              schemaVersion: 2,
+            },
+          },
+        ],
+      }),
+    );
+    await writeFile(
+      join(root, 'src/app.css'),
+      '.acme-widget::part(label) { color: green; }\n.other-widget::part(label) { color: red; }\n.acme-widget::part(private) { color: red; }',
+    );
+
+    const report = await analyzeUiProject({ root, adoption: true });
+
+    expect(report.diagnostics).toEqual([
+      expect.objectContaining({
+        ruleId: 'KUI-L011',
+        severity: 'review',
+        evidence: expect.objectContaining({ part: 'label' }),
+      }),
+      expect.objectContaining({
+        ruleId: 'KUI-L011',
+        severity: 'review',
+        evidence: expect.objectContaining({ part: 'private' }),
+      }),
+    ]);
+    expect(report.summary).toMatchObject({ errors: 0, review: 2 });
   });
 
   it('emits portable text and SARIF contracts', async () => {

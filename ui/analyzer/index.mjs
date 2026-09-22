@@ -30,7 +30,21 @@ export const UI_ANALYSIS_RULES = Object.freeze({
   'KUI-L007': { severity: 'error', title: 'Nested scroll owners' },
   'KUI-L008': { severity: 'review', title: 'Dynamic class requires review' },
   'KUI-L009': { severity: 'error', title: 'Stylesheet could not be parsed' },
+  'KUI-L010': {
+    severity: 'error',
+    title: 'Private Kerf descendant override',
+  },
+  'KUI-L011': { severity: 'error', title: 'Uncataloged shadow part override' },
+  'KUI-L012': { severity: 'error', title: 'Private Kerf token assignment' },
 });
+
+const adoptionRules = new Set([
+  'KUI-L001',
+  'KUI-L002',
+  'KUI-L010',
+  'KUI-L011',
+  'KUI-L012',
+]);
 
 const sourceExtensions = new Set(['.tsx', '.jsx']);
 const spacingProperties = /^(?:margin|padding|gap|inset)(?:-|$)/;
@@ -80,11 +94,11 @@ function location(file, node, source) {
   };
 }
 
-function diagnostic(ruleId, at, message, evidence, chain) {
+function diagnostic(ruleId, at, message, evidence, chain, adoption = false) {
   const rule = UI_ANALYSIS_RULES[ruleId];
   return {
     ruleId,
-    severity: rule.severity,
+    severity: adoption && adoptionRules.has(ruleId) ? 'review' : rule.severity,
     message,
     location: at,
     evidence,
@@ -187,6 +201,7 @@ async function loadCatalogs(profileResult) {
 function catalogFacts(entries) {
   const publicClasses = new Set();
   const publicTokens = new Set();
+  const publicParts = new Map();
   const classEntries = new Map();
   const exportEntries = new Map();
   for (const entry of entries) {
@@ -201,8 +216,19 @@ function catalogFacts(entries) {
     }
     for (const token of entry.boundaries?.publicTokens ?? [])
       publicTokens.add(token);
+    for (const part of entry.boundaries?.publicParts ?? []) {
+      const roots = publicParts.get(part) ?? new Set();
+      if (entry.boundaries?.rootClass) roots.add(entry.boundaries.rootClass);
+      publicParts.set(part, roots);
+    }
   }
-  return { publicClasses, publicTokens, classEntries, exportEntries };
+  return {
+    publicClasses,
+    publicTokens,
+    publicParts,
+    classEntries,
+    exportEntries,
+  };
 }
 
 function spacingValues(value) {
@@ -214,7 +240,18 @@ function spacingValues(value) {
   return results;
 }
 
-async function inspectCss(file, source, facts, diagnostics, cssFacts) {
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+async function inspectCss(
+  file,
+  source,
+  facts,
+  diagnostics,
+  cssFacts,
+  adoption = false,
+) {
   let root;
   try {
     root = postcss.parse(source, { from: file });
@@ -232,14 +269,69 @@ async function inspectCss(file, source, facts, diagnostics, cssFacts) {
     const classes = [
       ...rule.selector.matchAll(/\.([_a-zA-Z]+[_a-zA-Z0-9-]*)/g),
     ].map((match) => match[1]);
+    const publicRootPattern = [...facts.publicClasses]
+      .map(
+        (className) => `\\.${className.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`,
+      )
+      .join('|');
+    const privateDescendants = new Set();
+    if (publicRootPattern)
+      for (const selector of rule.selectors ?? [rule.selector]) {
+        const rootMatch = new RegExp(
+          `(?:${publicRootPattern})(?:[.#:[\\w-]|\\s)*(?:>|\\s)`,
+        ).exec(selector);
+        if (!rootMatch) continue;
+        const descendant = selector.slice(
+          rootMatch.index + rootMatch[0].length,
+        );
+        for (const match of descendant.matchAll(/\.(kui-[\w-]+)/g))
+          if (!facts.publicClasses.has(match[1]))
+            privateDescendants.add(match[1]);
+      }
     for (const className of classes) {
-      if (className.startsWith('kui-') && !facts.publicClasses.has(className))
+      if (privateDescendants.has(className))
+        diagnostics.push(
+          diagnostic(
+            'KUI-L010',
+            location(file, rule),
+            `.${className} is a private Kerf descendant; prefer the owning component's prop or variant, or catalog a deliberate public extension point.`,
+            { selector: rule.selector, className },
+            undefined,
+            adoption,
+          ),
+        );
+      else if (
+        className.startsWith('kui-') &&
+        !facts.publicClasses.has(className)
+      )
         diagnostics.push(
           diagnostic(
             'KUI-L001',
             location(file, rule),
-            `.${className} is not a cataloged public Kerf class.`,
+            `.${className} is not a cataloged public Kerf class; prefer a component prop or variant, or catalog the extension point.`,
             { selector: rule.selector, className },
+            undefined,
+            adoption,
+          ),
+        );
+    }
+    for (const match of rule.selector.matchAll(/::part\(\s*([\w-]+)\s*\)/g)) {
+      const part = match[1];
+      const roots = facts.publicParts.get(part) ?? new Set();
+      const allowed = [...roots].some((className) =>
+        new RegExp(`\\.${escapeRegExp(className)}(?:[^\\w-]|$)`).test(
+          rule.selector.slice(0, match.index),
+        ),
+      );
+      if (!allowed)
+        diagnostics.push(
+          diagnostic(
+            'KUI-L011',
+            location(file, rule),
+            `::part(${part}) is not a cataloged extension point; prefer the component's prop or variant, or add ${part} to boundaries.publicParts.`,
+            { selector: rule.selector, part },
+            undefined,
+            adoption,
           ),
         );
     }
@@ -250,15 +342,21 @@ async function inspectCss(file, source, facts, diagnostics, cssFacts) {
         ...(decl.value.match(/--kui-[a-z0-9-]+/g) ?? []),
       ];
       for (const token of new Set(tokens))
-        if (!facts.publicTokens.has(token))
+        if (!facts.publicTokens.has(token)) {
+          const assignment = decl.prop === token;
           diagnostics.push(
             diagnostic(
-              'KUI-L002',
+              assignment ? 'KUI-L012' : 'KUI-L002',
               at,
-              `${token} is not a cataloged public Kerf token.`,
+              assignment
+                ? `${token} has no public configuration contract; prefer the component's prop or variant, or catalog the token explicitly.`
+                : `${token} is not a cataloged public Kerf token; prefer a documented token or component configuration.`,
               { property: decl.prop, value: decl.value, token },
+              undefined,
+              adoption,
             ),
           );
+        }
       if (
         spacingProperties.test(decl.prop) &&
         !/var\(|calc\(|remify\(/.test(decl.value)
@@ -439,6 +537,7 @@ export async function analyzeUiProject({
   root: requestedRoot = process.cwd(),
   paths,
   knownRules = [],
+  adoption = false,
   profile: packageProfile = resolve(
     import.meta.dirname,
     '../ai/application-ui-profile.defaults.json',
@@ -538,7 +637,14 @@ export async function analyzeUiProject({
   for (const file of files.filter((item) => item.endsWith('.css'))) {
     const context = contexts.get(file);
     const fileFacts = new Map();
-    await inspectCss(file, contents.get(file), context.facts, [], fileFacts);
+    await inspectCss(
+      file,
+      contents.get(file),
+      context.facts,
+      [],
+      fileFacts,
+      adoption,
+    );
     styleFacts.set(file, fileFacts);
   }
   const styleConsumers = new Map(
@@ -572,6 +678,7 @@ export async function analyzeUiProject({
         context.facts,
         fileDiagnostics,
         new Map(),
+        adoption,
       );
       recordDiagnostics(fileDiagnostics, context);
     }

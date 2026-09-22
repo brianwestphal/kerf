@@ -142,7 +142,9 @@ export function validateCatalogV2(catalog, options = {}) {
       fail(`${at} accessibility obligations must be a unique string list`);
     if (
       !isStringList(entry?.boundaries?.publicClasses) ||
-      !isStringList(entry?.boundaries?.publicTokens)
+      !isStringList(entry?.boundaries?.publicTokens) ||
+      ('publicParts' in (entry?.boundaries ?? {}) &&
+        !isStringList(entry.boundaries.publicParts))
     )
       fail(`${at} public boundaries must be unique string lists`);
     if (
