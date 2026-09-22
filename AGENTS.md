@@ -66,6 +66,10 @@ before choosing an order; weigh dependencies, overlap, risk, and safe paralleliz
 priority as important guidance, not a hard rule. The CLI and MCP tools use the same engine —
 use whichever is handier.
 
+A stopped, completed, interrupted, or idle delegated worker does not make its ticket
+non-actionable. The primary agent must inspect and resume the handoff through verification,
+completion, commit, and publication.
+
 **Write portable durable references.** In documentation, ticket text, and notes, never copy a
 developer-specific home directory, username, or absolute clone path. Use repository-relative
 paths, a stable repo name/URL, or a placeholder such as `<repo-root>/path`. Keep an exact
@@ -107,8 +111,9 @@ Keep the repo in a known-good state.
    or misleading.
 4. Get the worktree clean before starting the next ticket.
 
-**Pushing is up to this repository.** Follow whatever push/PR/review conventions this project
-already uses; this default guidance does not require or forbid pushing on its own.
+**Push every completed ticket immediately.** After its required gates pass, commit the
+ticket, push it, and confirm the remote accepted it before beginning, resuming, or
+integrating another ticket. Do not batch completed local commits for a later push.
 <!-- END hotsheet:codex -->
 
 <!-- BEGIN hotsheet:antigravity -->
@@ -166,6 +171,10 @@ before choosing an order; weigh dependencies, overlap, risk, and safe paralleliz
 priority as important guidance, not a hard rule. The CLI and MCP tools use the same engine —
 use whichever is handier.
 
+A stopped, completed, interrupted, or idle delegated worker does not make its ticket
+non-actionable. The primary agent must inspect and resume the handoff through verification,
+completion, commit, and publication.
+
 **Write portable durable references.** In documentation, ticket text, and notes, never copy a
 developer-specific home directory, username, or absolute clone path. Use repository-relative
 paths, a stable repo name/URL, or a placeholder such as `<repo-root>/path`. Keep an exact
@@ -207,8 +216,9 @@ Keep the repo in a known-good state.
    or misleading.
 4. Get the worktree clean before starting the next ticket.
 
-**Pushing is up to this repository.** Follow whatever push/PR/review conventions this project
-already uses; this default guidance does not require or forbid pushing on its own.
+**Push every completed ticket immediately.** After its required gates pass, commit the
+ticket, push it, and confirm the remote accepted it before beginning, resuming, or
+integrating another ticket. Do not batch completed local commits for a later push.
 <!-- END hotsheet:antigravity -->
 
 <!-- BEGIN hotsheet:opencode -->
@@ -266,6 +276,10 @@ before choosing an order; weigh dependencies, overlap, risk, and safe paralleliz
 priority as important guidance, not a hard rule. The CLI and MCP tools use the same engine —
 use whichever is handier.
 
+A stopped, completed, interrupted, or idle delegated worker does not make its ticket
+non-actionable. The primary agent must inspect and resume the handoff through verification,
+completion, commit, and publication.
+
 **Write portable durable references.** In documentation, ticket text, and notes, never copy a
 developer-specific home directory, username, or absolute clone path. Use repository-relative
 paths, a stable repo name/URL, or a placeholder such as `<repo-root>/path`. Keep an exact
@@ -307,6 +321,7 @@ Keep the repo in a known-good state.
    or misleading.
 4. Get the worktree clean before starting the next ticket.
 
-**Pushing is up to this repository.** Follow whatever push/PR/review conventions this project
-already uses; this default guidance does not require or forbid pushing on its own.
+**Push every completed ticket immediately.** After its required gates pass, commit the
+ticket, push it, and confirm the remote accepted it before beginning, resuming, or
+integrating another ticket. Do not batch completed local commits for a later push.
 <!-- END hotsheet:opencode -->
