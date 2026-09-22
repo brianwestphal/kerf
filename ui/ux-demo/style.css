@@ -431,8 +431,6 @@ button {
   display: none;
 }
 .demo-pane__secondary {
-  margin: 0;
-  padding: 0 var(--kui-space-xs) var(--kui-space-xs);
   color: var(--kui-color-text-quiet);
   font-size: var(--kui-font-s);
 }

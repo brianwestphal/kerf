@@ -13,12 +13,22 @@ test('Pane owns vertical slots, scrolling, and independent separators', async ({
   await expect(pane).toHaveAttribute('data-separator-block-end', 'true');
   await expect(pane).toHaveAttribute('data-separator-inline-start', 'true');
   await expect(pane).toHaveAttribute('data-separator-inline-end', 'true');
+  const secondary = pane.locator(
+    '.kui-pane__header [data-component="list-inset-text"]',
+  );
+  await expect(secondary).toHaveText('Optional secondary header row');
 
   const geometry = await pane.evaluate((element) => {
     const style = window.getComputedStyle(element);
     const header = element.querySelector<HTMLElement>('.kui-pane__header')!;
     const content = element.querySelector<HTMLElement>('.kui-pane__content')!;
     const footer = element.querySelector<HTMLElement>('.kui-pane__footer')!;
+    const secondary = element
+      .querySelector<HTMLElement>('[data-component="list-inset-text"]')!
+      .getBoundingClientRect();
+    const firstContent = content
+      .querySelector<HTMLElement>('.kui-content-item')!
+      .getBoundingClientRect();
     return {
       display: style.display,
       borders: [
@@ -30,6 +40,7 @@ test('Pane owns vertical slots, scrolling, and independent separators', async ({
       headerDirection: window.getComputedStyle(header).flexDirection,
       contentDirection: window.getComputedStyle(content).flexDirection,
       contentOverflow: window.getComputedStyle(content).overflowY,
+      alignedTextEdges: Math.abs(secondary.left - firstContent.left) <= 1,
       order: [header.offsetTop, content.offsetTop, footer.offsetTop],
     };
   });
@@ -39,6 +50,7 @@ test('Pane owns vertical slots, scrolling, and independent separators', async ({
     headerDirection: 'column',
     contentDirection: 'column',
     contentOverflow: 'auto',
+    alignedTextEdges: true,
   });
   expect(geometry.order[0]).toBeLessThan(geometry.order[1]);
   expect(geometry.order[1]).toBeLessThan(geometry.order[2]);
@@ -53,9 +65,8 @@ test('Pane owns vertical slots, scrolling, and independent separators', async ({
   );
 
   if (browserName === 'chromium')
-    await page.screenshot({
-      path: 'test-results/pane-wide.png',
-      fullPage: true,
+    await pane.screenshot({
+      path: 'test-results/pane-inset-text-wide.png',
     });
 });
 
@@ -67,6 +78,10 @@ test('Pane and the migrated catalog remain coherent at a narrow viewport', async
   await page.goto('/?component=pane');
 
   const sidebar = page.locator('.kui-catalog__sidebar');
+  const pane = page.locator('[data-demo="pane"] [data-component="pane"]');
+  await expect(
+    pane.locator('.kui-pane__header [data-component="list-inset-text"]'),
+  ).toHaveText('Optional secondary header row');
   const sidebarStyle = await sidebar.evaluate((element) => {
     const style = window.getComputedStyle(element);
     return {
@@ -84,8 +99,7 @@ test('Pane and the migrated catalog remain coherent at a narrow viewport', async
   expect(sidebarStyle.overflow).toBeLessThanOrEqual(1);
 
   if (browserName === 'chromium')
-    await page.screenshot({
-      path: 'test-results/pane-narrow.png',
-      fullPage: true,
+    await pane.screenshot({
+      path: 'test-results/pane-inset-text-narrow.png',
     });
 });

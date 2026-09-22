@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Fixed a collapsible `TokenSearchField` inside a rounded
   `ToolbarControlGroup` retaining its independent pill radius instead of using
   the group's shared concentric highlight radius.
+- Updated the `Pane` catalog demo's secondary header copy to use
+  `ListInsetText`, aligning it with the standard pane content gutter at wide and
+  narrow sizes instead of maintaining demo-only padding.
 - Documented and demonstrated list-first dialog bodies: use `List` with
   `bodyInset="none"`, and wrap bare dialog copy in `ListInsetText` so content
   shares the standard list gutter without double-insetting.

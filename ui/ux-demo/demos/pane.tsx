@@ -1,4 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Pane } from '@kerfjs/ui/pane';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -27,7 +28,9 @@ export function PaneDemo() {
                 dividerSides=""
                 leading={<ToolbarText text="Pane header" size="large" />}
               />
-              <p class="demo-pane__secondary">Optional secondary header row</p>
+              <ListInsetText className="demo-pane__secondary">
+                Optional secondary header row
+              </ListInsetText>
             </>
           }
           footer={
