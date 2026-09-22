@@ -148,6 +148,12 @@ originating `InputEvent` so a caller can gate on `inputType`/`data` — fires on
 `input`, letting a caller drop its own `input` listener; the application still
 owns query parsing and result-count/loading announcements.
 
+Managed clear captures the action before application handlers run, keeps the adopted
+expanded signal open during editor replacement, and focuses the current editor after
+rendering so typing can continue. The app still owns clearing query/tokens and emptying
+DOM-owned text. This focus step respects `manageFocus: false`, disposal, removed fields,
+and focus deliberately moved to another control; no app-level reopen callback is needed.
+
 ## CollapsiblePanel / sidebar
 
 `CollapsiblePanel` is a labeled `aside` region that is `aria-hidden` while

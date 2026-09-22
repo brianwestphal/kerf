@@ -234,7 +234,8 @@ Named and wildcard route parameters are URL-decoded fail-closed: a malformed per
 The searchbox keeps its leading icon, first text line, clear action, and trailing
 slot aligned to one fixed row as content wraps. The catalog demonstrates
 first-class empty-and-unfocused toolbar collapse, populated persistence,
-and focus transfer.
+and focus transfer. Managed clear preserves open state and replacement focus
+for continued typing, including when the app supplies the expanded signal.
 
 `PanelHeader` is a plain top toolbar used as a panel, dialog, or page heading and
 overrides no toolbar styles: an optional bordered icon group given a brand fill

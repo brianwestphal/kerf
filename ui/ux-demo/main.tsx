@@ -652,6 +652,17 @@ const stopActions = delegateActions(app, 'click', {
         ?.focus(),
     );
   },
+  'clear-adoption-search': (_event, element) => {
+    const editor = element
+      .closest('[data-component="token-search-field"]')
+      ?.querySelector<HTMLElement>('[data-token-search-editor]');
+    if (editor) editor.textContent = '';
+    batch(() => {
+      adoptionQuery.value = '';
+      adoptionTokens.value = [];
+      adoptionReadout.value = 'Search cleared';
+    });
+  },
   'clear-token-search': (_event, element) => {
     const editor = element
       .closest('[data-component="token-search-field"]')

@@ -100,3 +100,53 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
   });
   expect(chipBehindCaret).toBe(true);
 });
+
+test('managed clear preserves the controlled editor for immediate continued typing', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 800 });
+  await page.goto('/?component=token-search-field');
+  const field = page.locator(
+    '.token-search-adoption [data-component="token-search-field"]',
+  );
+  const editor = field.getByRole('searchbox', { name: 'Filter records' });
+  const clear = field.getByRole('button', { name: 'Clear search' });
+  for (const query of ['first', 'second']) {
+    await page
+      .locator('.token-search-adoption__suggestion', { hasText: 'status:open' })
+      .click();
+    await expect(
+      field.locator('[data-component="token-search-token"]'),
+    ).toHaveCount(1);
+    await editor.focus();
+    await clear.click();
+    await expect(field).toHaveAttribute('data-expanded', 'true');
+    await expect(editor).toBeFocused();
+    await expect(
+      field.locator('[data-component="token-search-token"]'),
+    ).toHaveCount(0);
+    await page.keyboard.type(query);
+    await expect(editor).toContainText(query);
+    await expect(page.locator('[data-demo-adoption-readout]')).toContainText(
+      query,
+    );
+    await clear.click();
+    await expect(editor).toBeFocused();
+  }
+  if (browserName === 'chromium')
+    await page
+      .locator('.token-search-adoption')
+      .screenshot({ path: 'test-results/token-search-clear-focus-wide.png' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.keyboard.type('narrow');
+  await expect(editor).toContainText('narrow');
+  if (browserName === 'chromium')
+    await page
+      .locator('.token-search-adoption')
+      .screenshot({ path: 'test-results/token-search-clear-focus-narrow.png' });
+  await clear.click();
+  await expect(editor).toBeFocused();
+  await page.locator('[data-action="toggle-theme"]').first().focus();
+  await expect(field).toHaveAttribute('data-expanded', 'false');
+});

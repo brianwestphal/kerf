@@ -1587,7 +1587,7 @@ interface TokenSearchCollapsibleOptions {
     collapseOnEmptyBlur?: boolean;
     /** Collapse an empty field on Escape and restore focus to its trigger. Default: true. */
     collapseOnEscape?: boolean;
-    /** Focus the editor on expand and the trigger on Escape-collapse. Default: true. */
+    /** Focus the editor on expand/controlled clear and the trigger on Escape-collapse. Default: true. */
     manageFocus?: boolean;
     /**
      * Keep an empty field expanded when focus moves to a caller-owned surface

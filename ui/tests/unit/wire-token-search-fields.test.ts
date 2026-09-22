@@ -704,6 +704,98 @@ describe('wireTokenSearchFields — managed collapsible behavior', () => {
     handle();
   });
 
+  it('keeps an adopted field open and refocuses its replacement after repeated controlled clears', async () => {
+    const expanded = signal(false);
+    const tokens = signal([{ value: 'tag:client', label: 'Client' }]);
+    const root = document.createElement('div');
+    document.body.append(root);
+    const unmount = mount(root, () =>
+      TokenSearchField({
+        id: 'find',
+        label: 'Find',
+        collapsible: true,
+        expanded: expanded.value,
+        tokens: tokens.value,
+      }),
+    );
+    const editor = () =>
+      root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    // Register the app listener first: helper capture still precedes application clear.
+    root.addEventListener('click', (event) => {
+      if (!(event.target as Element).closest('.kui-token-search__clear'))
+        return;
+      const previous = editor();
+      previous.textContent = '';
+      previous.dispatchEvent(focusoutEvent(null));
+      tokens.value = [];
+    });
+    const handle = wireTokenSearchFields(root, {
+      collapsible: { signals: { find: expanded } },
+    });
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      const previous = editor();
+      previous.focus();
+      root
+        .querySelector<HTMLButtonElement>('.kui-token-search__clear')!
+        .click();
+      await micro();
+      expect(expanded.value).toBe(true);
+      await raf();
+      expect(editor()).not.toBe(previous);
+      expect(document.activeElement).toBe(editor());
+      editor().textContent = 'next query';
+      expect(editor().textContent).toBe('next query');
+      tokens.value = [{ value: 'tag:client', label: 'Client' }];
+    }
+    handle();
+    unmount();
+  });
+
+  it.each(['dispose', 'remove', 'outside'] as const)(
+    'does not reclaim clear focus after %s',
+    async (transition) => {
+      const field = mountCollapsibleField(signal(true));
+      field.query.value = 'query';
+      const handle = wireCollapsible(field);
+      const outside = document.createElement('button');
+      document.body.append(outside);
+      field.editor()!.focus();
+      field.root
+        .querySelector<HTMLButtonElement>('.kui-token-search__clear')!
+        .click();
+      if (transition === 'dispose') handle();
+      if (transition === 'remove') field.root.replaceChildren();
+      outside.focus();
+      await raf();
+      expect(document.activeElement).toBe(outside);
+      handle();
+    },
+  );
+
+  it.each(['missing-id', 'disabled', 'noncollapsible'] as const)(
+    'ignores managed clear for %s fields',
+    async (shape) => {
+      const field = mountCollapsibleField(signal(true));
+      field.query.value = 'query';
+      const container = field.root.querySelector<HTMLElement>(
+        '[data-component="token-search-field"]',
+      )!;
+      if (shape === 'missing-id') delete container.dataset.tokenSearchId;
+      if (shape === 'disabled') container.dataset.disabled = 'true';
+      if (shape === 'noncollapsible') container.dataset.collapsible = 'false';
+      const handle = wireCollapsible(field);
+      const outside = document.createElement('button');
+      document.body.append(outside);
+      outside.focus();
+      field.root
+        .querySelector<HTMLButtonElement>('.kui-token-search__clear')!
+        .click();
+      await raf();
+      expect(document.activeElement).toBe(outside);
+      handle();
+    },
+  );
+
   it('adopts an app-provided signal and exposes it from the handle', () => {
     const appOpen = signal(false);
     const field = mountCollapsibleField(appOpen);

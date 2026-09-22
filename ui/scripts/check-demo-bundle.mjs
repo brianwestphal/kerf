@@ -14,8 +14,9 @@ const limits = {
   // → 265.78 kB (public foundation-token catalog route and metadata)
   // → 266.53 kB (Workbench focused route and catalog contract)
   // → 267.04 kB (controlled TabBar focus restoration).
+  // → 267.13 kB (managed clear replacement focus and adoption demo).
   // Keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 267_500,
+  totalJavaScriptGzip: 267_600,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) =>

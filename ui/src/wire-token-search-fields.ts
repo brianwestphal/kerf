@@ -1,4 +1,4 @@
-import { delegate, type Signal, signal } from 'kerfjs';
+import { delegate, delegateCapture, type Signal, signal } from 'kerfjs';
 
 import {
   placeTokenSearchCaret,
@@ -73,7 +73,7 @@ export interface TokenSearchCollapsibleOptions {
   collapseOnEmptyBlur?: boolean;
   /** Collapse an empty field on Escape and restore focus to its trigger. Default: true. */
   collapseOnEscape?: boolean;
-  /** Focus the editor on expand and the trigger on Escape-collapse. Default: true. */
+  /** Focus the editor on expand/controlled clear and the trigger on Escape-collapse. Default: true. */
   manageFocus?: boolean;
   /**
    * Keep an empty field expanded when focus moves to a caller-owned surface
@@ -386,6 +386,7 @@ export function wireTokenSearchFields(
     if (manageFocus) focusAfterRender(id, '.kui-token-search__expand');
   };
 
+  const clearing = new Set<string>();
   const pending = new Map<string, PendingTokenDeletion>();
   const selectAllIntents = new WeakSet<HTMLElement>();
   // editorFromEvent's selector guarantees this data attribute is present.
@@ -595,6 +596,48 @@ export function wireTokenSearchFields(
     );
   }
 
+  if (manageFocus) {
+    disposers.push(
+      () => clearing.clear(),
+      delegateCapture(
+        root,
+        'click',
+        '.kui-token-search__clear',
+        (_event, element) => {
+          const field = element.closest<HTMLElement>(
+            '[data-component="token-search-field"]',
+          );
+          const id = field?.dataset.tokenSearchId;
+          if (
+            !id ||
+            field.dataset.collapsible !== 'true' ||
+            field.dataset.disabled === 'true'
+          )
+            return;
+          const editor = replacementEditor(root, id);
+          // Capture before the application's clear handler empties and replaces the
+          // editor. A replacement blur must not collapse the adopted open signal.
+          clearing.add(id);
+          setExpanded(id, true);
+          view().requestAnimationFrame(() => {
+            if (!clearing.delete(id)) return;
+            const replacement = replacementEditor(root, id);
+            const active = root.ownerDocument.activeElement;
+            if (
+              !replacement ||
+              (active !== editor &&
+                active !== element &&
+                active !== replacement &&
+                active !== root.ownerDocument.body)
+            )
+              return;
+            placeTokenSearchCaret(replacement);
+          });
+        },
+      ),
+    );
+  }
+
   if (collapseOnEmptyBlur) {
     // Pressing an in-field control (clear, trailing, token, or the trigger) must not
     // blur the editor — otherwise the transient blur would collapse the field before
@@ -627,6 +670,7 @@ export function wireTokenSearchFields(
           )
             return;
           const next = (event as FocusEvent).relatedTarget;
+          if (!next && clearing.has(id)) return;
           if (next instanceof Node && field.contains(next)) return;
           if (isExemptTarget(next instanceof Element ? next : null)) return;
           if (!editorIsEmpty(editor)) return;

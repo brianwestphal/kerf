@@ -132,7 +132,8 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   push/pop animation, `wireTabBars` the overflow autoscroll, drag preview, and
   replacement focus after controlled automatic tab activation,
   `wireResizableRegions` the live drag preview; they report committed changes via
-  callbacks. The one richer case is `wireTokenSearchFields`, which manages the
+  callbacks. Managed TokenSearchField clear also preserves open state and replacement
+  editor focus for continued typing. The one richer case is `wireTokenSearchFields`, which manages the
   collapsible field's expand/collapse/focus by default (on, per-behavior opt-out) and
   exposes the `expanded` signal on its handle — bind it in render or hand in your own
   via `collapsible.signals`. Do not hand-roll open/collapse/focus that helper

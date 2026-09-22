@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed managed `TokenSearchField` clear losing focus or collapsing when an
+  application replaces its controlled editor; continued typing now works without
+  an application reopen callback.
+
 - Fixed `@kerfjs/ui` automatic TabBar keyboard activation losing focus when a
   controlled selection replaces the strip; navigation restores the same logical tab.
 

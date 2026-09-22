@@ -102,6 +102,7 @@ export function TokenSearchFieldDemo() {
         <div class="token-search-adoption">
           <TokenSearchField
             id="adoption-search"
+            clearAction="clear-adoption-search"
             label="Filter records"
             collapsible
             expanded={adoptionOpen.value}
