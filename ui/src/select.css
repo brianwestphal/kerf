@@ -17,10 +17,47 @@
 }
 .kui-select::part(display-input) {
   min-width: 0;
+  max-width: var(--kui-select-label-max-width, none);
   overflow: hidden;
   padding: 0;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.kui-select[data-size="compact"]::part(combobox) {
+  min-height: remify(32px);
+}
+.kui-select[data-presentation="toolbar-borderless"]::part(combobox) {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.kui-select[data-presentation="navigation"] {
+  width: max-content;
+  max-width: 100%;
+}
+.kui-select[data-focus-ring-owner="group"]:focus-within::part(combobox) {
+  outline: none;
+  box-shadow: none;
+}
+.kui-select[data-selected-presentation="icon-only"] {
+  width: remify(32px);
+}
+.kui-select[data-selected-presentation="icon-only"]::part(combobox) {
+  width: remify(32px);
+  min-width: remify(32px);
+  padding-inline: remify(7px);
+}
+.kui-select[data-selected-presentation="icon-only"]::part(display-input) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.kui-select[data-selected-presentation="icon-only"]
+  .kui-select__icon[slot="start"] {
+  margin-inline-end: 0 !important;
 }
 .kui-select::part(start),
 .kui-select::part(end),
@@ -132,6 +169,18 @@
   border: 1px solid var(--kui-color-border);
   border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
   background: var(--kui-color-surface);
+}
+.kui-select--placeholder[data-size="compact"] .kui-select__placeholder-box {
+  min-height: remify(32px);
+}
+.kui-select--placeholder[data-presentation="toolbar-borderless"]
+  .kui-select__placeholder-box {
+  border-color: transparent;
+  background: transparent;
+}
+.kui-select--placeholder[data-presentation="navigation"] {
+  width: max-content;
+  max-width: 100%;
 }
 .kui-select__placeholder-box .kui-skeleton {
   max-width: remify(160px);

@@ -2500,13 +2500,13 @@
       "category": "Controls",
       "kind": "component",
       "source": "kerf",
-      "description": "Controlled Web Awesome select with grouped choices, supporting hint text, and rerender-stable icon slots.",
+      "description": "Controlled Web Awesome select with typed form, toolbar, navigation, compact, icon-only, truncating, hint, and grouped-choice presentations.",
       "uses": [
         "lucide-icon",
         "wa-select",
         "wa-option"
       ],
-      "purpose": "Controlled Web Awesome select with grouped choices, supporting hint text, and rerender-stable icon slots.",
+      "purpose": "Controlled Web Awesome select with typed form, toolbar, navigation, compact, icon-only, truncating, hint, and grouped-choice presentations.",
       "publicExports": [
         "Select"
       ],
@@ -2535,7 +2535,8 @@
         "validation",
         "choices",
         "hint copy",
-        "domain mapping"
+        "domain mapping",
+        "outer placement"
       ],
       "variants": [
         "placeholder",
@@ -2544,7 +2545,12 @@
         "grouped",
         "custom selected content",
         "hint text",
-        "placeholder (loading)"
+        "placeholder (loading)",
+        "form, toolbar-borderless, or navigation presentation",
+        "default or compact size",
+        "label or icon-only selected presentation",
+        "select- or group-owned focus ring",
+        "label maximum width and truncation"
       ],
       "accessibility": [
         "Verify the live value, standard events, focus, and rendered output.",

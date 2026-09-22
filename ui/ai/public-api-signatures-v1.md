@@ -1329,9 +1329,18 @@ interface SelectBaseProps<Value extends string = string> {
     renderSelected?: (choice: SelectChoice<Value>) => SafeHtml;
     /** Render as an unanimated loading skeleton: the label above a static, empty control box. */
     placeholder?: boolean;
+    /** Form (default), borderless toolbar, or intrinsic navigation chrome. */
+    presentation?: 'form' | 'toolbar-borderless' | 'navigation';
+    size?: 'default' | 'compact';
+    /** Show only the selected choice icon while retaining the Select's accessible name. */
+    selectedPresentation?: 'label' | 'icon-only';
+    /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */
+    focusRingOwner?: 'select' | 'group';
+    /** Maximum closed-control label width in CSS pixels before ellipsis. */
+    labelMaxWidth?: number;
 }
 type SelectProps<Value extends string = string> = SelectBaseProps<Value> & SelectAccessibleName;
-declare function Select<Value extends string>({ name, value, label, ariaLabel, choices, className, placeholderText, hint, disabled, fitMenu, renderSelected, placeholder, }: SelectProps<Value>): SafeHtml;
+declare function Select<Value extends string>({ name, value, label, ariaLabel, choices, className, placeholderText, hint, disabled, fitMenu, renderSelected, placeholder, presentation, size, selectedPresentation, focusRingOwner, labelMaxWidth, }: SelectProps<Value>): SafeHtml;
 
 export { Select, type SelectChoice, type SelectProps };
 ```

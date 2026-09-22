@@ -31,6 +31,15 @@ interface SelectBaseProps<Value extends string = string> {
   renderSelected?: (choice: SelectChoice<Value>) => SafeHtml;
   /** Render as an unanimated loading skeleton: the label above a static, empty control box. */
   placeholder?: boolean;
+  /** Form (default), borderless toolbar, or intrinsic navigation chrome. */
+  presentation?: 'form' | 'toolbar-borderless' | 'navigation';
+  size?: 'default' | 'compact';
+  /** Show only the selected choice icon while retaining the Select's accessible name. */
+  selectedPresentation?: 'label' | 'icon-only';
+  /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */
+  focusRingOwner?: 'select' | 'group';
+  /** Maximum closed-control label width in CSS pixels before ellipsis. */
+  labelMaxWidth?: number;
 }
 
 export type SelectProps<Value extends string = string> =
@@ -49,6 +58,11 @@ export function Select<Value extends string>({
   fitMenu = false,
   renderSelected,
   placeholder = false,
+  presentation = 'form',
+  size = 'default',
+  selectedPresentation = 'label',
+  focusRingOwner = 'select',
+  labelMaxWidth,
 }: SelectProps<Value>) {
   if (placeholder) {
     return (
@@ -56,7 +70,16 @@ export function Select<Value extends string>({
         class={`kui-select kui-select--placeholder ${className}`.trim()}
         data-component="select"
         data-placeholder="true"
+        data-presentation={presentation}
+        data-size={size}
+        data-selected-presentation={selectedPresentation}
+        data-focus-ring-owner={focusRingOwner}
         aria-busy="true"
+        style={
+          labelMaxWidth === undefined
+            ? undefined
+            : `--kui-select-label-max-width:${labelMaxWidth}px`
+        }
       >
         {label && <span class="kui-select__placeholder-label">{label}</span>}
         <span
@@ -115,6 +138,10 @@ export function Select<Value extends string>({
     <wa-select
       class={`kui-select${renderSelected ? ' kui-select--custom-selected' : ''}${fitMenu ? ' kui-select--fit-menu' : ''}${!label ? ' kui-select--label-hidden' : ''} ${className}`.trim()}
       data-component="select"
+      data-presentation={presentation}
+      data-size={size}
+      data-selected-presentation={selectedPresentation}
+      data-focus-ring-owner={focusRingOwner}
       name={name}
       label={label || ariaLabel}
       aria-label={ariaLabel}
@@ -122,6 +149,11 @@ export function Select<Value extends string>({
       placeholder={placeholderText}
       hint={hint}
       disabled={disabled}
+      style={
+        labelMaxWidth === undefined
+          ? undefined
+          : `--kui-select-label-max-width:${labelMaxWidth}px`
+      }
     >
       {selected &&
         (renderSelected ? (

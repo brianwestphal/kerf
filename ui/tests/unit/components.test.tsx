@@ -1051,12 +1051,21 @@ describe('production UI primitives', () => {
           },
         ],
         fitMenu: true,
+        presentation: 'toolbar-borderless',
+        size: 'compact',
+        selectedPresentation: 'icon-only',
+        focusRingOwner: 'group',
+        labelMaxWidth: 120,
         renderSelected: (choice) => <strong>{choice.label}</strong>,
       }),
     );
     expect(grouped).toContain(
       'kui-select--custom-selected kui-select--fit-menu',
     );
+    expect(grouped).toContain(
+      'data-presentation="toolbar-borderless" data-size="compact" data-selected-presentation="icon-only" data-focus-ring-owner="group"',
+    );
+    expect(grouped).toContain('style="--kui-select-label-max-width:120px"');
     expect(grouped).toContain('role="group" aria-label="Recommended"');
     expect(grouped).toContain('<wa-divider></wa-divider>');
     expect(grouped).toContain('<strong>Balanced</strong>');

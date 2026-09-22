@@ -476,7 +476,7 @@ export const generatedKerfCatalog = [
     "category": "Controls",
     "kind": "component",
     "source": "kerf",
-    "description": "Controlled Web Awesome select with grouped choices, supporting hint text, and rerender-stable icon slots.",
+    "description": "Controlled Web Awesome select with typed form, toolbar, navigation, compact, icon-only, truncating, hint, and grouped-choice presentations.",
     "uses": [
       "lucide-icon",
       "wa-select",

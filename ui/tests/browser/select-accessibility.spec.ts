@@ -18,9 +18,49 @@ test('names plain and custom Select comboboxes without adding visible label geom
     name: 'Rendering preference',
     exact: true,
   });
+  const toolbar = demo.getByRole('combobox', {
+    name: 'Toolbar rendering balance',
+    exact: true,
+  });
+  const navigation = demo.getByRole('combobox', {
+    name: 'Navigation rendering balance',
+    exact: true,
+  });
   await expect(custom).toHaveValue('Balanced');
   await expect(plain).toHaveValue('Balanced');
   await expect(labeled).toHaveValue('Balanced');
+  await expect(toolbar).toHaveValue('Balanced');
+  await expect(navigation).toHaveValue('Balanced navigation workspace');
+  const toolbarHost = demo.locator(
+    'wa-select[name="toolbar-rendering-balance"]',
+  );
+  const navigationHost = demo.locator(
+    'wa-select[name="navigation-rendering-balance"]',
+  );
+  expect(
+    await toolbarHost.evaluate((element) => ({
+      width: Math.round(element.getBoundingClientRect().width),
+      height: Math.round(
+        element
+          .shadowRoot!.querySelector('[part~="combobox"]')!
+          .getBoundingClientRect().height,
+      ),
+      displayInputWidth: Math.round(
+        element
+          .shadowRoot!.querySelector('[part~="display-input"]')!
+          .getBoundingClientRect().width,
+      ),
+    })),
+  ).toEqual({ width: 32, height: 32, displayInputWidth: 1 });
+  expect(
+    await navigationHost.evaluate((element) =>
+      Math.round(
+        element
+          .shadowRoot!.querySelector('[part~="display-input"]')!
+          .getBoundingClientRect().width,
+      ),
+    ),
+  ).toBeLessThanOrEqual(120);
   const labeledHost = demo.locator(
     'wa-select[name="labeled-rendering-balance"]',
   );

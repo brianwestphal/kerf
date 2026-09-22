@@ -1,6 +1,7 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Select } from '@kerfjs/ui/select';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { Bell, SlidersHorizontal, Wrench } from 'lucide';
 
 import { selectedChoice } from './state.js';
@@ -87,6 +88,52 @@ export function SelectDemo() {
             { value: 'quiet', label: 'Quiet' },
             { value: 'balanced', label: 'Balanced' },
             { value: 'explicit', label: 'Explicit' },
+          ]}
+        />
+      </CatalogExample>
+      <CatalogExample label="Compact toolbar icon" align="inline-control">
+        <ToolbarControlGroup
+          label="Rendering mode"
+          size="compact"
+          density="tight"
+          content="icon"
+          single
+        >
+          <Select<string>
+            name="toolbar-rendering-balance"
+            value={selectedChoice.value}
+            ariaLabel="Toolbar rendering balance"
+            presentation="toolbar-borderless"
+            size="compact"
+            selectedPresentation="icon-only"
+            focusRingOwner="group"
+            choices={[
+              { value: 'quiet', label: 'Quiet', icon: Bell },
+              {
+                value: 'balanced',
+                label: 'Balanced',
+                icon: SlidersHorizontal,
+              },
+              { value: 'explicit', label: 'Explicit', icon: Wrench },
+            ]}
+          />
+        </ToolbarControlGroup>
+      </CatalogExample>
+      <CatalogExample label="Navigation label" align="inline-control">
+        <Select<string>
+          name="navigation-rendering-balance"
+          value={selectedChoice.value}
+          ariaLabel="Navigation rendering balance"
+          presentation="navigation"
+          size="compact"
+          labelMaxWidth={120}
+          choices={[
+            { value: 'quiet', label: 'Quiet navigation workspace' },
+            {
+              value: 'balanced',
+              label: 'Balanced navigation workspace',
+            },
+            { value: 'explicit', label: 'Explicit navigation workspace' },
           ]}
         />
       </CatalogExample>
