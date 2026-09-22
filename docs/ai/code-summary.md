@@ -38,6 +38,10 @@ pnpm, Yarn Classic, and Yarn Berry. Each manager case runs only when its exact
 pinned binary/version is detected; otherwise its non-empty test is skipped with
 the detected reason. These fixtures prove no-network local-artifact behavior,
 not a registry-cache implementation.
+`tests/unit/guidance-integrity.test.ts` covers byte snapshots and the
+changed/created/deleted comparison matrix, while
+`tests/integration/guidance-integrity.test.ts` drives the real command wrapper
+through unchanged and externally rewritten guidance flows.
 The application-local `ui/docs/examples/command-palette-adapter.tsx` demonstrates
 canonical layout ownership for a recurring concept the package does not export.
 `ui/scripts/check-recipes.mjs` keeps those sources,
@@ -405,7 +409,10 @@ kerf/
 │   └── manifest.json             ← { kerfjsVersion, files: [{ name, source, bundle, dest, version, sha256, history }] } — the shipped `kerfjs/ai-assistant-configs` rule's entry point; history maps prior canonical versions to hashes so edited stale files are preserved as forks
 ├── scripts/
 │   ├── lib/
-│   │   └── ai-bundle.mjs         ← KF-215 — shared logic for sync + check scripts; deterministic `computeBundle()` produces the three `ai/` files in memory from the root source-of-truth files
+│   │   ├── ai-bundle.mjs         ← KF-215 — shared logic for sync + check scripts; deterministic `computeBundle()` produces the three `ai/` files in memory from the root source-of-truth files
+│   │   ├── guidance-integrity.d.mts ← declarations for the guidance-integrity helpers consumed by the TypeScript test suite
+│   │   └── guidance-integrity.mjs ← byte-level snapshot and comparison helpers for the root check's tracked Hot Sheet guidance guard
+│   ├── check-guidance-integrity.mjs ← wraps the root check chain and fails if an external Hot Sheet config synchronizer changes AGENTS.md, CLAUDE.md, or either generated Hot Sheet skill while the gate runs
 │   ├── sync-ai-bundle.mjs        ← KF-215 — regenerates `ai/` from `kerf.claude-skill.md` + `kerf.cursorrules`; run after editing either source
 │   ├── check-ai-bundle.mjs       ← KF-215 — in-sync gate; fails when `ai/` drifts from the root sources or the manifest's `kerfjsVersion` is stale. Wired into `npm run check`
 │   ├── check-bundle-size.mjs   ← KF-428 — min+gzip budget gate over five representative consumer entries bundled against dist/. Budgets ratchet down (an under-budget entry fails too, so a win can't erode); the `main-no-dev-code` entry also asserts no dev-only code reached the main bundle, guarding the KF-429 hook-registry invariant by content and not just by weight.
