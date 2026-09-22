@@ -27,7 +27,7 @@ catalog and the app-layouts docs cover those.
 
 ```
 docs/design/templates/
-  panel-header.svg              ← library: every variant, inlined (light)
+  panel-header.svg              ← library: every variant, composed (light)
   panel-header-dark.svg         ← library: dark theme
   panel-header/
     icon-summary-actions.svg    ← one self-contained variant (light)
@@ -50,13 +50,12 @@ docs/design/templates/
   kerf UI design font stack is system-based, so the picture matches; a viewer
   without those fonts falls back to its own.
 - The **library** files (`<component>.svg` light, `<component>-dark.svg` dark) lay
-  the variants out with captions and embed an inline **copy** of each variant as a
-  positioned nested `<svg>`. Each is fully self-contained and renders everywhere —
-  a browser, an `<img>`, GitHub, or a static rasterizer. (External
-  `<use href="…#id">` and `<image href="…">` references render blank in many SVG
-  viewers, so the library inlines copies instead. Each copy's local ids and
-  domotion font-family names are namespaced so the inlined variants don't collide
-  in the one document; the individual variant files stay individually reusable.)
+  the variants out with captions. The generator writes a temporary HTML page whose
+  `<img>` elements reference the individual variant SVGs, then captures that page
+  with domotion and `--flatten-nested-svg`. The final library is self-contained,
+  contains positioned groups rather than nested `<svg>` elements, and remains
+  reliable in design tools such as Sketch. The individual variant files stay
+  independently reusable.
 
 ## Building
 
@@ -82,9 +81,9 @@ component can render with or without an icon, include both.
 `npm run check:design-templates` (part of `npm run check`) is an offline gate
 that verifies every component + variant in the manifest has its committed output —
 a light and dark SVG per variant plus the two per-component library files — and
-that no stray template files linger for a removed component. It also rejects a
-variant capture that still contains nested `<svg>` elements, guarding the Sketch
-compatibility contract. It does **not**
+that no stray template files linger for a removed component. It also rejects any
+variant or library capture that still contains nested `<svg>` elements, guarding
+the Sketch compatibility contract. It does **not**
 re-render (that needs domotion + a browser), so it catches a manifest entry whose
 templates were never generated or a half-regenerated set.
 
@@ -116,9 +115,11 @@ starting point and:
 4. Capture each variant with `domotion capture <page.html> --selector <css>
 --text-mode system-font --flatten-nested-svg -o <variant>.svg`, once per theme with
    `--color-scheme light` / `--color-scheme dark` (if your components theme with
-   `light-dark()`), then write a light and a dark library file that each embed an
-   inline copy of every variant (namespacing each copy's ids/font-family names so
-   they don't collide) rather than referencing them, so they render everywhere.
+   `light-dark()`).
+5. Build a light and dark HTML library page that references the generated variants
+   with `<img src="./component/variant.svg">`, and capture each page with the same
+   domotion options, including `--flatten-nested-svg`. Let domotion own embedding,
+   id isolation, and flattening instead of hand-assembling SVG markup.
 
 Maintaining these next to the components — and reviewing the captured SVGs on
 every component change — keeps the design source of truth honest.

@@ -31,6 +31,8 @@ for (const [name, spec] of Object.entries(COMPONENTS)) {
     const library = resolve(outRoot, `${name}${theme.suffix}.svg`);
     expected.add(library);
     if (!existsSync(library)) missing.push(rel(library));
+    else if ((readFileSync(library, 'utf8').match(/<svg\b/g) ?? []).length > 1)
+      nestedSvg.push(rel(library));
     for (const variant of spec.variants) {
       const svg = resolve(outRoot, name, `${variant.id}${theme.suffix}.svg`);
       expected.add(svg);
@@ -74,7 +76,7 @@ if (missing.length || stray.length || nestedSvg.length) {
   }
   if (nestedSvg.length) {
     console.error(
-      `[check-design-templates] ${nestedSvg.length} variant template(s) contain nested SVG elements:`,
+      `[check-design-templates] ${nestedSvg.length} template(s) contain nested SVG elements:`,
     );
     for (const svg of nestedSvg) console.error(`  - ${svg}`);
     console.error(

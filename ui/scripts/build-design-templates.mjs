@@ -10,10 +10,10 @@
 // foundation.css's light-dark() tokens respond to) — as
 // docs/design/templates/<component>/<variant>.svg and <variant>-dark.svg. Two
 // per-component library files (<component>.svg light,
-// <component>-dark.svg dark) then embed an inline COPY of each variant (a positioned
-// nested <svg>) — external <image href> / <use href> references render blank in many
-// SVG viewers/rasterizers, so inlining keeps each library self-contained everywhere;
-// the individual variant files stay reusable.
+// <component>-dark.svg dark) are captured from HTML pages that reference those
+// individual SVGs with <img>. domotion embeds the referenced images and flattens
+// them into positioned groups, so the libraries stay self-contained without a
+// second, hand-written SVG compositor or nested <svg> elements.
 //
 // Maintain this alongside the components: add a variant here when a component
 // gains a presentation combination, and re-run `npm run design-templates:build`.
@@ -773,6 +773,60 @@ body { margin: 0; padding: 20px; background: ${theme.pageBackground}; font-famil
 // fixture to a font shipped by macOS so its text metrics are reproducible.
 const captureCss = `:root { --kui-font-mono: "Courier New", monospace; }`;
 
+const escapeHtml = (value) =>
+  String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
+
+/**
+ * Build the temporary HTML page that domotion captures into a component library.
+ * Each image deliberately references the already-generated variant SVG instead of
+ * copying its markup; `--flatten-nested-svg` makes the final capture self-contained
+ * and Sketch-compatible.
+ */
+export function buildLibraryPage(name, rendered, theme) {
+  const gap = 16;
+  const captionHeight = 22;
+  const width = Math.max(...rendered.map((variant) => variant.width)) + gap * 2;
+  const height =
+    gap * (rendered.length + 1) +
+    rendered.reduce((sum, variant) => sum + captionHeight + variant.height, 0);
+  const rows = rendered
+    .map(
+      (variant) => `<section class="dt-variant">
+  <div class="dt-caption">${escapeHtml(variant.label)}</div>
+  <img src="./${escapeHtml(name)}/${escapeHtml(variant.id)}${theme.suffix}.svg" width="${variant.width}" height="${variant.height}" alt="">
+</section>`,
+    )
+    .join('\n');
+
+  return {
+    width,
+    height,
+    html: `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    body { background: ${theme.libraryBackground}; font-family: system-ui, -apple-system, sans-serif; }
+    #library { width: ${width}px; padding: ${gap}px; background: ${theme.libraryBackground}; }
+    .dt-variant + .dt-variant { margin-top: ${gap}px; }
+    .dt-caption { height: ${captionHeight}px; color: ${theme.captionColor}; font-size: 12px; font-weight: 600; line-height: 16px; }
+    .dt-variant img { display: block; }
+  </style>
+</head>
+<body>
+  <main id="library">${rows}</main>
+</body>
+</html>
+`,
+  };
+}
+
 async function buildComponent(domotion, name, spec) {
   const cssText = (
     await Promise.all(
@@ -829,61 +883,47 @@ async function buildComponent(domotion, name, spec) {
     );
     rendered.push({
       ...variant,
-      content: themed,
       width: dims ? Number(dims[1]) : spec.width,
       height: dims ? Number(dims[2]) : variant.height,
     });
   }
 
   // One library file per theme (`<component>.svg` light, `<component>-dark.svg`
-  // dark). Each embeds a COPY of every variant inline (a positioned nested <svg>)
-  // with a caption. External <image href="…"> / <use href="…"> references render
-  // blank in many SVG viewers/rasterizers; inlining keeps the one file
-  // self-contained everywhere. Each variant's own ids and domotion font-family
-  // names are namespaced first so inlined copies don't collide in the one document.
-  const gap = 16;
-  const captionH = 22;
-  const libW = Math.max(...rendered.map((v) => v.width)) + gap * 2;
+  // dark). Build an HTML composition that references the individual variant SVGs,
+  // then let domotion embed and flatten them into one self-contained SVG.
   for (const theme of THEMES) {
-    let y = gap;
-    const rows = rendered.map((v, index) => {
-      const top = y;
-      y += captionH + v.height + gap;
-      const inner = nestVariant(
-        namespaceSvg(v.content[theme.id], `v${index}-`),
-        gap,
-        top + captionH,
-      );
-      return `  <text x="${gap}" y="${top + 14}" font-family="system-ui, sans-serif" font-size="12" font-weight="600" fill="${theme.captionColor}">${v.label}</text>\n${inner}`;
-    });
-    const library = `<svg xmlns="http://www.w3.org/2000/svg" width="${libW}" height="${y}" viewBox="0 0 ${libW} ${y}">\n  <rect width="${libW}" height="${y}" fill="${theme.libraryBackground}"/>\n${rows.join('\n')}\n</svg>\n`;
-    await writeFile(resolve(outRoot, `${name}${theme.suffix}.svg`), library);
+    const library = buildLibraryPage(name, rendered, theme);
+    const pagePath = resolve(outRoot, `${name}${theme.suffix}.html`);
+    const svgPath = resolve(outRoot, `${name}${theme.suffix}.svg`);
+    await writeFile(pagePath, library.html);
+    await execFileAsync(
+      process.execPath,
+      [
+        domotion,
+        'capture',
+        pagePath,
+        '-o',
+        svgPath,
+        '--selector',
+        '#library',
+        '--width',
+        String(library.width),
+        '--height',
+        String(library.height),
+        '--color-scheme',
+        theme.id,
+        '--text-mode',
+        'system-font',
+        '--flatten-nested-svg',
+        '--optimize',
+      ],
+      { env: { ...process.env, DOMOTION_NO_OPEN: '1' } },
+    );
+    await rm(pagePath);
     console.log(
-      `  ${name}${theme.suffix}.svg (library, ${rendered.length} variants inlined)`,
+      `  ${name}${theme.suffix}.svg (library, ${rendered.length} variants composed by domotion)`,
     );
   }
-}
-
-/**
- * Prefix a self-contained variant SVG's local ids and domotion-generated
- * font-family names (`dmf0`, `dmf1`, …) so multiple copies can be inlined into one
- * document without colliding. Rewrites `id="X"` definitions plus every `#X`
- * reference (url(#X), href="#X") and every `dmf<n>` token.
- */
-function namespaceSvg(svg, prefix) {
-  const ids = [...svg.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]);
-  let out = svg;
-  // Longest ids first so a shorter id is never a prefix of a longer one mid-rewrite.
-  for (const id of [...new Set(ids)].sort((a, b) => b.length - a.length)) {
-    out = out.replaceAll(`id="${id}"`, `id="${prefix}${id}"`);
-    out = out.replaceAll(`#${id}`, `#${prefix}${id}`);
-  }
-  return out.replace(/\bdmf(\d+)\b/g, `${prefix}dmf$1`);
-}
-
-/** Position a variant SVG as a nested <svg> at (x, y) within the library sheet. */
-function nestVariant(svg, x, y) {
-  return `  ${svg.trim().replace(/<svg\s/, `<svg x="${x}" y="${y}" `)}`;
 }
 
 // Only run the (browser-driven) capture when invoked directly, so the manifest

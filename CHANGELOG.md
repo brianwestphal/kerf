@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Changed `@kerfjs/ui` component-library design templates to compose their
+  individual variant SVGs through HTML and `domotion capture
+--flatten-nested-svg`, eliminating the hand-built nested-SVG compositor and
+  making top-level template sheets reliable in Sketch.
 - Added a typed `shape` option to `SunkenPanel`: `rounded` remains the default,
   while `square` produces a lowered surface with `border-radius: 0` for flush or
   edge-to-edge application areas. Both shapes now appear in the UX catalog.
