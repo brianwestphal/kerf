@@ -45,5 +45,11 @@ const selected = signal<string | null>(null);
   app's selection). This is the portrait-tablet / handset presentation; as a
   dialog the compact form is a full-screen or large partial-cover modal.
 
+The catalog's **Interactive compact drill-down** example exercises this exact
+controlled flow: a list action sets the selected message, `detailActive` pushes
+its detail, and the wired Back action clears the selection to reveal the
+preserved list. Use the same structure in application demos so compact examples
+show the interaction rather than rendering a disconnected detail state.
+
 Compose the interactive wiring from the existing helpers — `SplitView` adds no
 wire of its own.

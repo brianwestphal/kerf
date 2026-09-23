@@ -24,8 +24,9 @@ const limits = {
   // → 272.17 kB (configuration-first List family specimens).
   // → 272.45 kB (first-class semantic pop color specimens).
   // → 273.10 kB (interactive NavStack push/pop and per-view chrome demo).
+  // → 273.61 kB (interactive SplitView list-detail drill-down demo).
   // Keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 273_350,
+  totalJavaScriptGzip: 273_850,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) =>

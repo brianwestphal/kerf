@@ -66,6 +66,50 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
     });
   }
 
+  await page.setViewportSize({ width: 1100, height: 820 });
+  await page.goto('/?component=split-view');
+  const compactStack = page.getByRole('region', { name: 'Compact messages' });
+  await expect(compactStack).toHaveAttribute('data-depth', '1');
+  await expect(compactStack.locator('[data-nav-back]')).toHaveCount(0);
+  if (browserName === 'chromium')
+    await compactStack.screenshot({
+      path: 'test-results/split-view-list-wide.png',
+    });
+  await compactStack.getByText('Design review', { exact: true }).click();
+  await expect(compactStack).toHaveAttribute('data-depth', '2');
+  await expect(compactStack).not.toHaveAttribute(
+    'data-nav-chrome-transition',
+    'true',
+  );
+  await expect(
+    compactStack.getByRole('button', { name: 'Back to inbox' }),
+  ).toBeVisible();
+  await expect(compactStack).toContainText('Today’s review notes');
+  if (browserName === 'chromium')
+    await compactStack.screenshot({
+      path: 'test-results/split-view-detail-wide.png',
+    });
+  await compactStack.getByRole('button', { name: 'Back to inbox' }).click();
+  await expect(compactStack).toHaveAttribute('data-depth', '1');
+  await expect(compactStack.locator('[data-nav-back]')).toHaveCount(0);
+
+  if (browserName === 'chromium') {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/?component=split-view');
+    const narrowStack = page.getByRole('region', {
+      name: 'Compact messages',
+    });
+    await narrowStack.getByText('Launch plan', { exact: true }).click();
+    await expect(narrowStack).toHaveAttribute('data-depth', '2');
+    await expect(narrowStack).not.toHaveAttribute(
+      'data-nav-chrome-transition',
+      'true',
+    );
+    await narrowStack.screenshot({
+      path: 'test-results/split-view-detail-narrow.png',
+    });
+  }
+
   await page.goto('/?component=tab-scaffold');
   const search = page.getByRole('tab', { name: 'Search' });
   await search.click();

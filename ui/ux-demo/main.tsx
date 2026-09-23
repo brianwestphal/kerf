@@ -61,6 +61,12 @@ import {
 } from './demos/nav-stack.js';
 import { demos } from './demos/registry.js';
 import {
+  clearSplitViewSelection,
+  resetSplitViewDemo,
+  selectRoomySplitViewMessage,
+  selectSplitViewMessage,
+} from './demos/split-view.js';
+import {
   activeTab,
   ADOPTION_SUGGESTIONS,
   adoptionOpen,
@@ -809,6 +815,16 @@ const stopActions = delegateActions(app, 'click', {
     pushNavStackDemo(projectId);
     actionLog.value = `Opened ${projectId}`;
   },
+  'open-split-view-message': (_event, element) => {
+    const messageId = (element as HTMLElement).dataset.itemId ?? '';
+    selectSplitViewMessage(messageId);
+    actionLog.value = `Opened ${messageId}`;
+  },
+  'select-roomy-split-view-message': (_event, element) => {
+    const messageId = (element as HTMLElement).dataset.itemId ?? '';
+    selectRoomySplitViewMessage(messageId);
+    actionLog.value = `Selected ${messageId}`;
+  },
   'log-neutral': () => {
     actionLog.value = 'Neutral banner action';
   },
@@ -902,6 +918,7 @@ let stopFocusedLayout: (() => void) | null = null;
 const stopFocusedLayoutEffect = effect(() => {
   const id = selectedDemo.value;
   if (id === 'nav-stack') resetNavStackDemo();
+  if (id === 'split-view') resetSplitViewDemo();
   if (id === 'tab-scaffold') resetTabScaffoldDemo();
   window.requestAnimationFrame(() => {
     stopFocusedLayout?.();
@@ -911,6 +928,10 @@ const stopFocusedLayoutEffect = effect(() => {
     if (id === 'nav-stack') {
       stopFocusedLayout = wireNavStack(canvas, {
         onBack: popNavStackDemo,
+      });
+    } else if (id === 'split-view') {
+      stopFocusedLayout = wireNavStack(canvas, {
+        onBack: clearSplitViewSelection,
       });
     } else if (id === 'tab-scaffold') {
       stopFocusedLayout = wireTabScaffold(canvas, {

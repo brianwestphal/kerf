@@ -31,6 +31,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   chrome alongside content slides, added per-view bottom toolbars with a
   persistent fallback, and replaced the static focused demo with a working
   push/pop flow.
+- Replaced the static compact `SplitView` detail specimen with a controlled,
+  interactive list-to-detail drill-down whose Back action restores the list;
+  the roomy example now demonstrates controlled selection as well.
 - Documented and demonstrated list-first dialog bodies: use `List` with
   `bodyInset="none"`, and wrap bare dialog copy in `ListInsetText` so content
   shares the standard list gutter without double-insetting.

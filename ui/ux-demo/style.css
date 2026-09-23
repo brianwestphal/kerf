@@ -406,6 +406,12 @@ button {
   color: var(--kui-color-text-quiet);
   font-size: var(--kui-font-s);
 }
+.demo-split-view__list {
+  min-height: 100%;
+}
+.demo-split-view__eyebrow {
+  font-weight: var(--kui-font-weight-medium);
+}
 .demo-workbench {
   width: 100%;
   height: remify(360px);
