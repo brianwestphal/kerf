@@ -1,8 +1,12 @@
+import { writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 
 import { defineConfig } from 'vite';
 
+import { computeDemoSourceFreshness } from '../scripts/lib/demo-source-freshness.mjs';
 import remifyCss from '../scripts/remify-css.mjs';
+
+const uiRoot = fileURLToPath(new URL('..', import.meta.url));
 
 const browserEntryDirectory = fileURLToPath(
   new URL('../dist/browser/', import.meta.url),
@@ -17,6 +21,16 @@ export default defineConfig({
   // Keep the standalone catalog relocatable when it is hosted below a preview or proxy path.
   base: './',
   plugins: [
+    {
+      name: 'kerf-ui-source-freshness',
+      async closeBundle() {
+        const freshness = await computeDemoSourceFreshness(uiRoot);
+        await writeFile(
+          new URL('../dist-demo/source-freshness.json', import.meta.url),
+          `${JSON.stringify(freshness, null, 2)}\n`,
+        );
+      },
+    },
     {
       name: 'kerf-ui-source-styles',
       enforce: 'pre',

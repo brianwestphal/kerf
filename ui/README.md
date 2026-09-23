@@ -9,6 +9,10 @@ When adding a first-party public component, follow the
 entry drives one validator across package, build, barrel, CSS, demo, route, and
 AI signature projections, with a non-mutating dry-run report.
 
+Browser verification always builds current source: both `npm run test:e2e`
+and direct focused Playwright commands run the catalog/conformance preflights
+and production build before preview. See the [UX catalog contract](./docs/ux-demo.md).
+
 When authoring a component gallery, follow the single
 [Catalog demo authoring contract](./docs/catalog.md#catalog-demo-authoring-contract)
 for focused-versus-composition modes, helper nesting, specimen selection,

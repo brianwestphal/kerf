@@ -2,6 +2,16 @@
 
 Run `npm run dev` from `ui/`. The catalog is a development and review surface, not a second implementation. The development server allows repo-owned assets used by the catalog, and its production bundle uses relative asset URLs so the complete catalog remains intact below preview and proxy paths.
 
+Every Playwright entry point builds current source before the preview server
+starts. `npm run test:e2e -- tests/browser/row.spec.ts` and a direct focused
+`npx playwright test tests/browser/row.spec.ts` both run catalog generation and
+demo-conformance preflights, build the package and production catalog, then
+launch Chromium, Firefox, and WebKit. The build emits
+`source-freshness.json`; browser coverage compares it with an independent hash
+of the current `src/` and `ux-demo/` inputs, so a stale `dist-demo` cannot pass
+after a route or component edit. `npm run demo:serve` remains a preview-only
+command for an already-built catalog.
+
 Seven lazy production-composition routes live under the `Recipes` category.
 Each `?component=recipe-*` route uses public package primitives, real wiring,
 deterministic state, and semantic layout owners from the [recipe guide](./recipes.md).

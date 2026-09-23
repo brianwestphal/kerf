@@ -297,7 +297,10 @@ Playwright runs the catalog in Chromium, Firefox, and WebKit and captures wide,
 intermediate, narrow, and 200%-zoom review images. Geometry assertions verify
 that the shell's page, preview surface, pane, and dialog each have one semantic
 spacing owner, that source and guidance links wrap without overflow, and that
-the sidebar remains the sole pane scroll owner.
+the sidebar remains the sole pane scroll owner. Every Playwright entry point
+runs catalog/conformance preflights and builds current source before preview;
+the emitted source-freshness digest is compared with current `src/` and
+`ux-demo/` inputs so a focused run cannot silently exercise stale output.
 
 AI-oriented entry points ship with the package at `ui/ai/skill.md` and
 `ui/llms.txt`. They route tools to the component contract, accessibility rules,

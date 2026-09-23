@@ -16,6 +16,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added one change-local `@kerfjs/ui` verification command that synchronizes
   generated projections, runs component/bundle/type coverage, builds the demo,
   reports exact gzip deltas, and records reviewed budget updates with reasons.
+- Made every `@kerfjs/ui` Playwright invocation build current catalog source
+  after fast preflights, with a served source digest that rejects stale preview
+  output during focused browser runs.
 - Added a first-class horizontal `Row` with typed spacing, physical-axis
   alignment, and opt-in wrapping; `List` now supports the same alignment
   vocabulary while retaining its existing defaults.

@@ -14,7 +14,7 @@ export default defineConfig({
   fullyParallel: false,
   use: { baseURL: 'http://127.0.0.1:42817', trace: 'retain-on-failure' },
   webServer: {
-    command: 'npm run demo:serve',
+    command: 'npm run test:e2e:serve',
     url: 'http://127.0.0.1:42817',
     reuseExistingServer: false,
   },
