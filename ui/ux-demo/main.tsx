@@ -67,7 +67,6 @@ import {
   selectSplitViewMessage,
 } from './demos/split-view.js';
 import {
-  activeTab,
   ADOPTION_SUGGESTIONS,
   adoptionOpen,
   adoptionQuery,
@@ -569,8 +568,7 @@ const stopActions = delegateActions(app, 'click', {
     element.textContent = expanded ? 'Resize target' : 'Restore size';
   },
   'select-tab': (_event, element) => {
-    activeTab.value = element.getAttribute('data-tab-id') ?? 'library';
-    actionLog.value = `Selected ${activeTab.value}`;
+    actionLog.value = `Selected ${element.getAttribute('data-tab-id') ?? 'tab'}`;
   },
   'select-reorder-tab': (_event, element) => {
     tabBarActive.value = element.getAttribute('data-tab-id') ?? 'components';

@@ -245,18 +245,7 @@ button {
   font-size: var(--kui-font-xs);
   line-height: 1.35;
 }
-.demo-tabs {
-  display: flex;
-  width: min(remify(672px), 100%);
-  min-height: remify(72px);
-  padding: remify(16px);
-  border: 1px solid var(--kui-color-border);
-  border-radius: var(--kui-radius-m);
-  background: var(--kui-color-surface-lowered);
-  align-items: flex-start;
-  gap: remify(5.6px);
-}
-.demo-tab-bar-frame {
+.demo-application-tabs {
   display: grid;
   width: min(remify(672px), 100%);
   overflow: hidden;
@@ -266,7 +255,14 @@ button {
   box-shadow: var(--kui-shadow-s);
   gap: 0;
 }
-.demo-tab-bar-frame > p {
+.demo-application-tabs__panel {
+  min-height: remify(160px);
+}
+.demo-application-tabs__panel > strong {
+  margin: 0;
+  text-transform: capitalize;
+}
+.demo-application-tabs > .demo-example-readout {
   margin: 0;
   padding: remify(10.4px) remify(12px);
   overflow: hidden;
@@ -275,7 +271,7 @@ button {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.demo-tab-bar-frame > p strong {
+.demo-application-tabs > .demo-example-readout strong {
   color: var(--kui-color-text);
   font-weight: 650;
 }
@@ -1361,7 +1357,6 @@ button {
   .demo-feedback,
   .demo-control-stack,
   .demo-list,
-  .demo-tabs,
   .demo-resize-shell {
     forced-color-adjust: auto;
   }
@@ -1377,9 +1372,7 @@ button {
     .demo-control-stack,
     .demo-list,
     .demo-value-table,
-    .demo-tab-bar-frame,
     .demo-select-selected,
-    .demo-tabs,
     .demo-spinner-row,
     .demo-state-banner-grid
   ) {

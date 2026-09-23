@@ -2128,6 +2128,61 @@
       }
     },
     {
+      "id": "application-tabs",
+      "name": "Application tabs composition",
+      "category": "Navigation",
+      "kind": "composition",
+      "source": "kerf",
+      "description": "Controlled document tabs with application-owned state and panels.",
+      "uses": [
+        "tabs",
+        "tab-bar",
+        "toolbar-control-group"
+      ],
+      "purpose": "Show AppTab and TabBar in a complete controlled composition.",
+      "publicExports": [],
+      "useWhen": [
+        "Compose application state, panels, actions, overflow, and reordering around TabBar and AppTab."
+      ],
+      "avoidWhen": [
+        "Use SegmentedControl instead for a compact local choice."
+      ],
+      "alternatives": [],
+      "appOwns": [
+        "ordered tabs",
+        "selected tab",
+        "tabpanels",
+        "add and close policy",
+        "routing and persistence"
+      ],
+      "variants": [
+        "overflow",
+        "keyboard and pointer reordering",
+        "adding and closing documents"
+      ],
+      "accessibility": [
+        "Keep one selected tab synchronized with one named tabpanel and retain the wireTabBars disposer."
+      ],
+      "geometry": {
+        "margin": "child",
+        "border": "child",
+        "padding": "child"
+      },
+      "delivery": {
+        "sideEffects": [
+          "css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=application-tabs",
+        "documentation": "docs/accessibility.md",
+        "recipe": "docs/accessibility.md#tabs"
+      }
+    },
+    {
       "id": "tabs",
       "name": "AppTab",
       "category": "Navigation",

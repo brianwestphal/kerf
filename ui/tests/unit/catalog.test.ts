@@ -101,7 +101,7 @@ describe('UX catalog metadata', () => {
     expect(artifact.entries.map(({ id }) => id)).toEqual(
       catalog.map(({ id }) => id),
     );
-    expect(artifact.entries).toHaveLength(116);
+    expect(artifact.entries).toHaveLength(117);
     expect(findCatalogEntry('recipe-command-palette')).toBeUndefined();
     expect(isCatalogId('recipe-command-palette')).toBe(false);
     const foundationSource = await readFile(
@@ -255,6 +255,13 @@ describe('UX catalog metadata', () => {
     expect(
       artifact.entries.find(({ id }) => id === 'tab-bar')?.publicExports,
     ).toEqual(['TabBar', 'wireTabBars', 'reorderTabs']);
+    expect(
+      artifact.entries.find(({ id }) => id === 'application-tabs'),
+    ).toMatchObject({
+      kind: 'composition',
+      uses: ['tabs', 'tab-bar', 'toolbar-control-group'],
+      publicExports: [],
+    });
     expect(
       artifact.entries.find(({ id }) => id === 'resize')?.publicExports,
     ).toEqual([
@@ -448,6 +455,7 @@ describe('UX catalog metadata', () => {
       'foundation',
       'layout',
       'headers',
+      'application-tabs',
       'feedback',
     ]);
     expect(webAwesomeCatalog).toHaveLength(70);

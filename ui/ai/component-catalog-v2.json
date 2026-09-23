@@ -1674,6 +1674,54 @@
       }
     },
     {
+      "key": "@kerfjs/ui:application-tabs",
+      "package": "@kerfjs/ui",
+      "id": "application-tabs",
+      "name": "Application tabs composition",
+      "kind": "composition",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "ordered tabs", "owner": "application", "required": false },
+        { "id": "selected tab", "owner": "application", "required": false },
+        { "id": "tabpanels", "owner": "application", "required": false },
+        {
+          "id": "add and close policy",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "routing and persistence",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["navigation"],
+        "geometry": { "margin": "child", "border": "child", "padding": "child" }
+      },
+      "accessibility": {
+        "obligations": [
+          "Keep one selected tab synchronized with one named tabpanel and retain the wireTabBars disposer."
+        ]
+      },
+      "boundaries": {
+        "rootClass": null,
+        "publicClasses": [],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:tabs",
       "package": "@kerfjs/ui",
       "id": "tabs",

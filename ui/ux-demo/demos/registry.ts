@@ -1,5 +1,6 @@
 import type { KerfCatalogId } from '../catalog.js';
 import type { RecipeId } from '../recipes/loaders.js';
+import { ApplicationTabsDemo } from './application-tabs.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
 import { DisclosureArrowDemo } from './disclosure-arrow.js';
 import { EmptyStateDemo } from './empty-state.js';
@@ -55,6 +56,7 @@ export const demos = {
   'list-item': ListItemDemo,
   'list-inset-control': ListInsetControlDemo,
   'list-inset-text': ListInsetTextDemo,
+  'application-tabs': ApplicationTabsDemo,
   tabs: TabsDemo,
   'tab-bar': TabBarDemo,
   headers: HeadersDemo,

@@ -1,50 +1,72 @@
 import { AppTab } from '@kerfjs/ui/app-tab';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { TabBar } from '@kerfjs/ui/tab-bar';
-import { PanelLeft, X } from 'lucide';
+import { CircleDot, PanelLeft, X } from 'lucide';
 
-import { activeTab, icon } from './state.js';
+import { icon } from './state.js';
+
+const extensionAttributes = {
+  'data-demo-tab-source': 'workspace',
+  'data-Action': 'unsafe-root-action',
+  'data-Tab-Id': 'unsafe-tab-id',
+  'data-Tab-Dragging': 'true',
+  'data-Tab-Drop-Position': 'before',
+  role: 'menuitem',
+};
 
 export function TabsDemo() {
-  const extensionAttributes = {
-    'data-demo-tab-source': 'workspace',
-    'data-Action': 'unsafe-root-action',
-    'data-Tab-Id': 'unsafe-tab-id',
-    'data-Tab-Dragging': 'true',
-    'data-Tab-Drop-Position': 'before',
-    role: 'menuitem',
-  };
   return (
-    <CatalogExampleStack
-      className="demo-tabs"
-      rootAttributes={{ 'data-demo': 'tabs' }}
-    >
-      <CatalogExample align="none">
-        <TabBar id="focused-app-tabs" label="Open documents">
-          {(['library', 'guidelines', 'catalog'] as const).map((id) => (
-            <AppTab
-              id={id}
-              name={id[0]!.toUpperCase() + id.slice(1)}
-              selected={activeTab.value === id}
-              closable={id !== 'library'}
-              leading={
-                id === 'library' ? icon(PanelLeft, 'panel-left') : undefined
-              }
-              closeIcon={
-                id === 'guidelines' ? icon(X, 'custom-tab-close') : undefined
-              }
-              rootAttributes={
-                id === 'guidelines' ? extensionAttributes : undefined
-              }
-            />
-          ))}
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'tabs' }}>
+      <CatalogExample label="Selected and closable" align="none">
+        <TabBar id="app-tab-selected" label="Selected AppTab specimen">
+          <AppTab
+            id="guidelines"
+            name="Guidelines"
+            selected
+            leading={icon(PanelLeft, 'panel-left')}
+            closeIcon={icon(X, 'custom-tab-close')}
+            rootAttributes={extensionAttributes}
+          />
         </TabBar>
       </CatalogExample>
-      <CatalogExample align="none">
-        <TabBar id="placeholder-app-tabs" label="Loading documents">
-          {(['first', 'second', 'third'] as const).map((id) => (
-            <AppTab id={id} name="" closable={id !== 'first'} placeholder />
-          ))}
+      <CatalogExample label="Compact and segmented" align="none">
+        <TabBar
+          id="app-tab-compact"
+          label="Compact AppTab specimen"
+          presentation="segmented"
+        >
+          <AppTab
+            id="activity"
+            name="Activity"
+            selected
+            closable={false}
+            presentation="segmented"
+            size="compact"
+          />
+          <AppTab
+            id="status"
+            name="Status"
+            closable={false}
+            leading={icon(CircleDot, 'circle-dot')}
+            presentation="icon-only"
+            size="compact"
+          />
+        </TabBar>
+      </CatalogExample>
+      <CatalogExample label="Truncated label" align="none">
+        <TabBar id="app-tab-truncated" label="Truncated AppTab specimen">
+          <AppTab
+            id="long-label"
+            name="A deliberately long document name"
+            selected
+            closable={false}
+            labelMaxWidth={120}
+          />
+        </TabBar>
+      </CatalogExample>
+      <CatalogExample label="Placeholder" align="none">
+        <TabBar id="app-tab-placeholder" label="Loading AppTab specimen">
+          <AppTab id="loading" name="" placeholder />
         </TabBar>
       </CatalogExample>
     </CatalogExampleStack>

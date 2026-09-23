@@ -3695,10 +3695,10 @@ test('catalog routes every production component family and supports its stateful
   await page.locator('.kui-catalog__sidebar [data-item-id="tabs"]').click();
   await expect(
     page.locator('[data-demo="tabs"] [data-component="tab-bar"]').first(),
-  ).toHaveAttribute('data-tab-bar-id', 'focused-app-tabs');
+  ).toHaveAttribute('data-tab-bar-id', 'app-tab-selected');
   await expect(
     page.locator('[data-demo="tabs"] [data-kui-tab-list]').first(),
-  ).toHaveAttribute('aria-label', 'Open documents');
+  ).toHaveAttribute('aria-label', 'Selected AppTab specimen');
   const guidelinesRoot = page.locator(
     '[data-demo="tabs"] .kui-app-tab[data-tab-id="guidelines"]',
   );
@@ -3728,18 +3728,9 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('.catalog-log')).toHaveText(
     'Close requested for guidelines',
   );
-  await page
-    .locator('[data-action="select-tab"][data-tab-id="guidelines"]')
-    .press('ArrowRight');
   await expect(
-    page.locator('[data-action="select-tab"][data-tab-id="catalog"]'),
-  ).toHaveAttribute('aria-selected', 'true');
-  await page
-    .locator('[data-action="select-tab"][data-tab-id="catalog"]')
-    .press('Home');
-  await expect(
-    page.locator('[data-action="select-tab"][data-tab-id="library"]'),
-  ).toHaveAttribute('aria-selected', 'true');
+    page.locator('[data-demo="tabs"] [data-catalog-example]'),
+  ).toHaveCount(4);
   if (browserName === 'chromium')
     await page
       .locator('[data-demo="tabs"]')
@@ -5698,11 +5689,6 @@ test('keeps AppTab extension metadata and replacement close icons inside the sha
 
   await tab.click();
   await expect(tab).toHaveAttribute('aria-selected', 'true');
-  await tab.press('ArrowRight');
-  await expect(demo.getByRole('tab', { name: 'Catalog' })).toHaveAttribute(
-    'aria-selected',
-    'true',
-  );
   await close.click();
   await expect(page.locator('.catalog-log')).toHaveText(
     'Close requested for guidelines',
@@ -5727,6 +5713,48 @@ test('keeps AppTab extension metadata and replacement close icons inside the sha
       fullPage: true,
     });
   }
+});
+
+test('separates focused AppTab and TabBar specimens from the application-tabs composition', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=tabs');
+  const appTabs = page.locator('[data-demo="tabs"]');
+  await expect(appTabs.locator('[data-catalog-example]')).toHaveCount(4);
+  await expect(appTabs.locator('[data-component="app-tab"]')).toHaveCount(5);
+  if (browserName === 'chromium')
+    await appTabs.screenshot({ path: 'test-results/app-tab-focused-wide.png' });
+
+  await page.goto('/?component=tab-bar');
+  const tabBars = page.locator('[data-demo="tab-bar"]');
+  await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(3);
+  await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(3);
+  if (browserName === 'chromium')
+    await tabBars.screenshot({ path: 'test-results/tab-bar-focused-wide.png' });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () => document.documentElement.scrollWidth <= window.innerWidth,
+      ),
+    )
+    .toBe(true);
+  if (browserName === 'chromium')
+    await tabBars.screenshot({
+      path: 'test-results/tab-bar-focused-narrow.png',
+    });
+
+  await page.goto('/?component=application-tabs');
+  await expect(page.locator('.demo-stage-inner')).toHaveAttribute(
+    'data-demo-mode',
+    'composition',
+  );
+  await expect(
+    page.locator('[data-demo="application-tabs"] [role="tabpanel"]'),
+  ).toContainText('components');
 });
 
 test('communicates preferred Kerf patterns on ecosystem alternatives', async ({
@@ -6100,9 +6128,9 @@ test('reorders and horizontally scrolls controlled TabBars', async ({
   browserName,
 }) => {
   await page.setViewportSize({ width: 900, height: 700 });
-  await page.goto('/?component=tab-bar');
+  await page.goto('/?component=application-tabs');
   const bar = page.locator(
-    '[data-demo="tab-bar"] [data-tab-bar-id="catalog-tabs"]',
+    '[data-demo="application-tabs"] [data-tab-bar-id="catalog-tabs"]',
   );
   const strip = bar.locator('[data-kui-tab-list]');
   await expect(bar.getByRole('tab')).toHaveCount(7);
@@ -6157,9 +6185,9 @@ test('reorders and horizontally scrolls controlled TabBars', async ({
 test('keeps added tab IDs unique after another tab closes', async ({
   page,
 }) => {
-  await page.goto('/?component=tab-bar');
+  await page.goto('/?component=application-tabs');
   const bar = page.locator(
-    '[data-demo="tab-bar"] [data-tab-bar-id="catalog-tabs"]',
+    '[data-demo="application-tabs"] [data-tab-bar-id="catalog-tabs"]',
   );
   const add = bar.getByRole('button', { name: 'Add tab' });
 
@@ -6204,8 +6232,8 @@ test('autoscrolls the TabBar while a dragged tab rests near either scroll edge',
   browserName,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/?component=tab-bar');
-  const frame = page.locator('.demo-tab-bar-frame');
+  await page.goto('/?component=application-tabs');
+  const frame = page.locator('.demo-application-tabs');
   const bar = frame.locator('[data-tab-bar-id="catalog-tabs"]');
   const strip = bar.locator('[data-kui-tab-list]');
   const source = bar.locator('.kui-app-tab').first();

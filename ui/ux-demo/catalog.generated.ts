@@ -415,6 +415,21 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "application-tabs",
+    "name": "Application tabs composition",
+    "category": "Navigation",
+    "kind": "composition",
+    "source": "kerf",
+    "description": "Show AppTab and TabBar in a complete controlled composition.",
+    "uses": [
+      "tabs",
+      "tab-bar",
+      "toolbar-control-group"
+    ],
+    "demoSource": "ui/ux-demo/demos/application-tabs.tsx",
+    "documentation": "ui/docs/accessibility.md"
+  },
+  {
     "id": "tabs",
     "name": "AppTab",
     "category": "Navigation",

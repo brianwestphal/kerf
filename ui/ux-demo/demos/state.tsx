@@ -3,7 +3,6 @@ import type { TokenSearchToken } from '@kerfjs/ui/token-search-field';
 import { signal } from 'kerfjs';
 
 export const regionSize = signal(276);
-export const activeTab = signal('library');
 export const tabBarActive = signal('components');
 export const tabBarTabs = signal([
   { id: 'components', name: 'Components' },

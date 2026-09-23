@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Added `ToolbarControlGroup.avatarImage`, painting contained avatar imagery on
   a lone group or on the pressed highlight when the group has multiple buttons.
+- Split the AppTab and TabBar catalog routes into focused component specimens,
+  and moved their controlled selection, tabpanel, overflow, add/close, and
+  reorder lifecycle into a separate application-tabs composition demo.
 - Fixed compact mixed-content `ToolbarControlGroup` dropdown triggers being
   forced into an icon-only width, which painted the label across its separator
   and the Web Awesome caret outside the group.
