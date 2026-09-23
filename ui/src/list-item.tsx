@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { em } from './css-values.js';
 import { filterDataAttributes } from './extension-attributes.js';
 import { LoadingSpinner } from './loading-spinner.js';
 import type { KerfUiContent } from './semantic-content.js';
@@ -49,7 +50,6 @@ export interface ListItemProps {
   action: string;
   itemId?: string;
   className?: string;
-  style?: string;
   pressed?: boolean;
   accessibleLabel?: string;
   title?: string;
@@ -75,7 +75,6 @@ export function ListItem({
   action,
   itemId,
   className = '',
-  style,
   pressed,
   accessibleLabel,
   title,
@@ -95,7 +94,6 @@ export function ListItem({
       {...extensionAttributes}
       type="button"
       class={`kui-list-item ${className}`.trim()}
-      style={style}
       title={placeholder ? undefined : title}
       disabled={disabled || placeholder}
       tabindex={placeholder ? -1 : tabIndex}
@@ -117,12 +115,12 @@ export function ListItem({
     >
       {icon && (
         <span class="kui-list-item__icon">
-          {placeholder ? <Skeleton width="1em" height="1em" /> : icon}
+          {placeholder ? <Skeleton width={em(1)} height={em(1)} /> : icon}
         </span>
       )}
       <span class="kui-list-item__label">
         <span class="kui-list-item__primary-label">
-          {placeholder ? <Skeleton width="9em" /> : label}
+          {placeholder ? <Skeleton width={em(9)} /> : label}
         </span>
         {!placeholder && description && (
           <span class="kui-list-item__description">{description}</span>
@@ -131,7 +129,7 @@ export function ListItem({
       {(busy || status || trailing) && (
         <span class="kui-list-item__trailing">
           {placeholder ? (
-            <Skeleton width="2.5em" />
+            <Skeleton width={em(2.5)} />
           ) : (
             <>
               {busy && <LoadingSpinner />}

@@ -1,6 +1,8 @@
 declare const cssValueBrand: unique symbol;
 declare const cssLengthBrand: unique symbol;
 declare const cssLengthExpressionBrand: unique symbol;
+declare const cssFlexBrand: unique symbol;
+declare const cssColorBrand: unique symbol;
 
 /**
  * A complete typed CSS value minted by a property-specific Kerf UI builder.
@@ -29,6 +31,111 @@ export type CssLengthExpression = string & {
   readonly [cssLengthExpressionBrand]: 'CssLengthExpression';
 };
 
+/** A complete CSS `flex` shorthand. It is not interchangeable with a length. */
+export type CssFlex = CssValue & {
+  readonly [cssFlexBrand]: 'CssFlex';
+};
+
+/** A complete CSS color value. It is not interchangeable with a length. */
+export type CssColor = CssValue & {
+  readonly [cssColorBrand]: 'CssColor';
+};
+
+export type CssFlexKeyword = 'none' | 'auto' | 'initial';
+export type CssFlexBasis =
+  | CssLength
+  | 'auto'
+  | 'content'
+  | 'min-content'
+  | 'max-content'
+  | 'fit-content';
+export type CssSizeKeyword =
+  'auto' | 'min-content' | 'max-content' | 'fit-content';
+/** A complete width/height value accepted by dimension-valued UI props. */
+export type CssSize = CssLength | CssSizeKeyword;
+
+const uiColorNames = [
+  'accent',
+  'accent-text',
+  'border',
+  'border-quiet',
+  'brand-border-loud',
+  'brand-border-normal',
+  'brand-border-quiet',
+  'brand-fill-loud',
+  'brand-fill-normal',
+  'brand-fill-quiet',
+  'brand-on-fill',
+  'brand-on-loud',
+  'brand-on-normal',
+  'brand-on-quiet',
+  'danger',
+  'danger-border-loud',
+  'danger-border-normal',
+  'danger-border-quiet',
+  'danger-fill-loud',
+  'danger-fill-normal',
+  'danger-fill-quiet',
+  'danger-on-loud',
+  'danger-on-normal',
+  'danger-on-quiet',
+  'danger-text',
+  'neutral-border-loud',
+  'neutral-border-normal',
+  'neutral-border-quiet',
+  'neutral-fill-loud',
+  'neutral-fill-normal',
+  'neutral-fill-quiet',
+  'neutral-on-loud',
+  'neutral-on-normal',
+  'neutral-on-quiet',
+  'pop',
+  'pop-border-loud',
+  'pop-border-normal',
+  'pop-border-quiet',
+  'pop-fill-loud',
+  'pop-fill-normal',
+  'pop-fill-quiet',
+  'pop-on-fill',
+  'pop-on-loud',
+  'pop-on-normal',
+  'pop-on-quiet',
+  'pop-text',
+  'success',
+  'success-border-loud',
+  'success-border-normal',
+  'success-border-quiet',
+  'success-fill-loud',
+  'success-fill-normal',
+  'success-fill-quiet',
+  'success-on-fill',
+  'success-on-loud',
+  'success-on-normal',
+  'success-on-quiet',
+  'success-text',
+  'surface',
+  'surface-lowered',
+  'surface-raised',
+  'text',
+  'text-link',
+  'text-quiet',
+  'warning',
+  'warning-border-loud',
+  'warning-border-normal',
+  'warning-border-quiet',
+  'warning-fill-loud',
+  'warning-fill-normal',
+  'warning-fill-quiet',
+  'warning-on-fill',
+  'warning-on-loud',
+  'warning-on-normal',
+  'warning-on-quiet',
+  'warning-text',
+] as const;
+
+/** Names of the public `--kui-color-*` semantic tokens. */
+export type UiColorName = (typeof uiColorNames)[number];
+
 /** Kerf UI's complete spacing-token vocabulary. `s` and `xl` are exceptions. */
 export type UiSpaceName = 'none' | '2xs' | 'xs' | 's' | 'm' | 'l' | 'xl';
 
@@ -46,6 +153,24 @@ function serializeNumber(value: number, helper: string): string {
   if (!Number.isFinite(value))
     throw new RangeError(`${helper}() requires a finite number.`);
   return String(Object.is(value, -0) ? 0 : value);
+}
+
+function serializeNonnegativeNumber(value: number, helper: string): string {
+  const serialized = serializeNumber(value, helper);
+  if (value < 0)
+    throw new RangeError(`${helper}() requires nonnegative flex factors.`);
+  return serialized;
+}
+
+function validateCustomPropertyName(
+  name: string,
+  helper: string,
+  example: string,
+): void {
+  if (!/^--[A-Za-z_][A-Za-z0-9_-]*$/.test(name))
+    throw new TypeError(
+      `${helper}() requires an ASCII custom property name such as ${example}.`,
+    );
 }
 
 function dimension(value: number, unit: string, helper: string): CssLength {
@@ -91,10 +216,7 @@ export function lengthVar(
   name: `--${string}`,
   fallback?: CssLength,
 ): CssLength {
-  if (!/^--[A-Za-z_][A-Za-z0-9_-]*$/.test(name))
-    throw new TypeError(
-      'lengthVar() requires an ASCII custom property name such as --app-gap.',
-    );
+  validateCustomPropertyName(name, 'lengthVar', '--app-gap');
   return `var(${name}${fallback === undefined ? '' : `, ${fallback}`})` as CssLength;
 }
 
@@ -110,4 +232,28 @@ export function plus(
 /** Turn a typed length expression into a complete CSS `calc()` value. */
 export function calc(expression: CssLengthExpression): CssLength {
   return `calc(${expression})` as CssLength;
+}
+
+/** Build a complete, structured CSS flex shorthand. */
+export function flex(
+  grow: number,
+  shrink = 1,
+  basis: CssFlexBasis = 'auto',
+): CssFlex {
+  return `${serializeNonnegativeNumber(grow, 'flex')} ${serializeNonnegativeNumber(shrink, 'flex')} ${basis}` as CssFlex;
+}
+
+/** Resolve a public Kerf UI semantic color token. */
+export function uiColor(name: UiColorName): CssColor {
+  if (!(uiColorNames as readonly string[]).includes(name))
+    throw new RangeError(
+      `uiColor() received unknown color name ${String(name)}.`,
+    );
+  return `var(--kui-color-${name})` as CssColor;
+}
+
+/** Reference an application-owned custom property whose contract is a color. */
+export function colorVar(name: `--${string}`, fallback?: CssColor): CssColor {
+  validateCustomPropertyName(name, 'colorVar', '--app-color');
+  return `var(${name}${fallback === undefined ? '' : `, ${fallback}`})` as CssColor;
 }

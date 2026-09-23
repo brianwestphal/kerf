@@ -2,6 +2,7 @@ import { Columns3, List, Settings } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
 import { AppTab } from '../../src/app-tab.js';
+import { em, pct, px, rem } from '../../src/css-values.js';
 import { ListActionRow } from '../../src/list-action-row.js';
 import { ListHeader } from '../../src/list-header.js';
 import { ListItem } from '../../src/list-item.js';
@@ -28,9 +29,9 @@ describe('Skeleton primitive', () => {
 
   it('applies width, height, and radius as inline style', () => {
     const html = asHtml(
-      Skeleton({ width: 'remify(120px)', height: '1.5em', radius: '2px' }),
+      Skeleton({ width: rem(7.5), height: em(1.5), radius: px(2) }),
     );
-    expect(html).toContain('width:remify(120px)');
+    expect(html).toContain('width:7.5rem');
     expect(html).toContain('height:1.5em');
     expect(html).toContain('--kui-skeleton-radius:2px');
   });
@@ -50,7 +51,9 @@ describe('Skeleton primitive', () => {
   });
 
   it('sizes stacked lines with an explicit width and height', () => {
-    const html = asHtml(Skeleton({ lines: 2, width: '50%', height: '0.9em' }));
+    const html = asHtml(
+      Skeleton({ lines: 2, width: pct(50), height: em(0.9) }),
+    );
     expect(html).toContain('class="kui-skeleton-lines"');
     expect(html).toContain('width:50%');
     expect(html).toContain('height:0.9em');

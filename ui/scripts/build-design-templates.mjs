@@ -51,6 +51,7 @@ import {
 } from 'lucide';
 
 import { AppTab } from '../dist/app-tab.js';
+import { em, px } from '../dist/css-values.js';
 import { EmptyState } from '../dist/empty-state.js';
 import { List } from '../dist/list.js';
 import { ListActionRow } from '../dist/list-action-row.js';
@@ -522,7 +523,7 @@ export const COMPONENTS = {
         id: 'block',
         label: 'Single block',
         height: 40,
-        render: () => Skeleton({ width: '16em', height: '1.5em' }),
+        render: () => Skeleton({ width: em(16), height: em(1.5) }),
       },
       {
         id: 'lines',
@@ -535,7 +536,7 @@ export const COMPONENTS = {
         label: 'Circular (avatar)',
         height: 56,
         render: () =>
-          Skeleton({ width: '3em', height: '3em', radius: '999px' }),
+          Skeleton({ width: em(3), height: em(3), radius: px(999) }),
       },
     ],
   },

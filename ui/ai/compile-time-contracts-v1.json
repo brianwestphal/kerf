@@ -112,6 +112,20 @@
       ],
       "kind": "property-specific-css-value",
       "summary": "List gap accepts finite spacing shorthands or branded complete length-percentage values, while raw CSS strings and non-standalone arithmetic expressions remain rejected."
+    },
+    {
+      "id": "KUI-T013",
+      "publicImport": "@kerfjs/ui/css-values",
+      "symbols": [
+        "CssFlex",
+        "CssSize",
+        "CssColor",
+        "flex",
+        "uiColor",
+        "colorVar"
+      ],
+      "kind": "property-specific-css-value",
+      "summary": "List flex, Skeleton dimensions, and Select icon colors use separate typed CSS grammars; row declaration-string props are absent rather than sharing a generic CSS escape hatch."
     }
   ]
 }

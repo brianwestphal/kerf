@@ -51,11 +51,13 @@ global baseline.
 brands plus deterministic builders:
 
 ```ts
-import { calc, pct, plus, rem, space } from "@kerfjs/ui/css-values";
+import { calc, flex, pct, plus, rem, space, uiColor } from "@kerfjs/ui/css-values";
 
 space("xs"); // var(--kui-space-xs)
 rem(0.25); // 0.25rem
 calc(plus(rem(0.25), pct(10))); // calc(0.25rem + 10%)
+flex(2, 1, rem(20)); // 2 1 20rem
+uiColor("success"); // var(--kui-color-success)
 ```
 
 `CssLength` pragmatically includes percentages for dimension-valued UI props.
@@ -66,11 +68,17 @@ All numeric builders reject non-finite input and normalize negative zero. These
 brands are authoring correctness tools, not sanitizers; no broad raw-string
 constructor is exposed.
 
-`List.gap` is the first consumer. It accepts boolean default spacing, direct
+The public props keep CSS property grammars separate. `List.gap` accepts boolean default spacing, direct
 `UiSpaceName` shorthands (`none`, `2xs`, `xs`, `s`, `m`, `l`, `xl`), or a
-complete `CssLength`. Raw string compatibility was intentionally removed before
-the 5.0 stable release so an invalid token or incomplete expression fails at
-typecheck time.
+complete `CssLength`; `List.flex` accepts its boolean default, finite keywords,
+or `CssFlex` from `flex()`. `Skeleton.width`/`height` accept typed lengths and
+finite intrinsic-size keywords, while `radius` accepts only `CssLength`.
+`SelectChoice.color` accepts `CssColor` from `uiColor()` or restrictive
+`colorVar()`. Media-query strings remain a separate grammar, and semantic pixel
+props remain numbers. Raw CSS string compatibility and row-level `style`
+declarations were intentionally removed before 5.0 stable so invalid or
+cross-property values fail at typecheck time. Use row `className`, public
+tokens, and cataloged props for styling.
 
 ## 22.4 Build and development contract
 

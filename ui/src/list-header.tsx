@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { em } from './css-values.js';
 import { DisclosureArrow } from './disclosure-arrow.js';
 import {
   filterControlAttributes,
@@ -144,7 +145,7 @@ export function ListHeader({
   const indicator = placeholder ? (
     (normalizedCount !== undefined || renderedBadge) && (
       <span class="kui-list-header__badge">
-        <Skeleton width="1.75em" />
+        <Skeleton width={em(1.75)} />
       </span>
     )
   ) : normalizedCount === undefined ? (

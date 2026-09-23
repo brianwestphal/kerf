@@ -28,8 +28,9 @@ const limits = {
   // → 274.02 kB (NavStack focus move and restoration behavior).
   // → 274.43 kB (focused AppTab/TabBar specimens and their application-tabs
   // composition, integrated alongside the NavStack focus work).
+  // → 274.89 kB (property-specific CSS-value builder specimens).
   // Keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 274_680,
+  totalJavaScriptGzip: 275_100,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) =>

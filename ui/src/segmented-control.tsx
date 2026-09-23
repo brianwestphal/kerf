@@ -1,3 +1,4 @@
+import { em } from './css-values.js';
 import type { KerfUiContent } from './semantic-content.js';
 import { Skeleton } from './skeleton.js';
 
@@ -73,7 +74,7 @@ export function SegmentedControl<Value extends string>({
             tabindex={placeholder ? '-1' : '0'}
           >
             {placeholder ? (
-              <Skeleton width="4em" />
+              <Skeleton width={em(4)} />
             ) : (
               (choice.content ?? <span>{choice.label}</span>)
             )}

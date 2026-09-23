@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 import { ChevronDown } from 'lucide';
 
+import { type CssColor, em } from './css-values.js';
 import { LucideIcon, type LucideNode } from './lucide-icon.js';
 import { Skeleton } from './skeleton.js';
 
@@ -9,7 +10,8 @@ export interface SelectChoice<Value extends string = string> {
   label: string;
   icon?: LucideNode;
   iconName?: string;
-  color?: string;
+  /** Typed semantic or application-owned color for the optional icon. */
+  color?: CssColor;
   group?: string;
   separatorBefore?: boolean;
 }
@@ -92,7 +94,7 @@ export function Select<Value extends string>({
           aria-label={ariaLabel}
           role="img"
         >
-          <Skeleton width="10em" />
+          <Skeleton width={em(10)} />
           <span class="kui-select__placeholder-chevron" aria-hidden="true">
             <LucideIcon icon={ChevronDown} name="chevron-down" />
           </span>

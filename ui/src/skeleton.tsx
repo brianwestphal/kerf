@@ -1,10 +1,12 @@
+import { type CssLength, type CssSize, pct } from './css-values.js';
+
 export interface SkeletonProps {
-  /** Width as any browser CSS length (e.g. `7.5rem`, `60%`). Defaults to filling its slot. */
-  width?: string;
-  /** Height as any CSS length. Defaults to a single text line. */
-  height?: string;
-  /** Corner radius override (a CSS length). Defaults to the small radius token. */
-  radius?: string;
+  /** Typed width or intrinsic sizing keyword. Defaults to filling its slot. */
+  width?: CssSize;
+  /** Typed height or intrinsic sizing keyword. Defaults to a single text line. */
+  height?: CssSize;
+  /** Typed corner-radius override. Defaults to the small radius token. */
+  radius?: CssLength;
   /** Render this many stacked lines (the last one shorter), for multi-line text. */
   lines?: number;
   /** Accessible label. Omit to keep the block decorative (`aria-hidden`). */
@@ -13,9 +15,9 @@ export interface SkeletonProps {
 }
 
 function blockStyle(
-  width?: string,
-  height?: string,
-  radius?: string,
+  width?: CssSize,
+  height?: CssSize,
+  radius?: CssLength,
 ): string | undefined {
   const parts = [
     width && `width:${width}`,
@@ -57,7 +59,7 @@ export function Skeleton({
             class="kui-skeleton"
             aria-hidden="true"
             style={blockStyle(
-              index === lines - 1 ? '60%' : undefined,
+              index === lines - 1 ? pct(60) : undefined,
               height,
               radius,
             )}

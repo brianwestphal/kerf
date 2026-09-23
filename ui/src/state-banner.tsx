@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { em } from './css-values.js';
 import type { KerfUiContent } from './semantic-content.js';
 import { Skeleton } from './skeleton.js';
 
@@ -44,15 +45,15 @@ export function StateBanner({
     >
       {icon && <span class="kui-state-banner__icon">{icon}</span>}
       <div class="kui-state-banner__copy">
-        <strong>{placeholder ? <Skeleton width="10em" /> : title}</strong>
+        <strong>{placeholder ? <Skeleton width={em(10)} /> : title}</strong>
         {badge && (
           <span class="kui-state-banner__badge">
-            {placeholder ? <Skeleton width="1.75em" /> : badge}
+            {placeholder ? <Skeleton width={em(1.75)} /> : badge}
           </span>
         )}
         {(placeholder || detail) && (
           <span class="kui-state-banner__detail">
-            {placeholder ? <Skeleton width="16em" /> : detail}
+            {placeholder ? <Skeleton width={em(16)} /> : detail}
           </span>
         )}
       </div>

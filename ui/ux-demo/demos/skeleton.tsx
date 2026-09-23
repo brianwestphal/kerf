@@ -1,4 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { em } from '@kerfjs/ui/css-values';
 import { Skeleton } from '@kerfjs/ui/skeleton';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 
@@ -16,10 +17,10 @@ export function SkeletonDemo() {
         align="glyph"
       >
         <div class="demo-skeleton-blocks">
-          <Skeleton width="12em" />
-          <Skeleton width="8em" height="1.5em" />
+          <Skeleton width={em(12)} />
+          <Skeleton width={em(8)} height={em(1.5)} radius={em(0.75)} />
           <Skeleton lines={3} />
-          <Skeleton width="6em" label="Loading value" />
+          <Skeleton width={em(6)} label="Loading value" />
         </div>
       </CatalogExample>
       <CatalogExample

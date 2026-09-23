@@ -2,6 +2,7 @@ import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/select/register';
 import './recipes.css';
 
+import { em } from '@kerfjs/ui/css-values';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
@@ -70,7 +71,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         />
         <p class="kui-recipe__heading-summary" id="recipe-inspector-summary">
           {p ? (
-            <Skeleton width="18em" />
+            <Skeleton width={em(18)} />
           ) : (
             'Restore keyboard focus after a dialog closes'
           )}

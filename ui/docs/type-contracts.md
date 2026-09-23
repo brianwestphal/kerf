@@ -25,6 +25,7 @@ public-signature artifact.
 | `KUI-T010` | Finite public variants have named exported union types, including divider sides, tab activation, banner urgency, and all AppTab, TabBar, ToolbarControlGroup, and Select presentation axes; the convenience root barrel re-exports them.                                                     |
 | `KUI-T011` | Semantic component zones use the recursive `KerfUiContent` type: `SafeHtml`, runtime-empty booleans/nullish values, and readonly nested arrays are valid; arbitrary strings, numbers, and signals are rejected. Explicit text positions such as `ListInsetText` retain their text exception. |
 | `KUI-T012` | `List.gap` accepts finite `UiSpaceName` shorthands or a complete branded `CssLength`; raw strings and non-standalone `CssLengthExpression` arithmetic are rejected. `calc(plus(...))` promotes a typed expression to a complete value.                                                       |
+| `KUI-T013` | CSS-valued props preserve property grammar: `List.flex` uses `CssFlex`, `Skeleton` dimensions use `CssSize`/`CssLength`, and choice icons use `CssColor`; row declaration strings are absent.                                                                                                |
 
 `KerfUiContent` lets conditionals and mapped component collections be direct
 siblings without an otherwise-unnecessary `Fragment`:
@@ -116,6 +117,11 @@ move errors into casts without making the integration safer.
 - Replace raw `List.gap` strings with a direct spacing shorthand (`"xs"`,
   `"m"`) or a complete value from `@kerfjs/ui/css-values`. Replace
   `gap="0.25rem"` with `gap={rem(0.25)}` and wrap sums with `calc(plus(...))`.
+- Replace raw `List.flex` shorthands with `flex(grow, shrink, basis)` or a finite
+  keyword; replace raw Skeleton dimensions with `px`/`rem`/`em`/`pct` builders;
+  and replace raw choice colors with `uiColor()` or `colorVar()`.
+- Remove `style` from `ListItem` and `ListActionRow`; use `className`, public
+  tokens, and cataloged props. These breaking cleanups land before 5.0 stable.
 
 JavaScript runtime behavior remains defensive for previously emitted calls, but
 new TypeScript builds report these invalid or ignored combinations.

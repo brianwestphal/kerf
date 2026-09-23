@@ -10,6 +10,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Extended the property-specific `@kerfjs/ui/css-values` contracts: `List.flex`
+  now uses finite keywords or `flex()`, `Skeleton` dimensions use `CssSize` and
+  `CssLength`, and `SelectChoice.color` uses `uiColor()` or `colorVar()`.
+  Removed the unrestricted `style` escape hatches from `ListItem` and
+  `ListActionRow` before the 5.0 stable release; use `className`, public tokens,
+  and cataloged props instead.
 - Added typed, CSS-free `@kerfjs/ui/css-values` builders and branded complete
   versus expression length types. `List.gap` now accepts direct spacing-token
   shorthands or complete `CssLength` values and rejects unrestricted CSS strings.

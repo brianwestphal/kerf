@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { em } from './css-values.js';
 import { Skeleton } from './skeleton.js';
 
 export interface ValueTableRowProps {
@@ -28,7 +29,7 @@ export function ValueTableRow({
         {icon && <span class="kui-value-table__icon">{icon}</span>}
         <span class="kui-value-table__label">{label}</span>
       </dt>
-      <dd>{placeholder ? <Skeleton width="10em" /> : value}</dd>
+      <dd>{placeholder ? <Skeleton width={em(10)} /> : value}</dd>
     </div>
   );
 }

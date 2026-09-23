@@ -63,6 +63,15 @@ Raw strings such as `"0.25rem"` no longer satisfy `List.gap`; this breaking
 contract lands before the 5.0 stable release so misspelled tokens and incomplete
 expressions fail during typechecking rather than in the browser.
 
+Other CSS-valued props use distinct contracts: `flex()` creates `CssFlex` for
+`List.flex`; `Skeleton` dimensions take typed lengths (plus finite intrinsic
+keywords for width/height); and `uiColor()`/`colorVar()` create `CssColor` for
+`SelectChoice.color`. Do not substitute one brand for another. Row components
+have no declaration-string `style` prop; use `className`, documented public
+tokens, and semantic component props. Catalog media queries remain strings and
+semantic pixel measurements remain numbers because those are different APIs.
+The corresponding public builders are `flex`, `uiColor`, and `colorVar`.
+
 ## Production recipes
 
 Use the [complete recipe guide](./recipes.md) when several primitives form one

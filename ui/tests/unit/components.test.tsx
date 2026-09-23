@@ -5,7 +5,7 @@ import { Check, Circle, Folder, Plus } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
 import { AppTab } from '../../src/app-tab.js';
-import { rem } from '../../src/css-values.js';
+import { flex, rem, uiColor } from '../../src/css-values.js';
 import { DisclosureArrow } from '../../src/disclosure-arrow.js';
 import { EmptyState } from '../../src/empty-state.js';
 import { FloatingToolbar } from '../../src/floating-toolbar.js';
@@ -235,7 +235,7 @@ describe('production UI primitives', () => {
       List({
         children: [<span>One</span>, <span>Two</span>],
         gap: rem(0.75),
-        flex: '2 1 20rem',
+        flex: flex(2, 1, rem(20)),
         scrollable: true,
         dividerSides: 'trbl',
         className: 'results',
@@ -333,7 +333,6 @@ describe('production UI primitives', () => {
         action: 'open',
         itemId: 'projects',
         className: 'project',
-        style: 'color:blue',
         pressed: false,
         accessibleLabel: 'Open projects',
         title: 'Projects',
@@ -1191,7 +1190,7 @@ describe('production UI primitives', () => {
             label: 'Balanced',
             icon: Check,
             iconName: 'check',
-            color: 'green',
+            color: uiColor('success'),
             group: 'Recommended',
           },
           {

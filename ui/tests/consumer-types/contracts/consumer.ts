@@ -18,13 +18,19 @@ import type {
 import { type CssValue, em, px } from '@kerfjs/ui';
 import {
   calc,
+  colorVar,
+  type CssColor,
+  type CssFlex,
   type CssLength,
   type CssLengthExpression,
+  type CssSize,
+  flex,
   lengthVar,
   pct,
   plus,
   rem,
   space,
+  uiColor,
   type UiSpaceName,
 } from '@kerfjs/ui/css-values';
 import {
@@ -32,9 +38,12 @@ import {
   type UiEvaluationContext,
 } from '@kerfjs/ui/evaluator';
 import { type DividerSides, List } from '@kerfjs/ui/list';
+import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { ListHeader } from '@kerfjs/ui/list-header';
+import { ListItem } from '@kerfjs/ui/list-item';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
-import { Select } from '@kerfjs/ui/select';
+import { Select, type SelectChoice } from '@kerfjs/ui/select';
+import { Skeleton } from '@kerfjs/ui/skeleton';
 import {
   StateBanner,
   type StateBannerTone,
@@ -57,6 +66,7 @@ import {
 } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import type {} from '@kerfjs/ui/webawesome';
+import type { CatalogRevealOptions } from '@kerfjs/ui/wire-catalog';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 
 const icon = ToolbarText({ text: 'Icon' });
@@ -81,6 +91,63 @@ List({ gap: '0.25rem' });
 space('xxs');
 // @ts-expect-error KUI-T012 custom property names keep their leading dashes.
 lengthVar('app-gap');
+
+// KUI-T013 positive: each remaining CSS-valued prop accepts only its own
+// grammar, while semantic keywords remain finite and media queries stay raw.
+const listFlex: CssFlex = flex(2, 1, rem(20));
+const skeletonWidth: CssSize = pct(60);
+const choiceColor: CssColor = colorVar(
+  '--app-choice-color',
+  uiColor('success'),
+);
+List({ flex: listFlex });
+List({ flex: 'none' });
+Skeleton({ width: skeletonWidth, height: em(1.5), radius: px(999) });
+Skeleton({ width: 'fit-content' });
+const coloredChoice: SelectChoice<'ready'> = {
+  value: 'ready',
+  label: 'Ready',
+  color: choiceColor,
+};
+Select({
+  name: 'state',
+  value: 'ready',
+  label: 'State',
+  labelMaxWidth: 120,
+  choices: [coloredChoice],
+});
+const responsiveReveal: CatalogRevealOptions = {
+  media: '(max-width: 40rem)',
+};
+void responsiveReveal;
+// @ts-expect-error KUI-T013 raw flex strings bypass the structured flex grammar.
+List({ flex: '2 1 20rem' });
+// @ts-expect-error KUI-T013 lengths are not complete flex shorthands.
+List({ flex: rem(20) });
+// @ts-expect-error KUI-T013 raw dimension strings bypass the size grammar.
+Skeleton({ width: '10em' });
+// @ts-expect-error KUI-T013 a flex shorthand is not a dimension.
+Skeleton({ height: listFlex });
+// @ts-expect-error KUI-T013 radius accepts lengths, not intrinsic size keywords.
+Skeleton({ radius: 'fit-content' });
+const rawColorChoice: SelectChoice = {
+  value: 'raw',
+  label: 'Raw',
+  // @ts-expect-error KUI-T013 choice icon colors require a semantic or application-owned color.
+  color: 'red',
+};
+void rawColorChoice;
+const lengthColorChoice: SelectChoice = {
+  value: 'wrong',
+  label: 'Wrong',
+  // @ts-expect-error KUI-T013 length values are not color values.
+  color: px(1),
+};
+void lengthColorChoice;
+// @ts-expect-error KUI-T013 row declaration strings were removed; use className and public tokens.
+ListItem({ label: 'Item', style: 'color:red' });
+// @ts-expect-error KUI-T013 row declaration strings were removed; use className and public tokens.
+ListActionRow({ label: 'Action', style: 'color:red' });
 
 // KUI-T011 positive: semantic component zones accept recursively nested,
 // readonly component content and runtime-empty values.
@@ -297,7 +364,7 @@ SunkenPanel({ shape: sunkenPanelShape });
 List({
   children: icon,
   gap: true,
-  flex: '1 1 0',
+  flex: flex(1, 1, px(0)),
   scrollable: true,
   dividerSides,
 });

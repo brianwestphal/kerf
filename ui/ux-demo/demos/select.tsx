@@ -1,4 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { colorVar } from '@kerfjs/ui/css-values';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Select } from '@kerfjs/ui/select';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -24,6 +25,7 @@ export function SelectDemo() {
                 label: 'Quiet',
                 icon: Bell,
                 iconName: 'bell',
+                color: colorVar('--kui-color-success'),
                 group: 'Attention',
               },
               {

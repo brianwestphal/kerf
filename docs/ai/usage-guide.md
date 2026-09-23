@@ -83,6 +83,11 @@ custom pipelines. App overrides belong later in the cascade or on a scoped
 The build-time `remify()` function is valid in package source CSS, not runtime
 props.
 
+Keep runtime CSS grammars property-specific: use `flex()` for `List.flex`,
+length builders for Skeleton dimensions, and `uiColor()`/`colorVar()` for
+choice-icon colors. Do not cast between their opaque brands or generate raw
+row `style` strings; use `className`, public tokens, and cataloged props.
+
 Menu adapters may pass product event/drop metadata through the typed
 `rootAttributes` `data-*` slot on ListItem, ListHeader, ListActionRow, and AppTab instead
 of copying their markup. `ListHeader.triggerAttributes` and

@@ -8,6 +8,8 @@ Generated from emitted declarations for `@kerfjs/ui@4.4.1` and `kerfjs@4.4.1`. T
 declare const cssValueBrand: unique symbol;
 declare const cssLengthBrand: unique symbol;
 declare const cssLengthExpressionBrand: unique symbol;
+declare const cssFlexBrand: unique symbol;
+declare const cssColorBrand: unique symbol;
 /**
  * A complete typed CSS value minted by a property-specific Kerf UI builder.
  *
@@ -32,6 +34,22 @@ type CssLength = CssValue & {
 type CssLengthExpression = string & {
     readonly [cssLengthExpressionBrand]: 'CssLengthExpression';
 };
+/** A complete CSS `flex` shorthand. It is not interchangeable with a length. */
+type CssFlex = CssValue & {
+    readonly [cssFlexBrand]: 'CssFlex';
+};
+/** A complete CSS color value. It is not interchangeable with a length. */
+type CssColor = CssValue & {
+    readonly [cssColorBrand]: 'CssColor';
+};
+type CssFlexKeyword = 'none' | 'auto' | 'initial';
+type CssFlexBasis = CssLength | 'auto' | 'content' | 'min-content' | 'max-content' | 'fit-content';
+type CssSizeKeyword = 'auto' | 'min-content' | 'max-content' | 'fit-content';
+/** A complete width/height value accepted by dimension-valued UI props. */
+type CssSize = CssLength | CssSizeKeyword;
+declare const uiColorNames: readonly ["accent", "accent-text", "border", "border-quiet", "brand-border-loud", "brand-border-normal", "brand-border-quiet", "brand-fill-loud", "brand-fill-normal", "brand-fill-quiet", "brand-on-fill", "brand-on-loud", "brand-on-normal", "brand-on-quiet", "danger", "danger-border-loud", "danger-border-normal", "danger-border-quiet", "danger-fill-loud", "danger-fill-normal", "danger-fill-quiet", "danger-on-loud", "danger-on-normal", "danger-on-quiet", "danger-text", "neutral-border-loud", "neutral-border-normal", "neutral-border-quiet", "neutral-fill-loud", "neutral-fill-normal", "neutral-fill-quiet", "neutral-on-loud", "neutral-on-normal", "neutral-on-quiet", "pop", "pop-border-loud", "pop-border-normal", "pop-border-quiet", "pop-fill-loud", "pop-fill-normal", "pop-fill-quiet", "pop-on-fill", "pop-on-loud", "pop-on-normal", "pop-on-quiet", "pop-text", "success", "success-border-loud", "success-border-normal", "success-border-quiet", "success-fill-loud", "success-fill-normal", "success-fill-quiet", "success-on-fill", "success-on-loud", "success-on-normal", "success-on-quiet", "success-text", "surface", "surface-lowered", "surface-raised", "text", "text-link", "text-quiet", "warning", "warning-border-loud", "warning-border-normal", "warning-border-quiet", "warning-fill-loud", "warning-fill-normal", "warning-fill-quiet", "warning-on-fill", "warning-on-loud", "warning-on-normal", "warning-on-quiet", "warning-text"];
+/** Names of the public `--kui-color-*` semantic tokens. */
+type UiColorName = (typeof uiColorNames)[number];
 /** Kerf UI's complete spacing-token vocabulary. `s` and `xl` are exceptions. */
 type UiSpaceName = 'none' | '2xs' | 'xs' | 's' | 'm' | 'l' | 'xl';
 /** Create a complete pixel length. */
@@ -54,8 +72,14 @@ declare function lengthVar(name: `--${string}`, fallback?: CssLength): CssLength
 declare function plus(first: CssLength, second: CssLength, ...rest: readonly CssLength[]): CssLengthExpression;
 /** Turn a typed length expression into a complete CSS `calc()` value. */
 declare function calc(expression: CssLengthExpression): CssLength;
+/** Build a complete, structured CSS flex shorthand. */
+declare function flex(grow: number, shrink?: number, basis?: CssFlexBasis): CssFlex;
+/** Resolve a public Kerf UI semantic color token. */
+declare function uiColor(name: UiColorName): CssColor;
+/** Reference an application-owned custom property whose contract is a color. */
+declare function colorVar(name: `--${string}`, fallback?: CssColor): CssColor;
 
-export { type CssLength, type CssLengthExpression, type CssValue, type UiSpaceName, calc, em, lengthVar, pct, plus, px, rem, space };
+export { type CssColor, type CssFlex, type CssFlexBasis, type CssFlexKeyword, type CssLength, type CssLengthExpression, type CssSize, type CssSizeKeyword, type CssValue, type UiColorName, type UiSpaceName, calc, colorVar, em, flex, lengthVar, pct, plus, px, rem, space, uiColor };
 ```
 
 ## `@kerfjs/ui/disclosure-arrow`
@@ -307,7 +331,7 @@ export { ListHeader, type ListHeaderProps };
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { UiSpaceName, CssLength } from './css-values.js';
+import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
 import { D as DividerSides } from './divider-sides-267FA7sY.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
@@ -315,8 +339,8 @@ interface ListProps {
     children?: KerfUiContent;
     /** Use the standard item gap, a named UI spacing token, or a typed CSS length. Defaults to no gap. */
     gap?: boolean | UiSpaceName | CssLength;
-    /** Allow this list to grow/shrink, or supply a CSS flex shorthand. */
-    flex?: boolean | string;
+    /** Allow this list to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
+    flex?: boolean | CssFlexKeyword | CssFlex;
     /** Own vertical scrolling and overscroll containment. */
     scrollable?: boolean;
     /** Physical divider edges in canonical top/right/bottom/left order. */
@@ -326,7 +350,7 @@ interface ListProps {
 /** A stretch-aligned vertical stack with optional gap, flex, scroll, and dividers. */
 declare function List({ children, gap, flex, scrollable, dividerSides, className, }: ListProps): kerfjs.SafeHtml;
 
-export { CssLength, DividerSides, List, type ListProps, UiSpaceName };
+export { CssFlex, CssFlexKeyword, CssLength, DividerSides, List, type ListProps, UiSpaceName };
 ```
 
 ## `@kerfjs/ui/list-action-row`
@@ -387,11 +411,10 @@ interface ListActionRowProps {
     trailingActionTitle?: string;
     trailingActionVisibility?: 'always' | 'interaction';
     className?: string;
-    style?: string;
     rootAttributes?: ListActionRowRootAttributes;
     trailingActionAttributes?: ListActionRowTrailingAttributes;
 }
-declare function ListActionRow({ label, description, status, busy, density, divider, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, trailingActionVisibility, className, style, rootAttributes, trailingActionAttributes, }: ListActionRowProps): SafeHtml;
+declare function ListActionRow({ label, description, status, busy, density, divider, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, trailingActionVisibility, className, rootAttributes, trailingActionAttributes, }: ListActionRowProps): SafeHtml;
 
 export { ListActionRow, type ListActionRowProps };
 ```
@@ -430,7 +453,6 @@ interface ListItemProps {
     action: string;
     itemId?: string;
     className?: string;
-    style?: string;
     pressed?: boolean;
     accessibleLabel?: string;
     title?: string;
@@ -442,7 +464,7 @@ interface ListItemProps {
     placeholder?: boolean;
     rootAttributes?: ListItemRootAttributes;
 }
-declare function ListItem({ label, description, icon, trailing, status, busy, density, divider, selected, action, itemId, className, style, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, rootAttributes, }: ListItemProps): SafeHtml;
+declare function ListItem({ label, description, icon, trailing, status, busy, density, divider, selected, action, itemId, className, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, rootAttributes, }: ListItemProps): SafeHtml;
 
 export { ListItem, type ListItemProps };
 ```
@@ -1486,6 +1508,7 @@ export { SegmentedControl, type SegmentedControlAppearance, type SegmentedContro
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { CssColor } from './css-values.js';
 import { LucideNode } from './lucide-icon.js';
 import 'lucide';
 
@@ -1494,7 +1517,8 @@ interface SelectChoice<Value extends string = string> {
     label: string;
     icon?: LucideNode;
     iconName?: string;
-    color?: string;
+    /** Typed semantic or application-owned color for the optional icon. */
+    color?: CssColor;
     group?: string;
     separatorBefore?: boolean;
 }
@@ -1603,14 +1627,15 @@ export { LoadingSpinner, type LoadingSpinnerProps };
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { CssSize, CssLength } from './css-values.js';
 
 interface SkeletonProps {
-    /** Width as any browser CSS length (e.g. `7.5rem`, `60%`). Defaults to filling its slot. */
-    width?: string;
-    /** Height as any CSS length. Defaults to a single text line. */
-    height?: string;
-    /** Corner radius override (a CSS length). Defaults to the small radius token. */
-    radius?: string;
+    /** Typed width or intrinsic sizing keyword. Defaults to filling its slot. */
+    width?: CssSize;
+    /** Typed height or intrinsic sizing keyword. Defaults to a single text line. */
+    height?: CssSize;
+    /** Typed corner-radius override. Defaults to the small radius token. */
+    radius?: CssLength;
     /** Render this many stacked lines (the last one shorter), for multi-line text. */
     lines?: number;
     /** Accessible label. Omit to keep the block decorative (`aria-hidden`). */

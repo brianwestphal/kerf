@@ -1,4 +1,10 @@
-import { type CssLength, space, type UiSpaceName } from './css-values.js';
+import {
+  type CssFlex,
+  type CssFlexKeyword,
+  type CssLength,
+  space,
+  type UiSpaceName,
+} from './css-values.js';
 import type { DividerSides } from './divider-sides.js';
 import type { KerfUiContent } from './semantic-content.js';
 
@@ -16,8 +22,8 @@ export interface ListProps {
   children?: KerfUiContent;
   /** Use the standard item gap, a named UI spacing token, or a typed CSS length. Defaults to no gap. */
   gap?: boolean | UiSpaceName | CssLength;
-  /** Allow this list to grow/shrink, or supply a CSS flex shorthand. */
-  flex?: boolean | string;
+  /** Allow this list to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
+  flex?: boolean | CssFlexKeyword | CssFlex;
   /** Own vertical scrolling and overscroll containment. */
   scrollable?: boolean;
   /** Physical divider edges in canonical top/right/bottom/left order. */
@@ -63,5 +69,10 @@ export function List({
   );
 }
 
-export type { CssLength, UiSpaceName } from './css-values.js';
+export type {
+  CssFlex,
+  CssFlexKeyword,
+  CssLength,
+  UiSpaceName,
+} from './css-values.js';
 export type { DividerSides } from './divider-sides.js';

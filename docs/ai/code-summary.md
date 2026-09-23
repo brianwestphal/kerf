@@ -637,8 +637,9 @@ published. The package's consumer-bundle gate proves those CSS boundaries,
 root-barrel JavaScript tree-shaking, and that `Select` stays registration-free
 until `@kerfjs/ui/select/register` is imported. The root declaration barrel
 also exports the CSS-free `css-values` builders and brands; source and packed
-contracts keep complete lengths distinct from intermediate expressions, and
-`List.gap` accepts only finite token shorthands or complete typed lengths. It
+contracts keep lengths, flex shorthands, and colors distinct from one another
+and from intermediate expressions. List gaps, List flex, Skeleton dimensions,
+and Select choice colors accept only their property-specific contracts. It
 also re-exports every named AppTab, TabBar, ToolbarControlGroup, and Select
 presentation axis; the source and packed consumer contract compile the same
 type-only import fixture. `Select` also owns the morph

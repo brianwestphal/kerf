@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('applies typed lengths and direct List spacing shorthands in a real browser', async ({
+test('applies property-specific CSS values in a real browser', async ({
   browserName,
   page,
 }) => {
@@ -13,6 +13,7 @@ test('applies typed lengths and direct List spacing shorthands in a real browser
     'style',
     '--_kui-list-gap:var(--kui-space-l);--_kui-list-flex:1 1 auto',
   );
+  await expect(content).toHaveCSS('flex', '1 1 auto');
 
   const tools = content.locator('section').nth(1).locator('.kui-list');
   await expect(tools).toHaveCSS('gap', '8px');
@@ -21,7 +22,27 @@ test('applies typed lengths and direct List spacing shorthands in a real browser
     '--_kui-list-gap:var(--kui-space-xs)',
   );
 
+  await page.goto('/?component=skeleton');
+  const shapedSkeleton = page
+    .locator('[data-demo="skeleton"] .demo-skeleton-blocks .kui-skeleton')
+    .nth(1);
+  await expect(shapedSkeleton).toHaveCSS('width', '128px');
+  await expect(shapedSkeleton).toHaveCSS('height', '24px');
+  await expect(shapedSkeleton).toHaveCSS('border-radius', '12px');
+
+  await page.goto('/?component=select');
+  const semanticIcon = page
+    .locator('[data-demo="select"] .kui-select__icon')
+    .filter({ has: page.locator('[data-lucide="bell"]') })
+    .first();
+  await expect(semanticIcon).toHaveAttribute(
+    'style',
+    'color:var(--kui-color-success)',
+  );
+  await expect(semanticIcon).toHaveCSS('color', /^(?:rgba?|color)\(/);
+
   if (browserName === 'chromium') {
+    await page.goto('/?component=list');
     await page.screenshot({
       path: 'test-results/css-values-list-wide.png',
       fullPage: true,

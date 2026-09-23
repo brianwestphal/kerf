@@ -125,6 +125,13 @@ an incomplete expression, so wrap it with `calc` before passing it to a prop.
 Raw CSS strings are deliberately rejected; the opaque brands catch authoring
 mistakes but are not sanitizers.
 
+The same property-specific boundary applies beyond spacing: use `flex()` (or a
+finite keyword) for `List.flex`; length builders and intrinsic-size keywords for
+`Skeleton.width`/`height`; length builders for `Skeleton.radius`; and
+`uiColor()` or `colorVar()` for `SelectChoice.color`. These grammars are not
+interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
+`style` declarations; use `className`, public tokens, and component props.
+
 ## Component subpaths
 
 | Component                                                           | Browser import (includes reachable CSS) | Manual CSS export                      |

@@ -94,7 +94,10 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   `dividerSides` (`t`/`r`/`b`/`l` order). It adds no list semantics; children own
   those, and only one bounded region should own scrolling. Pass a finite spacing
   shorthand (`gap="xs"`, `gap="m"`) or a complete `CssLength` from the CSS-free
-  `@kerfjs/ui/css-values` builders; raw CSS strings are rejected.
+  `@kerfjs/ui/css-values` builders; raw CSS strings are rejected. Use `flex()`
+  for List flex, typed lengths for Skeleton geometry, and
+  `uiColor()`/`colorVar()` for choice-icon colors. These brands are intentionally
+  not interchangeable; rows use classes/tokens/props rather than raw `style`.
 - **Keep Web Awesome on the shared inset tiers.** `webawesome.css` uses
   `--kui-wa-control-inset` (8px controls/items) and
   `--kui-wa-surface-margin` / `--kui-wa-surface-inset` (8px around/inside

@@ -1658,17 +1658,19 @@
         "space",
         "lengthVar",
         "plus",
-        "calc"
+        "calc",
+        "flex"
       ],
       "useWhen": [
         "Arrange component rows or sections in a vertical stretch-aligned stack.",
         "Let one bounded list own vertical scrolling, flex growth, or one or more physical-edge dividers.",
-        "Choose a finite gap shorthand such as xs or m, or compose a typed length with @kerfjs/ui/css-values when the spacing scale is insufficient."
+        "Choose a finite gap shorthand such as xs or m, or compose a typed length with @kerfjs/ui/css-values when the spacing scale is insufficient.",
+        "Use a finite flex keyword or the flex() builder when List participates in flexible layout."
       ],
       "avoidWhen": [
         "Do not use List as semantic list markup; use ul/ol when list semantics are required and apply layout deliberately.",
         "Do not create nested scroll owners or use divider sides as a substitute for meaningful grouping.",
-        "Do not pass raw CSS strings to gap or use the off-rhythm s/xl spacing steps without a deliberate exception."
+        "Do not pass raw CSS strings to gap or flex, mix their distinct grammars, or use the off-rhythm s/xl spacing steps without a deliberate exception."
       ],
       "alternatives": [],
       "appOwns": [
@@ -1681,7 +1683,7 @@
         "standard boolean gap",
         "named none/2xs/xs/s/m/l/xl token gap",
         "typed CssLength gap",
-        "boolean or custom flex",
+        "boolean, finite-keyword, or typed CssFlex flex",
         "scrollable",
         "top/right/bottom/left divider combinations"
       ],
@@ -1841,7 +1843,8 @@
         "A navigation or item row needs both a primary selectable action and an independently focusable trailing action."
       ],
       "avoidWhen": [
-        "Use ListItem when trailing content is dormant metadata; use AppTab only for tablist semantics and ToolbarControlGroup only for toolbar controls."
+        "Use ListItem when trailing content is dormant metadata; use AppTab only for tablist semantics and ToolbarControlGroup only for toolbar controls.",
+        "Do not inject declaration strings; use className, public tokens, and cataloged component props for application styling."
       ],
       "alternatives": [
         {
@@ -1954,7 +1957,8 @@
         "Render a selectable, disabled, trailing, or multiline sidebar/navigation action row whose descendants must remain clipped to the rounded row boundary."
       ],
       "avoidWhen": [
-        "Do not use for an ordinary inline link, form button, isolated ARIA menuitem, or an interactive trailing action; use ListActionRow for sibling row actions."
+        "Do not use for an ordinary inline link, form button, isolated ARIA menuitem, or an interactive trailing action; use ListActionRow for sibling row actions.",
+        "Do not inject declaration strings; use className, public tokens, and cataloged component props for application styling."
       ],
       "alternatives": [
         {
@@ -2739,10 +2743,13 @@
       ],
       "purpose": "Controlled Web Awesome select with typed form, toolbar, navigation, compact, icon-only, truncating, hint, and grouped-choice presentations.",
       "publicExports": [
-        "Select"
+        "Select",
+        "uiColor",
+        "colorVar"
       ],
       "useWhen": [
-        "Choose a controlled value from a moderate or long list, including grouped and icon-bearing choices."
+        "Choose a controlled value from a moderate or long list, including grouped and icon-bearing choices.",
+        "Color an optional choice icon with uiColor() or colorVar(); the CssColor contract intentionally rejects lengths and raw color strings."
       ],
       "avoidWhen": [
         "Do not use for commands or a small choice set that should stay visible."
@@ -3192,11 +3199,13 @@
       ],
       "useWhen": [
         "Stand in for a value that is still loading, on its own or via a component's placeholder prop, keeping the surrounding layout stable.",
-        "Placeholder a custom or free-text slot with the same visual the components' placeholder mode uses."
+        "Placeholder a custom or free-text slot with the same visual the components' placeholder mode uses.",
+        "Set width and height with typed length builders or finite intrinsic-size keywords; set radius with a typed length."
       ],
       "avoidWhen": [
         "Do not use for known progress or a busy spinner; use LoadingSpinner.",
-        "Do not animate it or use it as decorative filler."
+        "Do not animate it or use it as decorative filler.",
+        "Do not pass raw CSS strings or cross property grammars into width, height, or radius."
       ],
       "alternatives": [
         {
@@ -3212,7 +3221,8 @@
       "variants": [
         "block",
         "lines",
-        "labeled"
+        "labeled",
+        "typed width, height, and radius"
       ],
       "accessibility": [
         "Decorative by default (aria-hidden); pass label to announce it as an image. A component in placeholder mode marks itself aria-busy and disables its own controls."

@@ -1,3 +1,4 @@
+import { em } from './css-values.js';
 import { Skeleton } from './skeleton.js';
 
 export type ToolbarTextSize = 'xlarge' | 'large' | 'default' | 'small';
@@ -69,7 +70,7 @@ export function ToolbarText({
       aria-busy={placeholder ? 'true' : undefined}
     >
       {placeholder ? (
-        <Skeleton width="8em" />
+        <Skeleton width={em(8)} />
       ) : (
         <span class="kui-toolbar-text__text">{text}</span>
       )}

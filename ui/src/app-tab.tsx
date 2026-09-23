@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { em } from './css-values.js';
 import { filterDataAttributes } from './extension-attributes.js';
 import type { KerfUiContent } from './semantic-content.js';
 import { Skeleton } from './skeleton.js';
@@ -146,7 +147,7 @@ export function AppTab({
           class="kui-app-tab__name"
           aria-hidden={presentation === 'icon-only' ? 'true' : undefined}
         >
-          {placeholder ? <Skeleton width="7em" /> : name}
+          {placeholder ? <Skeleton width={em(7)} /> : name}
         </span>
         {closable || trailing ? (
           <span class="kui-app-tab__trailing">{trailing}</span>

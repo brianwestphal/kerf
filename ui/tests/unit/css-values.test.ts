@@ -2,13 +2,17 @@ import { describe, expect, it } from 'vitest';
 
 import {
   calc,
+  colorVar,
   em,
+  flex,
   lengthVar,
   pct,
   plus,
   px,
   rem,
   space,
+  uiColor,
+  type UiColorName,
   type UiSpaceName,
 } from '../../src/css-values.js';
 
@@ -52,6 +56,33 @@ describe('typed CSS values', () => {
     expect(calc(plus(rem(0.25), pct(10)))).toBe('calc(0.25rem + 10%)');
   });
 
+  it('builds property-specific flex and color values', () => {
+    expect(flex(1)).toBe('1 1 auto');
+    expect(flex(2, 0, rem(20))).toBe('2 0 20rem');
+    expect(flex(-0, -0, 'min-content')).toBe('0 0 min-content');
+    expect(uiColor('success')).toBe('var(--kui-color-success)');
+    expect(colorVar('--app-choice-color')).toBe('var(--app-choice-color)');
+    expect(colorVar('--app-choice-color', uiColor('accent'))).toBe(
+      'var(--app-choice-color, var(--kui-color-accent))',
+    );
+  });
+
+  it('rejects invalid flex factors and semantic color names', () => {
+    for (const value of [Number.NaN, Number.POSITIVE_INFINITY, -Infinity])
+      expect(() => flex(value)).toThrow(
+        new RangeError('flex() requires a finite number.'),
+      );
+    expect(() => flex(-1)).toThrow(
+      new RangeError('flex() requires nonnegative flex factors.'),
+    );
+    expect(() => flex(1, -1)).toThrow(
+      new RangeError('flex() requires nonnegative flex factors.'),
+    );
+    expect(() => uiColor('rainbow' as UiColorName)).toThrow(
+      new RangeError('uiColor() received unknown color name rainbow.'),
+    );
+  });
+
   it.each([
     ['px', px],
     ['rem', rem],
@@ -75,6 +106,19 @@ describe('typed CSS values', () => {
       expect(() => lengthVar(name as `--${string}`), name).toThrow(
         new TypeError(
           'lengthVar() requires an ASCII custom property name such as --app-gap.',
+        ),
+      );
+
+    for (const name of [
+      '--app color',
+      '--color;background:red',
+      '--color\nbackground:red',
+      '--1color',
+      '--',
+    ])
+      expect(() => colorVar(name as `--${string}`), name).toThrow(
+        new TypeError(
+          'colorVar() requires an ASCII custom property name such as --app-color.',
         ),
       );
   });

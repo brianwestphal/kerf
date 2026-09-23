@@ -6,16 +6,26 @@ export {
 } from './app-tab.js';
 export {
   calc,
+  colorVar,
+  type CssColor,
+  type CssFlex,
+  type CssFlexBasis,
+  type CssFlexKeyword,
   type CssLength,
   type CssLengthExpression,
+  type CssSize,
+  type CssSizeKeyword,
   type CssValue,
   em,
+  flex,
   lengthVar,
   pct,
   plus,
   px,
   rem,
   space,
+  uiColor,
+  type UiColorName,
   type UiSpaceName,
 } from './css-values.js';
 export {

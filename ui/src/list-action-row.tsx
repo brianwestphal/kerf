@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { em } from './css-values.js';
 import {
   filterControlAttributes,
   filterDataAttributes,
@@ -86,7 +87,6 @@ export interface ListActionRowProps {
   trailingActionTitle?: string;
   trailingActionVisibility?: 'always' | 'interaction';
   className?: string;
-  style?: string;
   rootAttributes?: ListActionRowRootAttributes;
   trailingActionAttributes?: ListActionRowTrailingAttributes;
 }
@@ -117,7 +117,6 @@ export function ListActionRow({
   trailingActionTitle,
   trailingActionVisibility = 'always',
   className = '',
-  style,
   rootAttributes = {},
   trailingActionAttributes = {},
 }: ListActionRowProps) {
@@ -134,7 +133,6 @@ export function ListActionRow({
     <div
       {...extensionRootAttributes}
       class={`kui-list-action-row ${className}`.trim()}
-      style={style}
       data-component="list-action-row"
       data-item-id={itemId}
       data-has-icon={String(Boolean(icon))}
@@ -163,12 +161,12 @@ export function ListActionRow({
       >
         {icon && (
           <span class="kui-list-action-row__icon">
-            {placeholder ? <Skeleton width="1em" height="1em" /> : icon}
+            {placeholder ? <Skeleton width={em(1)} height={em(1)} /> : icon}
           </span>
         )}
         <span class="kui-list-action-row__label">
           <span class="kui-list-action-row__primary-label">
-            {placeholder ? <Skeleton width="9em" /> : label}
+            {placeholder ? <Skeleton width={em(9)} /> : label}
           </span>
           {!placeholder && description && (
             <span class="kui-list-action-row__description">{description}</span>

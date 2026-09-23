@@ -1,5 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { space } from '@kerfjs/ui/css-values';
+import { flex, space } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
@@ -57,7 +57,7 @@ export function ListDemo() {
           <List
             className="demo-list__content kui-pane__content kui-content"
             gap={space('l')}
-            flex
+            flex={flex(1)}
             scrollable
             dividerSides="r"
           >
