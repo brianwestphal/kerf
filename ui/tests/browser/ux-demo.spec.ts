@@ -5235,6 +5235,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
 
 test('expands and collapses the ToolbarControlGroup collapsible search without stretching the group', async ({
   page,
+  browserName,
 }) => {
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=toolbar-control-group');
@@ -5242,6 +5243,14 @@ test('expands and collapses the ToolbarControlGroup collapsible search without s
   const field = group.locator('.kui-token-search');
   const groupHeight = () =>
     group.evaluate((node) => Math.round(node.getBoundingClientRect().height));
+
+  await page.getByRole('button', { name: 'Rounded' }).click();
+  await expect(group).toHaveCSS('border-radius', '12px');
+  await expect(field).toHaveCSS('border-radius', '10px');
+  await expect(field.locator('.kui-token-search__expand')).toHaveCSS(
+    'border-radius',
+    '10px',
+  );
 
   // Collapsed: one iconic control at the toolbar-control height (not a tall box).
   await expect(field).toHaveAttribute('data-expanded', 'false');
@@ -5255,6 +5264,11 @@ test('expands and collapses the ToolbarControlGroup collapsible search without s
   await expect(field).toHaveAttribute('data-expanded', 'true');
   await expect(group.locator('.kui-token-search__editor')).toBeVisible();
   expect(await groupHeight()).toBeLessThanOrEqual(48);
+  await expect(field).toHaveCSS('border-radius', '10px');
+  if (browserName === 'chromium')
+    await group.screenshot({
+      path: 'test-results/toolbar-control-group-rounded-search.png',
+    });
 });
 
 test('renders the Hot Sheet split treatment on ResizableRegion', async ({

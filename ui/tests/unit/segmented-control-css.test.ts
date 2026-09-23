@@ -81,4 +81,28 @@ describe('SegmentedControl corner geometry', () => {
       ).has('--kui-toolbar-item-radius'),
     ).toBe(false);
   });
+
+  it('shares the toolbar group highlight radius with a collapsible search', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/token-search-field.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const rule = root.nodes.find(
+      (node) =>
+        node.type === 'rule' &&
+        node.selector ===
+          '.kui-toolbar-control-group > .kui-token-search[data-collapsible="true"]',
+    );
+
+    if (!rule || rule.type !== 'rule')
+      throw new Error('Missing grouped collapsible search rule');
+
+    const radius = rule.nodes.find(
+      (node) => node.type === 'decl' && node.prop === 'border-radius',
+    );
+    if (!radius || radius.type !== 'decl')
+      throw new Error('Missing grouped collapsible search radius');
+    expect(radius.value).toBe('var(--kui-control-highlight-radius)');
+  });
 });

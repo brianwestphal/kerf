@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed a collapsible `TokenSearchField` inside a rounded
+  `ToolbarControlGroup` retaining its independent pill radius instead of using
+  the group's shared concentric highlight radius.
 - Documented and demonstrated list-first dialog bodies: use `List` with
   `bodyInset="none"`, and wrap bare dialog copy in `ListInsetText` so content
   shares the standard list gutter without double-insetting.

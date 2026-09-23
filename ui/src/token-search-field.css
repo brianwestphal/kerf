@@ -242,6 +242,10 @@
   min-height: remify(40px);
   padding: remify(4px) remify(6px);
   border: 0;
+  /* This field is the group's inset visual layer. Inherit the same concentric
+     radius contract as buttons instead of retaining TokenSearchField's own pill
+     radius when the group switches to `shape="rounded"`. */
+  border-radius: var(--kui-control-highlight-radius);
   background: transparent;
   box-shadow: none;
 }
