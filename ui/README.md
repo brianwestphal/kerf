@@ -539,7 +539,10 @@ empty value inside the closed control. Loading placeholders preserve the hint.
 `Select` also owns the Kerf/Web Awesome reconciliation boundary: option icons
 keep stable slotted elements across rerenders, and `renderSelected` content is
 replaced when the controlled value changes. Consumers do not need to add
-`data-key` or `data-morph-skip` workarounds around choice icons.
+`data-key` or `data-morph-skip` workarounds around choice icons. Icon-bearing
+options retain the standard icon-to-label gap. When a compact Select is wrapped
+in a `ToolbarControlGroup`, use `focusRingOwner="group"`; the group paints the
+focus ring with its configured pill or rounded geometry.
 
 For application choices and panes, prefer Kerf's purpose-built primitives:
 `Select` over direct Web Awesome selection/dropdown composition,

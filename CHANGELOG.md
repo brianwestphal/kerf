@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Made `ListItem` clip label, status, and dormant trailing painting to its
   rounded row boundary so compact and constrained rows cannot visibly overflow;
   described rows now grow enough to keep their owned two-line label readable.
+- Fixed compact toolbar `Select` focus to follow its owning group's pill or
+  rounded geometry and restored consistent spacing between popup icons and labels.
 - Fixed a collapsible `TokenSearchField` inside a rounded
   `ToolbarControlGroup` retaining its independent pill radius instead of using
   the group's shared concentric highlight radius.

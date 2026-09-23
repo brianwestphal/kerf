@@ -153,7 +153,7 @@ Common toolbar patterns:
 | Identity or title text        | `<ToolbarText text="…" size="large" />` (or `xlarge` for a page/panel title)           | Wrap in a `single` borderless group only when it must align with adjacent control pills                           |
 | One or more icon/text buttons | `<ToolbarControlGroup>{buttons}</ToolbarControlGroup>`                                 | Use `buttonAppearance="push"` for toggle buttons with `aria-pressed`; `single` for a lone control                 |
 | An exclusive view switch      | `<ToolbarControlGroup><SegmentedControl … /></ToolbarControlGroup>`                    | Not `TabBar`, which switches tabpanels                                                                            |
-| A value list                  | `<ToolbarControlGroup><Select … /></ToolbarControlGroup>`                              | Register `@kerfjs/ui/select/register` once                                                                        |
+| A value list                  | `<ToolbarControlGroup><Select … /></ToolbarControlGroup>`                              | Register `@kerfjs/ui/select/register` once; use `focusRingOwner="group"` so focus follows the group's geometry    |
 | A collapsible search box      | `<ToolbarControlGroup single><TokenSearchField collapsible … /></ToolbarControlGroup>` | The group animates the iconic ↔ expanded states; `wireTokenSearchFields` manages expand/collapse/focus by default |
 
 A **popup menu in a toolbar** is a `single` `ToolbarControlGroup` wrapping a Web

@@ -319,6 +319,16 @@
   outline-offset: 1px;
 }
 
+/* A composed Select can delegate focus paint to the group so the visible ring
+   follows the group's selected pill/rounded geometry instead of Web Awesome's
+   form-control radius. */
+.kui-toolbar-control-group:has(
+  > .kui-select[data-focus-ring-owner="group"]:is(:focus-within, [open])
+) {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
 .kui-toolbar-control-group[data-button-appearance="push"][data-single="true"]:has(
     > :is(button, wa-button)[aria-pressed="true"]
   ) {

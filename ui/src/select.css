@@ -86,6 +86,7 @@
 }
 .kui-select wa-option::part(start) {
   align-self: center;
+  margin-inline-end: remify(8px);
   margin-top: 0;
 }
 .kui-select wa-option::part(label) {
@@ -102,7 +103,7 @@
   height: remify(16px);
   flex: none;
 }
-.kui-select__icon[slot="start"] {
+.kui-select > .kui-select__icon[slot="start"] {
   margin-inline-end: remify(8px) !important;
 }
 .kui-select__icon svg {
