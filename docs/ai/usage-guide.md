@@ -169,7 +169,10 @@ content when the controlled value changes.
 
 For a one-pane drill-down, keep the ordered `NavStackView[]` in app state and
 call `wireNavStack()`: content slides on push/pop while the active view's title,
-top actions, and optional `bottomToolbar` cross-fade. Use the component-level
+top actions, and optional `bottomToolbar` cross-fade. The helper also moves
+focus into the new top view and restores the revealed view's last focused
+descendant on pop; add `data-nav-focus` to a preferred initial heading or
+control when DOM order is not sufficient. Use the component-level
 `bottomToolbar` only as a persistent fallback for views without their own bottom
 chrome.
 

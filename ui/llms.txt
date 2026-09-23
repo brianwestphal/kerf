@@ -147,7 +147,8 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   navigation stacks, tab selection and order, pane sizes, and `collapsed`/`expanded`
   disclosure flags in the app — they are data or persisted layout, and the app reads
   them to render. The `wire…` helpers own the _ephemeral_ parts: `wireNavStack` the
-  content-slide and per-view top/bottom chrome cross-fade, `wireTabBars` the
+  content-slide, per-view top/bottom chrome cross-fade, and focus move/restore
+  (mark a preferred new-view target with `data-nav-focus`), `wireTabBars` the
   overflow autoscroll, drag preview, and
   replacement focus after controlled automatic tab activation,
   `wireResizableRegions` the live drag preview; they report committed changes via

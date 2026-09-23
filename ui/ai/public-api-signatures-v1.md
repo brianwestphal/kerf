@@ -612,7 +612,10 @@ interface WireNavStackOptions {
  * Animate a `NavStack`'s push/pop transitions and wire its back control. The app
  * owns the stack (a signal of `NavStackView[]`) and re-renders `NavStack` when it
  * changes; this helper slides the content and settles the chrome across each
- * change, and calls `onBack` when the back control is used. Returns a disposer.
+ * change, moves focus into every new top view, restores that view's last focused
+ * descendant on pop, and calls `onBack` when the back control is used. Mark a
+ * preferred initial target with `data-nav-focus`; otherwise the first focusable
+ * descendant (or the view itself) receives focus. Returns a disposer.
  */
 declare function wireNavStack(root: Element, options?: WireNavStackOptions): () => void;
 

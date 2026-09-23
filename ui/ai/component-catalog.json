@@ -575,7 +575,7 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "A controlled one-pane navigation stack that keeps prior views mounted, slides content on push and pop, and cross-fades per-view chrome.",
+      "description": "A controlled one-pane navigation stack that keeps prior views mounted, slides content on push and pop, cross-fades per-view chrome, and moves/restores focus.",
       "uses": [
         "toolbar-text"
       ],
@@ -609,7 +609,7 @@
         "ordered view stack and stable keys",
         "view content and titles",
         "push and pop actions",
-        "focus restoration policy",
+        "preferred initial focus targets when DOM order is insufficient",
         "per-view bottom toolbar content or a persistent fallback"
       ],
       "variants": [
@@ -621,7 +621,8 @@
       ],
       "accessibility": [
         "Give the stack region an accessible label and every back control a stable action label.",
-        "Wire pop behavior and restore focus to the control that opened the departing view after the controlled rerender."
+        "Use wireNavStack so each controlled push moves focus into the new top view and each pop restores the revealed view's remembered descendant.",
+        "Mark a preferred initial heading or control with data-nav-focus when the first enabled focusable descendant is not the right target."
       ],
       "geometry": {
         "margin": "none",

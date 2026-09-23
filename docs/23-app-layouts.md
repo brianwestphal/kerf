@@ -131,9 +131,12 @@ slides** (the pattern already used on several `~/Documents/hotsheet2` dialogs).
 `@kerfjs/ui` component, the app owns the stack as a `signal<NavStackView[]>`;
 `NavStack({ views })` renders it as `SafeHtml` (all views stacked, the last
 active), and `wireNavStack(root, { onBack })` animates the push/pop transition
-and cross-fades the chrome, returning a disposer. Back is a delegated control;
-the app's `onBack` pops its own signal. This replaces the earlier imperative
-`navStack({ root }).push()` sketch.
+and cross-fades the chrome, moves focus into the new top view, and restores the
+revealed view's remembered descendant on pop. A consumer can mark the preferred
+initial target with `data-nav-focus`; the helper otherwise uses the first
+focusable descendant or the view container. It returns a disposer. Back is a
+delegated control; the app's `onBack` pops its own signal. This replaces the
+earlier imperative `navStack({ root }).push()` sketch.
 
 ```ts
 const views = signal<NavStackView[]>([{ key: 'home', content: <HomeView/> }]);

@@ -14,8 +14,10 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
     await navDemo.screenshot({
       path: 'test-results/nav-stack-root-wide.png',
     });
-  await stack.getByText('Project Atlas', { exact: true }).click();
+  const atlas = stack.getByRole('button', { name: /Project Atlas/ });
+  await atlas.click();
   await expect(stack).toHaveAttribute('data-depth', '2');
+  await expect(stack.locator('[data-nav-detail-focus]')).toBeFocused();
   await expect(stack).toHaveAttribute('data-nav-chrome-transition', 'true');
   await expect(stack.locator('[data-nav-chrome-copy]')).toHaveCount(2);
   await expect(
@@ -35,6 +37,7 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
     });
   await page.getByRole('button', { name: 'Back to library' }).click();
   await expect(stack).toHaveAttribute('data-depth', '1');
+  await expect(atlas).toBeFocused();
   await expect(stack).toHaveAttribute('data-nav-chrome-transition', 'true');
   await expect(
     stack.locator(

@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Split the AppTab and TabBar catalog routes into focused component specimens,
   and moved their controlled selection, tabpanel, overflow, add/close, and
   reorder lifecycle into a separate application-tabs composition demo.
+- Fixed `wireNavStack` focus ownership across controlled navigation: pushes
+  focus the new top view, pops restore its remembered descendant, and removed
+  targets fall back through `data-nav-focus`, the first enabled control, and
+  the view container.
 - Fixed compact mixed-content `ToolbarControlGroup` dropdown triggers being
   forced into an icon-only width, which painted the label across its separator
   and the Web Awesome caret outside the group.

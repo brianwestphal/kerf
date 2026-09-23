@@ -474,7 +474,7 @@
           "required": false
         },
         {
-          "id": "focus restoration policy",
+          "id": "preferred initial focus targets when DOM order is insufficient",
           "owner": "application",
           "required": false
         },
@@ -504,7 +504,8 @@
       "accessibility": {
         "obligations": [
           "Give the stack region an accessible label and every back control a stable action label.",
-          "Wire pop behavior and restore focus to the control that opened the departing view after the controlled rerender."
+          "Use wireNavStack so each controlled push moves focus into the new top view and each pop restores the revealed view's remembered descendant.",
+          "Mark a preferred initial heading or control with data-nav-focus when the first enabled focusable descendant is not the right target."
         ]
       },
       "boundaries": {

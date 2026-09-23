@@ -80,7 +80,13 @@ const detailView = (project: Project): NavStackView => ({
   bottomToolbar: footer('Updated just now'),
   content: (
     <List className="kui-content">
-      <div class="kui-content-item">
+      <div
+        class="kui-content-item"
+        tabindex="-1"
+        data-nav-focus
+        data-nav-detail-focus
+        aria-label={`${project.label} details`}
+      >
         <LucideIcon icon={FileText} name="file-text" />
         <strong>{project.label}</strong>
         <span>{project.summary}</span>

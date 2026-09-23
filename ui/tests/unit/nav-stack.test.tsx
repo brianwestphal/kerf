@@ -286,6 +286,154 @@ describe('wireNavStack', () => {
     dispose();
   });
 
+  it('moves focus into pushes and restores exact controls across nested pops', async () => {
+    const root = mountStack([view('home', 'Home')]);
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    const home = viewport.querySelector<HTMLElement>('[data-nav-key="home"]')!;
+    home.innerHTML = '<button id="open-detail">Open detail</button>';
+    const opener = home.querySelector<HTMLButtonElement>('#open-detail')!;
+    opener.focus();
+    const dispose = wireNavStack(root, { duration: 0 });
+
+    home.dataset.navActive = 'false';
+    home.setAttribute('aria-hidden', 'true');
+    const detail = document.createElement('article');
+    detail.className = 'kui-nav-stack__view';
+    detail.dataset.navKey = 'detail';
+    detail.dataset.navActive = 'true';
+    detail.innerHTML =
+      '<button id="detail-default" data-nav-focus>Detail default</button><button id="open-leaf">Open leaf</button>';
+    viewport.append(detail);
+    await tick();
+    const detailDefault = detail.querySelector('#detail-default');
+    const detailOpener = detail.querySelector<HTMLButtonElement>('#open-leaf')!;
+    expect(document.activeElement).toBe(detailDefault);
+
+    detailOpener.focus();
+    detail.dataset.navActive = 'false';
+    detail.setAttribute('aria-hidden', 'true');
+    const leaf = document.createElement('article');
+    leaf.className = 'kui-nav-stack__view';
+    leaf.dataset.navKey = 'leaf';
+    leaf.dataset.navActive = 'true';
+    leaf.innerHTML = '<button id="leaf-default">Leaf default</button>';
+    viewport.append(leaf);
+    await tick();
+    expect(document.activeElement).toBe(leaf.querySelector('#leaf-default'));
+
+    detail.dataset.navActive = 'true';
+    detail.setAttribute('aria-hidden', 'false');
+    leaf.remove();
+    await tick();
+    expect(document.activeElement).toBe(detailOpener);
+
+    home.dataset.navActive = 'true';
+    home.setAttribute('aria-hidden', 'false');
+    detail.remove();
+    await tick();
+    expect(document.activeElement).toBe(opener);
+    dispose();
+  });
+
+  it('falls back to the revealed view preference when remembered focus disappeared', async () => {
+    const root = mountStack([view('home', 'Home')]);
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    const home = viewport.querySelector<HTMLElement>('[data-nav-key="home"]')!;
+    home.innerHTML =
+      '<button id="open-detail">Open detail</button><h2 tabindex="-1" data-nav-focus>Home heading</h2>';
+    const opener = home.querySelector<HTMLButtonElement>('#open-detail')!;
+    opener.focus();
+    const dispose = wireNavStack(root, { duration: 0 });
+
+    home.dataset.navActive = 'false';
+    home.setAttribute('aria-hidden', 'true');
+    const detail = document.createElement('article');
+    detail.className = 'kui-nav-stack__view';
+    detail.dataset.navKey = 'detail';
+    detail.dataset.navActive = 'true';
+    detail.innerHTML = '<button>Detail default</button>';
+    viewport.append(detail);
+    await tick();
+    opener.remove();
+
+    home.dataset.navActive = 'true';
+    home.setAttribute('aria-hidden', 'false');
+    detail.remove();
+    await tick();
+    expect(document.activeElement).toBe(home.querySelector('[data-nav-focus]'));
+    dispose();
+  });
+
+  it('skips unavailable preferred and ordinary targets when focusing a push', async () => {
+    const root = mountStack([view('home', 'Home')]);
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    viewport.querySelector<HTMLElement>(
+      '[data-nav-key="home"]',
+    )!.dataset.navActive = 'false';
+    const dispose = wireNavStack(root, { duration: 0 });
+    const detail = document.createElement('article');
+    detail.className = 'kui-nav-stack__view';
+    detail.dataset.navKey = 'detail';
+    detail.dataset.navActive = 'true';
+    detail.innerHTML =
+      '<button data-nav-focus disabled>Disabled preference</button><div inert><button>Inert control</button></div><button hidden>Hidden control</button><button id="available">Available control</button>';
+    viewport.append(detail);
+    await tick();
+    expect(document.activeElement).toBe(detail.querySelector('#available'));
+    dispose();
+  });
+
+  it('focuses and cleans up a view fallback after an empty-then-refill sequence', async () => {
+    const root = mountStack([view('home', 'Home')]);
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    const home = viewport.querySelector<HTMLElement>('[data-nav-key="home"]')!;
+    const dispose = wireNavStack(root, { duration: 0 });
+    home.remove();
+    await tick();
+
+    const replacement = document.createElement('article');
+    replacement.className = 'kui-nav-stack__view';
+    replacement.dataset.navKey = 'replacement';
+    replacement.dataset.navActive = 'true';
+    replacement.textContent = 'No controls';
+    viewport.append(replacement);
+    await tick();
+    expect(document.activeElement).toBe(replacement);
+    expect(replacement.tabIndex).toBe(-1);
+
+    replacement.dataset.navActive = 'false';
+    replacement.setAttribute('aria-hidden', 'true');
+    const second = document.createElement('article');
+    second.className = 'kui-nav-stack__view';
+    second.dataset.navKey = 'second';
+    second.dataset.navActive = 'true';
+    second.setAttribute('tabindex', '-2');
+    second.textContent = 'Still no controls';
+    viewport.append(second);
+    await tick();
+    expect(document.activeElement).toBe(second);
+    expect(second.tabIndex).toBe(-1);
+
+    second.dataset.navActive = 'false';
+    second.setAttribute('aria-hidden', 'true');
+    const third = document.createElement('article');
+    third.className = 'kui-nav-stack__view';
+    third.dataset.navKey = 'third';
+    third.dataset.navActive = 'true';
+    third.innerHTML = '<button>Third control</button>';
+    viewport.append(third);
+    await tick();
+    second.dataset.navActive = 'true';
+    second.setAttribute('aria-hidden', 'false');
+    third.remove();
+    await tick();
+    expect(document.activeElement).toBe(second);
+
+    dispose();
+    expect(replacement.hasAttribute('tabindex')).toBe(false);
+    expect(second.getAttribute('tabindex')).toBe('-2');
+  });
+
   it('stops animating after dispose', async () => {
     const root = mountStack([view('home', 'Home')]);
     const dispose = wireNavStack(root, { duration: 10 });
@@ -300,5 +448,6 @@ describe('wireNavStack', () => {
     expect(next.classList.contains('kui-nav-stack__view--entering')).toBe(
       false,
     );
+    expect(document.activeElement).not.toBe(next);
   });
 });
