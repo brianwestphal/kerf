@@ -154,21 +154,26 @@ export function granularListSafeHtml(
   return new SafeHtml({ kind: 'list', id, items, patches, source });
 }
 
-// KF-294: `ReadonlySignal<unknown>` (covariant) accepts both `signal()` and
-// `computed()` values of any T handed straight into a text hole — the runtime
-// binds them fine-grained instead of stringifying.
-type Child =
+/**
+ * Content accepted by a Kerf JSX child position.
+ *
+ * Use this for `children` (and equivalent content slots) on third-party
+ * function components. It deliberately mirrors the runtime: arrays may be
+ * readonly and nested to any depth, signals bind fine-grained inside a mount,
+ * and boolean/nullish values render nothing.
+ */
+export type JSXChildren =
   | SafeHtml
   | string
   | number
   | boolean
   | null
   | undefined
-  | ReadonlySignal<unknown>;
-type Children = Child | Children[];
+  | ReadonlySignal<unknown>
+  | readonly JSXChildren[];
 
 interface Props {
-  children?: Children;
+  children?: JSXChildren;
   [key: string]: unknown;
 }
 
@@ -193,7 +198,7 @@ const VOID_TAGS = new Set([
  * primitive coercion + escaping, arrays (recursive), and the nullish/false
  * skip cases.
  */
-function toSegment(child: Children): Segment {
+function toSegment(child: JSXChildren): Segment {
   if (child == null || typeof child === 'boolean')
     return { kind: 'static', html: '' };
   // KF-294: a signal handed straight into a text position. Inside a mount
@@ -234,8 +239,8 @@ function toSegment(child: Children): Segment {
   }
   throw new Error(
     `JSX: unsupported child of type ${describeValue(child)}. ` +
-      'Children must be SafeHtml, string, number, boolean, null, undefined, or an array of those. ' +
-      'Common mistakes: passing a Signal/Store object directly (use signal.value or store.state.value), ' +
+      'Children must be SafeHtml, string, number, boolean, null, undefined, a signal/computed, or a nested array of those. ' +
+      'Common mistakes: passing a Store object directly (use store.state.value), ' +
       'passing a function (call it first), or passing a Promise (await it before render).',
   );
 }
@@ -407,7 +412,7 @@ export { jsx as jsxs };
 // caring.
 export { jsx as jsxDEV };
 
-export function Fragment({ children }: { children?: Children }): SafeHtml {
+export function Fragment({ children }: { children?: JSXChildren }): SafeHtml {
   return new SafeHtml(
     children != null ? toSegment(children) : { kind: 'static', html: '' },
   );
@@ -453,7 +458,7 @@ export namespace JSX {
  * (`class`, not `className`).
  */
 export function _toSegment(child: unknown): Segment {
-  return toSegment(child as Children);
+  return toSegment(child as JSXChildren);
 }
 
 export function _renderAttrVerbatim(name: string, value: unknown): string {

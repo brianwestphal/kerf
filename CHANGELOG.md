@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added the public recursive `JSXChildren` type from both `kerfjs` and
+  `kerfjs/jsx-runtime`, giving third-party function components a canonical
+  declaration for nullable, signal-backed, and arbitrarily nested readonly
+  child content that matches the runtime.
 - Fixed bottom `Workbench` drawers overshooting and snapping during collapse
   transitions by anchoring fixed-height content to the shell's stable bottom
   edge.

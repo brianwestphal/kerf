@@ -1,4 +1,4 @@
-<!-- kerf-skill-version: 1.20.0 -->
+<!-- kerf-skill-version: 1.21.0 -->
 
 # kerf.cursorrules — rules for building apps with kerf
 
@@ -87,6 +87,7 @@ import {
   isSafeHtml,
   raw,
   Fragment,
+  type JSXChildren,
 } from "kerfjs";
 
 // Optional, only when you need granular collection updates:
@@ -114,6 +115,7 @@ if (import.meta.env.DEV) await import("kerfjs/dev");
 | `attr(name)`                                 | dynamic factory — `attr<N,V=string>(name)` returns `(value: V) => { readonly [name]: V }`; both generics off → N inferred, V defaults to string; specify both to constrain values                                                                                                                         |
 | `toElement(jsx)`                             | parse JSX into a DOM node (SVG-aware). Single-root → `Element`; multi-root (`<><svg/> label</>`, two icons side by side) → `DocumentFragment` that `appendChild`/`replaceChildren`/`append` inlines into the parent.                                                                                      |
 | `raw(html)`                                  | inject pre-escaped HTML                                                                                                                                                                                                                                                                                   |
+| `JSXChildren`                                | recursive type for general-purpose component `children`: SafeHtml, primitives, read-only signals, nullish/boolean empty values, and readonly arrays at any depth. Use a narrower union for semantically restricted slots                                                                                  |
 | `arraySignal(initial?)`                      | granular keyed-list signal at `kerfjs/array-signal` subpath; `each()` reconciles in O(patches)                                                                                                                                                                                                            |
 | `` html`…` ``                                | tagged template at `kerfjs/html` subpath — JSX-identical runtime semantics with NO build step (CDN/importmap projects). Real HTML attribute names (`class`, not `className`); holes only in text positions or as a COMPLETE attribute value (`attr=${v}` / `attr="${v}"`)                                 |
 

@@ -13,7 +13,48 @@
 
 import { describe, expect, it } from 'vitest';
 
-import type { KerfCustomElement } from '../../src/jsx-runtime.js';
+import type { JSXChildren as BarrelJSXChildren } from '../../src/index.js';
+import type {
+  JSXChildren,
+  KerfCustomElement,
+  SafeHtml,
+} from '../../src/jsx-runtime.js';
+import { computed, signal } from '../../src/reactive.js';
+
+function ContentSlot({ children }: { children?: JSXChildren }): SafeHtml {
+  return <section>{children}</section>;
+}
+
+const compileTimeCondition = true as boolean;
+const compileTimeRows = ['one', 'two'] as const;
+const compileTimeReadonlyChildren: readonly JSXChildren[] = [
+  <i>readonly</i>,
+  [null, false, 'text', 1],
+];
+
+// Public source declarations accept the same recursive content shapes that the
+// runtime already renders. In particular, direct sibling expressions do not
+// need a Fragment merely because one is nullable and another is an array.
+const sourceChildrenContract: SafeHtml = (
+  <ContentSlot>
+    {compileTimeCondition ? <strong>conditional</strong> : null}
+    {compileTimeRows.map((row) => (
+      <span>{row}</span>
+    ))}
+    {compileTimeReadonlyChildren}
+    {signal('live')}
+    {computed(() => 'derived')}
+  </ContentSlot>
+);
+void sourceChildrenContract;
+const sourceBarrelContract: BarrelJSXChildren = sourceChildrenContract;
+void sourceBarrelContract;
+// @ts-expect-error — DOM nodes are not part of the runtime child contract.
+const invalidDomChild: JSXChildren = document.createElement('div');
+// @ts-expect-error — functions must be invoked before becoming JSX children.
+const invalidFunctionChild: JSXChildren = () => 'text';
+void invalidDomChild;
+void invalidFunctionChild;
 
 // KF-100: declaration merging must work via the `kerfjs/jsx-runtime` module
 // (in tests, that's `../../src/jsx-runtime.js`). `IntrinsicElements` is

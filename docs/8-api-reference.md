@@ -439,6 +439,28 @@ The return type of every JSX expression. `.toString()` returns the underlying HT
 
 `SafeHtml` instances carry a brand symbol — `Symbol.for('kerfjs.SafeHtml')` — so cross-bundle identification works even if a consumer's bundler ends up loading two copies of kerf (e.g. the barrel and the JSX-runtime entry resolved as independent modules). Prefer `isSafeHtml()` over `instanceof SafeHtml` when writing custom integrations.
 
+### `JSXChildren` (type)
+
+```ts
+type JSXChildren =
+  | SafeHtml
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | ReadonlySignal<unknown>
+  | readonly JSXChildren[];
+```
+
+The canonical recursive type for a third-party function component's
+`children` or equivalent general-purpose content slot. It exactly matches what
+the JSX runtime accepts, including readonly arrays nested to any depth. Boolean
+and nullish members render nothing; signals bind fine-grained inside `mount()`
+and snapshot outside it. Importable from either `kerfjs` or
+`kerfjs/jsx-runtime`. Prefer a narrower domain-specific union when a component
+intentionally restricts its child semantics.
+
 ### `isSafeHtml(value: unknown): value is SafeHtml`
 
 Cross-bundle-safe type guard. Returns `true` for any object carrying the `Symbol.for('kerfjs.SafeHtml')` brand. Use this rather than `instanceof SafeHtml` if you're inspecting JSX values yourself — `instanceof` fails when two copies of kerf produce structurally-identical-but-class-distinct `SafeHtml` instances.

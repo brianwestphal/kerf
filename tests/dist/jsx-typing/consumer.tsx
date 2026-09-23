@@ -10,11 +10,41 @@
  * Runtime never executes — `tsc --noEmit` is the only check.
  */
 
-import { delegate, delegateCapture, each, Fragment, isSafeHtml, mount, raw, signal, type SafeHtml } from 'kerfjs';
+import { computed, delegate, delegateCapture, each, Fragment, isSafeHtml, type JSXChildren, mount, raw, signal, type SafeHtml } from 'kerfjs';
 import { arraySignal } from 'kerfjs/array-signal';
+import type { JSXChildren as RuntimeJSXChildren } from 'kerfjs/jsx-runtime';
 
 const count = signal(0);
 const rows = arraySignal<{ id: number; label: string }>([]);
+
+function ContentSlot({ children }: { children?: JSXChildren }): SafeHtml {
+  return <section>{children}</section>;
+}
+
+const includeIntro = true as boolean;
+const readonlyChildren: readonly JSXChildren[] = [
+  <em>readonly</em>,
+  [null, false, 'text', 2],
+];
+
+const recursiveChildrenContract: SafeHtml = (
+  <ContentSlot>
+    {includeIntro ? <strong>intro</strong> : null}
+    {['a', 'b'].map((label) => <span>{label}</span>)}
+    {readonlyChildren}
+    {count}
+    {computed(() => count.value + 1)}
+  </ContentSlot>
+);
+void recursiveChildrenContract;
+const runtimeSubpathContract: RuntimeJSXChildren = recursiveChildrenContract;
+void runtimeSubpathContract;
+// @ts-expect-error — DOM nodes are not supported JSX children.
+const invalidDomChild: JSXChildren = document.createElement('div');
+// @ts-expect-error — functions must be called before being used as children.
+const invalidFunctionChild: JSXChildren = () => 'text';
+void invalidDomChild;
+void invalidFunctionChild;
 
 const safeRef: SafeHtml = (
   <div id="app" className="root" data-test="ok">

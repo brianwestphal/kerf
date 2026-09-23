@@ -209,6 +209,23 @@ This is by design (it's what `srcdoc` is _for_), the same footgun as React's `sr
 
 **`SafeHtml` children are injected raw.** That's the whole point — a sub-component returns `SafeHtml`, it composes without re-escaping.
 
+Reusable function components can type a content slot with the public recursive
+`JSXChildren` type:
+
+```tsx
+import type { JSXChildren, SafeHtml } from "kerfjs";
+
+function Stack({ children }: { children?: JSXChildren }): SafeHtml {
+  return <div class="stack">{children}</div>;
+}
+```
+
+`JSXChildren` matches the runtime contract: `SafeHtml`, strings, numbers,
+booleans, nullish values, read-only signals, and readonly arrays nested to any
+depth. That lets nullable conditionals, mapped arrays, and readonly collections
+appear as direct siblings without a wrapping Fragment. Use a narrower prop type
+when a component's semantics intentionally admit only particular child kinds.
+
 **DOM nodes throw.** If you accidentally pass `toElement(...)` (a DOM node) as a child, the runtime throws a descriptive error. The runtime renders to strings; DOM nodes have no string equivalent.
 
 ## 6.6 `raw(html)`

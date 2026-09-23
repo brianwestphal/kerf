@@ -17,9 +17,11 @@ import {
   Fragment,
   isSafeHtml,
   jsx,
+  type JSXChildren,
   raw,
   SafeHtml,
 } from '../../src/jsx-runtime.js';
+import { computed, signal } from '../../src/reactive.js';
 import {
   enterProductionShape,
   restoreDevelopmentShape,
@@ -123,6 +125,31 @@ describe('jsx()', () => {
       children: [jsx('li', { children: 'a' }), jsx('li', { children: 'b' })],
     });
     expect(out.toString()).toBe('<ul><li>a</li><li>b</li></ul>');
+  });
+
+  it('renders every JSXChildren member through adversarial readonly nesting', () => {
+    const live = signal('bound');
+    const derived = computed(() => `${live.value}!`);
+    const deepest: readonly JSXChildren[] = Object.freeze([
+      raw('<b>safe</b>'),
+      ' <unsafe>',
+      7,
+      true,
+      false,
+      null,
+      undefined,
+      live,
+      derived,
+    ]);
+    const children: JSXChildren = Object.freeze([
+      Object.freeze([]),
+      Object.freeze([Object.freeze([deepest])]),
+      Object.freeze([]),
+    ]);
+
+    expect(jsx('div', { children }).toString()).toBe(
+      '<div><b>safe</b> &lt;unsafe&gt;7boundbound!</div>',
+    );
   });
 
   it('escapes attribute values', () => {
