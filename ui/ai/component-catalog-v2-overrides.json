@@ -413,6 +413,14 @@
       }
     ]
   },
+  "@kerfjs/ui:wa-dialog": {
+    "_source": "docs/webawesome-theme.md#coverage",
+    "boundaries": {
+      "rootClass": null,
+      "publicClasses": ["hide-actions"],
+      "publicTokens": []
+    }
+  },
   "@kerfjs/ui:wa-radio-group": {
     "_source": "docs/webawesome-theme.md#coverage",
     "children": {

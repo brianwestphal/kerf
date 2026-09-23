@@ -74,6 +74,26 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toMatch(/footer uses the 16px container inset/);
   });
 
+  it('hides dialog header actions through the directly exported shadow part', () => {
+    const css = readFileSync(
+      resolve(import.meta.dirname, '../../src/webawesome.css'),
+      'utf8',
+    );
+    const guidance = readFileSync(
+      resolve(import.meta.dirname, '../../docs/webawesome-theme.md'),
+      'utf8',
+    );
+
+    expect(css).toMatch(
+      /wa-dialog\.hide-actions::part\(header-actions\)\s*{\s*display: none/,
+    );
+    expect(css).not.toContain(
+      '::part(dialog)::part(header)::part(header-actions)',
+    );
+    expect(guidance).toContain('class="hide-actions"');
+    expect(guidance).toContain('directly exported `header-actions` part');
+  });
+
   it('keeps unbordered group and color-picker control regions on the shared inline inset', () => {
     const css = readFileSync(
       resolve(import.meta.dirname, '../../src/webawesome.css'),

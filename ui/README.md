@@ -416,6 +416,9 @@ Awesome modules the application renders.
 `webawesome.css` includes Web Awesome's native/base theme and then applies the
 Hot Sheet 2 palette, surfaces, status colors, focus treatment, form geometry,
 radii, tooltips, and shadows through Web Awesome's public `--wa-*` contract.
+On `wa-dialog`, the optional `hide-actions` class hides the exported
+`header-actions` shadow part for compositions that provide another dismissal
+affordance.
 Those tokens flow into all free component families. Every free Web Awesome 3.12
 component has an individual UX-catalog route under the collapsible ecosystem
 section, but the theme entry does not import or register component JavaScript,

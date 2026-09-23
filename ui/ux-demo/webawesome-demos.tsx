@@ -306,9 +306,10 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <wa-button variant="brand" data-action="show-wa-dialog">
         Open dialog
       </wa-button>
-      <span>The live dialog uses its native modal layer.</span>
+      <span>Footer actions replace the native header action.</span>
       <wa-dialog
         id="catalog-wa-dialog"
+        class="hide-actions"
         label="Publish component library"
         with-footer
       >

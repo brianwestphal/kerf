@@ -316,6 +316,14 @@
     padding: var(--kui-wa-container-inset);
   }
 
+  /* Dialogs that provide their own dismissal affordance can opt out of Web
+     Awesome's header action region without reaching through the shadow root.
+     `header-actions` is a directly exported part, so it must be targeted from
+     the host rather than chained through the `dialog` and `header` parts. */
+  wa-dialog.hide-actions::part(header-actions) {
+    display: none;
+  }
+
   wa-callout {
     padding: var(--kui-wa-surface-inset) !important;
   }

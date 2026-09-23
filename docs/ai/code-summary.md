@@ -456,7 +456,10 @@ kerf/
 The optional `ui/src/webawesome.css` bridge maps Dialog body padding to the 8px
 surface tier and footer padding to the 16px container tier independently of
 Web Awesome's shared `--spacing`, with static guidance and real-browser
-computed-style coverage.
+computed-style coverage. Its opt-in `wa-dialog.hide-actions` host class hides
+the directly exported `header-actions` part for dialogs with another dismissal
+affordance; the contract deliberately avoids unsupported chained shadow-part
+selectors.
 
 Within `ui/ai/`, the compatible selection catalog and package-qualified v2
 composition projection are joined by `application-ui-profile.*`: shipped

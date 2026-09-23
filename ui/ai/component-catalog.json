@@ -4231,6 +4231,9 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "publicClasses": [
+        "hide-actions"
+      ],
       "geometry": {
         "margin": "none",
         "border": "child",

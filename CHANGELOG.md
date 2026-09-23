@@ -1,5 +1,9 @@
 # Changelog
 
+- Added `wa-dialog.hide-actions` support to `@kerfjs/ui/webawesome.css`, hiding
+  Web Awesome's directly exported `header-actions` shadow part for dialogs that
+  provide their own dismissal affordance.
+
 All notable changes to **kerf** are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

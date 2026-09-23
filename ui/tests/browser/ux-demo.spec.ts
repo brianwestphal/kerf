@@ -2627,6 +2627,57 @@ test('insets the complete Slider region with a scalable, overridable logical mar
   await expect.poll(margins).toEqual(['12px', '12px']);
 });
 
+test('hides and restores the Dialog header actions through the public host class', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1100, height: 850 });
+  await page.goto('/?component=wa-dialog');
+  await page.getByRole('button', { name: 'Open dialog' }).click();
+  const dialog = page.locator('#catalog-wa-dialog');
+  await expect(dialog).toHaveClass(/\bhide-actions\b/);
+
+  const headerActionsDisplay = () =>
+    dialog.evaluate(
+      (element) =>
+        window.getComputedStyle(
+          element.shadowRoot!.querySelector<HTMLElement>(
+            '[part~="header-actions"]',
+          )!,
+        ).display,
+    );
+  const dialogClip = () =>
+    dialog.evaluate((element) => {
+      const rect = element
+        .shadowRoot!.querySelector<HTMLElement>('[part~="dialog"]')!
+        .getBoundingClientRect();
+      const inset = 16;
+      return {
+        x: Math.max(0, rect.left - inset),
+        y: Math.max(0, rect.top - inset),
+        width: Math.min(window.innerWidth, rect.width + inset * 2),
+        height: Math.min(window.innerHeight, rect.height + inset * 2),
+      };
+    });
+  await expect.poll(headerActionsDisplay).toBe('none');
+  await page.screenshot({
+    path: testInfo.outputPath('dialog-hide-actions-wide.png'),
+    clip: await dialogClip(),
+  });
+
+  await dialog.evaluate((element) => element.classList.remove('hide-actions'));
+  await expect.poll(headerActionsDisplay).not.toBe('none');
+  await dialog.evaluate((element) => element.classList.add('hide-actions'));
+  await expect.poll(headerActionsDisplay).toBe('none');
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({
+    path: testInfo.outputPath('dialog-hide-actions-narrow.png'),
+    clip: await dialogClip(),
+  });
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+  await expect(dialog).not.toHaveAttribute('open', '');
+});
+
 test('renders and operates representative focused Web Awesome specimens', async ({
   page,
   browserName,

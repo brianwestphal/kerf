@@ -293,6 +293,11 @@ inset without moving its label. Accordion, Card, Details, Callout, and Include
 use the shared 8px logical inline surface margin and 8px inner padding, with the
 Accordion margin owned once by the connected group.
 
+Web Awesome dialogs expose an opt-in `hide-actions` host class through the Kerf
+theme. It hides the directly exported `header-actions` part for dialogs with an
+application-owned dismissal affordance, without relying on unsupported chained
+shadow-part selectors.
+
 StateBanner tone labels are catalog-only specimen chrome and derive the shared
 8px margin + 1px border + 8px padding inset, aligning their text with each
 banner's leading icon. Its optional production `badge` is separate inline title

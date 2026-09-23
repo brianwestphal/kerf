@@ -103,6 +103,12 @@ tiers:
   content stays compact and the action group has a clearer boundary. These two
   parts do not inherit the dialog's shared `--spacing` value.
 
+Add `class="hide-actions"` to a `wa-dialog` when the dialog supplies its own
+dismissal affordance and should omit Web Awesome's header action region. The
+theme sets `display: none` on the directly exported `header-actions` part; it
+does not attempt to chain `::part()` through the internal `dialog` and `header`
+parts, which CSS shadow parts do not support.
+
 Badge remains intentionally compact at Web Awesome's intrinsic `0.375em` block /
 `0.625em` inline padding (4.5px / 7.5px at its default 12px text size): it is a
 short status or count, not a content item. Breadcrumb has no bordered or filled

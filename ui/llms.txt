@@ -96,6 +96,9 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   the surface (8px) and container (16px) tiers respectively, independent of the
   dialog's shared `--spacing`. Override the tier at the narrowest useful scope
   instead of restyling individual shadow parts.
+  When a dialog provides another dismissal affordance, add `hide-actions` to
+  the `wa-dialog` host; the theme hides its directly exported `header-actions`
+  part without an unsupported chained `::part()` selector.
   Checkbox and Radio Group option regions also receive the shared 8px inline
   outer inset because those groups have no bordered field shell. The Color
   Picker trigger receives the same inset for the same unbordered geometry.

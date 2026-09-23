@@ -211,7 +211,10 @@ declaration boundary for all 70 catalog-supported `wa-*` elements. The CSS-only
 entry includes Web Awesome's base stylesheet and the Hot Sheet 2-aligned Kerf
 theme but registers no custom elements. Continue importing only the individual
 Web Awesome component modules the app renders, and override public `--wa-*`
-values afterward when needed. The theme gives Checkbox Group and Radio Group
+values afterward when needed. A `wa-dialog` with another dismissal affordance
+can add `class="hide-actions"`; the theme hides the directly exported
+`header-actions` part without unsupported chained `::part()` selectors. The
+theme gives Checkbox Group and Radio Group
 option regions the shared 8px inline outer inset because those groups have no
 bordered field shell. The Color Picker trigger receives the same inset for the
 same unbordered geometry. Known Date field captions and bordered text-like
