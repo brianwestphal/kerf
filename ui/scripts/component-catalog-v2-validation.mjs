@@ -166,6 +166,54 @@ export function validateCatalogV2(catalog, options = {}) {
         !entry.boundaries.publicClasses.includes(entry.boundaries.rootClass))
     )
       fail(`${at} rootClass must be null or name one publicClasses entry`);
+    if ('cssValueProps' in (entry ?? {}) && !Array.isArray(entry.cssValueProps))
+      fail(`${at} cssValueProps must be an array when present`);
+    const cssPaths = new Set();
+    for (const contract of entry?.cssValueProps ?? []) {
+      if (!contract?.path || cssPaths.has(contract.path))
+        fail(`${at} CSS value paths must be unique and non-empty`);
+      cssPaths.add(contract?.path);
+      const lists = [
+        contract?.helpers,
+        contract?.nonStandaloneHelpers ?? [],
+        contract?.shorthands,
+        contract?.canonicalShorthands,
+        contract?.exceptionalShorthands,
+        contract?.examples,
+      ];
+      if (lists.some((list) => !isStringList(list)))
+        fail(
+          `${at}:${contract?.path} CSS value lists must be unique string lists`,
+        );
+      for (const shorthand of [
+        ...(contract?.canonicalShorthands ?? []),
+        ...(contract?.exceptionalShorthands ?? []),
+      ])
+        if (!contract?.shorthands?.includes(shorthand))
+          fail(
+            `${at}:${contract?.path} classifies unknown shorthand ${shorthand}`,
+          );
+      if (
+        contract?.canonicalShorthands?.some((item) =>
+          contract?.exceptionalShorthands?.includes(item),
+        )
+      )
+        fail(
+          `${at}:${contract?.path} canonical and exceptional shorthands overlap`,
+        );
+      if (
+        contract?.nonStandaloneHelpers?.some((item) =>
+          contract?.helpers?.includes(item),
+        )
+      )
+        fail(
+          `${at}:${contract?.path} standalone and expression helpers overlap`,
+        );
+      if (contract?.rawPolicy === 'unsafe-only' && !contract?.unsafeHelper)
+        fail(
+          `${at}:${contract?.path} unsafe-only policy requires unsafeHelper`,
+        );
+    }
     if (!Array.isArray(entry?.diagnostics))
       fail(`${at} diagnostics must be an array`);
     for (const diagnostic of entry?.diagnostics ?? []) {

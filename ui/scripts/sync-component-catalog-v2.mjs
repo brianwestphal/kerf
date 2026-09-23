@@ -65,6 +65,7 @@ function defaultEntry(entry) {
       geometry: entry.geometry ?? defaultGeometry,
     },
     accessibility: { obligations: entry.accessibility ?? [] },
+    cssValueProps: entry.cssValueProps ?? [],
     boundaries: {
       rootClass: entry.publicClasses?.[0] ?? null,
       publicClasses: entry.publicClasses ?? [],

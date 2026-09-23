@@ -1661,6 +1661,29 @@
         "calc",
         "flex"
       ],
+      "cssValueProps": [
+        {
+          "path": "gap",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
+          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
+          "exceptionalShorthands": ["s", "xl"],
+          "rawPolicy": "forbid",
+          "examples": ["gap=\"xs\"", "gap={rem(0.25)}", "gap={calc(plus(rem(0.25), pct(10)))}"]
+        },
+        {
+          "path": "flex",
+          "grammar": "flex",
+          "helpers": ["flex"],
+          "shorthands": ["none", "auto", "initial"],
+          "canonicalShorthands": ["none", "auto", "initial"],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["flex=\"none\"", "flex={flex(1, 1, rem(20))}"]
+        }
+      ],
       "useWhen": [
         "Arrange component rows or sections in a vertical stretch-aligned stack.",
         "Let one bounded list own vertical scrolling, flex growth, or one or more physical-edge dividers.",
@@ -1839,6 +1862,18 @@
       "publicExports": [
         "ListActionRow"
       ],
+      "cssValueProps": [
+        {
+          "path": "style",
+          "grammar": "declarations",
+          "helpers": [],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["className=\"app-row\""]
+        }
+      ],
       "useWhen": [
         "A navigation or item row needs both a primary selectable action and an independently focusable trailing action."
       ],
@@ -1952,6 +1987,18 @@
       "purpose": "Selectable, disabled, trailing, and multiline navigation rows.",
       "publicExports": [
         "ListItem"
+      ],
+      "cssValueProps": [
+        {
+          "path": "style",
+          "grammar": "declarations",
+          "helpers": [],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["className=\"app-row\""]
+        }
       ],
       "useWhen": [
         "Render a selectable, disabled, trailing, or multiline sidebar/navigation action row whose descendants must remain clipped to the rounded row boundary."
@@ -2747,6 +2794,18 @@
         "uiColor",
         "colorVar"
       ],
+      "cssValueProps": [
+        {
+          "path": "choices[].color",
+          "grammar": "color",
+          "helpers": ["uiColor", "colorVar"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["color: uiColor(\"success\")", "color: colorVar(\"--app-choice-color\")"]
+        }
+      ],
       "useWhen": [
         "Choose a controlled value from a moderate or long list, including grouped and icon-bearing choices.",
         "Color an optional choice icon with uiColor() or colorVar(); the CssColor contract intentionally rejects lengths and raw color strings."
@@ -3196,6 +3255,41 @@
       "purpose": "A subtle, unanimated loading placeholder block for a not-yet-known value slot.",
       "publicExports": [
         "Skeleton"
+      ],
+      "cssValueProps": [
+        {
+          "path": "width",
+          "grammar": "size",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["auto", "min-content", "max-content", "fit-content"],
+          "canonicalShorthands": ["auto", "min-content", "max-content", "fit-content"],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["width={em(12)}", "width=\"fit-content\""]
+        },
+        {
+          "path": "height",
+          "grammar": "size",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["auto", "min-content", "max-content", "fit-content"],
+          "canonicalShorthands": ["auto", "min-content", "max-content", "fit-content"],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["height={em(1.5)}"]
+        },
+        {
+          "path": "radius",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["radius={px(999)}"]
+        }
       ],
       "useWhen": [
         "Stand in for a value that is still loading, on its own or via a component's placeholder prop, keeping the surrounding layout stable.",

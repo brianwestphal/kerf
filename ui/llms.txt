@@ -63,6 +63,8 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 6. **Before calling an integration complete**, run
    [`kerf-ui-doctor`](./docs/ui-doctor.md). Its portable JSON report merges
    profile/catalog, TypeScript, Kerf ESLint, and static analyzer diagnostics;
+   CSS-adjacent component props are checked from catalog `cssValueProps`, so
+   prefer its canonical shorthand or typed helper over raw CSS strings;
    repair source-located errors until exit 0. Use full mode for release gates;
    generated `dist`/`coverage`, dependency, cache, evidence, and nested-worktree
    directories are excluded consistently from every static stage.

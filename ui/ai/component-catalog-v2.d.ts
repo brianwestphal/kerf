@@ -9,6 +9,25 @@ export type CatalogDiagnostic = {
   when: string;
   message: string;
 };
+export type CatalogCssValueProp = {
+  path: string;
+  grammar:
+    | 'length'
+    | 'size'
+    | 'flex'
+    | 'color'
+    | 'declarations'
+    | 'media-query'
+    | 'pixels';
+  helpers: string[];
+  nonStandaloneHelpers?: string[];
+  shorthands: string[];
+  canonicalShorthands: string[];
+  exceptionalShorthands: string[];
+  rawPolicy: 'forbid' | 'allow' | 'unsafe-only';
+  unsafeHelper?: string;
+  examples: string[];
+};
 export interface CatalogCompositionEntryV2 {
   key: CatalogQualifiedKey;
   package: string;
@@ -58,6 +77,7 @@ export interface CatalogCompositionEntryV2 {
     publicTokens: string[];
     publicParts?: string[];
   };
+  cssValueProps?: CatalogCssValueProp[];
   diagnostics: CatalogDiagnostic[];
   provenance: { selection: string; composition: string };
 }

@@ -10,6 +10,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added catalog-driven CSS value diagnostics across `eslint-plugin-kerfjs`,
+  `kerf-ui-analyze`, and `kerf-ui-doctor`. Stable `KUI-L013`–`KUI-L017`
+  findings now identify raw or unknown values, wrong-dimension helpers,
+  incomplete expressions, declaration-list escapes, and review-worthy
+  off-scale spacing from first- or third-party component catalogs.
 - Extended the property-specific `@kerfjs/ui/css-values` contracts: `List.flex`
   now uses finite keywords or `flex()`, `Skeleton` dimensions use `CssSize` and
   `CssLength`, and `SelectChoice.color` uses `uiColor()` or `colorVar()`.

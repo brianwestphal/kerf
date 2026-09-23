@@ -219,6 +219,10 @@
           "properties": { "obligations": { "$ref": "#/$defs/stringList" } },
           "additionalProperties": false
         },
+        "cssValueProps": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/cssValueProp" }
+        },
         "boundaries": {
           "type": "object",
           "required": ["rootClass", "publicClasses", "publicTokens"],
@@ -248,6 +252,45 @@
           },
           "additionalProperties": false
         }
+      },
+      "additionalProperties": false
+    },
+    "cssValueProp": {
+      "type": "object",
+      "required": [
+        "path",
+        "grammar",
+        "helpers",
+        "shorthands",
+        "canonicalShorthands",
+        "exceptionalShorthands",
+        "rawPolicy",
+        "examples"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "pattern": "^[A-Za-z][A-Za-z0-9]*(?:\\[\\]\\.[A-Za-z][A-Za-z0-9]*)?$"
+        },
+        "grammar": {
+          "enum": [
+            "length",
+            "size",
+            "flex",
+            "color",
+            "declarations",
+            "media-query",
+            "pixels"
+          ]
+        },
+        "helpers": { "$ref": "#/$defs/stringList" },
+        "nonStandaloneHelpers": { "$ref": "#/$defs/stringList" },
+        "shorthands": { "$ref": "#/$defs/stringList" },
+        "canonicalShorthands": { "$ref": "#/$defs/stringList" },
+        "exceptionalShorthands": { "$ref": "#/$defs/stringList" },
+        "rawPolicy": { "enum": ["forbid", "allow", "unsafe-only"] },
+        "unsafeHelper": { "type": "string", "minLength": 1 },
+        "examples": { "$ref": "#/$defs/stringList" }
       },
       "additionalProperties": false
     }

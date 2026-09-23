@@ -40,6 +40,7 @@
         "accessibility": { "type": "array", "items": { "type": "string" } },
         "publicClasses": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "publicTokens": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "cssValueProps": { "type": "array", "items": { "$ref": "#/$defs/cssValueProp" }, "uniqueItems": true },
         "geometry": { "$ref": "#/$defs/geometry" },
         "delivery": { "$ref": "#/$defs/delivery" },
         "links": { "$ref": "#/$defs/links" }
@@ -59,6 +60,28 @@
     },
     "geometryOwner": {
       "enum": ["self", "parent", "child", "none", "conditional"]
+    },
+    "cssValueProp": {
+      "type": "object",
+      "required": ["path", "grammar", "helpers", "shorthands", "canonicalShorthands", "exceptionalShorthands", "rawPolicy", "examples"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9]*(?:\\[\\]\\.[A-Za-z][A-Za-z0-9]*)?$" },
+        "grammar": { "enum": ["length", "size", "flex", "color", "declarations", "media-query", "pixels"] },
+        "helpers": { "$ref": "#/$defs/stringList" },
+        "nonStandaloneHelpers": { "$ref": "#/$defs/stringList" },
+        "shorthands": { "$ref": "#/$defs/stringList" },
+        "canonicalShorthands": { "$ref": "#/$defs/stringList" },
+        "exceptionalShorthands": { "$ref": "#/$defs/stringList" },
+        "rawPolicy": { "enum": ["forbid", "allow", "unsafe-only"] },
+        "unsafeHelper": { "type": "string", "minLength": 1 },
+        "examples": { "$ref": "#/$defs/stringList" }
+      },
+      "additionalProperties": false
+    },
+    "stringList": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
     },
     "alternative": {
       "type": "object",

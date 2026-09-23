@@ -123,6 +123,8 @@ describe('Kerf UI static analyzer', () => {
         entries: [
           {
             key: '@acme/ui:widget',
+            package: '@acme/ui',
+            id: 'widget',
             name: 'Widget',
             boundaries: {
               rootClass: 'acme-widget',
@@ -130,6 +132,18 @@ describe('Kerf UI static analyzer', () => {
               publicTokens: [],
               publicParts: ['label'],
             },
+            cssValueProps: [
+              {
+                path: 'gap',
+                grammar: 'length',
+                helpers: ['rem'],
+                shorthands: ['tight'],
+                canonicalShorthands: ['tight'],
+                exceptionalShorthands: [],
+                rawPolicy: 'forbid',
+                examples: ['gap="tight"'],
+              },
+            ],
           },
         ],
       }),
@@ -154,6 +168,10 @@ describe('Kerf UI static analyzer', () => {
       join(root, 'src/app.css'),
       '.acme-widget::part(label) { color: green; }\n.other-widget::part(label) { color: red; }\n.acme-widget::part(private) { color: red; }',
     );
+    await writeFile(
+      join(root, 'src/app.jsx'),
+      `import { Widget } from '@acme/ui'; export const App = () => <Widget gap="13px" />;`,
+    );
 
     const report = await analyzeUiProject({ root, adoption: true });
 
@@ -168,8 +186,59 @@ describe('Kerf UI static analyzer', () => {
         severity: 'review',
         evidence: expect.objectContaining({ part: 'private' }),
       }),
+      expect.objectContaining({
+        ruleId: 'KUI-L013',
+        severity: 'error',
+        evidence: expect.objectContaining({ component: '@acme/ui:widget' }),
+      }),
     ]);
-    expect(report.summary).toMatchObject({ errors: 0, review: 2 });
+    expect(report.summary).toMatchObject({ errors: 1, review: 2 });
+  });
+
+  it('enforces cataloged CSS value grammars in JavaScript, TSX, and nested values', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-values-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'src/values.js'),
+      `import { List, flex, plus, rem, px } from '@kerfjs/ui';
+List({ gap: '11px' });
+List({ gap: flex(1) });
+List({ gap: plus(rem(1), px(2)) });
+List({ gap: 'xl' });
+`,
+    );
+    await writeFile(
+      join(root, 'src/values.tsx'),
+      `import { ListItem, Select } from '@kerfjs/ui';
+export const Values = () => <><ListItem style="color: red" /><Select choices={[{ label: 'A', value: 'a', color: '#fff' }]} /></>;
+`,
+    );
+    await writeFile(
+      join(root, 'src/dynamic.tsx'),
+      `import { ListItem } from '@kerfjs/ui'; const declarations = getStyle(); export const Dynamic = () => <ListItem style={declarations} />;`,
+    );
+
+    const report = await analyzeUiProject({ root, profile: packageProfile });
+    expect(report.diagnostics.map(({ ruleId }) => ruleId)).toEqual(
+      expect.arrayContaining([
+        'KUI-L013',
+        'KUI-L014',
+        'KUI-L015',
+        'KUI-L016',
+        'KUI-L017',
+      ]),
+    );
+    expect(
+      report.diagnostics.find(({ ruleId }) => ruleId === 'KUI-L014')?.message,
+    ).toContain('`rem()`');
+    expect(report.files).toEqual([
+      'src/dynamic.tsx',
+      'src/values.js',
+      'src/values.tsx',
+    ]);
+    expect(
+      report.diagnostics.filter(({ ruleId }) => ruleId === 'KUI-L016'),
+    ).toHaveLength(2);
   });
 
   it('emits portable text and SARIF contracts', async () => {

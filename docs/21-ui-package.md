@@ -355,6 +355,10 @@ TSX/JSX without executing application code, and emits stable `KUI-L###`
 diagnostics for private selectors, unknown tokens, competing geometry owners,
 repeated insets, forced component dimensions, off-scale literal spacing,
 nested scroll owners, and dynamic class expressions needing human review.
+Catalog `cssValueProps` also drive exact diagnostics for raw or unknown
+shorthands, wrong-dimension helpers, uncomposed expressions, forbidden
+declaration lists, and exceptional spacing in JavaScript/TypeScript calls and
+JSX. First- and third-party catalogs use the same contract.
 Each source resolves its own parent-to-child directory profile and only receives
 facts from its reachable relative CSS import graph, so sibling monorepo apps do
 not leak policy or same-named class behavior into one another. Shared stylesheet

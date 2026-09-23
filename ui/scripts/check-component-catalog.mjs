@@ -321,6 +321,40 @@ for (const entry of entries) {
     if (!idSet.has(alternative.id))
       fail(`${entry.id} names unknown alternative ${alternative.id}`);
   }
+  const cssPaths = new Set();
+  for (const contract of entry.cssValueProps ?? []) {
+    if (cssPaths.has(contract.path))
+      fail(`${entry.id} repeats CSS value path ${contract.path}`);
+    cssPaths.add(contract.path);
+    for (const shorthand of [
+      ...contract.canonicalShorthands,
+      ...contract.exceptionalShorthands,
+    ])
+      if (!contract.shorthands.includes(shorthand))
+        fail(
+          `${entry.id}:${contract.path} classifies unknown shorthand ${shorthand}`,
+        );
+    if (
+      contract.canonicalShorthands.some((item) =>
+        contract.exceptionalShorthands.includes(item),
+      )
+    )
+      fail(
+        `${entry.id}:${contract.path} canonical and exceptional shorthands overlap`,
+      );
+    if (
+      (contract.nonStandaloneHelpers ?? []).some((item) =>
+        contract.helpers.includes(item),
+      )
+    )
+      fail(
+        `${entry.id}:${contract.path} standalone and expression helpers overlap`,
+      );
+    if (contract.rawPolicy === 'unsafe-only' && !contract.unsafeHelper)
+      fail(
+        `${entry.id}:${contract.path} unsafe-only policy requires unsafeHelper`,
+      );
+  }
 }
 
 const sourceFile = ts.createSourceFile(

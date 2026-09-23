@@ -28,6 +28,14 @@ named zones and cardinality, optional explicit JSX prop bindings, child concepts
 responsive ownership, layout and geometry, accessibility obligations, public
 CSS boundaries, diagnostics, and provenance.
 
+An entry's optional `cssValueProps` makes CSS-adjacent prop grammar equally
+machine-evaluable. Each path records the property grammar, finite shorthands,
+canonical versus exceptional spacing choices, standalone and expression-only
+helpers, raw/unsafe policy, and serialization examples. Nested paths use the
+bounded `items[].property` form. Consumer catalogs can publish the same facts;
+ESLint, `kerf-ui-analyze`, and `kerf-ui-doctor` then issue the same stable
+`KUI-L013`–`KUI-L017` feedback for application and third-party components.
+
 The generator starts with permissive defaults. An `any` mode records that the
 catalog has no defensible prohibition; it does not claim every composition is
 recommended. Objective rules live in

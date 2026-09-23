@@ -36,6 +36,11 @@ export const UI_ANALYSIS_RULES = Object.freeze({
   },
   'KUI-L011': { severity: 'error', title: 'Uncataloged shadow part override' },
   'KUI-L012': { severity: 'error', title: 'Private Kerf token assignment' },
+  'KUI-L013': { severity: 'error', title: 'Uncataloged CSS value literal' },
+  'KUI-L014': { severity: 'error', title: 'Wrong CSS value helper dimension' },
+  'KUI-L015': { severity: 'error', title: 'Non-standalone CSS expression' },
+  'KUI-L016': { severity: 'error', title: 'Forbidden declaration-list escape' },
+  'KUI-L017': { severity: 'review', title: 'Exceptional spacing shorthand' },
 });
 
 const adoptionRules = new Set([
@@ -46,7 +51,7 @@ const adoptionRules = new Set([
   'KUI-L012',
 ]);
 
-const sourceExtensions = new Set(['.tsx', '.jsx']);
+const sourceExtensions = new Set(['.js', '.jsx', '.mjs', '.ts', '.tsx']);
 const spacingProperties = /^(?:margin|padding|gap|inset)(?:-|$)/;
 const dimensionProperties =
   /^(?:width|height|min-width|max-width|min-height|max-height)$/;
@@ -133,7 +138,13 @@ function relativeStyleImports(file, source) {
     });
     return imports;
   }
-  const syntax = file.endsWith('.tsx') ? ts.ScriptKind.TSX : ts.ScriptKind.JSX;
+  const syntax = file.endsWith('.tsx')
+    ? ts.ScriptKind.TSX
+    : file.endsWith('.jsx')
+      ? ts.ScriptKind.JSX
+      : file.endsWith('.ts')
+        ? ts.ScriptKind.TS
+        : ts.ScriptKind.JS;
   const module = ts.createSourceFile(
     file,
     source,
@@ -426,6 +437,168 @@ function literalClasses(attribute) {
   return { values: [], dynamic: true };
 }
 
+function cssPreferred(contract) {
+  return (
+    [
+      ...(contract.canonicalShorthands ?? []).map((item) => `\`${item}\``),
+      ...(contract.helpers ?? []).map((item) => `\`${item}()\``),
+    ].join(' or ') || 'a cataloged component prop'
+  );
+}
+
+function objectProperty(object, name) {
+  return object?.properties.find(
+    (property) =>
+      ts.isPropertyAssignment(property) &&
+      property.name.getText().replaceAll(/["']/g, '') === name,
+  );
+}
+
+function nestedCssValues(value, tail) {
+  if (!tail) return value ? [value] : [];
+  if (!value || !ts.isArrayLiteralExpression(value)) return [];
+  return value.elements.flatMap((element) => {
+    if (!ts.isObjectLiteralExpression(element)) return [];
+    const property = objectProperty(element, tail);
+    return property ? [property.initializer] : [];
+  });
+}
+
+function jsxCssValues(opening, path) {
+  const [head, tail] = path.split('[].');
+  const attribute = opening.attributes.properties.find(
+    (item) => ts.isJsxAttribute(item) && item.name.getText() === head,
+  );
+  if (!attribute?.initializer) return [];
+  const value = ts.isJsxExpression(attribute.initializer)
+    ? attribute.initializer.expression
+    : attribute.initializer;
+  return nestedCssValues(value, tail);
+}
+
+function callCssValues(call, path) {
+  const options = call.arguments[0];
+  if (!options || !ts.isObjectLiteralExpression(options)) return [];
+  const [head, tail] = path.split('[].');
+  const property = objectProperty(options, head);
+  return property ? nestedCssValues(property.initializer, tail) : [];
+}
+
+function cssLiteral(value) {
+  if (
+    ts.isStringLiteralLike(value) ||
+    ts.isNoSubstitutionTemplateLiteral(value)
+  )
+    return value.text;
+  return undefined;
+}
+
+function importedName(expression, helperImports, namespaces, packageName) {
+  let helper;
+  if (ts.isIdentifier(expression)) helper = helperImports.get(expression.text);
+  else if (
+    ts.isPropertyAccessExpression(expression) &&
+    ts.isIdentifier(expression.expression) &&
+    namespaces.has(expression.expression.text)
+  )
+    helper = {
+      imported: expression.name.text,
+      source: namespaces.get(expression.expression.text),
+    };
+  else helper = undefined;
+  if (!helper) return undefined;
+  return helper.source === packageName ||
+    helper.source.startsWith(`${packageName}/`)
+    ? helper.imported
+    : undefined;
+}
+
+function inspectCssValues(
+  file,
+  source,
+  entry,
+  valuesFor,
+  helperImports,
+  namespaces,
+  diagnostics,
+) {
+  for (const contract of entry.cssValueProps ?? []) {
+    const preferred = cssPreferred(contract);
+    for (const value of valuesFor(contract.path)) {
+      const at = location(file, value, source);
+      if (
+        contract.grammar === 'declarations' &&
+        contract.rawPolicy !== 'allow'
+      ) {
+        diagnostics.push(
+          diagnostic(
+            'KUI-L016',
+            at,
+            `\`${entry.name}.${contract.path}\` is a forbidden declaration-list escape; use \`className\`, public tokens, or cataloged props.`,
+            { component: entry.key, path: contract.path },
+          ),
+        );
+        continue;
+      }
+      const literal = cssLiteral(value);
+      if (literal !== undefined) {
+        if (contract.exceptionalShorthands?.includes(literal)) {
+          diagnostics.push(
+            diagnostic(
+              'KUI-L017',
+              at,
+              `\`${literal}\` is exceptional for \`${entry.name}.${contract.path}\`; prefer ${preferred} unless the off-scale choice is deliberate.`,
+              { component: entry.key, path: contract.path, value: literal },
+            ),
+          );
+        } else if (
+          !contract.shorthands?.includes(literal) &&
+          contract.rawPolicy !== 'allow'
+        ) {
+          diagnostics.push(
+            diagnostic(
+              'KUI-L013',
+              at,
+              `\`${entry.name}.${contract.path}\` uses ${contract.grammar} grammar; replace raw \`${literal}\` with ${preferred}.`,
+              { component: entry.key, path: contract.path, value: literal },
+            ),
+          );
+        }
+        continue;
+      }
+      if (!ts.isCallExpression(value)) continue;
+      const helper = importedName(
+        value.expression,
+        helperImports,
+        namespaces,
+        entry.package,
+      );
+      if (!helper) continue;
+      if (contract.nonStandaloneHelpers?.includes(helper))
+        diagnostics.push(
+          diagnostic(
+            'KUI-L015',
+            at,
+            `\`${helper}()\` is not standalone for \`${entry.name}.${contract.path}\`; wrap it with an accepted composer such as \`calc()\`.`,
+            { component: entry.key, path: contract.path, helper },
+          ),
+        );
+      else if (
+        !contract.helpers?.includes(helper) &&
+        contract.unsafeHelper !== helper
+      )
+        diagnostics.push(
+          diagnostic(
+            'KUI-L014',
+            at,
+            `\`${helper}()\` has the wrong grammar for \`${entry.name}.${contract.path}\`; use ${preferred}.`,
+            { component: entry.key, path: contract.path, helper },
+          ),
+        );
+    }
+  }
+}
+
 function inspectTsx(file, sourceText, facts, cssFacts, diagnostics) {
   const source = ts.createSourceFile(
     file,
@@ -435,6 +608,8 @@ function inspectTsx(file, sourceText, facts, cssFacts, diagnostics) {
     ts.ScriptKind.TSX,
   );
   const imports = new Map();
+  const helperImports = new Map();
+  const namespaces = new Map();
   for (const statement of source.statements) {
     if (
       !ts.isImportDeclaration(statement) ||
@@ -442,13 +617,27 @@ function inspectTsx(file, sourceText, facts, cssFacts, diagnostics) {
     )
       continue;
     const module = statement.moduleSpecifier.text;
-    if (!module.includes('kerf') && !module.startsWith('@')) continue;
+    const importClause = statement.importClause;
+    if (importClause?.name)
+      helperImports.set(importClause.name.text, {
+        imported: 'default',
+        source: module,
+      });
     const bindings = statement.importClause?.namedBindings;
+    if (bindings && ts.isNamespaceImport(bindings)) {
+      namespaces.set(bindings.name.text, module);
+      continue;
+    }
     if (!bindings || !ts.isNamedImports(bindings)) continue;
     for (const item of bindings.elements) {
       const exported = item.propertyName?.text ?? item.name.text;
+      helperImports.set(item.name.text, { imported: exported, source: module });
       const entry = facts.exportEntries.get(exported);
-      if (entry) imports.set(item.name.text, entry);
+      if (
+        entry &&
+        (module === entry.package || module.startsWith(`${entry.package}/`))
+      )
+        imports.set(item.name.text, entry);
     }
   }
   const stack = [];
@@ -456,7 +645,23 @@ function inspectTsx(file, sourceText, facts, cssFacts, diagnostics) {
     if (ts.isJsxElement(node) || ts.isJsxSelfClosingElement(node)) {
       const opening = ts.isJsxElement(node) ? node.openingElement : node;
       const tag = opening.tagName.getText(source);
-      const entry = imports.get(tag);
+      const namespaceEntry =
+        ts.isPropertyAccessExpression(opening.tagName) &&
+        ts.isIdentifier(opening.tagName.expression)
+          ? facts.exportEntries.get(opening.tagName.name.text)
+          : undefined;
+      const namespaceSource =
+        ts.isPropertyAccessExpression(opening.tagName) &&
+        ts.isIdentifier(opening.tagName.expression)
+          ? namespaces.get(opening.tagName.expression.text)
+          : undefined;
+      const entry =
+        imports.get(tag) ??
+        (namespaceEntry &&
+        (namespaceSource === namespaceEntry.package ||
+          namespaceSource?.startsWith(`${namespaceEntry.package}/`))
+          ? namespaceEntry
+          : undefined);
       const classAttribute = opening.attributes.properties.find(
         (item) =>
           ts.isJsxAttribute(item) &&
@@ -464,6 +669,16 @@ function inspectTsx(file, sourceText, facts, cssFacts, diagnostics) {
       );
       const classes = literalClasses(classAttribute);
       const at = location(file, opening, source);
+      if (entry)
+        inspectCssValues(
+          file,
+          source,
+          entry,
+          (path) => jsxCssValues(opening, path),
+          helperImports,
+          namespaces,
+          diagnostics,
+        );
       if (classes.dynamic)
         diagnostics.push(
           diagnostic(
@@ -527,6 +742,33 @@ function inspectTsx(file, sourceText, facts, cssFacts, diagnostics) {
         for (const child of node.children) visit(child);
       stack.pop();
       return;
+    }
+    if (ts.isCallExpression(node)) {
+      const namespaceEntry = ts.isPropertyAccessExpression(node.expression)
+        ? facts.exportEntries.get(node.expression.name.text)
+        : undefined;
+      const namespaceSource =
+        ts.isPropertyAccessExpression(node.expression) &&
+        ts.isIdentifier(node.expression.expression)
+          ? namespaces.get(node.expression.expression.text)
+          : undefined;
+      const entry = ts.isIdentifier(node.expression)
+        ? imports.get(node.expression.text)
+        : namespaceEntry &&
+            (namespaceSource === namespaceEntry.package ||
+              namespaceSource?.startsWith(`${namespaceEntry.package}/`))
+          ? namespaceEntry
+          : undefined;
+      if (entry)
+        inspectCssValues(
+          file,
+          source,
+          entry,
+          (path) => callCssValues(node, path),
+          helperImports,
+          namespaces,
+          diagnostics,
+        );
     }
     ts.forEachChild(node, visit);
   };

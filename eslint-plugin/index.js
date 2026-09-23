@@ -7,6 +7,7 @@ import preferModuleJsxAugmentation from './lib/rules/prefer-module-jsx-augmentat
 import requireDataKeyInEach from './lib/rules/require-data-key-in-each.js';
 import requireDelegateDisposer from './lib/rules/require-delegate-disposer.js';
 import uiComposition from './lib/rules/ui-composition.js';
+import uiCssValues from './lib/rules/ui-css-values.js';
 import uiPreferences from './lib/rules/ui-preferences.js';
 import uiPublicBoundaries from './lib/rules/ui-public-boundaries.js';
 import uiWiring from './lib/rules/ui-wiring.js';
@@ -23,6 +24,7 @@ const plugin = {
     'prefer-attr-selector': preferAttrSelector,
     'ai-assistant-configs': aiAssistantConfigs,
     'ui-composition': uiComposition,
+    'ui-css-values': uiCssValues,
     'ui-preferences': uiPreferences,
     'ui-public-boundaries': uiPublicBoundaries,
     'ui-wiring': uiWiring,
@@ -62,6 +64,7 @@ const recommendedUiRules = {
   ...recommendedRules,
   'kerfjs/ui-public-boundaries': 'error',
   'kerfjs/ui-composition': 'error',
+  'kerfjs/ui-css-values': 'error',
   'kerfjs/ui-preferences': 'warn',
   'kerfjs/ui-wiring': 'warn',
 };

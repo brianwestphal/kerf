@@ -229,3 +229,55 @@ test('a downstream app moves from broken to clean using the supported doctor loo
     await rm(root, { recursive: true, force: true });
   }
 }, 30_000);
+
+test('doctor surfaces catalog-driven CSS value diagnostics for downstream JSX', async () => {
+  const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-values-'));
+  try {
+    await mkdir(resolve(root, 'src'), { recursive: true });
+    await writeFile(
+      resolve(root, 'package.json'),
+      '{"name":"doctor-values","private":true,"type":"module"}\n',
+    );
+    await writeFile(
+      resolve(root, 'tsconfig.json'),
+      JSON.stringify({
+        compilerOptions: {
+          allowJs: true,
+          checkJs: true,
+          jsx: 'preserve',
+          noEmit: true,
+          module: 'esnext',
+          moduleResolution: 'bundler',
+          target: 'es2022',
+        },
+        include: ['src/**/*'],
+      }),
+    );
+    await writeFile(
+      resolve(root, 'src/app.jsx'),
+      `import { List } from '@kerfjs/ui'; export const App = () => <List gap="17px" />;\n`,
+    );
+    await link(root, 'typescript', resolve(uiRoot, 'node_modules/typescript'));
+    await link(root, 'eslint', resolve(uiRoot, 'node_modules/eslint'));
+    await link(
+      root,
+      'eslint-plugin-kerfjs',
+      resolve(repositoryRoot, 'eslint-plugin'),
+    );
+    await link(root, '@kerfjs/ui', uiRoot);
+
+    const report = await doctor(root);
+    expect(report.status).toBe(1);
+    expect(report.report.diagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          id: 'KUI-L013',
+          message: expect.stringContaining('`List.gap`'),
+          documentation: expect.any(String),
+        }),
+      ]),
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+}, 30_000);

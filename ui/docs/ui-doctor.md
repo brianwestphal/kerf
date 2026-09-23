@@ -17,6 +17,13 @@ The catalog stage discovers the package-default application UI profile and works
 
 TypeScript uses the compiler API with `noEmit`. ESLint loads the installed `eslint-plugin-kerfjs` `recommended-ui` preset (`--eslint strict-ui` opts into advisory rules as errors). This is deliberately an isolated Kerf lint pass rather than the consumer's complete ESLint configuration. For each file, the doctor projects the applicable core ESLint rules and `linterOptions` from the consumer configuration so core-rule suppression directives retain the same used/unused semantics as the application's normal lint command. Consumer plugin rules are not executed, and inline directives for plugins such as `@typescript-eslint` therefore do not produce false "rule definition not found" diagnostics; the consumer's normal ESLint command remains authoritative for those rules. Unknown `kerfjs/*` directives still fail the doctor pass. Stable KUI identifiers come from the packaged `application-ui-diagnostic-ids-v1.json` registry; the doctor also reads installed ESLint message metadata for semantic conflict detection instead of duplicating rule definitions. The analyzer calls the public `@kerfjs/ui/analyzer` contract. None of these stages executes generated application code.
 
+Property-specific CSS values are evaluated from each first- or third-party
+catalog entry's `cssValueProps`. `KUI-L013`–`KUI-L016` are blocking grammar
+violations and name a preferred shorthand/helper; `KUI-L017` keeps an
+exceptional but valid spacing choice in the review queue. The ESLint and
+analyzer stages share these ids, so the normalized report can be consumed as
+one repair loop without tool-specific translations.
+
 The browser evaluator is different: it runs the application and is disabled by default. It only runs when configuration supplies `browser.url` or the command receives `--browser-url`. Start and authorize the target application separately.
 
 An unavailable or failed stage does not prevent independent stages from reporting. Its final exit is still a configuration failure, so a partial run cannot appear clean.

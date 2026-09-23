@@ -33,6 +33,7 @@
           "Decorative icons are aria-hidden; meaningful icons require a label."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -75,6 +76,7 @@
           "The arrow is decorative; expose expanded state through aria-expanded on its owning control and keep that control's accessible name stable."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-disclosure-arrow",
         "publicClasses": ["kui-disclosure-arrow"],
@@ -123,6 +125,7 @@
           "Preserve Web Awesome semantics and Kerf focus/contrast tokens."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -175,6 +178,7 @@
           "Preserve semantic contrast relationships and the visible focus ring when overriding foundation colors."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -342,6 +346,7 @@
           "When collapse replaces one control with its counterpart in another toolbar, move focus to the newly rendered restore or collapse control."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-content",
         "publicClasses": [
@@ -454,6 +459,7 @@
           "Keep fixed header/footer chrome outside the single scrolling content slot so reading and focus order remain coherent."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-pane",
         "publicClasses": [
@@ -536,6 +542,7 @@
           "Mark a preferred initial heading or control with data-nav-focus when the first enabled focusable descendant is not the right target."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-nav-stack",
         "publicClasses": [
@@ -636,6 +643,7 @@
           "Wire the compact back action and optional separator keyboard behavior, and restore focus when controlled navigation replaces a view."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-split-view",
         "publicClasses": [
@@ -709,6 +717,7 @@
           "Wire selection through the controlled active id while leaving inactive scenes mounted and hidden."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-tab-scaffold",
         "publicClasses": [
@@ -803,6 +812,7 @@
           "Keep collapse controls outside the disappearing region and move focus when a controlled rerender replaces a collapse control with its restore control."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-workbench",
         "publicClasses": [
@@ -890,6 +900,7 @@
           "Keep the restore control outside the disappearing panel and use wireSidebar for focus transfer, Escape, backdrop dismissal, and compact focus trapping."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-collapsible-panel",
         "publicClasses": [
@@ -961,6 +972,7 @@
           "Pass ariaLabel only when the surface is a distinct named region; otherwise it remains a non-landmark grouping."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-sunken-panel",
         "publicClasses": ["kui-sunken-panel"],
@@ -1051,6 +1063,7 @@
           "Supply a label when the toolbar needs an accessible name."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-toolbar",
         "publicClasses": [
@@ -1117,6 +1130,7 @@
           "Name the group when its relationship is not evident from context."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-toolbar-control-group",
         "publicClasses": ["kui-toolbar-control-group"],
@@ -1184,6 +1198,7 @@
           "Use popup surfaces only for real dropdown menus with named triggers."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-dialog-surface",
         "publicClasses": ["kui-dialog-surface", "kui-popup-surface"],
@@ -1226,6 +1241,7 @@
           "Give the toolbar an accessible name (label is required — it exposes role=\"toolbar\")."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-floating-toolbar",
         "publicClasses": ["kui-floating-toolbar"],
@@ -1271,6 +1287,7 @@
           "Plain text is not a heading; pass headingLevel to expose role=heading + aria-level for a page/section title."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-toolbar-text",
         "publicClasses": ["kui-toolbar-text"],
@@ -1315,6 +1332,7 @@
           "Preserve heading and description relationships for the containing surface."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -1353,6 +1371,7 @@
           "Name ValueTable with its label; ValueTableRow supplies dt/dd semantics, and row icons stay decorative unless meaning requires an accessible label."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-value-table",
         "publicClasses": [
@@ -1429,6 +1448,33 @@
           "Give a scrollable List a bounded block size and keep keyboard focus visible as its contents scroll."
         ]
       },
+      "cssValueProps": [
+        {
+          "path": "gap",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
+          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
+          "exceptionalShorthands": ["s", "xl"],
+          "rawPolicy": "forbid",
+          "examples": [
+            "gap=\"xs\"",
+            "gap={rem(0.25)}",
+            "gap={calc(plus(rem(0.25), pct(10)))}"
+          ]
+        },
+        {
+          "path": "flex",
+          "grammar": "flex",
+          "helpers": ["flex"],
+          "shorthands": ["none", "auto", "initial"],
+          "canonicalShorthands": ["none", "auto", "initial"],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["flex=\"none\"", "flex={flex(1, 1, rem(20))}"]
+        }
+      ],
       "boundaries": {
         "rootClass": "kui-list",
         "publicClasses": ["kui-list"],
@@ -1469,6 +1515,7 @@
           "The owning control retains a stable accessible name."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-list-header",
         "publicClasses": [
@@ -1554,6 +1601,18 @@
           "Selection semantics are exposed only by the primary button; label, icon, and trailingActionIcon are dormant SafeHtml and must not contain interactive descendants; never place an interactive descendant in ListItem.trailing."
         ]
       },
+      "cssValueProps": [
+        {
+          "path": "style",
+          "grammar": "declarations",
+          "helpers": [],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["className=\"app-row\""]
+        }
+      ],
       "boundaries": {
         "rootClass": "kui-list-action-row",
         "publicClasses": [
@@ -1633,6 +1692,18 @@
           "Uses native button activation; selected maps to aria-current and pressed to aria-pressed; rootAttributes cannot add role=menuitem or replace owned ARIA; trailing is dormant content and must not contain controls."
         ]
       },
+      "cssValueProps": [
+        {
+          "path": "style",
+          "grammar": "declarations",
+          "helpers": [],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["className=\"app-row\""]
+        }
+      ],
       "boundaries": {
         "rootClass": "kui-list-item",
         "publicClasses": [
@@ -1698,6 +1769,7 @@
           "A layout wrapper only; it adds no role or name — the wrapped control keeps its own."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-list-inset-control",
         "publicClasses": ["kui-list-inset-control"],
@@ -1732,6 +1804,7 @@
       "accessibility": {
         "obligations": ["A layout wrapper only; it adds no role or name."]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-list-inset-text",
         "publicClasses": [
@@ -1783,6 +1856,7 @@
           "Keep one selected tab synchronized with one named tabpanel and retain the wireTabBars disposer."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -1852,6 +1926,7 @@
           "Use rootAttributes only for application data-* metadata; component-owned identity, state, action, and role semantics are protected at runtime."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-app-tab",
         "publicClasses": [
@@ -1948,6 +2023,7 @@
           "Selection and focus behavior follow the configured activation mode."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-tab-bar",
         "publicClasses": [
@@ -1995,6 +2071,7 @@
           "Every choice has a meaningful label."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-segmented-control",
         "publicClasses": [
@@ -2087,6 +2164,7 @@
           "In collapsible mode, wireTokenSearchFields manages this by default: activating the trigger reveals the searchbox and moves focus into it, Escape on an empty field collapses and returns focus to the trigger, and focus leaving an empty field collapses it; each behavior is individually opt-out."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-token-search",
         "publicClasses": [
@@ -2171,6 +2249,7 @@
           "Keep handleIcon decorative and free of interactive descendants; the separator owns focus, naming, and pointer/keyboard interaction."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-resizable-region",
         "publicClasses": [
@@ -2240,6 +2319,21 @@
           "Hint text is visible below the control through Web Awesome's native hint relationship; placeholderText remains the empty value inside the closed control."
         ]
       },
+      "cssValueProps": [
+        {
+          "path": "choices[].color",
+          "grammar": "color",
+          "helpers": ["uiColor", "colorVar"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "color: uiColor(\"success\")",
+            "color: colorVar(\"--app-choice-color\")"
+          ]
+        }
+      ],
       "boundaries": {
         "rootClass": "kui-select",
         "publicClasses": [
@@ -2302,6 +2396,7 @@
           "Choose polite status versus assertive alert deliberately."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -2358,6 +2453,7 @@
           "Keep optional badge content terse and do not rely on its tone alone for meaning."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-state-banner",
         "publicClasses": [
@@ -2472,6 +2568,7 @@
           "Busy state uses aria-busy; the illustration never supplies the only label."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-empty-state",
         "publicClasses": [
@@ -2530,6 +2627,7 @@
           "Labeled spinners use role img; decorative spinners are hidden and stop for reduced motion."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-loading-spinner",
         "publicClasses": ["kui-loading-spinner"],
@@ -2580,6 +2678,51 @@
           "Decorative by default (aria-hidden); pass label to announce it as an image. A component in placeholder mode marks itself aria-busy and disables its own controls."
         ]
       },
+      "cssValueProps": [
+        {
+          "path": "width",
+          "grammar": "size",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["auto", "min-content", "max-content", "fit-content"],
+          "canonicalShorthands": [
+            "auto",
+            "min-content",
+            "max-content",
+            "fit-content"
+          ],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["width={em(12)}", "width=\"fit-content\""]
+        },
+        {
+          "path": "height",
+          "grammar": "size",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["auto", "min-content", "max-content", "fit-content"],
+          "canonicalShorthands": [
+            "auto",
+            "min-content",
+            "max-content",
+            "fit-content"
+          ],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["height={em(1.5)}"]
+        },
+        {
+          "path": "radius",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["radius={px(999)}"]
+        }
+      ],
       "boundaries": {
         "rootClass": "kui-skeleton",
         "publicClasses": ["kui-skeleton", "kui-skeleton-lines"],
@@ -2610,6 +2753,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -2640,6 +2784,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -2670,6 +2815,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -2700,6 +2846,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -2730,6 +2877,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -2760,6 +2908,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -2790,6 +2939,7 @@
         "geometry": { "margin": "self", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -2820,6 +2970,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -2850,6 +3001,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -2880,6 +3032,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -2910,6 +3063,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -2940,6 +3094,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -2970,6 +3125,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3000,6 +3156,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3041,6 +3198,7 @@
         "geometry": { "margin": "self", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3071,6 +3229,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3112,6 +3271,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3142,6 +3302,7 @@
         "geometry": { "margin": "self", "border": "none", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3172,6 +3333,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3202,6 +3364,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3232,6 +3395,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3273,6 +3437,7 @@
         "geometry": { "margin": "self", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3303,6 +3468,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3333,6 +3499,7 @@
         "geometry": { "margin": "self", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3363,6 +3530,7 @@
         "geometry": { "margin": "self", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3393,6 +3561,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": ["hide-actions"],
@@ -3423,6 +3592,7 @@
         "geometry": { "margin": "parent", "border": "self", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3453,6 +3623,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3483,6 +3654,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3513,6 +3685,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3543,6 +3716,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3573,6 +3747,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3603,6 +3778,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3633,6 +3809,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3663,6 +3840,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3710,6 +3888,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3754,6 +3933,7 @@
         }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3784,6 +3964,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3814,6 +3995,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3844,6 +4026,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3874,6 +4057,7 @@
         "geometry": { "margin": "self", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3904,6 +4088,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3934,6 +4119,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3964,6 +4150,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -3994,6 +4181,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4024,6 +4212,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4054,6 +4243,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4084,6 +4274,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4114,6 +4305,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4144,6 +4336,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4174,6 +4367,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4204,6 +4398,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4234,6 +4429,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4264,6 +4460,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4294,6 +4491,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4324,6 +4522,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4354,6 +4553,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4384,6 +4584,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4414,6 +4615,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4444,6 +4646,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4474,6 +4677,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4504,6 +4708,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4534,6 +4739,7 @@
         "geometry": { "margin": "self", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4564,6 +4770,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4594,6 +4801,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4624,6 +4832,7 @@
         "geometry": { "margin": "none", "border": "self", "padding": "self" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4654,6 +4863,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4684,6 +4894,7 @@
         "geometry": { "margin": "none", "border": "child", "padding": "child" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4714,6 +4925,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4744,6 +4956,7 @@
         "geometry": { "margin": "none", "border": "none", "padding": "none" }
       },
       "accessibility": { "obligations": [] },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4791,6 +5004,7 @@
           "Each pane has one scroll owner and each resize handle keeps its separator keyboard contract."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4838,6 +5052,7 @@
           "Native buttons retain names, current state, sequential focus, and disclosure state; rows and standalone footer actions remain at least 44px tall."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4881,6 +5096,7 @@
           "Heading order and action focus order remain stable when controls wrap."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4924,6 +5140,7 @@
           "Web Awesome owns modal focus and Escape; the application adapter restores the invoking control after hide, and Toolbar plus ToolbarText supply the visible hierarchy."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -4971,6 +5188,7 @@
           "The form references its ToolbarText title and supporting-summary ids; production fields own labels and help; invalid submission creates an assertive persistent StateBanner while successful submission creates a polite persistent banner."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -5014,6 +5232,7 @@
           "Busy, polite, and assertive states use the appropriate production feedback semantics."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -5065,6 +5284,7 @@
           "Each control retains its own native name, pressed/value state, and keyboard contract."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -5112,6 +5332,7 @@
           "The back control is a real button; reduced motion collapses the slide to instant."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -5166,6 +5387,7 @@
           "Each component marks itself aria-busy and disables its own controls while loading; the composition keeps labels and structure stable across the transition."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
@@ -5217,6 +5439,7 @@
           "Each panel is a labeled aside that is aria-hidden while collapsed; toggles carry aria-expanded and the standard per-side glyph; while compact an open panel is an overlay with a backdrop, Escape and backdrop-click dismiss, and a trapped Tab ring."
         ]
       },
+      "cssValueProps": [],
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],

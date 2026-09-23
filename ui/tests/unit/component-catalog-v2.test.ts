@@ -122,6 +122,33 @@ describe('component catalog v2 composition contract', () => {
     expect('jsx' in workbench.zones.find(({ id }) => id === 'left-rail')!).toBe(
       false,
     );
+    expect(
+      v2.entries.find((entry) => entry.id === 'list')?.cssValueProps,
+    ).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          path: 'gap',
+          grammar: 'length',
+          canonicalShorthands: expect.arrayContaining(['xs', 'm']),
+          exceptionalShorthands: ['s', 'xl'],
+          nonStandaloneHelpers: ['plus'],
+          rawPolicy: 'forbid',
+        }),
+      ]),
+    );
+  });
+
+  it('rejects contradictory CSS value classifications', async () => {
+    const v2 = await readJson<ComponentCatalogV2>(
+      '../../ai/component-catalog-v2.json',
+    );
+    const list = v2.entries.find((entry) => entry.id === 'list')!;
+    list.cssValueProps![0]!.exceptionalShorthands.push('xs');
+    expect(validateCatalogV2(v2)).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining('canonical and exceptional shorthands overlap'),
+      ]),
+    );
   });
 
   it('rejects adversarial invalid fixtures with stable actionable findings', async () => {

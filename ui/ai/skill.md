@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.40.0
+kerf-ui-skill-version: 1.41.0
 ---
 
 # Building with @kerfjs/ui
@@ -101,6 +101,15 @@ against the resolved application profile. Use `--format sarif` in code-scanning
 workflows and `--fail-on-review` when the project requires a zero-review budget.
 Do not suppress a finding in source; add only a narrowly targeted, justified
 profile exception when the deviation is deliberate.
+
+For every CSS-adjacent component prop, read that entry's `cssValueProps`
+contract. Choose a canonical shorthand first, then an accepted typed helper.
+Never substitute an arbitrary string, a helper from another grammar, or an
+expression-only helper such as `plus()` without its cataloged composer. Treat
+`KUI-L013`–`KUI-L016` as required repairs; `KUI-L017` is a deliberate off-scale
+choice that should remain only when application context justifies it. Apply the
+same metadata when authoring consumer component catalogs so lint, analyzer, and
+doctor feedback covers local components too.
 
 Hard rules:
 

@@ -115,6 +115,77 @@ export const catalog = {
     }),
     component('select', 'Select', {
       wiring: { required: true, helpers: ['@kerfjs/ui/select/register'] },
+      cssValueProps: [
+        {
+          path: 'choices[].color',
+          grammar: 'color',
+          helpers: ['uiColor', 'colorVar'],
+          shorthands: [],
+          canonicalShorthands: [],
+          exceptionalShorthands: [],
+          rawPolicy: 'forbid',
+          examples: ['uiColor("accent")'],
+        },
+      ],
+    }),
+    component('list', 'List', {
+      cssValueProps: [
+        {
+          path: 'gap',
+          grammar: 'length',
+          helpers: ['px', 'rem', 'em', 'pct', 'space', 'lengthVar', 'calc'],
+          nonStandaloneHelpers: ['plus'],
+          shorthands: ['none', '2xs', 'xs', 's', 'm', 'l', 'xl'],
+          canonicalShorthands: ['none', '2xs', 'xs', 'm', 'l'],
+          exceptionalShorthands: ['s', 'xl'],
+          rawPolicy: 'forbid',
+          examples: ['gap="xs"', 'gap={rem(1)}'],
+        },
+        {
+          path: 'flex',
+          grammar: 'flex',
+          helpers: ['flex'],
+          shorthands: ['none', 'auto', 'initial'],
+          canonicalShorthands: ['none', 'auto', 'initial'],
+          exceptionalShorthands: [],
+          rawPolicy: 'forbid',
+          examples: ['flex={flex(1)}'],
+        },
+      ],
+    }),
+    component('list-item', 'ListItem', {
+      cssValueProps: [
+        {
+          path: 'style',
+          grammar: 'declarations',
+          helpers: [],
+          shorthands: [],
+          canonicalShorthands: [],
+          exceptionalShorthands: [],
+          rawPolicy: 'forbid',
+          examples: ['className="item"'],
+        },
+      ],
+    }),
+    component('skeleton', 'Skeleton', {
+      cssValueProps: [
+        {
+          path: 'width',
+          grammar: 'size',
+          helpers: ['px', 'rem', 'em', 'pct', 'space', 'lengthVar', 'calc'],
+          nonStandaloneHelpers: ['plus'],
+          shorthands: ['auto', 'min-content', 'max-content', 'fit-content'],
+          canonicalShorthands: [
+            'auto',
+            'min-content',
+            'max-content',
+            'fit-content',
+          ],
+          exceptionalShorthands: [],
+          rawPolicy: 'forbid',
+          examples: ['width={pct(100)}'],
+        },
+      ],
     }),
     component('workbench', 'Workbench', {
       boundaries: {
@@ -145,7 +216,22 @@ export const selectionCatalog = {
     publicExports:
       entry.id === 'token-search-field'
         ? [entry.name, 'wireTokenSearchFields']
-        : [entry.name],
+        : entry.id === 'list'
+          ? [
+              entry.name,
+              'px',
+              'rem',
+              'em',
+              'pct',
+              'space',
+              'lengthVar',
+              'calc',
+              'plus',
+              'flex',
+              'uiColor',
+              'colorVar',
+            ]
+          : [entry.name],
     delivery:
       entry.id === 'workbench'
         ? { moduleImport: '@kerfjs/ui/workbench' }

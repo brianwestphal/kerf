@@ -116,4 +116,41 @@ describe('kerf-ui-analyze downstream command', () => {
       ]),
     );
   });
+
+  it('emits stable catalog-driven CSS value diagnostics from the CLI', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-values-cli-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'src/app.tsx'),
+      `import { List, uiColor } from '@kerfjs/ui';
+export const App = () => <List gap={uiColor('accent')} />;
+`,
+    );
+    const cli = resolve(import.meta.dirname, '../../analyzer/cli.mjs');
+
+    await expect(
+      execFileAsync(process.execPath, [
+        cli,
+        '--root',
+        root,
+        '--format',
+        'json',
+        '--output',
+        'report.json',
+      ]),
+    ).rejects.toMatchObject({ code: 1 });
+    const report = JSON.parse(
+      await readFile(join(root, 'report.json'), 'utf8'),
+    );
+    expect(report.diagnostics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          ruleId: 'KUI-L014',
+          severity: 'error',
+          message: expect.stringContaining('`rem()`'),
+          location: expect.objectContaining({ file: 'src/app.tsx' }),
+        }),
+      ]),
+    );
+  });
 });

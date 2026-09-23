@@ -5,9 +5,53 @@ import composition from '../../lib/rules/ui-composition.js';
 import preferences from '../../lib/rules/ui-preferences.js';
 import boundaries from '../../lib/rules/ui-public-boundaries.js';
 import wiring from '../../lib/rules/ui-wiring.js';
+import cssValues from '../../lib/rules/ui-css-values.js';
 
 const tester = createRuleTester();
 const settings = uiSettings();
+const thirdPartyCatalog = {
+  schemaVersion: 2,
+  package: '@acme/ui',
+  entries: [
+    {
+      key: '@acme/ui:stack',
+      package: '@acme/ui',
+      id: 'stack',
+      name: 'Stack',
+      parents: { mode: 'any', entries: [] },
+      wiring: { required: false, helpers: [] },
+      boundaries: { publicClasses: [], publicTokens: [] },
+      cssValueProps: [
+        {
+          path: 'gap',
+          grammar: 'length',
+          helpers: ['rem'],
+          shorthands: ['tight'],
+          canonicalShorthands: ['tight'],
+          exceptionalShorthands: [],
+          rawPolicy: 'forbid',
+          examples: ['gap="tight"'],
+        },
+      ],
+    },
+  ],
+};
+const thirdPartySettings = uiSettings({
+  catalog: thirdPartyCatalog,
+  selectionCatalog: {
+    schemaVersion: 1,
+    package: '@acme/ui',
+    entries: [
+      {
+        id: 'stack',
+        publicExports: ['Stack', 'rem'],
+        delivery: { browserImport: '@acme/ui/stack' },
+        wiring: [],
+      },
+    ],
+  },
+  profile: { schemaVersion: 1, scope: 'package' },
+});
 
 tester.run('ui-public-boundaries', boundaries, {
   valid: [
@@ -223,6 +267,91 @@ tester.run('ui-wiring', wiring, {
       code: "import Select from '@kerfjs/ui/select'; <Select />;",
       settings,
       errors: [{ messageId: 'missing' }],
+    },
+  ],
+});
+
+tester.run('ui-css-values', cssValues, {
+  valid: [
+    {
+      code: 'import { List, rem, flex } from \'@kerfjs/ui\'; <List gap="xs" flex={flex(1, 1, rem(20))} />;',
+      settings,
+    },
+    {
+      code: "import { List, calc, plus, rem, px } from '@kerfjs/ui'; List({ gap: calc(plus(rem(1), px(2))) });",
+      settings,
+    },
+    {
+      code: "import { Skeleton, em } from '@kerfjs/ui'; <Skeleton width={em(12)} />;",
+      settings,
+    },
+    {
+      code: "import { Select, uiColor } from '@kerfjs/ui'; <Select choices={[{ label: 'A', value: 'a', color: uiColor('accent') }]} />;",
+      settings,
+    },
+    {
+      code: "import { List } from '@kerfjs/ui'; const gap = getGap(); <List gap={gap} />;",
+      settings,
+    },
+    {
+      code: 'import { List } from \'other-ui\'; <List gap="12px" />;',
+      settings,
+    },
+    {
+      code: "import { Stack, rem } from '@acme/ui'; <Stack gap={rem(1)} />;",
+      settings: thirdPartySettings,
+    },
+  ],
+  invalid: [
+    {
+      code: 'import { List } from \'@kerfjs/ui\'; <List gap="12px" />;',
+      settings,
+      errors: [{ messageId: 'raw' }],
+    },
+    {
+      code: "import { List } from '@kerfjs/ui'; List({ gap: 'xxs' });",
+      settings,
+      errors: [{ messageId: 'raw' }],
+    },
+    {
+      code: "import { List, flex } from '@kerfjs/ui'; <List gap={flex(1)} />;",
+      settings,
+      errors: [{ messageId: 'helper' }],
+    },
+    {
+      code: "import { List, plus, rem, px } from '@kerfjs/ui'; <List gap={plus(rem(1), px(2))} />;",
+      settings,
+      errors: [{ messageId: 'expression' }],
+    },
+    {
+      code: 'import { ListItem } from \'@kerfjs/ui\'; <ListItem style="color: red" />;',
+      settings,
+      errors: [{ messageId: 'declarations' }],
+    },
+    {
+      code: "import { ListItem } from '@kerfjs/ui'; const declarations = getStyle(); <ListItem style={declarations} />;",
+      settings,
+      errors: [{ messageId: 'declarations' }],
+    },
+    {
+      code: 'import { List } from \'@kerfjs/ui\'; <List gap="xl" />;',
+      settings,
+      errors: [{ messageId: 'exceptional' }],
+    },
+    {
+      code: "import { Skeleton, uiColor } from '@kerfjs/ui'; <Skeleton width={uiColor('accent')} />;",
+      settings,
+      errors: [{ messageId: 'helper' }],
+    },
+    {
+      code: "import { Select } from '@kerfjs/ui'; <Select choices={[{ label: 'A', value: 'a', color: '#fff' }]} />;",
+      settings,
+      errors: [{ messageId: 'raw' }],
+    },
+    {
+      code: 'import { Stack } from \'@acme/ui\'; <Stack gap="12px" />;',
+      settings: thirdPartySettings,
+      errors: [{ messageId: 'raw' }],
     },
   ],
 });

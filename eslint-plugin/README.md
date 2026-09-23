@@ -55,7 +55,7 @@ Applications using the UI catalog can select one of two additive flat configs:
 export default [
   // parser/files configuration as above
   kerfjs.configs['recommended-ui'], // preferences and wiring are warnings
-  // or kerfjs.configs['strict-ui']  // all four UI contracts are errors
+  // or kerfjs.configs['strict-ui']  // all UI contracts are errors
 ];
 ```
 
@@ -77,7 +77,12 @@ settings: {
 
 For deterministic generated configs, the same settings accept parsed `catalog`, `selectionCatalog`, and `profile` objects. File-based precedence is package defaults, then workspace profile, then root-to-leaf directory profiles. The rules load `application-ui-profile-sync.cjs` from the installed `@kerfjs/ui` package by default because ESLint rule creation is synchronous; `profileContractPath` is only needed when artifacts are vendored. Every raw layer is schema- and catalog-reference-validated before merge, so a child cannot hide malformed or stale parent policy. Exceptions use exact `KUI-L*` diagnostic ids and repository-relative file or directory targets.
 
-`KUI-L090` is reserved for catalog/profile loading and configuration failures; it does not collide with the static analyzer's `KUI-L001`–`KUI-L009` findings. The supported-ESLint matrix installs real packed `eslint-plugin-kerfjs` and `@kerfjs/ui` tarballs in a downstream flat-config fixture, ensuring these defaults resolve from the consumer rather than this repository's source tree.
+`ui-css-values` consumes each catalog entry's property-specific grammar and
+emits `KUI-L013`–`KUI-L017` with a preferred shorthand or helper. It covers JSX,
+direct component calls, nested catalog paths, and explicitly configured
+third-party catalogs; dynamic values remain governed by TypeScript.
+
+`KUI-L090` is reserved for catalog/profile loading and configuration failures. The supported-ESLint matrix installs real packed `eslint-plugin-kerfjs` and `@kerfjs/ui` tarballs in a downstream flat-config fixture, ensuring these defaults resolve from the consumer rather than this repository's source tree.
 
 ## Legacy `.eslintrc` configs are not supported
 
@@ -99,6 +104,7 @@ Use flat config (`eslint.config.js`), shown above. The `legacy-recommended` expo
 | [`ai-assistant-configs`](docs/rules/ai-assistant-configs.md)                     | — (project hygiene)                                  | `warn`                 |
 | [`ui-public-boundaries`](docs/rules/ui-public-boundaries.md)                     | — (cataloged CSS boundaries)                         | `error`                |
 | [`ui-composition`](docs/rules/ui-composition.md)                                 | — (cataloged parents and zones)                      | `error`                |
+| [`ui-css-values`](docs/rules/ui-css-values.md)                                   | — (cataloged property-specific value grammar)        | `error`                |
 | [`ui-preferences`](docs/rules/ui-preferences.md)                                 | — (application component choices)                    | `warn`                 |
 | [`ui-wiring`](docs/rules/ui-wiring.md)                                           | — (required setup and cleanup)                       | `warn`                 |
 

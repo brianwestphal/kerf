@@ -313,9 +313,11 @@ are merged with catalog diagnostics before exception validation.
 Run `kerf-ui-analyze --root . src` (or import
 `@kerfjs/ui/analyzer`) to evaluate cross-file integration facts against the
 composition catalogs and application profile. It catches provable private
-selector reach-through, unknown tokens, competing geometry owners, and nested
-scroll owners; it reports forced dimensions, repeated insets, off-scale literal
-spacing, and dynamic classes separately as review findings. Text, versioned JSON,
+selector reach-through, unknown tokens, competing geometry owners, nested
+scroll owners, and cataloged CSS-value violations in JavaScript/TypeScript
+component calls and JSX. It reports forced dimensions, repeated insets,
+exceptional spacing shorthands, and dynamic classes separately as review
+findings. Text, versioned JSON,
 and SARIF outputs carry stable `KUI-L###` ids, repository-relative locations,
 evidence, and ownership chains. See the [analyzer guide](./docs/ui-analyzer.md).
 

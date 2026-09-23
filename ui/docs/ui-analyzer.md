@@ -13,8 +13,9 @@ npx kerf-ui-analyze --root . --format sarif --output artifacts/kerf-ui.sarif
 The analyzer is opt-in. Add a project script such as
 `"check:kerf-ui-layout": "kerf-ui-analyze --root . src"`; it never executes
 application code. It discovers `.kerf-ui-profile.json`, joins every declared
-composition catalog by `package:id`, parses literal TSX/JSX class usage and CSS,
-and reports portable repository-relative locations.
+composition catalog by `package:id`, parses literal JavaScript/TypeScript
+component calls, TSX/JSX, and CSS, and reports portable repository-relative
+locations.
 
 Analysis is scoped per source file. Each TSX/JSX file resolves package,
 workspace, and parent-to-child directory profiles from its own location, then
@@ -49,6 +50,11 @@ policy, or analysis inputs to the containing application.
 | `KUI-L010` | error  | A selector reaches a private Kerf descendant from a public root.  |
 | `KUI-L011` | error  | A `::part()` target is not cataloged as a public extension point. |
 | `KUI-L012` | error  | CSS assigns a Kerf token without a public configuration contract. |
+| `KUI-L013` | error  | A CSS-adjacent prop uses an unknown shorthand or raw literal.     |
+| `KUI-L014` | error  | A typed helper produces the wrong property grammar.               |
+| `KUI-L015` | error  | An expression-only helper is passed without a composer.           |
+| `KUI-L016` | error  | A removed declaration-list escape hatch is used.                  |
+| `KUI-L017` | review | A valid but exceptional off-scale shorthand needs justification.  |
 
 Errors are provable contract violations and make the command exit 1. Review
 findings are deliberately heuristic and do not fail by default; pass
@@ -69,6 +75,13 @@ point on one component does not authorize the same-named part on another.
 Parent-owned placement and selectors for application-owned content remain
 allowed because the analyzer only reserves `.kui-*`, `--kui-*`, and cataloged
 shadow boundaries.
+
+Catalog entries may also publish `cssValueProps`. Each path names its grammar,
+finite shorthands, canonical and exceptional scale steps, accepted typed
+helpers, expression-only helpers, raw escape policy, and examples. The analyzer
+uses that same metadata for direct component calls and JSX, including nested
+paths such as `choices[].color`; consumer catalogs receive identical checks.
+Dynamic values remain a type-system responsibility rather than being guessed.
 
 The JSON report schema is exported as
 `@kerfjs/ui/analyzer/report.schema.json`.
@@ -100,5 +113,6 @@ validator.
 
 Review findings remain visible until explicitly suppressed. Avoid suppressing
 `KUI-L001`, `KUI-L002`, `KUI-L003`, `KUI-L007`, `KUI-L009`, `KUI-L010`,
-`KUI-L011`, or `KUI-L012`: those indicate a
+`KUI-L011`, `KUI-L012`, `KUI-L013`, `KUI-L014`, `KUI-L015`, or `KUI-L016`:
+those indicate a
 definite boundary or parsing failure rather than an aesthetic judgment.
