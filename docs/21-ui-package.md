@@ -240,6 +240,12 @@ slot without mixing authoring rules into the per-entry component catalog.
 
 ## 21.5 Catalog and verification
 
+The [public component integration workflow](../ui/docs/component-integration.md)
+uses the canonical v1 catalog as the manifest for first-party components. Its
+dry-run/check pair reports package exports, tsup entries, root-barrel exports,
+CSS delivery, demo registry/routes, and AI signature drift in one pass instead
+of allowing those surfaces to fail sequentially.
+
 `ui/ux-demo/` is a production-backed component catalog: it imports public
 package paths, groups routes by category in a master/detail shell, exposes each
 public visual component through an addressable `?component=` route, retains

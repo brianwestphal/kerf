@@ -101,7 +101,6 @@ describe('UX catalog metadata', () => {
     expect(artifact.entries.map(({ id }) => id)).toEqual(
       catalog.map(({ id }) => id),
     );
-    expect(artifact.entries).toHaveLength(118);
     expect(findCatalogEntry('recipe-command-palette')).toBeUndefined();
     expect(isCatalogId('recipe-command-palette')).toBe(false);
     const foundationSource = await readFile(

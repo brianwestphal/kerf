@@ -10,7 +10,7 @@ const webAwesomeOutputPath = resolve(
   'ai/webawesome-jsx-signatures-v1.md',
 );
 const check = process.argv.includes('--check');
-const entries = [
+const curatedEntries = [
   ['@kerfjs/ui/css-values', 'dist/css-values.d.ts'],
   ['@kerfjs/ui/disclosure-arrow', 'dist/disclosure-arrow.d.ts'],
   ['@kerfjs/ui/toolbar', 'dist/toolbar.d.ts'],
@@ -56,9 +56,27 @@ const entries = [
 const uiPackage = JSON.parse(
   await readFile(resolve(root, 'package.json'), 'utf8'),
 );
+const catalog = JSON.parse(
+  await readFile(resolve(root, 'ai/component-catalog.json'), 'utf8'),
+);
 const kerfPackage = JSON.parse(
   await readFile(resolve(root, 'node_modules/kerfjs/package.json'), 'utf8'),
 );
+const componentEntries = catalog.entries
+  .filter((entry) => entry.source === 'kerf' && entry.kind === 'component')
+  .map((entry) => {
+    const specifier =
+      entry.delivery.browserImport ?? entry.delivery.moduleImport;
+    const packageExport =
+      uiPackage.exports?.[`./${specifier.slice('@kerfjs/ui/'.length)}`];
+    if (!packageExport?.types)
+      throw new Error(`${specifier} has no typed package export`);
+    return [specifier, packageExport.types.replace(/^\.\//, '')];
+  });
+const entries = [...curatedEntries];
+for (const entry of componentEntries)
+  if (!entries.some(([specifier]) => specifier === entry[0]))
+    entries.push(entry);
 const sections = [];
 for (const [specifier, path] of entries) {
   const declaration = await readFile(resolve(root, path), 'utf8');

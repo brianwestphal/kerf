@@ -4,6 +4,11 @@ Accessible, composable UI primitives for [kerf](https://github.com/brianwestphal
 
 Start interface work with the [need-first component selection matrix](./docs/component-selection.md). It distinguishes direct reuse, composition, thin application adapters, and genuinely custom semantics, with imports, required wiring, application ownership, alternatives, and recipes for every public primitive.
 
+When adding a first-party public component, follow the
+[component integration workflow](./docs/component-integration.md). The catalog
+entry drives one validator across package, build, barrel, CSS, demo, route, and
+AI signature projections, with a non-mutating dry-run report.
+
 When authoring a component gallery, follow the single
 [Catalog demo authoring contract](./docs/catalog.md#catalog-demo-authoring-contract)
 for focused-versus-composition modes, helper nesting, specimen selection,

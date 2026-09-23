@@ -1940,3 +1940,79 @@ declare function delegateActions<E extends Element = Element>(root: HTMLElement,
 
 export { type ActionHandler, type DelegateActionsOptions, action, delegateActions };
 ```
+
+## `@kerfjs/ui/lucide-icon`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { IconNode } from 'lucide';
+
+type LucideNode = IconNode;
+interface LucideIconProps {
+    icon: LucideNode;
+    name: string;
+    className?: string;
+    label?: string;
+}
+/** Render a Lucide-compatible icon node without copying icon SVG strings. */
+declare function LucideIcon({ icon, name, className, label }: LucideIconProps): kerfjs.SafeHtml;
+
+export { LucideIcon, type LucideIconProps, type LucideNode };
+```
+
+## `@kerfjs/ui/surface-scaffold`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+
+type DialogSurfaceSize = 'small' | 'medium' | 'large';
+type DialogSurfacePresentation = 'modal' | 'side-sheet' | 'fullscreen';
+type SurfaceInset = 'none' | 'compact' | 'comfortable';
+interface DialogSurfaceProps {
+    children: KerfUiContent;
+    size?: DialogSurfaceSize;
+    presentation?: DialogSurfacePresentation;
+    bodyInset?: SurfaceInset;
+    footerInset?: SurfaceInset;
+    className?: string;
+}
+/** Configure recurring Web Awesome dialog geometry without consumer ::part() CSS. */
+declare function DialogSurface({ children, size, presentation, bodyInset, footerInset, className, }: DialogSurfaceProps): kerfjs.SafeHtml;
+type PopupSurfaceInset = 'standard' | 'compact' | 'list-zero';
+interface PopupSurfaceProps {
+    children: KerfUiContent;
+    inset?: PopupSurfaceInset;
+    className?: string;
+}
+/** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
+declare function PopupSurface({ children, inset, className, }: PopupSurfaceProps): kerfjs.SafeHtml;
+
+export { DialogSurface, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceSize, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
+```
+
+## `@kerfjs/ui/row`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { UiSpaceName, CssLength } from './css-values.js';
+import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-CF8NLj7i.js';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+
+interface RowProps {
+    children?: KerfUiContent;
+    /** Horizontal distribution. Defaults to left. */
+    hAlign?: HorizontalAlignment;
+    /** Vertical alignment and wrapped-line distribution. Defaults to full. */
+    vAlign?: VerticalAlignment;
+    /** A named UI spacing token or typed CSS length. Defaults to xs. */
+    gap?: UiSpaceName | CssLength;
+    /** Allow children to wrap onto additional lines. */
+    wrap?: boolean;
+    className?: string;
+}
+/** A horizontal flex row with explicit physical-axis alignment and spacing. */
+declare function Row({ children, hAlign, vAlign, gap, wrap, className, }: RowProps): kerfjs.SafeHtml;
+
+export { CssLength, HorizontalAlignment, Row, type RowProps, UiSpaceName, VerticalAlignment };
+```
