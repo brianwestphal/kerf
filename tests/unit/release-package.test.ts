@@ -42,6 +42,7 @@ beforeAll(() => {
     'scripts/prepare-release-package.mjs',
     'package.json',
     'ai/manifest.json',
+    'setup',
     'eslint-plugin/package.json',
     'eslint-plugin/index.js',
     'create-kerf-component/package.json',
@@ -106,6 +107,9 @@ describe('release package preparation', () => {
     expect(
       JSON.parse(packedText(coreTarball, 'ai/manifest.json')).kerfjsVersion,
     ).toBe(betaVersion);
+    expect(packedText(coreTarball, 'setup/cli.mjs')).toContain(
+      '#!/usr/bin/env node',
+    );
 
     const pluginTarball = tarballs.get('eslint-plugin-kerfjs')!;
     expect(JSON.parse(packedText(pluginTarball, 'package.json')).version).toBe(
@@ -195,7 +199,7 @@ describe('release package preparation', () => {
       }),
     ).not.toThrow();
     expect(() =>
-      execFileSync('npm', ['publish', '--dry-run', '--json'], {
+      execFileSync('npm', ['publish', '--dry-run', '--offline', '--json'], {
         cwd: generatedRoot,
         stdio: 'pipe',
         env: {
@@ -232,14 +236,16 @@ describe('release package preparation', () => {
       );
       const publishJob = source.slice(source.indexOf('  npm-publish:\n'));
       const beforePublish = source.slice(0, source.indexOf('  npm-publish:\n'));
-      const publishArguments = [
-        ...publishJob.matchAll(/run: npm publish (\S+)/g),
-      ].map((match) => match[1]);
+      const publishCommands = [
+        ...publishJob.matchAll(/run: (npm publish (\S+)[^\n]*)/g),
+      ].map((match) => ({ command: match[1], artifact: match[2] }));
 
       expect(beforePublish).toContain('scripts/prepare-release-package.mjs');
       expect(beforePublish).toContain('npm pack --ignore-scripts');
       expect(publishJob).toContain('actions/download-artifact@');
-      expect(publishArguments).toHaveLength(2);
+      expect(publishCommands).toHaveLength(2);
+      expect(publishCommands[0]!.command).not.toContain('--tag beta');
+      expect(publishCommands[1]!.command).toContain('--tag beta');
       expect(publishJob).not.toContain('scripts/prepare-release-package.mjs');
       expect(publishJob).not.toContain('npm version');
       expect(publishJob).not.toContain('npm install');
@@ -248,8 +254,8 @@ describe('release package preparation', () => {
         "node-version: '${{ env.PUBLISH_NODE_VERSION }}'",
       );
 
-      for (const artifactArgument of publishArguments) {
-        const expandedArgument = artifactArgument.replace(
+      for (const { artifact } of publishCommands) {
+        const expandedArgument = artifact.replace(
           '*.tgz',
           basename(coreTarball),
         );
@@ -262,6 +268,14 @@ describe('release package preparation', () => {
               '--dry-run',
               '--offline',
               '--ignore-scripts',
+              // npm 11+ rejects every prerelease publish without an explicit
+              // non-latest dist-tag, including dry runs. The fixture tarball
+              // is intentionally a beta even when validating the stable
+              // workflow's local artifact path; this tag applies only to the
+              // validation command, while the assertions above keep the
+              // actual stable publish command tag-free.
+              '--tag',
+              'beta',
             ],
             {
               cwd: fixtureRoot,
