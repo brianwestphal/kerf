@@ -19,6 +19,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Made every `@kerfjs/ui` Playwright invocation build current catalog source
   after fast preflights, with a served source digest that rejects stale preview
   output during focused browser runs.
+- Added durable Hot Sheet phase timing for active work, local verification,
+  push hooks, CI, and publication, including safe failure aggregation and
+  per-ticket summaries.
 - Added a first-class horizontal `Row` with typed spacing, physical-axis
   alignment, and opt-in wrapping; `List` now supports the same alignment
   vocabulary while retaining its existing defaults.

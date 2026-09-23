@@ -42,6 +42,10 @@ not a registry-cache implementation.
 changed/created/deleted comparison matrix, while
 `tests/integration/guidance-integrity.test.ts` drives the real command wrapper
 through unchanged and externally rewritten guidance flows.
+`tests/unit/ticket-timing.test.ts` covers timing-note parsing, phase transition
+summaries, queue delay, repeated failures, and outgoing ticket discovery;
+`tests/integration/ticket-timing.test.ts` drives successful and failed commands
+through the real CLI with a faithful Hot Sheet command boundary.
 The application-local `ui/docs/examples/command-palette-adapter.tsx` demonstrates
 canonical layout ownership for a recurring concept the package does not export.
 `ui/scripts/check-recipes.mjs` keeps those sources,
@@ -392,6 +396,9 @@ kerf/
 │   ├── 20-router.md               ← the optional `kerfjs/router` postcard-router contract
 │   ├── 21-ui-package.md           ← the first-party `@kerfjs/ui` package contract
 │   ├── 22-ui-css-authoring.md     ← pixel-first `remify(<px>)` authoring and compiled-rem delivery
+│   ├── 23-app-layouts.md          ← application shell spacing roles, scroll ownership, and responsive pane-control relocation
+│   ├── 24-ai-first-setup.md       ← deterministic project detection and transactional AI-first setup contract
+│   ├── 25-ticket-timing.md        ← durable Hot Sheet phase records and process-review summaries without raw output or machine-specific paths
 │   ├── companion-utilities-design.md ← design history for the optional companion subpaths
 │   ├── graphics/                  ← editable logo sources plus the published SVG
 │   ├── technical-changelog/      ← long-form release migration notes
@@ -411,8 +418,11 @@ kerf/
 │   ├── lib/
 │   │   ├── ai-bundle.mjs         ← KF-215 — shared logic for sync + check scripts; deterministic `computeBundle()` produces the three `ai/` files in memory from the root source-of-truth files
 │   │   ├── guidance-integrity.d.mts ← declarations for the guidance-integrity helpers consumed by the TypeScript test suite
-│   │   └── guidance-integrity.mjs ← byte-level snapshot and comparison helpers for the root check's tracked Hot Sheet guidance guard
+│   │   ├── guidance-integrity.mjs ← byte-level snapshot and comparison helpers for the root check's tracked Hot Sheet guidance guard
+│   │   ├── ticket-timing.d.mts ← timing helper declarations consumed by the TypeScript test suite
+│   │   └── ticket-timing.mjs ← versioned timing-note parsing, safe identifiers, outgoing ticket discovery, and adversarial phase-summary logic
 │   ├── check-guidance-integrity.mjs ← wraps the root check chain and fails if an external Hot Sheet config synchronizer changes AGENTS.md, CLAUDE.md, or either generated Hot Sheet skill while the gate runs
+│   ├── ticket-timing.mjs       ← durable Hot Sheet active/local/push/CI/publication timing CLI; wraps commands without storing output, powers summaries, and records the pre-push gate against ticket slugs in outgoing commits
 │   ├── check-packed-jsx-typing.mjs ← packs `kerfjs`, extracts it as an installed dependency, and compiles the downstream JSX fixture so the published tarball must preserve the recursive `JSXChildren` contract
 │   ├── sync-ai-bundle.mjs        ← KF-215 — regenerates `ai/` from `kerf.claude-skill.md` + `kerf.cursorrules`; run after editing either source
 │   ├── check-ai-bundle.mjs       ← KF-215 — in-sync gate; fails when `ai/` drifts from the root sources or the manifest's `kerfjsVersion` is stale. Wired into `npm run check`

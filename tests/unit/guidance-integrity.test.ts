@@ -53,7 +53,9 @@ describe('local git gate policy', () => {
     ]);
 
     expect(preCommit.trim()).toBe('git diff --cached --check');
-    expect(prePush.trim()).toBe('npm run check');
+    expect(prePush.trim()).toBe(
+      'node scripts/ticket-timing.mjs pre-push "$@" -- npm run check',
+    );
   });
 
   it('excludes multi-source AI guidance from repository-wide Prettier checks', async () => {

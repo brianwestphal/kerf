@@ -175,7 +175,8 @@
     "check:skills": "node scripts/check-skill-freshness.mjs",
     "check:design-rule-5": "node scripts/check-design-rule-5.mjs",
     "check:docs:dev-warns": "node scripts/check-dev-warn-docs.mjs",
-    "check:audit": "npm audit --omit=dev --audit-level=high"
+    "check:audit": "npm audit --omit=dev --audit-level=high",
+    "ticket:timing": "node scripts/ticket-timing.mjs"
   },
   "dependencies": {
     "@preact/signals-core": "^1.14.1",
