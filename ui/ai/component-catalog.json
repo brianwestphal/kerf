@@ -2852,7 +2852,8 @@
       "accessibility": [
         "Verify the live value, standard events, focus, and rendered output.",
         "A nonempty label names the internal combobox; otherwise ariaLabel supplies a visually hidden label without adding control height, including custom selected content.",
-        "Hint text is visible below the control through Web Awesome's native hint relationship; placeholderText remains the empty value inside the closed control."
+        "Hint text is visible below the control through Web Awesome's native hint relationship; placeholderText remains the empty value inside the closed control.",
+        "Import select/register once; its scoped lifecycle adapter keeps the latest open/close request authoritative across animation reversals, canceled transitions, and removal. Do not add consumer popup timing or position repairs."
       ],
       "geometry": {
         "margin": "none",

@@ -123,6 +123,9 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 - `Select` requires a visible `label` or an `ariaLabel` for a visually hidden
   accessible name. The package names the internal combobox, including custom
   selected content; consumers do not need shadow-DOM naming workarounds.
+  Import `select/register` once for the canonical animation lifecycle: stale
+  close/show completions cannot override a later request. Consumers must not
+  repair popup timing or anchor placement; raw Web Awesome selects stay native.
   Use `hint` for supporting text below the control and `placeholderText` only
   for the empty value inside it; loading placeholders retain the visible hint.
 - **Trust the defaults.** Render a control at its natural size and color (a

@@ -100,6 +100,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added a first-class vibrant `pop` semantic color for attractive non-status
   emphasis, with complete light/dark/increased-contrast token roles and typed
   StateBanner, ListHeader indicator, and ToolbarControlGroup selected tones.
+- Fixed canonical `Select` popup animation reversals so an earlier close cannot
+  hide a reopened menu after resizing. Canceled transitions retain the accepted
+  state, and removed controls cannot receive stale completion or deferred focus.
 - Fixed managed `TokenSearchField` Clear focus before the next input task, so
   immediate typing stays in the replacement editor instead of triggering page
   shortcuts; genuine later focus handoffs and selections remain untouched.

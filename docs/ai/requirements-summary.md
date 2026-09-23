@@ -262,6 +262,9 @@ the first inherited text line.
 Web Awesome's internal combobox name. The ariaLabel-only label is visually
 hidden without adding geometry, including with custom selected content. See
 [`ui/docs/accessibility.md`](../../ui/docs/accessibility.md#select).
+Select registration owns animation reversals: only the current request may
+complete, canceled show/hide retains the accepted state, and removal blocks
+deferred activation. Raw Web Awesome Selects remain native.
 Select `hint` text stays visible below interactive and loading-placeholder
 controls through Web Awesome's native hint relationship; `placeholderText`
 remains the empty value inside the closed control. The relationship computes as

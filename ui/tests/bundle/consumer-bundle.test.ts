@@ -309,6 +309,8 @@ describe('consumer bundle boundaries', () => {
     expect(output(pure, '.css')).toContain('.kui-select');
     expect(output(pure, '.css')).toContain('[data-lucide]');
     const registered = await bundle("import '@kerfjs/ui/select/register';");
+    expect(output(pure, '.js')).not.toContain('@kerfjs/ui/select-lifecycle');
+    expect(output(registered, '.js')).toContain('@kerfjs/ui/select-lifecycle');
     expect(Object.keys(registered.metafile!.inputs).join('\n')).toContain(
       '@awesome.me/webawesome',
     );

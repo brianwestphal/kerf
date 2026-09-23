@@ -166,3 +166,11 @@ Common mistakes:
 | Put raw prose directly in a padded dialog body                                               | Compose the body as `List`, set `bodyInset="none"` for list-owned geometry, and wrap bare prose in `ListInsetText`                                    |
 | Keep chrome, a label, or a readout that aids no decision                                     | Delete it; every element must help a person decide or act                                                                                             |
 | Override a component's default size or color because it "looks off"                          | Trust the default (a LucideIcon is 24px) and fix the surrounding layout instead                                                                       |
+
+## Select lifecycle ownership
+
+Import `@kerfjs/ui/select/register` once. It owns the canonical Select animation
+lifecycle: the latest request wins through open/close reversals, canceled
+transitions, and removal. Native value, keyboard, dismissal, and anchor placement
+remain with Web Awesome. Do not add popup delays, position repairs, or animation
+completion handlers in consumers. Raw `wa-select` elements remain native.

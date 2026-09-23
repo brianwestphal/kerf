@@ -54,6 +54,19 @@ variants. `tests/browser/select-accessibility.spec.ts` verifies actual accessibl
 names, unchanged unlabeled geometry, keyboard selection, controlled rerenders,
 native hint wiring, and wide/narrow presentation in Chromium, Firefox, and WebKit.
 
+The explicit `@kerfjs/ui/select/register` import also installs the canonical
+Select lifecycle adapter. The latest open/close request owns animation completion
+and deferred option focus. A stale close cannot hide a reopened popup after
+resize; stale completion events are not emitted. Preventing `wa-show` or
+`wa-hide` retains the accepted closed/open state, and removal prevents deferred
+activation. Native option selection, keyboard behavior, dismissal listeners,
+and popup anchor placement remain with Web Awesome. Raw `wa-select` elements
+without the canonical `data-component="select"` marker are unchanged.
+`tests/unit/select-lifecycle.test.ts` and `animate-select-popup.test.ts` cover
+repeated and out-of-order completions, cancellation, instance isolation, and
+removal. `tests/browser/select-lifecycle.spec.ts` repeats animation/resize/reopen
+sequences at wide and narrow widths in Chromium, Firefox, and WebKit.
+
 ## ListActionRow
 
 `ListActionRow` renders a noninteractive visual root containing primary and

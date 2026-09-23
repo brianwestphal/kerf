@@ -30,7 +30,8 @@ const limits = {
   // composition, integrated alongside the NavStack focus work).
   // → 274.89 kB (property-specific CSS-value builder specimens).
   // Keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 275_100,
+  // Rebased canonical Select lifecycle on the current catalog: 275.48 kB.
+  totalJavaScriptGzip: 275_600,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) =>
