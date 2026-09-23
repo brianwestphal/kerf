@@ -310,6 +310,7 @@ describe('production UI primitives', () => {
     expect(item).toContain('data-action="open"');
     expect(item).toContain('data-item-id="projects"');
     expect(item).toContain('data-has-icon="true"');
+    expect(item).toContain('data-has-description="true"');
     expect(item).toContain('data-multiline="true"');
     expect(item).toContain('data-density="compact"');
     expect(item).toContain('data-divider="both"');
@@ -329,6 +330,7 @@ describe('production UI primitives', () => {
       ListItem({ label: 'Disabled', action: 'none', disabled: true }),
     );
     expect(iconless).toContain('data-has-icon="false"');
+    expect(iconless).toContain('data-has-description="false"');
     expect(iconless).toContain('disabled');
     const toggle = asHtml(
       ListHeader({

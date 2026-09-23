@@ -316,6 +316,7 @@ type ListItemRootAttributes = Readonly<Record<`data-${string}`, string | undefin
     'data-action'?: never;
     'data-item-id'?: never;
     'data-has-icon'?: never;
+    'data-has-description'?: never;
     'data-multiline'?: never;
     'data-density'?: never;
     'data-divider'?: never;

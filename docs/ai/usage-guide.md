@@ -111,6 +111,8 @@ primary and trailing sibling buttons with independent action, name, disabled,
 focus, and click ownership while the application controls selection and any
 popover or context-menu lifecycle. Its `label`, `icon`, and
 `trailingActionIcon` SafeHtml slots are dormant and must not contain controls.
+`ListItem` clips descendant painting to its rounded row boundary; set
+`multiline` when its primary label should wrap instead of truncate.
 
 Use `wireTokenSearchFields` for managed search focus, including controlled clear
 and Select All deletion. Persist both query and tokens from `readTokenSearchField`

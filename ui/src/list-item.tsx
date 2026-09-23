@@ -9,6 +9,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-action',
   'data-item-id',
   'data-has-icon',
+  'data-has-description',
   'data-multiline',
   'data-density',
   'data-divider',
@@ -22,6 +23,7 @@ type ListItemRootAttributes = Readonly<
     'data-action'?: never;
     'data-item-id'?: never;
     'data-has-icon'?: never;
+    'data-has-description'?: never;
     'data-multiline'?: never;
     'data-density'?: never;
     'data-divider'?: never;
@@ -100,6 +102,7 @@ export function ListItem({
       data-action={placeholder ? undefined : action}
       data-item-id={itemId}
       data-has-icon={String(Boolean(icon))}
+      data-has-description={String(Boolean(description))}
       data-multiline={multiline ? 'true' : undefined}
       data-density={density}
       data-divider={divider}

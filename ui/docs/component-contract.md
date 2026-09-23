@@ -195,7 +195,11 @@ need, request a supported hook instead of inferring one from rendered markup.
 
 `ListItem` renders its leading icon and nested SVG at a root-scaled 18px by
 default while retaining the row's 44px minimum interactive target. Multiline
-rows align that 18px visual with the first inherited text line.
+rows align that 18px visual with the first inherited text line. The row clips
+descendant painting to its rounded root so labels, status, and dormant trailing
+content cannot escape its visible boundary. Rows with descriptions grow enough
+to keep their owned two-line label stack readable; use `multiline` when the
+primary label should wrap rather than truncate.
 
 `DisclosureArrow` uses an 18px root-scaled visual by default. Override
 `--kui-disclosure-arrow-size` on the component or its containing scope when a

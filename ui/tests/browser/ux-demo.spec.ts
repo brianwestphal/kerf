@@ -4310,6 +4310,37 @@ test('renders configured List family density, status, busy, dividers, and intera
   await expect(statusItem.locator('.kui-list-item__status')).toHaveText(
     'Passing',
   );
+  await expect(statusItem).toHaveCSS('overflow', 'hidden');
+  const statusGeometry = await statusItem.evaluate((element) => {
+    const root = element.getBoundingClientRect();
+    const children = [
+      ...element.querySelectorAll<HTMLElement>(
+        '.kui-list-item__label, .kui-list-item__trailing',
+      ),
+    ].map((child) => child.getBoundingClientRect());
+    return {
+      childrenWithinBlock: children.every(
+        (child) => child.top >= root.top - 1 && child.bottom <= root.bottom + 1,
+      ),
+      documentOverflow:
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+    };
+  });
+  expect(statusGeometry).toEqual({
+    childrenWithinBlock: true,
+    documentOverflow: 0,
+  });
+  if (browserName === 'chromium') {
+    await statusItem.screenshot({
+      path: 'test-results/list-item-clipping-wide.png',
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await statusItem.screenshot({
+      path: 'test-results/list-item-clipping-narrow.png',
+    });
+    await page.setViewportSize({ width: 1100, height: 760 });
+  }
   const busyItem = page.locator('[data-item-id="busy"]');
   await expect(busyItem).toHaveAttribute('aria-busy', 'true');
   await expect(

@@ -1918,7 +1918,7 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Configurable native-button navigation rows with structured labels, status/busy metadata, density, group dividers, and protected domain metadata hooks.",
+      "description": "Configurable native-button navigation rows with structured labels, status/busy metadata, density, group dividers, protected domain metadata hooks, and rounded-boundary overflow clipping.",
       "uses": [
         "lucide-icon",
         "loading-spinner"
@@ -1928,7 +1928,7 @@
         "ListItem"
       ],
       "useWhen": [
-        "Render a selectable, disabled, trailing, or multiline sidebar/navigation action row."
+        "Render a selectable, disabled, trailing, or multiline sidebar/navigation action row whose descendants must remain clipped to the rounded row boundary."
       ],
       "avoidWhen": [
         "Do not use for an ordinary inline link, form button, isolated ARIA menuitem, or an interactive trailing action; use ListActionRow for sibling row actions."

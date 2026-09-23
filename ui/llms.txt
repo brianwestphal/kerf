@@ -173,6 +173,10 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   markup. Use the standalone `Skeleton` for a custom slot. Prefer it over `wa-skeleton`
   (the pure-Kerf primitives avoid Web Awesome), and never animate it — use
   `LoadingSpinner` for known busy activity instead.
+- **Keep ListItem content inside the row.** The rounded `ListItem` root clips
+  overflowing label, status, and dormant trailing content. Set `multiline` when
+  the primary label should wrap; use `ListActionRow` instead when trailing content
+  must be interactive.
 - **Dialog bodies are lists by default.** Compose rows and sections in `List`,
   use `DialogSurface bodyInset="none"` when those children own their geometry,
   and wrap bare prose in `ListInsetText` so it shares the standard list gutter

@@ -79,7 +79,7 @@ describe('Catalog', () => {
     expect(html).toContain('kui-catalog__tag">Preview</span>');
     // Active item marked selected
     expect(html).toContain(
-      'data-item-id="select" data-has-icon="false" data-multiline="true" data-density="standard" data-divider="none" aria-current="page"',
+      'data-item-id="select" data-has-icon="false" data-has-description="false" data-multiline="true" data-density="standard" data-divider="none" aria-current="page"',
     );
     // Detail header shows the active name + description
     expect(html).toContain('<h2>Select</h2>');

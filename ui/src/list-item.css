@@ -11,6 +11,7 @@
   display: grid;
   width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
   min-height: remify(44px);
+  overflow: hidden;
   margin-inline: var(--kui-layout-inline-margin, remify(8px));
   padding: var(--kui-layout-item-padding, remify(8px));
   box-sizing: border-box;
@@ -29,6 +30,14 @@
 .kui-list-item[data-density="compact"] {
   min-height: remify(36px);
   padding-block: remify(4px);
+}
+
+.kui-list-item[data-has-description="true"] {
+  min-height: remify(52px);
+}
+
+.kui-list-item[data-density="compact"][data-has-description="true"] {
+  min-height: remify(44px);
 }
 
 .kui-list-item[data-divider="before"],

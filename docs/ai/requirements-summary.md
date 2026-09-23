@@ -247,6 +247,11 @@ trailing controls. Supporting copy is app-owned content below the toolbar. The
 application links title/supporting-copy ids to the owning dialog or panel and
 sets `headingLevel` on `ToolbarText` when the title should be a heading landmark.
 
+`ListItem` clips descendant painting to its rounded row boundary so labels,
+status, and dormant trailing content cannot escape the visible row. Its
+`multiline` variant wraps the primary label while keeping the leading icon on
+the first inherited text line.
+
 `@kerfjs/ui` Select projects a nonempty `label`, or otherwise `ariaLabel`, to
 Web Awesome's internal combobox name. The ariaLabel-only label is visually
 hidden without adding geometry, including with custom selected content. See

@@ -26,6 +26,29 @@ async function declarationsFor(file: string, selector: string) {
 }
 
 describe('menu row icon alignment contract', () => {
+  it('clips ListItem content to the rounded row boundary', async () => {
+    await expect(
+      declarationsFor('list-item.css', '.kui-list-item'),
+    ).resolves.toMatchObject({
+      overflow: 'hidden',
+    });
+  });
+
+  it('gives described ListItems enough height to keep owned text inside that boundary', async () => {
+    await expect(
+      declarationsFor(
+        'list-item.css',
+        '.kui-list-item[data-has-description="true"]',
+      ),
+    ).resolves.toEqual({ 'min-height': 'remify(52px)' });
+    await expect(
+      declarationsFor(
+        'list-item.css',
+        '.kui-list-item[data-density="compact"][data-has-description="true"]',
+      ),
+    ).resolves.toEqual({ 'min-height': 'remify(44px)' });
+  });
+
   it('sizes the ListItem leading icon and its SVG to 18px', async () => {
     await expect(
       declarationsFor('list-item.css', '.kui-list-item__icon'),
