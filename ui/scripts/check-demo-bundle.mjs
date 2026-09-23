@@ -26,8 +26,10 @@ const limits = {
   // → 273.10 kB (interactive NavStack push/pop and per-view chrome demo).
   // → 273.61 kB (interactive SplitView list-detail drill-down demo).
   // → 274.02 kB (NavStack focus move and restoration behavior).
+  // → 274.43 kB (focused AppTab/TabBar specimens and their application-tabs
+  // composition, integrated alongside the NavStack focus work).
   // Keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 274_270,
+  totalJavaScriptGzip: 274_680,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) =>
