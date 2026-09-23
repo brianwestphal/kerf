@@ -68,3 +68,66 @@ test('catalogs Workbench public geometry and controlled collapse', async ({
       fullPage: true,
     });
 });
+
+test('bottom drawer opens and closes monotonically from one bottom anchor', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=workbench');
+
+  const samples = await page.evaluate(async () => {
+    const drawer = document.querySelector<HTMLElement>(
+      '#catalog-workbench-full [data-workbench-drawer]',
+    )!;
+    const sampleTransition = async (collapsed: boolean) => {
+      drawer.dataset.collapsed = String(collapsed);
+      const frames: Array<{
+        distanceFromBottom: number;
+        drawerBottom: number;
+        translateY: number;
+      }> = [];
+      for (let index = 0; index < 24; index += 1) {
+        await new Promise(window.requestAnimationFrame);
+        const content = drawer.querySelector<HTMLElement>(
+          '.kui-workbench__panel-content',
+        )!;
+        const drawerBounds = drawer.getBoundingClientRect();
+        const transform = window.getComputedStyle(content).transform;
+        frames.push({
+          distanceFromBottom:
+            content.getBoundingClientRect().top - drawerBounds.bottom,
+          drawerBottom: drawerBounds.bottom,
+          translateY: transform === 'none' ? 0 : new DOMMatrix(transform).m42,
+        });
+      }
+      return frames;
+    };
+
+    drawer.dataset.collapsed = 'true';
+    await new Promise((resolve) => window.setTimeout(resolve, 250));
+    const opening = await sampleTransition(false);
+    const closing = await sampleTransition(true);
+    return { opening, closing };
+  });
+
+  const bottomDrift = (frames: typeof samples.opening) =>
+    Math.max(...frames.map(({ drawerBottom }) => drawerBottom)) -
+    Math.min(...frames.map(({ drawerBottom }) => drawerBottom));
+  expect(bottomDrift(samples.opening)).toBeLessThan(1.5);
+  expect(bottomDrift(samples.closing)).toBeLessThan(1.5);
+  expect(samples.opening.some(({ translateY }) => translateY > 20)).toBe(true);
+  expect(samples.closing.some(({ translateY }) => translateY > 20)).toBe(true);
+
+  for (let index = 1; index < samples.opening.length; index += 1) {
+    expect(samples.opening[index]!.distanceFromBottom).toBeLessThanOrEqual(
+      samples.opening[index - 1]!.distanceFromBottom + 1,
+    );
+    expect(samples.closing[index]!.distanceFromBottom).toBeGreaterThanOrEqual(
+      samples.closing[index - 1]!.distanceFromBottom - 1,
+    );
+  }
+  expect(samples.opening.at(-1)!.distanceFromBottom).toBeLessThan(-200);
+  expect(Math.abs(samples.closing.at(-1)!.distanceFromBottom)).toBeLessThan(
+    1.5,
+  );
+});

@@ -42,8 +42,10 @@ export interface WorkbenchProps {
  * bottom drawer around a central work area (any absent). Collapsing snaps the
  * panel's track to zero in one reflow while its fixed-size content slides out via
  * a composited transform — the instant-width / sliding-content technique, so the
- * work area relayouts once, not per frame. The app owns each `collapsed` flag;
- * the collapse is pure CSS (no wire). See `docs/23-app-layouts.md` §3.3.
+ * work area relayouts once, not per frame. Bottom-drawer content stays anchored
+ * to the shell's stable bottom edge throughout that transition. The app owns
+ * each `collapsed` flag; the collapse is pure CSS (no wire). See
+ * `docs/23-app-layouts.md` §3.3.
  */
 export function Workbench({
   id,

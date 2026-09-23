@@ -1,4 +1,8 @@
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
 import { raw } from 'kerfjs';
+import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
 import { Workbench } from '../../src/workbench.js';
@@ -77,6 +81,35 @@ describe('Workbench', () => {
     expect(html).toContain('--kui-workbench-rail-width: 320px');
     expect(html).toContain('--kui-workbench-rail-width: 260px');
     expect(html).toContain('--kui-workbench-drawer-height: 180px');
+  });
+
+  it('bottom-anchors drawer content so both motion directions share one origin', async () => {
+    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const declarations = (selector: string) => {
+      const rule = root.nodes.find(
+        (node) => node.type === 'rule' && node.selector === selector,
+      );
+      if (!rule || rule.type !== 'rule')
+        throw new Error(`Missing ${selector} rule`);
+      return Object.fromEntries(
+        rule.nodes
+          .filter((node) => node.type === 'decl')
+          .map((node) => [node.prop, node.value]),
+      );
+    };
+
+    expect(declarations('.kui-workbench__drawer')).toMatchObject({
+      position: 'relative',
+    });
+    expect(
+      declarations('.kui-workbench__drawer .kui-workbench__panel-content'),
+    ).toMatchObject({
+      position: 'absolute',
+      'inset-inline': '0',
+      'inset-block-end': '0',
+      transition: 'transform 200ms ease',
+    });
   });
 
   it('applies a custom className', () => {

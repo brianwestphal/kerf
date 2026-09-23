@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed bottom `Workbench` drawers overshooting and snapping during collapse
+  transitions by anchoring fixed-height content to the shell's stable bottom
+  edge.
 - Fixed bottom `CollapsiblePanel` drawers overshooting their open position and
   snapping back by anchoring fixed-height content to the panel's stable bottom
   edge throughout the transform transition.

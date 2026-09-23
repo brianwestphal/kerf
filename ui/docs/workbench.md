@@ -115,7 +115,9 @@ attributes or descendant tags as styling contracts.
 Collapsing snaps the panel's flex track to zero in a single reflow (so the work
 area relayouts once, not per frame) while the panel's fixed-size content slides
 out via a composited `transform` — a rail slides horizontally, the drawer
-vertically — clipped by the shell's overflow. It honors `prefers-reduced-motion`
-(the slide collapses to instant). On smaller device classes, present the rails'
-contents through a `NavStack` or overlay drawers rather than shrinking the
-three-panel shell.
+vertically — clipped by the shell's overflow. The drawer content is positioned
+against the shell's stable bottom edge, so opening and closing move monotonically
+through the transform rather than inheriting a changing normal-flow origin. It
+honors `prefers-reduced-motion` (the slide collapses to instant). On smaller
+device classes, present the rails' contents through a `NavStack` or overlay
+drawers rather than shrinking the three-panel shell.

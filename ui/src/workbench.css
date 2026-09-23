@@ -53,6 +53,7 @@
 
 /* Bottom drawer — the vertical analogue of a rail. */
 .kui-workbench__drawer {
+  position: relative;
   flex: 0 0 var(--kui-workbench-drawer-height, remify(220px));
   min-height: 0;
   overflow: hidden;
@@ -85,6 +86,9 @@
 }
 
 .kui-workbench__drawer .kui-workbench__panel-content {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
   width: 100%;
   height: var(--kui-workbench-drawer-height, remify(220px));
   transition: transform 200ms ease;

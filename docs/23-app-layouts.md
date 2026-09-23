@@ -199,7 +199,9 @@ name; §7.**
   its fixed-width content slides via a composited `transform`, clipped by the
   shell's overflow — never a per-frame width animation. `Workbench`
   **generalizes the KF-7QKJRK demo CSS** into a reusable component; the demo
-  sidebar can later adopt it.
+  sidebar can later adopt it. The bottom drawer uses the vertical analogue while
+  anchoring its fixed-height content to the shell's stable bottom edge, so the
+  layout origin cannot move underneath the transform transition.
 - Rails/drawer are `ResizableRegion`s with the collapse animation layered on.
 - Appropriate for **desktop-size devices**. On smaller classes the guidance is to
   present the rails' contents through a different layout (a `NavStack` or overlay
