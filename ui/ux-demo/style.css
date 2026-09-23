@@ -278,6 +278,10 @@ button {
   max-width: remify(480px);
 }
 
+.demo-row-flex-stack {
+  min-height: remify(248px);
+}
+
 .demo-list-alignment {
   min-height: remify(176px);
   padding: var(--kui-space-xs);

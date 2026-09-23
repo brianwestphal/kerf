@@ -92,6 +92,27 @@ export function RowDemo() {
           )}
         </Row>
       </CatalogExample>
+      <CatalogExample
+        label="Flex participation"
+        note="Row accepts the same boolean, finite-keyword, and typed flex grammar as List when it participates in a parent flex layout."
+      >
+        <List gap="xs" className="demo-row-flex-stack">
+          <Row
+            className="demo-row-frame demo-row-flex-grow"
+            flex
+            vAlign="middle"
+          >
+            {chips('Growing')}
+          </Row>
+          <Row
+            className="demo-row-frame demo-row-flex-none"
+            flex="none"
+            vAlign="middle"
+          >
+            {chips('Fixed')}
+          </Row>
+        </List>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

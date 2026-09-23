@@ -1,8 +1,25 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 276600,
-  "measuredLargestJavaScriptGzip": 128393,
-  "measuredTotalJavaScriptGzip": 276493,
-  "history": []
+  "totalJavaScriptGzip": 276700,
+  "measuredLargestJavaScriptGzip": 128394,
+  "measuredTotalJavaScriptGzip": 276672,
+  "history": [
+    {
+      "at": "2026-09-23T10:37:37.924Z",
+      "reason": "document Row flex participation in the component demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 128393,
+        "measuredTotalJavaScriptGzip": 276493,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 276600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 128394,
+        "measuredTotalJavaScriptGzip": 276672,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 276700
+      }
+    }
+  ]
 }

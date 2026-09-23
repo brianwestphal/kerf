@@ -1995,7 +1995,7 @@ export { DialogSurface, type DialogSurfacePresentation, type DialogSurfaceProps,
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { UiSpaceName, CssLength } from './css-values.js';
+import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
 import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-CF8NLj7i.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
@@ -2007,12 +2007,14 @@ interface RowProps {
     vAlign?: VerticalAlignment;
     /** A named UI spacing token or typed CSS length. Defaults to xs. */
     gap?: UiSpaceName | CssLength;
+    /** Allow this row to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
+    flex?: boolean | CssFlexKeyword | CssFlex;
     /** Allow children to wrap onto additional lines. */
     wrap?: boolean;
     className?: string;
 }
 /** A horizontal flex row with explicit physical-axis alignment and spacing. */
-declare function Row({ children, hAlign, vAlign, gap, wrap, className, }: RowProps): kerfjs.SafeHtml;
+declare function Row({ children, hAlign, vAlign, gap, flex, wrap, className, }: RowProps): kerfjs.SafeHtml;
 
-export { CssLength, HorizontalAlignment, Row, type RowProps, UiSpaceName, VerticalAlignment };
+export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, Row, type RowProps, UiSpaceName, VerticalAlignment };
 ```

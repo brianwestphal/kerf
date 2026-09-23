@@ -111,6 +111,9 @@ const choiceColor: CssColor = colorVar(
 );
 List({ flex: listFlex });
 List({ flex: 'none' });
+Row({ flex: listFlex });
+Row({ flex: true });
+Row({ flex: 'auto' });
 const horizontalAlignment: HorizontalAlignment = 'space-between';
 const verticalAlignment: VerticalAlignment = 'space-around';
 Row({
@@ -145,6 +148,10 @@ void responsiveReveal;
 List({ flex: '2 1 20rem' });
 // @ts-expect-error KUI-T013 lengths are not complete flex shorthands.
 List({ flex: rem(20) });
+// @ts-expect-error KUI-T013 Row rejects raw flex strings too.
+Row({ flex: '2 1 20rem' });
+// @ts-expect-error KUI-T013 Row flex does not accept a length grammar.
+Row({ flex: rem(20) });
 // @ts-expect-error KUI-T013 raw dimension strings bypass the size grammar.
 Skeleton({ width: '10em' });
 // @ts-expect-error KUI-T013 a flex shorthand is not a dimension.

@@ -1642,7 +1642,7 @@
     "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "A horizontal flex row with physical-axis alignment, a typed xs gap by default, and opt-in wrapping.",
+      "description": "A horizontal flex row with physical-axis alignment, a typed xs gap by default, flex participation, and opt-in wrapping.",
       "uses": [],
       "purpose": "Arrange related content horizontally with consistent spacing and explicit left/center/right/full plus top/middle/bottom/full alignment instead of application-owned flex wrappers.",
     "publicExports": ["Row"],
@@ -1657,16 +1657,27 @@
           "exceptionalShorthands": ["s", "xl"],
           "rawPolicy": "forbid",
           "examples": ["gap=\"xs\"", "gap={space(\"m\")}", "gap={calc(plus(rem(0.25), pct(10)))}"]
+        },
+        {
+          "path": "flex",
+          "grammar": "flex",
+          "helpers": ["flex"],
+          "shorthands": ["none", "auto", "initial"],
+          "canonicalShorthands": ["none", "auto", "initial"],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["flex", "flex=\"none\"", "flex={flex(1, 1, rem(20))}"]
         }
       ],
       "useWhen": [
         "Arrange a group of sibling components horizontally.",
         "Choose physical horizontal distribution and vertical alignment without writing one-off flex CSS.",
+        "Use a finite flex keyword or the flex() builder when Row participates in a flexible parent layout.",
         "Allow a bounded group to wrap while retaining the same typed gap and alignment contract."
       ],
       "avoidWhen": [
         "Do not use Row when content belongs in a semantic list or when a named-zone component such as Toolbar owns the composition.",
-        "Do not pass raw CSS strings to gap or use s/xl spacing steps without a deliberate exception.",
+        "Do not pass raw CSS strings to gap or flex, mix their distinct grammars, or use s/xl spacing steps without a deliberate exception.",
         "Do not use alignment to replace semantic grouping or responsive relocation."
       ],
     "alternatives": [
@@ -1684,13 +1695,14 @@
       "appOwns": [
         "child semantics and content",
         "alignment and wrapping policy",
-        "typed gap overrides"
+        "typed gap and flex choices"
       ],
       "variants": [
         "left/center/right/full horizontal alignment with l/c/r/f and flex aliases",
         "top/middle/bottom/full vertical alignment with t/m/c/b/f and flex aliases",
         "named none/2xs/xs/s/m/l/xl token gap",
         "typed CssLength gap",
+        "boolean, finite-keyword, or typed CssFlex flex",
         "nowrap or wrapping"
       ],
       "accessibility": [
@@ -1702,7 +1714,7 @@
         "border": "none",
         "padding": "none",
         "notes": [
-          "Row adds no margin, border, or padding; it owns only flex alignment, wrapping, and the gap between children."
+          "Row adds no margin, border, or padding; it owns only flex participation, alignment, wrapping, and the gap between children."
         ]
       },
       "delivery": {

@@ -5,6 +5,7 @@ type FlexGeometry = {
   alignItems: string;
   display: string;
   flexDirection: string;
+  flex: string;
   flexWrap: string;
   gap: string;
   justifyContent: string;
@@ -18,6 +19,7 @@ async function flexGeometry(locator: Locator) {
       alignItems: style.alignItems,
       display: style.display,
       flexDirection: style.flexDirection,
+      flex: style.flex,
       flexWrap: style.flexWrap,
       gap: style.gap,
       justifyContent: style.justifyContent,
@@ -35,6 +37,7 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
   const defaultRow = page.locator('.demo-row-default');
   await expect(defaultRow).toHaveAttribute('data-h-align', 'left');
   await expect(defaultRow).toHaveAttribute('data-v-align', 'full');
+  await expect(defaultRow).toHaveAttribute('data-flex', 'false');
   await expect(defaultRow).toHaveAttribute('data-wrap', 'false');
   await expect
     .poll(() => flexGeometry(defaultRow))
@@ -79,6 +82,17 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
       flexWrap: 'wrap',
       gap: '16px',
     });
+
+  const growing = page.locator('.demo-row-flex-grow');
+  await expect(growing).toHaveAttribute('data-flex', 'true');
+  await expect
+    .poll(() => flexGeometry(growing))
+    .toMatchObject({
+      flex: '1 1 auto',
+    });
+  await expect
+    .poll(() => flexGeometry(page.locator('.demo-row-flex-none')))
+    .toMatchObject({ flex: '0 0 auto' });
 
   if (browserName === 'chromium') {
     await page.screenshot({

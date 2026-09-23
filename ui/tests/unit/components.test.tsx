@@ -273,7 +273,14 @@ describe('production UI primitives', () => {
     const defaults = asHtml(Row({ children: <span>Default</span> }));
     expect(defaults).toContain('class="kui-row" data-component="row"');
     expect(defaults).toContain(
-      'data-h-align="left" data-v-align="full" data-wrap="false" style="--_kui-row-gap:var(--kui-space-xs)"',
+      'data-h-align="left" data-v-align="full" data-flex="false" data-wrap="false" style="--_kui-row-gap:var(--kui-space-xs)"',
+    );
+
+    expect(asHtml(Row({ flex: true }))).toContain(
+      'data-flex="true" data-wrap="false" style="--_kui-row-gap:var(--kui-space-xs);--_kui-row-flex:1 1 auto"',
+    );
+    expect(asHtml(Row({ flex: flex(2, 1, rem(20)) }))).toContain(
+      'style="--_kui-row-gap:var(--kui-space-xs);--_kui-row-flex:2 1 20rem"',
     );
 
     const row = asHtml(
@@ -282,13 +289,14 @@ describe('production UI primitives', () => {
         hAlign: 'space-between',
         vAlign: 'c',
         gap: rem(1),
+        flex: 'none',
         wrap: true,
         className: 'actions',
       }),
     );
     expect(row).toContain('class="kui-row actions"');
     expect(row).toContain(
-      'data-h-align="full" data-v-align="middle" data-wrap="true" style="--_kui-row-gap:1rem"',
+      'data-h-align="full" data-v-align="middle" data-flex="true" data-wrap="true" style="--_kui-row-gap:1rem;--_kui-row-flex:none"',
     );
     expect(row).toContain('<span>One</span><span>Two</span>');
 

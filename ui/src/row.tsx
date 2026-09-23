@@ -1,4 +1,10 @@
-import { type CssLength, space, type UiSpaceName } from './css-values.js';
+import {
+  type CssFlex,
+  type CssFlexKeyword,
+  type CssLength,
+  space,
+  type UiSpaceName,
+} from './css-values.js';
 import {
   type HorizontalAlignment,
   horizontalAlignment,
@@ -25,6 +31,8 @@ export interface RowProps {
   vAlign?: VerticalAlignment;
   /** A named UI spacing token or typed CSS length. Defaults to xs. */
   gap?: UiSpaceName | CssLength;
+  /** Allow this row to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
+  flex?: boolean | CssFlexKeyword | CssFlex;
   /** Allow children to wrap onto additional lines. */
   wrap?: boolean;
   className?: string;
@@ -36,12 +44,20 @@ export function Row({
   hAlign = 'left',
   vAlign = 'full',
   gap = 'xs',
+  flex = false,
   wrap = false,
   className = '',
 }: RowProps) {
   const gapValue = spaceNames.includes(gap as UiSpaceName)
     ? space(gap as UiSpaceName)
     : gap;
+  const flexValue = flex === true ? '1 1 auto' : flex || undefined;
+  const style = [
+    `--_kui-row-gap:${gapValue}`,
+    flexValue ? `--_kui-row-flex:${flexValue}` : '',
+  ]
+    .filter(Boolean)
+    .join(';');
 
   return (
     <div
@@ -49,15 +65,21 @@ export function Row({
       data-component="row"
       data-h-align={horizontalAlignment(hAlign)}
       data-v-align={verticalAlignment(vAlign)}
+      data-flex={String(Boolean(flex))}
       data-wrap={String(wrap)}
-      style={`--_kui-row-gap:${gapValue}`}
+      style={style}
     >
       {children}
     </div>
   );
 }
 
-export type { CssLength, UiSpaceName } from './css-values.js';
+export type {
+  CssFlex,
+  CssFlexKeyword,
+  CssLength,
+  UiSpaceName,
+} from './css-values.js';
 export type {
   HorizontalAlignment,
   VerticalAlignment,

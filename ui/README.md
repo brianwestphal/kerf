@@ -141,7 +141,7 @@ defaults to left/full alignment, the `xs` gap, and `wrap={false}`; List keeps
 its existing full/top alignment and zero-gap defaults.
 
 The same property-specific boundary applies beyond spacing: use `flex()` (or a
-finite keyword) for `List.flex`; length builders and intrinsic-size keywords for
+finite keyword) for `Row.flex` and `List.flex`; length builders and intrinsic-size keywords for
 `Skeleton.width`/`height`; length builders for `Skeleton.radius`; and
 `uiColor()` or `colorVar()` for `SelectChoice.color`. These grammars are not
 interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw

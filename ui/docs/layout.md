@@ -136,6 +136,13 @@ items, while applying the requested distribution to `align-content` when a
 Row wraps. Prefer the descriptive values in application code; the short and
 CSS-shaped aliases are provided for compact or migrated call sites.
 
+`Row.flex` and `List.flex` share one typed participation contract. Omit the prop
+for the CSS initial value, pass `true` for `1 1 auto`, select the finite
+`"none"`, `"auto"`, or `"initial"` keyword, or use
+`flex(grow, shrink, basis)` from `@kerfjs/ui/css-values` for a complete branded
+shorthand. A `CssLength` is not a flex shorthand, and arbitrary strings are
+rejected by the type contract.
+
 `--kui-space-s` (12px) and `--kui-space-xl` (32px) exist but are **off the
 canonical rhythm** — reach for them only as a deliberate exception, never as a
 default step. Prefer the five canonical tokens so spacing stays legible and

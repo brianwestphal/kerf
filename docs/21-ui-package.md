@@ -302,6 +302,10 @@ runs catalog/conformance preflights and builds current source before preview;
 the emitted source-freshness digest is compared with current `src/` and
 `ux-demo/` inputs so a focused run cannot silently exercise stale output.
 
+`Row` and `List` share the same typed flex-participation contract: boolean
+growth, finite CSS keywords, or a branded `CssFlex` from `flex()`; raw flex
+strings and length-only values are rejected.
+
 AI-oriented entry points ship with the package at `ui/ai/skill.md` and
 `ui/llms.txt`. They route tools to the component contract, accessibility rules,
 catalog, and the need-first `ui/docs/component-selection.md` decision matrix

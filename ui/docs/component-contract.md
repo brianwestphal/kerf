@@ -269,7 +269,8 @@ Logical-edge separator lines are independently opt-in and default off.
 geometry classes.
 `List` is the corresponding layout-only vertical stack: its children stretch by
 default, while `gap`, `flex`, and `scrollable` opt into typed spacing,
-flex growth, and vertical scroll ownership. `dividerSides` accepts canonical
+flex growth, and vertical scroll ownership. `Row.flex` uses the same typed flex
+participation contract on the horizontal counterpart. `dividerSides` accepts canonical
 physical top/right/bottom/left combinations such as `tr` and `trbl`; the stack
 adds no list semantics, margin, or padding of its own. Use a direct finite
 spacing shorthand such as `gap="2xs"`, or pass a `CssLength` created by the
@@ -280,7 +281,7 @@ length. Raw CSS strings and source-only `remify(4px)` are not valid runtime
 props. The `CssLength` name intentionally includes percentages for UI dimension
 props. Its opaque string brand improves authoring correctness; it is not a CSS
 sanitizer or security boundary.
-`List.flex` likewise accepts its boolean default, finite keywords, or `CssFlex`
+`Row.flex` and `List.flex` likewise accept their boolean default, finite keywords, or `CssFlex`
 from `flex(grow, shrink, basis)`. `Skeleton` width/height use `CssSize`, radius
 uses `CssLength`, and `SelectChoice.color` uses `CssColor` from `uiColor()` or
 `colorVar()`. Never exchange these property grammars. List rows expose

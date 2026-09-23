@@ -22,6 +22,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added durable Hot Sheet phase timing for active work, local verification,
   push hooks, CI, and publication, including safe failure aggregation and
   per-ticket summaries.
+- Added typed flex participation to `Row`, matching `List`'s boolean, finite
+  keyword, and branded `CssFlex` contract.
 - Added a first-class horizontal `Row` with typed spacing, physical-axis
   alignment, and opt-in wrapping; `List` now supports the same alignment
   vocabulary while retaining its existing defaults.

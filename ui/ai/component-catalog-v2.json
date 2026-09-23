@@ -1424,7 +1424,7 @@
           "required": false
         },
         {
-          "id": "typed gap overrides",
+          "id": "typed gap and flex choices",
           "owner": "application",
           "required": false
         }
@@ -1438,7 +1438,7 @@
           "border": "none",
           "padding": "none",
           "notes": [
-            "Row adds no margin, border, or padding; it owns only flex alignment, wrapping, and the gap between children."
+            "Row adds no margin, border, or padding; it owns only flex participation, alignment, wrapping, and the gap between children."
           ]
         }
       },
@@ -1463,6 +1463,16 @@
             "gap={space(\"m\")}",
             "gap={calc(plus(rem(0.25), pct(10)))}"
           ]
+        },
+        {
+          "path": "flex",
+          "grammar": "flex",
+          "helpers": ["flex"],
+          "shorthands": ["none", "auto", "initial"],
+          "canonicalShorthands": ["none", "auto", "initial"],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["flex", "flex=\"none\"", "flex={flex(1, 1, rem(20))}"]
         }
       ],
       "boundaries": {
