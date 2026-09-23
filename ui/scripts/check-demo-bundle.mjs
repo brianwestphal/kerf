@@ -1,39 +1,23 @@
-import { gzipSync } from 'node:zlib';
-import { readdir, readFile } from 'node:fs/promises';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
+
+import {
+  gzipDelta,
+  measureDemoBundle,
+  updateDemoBundleBudget,
+} from './lib/demo-bundle-budget.mjs';
 
 const assetsDir = fileURLToPath(
   new URL('../dist-demo/assets/', import.meta.url),
 );
-const limits = {
-  largestJavaScriptGzip: 150_000,
-  // Grows as demos are added: 260.59 kB (collapsible-sidebar recipe) → 261.13 kB
-  // (TokenSearchField adoption knobs) → 262.10 kB (FloatingToolbar demo) → 263.21 kB
-  // (ToolbarText overflow examples) → 264.00 kB (atomic-chip deletion hardening)
-  // → 265.24 kB (Pane + SunkenPanel focused demos and catalog metadata v2)
-  // → 265.78 kB (public foundation-token catalog route and metadata)
-  // → 266.53 kB (Workbench focused route and catalog contract)
-  // → 267.04 kB (controlled TabBar focus restoration).
-  // → 267.13 kB (managed clear replacement focus and adoption demo).
-  // → 267.93 kB (first-class SplitView catalog route and metadata).
-  // → 269.37 kB (NavStack, TabScaffold, and CollapsiblePanel focused routes).
-  // → 269.99 kB (typed AppTab and TabBar presentation specimens).
-  // → 270.44 kB (typed ToolbarControlGroup content/chrome specimens).
-  // → 270.93 kB (dialog and popup surface scaffold route).
-  // → 271.67 kB (configuration-first application panel policies).
-  // → 272.17 kB (configuration-first List family specimens).
-  // → 272.45 kB (first-class semantic pop color specimens).
-  // → 273.10 kB (interactive NavStack push/pop and per-view chrome demo).
-  // → 273.61 kB (interactive SplitView list-detail drill-down demo).
-  // → 274.02 kB (NavStack focus move and restoration behavior).
-  // → 274.43 kB (focused AppTab/TabBar specimens and their application-tabs
-  // composition, integrated alongside the NavStack focus work).
-  // → 274.89 kB (property-specific CSS-value builder specimens).
-  // Keep only narrow headroom and preserve the split.
-  // Rebased canonical Select lifecycle on the current catalog: 275.48 kB.
-  // → 276.49 kB (first-class Row and shared List alignment specimens).
-  totalJavaScriptGzip: 276_600,
+const budgetUrl = new URL('../demo-bundle-budget.json', import.meta.url);
+const limits = JSON.parse(await readFile(budgetUrl, 'utf8'));
+const valueAfter = (flag) => {
+  const index = process.argv.indexOf(flag);
+  return index >= 0 ? process.argv[index + 1] : undefined;
 };
+const updateBudget = process.argv.includes('--update-budget');
+const json = process.argv.includes('--json');
 
 const javascript = (await readdir(assetsDir)).filter((name) =>
   name.endsWith('.js'),
@@ -73,34 +57,40 @@ for (const name of stylesheets) {
   }
 }
 
-const sizes = await Promise.all(
-  javascript.map(async (name) => ({
-    name,
-    gzip: gzipSync(
-      await readFile(new URL(`../dist-demo/assets/${name}`, import.meta.url)),
-    ).byteLength,
-  })),
-);
-const largest = sizes.reduce((current, asset) =>
-  asset.gzip > current.gzip ? asset : current,
-);
-const total = sizes.reduce((sum, asset) => sum + asset.gzip, 0);
+const measurement = await measureDemoBundle(assetsDir);
+const delta = gzipDelta(measurement, limits);
+
+if (updateBudget) {
+  const next = updateDemoBundleBudget(
+    limits,
+    measurement,
+    process.env.KERF_UI_BUNDLE_REASON ?? valueAfter('--reason') ?? '',
+    new Date().toISOString(),
+  );
+  await writeFile(budgetUrl, `${JSON.stringify(next, null, 2)}\n`);
+  console.log(
+    `UX demo bundle budget updated: ${limits.measuredTotalJavaScriptGzip} -> ${measurement.totalJavaScriptGzip} bytes measured; ${limits.totalJavaScriptGzip} -> ${next.totalJavaScriptGzip} bytes budget.`,
+  );
+  process.exit(0);
+}
 
 function kb(bytes) {
   return `${(bytes / 1000).toFixed(2)} kB`;
 }
 
-if (largest.gzip > limits.largestJavaScriptGzip) {
+if (measurement.largestJavaScriptGzip > limits.largestJavaScriptGzip) {
   throw new Error(
-    `UX demo largest JavaScript chunk ${largest.name} is ${kb(largest.gzip)} gzip; budget is ${kb(limits.largestJavaScriptGzip)}`,
+    `UX demo largest JavaScript chunk ${measurement.largestJavaScriptAsset} is ${kb(measurement.largestJavaScriptGzip)} gzip; budget is ${kb(limits.largestJavaScriptGzip)}`,
   );
 }
-if (total > limits.totalJavaScriptGzip) {
+if (measurement.totalJavaScriptGzip > limits.totalJavaScriptGzip) {
   throw new Error(
-    `UX demo JavaScript totals ${kb(total)} gzip; budget is ${kb(limits.totalJavaScriptGzip)}`,
+    `UX demo JavaScript totals ${kb(measurement.totalJavaScriptGzip)} gzip; budget is ${kb(limits.totalJavaScriptGzip)}. If reviewed, run npm run check:change -- --update-bundle-budget --reason "why the growth is intentional".`,
   );
 }
 
-console.log(
-  `UX demo bundle budget: ${javascript.length} chunks, ${kb(total)} gzip total, largest ${largest.name} at ${kb(largest.gzip)} gzip`,
-);
+if (json) console.log(JSON.stringify({ ...measurement, delta }));
+else
+  console.log(
+    `UX demo bundle budget: ${measurement.chunks} chunks, ${kb(measurement.totalJavaScriptGzip)} gzip total (${delta.total >= 0 ? '+' : ''}${delta.total} bytes from reviewed baseline), largest ${measurement.largestJavaScriptAsset} at ${kb(measurement.largestJavaScriptGzip)} gzip (${delta.largest >= 0 ? '+' : ''}${delta.largest} bytes)`,
+  );

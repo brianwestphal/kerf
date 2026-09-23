@@ -336,6 +336,7 @@
     "catalog:v2:sync": "node scripts/sync-component-catalog-v2.mjs",
     "check:component-integrations": "node scripts/check-component-integrations.mjs",
     "component-integrations:dry-run": "node scripts/check-component-integrations.mjs --dry-run",
+    "check:change": "node scripts/check-ui-change.mjs",
     "check:catalog": "node scripts/sync-component-catalog.mjs --check && node scripts/sync-component-catalog-v2.mjs --check && node scripts/check-component-catalog.mjs",
     "check:profile": "node scripts/check-application-ui-profile.mjs",
     "check:demo-conformance": "node scripts/check-catalog-demo-conformance.mjs",

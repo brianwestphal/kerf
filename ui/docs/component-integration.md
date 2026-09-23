@@ -38,3 +38,26 @@ component can no longer be silently omitted from that corpus.
 Non-component helpers, wiring modules, compositions, recipes, and development
 tools remain explicit package surfaces. They do not masquerade as visual
 components merely to enter this workflow.
+
+## Change-local verification and bundle review
+
+Run `npm run check:change` after changing a public component. It synchronizes
+both catalog projections, declarations, AI signatures, and compatibility
+digests; names every checked-in projection changed by that synchronization;
+runs the catalog/component contracts, unit coverage, consumer bundle tests,
+source and packed type contracts; builds the production catalog; and reports
+the exact gzip byte delta from the last reviewed baseline. The broader
+`npm run check` remains the release gate.
+
+Intentional bundle changes use the same workflow with an explicit review
+reason:
+
+```bash
+npm run check:change -- --update-bundle-budget \
+  --reason "Added the reviewed List detail states and keyboard behavior"
+```
+
+That mode writes `demo-bundle-budget.json`, records the previous and new exact
+measurements and budgets with the reason and timestamp, and rounds the total
+budget to the next 100 bytes. Do not edit the budget or add a history comment
+by hand.

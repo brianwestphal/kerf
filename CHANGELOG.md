@@ -13,6 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added a catalog-driven public-component integration validator for
   `@kerfjs/ui`, including an all-at-once dry-run report across package, build,
   barrel, CSS, demo, route, signature, and compatibility surfaces.
+- Added one change-local `@kerfjs/ui` verification command that synchronizes
+  generated projections, runs component/bundle/type coverage, builds the demo,
+  reports exact gzip deltas, and records reviewed budget updates with reasons.
 - Added a first-class horizontal `Row` with typed spacing, physical-axis
   alignment, and opt-in wrapping; `List` now supports the same alignment
   vocabulary while retaining its existing defaults.

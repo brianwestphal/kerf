@@ -244,7 +244,11 @@ The [public component integration workflow](../ui/docs/component-integration.md)
 uses the canonical v1 catalog as the manifest for first-party components. Its
 dry-run/check pair reports package exports, tsup entries, root-barrel exports,
 CSS delivery, demo registry/routes, and AI signature drift in one pass instead
-of allowing those surfaces to fail sequentially.
+of allowing those surfaces to fail sequentially. `npm run check:change` from
+`ui/` synchronizes those projections, runs the change-local contract, unit,
+bundle, and type gates, builds the production catalog, and prints the exact
+gzip delta; its explicit reviewed update mode records old/new measurements and
+the reason in `ui/demo-bundle-budget.json`.
 
 `ui/ux-demo/` is a production-backed component catalog: it imports public
 package paths, groups routes by category in a master/detail shell, exposes each
