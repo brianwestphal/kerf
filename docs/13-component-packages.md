@@ -254,6 +254,12 @@ environment. A third-party component package follows the same shape: build with
 requirement — `@kerfjs/ui` is scoped; the other three publish unscoped. See
 [`21-ui-package.md`](21-ui-package.md) for the first-party component contract.
 
+The repository treats `ui/ai/component-catalog-v2.schema.json` as the canonical
+composition contract and generates `create-kerf-component`'s bundled copy with
+`npm run sync:scaffold-catalog-schema`. The root check and interactive release
+flow run the matching check command, so schema drift fails before a release tag
+is created.
+
 ## 13.6 Checklist
 
 - [ ] Components are functions `(props) => SafeHtml`; no inline event handlers.

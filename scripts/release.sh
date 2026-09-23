@@ -365,6 +365,10 @@ step_local_checks() {
   echo ""
   info "UI package..."
   (cd ui && npm run check)
+  echo ""
+  info "Component scaffold..."
+  npm run check:scaffold-catalog-schema
+  (cd create-kerf-component && npm test)
   success "All local checks passed"
 }
 

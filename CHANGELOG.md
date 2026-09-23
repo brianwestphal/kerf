@@ -14,6 +14,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   pre-push so coherent commit batches pay its cost once; pre-commit now performs
   only Git's staged whitespace check, and multi-source AI guidance files are
   excluded from repository-wide Prettier enforcement.
+- Fixed `create-kerf-component` releases carrying a stale composition-catalog
+  schema by generating the bundled copy from `@kerfjs/ui`'s canonical schema
+  and gating both the root check and interactive release flow against drift.
 - Added catalog-driven CSS value diagnostics across `eslint-plugin-kerfjs`,
   `kerf-ui-analyze`, and `kerf-ui-doctor`. Stable `KUI-L013`–`KUI-L017`
   findings now identify raw or unknown values, wrong-dimension helpers,

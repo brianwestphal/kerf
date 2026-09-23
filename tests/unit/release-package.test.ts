@@ -6,6 +6,7 @@ import {
   readFileSync,
   rmSync,
   symlinkSync,
+  writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, join, resolve } from 'node:path';
@@ -40,6 +41,7 @@ function packedText(tarball: string, relative: string): string {
 beforeAll(() => {
   for (const relative of [
     'scripts/prepare-release-package.mjs',
+    'scripts/sync-scaffold-catalog-schema.mjs',
     'package.json',
     'ai/manifest.json',
     'setup',
@@ -54,6 +56,7 @@ beforeAll(() => {
     'ui/package.json',
     'ui/ai/public-api-signatures-v1.md',
     'ui/ai/webawesome-jsx-signatures-v1.md',
+    'ui/ai/component-catalog-v2.schema.json',
   ])
     copy(relative);
 
@@ -99,6 +102,47 @@ beforeAll(() => {
 afterAll(() => rmSync(fixtureRoot, { recursive: true, force: true }));
 
 describe('release package preparation', () => {
+  it('repairs scaffold schema drift from the canonical UI contract and then passes its release gate', () => {
+    const script = join(
+      fixtureRoot,
+      'scripts/sync-scaffold-catalog-schema.mjs',
+    );
+    const scaffoldSchema = join(
+      fixtureRoot,
+      'create-kerf-component/component-catalog-v2.schema.json',
+    );
+    const canonicalSchema = join(
+      fixtureRoot,
+      'ui/ai/component-catalog-v2.schema.json',
+    );
+    writeFileSync(scaffoldSchema, '{}\n');
+
+    expect(() =>
+      execFileSync(
+        process.execPath,
+        [script, '--check', '--root', fixtureRoot],
+        {
+          stdio: 'pipe',
+        },
+      ),
+    ).toThrow();
+    execFileSync(process.execPath, [script, '--write', '--root', fixtureRoot], {
+      stdio: 'pipe',
+    });
+    expect(() =>
+      execFileSync(
+        process.execPath,
+        [script, '--check', '--root', fixtureRoot],
+        {
+          stdio: 'pipe',
+        },
+      ),
+    ).not.toThrow();
+    expect(readFileSync(scaffoldSchema, 'utf8')).toBe(
+      readFileSync(canonicalSchema, 'utf8'),
+    );
+  });
+
   it('packs synchronized beta metadata into all four release artifacts', () => {
     const coreTarball = tarballs.get('kerfjs')!;
     expect(JSON.parse(packedText(coreTarball, 'package.json')).version).toBe(
