@@ -460,6 +460,7 @@
 /* The related trigger carries a text label ("Component") beside the glyph, so let
    it grow to its content instead of the single-group's fixed 48px icon-button
    width (from toolbar-control-group.css). */
+.kui-catalog__related-group[data-single="true"] > .kui-catalog__related-menu,
 .kui-catalog__related-group[data-single="true"]
   > .kui-catalog__related-menu
   > wa-button,
@@ -467,6 +468,12 @@
   > .kui-catalog__related-menu
   > wa-button::part(base) {
   width: auto;
+}
+
+/* The menu owns a standard inner inset so long relationship names never touch
+   the popup border. */
+.kui-catalog__related-menu::part(menu) {
+  padding: var(--kui-wa-surface-inset, remify(8px));
 }
 
 /* Keep the glyph beside the text label (the toolbar group paints the slotted svg
@@ -484,7 +491,7 @@
 /* Group heading inside the related-entries popup menu (e.g. "Uses" / "Used by"). */
 .kui-catalog__related-heading {
   display: block;
-  padding: remify(4px) remify(12px) 0;
+  padding: remify(4px) var(--kui-wa-control-inset, remify(8px)) 0;
   color: var(--kui-color-text-quiet);
   font-size: var(--kui-font-xs);
   font-weight: 600;

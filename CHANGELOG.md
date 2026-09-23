@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   rounded geometry and restored consistent spacing between popup icons and labels.
 - Fixed the compact-toolbar recipe's independent overflow action to use the
   same full-height pill geometry as its adjacent toolbar controls.
+- Fixed the catalog footer's `Components` relationship selector to fit its icon
+  and plural label and give popup headings/items consistent border clearance.
 - Fixed a collapsible `TokenSearchField` inside a rounded
   `ToolbarControlGroup` retaining its independent pill radius instead of using
   the group's shared concentric highlight radius.

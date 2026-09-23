@@ -3654,7 +3654,7 @@ test('catalog routes every production component family and supports its stateful
   const menuRelationships = page.locator('[data-catalog-related]');
   const relatedTrigger = menuRelationships.locator('wa-button[slot="trigger"]');
   await expect(relatedTrigger).toHaveCount(1);
-  await expect(relatedTrigger).toContainText('Component');
+  await expect(relatedTrigger).toContainText('Components');
   await relatedTrigger.click();
   await expect(
     menuRelationships.locator('.kui-catalog__related-heading', {

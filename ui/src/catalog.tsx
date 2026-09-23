@@ -447,7 +447,7 @@ export function Catalog({
                           <span class="kui-catalog__related-trigger">
                             <LucideIcon icon={Waypoints} name="waypoints" />
                             <span class="kui-catalog__related-label">
-                              Component
+                              Components
                             </span>
                           </span>
                         </wa-button>
