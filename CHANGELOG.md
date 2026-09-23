@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   described rows now grow enough to keep their owned two-line label readable.
 - Fixed compact toolbar `Select` focus to follow its owning group's pill or
   rounded geometry and restored consistent spacing between popup icons and labels.
+- Fixed the compact-toolbar recipe's independent overflow action to use the
+  same full-height pill geometry as its adjacent toolbar controls.
 - Fixed a collapsible `TokenSearchField` inside a rounded
   `ToolbarControlGroup` retaining its independent pill radius instead of using
   the group's shared concentric highlight radius.

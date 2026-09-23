@@ -107,8 +107,10 @@ rows.
 
 Use `ToolbarControlGroup` for related commands, `SegmentedControl` for a few
 visible exclusive choices, `Select` for a longer value list, and an ordinary
-button for an independent command. The app owns values, actions, persistence,
-and responsive priority.
+button for an independent command. Even that independent button sits in a
+single-control `ToolbarControlGroup`, which keeps its height, pill shape, focus,
+and hover treatment aligned with the adjacent toolbar controls. The app owns
+values, actions, persistence, and responsive priority.
 
 ## Navigation stack
 

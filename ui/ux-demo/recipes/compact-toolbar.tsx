@@ -80,15 +80,16 @@ export const createRecipe: RecipeFactory = (announce) => {
                 <LucideIcon icon={RefreshCw} name="refresh-cw" />
               </button>
             </ToolbarControlGroup>
-            <button
-              class="kui-recipe__button"
-              type="button"
-              aria-label="More task actions"
-              data-action="recipe-action"
-              data-recipe-command="more"
-            >
-              <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
-            </button>
+            <ToolbarControlGroup label="More task actions" single>
+              <button
+                type="button"
+                aria-label="More task actions"
+                data-action="recipe-action"
+                data-recipe-command="more"
+              >
+                <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+              </button>
+            </ToolbarControlGroup>
           </div>
         }
       />

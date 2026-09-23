@@ -101,6 +101,23 @@ describe('production composition recipes', () => {
     expect(html(toolbar.render())).toContain('data-value="board"');
   });
 
+  it('wraps the compact toolbar independent action in single-control geometry', () => {
+    const markup = html(createCompactToolbar(() => {}).render());
+    const template = document.createElement('template');
+    template.innerHTML = markup;
+    const more = template.content.querySelector<HTMLButtonElement>(
+      '[data-recipe-command="more"]',
+    );
+    expect(more?.classList.contains('kui-recipe__button')).toBe(false);
+    expect(more?.parentElement?.getAttribute('data-component')).toBe(
+      'toolbar-control-group',
+    );
+    expect(more?.parentElement?.getAttribute('data-single')).toBe('true');
+    expect(more?.parentElement?.getAttribute('aria-label')).toBe(
+      'More task actions',
+    );
+  });
+
   it('gives the composer toolbar heading and direct shared-gutter controls', () => {
     const form = createComposerForm(() => {});
     const template = document.createElement('template');
