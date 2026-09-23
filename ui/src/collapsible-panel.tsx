@@ -117,7 +117,9 @@ export interface CollapsiblePanelProps {
  * {@link Workbench} shell. It owns only the presentation: a fixed-size content
  * area that stays laid out while the panel's track snaps to zero and the content
  * slides out via `transform` (one reflow, composited — the same technique
- * `Workbench` and the catalog sidebar use). The app owns the `collapsed` signal;
+ * `Workbench` and the catalog sidebar use). Bottom-drawer content stays anchored
+ * to the panel's fixed bottom edge, so the track cannot move its layout origin
+ * underneath the transform transition. The app owns the `collapsed` signal;
  * pair it with `wireSidebar` for the toggle, focus, compact-overlay, keyboard,
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
  * affordance. See `docs/24-collapsible-panel.md`.

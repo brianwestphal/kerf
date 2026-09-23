@@ -1,4 +1,8 @@
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
 import { raw } from 'kerfjs';
+import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -53,6 +57,42 @@ describe('CollapsiblePanel', () => {
     );
     expect(drawer).toContain('kui-collapsible-panel--bottom');
     expect(drawer).toContain('--kui-collapsible-panel-height: 240px');
+  });
+
+  it('bottom-anchors drawer content so the slide has one stable motion origin', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/collapsible-panel.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const declarations = (selector: string) => {
+      const rule = root.nodes.find(
+        (node) => node.type === 'rule' && node.selector === selector,
+      );
+      if (!rule || rule.type !== 'rule')
+        throw new Error(`Missing ${selector} rule`);
+      return Object.fromEntries(
+        rule.nodes
+          .filter((node) => node.type === 'decl')
+          .map((node) => [node.prop, node.value]),
+      );
+    };
+
+    expect(declarations('.kui-collapsible-panel--bottom')).toMatchObject({
+      position: 'relative',
+    });
+    expect(
+      declarations(
+        '.kui-collapsible-panel--bottom .kui-collapsible-panel__content',
+      ),
+    ).toMatchObject({
+      position: 'absolute',
+      'inset-inline': '0',
+      'inset-block-end': '0',
+    });
+    expect(declarations('.kui-collapsible-panel__content')).toMatchObject({
+      transition: 'transform 200ms ease',
+    });
   });
 
   it('projects panel policies and renders a collapsed safe-area restore control', () => {

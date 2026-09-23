@@ -55,6 +55,58 @@ test('expands and collapses the bottom drawer independently', async ({
   await expect(drawerPanel(page)).toHaveAttribute('data-collapsed', 'true');
 });
 
+test('opens the bottom drawer monotonically from its stable bottom edge', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1200, height: 820 });
+  await page.goto(RECIPE);
+
+  const samples = await page.evaluate(async () => {
+    document
+      .querySelector<HTMLButtonElement>('button[aria-label="Show activity"]')!
+      .click();
+    const frames: Array<{
+      offset: number;
+      translateY: number;
+      panelBottom: number;
+    }> = [];
+    for (let index = 0; index < 18; index += 1) {
+      await new Promise(window.requestAnimationFrame);
+      const panel = document.querySelector<HTMLElement>(
+        '[data-collapsible-panel="sidebar-console"]',
+      )!;
+      const motion = panel.querySelector<HTMLElement>(
+        '.kui-collapsible-panel__content',
+      )!;
+      const transform = window.getComputedStyle(motion).transform;
+      frames.push({
+        offset:
+          motion.getBoundingClientRect().top -
+          panel.getBoundingClientRect().top,
+        translateY: transform === 'none' ? 0 : new DOMMatrix(transform).m42,
+        panelBottom: panel.getBoundingClientRect().bottom,
+      });
+    }
+    return frames;
+  });
+
+  expect(samples.some(({ translateY }) => translateY > 20)).toBe(true);
+  // The panel's bottom edge is the motion anchor. A changing normal-flow origin
+  // caused the old content overshoot and snap even while this edge stayed put.
+  expect(
+    Math.max(...samples.map(({ panelBottom }) => panelBottom)) -
+      Math.min(...samples.map(({ panelBottom }) => panelBottom)),
+  ).toBeLessThan(1.5);
+  for (let index = 1; index < samples.length; index += 1) {
+    // The content's top advances only upward. A one-pixel tolerance absorbs
+    // subpixel easing/rounding at the settled edge in all three engines.
+    expect(samples[index]!.offset).toBeLessThanOrEqual(
+      samples[index - 1]!.offset + 1,
+    );
+  }
+  expect(samples.at(-1)!.offset).toBeLessThan(1.5);
+});
+
 test('presents a compact overlay dismissed by Escape and the backdrop', async ({
   page,
 }) => {

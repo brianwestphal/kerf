@@ -18,7 +18,10 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   docked panel: a `'left'` / `'right'` rail or a `'bottom'` drawer. It owns only
   presentation. Collapsing snaps the panel's own size to zero in one reflow while
   the fixed-size content slides out via `transform` (composited, clipped) — never
-  a per-frame width/height animation. The app owns the `collapsed` signal; `size`
+  a per-frame width/height animation. A bottom drawer anchors that fixed-size
+  content to its stable bottom edge, so opening and closing move monotonically
+  through the transform alone instead of transitioning from a changing layout
+  origin and snapping at the end. The app owns the `collapsed` signal; `size`
   overrides the CSS default width/height.
   Reusable shell policies are typed props: `separator`, `collapseMotion`,
   `contentOverflow`, and `presentation`. A collapsed panel may also receive a

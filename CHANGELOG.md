@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed bottom `CollapsiblePanel` drawers overshooting their open position and
+  snapping back by anchoring fixed-height content to the panel's stable bottom
+  edge throughout the transform transition.
 - Added `ToolbarControlGroup.avatarImage`, painting contained avatar imagery on
   a lone group or on the pressed highlight when the group has multiple buttons.
 - Split the AppTab and TabBar catalog routes into focused component specimens,

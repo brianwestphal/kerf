@@ -251,7 +251,9 @@ NavStack.
 A single collapsible **side rail or bottom drawer** for apps that want one panel
 outside the full `Workbench` shell. `CollapsiblePanel({ id, side, collapsed?,
 size? })` reuses the §3.3 instant-size/sliding-content collapse for a `'left'` /
-`'right'` rail or a `'bottom'` drawer; `CollapsiblePanelToggle` +
+`'right'` rail or a `'bottom'` drawer. Bottom-drawer content is anchored to the
+panel's stable bottom edge so the transform cannot overshoot and snap while the
+track changes size. `CollapsiblePanelToggle` +
 `collapsiblePanelToggleIcon` are the standard toggle affordance and per-side icon
 convention (`PanelLeft*` / `PanelRight*` / `PanelBottom*`). `wireSidebar(root, {
 panels, deviceClass?, storage? })` adds the semantics: toggle delegation with
