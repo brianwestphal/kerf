@@ -47,8 +47,13 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
    [workspace profile example](./docs/examples/application-ui-profile.json).
    A zone's optional `jsx.prop` is its only authoritative JSX binding; never
    infer one from the zone id. Use `children` for one homogeneous primary
-   region and explicit named `SafeHtml` prop slots for semantic positions or
-   replacement content. These are typed props, not native `<slot>` elements,
+   region and explicit named content prop slots for semantic positions or
+   replacement content. These slots use the recursive `KerfUiContent` type:
+   `SafeHtml`, runtime-empty boolean/nullish values, and readonly nested arrays.
+   Put conditionals and mapped component arrays directly in them; do not add a
+   `Fragment` only to satisfy types. Arbitrary strings, numbers, and signals are
+   rejected unless a component explicitly exposes a text position such as
+   `ListInsetText`. These are typed props, not native `<slot>` elements,
    wrapper slot components, or a generic `slots` object. Leave unresolved
    dynamic expressions unknown.
 4. **When authoring a component gallery**, load

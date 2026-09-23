@@ -1,6 +1,5 @@
-import type { SafeHtml } from 'kerfjs';
-
 import { filterDataAttributes } from './extension-attributes.js';
+import type { KerfUiContent } from './semantic-content.js';
 
 /** Logical sides that can show a {@link Pane} separator. */
 export type PaneSeparatorSide =
@@ -32,11 +31,11 @@ type PaneRootAttributes = Readonly<
 
 export interface PaneProps {
   /** Optional fixed chrome above the scrolling content, arranged vertically. */
-  header?: SafeHtml | readonly SafeHtml[];
+  header?: KerfUiContent;
   /** The pane's primary vertical, scrolling content stack. */
-  children?: SafeHtml | readonly SafeHtml[];
+  children?: KerfUiContent;
   /** Optional fixed chrome below the scrolling content. */
-  footer?: SafeHtml | readonly SafeHtml[];
+  footer?: KerfUiContent;
   /** Root semantics. Defaults to `div`. */
   element?: PaneElement;
   /** Scrolling content semantics. Defaults to `div`. */
@@ -58,7 +57,7 @@ export interface PaneProps {
 
 function paneContent(
   element: PaneContentElement,
-  children: SafeHtml | readonly SafeHtml[] | undefined,
+  children: KerfUiContent,
   className: string,
   label: string | undefined,
 ) {

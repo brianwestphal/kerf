@@ -1,9 +1,8 @@
-import type { SafeHtml } from 'kerfjs';
-
 import type { DividerSides } from './divider-sides.js';
+import type { KerfUiContent } from './semantic-content.js';
 
 export interface ListProps {
-  children?: SafeHtml | readonly SafeHtml[];
+  children?: KerfUiContent;
   /** Use the standard item gap, or supply browser CSS such as `var(--kui-space-2xs)` or `0.25rem`. Defaults to no gap. */
   gap?: boolean | string;
   /** Allow this list to grow/shrink, or supply a CSS flex shorthand. */

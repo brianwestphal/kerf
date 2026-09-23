@@ -10,6 +10,20 @@ import { CircleHelp, Folder, Inbox, Plus, Settings, Wrench } from 'lucide';
 import { icon, menuToolsOpen } from './state.js';
 
 export function ListDemo() {
+  const workspaceHeading: string | undefined = 'Workspace';
+  const workspaceRows = [
+    {
+      action: 'log-projects',
+      itemId: 'projects',
+      label: 'Projects',
+      icon: icon(Folder, 'folder'),
+    },
+    {
+      action: 'log-drafts',
+      itemId: 'drafts',
+      label: 'Drafts without a visible icon',
+    },
+  ];
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'list' }}>
       <CatalogExample
@@ -48,14 +62,16 @@ export function ListDemo() {
           >
             <section>
               <List>
-                <ListHeader
-                  label="Workspace"
-                  count={3}
-                  countLabel="3 workspaces"
-                  action="log-add"
-                  actionLabel="Add workspace"
-                  actionIcon={icon(Plus, 'plus')}
-                />
+                {workspaceHeading !== undefined ? (
+                  <ListHeader
+                    label={workspaceHeading}
+                    count={3}
+                    countLabel="3 workspaces"
+                    action="log-add"
+                    actionLabel="Add workspace"
+                    actionIcon={icon(Plus, 'plus')}
+                  />
+                ) : null}
                 <ListItem
                   action="log-inbox"
                   itemId="inbox"
@@ -64,17 +80,9 @@ export function ListDemo() {
                   trailing={<span>12</span>}
                   selected
                 />
-                <ListItem
-                  action="log-projects"
-                  itemId="projects"
-                  label="Projects"
-                  icon={icon(Folder, 'folder')}
-                />
-                <ListItem
-                  action="log-drafts"
-                  itemId="drafts"
-                  label="Drafts without a visible icon"
-                />
+                {workspaceRows.map((row) => (
+                  <ListItem {...row} />
+                ))}
               </List>
             </section>
             <section>

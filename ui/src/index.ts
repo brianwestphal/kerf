@@ -68,6 +68,7 @@ export {
   type SelectSelectedPresentation,
   type SelectSize,
 } from './select.js';
+export { type KerfUiContent } from './semantic-content.js';
 export { Skeleton, type SkeletonProps } from './skeleton.js';
 export {
   StateBanner,

@@ -1,8 +1,8 @@
-import type { SafeHtml } from 'kerfjs';
+import type { KerfUiContent } from './semantic-content.js';
 
 export interface ListInsetTextProps {
   /** Text (or inline content) that carries no margin, border, or padding of its own. */
-  children: SafeHtml | SafeHtml[] | string;
+  children: KerfUiContent | string;
   /**
    * Keep only the horizontal geometry (inline margin, left/right border, and
    * left/right padding) and drop the vertical margin, border, and padding. Use it

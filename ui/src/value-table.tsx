@@ -1,11 +1,11 @@
-import type { SafeHtml } from 'kerfjs';
+import type { KerfUiContent } from './semantic-content.js';
 
 export { ValueTableRow, type ValueTableRowProps } from './value-table-row.js';
 
 export interface ValueTableProps {
   label: string;
   className?: string;
-  children: SafeHtml | readonly SafeHtml[];
+  children: KerfUiContent;
 }
 
 export function ValueTable({

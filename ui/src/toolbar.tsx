@@ -1,11 +1,10 @@
-import type { SafeHtml } from 'kerfjs';
-
 import type { DividerSides } from './divider-sides.js';
+import type { KerfUiContent } from './semantic-content.js';
 
 export interface ToolbarProps {
-  leading?: SafeHtml;
-  center?: SafeHtml;
-  trailing?: SafeHtml;
+  leading?: KerfUiContent;
+  center?: KerfUiContent;
+  trailing?: KerfUiContent;
   label?: string;
   /** Physical divider edges in canonical top/right/bottom/left order. Defaults to bottom. */
   dividerSides?: DividerSides;

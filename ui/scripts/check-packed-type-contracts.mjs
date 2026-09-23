@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import {
   copyFileSync,
+  cpSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -37,9 +38,22 @@ try {
     { stdio: 'inherit' },
   );
 
-  const fixture = resolve(root, 'tests/consumer-types/contracts/consumer.ts');
-  const consumer = join(temporary, basename(fixture));
-  copyFileSync(fixture, consumer);
+  cpSync(
+    resolve(root, 'node_modules/kerfjs'),
+    join(temporary, 'node_modules/kerfjs'),
+    {
+      recursive: true,
+    },
+  );
+  const fixtures = [
+    resolve(root, 'tests/consumer-types/contracts/consumer.ts'),
+    resolve(root, 'tests/consumer-types/contracts/semantic-content.tsx'),
+  ];
+  const consumers = fixtures.map((fixture) => {
+    const consumer = join(temporary, basename(fixture));
+    copyFileSync(fixture, consumer);
+    return consumer;
+  });
   writeFileSync(
     join(temporary, 'tsconfig.json'),
     `${JSON.stringify(
@@ -52,9 +66,11 @@ try {
           strict: true,
           noEmit: true,
           skipLibCheck: true,
+          jsx: 'react-jsx',
+          jsxImportSource: 'kerfjs',
           types: [],
         },
-        files: [basename(consumer)],
+        files: consumers.map((consumer) => basename(consumer)),
       },
       null,
       2,
@@ -70,7 +86,7 @@ try {
     readFileSync(join(packageRoot, 'package.json'), 'utf8'),
   );
   console.log(
-    `[check-packed-type-contracts] OK — ${packedManifest.name}@${packedManifest.version} declarations preserve 10 active KUI-T contracts.`,
+    `[check-packed-type-contracts] OK — ${packedManifest.name}@${packedManifest.version} declarations preserve 11 active KUI-T contracts.`,
   );
 } finally {
   rmSync(temporary, { recursive: true, force: true });

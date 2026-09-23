@@ -1,5 +1,4 @@
-import type { SafeHtml } from 'kerfjs';
-
+import type { KerfUiContent } from './semantic-content.js';
 import { ToolbarText } from './toolbar-text.js';
 
 /**
@@ -9,13 +8,13 @@ import { ToolbarText } from './toolbar-text.js';
 export interface NavStackView {
   /** Stable identity for keyed reconcile and transition direction. */
   key: string;
-  content: SafeHtml;
+  content: KerfUiContent;
   /** Title shown in the top toolbar for this view. */
   title?: string;
   /** Trailing actions for this view's top toolbar. */
-  toolbar?: SafeHtml;
+  toolbar?: KerfUiContent;
   /** Bottom toolbar for this view. Cross-fades with the top chrome on navigation. */
-  bottomToolbar?: SafeHtml;
+  bottomToolbar?: KerfUiContent;
 }
 
 export interface NavStackProps {
@@ -29,7 +28,7 @@ export interface NavStackProps {
   /** Hide the top toolbar entirely (rare — a fully custom-chrome view). */
   hideToolbar?: boolean;
   /** Optional persistent bottom toolbar used when the active view does not provide one. */
-  bottomToolbar?: SafeHtml;
+  bottomToolbar?: KerfUiContent;
   className?: string;
 }
 

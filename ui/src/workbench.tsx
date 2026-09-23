@@ -7,10 +7,11 @@ import type {
   ResizableRegionRestorePosition,
   ResizableRegionSeparator,
 } from './resizable-region.js';
+import type { KerfUiContent } from './semantic-content.js';
 
 /** A collapsible Workbench panel — a side rail or the bottom drawer. */
 export interface WorkbenchPanel {
-  content: SafeHtml;
+  content: KerfUiContent;
   /** Whether the panel is currently collapsed (the app owns this). */
   collapsed?: boolean;
   /** Rail width, or drawer height, in px. Overrides the CSS default. */
@@ -30,7 +31,7 @@ export interface WorkbenchProps {
   id: string;
   label: string;
   /** The central work area. */
-  main: SafeHtml;
+  main: KerfUiContent;
   leftRail?: WorkbenchPanel;
   rightRail?: WorkbenchPanel;
   bottomDrawer?: WorkbenchPanel;

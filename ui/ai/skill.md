@@ -41,9 +41,14 @@ exact `when` condition; subjective guidance stays prose. App entries use the
 v2 extension schema and retain their own package identity across Kerf edges.
 Treat a zone's optional `jsx.prop` as its only authoritative JSX binding; never
 assume the zone id itself is a prop. `children` carries one homogeneous primary
-region. Semantic positions and replacement content use explicit named
-`SafeHtml` prop slots (`header`, `footer`, `leading`, `trailing`, `icon`,
-`action`, and similar). They are typed props, not native `<slot>` elements,
+region. Semantic positions and replacement content use explicit named content
+props (`header`, `footer`, `leading`, `trailing`, `action`, and similar). Multi-
+content positions use the recursive `KerfUiContent` type: `SafeHtml`, runtime-
+empty boolean/nullish values, and readonly nested arrays. Put conditional
+components and mapped component arrays directly in these positions; do not add
+a `Fragment` merely to satisfy types. Arbitrary strings, numbers, and signals
+are rejected unless a component explicitly exposes a text position such as
+`ListInsetText`. These are typed props, not native `<slot>` elements,
 wrapper slot components, or a generic `slots` object. Preserve dynamic
 expressions as unknown when their content cannot be established statically.
 

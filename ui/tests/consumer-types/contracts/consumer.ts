@@ -1,6 +1,7 @@
 import type {
   AppTabPresentation,
   AppTabSize,
+  KerfUiContent,
   SelectFocusRingOwner,
   SelectPresentation,
   SelectSelectedPresentation,
@@ -47,6 +48,13 @@ import type {} from '@kerfjs/ui/webawesome';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 
 const icon = ToolbarText({ text: 'Icon' });
+
+// KUI-T011 positive: semantic component zones accept recursively nested,
+// readonly component content and runtime-empty values.
+const semanticContent: KerfUiContent = [icon, [false, null, undefined]];
+List({ children: semanticContent });
+// @ts-expect-error KUI-T011 semantic component zones reject arbitrary raw text.
+List({ children: 'plain text' });
 
 const evaluationContexts: UiEvaluationContext[] = buildEvaluationContexts();
 void evaluationContexts;

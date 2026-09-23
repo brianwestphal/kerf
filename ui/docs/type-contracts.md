@@ -11,18 +11,35 @@ public-signature artifact.
 
 ## Strengthened contracts
 
-| ID         | Compile-time guarantee                                                                                                                                                                                                                   |
-| ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `KUI-T001` | `ListHeader` is a passive heading, a fully named/icon-bearing trailing action, or a controlled disclosure with `action` + `expanded`. Props ignored by the selected mode are rejected.                                                   |
-| `KUI-T002` | `Select` has a visible `label` or an `ariaLabel`.                                                                                                                                                                                        |
-| `KUI-T003` | A literal `Select.value` belongs to its literal `choices`.                                                                                                                                                                               |
-| `KUI-T004` | A literal `SegmentedControl.value` belongs to its literal `choices`.                                                                                                                                                                     |
-| `KUI-T005` | `expanded`, `expandAction`, and `expandLabel` exist only on `TokenSearchField({ collapsible: true })`.                                                                                                                                   |
-| `KUI-T006` | `TokenSearchEditorAttributes` accepts application `data-*` metadata but rejects component-owned identity, morph, count, and placeholder attributes.                                                                                      |
-| `KUI-T007` | `ToolbarText.maxLines` requires `wrap: true`; it is never silently ignored in typed code.                                                                                                                                                |
-| `KUI-T008` | A literal `TabScaffold.active` id belongs to its literal `tabs`.                                                                                                                                                                         |
-| `KUI-T009` | Adjacent-token keyboard removal requires `onRemoveToken`; disabling removal rejects the now-meaningless callback.                                                                                                                        |
-| `KUI-T010` | Finite public variants have named exported union types, including divider sides, tab activation, banner urgency, and all AppTab, TabBar, ToolbarControlGroup, and Select presentation axes; the convenience root barrel re-exports them. |
+| ID         | Compile-time guarantee                                                                                                                                                                                                                                                                       |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `KUI-T001` | `ListHeader` is a passive heading, a fully named/icon-bearing trailing action, or a controlled disclosure with `action` + `expanded`. Props ignored by the selected mode are rejected.                                                                                                       |
+| `KUI-T002` | `Select` has a visible `label` or an `ariaLabel`.                                                                                                                                                                                                                                            |
+| `KUI-T003` | A literal `Select.value` belongs to its literal `choices`.                                                                                                                                                                                                                                   |
+| `KUI-T004` | A literal `SegmentedControl.value` belongs to its literal `choices`.                                                                                                                                                                                                                         |
+| `KUI-T005` | `expanded`, `expandAction`, and `expandLabel` exist only on `TokenSearchField({ collapsible: true })`.                                                                                                                                                                                       |
+| `KUI-T006` | `TokenSearchEditorAttributes` accepts application `data-*` metadata but rejects component-owned identity, morph, count, and placeholder attributes.                                                                                                                                          |
+| `KUI-T007` | `ToolbarText.maxLines` requires `wrap: true`; it is never silently ignored in typed code.                                                                                                                                                                                                    |
+| `KUI-T008` | A literal `TabScaffold.active` id belongs to its literal `tabs`.                                                                                                                                                                                                                             |
+| `KUI-T009` | Adjacent-token keyboard removal requires `onRemoveToken`; disabling removal rejects the now-meaningless callback.                                                                                                                                                                            |
+| `KUI-T010` | Finite public variants have named exported union types, including divider sides, tab activation, banner urgency, and all AppTab, TabBar, ToolbarControlGroup, and Select presentation axes; the convenience root barrel re-exports them.                                                     |
+| `KUI-T011` | Semantic component zones use the recursive `KerfUiContent` type: `SafeHtml`, runtime-empty booleans/nullish values, and readonly nested arrays are valid; arbitrary strings, numbers, and signals are rejected. Explicit text positions such as `ListInsetText` retain their text exception. |
+
+`KerfUiContent` lets conditionals and mapped component collections be direct
+siblings without an otherwise-unnecessary `Fragment`:
+
+```tsx
+<List>
+  {intro ? <ListInsetText>{intro}</ListInsetText> : null}
+  {rows.map((row) => (
+    <ListItem label={row.label} />
+  ))}
+</List>
+```
+
+The type is intentionally narrower than core JSX children. Wrap prose in a
+semantic text component, and read signals into components or structural
+conditionals rather than passing signal objects as content.
 
 Literal identity inference is intentionally additive for dynamic applications.
 When choices or ids arrive at runtime and the state signal is correctly typed as

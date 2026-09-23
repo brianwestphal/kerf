@@ -2,6 +2,7 @@ import type { SafeHtml } from 'kerfjs';
 
 import { filterDataAttributes } from './extension-attributes.js';
 import { LoadingSpinner } from './loading-spinner.js';
+import type { KerfUiContent } from './semantic-content.js';
 import { Skeleton } from './skeleton.js';
 
 const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
@@ -37,7 +38,7 @@ export interface ListItemProps {
   /** App-owned supporting text rendered in the component's stable label stack. */
   description?: string | SafeHtml;
   icon?: SafeHtml;
-  trailing?: SafeHtml;
+  trailing?: KerfUiContent;
   /** Dormant status metadata rendered before trailing content. */
   status?: string | SafeHtml;
   /** Show a progress indicator and expose the row as busy without replacing its content. */

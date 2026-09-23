@@ -14,6 +14,7 @@ import { ListHeader } from './list-header.js';
 import { ListItem } from './list-item.js';
 import { LucideIcon } from './lucide-icon.js';
 import { Pane } from './pane.js';
+import type { KerfUiContent } from './semantic-content.js';
 import { Toolbar } from './toolbar.js';
 import { ToolbarControlGroup } from './toolbar-control-group.js';
 
@@ -76,19 +77,19 @@ export interface CatalogProps {
   /** The controlled active entry id — the app owns this signal. */
   active: string;
   /** The rendered preview for the active entry; the app computes it from `active`. */
-  content: SafeHtml;
+  content: KerfUiContent;
   /** Whether the sidebar is collapsed (controlled). */
   collapsed?: boolean;
   /** Current theme; when set, a theme toggle is shown that switches to the opposite. Omit to hide it. */
   theme?: 'light' | 'dark';
   /** Extra header controls placed before the theme toggle (each a `ToolbarControlGroup`). */
-  headerActions?: SafeHtml;
+  headerActions?: KerfUiContent;
   /** A secondary "ecosystem" group of sections below the primary category groups. */
   secondarySections?: CatalogSecondaryGroup;
   /** Extra sidebar content below the category groups (and the secondary group). */
-  sidebarFooter?: SafeHtml;
+  sidebarFooter?: KerfUiContent;
   /** Status line content shown at the start of the detail footer. */
-  status?: SafeHtml;
+  status?: KerfUiContent;
   /**
    * Whether to highlight specimens' computed borders (or transparent outer
    * bounds) and non-zero margins. Pass a boolean (rather than omitting the
@@ -528,7 +529,7 @@ export interface CatalogExampleProps {
   /** Safe authoring `data-*` metadata for the rendered section. Helper-owned structural attributes remain protected. */
   rootAttributes?: CatalogExampleRootAttributes;
   className?: string;
-  children?: SafeHtml | readonly SafeHtml[];
+  children?: KerfUiContent;
 }
 
 /**
@@ -584,7 +585,7 @@ export interface CatalogExampleStackProps {
   /** Safe authoring `data-*` metadata for the rendered stack. Helper-owned structural attributes remain protected. */
   rootAttributes?: CatalogExampleStackRootAttributes;
   className?: string;
-  children?: SafeHtml | readonly SafeHtml[];
+  children?: KerfUiContent;
 }
 
 /**

@@ -1,12 +1,13 @@
 import type { SafeHtml } from 'kerfjs';
 
 import { LoadingSpinner } from './loading-spinner.js';
+import type { KerfUiContent } from './semantic-content.js';
 
 export interface EmptyStateProps {
   title: string;
   detail?: string;
   icon?: SafeHtml;
-  action?: SafeHtml;
+  action?: KerfUiContent;
   busy?: boolean;
   className?: string;
 }

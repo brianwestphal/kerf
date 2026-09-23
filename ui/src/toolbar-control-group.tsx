@@ -1,4 +1,4 @@
-import type { SafeHtml } from 'kerfjs';
+import type { KerfUiContent } from './semantic-content.js';
 
 export type ToolbarControlGroupAppearance = 'contained' | 'borderless';
 export type ToolbarControlGroupTone = 'default' | 'dark';
@@ -11,7 +11,7 @@ export type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
 export type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 
 export interface ToolbarControlGroupProps {
-  children: SafeHtml | SafeHtml[];
+  children: KerfUiContent;
   label?: string;
   className?: string;
   expanded?: boolean;

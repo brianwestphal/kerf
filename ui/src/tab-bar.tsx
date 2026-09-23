@@ -1,4 +1,4 @@
-import type { SafeHtml } from 'kerfjs';
+import type { KerfUiContent } from './semantic-content.js';
 
 export type TabActivation = 'automatic' | 'manual';
 export type TabBarAllocation = 'intrinsic' | 'fill';
@@ -8,9 +8,9 @@ export type TabBarTrailingPlacement = 'separate' | 'adjacent';
 export interface TabBarProps {
   id: string;
   label: string;
-  children: SafeHtml | readonly SafeHtml[];
-  leading?: SafeHtml;
-  trailing?: SafeHtml;
+  children: KerfUiContent;
+  leading?: KerfUiContent;
+  trailing?: KerfUiContent;
   className?: string;
   /**
    * Keyboard activation mode for this strip, emitted as `data-tab-activation` for

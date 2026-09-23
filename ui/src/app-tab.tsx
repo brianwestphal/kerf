@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
 import { filterDataAttributes } from './extension-attributes.js';
+import type { KerfUiContent } from './semantic-content.js';
 import { Skeleton } from './skeleton.js';
 
 const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
@@ -32,8 +33,8 @@ export interface AppTabProps {
   selected?: boolean;
   closable?: boolean;
   draggable?: boolean;
-  leading?: SafeHtml;
-  trailing?: SafeHtml;
+  leading?: KerfUiContent;
+  trailing?: KerfUiContent;
   /** Visual treatment within a TabBar. Icon-only tabs retain `name` as their accessible name. */
   presentation?: AppTabPresentation;
   /** Compact tabs use the 32px application-rail height. */

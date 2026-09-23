@@ -1,11 +1,11 @@
-import type { SafeHtml } from 'kerfjs';
+import type { KerfUiContent } from './semantic-content.js';
 
 export type DialogSurfaceSize = 'small' | 'medium' | 'large';
 export type DialogSurfacePresentation = 'modal' | 'side-sheet' | 'fullscreen';
 export type SurfaceInset = 'none' | 'compact' | 'comfortable';
 
 export interface DialogSurfaceProps {
-  children: SafeHtml | readonly SafeHtml[];
+  children: KerfUiContent;
   size?: DialogSurfaceSize;
   presentation?: DialogSurfacePresentation;
   bodyInset?: SurfaceInset;
@@ -39,7 +39,7 @@ export function DialogSurface({
 export type PopupSurfaceInset = 'standard' | 'compact' | 'list-zero';
 
 export interface PopupSurfaceProps {
-  children: SafeHtml | readonly SafeHtml[];
+  children: KerfUiContent;
   inset?: PopupSurfaceInset;
   className?: string;
 }

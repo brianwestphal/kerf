@@ -1,5 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
+import type { KerfUiContent } from './semantic-content.js';
+
 export type ResizableRegionAxis = 'horizontal' | 'vertical';
 export type ResizableRegionEdge = 'start' | 'end';
 export type ResizableRegionSeparator = 'auto' | 'hidden';
@@ -32,7 +34,7 @@ export interface ResizableRegionProps {
   restorePosition?: ResizableRegionRestorePosition;
   /** Decorative dormant content for the separator handle. Must not contain interactive descendants. */
   handleIcon?: SafeHtml;
-  children: SafeHtml | SafeHtml[];
+  children: KerfUiContent;
 }
 
 export const clampRegionSize = (size: number, min: number, max: number) =>

@@ -1,8 +1,8 @@
-import type { SafeHtml } from 'kerfjs';
+import type { KerfUiContent } from './semantic-content.js';
 
 export interface ListInsetControlProps {
   /** Control(s) that own their own border and padding (e.g. an input, a `wa-*`). */
-  children: SafeHtml | SafeHtml[];
+  children: KerfUiContent;
   className?: string;
 }
 

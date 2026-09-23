@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import type { KerfUiContent } from './semantic-content.js';
 import { Skeleton } from './skeleton.js';
 
 export type StateBannerTone =
@@ -12,7 +13,7 @@ export interface StateBannerProps {
   /** Optional compact status or count shown beside the title. */
   badge?: string;
   icon?: SafeHtml;
-  action?: SafeHtml;
+  action?: KerfUiContent;
   tone?: StateBannerTone;
   urgency?: StateBannerUrgency;
   className?: string;

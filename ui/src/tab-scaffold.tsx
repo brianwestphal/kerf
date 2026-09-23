@@ -1,12 +1,14 @@
 import type { SafeHtml } from 'kerfjs';
 
+import type { KerfUiContent } from './semantic-content.js';
+
 export interface TabScaffoldTab<Id extends string = string> {
   id: Id;
   label: string;
   /** Decorative icon shown above the label in the bottom bar. */
   icon?: SafeHtml;
   /** The tab's content — typically a `NavStack` so each tab keeps its own stack. */
-  content: SafeHtml;
+  content: KerfUiContent;
 }
 
 export interface TabScaffoldProps<Id extends string = string> {

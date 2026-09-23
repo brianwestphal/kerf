@@ -1,7 +1,6 @@
-import type { SafeHtml } from 'kerfjs';
-
 import { NavStack } from './nav-stack.js';
 import { ResizableRegion } from './resizable-region.js';
+import type { KerfUiContent } from './semantic-content.js';
 
 export interface SplitViewResizable {
   size: number;
@@ -13,9 +12,9 @@ export interface SplitViewProps {
   id: string;
   label: string;
   /** The list (primary) pane. */
-  list: SafeHtml;
+  list: KerfUiContent;
   /** The detail (secondary) pane. */
-  detail: SafeHtml;
+  detail: KerfUiContent;
   /**
    * Compact ("one pane at a time") classes — a handset or portrait tablet.
    * Derive from `deviceClass().value.compact`. When true the split collapses to

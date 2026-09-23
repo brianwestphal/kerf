@@ -1,4 +1,4 @@
-import type { SafeHtml } from 'kerfjs';
+import type { KerfUiContent } from './semantic-content.js';
 
 /** Where a {@link FloatingToolbar} floats within its positioned container. */
 export type FloatingToolbarPosition =
@@ -6,7 +6,7 @@ export type FloatingToolbarPosition =
 
 export interface FloatingToolbarProps {
   /** Toolbar contents — normally one or more `ToolbarControlGroup`s. */
-  children: SafeHtml | SafeHtml[];
+  children: KerfUiContent;
   /** Accessible name for the toolbar (required — it exposes `role="toolbar"`). */
   label: string;
   /**

@@ -16,6 +16,7 @@ import type {
   ResizableRegionRestorePosition,
   ResizableRegionSeparator,
 } from './resizable-region.js';
+import type { KerfUiContent } from './semantic-content.js';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
 export type CollapsiblePanelSide = 'left' | 'right' | 'bottom';
@@ -101,7 +102,7 @@ export interface CollapsiblePanelProps {
   /** Accessible label for the panel region. */
   label?: string;
   /** Panel content. */
-  children?: SafeHtml | readonly SafeHtml[];
+  children?: KerfUiContent;
   separator?: ResizableRegionSeparator;
   collapseMotion?: ResizableRegionCollapseMotion;
   contentOverflow?: ResizableRegionContentOverflow;

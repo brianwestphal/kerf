@@ -314,9 +314,12 @@ symbols, and catalog identities. Its positive/negative consumer fixture is
 compiled once through source path mappings and again through declarations
 extracted from the actual packed tarball. This covers conditional prop modes,
 accessible naming, literal controlled identity, protected attribute slots, and
-required controlled callbacks without claiming TypeScript can inspect
-`SafeHtml` children, live DOM relationships, disposer invocation, or dynamic
-datasets. Migration guidance lives in `ui/docs/type-contracts.md`.
+required controlled callbacks. Public multi-content zones share the recursive
+`KerfUiContent` contract, which accepts `SafeHtml`, runtime-empty values, and
+readonly nested arrays while rejecting arbitrary strings, numbers, and signals;
+TypeScript still cannot inspect semantics hidden inside an already-produced
+`SafeHtml`, live DOM relationships, disposer invocation, or dynamic datasets.
+Migration guidance lives in `ui/docs/type-contracts.md`.
 
 `ui/ai/application-ui-profile.defaults.json` and its schema/types/API define
 the project-policy layer above the catalogs. A checked-in

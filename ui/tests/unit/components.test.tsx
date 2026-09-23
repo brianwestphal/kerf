@@ -261,6 +261,39 @@ describe('production UI primitives', () => {
     );
   });
 
+  it('renders nullable and recursively nested semantic children without a Fragment', () => {
+    const includeIntro: boolean = true;
+    const intro = includeIntro ? <span>Intro</span> : null;
+    const mutableRows = [<span>One</span>, <span>Two</span>];
+    const readonlyRows = [<span>Three</span>] as const;
+    const direct = asHtml(
+      List({
+        children: [
+          intro,
+          false,
+          [mutableRows, null, [undefined, readonlyRows, true]],
+        ],
+      }),
+    );
+    const grouped = asHtml(
+      List({
+        children: (
+          <>
+            <span>Intro</span>
+            <span>One</span>
+            <span>Two</span>
+            <span>Three</span>
+          </>
+        ),
+      }),
+    );
+
+    expect(direct).toBe(grouped);
+    expect(direct).toContain(
+      '<span>Intro</span><span>One</span><span>Two</span><span>Three</span>',
+    );
+  });
+
   it('renders a labeled floating toolbar with a default and custom position', () => {
     const floating = asHtml(
       FloatingToolbar({ children: icon, label: 'Drawer' }),

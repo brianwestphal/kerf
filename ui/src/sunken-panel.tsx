@@ -1,9 +1,9 @@
-import type { SafeHtml } from 'kerfjs';
+import type { KerfUiContent } from './semantic-content.js';
 
 export type SunkenPanelShape = 'rounded' | 'square';
 
 export interface SunkenPanelProps {
-  children?: SafeHtml | readonly SafeHtml[];
+  children?: KerfUiContent;
   /** Optional accessible landmark name for a distinct application region. */
   ariaLabel?: string;
   /** Corner shape: a rounded rectangle (default) or square corners. */

@@ -36,7 +36,8 @@
               "discriminated-union",
               "finite-vocabulary",
               "literal-identity",
-              "protected-attributes"
+              "protected-attributes",
+              "recursive-semantic-content"
             ]
           },
           "summary": { "type": "string", "minLength": 1 }

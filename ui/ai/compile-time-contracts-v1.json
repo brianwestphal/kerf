@@ -89,6 +89,13 @@
       ],
       "kind": "finite-vocabulary",
       "summary": "Finite public variant vocabularies, including canonical divider-edge combinations, are named exported unions rather than anonymous string sets."
+    },
+    {
+      "id": "KUI-T011",
+      "publicImport": "@kerfjs/ui",
+      "symbols": ["KerfUiContent"],
+      "kind": "recursive-semantic-content",
+      "summary": "Semantic UI content zones accept SafeHtml, runtime-empty boolean/nullish values, and readonly nested arrays while rejecting arbitrary strings, numbers, and signals."
     }
   ]
 }

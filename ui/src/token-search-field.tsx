@@ -1,7 +1,7 @@
-import type { SafeHtml } from 'kerfjs';
 import { Search, X } from 'lucide';
 
 import { LucideIcon } from './lucide-icon.js';
+import type { KerfUiContent } from './semantic-content.js';
 
 export interface TokenSearchToken {
   value: string;
@@ -30,8 +30,8 @@ interface TokenSearchFieldBaseProps {
   tokenPlaceholder?: string;
   disabled?: boolean;
   autofocus?: boolean;
-  leading?: SafeHtml;
-  trailing?: SafeHtml;
+  leading?: KerfUiContent;
+  trailing?: KerfUiContent;
   editAction?: string;
   removeAction?: string;
   clearAction?: string;

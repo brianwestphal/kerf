@@ -1,5 +1,4 @@
-import type { SafeHtml } from 'kerfjs';
-
+import type { KerfUiContent } from './semantic-content.js';
 import { Skeleton } from './skeleton.js';
 
 export type SegmentedControlAppearance = 'filled' | 'outlined' | 'toolbar';
@@ -10,7 +9,7 @@ export type SegmentedControlLayout = 'content' | 'equal';
 export interface SegmentedControlChoice<Value extends string = string> {
   value: Value;
   label: string;
-  content?: SafeHtml;
+  content?: KerfUiContent;
   title?: string;
   disabled?: boolean;
 }

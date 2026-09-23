@@ -24,19 +24,20 @@ export { DisclosureArrow, type DisclosureArrowProps, type DisclosureDirection };
 ## `@kerfjs/ui/toolbar`
 
 ```ts
-import { SafeHtml } from 'kerfjs';
+import * as kerfjs from 'kerfjs';
 import { D as DividerSides } from './divider-sides-267FA7sY.js';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface ToolbarProps {
-    leading?: SafeHtml;
-    center?: SafeHtml;
-    trailing?: SafeHtml;
+    leading?: KerfUiContent;
+    center?: KerfUiContent;
+    trailing?: KerfUiContent;
     label?: string;
     /** Physical divider edges in canonical top/right/bottom/left order. Defaults to bottom. */
     dividerSides?: DividerSides;
     className?: string;
 }
-declare function Toolbar({ leading, center, trailing, label, dividerSides, className, }: ToolbarProps): SafeHtml;
+declare function Toolbar({ leading, center, trailing, label, dividerSides, className, }: ToolbarProps): kerfjs.SafeHtml;
 
 export { DividerSides, Toolbar, type ToolbarProps };
 ```
@@ -87,7 +88,8 @@ export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarText
 ## `@kerfjs/ui/toolbar-control-group`
 
 ```ts
-import { SafeHtml } from 'kerfjs';
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type ToolbarControlGroupAppearance = 'contained' | 'borderless';
 type ToolbarControlGroupTone = 'default' | 'dark';
@@ -99,7 +101,7 @@ type ToolbarControlGroupContent = 'icon' | 'text' | 'mixed' | 'avatar';
 type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
 type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 interface ToolbarControlGroupProps {
-    children: SafeHtml | SafeHtml[];
+    children: KerfUiContent;
     label?: string;
     className?: string;
     expanded?: boolean;
@@ -124,7 +126,7 @@ interface ToolbarControlGroupProps {
      */
     avatarImage?: string;
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, selectedChrome, selectedTone, nestedDropdown, scrim, avatarImage, }: ToolbarControlGroupProps): SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, selectedChrome, selectedTone, nestedDropdown, scrim, avatarImage, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
 
 export { ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupTone };
 ```
@@ -132,13 +134,14 @@ export { ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarCo
 ## `@kerfjs/ui/floating-toolbar`
 
 ```ts
-import { SafeHtml } from 'kerfjs';
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 /** Where a {@link FloatingToolbar} floats within its positioned container. */
 type FloatingToolbarPosition = 'bottom' | 'bottom-start' | 'bottom-end' | 'top' | 'top-start' | 'top-end';
 interface FloatingToolbarProps {
     /** Toolbar contents — normally one or more `ToolbarControlGroup`s. */
-    children: SafeHtml | SafeHtml[];
+    children: KerfUiContent;
     /** Accessible name for the toolbar (required — it exposes `role="toolbar"`). */
     label: string;
     /**
@@ -157,7 +160,7 @@ interface FloatingToolbarProps {
  * top toolbar's own inset); override that token to move it. The app owns the
  * controls and their behavior — wire them with `delegate()` as usual.
  */
-declare function FloatingToolbar({ children, label, position, className, }: FloatingToolbarProps): SafeHtml;
+declare function FloatingToolbar({ children, label, position, className, }: FloatingToolbarProps): kerfjs.SafeHtml;
 
 export { FloatingToolbar, type FloatingToolbarPosition, type FloatingToolbarProps };
 ```
@@ -315,6 +318,7 @@ export { ListActionRow, type ListActionRowProps };
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type ListItemRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -333,7 +337,7 @@ interface ListItemProps {
     /** App-owned supporting text rendered in the component's stable label stack. */
     description?: string | SafeHtml;
     icon?: SafeHtml;
-    trailing?: SafeHtml;
+    trailing?: KerfUiContent;
     /** Dormant status metadata rendered before trailing content. */
     status?: string | SafeHtml;
     /** Show a progress indicator and expose the row as busy without replacing its content. */
@@ -364,11 +368,12 @@ export { ListItem, type ListItemProps };
 ## `@kerfjs/ui/list-inset-control`
 
 ```ts
-import { SafeHtml } from 'kerfjs';
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface ListInsetControlProps {
     /** Control(s) that own their own border and padding (e.g. an input, a `wa-*`). */
-    children: SafeHtml | SafeHtml[];
+    children: KerfUiContent;
     className?: string;
 }
 /**
@@ -377,7 +382,7 @@ interface ListInsetControlProps {
  * Use it for controls that carry their own border and padding but no outer margin
  * — the wrapper adds only the alignment margin and layout, not a second inset.
  */
-declare function ListInsetControl({ children, className, }: ListInsetControlProps): SafeHtml;
+declare function ListInsetControl({ children, className, }: ListInsetControlProps): kerfjs.SafeHtml;
 
 export { ListInsetControl, type ListInsetControlProps };
 ```
@@ -385,11 +390,12 @@ export { ListInsetControl, type ListInsetControlProps };
 ## `@kerfjs/ui/list-inset-text`
 
 ```ts
-import { SafeHtml } from 'kerfjs';
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface ListInsetTextProps {
     /** Text (or inline content) that carries no margin, border, or padding of its own. */
-    children: SafeHtml | SafeHtml[] | string;
+    children: KerfUiContent | string;
     /**
      * Keep only the horizontal geometry (inline margin, left/right border, and
      * left/right padding) and drop the vertical margin, border, and padding. Use it
@@ -407,7 +413,7 @@ interface ListInsetTextProps {
  * Pass `horizontalOnly` to keep the horizontal inset but drop the vertical box
  * space for tight text layout.
  */
-declare function ListInsetText({ children, horizontalOnly, className, }: ListInsetTextProps): SafeHtml;
+declare function ListInsetText({ children, horizontalOnly, className, }: ListInsetTextProps): kerfjs.SafeHtml;
 
 export { ListInsetText, type ListInsetTextProps };
 ```
@@ -415,7 +421,9 @@ export { ListInsetText, type ListInsetTextProps };
 ## `@kerfjs/ui/value-table`
 
 ```ts
+import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface ValueTableRowProps {
     label: string | SafeHtml;
@@ -430,9 +438,9 @@ declare function ValueTableRow({ label, value, icon, className, placeholder, }: 
 interface ValueTableProps {
     label: string;
     className?: string;
-    children: SafeHtml | readonly SafeHtml[];
+    children: KerfUiContent;
 }
-declare function ValueTable({ label, className, children, }: ValueTableProps): SafeHtml;
+declare function ValueTable({ label, className, children, }: ValueTableProps): kerfjs.SafeHtml;
 
 export { ValueTable, type ValueTableProps, ValueTableRow, type ValueTableRowProps };
 ```
@@ -441,6 +449,7 @@ export { ValueTable, type ValueTableProps, ValueTableRow, type ValueTableRowProp
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type AppTabRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -458,8 +467,8 @@ interface AppTabProps {
     selected?: boolean;
     closable?: boolean;
     draggable?: boolean;
-    leading?: SafeHtml;
-    trailing?: SafeHtml;
+    leading?: KerfUiContent;
+    trailing?: KerfUiContent;
     /** Visual treatment within a TabBar. Icon-only tabs retain `name` as their accessible name. */
     presentation?: AppTabPresentation;
     /** Compact tabs use the 32px application-rail height. */
@@ -483,7 +492,8 @@ export { AppTab, type AppTabPresentation, type AppTabProps, type AppTabSize };
 ## `@kerfjs/ui/tab-bar`
 
 ```ts
-import { SafeHtml } from 'kerfjs';
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type TabActivation = 'automatic' | 'manual';
 type TabBarAllocation = 'intrinsic' | 'fill';
@@ -492,9 +502,9 @@ type TabBarTrailingPlacement = 'separate' | 'adjacent';
 interface TabBarProps {
     id: string;
     label: string;
-    children: SafeHtml | readonly SafeHtml[];
-    leading?: SafeHtml;
-    trailing?: SafeHtml;
+    children: KerfUiContent;
+    leading?: KerfUiContent;
+    trailing?: KerfUiContent;
     className?: string;
     /**
      * Keyboard activation mode for this strip, emitted as `data-tab-activation` for
@@ -511,7 +521,7 @@ interface TabBarProps {
     trailingPlacement?: TabBarTrailingPlacement;
 }
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
-declare function TabBar({ id, label, children, leading, trailing, className, activation, allocation, presentation, trailingPlacement, }: TabBarProps): SafeHtml;
+declare function TabBar({ id, label, children, leading, trailing, className, activation, allocation, presentation, trailingPlacement, }: TabBarProps): kerfjs.SafeHtml;
 
 export { type TabActivation, TabBar, type TabBarAllocation, type TabBarPresentation, type TabBarProps, type TabBarTrailingPlacement };
 ```
@@ -521,6 +531,7 @@ export { type TabActivation, TabBar, type TabBarAllocation, type TabBarPresentat
 ```ts
 import { TabActivation } from './tab-bar.js';
 import 'kerfjs';
+import './semantic-content-BbzjvSu9.js';
 
 type TabReorderSource = 'pointer' | 'keyboard';
 type TabDropPosition = 'before' | 'after';
@@ -557,7 +568,8 @@ export { TabActivation, type TabDropPosition, type TabReorder, type TabReorderSo
 ## `@kerfjs/ui/nav-stack`
 
 ```ts
-import { SafeHtml } from 'kerfjs';
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 /**
  * One entry in a {@link NavStack}. The app owns the stack as an array (usually a
@@ -566,13 +578,13 @@ import { SafeHtml } from 'kerfjs';
 interface NavStackView {
     /** Stable identity for keyed reconcile and transition direction. */
     key: string;
-    content: SafeHtml;
+    content: KerfUiContent;
     /** Title shown in the top toolbar for this view. */
     title?: string;
     /** Trailing actions for this view's top toolbar. */
-    toolbar?: SafeHtml;
+    toolbar?: KerfUiContent;
     /** Bottom toolbar for this view. Cross-fades with the top chrome on navigation. */
-    bottomToolbar?: SafeHtml;
+    bottomToolbar?: KerfUiContent;
 }
 interface NavStackProps {
     id: string;
@@ -585,7 +597,7 @@ interface NavStackProps {
     /** Hide the top toolbar entirely (rare — a fully custom-chrome view). */
     hideToolbar?: boolean;
     /** Optional persistent bottom toolbar used when the active view does not provide one. */
-    bottomToolbar?: SafeHtml;
+    bottomToolbar?: KerfUiContent;
     className?: string;
 }
 /**
@@ -594,7 +606,7 @@ interface NavStackProps {
  * cross-fades the chrome across a change. A single-pane layout is a `NavStack`
  * with one entry. See `docs/23-app-layouts.md` §3.1.
  */
-declare function NavStack({ id, label, views, backLabel, hideToolbar, bottomToolbar, className, }: NavStackProps): SafeHtml;
+declare function NavStack({ id, label, views, backLabel, hideToolbar, bottomToolbar, className, }: NavStackProps): kerfjs.SafeHtml;
 
 export { NavStack, type NavStackProps, type NavStackView };
 ```
@@ -625,7 +637,8 @@ export { type WireNavStackOptions, wireNavStack };
 ## `@kerfjs/ui/split-view`
 
 ```ts
-import { SafeHtml } from 'kerfjs';
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface SplitViewResizable {
     size: number;
@@ -636,9 +649,9 @@ interface SplitViewProps {
     id: string;
     label: string;
     /** The list (primary) pane. */
-    list: SafeHtml;
+    list: KerfUiContent;
     /** The detail (secondary) pane. */
-    detail: SafeHtml;
+    detail: KerfUiContent;
     /**
      * Compact ("one pane at a time") classes — a handset or portrait tablet.
      * Derive from `deviceClass().value.compact`. When true the split collapses to
@@ -664,7 +677,7 @@ interface SplitViewProps {
  * resizable wiring with `wireResizableRegions` and the compact back with
  * `wireNavStack`.
  */
-declare function SplitView({ id, label, list, detail, compact, detailActive, listTitle, detailTitle, backLabel, resizable, className, }: SplitViewProps): SafeHtml;
+declare function SplitView({ id, label, list, detail, compact, detailActive, listTitle, detailTitle, backLabel, resizable, className, }: SplitViewProps): kerfjs.SafeHtml;
 
 export { SplitView, type SplitViewProps, type SplitViewResizable };
 ```
@@ -672,7 +685,8 @@ export { SplitView, type SplitViewProps, type SplitViewResizable };
 ## `@kerfjs/ui/pane`
 
 ```ts
-import { SafeHtml } from 'kerfjs';
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 /** Logical sides that can show a {@link Pane} separator. */
 type PaneSeparatorSide = 'block-start' | 'block-end' | 'inline-start' | 'inline-end';
@@ -689,11 +703,11 @@ type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
 }>;
 interface PaneProps {
     /** Optional fixed chrome above the scrolling content, arranged vertically. */
-    header?: SafeHtml | readonly SafeHtml[];
+    header?: KerfUiContent;
     /** The pane's primary vertical, scrolling content stack. */
-    children?: SafeHtml | readonly SafeHtml[];
+    children?: KerfUiContent;
     /** Optional fixed chrome below the scrolling content. */
-    footer?: SafeHtml | readonly SafeHtml[];
+    footer?: KerfUiContent;
     /** Root semantics. Defaults to `div`. */
     element?: PaneElement;
     /** Scrolling content semantics. Defaults to `div`. */
@@ -718,7 +732,7 @@ interface PaneProps {
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, element, contentElement, separators, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, }: PaneProps): SafeHtml;
+declare function Pane({ header, children, footer, element, contentElement, separators, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, }: PaneProps): kerfjs.SafeHtml;
 
 export { Pane, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
 ```
@@ -728,10 +742,11 @@ export { Pane, type PaneContentElement, type PaneElement, type PaneProps, type P
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 /** A collapsible Workbench panel — a side rail or the bottom drawer. */
 interface WorkbenchPanel {
-    content: SafeHtml;
+    content: KerfUiContent;
     /** Whether the panel is currently collapsed (the app owns this). */
     collapsed?: boolean;
     /** Rail width, or drawer height, in px. Overrides the CSS default. */
@@ -750,7 +765,7 @@ interface WorkbenchProps {
     id: string;
     label: string;
     /** The central work area. */
-    main: SafeHtml;
+    main: KerfUiContent;
     leftRail?: WorkbenchPanel;
     rightRail?: WorkbenchPanel;
     bottomDrawer?: WorkbenchPanel;
@@ -777,6 +792,7 @@ export { Workbench, type WorkbenchPanel, type WorkbenchProps };
 import { SafeHtml } from 'kerfjs';
 import { LucideIcon } from './lucide-icon.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import 'lucide';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
@@ -825,7 +841,7 @@ interface CollapsiblePanelProps {
     /** Accessible label for the panel region. */
     label?: string;
     /** Panel content. */
-    children?: SafeHtml | readonly SafeHtml[];
+    children?: KerfUiContent;
     separator?: ResizableRegionSeparator;
     collapseMotion?: ResizableRegionCollapseMotion;
     contentOverflow?: ResizableRegionContentOverflow;
@@ -909,6 +925,7 @@ export { type SidebarStorage, type WireSidebarOptions, type WireSidebarPanel, wi
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface TabScaffoldTab<Id extends string = string> {
     id: Id;
@@ -916,7 +933,7 @@ interface TabScaffoldTab<Id extends string = string> {
     /** Decorative icon shown above the label in the bottom bar. */
     icon?: SafeHtml;
     /** The tab's content — typically a `NavStack` so each tab keeps its own stack. */
-    content: SafeHtml;
+    content: KerfUiContent;
 }
 interface TabScaffoldProps<Id extends string = string> {
     id: string;
@@ -960,6 +977,7 @@ export { type WireTabScaffoldOptions, wireTabScaffold };
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type ResizableRegionAxis = 'horizontal' | 'vertical';
 type ResizableRegionEdge = 'start' | 'end';
@@ -992,7 +1010,7 @@ interface ResizableRegionProps {
     restorePosition?: ResizableRegionRestorePosition;
     /** Decorative dormant content for the separator handle. Must not contain interactive descendants. */
     handleIcon?: SafeHtml;
-    children: SafeHtml | SafeHtml[];
+    children: KerfUiContent;
 }
 declare const clampRegionSize: (size: number, min: number, max: number) => number;
 declare const resizeRegionFromPointer: (startSize: number, delta: number, edge: ResizableRegionEdge) => number;
@@ -1092,6 +1110,7 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 /** A reference link shown in the detail footer for the active entry. */
 interface CatalogResource {
@@ -1146,19 +1165,19 @@ interface CatalogProps {
     /** The controlled active entry id — the app owns this signal. */
     active: string;
     /** The rendered preview for the active entry; the app computes it from `active`. */
-    content: SafeHtml;
+    content: KerfUiContent;
     /** Whether the sidebar is collapsed (controlled). */
     collapsed?: boolean;
     /** Current theme; when set, a theme toggle is shown that switches to the opposite. Omit to hide it. */
     theme?: 'light' | 'dark';
     /** Extra header controls placed before the theme toggle (each a `ToolbarControlGroup`). */
-    headerActions?: SafeHtml;
+    headerActions?: KerfUiContent;
     /** A secondary "ecosystem" group of sections below the primary category groups. */
     secondarySections?: CatalogSecondaryGroup;
     /** Extra sidebar content below the category groups (and the secondary group). */
-    sidebarFooter?: SafeHtml;
+    sidebarFooter?: KerfUiContent;
     /** Status line content shown at the start of the detail footer. */
-    status?: SafeHtml;
+    status?: KerfUiContent;
     /**
      * Whether to highlight specimens' computed borders (or transparent outer
      * bounds) and non-zero margins. Pass a boolean (rather than omitting the
@@ -1214,7 +1233,7 @@ interface CatalogExampleProps {
     /** Safe authoring `data-*` metadata for the rendered section. Helper-owned structural attributes remain protected. */
     rootAttributes?: CatalogExampleRootAttributes;
     className?: string;
-    children?: SafeHtml | readonly SafeHtml[];
+    children?: KerfUiContent;
 }
 /**
  * One labeled example in a catalog preview: a `ListHeader` label, an optional
@@ -1231,7 +1250,7 @@ interface CatalogExampleStackProps {
     /** Safe authoring `data-*` metadata for the rendered stack. Helper-owned structural attributes remain protected. */
     rootAttributes?: CatalogExampleStackRootAttributes;
     className?: string;
-    children?: SafeHtml | readonly SafeHtml[];
+    children?: KerfUiContent;
 }
 /**
  * A vertically-stacked group of {@link CatalogExample}s with the catalog's
@@ -1248,6 +1267,7 @@ export { Catalog, type CatalogBrand, type CatalogEntry, CatalogExample, type Cat
 ```ts
 import { CatalogResource } from './catalog.js';
 import 'kerfjs';
+import './semantic-content-BbzjvSu9.js';
 
 /**
  * Standard resource labels for a Kerf catalog detail footer. Keep these labels
@@ -1347,7 +1367,8 @@ export { type CatalogRevealOptions, type WireCatalogOptions, revealCatalogEntry,
 ## `@kerfjs/ui/segmented-control`
 
 ```ts
-import { SafeHtml } from 'kerfjs';
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type SegmentedControlAppearance = 'filled' | 'outlined' | 'toolbar';
 type SegmentedControlShape = 'rounded' | 'pill';
@@ -1356,7 +1377,7 @@ type SegmentedControlLayout = 'content' | 'equal';
 interface SegmentedControlChoice<Value extends string = string> {
     value: Value;
     label: string;
-    content?: SafeHtml;
+    content?: KerfUiContent;
     title?: string;
     disabled?: boolean;
 }
@@ -1374,7 +1395,7 @@ interface SegmentedControlProps<Value extends string = string> {
     /** Render as an unanimated loading skeleton, disabling every segment. */
     placeholder?: boolean;
 }
-declare function SegmentedControl<Value extends string>({ id, label, value, choices, action, appearance, shape, size, layout, className, placeholder, }: SegmentedControlProps<Value>): SafeHtml;
+declare function SegmentedControl<Value extends string>({ id, label, value, choices, action, appearance, shape, size, layout, className, placeholder, }: SegmentedControlProps<Value>): kerfjs.SafeHtml;
 
 export { SegmentedControl, type SegmentedControlAppearance, type SegmentedControlChoice, type SegmentedControlLayout, type SegmentedControlProps, type SegmentedControlShape, type SegmentedControlSize };
 ```
@@ -1440,6 +1461,7 @@ export { Select, type SelectChoice, type SelectFocusRingOwner, type SelectPresen
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type StateBannerTone = 'neutral' | 'info' | 'pop' | 'success' | 'warning' | 'danger';
 type StateBannerUrgency = 'status' | 'alert';
@@ -1449,7 +1471,7 @@ interface StateBannerProps {
     /** Optional compact status or count shown beside the title. */
     badge?: string;
     icon?: SafeHtml;
-    action?: SafeHtml;
+    action?: KerfUiContent;
     tone?: StateBannerTone;
     urgency?: StateBannerUrgency;
     className?: string;
@@ -1465,12 +1487,13 @@ export { StateBanner, type StateBannerProps, type StateBannerTone, type StateBan
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface EmptyStateProps {
     title: string;
     detail?: string;
     icon?: SafeHtml;
-    action?: SafeHtml;
+    action?: KerfUiContent;
     busy?: boolean;
     className?: string;
 }
@@ -1526,11 +1549,12 @@ export { Skeleton, type SkeletonProps };
 ## `@kerfjs/ui/sunken-panel`
 
 ```ts
-import { SafeHtml } from 'kerfjs';
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type SunkenPanelShape = 'rounded' | 'square';
 interface SunkenPanelProps {
-    children?: SafeHtml | readonly SafeHtml[];
+    children?: KerfUiContent;
     /** Optional accessible landmark name for a distinct application region. */
     ariaLabel?: string;
     /** Corner shape: a rounded rectangle (default) or square corners. */
@@ -1542,7 +1566,7 @@ interface SunkenPanelProps {
  * stack. The panel owns its background and padding; children own their own
  * borders and internal geometry.
  */
-declare function SunkenPanel({ children, ariaLabel, shape, className, }: SunkenPanelProps): SafeHtml;
+declare function SunkenPanel({ children, ariaLabel, shape, className, }: SunkenPanelProps): kerfjs.SafeHtml;
 
 export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape };
 ```
@@ -1550,7 +1574,8 @@ export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape };
 ## `@kerfjs/ui/token-search-field`
 
 ```ts
-import { SafeHtml } from 'kerfjs';
+import * as kerfjs from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface TokenSearchToken {
     value: string;
@@ -1575,8 +1600,8 @@ interface TokenSearchFieldBaseProps {
     tokenPlaceholder?: string;
     disabled?: boolean;
     autofocus?: boolean;
-    leading?: SafeHtml;
-    trailing?: SafeHtml;
+    leading?: KerfUiContent;
+    trailing?: KerfUiContent;
     editAction?: string;
     removeAction?: string;
     clearAction?: string;
@@ -1602,7 +1627,7 @@ interface TokenSearchFieldValue {
     query: string;
     tokens: TokenSearchToken[];
 }
-declare function TokenSearchField({ id, label, query, tokens, placeholder, tokenPlaceholder, disabled, autofocus, collapsible, expanded, expandAction, expandLabel, leading, trailing, editAction, removeAction, clearAction, clearLabel, className, editorAttributes, }: TokenSearchFieldProps): SafeHtml;
+declare function TokenSearchField({ id, label, query, tokens, placeholder, tokenPlaceholder, disabled, autofocus, collapsible, expanded, expandAction, expandLabel, leading, trailing, editAction, removeAction, clearAction, clearLabel, className, editorAttributes, }: TokenSearchFieldProps): kerfjs.SafeHtml;
 /** Read editable text and ordered token offsets from a rendered TokenSearchField editor. */
 declare function readTokenSearchField(editor: HTMLElement, knownTokens?: readonly TokenSearchToken[]): TokenSearchFieldValue;
 /** Focus an editor and place its caret at a text offset, skipping atomic token chips. */
