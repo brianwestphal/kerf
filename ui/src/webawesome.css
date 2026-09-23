@@ -297,7 +297,7 @@
 
   wa-card::part(footer) {
     border-top: none;
-    padding: var(--kui-wa-surface-inset);
+    padding: var(--kui-wa-container-inset);
   }
 
   /* Dialog content follows the compact surface inset, while its action region
