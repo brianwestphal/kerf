@@ -58,6 +58,13 @@ defaults for neutral, brand/info, success, warning, and danger roles. Stateful
 components expose scoped custom properties, so an application may override the
 complete theme, one semantic tone, or one instance.
 
+The CSS-free `@kerfjs/ui/css-values` subpath and root barrel export branded
+primitive-string dimension builders (`px`, `rem`, `em`, `pct`, `space`,
+`lengthVar`, `plus`, and `calc`). Complete `CssLength` values are distinct from
+non-standalone `CssLengthExpression` arithmetic. `List.gap` accepts those
+complete values or direct finite `UiSpaceName` shorthands, replacing its former
+unrestricted CSS string while keeping boolean component-default spacing.
+
 `DisclosureArrow` has an 18px root-scaled default and exposes
 `--kui-disclosure-arrow-size` for a scoped consumer override. Kerf `Select`
 uses a separate Web Awesome expand-glyph contract with
@@ -317,6 +324,9 @@ accessible naming, literal controlled identity, protected attribute slots, and
 required controlled callbacks. Public multi-content zones share the recursive
 `KerfUiContent` contract, which accepts `SafeHtml`, runtime-empty values, and
 readonly nested arrays while rejecting arbitrary strings, numbers, and signals;
+the typed CSS-value contract similarly distinguishes finite `List.gap`
+shorthands, complete branded `CssLength` values, and non-standalone arithmetic
+expressions across both source and packed declarations;
 TypeScript still cannot inspect semantics hidden inside an already-produced
 `SafeHtml`, live DOM relationships, disposer invocation, or dynamic datasets.
 Migration guidance lives in `ui/docs/type-contracts.md`.

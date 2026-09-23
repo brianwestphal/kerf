@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added typed, CSS-free `@kerfjs/ui/css-values` builders and branded complete
+  versus expression length types. `List.gap` now accepts direct spacing-token
+  shorthands or complete `CssLength` values and rejects unrestricted CSS strings.
 - Added the public recursive `JSXChildren` type from both `kerfjs` and
   `kerfjs/jsx-runtime`, giving third-party function components a canonical
   declaration for nullable, signal-backed, and arbitrarily nested readonly

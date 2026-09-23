@@ -36,6 +36,7 @@
               "discriminated-union",
               "finite-vocabulary",
               "literal-identity",
+              "property-specific-css-value",
               "protected-attributes",
               "recursive-semantic-content"
             ]

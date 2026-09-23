@@ -1,10 +1,21 @@
+import { type CssLength, space, type UiSpaceName } from './css-values.js';
 import type { DividerSides } from './divider-sides.js';
 import type { KerfUiContent } from './semantic-content.js';
 
+const spaceNames: readonly UiSpaceName[] = [
+  'none',
+  '2xs',
+  'xs',
+  's',
+  'm',
+  'l',
+  'xl',
+];
+
 export interface ListProps {
   children?: KerfUiContent;
-  /** Use the standard item gap, or supply browser CSS such as `var(--kui-space-2xs)` or `0.25rem`. Defaults to no gap. */
-  gap?: boolean | string;
+  /** Use the standard item gap, a named UI spacing token, or a typed CSS length. Defaults to no gap. */
+  gap?: boolean | UiSpaceName | CssLength;
   /** Allow this list to grow/shrink, or supply a CSS flex shorthand. */
   flex?: boolean | string;
   /** Own vertical scrolling and overscroll containment. */
@@ -23,7 +34,12 @@ export function List({
   dividerSides = '',
   className = '',
 }: ListProps) {
-  const gapValue = gap === true ? 'var(--kui-list-gap)' : gap || undefined;
+  const gapValue =
+    gap === true
+      ? 'var(--kui-list-gap)'
+      : spaceNames.includes(gap as UiSpaceName)
+        ? space(gap as UiSpaceName)
+        : gap || undefined;
   const flexValue = flex === true ? '1 1 auto' : flex || undefined;
   const style = [
     gapValue ? `--_kui-list-gap:${gapValue}` : '',
@@ -47,4 +63,5 @@ export function List({
   );
 }
 
+export type { CssLength, UiSpaceName } from './css-values.js';
 export type { DividerSides } from './divider-sides.js';

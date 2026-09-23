@@ -2,6 +2,62 @@
 
 Generated from emitted declarations for `@kerfjs/ui@4.4.1` and `kerfjs@4.4.1`. This bounded reference covers only APIs used by the seven-task corpus. It is interface evidence, not an implementation or runtime guarantee.
 
+## `@kerfjs/ui/css-values`
+
+```ts
+declare const cssValueBrand: unique symbol;
+declare const cssLengthBrand: unique symbol;
+declare const cssLengthExpressionBrand: unique symbol;
+/**
+ * A complete typed CSS value minted by a property-specific Kerf UI builder.
+ *
+ * This brand is an authoring correctness aid, not a sanitizer or security
+ * boundary. Prefer the narrower property grammar, such as {@link CssLength},
+ * whenever one is available.
+ */
+type CssValue = string & {
+    readonly [cssValueBrand]: 'CssValue';
+};
+/**
+ * A complete CSS length-percentage value suitable for dimension-valued UI
+ * props. Despite the concise name, percentages are intentionally included.
+ */
+type CssLength = CssValue & {
+    readonly [cssLengthBrand]: 'CssLength';
+};
+/**
+ * An incomplete arithmetic expression. Wrap it with {@link calc} before
+ * passing it to a prop that accepts {@link CssLength}.
+ */
+type CssLengthExpression = string & {
+    readonly [cssLengthExpressionBrand]: 'CssLengthExpression';
+};
+/** Kerf UI's complete spacing-token vocabulary. `s` and `xl` are exceptions. */
+type UiSpaceName = 'none' | '2xs' | 'xs' | 's' | 'm' | 'l' | 'xl';
+/** Create a complete pixel length. */
+declare function px(value: number): CssLength;
+/** Create a complete root-font-relative length. */
+declare function rem(value: number): CssLength;
+/** Create a complete current-font-relative length. */
+declare function em(value: number): CssLength;
+/** Create a complete percentage length. */
+declare function pct(value: number): CssLength;
+/** Resolve a Kerf UI spacing step to its public custom property. */
+declare function space(name: UiSpaceName): CssLength;
+/**
+ * Reference an application-owned custom property whose contract is a CSS
+ * length-percentage. The deliberately narrow name grammar keeps this helper
+ * from becoming an arbitrary CSS-string constructor.
+ */
+declare function lengthVar(name: `--${string}`, fallback?: CssLength): CssLength;
+/** Combine two or more complete lengths into a non-standalone sum. */
+declare function plus(first: CssLength, second: CssLength, ...rest: readonly CssLength[]): CssLengthExpression;
+/** Turn a typed length expression into a complete CSS `calc()` value. */
+declare function calc(expression: CssLengthExpression): CssLength;
+
+export { type CssLength, type CssLengthExpression, type CssValue, type UiSpaceName, calc, em, lengthVar, pct, plus, px, rem, space };
+```
+
 ## `@kerfjs/ui/disclosure-arrow`
 
 ```ts
@@ -245,6 +301,32 @@ type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHead
 declare function ListHeader({ label, count, countLabel, badge, status, density, divider, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, }: ListHeaderProps): SafeHtml;
 
 export { ListHeader, type ListHeaderProps };
+```
+
+## `@kerfjs/ui/list`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { UiSpaceName, CssLength } from './css-values.js';
+import { D as DividerSides } from './divider-sides-267FA7sY.js';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+
+interface ListProps {
+    children?: KerfUiContent;
+    /** Use the standard item gap, a named UI spacing token, or a typed CSS length. Defaults to no gap. */
+    gap?: boolean | UiSpaceName | CssLength;
+    /** Allow this list to grow/shrink, or supply a CSS flex shorthand. */
+    flex?: boolean | string;
+    /** Own vertical scrolling and overscroll containment. */
+    scrollable?: boolean;
+    /** Physical divider edges in canonical top/right/bottom/left order. */
+    dividerSides?: DividerSides;
+    className?: string;
+}
+/** A stretch-aligned vertical stack with optional gap, flex, scroll, and dividers. */
+declare function List({ children, gap, flex, scrollable, dividerSides, className, }: ListProps): kerfjs.SafeHtml;
+
+export { CssLength, DividerSides, List, type ListProps, UiSpaceName };
 ```
 
 ## `@kerfjs/ui/list-action-row`

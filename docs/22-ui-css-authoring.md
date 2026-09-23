@@ -44,7 +44,35 @@ or hairline. Keep the occasional `em` explicit because it is intentionally
 relative to the current element's font size and cannot be converted from a
 global baseline.
 
-## 22.3 Build and development contract
+## 22.3 Runtime component values are a separate API
+
+`remify()` is source-CSS syntax only. Runtime component props use the CSS-free
+`@kerfjs/ui/css-values` JavaScript subpath. It exports opaque primitive-string
+brands plus deterministic builders:
+
+```ts
+import { calc, pct, plus, rem, space } from "@kerfjs/ui/css-values";
+
+space("xs"); // var(--kui-space-xs)
+rem(0.25); // 0.25rem
+calc(plus(rem(0.25), pct(10))); // calc(0.25rem + 10%)
+```
+
+`CssLength` pragmatically includes percentages for dimension-valued UI props.
+`CssLengthExpression` is deliberately not a complete value: `plus()` results
+must pass through `calc()` before a component accepts them. The API also offers
+`px()`, `em()`, and a restrictive `lengthVar('--app-token', fallback?)` helper.
+All numeric builders reject non-finite input and normalize negative zero. These
+brands are authoring correctness tools, not sanitizers; no broad raw-string
+constructor is exposed.
+
+`List.gap` is the first consumer. It accepts boolean default spacing, direct
+`UiSpaceName` shorthands (`none`, `2xs`, `xs`, `s`, `m`, `l`, `xl`), or a
+complete `CssLength`. Raw string compatibility was intentionally removed before
+the 5.0 stable release so an invalid token or incomplete expression fails at
+typecheck time.
+
+## 22.4 Build and development contract
 
 Component author styles live in `ui/src/*.css`; catalog-only styles may use the
 same syntax under `ui/ux-demo/`. The PostCSS plugin in
@@ -65,7 +93,7 @@ package or `npm run format:css` for style-only work; `npm run lint` and
 `npm run check` reject formatting drift, malformed `remify()` calls, or
 build/demo CSS that still contains the authoring function.
 
-## 22.4 Verification
+## 22.5 Verification
 
 - Unit tests cover exact conversion, declaration and at-rule use, ignored
   strings/comments, and actionable failures for unsupported arguments.
@@ -73,3 +101,6 @@ build/demo CSS that still contains the authoring function.
   ordinary `rem`, and never exposes `remify()`.
 - The production catalog build rejects an untransformed function in emitted
   CSS; the browser suite continues to guard component geometry and behavior.
+- Source and packed-consumer compilation distinguish complete lengths from
+  expressions; unit tests cover deterministic serialization and invalid input;
+  browser coverage resolves direct and helper-built List gaps through real CSS.

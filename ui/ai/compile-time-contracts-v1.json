@@ -96,6 +96,22 @@
       "symbols": ["KerfUiContent"],
       "kind": "recursive-semantic-content",
       "summary": "Semantic UI content zones accept SafeHtml, runtime-empty boolean/nullish values, and readonly nested arrays while rejecting arbitrary strings, numbers, and signals."
+    },
+    {
+      "id": "KUI-T012",
+      "catalogKey": "@kerfjs/ui:list",
+      "publicImport": "@kerfjs/ui/css-values",
+      "symbols": [
+        "CssValue",
+        "CssLength",
+        "CssLengthExpression",
+        "UiSpaceName",
+        "space",
+        "plus",
+        "calc"
+      ],
+      "kind": "property-specific-css-value",
+      "summary": "List gap accepts finite spacing shorthands or branded complete length-percentage values, while raw CSS strings and non-standalone arithmetic expressions remain rejected."
     }
   ]
 }

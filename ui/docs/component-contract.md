@@ -260,12 +260,18 @@ Logical-edge separator lines are independently opt-in and default off.
 `@kerfjs/ui/layout.css` retains the pane roles and supplies the related content
 geometry classes.
 `List` is the corresponding layout-only vertical stack: its children stretch by
-default, while `gap`, `flex`, and `scrollable` opt into standard/custom spacing,
+default, while `gap`, `flex`, and `scrollable` opt into typed spacing,
 flex growth, and vertical scroll ownership. `dividerSides` accepts canonical
 physical top/right/bottom/left combinations such as `tr` and `trbl`; the stack
-adds no list semantics, margin, or padding of its own. String props receive
-browser CSS, so use `gap="var(--kui-space-2xs)"` for the root-scaled 4px token or
-`gap="0.25rem"`; source-only `remify(4px)` is not valid at runtime.
+adds no list semantics, margin, or padding of its own. Use a direct finite
+spacing shorthand such as `gap="2xs"`, or pass a `CssLength` created by the
+CSS-free `@kerfjs/ui/css-values` helpers: `space('m')`, `rem(0.25)`,
+`lengthVar('--app-gap')`, or `calc(plus(rem(0.25), pct(10)))`. `plus` returns a
+non-standalone `CssLengthExpression`; only `calc` turns it into a complete
+length. Raw CSS strings and source-only `remify(4px)` are not valid runtime
+props. The `CssLength` name intentionally includes percentages for UI dimension
+props. Its opaque string brand improves authoring correctness; it is not a CSS
+sanitizer or security boundary.
 `.kui-content` gives major children 24px vertical separation.
 `.kui-content-item` gives one child 8px inline margin, a real 1px border,
 8px padding, and 12px corners; border and background may be transparent without

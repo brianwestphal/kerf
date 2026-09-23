@@ -117,6 +117,14 @@ Do not concatenate a count into `label` or pass a numeric `badge`; the mutually
 exclusive legacy `badge` slot remains available for non-count `SafeHtml` such
 as a `New` marker.
 
+`List.gap` accepts boolean default spacing, a direct spacing name such as
+`gap="xs"` or `gap="m"`, or a branded `CssLength`. Import `space`, `rem`, `em`,
+`px`, `pct`, `lengthVar`, `plus`, and `calc` from the CSS-free
+`@kerfjs/ui/css-values` subpath when a named step is not enough. `plus` returns
+an incomplete expression, so wrap it with `calc` before passing it to a prop.
+Raw CSS strings are deliberately rejected; the opaque brands catch authoring
+mistakes but are not sanitizers.
+
 ## Component subpaths
 
 | Component                                                           | Browser import (includes reachable CSS) | Manual CSS export                      |
@@ -129,6 +137,7 @@ as a `New` marker.
 | `FloatingToolbar`                                                   | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`      |
 | `ToolbarText`                                                       | `@kerfjs/ui/toolbar-text`               | `@kerfjs/ui/toolbar-text.css`          |
 | `List`                                                              | `@kerfjs/ui/list`                       | `@kerfjs/ui/list.css`                  |
+| Typed CSS dimension builders                                        | `@kerfjs/ui/css-values`                 | —                                      |
 | `ListActionRow`                                                     | `@kerfjs/ui/list-action-row`            | `@kerfjs/ui/list-action-row.css`       |
 | `ListItem`                                                          | `@kerfjs/ui/list-item`                  | `@kerfjs/ui/list-item.css`             |
 | `ListHeader`                                                        | `@kerfjs/ui/list-header`                | `@kerfjs/ui/list-header.css`           |

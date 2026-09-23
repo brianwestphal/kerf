@@ -41,7 +41,7 @@ const spec: {
 // Exact regression: nullable and mapped siblings compose directly. A Fragment
 // is optional grouping syntax, not a workaround for the public List contract.
 const unfragmented = (
-  <List gap="var(--kui-space-m)">
+  <List gap="m">
     {spec.intro !== undefined ? (
       <ListInsetText className="muted small">{spec.intro}</ListInsetText>
     ) : null}

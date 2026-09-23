@@ -44,6 +44,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./css-values": {
+      "types": "./dist/css-values.d.ts",
+      "import": "./dist/css-values.js"
+    },
     "./lucide-icon": {
       "types": "./dist/lucide-icon.d.ts",
       "browser": "./dist/browser/lucide-icon.js",

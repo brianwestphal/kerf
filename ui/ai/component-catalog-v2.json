@@ -1405,7 +1405,7 @@
           "required": false
         },
         {
-          "id": "gap, flex, and divider choices",
+          "id": "typed gap, flex, and divider choices",
           "owner": "application",
           "required": false
         }

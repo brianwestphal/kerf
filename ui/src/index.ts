@@ -5,6 +5,20 @@ export {
   type AppTabSize,
 } from './app-tab.js';
 export {
+  calc,
+  type CssLength,
+  type CssLengthExpression,
+  type CssValue,
+  em,
+  lengthVar,
+  pct,
+  plus,
+  px,
+  rem,
+  space,
+  type UiSpaceName,
+} from './css-values.js';
+export {
   DisclosureArrow,
   type DisclosureArrowProps,
   type DisclosureDirection,

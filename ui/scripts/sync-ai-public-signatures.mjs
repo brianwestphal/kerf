@@ -11,12 +11,14 @@ const webAwesomeOutputPath = resolve(
 );
 const check = process.argv.includes('--check');
 const entries = [
+  ['@kerfjs/ui/css-values', 'dist/css-values.d.ts'],
   ['@kerfjs/ui/disclosure-arrow', 'dist/disclosure-arrow.d.ts'],
   ['@kerfjs/ui/toolbar', 'dist/toolbar.d.ts'],
   ['@kerfjs/ui/toolbar-text', 'dist/toolbar-text.d.ts'],
   ['@kerfjs/ui/toolbar-control-group', 'dist/toolbar-control-group.d.ts'],
   ['@kerfjs/ui/floating-toolbar', 'dist/floating-toolbar.d.ts'],
   ['@kerfjs/ui/list-header', 'dist/list-header.d.ts'],
+  ['@kerfjs/ui/list', 'dist/list.d.ts'],
   ['@kerfjs/ui/list-action-row', 'dist/list-action-row.d.ts'],
   ['@kerfjs/ui/list-item', 'dist/list-item.d.ts'],
   ['@kerfjs/ui/list-inset-control', 'dist/list-inset-control.d.ts'],

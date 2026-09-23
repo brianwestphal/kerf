@@ -24,6 +24,7 @@ public-signature artifact.
 | `KUI-T009` | Adjacent-token keyboard removal requires `onRemoveToken`; disabling removal rejects the now-meaningless callback.                                                                                                                                                                            |
 | `KUI-T010` | Finite public variants have named exported union types, including divider sides, tab activation, banner urgency, and all AppTab, TabBar, ToolbarControlGroup, and Select presentation axes; the convenience root barrel re-exports them.                                                     |
 | `KUI-T011` | Semantic component zones use the recursive `KerfUiContent` type: `SafeHtml`, runtime-empty booleans/nullish values, and readonly nested arrays are valid; arbitrary strings, numbers, and signals are rejected. Explicit text positions such as `ListInsetText` retain their text exception. |
+| `KUI-T012` | `List.gap` accepts finite `UiSpaceName` shorthands or a complete branded `CssLength`; raw strings and non-standalone `CssLengthExpression` arithmetic are rejected. `calc(plus(...))` promotes a typed expression to a complete value.                                                       |
 
 `KerfUiContent` lets conditionals and mapped component collections be direct
 siblings without an otherwise-unnecessary `Fragment`:
@@ -112,6 +113,9 @@ move errors into casts without making the integration safer.
 - Replace `Toolbar({ divider: false })` with `dividerSides: ''`; the default
   remains a bottom divider, while canonical combinations such as `tr` and
   `trbl` select more physical edges.
+- Replace raw `List.gap` strings with a direct spacing shorthand (`"xs"`,
+  `"m"`) or a complete value from `@kerfjs/ui/css-values`. Replace
+  `gap="0.25rem"` with `gap={rem(0.25)}` and wrap sums with `calc(plus(...))`.
 
 JavaScript runtime behavior remains defensive for previously emitted calls, but
 new TypeScript builds report these invalid or ignored combinations.

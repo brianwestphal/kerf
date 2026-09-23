@@ -1642,7 +1642,7 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "A stretch-aligned vertical stack with optional gap, flex growth, vertical scrolling, and independently selectable divider edges.",
+      "description": "A stretch-aligned vertical stack with optional typed token/length gap, flex growth, vertical scrolling, and independently selectable divider edges.",
       "uses": [
         "list-header",
         "list-action-row",
@@ -1650,25 +1650,37 @@
       ],
       "purpose": "Standardize vertical component layout and its scroll/divider ownership instead of repeating ad-hoc flex-column wrappers.",
       "publicExports": [
-        "List"
+        "List",
+        "px",
+        "rem",
+        "em",
+        "pct",
+        "space",
+        "lengthVar",
+        "plus",
+        "calc"
       ],
       "useWhen": [
         "Arrange component rows or sections in a vertical stretch-aligned stack.",
-        "Let one bounded list own vertical scrolling, flex growth, or one or more physical-edge dividers."
+        "Let one bounded list own vertical scrolling, flex growth, or one or more physical-edge dividers.",
+        "Choose a finite gap shorthand such as xs or m, or compose a typed length with @kerfjs/ui/css-values when the spacing scale is insufficient."
       ],
       "avoidWhen": [
         "Do not use List as semantic list markup; use ul/ol when list semantics are required and apply layout deliberately.",
-        "Do not create nested scroll owners or use divider sides as a substitute for meaningful grouping."
+        "Do not create nested scroll owners or use divider sides as a substitute for meaningful grouping.",
+        "Do not pass raw CSS strings to gap or use the off-rhythm s/xl spacing steps without a deliberate exception."
       ],
       "alternatives": [],
       "appOwns": [
         "child semantics and content",
         "the bounded height needed for scrolling",
-        "gap, flex, and divider choices"
+        "typed gap, flex, and divider choices"
       ],
       "variants": [
         "no gap",
-        "standard or custom gap",
+        "standard boolean gap",
+        "named none/2xs/xs/s/m/l/xl token gap",
+        "typed CssLength gap",
         "boolean or custom flex",
         "scrollable",
         "top/right/bottom/left divider combinations"

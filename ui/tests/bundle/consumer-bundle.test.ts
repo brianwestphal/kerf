@@ -105,6 +105,20 @@ describe('consumer bundle boundaries', () => {
     expect(inputs).not.toContain('ux-demo');
   });
 
+  it('ships typed CSS value builders as a CSS-free tree-shakeable subpath', async () => {
+    const result = await bundle(
+      "import { calc, pct, plus, rem } from '@kerfjs/ui/css-values'; console.log(calc(plus(rem(0.25), pct(10))));",
+    );
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const javascript = output(result, '.js');
+    expect(inputs).toContain('dist/css-values.js');
+    expect(inputs).not.toContain('dist/index.js');
+    expect(inputs).not.toContain('dist/browser');
+    expect(javascript).toContain('calc(');
+    expect(javascript).not.toContain('kui-list');
+    expect(output(result, '.css')).toBe('');
+  });
+
   it('loads only reachable CSS for a browser component subpath', async () => {
     const result = await bundle(
       "import { Toolbar } from '@kerfjs/ui/toolbar'; console.log(String(Toolbar({}))); ",

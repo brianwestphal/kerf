@@ -15,6 +15,18 @@ import type {
   ToolbarControlGroupSelectedTone,
   ToolbarControlGroupSize,
 } from '@kerfjs/ui';
+import { type CssValue, em, px } from '@kerfjs/ui';
+import {
+  calc,
+  type CssLength,
+  type CssLengthExpression,
+  lengthVar,
+  pct,
+  plus,
+  rem,
+  space,
+  type UiSpaceName,
+} from '@kerfjs/ui/css-values';
 import {
   buildEvaluationContexts,
   type UiEvaluationContext,
@@ -48,6 +60,27 @@ import type {} from '@kerfjs/ui/webawesome';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 
 const icon = ToolbarText({ text: 'Icon' });
+
+// KUI-T012 positive: complete branded lengths and finite spacing shorthands
+// compose without accepting intermediate expressions or arbitrary CSS strings.
+const expression: CssLengthExpression = plus(rem(0.25), pct(10));
+const responsiveGap: CssLength = calc(expression);
+const genericCssValue: CssValue = responsiveGap;
+const spacingName: UiSpaceName = 'xs';
+List({ gap: spacingName });
+List({ gap: responsiveGap });
+List({ gap: space('m') });
+List({ gap: lengthVar('--app-gap', px(4)) });
+List({ gap: em(0.5) });
+void genericCssValue;
+// @ts-expect-error KUI-T012 an incomplete expression must be wrapped in calc().
+List({ gap: expression });
+// @ts-expect-error KUI-T012 raw CSS strings do not satisfy the typed length contract.
+List({ gap: '0.25rem' });
+// @ts-expect-error KUI-T012 spacing shorthands are a finite vocabulary.
+space('xxs');
+// @ts-expect-error KUI-T012 custom property names keep their leading dashes.
+lengthVar('app-gap');
 
 // KUI-T011 positive: semantic component zones accept recursively nested,
 // readonly component content and runtime-empty values.

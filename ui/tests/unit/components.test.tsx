@@ -5,6 +5,7 @@ import { Check, Circle, Folder, Plus } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
 import { AppTab } from '../../src/app-tab.js';
+import { rem } from '../../src/css-values.js';
 import { DisclosureArrow } from '../../src/disclosure-arrow.js';
 import { EmptyState } from '../../src/empty-state.js';
 import { FloatingToolbar } from '../../src/floating-toolbar.js';
@@ -233,7 +234,7 @@ describe('production UI primitives', () => {
     const html = asHtml(
       List({
         children: [<span>One</span>, <span>Two</span>],
-        gap: '12px',
+        gap: rem(0.75),
         flex: '2 1 20rem',
         scrollable: true,
         dividerSides: 'trbl',
@@ -245,7 +246,7 @@ describe('production UI primitives', () => {
       'data-component="list" data-gap="true" data-flex="true" data-scrollable="true" divider-sides="trbl"',
     );
     expect(html).toContain(
-      'style="--_kui-list-gap:12px;--_kui-list-flex:2 1 20rem"',
+      'style="--_kui-list-gap:0.75rem;--_kui-list-flex:2 1 20rem"',
     );
     expect(html).toContain('<span>One</span><span>Two</span>');
 
@@ -258,6 +259,12 @@ describe('production UI primitives', () => {
 
     expect(asHtml(List({ gap: true, flex: true }))).toContain(
       'style="--_kui-list-gap:var(--kui-list-gap);--_kui-list-flex:1 1 auto"',
+    );
+    expect(asHtml(List({ gap: 'xs' }))).toContain(
+      'style="--_kui-list-gap:var(--kui-space-xs)"',
+    );
+    expect(asHtml(List({ gap: 'none' }))).toContain(
+      'data-gap="true" data-flex="false"',
     );
   });
 

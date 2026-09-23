@@ -112,6 +112,12 @@ The two relationships that get confused most are 8px vs 24px: 8px is _inside_ a
 group, 24px is _between_ major, differing regions. 16px sits between them for
 same-kind groups.
 
+For `List.gap`, pass these token names directly (`gap="xs"`, `gap="m"`) or use
+`space('xs')` from `@kerfjs/ui/css-values` when composing a value in JavaScript.
+Use `rem`, `em`, `px`, `pct`, `lengthVar`, and `calc(plus(...))` only when a
+named spacing relationship does not express the requirement; do not pass raw
+CSS strings.
+
 `--kui-space-s` (12px) and `--kui-space-xl` (32px) exist but are **off the
 canonical rhythm** — reach for them only as a deliberate exception, never as a
 default step. Prefer the five canonical tokens so spacing stays legible and

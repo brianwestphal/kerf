@@ -36,6 +36,33 @@ useful subtree. Prefer a component prop or component-specific token when the
 change belongs to one component or instance, and preserve the documented
 foreground/background contrast relationships and visible focus ring.
 
+### Typed runtime dimensions
+
+Use `List` spacing shorthands for the common case: `gap="xs"`, `gap="m"`, and
+the other `UiSpaceName` values resolve to their matching `--kui-space-*` token.
+The canonical rhythm is `none`, `2xs`, `xs`, `m`, and `l`; use `s` and `xl`
+only as deliberate exceptions.
+
+When a value cannot be expressed by one spacing step, import the CSS-free
+`@kerfjs/ui/css-values` subpath. `px`, `rem`, `em`, and `pct` create typed
+`CssLength` values; `space` and `lengthVar` reference spacing or
+application-owned length tokens. `plus` creates a non-standalone
+`CssLengthExpression`, so wrap it with `calc` before passing it to `List.gap`:
+
+```tsx
+import { calc, pct, plus, rem, space } from "@kerfjs/ui/css-values";
+import { List } from "@kerfjs/ui/list";
+
+<List gap="xs">...</List>;
+<List gap={space("m")}>...</List>;
+<List gap={calc(plus(rem(0.25), pct(10)))}>...</List>;
+```
+
+`CssValue` is the common branded base, not an arbitrary-string constructor.
+Raw strings such as `"0.25rem"` no longer satisfy `List.gap`; this breaking
+contract lands before the 5.0 stable release so misspelled tokens and incomplete
+expressions fail during typechecking rather than in the browser.
+
 ## Production recipes
 
 Use the [complete recipe guide](./recipes.md) when several primitives form one

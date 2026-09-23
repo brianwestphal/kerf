@@ -54,6 +54,7 @@ npm install @kerfjs/ui
 
 ```ts
 import { AppTab } from "@kerfjs/ui/app-tab";
+import { calc, pct, plus, rem, space } from "@kerfjs/ui/css-values";
 import { ListActionRow } from "@kerfjs/ui/list-action-row";
 import { SegmentedControl } from "@kerfjs/ui/segmented-control";
 import { StateBanner } from "@kerfjs/ui/state-banner";
@@ -73,6 +74,14 @@ and `@kerfjs/ui/unstyled` are CSS-free; pair the root with `styles.css` only whe
 the complete layer is intentional. Manual CSS subpaths remain available for
 custom pipelines. App overrides belong later in the cascade or on a scoped
 `--kui-*` owner.
+
+`List.gap` accepts boolean default spacing, a finite token shorthand such as
+`"xs"` or `"m"`, or a branded complete `CssLength`. Use the CSS-free
+`@kerfjs/ui/css-values` builders (`space`, `px`, `rem`, `em`, `pct`,
+`lengthVar`, `plus`, `calc`) rather than raw CSS strings. `plus` produces only a
+`CssLengthExpression`; wrap it with `calc` before passing it to a component.
+The build-time `remify()` function is valid in package source CSS, not runtime
+props.
 
 Menu adapters may pass product event/drop metadata through the typed
 `rootAttributes` `data-*` slot on ListItem, ListHeader, ListActionRow, and AppTab instead
