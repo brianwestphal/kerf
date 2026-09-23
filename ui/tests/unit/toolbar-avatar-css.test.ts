@@ -80,4 +80,62 @@ describe('ToolbarControlGroup avatar image ownership', () => {
       'background-size': 'contain',
     });
   });
+
+  it('changes only the group color on hover so avatar fitting stays stable', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/toolbar-control-group.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    for (const selector of [
+      '[data-single="true"]:has',
+      ':not([data-single="true"]):has',
+    ]) {
+      const hover = declarations(
+        findRuleWithDeclaration(root, selector, 'background-color'),
+      );
+      expect(hover['background-color']).toBe(
+        'var(--kui-toolbar-control-hover-background)',
+      );
+      expect(hover).not.toHaveProperty('background');
+    }
+  });
+});
+
+describe('ToolbarControlGroup compact mixed selection', () => {
+  it('keeps standard padding and overlays the outer border without a separator', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/toolbar-control-group.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const compact = declarations(
+      findExactRule(
+        root,
+        '.kui-toolbar-control-group[data-size="compact"][data-content="mixed"]',
+      ),
+    );
+    expect(compact['--kui-layout-item-padding']).toBe('remify(8px)');
+
+    const selected = declarations(
+      findRuleWithDeclaration(
+        root,
+        '[data-size="compact"][data-content="mixed"]',
+        'margin',
+      ),
+    );
+    expect(selected).toMatchObject({
+      height: 'var(--kui-toolbar-group-size)',
+      margin: '-2px',
+      'border-radius': 'var(--kui-toolbar-group-radius)',
+      'z-index': '1',
+    });
+
+    const separator = root.nodes.find(
+      (node): node is Rule =>
+        node.type === 'rule' &&
+        node.selector.includes('[data-content="mixed"] > wa-dropdown'),
+    );
+    expect(separator).toBeUndefined();
+  });
 });

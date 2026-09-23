@@ -73,13 +73,6 @@
   display: flex;
   gap: var(--kui-space-xs);
 }
-.kui-toolbar-control-group[data-content="mixed"] {
-  gap: remify(8px);
-}
-.kui-toolbar-control-group[data-content="mixed"] > wa-dropdown {
-  padding-inline-start: remify(6px);
-  border-inline-start: 1px solid var(--kui-toolbar-control-border);
-}
 .kui-toolbar-control-group[data-content="avatar"][data-scrim="true"] {
   --kui-toolbar-control-background: color-mix(
     in srgb,
@@ -193,6 +186,22 @@
   min-height: remify(32px);
 }
 
+/* Compact mixed controls keep the default horizontal breathing room. Their
+   raised selection grows over the group's own border instead of becoming a
+   smaller inset lozenge, while negative margins keep the outer geometry and
+   neighboring trigger position stable. */
+.kui-toolbar-control-group[data-size="compact"][data-content="mixed"] {
+  --kui-layout-item-padding: remify(8px);
+}
+.kui-toolbar-control-group[data-size="compact"][data-content="mixed"]
+  > button[aria-pressed="true"] {
+  position: relative;
+  z-index: 1;
+  height: var(--kui-toolbar-group-size);
+  margin: -2px;
+  border-radius: var(--kui-toolbar-group-radius);
+}
+
 /* A compact icon-only trigger may stay square, but a mixed-content dropdown
    trigger must grow for its slotted label plus Web Awesome's caret. Otherwise
    the fixed 32px base centers both outside its host, painting the label across
@@ -247,13 +256,13 @@
 
 .kui-toolbar-control-group wa-button:hover::part(base) {
   border-color: var(--kui-toolbar-control-border);
-  background: var(--kui-toolbar-control-hover-background);
+  background-color: var(--kui-toolbar-control-hover-background);
 }
 
 .kui-toolbar-control-group[data-single="true"]:has(
     > :is(button, wa-button, wa-dropdown)
   ):hover {
-  background: var(--kui-toolbar-control-hover-background);
+  background-color: var(--kui-toolbar-control-hover-background);
 }
 
 .kui-toolbar-control-group[data-single="true"] > :is(button, wa-button):hover,
@@ -269,7 +278,7 @@
 .kui-toolbar-control-group:not([data-single="true"]):has(
     > :is(button, wa-button):only-child
   ):hover {
-  background: var(--kui-toolbar-control-hover-background);
+  background-color: var(--kui-toolbar-control-hover-background);
 }
 
 .kui-toolbar-control-group:not([data-single="true"]):has(

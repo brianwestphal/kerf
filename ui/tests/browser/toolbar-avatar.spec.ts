@@ -19,6 +19,19 @@ test('avatar imagery belongs to the group or selected highlight', async ({
     'background-image',
     'none',
   );
+  const avatarPaint = () =>
+    single.evaluate((node) => {
+      const style = window.getComputedStyle(node);
+      return {
+        image: style.backgroundImage,
+        position: style.backgroundPosition,
+        repeat: style.backgroundRepeat,
+        size: style.backgroundSize,
+      };
+    });
+  const restingPaint = await avatarPaint();
+  await single.getByRole('button').hover();
+  expect(await avatarPaint()).toEqual(restingPaint);
 
   const choices = page.getByRole('group', { name: 'Profile view' });
   const primary = choices.getByRole('button', { name: 'Primary profile' });
@@ -43,7 +56,12 @@ test('avatar imagery belongs to the group or selected highlight', async ({
   await expect(primary).toHaveCSS('background-image', 'none');
 
   if (browserName === 'chromium') {
-    await single.screenshot({ path: 'test-results/avatar-single-wide.png' });
+    await single.screenshot({
+      path: 'test-results/avatar-single-hover-wide.png',
+    });
+    await single
+      .locator('xpath=ancestor::*[@data-catalog-example]')
+      .screenshot({ path: 'test-results/avatar-profile-hover-example.png' });
     await choices.screenshot({ path: 'test-results/avatar-multi-wide.png' });
     await page.setViewportSize({ width: 390, height: 844 });
     await single.screenshot({ path: 'test-results/avatar-single-narrow.png' });

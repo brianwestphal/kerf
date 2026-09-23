@@ -249,6 +249,9 @@ sets `headingLevel` on `ToolbarText` when the title should be a heading landmark
 Avatar toolbar controls use `ToolbarControlGroup`'s `content="avatar"` and
 `avatarImage` contract instead of nested images: a single control paints the
 group, while a multi-button control paints the pressed selection highlight.
+Compact mixed groups retain standard horizontal item padding and raised
+selection chrome; the selected item overlays the outer border without an
+internal separator.
 
 `ListItem` clips descendant painting to its rounded row boundary so labels,
 status, and dormant trailing content cannot escape the visible row. Its

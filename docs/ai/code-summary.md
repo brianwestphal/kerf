@@ -687,6 +687,10 @@ Heading recipes compose `Toolbar`, direct `ToolbarText`, and optional
 `ToolbarControlGroup` icon/action zones through public subpaths, with app-owned
 supporting copy on a separate row. Page and section titles opt into heading
 semantics through `ToolbarText.headingLevel`.
+Compact mixed `ToolbarControlGroup` selections keep standard item padding,
+remove the internal separator, and paint raised selected chrome over the outer
+border. Single avatar hover changes only the color layer so its contained image
+fit remains stable.
 
 Inset hover and selection surfaces use the foundation
 `--kui-layout-highlight-inset` contract: component CSS subtracts the full inset

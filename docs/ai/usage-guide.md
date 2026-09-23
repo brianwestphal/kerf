@@ -149,6 +149,11 @@ For an avatar toolbar control, set `content="avatar"` and `avatarImage` on
 paints the contained image on the outer group, while a multi-button group paints
 it only on the pressed selection highlight.
 
+For a compact mixed group, keep the default raised selected chrome and standard
+item padding. The selected item already overlays the outer border, and the
+component omits an internal separator; do not recreate either treatment in app
+CSS.
+
 Prefer an equivalent component prop or semantic token before writing an
 anatomy selector. When composition-specific layout still needs one, the
 machine catalog's `publicClasses` arrays are the exact supported boundary:

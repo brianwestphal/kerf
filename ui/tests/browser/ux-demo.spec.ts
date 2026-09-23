@@ -5277,13 +5277,32 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     const dropdown = node
       .querySelector(':scope > wa-dropdown')!
       .getBoundingClientRect();
+    const group = node.getBoundingClientRect();
+    const buttonStyle = window.getComputedStyle(
+      node.querySelector(':scope > button')!,
+    );
+    const dropdownStyle = window.getComputedStyle(
+      node.querySelector(':scope > wa-dropdown')!,
+    );
     return {
       gap: dropdown.left - button.right,
       declaredGap: window.getComputedStyle(node).gap,
+      paddingInline: buttonStyle.paddingInlineStart,
+      separatorWidth: dropdownStyle.borderInlineStartWidth,
+      selectedTop: button.top - group.top,
+      selectedBottom: group.bottom - button.bottom,
+      selectedBackground: buttonStyle.backgroundColor,
+      selectedShadow: buttonStyle.boxShadow,
     };
   });
-  expect(compactSpacing.declaredGap).toBe('8px');
-  expect(compactSpacing.gap).toBeGreaterThanOrEqual(7.9);
+  expect(compactSpacing.declaredGap).toBe('0px');
+  expect(compactSpacing.gap).toBeLessThanOrEqual(0);
+  expect(compactSpacing.paddingInline).toBe('8px');
+  expect(compactSpacing.separatorWidth).toBe('0px');
+  expect(Math.abs(compactSpacing.selectedTop)).toBeLessThanOrEqual(0.5);
+  expect(Math.abs(compactSpacing.selectedBottom)).toBeLessThanOrEqual(0.5);
+  expect(compactSpacing.selectedBackground).toBe('rgb(255, 255, 255)');
+  expect(compactSpacing.selectedShadow).not.toBe('none');
   await expect(
     demo.getByRole('group', { name: 'Profile', exact: true }),
   ).toHaveAttribute('data-scrim', 'true');
@@ -5430,7 +5449,7 @@ test('expands and collapses the ToolbarControlGroup collapsible search without s
     });
 });
 
-test('contains the compact mixed dropdown label, separator, and caret for both group shapes', async ({
+test('contains the compact mixed raised selection, dropdown label, and caret for both group shapes', async ({
   page,
   browserName,
 }) => {
@@ -5465,8 +5484,8 @@ test('contains the compact mixed dropdown label, separator, and caret for both g
   for (const shape of ['Pill', 'Rounded']) {
     await demo.getByRole('button', { name: shape, exact: true }).click();
     const measured = await geometry();
-    expect(measured.dropdown.left - measured.selected.right).toBeCloseTo(8, 1);
-    expect(measured.trigger.left).toBeGreaterThan(measured.dropdown.left);
+    expect(measured.dropdown.left - measured.selected.right).toBeCloseTo(-2, 1);
+    expect(measured.trigger.left).toBeCloseTo(measured.dropdown.left, 1);
     expect(measured.caret.left).toBeGreaterThan(measured.trigger.left);
     expect(measured.caret.right).toBeLessThanOrEqual(measured.group.right - 1);
     expect(measured.trigger.right).toBeLessThanOrEqual(
@@ -5476,6 +5495,12 @@ test('contains the compact mixed dropdown label, separator, and caret for both g
       await group.screenshot({
         path: `test-results/toolbar-control-group-compact-${shape.toLowerCase()}.png`,
       });
+    if (browserName === 'chromium' && shape === 'Pill')
+      await group
+        .locator('xpath=ancestor::*[@data-catalog-example]')
+        .screenshot({
+          path: 'test-results/toolbar-control-group-compact-example.png',
+        });
   }
 });
 

@@ -212,9 +212,7 @@ export function ToolbarControlGroupDemo() {
         <ToolbarControlGroup
           label="Compact formatting"
           size="compact"
-          density="tight"
           content="mixed"
-          selectedChrome="filled"
           nestedDropdown
           shape={shape}
         >

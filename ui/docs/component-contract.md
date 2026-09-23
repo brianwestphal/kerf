@@ -299,8 +299,10 @@ free of a Web Awesome dependency and shadow DOM. Reach for `wa-button` only when
 you need a Web Awesome feature, chiefly the `slot="trigger"` button of a
 `wa-dropdown` popup menu. For a compact mixed-content group, set
 `nestedDropdown`; a text-and-caret trigger grows to its intrinsic width while an
-icon-only trigger can remain square, keeping the separator and caret inside the
-group. The short text trigger has an engine-stable 66px floor because WebKit
+icon-only trigger can remain square. Compact mixed controls retain the standard
+item padding, omit an internal separator, and let the raised selected item paint
+over the outer border instead of shrinking to an inset highlight. The short text
+trigger has an engine-stable 66px floor because WebKit
 does not include the shadow caret in the custom-element host's intrinsic width;
 raise `--kui-toolbar-dropdown-trigger-width` for longer localized copy.
 `ListHeader` similarly separates its dormant title and
