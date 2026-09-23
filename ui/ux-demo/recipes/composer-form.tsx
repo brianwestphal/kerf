@@ -6,6 +6,7 @@ import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
 import './recipes.css';
 
+import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Toolbar } from '@kerfjs/ui/toolbar';
@@ -56,9 +57,11 @@ export const createRecipe: RecipeFactory = (announce) => {
           />
         }
       />
-      <p class="kui-recipe__heading-summary" id="recipe-composer-summary">
-        Share a concise, actionable update with collaborators.
-      </p>
+      <ListInsetText className="kui-recipe__heading-summary">
+        <span id="recipe-composer-summary">
+          Share a concise, actionable update with collaborators.
+        </span>
+      </ListInsetText>
       {status.value === 'error' && (
         <StateBanner
           title="Add a title before publishing"

@@ -81,8 +81,10 @@ Do not rebuild the dialog or reach into private shadow parts.
 [Open the recipe](../ux-demo/?component=recipe-composer-form) · [TSX source](../ux-demo/recipes/composer-form.tsx)
 
 A direct `ToolbarText` supplies the task title, with app-owned supporting copy
-below; their ids are referenced by the form. Production fields own labels, help,
-and native focus. The field
+below; their ids are referenced by the form. `ListInsetText` gives that bare
+supporting copy the same content-item text inset as the fields instead of
+duplicating its geometry in recipe CSS. Production fields own labels, help, and
+native focus. The field
 and footer control edges sit directly on the shared 8px inline gutter rather
 than acquiring a second content-item padding inset; major children remain 24px
 apart and related controls use 8px gaps. The app owns

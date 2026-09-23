@@ -140,6 +140,10 @@ describe('production composition recipes', () => {
       'Share a concise, actionable update with collaborators.',
     );
     expect(
+      root.querySelector('#recipe-composer-summary')?.parentElement?.dataset
+        .component,
+    ).toBe('list-inset-text');
+    expect(
       [...root.children].filter((child) =>
         child.classList.contains('recipe-form__section'),
       ),

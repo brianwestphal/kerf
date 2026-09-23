@@ -336,6 +336,11 @@ test('keeps the composer on one labeled surface with shared field and action gut
         .getBoundingClientRect();
       const fieldsBounds = fields.getBoundingClientRect();
       const headerBounds = header.getBoundingClientRect();
+      const summary = root.querySelector<HTMLElement>(
+        '#recipe-composer-summary',
+      )!;
+      const summaryRange = document.createRange();
+      summaryRange.selectNodeContents(summary);
       const ownership = root
         .querySelector<HTMLElement>(
           '.recipe-form__footer .kui-recipe__ownership',
@@ -414,6 +419,8 @@ test('keeps the composer on one labeled surface with shared field and action gut
         hintCountOverlap,
         rootBackground: rootStyle.backgroundColor,
         rootBorderWidth: parseFloat(rootStyle.borderLeftWidth),
+        summaryTextStart:
+          summaryRange.getBoundingClientRect().left - rootBounds.left,
         selectLabelPadding: partPadding(selectLabel),
         textareaControlPadding: partPadding(textareaControl),
         textareaCountEnd: textareaBounds.right - countBounds.right,
@@ -487,6 +494,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
     // content-item gutter, so it sits at the edge rather than the 9px inset.
     expect(measured.headerStart).toBeLessThanOrEqual(1 + 2 * scale);
     expect(measured.headerEnd).toBeLessThanOrEqual(1 + 2 * scale);
+    expect(measured.summaryTextStart).toBeCloseTo(2 + 16 * scale, 0);
     for (const padding of [
       measured.inputLabelPadding,
       measured.inputHintPadding,
