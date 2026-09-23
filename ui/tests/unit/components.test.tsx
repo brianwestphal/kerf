@@ -177,6 +177,7 @@ describe('production UI primitives', () => {
       selectedTone: 'pop',
       nestedDropdown: true,
       scrim: true,
+      avatarImage: '/profile.svg',
       className: 'extra',
     });
     const html = asHtml(
@@ -198,6 +199,9 @@ describe('production UI primitives', () => {
     );
     expect(asHtml(group)).toContain(
       'data-size="compact" data-density="tight" data-content="mixed" data-selected-chrome="outline" data-selected-tone="pop" data-nested-dropdown="true" data-scrim="true"',
+    );
+    expect(asHtml(group)).toContain(
+      'style="--kui-toolbar-avatar-image:url(&quot;/profile.svg&quot;)"',
     );
     expect(
       asHtml(

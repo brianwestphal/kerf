@@ -30,6 +30,11 @@ export interface ToolbarControlGroupProps {
   nestedDropdown?: boolean;
   /** Add contrast behind photo-backed avatar content. */
   scrim?: boolean;
+  /**
+   * Avatar image URL. A single-control group paints it on the group; a
+   * multi-control group paints it only on the pressed selection highlight.
+   */
+  avatarImage?: string;
 }
 
 export function ToolbarControlGroup({
@@ -49,6 +54,7 @@ export function ToolbarControlGroup({
   selectedTone = 'brand',
   nestedDropdown = false,
   scrim = false,
+  avatarImage,
 }: ToolbarControlGroupProps) {
   return (
     <div
@@ -69,6 +75,11 @@ export function ToolbarControlGroup({
       data-selected-tone={selectedTone}
       data-nested-dropdown={String(nestedDropdown)}
       data-scrim={String(scrim)}
+      style={
+        avatarImage
+          ? `--kui-toolbar-avatar-image:url(${JSON.stringify(avatarImage)})`
+          : undefined
+      }
     >
       {children}
     </div>

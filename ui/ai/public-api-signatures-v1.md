@@ -118,8 +118,13 @@ interface ToolbarControlGroupProps {
     nestedDropdown?: boolean;
     /** Add contrast behind photo-backed avatar content. */
     scrim?: boolean;
+    /**
+     * Avatar image URL. A single-control group paints it on the group; a
+     * multi-control group paints it only on the pressed selection highlight.
+     */
+    avatarImage?: string;
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, selectedChrome, selectedTone, nestedDropdown, scrim, }: ToolbarControlGroupProps): SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, selectedChrome, selectedTone, nestedDropdown, scrim, avatarImage, }: ToolbarControlGroupProps): SafeHtml;
 
 export { ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupTone };
 ```

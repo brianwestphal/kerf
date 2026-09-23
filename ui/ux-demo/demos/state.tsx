@@ -37,6 +37,7 @@ export const toolbarFindOpen = signal(false);
 export const collapsibleSearchOpen = signal(false);
 export const toolbarGroupSearchOpen = signal(false);
 export const toolbarGroupShape = signal<'pill' | 'rounded'>('pill');
+export const toolbarAvatarChoice = signal<'primary' | 'secondary'>('primary');
 export const floatingToolbarOpen = signal(false);
 export const adoptionOpen = signal(true);
 export const adoptionQuery = signal('');

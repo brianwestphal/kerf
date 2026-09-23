@@ -26,7 +26,9 @@ deterministic state, and semantic layout owners from the [recipe guide](./recipe
   mixed-content, filled-selection, nested-dropdown, and avatar/scrim contracts
   added for consumers that previously restyled group descendants. The compact
   mixed specimen keeps its separator, trigger label, and caret inside both pill
-  and rounded group shapes. Its
+  and rounded group shapes. Avatar images are chrome rather than nested `img`
+  elements: a lone avatar paints the group, while a multi-button avatar group
+  paints only the pressed selection, with contain fitting in both cases. Its
   collapsible-search specimen follows the selected group shape with a
   concentric inner radius in both collapsed and expanded states.
 - Recipe ownership notes are hidden by default. A page-toolbar toggle reveals them as floating warning-toned notes with a folded corner, keeping instructional copy visually distinct and removable from the specimen flow.

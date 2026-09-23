@@ -246,6 +246,9 @@ icon `ToolbarControlGroup`, a direct extra-large `ToolbarText`, and grouped
 trailing controls. Supporting copy is app-owned content below the toolbar. The
 application links title/supporting-copy ids to the owning dialog or panel and
 sets `headingLevel` on `ToolbarText` when the title should be a heading landmark.
+Avatar toolbar controls use `ToolbarControlGroup`'s `content="avatar"` and
+`avatarImage` contract instead of nested images: a single control paints the
+group, while a multi-button control paints the pressed selection highlight.
 
 `ListItem` clips descendant painting to its rounded row boundary so labels,
 status, and dormant trailing content cannot escape the visible row. Its

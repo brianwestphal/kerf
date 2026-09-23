@@ -1030,7 +1030,8 @@
       "state": [
         { "id": "actions", "owner": "application", "required": false },
         { "id": "pressed state", "owner": "application", "required": false },
-        { "id": "expanded state", "owner": "application", "required": false }
+        { "id": "expanded state", "owner": "application", "required": false },
+        { "id": "avatar image URL", "owner": "application", "required": false }
       ],
       "wiring": { "required": false, "helpers": [], "obligations": [] },
       "responsive": { "owner": "not-applicable", "behaviors": [] },

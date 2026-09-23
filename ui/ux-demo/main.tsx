@@ -90,6 +90,7 @@ import {
   tabBarTabs,
   tokenSearchQuery,
   tokenSearchTokens,
+  toolbarAvatarChoice,
   toolbarChoice,
   toolbarFindOpen,
   toolbarFindQuery,
@@ -625,6 +626,12 @@ const stopActions = delegateActions(app, 'click', {
     )
       toolbarGroupShape.value = value;
     if (value) actionLog.value = `Selected ${value}`;
+  },
+  'select-avatar-demo': (_event, element) => {
+    const value = element.getAttribute('data-avatar-value');
+    if (value !== 'primary' && value !== 'secondary') return;
+    toolbarAvatarChoice.value = value;
+    actionLog.value = `Selected ${value} profile`;
   },
   'edit-search-token': (_event, element) => {
     const value = element.getAttribute('data-token-value');

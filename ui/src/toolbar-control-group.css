@@ -80,12 +80,6 @@
   padding-inline-start: remify(6px);
   border-inline-start: 1px solid var(--kui-toolbar-control-border);
 }
-.kui-toolbar-control-group[data-content="avatar"] img {
-  width: remify(24px);
-  height: remify(24px);
-  border-radius: var(--kui-radius-pill);
-  object-fit: cover;
-}
 .kui-toolbar-control-group[data-content="avatar"][data-scrim="true"] {
   --kui-toolbar-control-background: color-mix(
     in srgb,
@@ -341,4 +335,45 @@
 .kui-toolbar-control-group[data-button-appearance="push"][data-single="true"]
   > :is(button, wa-button)[aria-pressed="true"] {
   color: var(--kui-toolbar-control-pressed-color);
+}
+
+/* Avatar controls paint the image as chrome rather than inserting a replaced
+   <img> into the control. `background-size: contain` is the background-image
+   equivalent of `object-fit: contain`: the whole avatar remains visible. A
+   lone control belongs to the outer group surface; in a group of choices the
+   image belongs only to the selected highlight. */
+.kui-toolbar-control-group[data-content="avatar"] {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.kui-toolbar-control-group[data-content="avatar"]:is(
+    [data-single="true"],
+    :has(> :is(button, wa-button):only-child)
+  ) {
+  background-image: var(--kui-toolbar-avatar-image);
+}
+
+.kui-toolbar-control-group[data-content="avatar"]:is(
+    [data-single="true"],
+    :has(> :is(button, wa-button):only-child)
+  )
+  > :is(button, wa-button) {
+  color: transparent;
+}
+
+.kui-toolbar-control-group[data-content="avatar"][data-single="false"]:not(
+    :has(> :is(button, wa-button):only-child)
+  )
+  > button[aria-pressed="true"],
+.kui-toolbar-control-group[data-content="avatar"][data-single="false"]:not(
+    :has(> :is(button, wa-button):only-child)
+  )
+  > wa-button[aria-pressed="true"]::part(base) {
+  color: transparent;
+  background-image: var(--kui-toolbar-avatar-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }

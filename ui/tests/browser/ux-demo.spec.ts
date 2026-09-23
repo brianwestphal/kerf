@@ -5178,10 +5178,11 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Dark group',
     'Compact mixed controls',
     'Avatar profile',
+    'Avatar selection',
     'Collapsible search',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  await expect(groups).toHaveCount(13);
+  await expect(groups).toHaveCount(14);
   const standardGroups = demo.locator(
     '[data-component="toolbar-control-group"]:not([data-size="compact"])',
   );
@@ -5210,10 +5211,46 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
   });
   expect(compactSpacing.declaredGap).toBe('8px');
   expect(compactSpacing.gap).toBeGreaterThanOrEqual(7.9);
-  await expect(demo.getByRole('group', { name: 'Profile' })).toHaveAttribute(
-    'data-scrim',
-    'true',
+  await expect(
+    demo.getByRole('group', { name: 'Profile', exact: true }),
+  ).toHaveAttribute('data-scrim', 'true');
+  const singleAvatar = demo.getByRole('group', {
+    name: 'Profile',
+    exact: true,
+  });
+  await expect(singleAvatar.locator('img')).toHaveCount(0);
+  await expect(singleAvatar).toHaveCSS('background-size', 'contain');
+  expect(
+    await singleAvatar.evaluate(
+      (node) => window.getComputedStyle(node).backgroundImage,
+    ),
+  ).toContain('logo');
+  await expect(singleAvatar.getByRole('button')).toHaveCSS(
+    'background-image',
+    'none',
   );
+  const avatarChoices = demo.getByRole('group', { name: 'Profile view' });
+  const primaryAvatar = avatarChoices.getByRole('button', {
+    name: 'Primary profile',
+  });
+  const secondaryAvatar = avatarChoices.getByRole('button', {
+    name: 'Secondary profile',
+  });
+  await expect(avatarChoices).toHaveCSS('background-image', 'none');
+  expect(
+    await primaryAvatar.evaluate(
+      (node) => window.getComputedStyle(node).backgroundImage,
+    ),
+  ).toContain('logo');
+  await expect(secondaryAvatar).toHaveCSS('background-image', 'none');
+  await secondaryAvatar.click();
+  await expect(secondaryAvatar).toHaveAttribute('aria-pressed', 'true');
+  expect(
+    await secondaryAvatar.evaluate(
+      (node) => window.getComputedStyle(node).backgroundImage,
+    ),
+  ).toContain('logo');
+  await expect(primaryAvatar).toHaveCSS('background-image', 'none');
   await demo.getByRole('button', { name: 'Columns view' }).click();
   await expect(
     demo.getByRole('button', { name: 'Columns view' }),
@@ -5270,11 +5307,11 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       path: 'test-results/toolbar-control-group-compact-mixed.png',
     });
     await demo
-      .getByRole('group', { name: 'Profile' })
+      .getByRole('group', { name: 'Profile', exact: true })
       .screenshot({ path: 'test-results/toolbar-control-group-avatar.png' });
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(groups).toHaveCount(13);
+  await expect(groups).toHaveCount(14);
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/toolbar-control-groups-narrow.png',

@@ -1219,7 +1219,8 @@
       ],
       "useWhen": [
         "Group related controls inside a toolbar with a supported visual treatment.",
-        "Fill it with plain <button> controls (the group styles > button fully); use wa-button only for a Web Awesome feature such as a wa-dropdown popup trigger."
+        "Fill it with plain <button> controls (the group styles > button fully); use wa-button only for a Web Awesome feature such as a wa-dropdown popup trigger.",
+        "For an avatar control, set content=avatar and avatarImage instead of inserting an img; one button paints the group and multiple buttons paint only the pressed highlight."
       ],
       "avoidWhen": [
         "Do not use merely to align unrelated buttons or to imitate an exclusive choice.",
@@ -1238,7 +1239,8 @@
       "appOwns": [
         "actions",
         "pressed state",
-        "expanded state"
+        "expanded state",
+        "avatar image URL"
       ],
       "variants": [
         "contained",
@@ -1251,7 +1253,8 @@
         "raised, filled, or outline selected chrome",
         "brand, neutral, or pop selected tone",
         "nested dropdown trigger",
-        "avatar scrim"
+        "avatar scrim",
+        "contained avatar background on a single group or selected multi-button highlight"
       ],
       "accessibility": [
         "Name the group when its relationship is not evident from context."

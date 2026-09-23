@@ -130,6 +130,11 @@ on `ToolbarText` for page or section landmarks; omit it for a dialog title named
 through `aria-labelledby`. The app owns modal focus, dismissal, command policy,
 ids, supporting copy, and action handling.
 
+For an avatar toolbar control, set `content="avatar"` and `avatarImage` on
+`ToolbarControlGroup`; do not insert an `img` into the button. A lone control
+paints the contained image on the outer group, while a multi-button group paints
+it only on the pressed selection highlight.
+
 Prefer an equivalent component prop or semantic token before writing an
 anatomy selector. When composition-specific layout still needs one, the
 machine catalog's `publicClasses` arrays are the exact supported boundary:

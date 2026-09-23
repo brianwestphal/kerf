@@ -18,6 +18,7 @@ import {
 
 import {
   icon,
+  toolbarAvatarChoice,
   toolbarChoice,
   toolbarGroupSearchOpen,
   toolbarGroupShape,
@@ -236,10 +237,33 @@ export function ToolbarControlGroupDemo() {
           scrim
           single
           shape={shape}
+          avatarImage={profileImageUrl}
         >
-          <button type="button" aria-label="Open Brian profile">
-            <img src={profileImageUrl} alt="" />
-          </button>
+          <button type="button" aria-label="Open Brian profile" />
+        </ToolbarControlGroup>
+      </CatalogExample>
+      <CatalogExample label="Avatar selection" align="inline-control">
+        <ToolbarControlGroup
+          label="Profile view"
+          content="avatar"
+          selectedTone="neutral"
+          avatarImage={profileImageUrl}
+          shape={shape}
+        >
+          <button
+            type="button"
+            aria-label="Primary profile"
+            aria-pressed={String(toolbarAvatarChoice.value === 'primary')}
+            data-action="select-avatar-demo"
+            data-avatar-value="primary"
+          />
+          <button
+            type="button"
+            aria-label="Secondary profile"
+            aria-pressed={String(toolbarAvatarChoice.value === 'secondary')}
+            data-action="select-avatar-demo"
+            data-avatar-value="secondary"
+          />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
