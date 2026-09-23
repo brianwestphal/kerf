@@ -22,8 +22,9 @@ const limits = {
   // → 270.93 kB (dialog and popup surface scaffold route).
   // → 271.67 kB (configuration-first application panel policies).
   // → 272.17 kB (configuration-first List family specimens).
+  // → 272.45 kB (first-class semantic pop color specimens).
   // Keep only narrow headroom and preserve the split.
-  totalJavaScriptGzip: 272_400,
+  totalJavaScriptGzip: 272_600,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) =>
