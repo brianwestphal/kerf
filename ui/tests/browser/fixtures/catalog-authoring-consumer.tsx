@@ -20,7 +20,7 @@ const sections: CatalogSection[] = [
   },
 ];
 
-function focusedPreview(): SafeHtml {
+function FocusedPreview(): SafeHtml {
   return CatalogExampleStack({
     label: 'Status banner states',
     rootAttributes: { 'data-demo': 'status' },
@@ -41,7 +41,7 @@ function focusedPreview(): SafeHtml {
   });
 }
 
-function compositionPreview(): SafeHtml {
+function CompositionPreview(): SafeHtml {
   return CatalogExampleStack({
     label: 'Workspace composition',
     rootAttributes: { 'data-demo': 'workspace' },
@@ -56,15 +56,19 @@ function compositionPreview(): SafeHtml {
 }
 
 /** Downstream-style fixture authored only from the published Catalog contract. */
-export function catalogAuthoringConsumer(
-  mode: CatalogAuthoringFixtureMode,
-): SafeHtml {
+export interface CatalogAuthoringConsumerProps {
+  mode: CatalogAuthoringFixtureMode;
+}
+
+export function CatalogAuthoringConsumer({
+  mode,
+}: CatalogAuthoringConsumerProps): SafeHtml {
   return Catalog({
     brand: { title: 'Consumer catalog' },
     sections,
     active: mode === 'component' ? 'status' : 'workspace',
     geometryOverlay: mode === 'component',
-    content: mode === 'component' ? focusedPreview() : compositionPreview(),
+    content: mode === 'component' ? FocusedPreview() : CompositionPreview(),
   });
 }
 
@@ -74,5 +78,5 @@ const fixtureRoot = document.querySelector<HTMLElement>(
 if (fixtureRoot) {
   const mode =
     fixtureRoot.dataset.mode === 'composition' ? 'composition' : 'component';
-  mount(fixtureRoot, () => catalogAuthoringConsumer(mode));
+  mount(fixtureRoot, () => CatalogAuthoringConsumer({ mode }));
 }
