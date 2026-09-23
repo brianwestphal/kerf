@@ -298,6 +298,9 @@
   wa-card::part(footer) {
     border-top: none;
     padding: var(--kui-wa-container-inset);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--kui-layout-item-gap, remify(8px));
   }
 
   /* Dialog content follows the compact surface inset, while its action region
@@ -314,6 +317,9 @@
 
   wa-dialog::part(footer) {
     padding: var(--kui-wa-container-inset);
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--kui-layout-item-gap, remify(8px));
   }
 
   /* Dialogs that provide their own dismissal affordance can opt out of Web
