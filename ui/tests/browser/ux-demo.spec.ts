@@ -1732,8 +1732,18 @@ test('renders the header composition as two toolbars over a value table', async 
       ),
     ).toHaveCount(1);
     await expect(demo.locator('.kui-value-table')).toHaveCount(1);
+    const summary = demo.locator(':scope > [data-component="list-inset-text"]');
+    await expect(summary).toHaveText(
+      'Production-backed primitives with explicit contracts.',
+    );
     const geometry = await demo.evaluate((element) => {
       const frame = element.getBoundingClientRect();
+      const summaryElement = element.querySelector<HTMLElement>(
+        ':scope > [data-component="list-inset-text"]',
+      )!;
+      const summaryRange = document.createRange();
+      summaryRange.selectNodeContents(summaryElement);
+      const summary = summaryRange.getBoundingClientRect();
       const children = [
         ...element.querySelectorAll<HTMLElement>(
           '[data-component="toolbar"], .kui-value-table',
@@ -1744,12 +1754,19 @@ test('renders the header composition as two toolbars over a value table', async 
           (child) =>
             child.left >= frame.left - 1 && child.right <= frame.right + 1,
         ),
+        summaryStartInset:
+          window.getComputedStyle(element).direction === 'rtl'
+            ? frame.right - summary.right
+            : summary.left - frame.left,
         documentOverflow:
           document.documentElement.scrollWidth -
           document.documentElement.clientWidth,
       };
     });
     expect(geometry.withinFrame).toBe(true);
+    expect(
+      Math.abs(geometry.summaryStartInset - 17 * layout.scale),
+    ).toBeLessThanOrEqual(1);
     expect(geometry.documentOverflow).toBeLessThanOrEqual(1);
 
     if (browserName === 'chromium') {

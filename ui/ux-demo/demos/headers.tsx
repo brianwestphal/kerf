@@ -1,3 +1,4 @@
+import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -50,9 +51,9 @@ export function HeadersDemo() {
           </ToolbarControlGroup>
         }
       />
-      <p class="kui-inline-metadata" id="headers-panel-summary">
+      <ListInsetText horizontalOnly className="kui-inline-metadata">
         Production-backed primitives with explicit contracts.
-      </p>
+      </ListInsetText>
       <div class="kui-content">
         <ValueTable label="Package metadata">
           <ValueTableRow label="Package" value="@kerfjs/ui" />

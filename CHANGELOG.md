@@ -12,6 +12,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Fixed a collapsible `TokenSearchField` inside a rounded
   `ToolbarControlGroup` retaining its independent pill radius instead of using
   the group's shared concentric highlight radius.
+- Updated the header-composition catalog demo's supporting copy to use the
+  horizontal `ListInsetText` geometry, aligning it with the value-table content
+  edge across responsive, RTL, and zoomed layouts.
 - Updated the `Pane` catalog demo's secondary header copy to use
   `ListInsetText`, aligning it with the standard pane content gutter at wide and
   narrow sizes instead of maintaining demo-only padding.
