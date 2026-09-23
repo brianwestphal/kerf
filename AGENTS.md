@@ -12,6 +12,7 @@
 <!-- hotsheet:end section=claude-adapter -->
 
 <!-- BEGIN hotsheet:codex -->
+<!-- hotsheet-instructions-version: 48 -->
 
 ## Hot Sheet — ticket workflow
 
@@ -27,20 +28,18 @@ code-changing task. Skip ticketing only for trivial one-offs: simple questions, 
 lookups, a single-line fix, or a git commit. When in doubt, create the ticket.
 
 **Find and plan the queue:**
-
 - `hotsheet-cli ls --up-next` — the prioritized Up Next queue.
 - `hotsheet-cli show <slug>` — read one ticket in full.
 - Or the MCP tools: `hotsheet_query` (with `up_next: true`) and `hotsheet_get`.
 
 **Claim a ticket before you work it — claiming, not `started`, is what signals live work:**
-
 - `hotsheet-cli claim <slug> --worker <your-id>` when you begin. This atomically moves a Not
-  Started ticket to **Started** _and_ takes a renewable live lease that tells everyone you are
+  Started ticket to **Started** *and* takes a renewable live lease that tells everyone you are
   actively on it. Always claim before you touch code. Prefer it over `hotsheet-cli edit <slug>
---status started`, which only flips the status and does **not** claim or signal live work.
+  --status started`, which only flips the status and does **not** claim or signal live work.
   (Self-serve the top of the queue with `hotsheet-cli claim-next --worker <your-id>`.)
 - `hotsheet-cli renew <slug> --worker <your-id>` during long work; `hotsheet-cli release <slug>
---worker <your-id>` when you stop for completion, handoff, or a blocker.
+  --worker <your-id>` when you stop for completion, handoff, or a blocker.
 - `hotsheet-cli edit <slug> --status completed --note "what you did"` when done.
 - Or the MCP tools: `hotsheet_claim_next` / `hotsheet_renew` / `hotsheet_release` for the lease,
   and `hotsheet_update` (it takes a `note`) / `hotsheet_close`.
@@ -57,7 +56,7 @@ ticket's completing note, then continue.
 docs the change requires; scan for placeholders, TODO/FIXME, stubs, and documented-but-
 unbuilt behavior; create a follow-up for every incomplete item; and put the result,
 verification, and all follow-up slugs in the completing note. `FEEDBACK NEEDED` is only for a
-blocker on the _current_ ticket that needs a user decision or unavailable external state —
+blocker on the *current* ticket that needs a user decision or unavailable external state —
 leave that ticket `started`, name the blocker, and release its lease (`hotsheet-cli release`).
 It does not replace follow-ups for independently describable work.
 
@@ -65,10 +64,6 @@ Normally continue until every actionable Up Next ticket is complete. Read the wh
 before choosing an order; weigh dependencies, overlap, risk, and safe parallelization. Treat
 priority as important guidance, not a hard rule. The CLI and MCP tools use the same engine —
 use whichever is handier.
-
-A stopped, completed, interrupted, or idle delegated worker does not make its ticket
-non-actionable. The primary agent must inspect and resume the handoff through verification,
-completion, commit, and publication.
 
 **Write portable durable references.** In documentation, ticket text, and notes, never copy a
 developer-specific home directory, username, or absolute clone path. Use repository-relative
@@ -81,11 +76,11 @@ local path only as clearly labeled machine-local diagnostic evidence.
   dependencies mocked) **and** end-to-end tests (real user flows through the running system,
   minimal mocking). Keep test fakes faithful to the real contract — same shapes, fields, and
   status codes.
-- **Coverage is a floor, not a ceiling.** 100% lines means every line _ran_, not that every
-  _behavior_ — or every _sequence_ of behaviors — is _asserted_. It is blind to missing state
+- **Coverage is a floor, not a ceiling.** 100% lines means every line *ran*, not that every
+  *behavior* — or every *sequence* of behaviors — is *asserted*. It is blind to missing state
   transitions.
 - **Stateful code gets transition-matrix + adversarial tests.** For anything with modes, a
-  cache, or a state machine, enumerate the states _and_ the transitions, then walk realistic
+  cache, or a state machine, enumerate the states *and* the transitions, then walk realistic
   multi-step sequences that cross boundaries. Deliberately try to break it with out-of-order,
   interleaved, repeated, and empty-then-refill sequences; pin any bug you find as a permanent
   regression test.
@@ -111,12 +106,12 @@ Keep the repo in a known-good state.
    or misleading.
 4. Get the worktree clean before starting the next ticket.
 
-**Push every completed ticket immediately.** After its required gates pass, commit the
-ticket, push it, and confirm the remote accepted it before beginning, resuming, or
-integrating another ticket. Do not batch completed local commits for a later push.
+**Pushing is up to this repository.** Follow whatever push/PR/review conventions this project
+already uses; this default guidance does not require or forbid pushing on its own.
 <!-- END hotsheet:codex -->
 
 <!-- BEGIN hotsheet:antigravity -->
+<!-- hotsheet-instructions-version: 48 -->
 
 ## Hot Sheet — ticket workflow
 
@@ -132,20 +127,18 @@ code-changing task. Skip ticketing only for trivial one-offs: simple questions, 
 lookups, a single-line fix, or a git commit. When in doubt, create the ticket.
 
 **Find and plan the queue:**
-
 - `hotsheet-cli ls --up-next` — the prioritized Up Next queue.
 - `hotsheet-cli show <slug>` — read one ticket in full.
 - Or the MCP tools: `hotsheet_query` (with `up_next: true`) and `hotsheet_get`.
 
 **Claim a ticket before you work it — claiming, not `started`, is what signals live work:**
-
 - `hotsheet-cli claim <slug> --worker <your-id>` when you begin. This atomically moves a Not
-  Started ticket to **Started** _and_ takes a renewable live lease that tells everyone you are
+  Started ticket to **Started** *and* takes a renewable live lease that tells everyone you are
   actively on it. Always claim before you touch code. Prefer it over `hotsheet-cli edit <slug>
---status started`, which only flips the status and does **not** claim or signal live work.
+  --status started`, which only flips the status and does **not** claim or signal live work.
   (Self-serve the top of the queue with `hotsheet-cli claim-next --worker <your-id>`.)
 - `hotsheet-cli renew <slug> --worker <your-id>` during long work; `hotsheet-cli release <slug>
---worker <your-id>` when you stop for completion, handoff, or a blocker.
+  --worker <your-id>` when you stop for completion, handoff, or a blocker.
 - `hotsheet-cli edit <slug> --status completed --note "what you did"` when done.
 - Or the MCP tools: `hotsheet_claim_next` / `hotsheet_renew` / `hotsheet_release` for the lease,
   and `hotsheet_update` (it takes a `note`) / `hotsheet_close`.
@@ -162,7 +155,7 @@ ticket's completing note, then continue.
 docs the change requires; scan for placeholders, TODO/FIXME, stubs, and documented-but-
 unbuilt behavior; create a follow-up for every incomplete item; and put the result,
 verification, and all follow-up slugs in the completing note. `FEEDBACK NEEDED` is only for a
-blocker on the _current_ ticket that needs a user decision or unavailable external state —
+blocker on the *current* ticket that needs a user decision or unavailable external state —
 leave that ticket `started`, name the blocker, and release its lease (`hotsheet-cli release`).
 It does not replace follow-ups for independently describable work.
 
@@ -170,10 +163,6 @@ Normally continue until every actionable Up Next ticket is complete. Read the wh
 before choosing an order; weigh dependencies, overlap, risk, and safe parallelization. Treat
 priority as important guidance, not a hard rule. The CLI and MCP tools use the same engine —
 use whichever is handier.
-
-A stopped, completed, interrupted, or idle delegated worker does not make its ticket
-non-actionable. The primary agent must inspect and resume the handoff through verification,
-completion, commit, and publication.
 
 **Write portable durable references.** In documentation, ticket text, and notes, never copy a
 developer-specific home directory, username, or absolute clone path. Use repository-relative
@@ -186,11 +175,11 @@ local path only as clearly labeled machine-local diagnostic evidence.
   dependencies mocked) **and** end-to-end tests (real user flows through the running system,
   minimal mocking). Keep test fakes faithful to the real contract — same shapes, fields, and
   status codes.
-- **Coverage is a floor, not a ceiling.** 100% lines means every line _ran_, not that every
-  _behavior_ — or every _sequence_ of behaviors — is _asserted_. It is blind to missing state
+- **Coverage is a floor, not a ceiling.** 100% lines means every line *ran*, not that every
+  *behavior* — or every *sequence* of behaviors — is *asserted*. It is blind to missing state
   transitions.
 - **Stateful code gets transition-matrix + adversarial tests.** For anything with modes, a
-  cache, or a state machine, enumerate the states _and_ the transitions, then walk realistic
+  cache, or a state machine, enumerate the states *and* the transitions, then walk realistic
   multi-step sequences that cross boundaries. Deliberately try to break it with out-of-order,
   interleaved, repeated, and empty-then-refill sequences; pin any bug you find as a permanent
   regression test.
@@ -216,12 +205,12 @@ Keep the repo in a known-good state.
    or misleading.
 4. Get the worktree clean before starting the next ticket.
 
-**Push every completed ticket immediately.** After its required gates pass, commit the
-ticket, push it, and confirm the remote accepted it before beginning, resuming, or
-integrating another ticket. Do not batch completed local commits for a later push.
+**Pushing is up to this repository.** Follow whatever push/PR/review conventions this project
+already uses; this default guidance does not require or forbid pushing on its own.
 <!-- END hotsheet:antigravity -->
 
 <!-- BEGIN hotsheet:opencode -->
+<!-- hotsheet-instructions-version: 48 -->
 
 ## Hot Sheet — ticket workflow
 
@@ -237,20 +226,18 @@ code-changing task. Skip ticketing only for trivial one-offs: simple questions, 
 lookups, a single-line fix, or a git commit. When in doubt, create the ticket.
 
 **Find and plan the queue:**
-
 - `hotsheet-cli ls --up-next` — the prioritized Up Next queue.
 - `hotsheet-cli show <slug>` — read one ticket in full.
 - Or the MCP tools: `hotsheet_query` (with `up_next: true`) and `hotsheet_get`.
 
 **Claim a ticket before you work it — claiming, not `started`, is what signals live work:**
-
 - `hotsheet-cli claim <slug> --worker <your-id>` when you begin. This atomically moves a Not
-  Started ticket to **Started** _and_ takes a renewable live lease that tells everyone you are
+  Started ticket to **Started** *and* takes a renewable live lease that tells everyone you are
   actively on it. Always claim before you touch code. Prefer it over `hotsheet-cli edit <slug>
---status started`, which only flips the status and does **not** claim or signal live work.
+  --status started`, which only flips the status and does **not** claim or signal live work.
   (Self-serve the top of the queue with `hotsheet-cli claim-next --worker <your-id>`.)
 - `hotsheet-cli renew <slug> --worker <your-id>` during long work; `hotsheet-cli release <slug>
---worker <your-id>` when you stop for completion, handoff, or a blocker.
+  --worker <your-id>` when you stop for completion, handoff, or a blocker.
 - `hotsheet-cli edit <slug> --status completed --note "what you did"` when done.
 - Or the MCP tools: `hotsheet_claim_next` / `hotsheet_renew` / `hotsheet_release` for the lease,
   and `hotsheet_update` (it takes a `note`) / `hotsheet_close`.
@@ -267,7 +254,7 @@ ticket's completing note, then continue.
 docs the change requires; scan for placeholders, TODO/FIXME, stubs, and documented-but-
 unbuilt behavior; create a follow-up for every incomplete item; and put the result,
 verification, and all follow-up slugs in the completing note. `FEEDBACK NEEDED` is only for a
-blocker on the _current_ ticket that needs a user decision or unavailable external state —
+blocker on the *current* ticket that needs a user decision or unavailable external state —
 leave that ticket `started`, name the blocker, and release its lease (`hotsheet-cli release`).
 It does not replace follow-ups for independently describable work.
 
@@ -275,10 +262,6 @@ Normally continue until every actionable Up Next ticket is complete. Read the wh
 before choosing an order; weigh dependencies, overlap, risk, and safe parallelization. Treat
 priority as important guidance, not a hard rule. The CLI and MCP tools use the same engine —
 use whichever is handier.
-
-A stopped, completed, interrupted, or idle delegated worker does not make its ticket
-non-actionable. The primary agent must inspect and resume the handoff through verification,
-completion, commit, and publication.
 
 **Write portable durable references.** In documentation, ticket text, and notes, never copy a
 developer-specific home directory, username, or absolute clone path. Use repository-relative
@@ -291,11 +274,11 @@ local path only as clearly labeled machine-local diagnostic evidence.
   dependencies mocked) **and** end-to-end tests (real user flows through the running system,
   minimal mocking). Keep test fakes faithful to the real contract — same shapes, fields, and
   status codes.
-- **Coverage is a floor, not a ceiling.** 100% lines means every line _ran_, not that every
-  _behavior_ — or every _sequence_ of behaviors — is _asserted_. It is blind to missing state
+- **Coverage is a floor, not a ceiling.** 100% lines means every line *ran*, not that every
+  *behavior* — or every *sequence* of behaviors — is *asserted*. It is blind to missing state
   transitions.
 - **Stateful code gets transition-matrix + adversarial tests.** For anything with modes, a
-  cache, or a state machine, enumerate the states _and_ the transitions, then walk realistic
+  cache, or a state machine, enumerate the states *and* the transitions, then walk realistic
   multi-step sequences that cross boundaries. Deliberately try to break it with out-of-order,
   interleaved, repeated, and empty-then-refill sequences; pin any bug you find as a permanent
   regression test.
@@ -321,7 +304,6 @@ Keep the repo in a known-good state.
    or misleading.
 4. Get the worktree clean before starting the next ticket.
 
-**Push every completed ticket immediately.** After its required gates pass, commit the
-ticket, push it, and confirm the remote accepted it before beginning, resuming, or
-integrating another ticket. Do not batch completed local commits for a later push.
+**Pushing is up to this repository.** Follow whatever push/PR/review conventions this project
+already uses; this default guidance does not require or forbid pushing on its own.
 <!-- END hotsheet:opencode -->

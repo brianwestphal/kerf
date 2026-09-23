@@ -7,7 +7,16 @@ playwright-report/
 test-results/
 .astro/
 .agents/
+**/.claude/
+.codex/
+.cursor/
+.gemini/
 .husky/_/
+
+# Multi-source AI guidance is assembled or synchronized by external tools.
+**/AGENTS.md
+**/CLAUDE.md
+**/GEMINI.md
 
 # Generated mirrors, reports, captures, and fixtures
 /ai/

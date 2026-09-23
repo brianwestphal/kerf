@@ -3,7 +3,7 @@
  * KF-109: ensure `docs/ai/code-summary.md` mentions every test file in the
  * `tests/` tree. The audit-driven "test inventory drift" pattern was
  * recurring (4+4 entries behind reality on the last KF-104 audit) — this
- * check fails the pre-commit gate when a new test file lands without a
+ * check fails the pre-push gate when a new test file lands without a
  * corresponding mention in the doc.
  *
  * Behaviour:

@@ -1,5 +1,5 @@
 import { Buffer } from 'node:buffer';
-import { mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -40,5 +40,36 @@ describe('guidance integrity snapshots', () => {
 
     expect(snapshot.get('present.md')?.toString()).toBe('contents');
     expect(snapshot.get('missing.md')).toBeNull();
+  });
+});
+
+describe('local git gate policy', () => {
+  const root = join(import.meta.dirname, '../..');
+
+  it('keeps commits fast and runs the comprehensive check once per push', async () => {
+    const [preCommit, prePush] = await Promise.all([
+      readFile(join(root, '.husky/pre-commit'), 'utf8'),
+      readFile(join(root, '.husky/pre-push'), 'utf8'),
+    ]);
+
+    expect(preCommit.trim()).toBe('git diff --cached --check');
+    expect(prePush.trim()).toBe('npm run check');
+  });
+
+  it('excludes multi-source AI guidance from repository-wide Prettier checks', async () => {
+    const ignore = await readFile(join(root, '.prettierignore'), 'utf8');
+
+    for (const pattern of [
+      '.agents/',
+      '**/.claude/',
+      '.codex/',
+      '.cursor/',
+      '.gemini/',
+      '**/AGENTS.md',
+      '**/CLAUDE.md',
+      '**/GEMINI.md',
+    ]) {
+      expect(ignore.split('\n')).toContain(pattern);
+    }
   });
 });

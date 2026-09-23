@@ -388,7 +388,7 @@ step_update_version() {
   # from the new root version so these secondary surfaces cannot drift.
   node scripts/sync-lockstep-versions.mjs --write
   # The bundled AI configs at `ai/manifest.json` embed `kerfjsVersion` — re-sync
-  # so the in-sync gate (which the pre-commit hook runs) sees a current bundle
+  # so the in-sync gate (which the pre-push hook runs) sees a current bundle
   # after the version bump. See docs/12-ai-assistant-configs.md §12.2.2.
   node scripts/sync-ai-bundle.mjs > /dev/null
   success "package versions and companion metadata updated; ai/ bundle re-synced"
@@ -408,7 +408,7 @@ step_git_commit() {
     examples/reactivity-demo/package-lock.json site/package-lock.json \
     ai/manifest.json
   # Idempotent: if a previous run already absorbed these files into a manual
-  # commit (e.g. recovery after the pre-commit hook failed), there's nothing
+  # commit (e.g. recovery after an interrupted release commit), there's nothing
   # left to stage. Skip rather than fail under `set -e` so the tag-and-push
   # step still gets to run against the existing HEAD.
   if git diff --cached --quiet; then

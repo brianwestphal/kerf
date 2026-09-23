@@ -31,7 +31,7 @@
 #   4. Run `npm run check` — kerf's canonical green-gate (lint + typecheck +
 #      doc/coverage checks + unit/integration tests + build + bundle-size +
 #      both dist suites + the jsx-typing/examples/scaffold typing gates). This
-#      is the same gate the pre-commit hook runs. Skip with --skip-checks.
+#      is the same gate the pre-push hook runs. Skip with --skip-checks.
 #   5. Auto-increment the beta number: find the highest existing
 #      `v<version>-beta.N` tag and pick N+1. Same logic as the interactive
 #      `step_beta_tag_and_push`.
@@ -351,7 +351,7 @@ the package-derived target. With no such series it targets the upcoming X.Y.0
 (next minor from a released package.json), unless package.json is already ahead
 of its stable tag. Override with --version to point at an explicit release.
 
-The local gate is \`npm run check\` (the same pre-commit gate: lint, typecheck,
+The local gate is \`npm run check\` (the same pre-push gate: lint, typecheck,
 doc/coverage checks, unit + integration tests, build, bundle-size, both dist
 suites, and the typing gates). Pass --skip-checks to bypass it after you've
 validated the tree some other way. CI re-runs everything on tag-push regardless.

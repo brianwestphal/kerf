@@ -219,9 +219,9 @@ npm run check:features            # KF-284/286/289: ensures every behavior in th
 npm run check:bundle-size         # KF-428: builds, then bundles five representative consumer entries against dist/ (esbuild --bundle --minify + gzip, prod NODE_ENV define) and fails any over budget. It also gates the PROSE: every place the docs advertise a size (README, llms.txt, the AI summaries, the migration pages, …) is matched against the measured figure, and each migration page's Delta row must equal the gap between its own rows — a reworded claim that stops matching FAILS rather than silently going unchecked. Budgets RATCHET — an entry more than 0.35 KB under budget also fails, asking you to lower it so a win can't silently erode. The `main-no-dev-code` entry additionally greps the production bundle for dev-only markers, so any `dev-*` module reaching the main entry fails even if it were free. `--why <entry>` prints the per-module byte breakdown; `--report` prints sizes without failing
 npm run check:docs:examples       # ensures /kerf/run/ doc links resolve to built+tested examples, doc/source example pairs match, and self-contained kerf code blocks compile
 npm run fuzz:soak                 # long fuzz soak — windows of seeds in fresh processes, no total limit (`-- --total 200000`)
-npm run check                     # local pre-commit gate: lint + typecheck + doc inventory + api/feature coverage + ai-bundle sync + test + build + both dist:* suites + jsx-typing/examples/scaffold typing gates + docs-examples check
+npm run check                     # local pre-push gate: lint + typecheck + doc inventory + api/feature coverage + ai-bundle sync + test + build + both dist:* suites + jsx-typing/examples/scaffold typing gates + docs-examples check
 npm run check:core                # the check chain invoked by `check`; call `check`, not this directly, so tracked Hot Sheet guidance is guarded against external config-sync writes
-npm run check:audit               # KF-450: `npm audit --omit=dev --audit-level=high` — the PUBLISHED tree, which is the only surface a consumer inherits (`@preact/signals-core` and nothing else). Dev-tree advisories get their own tickets rather than gating here, because a permanently-red audit is one nobody reads. Runs in `check:full`, NOT `check`: audit needs the network and `check` is the pre-commit hook, which has to work offline
+npm run check:audit               # KF-450: `npm audit --omit=dev --audit-level=high` — the PUBLISHED tree, which is the only surface a consumer inherits (`@preact/signals-core` and nothing else). Dev-tree advisories get their own tickets rather than gating here, because a permanently-red audit is one nobody reads. Runs in `check:full`, NOT `check`: audit needs the network and the ordinary pre-push gate must work offline
 npm --prefix site run check:audit # audits the complete private site build tree, including devDependencies, and fails on high/critical advisories. It runs in the networked CI site job rather than the offline root check
 npm run check:full                # KF-118: extended pre-push gate — `check` plus the production audit and the Playwright browser suite (chromium/firefox/webkit), which exercises tests/dist/consumer-app/ end-to-end
 ```
@@ -234,7 +234,7 @@ images, and collapsed main content. Inspect the generated
 captures before handoff. Set `KERF_VISUAL_ROUTE=api/` (or another built route such as
 `run/chat/`) to focus the matrix while iterating, then run the unfiltered command.
 
-`npm run check` is what the husky pre-commit hook runs — the canonical "is everything green" command for fast local turnaround and the minimum gate immediately before every push. It snapshots `AGENTS.md`, `CLAUDE.md`, and both generated Hot Sheet skill files before running the chain, then fails if an external config synchronizer changes any of them while the gate is active. It includes lint, TypeScript compilation/typechecking, unit tests, and the production build. `npm run check:full` is the heavier opt-in gate: use it when browser-sensitive work also needs local Playwright coverage (SVG/MathML namespacing, IME composition, mutation counts, stateful attributes — anything the happy-dom unit tests can't model truthfully). CI runs both on every push/PR (see `.github/workflows/ci.yml`).
+`npm run check` is what the husky pre-push hook runs — the canonical "is everything green" command and the minimum gate once per coherent push batch. The pre-commit hook deliberately runs only `git diff --cached --check`, so ticket-sized commits stay fast while whitespace errors still fail immediately. The pre-push gate snapshots `AGENTS.md`, `CLAUDE.md`, and both generated Hot Sheet skill files before running the chain, then fails if an external config synchronizer changes any of them while the gate is active. It includes lint, TypeScript compilation/typechecking, unit tests, and the production build. Multi-source agent guidance (`AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, and provider directories such as `.agents/`, `.claude/`, `.codex/`, `.cursor/`, and `.gemini/`) is excluded from repository-wide Prettier enforcement; its owning generator or synchronizer controls its formatting. `npm run check:full` is the heavier opt-in gate: use it when browser-sensitive work also needs local Playwright coverage (SVG/MathML namespacing, IME composition, mutation counts, stateful attributes — anything the happy-dom unit tests can't model truthfully). CI runs both on every push/PR (see `.github/workflows/ci.yml`).
 
 Coverage thresholds (`vitest.config.ts`): **100% lines and functions, 98.5% branches, 99.5% statements** on `src/`. Lines and functions are the load-bearing pair — they are what catches genuinely unexercised code. Branches and statements sit below 100 for one enumerated reason: defensive arms that cannot be exercised by construction (a `parentElement !== null` guard on a node the reconciler just found attached, a `?? ''` after a regex that always matches, loop-completion branches). KF-103 first lowered branches to 99 for that class; KF-452 moved both numbers again when vitest 4 replaced `v8-to-istanbul` with `ast-v8-to-istanbul`, which maps V8's counters onto the AST rather than onto transpiled line ranges and so resolves guards the old mapping silently credited as covered. **Coverage did not get worse — the instrument got sharper.** `vitest.config.ts` names all seventeen affected branches. If these numbers need to move again, name the branches that moved them; never lower them to make a build pass.
 
@@ -264,7 +264,7 @@ Keep **text search** (ripgrep / the editor's grep / the Explore agent) for what 
 ## Git
 
 - **Commit as needed.** You may create git commits without asking when it helps the work (e.g. checkpointing completed, verified changes).
-- **Push completed work as you go.** This repository pre-authorizes `git push` after the relevant commit is ready. Run `npm run check` immediately before every push and do not push unless its lint, TypeScript compilation/typecheck, unit-test, and build gates all pass.
+- **Push coherent batches, not every commit.** This repository pre-authorizes `git push`, but hold completed ticket commits locally until a coherent batch is ready. The pre-push hook runs `npm run check` once for the batch; do not bypass it unless the same commit range has already passed an equivalent gate.
 
 ## Hot Sheet integration
 
@@ -407,7 +407,7 @@ Both mirror the hard rules + canonical patterns + common errors from the AI usag
 
 These root files are the **source of truth**. A `npm install kerfjs` lands generated mirrors at `node_modules/kerfjs/ai/skill.md` and `node_modules/kerfjs/ai/cursorrules` (plus an `ai/manifest.json` with per-file `kerf-skill-version` + sha256 — the version that the shipped `kerfjs/ai-assistant-configs` ESLint rule reads to detect drift). The bundling, the canonical-file contract (version line + `KERF-APP-CANONICAL-END` marker), and the eslint rule are all designed together in [`docs/12-ai-assistant-configs.md`](docs/12-ai-assistant-configs.md).
 
-**Editing workflow.** Only edit the root files. After any change, run `npm run ai-bundle:sync` to regenerate `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`, then commit the regenerated mirror alongside your edit. `npm run check` runs `check:ai-bundle-in-sync` (`scripts/check-ai-bundle.mjs`) which fails the pre-commit gate if you forgot.
+**Editing workflow.** Only edit the root files. After any change, run `npm run ai-bundle:sync` to regenerate `ai/skill.md` / `ai/cursorrules` / `ai/manifest.json`, then commit the regenerated mirror alongside your edit. `npm run check` runs `check:ai-bundle-in-sync` (`scripts/check-ai-bundle.mjs`) which fails the pre-push gate if you forgot.
 
 **Versioning the canonical content.** Each root file has a `kerf-skill-version: <semver>` line — inside the YAML frontmatter for `kerf.claude-skill.md`, inside a top-of-file HTML comment for `kerf.cursorrules`. Bump this version whenever the canonical content changes in a way a consumer would benefit from re-syncing (hard-rule additions/renumberings, new canonical patterns, API-surface changes, new common-error rows). Skip bumps for typos, grammar, and comment-only changes. See §12.3.2 of the doc for the full rubric.
 
@@ -501,7 +501,7 @@ Fully documented in the **Testing** section above; in brief:
 - **Integration** (`tests/integration/`): vitest, full pipeline (signals + stores + mount + delegate) against a real DOM.
 - **Browser / E2E** (`tests/browser/`): Playwright across Chromium / Firefox / WebKit; builds `dist/` first. Covers the consumer-app and example-apps specs.
 - **Dist regression** (`tests/dist/`): targeted suite + the `.d.ts` typing gate against built `dist/`.
-- **Commands**: `npm run check` (pre-commit gate) and `npm run check:full` (pre-push, adds Playwright) run everything; see the **Testing** section for the granular `test:*` scripts and the coverage thresholds.
+- **Commands**: `npm run check` (automatic pre-push gate) and `npm run check:full` (opt-in extended gate adding audit + Playwright) run everything; pre-commit only checks staged whitespace. See the **Testing** section for the granular `test:*` scripts and the coverage thresholds.
 
 <!-- hotsheet:end specifics=testing-philosophy -->
 <!-- hotsheet:end section=testing-philosophy -->
@@ -556,6 +556,7 @@ outstanding review and leave it open. Dependency presence alone is not visual
 validation.
 
 <!-- BEGIN hotsheet:claude -->
+<!-- hotsheet-instructions-version: 48 -->
 
 ## Hot Sheet — ticket workflow
 
@@ -571,20 +572,18 @@ code-changing task. Skip ticketing only for trivial one-offs: simple questions, 
 lookups, a single-line fix, or a git commit. When in doubt, create the ticket.
 
 **Find and plan the queue:**
-
 - `hotsheet-cli ls --up-next` — the prioritized Up Next queue.
 - `hotsheet-cli show <slug>` — read one ticket in full.
 - Or the MCP tools: `hotsheet_query` (with `up_next: true`) and `hotsheet_get`.
 
 **Claim a ticket before you work it — claiming, not `started`, is what signals live work:**
-
 - `hotsheet-cli claim <slug> --worker <your-id>` when you begin. This atomically moves a Not
-  Started ticket to **Started** _and_ takes a renewable live lease that tells everyone you are
+  Started ticket to **Started** *and* takes a renewable live lease that tells everyone you are
   actively on it. Always claim before you touch code. Prefer it over `hotsheet-cli edit <slug>
---status started`, which only flips the status and does **not** claim or signal live work.
+  --status started`, which only flips the status and does **not** claim or signal live work.
   (Self-serve the top of the queue with `hotsheet-cli claim-next --worker <your-id>`.)
 - `hotsheet-cli renew <slug> --worker <your-id>` during long work; `hotsheet-cli release <slug>
---worker <your-id>` when you stop for completion, handoff, or a blocker.
+  --worker <your-id>` when you stop for completion, handoff, or a blocker.
 - `hotsheet-cli edit <slug> --status completed --note "what you did"` when done.
 - Or the MCP tools: `hotsheet_claim_next` / `hotsheet_renew` / `hotsheet_release` for the lease,
   and `hotsheet_update` (it takes a `note`) / `hotsheet_close`.
@@ -601,7 +600,7 @@ ticket's completing note, then continue.
 docs the change requires; scan for placeholders, TODO/FIXME, stubs, and documented-but-
 unbuilt behavior; create a follow-up for every incomplete item; and put the result,
 verification, and all follow-up slugs in the completing note. `FEEDBACK NEEDED` is only for a
-blocker on the _current_ ticket that needs a user decision or unavailable external state —
+blocker on the *current* ticket that needs a user decision or unavailable external state —
 leave that ticket `started`, name the blocker, and release its lease (`hotsheet-cli release`).
 It does not replace follow-ups for independently describable work.
 
@@ -609,10 +608,6 @@ Normally continue until every actionable Up Next ticket is complete. Read the wh
 before choosing an order; weigh dependencies, overlap, risk, and safe parallelization. Treat
 priority as important guidance, not a hard rule. The CLI and MCP tools use the same engine —
 use whichever is handier.
-
-A stopped, completed, interrupted, or idle delegated worker does not make its ticket
-non-actionable. The primary agent must inspect and resume the handoff through verification,
-completion, commit, and publication.
 
 **Write portable durable references.** In documentation, ticket text, and notes, never copy a
 developer-specific home directory, username, or absolute clone path. Use repository-relative
@@ -625,11 +620,11 @@ local path only as clearly labeled machine-local diagnostic evidence.
   dependencies mocked) **and** end-to-end tests (real user flows through the running system,
   minimal mocking). Keep test fakes faithful to the real contract — same shapes, fields, and
   status codes.
-- **Coverage is a floor, not a ceiling.** 100% lines means every line _ran_, not that every
-  _behavior_ — or every _sequence_ of behaviors — is _asserted_. It is blind to missing state
+- **Coverage is a floor, not a ceiling.** 100% lines means every line *ran*, not that every
+  *behavior* — or every *sequence* of behaviors — is *asserted*. It is blind to missing state
   transitions.
 - **Stateful code gets transition-matrix + adversarial tests.** For anything with modes, a
-  cache, or a state machine, enumerate the states _and_ the transitions, then walk realistic
+  cache, or a state machine, enumerate the states *and* the transitions, then walk realistic
   multi-step sequences that cross boundaries. Deliberately try to break it with out-of-order,
   interleaved, repeated, and empty-then-refill sequences; pin any bug you find as a permanent
   regression test.
@@ -655,7 +650,6 @@ Keep the repo in a known-good state.
    or misleading.
 4. Get the worktree clean before starting the next ticket.
 
-**Push every completed ticket immediately.** After its required gates pass, commit the
-ticket, push it, and confirm the remote accepted it before beginning, resuming, or
-integrating another ticket. Do not batch completed local commits for a later push.
+**Pushing is up to this repository.** Follow whatever push/PR/review conventions this project
+already uses; this default guidance does not require or forbid pushing on its own.
 <!-- END hotsheet:claude -->

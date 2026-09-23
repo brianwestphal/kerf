@@ -26,8 +26,8 @@
  *
  * Tuning: `KERF_FUZZ_RUNS` (default 200) and `KERF_FUZZ_SEED` for a longer soak,
  * e.g. `KERF_FUZZ_RUNS=5000 npm run test:unit -- reconciler-fuzz`. The default
- * is deliberately modest and fully deterministic so the pre-commit gate stays
- * fast and can never flake. `KERF_FUZZ_DIFF=0` drops the differential check for
+ * is deliberately modest and fully deterministic so the pre-push gate stays
+ * reliable and can never flake. `KERF_FUZZ_DIFF=0` drops the differential check for
  * triage, leaving only the checks a user would actually see fail.
  *
  * There is currently no quarantine: every generated case is expected to hold.

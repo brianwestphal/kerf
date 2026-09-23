@@ -92,7 +92,7 @@ gates.
 
 If a contributor edits a root file without re-running the sync (or
 edits a generated file directly), the gate fails the local
-pre-commit and CI.
+pre-push check and CI.
 
 ### 12.2.2 The manifest
 
