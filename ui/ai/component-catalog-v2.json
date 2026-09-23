@@ -1402,6 +1402,81 @@
       }
     },
     {
+      "key": "@kerfjs/ui:row",
+      "package": "@kerfjs/ui",
+      "id": "row",
+      "name": "Row",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui", "horizontal-layout"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "child semantics and content",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "alignment and wrapping policy",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "typed gap overrides",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "Row adds no margin, border, or padding; it owns only flex alignment, wrapping, and the gap between children."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Row adds layout only and no grouping role; children retain responsibility for native or ARIA semantics.",
+          "Wrapping must preserve a readable source and focus order."
+        ]
+      },
+      "cssValueProps": [
+        {
+          "path": "gap",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
+          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
+          "exceptionalShorthands": ["s", "xl"],
+          "rawPolicy": "forbid",
+          "examples": [
+            "gap=\"xs\"",
+            "gap={space(\"m\")}",
+            "gap={calc(plus(rem(0.25), pct(10)))}"
+          ]
+        }
+      ],
+      "boundaries": {
+        "rootClass": "kui-row",
+        "publicClasses": ["kui-row"],
+        "publicTokens": ["--kui-layout-item-gap", "--kui-row-gap"]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "docs/layout.md#row-and-list-alignment"
+      }
+    },
+    {
       "key": "@kerfjs/ui:list",
       "package": "@kerfjs/ui",
       "id": "list",
@@ -1424,7 +1499,7 @@
           "required": false
         },
         {
-          "id": "typed gap, flex, and divider choices",
+          "id": "typed gap, flex, alignment, and divider choices",
           "owner": "application",
           "required": false
         }

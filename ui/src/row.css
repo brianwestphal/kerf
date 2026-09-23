@@ -1,0 +1,45 @@
+.kui-row {
+  --kui-row-gap: var(--kui-layout-item-gap, remify(8px));
+
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  align-content: space-between;
+  justify-content: flex-start;
+  gap: var(--_kui-row-gap, var(--kui-row-gap));
+}
+
+.kui-row[data-wrap="true"] {
+  flex-wrap: wrap;
+}
+
+.kui-row[data-h-align="center"] {
+  justify-content: space-around;
+}
+
+.kui-row[data-h-align="right"] {
+  justify-content: flex-end;
+}
+
+.kui-row[data-h-align="full"] {
+  justify-content: space-between;
+}
+
+.kui-row[data-v-align="top"] {
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+.kui-row[data-v-align="middle"] {
+  align-items: center;
+  align-content: space-around;
+}
+
+.kui-row[data-v-align="bottom"] {
+  align-items: flex-end;
+  align-content: flex-end;
+}

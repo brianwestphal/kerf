@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added a first-class horizontal `Row` with typed spacing, physical-axis
+  alignment, and opt-in wrapping; `List` now supports the same alignment
+  vocabulary while retaining its existing defaults.
 - Refined compact mixed `ToolbarControlGroup` selections to retain standard
   horizontal padding, remove the internal separator, and raise the selected
   surface over the outer border; avatar group hover now preserves image fitting.

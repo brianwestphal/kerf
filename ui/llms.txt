@@ -91,7 +91,10 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   own the geometry (8px inline margin + 1px border + 8px padding). Do not add a
   container padding on top of a content-item's own margin — pick one owner. Use
   `.kui-content` for 24px major vertical rhythm.
-- **Use `List` for vertical layout.** It supplies a stretch-aligned column plus
+- **Use `Row` for horizontal and `List` for vertical layout.** Both expose
+  physical `hAlign`/`vAlign` props and typed gaps. Row defaults to left/full,
+  an `xs` gap, and no wrapping; List retains full/top and zero-gap defaults.
+  List additionally supplies
   optional typed `gap`, `flex`, vertical scrolling, and canonical
   `dividerSides` (`t`/`r`/`b`/`l` order). It adds no list semantics; children own
   those, and only one bounded region should own scrolling. Pass a finite spacing
@@ -154,7 +157,7 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 - **Space by the five-step scale, by relationship not by eye.** `0`
   `--kui-space-none`, `4px` `--kui-space-2xs`, `8px` `--kui-space-xs` (inside a
   group), `16px` `--kui-space-m`, `24px` `--kui-space-l` (between major differing
-  regions). 12px/32px are off-scale exceptions. Prefer direct `List.gap`
+  regions). 12px/32px are off-scale exceptions. Prefer direct `Row.gap`/`List.gap`
   shorthands; use `space`, `px`, `rem`, `em`, `pct`, `lengthVar`, and
   `calc(plus(...))` for typed runtime composition. `remify()` is source-CSS only.
 - **Keep nested highlight corners concentric.** Inset hover and selection surfaces

@@ -333,6 +333,7 @@ export { ListHeader, type ListHeaderProps };
 import * as kerfjs from 'kerfjs';
 import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
 import { D as DividerSides } from './divider-sides-267FA7sY.js';
+import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-CF8NLj7i.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface ListProps {
@@ -341,6 +342,10 @@ interface ListProps {
     gap?: boolean | UiSpaceName | CssLength;
     /** Allow this list to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
     flex?: boolean | CssFlexKeyword | CssFlex;
+    /** Horizontal alignment. Defaults to full to preserve stretch-aligned list children. */
+    hAlign?: HorizontalAlignment;
+    /** Vertical distribution. Defaults to top. */
+    vAlign?: VerticalAlignment;
     /** Own vertical scrolling and overscroll containment. */
     scrollable?: boolean;
     /** Physical divider edges in canonical top/right/bottom/left order. */
@@ -348,9 +353,9 @@ interface ListProps {
     className?: string;
 }
 /** A stretch-aligned vertical stack with optional gap, flex, scroll, and dividers. */
-declare function List({ children, gap, flex, scrollable, dividerSides, className, }: ListProps): kerfjs.SafeHtml;
+declare function List({ children, gap, flex, hAlign, vAlign, scrollable, dividerSides, className, }: ListProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, CssLength, DividerSides, List, type ListProps, UiSpaceName };
+export { CssFlex, CssFlexKeyword, CssLength, DividerSides, HorizontalAlignment, List, type ListProps, UiSpaceName, VerticalAlignment };
 ```
 
 ## `@kerfjs/ui/list-action-row`

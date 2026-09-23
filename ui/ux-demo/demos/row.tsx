@@ -1,0 +1,97 @@
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { List } from '@kerfjs/ui/list';
+import {
+  type HorizontalAlignment,
+  Row,
+  type VerticalAlignment,
+} from '@kerfjs/ui/row';
+
+const horizontal: readonly [string, HorizontalAlignment][] = [
+  ['Left', 'left'],
+  ['Center', 'center'],
+  ['Right', 'right'],
+  ['Full', 'full'],
+];
+const vertical: readonly [string, VerticalAlignment][] = [
+  ['Top', 'top'],
+  ['Middle', 'middle'],
+  ['Bottom', 'bottom'],
+  ['Full', 'full'],
+];
+
+const chips = (prefix: string) => [
+  <span class="demo-row-chip">{prefix} one</span>,
+  <span class="demo-row-chip demo-row-chip--tall">{prefix} two</span>,
+  <span class="demo-row-chip">{prefix} three</span>,
+];
+
+export function RowDemo() {
+  return (
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'row' }}>
+      <CatalogExample
+        label="Default row"
+        note="Row defaults to left, full-height children, the xs gap, and no wrapping."
+      >
+        <Row className="demo-row-frame demo-row-default">
+          {chips('Default')}
+        </Row>
+      </CatalogExample>
+      <CatalogExample
+        label="Horizontal distribution"
+        note="Center uses space-around while full uses space-between; left and right pin the group to an edge."
+      >
+        <List gap="xs" className="demo-row-gallery">
+          {horizontal.map(([label, alignment]) => (
+            <section>
+              <code>{label}</code>
+              <Row
+                className={`demo-row-frame demo-row-horizontal-${alignment}`}
+                hAlign={alignment}
+                vAlign="middle"
+              >
+                {chips(label)}
+              </Row>
+            </section>
+          ))}
+        </List>
+      </CatalogExample>
+      <CatalogExample
+        label="Vertical alignment"
+        note="Cross-axis alignment remains valid CSS: top, centered middle, bottom, or stretched full. Wrapped lines use the matching distribution."
+      >
+        <List gap="xs" className="demo-row-gallery">
+          {vertical.map(([label, alignment]) => (
+            <section>
+              <code>{label}</code>
+              <Row
+                className={`demo-row-frame demo-row-vertical-${alignment}`}
+                hAlign="left"
+                vAlign={alignment}
+              >
+                {chips(label)}
+              </Row>
+            </section>
+          ))}
+        </List>
+      </CatalogExample>
+      <CatalogExample
+        label="Wrapped row"
+        note="Wrapping is opt-in and keeps the same physical alignment and typed gap contract."
+      >
+        <Row
+          className="demo-row-frame demo-row-wrapped"
+          hAlign="full"
+          vAlign="middle"
+          gap="m"
+          wrap
+        >
+          {['Alpha', 'Beta release', 'Gamma', 'Delta workspace', 'Epsilon'].map(
+            (label) => (
+              <span class="demo-row-chip demo-row-chip--wide">{label}</span>
+            ),
+          )}
+        </Row>
+      </CatalogExample>
+    </CatalogExampleStack>
+  );
+}

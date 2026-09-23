@@ -140,6 +140,21 @@ export function ListDemo() {
           </div>
         </List>
       </CatalogExample>
+      <CatalogExample
+        label="Physical-axis alignment"
+        note="List keeps its stretch-and-top defaults when omitted; explicit horizontal and vertical alignment use the same vocabulary as Row."
+      >
+        <List
+          className="demo-list-alignment"
+          gap="xs"
+          hAlign="right"
+          vAlign="full"
+        >
+          <span>Top</span>
+          <span>Middle</span>
+          <span>Bottom</span>
+        </List>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

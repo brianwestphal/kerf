@@ -56,6 +56,7 @@ npm install @kerfjs/ui
 import { AppTab } from "@kerfjs/ui/app-tab";
 import { calc, pct, plus, rem, space } from "@kerfjs/ui/css-values";
 import { ListActionRow } from "@kerfjs/ui/list-action-row";
+import { Row } from "@kerfjs/ui/row";
 import { SegmentedControl } from "@kerfjs/ui/segmented-control";
 import { StateBanner } from "@kerfjs/ui/state-banner";
 import { TabBar } from "@kerfjs/ui/tab-bar";
@@ -75,7 +76,7 @@ the complete layer is intentional. Manual CSS subpaths remain available for
 custom pipelines. App overrides belong later in the cascade or on a scoped
 `--kui-*` owner.
 
-`List.gap` accepts boolean default spacing, a finite token shorthand such as
+`Row.gap` and `List.gap` accept a finite token shorthand such as
 `"xs"` or `"m"`, or a branded complete `CssLength`. Use the CSS-free
 `@kerfjs/ui/css-values` builders (`space`, `px`, `rem`, `em`, `pct`,
 `lengthVar`, `plus`, `calc`) rather than raw CSS strings. `plus` produces only a

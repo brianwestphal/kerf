@@ -1637,12 +1637,95 @@
       }
     },
     {
+      "id": "row",
+      "name": "Row",
+    "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A horizontal flex row with physical-axis alignment, a typed xs gap by default, and opt-in wrapping.",
+      "uses": [],
+      "purpose": "Arrange related content horizontally with consistent spacing and explicit left/center/right/full plus top/middle/bottom/full alignment instead of application-owned flex wrappers.",
+    "publicExports": ["Row"],
+      "cssValueProps": [
+        {
+          "path": "gap",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
+          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
+          "exceptionalShorthands": ["s", "xl"],
+          "rawPolicy": "forbid",
+          "examples": ["gap=\"xs\"", "gap={space(\"m\")}", "gap={calc(plus(rem(0.25), pct(10)))}"]
+        }
+      ],
+      "useWhen": [
+        "Arrange a group of sibling components horizontally.",
+        "Choose physical horizontal distribution and vertical alignment without writing one-off flex CSS.",
+        "Allow a bounded group to wrap while retaining the same typed gap and alignment contract."
+      ],
+      "avoidWhen": [
+        "Do not use Row when content belongs in a semantic list or when a named-zone component such as Toolbar owns the composition.",
+        "Do not pass raw CSS strings to gap or use s/xl spacing steps without a deliberate exception.",
+        "Do not use alignment to replace semantic grouping or responsive relocation."
+      ],
+    "alternatives": [
+      {
+        "id": "list",
+        "relationship": "axis-alternative",
+        "when": "Use List when the main layout axis is vertical."
+      },
+      {
+        "id": "toolbar",
+        "relationship": "semantic-alternative",
+        "when": "Use Toolbar when content belongs to named leading, center, and trailing application-chrome zones."
+      }
+    ],
+      "appOwns": [
+        "child semantics and content",
+        "alignment and wrapping policy",
+        "typed gap overrides"
+      ],
+      "variants": [
+        "left/center/right/full horizontal alignment with l/c/r/f and flex aliases",
+        "top/middle/bottom/full vertical alignment with t/m/c/b/f and flex aliases",
+        "named none/2xs/xs/s/m/l/xl token gap",
+        "typed CssLength gap",
+        "nowrap or wrapping"
+      ],
+      "accessibility": [
+        "Row adds layout only and no grouping role; children retain responsibility for native or ARIA semantics.",
+        "Wrapping must preserve a readable source and focus order."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "Row adds no margin, border, or padding; it owns only flex alignment, wrapping, and the gap between children."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/row",
+        "manualCssImport": "@kerfjs/ui/row.css",
+        "sideEffects": ["browser-condition-css"]
+      },
+      "wiring": [],
+      "publicClasses": ["kui-row"],
+      "publicTokens": ["--kui-layout-item-gap", "--kui-row-gap"],
+      "links": {
+        "catalogRoute": "?component=row",
+        "documentation": "docs/layout.md",
+        "recipe": "docs/layout.md#row-and-list-alignment"
+      }
+    },
+    {
       "id": "list",
       "name": "List",
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "A stretch-aligned vertical stack with optional typed token/length gap, flex growth, vertical scrolling, and independently selectable divider edges.",
+      "description": "A vertical stack with physical-axis alignment, optional typed token/length gap, flex growth, vertical scrolling, and independently selectable divider edges.",
       "uses": [
         "list-header",
         "list-action-row",
@@ -1689,6 +1772,7 @@
         "Let one bounded list own vertical scrolling, flex growth, or one or more physical-edge dividers.",
         "Choose a finite gap shorthand such as xs or m, or compose a typed length with @kerfjs/ui/css-values when the spacing scale is insufficient.",
         "Use a finite flex keyword or the flex() builder when List participates in flexible layout."
+        ,"Align children horizontally or distribute them vertically with the same physical alignment vocabulary as Row."
       ],
       "avoidWhen": [
         "Do not use List as semantic list markup; use ul/ol when list semantics are required and apply layout deliberately.",
@@ -1699,7 +1783,7 @@
       "appOwns": [
         "child semantics and content",
         "the bounded height needed for scrolling",
-        "typed gap, flex, and divider choices"
+        "typed gap, flex, alignment, and divider choices"
       ],
       "variants": [
         "no gap",
@@ -1708,6 +1792,8 @@
         "typed CssLength gap",
         "boolean, finite-keyword, or typed CssFlex flex",
         "scrollable",
+        "left/center/right/full horizontal alignment",
+        "top/middle/bottom/full vertical alignment",
         "top/right/bottom/left divider combinations"
       ],
       "accessibility": [

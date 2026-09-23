@@ -41,6 +41,11 @@ import { type DividerSides, List } from '@kerfjs/ui/list';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
+import {
+  type HorizontalAlignment,
+  Row,
+  type VerticalAlignment,
+} from '@kerfjs/ui/row';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select, type SelectChoice } from '@kerfjs/ui/select';
 import { Skeleton } from '@kerfjs/ui/skeleton';
@@ -82,11 +87,15 @@ List({ gap: responsiveGap });
 List({ gap: space('m') });
 List({ gap: lengthVar('--app-gap', px(4)) });
 List({ gap: em(0.5) });
+Row({ gap: spacingName });
+Row({ gap: responsiveGap });
 void genericCssValue;
 // @ts-expect-error KUI-T012 an incomplete expression must be wrapped in calc().
 List({ gap: expression });
 // @ts-expect-error KUI-T012 raw CSS strings do not satisfy the typed length contract.
 List({ gap: '0.25rem' });
+// @ts-expect-error KUI-T012 Row uses the same typed gap contract.
+Row({ gap: '0.25rem' });
 // @ts-expect-error KUI-T012 spacing shorthands are a finite vocabulary.
 space('xxs');
 // @ts-expect-error KUI-T012 custom property names keep their leading dashes.
@@ -102,6 +111,18 @@ const choiceColor: CssColor = colorVar(
 );
 List({ flex: listFlex });
 List({ flex: 'none' });
+const horizontalAlignment: HorizontalAlignment = 'space-between';
+const verticalAlignment: VerticalAlignment = 'space-around';
+Row({
+  hAlign: horizontalAlignment,
+  vAlign: verticalAlignment,
+  wrap: true,
+});
+List({ hAlign: 'c', vAlign: 'b' });
+// @ts-expect-error alignment aliases are finite.
+Row({ hAlign: 'between' });
+// @ts-expect-error alignment aliases are finite.
+List({ vAlign: 'baseline' });
 Skeleton({ width: skeletonWidth, height: em(1.5), radius: px(999) });
 Skeleton({ width: 'fit-content' });
 const coloredChoice: SelectChoice<'ready'> = {

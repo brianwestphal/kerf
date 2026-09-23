@@ -150,6 +150,21 @@ describe('consumer bundle boundaries', () => {
     expect(css).not.toContain('remify(');
   });
 
+  it('loads only Row CSS from the Row browser subpath', async () => {
+    const result = await bundle(
+      "import { Row } from '@kerfjs/ui/row'; console.log(String(Row({ hAlign: 'full', wrap: true }))); ",
+    );
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const css = output(result, '.css');
+    expect(inputs).toContain('dist/browser/row.js');
+    expect(inputs).toContain('dist/styles/row.css');
+    expect(css).toContain('.kui-row');
+    expect(css).toContain('[data-h-align=full]');
+    expect(css).not.toContain('.kui-list');
+    expect(css).not.toContain('.kui-toolbar');
+    expect(css).not.toContain('remify(');
+  });
+
   it('keeps a re-exported component’s CSS reachable (ValueTableRow placeholder pulls skeleton.css)', async () => {
     // value-table.tsx re-exports ValueTableRow via `export { … } from './value-table-row.js'`;
     // the browser-entry scanner must follow that re-export to the row's Skeleton dependency so
@@ -501,6 +516,12 @@ describe('consumer bundle boundaries', () => {
     });
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
     expect(pkg.exports['./list.css']).toBe('./dist/styles/list.css');
+    expect(pkg.exports['./row']).toMatchObject({
+      types: './dist/row.d.ts',
+      browser: './dist/browser/row.js',
+      import: './dist/row.js',
+    });
+    expect(pkg.exports['./row.css']).toBe('./dist/styles/row.css');
     expect(pkg.exports['./list-action-row.css']).toBe(
       './dist/styles/list-action-row.css',
     );

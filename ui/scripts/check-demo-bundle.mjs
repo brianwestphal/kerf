@@ -31,7 +31,8 @@ const limits = {
   // → 274.89 kB (property-specific CSS-value builder specimens).
   // Keep only narrow headroom and preserve the split.
   // Rebased canonical Select lifecycle on the current catalog: 275.48 kB.
-  totalJavaScriptGzip: 275_600,
+  // → 276.49 kB (first-class Row and shared List alignment specimens).
+  totalJavaScriptGzip: 276_600,
 };
 
 const javascript = (await readdir(assetsDir)).filter((name) =>

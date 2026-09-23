@@ -117,13 +117,19 @@ Do not concatenate a count into `label` or pass a numeric `badge`; the mutually
 exclusive legacy `badge` slot remains available for non-count `SafeHtml` such
 as a `New` marker.
 
-`List.gap` accepts boolean default spacing, a direct spacing name such as
+`Row.gap` and `List.gap` accept a direct spacing name such as
 `gap="xs"` or `gap="m"`, or a branded `CssLength`. Import `space`, `rem`, `em`,
 `px`, `pct`, `lengthVar`, `plus`, and `calc` from the CSS-free
 `@kerfjs/ui/css-values` subpath when a named step is not enough. `plus` returns
 an incomplete expression, so wrap it with `calc` before passing it to a prop.
 Raw CSS strings are deliberately rejected; the opaque brands catch authoring
 mistakes but are not sanitizers.
+
+Use `Row` for horizontal flex composition and `List` for vertical composition.
+Both accept `hAlign` (`left`, `center`, `right`, `full`) and `vAlign` (`top`,
+`middle`, `bottom`, `full`), plus their documented short/CSS aliases. `Row`
+defaults to left/full alignment, the `xs` gap, and `wrap={false}`; List keeps
+its existing full/top alignment and zero-gap defaults.
 
 The same property-specific boundary applies beyond spacing: use `flex()` (or a
 finite keyword) for `List.flex`; length builders and intrinsic-size keywords for
@@ -144,6 +150,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `FloatingToolbar`                                                   | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`      |
 | `ToolbarText`                                                       | `@kerfjs/ui/toolbar-text`               | `@kerfjs/ui/toolbar-text.css`          |
 | `List`                                                              | `@kerfjs/ui/list`                       | `@kerfjs/ui/list.css`                  |
+| `Row`                                                               | `@kerfjs/ui/row`                        | `@kerfjs/ui/row.css`                   |
 | Typed CSS dimension builders                                        | `@kerfjs/ui/css-values`                 | —                                      |
 | `ListActionRow`                                                     | `@kerfjs/ui/list-action-row`            | `@kerfjs/ui/list-action-row.css`       |
 | `ListItem`                                                          | `@kerfjs/ui/list-item`                  | `@kerfjs/ui/list-item.css`             |

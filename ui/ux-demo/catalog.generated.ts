@@ -326,6 +326,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "row",
+    "name": "Row",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Arrange related content horizontally with consistent spacing and explicit left/center/right/full plus top/middle/bottom/full alignment instead of application-owned flex wrappers.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/row.tsx",
+    "componentSource": "ui/src/row.tsx",
+    "documentation": "ui/docs/layout.md"
+  },
+  {
     "id": "list",
     "name": "List",
     "category": "Navigation",

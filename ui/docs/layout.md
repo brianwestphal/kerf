@@ -112,11 +112,29 @@ The two relationships that get confused most are 8px vs 24px: 8px is _inside_ a
 group, 24px is _between_ major, differing regions. 16px sits between them for
 same-kind groups.
 
-For `List.gap`, pass these token names directly (`gap="xs"`, `gap="m"`) or use
+For `Row.gap` and `List.gap`, pass these token names directly (`gap="xs"`, `gap="m"`) or use
 `space('xs')` from `@kerfjs/ui/css-values` when composing a value in JavaScript.
 Use `rem`, `em`, `px`, `pct`, `lengthVar`, and `calc(plus(...))` only when a
 named spacing relationship does not express the requirement; do not pass raw
 CSS strings.
+
+## Row and List alignment
+
+Use `Row` for a horizontal flex layout and `List` for a vertical one. `Row`
+defaults to `hAlign="left"`, `vAlign="full"`, `gap="xs"`, and no wrapping;
+`List` retains its existing full-width, top-aligned defaults and zero gap.
+Both components accept the same physical-axis vocabulary:
+
+| Axis       | Values and aliases                                                                                                             | Flex behavior                                                             |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| Horizontal | `left` / `l` / `flex-start`; `center` / `c` / `space-around`; `right` / `r` / `flex-end`; `full` / `f` / `space-between`       | Distributes a Row's children; aligns a List's children across its width.  |
+| Vertical   | `top` / `t` / `flex-start`; `middle` / `m` / `c` / `space-around`; `bottom` / `b` / `flex-end`; `full` / `f` / `space-between` | Aligns a Row's children across its height; distributes a List's children. |
+
+Cross-axis `space-around` and `space-between` are not valid `align-items`
+values. Kerf therefore maps `middle` to centered items and `full` to stretched
+items, while applying the requested distribution to `align-content` when a
+Row wraps. Prefer the descriptive values in application code; the short and
+CSS-shaped aliases are provided for compact or migrated call sites.
 
 `--kui-space-s` (12px) and `--kui-space-xl` (32px) exist but are **off the
 canonical rhythm** — reach for them only as a deliberate exception, never as a

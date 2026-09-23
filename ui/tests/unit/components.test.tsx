@@ -22,6 +22,7 @@ import {
   ResizableRegion,
   resizeRegionFromPointer,
 } from '../../src/resizable-region.js';
+import { Row } from '../../src/row.js';
 import { SegmentedControl } from '../../src/segmented-control.js';
 import { Select, type SelectChoice } from '../../src/select.js';
 import { StateBanner } from '../../src/state-banner.js';
@@ -243,7 +244,7 @@ describe('production UI primitives', () => {
     );
     expect(html).toContain('class="kui-list results"');
     expect(html).toContain(
-      'data-component="list" data-gap="true" data-flex="true" data-scrollable="true" divider-sides="trbl"',
+      'data-component="list" data-gap="true" data-flex="true" data-h-align="full" data-v-align="top" data-scrollable="true" divider-sides="trbl"',
     );
     expect(html).toContain(
       'style="--_kui-list-gap:0.75rem;--_kui-list-flex:2 1 20rem"',
@@ -252,7 +253,7 @@ describe('production UI primitives', () => {
 
     const defaults = asHtml(List({ children: <span>Only</span> }));
     expect(defaults).toContain(
-      'data-gap="false" data-flex="false" data-scrollable="false"',
+      'data-gap="false" data-flex="false" data-h-align="full" data-v-align="top" data-scrollable="false"',
     );
     expect(defaults).not.toContain('divider-sides');
     expect(defaults).not.toContain('style=');
@@ -266,6 +267,68 @@ describe('production UI primitives', () => {
     expect(asHtml(List({ gap: 'none' }))).toContain(
       'data-gap="true" data-flex="false"',
     );
+  });
+
+  it('normalizes physical alignment aliases for rows and lists', () => {
+    const defaults = asHtml(Row({ children: <span>Default</span> }));
+    expect(defaults).toContain('class="kui-row" data-component="row"');
+    expect(defaults).toContain(
+      'data-h-align="left" data-v-align="full" data-wrap="false" style="--_kui-row-gap:var(--kui-space-xs)"',
+    );
+
+    const row = asHtml(
+      Row({
+        children: [<span>One</span>, <span>Two</span>],
+        hAlign: 'space-between',
+        vAlign: 'c',
+        gap: rem(1),
+        wrap: true,
+        className: 'actions',
+      }),
+    );
+    expect(row).toContain('class="kui-row actions"');
+    expect(row).toContain(
+      'data-h-align="full" data-v-align="middle" data-wrap="true" style="--_kui-row-gap:1rem"',
+    );
+    expect(row).toContain('<span>One</span><span>Two</span>');
+
+    expect(asHtml(Row({ hAlign: 'r', vAlign: 'b' }))).toContain(
+      'data-h-align="right" data-v-align="bottom"',
+    );
+    expect(asHtml(List({ hAlign: 'l', vAlign: 'space-around' }))).toContain(
+      'data-h-align="left" data-v-align="middle"',
+    );
+    expect(asHtml(List({ hAlign: 'c', vAlign: 'f' }))).toContain(
+      'data-h-align="center" data-v-align="full"',
+    );
+
+    const horizontalAliases = [
+      [['left', 'l', 'flex-start'], 'left'],
+      [['center', 'c', 'space-around'], 'center'],
+      [['right', 'r', 'flex-end'], 'right'],
+      [['full', 'f', 'space-between'], 'full'],
+    ] as const;
+    for (const [aliases, canonical] of horizontalAliases) {
+      for (const alias of aliases) {
+        expect(asHtml(Row({ hAlign: alias }))).toContain(
+          `data-h-align="${canonical}"`,
+        );
+      }
+    }
+
+    const verticalAliases = [
+      [['top', 't', 'flex-start'], 'top'],
+      [['middle', 'm', 'c', 'space-around'], 'middle'],
+      [['bottom', 'b', 'flex-end'], 'bottom'],
+      [['full', 'f', 'space-between'], 'full'],
+    ] as const;
+    for (const [aliases, canonical] of verticalAliases) {
+      for (const alias of aliases) {
+        expect(asHtml(List({ vAlign: alias }))).toContain(
+          `data-v-align="${canonical}"`,
+        );
+      }
+    }
   });
 
   it('renders nullable and recursively nested semantic children without a Fragment', () => {

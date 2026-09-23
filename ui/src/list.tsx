@@ -6,6 +6,12 @@ import {
   type UiSpaceName,
 } from './css-values.js';
 import type { DividerSides } from './divider-sides.js';
+import {
+  type HorizontalAlignment,
+  horizontalAlignment,
+  type VerticalAlignment,
+  verticalAlignment,
+} from './flex-alignment.js';
 import type { KerfUiContent } from './semantic-content.js';
 
 const spaceNames: readonly UiSpaceName[] = [
@@ -24,6 +30,10 @@ export interface ListProps {
   gap?: boolean | UiSpaceName | CssLength;
   /** Allow this list to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
   flex?: boolean | CssFlexKeyword | CssFlex;
+  /** Horizontal alignment. Defaults to full to preserve stretch-aligned list children. */
+  hAlign?: HorizontalAlignment;
+  /** Vertical distribution. Defaults to top. */
+  vAlign?: VerticalAlignment;
   /** Own vertical scrolling and overscroll containment. */
   scrollable?: boolean;
   /** Physical divider edges in canonical top/right/bottom/left order. */
@@ -36,6 +46,8 @@ export function List({
   children,
   gap = false,
   flex = false,
+  hAlign = 'full',
+  vAlign = 'top',
   scrollable = false,
   dividerSides = '',
   className = '',
@@ -60,6 +72,8 @@ export function List({
       data-component="list"
       data-gap={String(Boolean(gap))}
       data-flex={String(Boolean(flex))}
+      data-h-align={horizontalAlignment(hAlign)}
+      data-v-align={verticalAlignment(vAlign)}
       data-scrollable={String(scrollable)}
       divider-sides={dividerSides || undefined}
       style={style || undefined}
@@ -76,3 +90,7 @@ export type {
   UiSpaceName,
 } from './css-values.js';
 export type { DividerSides } from './divider-sides.js';
+export type {
+  HorizontalAlignment,
+  VerticalAlignment,
+} from './flex-alignment.js';

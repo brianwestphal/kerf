@@ -20,6 +20,7 @@ import { LucideIconDemo } from './lucide-icon.js';
 import { NavStackDemo } from './nav-stack.js';
 import { PaneDemo } from './pane.js';
 import { ResizeDemo } from './resize.js';
+import { RowDemo } from './row.js';
 import { SegmentedControlDemo } from './segmented-control.js';
 import { SelectDemo } from './select.js';
 import { SkeletonDemo } from './skeleton.js';
@@ -51,6 +52,7 @@ export const demos = {
   'token-search-field': TokenSearchFieldDemo,
   'toolbar-text': ToolbarTextDemo,
   list: ListDemo,
+  row: RowDemo,
   'list-header': ListHeaderDemo,
   'list-action-row': ListActionRowDemo,
   'list-item': ListItemDemo,

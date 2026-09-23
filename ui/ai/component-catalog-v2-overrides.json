@@ -98,6 +98,16 @@
       "requiredConcepts": ["control"]
     }
   },
+  "@kerfjs/ui:row": {
+    "_source": "docs/layout.md#row-and-list-alignment",
+    "contexts": ["application-ui", "horizontal-layout"],
+    "children": {
+      "mode": "any",
+      "concepts": [],
+      "requiredConcepts": []
+    },
+    "zones": []
+  },
   "@kerfjs/ui:list": {
     "_source": "docs/component-selection.md#problem-to-component-matrix",
     "contexts": ["application-ui", "navigation-list", "vertical-layout"],

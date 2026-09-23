@@ -68,7 +68,7 @@ All numeric builders reject non-finite input and normalize negative zero. These
 brands are authoring correctness tools, not sanitizers; no broad raw-string
 constructor is exposed.
 
-The public props keep CSS property grammars separate. `List.gap` accepts boolean default spacing, direct
+The public props keep CSS property grammars separate. `Row.gap` and `List.gap` accept direct
 `UiSpaceName` shorthands (`none`, `2xs`, `xs`, `s`, `m`, `l`, `xl`), or a
 complete `CssLength`; `List.flex` accepts its boolean default, finite keywords,
 or `CssFlex` from `flex()`. `Skeleton.width`/`height` accept typed lengths and
@@ -111,4 +111,4 @@ build/demo CSS that still contains the authoring function.
   CSS; the browser suite continues to guard component geometry and behavior.
 - Source and packed-consumer compilation distinguish complete lengths from
   expressions; unit tests cover deterministic serialization and invalid input;
-  browser coverage resolves direct and helper-built List gaps through real CSS.
+  browser coverage resolves direct and helper-built Row/List gaps through real CSS.

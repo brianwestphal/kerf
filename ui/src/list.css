@@ -13,12 +13,41 @@
   flex: var(--_kui-list-flex, initial);
   flex-direction: column;
   align-items: stretch;
+  align-content: space-between;
+  justify-content: flex-start;
   gap: var(--_kui-list-gap, 0);
   box-shadow:
     inset 0 1px var(--_kui-list-divider-top),
     inset -1px 0 var(--_kui-list-divider-right),
     inset 0 -1px var(--_kui-list-divider-bottom),
     inset 1px 0 var(--_kui-list-divider-left);
+}
+
+.kui-list[data-h-align="left"] {
+  align-items: flex-start;
+  align-content: flex-start;
+}
+
+.kui-list[data-h-align="center"] {
+  align-items: center;
+  align-content: space-around;
+}
+
+.kui-list[data-h-align="right"] {
+  align-items: flex-end;
+  align-content: flex-end;
+}
+
+.kui-list[data-v-align="middle"] {
+  justify-content: space-around;
+}
+
+.kui-list[data-v-align="bottom"] {
+  justify-content: flex-end;
+}
+
+.kui-list[data-v-align="full"] {
+  justify-content: space-between;
 }
 
 .kui-list[data-scrollable="true"] {

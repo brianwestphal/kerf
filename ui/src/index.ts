@@ -75,6 +75,12 @@ export {
   resizeRegionFromPointer,
 } from './resizable-region.js';
 export {
+  type HorizontalAlignment,
+  Row,
+  type RowProps,
+  type VerticalAlignment,
+} from './row.js';
+export {
   SegmentedControl,
   type SegmentedControlAppearance,
   type SegmentedControlChoice,
