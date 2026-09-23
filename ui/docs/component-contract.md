@@ -24,7 +24,7 @@ remains authored rather than generated.
 machine-evaluable composition layer without changing the v1 selection and
 delivery contract. Every v1 entry projects once, in order, under the stable
 qualified key `package:id`. Each v2 entry explicitly covers parents/contexts,
-named zones and cardinality, child concepts, state ownership, required wiring,
+named zones and cardinality, optional explicit JSX prop bindings, child concepts, state ownership, required wiring,
 responsive ownership, layout and geometry, accessibility obligations, public
 CSS boundaries, diagnostics, and provenance.
 
@@ -34,6 +34,17 @@ recommended. Objective rules live in
 `component-catalog-v2-overrides.json` and may carry stable `KUI-C###`
 diagnostics. A tool reports a diagnostic only after proving its exact `when`
 condition. Subjective choice, product policy, and visual taste remain prose.
+
+Kerf UI calls component content positions **named `SafeHtml` prop slots**.
+Use `children` for one homogeneous primary region; use explicit named
+`SafeHtml` props for semantic positions or replacement content such as
+`header`, `footer`, `leading`, `trailing`, `icon`, and `action`. These are typed
+function-component props, not native web-component `<slot>` elements and not a
+generic `slots={{...}}` object. A v2 zone declares `jsx.prop` only when tooling
+can soundly bind that zone to one public JSX prop; `children` is spelled
+explicitly. Zones without that binding remain guidance and are never guessed
+from their ids. Static tools inspect only visible JSX structure and leave
+dynamic `SafeHtml` expressions to runtime and accessibility evaluation.
 
 V1 consumers continue unchanged. V2 consumers read v1 for selection/delivery
 and v2 for composition. `npm run catalog:sync` projects every new component,

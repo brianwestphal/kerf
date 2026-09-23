@@ -10,18 +10,21 @@
     "zones": [
       {
         "id": "leading",
+        "jsx": { "prop": "leading" },
         "accepts": ["toolbar-text", "toolbar-control-group"],
         "cardinality": { "min": 0, "max": "unbounded" },
         "exclusiveWith": []
       },
       {
         "id": "center",
+        "jsx": { "prop": "center" },
         "accepts": ["toolbar-text", "toolbar-control-group"],
         "cardinality": { "min": 0, "max": "unbounded" },
         "exclusiveWith": []
       },
       {
         "id": "trailing",
+        "jsx": { "prop": "trailing" },
         "accepts": ["toolbar-text", "toolbar-control-group"],
         "cardinality": { "min": 0, "max": "unbounded" },
         "exclusiveWith": []
@@ -38,6 +41,39 @@
         "severity": "error",
         "when": "a direct zone child is neither ToolbarText nor ToolbarControlGroup",
         "message": "Wrap toolbar controls in ToolbarControlGroup; only ToolbarText and ToolbarControlGroup are direct zone children."
+      }
+    ]
+  },
+  "@kerfjs/ui:pane": {
+    "_source": "docs/layout.md#anatomy",
+    "contexts": [
+      "application-column",
+      "sidebar",
+      "main-content",
+      "inspector",
+      "dialog-column"
+    ],
+    "zones": [
+      {
+        "id": "header",
+        "jsx": { "prop": "header" },
+        "accepts": ["fixed-chrome"],
+        "cardinality": { "min": 0, "max": "unbounded" },
+        "exclusiveWith": []
+      },
+      {
+        "id": "content",
+        "jsx": { "prop": "children" },
+        "accepts": ["pane-content"],
+        "cardinality": { "min": 0, "max": "unbounded" },
+        "exclusiveWith": []
+      },
+      {
+        "id": "footer",
+        "jsx": { "prop": "footer" },
+        "accepts": ["fixed-chrome"],
+        "cardinality": { "min": 0, "max": "unbounded" },
+        "exclusiveWith": []
       }
     ]
   },
@@ -102,8 +138,23 @@
     "zones": [
       {
         "id": "tabs",
-        "accepts": ["app-tab"],
+        "jsx": { "prop": "children" },
+        "accepts": ["tabs"],
         "cardinality": { "min": 1, "max": "unbounded" },
+        "exclusiveWith": []
+      },
+      {
+        "id": "leading",
+        "jsx": { "prop": "leading" },
+        "accepts": ["toolbar-control-group"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      },
+      {
+        "id": "trailing",
+        "jsx": { "prop": "trailing" },
+        "accepts": ["toolbar-control-group"],
+        "cardinality": { "min": 0, "max": 1 },
         "exclusiveWith": []
       }
     ],
@@ -133,6 +184,37 @@
       }
     ]
   },
+  "@kerfjs/ui:tabs": {
+    "_source": "docs/accessibility.md#tabs",
+    "parents": {
+      "mode": "listed",
+      "entries": ["@kerfjs/ui:tab-bar"]
+    },
+    "contexts": ["tabpanel-navigation"],
+    "zones": [
+      {
+        "id": "leading-decoration",
+        "jsx": { "prop": "leading" },
+        "accepts": ["dormant-decoration"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      },
+      {
+        "id": "trailing-decoration",
+        "jsx": { "prop": "trailing" },
+        "accepts": ["dormant-decoration"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      },
+      {
+        "id": "close-icon",
+        "jsx": { "prop": "closeIcon" },
+        "accepts": ["dormant-decoration"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      }
+    ]
+  },
   "@kerfjs/ui:segmented-control": {
     "_source": "docs/accessibility.md#segmentedcontrol",
     "contexts": ["compact-exclusive-choice"],
@@ -147,6 +229,22 @@
   "@kerfjs/ui:token-search-field": {
     "_source": "docs/accessibility.md#tokensearchfield",
     "contexts": ["structured-search-editor"],
+    "zones": [
+      {
+        "id": "leading-decoration",
+        "jsx": { "prop": "leading" },
+        "accepts": ["dormant-decoration"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      },
+      {
+        "id": "trailing-control",
+        "jsx": { "prop": "trailing" },
+        "accepts": ["control"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      }
+    ],
     "state": [
       { "id": "tokens", "owner": "controlled", "required": true },
       { "id": "text", "owner": "component", "required": true },
@@ -166,6 +264,97 @@
         "severity": "error",
         "when": "wireTokenSearchFields is absent",
         "message": "TokenSearchField requires its public wiring helper for keyboard and collapsible behavior."
+      }
+    ]
+  },
+  "@kerfjs/ui:state-banner": {
+    "_source": "docs/component-selection.md#problem-to-component-matrix",
+    "contexts": ["persistent-status", "recoverable-error"],
+    "zones": [
+      {
+        "id": "icon",
+        "jsx": { "prop": "icon" },
+        "accepts": ["dormant-decoration"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      },
+      {
+        "id": "action",
+        "jsx": { "prop": "action" },
+        "accepts": ["control"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      }
+    ]
+  },
+  "@kerfjs/ui:empty-state": {
+    "_source": "docs/component-selection.md#problem-to-component-matrix",
+    "contexts": ["empty-content", "busy-content"],
+    "zones": [
+      {
+        "id": "icon",
+        "jsx": { "prop": "icon" },
+        "accepts": ["dormant-decoration"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      },
+      {
+        "id": "action",
+        "jsx": { "prop": "action" },
+        "accepts": ["control"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      }
+    ]
+  },
+  "@kerfjs/ui:split-view": {
+    "_source": "docs/split-view.md#split-view-list-detail",
+    "contexts": ["list-detail", "responsive-master-detail"],
+    "zones": [
+      {
+        "id": "list",
+        "jsx": { "prop": "list" },
+        "accepts": ["list-region"],
+        "cardinality": { "min": 1, "max": 1 },
+        "exclusiveWith": []
+      },
+      {
+        "id": "detail",
+        "jsx": { "prop": "detail" },
+        "accepts": ["detail-region"],
+        "cardinality": { "min": 1, "max": 1 },
+        "exclusiveWith": []
+      }
+    ]
+  },
+  "@kerfjs/ui:workbench": {
+    "_source": "docs/workbench.md#workbench",
+    "contexts": ["desktop-application-shell"],
+    "zones": [
+      {
+        "id": "main",
+        "jsx": { "prop": "main" },
+        "accepts": ["workspace-region"],
+        "cardinality": { "min": 1, "max": 1 },
+        "exclusiveWith": []
+      },
+      {
+        "id": "left-rail",
+        "accepts": ["panel-region"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      },
+      {
+        "id": "right-rail",
+        "accepts": ["panel-region"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      },
+      {
+        "id": "bottom-drawer",
+        "accepts": ["panel-region"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
       }
     ]
   },

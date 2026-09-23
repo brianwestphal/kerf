@@ -39,6 +39,13 @@ composition. Join catalogs by `key` (`package:id`), never bare `id`. Treat
 as a prohibition. Emit a diagnostic only after mechanically establishing its
 exact `when` condition; subjective guidance stays prose. App entries use the
 v2 extension schema and retain their own package identity across Kerf edges.
+Treat a zone's optional `jsx.prop` as its only authoritative JSX binding; never
+assume the zone id itself is a prop. `children` carries one homogeneous primary
+region. Semantic positions and replacement content use explicit named
+`SafeHtml` prop slots (`header`, `footer`, `leading`, `trailing`, `icon`,
+`action`, and similar). They are typed props, not native `<slot>` elements,
+wrapper slot components, or a generic `slots` object. Preserve dynamic
+expressions as unknown when their content cannot be established statically.
 
 Before selecting for an application, call the Node-side discovery API in
 `./application-ui-profile.mjs` (or implement its documented filename/order)

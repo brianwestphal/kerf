@@ -60,10 +60,23 @@ export function validateCatalogV2(catalog, options = {}) {
       fail(`${at} contexts must be a unique string list`);
     if (!Array.isArray(entry?.zones)) fail(`${at} zones must be an array`);
     const zoneIds = new Set();
+    const zoneProps = new Set();
     for (const zone of entry?.zones ?? []) {
       if (!zone?.id || zoneIds.has(zone.id))
         fail(`${at} zone ids must be unique`);
       zoneIds.add(zone?.id);
+      if ('jsx' in (zone ?? {})) {
+        if (
+          typeof zone?.jsx !== 'object' ||
+          zone.jsx === null ||
+          typeof zone.jsx.prop !== 'string' ||
+          !zone.jsx.prop
+        )
+          fail(`${at}:${zone?.id} jsx.prop must be a non-empty string`);
+        else if (zoneProps.has(zone.jsx.prop))
+          fail(`${at} JSX zone props must be unique`);
+        else zoneProps.add(zone.jsx.prop);
+      }
       if (!isStringList(zone?.accepts) || !zone.accepts.length)
         fail(
           `${at}:${zone?.id} accepts must be a non-empty unique string list`,

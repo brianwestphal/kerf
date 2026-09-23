@@ -67,6 +67,26 @@ tester.run('ui-composition', composition, {
       code: "import { ToolbarControlGroup as Group } from 'other-ui'; <Group />;",
       settings,
     },
+    {
+      code: "import { Pane, Toolbar as Bar } from '@kerfjs/ui'; const body = getContent(); <Pane header={<Bar />}>{body}</Pane>;",
+      settings,
+    },
+    {
+      code: "import { Pane, SegmentedControl } from '@kerfjs/ui'; <Pane footer={<SegmentedControl />} />;",
+      settings,
+    },
+    {
+      code: "import * as UI from '@kerfjs/ui'; const alternate = true; <UI.TabBar>{alternate ? <UI.AppTab /> : [<UI.AppTab />, <UI.AppTab />]}</UI.TabBar>;",
+      settings,
+    },
+    {
+      code: "import { TabBar as Tabs } from '@kerfjs/ui/tab-bar'; import { AppTab as Tab } from '@kerfjs/ui/app-tab'; const ready = true; <Tabs>{ready && <Tab />}</Tabs>;",
+      settings,
+    },
+    {
+      code: "import { SplitView } from '@kerfjs/ui'; const list = getList(); const detail = getDetail(); <SplitView list={list} detail={detail} />;",
+      settings,
+    },
   ],
   invalid: [
     {
@@ -88,6 +108,26 @@ tester.run('ui-composition', composition, {
       code: "import { Toolbar } from '@kerfjs/ui'; const Action = () => <button />; <Toolbar trailing={<Action />} />;",
       settings,
       errors: [{ messageId: 'zone' }],
+    },
+    {
+      code: "import { TabBar } from '@kerfjs/ui'; <TabBar />;",
+      settings,
+      errors: [{ messageId: 'cardinality' }],
+    },
+    {
+      code: "import { TabBar, ToolbarText } from '@kerfjs/ui'; <TabBar><ToolbarText /></TabBar>;",
+      settings,
+      errors: [{ messageId: 'zone' }],
+    },
+    {
+      code: "import { AppTab, LucideIcon } from '@kerfjs/ui'; <div><AppTab closeIcon={<><LucideIcon /><LucideIcon /></>} /></div>;",
+      settings,
+      errors: [{ messageId: 'parent' }, { messageId: 'cardinality' }],
+    },
+    {
+      code: "import { SplitView } from '@kerfjs/ui'; <SplitView />;",
+      settings,
+      errors: [{ messageId: 'cardinality' }, { messageId: 'cardinality' }],
     },
     {
       code: "import { Toolbar, ToolbarText } from '@kerfjs/ui'; <Toolbar center={<><ToolbarText /><ToolbarText /></>} />;",

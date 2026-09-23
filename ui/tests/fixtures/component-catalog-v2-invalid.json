@@ -31,6 +31,41 @@
     "message": "cardinality.max"
   },
   {
+    "name": "invalid JSX prop binding",
+    "path": "entries.0.zones",
+    "value": [
+      {
+        "id": "content",
+        "jsx": { "prop": "" },
+        "accepts": ["any"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      }
+    ],
+    "message": "jsx.prop must be a non-empty string"
+  },
+  {
+    "name": "duplicate JSX prop binding",
+    "path": "entries.0.zones",
+    "value": [
+      {
+        "id": "primary",
+        "jsx": { "prop": "content" },
+        "accepts": ["any"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      },
+      {
+        "id": "secondary",
+        "jsx": { "prop": "content" },
+        "accepts": ["any"],
+        "cardinality": { "min": 0, "max": 1 },
+        "exclusiveWith": []
+      }
+    ],
+    "message": "JSX zone props must be unique"
+  },
+  {
     "name": "required wiring without helper",
     "path": "entries.0.wiring",
     "value": { "required": true, "helpers": [], "obligations": [] },

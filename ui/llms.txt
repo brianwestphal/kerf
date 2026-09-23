@@ -45,6 +45,12 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
    child; synchronous hosts use [application-ui-profile-sync.cjs](./ai/application-ui-profile-sync.cjs).
    See the
    [workspace profile example](./docs/examples/application-ui-profile.json).
+   A zone's optional `jsx.prop` is its only authoritative JSX binding; never
+   infer one from the zone id. Use `children` for one homogeneous primary
+   region and explicit named `SafeHtml` prop slots for semantic positions or
+   replacement content. These are typed props, not native `<slot>` elements,
+   wrapper slot components, or a generic `slots` object. Leave unresolved
+   dynamic expressions unknown.
 4. **When authoring a component gallery**, load
    [catalog-authoring.json](./ai/catalog-authoring.json), then follow its
    authoritative [Catalog demo authoring contract](./docs/catalog.md#catalog-demo-authoring-contract).

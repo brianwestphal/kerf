@@ -23,6 +23,8 @@ export interface CatalogCompositionEntryV2 {
   contexts: string[];
   zones: Array<{
     id: string;
+    /** Static JSX binding when this zone is supplied by a public prop. */
+    jsx?: { prop: string };
     accepts: string[];
     cardinality: CatalogCardinality;
     exclusiveWith: string[];

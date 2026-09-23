@@ -17,16 +17,19 @@ export const catalog = {
       zones: [
         {
           id: 'leading',
+          jsx: { prop: 'leading' },
           accepts: ['toolbar-text', 'toolbar-control-group'],
           cardinality: { min: 0, max: 'unbounded' },
         },
         {
           id: 'center',
+          jsx: { prop: 'center' },
           accepts: ['toolbar-text'],
           cardinality: { min: 0, max: 1 },
         },
         {
           id: 'trailing',
+          jsx: { prop: 'trailing' },
           accepts: ['toolbar-text', 'toolbar-control-group'],
           cardinality: { min: 0, max: 'unbounded' },
         },
@@ -44,6 +47,65 @@ export const catalog = {
       },
     }),
     component('segmented-control', 'SegmentedControl'),
+    component('pane', 'Pane', {
+      zones: [
+        {
+          id: 'header',
+          jsx: { prop: 'header' },
+          accepts: ['toolbar'],
+          cardinality: { min: 0, max: 1 },
+        },
+        {
+          id: 'content',
+          jsx: { prop: 'children' },
+          accepts: ['pane-content'],
+          cardinality: { min: 0, max: 'unbounded' },
+        },
+        {
+          id: 'footer',
+          accepts: ['toolbar'],
+          cardinality: { min: 0, max: 1 },
+        },
+      ],
+    }),
+    component('tabs', 'AppTab', {
+      parents: { mode: 'listed', entries: ['@kerfjs/ui:tab-bar'] },
+      zones: [
+        {
+          id: 'close-icon',
+          jsx: { prop: 'closeIcon' },
+          accepts: ['lucide-icon'],
+          cardinality: { min: 0, max: 1 },
+        },
+      ],
+    }),
+    component('tab-bar', 'TabBar', {
+      zones: [
+        {
+          id: 'tabs',
+          jsx: { prop: 'children' },
+          accepts: ['tabs'],
+          cardinality: { min: 1, max: 'unbounded' },
+        },
+      ],
+    }),
+    component('lucide-icon', 'LucideIcon'),
+    component('split-view', 'SplitView', {
+      zones: [
+        {
+          id: 'list',
+          jsx: { prop: 'list' },
+          accepts: ['list-region'],
+          cardinality: { min: 1, max: 1 },
+        },
+        {
+          id: 'detail',
+          jsx: { prop: 'detail' },
+          accepts: ['detail-region'],
+          cardinality: { min: 1, max: 1 },
+        },
+      ],
+    }),
     component('wa-button-group', 'WaButtonGroup'),
     component('token-search-field', 'TokenSearchField', {
       wiring: {
@@ -87,7 +149,11 @@ export const selectionCatalog = {
     delivery:
       entry.id === 'workbench'
         ? { moduleImport: '@kerfjs/ui/workbench' }
-        : { browserImport: `@kerfjs/ui/${entry.id}` },
+        : entry.id === 'tabs'
+          ? { browserImport: '@kerfjs/ui/app-tab' }
+          : entry.id === 'tab-bar'
+            ? { browserImport: '@kerfjs/ui/tab-bar' }
+            : { browserImport: `@kerfjs/ui/${entry.id}` },
     wiring:
       entry.id === 'token-search-field'
         ? [

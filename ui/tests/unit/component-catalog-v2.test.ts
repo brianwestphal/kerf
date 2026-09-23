@@ -79,6 +79,12 @@ describe('component catalog v2 composition contract', () => {
     const toolbar = v2.entries.find((entry) => entry.id === 'toolbar')!;
     const icon = v2.entries.find((entry) => entry.id === 'lucide-icon')!;
     expect(toolbar).toMatchObject({
+      zones: expect.arrayContaining([
+        expect.objectContaining({
+          id: 'leading',
+          jsx: { prop: 'leading' },
+        }),
+      ]),
       children: {
         mode: 'listed',
         concepts: ['toolbar-text', 'toolbar-control-group'],
@@ -93,6 +99,29 @@ describe('component catalog v2 composition contract', () => {
       provenance: { composition: 'generated-permissive-default' },
     });
     expect(icon.diagnostics).toEqual([]);
+
+    const pane = v2.entries.find((entry) => entry.id === 'pane')!;
+    const tabBar = v2.entries.find((entry) => entry.id === 'tab-bar')!;
+    const workbench = v2.entries.find((entry) => entry.id === 'workbench')!;
+    expect(pane.zones.map(({ id, jsx }) => [id, jsx?.prop])).toEqual([
+      ['header', 'header'],
+      ['content', 'children'],
+      ['footer', 'footer'],
+    ]);
+    expect(tabBar.zones[0]).toMatchObject({
+      id: 'tabs',
+      jsx: { prop: 'children' },
+      accepts: ['tabs'],
+    });
+    expect(workbench.zones).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 'main', jsx: { prop: 'main' } }),
+        expect.objectContaining({ id: 'left-rail' }),
+      ]),
+    );
+    expect('jsx' in workbench.zones.find(({ id }) => id === 'left-rail')!).toBe(
+      false,
+    );
   });
 
   it('rejects adversarial invalid fixtures with stable actionable findings', async () => {

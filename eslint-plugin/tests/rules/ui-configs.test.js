@@ -172,9 +172,14 @@ export default [
     resolve(consumer, 'src/view.jsx'),
     `import * as UI from '@kerfjs/ui';
 import * as Field from '@kerfjs/ui/token-search-field';
+import * as NavWiring from '@kerfjs/ui/wire-nav-stack';
 const dispose = UI.wireTokenSearchFields(root);
-export const view = <><UI.Toolbar leading={<button>Save</button>} /><Field.TokenSearchField tokens={[]} onTokensChange={() => {}} /></>;
+const disposeResize = UI.wireResizableRegions(root);
+const disposeNav = NavWiring.wireNavStack(root);
+export const view = <><UI.Toolbar leading={<button>Save</button>} /><UI.SplitView list={<div />} /><Field.TokenSearchField tokens={[]} onTokensChange={() => {}} /></>;
 void dispose;
+void disposeResize;
+void disposeNav;
 `,
   );
   await mkdir(resolve(consumer, 'invalid'));
@@ -215,7 +220,7 @@ void dispose;
     result.messages
       .filter(({ ruleId }) => ruleId === 'kerfjs/ui-composition')
       .map(({ message }) => message.slice(0, 8)),
-    ['KUI-L202'],
+    ['KUI-L202', 'KUI-L203'],
   );
   assert.equal(
     result.messages.some(({ ruleId }) => ruleId === 'kerfjs/ui-wiring'),

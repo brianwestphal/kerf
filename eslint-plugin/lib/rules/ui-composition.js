@@ -94,6 +94,28 @@ function directParentKey(node, registry, contract) {
     : undefined;
 }
 
+function boundZone(openingElement, zone, registry, contract) {
+  const prop = zone.jsx?.prop;
+  if (!prop) return undefined;
+  if (prop === 'children')
+    return {
+      node: openingElement.name,
+      shape: combine(
+        (openingElement.parent?.children ?? []).map((child) =>
+          zoneShape(child, registry, contract),
+        ),
+      ),
+    };
+  const attribute = openingElement.attributes.find(
+    (candidate) =>
+      candidate.type === 'JSXAttribute' && candidate.name.name === prop,
+  );
+  return {
+    node: attribute ?? openingElement.name,
+    shape: zoneShape(attribute?.value, registry, contract),
+  };
+}
+
 export default {
   meta: {
     type: 'problem',
@@ -143,17 +165,10 @@ export default {
               data: { child: key, parents: entry.parents.entries.join(', ') },
             });
         }
-        // Catalog zone ids are not universally JSX prop names. Toolbar's public
-        // API deliberately exposes its three zones as same-named props, so only
-        // that component has a sound static prop-to-zone mapping here.
-        if (entry.id !== 'toolbar') return;
         for (const zone of entry.zones ?? []) {
-          const attribute = node.attributes.find(
-            (candidate) =>
-              candidate.type === 'JSXAttribute' &&
-              candidate.name.name === zone.id,
-          );
-          const shape = zoneShape(attribute?.value, registry, contract);
+          const bound = boundZone(node, zone, registry, contract);
+          if (!bound) continue;
+          const { node: reportNode, shape } = bound;
           const allowed = new Set(
             zone.accepts
               .map((accepted) =>
@@ -167,7 +182,7 @@ export default {
             for (const child of shape.items)
               if (!child.key || !allowed.has(child.key))
                 context.report({
-                  node: attribute ?? node.name,
+                  node: reportNode,
                   messageId: 'zone',
                   data: {
                     component: key,
@@ -182,7 +197,7 @@ export default {
           const tooMany = max !== 'unbounded' && shape.min > max;
           if (tooFew || tooMany)
             context.report({
-              node: attribute ?? node.name,
+              node: reportNode,
               messageId: 'cardinality',
               data: {
                 component: key,

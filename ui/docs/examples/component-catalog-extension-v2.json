@@ -19,12 +19,14 @@
       "zones": [
         {
           "id": "header",
+          "jsx": { "prop": "header" },
           "accepts": ["@kerfjs/ui:toolbar"],
           "cardinality": { "min": 1, "max": 1 },
           "exclusiveWith": []
         },
         {
           "id": "facts",
+          "jsx": { "prop": "facts" },
           "accepts": ["@kerfjs/ui:value-table"],
           "cardinality": { "min": 1, "max": 1 },
           "exclusiveWith": []

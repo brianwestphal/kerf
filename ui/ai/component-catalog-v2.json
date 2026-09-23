@@ -377,8 +377,36 @@
       "kind": "component",
       "source": "kerf",
       "parents": { "mode": "any", "entries": [] },
-      "contexts": ["application-ui"],
-      "zones": [],
+      "contexts": [
+        "application-column",
+        "sidebar",
+        "main-content",
+        "inspector",
+        "dialog-column"
+      ],
+      "zones": [
+        {
+          "id": "header",
+          "jsx": { "prop": "header" },
+          "accepts": ["fixed-chrome"],
+          "cardinality": { "min": 0, "max": "unbounded" },
+          "exclusiveWith": []
+        },
+        {
+          "id": "content",
+          "jsx": { "prop": "children" },
+          "accepts": ["pane-content"],
+          "cardinality": { "min": 0, "max": "unbounded" },
+          "exclusiveWith": []
+        },
+        {
+          "id": "footer",
+          "jsx": { "prop": "footer" },
+          "accepts": ["fixed-chrome"],
+          "cardinality": { "min": 0, "max": "unbounded" },
+          "exclusiveWith": []
+        }
+      ],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [
         {
@@ -443,7 +471,7 @@
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
-        "composition": "generated-permissive-default"
+        "composition": "docs/layout.md#anatomy"
       }
     },
     {
@@ -544,8 +572,23 @@
       "kind": "component",
       "source": "kerf",
       "parents": { "mode": "any", "entries": [] },
-      "contexts": ["application-ui"],
-      "zones": [],
+      "contexts": ["list-detail", "responsive-master-detail"],
+      "zones": [
+        {
+          "id": "list",
+          "jsx": { "prop": "list" },
+          "accepts": ["list-region"],
+          "cardinality": { "min": 1, "max": 1 },
+          "exclusiveWith": []
+        },
+        {
+          "id": "detail",
+          "jsx": { "prop": "detail" },
+          "accepts": ["detail-region"],
+          "cardinality": { "min": 1, "max": 1 },
+          "exclusiveWith": []
+        }
+      ],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [
         {
@@ -607,7 +650,7 @@
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
-        "composition": "generated-permissive-default"
+        "composition": "docs/split-view.md#split-view-list-detail"
       }
     },
     {
@@ -693,8 +736,34 @@
       "kind": "component",
       "source": "kerf",
       "parents": { "mode": "any", "entries": [] },
-      "contexts": ["application-ui"],
-      "zones": [],
+      "contexts": ["desktop-application-shell"],
+      "zones": [
+        {
+          "id": "main",
+          "jsx": { "prop": "main" },
+          "accepts": ["workspace-region"],
+          "cardinality": { "min": 1, "max": 1 },
+          "exclusiveWith": []
+        },
+        {
+          "id": "left-rail",
+          "accepts": ["panel-region"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        },
+        {
+          "id": "right-rail",
+          "accepts": ["panel-region"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        },
+        {
+          "id": "bottom-drawer",
+          "accepts": ["panel-region"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        }
+      ],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [
         {
@@ -761,7 +830,7 @@
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
-        "composition": "generated-permissive-default"
+        "composition": "docs/workbench.md#workbench"
       }
     },
     {
@@ -926,18 +995,21 @@
       "zones": [
         {
           "id": "leading",
+          "jsx": { "prop": "leading" },
           "accepts": ["toolbar-text", "toolbar-control-group"],
           "cardinality": { "min": 0, "max": "unbounded" },
           "exclusiveWith": []
         },
         {
           "id": "center",
+          "jsx": { "prop": "center" },
           "accepts": ["toolbar-text", "toolbar-control-group"],
           "cardinality": { "min": 0, "max": "unbounded" },
           "exclusiveWith": []
         },
         {
           "id": "trailing",
+          "jsx": { "prop": "trailing" },
           "accepts": ["toolbar-text", "toolbar-control-group"],
           "cardinality": { "min": 0, "max": "unbounded" },
           "exclusiveWith": []
@@ -1729,9 +1801,31 @@
       "name": "AppTab",
       "kind": "component",
       "source": "kerf",
-      "parents": { "mode": "any", "entries": [] },
-      "contexts": ["application-ui"],
-      "zones": [],
+      "parents": { "mode": "listed", "entries": ["@kerfjs/ui:tab-bar"] },
+      "contexts": ["tabpanel-navigation"],
+      "zones": [
+        {
+          "id": "leading-decoration",
+          "jsx": { "prop": "leading" },
+          "accepts": ["dormant-decoration"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        },
+        {
+          "id": "trailing-decoration",
+          "jsx": { "prop": "trailing" },
+          "accepts": ["dormant-decoration"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        },
+        {
+          "id": "close-icon",
+          "jsx": { "prop": "closeIcon" },
+          "accepts": ["dormant-decoration"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        }
+      ],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [
         { "id": "tab identity", "owner": "application", "required": false },
@@ -1792,7 +1886,7 @@
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
-        "composition": "generated-permissive-default"
+        "composition": "docs/accessibility.md#tabs"
       }
     },
     {
@@ -1807,8 +1901,23 @@
       "zones": [
         {
           "id": "tabs",
-          "accepts": ["app-tab"],
+          "jsx": { "prop": "children" },
+          "accepts": ["tabs"],
           "cardinality": { "min": 1, "max": "unbounded" },
+          "exclusiveWith": []
+        },
+        {
+          "id": "leading",
+          "jsx": { "prop": "leading" },
+          "accepts": ["toolbar-control-group"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        },
+        {
+          "id": "trailing",
+          "jsx": { "prop": "trailing" },
+          "accepts": ["toolbar-control-group"],
+          "cardinality": { "min": 0, "max": 1 },
           "exclusiveWith": []
         }
       ],
@@ -1935,7 +2044,22 @@
       "source": "kerf",
       "parents": { "mode": "any", "entries": [] },
       "contexts": ["structured-search-editor"],
-      "zones": [],
+      "zones": [
+        {
+          "id": "leading-decoration",
+          "jsx": { "prop": "leading" },
+          "accepts": ["dormant-decoration"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        },
+        {
+          "id": "trailing-control",
+          "jsx": { "prop": "trailing" },
+          "accepts": ["control"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        }
+      ],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [
         { "id": "tokens", "owner": "controlled", "required": true },
@@ -2197,8 +2321,23 @@
       "kind": "component",
       "source": "kerf",
       "parents": { "mode": "any", "entries": [] },
-      "contexts": ["application-ui"],
-      "zones": [],
+      "contexts": ["persistent-status", "recoverable-error"],
+      "zones": [
+        {
+          "id": "icon",
+          "jsx": { "prop": "icon" },
+          "accepts": ["dormant-decoration"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        },
+        {
+          "id": "action",
+          "jsx": { "prop": "action" },
+          "accepts": ["control"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        }
+      ],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [
         { "id": "badge content", "owner": "application", "required": false },
@@ -2284,7 +2423,7 @@
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
-        "composition": "generated-permissive-default"
+        "composition": "docs/component-selection.md#problem-to-component-matrix"
       }
     },
     {
@@ -2295,8 +2434,23 @@
       "kind": "component",
       "source": "kerf",
       "parents": { "mode": "any", "entries": [] },
-      "contexts": ["application-ui"],
-      "zones": [],
+      "contexts": ["empty-content", "busy-content"],
+      "zones": [
+        {
+          "id": "icon",
+          "jsx": { "prop": "icon" },
+          "accepts": ["dormant-decoration"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        },
+        {
+          "id": "action",
+          "jsx": { "prop": "action" },
+          "accepts": ["control"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
+        }
+      ],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [
         {
@@ -2339,7 +2493,7 @@
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
-        "composition": "generated-permissive-default"
+        "composition": "docs/component-selection.md#problem-to-component-matrix"
       }
     },
     {

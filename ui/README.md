@@ -83,6 +83,15 @@ mount(root, () => (
 
 Components return Kerf `SafeHtml`. They do not own application state or attach transient listeners. Actions are stable `data-action` hooks; the application wires them once with `delegate()` or `delegateActions()` and retains the disposer.
 
+Component content positions use one convention: `children` is the homogeneous
+primary region, while semantic positions and replacement content use explicit
+named `SafeHtml` props such as `header`, `footer`, `leading`, `trailing`,
+`icon`, and `action`. These named `SafeHtml` prop slots are ordinary typed
+function-component props—not native `<slot>` elements, wrapper slot
+components, or a generic `slots` object. The v2 composition catalog publishes
+sound prop bindings as `zone.jsx.prop`, allowing ESLint to validate statically
+visible content and cardinality without guessing from zone names.
+
 `ListItem.rootAttributes`, `ListHeader.rootAttributes`,
 `ListActionRow.rootAttributes`, `AppTab.rootAttributes`,
 `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` carry typed

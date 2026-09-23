@@ -761,8 +761,10 @@ interface WorkbenchProps {
  * bottom drawer around a central work area (any absent). Collapsing snaps the
  * panel's track to zero in one reflow while its fixed-size content slides out via
  * a composited transform — the instant-width / sliding-content technique, so the
- * work area relayouts once, not per frame. The app owns each `collapsed` flag;
- * the collapse is pure CSS (no wire). See `docs/23-app-layouts.md` §3.3.
+ * work area relayouts once, not per frame. Bottom-drawer content stays anchored
+ * to the shell's stable bottom edge throughout that transition. The app owns
+ * each `collapsed` flag; the collapse is pure CSS (no wire). See
+ * `docs/23-app-layouts.md` §3.3.
  */
 declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, className, }: WorkbenchProps): SafeHtml;
 
@@ -838,7 +840,9 @@ interface CollapsiblePanelProps {
  * {@link Workbench} shell. It owns only the presentation: a fixed-size content
  * area that stays laid out while the panel's track snaps to zero and the content
  * slides out via `transform` (one reflow, composited — the same technique
- * `Workbench` and the catalog sidebar use). The app owns the `collapsed` signal;
+ * `Workbench` and the catalog sidebar use). Bottom-drawer content stays anchored
+ * to the panel's fixed bottom edge, so the track cannot move its layout origin
+ * underneath the transform transition. The app owns the `collapsed` signal;
  * pair it with `wireSidebar` for the toggle, focus, compact-overlay, keyboard,
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
  * affordance. See `docs/24-collapsible-panel.md`.

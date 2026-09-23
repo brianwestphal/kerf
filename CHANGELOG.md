@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Fixed bottom `CollapsiblePanel` drawers overshooting their open position and
   snapping back by anchoring fixed-height content to the panel's stable bottom
   edge throughout the transform transition.
+- Formalized named `SafeHtml` prop slots as explicit `zone.jsx.prop` bindings
+  in the UI composition catalog and generalized `ui-composition` linting beyond
+  Toolbar, including statically visible `children`, cardinality, aliases,
+  namespaces, arrays, fragments, and branches.
 - Added `ToolbarControlGroup.avatarImage`, painting contained avatar imagery on
   a lone group or on the pressed highlight when the group has multiple buttons.
 - Split the AppTab and TabBar catalog routes into focused component specimens,

@@ -45,6 +45,14 @@
       "required": ["id", "accepts", "cardinality", "exclusiveWith"],
       "properties": {
         "id": { "type": "string", "minLength": 1 },
+        "jsx": {
+          "type": "object",
+          "required": ["prop"],
+          "properties": {
+            "prop": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        },
         "accepts": { "$ref": "#/$defs/stringList" },
         "cardinality": { "$ref": "#/$defs/cardinality" },
         "exclusiveWith": { "$ref": "#/$defs/stringList" }
