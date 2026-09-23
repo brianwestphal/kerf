@@ -29,6 +29,14 @@ function reducedMotion(view: Window): boolean {
   );
 }
 
+function chromeOf(section: HTMLElement): HTMLElement[] {
+  return Array.from(
+    section.querySelectorAll<HTMLElement>(
+      ':scope > [data-nav-stack-chrome], :scope > [data-nav-stack-bottom]',
+    ),
+  );
+}
+
 /**
  * Animate a `NavStack`'s push/pop transitions and wire its back control. The app
  * owns the stack (a signal of `NavStackView[]`) and re-renders `NavStack` when it
@@ -47,12 +55,22 @@ export function wireNavStack(
 
   const view = section.ownerDocument.defaultView ?? window;
   const duration = options.duration ?? DEFAULT_DURATION;
+  const previousDuration = section.style.getPropertyValue(
+    '--kui-nav-stack-transition-duration',
+  );
+  section.style.setProperty(
+    '--kui-nav-stack-transition-duration',
+    `${Math.max(0, duration)}ms`,
+  );
   const disposeBack = delegate(section, 'click', '[data-nav-back]', () =>
     options.onBack?.(),
   );
 
   let activeKey = topView(viewport)?.dataset.navKey;
   const timers = new Set<number>();
+  let chromeSnapshots = chromeOf(section).map((element) =>
+    element.cloneNode(true),
+  ) as HTMLElement[];
 
   const settle = (fn: () => void): void => {
     if (duration <= 0 || reducedMotion(view)) {
@@ -92,6 +110,50 @@ export function wireNavStack(
     }
   };
 
+  const crossFadeChrome = (): void => {
+    const current = chromeOf(section);
+    const animated = duration > 0 && !reducedMotion(view);
+    if (!animated) {
+      chromeSnapshots = current.map((element) =>
+        element.cloneNode(true),
+      ) as HTMLElement[];
+      return;
+    }
+
+    section.dataset.navChromeTransition = 'true';
+    const copies = chromeSnapshots.map((snapshot) => {
+      const copy = snapshot.cloneNode(true) as HTMLElement;
+      copy.classList.add('kui-nav-stack__chrome-copy');
+      copy.dataset.navChromeCopy = '';
+      copy.setAttribute('aria-hidden', 'true');
+      copy.setAttribute('inert', '');
+      if (copy.hasAttribute('data-nav-stack-bottom'))
+        copy.classList.add('kui-nav-stack__chrome-copy--bottom');
+      section.append(copy);
+      return copy;
+    });
+
+    current.forEach((element) =>
+      element.classList.add('kui-nav-stack__chrome--entering'),
+    );
+    void section.offsetWidth;
+    view.requestAnimationFrame(() => {
+      current.forEach((element) =>
+        element.classList.remove('kui-nav-stack__chrome--entering'),
+      );
+      copies.forEach((copy) =>
+        copy.classList.add('kui-nav-stack__chrome-copy--exiting'),
+      );
+    });
+    settle(() => {
+      copies.forEach((copy) => copy.remove());
+      delete section.dataset.navChromeTransition;
+    });
+    chromeSnapshots = current.map((element) =>
+      element.cloneNode(true),
+    ) as HTMLElement[];
+  };
+
   const observer = new MutationObserver((records) => {
     const removed: HTMLElement[] = [];
     let added = false;
@@ -123,10 +185,12 @@ export function wireNavStack(
       poppedTop.setAttribute('aria-hidden', 'true');
       viewport.append(poppedTop);
       play(poppedTop, 'exiting');
+      crossFadeChrome();
       settle(() => poppedTop.remove());
     } else if (added && currentKey !== activeKey && top) {
       // Push: slide the new top in.
       play(top, 'entering');
+      crossFadeChrome();
     }
 
     activeKey = currentKey;
@@ -138,5 +202,15 @@ export function wireNavStack(
     observer.disconnect();
     for (const timer of timers) view.clearTimeout(timer);
     timers.clear();
+    section
+      .querySelectorAll<HTMLElement>('[data-nav-chrome-copy]')
+      .forEach((copy) => copy.remove());
+    delete section.dataset.navChromeTransition;
+    if (previousDuration)
+      section.style.setProperty(
+        '--kui-nav-stack-transition-duration',
+        previousDuration,
+      );
+    else section.style.removeProperty('--kui-nav-stack-transition-duration');
   };
 }

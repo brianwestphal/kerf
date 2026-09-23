@@ -566,6 +566,8 @@ interface NavStackView {
     title?: string;
     /** Trailing actions for this view's top toolbar. */
     toolbar?: SafeHtml;
+    /** Bottom toolbar for this view. Cross-fades with the top chrome on navigation. */
+    bottomToolbar?: SafeHtml;
 }
 interface NavStackProps {
     id: string;
@@ -577,7 +579,7 @@ interface NavStackProps {
     backLabel?: string;
     /** Hide the top toolbar entirely (rare — a fully custom-chrome view). */
     hideToolbar?: boolean;
-    /** Optional persistent bottom toolbar. */
+    /** Optional persistent bottom toolbar used when the active view does not provide one. */
     bottomToolbar?: SafeHtml;
     className?: string;
 }

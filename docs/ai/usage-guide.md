@@ -161,6 +161,13 @@ custom-element side effect and Web Awesome is otherwise optional. Supply
 icon-bearing choices and `renderSelected` output directly: `Select` preserves
 the Web Awesome option slots across Kerf rerenders and replaces custom selected
 content when the controlled value changes.
+
+For a one-pane drill-down, keep the ordered `NavStackView[]` in app state and
+call `wireNavStack()`: content slides on push/pop while the active view's title,
+top actions, and optional `bottomToolbar` cross-fade. Use the component-level
+`bottomToolbar` only as a persistent fallback for views without their own bottom
+chrome.
+
 `@kerfjs/ui` Select projects a nonempty `label`, or otherwise `ariaLabel`, to
 Web Awesome’s internal combobox name. The ariaLabel-only label is visually
 hidden without adding geometry, also with custom selected content. See

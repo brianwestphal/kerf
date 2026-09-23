@@ -27,6 +27,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Updated the `Pane` catalog demo's secondary header copy to use
   `ListInsetText`, aligning it with the standard pane content gutter at wide and
   narrow sizes instead of maintaining demo-only padding.
+- Completed `NavStack` navigation transitions by cross-fading top and bottom
+  chrome alongside content slides, added per-view bottom toolbars with a
+  persistent fallback, and replaced the static focused demo with a working
+  push/pop flow.
 - Documented and demonstrated list-first dialog bodies: use `List` with
   `bodyInset="none"`, and wrap bare dialog copy in `ListInsetText` so content
   shares the standard list gutter without double-insetting.

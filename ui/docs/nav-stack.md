@@ -21,7 +21,12 @@ stack as a `signal<NavStackView[]>`, `NavStack({ views })` renders it, and
 
 ```tsx
 const views = signal<NavStackView[]>([
-  { key: "inbox", title: "Inbox", content: <InboxView /> },
+  {
+    key: "inbox",
+    title: "Inbox",
+    content: <InboxView />,
+    bottomToolbar: <InboxStatus />,
+  },
 ]);
 
 // render inside mount():
@@ -43,14 +48,18 @@ views.value = [
 
 `NavStack` renders every entry stacked, the last one active and the rest kept
 mounted (so their DOM state and focus survive) but hidden. Each entry carries a
-`key` (stable identity), `content`, an optional `title`, and optional per-view
-`toolbar` actions. The back control appears automatically once the stack has more
-than one entry; `wireNavStack`'s `onBack` is where the app pops its own signal.
+`key` (stable identity), `content`, an optional `title`, optional per-view
+`toolbar` actions, and an optional per-view `bottomToolbar`. The component-level
+`bottomToolbar` remains a persistent fallback for views that do not provide one.
+The back control appears automatically once the stack has more than one entry;
+`wireNavStack`'s `onBack` is where the app pops its own signal.
 
 ## Transitions
 
 `wireNavStack(root, { onBack, duration? })` observes the rendered stack and
 animates each change: a pushed view slides in from the trailing edge; a popped
-view slides back off it over the revealed view. It returns a disposer. The
-animation honors `prefers-reduced-motion` (transitions collapse to instant) and
-`duration: 0` disables it. Applicable at every device size and inside dialogs.
+view slides back off it over the revealed view; and snapshots of the previous
+top and bottom chrome cross-fade into the active view's chrome. It returns a
+disposer. The animation honors `prefers-reduced-motion` (transitions collapse to
+instant) and `duration: 0` disables it. Applicable at every device size and
+inside dialogs.

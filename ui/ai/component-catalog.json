@@ -575,7 +575,7 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "A controlled one-pane navigation stack that keeps prior views mounted and animates push and pop transitions.",
+      "description": "A controlled one-pane navigation stack that keeps prior views mounted, slides content on push and pop, and cross-fades per-view chrome.",
       "uses": [
         "toolbar-text"
       ],
@@ -610,13 +610,14 @@
         "view content and titles",
         "push and pop actions",
         "focus restoration policy",
-        "optional persistent bottom toolbar"
+        "per-view bottom toolbar content or a persistent fallback"
       ],
       "variants": [
         "single root view",
         "pushed detail view",
         "toolbar hidden",
-        "persistent bottom toolbar"
+        "per-view bottom toolbar",
+        "persistent bottom-toolbar fallback"
       ],
       "accessibility": [
         "Give the stack region an accessible label and every back control a stable action label.",
@@ -647,6 +648,11 @@
       "publicClasses": [
         "kui-nav-stack",
         "kui-nav-stack__chrome",
+        "kui-nav-stack__bottom",
+        "kui-nav-stack__chrome--entering",
+        "kui-nav-stack__chrome-copy",
+        "kui-nav-stack__chrome-copy--bottom",
+        "kui-nav-stack__chrome-copy--exiting",
         "kui-nav-stack__lead",
         "kui-nav-stack__back",
         "kui-nav-stack__back-icon",
@@ -655,10 +661,11 @@
         "kui-nav-stack__viewport",
         "kui-nav-stack__view",
         "kui-nav-stack__view--entering",
-        "kui-nav-stack__view--exiting",
-        "kui-nav-stack__bottom"
+        "kui-nav-stack__view--exiting"
       ],
-      "publicTokens": [],
+      "publicTokens": [
+        "--kui-nav-stack-transition-duration"
+      ],
       "links": {
         "catalogRoute": "?component=nav-stack",
         "documentation": "docs/nav-stack.md",

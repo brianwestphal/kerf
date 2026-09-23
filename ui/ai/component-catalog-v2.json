@@ -479,7 +479,7 @@
           "required": false
         },
         {
-          "id": "optional persistent bottom toolbar",
+          "id": "per-view bottom toolbar content or a persistent fallback",
           "owner": "application",
           "required": false
         }
@@ -512,6 +512,11 @@
         "publicClasses": [
           "kui-nav-stack",
           "kui-nav-stack__chrome",
+          "kui-nav-stack__bottom",
+          "kui-nav-stack__chrome--entering",
+          "kui-nav-stack__chrome-copy",
+          "kui-nav-stack__chrome-copy--bottom",
+          "kui-nav-stack__chrome-copy--exiting",
           "kui-nav-stack__lead",
           "kui-nav-stack__back",
           "kui-nav-stack__back-icon",
@@ -520,10 +525,9 @@
           "kui-nav-stack__viewport",
           "kui-nav-stack__view",
           "kui-nav-stack__view--entering",
-          "kui-nav-stack__view--exiting",
-          "kui-nav-stack__bottom"
+          "kui-nav-stack__view--exiting"
         ],
-        "publicTokens": []
+        "publicTokens": ["--kui-nav-stack-transition-duration"]
       },
       "diagnostics": [],
       "provenance": {

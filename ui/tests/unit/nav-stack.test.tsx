@@ -8,11 +8,13 @@ const view = (
   key: string,
   title?: string,
   toolbar?: unknown,
+  bottomToolbar?: unknown,
 ): NavStackView => ({
   key,
   title,
   content: raw(`<p class="body">${key}</p>`),
   toolbar: toolbar as NavStackView['toolbar'],
+  bottomToolbar: bottomToolbar as NavStackView['bottomToolbar'],
 });
 
 const tick = () => new Promise((resolve) => window.setTimeout(resolve, 0));
@@ -89,6 +91,22 @@ describe('NavStack markup', () => {
     expect(html).toContain('data-nav-stack-bottom');
   });
 
+  it('prefers the active view bottom toolbar over the persistent fallback', () => {
+    const html = String(
+      NavStack({
+        id: 'nav',
+        label: 'Flow',
+        views: [
+          view('home', 'Home'),
+          view('detail', 'Detail', undefined, raw('<nav>detail tools</nav>')),
+        ],
+        bottomToolbar: raw('<nav>fallback tools</nav>'),
+      }),
+    );
+    expect(html).toContain('<nav>detail tools</nav>');
+    expect(html).not.toContain('fallback tools');
+  });
+
   it('renders an empty stack without a top view', () => {
     const html = String(NavStack({ id: 'nav', label: 'Flow', views: [] }));
     expect(html).toContain('data-depth="0"');
@@ -148,6 +166,68 @@ describe('wireNavStack', () => {
     );
     expect(viewport.querySelectorAll('.kui-nav-stack__view')).toHaveLength(2);
     dispose();
+  });
+
+  it('cross-fades snapshots of the top and bottom chrome across a push', async () => {
+    const root = mountStack([view('home', 'Home')], {
+      bottomToolbar: raw('<nav>Root status</nav>'),
+    });
+    const dispose = wireNavStack(root, { duration: 10 });
+    root.querySelector('.kui-toolbar-text__text')!.textContent = 'Detail';
+    root.querySelector('[data-nav-stack-bottom]')!.innerHTML =
+      '<nav>Detail status</nav>';
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    viewport.querySelector<HTMLElement>(
+      '.kui-nav-stack__view',
+    )!.dataset.navActive = 'false';
+    const next = document.createElement('article');
+    next.className = 'kui-nav-stack__view';
+    next.dataset.navKey = 'detail';
+    next.dataset.navActive = 'true';
+    viewport.append(next);
+
+    await tick();
+    expect(root.dataset.navChromeTransition).toBe('true');
+    expect(root.querySelectorAll('[data-nav-chrome-copy]')).toHaveLength(2);
+    expect(root.textContent).toContain('Root status');
+    expect(root.textContent).toContain('Detail status');
+    expect(
+      root.style.getPropertyValue('--kui-nav-stack-transition-duration'),
+    ).toBe('10ms');
+
+    await delay(30);
+    expect(root.dataset.navChromeTransition).toBeUndefined();
+    expect(root.querySelectorAll('[data-nav-chrome-copy]')).toHaveLength(0);
+    dispose();
+    expect(
+      root.style.getPropertyValue('--kui-nav-stack-transition-duration'),
+    ).toBe('');
+  });
+
+  it('removes in-flight chrome copies and restores an existing duration on dispose', async () => {
+    const root = mountStack([view('home', 'Home')], {
+      bottomToolbar: raw('<nav>Root status</nav>'),
+    });
+    root.style.setProperty('--kui-nav-stack-transition-duration', '77ms');
+    const dispose = wireNavStack(root, { duration: 10 });
+    const viewport = root.querySelector('[data-nav-stack-viewport]')!;
+    viewport.querySelector<HTMLElement>(
+      '.kui-nav-stack__view',
+    )!.dataset.navActive = 'false';
+    const next = document.createElement('article');
+    next.className = 'kui-nav-stack__view';
+    next.dataset.navKey = 'detail';
+    next.dataset.navActive = 'true';
+    viewport.append(next);
+
+    await tick();
+    expect(root.querySelectorAll('[data-nav-chrome-copy]')).toHaveLength(2);
+    dispose();
+    expect(root.querySelectorAll('[data-nav-chrome-copy]')).toHaveLength(0);
+    expect(root.dataset.navChromeTransition).toBeUndefined();
+    expect(
+      root.style.getPropertyValue('--kui-nav-stack-transition-duration'),
+    ).toBe('77ms');
   });
 
   it('finalizes a pushed view instantly when animation is disabled', async () => {

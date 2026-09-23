@@ -2,13 +2,69 @@ import { expect, test } from '@playwright/test';
 
 test('focused app-layout catalog demos expose their real controlled behavior', async ({
   page,
+  browserName,
 }) => {
+  await page.setViewportSize({ width: 1100, height: 820 });
   await page.goto('/?component=nav-stack');
+  const navDemo = page.locator('[data-demo="nav-stack"]');
   const stack = page.getByRole('region', { name: 'Project library' });
+  await expect(stack).toHaveAttribute('data-depth', '1');
+  await expect(stack.locator('[data-nav-back]')).toHaveCount(0);
+  if (browserName === 'chromium')
+    await navDemo.screenshot({
+      path: 'test-results/nav-stack-root-wide.png',
+    });
+  await stack.getByText('Project Atlas', { exact: true }).click();
   await expect(stack).toHaveAttribute('data-depth', '2');
+  await expect(stack).toHaveAttribute('data-nav-chrome-transition', 'true');
+  await expect(stack.locator('[data-nav-chrome-copy]')).toHaveCount(2);
+  await expect(
+    stack.locator(
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-nav-stack__title',
+    ),
+  ).toHaveText('Project Atlas');
+  await expect(
+    stack.locator(
+      ':scope > [data-nav-stack-bottom]:not([data-nav-chrome-copy])',
+    ),
+  ).toHaveText('Updated just now');
+  await expect(stack).not.toHaveAttribute('data-nav-chrome-transition', 'true');
+  if (browserName === 'chromium')
+    await navDemo.screenshot({
+      path: 'test-results/nav-stack-detail-wide.png',
+    });
   await page.getByRole('button', { name: 'Back to library' }).click();
   await expect(stack).toHaveAttribute('data-depth', '1');
-  await expect(stack.locator('.kui-nav-stack__title')).toHaveText('Library');
+  await expect(stack).toHaveAttribute('data-nav-chrome-transition', 'true');
+  await expect(
+    stack.locator(
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-nav-stack__title',
+    ),
+  ).toHaveText('Library');
+  await expect(
+    stack.locator(
+      ':scope > [data-nav-stack-bottom]:not([data-nav-chrome-copy])',
+    ),
+  ).toHaveText('2 saved projects');
+  await expect(stack).not.toHaveAttribute('data-nav-chrome-transition', 'true');
+
+  if (browserName === 'chromium') {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/?component=nav-stack');
+    const narrowStack = page.getByRole('region', { name: 'Project library' });
+    await narrowStack.getByText('Project Relay', { exact: true }).click();
+    await expect(narrowStack).toHaveAttribute(
+      'data-nav-chrome-transition',
+      'true',
+    );
+    await expect(narrowStack).not.toHaveAttribute(
+      'data-nav-chrome-transition',
+      'true',
+    );
+    await page.locator('[data-demo="nav-stack"]').screenshot({
+      path: 'test-results/nav-stack-detail-narrow.png',
+    });
+  }
 
   await page.goto('/?component=tab-scaffold');
   const search = page.getByRole('tab', { name: 'Search' });

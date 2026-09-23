@@ -1,4 +1,5 @@
 .kui-nav-stack {
+  position: relative;
   display: flex;
   min-width: 0;
   min-height: 0;
@@ -6,6 +7,32 @@
   overflow: hidden;
   flex-direction: column;
   background: var(--kui-color-surface);
+}
+
+.kui-nav-stack__chrome,
+.kui-nav-stack__bottom {
+  transition: opacity var(--kui-nav-stack-transition-duration, 200ms) ease;
+}
+
+.kui-nav-stack__chrome--entering {
+  opacity: 0;
+}
+
+.kui-nav-stack__chrome-copy {
+  position: absolute;
+  z-index: 2;
+  inset-block-start: 0;
+  inset-inline: 0;
+  pointer-events: none;
+  transition: opacity var(--kui-nav-stack-transition-duration, 200ms) ease;
+}
+
+.kui-nav-stack__chrome-copy--bottom {
+  inset-block: auto 0;
+}
+
+.kui-nav-stack__chrome-copy--exiting {
+  opacity: 0;
 }
 
 .kui-nav-stack__chrome {
@@ -77,7 +104,7 @@
   position: absolute;
   overflow: auto;
   background: var(--kui-color-surface);
-  transition: transform 200ms ease;
+  transition: transform var(--kui-nav-stack-transition-duration, 200ms) ease;
   inset: 0;
 }
 
@@ -105,7 +132,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .kui-nav-stack__view {
+  .kui-nav-stack__view,
+  .kui-nav-stack__chrome,
+  .kui-nav-stack__bottom,
+  .kui-nav-stack__chrome-copy {
     transition: none;
   }
 }

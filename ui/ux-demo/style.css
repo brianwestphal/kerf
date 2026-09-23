@@ -361,7 +361,7 @@ button {
   height: remify(360px);
   background: var(--kui-color-surface);
 }
-.demo-nav-stack,
+.demo-nav-stack.kui-nav-stack,
 .demo-tab-scaffold {
   width: min(100%, remify(440px));
   height: remify(360px);

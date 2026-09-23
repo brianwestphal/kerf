@@ -54,7 +54,11 @@ import {
   oppositeDemoTheme,
   preferredDemoTheme,
 } from './demo-theme.js';
-import { popNavStackDemo, resetNavStackDemo } from './demos/nav-stack.js';
+import {
+  popNavStackDemo,
+  pushNavStackDemo,
+  resetNavStackDemo,
+} from './demos/nav-stack.js';
 import { demos } from './demos/registry.js';
 import {
   activeTab,
@@ -799,6 +803,11 @@ const stopActions = delegateActions(app, 'click', {
   },
   'log-next': () => {
     actionLog.value = 'Next requested';
+  },
+  'open-nav-stack-project': (_event, element) => {
+    const projectId = (element as HTMLElement).dataset.itemId ?? '';
+    pushNavStackDemo(projectId);
+    actionLog.value = `Opened ${projectId}`;
   },
   'log-neutral': () => {
     actionLog.value = 'Neutral banner action';

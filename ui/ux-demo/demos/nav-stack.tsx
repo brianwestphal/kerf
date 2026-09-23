@@ -1,39 +1,104 @@
 import '@kerfjs/ui/nav-stack.css';
+import '@kerfjs/ui/list.css';
+import '@kerfjs/ui/list-header.css';
+import '@kerfjs/ui/list-item.css';
+import '@kerfjs/ui/toolbar.css';
+import '@kerfjs/ui/toolbar-text.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { List } from '@kerfjs/ui/list';
+import { ListHeader } from '@kerfjs/ui/list-header';
+import { ListItem } from '@kerfjs/ui/list-item';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
+import { ChevronRight, FileText, Folder } from 'lucide';
+
+interface Project {
+  id: string;
+  label: string;
+  summary: string;
+}
+
+const PROJECTS: Project[] = [
+  {
+    id: 'atlas',
+    label: 'Project Atlas',
+    summary: 'Navigation and workspace patterns for the Kerf UI catalog.',
+  },
+  {
+    id: 'relay',
+    label: 'Project Relay',
+    summary:
+      'Interaction contracts shared across responsive application layouts.',
+  },
+];
+
+const footer = (text: string) => (
+  <Toolbar
+    label="View status"
+    dividerSides=""
+    leading={<ToolbarText text={text} size="small" />}
+  />
+);
 
 const rootView = (): NavStackView => ({
   key: 'library',
   title: 'Library',
+  toolbar: <ToolbarText text="Projects" size="small" />,
+  bottomToolbar: footer('2 saved projects'),
   content: (
-    <div class="kui-content">
-      <div class="kui-content-item">
-        <strong>Saved projects</strong>
-        <span>Choose an item to push its detail view.</span>
-      </div>
-    </div>
+    <List className="kui-content">
+      {[
+        <ListHeader
+          label="Saved projects"
+          count={PROJECTS.length}
+          countLabel={`${PROJECTS.length} saved projects`}
+        />,
+        ...PROJECTS.map((project) => (
+          <ListItem
+            action="open-nav-stack-project"
+            itemId={project.id}
+            label={project.label}
+            description={project.summary}
+            icon={<LucideIcon icon={Folder} name="folder" />}
+            trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
+            multiline
+          />
+        )),
+      ]}
+    </List>
   ),
 });
 
-const detailView = (): NavStackView => ({
-  key: 'project-atlas',
-  title: 'Project Atlas',
+const detailView = (project: Project): NavStackView => ({
+  key: `project-${project.id}`,
+  title: project.label,
+  toolbar: <ToolbarText text="Detail" size="small" />,
+  bottomToolbar: footer('Updated just now'),
   content: (
-    <div class="kui-content">
+    <List className="kui-content">
       <div class="kui-content-item">
-        <strong>Project Atlas</strong>
-        <span>The previous view remains mounted beneath this detail.</span>
+        <LucideIcon icon={FileText} name="file-text" />
+        <strong>{project.label}</strong>
+        <span>{project.summary}</span>
       </div>
-    </div>
+    </List>
   ),
 });
 
-const demoViews = signal<NavStackView[]>([rootView(), detailView()]);
+const demoViews = signal<NavStackView[]>([rootView()]);
 
 export function resetNavStackDemo(): void {
-  demoViews.value = [rootView(), detailView()];
+  demoViews.value = [rootView()];
+}
+
+export function pushNavStackDemo(projectId: string): void {
+  if (demoViews.value.length > 1) return;
+  const project = PROJECTS.find(({ id }) => id === projectId);
+  if (project) demoViews.value = [...demoViews.value, detailView(project)];
 }
 
 export function popNavStackDemo(): void {
@@ -48,8 +113,8 @@ export function NavStackDemo() {
       rootAttributes={{ 'data-demo': 'nav-stack' }}
     >
       <CatalogExample
-        label="Pushed detail"
-        note="The app owns the ordered view array; the public wire helper animates the controlled pop and restores the root view."
+        label="Interactive push and pop"
+        note="Choose a project to push its detail. The content slides while the view-owned title, actions, and bottom status cross-fade; Back pops to the preserved list."
       >
         <NavStack
           id="catalog-nav-stack"
