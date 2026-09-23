@@ -14,12 +14,29 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
     await navDemo.screenshot({
       path: 'test-results/nav-stack-root-wide.png',
     });
+  await stack.evaluate((element) => {
+    const stack = element as HTMLElement;
+    const record = () => {
+      if (stack.dataset.navChromeTransition === 'true')
+        stack.dataset.testSawChromeTransition = 'true';
+      const copies = stack.querySelectorAll('[data-nav-chrome-copy]').length;
+      const maxCopies = String(
+        Math.max(Number(stack.dataset.testMaxChromeCopies ?? 0), copies),
+      );
+      if (stack.dataset.testMaxChromeCopies !== maxCopies)
+        stack.dataset.testMaxChromeCopies = maxCopies;
+    };
+    new MutationObserver(record).observe(stack, {
+      attributeFilter: ['data-nav-chrome-transition'],
+      childList: true,
+      subtree: true,
+    });
+    record();
+  });
   const atlas = stack.getByRole('button', { name: /Project Atlas/ });
   await atlas.click();
   await expect(stack).toHaveAttribute('data-depth', '2');
   await expect(stack.locator('[data-nav-detail-focus]')).toBeFocused();
-  await expect(stack).toHaveAttribute('data-nav-chrome-transition', 'true');
-  await expect(stack.locator('[data-nav-chrome-copy]')).toHaveCount(2);
   await expect(
     stack.locator(
       ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-nav-stack__title',
@@ -31,6 +48,11 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
     ),
   ).toHaveText('Updated just now');
   await expect(stack).not.toHaveAttribute('data-nav-chrome-transition', 'true');
+  await expect(stack).toHaveAttribute(
+    'data-test-saw-chrome-transition',
+    'true',
+  );
+  await expect(stack).toHaveAttribute('data-test-max-chrome-copies', '2');
   if (browserName === 'chromium')
     await navDemo.screenshot({
       path: 'test-results/nav-stack-detail-wide.png',

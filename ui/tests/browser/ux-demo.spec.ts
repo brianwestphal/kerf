@@ -194,11 +194,38 @@ test('drills through the navigation-stack recipe with animated push/pop and redu
     /transform/,
   );
 
+  await nav.evaluate((element) => {
+    const nav = element as HTMLElement;
+    const record = () => {
+      if (nav.dataset.navChromeTransition === 'true')
+        nav.dataset.testSawChromeTransition = 'true';
+      const copies = nav.querySelectorAll('[data-nav-chrome-copy]').length;
+      const maxCopies = String(
+        Math.max(Number(nav.dataset.testMaxChromeCopies ?? 0), copies),
+      );
+      if (nav.dataset.testMaxChromeCopies !== maxCopies)
+        nav.dataset.testMaxChromeCopies = maxCopies;
+    };
+    new MutationObserver(record).observe(nav, {
+      attributeFilter: ['data-nav-chrome-transition'],
+      childList: true,
+      subtree: true,
+    });
+    record();
+  });
+
   // Push a detail: back control appears and the title cross-fades to the item.
   await recipe.locator('[data-item-id="layouts"]').click();
   await expect(nav).toHaveAttribute('data-depth', '2');
   await expect(nav.locator('[data-nav-back]')).toBeVisible();
-  await expect(nav.locator('.kui-nav-stack__title')).toHaveText('App layouts');
+  await expect(
+    nav.locator(
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-nav-stack__title',
+    ),
+  ).toHaveText('App layouts');
+  await expect(nav).not.toHaveAttribute('data-nav-chrome-transition', 'true');
+  await expect(nav).toHaveAttribute('data-test-saw-chrome-transition', 'true');
+  await expect(nav).toHaveAttribute('data-test-max-chrome-copies', '1');
   if (browserName === 'chromium')
     await recipe.screenshot({
       path: 'test-results/recipe-navigation-stack.png',
@@ -208,6 +235,12 @@ test('drills through the navigation-stack recipe with animated push/pop and redu
   await nav.locator('[data-nav-back]').click();
   await expect(nav).toHaveAttribute('data-depth', '1');
   await expect(nav.locator('[data-nav-back]')).toHaveCount(0);
+  await expect(
+    nav.locator(
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-nav-stack__title',
+    ),
+  ).toHaveText('Library');
+  await expect(nav).not.toHaveAttribute('data-nav-chrome-transition', 'true');
 
   // Reduced motion collapses the slide to instant.
   await page.emulateMedia({ reducedMotion: 'reduce' });

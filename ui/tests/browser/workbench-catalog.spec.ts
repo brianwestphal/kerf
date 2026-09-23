@@ -80,17 +80,18 @@ test('bottom drawer opens and closes monotonically from one bottom anchor', asyn
       '#catalog-workbench-full [data-workbench-drawer]',
     )!;
     const sampleTransition = async (collapsed: boolean) => {
+      const content = drawer.querySelector<HTMLElement>(
+        '.kui-workbench__panel-content',
+      )!;
       drawer.dataset.collapsed = String(collapsed);
       const frames: Array<{
         distanceFromBottom: number;
         drawerBottom: number;
         translateY: number;
       }> = [];
-      for (let index = 0; index < 24; index += 1) {
+      let settledFrames = 0;
+      for (let index = 0; index < 90; index += 1) {
         await new Promise(window.requestAnimationFrame);
-        const content = drawer.querySelector<HTMLElement>(
-          '.kui-workbench__panel-content',
-        )!;
         const drawerBounds = drawer.getBoundingClientRect();
         const transform = window.getComputedStyle(content).transform;
         frames.push({
@@ -99,8 +100,14 @@ test('bottom drawer opens and closes monotonically from one bottom anchor', asyn
           drawerBottom: drawerBounds.bottom,
           translateY: transform === 'none' ? 0 : new DOMMatrix(transform).m42,
         });
+        const frame = frames.at(-1)!;
+        const settled = collapsed
+          ? Math.abs(frame.distanceFromBottom) < 0.5
+          : Math.abs(frame.translateY) < 0.5;
+        settledFrames = settled ? settledFrames + 1 : 0;
+        if (settledFrames >= 2) break;
       }
-      return frames;
+      return { settled: settledFrames >= 2, frames };
     };
 
     drawer.dataset.collapsed = 'true';
@@ -110,24 +117,36 @@ test('bottom drawer opens and closes monotonically from one bottom anchor', asyn
     return { opening, closing };
   });
 
-  const bottomDrift = (frames: typeof samples.opening) =>
+  expect(samples.opening.settled).toBe(true);
+  expect(samples.closing.settled).toBe(true);
+  const bottomDrift = (frames: typeof samples.opening.frames) =>
     Math.max(...frames.map(({ drawerBottom }) => drawerBottom)) -
     Math.min(...frames.map(({ drawerBottom }) => drawerBottom));
-  expect(bottomDrift(samples.opening)).toBeLessThan(1.5);
-  expect(bottomDrift(samples.closing)).toBeLessThan(1.5);
-  expect(samples.opening.some(({ translateY }) => translateY > 20)).toBe(true);
-  expect(samples.closing.some(({ translateY }) => translateY > 20)).toBe(true);
+  expect(bottomDrift(samples.opening.frames)).toBeLessThan(1.5);
+  expect(bottomDrift(samples.closing.frames)).toBeLessThan(1.5);
+  expect(samples.opening.frames.some(({ translateY }) => translateY > 20)).toBe(
+    true,
+  );
+  expect(samples.closing.frames.some(({ translateY }) => translateY > 20)).toBe(
+    true,
+  );
 
-  for (let index = 1; index < samples.opening.length; index += 1) {
-    expect(samples.opening[index]!.distanceFromBottom).toBeLessThanOrEqual(
-      samples.opening[index - 1]!.distanceFromBottom + 1,
-    );
-    expect(samples.closing[index]!.distanceFromBottom).toBeGreaterThanOrEqual(
-      samples.closing[index - 1]!.distanceFromBottom - 1,
+  for (let index = 1; index < samples.opening.frames.length; index += 1) {
+    expect(
+      samples.opening.frames[index]!.distanceFromBottom,
+    ).toBeLessThanOrEqual(
+      samples.opening.frames[index - 1]!.distanceFromBottom + 1,
     );
   }
-  expect(samples.opening.at(-1)!.distanceFromBottom).toBeLessThan(-200);
-  expect(Math.abs(samples.closing.at(-1)!.distanceFromBottom)).toBeLessThan(
-    1.5,
-  );
+  for (let index = 1; index < samples.closing.frames.length; index += 1) {
+    expect(
+      samples.closing.frames[index]!.distanceFromBottom,
+    ).toBeGreaterThanOrEqual(
+      samples.closing.frames[index - 1]!.distanceFromBottom - 1,
+    );
+  }
+  expect(samples.opening.frames.at(-1)!.distanceFromBottom).toBeLessThan(-200);
+  expect(
+    Math.abs(samples.closing.frames.at(-1)!.distanceFromBottom),
+  ).toBeLessThan(1.5);
 });

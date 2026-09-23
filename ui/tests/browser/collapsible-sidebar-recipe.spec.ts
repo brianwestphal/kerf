@@ -61,50 +61,75 @@ test('opens the bottom drawer monotonically from its stable bottom edge', async 
   await page.setViewportSize({ width: 1200, height: 820 });
   await page.goto(RECIPE);
 
-  const samples = await page.evaluate(async () => {
-    document
-      .querySelector<HTMLButtonElement>('button[aria-label="Show activity"]')!
-      .click();
+  await expect(drawerPanel(page)).toHaveAttribute('data-collapsed', 'true');
+  const samplesPromise = page.evaluate(async () => {
     const frames: Array<{
       offset: number;
       translateY: number;
       panelBottom: number;
     }> = [];
-    for (let index = 0; index < 18; index += 1) {
+    let sawMotion = false;
+    let settled = false;
+    for (let index = 0; index < 90; index += 1) {
       await new Promise(window.requestAnimationFrame);
       const panel = document.querySelector<HTMLElement>(
         '[data-collapsible-panel="sidebar-console"]',
       )!;
+      if (panel.dataset.collapsed !== 'false') continue;
       const motion = panel.querySelector<HTMLElement>(
         '.kui-collapsible-panel__content',
       )!;
       const transform = window.getComputedStyle(motion).transform;
-      frames.push({
+      const frame = {
         offset:
           motion.getBoundingClientRect().top -
           panel.getBoundingClientRect().top,
         translateY: transform === 'none' ? 0 : new DOMMatrix(transform).m42,
         panelBottom: panel.getBoundingClientRect().bottom,
-      });
+      };
+      sawMotion ||= frame.translateY > 20;
+      if (
+        sawMotion &&
+        Math.abs(frame.translateY) < 0.5 &&
+        Math.abs(frame.offset) < 1.5
+      ) {
+        settled = true;
+        if (frames.length === 0) frames.push(frame);
+        break;
+      }
+      if (sawMotion) frames.push(frame);
     }
-    return frames;
+    return { sawMotion, settled, frames };
   });
+  await page.getByRole('button', { name: 'Show activity' }).first().click();
+  const samples = await samplesPromise;
 
-  expect(samples.some(({ translateY }) => translateY > 20)).toBe(true);
+  expect(samples.settled).toBe(true);
+  expect(samples.sawMotion).toBe(true);
   // The panel's bottom edge is the motion anchor. A changing normal-flow origin
   // caused the old content overshoot and snap even while this edge stayed put.
   expect(
-    Math.max(...samples.map(({ panelBottom }) => panelBottom)) -
-      Math.min(...samples.map(({ panelBottom }) => panelBottom)),
+    Math.max(...samples.frames.map(({ panelBottom }) => panelBottom)) -
+      Math.min(...samples.frames.map(({ panelBottom }) => panelBottom)),
   ).toBeLessThan(1.5);
-  for (let index = 1; index < samples.length; index += 1) {
+  for (let index = 1; index < samples.frames.length; index += 1) {
     // The content's top advances only upward. A one-pixel tolerance absorbs
     // subpixel easing/rounding at the settled edge in all three engines.
-    expect(samples[index]!.offset).toBeLessThanOrEqual(
-      samples[index - 1]!.offset + 1,
+    expect(samples.frames[index]!.offset).toBeLessThanOrEqual(
+      samples.frames[index - 1]!.offset + 1,
     );
   }
-  expect(samples.at(-1)!.offset).toBeLessThan(1.5);
+  await expect(drawerPanel(page)).toHaveAttribute('data-collapsed', 'false');
+  expect(
+    await drawerPanel(page).evaluate((panel) => {
+      const motion = panel.querySelector<HTMLElement>(
+        '.kui-collapsible-panel__content',
+      )!;
+      return (
+        motion.getBoundingClientRect().top - panel.getBoundingClientRect().top
+      );
+    }),
+  ).toBeLessThan(1.5);
 });
 
 test('presents a compact overlay dismissed by Escape and the backdrop', async ({

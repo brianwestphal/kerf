@@ -5,8 +5,10 @@ test('automatic tab activation retains focus when a controlled consumer replaces
   browserName,
 }) => {
   await page.setViewportSize({ width: 900, height: 700 });
-  await page.goto('/?component=tab-bar');
-  const bar = page.locator('[data-tab-bar-id="catalog-tabs"]');
+  await page.goto('/?component=application-tabs');
+  const bar = page.locator(
+    '[data-demo="application-tabs"] [data-tab-bar-id="catalog-tabs"]',
+  );
   await expect(bar.getByRole('tab')).toHaveCount(7);
   // Model a consumer whose controlled activation renders a new strip. The demo's
   // real select handler runs first and updates selection; replacement follows it.
@@ -54,10 +56,10 @@ test('disposing the demo wiring cancels pending tab focus restoration', async ({
     'automatic-activation',
     'keyboard-reorder',
   ] as const) {
-    await page.goto('/?component=tab-bar');
+    await page.goto('/?component=application-tabs');
     await page.evaluate((kind) => {
       const bar = document.querySelector<HTMLElement>(
-        '[data-tab-bar-id="catalog-tabs"]',
+        '[data-demo="application-tabs"] [data-tab-bar-id="catalog-tabs"]',
       )!;
       if (kind === 'automatic-activation') {
         document.addEventListener('click', (event) => {

@@ -7,7 +7,7 @@ test('renders typed tab presentations without consumer descendant CSS', async ({
   await page.goto('/?component=tab-bar');
   const demo = page.locator('[data-demo="tab-bar"]');
 
-  const inspector = demo.locator('[data-tab-bar-id="inspector-tabs"]');
+  const inspector = demo.locator('[data-tab-bar-id="inspector-tab-bar"]');
   await expect(inspector).toHaveAttribute('data-allocation', 'fill');
   await expect(inspector).toHaveAttribute(
     'data-trailing-placement',
@@ -34,12 +34,16 @@ test('renders typed tab presentations without consumer descendant CSS', async ({
       .evaluate((element) => window.getComputedStyle(element).textOverflow),
   ).toBe('ellipsis');
 
-  const iconTab = demo.locator(
-    '[data-component="app-tab"][data-tab-id="navigation"]',
+  await page.goto('/?component=tabs');
+  const appTabDemo = page.locator('[data-demo="tabs"]');
+  const iconTab = appTabDemo.locator(
+    '[data-component="app-tab"][data-tab-id="status"]',
   );
-  await expect(iconTab.getByRole('tab', { name: 'Navigation' })).toBeVisible();
+  await expect(iconTab.getByRole('tab', { name: 'Status' })).toBeVisible();
   expect(
     await iconTab.evaluate((element) => element.getBoundingClientRect().width),
   ).toBe(32);
-  await demo.screenshot({ path: testInfo.outputPath('tab-presentations.png') });
+  await appTabDemo.screenshot({
+    path: testInfo.outputPath('tab-presentations.png'),
+  });
 });
