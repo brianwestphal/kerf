@@ -3737,17 +3737,15 @@ test('catalog routes every production component family and supports its stateful
       .screenshot({ path: 'test-results/app-tab-shared-tab-bar.png' });
 
   await page.locator('.kui-catalog__sidebar [data-item-id="feedback"]').click();
-  await page.locator('[data-action="cycle-tone"]').click();
-  await page.locator('[data-action="cycle-tone"]').click();
-  await page.locator('[data-action="cycle-tone"]').click();
-  await expect(page.locator('[data-component="state-banner"]')).toHaveAttribute(
-    'data-tone',
-    'danger',
-  );
-  await expect(page.locator('[data-component="state-banner"]')).toHaveAttribute(
-    'role',
-    'alert',
-  );
+  const feedbackBanner = page.locator('[data-component="state-banner"]');
+  for (const tone of ['pop', 'success', 'warning', 'danger']) {
+    await page.locator('[data-action="cycle-tone"]').click();
+    await expect(feedbackBanner).toHaveAttribute('data-tone', tone);
+    await expect(feedbackBanner).toHaveAttribute(
+      'role',
+      tone === 'danger' ? 'alert' : 'status',
+    );
+  }
 
   await page.goto('/?component=resize');
   const handle = page.locator('[data-kui-resize-handle]');
