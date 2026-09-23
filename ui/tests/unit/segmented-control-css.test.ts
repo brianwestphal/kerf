@@ -105,4 +105,49 @@ describe('SegmentedControl corner geometry', () => {
       throw new Error('Missing grouped collapsible search radius');
     expect(radius.value).toBe('var(--kui-control-highlight-radius)');
   });
+
+  it('lets mixed nested dropdown triggers grow for their label and caret', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/toolbar-control-group.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const rule = root.nodes.find(
+      (node) =>
+        node.type === 'rule' &&
+        node.selector.includes('[data-content="mixed"]') &&
+        node.selector.includes('[data-nested-dropdown="true"]') &&
+        node.selector.includes('wa-button::part(base)'),
+    );
+
+    if (!rule || rule.type !== 'rule')
+      throw new Error('Missing mixed nested dropdown sizing rule');
+    const minWidth = rule.nodes.find(
+      (node) => node.type === 'decl' && node.prop === 'min-width',
+    );
+    if (!minWidth || minWidth.type !== 'decl')
+      throw new Error('Missing mixed nested dropdown minimum width');
+    expect(minWidth.value).toBe('max-content');
+
+    const hostRule = root.nodes.find(
+      (node) =>
+        node.type === 'rule' &&
+        node.selector.includes('[data-content="mixed"]') &&
+        node.selector.includes('[data-nested-dropdown="true"]') &&
+        !node.selector.includes('::part(base)') &&
+        node.nodes.some(
+          (child) => child.type === 'decl' && child.prop === 'width',
+        ),
+    );
+    if (!hostRule || hostRule.type !== 'rule')
+      throw new Error('Missing mixed nested dropdown host-width rule');
+    const width = hostRule.nodes.find(
+      (node) => node.type === 'decl' && node.prop === 'width',
+    );
+    if (!width || width.type !== 'decl')
+      throw new Error('Missing mixed nested dropdown host width');
+    expect(width.value).toBe(
+      'var(--kui-toolbar-dropdown-trigger-width, remify(66px))',
+    );
+  });
 });

@@ -5272,6 +5272,55 @@ test('expands and collapses the ToolbarControlGroup collapsible search without s
     });
 });
 
+test('contains the compact mixed dropdown label, separator, and caret for both group shapes', async ({
+  page,
+  browserName,
+}) => {
+  await page.goto('/?component=toolbar-control-group');
+  await expect
+    .poll(() =>
+      page.evaluate(() => customElements.get('wa-dropdown') !== undefined),
+    )
+    .toBe(true);
+  const demo = page.getByRole('region', { name: 'ToolbarControlGroup demo' });
+  const group = demo.getByRole('group', { name: 'Compact formatting' });
+
+  const geometry = () =>
+    group.evaluate((node) => {
+      const selected = node.querySelector(':scope > button')!;
+      const dropdown = node.querySelector(':scope > wa-dropdown')!;
+      const trigger = dropdown.querySelector('wa-button')!;
+      const caret = trigger.shadowRoot!.querySelector('[part~="caret"]')!;
+      const bounds = (element: Element) => {
+        const rect = element.getBoundingClientRect();
+        return { left: rect.left, right: rect.right };
+      };
+      return {
+        group: bounds(node),
+        selected: bounds(selected),
+        dropdown: bounds(dropdown),
+        trigger: bounds(trigger),
+        caret: bounds(caret),
+      };
+    });
+
+  for (const shape of ['Pill', 'Rounded']) {
+    await demo.getByRole('button', { name: shape, exact: true }).click();
+    const measured = await geometry();
+    expect(measured.dropdown.left - measured.selected.right).toBeCloseTo(8, 1);
+    expect(measured.trigger.left).toBeGreaterThan(measured.dropdown.left);
+    expect(measured.caret.left).toBeGreaterThan(measured.trigger.left);
+    expect(measured.caret.right).toBeLessThanOrEqual(measured.group.right - 1);
+    expect(measured.trigger.right).toBeLessThanOrEqual(
+      measured.group.right - 1,
+    );
+    if (browserName === 'chromium')
+      await group.screenshot({
+        path: `test-results/toolbar-control-group-compact-${shape.toLowerCase()}.png`,
+      });
+  }
+});
+
 test('renders the Hot Sheet split treatment on ResizableRegion', async ({
   page,
   browserName,
