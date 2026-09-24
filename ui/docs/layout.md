@@ -129,11 +129,19 @@ typography remains available to the surrounding composition. Choose heading
 levels from the document outline, not for visual size. Toolbar identity and
 page-heading compositions continue to use `ToolbarText`.
 
+Presentation is independent of the native element: use `tone="quiet"` for
+supporting copy, `tone="danger"` for error or validation copy, `size="compact"`
+for compact metadata, and `font="monospace"` for code or identifiers. These
+finite props compose with each other and with every semantic `variant`; omit
+them to inherit the surrounding color, size, and font.
+
 ```tsx
 import { Text } from "@kerfjs/ui/text";
 
 <Text variant="h2" id="details-title">Details</Text>;
 <Text aria-describedby="details-title">Supporting copy</Text>;
+<Text tone="quiet" size="compact">Updated yesterday</Text>;
+<Text tone="danger" font="monospace">ERR_INVALID_ID</Text>;
 ```
 
 ## Spacer

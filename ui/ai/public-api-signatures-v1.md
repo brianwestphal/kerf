@@ -2013,10 +2013,19 @@ import { KerfBaseAttrs } from 'kerfjs/jsx-runtime';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
+type TextTone = 'default' | 'quiet' | 'danger';
+type TextSize = 'default' | 'compact';
+type TextFont = 'default' | 'monospace';
 type TextContent = KerfUiContent | string | number | readonly TextContent[];
 type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
     /** Native heading or paragraph element to render. Defaults to `p`. */
     variant?: TextVariant;
+    /** Semantic foreground treatment. Defaults to the inherited foreground. */
+    tone?: TextTone;
+    /** Text sizing independent of the native semantic element. */
+    size?: TextSize;
+    /** Font family independent of the native semantic element. */
+    font?: TextFont;
     children: TextContent;
     class?: string;
     className?: string;
@@ -2025,9 +2034,9 @@ type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
  * Semantic heading or paragraph text with the standard content-item padding.
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
-declare function Text({ variant: Variant, children, class: classValue, className, ...attributes }: TextProps): kerfjs.SafeHtml;
+declare function Text({ variant: Variant, tone, size, font, children, class: classValue, className, ...attributes }: TextProps): kerfjs.SafeHtml;
 
-export { Text, type TextContent, type TextProps, type TextVariant };
+export { Text, type TextContent, type TextFont, type TextProps, type TextSize, type TextTone, type TextVariant };
 ```
 
 ## `@kerfjs/ui/row`

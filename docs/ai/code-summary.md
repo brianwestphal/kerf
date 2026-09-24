@@ -703,7 +703,9 @@ supporting copy on a separate row. Page and section titles opt into heading
 semantics through `ToolbarText.headingLevel`.
 Ordinary UI headings and paragraphs use `Text` (`ui/src/text.tsx`), whose
 default `p` and optional `h1`–`h6` variant render native semantics and whose
-companion CSS adds the standard transparent border and item padding.
+companion CSS adds the standard transparent border and item padding. Its
+independent `tone`, `size`, and `font` unions expose quiet/danger, compact, and
+monospace roles through stable data attributes and semantic foundation tokens.
 Compact mixed `ToolbarControlGroup` selections keep standard item padding,
 remove the internal separator, and paint raised selected chrome over the outer
 border. Single avatar hover changes only the color layer so its contained image

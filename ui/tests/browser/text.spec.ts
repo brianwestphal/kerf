@@ -16,6 +16,9 @@ test('Text renders semantic variants with standard padded geometry', async ({
   await expect(paragraph).toHaveAttribute('lang', 'en');
   await expect(paragraph).toHaveAttribute('data-demo-copy', 'paragraph');
   await expect(paragraph).toHaveAttribute('aria-label', 'Example paragraph');
+  await expect(paragraph).toHaveAttribute('data-tone', 'default');
+  await expect(paragraph).toHaveAttribute('data-size', 'default');
+  await expect(paragraph).toHaveAttribute('data-font', 'default');
   await expect
     .poll(() =>
       paragraph.evaluate((element) => {
@@ -35,7 +38,71 @@ test('Text renders semantic variants with standard padded geometry', async ({
       padding: '8px',
     });
 
+  const roles = page.locator('.demo-text-role-stack > .kui-text');
+  await expect(roles).toHaveCount(5);
+  await expect(roles.nth(0)).toHaveAttribute('data-tone', 'quiet');
+  await expect(roles.nth(1)).toHaveAttribute('data-tone', 'danger');
+  await expect(roles.nth(2)).toHaveAttribute('data-size', 'compact');
+  await expect(roles.nth(3)).toHaveAttribute('data-font', 'monospace');
+  await expect(roles.nth(4)).toHaveAttribute('data-tone', 'quiet');
+  await expect(roles.nth(4)).toHaveAttribute('data-size', 'compact');
+  await expect(roles.nth(4)).toHaveAttribute('data-font', 'monospace');
+  await expect
+    .poll(() =>
+      roles.evaluateAll((elements) => {
+        const styles = elements.map((element) =>
+          globalThis.getComputedStyle(element),
+        );
+        return {
+          quietColor: styles[0]?.color,
+          dangerColor: styles[1]?.color,
+          defaultColor: globalThis.getComputedStyle(
+            document.querySelector('#text-demo-paragraph')!,
+          ).color,
+          compactSize: styles[2]?.fontSize,
+          defaultSize: globalThis.getComputedStyle(
+            document.querySelector('#text-demo-paragraph')!,
+          ).fontSize,
+          monoFamily: styles[3]?.fontFamily,
+          defaultFamily: globalThis.getComputedStyle(
+            document.querySelector('#text-demo-paragraph')!,
+          ).fontFamily,
+        };
+      }),
+    )
+    .toMatchObject({
+      compactSize: '12px',
+    });
+
+  const presentation = await roles.evaluateAll((elements) => {
+    const styles = elements.map((element) =>
+      globalThis.getComputedStyle(element),
+    );
+    const defaults = globalThis.getComputedStyle(
+      document.querySelector('#text-demo-paragraph')!,
+    );
+    return {
+      quietDiffers: styles[0]?.color !== defaults.color,
+      dangerDiffers: styles[1]?.color !== defaults.color,
+      compactDiffers: styles[2]?.fontSize !== defaults.fontSize,
+      monoDiffers: styles[3]?.fontFamily !== defaults.fontFamily,
+    };
+  });
+  expect(presentation).toEqual({
+    quietDiffers: true,
+    dangerDiffers: true,
+    compactDiffers: true,
+    monoDiffers: true,
+  });
+
   await page.screenshot({ path: 'test-results/text-wide.png', fullPage: true });
+  await page.locator('[data-action="toggle-theme"]').click();
+  await expect(page.locator('html')).toHaveClass(/demo-dark/);
+  await page.screenshot({
+    path: 'test-results/text-dark-wide.png',
+    fullPage: true,
+  });
+  await page.locator('[data-action="toggle-theme"]').click();
   await page.setViewportSize({ width: 390, height: 844 });
   await expect
     .poll(() =>

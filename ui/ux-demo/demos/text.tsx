@@ -27,6 +27,21 @@ export function TextDemo() {
           </Text>
         </div>
       </CatalogExample>
+      <CatalogExample
+        label="Presentation roles"
+        note="Tone, size, and font are independent of the native semantic element, so applications can express supporting copy, errors, compact metadata, and code without global utility classes."
+        align="none"
+      >
+        <div class="demo-text-role-stack">
+          <Text tone="quiet">Quiet supporting copy</Text>
+          <Text tone="danger">Danger or validation copy</Text>
+          <Text size="compact">Compact metadata</Text>
+          <Text font="monospace">Monospace identifier: INV-2048</Text>
+          <Text tone="quiet" size="compact" font="monospace">
+            Quiet compact code: PO-1042
+          </Text>
+        </div>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

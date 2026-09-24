@@ -300,7 +300,7 @@ export const generatedKerfCatalog = [
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
-    "description": "Render paragraph semantics by default or h1 through h6 when selected, while consistently supplying the standard transparent border and content padding.",
+    "description": "Render paragraph semantics by default or h1 through h6 when selected, while independently configuring quiet or danger tone, compact size, or monospace font and consistently supplying standard geometry.",
     "uses": [],
     "demoSource": "ui/ux-demo/demos/text.tsx",
     "componentSource": "ui/src/text.tsx",

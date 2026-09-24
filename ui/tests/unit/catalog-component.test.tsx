@@ -65,10 +65,10 @@ describe('Catalog', () => {
     expect(html).toContain('data-component="catalog"');
     expect(html).toContain('data-sidebar-collapsed="false"');
     expect(html).toContain(
-      '<h1 class="kui-text" data-component="text">Acme UI</h1>',
+      '<h1 class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default">Acme UI</h1>',
     );
     expect(html).toContain(
-      'kui-catalog__subtitle" data-component="text">Design system',
+      'kui-catalog__subtitle" data-component="text" data-tone="default" data-size="default" data-font="default">Design system',
     );
     expect(html).toContain('src="/logo.svg"');
     // Category groups + items (ListHeader per section, ListItem per entry)
@@ -87,7 +87,7 @@ describe('Catalog', () => {
     );
     // Detail header shows the active name + description
     expect(html).toContain(
-      '<h2 class="kui-text" data-component="text">Select</h2>',
+      '<h2 class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default">Select</h2>',
     );
     expect(html).toContain('A value list.');
     // Stage renders the app-provided content
@@ -158,7 +158,9 @@ describe('Catalog', () => {
         content: raw('<b/>'),
       }),
     );
-    expect(html).toContain('<h2 class="kui-text" data-component="text"></h2>');
+    expect(html).toContain(
+      '<h2 class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default"></h2>',
+    );
     expect(html).not.toContain('kui-catalog__description');
     expect(html).not.toContain('kui-catalog__resource"');
   });
@@ -217,7 +219,7 @@ describe('Catalog', () => {
     expect(open).toContain('kui-catalog__group--secondary');
     expect(open).toContain('data-catalog-secondary');
     expect(open).toContain(
-      'kui-catalog__secondary-heading" data-component="text">Forms',
+      'kui-catalog__secondary-heading" data-component="text" data-tone="default" data-size="default" data-font="default">Forms',
     );
     expect(open).toContain(
       'data-action="catalog-select" data-item-id="wa-input"',
@@ -260,7 +262,7 @@ describe('Catalog', () => {
       }),
     );
     expect(html).toContain(
-      '<h2 class="kui-text" data-component="text">Input</h2>',
+      '<h2 class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default">Input</h2>',
     );
     expect(html).toContain('A form field.');
   });
@@ -281,7 +283,7 @@ describe('CatalogExample', () => {
     expect(html).toContain('data-component="list-header"');
     expect(html).toContain('data-catalog-example-label');
     expect(html).toContain(
-      'data-catalog-example-note class="kui-text kui-catalog-example__note" data-component="text">A note.',
+      'data-catalog-example-note class="kui-text kui-catalog-example__note" data-component="text" data-tone="default" data-size="default" data-font="default">A note.',
     );
     expect(html).toContain('<svg data-icon />');
   });

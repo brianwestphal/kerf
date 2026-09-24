@@ -371,6 +371,9 @@ The UI package also ships `Text`, a semantic wrapper that renders native `p` by
 default and accepts `h1`–`h6` variants for headings. It passes through ordinary
 element attributes and standardizes text-box geometry with an 8px item padding
 and transparent 1px border while preserving the selected native semantics.
+Independent finite tone, size, and font props cover quiet/danger, compact, and
+monospace presentation roles without appearance-only heading choices or global
+utility classes.
 
 ### §23 App and dialog layouts
 

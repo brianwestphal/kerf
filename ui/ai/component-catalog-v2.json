@@ -1318,6 +1318,9 @@
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [
         { "id": "semantic variant", "owner": "application", "required": false },
+        { "id": "tone", "owner": "application", "required": false },
+        { "id": "size", "owner": "application", "required": false },
+        { "id": "font", "owner": "application", "required": false },
         { "id": "copy", "owner": "application", "required": false },
         {
           "id": "document heading hierarchy",
@@ -1341,14 +1344,21 @@
       "accessibility": {
         "obligations": [
           "Text renders a native paragraph by default; choose an h1 through h6 variant by document outline rather than appearance.",
-          "Ordinary global, data, and ARIA attributes pass through to the native element."
+          "Ordinary global, data, and ARIA attributes pass through to the native element.",
+          "Choose tone, size, and font independently of the heading level so appearance does not distort the document outline."
         ]
       },
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-text",
         "publicClasses": ["kui-text"],
-        "publicTokens": ["--kui-layout-item-padding"]
+        "publicTokens": [
+          "--kui-color-danger-text",
+          "--kui-color-text-quiet",
+          "--kui-font-mono",
+          "--kui-font-xs",
+          "--kui-layout-item-padding"
+        ]
       },
       "diagnostics": [],
       "provenance": {

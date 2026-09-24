@@ -4,3 +4,19 @@
   border: 1px solid transparent;
   margin: 0;
 }
+
+.kui-text[data-tone="quiet"] {
+  color: var(--kui-color-text-quiet);
+}
+
+.kui-text[data-tone="danger"] {
+  color: var(--kui-color-danger-text);
+}
+
+.kui-text[data-size="compact"] {
+  font-size: var(--kui-font-xs);
+}
+
+.kui-text[data-font="monospace"] {
+  font-family: var(--kui-font-mono);
+}

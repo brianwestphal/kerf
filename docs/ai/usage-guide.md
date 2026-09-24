@@ -155,7 +155,9 @@ Use `Text` from `@kerfjs/ui/text` for ordinary headings and paragraphs outside
 toolbar title zones. It renders `p` by default; set `variant` to `h1`–`h6` only
 when the document hierarchy calls for a heading. It passes ordinary native
 attributes through and owns the standard transparent border plus content
-padding.
+padding. Keep presentation independent of semantics: compose `tone="quiet"` or
+`tone="danger"`, `size="compact"`, and `font="monospace"` for supporting,
+validation, metadata, and code roles instead of global utility classes.
 
 For an avatar toolbar control, set `content="avatar"` and `avatarImage` on
 `ToolbarControlGroup`; do not insert an `img` into the button. A lone control

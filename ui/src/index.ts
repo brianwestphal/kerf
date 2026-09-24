@@ -139,7 +139,10 @@ export {
 export {
   Text,
   type TextContent,
+  type TextFont,
   type TextProps,
+  type TextSize,
+  type TextTone,
   type TextVariant,
 } from './text.js';
 export {

@@ -165,9 +165,11 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   toolbar.
 - **Use `Text` for ordinary semantic headings and paragraphs outside toolbar
   title zones.** Omit `variant` for the default `p`, or pass `h1`–`h6` based on
-  the document outline. It passes native attributes through and owns the standard
-  transparent border plus item padding; keep toolbar titles on `ToolbarText` and
-  list-aligned bare prose on `ListInsetText`.
+  the document outline. Independently compose `tone="quiet|danger"`,
+  `size="compact"`, and `font="monospace"` for supporting, error, compact, and
+  code roles instead of global utility classes. It passes native attributes
+  through and owns the standard transparent border plus item padding; keep
+  toolbar titles on `ToolbarText` and list-aligned bare prose on `ListInsetText`.
 - **Space by the five-step scale, by relationship not by eye.** `0`
   `--kui-space-none`, `4px` `--kui-space-2xs`, `8px` `--kui-space-xs` (inside a
   group), `16px` `--kui-space-m`, `24px` `--kui-space-l` (between major differing

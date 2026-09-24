@@ -1514,9 +1514,9 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "Semantic native paragraph text by default, with heading variants and standard padded content geometry.",
+      "description": "Semantic native paragraph text by default, with heading variants, composable semantic presentation roles, and standard padded content geometry.",
       "uses": [],
-      "purpose": "Render paragraph semantics by default or h1 through h6 when selected, while consistently supplying the standard transparent border and content padding.",
+      "purpose": "Render paragraph semantics by default or h1 through h6 when selected, while independently configuring quiet or danger tone, compact size, or monospace font and consistently supplying standard geometry.",
       "publicExports": ["Text"],
       "useWhen": [
         "Render ordinary application headings or paragraphs that should use native document semantics and the standard text-box inset."
@@ -1535,11 +1535,24 @@
           "relationship": "list-geometry-specific"
         }
       ],
-      "appOwns": ["semantic variant", "copy", "document heading hierarchy"],
-      "variants": ["h1", "h2", "h3", "h4", "h5", "h6", "p"],
+      "appOwns": [
+        "semantic variant",
+        "tone",
+        "size",
+        "font",
+        "copy",
+        "document heading hierarchy"
+      ],
+      "variants": [
+        "p or h1 through h6 semantic variant",
+        "default, quiet, or danger tone",
+        "default or compact size",
+        "default or monospace font"
+      ],
       "accessibility": [
         "Text renders a native paragraph by default; choose an h1 through h6 variant by document outline rather than appearance.",
-        "Ordinary global, data, and ARIA attributes pass through to the native element."
+        "Ordinary global, data, and ARIA attributes pass through to the native element.",
+        "Choose tone, size, and font independently of the heading level so appearance does not distort the document outline."
       ],
       "geometry": {
         "margin": "none",
@@ -1556,7 +1569,13 @@
       },
       "wiring": [],
       "publicClasses": ["kui-text"],
-      "publicTokens": ["--kui-layout-item-padding"],
+      "publicTokens": [
+        "--kui-color-danger-text",
+        "--kui-color-text-quiet",
+        "--kui-font-mono",
+        "--kui-font-xs",
+        "--kui-layout-item-padding"
+      ],
       "links": {
         "catalogRoute": "?component=text",
         "documentation": "docs/component-selection.md",

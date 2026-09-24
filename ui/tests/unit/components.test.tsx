@@ -406,11 +406,21 @@ describe('production UI primitives', () => {
         }),
       ),
     ).toBe(
-      '<h2 id="section-title" aria-label="Section title" data-scope="details" class="kui-text title emphasis" data-component="text">Details</h2>',
+      '<h2 id="section-title" aria-label="Section title" data-scope="details" class="kui-text title emphasis" data-component="text" data-tone="default" data-size="default" data-font="default">Details</h2>',
     );
     expect(asHtml(Text({ children: <span>Body</span> }))).toBe(
-      '<p class="kui-text" data-component="text"><span>Body</span></p>',
+      '<p class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default"><span>Body</span></p>',
     );
+    expect(
+      asHtml(
+        Text({
+          tone: 'danger',
+          size: 'compact',
+          font: 'monospace',
+          children: 'Invalid code',
+        }),
+      ),
+    ).toContain('data-tone="danger" data-size="compact" data-font="monospace"');
   });
 
   it('renders nullable and recursively nested semantic children without a Fragment', () => {
@@ -605,7 +615,7 @@ describe('production UI primitives', () => {
       }),
     );
     expect(header).toContain(
-      '<h2 aria-label="Workspace, 0 workspaces" class="kui-text kui-list-header__label" data-component="text">Workspace</h2>',
+      '<h2 aria-label="Workspace, 0 workspaces" class="kui-text kui-list-header__label" data-component="text" data-tone="default" data-size="default" data-font="default">Workspace</h2>',
     );
     expect(header).toContain(
       'class="kui-list-header__count" aria-hidden="true">0</span>',

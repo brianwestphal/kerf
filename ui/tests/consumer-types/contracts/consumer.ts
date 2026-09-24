@@ -9,6 +9,9 @@ import type {
   TabBarAllocation,
   TabBarPresentation,
   TabBarTrailingPlacement,
+  TextFont,
+  TextSize,
+  TextTone,
   TextVariant,
   ToolbarControlGroupContent,
   ToolbarControlGroupDensity,
@@ -79,8 +82,14 @@ import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 
 const icon = ToolbarText({ text: 'Icon' });
 const textVariant: TextVariant = 'h3';
+const textTone: TextTone = 'quiet';
+const textSize: TextSize = 'compact';
+const textFont: TextFont = 'monospace';
 Text({
   variant: textVariant,
+  tone: textTone,
+  size: textSize,
+  font: textFont,
   class: 'section-title',
   id: 'section-title',
   'aria-describedby': 'section-summary',
@@ -89,6 +98,12 @@ Text({
 Text({ children: 'Paragraph by default' });
 // @ts-expect-error Text variants are limited to native headings and paragraphs.
 Text({ variant: 'span', children: 'Invalid' });
+// @ts-expect-error Text tones are a finite semantic vocabulary.
+Text({ tone: 'muted', children: 'Invalid' });
+// @ts-expect-error Text sizes are independent of heading variants and finite.
+Text({ size: 'small', children: 'Invalid' });
+// @ts-expect-error Text fonts are a finite role vocabulary.
+Text({ font: 'code', children: 'Invalid' });
 
 // KUI-T012 positive: complete branded lengths and finite spacing shorthands
 // compose without accepting intermediate expressions or arbitrary CSS strings.
