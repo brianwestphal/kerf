@@ -125,6 +125,13 @@ export function RowDemo() {
           vAlign="middle"
         >
           {chips('Inset')}
+          <Row
+            className="demo-row-insets-nested"
+            controlInsets="b"
+            vAlign="middle"
+          >
+            {chips('Nested')}
+          </Row>
         </Row>
       </CatalogExample>
     </CatalogExampleStack>

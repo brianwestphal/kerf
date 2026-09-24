@@ -350,6 +350,30 @@ describe('production UI primitives', () => {
     }
   });
 
+  it('keeps inset selections explicit on nested rows and lists', () => {
+    const nestedRows = asHtml(
+      Row({
+        textInsets: 'tbl',
+        controlInsets: 'r',
+        children: Row({ controlInsets: 'b' }),
+      }),
+    );
+    expect(nestedRows).toContain('data-text-insets="tbl"');
+    expect(nestedRows).toContain('data-control-insets="r"');
+    expect(nestedRows).toContain('data-control-insets="b"');
+
+    const nestedLists = asHtml(
+      List({
+        textInsets: 'l',
+        controlInsets: 'rb',
+        children: List({ textInsets: 't' }),
+      }),
+    );
+    expect(nestedLists).toContain('data-text-insets="l"');
+    expect(nestedLists).toContain('data-control-insets="rb"');
+    expect(nestedLists).toContain('data-text-insets="t"');
+  });
+
   it('renders fixed and flexible decorative spacers with typed dimensions', () => {
     const fixed = asHtml(
       Spacer({

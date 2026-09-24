@@ -196,6 +196,8 @@ physical `Sides` union. Values follow canonical top/right/bottom/left order
 padding. A selected text side adds the complete content-item alignment inset —
 8px outer margin + 1px border + 8px inner padding, represented as 17px of
 container padding. When both props select the same side, the text inset wins.
+Each nested `Row` or `List` resolves its own four inset sides; unselected sides
+reset to zero instead of inheriting a same-type parent's inset selection.
 
 `ListInsetText` and `ListInsetControl` use the same `sides` vocabulary and
 default to `trbl`. The text wrapper applies its complete 8/1/8 geometry only on

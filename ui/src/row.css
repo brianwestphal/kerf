@@ -1,5 +1,9 @@
 .kui-row {
   --kui-row-gap: var(--kui-layout-item-gap, remify(8px));
+  --_kui-row-inset-top: 0;
+  --_kui-row-inset-right: 0;
+  --_kui-row-inset-bottom: 0;
+  --_kui-row-inset-left: 0;
 
   display: flex;
   min-width: 0;

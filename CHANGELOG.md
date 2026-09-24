@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed nested Rows and Lists inheriting inset values for sides that were not
+  selected on the inner layout component.
 - Fixed migrated `Text` instances in Catalog and passive `ListHeader` labels
   retaining nested padding or border geometry that offset their visible content.
 - Added `Row.vAlign="baseline"` for native flex cross-axis baseline alignment;

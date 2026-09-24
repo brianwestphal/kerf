@@ -170,6 +170,9 @@ export function ListDemo() {
         >
           <span>Text-aligned left edge</span>
           <input aria-label="Inset list control" value="Control edge" />
+          <List className="demo-list-insets-nested" textInsets="t">
+            <span>Nested text-aligned top edge</span>
+          </List>
         </List>
       </CatalogExample>
     </CatalogExampleStack>

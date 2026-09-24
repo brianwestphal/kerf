@@ -145,7 +145,8 @@ its existing full/top alignment and zero-gap defaults. Set `textInsets` or
 example, `textInsets="tbl"` or `controlInsets="r"`). Text geometry takes
 precedence where both select the same side. `ListInsetText` and
 `ListInsetControl` inset all four sides by default and accept the same `sides`
-grammar for selective insets.
+grammar for selective insets. Nested Rows and Lists resolve their inset sides
+independently, so an unselected inner side does not inherit its parent's inset.
 
 The same property-specific boundary applies beyond spacing: use `flex()` (or a
 finite keyword) for `Row.flex` and `List.flex`; length builders and intrinsic-size keywords for

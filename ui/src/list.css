@@ -1,6 +1,10 @@
 .kui-list {
   --kui-list-divider-color: var(--kui-color-border);
   --kui-list-gap: var(--kui-layout-item-gap, remify(8px));
+  --_kui-list-inset-top: 0;
+  --_kui-list-inset-right: 0;
+  --_kui-list-inset-bottom: 0;
+  --_kui-list-inset-left: 0;
   --_kui-list-divider-top: transparent;
   --_kui-list-divider-right: transparent;
   --_kui-list-divider-bottom: transparent;

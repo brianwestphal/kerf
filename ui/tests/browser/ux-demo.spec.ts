@@ -700,6 +700,9 @@ test('applies text and control insets only to selected physical sides', async ({
   await expect(row).toHaveAttribute('data-text-insets', 'tbl');
   await expect(row).toHaveAttribute('data-control-insets', 'r');
   expect(await edges(row, 'padding')).toEqual([17, 8, 17, 17]);
+  expect(
+    await edges(row.locator('.demo-row-insets-nested'), 'padding'),
+  ).toEqual([0, 0, 8, 0]);
   if (browserName === 'chromium')
     await row.screenshot({ path: 'test-results/row-selected-insets-wide.png' });
 
@@ -708,6 +711,9 @@ test('applies text and control insets only to selected physical sides', async ({
   await expect(list).toHaveAttribute('data-text-insets', 'l');
   await expect(list).toHaveAttribute('data-control-insets', 'rb');
   expect(await edges(list, 'padding')).toEqual([0, 8, 8, 17]);
+  expect(
+    await edges(list.locator('.demo-list-insets-nested'), 'padding'),
+  ).toEqual([17, 0, 0, 0]);
   if (browserName === 'chromium')
     await list.screenshot({
       path: 'test-results/list-selected-insets-wide.png',
