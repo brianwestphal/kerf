@@ -96,6 +96,13 @@
   white-space: nowrap;
 }
 
+/* Passive labels use Text for semantic heading markup. The title wrapper
+   already owns the transparent alignment border, so avoid counting a second
+   border before Text's standard content padding. */
+.kui-list-header__label.kui-text {
+  border: 0;
+}
+
 .kui-list-header__badge {
   display: inline-flex;
   min-height: remify(24px);

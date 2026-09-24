@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 278400,
+  "totalJavaScriptGzip": 278500,
   "measuredLargestJavaScriptGzip": 128409,
-  "measuredTotalJavaScriptGzip": 278373,
+  "measuredTotalJavaScriptGzip": 278402,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -83,6 +83,22 @@
         "measuredTotalJavaScriptGzip": 278373,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 278400
+      }
+    },
+    {
+      "at": "2026-09-24T07:15:34.434Z",
+      "reason": "Text geometry CSS fixes change generated demo asset hashes",
+      "old": {
+        "measuredLargestJavaScriptGzip": 128409,
+        "measuredTotalJavaScriptGzip": 278373,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 278400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 128409,
+        "measuredTotalJavaScriptGzip": 278402,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 278500
       }
     }
   ]

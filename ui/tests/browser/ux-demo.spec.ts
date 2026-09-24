@@ -5255,9 +5255,11 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
           '[data-item-id="drafts"] .kui-list-item__label',
         )!
         .getBoundingClientRect();
-      const sectionLabel = node
-        .querySelector<HTMLElement>('.kui-list-header h2')!
-        .getBoundingClientRect();
+      const sectionLabelElement = node.querySelector<HTMLElement>(
+        '.kui-list-header h2',
+      )!;
+      const sectionLabel = sectionLabelElement.getBoundingClientRect();
+      const sectionLabelStyle = window.getComputedStyle(sectionLabelElement);
       const surfaceElement = node.querySelector<HTMLElement>(
         '[data-content-item]',
       )!;
@@ -5296,7 +5298,10 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
         rowEnd: end(content, row),
         rowHeight: row.height,
         plainStart: start(content, iconlessLabel),
-        sectionStart: start(content, sectionLabel),
+        sectionStart:
+          start(content, sectionLabel) +
+          parseFloat(sectionLabelStyle.borderInlineStartWidth) +
+          parseFloat(sectionLabelStyle.paddingInlineStart),
         surfaceStart: start(content, surface),
         surfaceContentStart: start(content, surfaceLabel),
         surfacePadding: parseFloat(
@@ -6208,10 +6213,18 @@ test('ships semantic banner palettes with scoped overrides', async ({
   const labelIconOffsets = () =>
     articles.evaluateAll((nodes) =>
       nodes.map((node) => {
-        const label = node.querySelector('.kui-list-header__label')!;
-        const icon = node.querySelector('.kui-state-banner__icon')!;
+        const label = node.querySelector<HTMLElement>(
+          '.kui-list-header__label',
+        )!;
+        const icon = node.querySelector<HTMLElement>(
+          '.kui-state-banner__icon',
+        )!;
+        const labelBounds = label.getBoundingClientRect();
+        const labelStyle = window.getComputedStyle(label);
         return Math.abs(
-          label.getBoundingClientRect().left -
+          labelBounds.left +
+            Number.parseFloat(labelStyle.borderLeftWidth) +
+            Number.parseFloat(labelStyle.paddingLeft) -
             icon.getBoundingClientRect().left,
         );
       }),

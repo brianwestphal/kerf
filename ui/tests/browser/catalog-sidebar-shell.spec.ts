@@ -7,9 +7,16 @@ const headerGeometry = async (page: Page) =>
     const logo = rect('.kui-catalog__mark');
     const title = rect('.kui-catalog__identity h1');
     const subtitle = rect('.kui-catalog__subtitle');
-    const subtitleStyle = window.getComputedStyle(
-      document.querySelector<HTMLElement>('.kui-catalog__subtitle')!,
-    );
+    const contentStart = (selector: string) => {
+      const element = document.querySelector<HTMLElement>(selector)!;
+      const bounds = element.getBoundingClientRect();
+      const style = window.getComputedStyle(element);
+      return (
+        bounds.left +
+        Number.parseFloat(style.borderLeftWidth) +
+        Number.parseFloat(style.paddingLeft)
+      );
+    };
     const collapse = rect(
       '.kui-catalog__brand [aria-label="Collapse Kerf catalog"]',
     );
@@ -19,9 +26,8 @@ const headerGeometry = async (page: Page) =>
       logoTitleCenterDelta: Math.abs(centerY(logo) - centerY(title)),
       subtitleBelowTitle: subtitle.top >= title.bottom - 1,
       subtitleTitleLeftDelta: Math.abs(
-        subtitle.left +
-          Number.parseFloat(subtitleStyle.paddingInlineStart) -
-          title.left,
+        contentStart('.kui-catalog__subtitle') -
+          contentStart('.kui-catalog__identity h1'),
       ),
     };
   });

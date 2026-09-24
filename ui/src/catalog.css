@@ -53,11 +53,13 @@
 }
 
 .kui-catalog__identity h1,
-.kui-catalog__subtitle {
+.kui-catalog__subtitle.kui-text {
   margin: 0;
 }
 
 .kui-catalog__identity h1 {
+  padding: 0;
+  border: 0;
   overflow: hidden;
   font-size: var(--kui-font-m);
   letter-spacing: 0.07em;
@@ -67,8 +69,9 @@
   white-space: nowrap;
 }
 
-.kui-catalog__subtitle {
+.kui-catalog__subtitle.kui-text {
   overflow: hidden;
+  border: 0;
   margin-block-start: calc(-1 * var(--kui-space-xs));
   padding-block-end: var(--kui-space-xs);
   padding-inline: calc(
