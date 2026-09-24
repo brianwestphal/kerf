@@ -27,9 +27,13 @@ session=$(npm run --silent ticket:timing -- start KF-ABC123 --phase active --gat
 npm run ticket:timing -- finish KF-ABC123 --session "$session"
 ```
 
-The pre-push hook derives ticket slugs from outgoing commit subjects and
-records `root:check` automatically. Time a local gate while preserving its
-exit status with `run`:
+The pre-push hook derives ticket slugs from commits that are actually outgoing
+to the named remote and records `root:check` automatically. A tag-only push of
+an already-pushed commit therefore records no historical subjects. Set
+`KERF_TICKET_TIMING_TICKETS` to a comma- or space-separated list when a push
+must be attributed to explicit tickets despite having no outgoing commit (for
+example, `KERF_TICKET_TIMING_TICKETS=KF-ABC123 git push origin <tag>`). Time a
+local gate while preserving its exit status with `run`:
 
 ```bash
 npm run ticket:timing -- run KF-ABC123 \

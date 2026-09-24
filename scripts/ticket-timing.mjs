@@ -195,24 +195,40 @@ async function summary(ticket, json) {
     console.log(`In progress: ${result.in_progress.length} session(s)`);
 }
 
-async function subjectsFromPushInput(input) {
+async function hasRemoteTrackingRefs(remoteName) {
+  if (!remoteName) return false;
+  const { stdout } = await execFileAsync('git', [
+    'for-each-ref',
+    '--format=%(refname)',
+    `refs/remotes/${remoteName}`,
+  ]);
+  return stdout.trim().length > 0;
+}
+
+async function subjectsFromPushInput(input, remoteName) {
   const subjects = [];
+  const remoteTracksCommits = await hasRemoteTrackingRefs(remoteName);
   for (const line of input.trim().split('\n')) {
     if (!line) continue;
     const [, localSha, , remoteSha] = line.split(/\s+/);
     if (!localSha || /^0+$/.test(localSha)) continue;
-    const revision =
-      remoteSha && !/^0+$/.test(remoteSha)
-        ? `${remoteSha}..${localSha}`
-        : localSha;
-    const { stdout } = await execFileAsync('git', [
-      'log',
-      '--format=%s',
-      revision,
-    ]);
+    const logArgs = ['log', '--format=%s'];
+    if (remoteSha && !/^0+$/.test(remoteSha))
+      logArgs.push(`${remoteSha}..${localSha}`);
+    else {
+      logArgs.push(localSha);
+      if (remoteTracksCommits) logArgs.push('--not', `--remotes=${remoteName}`);
+    }
+    const { stdout } = await execFileAsync('git', logArgs);
     subjects.push(...stdout.trim().split('\n').filter(Boolean));
   }
   return subjects;
+}
+
+function explicitlySuppliedTickets() {
+  return ticketSlugsFromSubjects([
+    process.env.KERF_TICKET_TIMING_TICKETS ?? '',
+  ]);
 }
 
 async function prePush(args) {
@@ -221,7 +237,12 @@ async function prePush(args) {
   if (!command.length) usage('A pre-push command is required after --');
   let input = '';
   for await (const chunk of process.stdin) input += chunk;
-  const tickets = ticketSlugsFromSubjects(await subjectsFromPushInput(input));
+  const tickets = [
+    ...new Set([
+      ...ticketSlugsFromSubjects(await subjectsFromPushInput(input, args[0])),
+      ...explicitlySuppliedTickets(),
+    ]),
+  ].sort();
   const startedAt = new Date().toISOString();
   const result = await runCommand(command[0], command.slice(1));
   const finishedAt = new Date().toISOString();
