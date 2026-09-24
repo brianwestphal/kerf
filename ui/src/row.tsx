@@ -5,6 +5,7 @@ import {
   space,
   type UiSpaceName,
 } from './css-values.js';
+import type { Sides } from './divider-sides.js';
 import {
   type HorizontalAlignment,
   horizontalAlignment,
@@ -35,6 +36,10 @@ export interface RowProps {
   flex?: boolean | CssFlexKeyword | CssFlex;
   /** Allow children to wrap onto additional lines. */
   wrap?: boolean;
+  /** Physical sides that receive the standard 17px text inset. */
+  textInsets?: Sides;
+  /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
+  controlInsets?: Sides;
   className?: string;
 }
 
@@ -46,6 +51,8 @@ export function Row({
   gap = 'xs',
   flex = false,
   wrap = false,
+  textInsets = '',
+  controlInsets = '',
   className = '',
 }: RowProps) {
   const gapValue = spaceNames.includes(gap as UiSpaceName)
@@ -67,6 +74,8 @@ export function Row({
       data-v-align={verticalAlignment(vAlign)}
       data-flex={String(Boolean(flex))}
       data-wrap={String(wrap)}
+      text-insets={textInsets || undefined}
+      control-insets={controlInsets || undefined}
       style={style}
     >
       {children}
@@ -80,6 +89,7 @@ export type {
   CssLength,
   UiSpaceName,
 } from './css-values.js';
+export type { Sides } from './divider-sides.js';
 export type {
   HorizontalAlignment,
   VerticalAlignment,

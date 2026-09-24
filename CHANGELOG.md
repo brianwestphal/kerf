@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added the shared physical `Sides` contract to `List` and `Row` text/control
+  insets and to `ListInsetText` / `ListInsetControl`; inset wrappers now default
+  to all four sides, while `ListInsetText.horizontalOnly` remains a deprecated
+  compatibility alias for `sides="rl"`.
 - Added `ListHeader.inline` for shrink-wrapped section labels that remove the
   component root's outer margin, border, and padding while preserving title,
   count, action, and disclosure behavior.

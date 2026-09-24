@@ -5,7 +5,7 @@ import {
   space,
   type UiSpaceName,
 } from './css-values.js';
-import type { DividerSides } from './divider-sides.js';
+import type { DividerSides, Sides } from './divider-sides.js';
 import {
   type HorizontalAlignment,
   horizontalAlignment,
@@ -38,6 +38,10 @@ export interface ListProps {
   scrollable?: boolean;
   /** Physical divider edges in canonical top/right/bottom/left order. */
   dividerSides?: DividerSides;
+  /** Physical sides that receive the standard 17px text inset. */
+  textInsets?: Sides;
+  /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
+  controlInsets?: Sides;
   className?: string;
 }
 
@@ -50,6 +54,8 @@ export function List({
   vAlign = 'top',
   scrollable = false,
   dividerSides = '',
+  textInsets = '',
+  controlInsets = '',
   className = '',
 }: ListProps) {
   const gapValue =
@@ -76,6 +82,8 @@ export function List({
       data-v-align={verticalAlignment(vAlign)}
       data-scrollable={String(scrollable)}
       divider-sides={dividerSides || undefined}
+      text-insets={textInsets || undefined}
+      control-insets={controlInsets || undefined}
       style={style || undefined}
     >
       {children}
@@ -89,7 +97,7 @@ export type {
   CssLength,
   UiSpaceName,
 } from './css-values.js';
-export type { DividerSides } from './divider-sides.js';
+export type { DividerSides, Sides } from './divider-sides.js';
 export type {
   HorizontalAlignment,
   VerticalAlignment,

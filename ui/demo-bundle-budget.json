@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 276800,
+  "totalJavaScriptGzip": 277400,
   "measuredLargestJavaScriptGzip": 128393,
-  "measuredTotalJavaScriptGzip": 276778,
+  "measuredTotalJavaScriptGzip": 277311,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -35,6 +35,22 @@
         "measuredTotalJavaScriptGzip": 276778,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 276800
+      }
+    },
+    {
+      "at": "2026-09-24T00:25:23.360Z",
+      "reason": "Catalog specimens document List and Row text/control insets plus side-selectable inset wrappers",
+      "old": {
+        "measuredLargestJavaScriptGzip": 128393,
+        "measuredTotalJavaScriptGzip": 276778,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 276800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 128393,
+        "measuredTotalJavaScriptGzip": 277311,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 277400
       }
     }
   ]

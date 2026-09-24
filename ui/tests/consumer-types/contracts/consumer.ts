@@ -37,7 +37,7 @@ import {
   buildEvaluationContexts,
   type UiEvaluationContext,
 } from '@kerfjs/ui/evaluator';
-import { type DividerSides, List } from '@kerfjs/ui/list';
+import { type DividerSides, List, type Sides } from '@kerfjs/ui/list';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
@@ -379,6 +379,7 @@ const buttonAppearance: ToolbarControlGroupButtonAppearance = 'push';
 const shape: ToolbarControlGroupShape = 'rounded';
 const sunkenPanelShape: SunkenPanelShape = 'square';
 const dividerSides: DividerSides = 'tr';
+const insetSides: Sides = 'tbl';
 TabBar({ id: 'tabs', label: 'Tabs', activation, children: icon });
 StateBanner({ title: 'Featured', badge: '3', tone: stateBannerTone, urgency });
 ToolbarControlGroup({
@@ -396,7 +397,12 @@ List({
   flex: flex(1, 1, px(0)),
   scrollable: true,
   dividerSides,
+  textInsets: insetSides,
+  controlInsets: 'r',
 });
+Row({ children: icon, textInsets: insetSides, controlInsets: 'r' });
+// @ts-expect-error KUI-T010 inset sides use canonical t/r/b/l order.
+List({ textInsets: 'lr' });
 Toolbar({ leading: icon, dividerSides });
 // @ts-expect-error KUI-T010 divider sides use canonical t/r/b/l order.
 List({ dividerSides: 'rt' });

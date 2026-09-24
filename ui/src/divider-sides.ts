@@ -1,5 +1,5 @@
-/** Canonical physical edge combinations for components that draw dividers. */
-export type DividerSides =
+/** Canonical physical edge combinations in top/right/bottom/left order. */
+export type Sides =
   | ''
   | 't'
   | 'r'
@@ -16,3 +16,6 @@ export type DividerSides =
   | 'tbl'
   | 'rbl'
   | 'trbl';
+
+/** @deprecated Use the general `Sides` type. */
+export type DividerSides = Sides;

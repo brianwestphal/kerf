@@ -143,6 +143,19 @@ for the CSS initial value, pass `true` for `1 1 auto`, select the finite
 shorthand. A `CssLength` is not a flex shorthand, and arbitrary strings are
 rejected by the type contract.
 
+Both components also accept `textInsets` and `controlInsets` using the shared
+physical `Sides` union. Values follow canonical top/right/bottom/left order
+(`t`, `rb`, `tbl`, `trbl`, and so on). A selected control side adds 8px of
+padding. A selected text side adds the complete content-item alignment inset —
+8px outer margin + 1px border + 8px inner padding, represented as 17px of
+container padding. When both props select the same side, the text inset wins.
+
+`ListInsetText` and `ListInsetControl` use the same `sides` vocabulary and
+default to `trbl`. The text wrapper applies its complete 8/1/8 geometry only on
+selected sides; the control wrapper applies its 8px outer margin only on
+selected sides. `ListInsetText.horizontalOnly` remains a deprecated alias for
+`sides="rl"`; an explicit `sides` value takes precedence.
+
 `--kui-space-s` (12px) and `--kui-space-xl` (32px) exist but are **off the
 canonical rhythm** — reach for them only as a deliberate exception, never as a
 default step. Prefer the five canonical tokens so spacing stays legible and

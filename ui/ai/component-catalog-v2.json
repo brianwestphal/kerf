@@ -1436,9 +1436,9 @@
         "geometry": {
           "margin": "none",
           "border": "none",
-          "padding": "none",
+          "padding": "conditional",
           "notes": [
-            "Row adds no margin, border, or padding; it owns only flex participation, alignment, wrapping, and the gap between children."
+            "Row adds no margin or border. textInsets adds the full 17px content inset and controlInsets adds 8px on selected physical sides; text wins when both select a side."
           ]
         }
       },
@@ -1521,9 +1521,9 @@
         "geometry": {
           "margin": "none",
           "border": "conditional",
-          "padding": "none",
+          "padding": "conditional",
           "notes": [
-            "List adds no margin or padding; dividerSides draws only the selected physical edges without changing box geometry."
+            "List adds no margin. dividerSides draws selected physical edges without changing geometry; textInsets adds the full 17px content inset and controlInsets adds 8px on selected sides, with text winning on overlap."
           ]
         }
       },

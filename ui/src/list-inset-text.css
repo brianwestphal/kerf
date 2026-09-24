@@ -1,14 +1,30 @@
-.kui-list-inset-text {
-  margin: 0 remify(8px);
-  border: 1px solid transparent;
-  padding: remify(8px);
+.kui-list-inset-text,
+.kui-list-inset-text--horizontal {
+  margin: 0;
+  border: 0 solid transparent;
+  padding: 0;
 }
 
-/* Horizontal-only: keep the inline inset (margin + left/right border + left/right
-   padding) so the text edge still aligns with bordered items, but drop the vertical
-   box space for tight text layout. */
-.kui-list-inset-text--horizontal {
-  margin-block: 0;
-  border-block: 0;
-  padding-block: 0;
+.kui-list-inset-text[data-sides*="t"] {
+  margin-top: var(--kui-layout-inline-margin, remify(8px));
+  border-top-width: 1px;
+  padding-top: var(--kui-layout-item-padding, remify(8px));
+}
+
+.kui-list-inset-text[data-sides*="r"] {
+  margin-right: var(--kui-layout-inline-margin, remify(8px));
+  border-right-width: 1px;
+  padding-right: var(--kui-layout-item-padding, remify(8px));
+}
+
+.kui-list-inset-text[data-sides*="b"] {
+  margin-bottom: var(--kui-layout-inline-margin, remify(8px));
+  border-bottom-width: 1px;
+  padding-bottom: var(--kui-layout-item-padding, remify(8px));
+}
+
+.kui-list-inset-text[data-sides*="l"] {
+  margin-left: var(--kui-layout-inline-margin, remify(8px));
+  border-left-width: 1px;
+  padding-left: var(--kui-layout-item-padding, remify(8px));
 }

@@ -155,6 +155,20 @@ export function ListDemo() {
           <span>Bottom</span>
         </List>
       </CatalogExample>
+      <CatalogExample
+        label="Side-selectable insets"
+        note="Text insets apply the full 8px + 1px + 8px content geometry; control insets apply 8px, and text wins where both select a side."
+      >
+        <List
+          className="demo-list-alignment demo-list-insets"
+          gap="xs"
+          textInsets="l"
+          controlInsets="rb"
+        >
+          <span>Text-aligned left edge</span>
+          <input aria-label="Inset list control" value="Control edge" />
+        </List>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

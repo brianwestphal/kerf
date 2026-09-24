@@ -1,7 +1,23 @@
 .kui-list-inset-control {
   display: flex;
-  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  margin: 0;
   justify-content: stretch;
   align-items: stretch;
   gap: remify(8px);
+}
+
+.kui-list-inset-control[data-sides*="t"] {
+  margin-top: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-list-inset-control[data-sides*="r"] {
+  margin-right: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-list-inset-control[data-sides*="b"] {
+  margin-bottom: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-list-inset-control[data-sides*="l"] {
+  margin-left: var(--kui-layout-inline-margin, remify(8px));
 }

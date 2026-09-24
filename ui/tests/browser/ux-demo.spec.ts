@@ -643,6 +643,8 @@ test('insets a self-bordered control and bare text so their edges line up in a c
   await expect(control).toBeVisible();
   // The wrapper is a stretch flex row; its child control fills the row width.
   await expect(control).toHaveCSS('display', 'flex');
+  await expect(control).toHaveAttribute('data-sides', 'trbl');
+  await expect(control).toHaveCSS('margin-top', '8px');
   const [controlBox, childBox] = await Promise.all([
     control.evaluate((el) => el.getBoundingClientRect().width),
     control
@@ -658,6 +660,8 @@ test('insets a self-bordered control and bare text so their edges line up in a c
   // Bare text carries the content-item geometry: 8px inline margin, 1px border, 8px padding.
   await expect(text).toHaveCSS('border-top-width', '1px');
   await expect(text).toHaveCSS('padding-left', '8px');
+  await expect(text).toHaveCSS('margin-top', '8px');
+  await expect(text).toHaveAttribute('data-sides', 'trbl');
 
   // horizontalOnly keeps the horizontal inset but drops the vertical box space.
   const tight = page.locator('.kui-list-inset-text--horizontal').first();
@@ -667,6 +671,77 @@ test('insets a self-bordered control and bare text so their edges line up in a c
   await expect(tight).toHaveCSS('padding-top', '0px');
   await expect(tight).toHaveCSS('border-top-width', '0px');
   await expect(tight).toHaveCSS('margin-top', '0px');
+  await expect(tight).toHaveAttribute('data-sides', 'rl');
+});
+
+test('applies text and control insets only to selected physical sides', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  const edges = (locator: ReturnType<typeof page.locator>, property: string) =>
+    locator.evaluate((element, name) => {
+      const style = window.getComputedStyle(element);
+      return ['Top', 'Right', 'Bottom', 'Left'].map((side) =>
+        parseFloat(
+          style.getPropertyValue(`${name}-${side.toLowerCase()}`) ||
+            style.getPropertyValue(
+              `${name}${side}`.replace(
+                /[A-Z]/g,
+                (letter) => `-${letter.toLowerCase()}`,
+              ),
+            ),
+        ),
+      );
+    }, property);
+
+  await page.goto('/?component=row');
+  const row = page.locator('.demo-row-insets');
+  await expect(row).toHaveAttribute('text-insets', 'tbl');
+  await expect(row).toHaveAttribute('control-insets', 'r');
+  expect(await edges(row, 'padding')).toEqual([17, 8, 17, 17]);
+  if (browserName === 'chromium')
+    await row.screenshot({ path: 'test-results/row-selected-insets-wide.png' });
+
+  await page.goto('/?component=list');
+  const list = page.locator('.demo-list-insets');
+  await expect(list).toHaveAttribute('text-insets', 'l');
+  await expect(list).toHaveAttribute('control-insets', 'rb');
+  expect(await edges(list, 'padding')).toEqual([0, 8, 8, 17]);
+  if (browserName === 'chromium')
+    await list.screenshot({
+      path: 'test-results/list-selected-insets-wide.png',
+    });
+
+  await page.goto('/?component=list-inset-text');
+  const text = page.locator('.demo-list-inset-text-sides');
+  expect(await edges(text, 'margin')).toEqual([8, 0, 8, 8]);
+  expect(await edges(text, 'border')).toEqual([1, 0, 1, 1]);
+  expect(await edges(text, 'padding')).toEqual([8, 0, 8, 8]);
+  if (browserName === 'chromium')
+    await text.locator('..').screenshot({
+      path: 'test-results/list-inset-text-sides-wide.png',
+    });
+
+  await page.goto('/?component=list-inset-control');
+  const control = page.locator('.demo-list-inset-control-sides');
+  expect(await edges(control, 'margin')).toEqual([0, 8, 8, 0]);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await control.scrollIntoViewIfNeeded();
+  expect(await edges(control, 'margin')).toEqual([0, 8, 8, 0]);
+  if (browserName === 'chromium')
+    await control.locator('..').screenshot({
+      path: 'test-results/list-inset-control-sides-narrow.png',
+    });
+
+  await page.setViewportSize({ width: 720, height: 900 });
+  await page.locator('html').evaluate((element) => {
+    element.style.fontSize = '200%';
+  });
+  expect(await edges(control, 'margin')).toEqual([0, 16, 16, 0]);
+  await control.evaluate((element) => element.setAttribute('dir', 'rtl'));
+  expect(await edges(control, 'margin')).toEqual([0, 16, 16, 0]);
 });
 
 test('computes component geometry overlays from live CSS and leaves composition demos alone', async ({

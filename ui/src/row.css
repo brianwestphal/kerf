@@ -5,6 +5,8 @@
   min-width: 0;
   min-height: 0;
   box-sizing: border-box;
+  padding: var(--_kui-row-inset-top, 0) var(--_kui-row-inset-right, 0)
+    var(--_kui-row-inset-bottom, 0) var(--_kui-row-inset-left, 0);
   flex: var(--_kui-row-flex, initial);
   flex-direction: row;
   flex-wrap: nowrap;
@@ -12,6 +14,50 @@
   align-content: space-between;
   justify-content: flex-start;
   gap: var(--_kui-row-gap, var(--kui-row-gap));
+}
+
+.kui-row[control-insets*="t"] {
+  --_kui-row-inset-top: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-row[control-insets*="r"] {
+  --_kui-row-inset-right: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-row[control-insets*="b"] {
+  --_kui-row-inset-bottom: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-row[control-insets*="l"] {
+  --_kui-row-inset-left: var(--kui-layout-inline-margin, remify(8px));
+}
+
+.kui-row[text-insets*="t"] {
+  --_kui-row-inset-top: calc(
+    var(--kui-layout-inline-margin, remify(8px)) + 1px +
+      var(--kui-layout-item-padding, remify(8px))
+  );
+}
+
+.kui-row[text-insets*="r"] {
+  --_kui-row-inset-right: calc(
+    var(--kui-layout-inline-margin, remify(8px)) + 1px +
+      var(--kui-layout-item-padding, remify(8px))
+  );
+}
+
+.kui-row[text-insets*="b"] {
+  --_kui-row-inset-bottom: calc(
+    var(--kui-layout-inline-margin, remify(8px)) + 1px +
+      var(--kui-layout-item-padding, remify(8px))
+  );
+}
+
+.kui-row[text-insets*="l"] {
+  --_kui-row-inset-left: calc(
+    var(--kui-layout-inline-margin, remify(8px)) + 1px +
+      var(--kui-layout-item-padding, remify(8px))
+  );
 }
 
 .kui-row[data-wrap="true"] {

@@ -1,10 +1,13 @@
+import type { Sides } from './divider-sides.js';
 import type { KerfUiContent } from './semantic-content.js';
 
 export interface ListInsetTextProps {
   /** Text (or inline content) that carries no margin, border, or padding of its own. */
   children: KerfUiContent | string;
+  /** Physical inset sides in canonical top/right/bottom/left order. Defaults to all sides. */
+  sides?: Sides;
   /**
-   * Keep only the horizontal geometry (inline margin, left/right border, and
+   * @deprecated Pass `sides="rl"` instead. Keep only the horizontal geometry (inline margin, left/right border, and
    * left/right padding) and drop the vertical margin, border, and padding. Use it
    * when the text edge must still align with bordered items but the line should not
    * add its own vertical box space — tight text layout inside a content region.
@@ -23,14 +26,22 @@ export interface ListInsetTextProps {
  */
 export function ListInsetText({
   children,
+  sides,
   horizontalOnly = false,
   className = '',
 }: ListInsetTextProps) {
+  const resolvedSides = sides ?? (horizontalOnly ? 'rl' : 'trbl');
   const cls =
     `kui-list-inset-text${horizontalOnly ? ' kui-list-inset-text--horizontal' : ''} ${className}`.trim();
   return (
-    <div class={cls} data-component="list-inset-text">
+    <div
+      class={cls}
+      data-component="list-inset-text"
+      data-sides={resolvedSides}
+    >
       {children}
     </div>
   );
 }
+
+export type { Sides } from './divider-sides.js';

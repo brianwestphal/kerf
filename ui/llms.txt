@@ -94,6 +94,10 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 - **Use `Row` for horizontal and `List` for vertical layout.** Both expose
   physical `hAlign`/`vAlign` props and typed gaps. Row defaults to left/full,
   an `xs` gap, and no wrapping; List retains full/top and zero-gap defaults.
+  Use canonical physical `textInsets` or `controlInsets` sides in
+  `t`/`r`/`b`/`l` order; text geometry wins on overlapping sides.
+  `ListInsetText` and `ListInsetControl` inset every side by default and accept
+  the same `sides` grammar for selective edges.
   List additionally supplies
   optional typed `gap`, `flex`, vertical scrolling, and canonical
   `dividerSides` (`t`/`r`/`b`/`l` order). It adds no list semantics; children own

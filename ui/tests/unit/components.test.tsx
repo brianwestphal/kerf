@@ -67,7 +67,7 @@ describe('production UI primitives', () => {
     expect(listBody).toContain('data-body-inset="none"');
     expect(listBody).toContain('data-component="list"');
     expect(listBody).toContain(
-      'class="kui-list-inset-text" data-component="list-inset-text">Aligned dialog copy</div>',
+      'class="kui-list-inset-text" data-component="list-inset-text" data-sides="trbl">Aligned dialog copy</div>',
     );
     const popup = asHtml(
       PopupSurface({
@@ -239,12 +239,14 @@ describe('production UI primitives', () => {
         flex: flex(2, 1, rem(20)),
         scrollable: true,
         dividerSides: 'trbl',
+        textInsets: 'tbl',
+        controlInsets: 'r',
         className: 'results',
       }),
     );
     expect(html).toContain('class="kui-list results"');
     expect(html).toContain(
-      'data-component="list" data-gap="true" data-flex="true" data-h-align="full" data-v-align="top" data-scrollable="true" divider-sides="trbl"',
+      'data-component="list" data-gap="true" data-flex="true" data-h-align="full" data-v-align="top" data-scrollable="true" divider-sides="trbl" text-insets="tbl" control-insets="r"',
     );
     expect(html).toContain(
       'style="--_kui-list-gap:0.75rem;--_kui-list-flex:2 1 20rem"',
@@ -256,6 +258,8 @@ describe('production UI primitives', () => {
       'data-gap="false" data-flex="false" data-h-align="full" data-v-align="top" data-scrollable="false"',
     );
     expect(defaults).not.toContain('divider-sides');
+    expect(defaults).not.toContain('text-insets');
+    expect(defaults).not.toContain('control-insets');
     expect(defaults).not.toContain('style=');
 
     expect(asHtml(List({ gap: true, flex: true }))).toContain(
@@ -291,12 +295,14 @@ describe('production UI primitives', () => {
         gap: rem(1),
         flex: 'none',
         wrap: true,
+        textInsets: 'tbl',
+        controlInsets: 'r',
         className: 'actions',
       }),
     );
     expect(row).toContain('class="kui-row actions"');
     expect(row).toContain(
-      'data-h-align="full" data-v-align="middle" data-flex="true" data-wrap="true" style="--_kui-row-gap:1rem;--_kui-row-flex:none"',
+      'data-h-align="full" data-v-align="middle" data-flex="true" data-wrap="true" text-insets="tbl" control-insets="r" style="--_kui-row-gap:1rem;--_kui-row-flex:none"',
     );
     expect(row).toContain('<span>One</span><span>Two</span>');
 
@@ -725,7 +731,7 @@ describe('production UI primitives', () => {
       ListInsetControl({ children: <input type="search" /> }),
     );
     expect(control).toContain(
-      'class="kui-list-inset-control" data-component="list-inset-control"',
+      'class="kui-list-inset-control" data-component="list-inset-control" data-sides="trbl"',
     );
     expect(control).toContain('<input type="search"');
 
@@ -733,10 +739,13 @@ describe('production UI primitives', () => {
       ListInsetControl({ children: [icon, icon], className: 'extra' }),
     );
     expect(multi).toContain('class="kui-list-inset-control extra"');
+    expect(asHtml(ListInsetControl({ children: icon, sides: 'rb' }))).toContain(
+      'data-sides="rb"',
+    );
 
     const text = asHtml(ListInsetText({ children: 'Sorted by name' }));
     expect(text).toContain(
-      'class="kui-list-inset-text" data-component="list-inset-text"',
+      'class="kui-list-inset-text" data-component="list-inset-text" data-sides="trbl"',
     );
     expect(text).toContain('>Sorted by name</div>');
 
@@ -752,6 +761,16 @@ describe('production UI primitives', () => {
     expect(horizontal).toContain(
       'class="kui-list-inset-text kui-list-inset-text--horizontal" data-component="list-inset-text"',
     );
+    expect(horizontal).toContain('data-sides="rl"');
+
+    const explicitSides = asHtml(
+      ListInsetText({
+        children: 'Selected',
+        sides: 'tbl',
+        horizontalOnly: true,
+      }),
+    );
+    expect(explicitSides).toContain('data-sides="tbl"');
 
     const horizontalExtra = asHtml(
       ListInsetText({

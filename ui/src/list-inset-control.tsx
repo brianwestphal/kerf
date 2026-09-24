@@ -1,8 +1,11 @@
+import type { Sides } from './divider-sides.js';
 import type { KerfUiContent } from './semantic-content.js';
 
 export interface ListInsetControlProps {
   /** Control(s) that own their own border and padding (e.g. an input, a `wa-*`). */
   children: KerfUiContent;
+  /** Physical inset sides in canonical top/right/bottom/left order. Defaults to all sides. */
+  sides?: Sides;
   className?: string;
 }
 
@@ -14,14 +17,18 @@ export interface ListInsetControlProps {
  */
 export function ListInsetControl({
   children,
+  sides = 'trbl',
   className = '',
 }: ListInsetControlProps) {
   return (
     <div
       class={`kui-list-inset-control ${className}`.trim()}
       data-component="list-inset-control"
+      data-sides={sides}
     >
       {children}
     </div>
   );
 }
+
+export type { Sides } from './divider-sides.js';

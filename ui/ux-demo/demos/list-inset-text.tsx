@@ -56,6 +56,17 @@ export function ListInsetTextDemo() {
           </ListInsetText>
         </div>
       </CatalogExample>
+      <CatalogExample
+        label="Selected physical sides"
+        note="The sides prop uses canonical top/right/bottom/left order; only selected sides receive the full text inset geometry."
+        align="none"
+      >
+        <div class="list-inset-demo__pane kui-content">
+          <ListInsetText sides="tbl" className="demo-list-inset-text-sides">
+            Top, bottom, and left are inset; the right edge stays flush.
+          </ListInsetText>
+        </div>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

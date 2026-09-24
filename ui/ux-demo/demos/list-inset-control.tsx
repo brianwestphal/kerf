@@ -41,6 +41,25 @@ export function ListInsetControlDemo() {
           </ListInsetControl>
         </div>
       </CatalogExample>
+      <CatalogExample
+        label="Selected physical sides"
+        note="The sides prop defaults to all sides and can select any canonical top/right/bottom/left combination."
+        align="none"
+      >
+        <div class="list-inset-demo__pane kui-content">
+          <ListInsetControl
+            sides="rb"
+            className="demo-list-inset-control-sides"
+          >
+            <input
+              class="list-inset-demo__input"
+              type="text"
+              aria-label="Filter selected sides"
+              placeholder="Right and bottom inset"
+            />
+          </ListInsetControl>
+        </div>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

@@ -113,6 +113,19 @@ export function RowDemo() {
           </Row>
         </List>
       </CatalogExample>
+      <CatalogExample
+        label="Side-selectable insets"
+        note="Text insets apply the full 8px + 1px + 8px content geometry; control insets apply 8px. Physical sides use canonical top/right/bottom/left order."
+      >
+        <Row
+          className="demo-row-frame demo-row-insets"
+          textInsets="tbl"
+          controlInsets="r"
+          vAlign="middle"
+        >
+          {chips('Inset')}
+        </Row>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

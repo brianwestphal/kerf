@@ -138,7 +138,12 @@ Use `Row` for horizontal flex composition and `List` for vertical composition.
 Both accept `hAlign` (`left`, `center`, `right`, `full`) and `vAlign` (`top`,
 `middle`, `bottom`, `full`), plus their documented short/CSS aliases. `Row`
 defaults to left/full alignment, the `xs` gap, and `wrap={false}`; List keeps
-its existing full/top alignment and zero-gap defaults.
+its existing full/top alignment and zero-gap defaults. Set `textInsets` or
+`controlInsets` with canonical physical sides in `t`/`r`/`b`/`l` order (for
+example, `textInsets="tbl"` or `controlInsets="r"`). Text geometry takes
+precedence where both select the same side. `ListInsetText` and
+`ListInsetControl` inset all four sides by default and accept the same `sides`
+grammar for selective insets.
 
 The same property-specific boundary applies beyond spacing: use `flex()` (or a
 finite keyword) for `Row.flex` and `List.flex`; length builders and intrinsic-size keywords for

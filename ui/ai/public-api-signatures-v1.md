@@ -105,7 +105,7 @@ export { DisclosureArrow, type DisclosureArrowProps, type DisclosureDirection };
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { D as DividerSides } from './divider-sides-267FA7sY.js';
+import { D as DividerSides } from './divider-sides-BzB6rphT.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface ToolbarProps {
@@ -335,7 +335,7 @@ export { ListHeader, type ListHeaderProps };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
-import { D as DividerSides } from './divider-sides-267FA7sY.js';
+import { D as DividerSides, S as Sides } from './divider-sides-BzB6rphT.js';
 import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-CF8NLj7i.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
@@ -353,12 +353,16 @@ interface ListProps {
     scrollable?: boolean;
     /** Physical divider edges in canonical top/right/bottom/left order. */
     dividerSides?: DividerSides;
+    /** Physical sides that receive the standard 17px text inset. */
+    textInsets?: Sides;
+    /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
+    controlInsets?: Sides;
     className?: string;
 }
 /** A stretch-aligned vertical stack with optional gap, flex, scroll, and dividers. */
-declare function List({ children, gap, flex, hAlign, vAlign, scrollable, dividerSides, className, }: ListProps): kerfjs.SafeHtml;
+declare function List({ children, gap, flex, hAlign, vAlign, scrollable, dividerSides, textInsets, controlInsets, className, }: ListProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, CssLength, DividerSides, HorizontalAlignment, List, type ListProps, UiSpaceName, VerticalAlignment };
+export { CssFlex, CssFlexKeyword, CssLength, DividerSides, HorizontalAlignment, List, type ListProps, Sides, UiSpaceName, VerticalAlignment };
 ```
 
 ## `@kerfjs/ui/list-action-row`
@@ -481,11 +485,14 @@ export { ListItem, type ListItemProps };
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { S as Sides } from './divider-sides-BzB6rphT.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface ListInsetControlProps {
     /** Control(s) that own their own border and padding (e.g. an input, a `wa-*`). */
     children: KerfUiContent;
+    /** Physical inset sides in canonical top/right/bottom/left order. Defaults to all sides. */
+    sides?: Sides;
     className?: string;
 }
 /**
@@ -494,22 +501,25 @@ interface ListInsetControlProps {
  * Use it for controls that carry their own border and padding but no outer margin
  * — the wrapper adds only the alignment margin and layout, not a second inset.
  */
-declare function ListInsetControl({ children, className, }: ListInsetControlProps): kerfjs.SafeHtml;
+declare function ListInsetControl({ children, sides, className, }: ListInsetControlProps): kerfjs.SafeHtml;
 
-export { ListInsetControl, type ListInsetControlProps };
+export { ListInsetControl, type ListInsetControlProps, Sides };
 ```
 
 ## `@kerfjs/ui/list-inset-text`
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { S as Sides } from './divider-sides-BzB6rphT.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface ListInsetTextProps {
     /** Text (or inline content) that carries no margin, border, or padding of its own. */
     children: KerfUiContent | string;
+    /** Physical inset sides in canonical top/right/bottom/left order. Defaults to all sides. */
+    sides?: Sides;
     /**
-     * Keep only the horizontal geometry (inline margin, left/right border, and
+     * @deprecated Pass `sides="rl"` instead. Keep only the horizontal geometry (inline margin, left/right border, and
      * left/right padding) and drop the vertical margin, border, and padding. Use it
      * when the text edge must still align with bordered items but the line should not
      * add its own vertical box space — tight text layout inside a content region.
@@ -525,9 +535,9 @@ interface ListInsetTextProps {
  * Pass `horizontalOnly` to keep the horizontal inset but drop the vertical box
  * space for tight text layout.
  */
-declare function ListInsetText({ children, horizontalOnly, className, }: ListInsetTextProps): kerfjs.SafeHtml;
+declare function ListInsetText({ children, sides, horizontalOnly, className, }: ListInsetTextProps): kerfjs.SafeHtml;
 
-export { ListInsetText, type ListInsetTextProps };
+export { ListInsetText, type ListInsetTextProps, Sides };
 ```
 
 ## `@kerfjs/ui/value-table`
@@ -1999,6 +2009,7 @@ export { DialogSurface, type DialogSurfacePresentation, type DialogSurfaceProps,
 ```ts
 import * as kerfjs from 'kerfjs';
 import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
+import { S as Sides } from './divider-sides-BzB6rphT.js';
 import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-CF8NLj7i.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
@@ -2014,10 +2025,14 @@ interface RowProps {
     flex?: boolean | CssFlexKeyword | CssFlex;
     /** Allow children to wrap onto additional lines. */
     wrap?: boolean;
+    /** Physical sides that receive the standard 17px text inset. */
+    textInsets?: Sides;
+    /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
+    controlInsets?: Sides;
     className?: string;
 }
 /** A horizontal flex row with explicit physical-axis alignment and spacing. */
-declare function Row({ children, hAlign, vAlign, gap, flex, wrap, className, }: RowProps): kerfjs.SafeHtml;
+declare function Row({ children, hAlign, vAlign, gap, flex, wrap, textInsets, controlInsets, className, }: RowProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, Row, type RowProps, UiSpaceName, VerticalAlignment };
+export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, Row, type RowProps, Sides, UiSpaceName, VerticalAlignment };
 ```

@@ -1642,9 +1642,9 @@
     "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "A horizontal flex row with physical-axis alignment, a typed xs gap by default, flex participation, and opt-in wrapping.",
+      "description": "A horizontal flex row with physical-axis alignment, side-selectable text/control insets, a typed xs gap by default, flex participation, and opt-in wrapping.",
       "uses": [],
-      "purpose": "Arrange related content horizontally with consistent spacing and explicit left/center/right/full plus top/middle/bottom/full alignment instead of application-owned flex wrappers.",
+      "purpose": "Arrange related content horizontally with consistent spacing, optional physical-side text/control insets, and explicit left/center/right/full plus top/middle/bottom/full alignment instead of application-owned flex wrappers.",
     "publicExports": ["Row"],
       "cssValueProps": [
         {
@@ -1674,6 +1674,7 @@
         "Choose physical horizontal distribution and vertical alignment without writing one-off flex CSS.",
         "Use a finite flex keyword or the flex() builder when Row participates in a flexible parent layout.",
         "Allow a bounded group to wrap while retaining the same typed gap and alignment contract."
+        ,"Apply the standard text or control inset to selected physical sides without an application wrapper."
       ],
       "avoidWhen": [
         "Do not use Row when content belongs in a semantic list or when a named-zone component such as Toolbar owns the composition.",
@@ -1703,7 +1704,8 @@
         "named none/2xs/xs/s/m/l/xl token gap",
         "typed CssLength gap",
         "boolean, finite-keyword, or typed CssFlex flex",
-        "nowrap or wrapping"
+        "nowrap or wrapping",
+        "top/right/bottom/left text and control inset combinations"
       ],
       "accessibility": [
         "Row adds layout only and no grouping role; children retain responsibility for native or ARIA semantics.",
@@ -1712,9 +1714,9 @@
       "geometry": {
         "margin": "none",
         "border": "none",
-        "padding": "none",
+        "padding": "conditional",
         "notes": [
-          "Row adds no margin, border, or padding; it owns only flex participation, alignment, wrapping, and the gap between children."
+          "Row adds no margin or border. textInsets adds the full 17px content inset and controlInsets adds 8px on selected physical sides; text wins when both select a side."
         ]
       },
       "delivery": {
@@ -1737,13 +1739,13 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "A vertical stack with physical-axis alignment, optional typed token/length gap, flex growth, vertical scrolling, and independently selectable divider edges.",
+      "description": "A vertical stack with physical-axis alignment, side-selectable text/control insets, optional typed token/length gap, flex growth, vertical scrolling, and independently selectable divider edges.",
       "uses": [
         "list-header",
         "list-action-row",
         "list-item"
       ],
-      "purpose": "Standardize vertical component layout and its scroll/divider ownership instead of repeating ad-hoc flex-column wrappers.",
+      "purpose": "Standardize vertical component layout, optional physical-side text/control insets, and scroll/divider ownership instead of repeating ad-hoc flex-column wrappers.",
       "publicExports": [
         "List",
         "px",
@@ -1783,7 +1785,8 @@
         "Arrange component rows or sections in a vertical stretch-aligned stack.",
         "Let one bounded list own vertical scrolling, flex growth, or one or more physical-edge dividers.",
         "Choose a finite gap shorthand such as xs or m, or compose a typed length with @kerfjs/ui/css-values when the spacing scale is insufficient.",
-        "Use a finite flex keyword or the flex() builder when List participates in flexible layout."
+        "Use a finite flex keyword or the flex() builder when List participates in flexible layout.",
+        "Apply the standard text or control inset to selected physical sides without an application wrapper."
         ,"Align children horizontally or distribute them vertically with the same physical alignment vocabulary as Row."
       ],
       "avoidWhen": [
@@ -1806,7 +1809,8 @@
         "scrollable",
         "left/center/right/full horizontal alignment",
         "top/middle/bottom/full vertical alignment",
-        "top/right/bottom/left divider combinations"
+        "top/right/bottom/left divider combinations",
+        "top/right/bottom/left text and control inset combinations"
       ],
       "accessibility": [
         "List adds layout only and no list role; children retain responsibility for their native or ARIA semantics.",
@@ -1815,9 +1819,9 @@
       "geometry": {
         "margin": "none",
         "border": "conditional",
-        "padding": "none",
+        "padding": "conditional",
         "notes": [
-          "List adds no margin or padding; dividerSides draws only the selected physical edges without changing box geometry."
+          "List adds no margin. dividerSides draws selected physical edges without changing geometry; textInsets adds the full 17px content inset and controlInsets adds 8px on selected sides, with text winning on overlap."
         ]
       },
       "delivery": {
@@ -2187,9 +2191,9 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "Insets a self-bordered control into a pane/list content region.",
+      "description": "Insets selected physical sides of a self-bordered control in a pane/list content region.",
       "uses": [],
-      "purpose": "Insets a self-bordered control into a pane/list content region.",
+      "purpose": "Apply the standard 8px outer margin to all physical sides of a self-bordered control by default, or only the sides selected with the canonical Sides contract.",
       "publicExports": [
         "ListInsetControl"
       ],
@@ -2207,6 +2211,10 @@
       ],
       "appOwns": [
         "the wrapped control and its behavior"
+      ],
+      "variants": [
+        "all-side inset by default",
+        "top/right/bottom/left inset combinations"
       ],
       "accessibility": [
         "A layout wrapper only; it adds no role or name — the wrapped control keeps its own."
@@ -2242,9 +2250,9 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "Gives bare text the content-item geometry so it lines up with bordered items.",
+      "description": "Gives selected physical sides of bare text the content-item geometry so it lines up with bordered items.",
       "uses": [],
-      "purpose": "Gives bare text the content-item geometry so it lines up with bordered items.",
+      "purpose": "Apply the full 8px margin + 1px transparent border + 8px padding to all physical sides of bare text by default, or only the sides selected with the canonical Sides contract.",
       "publicExports": [
         "ListInsetText"
       ],
@@ -2262,6 +2270,11 @@
       ],
       "appOwns": [
         "the text content"
+      ],
+      "variants": [
+        "all-side inset by default",
+        "top/right/bottom/left inset combinations",
+        "deprecated horizontalOnly compatibility alias for sides=\"rl\""
       ],
       "accessibility": [
         "A layout wrapper only; it adds no role or name."
