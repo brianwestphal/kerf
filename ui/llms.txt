@@ -115,6 +115,11 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   the surface (8px) and container (16px) tiers respectively, independent of the
   dialog's shared `--spacing`. Override the tier at the narrowest useful scope
   instead of restyling individual shadow parts.
+  Filled badges use each semantic variant's quiet fill with normal text for
+  WCAG-AA compact-copy contrast. Override
+  `--kui-wa-badge-filled-background` and
+  `--kui-wa-badge-filled-foreground` as a contrast-safe pair instead of adding
+  host selectors.
   When a dialog provides another dismissal affordance, add `hide-actions` to
   the `wa-dialog` host; the theme hides its directly exported `header-actions`
   part without an unsupported chained `::part()` selector.

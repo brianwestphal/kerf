@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Made filled Web Awesome badges use a quiet semantic fill with normal text by
+  default, preserving variant tint while meeting WCAG AA for their compact text.
 - Fixed nested Rows and Lists inheriting inset values for sides that were not
   selected on the inner layout component.
 - Fixed migrated `Text` instances in Catalog and passive `ListHeader` labels

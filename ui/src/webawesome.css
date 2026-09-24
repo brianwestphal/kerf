@@ -228,6 +228,21 @@
     color-scheme: dark;
   }
 
+  /* Web Awesome's filled badge pairs each variant's normal fill with its
+     normal foreground. Several of those combinations miss 4.5:1 at the
+     badge's 12px text size. Keep the variant's quiet tint, but use normal text
+     by default; consumers can override either side without host selectors. */
+  wa-badge[appearance="filled"] {
+    --wa-color-fill-normal: var(
+      --kui-wa-badge-filled-background,
+      var(--wa-color-fill-quiet)
+    ) !important;
+    --wa-color-on-normal: var(
+      --kui-wa-badge-filled-foreground,
+      var(--wa-color-text-normal)
+    ) !important;
+  }
+
   wa-carousel::part(navigation-button) {
     box-sizing: border-box;
     width: var(--kui-wa-carousel-control-size);

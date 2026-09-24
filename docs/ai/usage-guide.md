@@ -246,7 +246,11 @@ declaration boundary for all 70 catalog-supported `wa-*` elements. The CSS-only
 entry includes Web Awesome's base stylesheet and the Hot Sheet 2-aligned Kerf
 theme but registers no custom elements. Continue importing only the individual
 Web Awesome component modules the app renders, and override public `--wa-*`
-values afterward when needed. A `wa-dialog` with another dismissal affordance
+values afterward when needed. Use `wa-badge appearance="filled"` for compact
+semantic labels: the theme pairs each variant's quiet fill with normal text for
+WCAG-AA contrast, with `--kui-wa-badge-filled-background` and
+`--kui-wa-badge-filled-foreground` as the documented override pair. A
+`wa-dialog` with another dismissal affordance
 can add `class="hide-actions"`; the theme hides the directly exported
 `header-actions` part without unsupported chained `::part()` selectors. The
 theme gives Checkbox Group and Radio Group

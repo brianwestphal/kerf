@@ -5172,6 +5172,10 @@
         "border": "self",
         "padding": "self"
       },
+      "publicTokens": [
+        "--kui-wa-badge-filled-background",
+        "--kui-wa-badge-filled-foreground"
+      ],
       "delivery": {
         "registrationImport": "@awesome.me/webawesome/dist/components/badge/badge.js",
         "themeCssImport": "@kerfjs/ui/webawesome.css",

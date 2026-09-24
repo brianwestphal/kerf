@@ -307,7 +307,10 @@ nested `.claude/worktrees`) from diagnostics, TypeScript, ESLint, and doctor
 cache inputs; generated contents are not part of the containing application
 contract.
 
-Web Awesome Checkbox Group and Radio Group option regions use the shared 8px
+Filled Web Awesome badges use each semantic variant's quiet fill with normal
+text by default, with a documented two-token override pair, so compact badge
+copy stays WCAG-AA readable without application host selectors. Web Awesome
+Checkbox Group and Radio Group option regions use the shared 8px
 inline outer inset because those groups have no bordered field shell. The Color
 Picker trigger uses the same inset for the same unbordered geometry. Known Date
 field captions and bordered text-like field hints align with values at the 9px

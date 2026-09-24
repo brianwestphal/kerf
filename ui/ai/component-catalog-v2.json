@@ -4253,12 +4253,15 @@
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
-        "publicTokens": []
+        "publicTokens": [
+          "--kui-wa-badge-filled-background",
+          "--kui-wa-badge-filled-foreground"
+        ]
       },
       "diagnostics": [],
       "provenance": {
         "selection": "ai/component-catalog.json",
-        "composition": "generated-permissive-default"
+        "composition": "docs/webawesome-theme.md#badge-and-tag-guidance"
       }
     },
     {

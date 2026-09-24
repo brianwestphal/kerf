@@ -471,21 +471,21 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
 
   'wa-badge': () => (
     <div class="wa-demo-labeled-stack">
-      <span>Status badges · pill</span>
+      <span>Status badges · filled pill</span>
       <div class="wa-demo-row">
-        <wa-badge variant="neutral" pill="pill">
+        <wa-badge variant="neutral" appearance="filled" pill="pill">
           Draft
         </wa-badge>
-        <wa-badge variant="brand" pill="pill">
+        <wa-badge variant="brand" appearance="filled" pill="pill">
           In review
         </wa-badge>
-        <wa-badge variant="success" pill="pill">
+        <wa-badge variant="success" appearance="filled" pill="pill">
           Ready
         </wa-badge>
-        <wa-badge variant="warning" pill="pill">
+        <wa-badge variant="warning" appearance="filled" pill="pill">
           Attention
         </wa-badge>
-        <wa-badge variant="danger" pill="pill">
+        <wa-badge variant="danger" appearance="filled" pill="pill">
           Blocked
         </wa-badge>
       </div>

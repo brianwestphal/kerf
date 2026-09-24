@@ -431,6 +431,17 @@
       "publicTokens": []
     }
   },
+  "@kerfjs/ui:wa-badge": {
+    "_source": "docs/webawesome-theme.md#badge-and-tag-guidance",
+    "boundaries": {
+      "rootClass": null,
+      "publicClasses": [],
+      "publicTokens": [
+        "--kui-wa-badge-filled-background",
+        "--kui-wa-badge-filled-foreground"
+      ]
+    }
+  },
   "@kerfjs/ui:wa-radio-group": {
     "_source": "docs/webawesome-theme.md#coverage",
     "children": {

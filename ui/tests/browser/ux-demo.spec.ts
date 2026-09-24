@@ -2911,14 +2911,96 @@ test('distinguishes pill status badges from rounded-rectangle tags', async ({
   const badges = page.locator('[data-demo="wa-badge"] wa-badge');
   await expect(badges).toHaveCount(5);
   await expect(badges.first()).toHaveAttribute('pill', '');
+  await expect(badges.first()).toHaveAttribute('appearance', 'filled');
+  const minBadgeContrast = () =>
+    badges.evaluateAll((elements) => {
+      const luminance = (color: string): number => {
+        const channels =
+          color
+            .match(/[\d.]+/g)
+            ?.slice(0, 3)
+            .map(Number) ?? [];
+        const normalizedChannels = color.startsWith('color(srgb')
+          ? channels
+          : channels.map((channel) => channel / 255);
+        const [red = 0, green = 0, blue = 0] = normalizedChannels.map(
+          (normalized) =>
+            normalized <= 0.04045
+              ? normalized / 12.92
+              : ((normalized + 0.055) / 1.055) ** 2.4,
+        );
+        return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+      };
+      return Math.min(
+        ...elements.map((element) => {
+          const style = window.getComputedStyle(element);
+          const foreground = luminance(style.color);
+          const background = luminance(style.backgroundColor);
+          return (
+            (Math.max(foreground, background) + 0.05) /
+            (Math.min(foreground, background) + 0.05)
+          );
+        }),
+      );
+    });
+  await expect
+    .poll(minBadgeContrast, 'light filled badge contrast (min across variants)')
+    .toBeGreaterThanOrEqual(4.5);
+  await badges.first().evaluate((element) => {
+    (element as HTMLElement).style.setProperty(
+      '--kui-wa-badge-filled-background',
+      '#eef6ff',
+    );
+    (element as HTMLElement).style.setProperty(
+      '--kui-wa-badge-filled-foreground',
+      '#003366',
+    );
+  });
+  await expect(badges.first()).toHaveCSS(
+    'background-color',
+    'rgb(238, 246, 255)',
+  );
+  await expect(badges.first()).toHaveCSS('color', 'rgb(0, 51, 102)');
+  await badges.first().evaluate((element) => {
+    (element as HTMLElement).style.removeProperty(
+      '--kui-wa-badge-filled-background',
+    );
+    (element as HTMLElement).style.removeProperty(
+      '--kui-wa-badge-filled-foreground',
+    );
+  });
   const badgeRadius = await badges
     .first()
     .evaluate((element) => window.getComputedStyle(element).borderRadius);
-  if (browserName === 'chromium')
+  if (browserName === 'chromium') {
     await page.screenshot({
       path: 'test-results/webawesome-badge-wide.png',
       fullPage: true,
     });
+    await page.locator('[data-action="toggle-theme"]').click();
+    await expect
+      .poll(
+        minBadgeContrast,
+        'dark filled badge contrast (min across variants)',
+      )
+      .toBeGreaterThanOrEqual(4.5);
+    await page.screenshot({
+      path: 'test-results/webawesome-badge-dark-wide.png',
+      fullPage: true,
+    });
+    await page.locator('[data-action="toggle-theme"]').click();
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => document.documentElement.scrollWidth <= window.innerWidth,
+        ),
+      )
+      .toBe(true);
+    await page.locator('[data-demo="wa-badge"]').screenshot({
+      path: 'test-results/webawesome-badge-narrow.png',
+    });
+  }
 
   await page.goto('/?component=wa-tag');
   const tags = page.locator('[data-demo="wa-tag"] wa-tag');

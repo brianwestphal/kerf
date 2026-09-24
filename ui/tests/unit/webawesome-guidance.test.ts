@@ -50,8 +50,28 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toContain('Badge remains intentionally compact');
     expect(guidance).toContain('Breadcrumb');
     expect(guidance).toContain('bordered or filled');
-    expect(guidance).toContain('delegates item chrome');
+    expect(guidance).toMatch(/delegates item\s+chrome/);
     expect(guidance).toContain('no `wa-menu-item`');
+  });
+
+  it('keeps filled badges on a documented contrast-safe semantic pair', () => {
+    const css = readFileSync(
+      resolve(import.meta.dirname, '../../src/webawesome.css'),
+      'utf8',
+    );
+    const guidance = readFileSync(
+      resolve(import.meta.dirname, '../../docs/webawesome-theme.md'),
+      'utf8',
+    );
+
+    expect(css).toMatch(/wa-badge\[appearance="filled"\]/);
+    expect(css).toContain('--kui-wa-badge-filled-background');
+    expect(css).toContain('--kui-wa-badge-filled-foreground');
+    expect(css).toContain('var(--wa-color-fill-quiet)');
+    expect(css).toContain('var(--wa-color-text-normal)');
+    expect(guidance).toContain('meets WCAG AA');
+    expect(guidance).toContain('--kui-wa-badge-filled-background');
+    expect(guidance).toContain('--kui-wa-badge-filled-foreground');
   });
 
   it('assigns dialog body and footer to their distinct inset tiers', () => {

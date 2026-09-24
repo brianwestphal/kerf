@@ -155,19 +155,19 @@ export function WebAwesomeThemeDemo() {
         </header>
         <div class="webawesome-theme-demo__stack">
           <div class="webawesome-theme-demo__row">
-            <wa-badge variant="neutral" pill="pill">
+            <wa-badge variant="neutral" appearance="filled" pill="pill">
               Draft
             </wa-badge>
-            <wa-badge variant="brand" pill="pill">
+            <wa-badge variant="brand" appearance="filled" pill="pill">
               In review
             </wa-badge>
-            <wa-badge variant="success" pill="pill">
+            <wa-badge variant="success" appearance="filled" pill="pill">
               Ready
             </wa-badge>
-            <wa-badge variant="warning" pill="pill">
+            <wa-badge variant="warning" appearance="filled" pill="pill">
               Needs attention
             </wa-badge>
-            <wa-badge variant="danger" pill="pill">
+            <wa-badge variant="danger" appearance="filled" pill="pill">
               Blocked
             </wa-badge>
           </div>
