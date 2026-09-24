@@ -201,7 +201,6 @@ function ensureRecipe(id: RecipeId): Promise<void> {
 function needsWebAwesome(entry: CatalogEntry): boolean {
   return (
     entry.source === 'webawesome' ||
-    entry.id === 'webawesome-theme' ||
     (entry.uses?.some((id) => id.startsWith('wa-')) ?? false)
   );
 }

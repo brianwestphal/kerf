@@ -92,59 +92,6 @@
       }
     },
     {
-      "key": "@kerfjs/ui:webawesome-theme",
-      "package": "@kerfjs/ui",
-      "id": "webawesome-theme",
-      "name": "Web Awesome theme",
-      "kind": "composition",
-      "source": "kerf",
-      "parents": { "mode": "any", "entries": [] },
-      "contexts": ["application-ui"],
-      "zones": [],
-      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
-      "state": [
-        {
-          "id": "individual component registration",
-          "owner": "application",
-          "required": false
-        },
-        {
-          "id": "semantic token overrides",
-          "owner": "application",
-          "required": false
-        }
-      ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
-      "responsive": { "owner": "not-applicable", "behaviors": [] },
-      "layout": {
-        "roles": ["foundation"],
-        "geometry": { "margin": "child", "border": "child", "padding": "child" }
-      },
-      "accessibility": {
-        "obligations": [
-          "Preserve Web Awesome semantics and Kerf focus/contrast tokens."
-        ]
-      },
-      "cssValueProps": [],
-      "boundaries": {
-        "rootClass": null,
-        "publicClasses": [],
-        "publicTokens": [
-          "--kui-disclosure-icon-scale",
-          "--kui-wa-carousel-control-size",
-          "--kui-wa-carousel-dot-hit-size",
-          "--kui-wa-carousel-dot-size",
-          "--kui-wa-carousel-icon-size",
-          "--kui-wa-popover-arrow-size"
-        ]
-      },
-      "diagnostics": [],
-      "provenance": {
-        "selection": "ai/component-catalog.json",
-        "composition": "generated-permissive-default"
-      }
-    },
-    {
       "key": "@kerfjs/ui:foundation",
       "package": "@kerfjs/ui",
       "id": "foundation",

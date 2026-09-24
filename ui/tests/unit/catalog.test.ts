@@ -330,6 +330,8 @@ describe('UX catalog metadata', () => {
       ),
     ).toBe(true);
     expect(isCatalogId('toolbar')).toBe(true);
+    expect(findCatalogEntry('webawesome-theme')).toBeUndefined();
+    expect(isCatalogId('webawesome-theme')).toBe(false);
     expect(isCatalogId('missing')).toBe(false);
     expect(isCatalogId(null)).toBe(false);
   });
@@ -456,7 +458,6 @@ describe('UX catalog metadata', () => {
         .filter((entry) => entry.kind === 'composition')
         .map((entry) => entry.id),
     ).toEqual([
-      'webawesome-theme',
       'foundation',
       'layout',
       'headers',
@@ -505,12 +506,11 @@ describe('UX catalog metadata', () => {
       'wa-option',
     ]);
     expect(catalogEntriesUsing('wa-select').map((entry) => entry.id)).toEqual([
-      'webawesome-theme',
       'select',
     ]);
     expect(
       catalogEntriesUsing('wa-carousel-item').map((entry) => entry.id),
-    ).toEqual(['webawesome-theme', 'wa-carousel']);
+    ).toEqual(['wa-carousel']);
     expect(
       catalogEntriesUsing('segmented-control').map((entry) => entry.id),
     ).toEqual([

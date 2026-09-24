@@ -176,6 +176,43 @@ test('omits the removed command-palette recipe and safely falls back from its st
     });
 });
 
+test('omits the redundant Web Awesome theme demo and safely falls back from its stale route', async ({
+  page,
+  browserName,
+}) => {
+  const verifyRemoved = async (width: number, height: number) => {
+    await page.setViewportSize({ width, height });
+    await page.goto('/');
+    await expect(page.locator('[data-item-id="webawesome-theme"]')).toHaveCount(
+      0,
+    );
+    await expect(page.locator('[data-demo="webawesome-theme"]')).toHaveCount(0);
+    expect(
+      await page.evaluate(
+        () =>
+          document.documentElement.scrollWidth -
+          document.documentElement.clientWidth,
+      ),
+    ).toBeLessThanOrEqual(1);
+  };
+
+  await verifyRemoved(1100, 900);
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/catalog-without-webawesome-theme-wide.png',
+    });
+
+  await page.goto('/?component=webawesome-theme');
+  await expect(page.locator('[data-demo="lucide-icon"]')).toBeVisible();
+  await expect(page.locator('[data-demo="webawesome-theme"]')).toHaveCount(0);
+
+  await verifyRemoved(390, 844);
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/catalog-without-webawesome-theme-narrow.png',
+    });
+});
+
 test('drills through the navigation-stack recipe with animated push/pop and reduced motion', async ({
   page,
   browserName,
@@ -2449,216 +2486,6 @@ test('renders an interactive responsive find field inside a toolbar', async ({
     await toolbar.screenshot({
       path: 'test-results/toolbar-find-narrow-open.png',
     });
-});
-
-test('themes representative free Web Awesome families with overridable semantic tokens', async ({
-  page,
-  browserName,
-}) => {
-  await page.setViewportSize({ width: 1440, height: 1100 });
-  await page.goto('/?component=webawesome-theme');
-  const demo = page.locator('[data-demo="webawesome-theme"]');
-  await expect(demo).toBeVisible();
-  await expect(demo.locator(':scope > section')).toHaveCount(5);
-
-  const registered = await page.evaluate(() =>
-    [
-      'wa-button',
-      'wa-input',
-      'wa-checkbox',
-      'wa-card',
-      'wa-accordion',
-      'wa-tab-group',
-      'wa-tree',
-      'wa-callout',
-      'wa-progress-bar',
-      'wa-tag',
-      'wa-avatar',
-      'wa-qr-code',
-    ].every((tag) => Boolean(customElements.get(tag))),
-  );
-  expect(registered).toBe(true);
-
-  const theme = await demo.evaluate((element) => {
-    const style = window.getComputedStyle(element);
-    return {
-      family: style.getPropertyValue('--wa-font-family-body').trim(),
-      brand: style.getPropertyValue('--wa-color-brand-fill-loud').trim(),
-      border: style.getPropertyValue('--wa-form-control-border-color').trim(),
-    };
-  });
-  expect(theme.family).toContain('ui-sans-serif');
-  expect(theme.brand).toBe('light-dark(#0088ff, #64d2ff)');
-  expect(theme.border).toBe('light-dark(#d1d1d6, #48484a)');
-
-  // Form fields carry the kui content-item inset (1px border + 8px padding), and
-  // their top label is inset to align with the value (border + padding = 9px) and
-  // styled exactly like a ListHeader label (uppercase, xs, quiet, weight 650).
-  const fieldInset = await page.evaluate(() => {
-    const input = document.querySelector('wa-input') as HTMLElement;
-    const checkboxGroup = document.querySelector(
-      'wa-checkbox-group',
-    ) as HTMLElement;
-    const colorPicker = document.querySelector(
-      'wa-color-picker',
-    ) as HTMLElement;
-    const radioGroup = document.querySelector('wa-radio-group') as HTMLElement;
-    // Resolve the geometry tokens to used pixels via a probe (they are authored as
-    // rem-based calc()s, so reading the custom property returns the calc string).
-    const probe = document.createElement('div');
-    probe.style.position = 'absolute';
-    input.parentElement!.appendChild(probe);
-    const resolve = (name: string) => {
-      probe.style.width = `var(${name})`;
-      return window.getComputedStyle(probe).width;
-    };
-    const padInline = resolve('--wa-form-control-padding-inline');
-    const padBlock = resolve('--wa-form-control-padding-block');
-    const borderWidth = resolve('--wa-form-control-border-width');
-    probe.remove();
-    const label = input.shadowRoot!.querySelector(
-      '[part~="form-control-label"]',
-    ) as HTMLElement;
-    const ls = window.getComputedStyle(label);
-    const controlInputMargin = (control: HTMLElement) => {
-      const inputPart = control.shadowRoot!.querySelector(
-        '[part~="form-control-input"]',
-      ) as HTMLElement;
-      const style = window.getComputedStyle(inputPart);
-      return [style.marginInlineStart, style.marginInlineEnd];
-    };
-    return {
-      padInline,
-      padBlock,
-      borderWidth,
-      labelPad: ls.paddingInlineStart,
-      labelTransform: ls.textTransform,
-      labelSize: ls.fontSize,
-      labelWeight: ls.fontWeight,
-      checkboxGroupInputMargin: controlInputMargin(checkboxGroup),
-      colorPickerInputMargin: controlInputMargin(colorPicker),
-      radioGroupInputMargin: controlInputMargin(radioGroup),
-    };
-  });
-  expect(fieldInset.padInline).toBe('8px');
-  expect(fieldInset.padBlock).toBe('8px');
-  expect(fieldInset.borderWidth).toBe('1px');
-  expect(fieldInset.labelPad).toBe('9px');
-  expect(fieldInset.labelTransform).toBe('uppercase');
-  expect(fieldInset.labelSize).toBe('12px');
-  expect(fieldInset.labelWeight).toBe('650');
-  expect(fieldInset.checkboxGroupInputMargin).toEqual(['8px', '8px']);
-  expect(fieldInset.colorPickerInputMargin).toEqual(['8px', '8px']);
-  expect(fieldInset.radioGroupInputMargin).toEqual(['8px', '8px']);
-
-  const nonFieldInsets = await page.evaluate(() => {
-    const style = (selector: string, part?: string) => {
-      const host = document.querySelector(selector) as HTMLElement;
-      const target = part
-        ? (host.shadowRoot!.querySelector(`[part~="${part}"]`) as HTMLElement)
-        : host;
-      return window.getComputedStyle(target);
-    };
-    const cardHeader = style('wa-card', 'header');
-    const cardBody = style('wa-card', 'body');
-    const callout = style('wa-callout');
-    const detailsHeader = style('wa-details', 'header');
-    const accordionButton = style('wa-accordion-item', 'button');
-    const accordion = style('wa-accordion');
-    const card = style('wa-card');
-    const details = style('wa-details');
-    const tab = style('wa-tab', 'tab');
-    const tabPanelHost = document.querySelector(
-      'wa-tab-panel[active]',
-    ) as HTMLElement;
-    const tabPanel = window.getComputedStyle(
-      tabPanelHost.shadowRoot!.querySelector('.tab-panel')!,
-    );
-    const treeItem = style('wa-tree-item[selected]', 'item');
-    const button = style('wa-button[variant="brand"]', 'button');
-    const badge = style('wa-badge');
-    const tag = style('wa-tag');
-    const dropdownItem = style('wa-dropdown-item');
-    return {
-      cardHeader: [cardHeader.paddingBlockStart, cardHeader.paddingInlineStart],
-      cardBody: cardBody.padding,
-      callout: callout.padding,
-      detailsHeader: detailsHeader.padding,
-      accordionButton: accordionButton.padding,
-      surfaceMargins: [accordion, card, details, callout].map((computed) => [
-        computed.marginInlineStart,
-        computed.marginInlineEnd,
-      ]),
-      tab: tab.padding,
-      tabPanel: tabPanel.padding,
-      tree: [treeItem.marginInlineStart, treeItem.paddingInlineEnd],
-      button: button.paddingInlineStart,
-      badge: [badge.paddingBlockStart, badge.paddingInlineStart],
-      tag: tag.paddingInlineStart,
-      dropdownItem: dropdownItem.paddingInlineStart,
-    };
-  });
-  expect(nonFieldInsets).toEqual({
-    cardHeader: ['8px', '8px'],
-    cardBody: '8px',
-    callout: '8px',
-    detailsHeader: '8px',
-    accordionButton: '8px',
-    surfaceMargins: Array.from({ length: 4 }, () => ['8px', '8px']),
-    tab: '8px',
-    tabPanel: '16px 0px',
-    tree: ['8px', '8px'],
-    button: '8px',
-    badge: ['4.5px', '7.5px'],
-    tag: '8px',
-    dropdownItem: '8px',
-  });
-
-  const primary = demo
-    .locator('wa-button[variant="brand"]')
-    .first()
-    .locator('[part~="button"]');
-  await expect(primary).toHaveCSS('background-color', 'rgb(0, 136, 255)');
-  await page.locator('[data-action="toggle-theme"]').click();
-  await expect(primary).toHaveCSS('background-color', 'rgb(100, 210, 255)');
-  await expect(page.locator('body')).toHaveCSS(
-    'background-color',
-    'rgb(17, 17, 19)',
-  );
-
-  if (browserName === 'chromium')
-    await page.screenshot({
-      path: 'test-results/webawesome-theme-dark-wide.png',
-      fullPage: true,
-    });
-
-  await demo.evaluate((element) =>
-    element.style.setProperty('--wa-color-brand-fill-loud', '#7540a8'),
-  );
-  await expect(primary).toHaveCSS('background-color', 'rgb(117, 64, 168)');
-  await demo.evaluate((element) =>
-    element.style.removeProperty('--wa-color-brand-fill-loud'),
-  );
-
-  if (browserName === 'chromium') {
-    await page.locator('[data-action="toggle-theme"]').click();
-    await page.screenshot({
-      path: 'test-results/webawesome-theme-light-wide.png',
-      fullPage: true,
-    });
-    await page.setViewportSize({ width: 390, height: 844 });
-    await expect
-      .poll(() =>
-        page.evaluate(
-          () => document.documentElement.scrollWidth <= window.innerWidth,
-        ),
-      )
-      .toBe(true);
-    await page.screenshot({
-      path: 'test-results/webawesome-theme-light-narrow.png',
-      fullPage: true,
-    });
-  }
 });
 
 test('aligns Known Date captions and bordered text-field hints with their values', async ({
