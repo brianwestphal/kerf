@@ -25,10 +25,14 @@ export type VerticalAlignment =
   | 'flex-end'
   | 'full'
   | 'f'
-  | 'space-between';
+  | 'space-between'
+  | 'baseline';
+
+export type ListVerticalAlignment = Exclude<VerticalAlignment, 'baseline'>;
 
 export type CanonicalHorizontalAlignment = 'left' | 'center' | 'right' | 'full';
-export type CanonicalVerticalAlignment = 'top' | 'middle' | 'bottom' | 'full';
+export type CanonicalVerticalAlignment =
+  'top' | 'middle' | 'bottom' | 'full' | 'baseline';
 
 export function horizontalAlignment(
   value: HorizontalAlignment,
@@ -74,5 +78,7 @@ export function verticalAlignment(
     case 'f':
     case 'space-between':
       return 'full';
+    case 'baseline':
+      return 'baseline';
   }
 }

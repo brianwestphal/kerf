@@ -1699,7 +1699,7 @@
       "source": "kerf",
       "description": "A horizontal flex row with physical-axis alignment, side-selectable text/control insets, a typed xs gap by default, flex participation, and opt-in wrapping.",
       "uses": [],
-      "purpose": "Arrange related content horizontally with consistent spacing, optional physical-side text/control insets, and explicit left/center/right/full plus top/middle/bottom/full alignment instead of application-owned flex wrappers.",
+      "purpose": "Arrange related content horizontally with consistent spacing, optional physical-side text/control insets, and explicit left/center/right/full plus top/middle/bottom/full/baseline alignment instead of application-owned flex wrappers.",
     "publicExports": ["Row"],
       "cssValueProps": [
         {
@@ -1755,7 +1755,7 @@
       ],
       "variants": [
         "left/center/right/full horizontal alignment with l/c/r/f and flex aliases",
-        "top/middle/bottom/full vertical alignment with t/m/c/b/f and flex aliases",
+        "top/middle/bottom/full vertical alignment with t/m/c/b/f and flex aliases, plus baseline alignment",
         "named none/2xs/xs/s/m/l/xl token gap",
         "typed CssLength gap",
         "boolean, finite-keyword, or typed CssFlex flex",

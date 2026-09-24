@@ -68,6 +68,7 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
     ['middle', 'center', 'space-around'],
     ['bottom', 'flex-end', 'flex-end'],
     ['full', 'stretch', 'space-between'],
+    ['baseline', 'baseline', 'baseline'],
   ] as const;
   for (const [name, items, content] of vertical) {
     await expect

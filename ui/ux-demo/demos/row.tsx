@@ -17,6 +17,7 @@ const vertical: readonly [string, VerticalAlignment][] = [
   ['Middle', 'middle'],
   ['Bottom', 'bottom'],
   ['Full', 'full'],
+  ['Baseline', 'baseline'],
 ];
 
 const chips = (prefix: string) => [
@@ -57,7 +58,7 @@ export function RowDemo() {
       </CatalogExample>
       <CatalogExample
         label="Vertical alignment"
-        note="Cross-axis alignment remains valid CSS: top, centered middle, bottom, or stretched full. Wrapped lines use the matching distribution."
+        note="Cross-axis alignment remains valid CSS: top, centered middle, bottom, stretched full, or text baseline. Wrapped lines use the matching distribution."
       >
         <List gap="xs" className="demo-row-gallery">
           {vertical.map(([label, alignment]) => (

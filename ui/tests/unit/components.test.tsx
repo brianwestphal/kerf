@@ -311,6 +311,9 @@ describe('production UI primitives', () => {
     expect(asHtml(Row({ hAlign: 'r', vAlign: 'b' }))).toContain(
       'data-h-align="right" data-v-align="bottom"',
     );
+    expect(asHtml(Row({ vAlign: 'baseline' }))).toContain(
+      'data-v-align="baseline"',
+    );
     expect(asHtml(List({ hAlign: 'l', vAlign: 'space-around' }))).toContain(
       'data-h-align="left" data-v-align="middle"',
     );
@@ -337,6 +340,7 @@ describe('production UI primitives', () => {
       [['middle', 'm', 'c', 'space-around'], 'middle'],
       [['bottom', 'b', 'flex-end'], 'bottom'],
       [['full', 'f', 'space-between'], 'full'],
+      [['baseline'], 'baseline'],
     ] as const;
     for (const [aliases, canonical] of verticalAliases) {
       for (const alias of aliases) {

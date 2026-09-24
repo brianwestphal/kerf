@@ -343,7 +343,7 @@ export const generatedKerfCatalog = [
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
-    "description": "Arrange related content horizontally with consistent spacing, optional physical-side text/control insets, and explicit left/center/right/full plus top/middle/bottom/full alignment instead of application-owned flex wrappers.",
+    "description": "Arrange related content horizontally with consistent spacing, optional physical-side text/control insets, and explicit left/center/right/full plus top/middle/bottom/full/baseline alignment instead of application-owned flex wrappers.",
     "uses": [],
     "demoSource": "ui/ux-demo/demos/row.tsx",
     "componentSource": "ui/src/row.tsx",

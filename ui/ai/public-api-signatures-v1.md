@@ -336,7 +336,8 @@ export { ListHeader, type ListHeaderProps };
 import * as kerfjs from 'kerfjs';
 import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
 import { D as DividerSides, S as Sides } from './divider-sides-BzB6rphT.js';
-import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-CF8NLj7i.js';
+import { H as HorizontalAlignment, L as ListVerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
+export { V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface ListProps {
@@ -348,7 +349,7 @@ interface ListProps {
     /** Horizontal alignment. Defaults to full to preserve stretch-aligned list children. */
     hAlign?: HorizontalAlignment;
     /** Vertical distribution. Defaults to top. */
-    vAlign?: VerticalAlignment;
+    vAlign?: ListVerticalAlignment;
     /** Own vertical scrolling and overscroll containment. */
     scrollable?: boolean;
     /** Physical divider edges in canonical top/right/bottom/left order. */
@@ -362,7 +363,7 @@ interface ListProps {
 /** A stretch-aligned vertical stack with optional gap, flex, scroll, and dividers. */
 declare function List({ children, gap, flex, hAlign, vAlign, scrollable, dividerSides, textInsets, controlInsets, className, }: ListProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, CssLength, DividerSides, HorizontalAlignment, List, type ListProps, Sides, UiSpaceName, VerticalAlignment };
+export { CssFlex, CssFlexKeyword, CssLength, DividerSides, HorizontalAlignment, List, type ListProps, ListVerticalAlignment, Sides, UiSpaceName };
 ```
 
 ## `@kerfjs/ui/list-action-row`
@@ -2035,7 +2036,7 @@ export { Text, type TextContent, type TextProps, type TextVariant };
 import * as kerfjs from 'kerfjs';
 import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
 import { S as Sides } from './divider-sides-BzB6rphT.js';
-import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-CF8NLj7i.js';
+import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface RowProps {

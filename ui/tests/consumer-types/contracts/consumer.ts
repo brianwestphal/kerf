@@ -138,6 +138,7 @@ Row({
   vAlign: verticalAlignment,
   wrap: true,
 });
+Row({ vAlign: 'baseline' });
 List({ hAlign: 'c', vAlign: 'b' });
 // @ts-expect-error alignment aliases are finite.
 Row({ hAlign: 'between' });

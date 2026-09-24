@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added `Row.vAlign="baseline"` for native flex cross-axis baseline alignment;
+  `List.vAlign` remains limited to values supported by vertical main-axis
+  distribution.
 - Added a first-class `@kerfjs/ui/text` component for native `h1`–`h6` and
   paragraph semantics with standard transparent-border and content-padding
   geometry and margin-neutral defaults; it renders `p` when `variant` is omitted,

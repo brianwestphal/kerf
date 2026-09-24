@@ -166,18 +166,22 @@ insets.
 Use `Row` for a horizontal flex layout and `List` for a vertical one. `Row`
 defaults to `hAlign="left"`, `vAlign="full"`, `gap="xs"`, and no wrapping;
 `List` retains its existing full-width, top-aligned defaults and zero gap.
-Both components accept the same physical-axis vocabulary:
+Both components accept the same physical-axis vocabulary, with baseline
+alignment additionally available on the horizontal `Row` cross axis:
 
-| Axis       | Values and aliases                                                                                                             | Flex behavior                                                             |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| Horizontal | `left` / `l` / `flex-start`; `center` / `c` / `space-around`; `right` / `r` / `flex-end`; `full` / `f` / `space-between`       | Distributes a Row's children; aligns a List's children across its width.  |
-| Vertical   | `top` / `t` / `flex-start`; `middle` / `m` / `c` / `space-around`; `bottom` / `b` / `flex-end`; `full` / `f` / `space-between` | Aligns a Row's children across its height; distributes a List's children. |
+| Axis       | Values and aliases                                                                                                                                  | Flex behavior                                                             |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Horizontal | `left` / `l` / `flex-start`; `center` / `c` / `space-around`; `right` / `r` / `flex-end`; `full` / `f` / `space-between`                            | Distributes a Row's children; aligns a List's children across its width.  |
+| Vertical   | `top` / `t` / `flex-start`; `middle` / `m` / `c` / `space-around`; `bottom` / `b` / `flex-end`; `full` / `f` / `space-between`; Row-only `baseline` | Aligns a Row's children across its height; distributes a List's children. |
 
 Cross-axis `space-around` and `space-between` are not valid `align-items`
 values. Kerf therefore maps `middle` to centered items and `full` to stretched
 items, while applying the requested distribution to `align-content` when a
 Row wraps. Prefer the descriptive values in application code; the short and
 CSS-shaped aliases are provided for compact or migrated call sites.
+`baseline` is Row-only because CSS baseline alignment applies to a flex
+container's cross axis; a vertical List's `vAlign` controls main-axis
+distribution through `justify-content`, which has no baseline value.
 
 `Row.flex` and `List.flex` share one typed participation contract. Omit the prop
 for the CSS initial value, pass `true` for `1 1 auto`, select the finite

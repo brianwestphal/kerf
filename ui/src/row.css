@@ -90,3 +90,8 @@
   align-items: flex-end;
   align-content: flex-end;
 }
+
+.kui-row[data-v-align="baseline"] {
+  align-items: baseline;
+  align-content: baseline;
+}

@@ -137,6 +137,8 @@ mistakes but are not sanitizers.
 Use `Row` for horizontal flex composition and `List` for vertical composition.
 Both accept `hAlign` (`left`, `center`, `right`, `full`) and `vAlign` (`top`,
 `middle`, `bottom`, `full`), plus their documented short/CSS aliases. `Row`
+also accepts `vAlign="baseline"` for cross-axis text alignment; baseline is not
+available on `List`, whose vertical axis uses `justify-content`. `Row`
 defaults to left/full alignment, the `xs` gap, and `wrap={false}`; List keeps
 its existing full/top alignment and zero-gap defaults. Set `textInsets` or
 `controlInsets` with canonical physical sides in `t`/`r`/`b`/`l` order (for

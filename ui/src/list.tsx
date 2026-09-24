@@ -9,7 +9,7 @@ import type { DividerSides, Sides } from './divider-sides.js';
 import {
   type HorizontalAlignment,
   horizontalAlignment,
-  type VerticalAlignment,
+  type ListVerticalAlignment,
   verticalAlignment,
 } from './flex-alignment.js';
 import type { KerfUiContent } from './semantic-content.js';
@@ -33,7 +33,7 @@ export interface ListProps {
   /** Horizontal alignment. Defaults to full to preserve stretch-aligned list children. */
   hAlign?: HorizontalAlignment;
   /** Vertical distribution. Defaults to top. */
-  vAlign?: VerticalAlignment;
+  vAlign?: ListVerticalAlignment;
   /** Own vertical scrolling and overscroll containment. */
   scrollable?: boolean;
   /** Physical divider edges in canonical top/right/bottom/left order. */
@@ -100,5 +100,6 @@ export type {
 export type { DividerSides, Sides } from './divider-sides.js';
 export type {
   HorizontalAlignment,
+  ListVerticalAlignment,
   VerticalAlignment,
 } from './flex-alignment.js';
