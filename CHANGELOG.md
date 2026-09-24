@@ -10,6 +10,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added a first-class `@kerfjs/ui/grid` layout primitive for any positive
+  equal-width column count, with typed gap and flex values and zero-minimum
+  fractional tracks that stay equal when child content has different intrinsic
+  widths.
 - Made accent and filled-outlined Web Awesome badge variants meet WCAG AA at
   their compact text size while preserving loud accent fills and outlined
   borders.

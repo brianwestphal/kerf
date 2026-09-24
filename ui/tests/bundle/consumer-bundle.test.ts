@@ -165,6 +165,22 @@ describe('consumer bundle boundaries', () => {
     expect(css).not.toContain('remify(');
   });
 
+  it('loads only Grid CSS from the Grid browser subpath', async () => {
+    const result = await bundle(
+      "import { Grid } from '@kerfjs/ui/grid'; console.log(String(Grid({ columns: 3, gap: 'm' }))); ",
+    );
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const css = output(result, '.css');
+    expect(inputs).toContain('dist/browser/grid.js');
+    expect(inputs).toContain('dist/styles/grid.css');
+    expect(css).toContain('.kui-grid');
+    expect(css).toContain('minmax(0, 1fr)');
+    expect(css).not.toContain('.kui-row');
+    expect(css).not.toContain('.kui-list');
+    expect(css).not.toContain('.kui-toolbar');
+    expect(css).not.toContain('remify(');
+  });
+
   it('keeps a re-exported component’s CSS reachable (ValueTableRow placeholder pulls skeleton.css)', async () => {
     // value-table.tsx re-exports ValueTableRow via `export { … } from './value-table-row.js'`;
     // the browser-entry scanner must follow that re-export to the row's Skeleton dependency so
@@ -522,6 +538,12 @@ describe('consumer bundle boundaries', () => {
       import: './dist/row.js',
     });
     expect(pkg.exports['./row.css']).toBe('./dist/styles/row.css');
+    expect(pkg.exports['./grid']).toMatchObject({
+      types: './dist/grid.d.ts',
+      browser: './dist/browser/grid.js',
+      import: './dist/grid.js',
+    });
+    expect(pkg.exports['./grid.css']).toBe('./dist/styles/grid.css');
     expect(pkg.exports['./list-action-row.css']).toBe(
       './dist/styles/list-action-row.css',
     );

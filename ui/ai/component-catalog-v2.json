@@ -1495,6 +1495,91 @@
       }
     },
     {
+      "key": "@kerfjs/ui:grid",
+      "package": "@kerfjs/ui",
+      "id": "grid",
+      "name": "Grid",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "child semantics and content",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "column count and responsive changes",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "typed gap and flex choices",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "Every track uses minmax(0, 1fr), so unequal intrinsic widths cannot break equal distribution."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Grid adds layout only and no grid role; children retain responsibility for native or ARIA semantics.",
+          "Responsive column-count changes must preserve source and focus order."
+        ]
+      },
+      "cssValueProps": [
+        {
+          "path": "gap",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
+          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
+          "exceptionalShorthands": ["s", "xl"],
+          "rawPolicy": "forbid",
+          "examples": [
+            "gap=\"m\"",
+            "gap={space(\"m\")}",
+            "gap={calc(plus(rem(0.25), pct(10)))}"
+          ]
+        },
+        {
+          "path": "flex",
+          "grammar": "flex",
+          "helpers": ["flex"],
+          "shorthands": ["none", "auto", "initial"],
+          "canonicalShorthands": ["none", "auto", "initial"],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["flex", "flex=\"none\"", "flex={flex(1, 1, rem(20))}"]
+        }
+      ],
+      "boundaries": {
+        "rootClass": "kui-grid",
+        "publicClasses": ["kui-grid"],
+        "publicTokens": ["--kui-grid-gap", "--kui-layout-item-gap"]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:spacer",
       "package": "@kerfjs/ui",
       "id": "spacer",

@@ -112,7 +112,7 @@ The two relationships that get confused most are 8px vs 24px: 8px is _inside_ a
 group, 24px is _between_ major, differing regions. 16px sits between them for
 same-kind groups.
 
-For `Row.gap` and `List.gap`, pass these token names directly (`gap="xs"`, `gap="m"`) or use
+For `Row.gap`, `Grid.gap`, and `List.gap`, pass these token names directly (`gap="xs"`, `gap="m"`) or use
 `space('xs')` from `@kerfjs/ui/css-values` when composing a value in JavaScript.
 Use `rem`, `em`, `px`, `pct`, `lengthVar`, and `calc(plus(...))` only when a
 named spacing relationship does not express the requirement; do not pass raw
@@ -168,6 +168,29 @@ Spacer is always decorative (`aria-hidden="true"`), accepts no children, and
 uses physical width and height. Prefer `Row.gap` or `List.gap` for uniform
 sibling rhythm, and never use Spacer to cancel or duplicate component-owned
 insets.
+
+## Grid
+
+Use `Grid` from `@kerfjs/ui/grid` when a fixed positive number of columns must
+share the available width evenly. Every track is `minmax(0, 1fr)`, so a child
+with wider intrinsic content cannot make its column wider than its peers. Grid
+defaults to the `xs` gap and accepts the same finite spacing names, complete
+typed `CssLength` values, and typed flex-participation contract as Row.
+
+```tsx
+import { Grid } from "@kerfjs/ui/grid";
+
+<Grid columns={2} gap="m">
+  <label>Quantity <input /></label>
+  <label>Unit <input /></label>
+</Grid>;
+```
+
+`columns` must be a positive safe integer; invalid counts throw instead of
+silently producing invalid CSS. Grid is layout-only and adds no ARIA grid role.
+The application owns child semantics and responsive count changes. Use
+application-owned CSS grid for intrinsic, asymmetric, spanning, auto-fit, or
+masonry tracks, and use `ResizableRegion` when people must adjust a boundary.
 
 ## Row and List alignment
 

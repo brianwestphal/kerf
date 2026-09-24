@@ -7,6 +7,7 @@ import { EmptyStateDemo } from './empty-state.js';
 import { FeedbackDemo } from './feedback.js';
 import { FloatingToolbarDemo } from './floating-toolbar.js';
 import { FoundationDemo } from './foundation.js';
+import { GridDemo } from './grid.js';
 import { HeadersDemo } from './headers.js';
 import { LayoutDemo } from './layout.js';
 import { ListDemo } from './list.js';
@@ -54,6 +55,7 @@ export const demos = {
   text: TextDemo,
   list: ListDemo,
   row: RowDemo,
+  grid: GridDemo,
   spacer: SpacerDemo,
   'list-header': ListHeaderDemo,
   'list-action-row': ListActionRowDemo,

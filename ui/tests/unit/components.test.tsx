@@ -9,6 +9,7 @@ import { flex, rem, uiColor } from '../../src/css-values.js';
 import { DisclosureArrow } from '../../src/disclosure-arrow.js';
 import { EmptyState } from '../../src/empty-state.js';
 import { FloatingToolbar } from '../../src/floating-toolbar.js';
+import { Grid } from '../../src/grid.js';
 import { List } from '../../src/list.js';
 import { ListActionRow } from '../../src/list-action-row.js';
 import { ListHeader, type ListHeaderProps } from '../../src/list-header.js';
@@ -347,6 +348,49 @@ describe('production UI primitives', () => {
           `data-v-align="${canonical}"`,
         );
       }
+    }
+  });
+
+  it('renders equal-track grids with typed gaps and flex participation', () => {
+    const html = asHtml(
+      Grid({
+        columns: 3,
+        gap: rem(1),
+        flex: flex(2, 1, rem(20)),
+        className: 'fields',
+        children: [<span>One</span>, <span>Two</span>, <span>Three</span>],
+      }),
+    );
+    expect(html).toContain(
+      'class="kui-grid fields" data-component="grid" data-columns="3" data-flex="true" style="--_kui-grid-columns:3;--_kui-grid-gap:1rem;--_kui-grid-flex:2 1 20rem"',
+    );
+    expect(html).toContain(
+      '<span>One</span><span>Two</span><span>Three</span>',
+    );
+
+    expect(asHtml(Grid({ columns: 2 }))).toContain(
+      'data-columns="2" data-flex="false" style="--_kui-grid-columns:2;--_kui-grid-gap:var(--kui-space-xs)"',
+    );
+    expect(asHtml(Grid({ columns: 4, gap: 'none', flex: true }))).toContain(
+      'style="--_kui-grid-columns:4;--_kui-grid-gap:var(--kui-space-none);--_kui-grid-flex:1 1 auto"',
+    );
+    expect(asHtml(Grid({ columns: 1, flex: 'none' }))).toContain(
+      '--_kui-grid-flex:none',
+    );
+  });
+
+  it('rejects invalid Grid column counts before rendering', () => {
+    for (const columns of [
+      0,
+      -1,
+      1.5,
+      Number.NaN,
+      Number.POSITIVE_INFINITY,
+      Number.MAX_SAFE_INTEGER + 1,
+    ]) {
+      expect(() => Grid({ columns })).toThrowError(
+        new RangeError('Grid columns must be a positive safe integer'),
+      );
     }
   });
 

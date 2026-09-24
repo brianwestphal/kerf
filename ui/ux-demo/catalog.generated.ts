@@ -268,6 +268,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/layout.md"
   },
   {
+    "id": "grid",
+    "name": "Grid",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Arrange related siblings in equal-width columns without repeating application-owned grid-template-columns CSS.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/grid.tsx",
+    "componentSource": "ui/src/grid.tsx",
+    "documentation": "ui/docs/layout.md"
+  },
+  {
     "id": "spacer",
     "name": "Spacer",
     "category": "Structure",

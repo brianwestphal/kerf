@@ -13,6 +13,7 @@ const entries = [
   'floating-toolbar',
   'list',
   'row',
+  'grid',
   'spacer',
   'list-action-row',
   'list-item',

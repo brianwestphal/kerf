@@ -283,11 +283,11 @@ an already-produced `SafeHtml` value.
 Runtime dimensions use the CSS-free `@kerfjs/ui/css-values` surface: branded
 primitive `CssLength` values are distinct from non-standalone
 `CssLengthExpression` arithmetic, finite numeric builders reject non-finite
-input, and `Row.gap`/`List.gap` plus `Spacer` width/height accept direct `UiSpaceName` shorthands or a complete typed
+input, and `Row.gap`/`Grid.gap`/`List.gap` plus `Spacer` width/height accept direct `UiSpaceName` shorthands or a complete typed
 length instead of unrestricted CSS strings. Source and packed-tarball type
 contracts pin that distinction.
 `CssFlex`, `CssSize`, and `CssColor` extend the same property-specific rule to
-List flex, Skeleton geometry, and Select choice icons. Row declaration-string
+Row/Grid/List flex, Skeleton geometry, and Select choice icons. Row declaration-string
 props are removed before 5.0 stable in favor of classes, public tokens, and
 semantic props; media queries and numeric pixel APIs keep their own grammars.
 
@@ -365,7 +365,7 @@ URLs keep those links deploy-safe without adding a UI runtime export.
 
 ### §22 Pixel-first UI CSS authoring
 
-**Shipped.** `@kerfjs/ui` component and catalog-only styles express scalable dimensions as `remify(<numeric-px-literal>)`, which PostCSS divides source CSS against a fixed 16px baseline into standard `rem`. Literal pixels remain appropriate for intentional hairlines, and `em` stays explicit because it is component-font-relative. Runtime component values deliberately use the separate CSS-free `@kerfjs/ui/css-values` subpath: branded primitive `CssLength` values come from deterministic `px`/`rem`/`em`/`pct`/`space`/`lengthVar` builders, while `plus` returns a non-standalone expression that `calc` promotes to a complete value. `Row.gap`, `List.gap`, and `Spacer` width/height accept the finite spacing vocabulary directly and reject unrestricted strings; `Spacer.flex` provides a decorative flexible main-axis gap. Package exports and generated browser wrappers point to compiled `ui/dist/styles/` output; component author CSS is excluded from publication, while deliberately shipped copyable recipe source remains ordinary CSS. The UX catalog resolves package imports back to component source and runs the identical transform under Vite, preserving CSS HMR. Unit, bundle, source/packed type, package, and browser checks reject malformed delivery syntax and invalid runtime-value composition. See [`docs/22-ui-css-authoring.md`](../22-ui-css-authoring.md).
+**Shipped.** `@kerfjs/ui` component and catalog-only styles express scalable dimensions as `remify(<numeric-px-literal>)`, which PostCSS divides source CSS against a fixed 16px baseline into standard `rem`. Literal pixels remain appropriate for intentional hairlines, and `em` stays explicit because it is component-font-relative. Runtime component values deliberately use the separate CSS-free `@kerfjs/ui/css-values` subpath: branded primitive `CssLength` values come from deterministic `px`/`rem`/`em`/`pct`/`space`/`lengthVar` builders, while `plus` returns a non-standalone expression that `calc` promotes to a complete value. `Row.gap`, `Grid.gap`, `List.gap`, and `Spacer` width/height accept the finite spacing vocabulary directly and reject unrestricted strings; Row, Grid, and List accept typed flex participation, while `Spacer.flex` provides a decorative flexible main-axis gap. Package exports and generated browser wrappers point to compiled `ui/dist/styles/` output; component author CSS is excluded from publication, while deliberately shipped copyable recipe source remains ordinary CSS. The UX catalog resolves package imports back to component source and runs the identical transform under Vite, preserving CSS HMR. Unit, bundle, source/packed type, package, and browser checks reject malformed delivery syntax and invalid runtime-value composition. See [`docs/22-ui-css-authoring.md`](../22-ui-css-authoring.md).
 
 The UI package also ships `Text`, a semantic wrapper that renders native `p` by
 default and accepts `h1`–`h6` variants for headings. It passes through ordinary

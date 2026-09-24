@@ -1681,6 +1681,104 @@
       }
     },
     {
+      "id": "grid",
+      "name": "Grid",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A fixed positive number of evenly distributed minmax columns with a typed xs gap by default and optional flex participation.",
+      "uses": [],
+      "purpose": "Arrange related siblings in equal-width columns without repeating application-owned grid-template-columns CSS.",
+      "publicExports": ["Grid"],
+      "cssValueProps": [
+        {
+          "path": "gap",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
+          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
+          "exceptionalShorthands": ["s", "xl"],
+          "rawPolicy": "forbid",
+          "examples": ["gap=\"m\"", "gap={space(\"m\")}", "gap={calc(plus(rem(0.25), pct(10)))}"]
+        },
+        {
+          "path": "flex",
+          "grammar": "flex",
+          "helpers": ["flex"],
+          "shorthands": ["none", "auto", "initial"],
+          "canonicalShorthands": ["none", "auto", "initial"],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["flex", "flex=\"none\"", "flex={flex(1, 1, rem(20))}"]
+        }
+      ],
+      "useWhen": [
+        "Arrange related siblings into a fixed positive number of equal-width columns.",
+        "Prevent wider intrinsic content from making one fractional track wider than its peers.",
+        "Use a finite flex keyword or the flex() builder when Grid participates in a flexible parent layout."
+      ],
+      "avoidWhen": [
+        "Do not use Grid for intrinsic, asymmetric, spanning, auto-fit, or masonry tracks; use application-owned CSS grid.",
+        "Do not use Grid when columns need a user-operable separator; use ResizableRegion.",
+        "Do not expect Grid to choose responsive breakpoints or change the column count; the application owns that policy.",
+        "Do not pass raw CSS strings to gap or flex, mix their distinct grammars, or use s/xl spacing steps without a deliberate exception."
+      ],
+      "alternatives": [
+        {
+          "id": "row",
+          "relationship": "axis-alternative",
+          "when": "Use Row for one horizontal flex line, alignment, or wrapping rather than fixed equal tracks."
+        },
+        {
+          "id": "list",
+          "relationship": "axis-alternative",
+          "when": "Use List when the main layout axis is vertical."
+        },
+        {
+          "id": "resize",
+          "relationship": "interactive-alternative",
+          "when": "Use ResizableRegion when people must adjust the boundary between tracks."
+        }
+      ],
+      "appOwns": [
+        "child semantics and content",
+        "column count and responsive changes",
+        "typed gap and flex choices"
+      ],
+      "variants": [
+        "any positive safe-integer equal-track count",
+        "named none/2xs/xs/s/m/l/xl token gap",
+        "typed CssLength gap",
+        "boolean, finite-keyword, or typed CssFlex flex"
+      ],
+      "accessibility": [
+        "Grid adds layout only and no grid role; children retain responsibility for native or ARIA semantics.",
+        "Responsive column-count changes must preserve source and focus order."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "Every track uses minmax(0, 1fr), so unequal intrinsic widths cannot break equal distribution."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/grid",
+        "manualCssImport": "@kerfjs/ui/grid.css",
+        "sideEffects": ["browser-condition-css"]
+      },
+      "wiring": [],
+      "publicClasses": ["kui-grid"],
+      "publicTokens": ["--kui-grid-gap", "--kui-layout-item-gap"],
+      "links": {
+        "catalogRoute": "?component=grid",
+        "documentation": "docs/layout.md",
+        "recipe": "docs/layout.md#grid"
+      }
+    },
+    {
       "id": "spacer",
       "name": "Spacer",
       "category": "Structure",

@@ -98,6 +98,11 @@
       "browser": "./dist/browser/row.js",
       "import": "./dist/row.js"
     },
+    "./grid": {
+      "types": "./dist/grid.d.ts",
+      "browser": "./dist/browser/grid.js",
+      "import": "./dist/grid.js"
+    },
     "./spacer": {
       "types": "./dist/spacer.d.ts",
       "browser": "./dist/browser/spacer.js",
@@ -295,6 +300,7 @@
     "./text.css": "./dist/styles/text.css",
     "./list.css": "./dist/styles/list.css",
     "./row.css": "./dist/styles/row.css",
+    "./grid.css": "./dist/styles/grid.css",
     "./spacer.css": "./dist/styles/spacer.css",
     "./list-action-row.css": "./dist/styles/list-action-row.css",
     "./list-item.css": "./dist/styles/list-item.css",

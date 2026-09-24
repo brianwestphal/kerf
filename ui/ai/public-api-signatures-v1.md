@@ -2072,6 +2072,29 @@ declare function Row({ children, hAlign, vAlign, gap, flex, wrap, textInsets, co
 export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, Row, type RowProps, Sides, UiSpaceName, VerticalAlignment };
 ```
 
+## `@kerfjs/ui/grid`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+
+interface GridProps {
+    children?: KerfUiContent;
+    /** Number of equal-width columns. Must be a positive safe integer. */
+    columns: number;
+    /** A named UI spacing token or typed CSS length. Defaults to xs. */
+    gap?: UiSpaceName | CssLength;
+    /** Allow this grid to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
+    flex?: boolean | CssFlexKeyword | CssFlex;
+    className?: string;
+}
+/** A fixed-count grid whose columns share the available width equally. */
+declare function Grid({ children, columns, gap, flex, className, }: GridProps): kerfjs.SafeHtml;
+
+export { CssFlex, CssFlexKeyword, CssLength, Grid, type GridProps, UiSpaceName };
+```
+
 ## `@kerfjs/ui/spacer`
 
 ```ts

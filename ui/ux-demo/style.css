@@ -289,6 +289,62 @@ button {
   width: min(remify(480px), 100%);
 }
 
+.demo-grid-frame {
+  width: min(remify(480px), 100%);
+}
+
+.demo-grid-field {
+  display: grid;
+  min-width: 0;
+  gap: var(--kui-space-2xs);
+  color: var(--kui-color-text-quiet);
+  font-family: var(--kui-font-sans);
+  font-size: var(--kui-font-xs);
+  font-weight: var(--kui-font-weight-semibold);
+  text-transform: uppercase;
+}
+
+.demo-grid-field input {
+  min-width: 0;
+  min-height: remify(36px);
+  box-sizing: border-box;
+  padding-inline: var(--kui-space-xs);
+  border: 1px solid var(--kui-color-border);
+  border-radius: var(--kui-radius-s);
+  background: var(--kui-color-surface);
+  color: var(--kui-color-text);
+  font: inherit;
+  font-size: var(--kui-font-s);
+  font-weight: normal;
+  text-transform: none;
+}
+
+.demo-grid-cell {
+  display: flex;
+  min-width: 0;
+  min-height: remify(72px);
+  box-sizing: border-box;
+  padding: var(--kui-space-xs);
+  border: 1px solid var(--kui-color-border);
+  border-radius: var(--kui-radius-m);
+  align-items: flex-start;
+  overflow-wrap: anywhere;
+  background: var(--kui-color-surface);
+  color: var(--kui-color-text);
+  font-family: var(--kui-font-sans);
+  font-size: var(--kui-font-s);
+}
+
+.demo-grid-flex-parent {
+  display: flex;
+  width: min(remify(480px), 100%);
+  min-height: remify(88px);
+}
+
+.demo-grid-flex {
+  align-items: stretch;
+}
+
 .demo-spacer-marker {
   background: var(--kui-color-accent-subtle);
 }

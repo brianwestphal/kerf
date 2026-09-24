@@ -126,7 +126,7 @@ Do not concatenate a count into `label` or pass a numeric `badge`; the mutually
 exclusive legacy `badge` slot remains available for non-count `SafeHtml` such
 as a `New` marker.
 
-`Row.gap`, `List.gap`, and `Spacer` dimensions accept a direct spacing name such as
+`Row.gap`, `Grid.gap`, `List.gap`, and `Spacer` dimensions accept a direct spacing name such as
 `gap="xs"` or `gap="m"`, or a branded `CssLength`. Import `space`, `rem`, `em`,
 `px`, `pct`, `lengthVar`, `plus`, and `calc` from the CSS-free
 `@kerfjs/ui/css-values` subpath when a named step is not enough. `plus` returns
@@ -148,8 +148,13 @@ precedence where both select the same side. `ListInsetText` and
 grammar for selective insets. Nested Rows and Lists resolve their inset sides
 independently, so an unselected inner side does not inherit its parent's inset.
 
+Use `Grid` for a fixed positive number of evenly distributed columns. Its
+`minmax(0, 1fr)` tracks stay equal when children have different intrinsic
+widths; the application owns responsive count changes. Use application CSS grid
+for asymmetric or intrinsic tracks and `ResizableRegion` for adjustable ones.
+
 The same property-specific boundary applies beyond spacing: use `flex()` (or a
-finite keyword) for `Row.flex` and `List.flex`; length builders and intrinsic-size keywords for
+finite keyword) for `Row.flex`, `Grid.flex`, and `List.flex`; length builders and intrinsic-size keywords for
 `Skeleton.width`/`height`; length builders for `Skeleton.radius`; and
 `uiColor()` or `colorVar()` for `SelectChoice.color`. These grammars are not
 interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
@@ -169,6 +174,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `Text`                                                              | `@kerfjs/ui/text`                       | `@kerfjs/ui/text.css`                  |
 | `List`                                                              | `@kerfjs/ui/list`                       | `@kerfjs/ui/list.css`                  |
 | `Row`                                                               | `@kerfjs/ui/row`                        | `@kerfjs/ui/row.css`                   |
+| `Grid`                                                              | `@kerfjs/ui/grid`                       | `@kerfjs/ui/grid.css`                  |
 | `Spacer`                                                            | `@kerfjs/ui/spacer`                     | `@kerfjs/ui/spacer.css`                |
 | Typed CSS dimension builders                                        | `@kerfjs/ui/css-values`                 | —                                      |
 | `ListActionRow`                                                     | `@kerfjs/ui/list-action-row`            | `@kerfjs/ui/list-action-row.css`       |

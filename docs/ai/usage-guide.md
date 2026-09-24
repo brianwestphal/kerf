@@ -78,7 +78,7 @@ the complete layer is intentional. Manual CSS subpaths remain available for
 custom pipelines. App overrides belong later in the cascade or on a scoped
 `--kui-*` owner.
 
-`Row.gap`, `List.gap`, and `Spacer` width/height accept a finite token shorthand such as
+`Row.gap`, `Grid.gap`, `List.gap`, and `Spacer` width/height accept a finite token shorthand such as
 `"xs"` or `"m"`, or a branded complete `CssLength`. Use the CSS-free
 `@kerfjs/ui/css-values` builders (`space`, `px`, `rem`, `em`, `pct`,
 `lengthVar`, `plus`, `calc`) rather than raw CSS strings. `plus` produces only a
@@ -90,7 +90,13 @@ Use `Spacer` for one intentional empty dimension rather than repeated sibling
 rhythm. Fixed spacers do not shrink; `flex` consumes remaining space along a
 flex parent's main axis. The component is decorative and accepts no children.
 
-Keep runtime CSS grammars property-specific: use `flex()` for `List.flex`,
+Use `Grid` from `@kerfjs/ui/grid` for a fixed positive number of equal-width
+columns. Its zero-minimum fractional tracks stay equal despite intrinsic child
+widths, and its `gap`/`flex` values use the shared typed contracts. The app owns
+responsive count changes; use application CSS grid for asymmetric or intrinsic
+tracks and `ResizableRegion` for adjustable boundaries.
+
+Keep runtime CSS grammars property-specific: use `flex()` for Row/Grid/List flex,
 length builders for Skeleton dimensions, and `uiColor()`/`colorVar()` for
 choice-icon colors. Do not cast between their opaque brands or generate raw
 row `style` strings; use `className`, public tokens, and cataloged props.

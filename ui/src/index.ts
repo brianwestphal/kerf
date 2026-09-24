@@ -39,6 +39,7 @@ export {
   type FloatingToolbarPosition,
   type FloatingToolbarProps,
 } from './floating-toolbar.js';
+export { Grid, type GridProps } from './grid.js';
 export {
   type DividerSides,
   List,

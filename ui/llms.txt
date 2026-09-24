@@ -107,6 +107,11 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   for List flex, typed lengths for Skeleton geometry, and
   `uiColor()`/`colorVar()` for choice-icon colors. These brands are intentionally
   not interchangeable; rows use classes/tokens/props rather than raw `style`.
+- **Use `Grid` for a fixed positive count of equal-width columns.** It uses
+  zero-minimum fractional tracks, so intrinsic content cannot make one column
+  wider than its peers. The app owns responsive count changes; use custom CSS
+  grid for asymmetric/intrinsic tracks and `ResizableRegion` for adjustable
+  boundaries. `Grid.gap` and `Grid.flex` use the same typed grammars as Row.
 - **Keep Web Awesome on the shared inset tiers.** `webawesome.css` uses
   `--kui-wa-control-inset` (8px controls/items) and
   `--kui-wa-surface-margin` / `--kui-wa-surface-inset` (8px around/inside

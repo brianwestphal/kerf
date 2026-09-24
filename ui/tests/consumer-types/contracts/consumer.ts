@@ -41,6 +41,7 @@ import {
   buildEvaluationContexts,
   type UiEvaluationContext,
 } from '@kerfjs/ui/evaluator';
+import { Grid } from '@kerfjs/ui/grid';
 import { type DividerSides, List, type Sides } from '@kerfjs/ui/list';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { ListHeader } from '@kerfjs/ui/list-header';
@@ -118,6 +119,8 @@ List({ gap: lengthVar('--app-gap', px(4)) });
 List({ gap: em(0.5) });
 Row({ gap: spacingName });
 Row({ gap: responsiveGap });
+Grid({ columns: 3, gap: spacingName });
+Grid({ columns: 3, gap: responsiveGap });
 Spacer({ width: spacingName, height: responsiveGap, flex: true });
 void genericCssValue;
 // @ts-expect-error KUI-T012 an incomplete expression must be wrapped in calc().
@@ -126,6 +129,8 @@ List({ gap: expression });
 List({ gap: '0.25rem' });
 // @ts-expect-error KUI-T012 Row uses the same typed gap contract.
 Row({ gap: '0.25rem' });
+// @ts-expect-error KUI-T012 Grid uses the same typed gap contract.
+Grid({ columns: 2, gap: '0.25rem' });
 // @ts-expect-error KUI-T012 Spacer dimensions use the same typed length contract.
 Spacer({ width: '0.25rem' });
 // @ts-expect-error KUI-T012 spacing shorthands are a finite vocabulary.
@@ -146,6 +151,9 @@ List({ flex: 'none' });
 Row({ flex: listFlex });
 Row({ flex: true });
 Row({ flex: 'auto' });
+Grid({ columns: 2, flex: listFlex });
+Grid({ columns: 2, flex: true });
+Grid({ columns: 2, flex: 'initial' });
 const horizontalAlignment: HorizontalAlignment = 'space-between';
 const verticalAlignment: VerticalAlignment = 'space-around';
 Row({
@@ -185,6 +193,14 @@ List({ flex: rem(20) });
 Row({ flex: '2 1 20rem' });
 // @ts-expect-error KUI-T013 Row flex does not accept a length grammar.
 Row({ flex: rem(20) });
+// @ts-expect-error KUI-T013 Grid rejects raw flex strings too.
+Grid({ columns: 2, flex: '2 1 20rem' });
+// @ts-expect-error KUI-T013 Grid flex does not accept a length grammar.
+Grid({ columns: 2, flex: rem(20) });
+// @ts-expect-error Grid requires an explicit equal-track count.
+Grid({});
+// @ts-expect-error Grid column counts are numeric.
+Grid({ columns: '2' });
 // @ts-expect-error KUI-T013 raw dimension strings bypass the size grammar.
 Skeleton({ width: '10em' });
 // @ts-expect-error KUI-T013 a flex shorthand is not a dimension.
