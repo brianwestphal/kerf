@@ -25,44 +25,44 @@
     inset 1px 0 var(--_kui-list-divider-left);
 }
 
-.kui-list[control-insets*="t"] {
+.kui-list[data-control-insets*="t"] {
   --_kui-list-inset-top: var(--kui-layout-inline-margin, remify(8px));
 }
 
-.kui-list[control-insets*="r"] {
+.kui-list[data-control-insets*="r"] {
   --_kui-list-inset-right: var(--kui-layout-inline-margin, remify(8px));
 }
 
-.kui-list[control-insets*="b"] {
+.kui-list[data-control-insets*="b"] {
   --_kui-list-inset-bottom: var(--kui-layout-inline-margin, remify(8px));
 }
 
-.kui-list[control-insets*="l"] {
+.kui-list[data-control-insets*="l"] {
   --_kui-list-inset-left: var(--kui-layout-inline-margin, remify(8px));
 }
 
-.kui-list[text-insets*="t"] {
+.kui-list[data-text-insets*="t"] {
   --_kui-list-inset-top: calc(
     var(--kui-layout-inline-margin, remify(8px)) + 1px +
       var(--kui-layout-item-padding, remify(8px))
   );
 }
 
-.kui-list[text-insets*="r"] {
+.kui-list[data-text-insets*="r"] {
   --_kui-list-inset-right: calc(
     var(--kui-layout-inline-margin, remify(8px)) + 1px +
       var(--kui-layout-item-padding, remify(8px))
   );
 }
 
-.kui-list[text-insets*="b"] {
+.kui-list[data-text-insets*="b"] {
   --_kui-list-inset-bottom: calc(
     var(--kui-layout-inline-margin, remify(8px)) + 1px +
       var(--kui-layout-item-padding, remify(8px))
   );
 }
 
-.kui-list[text-insets*="l"] {
+.kui-list[data-text-insets*="l"] {
   --_kui-list-inset-left: calc(
     var(--kui-layout-inline-margin, remify(8px)) + 1px +
       var(--kui-layout-item-padding, remify(8px))

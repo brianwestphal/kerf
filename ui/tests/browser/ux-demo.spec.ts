@@ -697,16 +697,16 @@ test('applies text and control insets only to selected physical sides', async ({
 
   await page.goto('/?component=row');
   const row = page.locator('.demo-row-insets');
-  await expect(row).toHaveAttribute('text-insets', 'tbl');
-  await expect(row).toHaveAttribute('control-insets', 'r');
+  await expect(row).toHaveAttribute('data-text-insets', 'tbl');
+  await expect(row).toHaveAttribute('data-control-insets', 'r');
   expect(await edges(row, 'padding')).toEqual([17, 8, 17, 17]);
   if (browserName === 'chromium')
     await row.screenshot({ path: 'test-results/row-selected-insets-wide.png' });
 
   await page.goto('/?component=list');
   const list = page.locator('.demo-list-insets');
-  await expect(list).toHaveAttribute('text-insets', 'l');
-  await expect(list).toHaveAttribute('control-insets', 'rb');
+  await expect(list).toHaveAttribute('data-text-insets', 'l');
+  await expect(list).toHaveAttribute('data-control-insets', 'rb');
   expect(await edges(list, 'padding')).toEqual([0, 8, 8, 17]);
   if (browserName === 'chromium')
     await list.screenshot({

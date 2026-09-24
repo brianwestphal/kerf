@@ -16,44 +16,44 @@
   gap: var(--_kui-row-gap, var(--kui-row-gap));
 }
 
-.kui-row[control-insets*="t"] {
+.kui-row[data-control-insets*="t"] {
   --_kui-row-inset-top: var(--kui-layout-inline-margin, remify(8px));
 }
 
-.kui-row[control-insets*="r"] {
+.kui-row[data-control-insets*="r"] {
   --_kui-row-inset-right: var(--kui-layout-inline-margin, remify(8px));
 }
 
-.kui-row[control-insets*="b"] {
+.kui-row[data-control-insets*="b"] {
   --_kui-row-inset-bottom: var(--kui-layout-inline-margin, remify(8px));
 }
 
-.kui-row[control-insets*="l"] {
+.kui-row[data-control-insets*="l"] {
   --_kui-row-inset-left: var(--kui-layout-inline-margin, remify(8px));
 }
 
-.kui-row[text-insets*="t"] {
+.kui-row[data-text-insets*="t"] {
   --_kui-row-inset-top: calc(
     var(--kui-layout-inline-margin, remify(8px)) + 1px +
       var(--kui-layout-item-padding, remify(8px))
   );
 }
 
-.kui-row[text-insets*="r"] {
+.kui-row[data-text-insets*="r"] {
   --_kui-row-inset-right: calc(
     var(--kui-layout-inline-margin, remify(8px)) + 1px +
       var(--kui-layout-item-padding, remify(8px))
   );
 }
 
-.kui-row[text-insets*="b"] {
+.kui-row[data-text-insets*="b"] {
   --_kui-row-inset-bottom: calc(
     var(--kui-layout-inline-margin, remify(8px)) + 1px +
       var(--kui-layout-item-padding, remify(8px))
   );
 }
 
-.kui-row[text-insets*="l"] {
+.kui-row[data-text-insets*="l"] {
   --_kui-row-inset-left: calc(
     var(--kui-layout-inline-margin, remify(8px)) + 1px +
       var(--kui-layout-item-padding, remify(8px))

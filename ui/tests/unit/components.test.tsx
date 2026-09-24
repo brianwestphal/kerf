@@ -247,7 +247,7 @@ describe('production UI primitives', () => {
     );
     expect(html).toContain('class="kui-list results"');
     expect(html).toContain(
-      'data-component="list" data-gap="true" data-flex="true" data-h-align="full" data-v-align="top" data-scrollable="true" divider-sides="trbl" text-insets="tbl" control-insets="r"',
+      'data-component="list" data-gap="true" data-flex="true" data-h-align="full" data-v-align="top" data-scrollable="true" divider-sides="trbl" data-text-insets="tbl" data-control-insets="r"',
     );
     expect(html).toContain(
       'style="--_kui-list-gap:0.75rem;--_kui-list-flex:2 1 20rem"',
@@ -303,7 +303,7 @@ describe('production UI primitives', () => {
     );
     expect(row).toContain('class="kui-row actions"');
     expect(row).toContain(
-      'data-h-align="full" data-v-align="middle" data-flex="true" data-wrap="true" text-insets="tbl" control-insets="r" style="--_kui-row-gap:1rem;--_kui-row-flex:none"',
+      'data-h-align="full" data-v-align="middle" data-flex="true" data-wrap="true" data-text-insets="tbl" data-control-insets="r" style="--_kui-row-gap:1rem;--_kui-row-flex:none"',
     );
     expect(row).toContain('<span>One</span><span>Two</span>');
 

@@ -82,8 +82,8 @@ export function List({
       data-v-align={verticalAlignment(vAlign)}
       data-scrollable={String(scrollable)}
       divider-sides={dividerSides || undefined}
-      text-insets={textInsets || undefined}
-      control-insets={controlInsets || undefined}
+      data-text-insets={textInsets || undefined}
+      data-control-insets={controlInsets || undefined}
       style={style || undefined}
     >
       {children}

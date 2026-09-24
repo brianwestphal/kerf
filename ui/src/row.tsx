@@ -74,8 +74,8 @@ export function Row({
       data-v-align={verticalAlignment(vAlign)}
       data-flex={String(Boolean(flex))}
       data-wrap={String(wrap)}
-      text-insets={textInsets || undefined}
-      control-insets={controlInsets || undefined}
+      data-text-insets={textInsets || undefined}
+      data-control-insets={controlInsets || undefined}
       style={style}
     >
       {children}
