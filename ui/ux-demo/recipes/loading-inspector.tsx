@@ -9,6 +9,7 @@ import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
 import { Skeleton } from '@kerfjs/ui/skeleton';
 import { StateBanner } from '@kerfjs/ui/state-banner';
+import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -69,13 +70,17 @@ export const createRecipe: RecipeFactory = (announce) => {
             </ToolbarControlGroup>
           }
         />
-        <p class="kui-recipe__heading-summary" id="recipe-inspector-summary">
+        <Text
+          variant="p"
+          class="kui-recipe__heading-summary"
+          id="recipe-inspector-summary"
+        >
           {p ? (
             <Skeleton width={em(18)} />
           ) : (
             'Restore keyboard focus after a dialog closes'
           )}
-        </p>
+        </Text>
         <div class="recipe-inspector__body kui-pane__content kui-content">
           <section>
             <ValueTable label="Ticket details">
@@ -164,12 +169,12 @@ export const createRecipe: RecipeFactory = (announce) => {
               icon={icon(FileText, 'file-text')}
             />
           )}
-          <p class="kui-recipe__ownership kui-content-item">
+          <Text variant="p" class="kui-recipe__ownership kui-content-item">
             Each value-bearing component's <code>placeholder</code> prop renders
             skeletons in its value slots while loading, so the recipe composes a
             faithful loading inspector from real chrome. The app owns the
             loading lifecycle and which values are still unknown.
-          </p>
+          </Text>
         </div>
       </section>
     );

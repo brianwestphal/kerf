@@ -158,6 +158,11 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   in the leading zone, and actions in a trailing group. Supporting copy is
   app-owned content below. Do not create a private heading wrapper or restyle the
   toolbar.
+- **Use `Text` for ordinary semantic headings and paragraphs outside toolbar
+  title zones.** Pass a required `h1`–`h6` or `p` variant based on document
+  meaning. It passes native attributes through and owns the standard transparent
+  border plus item padding; keep toolbar titles on `ToolbarText` and list-aligned
+  bare prose on `ListInsetText`.
 - **Space by the five-step scale, by relationship not by eye.** `0`
   `--kui-space-none`, `4px` `--kui-space-2xs`, `8px` `--kui-space-xs` (inside a
   group), `16px` `--kui-space-m`, `24px` `--kui-space-l` (between major differing
@@ -228,7 +233,7 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 
 ## Public exports
 
-`LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `FloatingToolbar`, `ToolbarText`,
+`LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `FloatingToolbar`, `ToolbarText`, `Text`,
 `ListItem`, `ListActionRow`, `ListHeader`, `ListInsetControl`,
 `ListInsetText`, `SegmentedControl`,
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,

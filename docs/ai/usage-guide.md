@@ -61,6 +61,7 @@ import { Spacer } from "@kerfjs/ui/spacer";
 import { SegmentedControl } from "@kerfjs/ui/segmented-control";
 import { StateBanner } from "@kerfjs/ui/state-banner";
 import { TabBar } from "@kerfjs/ui/tab-bar";
+import { Text } from "@kerfjs/ui/text";
 import { Toolbar } from "@kerfjs/ui/toolbar";
 import { wireTabBars } from "@kerfjs/ui/wire-tab-bars";
 ```
@@ -149,6 +150,11 @@ host's `aria-labelledby`/`aria-describedby`. The icon may use a normal bordered
 on `ToolbarText` for page or section landmarks; omit it for a dialog title named
 through `aria-labelledby`. The app owns modal focus, dismissal, command policy,
 ids, supporting copy, and action handling.
+
+Use `Text` from `@kerfjs/ui/text` for ordinary headings and paragraphs outside
+toolbar title zones. Its required `variant` is `h1`–`h6` or `p`; choose heading
+levels by document hierarchy. It passes ordinary native attributes through and
+owns the standard transparent border plus content padding.
 
 For an avatar toolbar control, set `content="avatar"` and `avatarImage` on
 `ToolbarControlGroup`; do not insert an `img` into the button. A lone control

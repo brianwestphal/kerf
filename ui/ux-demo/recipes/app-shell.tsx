@@ -5,6 +5,7 @@ import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
+import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -158,10 +159,10 @@ export const createRecipe: RecipeFactory = (announce) => {
             }
           />
           <div class="recipe-shell__main-body kui-pane__content kui-content">
-            <p class="kui-recipe__ownership kui-content-item">
+            <Text variant="p" class="kui-recipe__ownership kui-content-item">
               Recipe owns pane geometry and one scroll owner per pane. The app
               owns routing, data, pane visibility, sizes, and persistence.
-            </p>
+            </Text>
             <div class="recipe-shell__cards">
               {[
                 'Release accessibility audit',
@@ -171,9 +172,9 @@ export const createRecipe: RecipeFactory = (announce) => {
               ].map((title) => (
                 <article class="recipe-shell__card kui-content-item">
                   <strong>{title}</strong>
-                  <p class="kui-recipe__muted">
+                  <Text variant="p" class="kui-recipe__muted">
                     Assigned to the interface systems team · due this week
-                  </p>
+                  </Text>
                 </article>
               ))}
             </div>

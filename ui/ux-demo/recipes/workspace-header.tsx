@@ -2,6 +2,7 @@ import '@kerfjs/ui/layout.css';
 import './recipes.css';
 
 import { StateBanner } from '@kerfjs/ui/state-banner';
+import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -14,11 +15,14 @@ export const createRecipe: RecipeFactory = (announce) => ({
       class="kui-recipe recipe-header kui-recipe__surface kui-content"
       data-recipe="recipe-workspace-header"
     >
-      <p class="recipe-header__context kui-inline-metadata kui-content-item">
+      <Text
+        variant="p"
+        class="recipe-header__context kui-inline-metadata kui-content-item"
+      >
         <span>Northstar workspace</span>
         <span>·</span>
         <span>Product planning</span>
-      </p>
+      </Text>
       <Toolbar
         label="Workspace heading"
         dividerSides=""
@@ -65,10 +69,10 @@ export const createRecipe: RecipeFactory = (announce) => ({
         detail="All required checks passed 18 minutes ago."
         tone="success"
       />
-      <p class="kui-recipe__ownership kui-content-item">
+      <Text variant="p" class="kui-recipe__ownership kui-content-item">
         The recipe owns page hierarchy and action relocation. The app owns
         authorization, command behavior, breadcrumbs, and product copy.
-      </p>
+      </Text>
     </section>
   ),
   action(command) {

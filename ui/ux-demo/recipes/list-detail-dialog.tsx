@@ -7,6 +7,7 @@ import './recipes.css';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -58,11 +59,11 @@ export const createRecipe: RecipeFactory = (announce) => {
       >
         Open project details
       </button>
-      <p class="kui-recipe__ownership kui-content-item">
+      <Text variant="p" class="kui-recipe__ownership kui-content-item">
         Web Awesome owns modal focus and dismissal. The recipe owns
         header/body/list-detail anatomy; the app owns open state, selection, and
         policy.
-      </p>
+      </Text>
       <wa-dialog
         class="recipe-dialog"
         label="Project details"
@@ -118,16 +119,23 @@ export const createRecipe: RecipeFactory = (announce) => {
                   </ToolbarControlGroup>
                 }
               />
-              <p class="kui-recipe__heading-summary" id="recipe-dialog-summary">
+              <Text
+                variant="p"
+                class="kui-recipe__heading-summary"
+                id="recipe-dialog-summary"
+              >
                 Compare delivery state without leaving the workspace.
-              </p>
+              </Text>
               <div
                 class="recipe-list-detail__body kui-pane__content kui-content"
                 aria-live="polite"
               >
-                <h3 class="recipe-list-detail__title kui-recipe__pane-title kui-content-item">
+                <Text
+                  variant="h3"
+                  class="recipe-list-detail__title kui-recipe__pane-title kui-content-item"
+                >
                   {records[selected.value].name}
-                </h3>
+                </Text>
                 <ValueTable label="Project details">
                   <ValueTableRow
                     label="Owner"

@@ -7,6 +7,7 @@ import {
   filterDataAttributes,
 } from './extension-attributes.js';
 import { Skeleton } from './skeleton.js';
+import { Text } from './text.js';
 
 const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-component',
@@ -214,9 +215,13 @@ export function ListHeader({
       aria-busy={busy}
     >
       <div class="kui-list-header__title">
-        <h2 class="kui-list-header__label" aria-label={accessibleLabel}>
+        <Text
+          variant="h2"
+          class="kui-list-header__label"
+          aria-label={accessibleLabel}
+        >
           {label}
-        </h2>
+        </Text>
         {indicator}
       </div>
       {action && (

@@ -131,6 +131,12 @@ export {
   type TabBarTrailingPlacement,
 } from './tab-bar.js';
 export {
+  Text,
+  type TextContent,
+  type TextProps,
+  type TextVariant,
+} from './text.js';
+export {
   placeTokenSearchCaret,
   readTokenSearchField,
   type TokenSearchEditorAttributes,

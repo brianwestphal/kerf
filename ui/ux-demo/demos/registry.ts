@@ -32,6 +32,7 @@ import { SurfaceScaffoldDemo } from './surface-scaffold.js';
 import { TabBarDemo } from './tab-bar.js';
 import { TabScaffoldDemo } from './tab-scaffold.js';
 import { TabsDemo } from './tabs.js';
+import { TextDemo } from './text.js';
 import { TokenSearchFieldDemo } from './token-search-field.js';
 import { ToolbarDemo } from './toolbar.js';
 import { ToolbarControlGroupDemo } from './toolbar-control-group.js';
@@ -52,6 +53,7 @@ export const demos = {
   'segmented-control': SegmentedControlDemo,
   'token-search-field': TokenSearchFieldDemo,
   'toolbar-text': ToolbarTextDemo,
+  text: TextDemo,
   list: ListDemo,
   row: RowDemo,
   spacer: SpacerDemo,

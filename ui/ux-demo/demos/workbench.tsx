@@ -1,6 +1,7 @@
 import '@kerfjs/ui/workbench.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { Text } from '@kerfjs/ui/text';
 import { Workbench } from '@kerfjs/ui/workbench';
 
 const region = (title: string, detail: string) => (
@@ -18,10 +19,10 @@ export function WorkbenchDemo() {
         note="The shell owns panel tracks and separators; each region owns its content and scroll behavior."
         align="none"
       >
-        <p class="demo-workbench__compact-guidance">
+        <Text variant="p" class="demo-workbench__compact-guidance">
           Workbench is a desktop-class shell. Use focused navigation and
           overlays instead at this viewport width.
-        </p>
+        </Text>
         <Workbench
           id="catalog-workbench-full"
           label="Project workbench"
@@ -49,10 +50,10 @@ export function WorkbenchDemo() {
         note="Collapsed tracks snap to zero while their fixed-size content slides out."
         align="none"
       >
-        <p class="demo-workbench__compact-guidance">
+        <Text variant="p" class="demo-workbench__compact-guidance">
           Collapsed tracks preserve desktop workspace state; they are not a
           compact-layout substitute.
-        </p>
+        </Text>
         <Workbench
           id="catalog-workbench-collapsed"
           label="Focused editor workbench"

@@ -1,9 +1,11 @@
+import { Text } from '@kerfjs/ui/text';
+
 export function WebAwesomeThemeDemo() {
   return (
     <div class="webawesome-theme-demo" data-demo="webawesome-theme">
       <section>
         <header>
-          <p>Actions</p>
+          <Text variant="p">Actions</Text>
           <span>Buttons, groups, menus, and copy feedback</span>
         </header>
         <div class="webawesome-theme-demo__row">
@@ -34,7 +36,7 @@ export function WebAwesomeThemeDemo() {
 
       <section>
         <header>
-          <p>Forms</p>
+          <Text variant="p">Forms</Text>
           <span>Shared form geometry, focus, and semantic states</span>
         </header>
         <div class="webawesome-theme-demo__forms">
@@ -82,17 +84,17 @@ export function WebAwesomeThemeDemo() {
 
       <section>
         <header>
-          <p>Structure and navigation</p>
+          <Text variant="p">Structure and navigation</Text>
           <span>Panels and navigation use the same borders and surfaces</span>
         </header>
         <div class="webawesome-theme-demo__columns">
           <div class="webawesome-theme-demo__stack">
             <wa-card with-header>
               <strong slot="header">Release readiness</strong>
-              <p>
+              <Text variant="p">
                 Production components, contracts, and browser checks stay
                 together.
-              </p>
+              </Text>
               <wa-button slot="footer" appearance="plain">
                 View checklist
               </wa-button>
@@ -146,7 +148,7 @@ export function WebAwesomeThemeDemo() {
 
       <section>
         <header>
-          <p>Feedback and data</p>
+          <Text variant="p">Feedback and data</Text>
           <span>
             Brand and status variants stay meaningful in both appearances
           </span>
@@ -203,7 +205,7 @@ export function WebAwesomeThemeDemo() {
 
       <section>
         <header>
-          <p>Media and formatting</p>
+          <Text variant="p">Media and formatting</Text>
           <span>
             Non-control components inherit type and foreground semantics
           </span>

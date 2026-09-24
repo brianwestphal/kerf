@@ -1,5 +1,6 @@
 import { AppTab } from '@kerfjs/ui/app-tab';
 import { TabBar } from '@kerfjs/ui/tab-bar';
+import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { PanelLeft, Plus } from 'lucide';
 
@@ -54,12 +55,12 @@ export function ApplicationTabsDemo() {
       >
         <strong>{activeName}</strong>
       </section>
-      <p class="demo-example-readout">
+      <Text variant="p" class="demo-example-readout">
         Order:{' '}
         <strong data-tab-order>
           {tabBarTabs.value.map((tab) => tab.name).join(' · ')}
         </strong>
-      </p>
+      </Text>
     </section>
   );
 }

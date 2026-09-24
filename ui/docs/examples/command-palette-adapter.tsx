@@ -1,5 +1,6 @@
 import '@kerfjs/ui/layout.css';
 
+import { Text } from '@kerfjs/ui/text';
 import { delegate, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 
@@ -48,9 +49,9 @@ export function mountCommandPaletteAdapter(
             data-command-query
           />
         </div>
-        <p class="kui-content-item" aria-live="polite">
+        <Text variant="p" class="kui-content-item" aria-live="polite">
           {matches.length} matching commands
-        </p>
+        </Text>
         <ul class="kui-content-item" aria-label="Matching commands">
           {matches.map((command) => (
             <li>

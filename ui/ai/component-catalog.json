@@ -1509,6 +1509,61 @@
       }
     },
     {
+      "id": "text",
+      "name": "Text",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Semantic native heading and paragraph text with standard padded content geometry.",
+      "uses": [],
+      "purpose": "Render h1 through h6 or paragraph semantics while consistently supplying the standard transparent border and content padding.",
+      "publicExports": ["Text"],
+      "useWhen": [
+        "Render ordinary application headings or paragraphs that should use native document semantics and the standard text-box inset."
+      ],
+      "avoidWhen": [
+        "Do not use Text for toolbar identity or title content; use ToolbarText inside a Toolbar zone.",
+        "Do not choose a heading variant for visual size alone; preserve the document heading hierarchy."
+      ],
+      "alternatives": [
+        {
+          "id": "toolbar-text",
+          "relationship": "toolbar-specific"
+        },
+        {
+          "id": "list-inset-text",
+          "relationship": "list-geometry-specific"
+        }
+      ],
+      "appOwns": ["semantic variant", "copy", "document heading hierarchy"],
+      "variants": ["h1", "h2", "h3", "h4", "h5", "h6", "p"],
+      "accessibility": [
+        "Text renders the selected native element; choose heading levels by document outline rather than appearance.",
+        "Ordinary global, data, and ARIA attributes pass through to the native element."
+      ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "Text keeps the native variant's margin and adds a 1px transparent border plus the standard 8px item padding."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/text",
+        "manualCssImport": "@kerfjs/ui/text.css",
+        "sideEffects": ["browser-condition-css"]
+      },
+      "wiring": [],
+      "publicClasses": ["kui-text"],
+      "publicTokens": ["--kui-layout-item-padding"],
+      "links": {
+        "catalogRoute": "?component=text",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "headers",
       "name": "Header composition",
       "category": "Structure",
@@ -1948,7 +2003,8 @@
       "description": "Configurable section headings with full-width or shrink-wrapped inline presentation, semantic count/status indicators, density, group dividers, a logical-end action, disclosure states, and protected native-popover trigger metadata.",
       "uses": [
         "lucide-icon",
-        "disclosure-arrow"
+        "disclosure-arrow",
+        "text"
       ],
       "purpose": "Fill the available section width by default, or shrink-wrap without outer geometry when inline, while splitting a dormant title and mutually exclusive semantic count or legacy badge from an optional logical-end action with an 18px visual; disclosure mode renders the title cluster as a button with a default production DisclosureArrow.",
       "publicExports": [

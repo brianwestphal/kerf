@@ -7,6 +7,7 @@ import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
+import { Text } from '@kerfjs/ui/text';
 import { signal } from 'kerfjs';
 import { ChevronRight, FileText, Folder } from 'lucide';
 
@@ -57,11 +58,11 @@ export const createRecipe: RecipeFactory = (announce) => {
             />
           ))}
         </section>
-        <p class="kui-recipe__ownership kui-content-item">
+        <Text variant="p" class="kui-recipe__ownership kui-content-item">
           The recipe owns the stack as a signal of views and pushes/pops it;
           `NavStack` renders the stack and `wireNavStack` slides the content and
           settles the chrome. The app owns selection, data, and routing.
-        </p>
+        </Text>
       </div>
     ),
   });
@@ -74,7 +75,9 @@ export const createRecipe: RecipeFactory = (announce) => {
         <div class="kui-content-item">
           <LucideIcon icon={FileText} name="file-text" />
           <strong>{item.label}</strong>
-          <p class="kui-recipe__muted">{item.detail}</p>
+          <Text variant="p" class="kui-recipe__muted">
+            {item.detail}
+          </Text>
         </div>
       </div>
     ),

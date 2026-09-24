@@ -29,6 +29,7 @@ import { Spacer } from '../../src/spacer.js';
 import { StateBanner } from '../../src/state-banner.js';
 import { DialogSurface, PopupSurface } from '../../src/surface-scaffold.js';
 import { TabBar } from '../../src/tab-bar.js';
+import { Text } from '../../src/text.js';
 import { Toolbar } from '../../src/toolbar.js';
 import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
 import { ToolbarText } from '../../src/toolbar-text.js';
@@ -364,6 +365,27 @@ describe('production UI primitives', () => {
     expect(asHtml(Spacer({}))).not.toContain('style=');
   });
 
+  it('renders semantic Text variants with native attributes and standard geometry', () => {
+    expect(
+      asHtml(
+        Text({
+          variant: 'h2',
+          id: 'section-title',
+          class: 'title',
+          className: 'emphasis',
+          'aria-label': 'Section title',
+          'data-scope': 'details',
+          children: 'Details',
+        }),
+      ),
+    ).toBe(
+      '<h2 id="section-title" aria-label="Section title" data-scope="details" class="kui-text title emphasis" data-component="text">Details</h2>',
+    );
+    expect(asHtml(Text({ variant: 'p', children: <span>Body</span> }))).toBe(
+      '<p class="kui-text" data-component="text"><span>Body</span></p>',
+    );
+  });
+
   it('renders nullable and recursively nested semantic children without a Fragment', () => {
     const includeIntro: boolean = true;
     const intro = includeIntro ? <span>Intro</span> : null;
@@ -556,7 +578,7 @@ describe('production UI primitives', () => {
       }),
     );
     expect(header).toContain(
-      '<h2 class="kui-list-header__label" aria-label="Workspace, 0 workspaces">Workspace</h2>',
+      '<h2 aria-label="Workspace, 0 workspaces" class="kui-text kui-list-header__label" data-component="text">Workspace</h2>',
     );
     expect(header).toContain(
       'class="kui-list-header__count" aria-hidden="true">0</span>',

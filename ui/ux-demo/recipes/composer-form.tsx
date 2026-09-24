@@ -9,6 +9,7 @@ import './recipes.css';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner } from '@kerfjs/ui/state-banner';
+import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
@@ -123,10 +124,10 @@ export const createRecipe: RecipeFactory = (announce) => {
             Publish update
           </wa-button>
         </div>
-        <p class="kui-recipe__ownership">
+        <Text variant="p" class="kui-recipe__ownership">
           The recipe owns field, message, and action rhythm. The app owns
           validation rules, draft persistence, permissions, and transport.
-        </p>
+        </Text>
       </footer>
     </form>
   );

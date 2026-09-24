@@ -4,6 +4,7 @@ import './recipes.css';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { signal } from 'kerfjs';
@@ -77,17 +78,17 @@ export const createRecipe: RecipeFactory = (announce) => {
               />
               <div class="kui-content-item">
                 <strong>Quarterly goal</strong>
-                <p class="kui-recipe__muted">
+                <Text variant="p" class="kui-recipe__muted">
                   Ship accessible navigation patterns to every workspace.
-                </p>
+                </Text>
               </div>
             </>
           )}
         </section>
-        <p class="kui-recipe__ownership kui-content-item">
+        <Text variant="p" class="kui-recipe__ownership kui-content-item">
           The recipe owns pane, content-item, and toolbar geometry. The app owns
           routes, permissions, labels, and disclosure state.
-        </p>
+        </Text>
       </div>
       <footer class="recipe-sidebar__footer kui-pane__footer">
         <Toolbar

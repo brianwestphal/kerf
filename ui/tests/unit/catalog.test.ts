@@ -430,6 +430,7 @@ describe('UX catalog metadata', () => {
       'Surface scaffolds',
       'FloatingToolbar',
       'ToolbarText',
+      'Text',
       'ValueTable',
       'Row',
       'Spacer',

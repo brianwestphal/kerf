@@ -1306,6 +1306,57 @@
       }
     },
     {
+      "key": "@kerfjs/ui:text",
+      "package": "@kerfjs/ui",
+      "id": "text",
+      "name": "Text",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "semantic variant", "owner": "application", "required": false },
+        { "id": "copy", "owner": "application", "required": false },
+        {
+          "id": "document heading hierarchy",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "self",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "Text keeps the native variant's margin and adds a 1px transparent border plus the standard 8px item padding."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Text renders the selected native element; choose heading levels by document outline rather than appearance.",
+          "Ordinary global, data, and ARIA attributes pass through to the native element."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-text",
+        "publicClasses": ["kui-text"],
+        "publicTokens": ["--kui-layout-item-padding"]
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:headers",
       "package": "@kerfjs/ui",
       "id": "headers",

@@ -2004,6 +2004,31 @@ declare function PopupSurface({ children, inset, className, }: PopupSurfaceProps
 export { DialogSurface, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceSize, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
 ```
 
+## `@kerfjs/ui/text`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { KerfBaseAttrs } from 'kerfjs/jsx-runtime';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+
+type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
+type TextContent = KerfUiContent | string | number | readonly TextContent[];
+type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
+    /** Native heading or paragraph element to render. */
+    variant: TextVariant;
+    children: TextContent;
+    class?: string;
+    className?: string;
+};
+/**
+ * Semantic heading or paragraph text with the standard content-item padding.
+ * All ordinary native heading/paragraph attributes pass through to the element.
+ */
+declare function Text({ variant: Variant, children, class: classValue, className, ...attributes }: TextProps): kerfjs.SafeHtml;
+
+export { Text, type TextContent, type TextProps, type TextVariant };
+```
+
 ## `@kerfjs/ui/row`
 
 ```ts

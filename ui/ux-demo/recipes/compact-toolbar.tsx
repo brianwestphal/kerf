@@ -5,6 +5,7 @@ import './recipes.css';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
+import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -115,10 +116,10 @@ export const createRecipe: RecipeFactory = (announce) => {
           <span class="kui-recipe__muted">One independent command.</span>
         </div>
       </div>
-      <p class="kui-recipe__ownership kui-content-item">
+      <Text variant="p" class="kui-recipe__ownership kui-content-item">
         The recipe owns control semantics and wrapping. The app owns values,
         actions, persistence, and responsive priority.
-      </p>
+      </Text>
     </section>
   );
   return {

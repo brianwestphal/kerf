@@ -15,6 +15,7 @@ import { ListItem } from './list-item.js';
 import { LucideIcon } from './lucide-icon.js';
 import { Pane } from './pane.js';
 import type { KerfUiContent } from './semantic-content.js';
+import { Text } from './text.js';
 import { Toolbar } from './toolbar.js';
 import { ToolbarControlGroup } from './toolbar-control-group.js';
 
@@ -225,7 +226,7 @@ export function Catalog({
                   ) : (
                     <></>
                   )}
-                  <h1>{brand.title}</h1>
+                  <Text variant="h1">{brand.title}</Text>
                 </ToolbarControlGroup>
               }
               trailing={
@@ -241,7 +242,9 @@ export function Catalog({
               }
             />
             {brand.subtitle ? (
-              <p class="kui-catalog__subtitle">{brand.subtitle}</p>
+              <Text variant="p" class="kui-catalog__subtitle">
+                {brand.subtitle}
+              </Text>
             ) : (
               <></>
             )}
@@ -283,9 +286,9 @@ export function Catalog({
                 <div class="kui-catalog__secondary" data-catalog-secondary>
                   {secondarySections.sections.map((section) => (
                     <section class="kui-catalog__secondary-group">
-                      <h3 class="kui-catalog__secondary-heading">
+                      <Text variant="h3" class="kui-catalog__secondary-heading">
                         {section.category}
-                      </h3>
+                      </Text>
                       <List className="kui-catalog__items">
                         {section.entries.map((entry) => (
                           <ListItem
@@ -346,7 +349,7 @@ export function Catalog({
                     appearance="borderless"
                     className="kui-catalog__title"
                   >
-                    <h2>{name}</h2>
+                    <Text variant="h2">{name}</Text>
                   </ToolbarControlGroup>
                 </>
               }
@@ -379,9 +382,12 @@ export function Catalog({
               }
             />
             {selected?.description ? (
-              <p class="kui-catalog__description kui-content-item">
+              <Text
+                variant="p"
+                class="kui-catalog__description kui-content-item"
+              >
                 {selected.description}
-              </p>
+              </Text>
             ) : (
               <></>
             )}
@@ -568,9 +574,13 @@ export function CatalogExample({
         <></>
       )}
       {note !== undefined ? (
-        <p class="kui-catalog-example__note" data-catalog-example-note>
+        <Text
+          variant="p"
+          class="kui-catalog-example__note"
+          data-catalog-example-note
+        >
           {note}
-        </p>
+        </Text>
       ) : (
         <></>
       )}

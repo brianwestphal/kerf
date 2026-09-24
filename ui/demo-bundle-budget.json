@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 277900,
-  "measuredLargestJavaScriptGzip": 128393,
-  "measuredTotalJavaScriptGzip": 277836,
+  "totalJavaScriptGzip": 278400,
+  "measuredLargestJavaScriptGzip": 128409,
+  "measuredTotalJavaScriptGzip": 278373,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -67,6 +67,22 @@
         "measuredTotalJavaScriptGzip": 277836,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 277900
+      }
+    },
+    {
+      "at": "2026-09-24T05:47:34.791Z",
+      "reason": "Add the first-class Text component and its focused catalog demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 128393,
+        "measuredTotalJavaScriptGzip": 277836,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 277900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 128409,
+        "measuredTotalJavaScriptGzip": 278373,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 278400
       }
     }
   ]

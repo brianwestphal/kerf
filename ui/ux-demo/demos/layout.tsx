@@ -1,4 +1,5 @@
 import { Pane } from '@kerfjs/ui/pane';
+import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -32,10 +33,10 @@ export function LayoutDemo() {
     >
       <div class="demo-layout__surface kui-content-item">
         <strong>One owner per item</strong>
-        <p>
+        <Text variant="p">
           Each content child owns its margin, border, background, padding, and
           radius.
-        </p>
+        </Text>
       </div>
       <div class="demo-layout__actions kui-control-cluster">
         {button('Primary action', 'log-add')}

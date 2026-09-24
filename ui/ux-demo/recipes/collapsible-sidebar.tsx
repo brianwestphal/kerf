@@ -10,6 +10,7 @@ import { deviceClass } from '@kerfjs/ui/device-class';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -146,17 +147,17 @@ export const createRecipe: RecipeFactory = (announce) => {
           }
         />
         <div class="recipe-collapsible-sidebar__body kui-pane__content kui-content">
-          <p class="kui-recipe__ownership kui-content-item">
+          <Text variant="p" class="kui-recipe__ownership kui-content-item">
             The app owns each panel's <code>collapsed</code> signal, sizes, and
             content; <code>wireSidebar</code> owns the toggle, focus
             move/restore, the compact overlay, and persistence.
-          </p>
+          </Text>
           <article class="recipe-collapsible-sidebar__card kui-content-item">
             <strong>Narrow the window to a compact width</strong>
-            <p class="kui-recipe__muted">
+            <Text variant="p" class="kui-recipe__muted">
               The rail and drawer become a dismissable overlay: a backdrop,
               Escape, and a trapped Tab ring, all managed by the wire.
-            </p>
+            </Text>
           </article>
         </div>
       </main>

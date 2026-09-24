@@ -295,6 +295,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "text",
+    "name": "Text",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Render h1 through h6 or paragraph semantics while consistently supplying the standard transparent border and content padding.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/text.tsx",
+    "componentSource": "ui/src/text.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "headers",
     "name": "Header composition",
     "category": "Structure",
@@ -375,7 +387,8 @@ export const generatedKerfCatalog = [
     "description": "Fill the available section width by default, or shrink-wrap without outer geometry when inline, while splitting a dormant title and mutually exclusive semantic count or legacy badge from an optional logical-end action with an 18px visual; disclosure mode renders the title cluster as a button with a default production DisclosureArrow.",
     "uses": [
       "lucide-icon",
-      "disclosure-arrow"
+      "disclosure-arrow",
+      "text"
     ],
     "demoSource": "ui/ux-demo/demos/list-header.tsx",
     "componentSource": "ui/src/list-header.tsx",

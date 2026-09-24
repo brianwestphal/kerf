@@ -9,6 +9,7 @@ const entries = [
   'toolbar-control-group',
   'surface-scaffold',
   'toolbar-text',
+  'text',
   'floating-toolbar',
   'list',
   'row',

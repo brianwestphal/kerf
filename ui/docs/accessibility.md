@@ -97,6 +97,11 @@ The application owns persistence and collapsed/expanded policy. Keep the last ex
 
 ## Toolbar headings
 
+For headings and paragraphs outside toolbar identity/title zones, use `Text`.
+It renders the selected native `h1`–`h6` or `p` element, so heading navigation
+follows the variant directly; choose a level that preserves the document
+outline. Native global, `data-*`, and `aria-*` attributes pass through.
+
 Compose panel, dialog, and page headings as a plain `Toolbar`. Its leading zone
 holds an optional icon `ToolbarControlGroup` and a direct extra-large
 `ToolbarText`; controls belong in a trailing `ToolbarControlGroup`. By default

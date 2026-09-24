@@ -82,6 +82,7 @@
         "DividerSides",
         "StateBannerUrgency",
         "TabActivation",
+        "TextVariant",
         "ToolbarControlGroupAppearance",
         "ToolbarControlGroupButtonAppearance",
         "ToolbarControlGroupShape",

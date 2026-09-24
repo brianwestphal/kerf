@@ -9,6 +9,7 @@ import type {
   TabBarAllocation,
   TabBarPresentation,
   TabBarTrailingPlacement,
+  TextVariant,
   ToolbarControlGroupContent,
   ToolbarControlGroupDensity,
   ToolbarControlGroupSelectedChrome,
@@ -58,6 +59,7 @@ import {
 import { SunkenPanel, type SunkenPanelShape } from '@kerfjs/ui/sunken-panel';
 import { type TabActivation, TabBar } from '@kerfjs/ui/tab-bar';
 import { TabScaffold } from '@kerfjs/ui/tab-scaffold';
+import { Text } from '@kerfjs/ui/text';
 import {
   type TokenSearchEditorAttributes,
   TokenSearchField,
@@ -76,6 +78,16 @@ import type { CatalogRevealOptions } from '@kerfjs/ui/wire-catalog';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 
 const icon = ToolbarText({ text: 'Icon' });
+const textVariant: TextVariant = 'h3';
+Text({
+  variant: textVariant,
+  class: 'section-title',
+  id: 'section-title',
+  'aria-describedby': 'section-summary',
+  children: 'Section',
+});
+// @ts-expect-error Text variants are limited to native headings and paragraphs.
+Text({ variant: 'span', children: 'Invalid' });
 
 // KUI-T012 positive: complete branded lengths and finite spacing shorthands
 // compose without accepting intermediate expressions or arbitrary CSS strings.

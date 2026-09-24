@@ -2,6 +2,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { colorVar } from '@kerfjs/ui/css-values';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Select } from '@kerfjs/ui/select';
+import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { Bell, SlidersHorizontal, Wrench } from 'lucide';
 
@@ -59,10 +60,10 @@ export function SelectDemo() {
               </span>
             )}
           />
-          <p class="demo-example-readout">
+          <Text variant="p" class="demo-example-readout">
             Live value:{' '}
             <strong data-select-value>{selectedChoice.value}</strong>
-          </p>
+          </Text>
         </div>
       </CatalogExample>
       <CatalogExample

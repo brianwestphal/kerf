@@ -64,8 +64,12 @@ describe('Catalog', () => {
     // Shell + brand
     expect(html).toContain('data-component="catalog"');
     expect(html).toContain('data-sidebar-collapsed="false"');
-    expect(html).toContain('<h1>Acme UI</h1>');
-    expect(html).toContain('kui-catalog__subtitle">Design system');
+    expect(html).toContain(
+      '<h1 class="kui-text" data-component="text">Acme UI</h1>',
+    );
+    expect(html).toContain(
+      'kui-catalog__subtitle" data-component="text">Design system',
+    );
     expect(html).toContain('src="/logo.svg"');
     // Category groups + items (ListHeader per section, ListItem per entry)
     expect(html).toContain('data-component="list-header"');
@@ -82,7 +86,9 @@ describe('Catalog', () => {
       'data-item-id="select" data-has-icon="false" data-has-description="false" data-multiline="true" data-density="standard" data-divider="none" aria-current="page"',
     );
     // Detail header shows the active name + description
-    expect(html).toContain('<h2>Select</h2>');
+    expect(html).toContain(
+      '<h2 class="kui-text" data-component="text">Select</h2>',
+    );
     expect(html).toContain('A value list.');
     // Stage renders the app-provided content
     expect(html).toContain('class="preview">Select preview');
@@ -152,7 +158,7 @@ describe('Catalog', () => {
         content: raw('<b/>'),
       }),
     );
-    expect(html).toContain('<h2></h2>');
+    expect(html).toContain('<h2 class="kui-text" data-component="text"></h2>');
     expect(html).not.toContain('kui-catalog__description');
     expect(html).not.toContain('kui-catalog__resource"');
   });
@@ -210,7 +216,9 @@ describe('Catalog', () => {
     );
     expect(open).toContain('kui-catalog__group--secondary');
     expect(open).toContain('data-catalog-secondary');
-    expect(open).toContain('kui-catalog__secondary-heading">Forms');
+    expect(open).toContain(
+      'kui-catalog__secondary-heading" data-component="text">Forms',
+    );
     expect(open).toContain(
       'data-action="catalog-select" data-item-id="wa-input"',
     );
@@ -251,7 +259,9 @@ describe('Catalog', () => {
         secondarySections,
       }),
     );
-    expect(html).toContain('<h2>Input</h2>');
+    expect(html).toContain(
+      '<h2 class="kui-text" data-component="text">Input</h2>',
+    );
     expect(html).toContain('A form field.');
   });
 });
@@ -271,7 +281,7 @@ describe('CatalogExample', () => {
     expect(html).toContain('data-component="list-header"');
     expect(html).toContain('data-catalog-example-label');
     expect(html).toContain(
-      'kui-catalog-example__note" data-catalog-example-note>A note.',
+      'data-catalog-example-note class="kui-text kui-catalog-example__note" data-component="text">A note.',
     );
     expect(html).toContain('<svg data-icon />');
   });

@@ -3,6 +3,7 @@ import { flex, space } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
+import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -110,7 +111,9 @@ export function ListDemo() {
                   />
                   <div class="kui-content-item" data-content-item>
                     <strong>Shared item geometry</strong>
-                    <p>The child owns its margin, border, and padding.</p>
+                    <Text variant="p">
+                      The child owns its margin, border, and padding.
+                    </Text>
                   </div>
                 </div>
               </List>

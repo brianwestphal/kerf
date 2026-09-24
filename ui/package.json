@@ -83,6 +83,11 @@
       "browser": "./dist/browser/toolbar-text.js",
       "import": "./dist/toolbar-text.js"
     },
+    "./text": {
+      "types": "./dist/text.d.ts",
+      "browser": "./dist/browser/text.js",
+      "import": "./dist/text.js"
+    },
     "./list": {
       "types": "./dist/list.d.ts",
       "browser": "./dist/browser/list.js",
@@ -287,6 +292,7 @@
     "./surface-scaffold.css": "./dist/styles/surface-scaffold.css",
     "./floating-toolbar.css": "./dist/styles/floating-toolbar.css",
     "./toolbar-text.css": "./dist/styles/toolbar-text.css",
+    "./text.css": "./dist/styles/text.css",
     "./list.css": "./dist/styles/list.css",
     "./row.css": "./dist/styles/row.css",
     "./spacer.css": "./dist/styles/spacer.css",

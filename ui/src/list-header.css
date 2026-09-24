@@ -11,16 +11,11 @@
   min-width: 0;
   min-height: remify(44px);
   margin-inline: var(--kui-layout-inline-margin, remify(8px));
-  padding: calc(var(--kui-layout-item-padding, remify(8px)) + 1px);
   box-sizing: border-box;
   color: var(--kui-list-header-color);
   background: transparent;
   align-items: stretch;
   gap: var(--kui-layout-item-gap, remify(8px));
-
-  &:has(.kui-list-header__action) {
-    padding-inline-end: 0;
-  }
 }
 
 .kui-list-header[data-density="compact"],
@@ -183,6 +178,7 @@
 }
 
 .kui-list-header__toggle {
+  padding: var(--kui-layout-item-padding, remify(8px));
   appearance: none;
   width: 100%;
   cursor: pointer;

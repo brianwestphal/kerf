@@ -69,6 +69,7 @@ import '@awesome.me/webawesome/dist/components/tree/tree.js';
 import '@awesome.me/webawesome/dist/components/zoomable-frame/zoomable-frame.js';
 
 import { Select } from '@kerfjs/ui/select';
+import { Text } from '@kerfjs/ui/text';
 import type { SafeHtml } from 'kerfjs';
 
 import { webAwesomeCatalog, type WebAwesomeCatalogId } from './catalog.js';
@@ -285,7 +286,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-card': () => (
     <wa-card with-header with-footer>
       <strong slot="header">Release readiness</strong>
-      <p>Production components, contracts, and browser checks stay together.</p>
+      <Text variant="p">
+        Production components, contracts, and browser checks stay together.
+      </Text>
       <wa-button slot="footer" appearance="plain">
         View checklist
       </wa-button>
@@ -313,7 +316,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         label="Publish component library"
         with-footer
       >
-        <p>Review the version and release notes before publishing.</p>
+        <Text variant="p">
+          Review the version and release notes before publishing.
+        </Text>
         <wa-button
           slot="footer"
           appearance="plain"
@@ -347,7 +352,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       </wa-button>
       <span>The drawer enters from the trailing edge.</span>
       <wa-drawer id="catalog-wa-drawer" label="Inspector" with-footer>
-        <p>Theme and accessibility settings live here.</p>
+        <Text variant="p">Theme and accessibility settings live here.</Text>
         <wa-button slot="footer" variant="brand" data-action="hide-wa-drawer">
           Done
         </wa-button>
@@ -361,7 +366,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         Overview
       </a>
       <strong slot="main-header">Component catalog</strong>
-      <p>A compact application shell inside the preview canvas.</p>
+      <Text variant="p">
+        A compact application shell inside the preview canvas.
+      </Text>
       <small slot="footer">Kerf UI · Web Awesome</small>
     </wa-page>
   ),
@@ -906,7 +913,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       </wa-button>
       <wa-popover for="catalog-popover-target" placement="bottom">
         <strong>Popover content</strong>
-        <p>Interactive content stays anchored to its trigger.</p>
+        <Text variant="p">
+          Interactive content stays anchored to its trigger.
+        </Text>
         <wa-button size="small">Action</wa-button>
       </wa-popover>
       <small>

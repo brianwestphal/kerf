@@ -4,6 +4,7 @@ import './recipes.css';
 import { EmptyState } from '@kerfjs/ui/empty-state';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { StateBanner } from '@kerfjs/ui/state-banner';
+import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
@@ -166,10 +167,10 @@ export const createRecipe: RecipeFactory = (announce) => {
       />
       <div class="recipe-list__body kui-pane__content kui-content">
         {renderBody()}
-        <p class="kui-recipe__ownership kui-content-item">
+        <Text variant="p" class="kui-recipe__ownership kui-content-item">
           The recipe owns feedback placement and stable content. The app owns
           fetching, cache age, retry policy, and domain rows.
-        </p>
+        </Text>
       </div>
     </section>
   );

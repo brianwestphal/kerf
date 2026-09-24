@@ -163,6 +163,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `DialogSurface`, `PopupSurface`                                     | `@kerfjs/ui/surface-scaffold`           | `@kerfjs/ui/surface-scaffold.css`      |
 | `FloatingToolbar`                                                   | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`      |
 | `ToolbarText`                                                       | `@kerfjs/ui/toolbar-text`               | `@kerfjs/ui/toolbar-text.css`          |
+| `Text`                                                              | `@kerfjs/ui/text`                       | `@kerfjs/ui/text.css`                  |
 | `List`                                                              | `@kerfjs/ui/list`                       | `@kerfjs/ui/list.css`                  |
 | `Row`                                                               | `@kerfjs/ui/row`                        | `@kerfjs/ui/row.css`                   |
 | `Spacer`                                                            | `@kerfjs/ui/spacer`                     | `@kerfjs/ui/spacer.css`                |

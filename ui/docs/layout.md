@@ -118,6 +118,24 @@ Use `rem`, `em`, `px`, `pct`, `lengthVar`, and `calc(plus(...))` only when a
 named spacing relationship does not express the requirement; do not pass raw
 CSS strings.
 
+## Text
+
+Use `Text` from `@kerfjs/ui/text` for ordinary semantic headings and
+paragraphs. Its required `variant` renders the corresponding native `h1`–`h6`
+or `p` element, and ordinary global, `data-*`, and `aria-*` attributes pass
+through. Every variant owns a 1px transparent border and the standard 8px item
+padding; its native margin and typography remain available to the surrounding
+composition. Choose heading levels from the document outline, not for visual
+size. Toolbar identity and page-heading compositions continue to use
+`ToolbarText`.
+
+```tsx
+import { Text } from "@kerfjs/ui/text";
+
+<Text variant="h2" id="details-title">Details</Text>;
+<Text variant="p" aria-describedby="details-title">Supporting copy</Text>;
+```
+
 ## Spacer
 
 Use `Spacer` from `@kerfjs/ui/spacer` for one intentional empty dimension that
