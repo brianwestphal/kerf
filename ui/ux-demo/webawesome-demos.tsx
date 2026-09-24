@@ -489,6 +489,42 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           Blocked
         </wa-badge>
       </div>
+      <span>Accent pill</span>
+      <div class="wa-demo-row">
+        <wa-badge variant="neutral" appearance="accent" pill="pill">
+          Neutral
+        </wa-badge>
+        <wa-badge variant="brand" appearance="accent" pill="pill">
+          Brand
+        </wa-badge>
+        <wa-badge variant="success" appearance="accent" pill="pill">
+          Success
+        </wa-badge>
+        <wa-badge variant="warning" appearance="accent" pill="pill">
+          Warning
+        </wa-badge>
+        <wa-badge variant="danger" appearance="accent" pill="pill">
+          Danger
+        </wa-badge>
+      </div>
+      <span>Filled outlined pill</span>
+      <div class="wa-demo-row">
+        <wa-badge variant="neutral" appearance="filled-outlined" pill="pill">
+          Neutral
+        </wa-badge>
+        <wa-badge variant="brand" appearance="filled-outlined" pill="pill">
+          Brand
+        </wa-badge>
+        <wa-badge variant="success" appearance="filled-outlined" pill="pill">
+          Success
+        </wa-badge>
+        <wa-badge variant="warning" appearance="filled-outlined" pill="pill">
+          Warning
+        </wa-badge>
+        <wa-badge variant="danger" appearance="filled-outlined" pill="pill">
+          Danger
+        </wa-badge>
+      </div>
     </div>
   ),
   'wa-callout': () => (

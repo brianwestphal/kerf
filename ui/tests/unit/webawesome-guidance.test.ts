@@ -64,14 +64,18 @@ describe('Web Awesome consumer guidance', () => {
       'utf8',
     );
 
-    expect(css).toMatch(/wa-badge\[appearance="filled"\]/);
+    expect(css).toContain('[appearance="filled"]');
+    expect(css).toContain('[appearance="filled-outlined"]');
+    expect(css).toContain('wa-badge[appearance="accent"]');
     expect(css).toContain('--kui-wa-badge-filled-background');
     expect(css).toContain('--kui-wa-badge-filled-foreground');
+    expect(css).toContain('--kui-wa-badge-accent-foreground');
     expect(css).toContain('var(--wa-color-fill-quiet)');
     expect(css).toContain('var(--wa-color-text-normal)');
     expect(guidance).toContain('meets WCAG AA');
     expect(guidance).toContain('--kui-wa-badge-filled-background');
     expect(guidance).toContain('--kui-wa-badge-filled-foreground');
+    expect(guidance).toContain('--kui-wa-badge-accent-foreground');
   });
 
   it('assigns dialog body and footer to their distinct inset tiers', () => {

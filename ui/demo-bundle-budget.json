@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 278800,
-  "measuredLargestJavaScriptGzip": 128417,
-  "measuredTotalJavaScriptGzip": 278730,
+  "totalJavaScriptGzip": 279000,
+  "measuredLargestJavaScriptGzip": 128521,
+  "measuredTotalJavaScriptGzip": 278919,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -115,6 +115,22 @@
         "measuredTotalJavaScriptGzip": 278730,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 278800
+      }
+    },
+    {
+      "at": "2026-09-24T09:26:57.835Z",
+      "reason": "KF-CAC9HK adds accent and filled-outlined badge contrast audit rows",
+      "old": {
+        "measuredLargestJavaScriptGzip": 128417,
+        "measuredTotalJavaScriptGzip": 278730,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 278800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 128521,
+        "measuredTotalJavaScriptGzip": 278919,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 279000
       }
     }
   ]

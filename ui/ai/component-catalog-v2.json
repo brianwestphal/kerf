@@ -4264,6 +4264,7 @@
         "rootClass": null,
         "publicClasses": [],
         "publicTokens": [
+          "--kui-wa-badge-accent-foreground",
           "--kui-wa-badge-filled-background",
           "--kui-wa-badge-filled-foreground"
         ]

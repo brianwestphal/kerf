@@ -2909,44 +2909,79 @@ test('distinguishes pill status badges from rounded-rectangle tags', async ({
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=wa-badge');
   const badges = page.locator('[data-demo="wa-badge"] wa-badge');
-  await expect(badges).toHaveCount(5);
-  await expect(badges.first()).toHaveAttribute('pill', '');
-  await expect(badges.first()).toHaveAttribute('appearance', 'filled');
-  const minBadgeContrast = () =>
-    badges.evaluateAll((elements) => {
-      const luminance = (color: string): number => {
-        const channels =
-          color
-            .match(/[\d.]+/g)
-            ?.slice(0, 3)
-            .map(Number) ?? [];
-        const normalizedChannels = color.startsWith('color(srgb')
-          ? channels
-          : channels.map((channel) => channel / 255);
-        const [red = 0, green = 0, blue = 0] = normalizedChannels.map(
-          (normalized) =>
-            normalized <= 0.04045
-              ? normalized / 12.92
-              : ((normalized + 0.055) / 1.055) ** 2.4,
-        );
-        return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-      };
-      return Math.min(
-        ...elements.map((element) => {
-          const style = window.getComputedStyle(element);
-          const foreground = luminance(style.color);
-          const background = luminance(style.backgroundColor);
-          return (
-            (Math.max(foreground, background) + 0.05) /
-            (Math.min(foreground, background) + 0.05)
+  const filledBadges = page.locator(
+    '[data-demo="wa-badge"] wa-badge[appearance="filled"]',
+  );
+  const accentBadges = page.locator(
+    '[data-demo="wa-badge"] wa-badge[appearance="accent"]',
+  );
+  const filledOutlinedBadges = page.locator(
+    '[data-demo="wa-badge"] wa-badge[appearance="filled-outlined"]',
+  );
+  await expect(badges).toHaveCount(15);
+  await expect(filledBadges).toHaveCount(5);
+  await expect(accentBadges).toHaveCount(5);
+  await expect(filledOutlinedBadges).toHaveCount(5);
+  await expect(filledBadges.first()).toHaveAttribute('pill', '');
+  await expect(filledBadges.first()).toHaveAttribute('appearance', 'filled');
+  const minBadgeContrast = (
+    appearance: 'accent' | 'filled' | 'filled-outlined',
+  ) =>
+    page
+      .locator(`[data-demo="wa-badge"] wa-badge[appearance="${appearance}"]`)
+      .evaluateAll((elements) => {
+        const luminance = (color: string): number => {
+          const channels =
+            color
+              .match(/[\d.]+/g)
+              ?.slice(0, 3)
+              .map(Number) ?? [];
+          const normalizedChannels = color.startsWith('color(srgb')
+            ? channels
+            : channels.map((channel) => channel / 255);
+          const [red = 0, green = 0, blue = 0] = normalizedChannels.map(
+            (normalized) =>
+              normalized <= 0.04045
+                ? normalized / 12.92
+                : ((normalized + 0.055) / 1.055) ** 2.4,
           );
-        }),
-      );
-    });
+          return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
+        };
+        return Math.min(
+          ...elements.map((element) => {
+            const style = window.getComputedStyle(element);
+            const foreground = luminance(style.color);
+            const background = luminance(style.backgroundColor);
+            return (
+              (Math.max(foreground, background) + 0.05) /
+              (Math.min(foreground, background) + 0.05)
+            );
+          }),
+        );
+      });
   await expect
-    .poll(minBadgeContrast, 'light filled badge contrast (min across variants)')
+    .poll(
+      () => minBadgeContrast('filled'),
+      'light filled badge contrast (min across variants)',
+    )
     .toBeGreaterThanOrEqual(4.5);
-  await badges.first().evaluate((element) => {
+  await expect
+    .poll(
+      () => minBadgeContrast('accent'),
+      'light accent badge contrast (min across variants)',
+    )
+    .toBeGreaterThanOrEqual(4.5);
+  await expect
+    .poll(
+      () => minBadgeContrast('filled-outlined'),
+      'light filled-outlined badge contrast (min across variants)',
+    )
+    .toBeGreaterThanOrEqual(4.5);
+  await expect(filledOutlinedBadges.first()).not.toHaveCSS(
+    'border-color',
+    'rgba(0, 0, 0, 0)',
+  );
+  await filledBadges.first().evaluate((element) => {
     (element as HTMLElement).style.setProperty(
       '--kui-wa-badge-filled-background',
       '#eef6ff',
@@ -2956,12 +2991,12 @@ test('distinguishes pill status badges from rounded-rectangle tags', async ({
       '#003366',
     );
   });
-  await expect(badges.first()).toHaveCSS(
+  await expect(filledBadges.first()).toHaveCSS(
     'background-color',
     'rgb(238, 246, 255)',
   );
-  await expect(badges.first()).toHaveCSS('color', 'rgb(0, 51, 102)');
-  await badges.first().evaluate((element) => {
+  await expect(filledBadges.first()).toHaveCSS('color', 'rgb(0, 51, 102)');
+  await filledBadges.first().evaluate((element) => {
     (element as HTMLElement).style.removeProperty(
       '--kui-wa-badge-filled-background',
     );
@@ -2969,7 +3004,7 @@ test('distinguishes pill status badges from rounded-rectangle tags', async ({
       '--kui-wa-badge-filled-foreground',
     );
   });
-  const badgeRadius = await badges
+  const badgeRadius = await filledBadges
     .first()
     .evaluate((element) => window.getComputedStyle(element).borderRadius);
   if (browserName === 'chromium') {
@@ -2980,8 +3015,20 @@ test('distinguishes pill status badges from rounded-rectangle tags', async ({
     await page.locator('[data-action="toggle-theme"]').click();
     await expect
       .poll(
-        minBadgeContrast,
+        () => minBadgeContrast('filled'),
         'dark filled badge contrast (min across variants)',
+      )
+      .toBeGreaterThanOrEqual(4.5);
+    await expect
+      .poll(
+        () => minBadgeContrast('accent'),
+        'dark accent badge contrast (min across variants)',
+      )
+      .toBeGreaterThanOrEqual(4.5);
+    await expect
+      .poll(
+        () => minBadgeContrast('filled-outlined'),
+        'dark filled-outlined badge contrast (min across variants)',
       )
       .toBeGreaterThanOrEqual(4.5);
     await page.screenshot({

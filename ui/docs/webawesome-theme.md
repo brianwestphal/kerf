@@ -111,11 +111,16 @@ parts, which CSS shadow parts do not support.
 
 Badge remains intentionally compact at Web Awesome's intrinsic `0.375em` block /
 `0.625em` inline padding (4.5px / 7.5px at its default 12px text size): it is a
-short status or count, not a content item. A badge with `appearance="filled"`
-uses its variant's quiet fill with normal text by default so every shipped
-semantic variant meets WCAG AA for that small text. Override
+short status or count, not a content item. A badge with `appearance="filled"` or
+`appearance="filled-outlined"` uses its variant's quiet fill with normal text by
+default so every shipped semantic variant meets WCAG AA for that small text;
+filled-outlined keeps its normal variant border. Accent badges keep their loud
+fills, with brand, success, and danger using a dark foreground that clears AA in
+both themes (neutral and warning retain their already-safe variant foregrounds).
+Override
 `--kui-wa-badge-filled-background` and `--kui-wa-badge-filled-foreground` on a
-badge or containing scope when a product needs a different contrast-safe pair.
+badge or containing scope when a product needs a different contrast-safe pair,
+or `--kui-wa-badge-accent-foreground` for a reviewed accent foreground.
 Breadcrumb has no bordered or filled container, and Scroller delegates item chrome
 to its slotted children, so both retain their upstream geometry. Web Awesome
 3.12's free catalog has

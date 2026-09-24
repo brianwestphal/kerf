@@ -228,11 +228,11 @@
     color-scheme: dark;
   }
 
-  /* Web Awesome's filled badge pairs each variant's normal fill with its
-     normal foreground. Several of those combinations miss 4.5:1 at the
+  /* Web Awesome's filled badge appearances pair each variant's normal fill
+     with its normal foreground. Several combinations miss 4.5:1 at the
      badge's 12px text size. Keep the variant's quiet tint, but use normal text
-     by default; consumers can override either side without host selectors. */
-  wa-badge[appearance="filled"] {
+     by default; filled-outlined retains its normal border. */
+  wa-badge:is([appearance="filled"], [appearance="filled-outlined"]) {
     --wa-color-fill-normal: var(
       --kui-wa-badge-filled-background,
       var(--wa-color-fill-quiet)
@@ -240,6 +240,21 @@
     --wa-color-on-normal: var(
       --kui-wa-badge-filled-foreground,
       var(--wa-color-text-normal)
+    ) !important;
+  }
+
+  /* The fixed brand/success/danger loud fills need a dark foreground in both
+     color schemes at badge text size. Neutral and warning already select an
+     AA-safe on-loud token, so preserve their variant-specific treatment. */
+  wa-badge[appearance="accent"]:is(
+      :not([variant]),
+      [variant="brand"],
+      [variant="success"],
+      [variant="danger"]
+    ) {
+    --wa-color-on-loud: var(
+      --kui-wa-badge-accent-foreground,
+      #1d1d1f
     ) !important;
   }
 

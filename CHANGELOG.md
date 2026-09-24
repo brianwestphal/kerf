@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Made accent and filled-outlined Web Awesome badge variants meet WCAG AA at
+  their compact text size while preserving loud accent fills and outlined
+  borders.
 - Added independent typed `tone`, `size`, and `font` presentation roles to
   `@kerfjs/ui/text`, covering quiet/danger copy, compact metadata, and monospace
   identifiers without global utility classes or appearance-only heading levels.
