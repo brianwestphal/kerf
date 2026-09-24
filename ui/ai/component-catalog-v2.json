@@ -1330,11 +1330,11 @@
       "layout": {
         "roles": ["structure"],
         "geometry": {
-          "margin": "self",
+          "margin": "none",
           "border": "self",
           "padding": "self",
           "notes": [
-            "Text keeps the native variant's margin and adds a 1px transparent border plus the standard 8px item padding."
+            "Text resets the native variant's margin and adds a 1px transparent border plus the standard 8px item padding."
           ]
         }
       },

@@ -12,7 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Added a first-class `@kerfjs/ui/text` component for native `h1`–`h6` and
   paragraph semantics with standard transparent-border and content-padding
-  geometry, and migrated Kerf UI's headings and prose to use it.
+  geometry and margin-neutral defaults, and migrated Kerf UI's headings and
+  prose to use it.
 - Added the shared physical `Sides` contract to `List` and `Row` text/control
   insets and to `ListInsetText` / `ListInsetControl`; inset wrappers now default
   to all four sides, while `ListInsetText.horizontalOnly` remains a deprecated

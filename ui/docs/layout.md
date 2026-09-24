@@ -123,11 +123,11 @@ CSS strings.
 Use `Text` from `@kerfjs/ui/text` for ordinary semantic headings and
 paragraphs. Its required `variant` renders the corresponding native `h1`–`h6`
 or `p` element, and ordinary global, `data-*`, and `aria-*` attributes pass
-through. Every variant owns a 1px transparent border and the standard 8px item
-padding; its native margin and typography remain available to the surrounding
-composition. Choose heading levels from the document outline, not for visual
-size. Toolbar identity and page-heading compositions continue to use
-`ToolbarText`.
+through. Every variant resets its native margin, owns a 1px transparent border,
+and supplies the standard 8px item padding; native typography remains available
+to the surrounding composition. Choose heading levels from the document
+outline, not for visual size. Toolbar identity and page-heading compositions
+continue to use `ToolbarText`.
 
 ```tsx
 import { Text } from "@kerfjs/ui/text";

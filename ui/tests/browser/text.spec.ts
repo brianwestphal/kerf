@@ -23,11 +23,17 @@ test('Text renders semantic variants with standard padded geometry', async ({
         return {
           border: style.borderTopWidth,
           borderStyle: style.borderTopStyle,
+          margin: style.marginTop,
           padding: style.paddingTop,
         };
       }),
     )
-    .toEqual({ border: '1px', borderStyle: 'solid', padding: '8px' });
+    .toEqual({
+      border: '1px',
+      borderStyle: 'solid',
+      margin: '0px',
+      padding: '8px',
+    });
 
   await page.screenshot({ path: 'test-results/text-wide.png', fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
