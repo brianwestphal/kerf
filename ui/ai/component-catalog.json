@@ -4514,6 +4514,10 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "publicTokens": [
+        "--kui-wa-surface-margin",
+        "--kui-wa-surface-inset"
+      ],
       "geometry": {
         "margin": "self",
         "border": "self",

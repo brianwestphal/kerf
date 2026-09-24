@@ -204,7 +204,7 @@ test('a downstream app moves from broken to clean using the supported doctor loo
     await writeFile(resolve(root, 'src/view.js'), 'export const value = 1;\n');
     await writeFile(
       resolve(root, 'src/view.css'),
-      '.view { color: inherit; }\n',
+      '.details-scope { --kui-wa-surface-margin: 0.75rem; --kui-wa-surface-inset: 0.75rem; }\n',
     );
     await rm(resolve(root, '.kerf-ui-profile.json'));
     const clean = await doctor(root);

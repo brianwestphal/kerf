@@ -237,6 +237,9 @@ describe('UX catalog metadata', () => {
       padding: 'self',
     });
     expect(
+      artifact.entries.find((entry) => entry.id === 'wa-details')?.publicTokens,
+    ).toEqual(['--kui-wa-surface-margin', '--kui-wa-surface-inset']);
+    expect(
       artifact.entries.find((entry) => entry.id === 'value-table')?.geometry,
     ).toEqual({
       margin: 'self',

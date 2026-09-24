@@ -100,6 +100,11 @@ describe('component catalog v2 composition contract', () => {
     });
     expect(icon.diagnostics).toEqual([]);
 
+    expect(
+      v2.entries.find((entry) => entry.id === 'wa-details')?.boundaries
+        .publicTokens,
+    ).toEqual(['--kui-wa-surface-margin', '--kui-wa-surface-inset']);
+
     const pane = v2.entries.find((entry) => entry.id === 'pane')!;
     const tabBar = v2.entries.find((entry) => entry.id === 'tab-bar')!;
     const workbench = v2.entries.find((entry) => entry.id === 'workbench')!;

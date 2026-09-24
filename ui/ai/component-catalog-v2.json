@@ -3706,7 +3706,7 @@
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
-        "publicTokens": []
+        "publicTokens": ["--kui-wa-surface-margin", "--kui-wa-surface-inset"]
       },
       "diagnostics": [],
       "provenance": {
