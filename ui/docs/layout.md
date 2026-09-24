@@ -121,19 +121,19 @@ CSS strings.
 ## Text
 
 Use `Text` from `@kerfjs/ui/text` for ordinary semantic headings and
-paragraphs. Its required `variant` renders the corresponding native `h1`–`h6`
-or `p` element, and ordinary global, `data-*`, and `aria-*` attributes pass
-through. Every variant resets its native margin, owns a 1px transparent border,
-and supplies the standard 8px item padding; native typography remains available
-to the surrounding composition. Choose heading levels from the document
-outline, not for visual size. Toolbar identity and page-heading compositions
-continue to use `ToolbarText`.
+paragraphs. It renders a native `p` by default; set `variant` to `h1`–`h6` when
+the document outline calls for a heading. Ordinary global, `data-*`, and
+`aria-*` attributes pass through. Every variant resets its native margin, owns a
+1px transparent border, and supplies the standard 8px item padding; native
+typography remains available to the surrounding composition. Choose heading
+levels from the document outline, not for visual size. Toolbar identity and
+page-heading compositions continue to use `ToolbarText`.
 
 ```tsx
 import { Text } from "@kerfjs/ui/text";
 
 <Text variant="h2" id="details-title">Details</Text>;
-<Text variant="p" aria-describedby="details-title">Supporting copy</Text>;
+<Text aria-describedby="details-title">Supporting copy</Text>;
 ```
 
 ## Spacer

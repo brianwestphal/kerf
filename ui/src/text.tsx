@@ -11,8 +11,8 @@ export type TextProps = Omit<
   KerfBaseAttrs,
   'children' | 'class' | 'className'
 > & {
-  /** Native heading or paragraph element to render. */
-  variant: TextVariant;
+  /** Native heading or paragraph element to render. Defaults to `p`. */
+  variant?: TextVariant;
   children: TextContent;
   class?: string;
   className?: string;
@@ -23,7 +23,7 @@ export type TextProps = Omit<
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
 export function Text({
-  variant: Variant,
+  variant: Variant = 'p',
   children,
   class: classValue = '',
   className = '',

@@ -86,6 +86,7 @@ Text({
   'aria-describedby': 'section-summary',
   children: 'Section',
 });
+Text({ children: 'Paragraph by default' });
 // @ts-expect-error Text variants are limited to native headings and paragraphs.
 Text({ variant: 'span', children: 'Invalid' });
 

@@ -152,9 +152,10 @@ through `aria-labelledby`. The app owns modal focus, dismissal, command policy,
 ids, supporting copy, and action handling.
 
 Use `Text` from `@kerfjs/ui/text` for ordinary headings and paragraphs outside
-toolbar title zones. Its required `variant` is `h1`–`h6` or `p`; choose heading
-levels by document hierarchy. It passes ordinary native attributes through and
-owns the standard transparent border plus content padding.
+toolbar title zones. It renders `p` by default; set `variant` to `h1`–`h6` only
+when the document hierarchy calls for a heading. It passes ordinary native
+attributes through and owns the standard transparent border plus content
+padding.
 
 For an avatar toolbar control, set `content="avatar"` and `avatarImage` on
 `ToolbarControlGroup`; do not insert an `img` into the button. A lone control

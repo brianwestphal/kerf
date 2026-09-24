@@ -381,7 +381,7 @@ describe('production UI primitives', () => {
     ).toBe(
       '<h2 id="section-title" aria-label="Section title" data-scope="details" class="kui-text title emphasis" data-component="text">Details</h2>',
     );
-    expect(asHtml(Text({ variant: 'p', children: <span>Body</span> }))).toBe(
+    expect(asHtml(Text({ children: <span>Body</span> }))).toBe(
       '<p class="kui-text" data-component="text"><span>Body</span></p>',
     );
   });

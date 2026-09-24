@@ -701,8 +701,8 @@ Heading recipes compose `Toolbar`, direct `ToolbarText`, and optional
 supporting copy on a separate row. Page and section titles opt into heading
 semantics through `ToolbarText.headingLevel`.
 Ordinary UI headings and paragraphs use `Text` (`ui/src/text.tsx`), whose
-required `h1`–`h6`/`p` variant renders native semantics and whose companion CSS
-adds the standard transparent border and item padding.
+default `p` and optional `h1`–`h6` variant render native semantics and whose
+companion CSS adds the standard transparent border and item padding.
 Compact mixed `ToolbarControlGroup` selections keep standard item padding,
 remove the internal separator, and paint raised selected chrome over the outer
 border. Single avatar hover changes only the color layer so its contained image

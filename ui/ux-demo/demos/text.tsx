@@ -17,7 +17,6 @@ export function TextDemo() {
           <Text variant="h5">Heading level 5</Text>
           <Text variant="h6">Heading level 6</Text>
           <Text
-            variant="p"
             id="text-demo-paragraph"
             lang="en"
             data-demo-copy="paragraph"

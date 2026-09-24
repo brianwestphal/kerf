@@ -2014,8 +2014,8 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
 type TextContent = KerfUiContent | string | number | readonly TextContent[];
 type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
-    /** Native heading or paragraph element to render. */
-    variant: TextVariant;
+    /** Native heading or paragraph element to render. Defaults to `p`. */
+    variant?: TextVariant;
     children: TextContent;
     class?: string;
     className?: string;

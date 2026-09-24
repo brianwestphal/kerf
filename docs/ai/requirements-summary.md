@@ -364,10 +364,10 @@ URLs keep those links deploy-safe without adding a UI runtime export.
 
 **Shipped.** `@kerfjs/ui` component and catalog-only styles express scalable dimensions as `remify(<numeric-px-literal>)`, which PostCSS divides source CSS against a fixed 16px baseline into standard `rem`. Literal pixels remain appropriate for intentional hairlines, and `em` stays explicit because it is component-font-relative. Runtime component values deliberately use the separate CSS-free `@kerfjs/ui/css-values` subpath: branded primitive `CssLength` values come from deterministic `px`/`rem`/`em`/`pct`/`space`/`lengthVar` builders, while `plus` returns a non-standalone expression that `calc` promotes to a complete value. `Row.gap`, `List.gap`, and `Spacer` width/height accept the finite spacing vocabulary directly and reject unrestricted strings; `Spacer.flex` provides a decorative flexible main-axis gap. Package exports and generated browser wrappers point to compiled `ui/dist/styles/` output; component author CSS is excluded from publication, while deliberately shipped copyable recipe source remains ordinary CSS. The UX catalog resolves package imports back to component source and runs the identical transform under Vite, preserving CSS HMR. Unit, bundle, source/packed type, package, and browser checks reject malformed delivery syntax and invalid runtime-value composition. See [`docs/22-ui-css-authoring.md`](../22-ui-css-authoring.md).
 
-The UI package also ships `Text`, a required-variant semantic wrapper for native
-`h1`–`h6` and `p` elements. It passes through ordinary element attributes and
-standardizes text-box geometry with an 8px item padding and transparent 1px
-border while preserving the selected native semantics.
+The UI package also ships `Text`, a semantic wrapper that renders native `p` by
+default and accepts `h1`–`h6` variants for headings. It passes through ordinary
+element attributes and standardizes text-box geometry with an 8px item padding
+and transparent 1px border while preserving the selected native semantics.
 
 ### §23 App and dialog layouts
 

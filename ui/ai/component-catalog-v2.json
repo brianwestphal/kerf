@@ -1340,7 +1340,7 @@
       },
       "accessibility": {
         "obligations": [
-          "Text renders the selected native element; choose heading levels by document outline rather than appearance.",
+          "Text renders a native paragraph by default; choose an h1 through h6 variant by document outline rather than appearance.",
           "Ordinary global, data, and ARIA attributes pass through to the native element."
         ]
       },
