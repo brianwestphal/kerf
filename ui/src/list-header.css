@@ -39,7 +39,7 @@
 }
 
 .kui-list-header[data-inline="true"] {
-  display: inline-block;
+  display: inline-flex;
   width: auto;
   margin: 0;
   border: 0;
