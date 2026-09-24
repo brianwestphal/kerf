@@ -4345,7 +4345,7 @@ test('shrink-wraps inline ListHeader without root geometry or split action layou
     await expect(header).toHaveAttribute('data-inline', 'true');
     expect(await geometry()).toEqual({
       borderWidths: ['0px', '0px', '0px', '0px'],
-      display: 'inline-block',
+      display: 'inline-flex',
       documentOverflow: 0,
       marginWidths: ['0px', '0px', '0px', '0px'],
       paddingWidths: ['0px', '0px', '0px', '0px'],
