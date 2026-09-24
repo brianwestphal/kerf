@@ -116,6 +116,7 @@ describe('ToolbarControlGroup compact mixed selection', () => {
       ),
     );
     expect(compact['--kui-layout-item-padding']).toBe('remify(8px)');
+    expect(compact.gap).toBeUndefined();
 
     const selected = declarations(
       findRuleWithDeclaration(

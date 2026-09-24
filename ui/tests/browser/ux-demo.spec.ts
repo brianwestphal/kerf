@@ -5617,6 +5617,7 @@ test('contains the compact mixed raised selection, dropdown label, and caret for
       const selected = node.querySelector(':scope > button')!;
       const dropdown = node.querySelector(':scope > wa-dropdown')!;
       const trigger = dropdown.querySelector('wa-button')!;
+      const base = trigger.shadowRoot!.querySelector('[part~="base"]')!;
       const caret = trigger.shadowRoot!.querySelector('[part~="caret"]')!;
       const bounds = (element: Element) => {
         const rect = element.getBoundingClientRect();
@@ -5627,6 +5628,11 @@ test('contains the compact mixed raised selection, dropdown label, and caret for
         selected: bounds(selected),
         dropdown: bounds(dropdown),
         trigger: bounds(trigger),
+        base: {
+          ...bounds(base),
+          paddingInlineStart: window.getComputedStyle(base).paddingInlineStart,
+          paddingInlineEnd: window.getComputedStyle(base).paddingInlineEnd,
+        },
         caret: bounds(caret),
       };
     });
@@ -5636,6 +5642,8 @@ test('contains the compact mixed raised selection, dropdown label, and caret for
     const measured = await geometry();
     expect(measured.dropdown.left - measured.selected.right).toBeCloseTo(-2, 1);
     expect(measured.trigger.left).toBeCloseTo(measured.dropdown.left, 1);
+    expect(measured.base.paddingInlineStart).toBe('8px');
+    expect(measured.base.paddingInlineEnd).toBe('8px');
     expect(measured.caret.left).toBeGreaterThan(measured.trigger.left);
     expect(measured.caret.right).toBeLessThanOrEqual(measured.group.right - 1);
     expect(measured.trigger.right).toBeLessThanOrEqual(
@@ -5651,6 +5659,13 @@ test('contains the compact mixed raised selection, dropdown label, and caret for
         .screenshot({
           path: 'test-results/toolbar-control-group-compact-example.png',
         });
+  }
+
+  if (browserName === 'chromium') {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await group.locator('xpath=ancestor::*[@data-catalog-example]').screenshot({
+      path: 'test-results/toolbar-control-group-compact-narrow.png',
+    });
   }
 });
 

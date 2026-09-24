@@ -35,8 +35,9 @@ deterministic state, and semantic layout owners from the [recipe guide](./recipe
 - The ToolbarControlGroup route also demonstrates the public compact/tight,
   mixed-content, filled-selection, nested-dropdown, and avatar/scrim contracts
   added for consumers that previously restyled group descendants. The compact
-  mixed specimen keeps its separator, trigger label, and caret inside both pill
-  and rounded group shapes. Avatar images are chrome rather than nested `img`
+  mixed specimen keeps its connected separator plus the standard 8px dropdown
+  trigger inset, label, and caret inside both pill and rounded group shapes.
+  Avatar images are chrome rather than nested `img`
   elements: a lone avatar paints the group, while a multi-button avatar group
   paints only the pressed selection, with contain fitting in both cases. Its
   collapsible-search specimen follows the selected group shape with a

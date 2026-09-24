@@ -569,19 +569,6 @@ button {
   align-items: center;
   gap: remify(8px);
 }
-.toolbar-control-group-demo wa-button::part(base) {
-  width: remify(32px);
-  height: remify(32px);
-  min-height: remify(32px);
-  padding: 0;
-  border-radius: var(--kui-radius-pill);
-}
-.toolbar-control-group-demo wa-button::part(button) {
-  gap: 2px;
-}
-.toolbar-control-group-demo wa-button::part(caret) {
-  margin-inline-start: 2px;
-}
 .segmented-control-demo [data-layout="equal"] {
   min-width: min(remify(384px), 100%);
 }
