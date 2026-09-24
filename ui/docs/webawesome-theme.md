@@ -181,10 +181,9 @@ component should declare the no-arrow choice independent of theme context.
 The UX catalog includes a focused, addressable specimen for every component in
 this list. Because these are themed ecosystem components rather than
 first-class `@kerfjs/ui` exports, the sidebar keeps them under a collapsible
-`Web Awesome` heading with category subgroups. The aggregate theme route
-remains a broad visual-regression surface, while modal, drawer, toast, media,
-and helper routes make their own behavior inspectable without opening every
-state at once.
+`Web Awesome` heading with category subgroups. There is no aggregate theme
+route: the focused modal, drawer, toast, media, and helper routes make each
+component's behavior inspectable without opening every state at once.
 
 ## Badge and tag guidance
 

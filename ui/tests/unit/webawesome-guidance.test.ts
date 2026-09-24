@@ -4,6 +4,18 @@ import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 describe('Web Awesome consumer guidance', () => {
+  it('does not advertise the removed aggregate theme route', () => {
+    const guidance = readFileSync(
+      resolve(import.meta.dirname, '../../docs/webawesome-theme.md'),
+      'utf8',
+    );
+
+    expect(guidance).toMatch(/There is no aggregate theme\s+route/);
+    expect(guidance).not.toContain(
+      'The aggregate theme route remains a broad visual-regression surface',
+    );
+  });
+
   it('keeps the Markdown trust boundary explicit', () => {
     const guidance = readFileSync(
       resolve(import.meta.dirname, '../../docs/webawesome-theme.md'),

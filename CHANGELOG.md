@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Removed stale Web Awesome guidance that still advertised the deleted
+  aggregate theme route; focused component routes remain the supported catalog
+  surface.
 - Aligned Web Awesome Accordion and Details disclosure geometry: plain
   appearances no longer add inline trigger/body padding, while outlined and
   sunken headers use the roomier 16px container inset.
