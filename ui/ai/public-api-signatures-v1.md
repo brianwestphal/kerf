@@ -2036,3 +2036,24 @@ declare function Row({ children, hAlign, vAlign, gap, flex, wrap, textInsets, co
 
 export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, Row, type RowProps, Sides, UiSpaceName, VerticalAlignment };
 ```
+
+## `@kerfjs/ui/spacer`
+
+```ts
+import * as kerfjs from 'kerfjs';
+import { UiSpaceName, CssLength } from './css-values.js';
+
+interface SpacerProps {
+    /** Grow and shrink to fill the available space along a parent's flex axis. */
+    flex?: boolean;
+    /** A named UI spacing token or typed physical width. */
+    width?: UiSpaceName | CssLength;
+    /** A named UI spacing token or typed physical height. */
+    height?: UiSpaceName | CssLength;
+    className?: string;
+}
+/** A decorative fixed-size or flexible gap for Row, List, and other flex layouts. */
+declare function Spacer({ flex, width, height, className, }: SpacerProps): kerfjs.SafeHtml;
+
+export { CssLength, Spacer, type SpacerProps, UiSpaceName };
+```

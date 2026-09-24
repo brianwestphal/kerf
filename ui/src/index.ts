@@ -100,6 +100,7 @@ export {
 } from './select.js';
 export { type KerfUiContent } from './semantic-content.js';
 export { Skeleton, type SkeletonProps } from './skeleton.js';
+export { Spacer, type SpacerProps } from './spacer.js';
 export {
   StateBanner,
   type StateBannerProps,

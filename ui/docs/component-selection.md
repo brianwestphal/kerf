@@ -38,8 +38,10 @@ foreground/background contrast relationships and visible focus ring.
 
 ### Typed runtime dimensions
 
-Use `Row` or `List` spacing shorthands for the common case: `gap="xs"`, `gap="m"`, and
-the other `UiSpaceName` values resolve to their matching `--kui-space-*` token.
+Use `Row` or `List` spacing shorthands for repeated sibling spacing: `gap="xs"`,
+`gap="m"`, and the other `UiSpaceName` values resolve to their matching
+`--kui-space-*` token. Use `Spacer` for one deliberate empty width or height, or
+pass `flex` to consume the remaining space along a flex parent's main axis.
 The canonical rhythm is `none`, `2xs`, `xs`, `m`, and `l`; use `s` and `xl`
 only as deliberate exceptions.
 
@@ -65,7 +67,8 @@ Raw strings such as `"0.25rem"` no longer satisfy `Row.gap` or `List.gap`; this 
 contract lands before the 5.0 stable release so misspelled tokens and incomplete
 expressions fail during typechecking rather than in the browser.
 
-Other CSS-valued props use distinct contracts: `flex()` creates `CssFlex` for
+Other CSS-valued props use distinct contracts: `Spacer.width` and
+`Spacer.height` take `UiSpaceName | CssLength`; `flex()` creates `CssFlex` for
 `Row.flex` and `List.flex`; `Skeleton` dimensions take typed lengths (plus finite intrinsic
 keywords for width/height); and `uiColor()`/`colorVar()` create `CssColor` for
 `SelectChoice.color`. Do not substitute one brand for another. Row components

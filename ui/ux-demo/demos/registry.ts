@@ -24,6 +24,7 @@ import { RowDemo } from './row.js';
 import { SegmentedControlDemo } from './segmented-control.js';
 import { SelectDemo } from './select.js';
 import { SkeletonDemo } from './skeleton.js';
+import { SpacerDemo } from './spacer.js';
 import { SplitViewDemo } from './split-view.js';
 import { StateBannerDemo } from './state-banner.js';
 import { SunkenPanelDemo } from './sunken-panel.js';
@@ -53,6 +54,7 @@ export const demos = {
   'toolbar-text': ToolbarTextDemo,
   list: ListDemo,
   row: RowDemo,
+  spacer: SpacerDemo,
   'list-header': ListHeaderDemo,
   'list-action-row': ListActionRowDemo,
   'list-item': ListItemDemo,

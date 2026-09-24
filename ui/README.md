@@ -126,7 +126,7 @@ Do not concatenate a count into `label` or pass a numeric `badge`; the mutually
 exclusive legacy `badge` slot remains available for non-count `SafeHtml` such
 as a `New` marker.
 
-`Row.gap` and `List.gap` accept a direct spacing name such as
+`Row.gap`, `List.gap`, and `Spacer` dimensions accept a direct spacing name such as
 `gap="xs"` or `gap="m"`, or a branded `CssLength`. Import `space`, `rem`, `em`,
 `px`, `pct`, `lengthVar`, `plus`, and `calc` from the CSS-free
 `@kerfjs/ui/css-values` subpath when a named step is not enough. `plus` returns
@@ -165,6 +165,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `ToolbarText`                                                       | `@kerfjs/ui/toolbar-text`               | `@kerfjs/ui/toolbar-text.css`          |
 | `List`                                                              | `@kerfjs/ui/list`                       | `@kerfjs/ui/list.css`                  |
 | `Row`                                                               | `@kerfjs/ui/row`                        | `@kerfjs/ui/row.css`                   |
+| `Spacer`                                                            | `@kerfjs/ui/spacer`                     | `@kerfjs/ui/spacer.css`                |
 | Typed CSS dimension builders                                        | `@kerfjs/ui/css-values`                 | —                                      |
 | `ListActionRow`                                                     | `@kerfjs/ui/list-action-row`            | `@kerfjs/ui/list-action-row.css`       |
 | `ListItem`                                                          | `@kerfjs/ui/list-item`                  | `@kerfjs/ui/list-item.css`             |

@@ -12,6 +12,7 @@ const entries = [
   'floating-toolbar',
   'list',
   'row',
+  'spacer',
   'list-action-row',
   'list-item',
   'list-header',

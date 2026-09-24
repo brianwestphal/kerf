@@ -283,6 +283,23 @@ button {
   min-height: remify(248px);
 }
 
+.demo-spacer-row,
+.demo-spacer-flex,
+.demo-spacer-list {
+  width: min(remify(480px), 100%);
+}
+
+.demo-spacer-marker {
+  background: var(--kui-color-accent-subtle);
+}
+
+.demo-spacer-list {
+  padding: var(--kui-space-xs);
+  border: 1px solid var(--kui-color-border);
+  border-radius: var(--kui-radius-m);
+  background: var(--kui-color-surface-lowered);
+}
+
 .demo-list-alignment,
 .demo-list-insets {
   min-height: remify(176px);

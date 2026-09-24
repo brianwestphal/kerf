@@ -93,6 +93,11 @@
       "browser": "./dist/browser/row.js",
       "import": "./dist/row.js"
     },
+    "./spacer": {
+      "types": "./dist/spacer.d.ts",
+      "browser": "./dist/browser/spacer.js",
+      "import": "./dist/spacer.js"
+    },
     "./list-action-row": {
       "types": "./dist/list-action-row.d.ts",
       "browser": "./dist/browser/list-action-row.js",
@@ -284,6 +289,7 @@
     "./toolbar-text.css": "./dist/styles/toolbar-text.css",
     "./list.css": "./dist/styles/list.css",
     "./row.css": "./dist/styles/row.css",
+    "./spacer.css": "./dist/styles/spacer.css",
     "./list-action-row.css": "./dist/styles/list-action-row.css",
     "./list-item.css": "./dist/styles/list-item.css",
     "./list-header.css": "./dist/styles/list-header.css",

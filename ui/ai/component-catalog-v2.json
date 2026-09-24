@@ -1487,6 +1487,92 @@
       }
     },
     {
+      "key": "@kerfjs/ui:spacer",
+      "package": "@kerfjs/ui",
+      "id": "spacer",
+      "name": "Spacer",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "whether the empty space carries structural meaning",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "the named or typed dimensions",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "whether the spacer fills the flex main axis",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "A fixed Spacer does not shrink. flex changes its flex shorthand from 0 0 auto to 1 1 auto; width and height remain physical dimensions."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Spacer is always decorative and hidden from the accessibility tree.",
+          "Spacer must not contain content or become an interaction target."
+        ]
+      },
+      "cssValueProps": [
+        {
+          "path": "width",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
+          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
+          "exceptionalShorthands": ["s", "xl"],
+          "rawPolicy": "forbid",
+          "examples": [
+            "width=\"m\"",
+            "width={space(\"m\")}",
+            "width={calc(plus(rem(0.25), pct(10)))}"
+          ]
+        },
+        {
+          "path": "height",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
+          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
+          "exceptionalShorthands": ["s", "xl"],
+          "rawPolicy": "forbid",
+          "examples": ["height=\"xs\"", "height={rem(1)}"]
+        }
+      ],
+      "boundaries": {
+        "rootClass": "kui-spacer",
+        "publicClasses": ["kui-spacer"],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:list",
       "package": "@kerfjs/ui",
       "id": "list",

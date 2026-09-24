@@ -429,6 +429,7 @@ describe('UX catalog metadata', () => {
       'ToolbarText',
       'ValueTable',
       'Row',
+      'Spacer',
       'List',
       'ListHeader',
       'ListActionRow',

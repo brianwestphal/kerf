@@ -686,6 +686,9 @@ mutation checkpoint before later user input. The adoption demo persists both que
 `CatalogExample.rootAttributes` and `CatalogExampleStack.rootAttributes` use the
 same runtime filter for catalog-authoring `data-*` metadata while protecting
 their structure and alignment markers.
+`ui/src/spacer.tsx` is the decorative layout-gap primitive: `width` and `height`
+accept finite `UiSpaceName` shorthands or branded `CssLength` values, fixed gaps
+do not shrink, and `flex` consumes remaining space along a flex main axis.
 `ui/docs/catalog.md#catalog-demo-authoring-contract` is the single authoring
 authority; the separately versioned `ui/ai/catalog-authoring.json` discovery
 artifact points AI tools to it because `component-catalog.json` remains an

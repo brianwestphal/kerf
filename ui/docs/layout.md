@@ -118,6 +118,31 @@ Use `rem`, `em`, `px`, `pct`, `lengthVar`, and `calc(plus(...))` only when a
 named spacing relationship does not express the requirement; do not pass raw
 CSS strings.
 
+## Spacer
+
+Use `Spacer` from `@kerfjs/ui/spacer` for one intentional empty dimension that
+is not the repeated relationship owned by a parent's `gap`. Its `width` and
+`height` accept the same finite `UiSpaceName` vocabulary or a complete typed
+`CssLength`. Fixed spacers use `flex: 0 0 auto`, so flex layouts do not compress
+the requested dimension. Pass `flex` to use `1 1 auto` and consume the remaining
+space along a `Row`, `List`, or other flex parent's main axis.
+
+```tsx
+import { Row } from "@kerfjs/ui/row";
+import { Spacer } from "@kerfjs/ui/spacer";
+
+<Row gap="none">
+  <button>Back</button>
+  <Spacer flex />
+  <button>Save</button>
+</Row>;
+```
+
+Spacer is always decorative (`aria-hidden="true"`), accepts no children, and
+uses physical width and height. Prefer `Row.gap` or `List.gap` for uniform
+sibling rhythm, and never use Spacer to cancel or duplicate component-owned
+insets.
+
 ## Row and List alignment
 
 Use `Row` for a horizontal flex layout and `List` for a vertical one. `Row`

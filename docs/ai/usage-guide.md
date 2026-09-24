@@ -57,6 +57,7 @@ import { AppTab } from "@kerfjs/ui/app-tab";
 import { calc, pct, plus, rem, space } from "@kerfjs/ui/css-values";
 import { ListActionRow } from "@kerfjs/ui/list-action-row";
 import { Row } from "@kerfjs/ui/row";
+import { Spacer } from "@kerfjs/ui/spacer";
 import { SegmentedControl } from "@kerfjs/ui/segmented-control";
 import { StateBanner } from "@kerfjs/ui/state-banner";
 import { TabBar } from "@kerfjs/ui/tab-bar";
@@ -76,13 +77,17 @@ the complete layer is intentional. Manual CSS subpaths remain available for
 custom pipelines. App overrides belong later in the cascade or on a scoped
 `--kui-*` owner.
 
-`Row.gap` and `List.gap` accept a finite token shorthand such as
+`Row.gap`, `List.gap`, and `Spacer` width/height accept a finite token shorthand such as
 `"xs"` or `"m"`, or a branded complete `CssLength`. Use the CSS-free
 `@kerfjs/ui/css-values` builders (`space`, `px`, `rem`, `em`, `pct`,
 `lengthVar`, `plus`, `calc`) rather than raw CSS strings. `plus` produces only a
 `CssLengthExpression`; wrap it with `calc` before passing it to a component.
 The build-time `remify()` function is valid in package source CSS, not runtime
 props.
+
+Use `Spacer` for one intentional empty dimension rather than repeated sibling
+rhythm. Fixed spacers do not shrink; `flex` consumes remaining space along a
+flex parent's main axis. The component is decorative and accepts no children.
 
 Keep runtime CSS grammars property-specific: use `flex()` for `List.flex`,
 length builders for Skeleton dimensions, and `uiColor()`/`colorVar()` for

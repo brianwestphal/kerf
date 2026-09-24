@@ -49,6 +49,7 @@ import {
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select, type SelectChoice } from '@kerfjs/ui/select';
 import { Skeleton } from '@kerfjs/ui/skeleton';
+import { Spacer } from '@kerfjs/ui/spacer';
 import {
   StateBanner,
   type StateBannerTone,
@@ -89,6 +90,7 @@ List({ gap: lengthVar('--app-gap', px(4)) });
 List({ gap: em(0.5) });
 Row({ gap: spacingName });
 Row({ gap: responsiveGap });
+Spacer({ width: spacingName, height: responsiveGap, flex: true });
 void genericCssValue;
 // @ts-expect-error KUI-T012 an incomplete expression must be wrapped in calc().
 List({ gap: expression });
@@ -96,6 +98,8 @@ List({ gap: expression });
 List({ gap: '0.25rem' });
 // @ts-expect-error KUI-T012 Row uses the same typed gap contract.
 Row({ gap: '0.25rem' });
+// @ts-expect-error KUI-T012 Spacer dimensions use the same typed length contract.
+Spacer({ width: '0.25rem' });
 // @ts-expect-error KUI-T012 spacing shorthands are a finite vocabulary.
 space('xxs');
 // @ts-expect-error KUI-T012 custom property names keep their leading dashes.

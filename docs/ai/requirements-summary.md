@@ -283,7 +283,7 @@ an already-produced `SafeHtml` value.
 Runtime dimensions use the CSS-free `@kerfjs/ui/css-values` surface: branded
 primitive `CssLength` values are distinct from non-standalone
 `CssLengthExpression` arithmetic, finite numeric builders reject non-finite
-input, and `Row.gap`/`List.gap` accept direct `UiSpaceName` shorthands or a complete typed
+input, and `Row.gap`/`List.gap` plus `Spacer` width/height accept direct `UiSpaceName` shorthands or a complete typed
 length instead of unrestricted CSS strings. Source and packed-tarball type
 contracts pin that distinction.
 `CssFlex`, `CssSize`, and `CssColor` extend the same property-specific rule to
@@ -362,7 +362,7 @@ URLs keep those links deploy-safe without adding a UI runtime export.
 
 ### §22 Pixel-first UI CSS authoring
 
-**Shipped.** `@kerfjs/ui` component and catalog-only styles express scalable dimensions as `remify(<numeric-px-literal>)`, which PostCSS divides by a fixed 16px authoring baseline and emits as standard `rem`. Literal pixels remain appropriate for intentional hairlines, and `em` stays explicit because it is component-font-relative. Runtime component values deliberately use the separate CSS-free `@kerfjs/ui/css-values` subpath: branded primitive `CssLength` values come from deterministic `px`/`rem`/`em`/`pct`/`space`/`lengthVar` builders, while `plus` returns a non-standalone expression that `calc` promotes to a complete value. `List.gap` accepts the finite spacing vocabulary directly and rejects unrestricted strings. Package exports and generated browser wrappers point to compiled `ui/dist/styles/` output; component author CSS is excluded from publication, while deliberately shipped copyable recipe source remains ordinary CSS. The UX catalog resolves package imports back to component source and runs the identical transform under Vite, preserving CSS HMR. Unit, bundle, source/packed type, package, and browser checks reject malformed delivery syntax and invalid runtime-value composition. See [`docs/22-ui-css-authoring.md`](../22-ui-css-authoring.md).
+**Shipped.** `@kerfjs/ui` component and catalog-only styles express scalable dimensions as `remify(<numeric-px-literal>)`, which PostCSS divides source CSS against a fixed 16px baseline into standard `rem`. Literal pixels remain appropriate for intentional hairlines, and `em` stays explicit because it is component-font-relative. Runtime component values deliberately use the separate CSS-free `@kerfjs/ui/css-values` subpath: branded primitive `CssLength` values come from deterministic `px`/`rem`/`em`/`pct`/`space`/`lengthVar` builders, while `plus` returns a non-standalone expression that `calc` promotes to a complete value. `Row.gap`, `List.gap`, and `Spacer` width/height accept the finite spacing vocabulary directly and reject unrestricted strings; `Spacer.flex` provides a decorative flexible main-axis gap. Package exports and generated browser wrappers point to compiled `ui/dist/styles/` output; component author CSS is excluded from publication, while deliberately shipped copyable recipe source remains ordinary CSS. The UX catalog resolves package imports back to component source and runs the identical transform under Vite, preserving CSS HMR. Unit, bundle, source/packed type, package, and browser checks reject malformed delivery syntax and invalid runtime-value composition. See [`docs/22-ui-css-authoring.md`](../22-ui-css-authoring.md).
 
 ### §23 App and dialog layouts
 

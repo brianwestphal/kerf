@@ -162,7 +162,8 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   `--kui-space-none`, `4px` `--kui-space-2xs`, `8px` `--kui-space-xs` (inside a
   group), `16px` `--kui-space-m`, `24px` `--kui-space-l` (between major differing
   regions). 12px/32px are off-scale exceptions. Prefer direct `Row.gap`/`List.gap`
-  shorthands; use `space`, `px`, `rem`, `em`, `pct`, `lengthVar`, and
+  shorthands for repeated rhythm; use `Spacer` for one typed empty width/height
+  or flexible main-axis gap. Use `space`, `px`, `rem`, `em`, `pct`, `lengthVar`, and
   `calc(plus(...))` for typed runtime composition. `remify()` is source-CSS only.
 - **Keep nested highlight corners concentric.** Inset hover and selection surfaces
   follow the owning control's pill or rounded shape; their radius is the outer

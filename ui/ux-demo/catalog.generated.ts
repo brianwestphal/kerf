@@ -338,6 +338,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/layout.md"
   },
   {
+    "id": "spacer",
+    "name": "Spacer",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Express an intentional empty dimension or consume remaining flex space without application-owned spacer markup or raw CSS lengths.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/spacer.tsx",
+    "componentSource": "ui/src/spacer.tsx",
+    "documentation": "ui/docs/layout.md"
+  },
+  {
     "id": "list",
     "name": "List",
     "category": "Navigation",

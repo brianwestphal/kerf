@@ -25,6 +25,7 @@ import {
 import { Row } from '../../src/row.js';
 import { SegmentedControl } from '../../src/segmented-control.js';
 import { Select, type SelectChoice } from '../../src/select.js';
+import { Spacer } from '../../src/spacer.js';
 import { StateBanner } from '../../src/state-banner.js';
 import { DialogSurface, PopupSurface } from '../../src/surface-scaffold.js';
 import { TabBar } from '../../src/tab-bar.js';
@@ -343,6 +344,24 @@ describe('production UI primitives', () => {
         );
       }
     }
+  });
+
+  it('renders fixed and flexible decorative spacers with typed dimensions', () => {
+    const fixed = asHtml(
+      Spacer({
+        width: 'm',
+        height: rem(1.5),
+        className: 'section-gap',
+      }),
+    );
+    expect(fixed).toContain(
+      'class="kui-spacer section-gap" data-component="spacer" data-flex="false" aria-hidden="true" style="width:var(--kui-space-m);height:1.5rem"',
+    );
+
+    expect(asHtml(Spacer({ flex: true, width: 'none' }))).toContain(
+      'data-flex="true" aria-hidden="true" style="width:var(--kui-space-none)"',
+    );
+    expect(asHtml(Spacer({}))).not.toContain('style=');
   });
 
   it('renders nullable and recursively nested semantic children without a Fragment', () => {

@@ -1734,6 +1734,98 @@
       }
     },
     {
+      "id": "spacer",
+      "name": "Spacer",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A decorative, non-shrinking fixed gap or flexible main-axis spacer with typed physical width and height.",
+      "uses": [],
+      "purpose": "Express an intentional empty dimension or consume remaining flex space without application-owned spacer markup or raw CSS lengths.",
+      "publicExports": ["Spacer"],
+      "cssValueProps": [
+        {
+          "path": "width",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
+          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
+          "exceptionalShorthands": ["s", "xl"],
+          "rawPolicy": "forbid",
+          "examples": ["width=\"m\"", "width={space(\"m\")}", "width={calc(plus(rem(0.25), pct(10)))}"]
+        },
+        {
+          "path": "height",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
+          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
+          "exceptionalShorthands": ["s", "xl"],
+          "rawPolicy": "forbid",
+          "examples": ["height=\"xs\"", "height={rem(1)}"]
+        }
+      ],
+      "useWhen": [
+        "Reserve a fixed empty width or height from the UI spacing scale inside a layout.",
+        "Push siblings to opposite ends of a Row or other flex container by passing flex.",
+        "Use a typed CssLength when the finite spacing scale cannot express the required dimension."
+      ],
+      "avoidWhen": [
+        "Do not use Spacer for ordinary rhythm between siblings; prefer Row.gap or List.gap so the parent owns repeated spacing.",
+        "Do not use Spacer to compensate for component-owned padding, margin, alignment, or responsive layout defects.",
+        "Do not pass raw CSS strings to width or height."
+      ],
+      "alternatives": [
+        {
+          "id": "row",
+          "relationship": "parent-spacing-alternative",
+          "when": "Use Row.gap when every horizontal sibling needs the same repeated separation."
+        },
+        {
+          "id": "list",
+          "relationship": "parent-spacing-alternative",
+          "when": "Use List.gap when every vertical sibling needs the same repeated separation."
+        }
+      ],
+      "appOwns": [
+        "whether the empty space carries structural meaning",
+        "the named or typed dimensions",
+        "whether the spacer fills the flex main axis"
+      ],
+      "variants": [
+        "fixed named width and/or height",
+        "fixed typed CssLength width and/or height",
+        "flexible main-axis space"
+      ],
+      "accessibility": [
+        "Spacer is always decorative and hidden from the accessibility tree.",
+        "Spacer must not contain content or become an interaction target."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "A fixed Spacer does not shrink. flex changes its flex shorthand from 0 0 auto to 1 1 auto; width and height remain physical dimensions."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/spacer",
+        "manualCssImport": "@kerfjs/ui/spacer.css",
+        "sideEffects": ["browser-condition-css"]
+      },
+      "wiring": [],
+      "publicClasses": ["kui-spacer"],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=spacer",
+        "documentation": "docs/layout.md",
+        "recipe": "docs/layout.md#spacer"
+      }
+    },
+    {
       "id": "list",
       "name": "List",
       "category": "Navigation",
