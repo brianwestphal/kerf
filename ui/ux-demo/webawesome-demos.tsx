@@ -267,7 +267,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
 
   'wa-accordion': () => (
-    <wa-accordion>
+    <wa-accordion appearance="sunken">
       <wa-accordion-item label="Theme contract" expanded>
         Override semantic tokens after the Kerf theme import.
       </wa-accordion-item>
@@ -284,7 +284,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </wa-accordion>
   ),
   'wa-card': () => (
-    <wa-card with-header with-footer>
+    <wa-card appearance="sunken" with-header with-footer>
       <strong slot="header">Release readiness</strong>
       <Text variant="p">
         Production components, contracts, and browser checks stay together.
@@ -296,7 +296,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-details': () => (
     <div class="wa-demo-stack">
-      <wa-details summary="Compatibility notes" open>
+      <wa-details appearance="sunken" summary="Sunken compatibility notes" open>
         Web Awesome 3.12 uses the same semantic theme contract.
       </wa-details>
       <wa-details summary="Collapsed details">

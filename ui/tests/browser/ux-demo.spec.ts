@@ -3265,6 +3265,65 @@ test('content surfaces share an overridable 8px outer margin and inner padding',
   }
 });
 
+test('sunken Accordion, Card, and Details use the lowered rounded surface', async ({
+  page,
+  browserName,
+}) => {
+  const specimens = [
+    { route: 'wa-accordion', selector: 'wa-accordion', part: null },
+    { route: 'wa-card', selector: 'wa-card', part: null },
+    { route: 'wa-details', selector: 'wa-details', part: 'details' },
+  ] as const;
+
+  for (const specimen of specimens) {
+    await page.setViewportSize({ width: 1100, height: 820 });
+    await page.goto(`/?component=${specimen.route}`);
+    const host = page.locator(`${specimen.selector}[appearance="sunken"]`);
+    await expect(host).toBeVisible();
+    const appearance = await host.evaluate((element, part) => {
+      const target = part
+        ? (element.shadowRoot!.querySelector(
+            `[part~="${part}"]`,
+          ) as HTMLElement)
+        : element;
+      const probe = document.createElement('div');
+      probe.style.backgroundColor = 'var(--wa-color-surface-lowered)';
+      document.body.append(probe);
+      const loweredBackground = window.getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      const style = window.getComputedStyle(target);
+      return {
+        background: style.backgroundColor,
+        loweredBackground,
+        radius: parseFloat(style.borderStartStartRadius),
+        shadow: style.boxShadow,
+      };
+    }, specimen.part);
+    expect(appearance.background).toBe(appearance.loweredBackground);
+    expect(appearance.radius).toBeGreaterThan(0);
+    expect(appearance.shadow).toBe('none');
+
+    if (browserName === 'chromium') {
+      await page.screenshot({
+        path: `test-results/webawesome-${specimen.route}-sunken-wide.png`,
+        fullPage: true,
+      });
+      await page.setViewportSize({ width: 390, height: 844 });
+      await expect
+        .poll(() =>
+          page.evaluate(
+            () => document.documentElement.scrollWidth <= window.innerWidth,
+          ),
+        )
+        .toBe(true);
+      await page.screenshot({
+        path: `test-results/webawesome-${specimen.route}-sunken-narrow.png`,
+        fullPage: true,
+      });
+    }
+  }
+});
+
 test('disclosure and breadcrumb chevrons match the Kerf Select scale', async ({
   page,
   browserName,

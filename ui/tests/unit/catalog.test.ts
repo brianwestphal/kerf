@@ -238,7 +238,12 @@ describe('UX catalog metadata', () => {
     });
     expect(
       artifact.entries.find((entry) => entry.id === 'wa-details')?.publicTokens,
-    ).toEqual(['--kui-wa-surface-margin', '--kui-wa-surface-inset']);
+    ).toEqual([
+      '--kui-wa-surface-margin',
+      '--kui-wa-surface-inset',
+      '--kui-wa-sunken-background',
+      '--kui-wa-sunken-radius',
+    ]);
     expect(
       artifact.entries.find((entry) => entry.id === 'value-table')?.geometry,
     ).toEqual({

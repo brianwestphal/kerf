@@ -97,6 +97,11 @@ tiers:
   complete surface and the inset within it. Accordion applies the outer margin
   once to the group rather than separating connected items; Card's header,
   body, and footer all receive the full inset.
+- `appearance="sunken"` is a Kerf theme extension for Accordion, Card, and
+  Details. It removes raised chrome, paints the lowered semantic surface, and
+  uses the shared rounded-rectangle radius. Override
+  `--kui-wa-sunken-background` or `--kui-wa-sunken-radius` on an instance or
+  containing scope when that surface needs different tokens.
 - `--kui-wa-container-inset` defaults to the 16px homogeneous-group step. Tab
   Panel retains this roomier tier for unframed panel content. Dialog body uses
   the 8px surface inset, while its footer uses the 16px container inset so

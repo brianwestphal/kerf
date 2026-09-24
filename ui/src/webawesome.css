@@ -305,6 +305,37 @@
     margin-inline: var(--kui-wa-surface-margin);
   }
 
+  /* Kerf's sunken appearance is a shared extension for content surfaces. It
+     deliberately uses the lowered semantic surface and rounded-rectangle
+     geometry without the raised Card shadow. Details keeps its visible shell
+     inside the exported `details` part, while Accordion and Card paint their
+     host directly. */
+  :is(wa-accordion, wa-card)[appearance="sunken"] {
+    background-color: var(
+      --kui-wa-sunken-background,
+      var(--kui-color-surface-lowered, var(--wa-color-surface-lowered))
+    );
+    border-color: transparent;
+    border-radius: var(
+      --kui-wa-sunken-radius,
+      var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
+    );
+    box-shadow: none;
+  }
+
+  wa-details[appearance="sunken"]::part(details) {
+    background-color: var(
+      --kui-wa-sunken-background,
+      var(--kui-color-surface-lowered, var(--wa-color-surface-lowered))
+    );
+    border-color: transparent;
+    border-radius: var(
+      --kui-wa-sunken-radius,
+      var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
+    );
+    box-shadow: none;
+  }
+
   wa-card,
   wa-details,
   wa-accordion-item {

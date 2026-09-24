@@ -54,6 +54,28 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toContain('no `wa-menu-item`');
   });
 
+  it('defines and documents the shared sunken surface appearance', () => {
+    const css = readFileSync(
+      resolve(import.meta.dirname, '../../src/webawesome.css'),
+      'utf8',
+    );
+    const guidance = readFileSync(
+      resolve(import.meta.dirname, '../../docs/webawesome-theme.md'),
+      'utf8',
+    );
+
+    expect(css).toContain(':is(wa-accordion, wa-card)[appearance="sunken"]');
+    expect(css).toContain('wa-details[appearance="sunken"]::part(details)');
+    expect(css).toContain('--kui-wa-sunken-background');
+    expect(css).toContain('--kui-wa-sunken-radius');
+    expect(css).toContain('var(--kui-color-surface-lowered');
+    expect(guidance).toContain(
+      '`appearance="sunken"` is a Kerf theme extension for Accordion, Card, and',
+    );
+    expect(guidance).toContain('--kui-wa-sunken-background');
+    expect(guidance).toContain('--kui-wa-sunken-radius');
+  });
+
   it('keeps filled badges on a documented contrast-safe semantic pair', () => {
     const css = readFileSync(
       resolve(import.meta.dirname, '../../src/webawesome.css'),

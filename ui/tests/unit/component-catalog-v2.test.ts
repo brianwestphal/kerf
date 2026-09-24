@@ -103,7 +103,12 @@ describe('component catalog v2 composition contract', () => {
     expect(
       v2.entries.find((entry) => entry.id === 'wa-details')?.boundaries
         .publicTokens,
-    ).toEqual(['--kui-wa-surface-margin', '--kui-wa-surface-inset']);
+    ).toEqual([
+      '--kui-wa-surface-margin',
+      '--kui-wa-surface-inset',
+      '--kui-wa-sunken-background',
+      '--kui-wa-sunken-radius',
+    ]);
 
     const pane = v2.entries.find((entry) => entry.id === 'pane')!;
     const tabBar = v2.entries.find((entry) => entry.id === 'tab-bar')!;

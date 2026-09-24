@@ -3621,7 +3621,12 @@
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
-        "publicTokens": []
+        "publicTokens": [
+          "--kui-wa-surface-margin",
+          "--kui-wa-surface-inset",
+          "--kui-wa-sunken-background",
+          "--kui-wa-sunken-radius"
+        ]
       },
       "diagnostics": [],
       "provenance": {
@@ -3683,7 +3688,12 @@
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
-        "publicTokens": []
+        "publicTokens": [
+          "--kui-wa-surface-margin",
+          "--kui-wa-surface-inset",
+          "--kui-wa-sunken-background",
+          "--kui-wa-sunken-radius"
+        ]
       },
       "diagnostics": [],
       "provenance": {
@@ -3714,7 +3724,12 @@
       "boundaries": {
         "rootClass": null,
         "publicClasses": [],
-        "publicTokens": ["--kui-wa-surface-margin", "--kui-wa-surface-inset"]
+        "publicTokens": [
+          "--kui-wa-surface-margin",
+          "--kui-wa-surface-inset",
+          "--kui-wa-sunken-background",
+          "--kui-wa-sunken-radius"
+        ]
       },
       "diagnostics": [],
       "provenance": {

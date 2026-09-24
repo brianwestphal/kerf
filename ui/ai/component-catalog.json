@@ -4350,6 +4350,15 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "variants": [
+        "sunken appearance"
+      ],
+      "publicTokens": [
+        "--kui-wa-surface-margin",
+        "--kui-wa-surface-inset",
+        "--kui-wa-sunken-background",
+        "--kui-wa-sunken-radius"
+      ],
       "geometry": {
         "margin": "self",
         "border": "self",
@@ -4424,6 +4433,15 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "variants": [
+        "sunken appearance"
+      ],
+      "publicTokens": [
+        "--kui-wa-surface-margin",
+        "--kui-wa-surface-inset",
+        "--kui-wa-sunken-background",
+        "--kui-wa-sunken-radius"
+      ],
       "geometry": {
         "margin": "self",
         "border": "self",
@@ -4462,9 +4480,14 @@
       ],
       "recommendation": "supported",
       "alternatives": [],
+      "variants": [
+        "sunken appearance"
+      ],
       "publicTokens": [
         "--kui-wa-surface-margin",
-        "--kui-wa-surface-inset"
+        "--kui-wa-surface-inset",
+        "--kui-wa-sunken-background",
+        "--kui-wa-sunken-radius"
       ],
       "geometry": {
         "margin": "self",
