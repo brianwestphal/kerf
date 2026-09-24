@@ -231,9 +231,12 @@ In `ListHeader` toggle mode, omitting `actionIcon` composes the production
 `DisclosureArrow` and derives its visual direction from `expanded`. The app
 must update that controlled state and reveal or hide real content. Passing a
 custom `actionIcon` replaces the default rather than layering or rotating both.
-The root fills the available inline width after its standard margins. A
-separate action stays at the logical end in its 44px target while the visible
-glyph defaults to 18px through `--kui-list-header-action-icon-size`.
+The root fills the available inline width after its standard margins by
+default. Set `inline` when it must shrink-wrap beside surrounding content; that
+presentation removes the root margin, border, and padding while retaining the
+title and optional action's own control geometry. A separate action stays at
+the logical end while the visible glyph defaults to 18px through
+`--kui-list-header-action-icon-size`.
 
 `StateBanner` exposes instance-level `--kui-state-banner-background`,
 `--kui-state-banner-border`, `--kui-state-banner-foreground`,

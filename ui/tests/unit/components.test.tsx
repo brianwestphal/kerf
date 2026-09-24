@@ -470,6 +470,7 @@ describe('production UI primitives', () => {
       'class="kui-list-header__count" aria-hidden="true">2</span>',
     );
     expect(toggle).toContain('data-has-badge="false" data-has-count="true"');
+    expect(toggle).toContain('data-inline="false"');
     expect(toggle).toContain('class="kui-list-header__action-layer"');
     expect(toggle.match(/data-component="disclosure-arrow"/g)).toHaveLength(1);
     expect(toggle).toContain(
@@ -536,6 +537,7 @@ describe('production UI primitives', () => {
       'class="kui-list-header__count" aria-hidden="true">0</span>',
     );
     expect(header).toContain('data-has-badge="false" data-has-count="true"');
+    expect(header).toContain('data-inline="false"');
     expect(header).toContain('data-section-id="workspace"');
     expect(header).toContain(
       'popoverTarget="workspace-popover" popoverTargetAction="show" aria-controls="workspace-popover" aria-haspopup="dialog"',
@@ -584,6 +586,17 @@ describe('production UI primitives', () => {
       ),
     ).toContain('title="Add"');
     expect(asHtml(ListHeader({ label: 'Plain' }))).not.toContain('<button');
+    expect(
+      asHtml(
+        ListHeader({
+          label: 'Inline',
+          action: 'add',
+          actionLabel: 'Add',
+          actionIcon: icon,
+          inline: true,
+        }),
+      ),
+    ).toContain('data-inline="true"');
     ListItem({
       label: 'Unsafe menu role',
       action: 'unsafe',
@@ -618,6 +631,11 @@ describe('production UI primitives', () => {
       label: 'Unsafe root action',
       // @ts-expect-error Dormant ListHeader roots cannot become delegated actions.
       rootAttributes: { 'data-action': 'unsafe' },
+    });
+    ListHeader({
+      label: 'Unsafe inline state',
+      // @ts-expect-error Inline presentation remains owned by ListHeader.inline.
+      rootAttributes: { 'data-inline': 'true' },
     });
     // @ts-expect-error Count labels are required for counted headers.
     ListHeader({ label: 'Missing count label', count: 2 });

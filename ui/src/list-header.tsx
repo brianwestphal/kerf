@@ -15,6 +15,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-has-count',
   'data-density',
   'data-divider',
+  'data-inline',
   'data-indicator-tone',
   'data-toggle',
 ]);
@@ -28,6 +29,7 @@ type ListHeaderRootAttributes = Readonly<
     'data-has-count'?: never;
     'data-density'?: never;
     'data-divider'?: never;
+    'data-inline'?: never;
     'data-indicator-tone'?: never;
     'data-toggle'?: never;
   }
@@ -47,6 +49,8 @@ interface ListHeaderBaseProps {
   label: string;
   density?: 'standard' | 'compact';
   divider?: 'none' | 'before' | 'after' | 'both';
+  /** Shrink-wrap the header without its default outer margin, border, or padding. */
+  inline?: boolean;
   indicatorTone?: 'neutral' | 'accent' | 'pop' | 'danger';
   /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
   placeholder?: boolean;
@@ -103,6 +107,7 @@ export function ListHeader({
   status,
   density = 'standard',
   divider = 'none',
+  inline = false,
   indicatorTone = 'neutral',
   action,
   actionLabel,
@@ -166,6 +171,7 @@ export function ListHeader({
         data-has-count={String(normalizedCount !== undefined)}
         data-density={density}
         data-divider={divider}
+        data-inline={String(inline)}
         data-indicator-tone={indicatorTone}
         data-toggle="true"
         data-placeholder={placeholder ? 'true' : undefined}
@@ -201,6 +207,7 @@ export function ListHeader({
       data-has-count={String(normalizedCount !== undefined)}
       data-density={density}
       data-divider={divider}
+      data-inline={String(inline)}
       data-indicator-tone={indicatorTone}
       data-toggle="false"
       data-placeholder={placeholder ? 'true' : undefined}

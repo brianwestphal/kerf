@@ -4027,7 +4027,7 @@ test('fills ListHeader rows and keeps 18px action visuals at the logical end', a
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=list-header');
   const demo = page.locator('[data-demo="list-header"]');
-  const headers = demo.locator('.kui-list-header');
+  const headers = demo.locator('.kui-list-header[data-inline="false"]');
   const attachments = demo.locator('.kui-list-header').filter({
     has: page.getByRole('heading', { name: 'Attachments, 12 attachments' }),
   });
@@ -4213,6 +4213,94 @@ test('fills ListHeader rows and keeps 18px action visuals at the logical end', a
     await demo.screenshot({
       path: 'test-results/list-header-layout-zoom-200.png',
     });
+});
+
+test('shrink-wraps inline ListHeader without root geometry or split action layout', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=list-header');
+  const context = page.locator('.demo-list-header-inline-context');
+  const header = context.locator('.kui-list-header');
+
+  const geometry = () =>
+    header.evaluate((root) => {
+      const bounds = root.getBoundingClientRect();
+      const style = window.getComputedStyle(root);
+      const title = root
+        .querySelector<HTMLElement>('.kui-list-header__title')!
+        .getBoundingClientRect();
+      const action = root
+        .querySelector<HTMLElement>('.kui-list-header__action')!
+        .getBoundingClientRect();
+      const parent = root.parentElement!.getBoundingClientRect();
+      return {
+        borderWidths: [
+          style.borderTopWidth,
+          style.borderRightWidth,
+          style.borderBottomWidth,
+          style.borderLeftWidth,
+        ],
+        display: style.display,
+        documentOverflow:
+          document.documentElement.scrollWidth -
+          document.documentElement.clientWidth,
+        marginWidths: [
+          style.marginTop,
+          style.marginRight,
+          style.marginBottom,
+          style.marginLeft,
+        ],
+        paddingWidths: [
+          style.paddingTop,
+          style.paddingRight,
+          style.paddingBottom,
+          style.paddingLeft,
+        ],
+        shrinkWrapped: bounds.width < parent.width - 2,
+        titleActionSameLine:
+          Math.abs(
+            title.top + title.height / 2 - (action.top + action.height / 2),
+          ) <= 1,
+      };
+    });
+
+  const expectInlineGeometry = async () => {
+    await expect(header).toHaveAttribute('data-inline', 'true');
+    expect(await geometry()).toEqual({
+      borderWidths: ['0px', '0px', '0px', '0px'],
+      display: 'inline-block',
+      documentOverflow: 0,
+      marginWidths: ['0px', '0px', '0px', '0px'],
+      paddingWidths: ['0px', '0px', '0px', '0px'],
+      shrinkWrapped: true,
+      titleActionSameLine: true,
+    });
+  };
+
+  await expectInlineGeometry();
+  if (browserName === 'chromium')
+    await context.screenshot({
+      path: 'test-results/list-header-inline-wide.png',
+    });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await context.scrollIntoViewIfNeeded();
+  await expectInlineGeometry();
+  if (browserName === 'chromium')
+    await context.screenshot({
+      path: 'test-results/list-header-inline-narrow.png',
+    });
+
+  await page.setViewportSize({ width: 720, height: 900 });
+  await page.locator('html').evaluate((element) => {
+    element.style.fontSize = '200%';
+  });
+  await context.scrollIntoViewIfNeeded();
+  await expectInlineGeometry();
+  await context.evaluate((element) => element.setAttribute('dir', 'rtl'));
+  await expectInlineGeometry();
 });
 
 test('preserves menu extension metadata without surrendering native semantics', async ({

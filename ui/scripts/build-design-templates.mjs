@@ -322,6 +322,19 @@ export const COMPONENTS = {
           }),
       },
       {
+        id: 'inline-action',
+        label: 'Inline label with an action',
+        height: 52,
+        render: () =>
+          ListHeader({
+            label: 'Queued',
+            inline: true,
+            action: 'add-queued',
+            actionLabel: 'Add queued item',
+            actionIcon: glyph(Plus, 'plus'),
+          }),
+      },
+      {
         id: 'toggle-collapsed',
         label: 'Disclosure toggle, collapsed',
         height: 52,

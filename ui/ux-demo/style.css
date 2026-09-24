@@ -1458,8 +1458,19 @@ button {
 /* In the ListHeader demo the ListHeader IS the specimen, not an example label,
    so restore its default fill width (100% minus its own 8px inline margins)
    instead of the CatalogExample first-child label-shrink. */
-[data-demo="list-header"] .kui-catalog-example > .kui-list-header {
+[data-demo="list-header"]
+  .kui-catalog-example
+  > .kui-list-header:not([data-inline="true"]) {
   width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
+}
+.demo-list-header-inline-context {
+  min-width: 0;
+}
+.demo-list-header-inline-context > span:first-child {
+  margin-inline-end: var(--kui-layout-item-gap, remify(8px));
+}
+.demo-list-header-inline-context > span:last-child {
+  margin-inline-start: var(--kui-layout-item-gap, remify(8px));
 }
 .demo-disclosure-toggle {
   display: inline-flex;

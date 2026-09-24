@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added `ListHeader.inline` for shrink-wrapped section labels that remove the
+  component root's outer margin, border, and padding while preserving title,
+  count, action, and disclosure behavior.
 - Added a catalog-driven public-component integration validator for
   `@kerfjs/ui`, including an all-at-once dry-run report across package, build,
   barrel, CSS, demo, route, signature, and compatibility surfaces.

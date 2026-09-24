@@ -221,8 +221,9 @@ transform is applied. Direction changes take the shortest rotation path; a
 real controlled content and preserve the button's stable label; ordinary
 navigation must not display a disclosure arrow. A custom `actionIcon` remains
 an escape hatch and replaces the default arrow entirely. The header fills its
-available inline width, keeping a separate action at the logical end in a 44px
-target. Its visible action glyph defaults to 18px through
+available inline width by default; set `inline` to shrink-wrap it beside other
+content and remove its root margin, border, and padding. It keeps a separate
+action at the logical end. Its visible action glyph defaults to 18px through
 `--kui-list-header-action-icon-size`.
 
 ## Machine-readable catalog

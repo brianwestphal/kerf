@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 276700,
-  "measuredLargestJavaScriptGzip": 128394,
-  "measuredTotalJavaScriptGzip": 276672,
+  "totalJavaScriptGzip": 276800,
+  "measuredLargestJavaScriptGzip": 128393,
+  "measuredTotalJavaScriptGzip": 276778,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -19,6 +19,22 @@
         "measuredTotalJavaScriptGzip": 276672,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 276700
+      }
+    },
+    {
+      "at": "2026-09-24T00:02:29.766Z",
+      "reason": "ListHeader inline adds a documented presentation prop and a catalog demo specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 128394,
+        "measuredTotalJavaScriptGzip": 276672,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 276700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 128393,
+        "measuredTotalJavaScriptGzip": 276778,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 276800
       }
     }
   ]

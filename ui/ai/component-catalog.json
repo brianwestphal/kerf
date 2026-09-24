@@ -1849,12 +1849,12 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Configurable section headings with semantic count/status indicators, density, group dividers, a logical-end action, disclosure states, and protected native-popover trigger metadata.",
+      "description": "Configurable section headings with full-width or shrink-wrapped inline presentation, semantic count/status indicators, density, group dividers, a logical-end action, disclosure states, and protected native-popover trigger metadata.",
       "uses": [
         "lucide-icon",
         "disclosure-arrow"
       ],
-      "purpose": "Fill the available section width while splitting a dormant title and mutually exclusive semantic count or legacy badge from an optional logical-end 44px action with an 18px visual, or render that title cluster as a disclosure button with a default production DisclosureArrow.",
+      "purpose": "Fill the available section width by default, or shrink-wrap without outer geometry when inline, while splitting a dormant title and mutually exclusive semantic count or legacy badge from an optional logical-end action with an 18px visual; disclosure mode renders the title cluster as a button with a default production DisclosureArrow.",
       "publicExports": [
         "ListHeader"
       ],
@@ -1887,6 +1887,7 @@
         "action",
         "toggle",
         "placeholder (loading)",
+        "inline shrink-wrapped presentation",
         "compact density",
         "neutral, accent, pop, or danger indicator tone",
         "before, after, or paired group divider"

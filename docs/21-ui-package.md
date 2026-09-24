@@ -80,8 +80,9 @@ rotation.
 `ListHeader` toggle mode composes that production arrow automatically when no
 custom `actionIcon` is supplied; its controlled `expanded` value must correspond
 to real revealed content, and ordinary navigation does not borrow the
-disclosure affordance. The header fills its available inline width and keeps a
-separate 44px action at the logical end with an 18px visible glyph.
+disclosure affordance. The header fills its available inline width by default;
+`inline` shrink-wraps it without root margin, border, or padding. It keeps a
+separate action at the logical end with an 18px visible glyph.
 
 `layout.css` is the shared structural composition for navigation rails, main
 areas, inspectors, and dialogs. An unpadded `.kui-pane` contains an optional

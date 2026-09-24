@@ -18,6 +18,22 @@ export function ListHeaderDemo() {
         />
       </CatalogExample>
       <CatalogExample align="none">
+        <div class="demo-list-header-inline-context">
+          <span>Queue:</span>
+          <ListHeader
+            label="Inline queue"
+            count={12}
+            countLabel="12 queued items"
+            action="log-add"
+            actionLabel="Add queued item"
+            actionIcon={icon(Plus, 'plus')}
+            divider="both"
+            inline
+          />
+          <span>ready</span>
+        </div>
+      </CatalogExample>
+      <CatalogExample align="none">
         <ListHeader
           label="Needs attention"
           status={<span>3 blocked</span>}
