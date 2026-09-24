@@ -160,7 +160,7 @@ export function ListDemo() {
         note="Text insets apply the full 8px + 1px + 8px content geometry; control insets apply 8px, and text wins where both select a side."
       >
         <List
-          className="demo-list-alignment demo-list-insets"
+          className="demo-list-insets"
           gap="xs"
           textInsets="l"
           controlInsets="rb"

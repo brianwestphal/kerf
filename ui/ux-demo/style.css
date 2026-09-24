@@ -253,7 +253,8 @@ button {
 }
 
 .demo-row-chip,
-.demo-list-alignment > span {
+.demo-list-alignment > span,
+.demo-list-insets > span {
   display: inline-flex;
   min-height: remify(28px);
   padding-inline: var(--kui-space-xs);
@@ -282,7 +283,8 @@ button {
   min-height: remify(248px);
 }
 
-.demo-list-alignment {
+.demo-list-alignment,
+.demo-list-insets {
   min-height: remify(176px);
   padding: var(--kui-space-xs);
   border: 1px solid var(--kui-color-border);
