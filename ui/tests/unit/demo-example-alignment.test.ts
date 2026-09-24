@@ -10,7 +10,8 @@ describe('catalog-example note alignment', () => {
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = root.nodes.find(
       (node) =>
-        node.type === 'rule' && node.selector === '.kui-catalog-example__note',
+        node.type === 'rule' &&
+        node.selector === '.kui-catalog-example__note.kui-text',
     );
 
     if (!rule || rule.type !== 'rule')
@@ -22,7 +23,7 @@ describe('catalog-example note alignment', () => {
     if (!inset || inset.type !== 'decl')
       throw new Error('Missing catalog example note inset');
     expect(inset.value.replace(/\s+/g, ' ')).toBe(
-      'calc( var(--kui-layout-inline-margin, remify(8px)) + 1px + var(--kui-layout-item-padding, remify(8px)) )',
+      'calc( var(--kui-layout-inline-margin, remify(8px)) + var(--kui-layout-item-padding, remify(8px)) )',
     );
   });
 });

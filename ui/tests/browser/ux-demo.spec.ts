@@ -619,6 +619,26 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
     /Meaningful/,
   );
   await expect(examples.locator('.kui-catalog-example__note')).toHaveCount(2);
+  const alignedLeftEdges = await examples.evaluateAll((nodes) =>
+    nodes.map((example) => {
+      const contentLeft = (selector: string) => {
+        const element = example.querySelector(selector)!;
+        const bounds = element.getBoundingClientRect();
+        const style = window.getComputedStyle(element);
+        return (
+          bounds.left +
+          Number.parseFloat(style.borderLeftWidth) +
+          Number.parseFloat(style.paddingLeft)
+        );
+      };
+      return {
+        label: contentLeft('.kui-list-header__label'),
+        note: contentLeft('.kui-catalog-example__note'),
+      };
+    }),
+  );
+  for (const edges of alignedLeftEdges)
+    expect(edges.note).toBeCloseTo(edges.label, 1);
   // Both render the same glyph — the difference is semantics, not appearance:
   // the decorative icon is hidden from AT; the meaningful one is labeled.
   await expect(examples.nth(0).locator('svg[data-lucide]')).toHaveAttribute(
