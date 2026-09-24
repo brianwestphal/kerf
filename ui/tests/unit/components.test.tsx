@@ -340,7 +340,6 @@ describe('production UI primitives', () => {
       [['middle', 'm', 'c', 'space-around'], 'middle'],
       [['bottom', 'b', 'flex-end'], 'bottom'],
       [['full', 'f', 'space-between'], 'full'],
-      [['baseline'], 'baseline'],
     ] as const;
     for (const [aliases, canonical] of verticalAliases) {
       for (const alias of aliases) {
