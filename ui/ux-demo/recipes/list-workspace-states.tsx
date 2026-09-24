@@ -167,7 +167,7 @@ export const createRecipe: RecipeFactory = (announce) => {
       />
       <div class="recipe-list__body kui-pane__content kui-content">
         {renderBody()}
-        <Text variant="p" class="kui-recipe__ownership kui-content-item">
+        <Text class="kui-recipe__ownership kui-content-item">
           The recipe owns feedback placement and stable content. The app owns
           fetching, cache age, retry policy, and domain rows.
         </Text>

@@ -55,7 +55,7 @@ export function ApplicationTabsDemo() {
       >
         <strong>{activeName}</strong>
       </section>
-      <Text variant="p" class="demo-example-readout">
+      <Text class="demo-example-readout">
         Order:{' '}
         <strong data-tab-order>
           {tabBarTabs.value.map((tab) => tab.name).join(' · ')}

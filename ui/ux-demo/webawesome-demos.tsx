@@ -286,7 +286,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-card': () => (
     <wa-card appearance="sunken" with-header with-footer>
       <strong slot="header">Release readiness</strong>
-      <Text variant="p">
+      <Text>
         Production components, contracts, and browser checks stay together.
       </Text>
       <wa-button slot="footer" appearance="plain">
@@ -316,9 +316,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         label="Publish component library"
         with-footer
       >
-        <Text variant="p">
-          Review the version and release notes before publishing.
-        </Text>
+        <Text>Review the version and release notes before publishing.</Text>
         <wa-button
           slot="footer"
           appearance="plain"
@@ -352,7 +350,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       </wa-button>
       <span>The drawer enters from the trailing edge.</span>
       <wa-drawer id="catalog-wa-drawer" label="Inspector" with-footer>
-        <Text variant="p">Theme and accessibility settings live here.</Text>
+        <Text>Theme and accessibility settings live here.</Text>
         <wa-button slot="footer" variant="brand" data-action="hide-wa-drawer">
           Done
         </wa-button>
@@ -366,9 +364,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         Overview
       </a>
       <strong slot="main-header">Component catalog</strong>
-      <Text variant="p">
-        A compact application shell inside the preview canvas.
-      </Text>
+      <Text>A compact application shell inside the preview canvas.</Text>
       <small slot="footer">Kerf UI · Web Awesome</small>
     </wa-page>
   ),
@@ -949,9 +945,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       </wa-button>
       <wa-popover for="catalog-popover-target" placement="bottom">
         <strong>Popover content</strong>
-        <Text variant="p">
-          Interactive content stays anchored to its trigger.
-        </Text>
+        <Text>Interactive content stays anchored to its trigger.</Text>
         <wa-button size="small">Action</wa-button>
       </wa-popover>
       <small>

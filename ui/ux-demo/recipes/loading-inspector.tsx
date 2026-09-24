@@ -70,11 +70,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             </ToolbarControlGroup>
           }
         />
-        <Text
-          variant="p"
-          class="kui-recipe__heading-summary"
-          id="recipe-inspector-summary"
-        >
+        <Text class="kui-recipe__heading-summary" id="recipe-inspector-summary">
           {p ? (
             <Skeleton width={em(18)} />
           ) : (
@@ -169,7 +165,7 @@ export const createRecipe: RecipeFactory = (announce) => {
               icon={icon(FileText, 'file-text')}
             />
           )}
-          <Text variant="p" class="kui-recipe__ownership kui-content-item">
+          <Text class="kui-recipe__ownership kui-content-item">
             Each value-bearing component's <code>placeholder</code> prop renders
             skeletons in its value slots while loading, so the recipe composes a
             faithful loading inspector from real chrome. The app owns the

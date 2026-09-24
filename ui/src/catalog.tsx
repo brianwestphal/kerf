@@ -242,9 +242,7 @@ export function Catalog({
               }
             />
             {brand.subtitle ? (
-              <Text variant="p" class="kui-catalog__subtitle">
-                {brand.subtitle}
-              </Text>
+              <Text class="kui-catalog__subtitle">{brand.subtitle}</Text>
             ) : (
               <></>
             )}
@@ -382,10 +380,7 @@ export function Catalog({
               }
             />
             {selected?.description ? (
-              <Text
-                variant="p"
-                class="kui-catalog__description kui-content-item"
-              >
+              <Text class="kui-catalog__description kui-content-item">
                 {selected.description}
               </Text>
             ) : (
@@ -574,16 +569,10 @@ export function CatalogExample({
         <></>
       )}
       {note !== undefined ? (
-        <Text
-          variant="p"
-          class="kui-catalog-example__note"
-          data-catalog-example-note
-        >
+        <Text class="kui-catalog-example__note" data-catalog-example-note>
           {note}
         </Text>
-      ) : (
-        <></>
-      )}
+      ) : null}
       {children}
     </section>
   );

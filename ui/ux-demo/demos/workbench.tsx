@@ -19,7 +19,7 @@ export function WorkbenchDemo() {
         note="The shell owns panel tracks and separators; each region owns its content and scroll behavior."
         align="none"
       >
-        <Text variant="p" class="demo-workbench__compact-guidance">
+        <Text class="demo-workbench__compact-guidance">
           Workbench is a desktop-class shell. Use focused navigation and
           overlays instead at this viewport width.
         </Text>
@@ -50,7 +50,7 @@ export function WorkbenchDemo() {
         note="Collapsed tracks snap to zero while their fixed-size content slides out."
         align="none"
       >
-        <Text variant="p" class="demo-workbench__compact-guidance">
+        <Text class="demo-workbench__compact-guidance">
           Collapsed tracks preserve desktop workspace state; they are not a
           compact-layout substitute.
         </Text>

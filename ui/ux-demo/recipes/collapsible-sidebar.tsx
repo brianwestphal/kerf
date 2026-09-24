@@ -147,14 +147,14 @@ export const createRecipe: RecipeFactory = (announce) => {
           }
         />
         <div class="recipe-collapsible-sidebar__body kui-pane__content kui-content">
-          <Text variant="p" class="kui-recipe__ownership kui-content-item">
+          <Text class="kui-recipe__ownership kui-content-item">
             The app owns each panel's <code>collapsed</code> signal, sizes, and
             content; <code>wireSidebar</code> owns the toggle, focus
             move/restore, the compact overlay, and persistence.
           </Text>
           <article class="recipe-collapsible-sidebar__card kui-content-item">
             <strong>Narrow the window to a compact width</strong>
-            <Text variant="p" class="kui-recipe__muted">
+            <Text class="kui-recipe__muted">
               The rail and drawer become a dismissable overlay: a backdrop,
               Escape, and a trapped Tab ring, all managed by the wire.
             </Text>

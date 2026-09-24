@@ -15,10 +15,7 @@ export const createRecipe: RecipeFactory = (announce) => ({
       class="kui-recipe recipe-header kui-recipe__surface kui-content"
       data-recipe="recipe-workspace-header"
     >
-      <Text
-        variant="p"
-        class="recipe-header__context kui-inline-metadata kui-content-item"
-      >
+      <Text class="recipe-header__context kui-inline-metadata kui-content-item">
         <span>Northstar workspace</span>
         <span>·</span>
         <span>Product planning</span>
@@ -69,7 +66,7 @@ export const createRecipe: RecipeFactory = (announce) => ({
         detail="All required checks passed 18 minutes ago."
         tone="success"
       />
-      <Text variant="p" class="kui-recipe__ownership kui-content-item">
+      <Text class="kui-recipe__ownership kui-content-item">
         The recipe owns page hierarchy and action relocation. The app owns
         authorization, command behavior, breadcrumbs, and product copy.
       </Text>

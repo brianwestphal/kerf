@@ -49,7 +49,7 @@ export function mountCommandPaletteAdapter(
             data-command-query
           />
         </div>
-        <Text variant="p" class="kui-content-item" aria-live="polite">
+        <Text class="kui-content-item" aria-live="polite">
           {matches.length} matching commands
         </Text>
         <ul class="kui-content-item" aria-label="Matching commands">

@@ -60,7 +60,7 @@ export function SelectDemo() {
               </span>
             )}
           />
-          <Text variant="p" class="demo-example-readout">
+          <Text class="demo-example-readout">
             Live value:{' '}
             <strong data-select-value>{selectedChoice.value}</strong>
           </Text>

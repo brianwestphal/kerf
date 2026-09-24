@@ -111,9 +111,7 @@ export function ListDemo() {
                   />
                   <div class="kui-content-item" data-content-item>
                     <strong>Shared item geometry</strong>
-                    <Text variant="p">
-                      The child owns its margin, border, and padding.
-                    </Text>
+                    <Text>The child owns its margin, border, and padding.</Text>
                   </div>
                 </div>
               </List>

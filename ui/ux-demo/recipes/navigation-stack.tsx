@@ -58,7 +58,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             />
           ))}
         </section>
-        <Text variant="p" class="kui-recipe__ownership kui-content-item">
+        <Text class="kui-recipe__ownership kui-content-item">
           The recipe owns the stack as a signal of views and pushes/pops it;
           `NavStack` renders the stack and `wireNavStack` slides the content and
           settles the chrome. The app owns selection, data, and routing.
@@ -75,9 +75,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         <div class="kui-content-item">
           <LucideIcon icon={FileText} name="file-text" />
           <strong>{item.label}</strong>
-          <Text variant="p" class="kui-recipe__muted">
-            {item.detail}
-          </Text>
+          <Text class="kui-recipe__muted">{item.detail}</Text>
         </div>
       </div>
     ),

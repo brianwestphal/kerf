@@ -78,14 +78,14 @@ export const createRecipe: RecipeFactory = (announce) => {
               />
               <div class="kui-content-item">
                 <strong>Quarterly goal</strong>
-                <Text variant="p" class="kui-recipe__muted">
+                <Text class="kui-recipe__muted">
                   Ship accessible navigation patterns to every workspace.
                 </Text>
               </div>
             </>
           )}
         </section>
-        <Text variant="p" class="kui-recipe__ownership kui-content-item">
+        <Text class="kui-recipe__ownership kui-content-item">
           The recipe owns pane, content-item, and toolbar geometry. The app owns
           routes, permissions, labels, and disclosure state.
         </Text>

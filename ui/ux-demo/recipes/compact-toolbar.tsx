@@ -116,7 +116,7 @@ export const createRecipe: RecipeFactory = (announce) => {
           <span class="kui-recipe__muted">One independent command.</span>
         </div>
       </div>
-      <Text variant="p" class="kui-recipe__ownership kui-content-item">
+      <Text class="kui-recipe__ownership kui-content-item">
         The recipe owns control semantics and wrapping. The app owns values,
         actions, persistence, and responsive priority.
       </Text>

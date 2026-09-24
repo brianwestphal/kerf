@@ -59,7 +59,7 @@ export const createRecipe: RecipeFactory = (announce) => {
       >
         Open project details
       </button>
-      <Text variant="p" class="kui-recipe__ownership kui-content-item">
+      <Text class="kui-recipe__ownership kui-content-item">
         Web Awesome owns modal focus and dismissal. The recipe owns
         header/body/list-detail anatomy; the app owns open state, selection, and
         policy.
@@ -120,7 +120,6 @@ export const createRecipe: RecipeFactory = (announce) => {
                 }
               />
               <Text
-                variant="p"
                 class="kui-recipe__heading-summary"
                 id="recipe-dialog-summary"
               >

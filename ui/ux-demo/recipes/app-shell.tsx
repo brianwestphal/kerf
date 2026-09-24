@@ -159,7 +159,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             }
           />
           <div class="recipe-shell__main-body kui-pane__content kui-content">
-            <Text variant="p" class="kui-recipe__ownership kui-content-item">
+            <Text class="kui-recipe__ownership kui-content-item">
               Recipe owns pane geometry and one scroll owner per pane. The app
               owns routing, data, pane visibility, sizes, and persistence.
             </Text>
@@ -172,7 +172,7 @@ export const createRecipe: RecipeFactory = (announce) => {
               ].map((title) => (
                 <article class="recipe-shell__card kui-content-item">
                   <strong>{title}</strong>
-                  <Text variant="p" class="kui-recipe__muted">
+                  <Text class="kui-recipe__muted">
                     Assigned to the interface systems team · due this week
                   </Text>
                 </article>

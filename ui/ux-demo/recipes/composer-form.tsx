@@ -124,7 +124,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             Publish update
           </wa-button>
         </div>
-        <Text variant="p" class="kui-recipe__ownership">
+        <Text class="kui-recipe__ownership">
           The recipe owns field, message, and action rhythm. The app owns
           validation rules, draft persistence, permissions, and transport.
         </Text>

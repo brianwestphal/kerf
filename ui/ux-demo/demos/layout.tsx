@@ -32,8 +32,10 @@ export function LayoutDemo() {
       }
     >
       <div class="demo-layout__surface kui-content-item">
-        <strong>One owner per item</strong>
-        <Text variant="p">
+        <Text>
+          <strong>One owner per item</strong>
+        </Text>
+        <Text>
           Each content child owns its margin, border, background, padding, and
           radius.
         </Text>
