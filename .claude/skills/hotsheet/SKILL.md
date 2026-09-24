@@ -64,6 +64,10 @@ repository-relative path, stable repository name/URL, or placeholder such as
 `<repo-root>/path` will work. Keep an exact local path only when the path itself is
 indispensable machine-local diagnostic evidence, and label it as local context.
 
+Keep local Playwright runs Chromium-first. Run Firefox and WebKit locally only for
+engine-specific diagnosis, browser-sensitive changes, or deliberate cross-browser
+validation; CI owns the routine full three-engine matrix.
+
 For user-visible UI work, liberally capture and attach a representative set of real-browser
 screenshots covering the changed components, screens, states, and meaningful wide/narrow
 layouts. **If the ticket already has an image demonstrating the problem or requested

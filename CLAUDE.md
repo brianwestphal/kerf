@@ -226,6 +226,14 @@ npm --prefix site run check:audit # audits the complete private site build tree,
 npm run check:full                # KF-118: extended pre-push gate — `check` plus the production audit and the Playwright browser suite (chromium/firefox/webkit), which exercises tests/dist/consumer-app/ end-to-end
 ```
 
+For local Playwright work, run Chromium only by default (for example,
+`npm run test:browser -- --project=chromium` or the affected package's focused
+Playwright command with `--project=chromium`). Add Firefox and WebKit locally
+only when diagnosing an engine-specific failure, changing browser-sensitive
+behavior, or deliberately validating a cross-browser concern. CI remains the
+authoritative full Chromium/Firefox/WebKit matrix; ordinary local iteration
+does not need to duplicate it.
+
 Visually validate every site-facing change with Playwright, not just DOM
 assertions. From `site/`, `npm run test:visual` builds three full-page captures
 for every emitted HTML surface (including standalone pages such as `404.html`)
@@ -621,6 +629,10 @@ local path only as clearly labeled machine-local diagnostic evidence.
 
 ## Testing
 
+- **Keep local Playwright Chromium-first.** Run affected local browser tests in Chromium
+  by default. Add Firefox and WebKit only for engine-specific diagnosis, browser-sensitive
+  changes, or deliberate cross-browser validation. CI owns the routine full three-engine
+  matrix.
 - **Double coverage:** cover each feature with both unit tests (logic in isolation, external
   dependencies mocked) **and** end-to-end tests (real user flows through the running system,
   minimal mocking). Keep test fakes faithful to the real contract — same shapes, fields, and

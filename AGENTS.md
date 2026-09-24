@@ -72,6 +72,10 @@ local path only as clearly labeled machine-local diagnostic evidence.
 
 ## Testing
 
+- **Keep local Playwright Chromium-first.** Run affected local browser tests in Chromium
+  by default. Add Firefox and WebKit only for engine-specific diagnosis, browser-sensitive
+  changes, or deliberate cross-browser validation. CI owns the routine full three-engine
+  matrix.
 - **Double coverage:** cover each feature with both unit tests (logic in isolation, external
   dependencies mocked) **and** end-to-end tests (real user flows through the running system,
   minimal mocking). Keep test fakes faithful to the real contract — same shapes, fields, and
@@ -171,6 +175,10 @@ local path only as clearly labeled machine-local diagnostic evidence.
 
 ## Testing
 
+- **Keep local Playwright Chromium-first.** Run affected local browser tests in Chromium
+  by default. Add Firefox and WebKit only for engine-specific diagnosis, browser-sensitive
+  changes, or deliberate cross-browser validation. CI owns the routine full three-engine
+  matrix.
 - **Double coverage:** cover each feature with both unit tests (logic in isolation, external
   dependencies mocked) **and** end-to-end tests (real user flows through the running system,
   minimal mocking). Keep test fakes faithful to the real contract — same shapes, fields, and
@@ -270,6 +278,10 @@ local path only as clearly labeled machine-local diagnostic evidence.
 
 ## Testing
 
+- **Keep local Playwright Chromium-first.** Run affected local browser tests in Chromium
+  by default. Add Firefox and WebKit only for engine-specific diagnosis, browser-sensitive
+  changes, or deliberate cross-browser validation. CI owns the routine full three-engine
+  matrix.
 - **Double coverage:** cover each feature with both unit tests (logic in isolation, external
   dependencies mocked) **and** end-to-end tests (real user flows through the running system,
   minimal mocking). Keep test fakes faithful to the real contract — same shapes, fields, and
