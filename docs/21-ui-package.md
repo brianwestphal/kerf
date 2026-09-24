@@ -135,6 +135,9 @@ interactive region uses the shared 8px logical inline outer inset without
 moving its label. Accordion, Card, Details, Callout, and Include use the shared
 8px logical inline margin around their complete surface and 8px inner padding;
 Accordion keeps connected item borders by owning the margin at group level.
+Plain Accordion and Details remove inline padding from their trigger and body;
+outlined and sunken disclosure headers use the 16px container inset while their
+bodies retain the compact 8px surface inset.
 
 `Select` is a Web Awesome adapter. Rendering it is pure; custom-element
 registration happens only after `import '@kerfjs/ui/select/register'`. Web

@@ -3159,14 +3159,14 @@ test('content surfaces share an overridable 8px outer margin and inner padding',
       route: 'wa-accordion',
       host: 'wa-accordion',
       inner: 'wa-accordion-item',
-      part: 'button',
+      part: 'content',
     },
     { route: 'wa-card', host: 'wa-card', inner: 'wa-card', part: 'header' },
     {
       route: 'wa-details',
       host: 'wa-details',
       inner: 'wa-details',
-      part: 'header',
+      part: 'content',
     },
     {
       route: 'wa-callout',
@@ -3262,6 +3262,77 @@ test('content surfaces share an overridable 8px outer margin and inner padding',
       path: 'test-results/webawesome-surface-insets-narrow.png',
       fullPage: true,
     });
+  }
+});
+
+test('disclosure appearances use aligned plain content and roomier framed headers', async ({
+  page,
+  browserName,
+}) => {
+  const specimens = [
+    {
+      route: 'wa-details',
+      host: 'wa-details',
+      triggerPart: 'header',
+    },
+    {
+      route: 'wa-accordion',
+      host: 'wa-accordion',
+      triggerPart: 'button',
+    },
+  ] as const;
+
+  for (const specimen of specimens) {
+    await page.setViewportSize({ width: 1100, height: 820 });
+    await page.goto(`/?component=${specimen.route}`);
+
+    for (const appearance of ['plain', 'outlined', 'sunken'] as const) {
+      const host = page.locator(`${specimen.host}[appearance="${appearance}"]`);
+      const disclosure =
+        specimen.route === 'wa-details'
+          ? host
+          : host.locator('wa-accordion-item').first();
+      await expect(disclosure).toBeVisible();
+      const padding = await disclosure.evaluate(
+        (element, parts) => {
+          const root = element.shadowRoot!;
+          const trigger = root.querySelector<HTMLElement>(
+            `[part~="${parts.trigger}"]`,
+          )!;
+          const content = root.querySelector<HTMLElement>('[part~="content"]')!;
+          return {
+            trigger: window.getComputedStyle(trigger).paddingInlineStart,
+            content: window.getComputedStyle(content).paddingInlineStart,
+          };
+        },
+        { trigger: specimen.triggerPart },
+      );
+
+      expect(padding).toEqual(
+        appearance === 'plain'
+          ? { trigger: '0px', content: '0px' }
+          : { trigger: '16px', content: '8px' },
+      );
+    }
+
+    if (browserName === 'chromium') {
+      await page.screenshot({
+        path: `test-results/webawesome-${specimen.route}-disclosure-spacing-wide.png`,
+        fullPage: true,
+      });
+      await page.setViewportSize({ width: 390, height: 844 });
+      await expect
+        .poll(() =>
+          page.evaluate(
+            () => document.documentElement.scrollWidth <= window.innerWidth,
+          ),
+        )
+        .toBe(true);
+      await page.screenshot({
+        path: `test-results/webawesome-${specimen.route}-disclosure-spacing-narrow.png`,
+        fullPage: true,
+      });
+    }
   }
 });
 

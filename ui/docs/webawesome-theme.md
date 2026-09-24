@@ -97,6 +97,10 @@ tiers:
   complete surface and the inset within it. Accordion applies the outer margin
   once to the group rather than separating connected items; Card's header,
   body, and footer all receive the full inset.
+- Plain Accordion and Details remove inline padding from both their trigger and
+  content so their text aligns directly with the surrounding flow. Outlined and
+  sunken disclosure triggers use the 16px `--kui-wa-container-inset`, one 8px
+  step beyond their compact body inset.
 - `appearance="sunken"` is a Kerf theme extension for Accordion, Card, and
   Details. It removes raised chrome, paints the lowered semantic surface, and
   uses the shared rounded-rectangle radius. Override

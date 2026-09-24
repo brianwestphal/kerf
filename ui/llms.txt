@@ -116,6 +116,8 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   `--kui-wa-control-inset` (8px controls/items) and
   `--kui-wa-surface-margin` / `--kui-wa-surface-inset` (8px around/inside
   Accordion, Card, Details, Callout, and Include), while
+  plain Accordion/Details remove inline trigger/body padding and their
+  outlined/sunken headers use the 16px container inset,
   `--kui-wa-container-inset` keeps Tab Panel at 16px. Dialog body and footer use
   the surface (8px) and container (16px) tiers respectively, independent of the
   dialog's shared `--spacing`. Override the tier at the narrowest useful scope

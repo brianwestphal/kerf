@@ -271,6 +271,9 @@ both use that inset. Slider's complete interactive region uses the shared 8px
 logical inline outer inset without moving its label. Accordion, Card, Details,
 Callout, and Include use the shared 8px logical inline surface margin and 8px
 inner padding; Accordion owns the margin once for the connected group.
+Plain Accordion and Details remove inline padding from both trigger and body.
+Outlined and sunken disclosure headers use the 16px container inset while the
+body retains its compact 8px surface inset.
 The UX catalog projects canonical recommendation metadata into visible
 `Discouraged` sidebar tags for the 15 Web Awesome choices superseded by Kerf
 patterns or reserved for exceptional use; Popup remains conditional and untagged.

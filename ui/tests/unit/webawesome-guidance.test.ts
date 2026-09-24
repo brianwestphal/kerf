@@ -35,6 +35,10 @@ describe('Web Awesome consumer guidance', () => {
   });
 
   it('records the audited non-field inset tiers and intentional exceptions', () => {
+    const css = readFileSync(
+      resolve(import.meta.dirname, '../../src/webawesome.css'),
+      'utf8',
+    );
     const guidance = readFileSync(
       resolve(import.meta.dirname, '../../docs/webawesome-theme.md'),
       'utf8',
@@ -52,6 +56,12 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toContain('bordered or filled');
     expect(guidance).toMatch(/delegates item\s+chrome/);
     expect(guidance).toContain('no `wa-menu-item`');
+    expect(css).toContain('wa-details[appearance="plain"]::part(header)');
+    expect(css).toContain('wa-accordion[appearance="plain"]');
+    expect(css).toContain('padding-inline: var(--kui-wa-container-inset)');
+    expect(guidance).toContain(
+      'Plain Accordion and Details remove inline padding',
+    );
   });
 
   it('defines and documents the shared sunken surface appearance', () => {

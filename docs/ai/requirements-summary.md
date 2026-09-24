@@ -320,6 +320,9 @@ Slider's complete interactive region uses the shared 8px logical inline outer
 inset without moving its label. Accordion, Card, Details, Callout, and Include
 use the shared 8px logical inline surface margin and 8px inner padding, with the
 Accordion margin owned once by the connected group.
+Plain Accordion and Details align their triggers and bodies to the surrounding
+flow with no inline padding. Outlined and sunken disclosure headers use the
+16px container inset while their bodies retain the compact 8px surface inset.
 
 Web Awesome dialogs expose an opt-in `hide-actions` host class through the Kerf
 theme. It hides the directly exported `header-actions` part for dialogs with an

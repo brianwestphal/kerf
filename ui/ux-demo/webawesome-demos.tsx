@@ -267,14 +267,23 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
 
   'wa-accordion': () => (
-    <wa-accordion appearance="sunken">
-      <wa-accordion-item label="Theme contract" expanded>
-        Override semantic tokens after the Kerf theme import.
-      </wa-accordion-item>
-      <wa-accordion-item label="Component loading">
-        Import only the modules the application renders.
-      </wa-accordion-item>
-    </wa-accordion>
+    <div class="wa-demo-stack">
+      <wa-accordion appearance="sunken">
+        <wa-accordion-item label="Sunken disclosure" expanded>
+          The lowered surface follows the same framed geometry.
+        </wa-accordion-item>
+      </wa-accordion>
+      <wa-accordion appearance="outlined">
+        <wa-accordion-item label="Outlined disclosure" expanded>
+          The framed header uses the roomier container inset.
+        </wa-accordion-item>
+      </wa-accordion>
+      <wa-accordion appearance="plain">
+        <wa-accordion-item label="Plain disclosure" expanded>
+          Header and body align directly with surrounding content.
+        </wa-accordion-item>
+      </wa-accordion>
+    </div>
   ),
   'wa-accordion-item': () => (
     <wa-accordion>
@@ -297,10 +306,17 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-details': () => (
     <div class="wa-demo-stack">
       <wa-details appearance="sunken" summary="Sunken compatibility notes" open>
-        Web Awesome 3.12 uses the same semantic theme contract.
+        The lowered surface follows the same framed geometry.
       </wa-details>
-      <wa-details summary="Collapsed details">
-        Secondary information stays out of the main flow.
+      <wa-details
+        appearance="outlined"
+        summary="Outlined compatibility notes"
+        open
+      >
+        The framed header uses the roomier container inset.
+      </wa-details>
+      <wa-details appearance="plain" summary="Plain compatibility notes" open>
+        Header and body align directly with surrounding content.
       </wa-details>
     </div>
   ),
