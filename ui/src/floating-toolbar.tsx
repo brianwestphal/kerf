@@ -15,6 +15,8 @@ export interface FloatingToolbarProps {
    */
   position?: FloatingToolbarPosition;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /**
@@ -31,6 +33,7 @@ export function FloatingToolbar({
   label,
   position = 'bottom-end',
   className = '',
+  slot,
 }: FloatingToolbarProps) {
   return (
     <div
@@ -39,6 +42,7 @@ export function FloatingToolbar({
       data-position={position}
       role="toolbar"
       aria-label={label}
+      slot={slot}
     >
       {children}
     </div>

@@ -62,6 +62,8 @@ interface ListHeaderBaseProps {
   placeholder?: boolean;
   rootAttributes?: ListHeaderRootAttributes;
   triggerAttributes?: ListHeaderTriggerAttributes;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 type ListHeaderModeProps =
@@ -126,6 +128,7 @@ export function ListHeader({
   placeholder = false,
   rootAttributes = {},
   triggerAttributes = {},
+  slot,
 }: ListHeaderProps) {
   const extensionRootAttributes = filterDataAttributes(
     rootAttributes,
@@ -190,6 +193,7 @@ export function ListHeader({
         data-toggle="true"
         data-placeholder={placeholder ? 'true' : undefined}
         aria-busy={busy}
+        slot={slot}
       >
         <button
           {...extensionTriggerAttributes}
@@ -227,6 +231,7 @@ export function ListHeader({
       data-toggle="false"
       data-placeholder={placeholder ? 'true' : undefined}
       aria-busy={busy}
+      slot={slot}
     >
       <div class="kui-list-header__title">
         <Text

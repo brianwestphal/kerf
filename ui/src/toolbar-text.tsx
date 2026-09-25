@@ -26,6 +26,8 @@ interface ToolbarTextBaseProps {
    * instead. Default true.
    */
   ellipsis?: boolean;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
   /**
    * Cap wrapped text to this many lines, truncating past it. Only takes effect with
    * `wrap`; ignored on a single line. `null`/omitted wraps without a line cap. Default null.
@@ -52,6 +54,7 @@ export function ToolbarText({
   wrap = false,
   ellipsis = true,
   maxLines = null,
+  slot,
 }: ToolbarTextProps) {
   const capped = wrap && maxLines != null && maxLines > 0;
   return (
@@ -68,6 +71,7 @@ export function ToolbarText({
       role={headingLevel ? 'heading' : undefined}
       aria-level={headingLevel ? String(headingLevel) : undefined}
       aria-busy={placeholder ? 'true' : undefined}
+      slot={slot}
     >
       {placeholder ? (
         <Skeleton width={em(8)} />

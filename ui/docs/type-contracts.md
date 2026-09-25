@@ -26,6 +26,7 @@ public-signature artifact.
 | `KUI-T011` | Semantic component zones use the recursive `KerfUiContent` type: `SafeHtml`, runtime-empty booleans/nullish values, and readonly nested arrays are valid; arbitrary strings, numbers, and signals are rejected. Explicit text positions such as `ListInsetText` retain their text exception. |
 | `KUI-T012` | `List.gap` accepts finite `UiSpaceName` shorthands or a complete branded `CssLength`; raw strings and non-standalone `CssLengthExpression` arithmetic are rejected. `calc(plus(...))` promotes a typed expression to a complete value.                                                       |
 | `KUI-T013` | CSS-valued props preserve property grammar: `List.flex` uses `CssFlex`, `Skeleton` dimensions use `CssSize`/`CssLength`, and choice icons use `CssColor`; row declaration strings are absent.                                                                                                |
+| `KUI-T014` | Stable single-root visual components accept the explicit native `slot` attribute. Multi-root `ResizableRegion` and `CollapsiblePanel` remain excluded because no single returned element can own the assignment, and other arbitrary native attributes remain rejected.                      |
 
 `KerfUiContent` lets conditionals and mapped component collections be direct
 siblings without an otherwise-unnecessary `Fragment`:

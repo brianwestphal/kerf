@@ -78,6 +78,13 @@ the complete layer is intentional. Manual CSS subpaths remain available for
 custom pipelines. App overrides belong later in the cascade or on a scoped
 `--kui-*` owner.
 
+When a Kerf UI component is a light-DOM child of a custom element, pass the
+explicit native `slot="name"` prop. Every stable single-root visual component
+forwards it on every render branch, so native named-slot assignment survives
+Kerf rerenders. This is a narrow interop prop, not general native-attribute
+spreading. Multi-root `ResizableRegion` and `CollapsiblePanel` intentionally do
+not accept it; slot a stable child or `CollapsiblePanelToggle` instead.
+
 `Row.gap`, `Grid.gap`, `List.gap`, and `Spacer` width/height accept a finite token shorthand such as
 `"xs"` or `"m"`, or a branded complete `CssLength`. Use the CSS-free
 `@kerfjs/ui/css-values` builders (`space`, `px`, `rem`, `em`, `pct`,

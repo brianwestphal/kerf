@@ -26,6 +26,8 @@ export interface GridProps {
   /** Allow this grid to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
   flex?: boolean | CssFlexKeyword | CssFlex;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /** A fixed-count grid whose columns share the available width equally. */
@@ -35,6 +37,7 @@ export function Grid({
   gap = 'xs',
   flex = false,
   className = '',
+  slot,
 }: GridProps) {
   if (!Number.isSafeInteger(columns) || columns < 1) {
     throw new RangeError('Grid columns must be a positive safe integer');
@@ -59,6 +62,7 @@ export function Grid({
       data-columns={String(columns)}
       data-flex={String(Boolean(flex))}
       style={style}
+      slot={slot}
     >
       {children}
     </div>

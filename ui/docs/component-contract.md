@@ -54,6 +54,21 @@ explicitly. Zones without that binding remain guidance and are never guessed
 from their ids. Static tools inspect only visible JSX structure and leave
 dynamic `SafeHtml` expressions to runtime and accessibility evaluation.
 
+### Native named-slot assignment
+
+Every public visual component with one stable conceptual root accepts an
+explicit `slot?: string` prop and forwards it to that root on every render
+branch. Use it when a Kerf component is a light-DOM child of a custom element,
+for example `StateBanner({ title: 'Ready', slot: 'status' })`. Omitting the prop
+omits the attribute.
+
+This contract does not open a generic native-attribute bag: components still
+accept only their documented props and narrow extension-attribute objects.
+`ResizableRegion` and `CollapsiblePanel` are deliberately excluded because each
+can return a region plus a sibling restore control, leaving no single root that
+can truthfully own native slot assignment. Their single-root controls and all
+alternate-root branches of supported components retain the contract.
+
 V1 consumers continue unchanged. V2 consumers read v1 for selection/delivery
 and v2 for composition. `npm run catalog:sync` projects every new component,
 recipe, and supported Web Awesome entry, and the completeness gate prevents

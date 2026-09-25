@@ -89,6 +89,8 @@ export interface ListActionRowProps {
   className?: string;
   rootAttributes?: ListActionRowRootAttributes;
   trailingActionAttributes?: ListActionRowTrailingAttributes;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 export function ListActionRow({
@@ -119,6 +121,7 @@ export function ListActionRow({
   className = '',
   rootAttributes = {},
   trailingActionAttributes = {},
+  slot,
 }: ListActionRowProps) {
   const extensionRootAttributes = filterDataAttributes(
     rootAttributes,
@@ -146,6 +149,7 @@ export function ListActionRow({
       data-pressed={pressed === undefined ? undefined : String(pressed)}
       data-placeholder={placeholder ? 'true' : undefined}
       aria-busy={placeholder || busy ? 'true' : undefined}
+      slot={slot}
     >
       <button
         type="button"

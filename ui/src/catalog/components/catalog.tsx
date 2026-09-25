@@ -30,6 +30,7 @@ export function Catalog({
   toggleThemeAction = 'catalog-toggle-theme',
   toggleSecondaryAction = 'catalog-toggle-secondary',
   className = '',
+  slot,
 }: CatalogProps) {
   const selected =
     findEntry(sections, active) ??
@@ -45,6 +46,7 @@ export function Catalog({
       data-geometry-overlay={
         geometryOverlay === undefined ? undefined : String(geometryOverlay)
       }
+      slot={slot}
     >
       <CatalogSidebar
         brand={brand}

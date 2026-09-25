@@ -12,6 +12,8 @@ export interface DisclosureArrowProps {
   /** Replacement icons should use right as their unrotated orientation. */
   icon?: SafeHtml;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 const directionRotations: Record<DisclosureDirection, number> = {
@@ -40,6 +42,7 @@ export function DisclosureArrow({
   closedDirection = 'right',
   icon,
   className = '',
+  slot,
 }: DisclosureArrowProps) {
   const direction = open ? openDirection : closedDirection;
   const rotation = rotationForState(open, openDirection, closedDirection);
@@ -51,6 +54,7 @@ export function DisclosureArrow({
       data-open={String(open)}
       data-direction={direction}
       aria-hidden="true"
+      slot={slot}
     >
       {icon ?? <LucideIcon icon={ChevronRight} name="chevron-right" />}
     </span>

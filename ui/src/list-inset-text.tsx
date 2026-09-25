@@ -14,6 +14,8 @@ export interface ListInsetTextProps {
    */
   horizontalOnly?: boolean;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /**
@@ -29,6 +31,7 @@ export function ListInsetText({
   sides,
   horizontalOnly = false,
   className = '',
+  slot,
 }: ListInsetTextProps) {
   const resolvedSides = sides ?? (horizontalOnly ? 'rl' : 'trbl');
   const cls =
@@ -38,6 +41,7 @@ export function ListInsetText({
       class={cls}
       data-component="list-inset-text"
       data-sides={resolvedSides}
+      slot={slot}
     >
       {children}
     </div>

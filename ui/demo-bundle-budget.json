@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 279800,
+  "totalJavaScriptGzip": 280000,
   "measuredLargestJavaScriptGzip": 128881,
-  "measuredTotalJavaScriptGzip": 279704,
+  "measuredTotalJavaScriptGzip": 279918,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -163,6 +163,22 @@
         "measuredTotalJavaScriptGzip": 279704,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 279800
+      }
+    },
+    {
+      "at": "2026-09-25T05:34:37.197Z",
+      "reason": "forward explicit native slot assignments on stable component roots",
+      "old": {
+        "measuredLargestJavaScriptGzip": 128881,
+        "measuredTotalJavaScriptGzip": 279704,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 279800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 128881,
+        "measuredTotalJavaScriptGzip": 279918,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 280000
       }
     }
   ]

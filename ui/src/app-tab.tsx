@@ -50,6 +50,8 @@ export interface AppTabProps {
   /** Render as an unanimated loading skeleton, disabling select/close and dragging. */
   placeholder?: boolean;
   rootAttributes?: AppTabRootAttributes;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 function CloseIcon() {
@@ -85,6 +87,7 @@ export function AppTab({
   className = '',
   placeholder = false,
   rootAttributes = {},
+  slot,
 }: AppTabProps) {
   const keyshortcuts = [
     closable ? 'Delete Backspace' : '',
@@ -113,6 +116,7 @@ export function AppTab({
           ? undefined
           : `--kui-app-tab-label-max-width:${labelMaxWidth}px`
       }
+      slot={slot}
     >
       {closable && (
         <button

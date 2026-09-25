@@ -20,6 +20,16 @@ import type {
   ToolbarControlGroupSize,
 } from '@kerfjs/ui';
 import { type CssValue, em, px } from '@kerfjs/ui';
+import * as UI from '@kerfjs/ui';
+import {
+  Catalog,
+  CatalogExample,
+  CatalogExampleStack,
+} from '@kerfjs/ui/catalog';
+import {
+  CollapsiblePanel,
+  CollapsiblePanelToggle,
+} from '@kerfjs/ui/collapsible-panel';
 import {
   calc,
   colorVar,
@@ -46,6 +56,8 @@ import { type DividerSides, List, type Sides } from '@kerfjs/ui/list';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
+import { NavStack } from '@kerfjs/ui/nav-stack';
+import { ResizableRegion } from '@kerfjs/ui/resizable-region';
 import {
   type HorizontalAlignment,
   Row,
@@ -55,6 +67,7 @@ import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select, type SelectChoice } from '@kerfjs/ui/select';
 import { Skeleton } from '@kerfjs/ui/skeleton';
 import { Spacer } from '@kerfjs/ui/spacer';
+import { SplitView } from '@kerfjs/ui/split-view';
 import {
   StateBanner,
   type StateBannerTone,
@@ -80,6 +93,7 @@ import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import type {} from '@kerfjs/ui/webawesome';
 import type { CatalogRevealOptions } from '@kerfjs/ui/wire-catalog';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
+import { Workbench } from '@kerfjs/ui/workbench';
 
 const icon = ToolbarText({ text: 'Icon' });
 const textVariant: TextVariant = 'h3';
@@ -235,6 +249,120 @@ List({ children: 'plain text' });
 
 const evaluationContexts: UiEvaluationContext[] = buildEvaluationContexts();
 void evaluationContexts;
+
+// KUI-T014 positive: every stable single-root visual component accepts the
+// explicit native slot attribute without opening an arbitrary-attribute bag.
+const slottedContent = UI.Text({ children: 'Content', slot: 'named' });
+UI.AppTab({ id: 'tab', name: 'Tab', slot: 'named' });
+UI.Badge({ children: '1', slot: 'named' });
+Catalog({
+  brand: { title: 'Catalog' },
+  sections: [{ category: 'Group', entries: [{ id: 'entry', name: 'Entry' }] }],
+  active: 'entry',
+  content: slottedContent,
+  slot: 'named',
+});
+CatalogExample({ children: slottedContent, slot: 'named' });
+CatalogExampleStack({ children: slottedContent, slot: 'named' });
+CollapsiblePanelToggle({
+  side: 'left',
+  collapsed: false,
+  action: 'toggle',
+  slot: 'named',
+});
+UI.DialogSurface({ children: slottedContent, slot: 'named' });
+UI.DisclosureArrow({ open: false, slot: 'named' });
+UI.EmptyState({ title: 'Empty', slot: 'named' });
+UI.FloatingToolbar({ children: slottedContent, label: 'Tools', slot: 'named' });
+UI.Grid({ columns: 1, children: slottedContent, slot: 'named' });
+UI.List({ children: slottedContent, slot: 'named' });
+UI.ListActionRow({
+  label: 'Action',
+  action: 'open',
+  trailingAction: 'more',
+  trailingActionLabel: 'More',
+  trailingActionIcon: slottedContent,
+  slot: 'named',
+});
+UI.ListHeader({ label: 'Header', slot: 'named' });
+UI.ListInsetControl({ children: slottedContent, slot: 'named' });
+UI.ListInsetText({ children: 'Copy', slot: 'named' });
+UI.ListItem({ label: 'Item', action: 'open', slot: 'named' });
+UI.LoadingSpinner({ slot: 'named' });
+UI.LucideIcon({ icon: [], name: 'empty', slot: 'named' });
+NavStack({
+  id: 'stack',
+  label: 'Stack',
+  views: [{ key: 'root', content: slottedContent }],
+  slot: 'named',
+});
+UI.Pane({ children: slottedContent, slot: 'named' });
+UI.PopupSurface({ children: slottedContent, slot: 'named' });
+UI.Row({ children: slottedContent, slot: 'named' });
+UI.SegmentedControl({
+  id: 'segments',
+  label: 'Segments',
+  value: 'one',
+  choices: [{ value: 'one', label: 'One' }],
+  slot: 'named',
+});
+UI.Select({
+  name: 'choice',
+  label: 'Choice',
+  value: 'one',
+  choices: [{ value: 'one', label: 'One' }],
+  slot: 'named',
+});
+UI.Skeleton({ slot: 'named' });
+UI.Spacer({ slot: 'named' });
+SplitView({
+  id: 'split',
+  label: 'Split',
+  list: slottedContent,
+  detail: slottedContent,
+  slot: 'named',
+});
+UI.StateBanner({ title: 'State', slot: 'named' });
+UI.SunkenPanel({ children: slottedContent, slot: 'named' });
+UI.TabBar({
+  id: 'tabs',
+  label: 'Tabs',
+  children: slottedContent,
+  slot: 'named',
+});
+TabScaffold({
+  id: 'scaffold',
+  label: 'Tabs',
+  active: 'one',
+  tabs: [{ id: 'one', label: 'One', content: slottedContent }],
+  slot: 'named',
+});
+UI.TokenSearchField({ id: 'search', label: 'Search', slot: 'named' });
+UI.Toolbar({ leading: slottedContent, slot: 'named' });
+UI.ToolbarActionLink({ href: '/', label: 'Home', slot: 'named' });
+UI.ToolbarControlGroup({ children: slottedContent, slot: 'named' });
+UI.ToolbarText({ text: 'Title', slot: 'named' });
+UI.ValueTable({ label: 'Values', children: slottedContent, slot: 'named' });
+UI.ValueTableRow({ label: 'Name', value: 'Value', slot: 'named' });
+Workbench({
+  id: 'workbench',
+  label: 'Workbench',
+  main: slottedContent,
+  slot: 'named',
+});
+// @ts-expect-error KUI-T014 multi-root CollapsiblePanel has no unambiguous slot owner.
+CollapsiblePanel({ id: 'panel', side: 'left', slot: 'named' });
+ResizableRegion({
+  id: 'region',
+  label: 'Region',
+  size: 200,
+  min: 100,
+  max: 300,
+  // @ts-expect-error KUI-T014 multi-root ResizableRegion has no unambiguous slot owner.
+  slot: 'named',
+});
+// @ts-expect-error KUI-T014 slot support does not broaden components to arbitrary native attributes.
+UI.Badge({ children: '1', draggable: true });
 
 // KUI-T010 positive: every finite presentation axis is available from the
 // convenience root barrel in both source and packed declarations.

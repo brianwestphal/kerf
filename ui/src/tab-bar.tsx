@@ -25,6 +25,8 @@ export interface TabBarProps {
   presentation?: TabBarPresentation;
   /** Keep a trailing action beside the final tab or at the far edge of the bar. */
   trailingPlacement?: TabBarTrailingPlacement;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
@@ -39,6 +41,7 @@ export function TabBar({
   allocation = 'intrinsic',
   presentation = 'rail',
   trailingPlacement = 'separate',
+  slot,
 }: TabBarProps) {
   return (
     <nav
@@ -50,6 +53,7 @@ export function TabBar({
       data-presentation={presentation}
       data-trailing-placement={trailingPlacement}
       aria-label={label}
+      slot={slot}
     >
       {leading && <div class="kui-tab-bar__leading">{leading}</div>}
       <div

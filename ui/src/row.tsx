@@ -41,6 +41,8 @@ export interface RowProps {
   /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
   controlInsets?: Sides;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /** A horizontal flex row with explicit physical-axis alignment and spacing. */
@@ -54,6 +56,7 @@ export function Row({
   textInsets = '',
   controlInsets = '',
   className = '',
+  slot,
 }: RowProps) {
   const gapValue = spaceNames.includes(gap as UiSpaceName)
     ? space(gap as UiSpaceName)
@@ -77,6 +80,7 @@ export function Row({
       data-text-insets={textInsets || undefined}
       data-control-insets={controlInsets || undefined}
       style={style}
+      slot={slot}
     >
       {children}
     </div>

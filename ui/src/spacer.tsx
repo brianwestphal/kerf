@@ -18,6 +18,8 @@ export interface SpacerProps {
   /** A named UI spacing token or typed physical height. */
   height?: UiSpaceName | CssLength;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 function dimension(value?: UiSpaceName | CssLength): CssLength | undefined {
@@ -32,6 +34,7 @@ export function Spacer({
   width,
   height,
   className = '',
+  slot,
 }: SpacerProps) {
   const widthValue = dimension(width);
   const heightValue = dimension(height);
@@ -49,6 +52,7 @@ export function Spacer({
       data-flex={String(flex)}
       aria-hidden="true"
       style={style || undefined}
+      slot={slot}
     ></div>
   );
 }

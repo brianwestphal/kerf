@@ -40,6 +40,8 @@ interface TokenSearchFieldBaseProps {
   clearLabel?: string;
   className?: string;
   editorAttributes?: TokenSearchEditorAttributes;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 type TokenSearchCollapsibleProps =
@@ -119,6 +121,7 @@ export function TokenSearchField({
   clearLabel = 'Clear search',
   className = '',
   editorAttributes = {},
+  slot,
 }: TokenSearchFieldProps) {
   const parts = orderedParts(query, tokens);
   const key = `${id}:${tokens.map((token) => token.value).join('|')}`;
@@ -134,6 +137,7 @@ export function TokenSearchField({
       data-expanded={String(resolvedExpanded)}
       data-has-trailing={String(Boolean(trailing))}
       data-presentation={presentation}
+      slot={slot}
     >
       {!resolvedExpanded ? (
         <button

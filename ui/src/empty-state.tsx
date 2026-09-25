@@ -10,6 +10,8 @@ export interface EmptyStateProps {
   action?: KerfUiContent;
   busy?: boolean;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 export function EmptyState({
@@ -19,6 +21,7 @@ export function EmptyState({
   action,
   busy = false,
   className = '',
+  slot,
 }: EmptyStateProps) {
   return (
     <section
@@ -27,6 +30,7 @@ export function EmptyState({
       data-busy={String(busy)}
       role="status"
       aria-busy={String(busy)}
+      slot={slot}
     >
       <div class="kui-empty-state__icon">
         {busy ? <LoadingSpinner /> : icon}

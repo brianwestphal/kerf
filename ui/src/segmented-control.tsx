@@ -28,6 +28,8 @@ export interface SegmentedControlProps<Value extends string = string> {
   className?: string;
   /** Render as an unanimated loading skeleton, disabling every segment. */
   placeholder?: boolean;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 export function SegmentedControl<Value extends string>({
@@ -42,6 +44,7 @@ export function SegmentedControl<Value extends string>({
   layout = 'content',
   className = '',
   placeholder = false,
+  slot,
 }: SegmentedControlProps<Value>) {
   return (
     <div
@@ -57,6 +60,7 @@ export function SegmentedControl<Value extends string>({
       role="group"
       aria-label={label}
       aria-busy={placeholder ? 'true' : undefined}
+      slot={slot}
     >
       {choices.map((choice) => {
         const selected = choice.value === value;

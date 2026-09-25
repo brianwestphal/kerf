@@ -51,6 +51,12 @@ are rejected unless a component explicitly exposes a text position such as
 `ListInsetText`. These are typed props, not native `<slot>` elements,
 wrapper slot components, or a generic `slots` object. Preserve dynamic
 expressions as unknown when their content cannot be established statically.
+Stable single-root Kerf UI components separately accept native `slot="name"`
+for direct light-DOM composition inside a custom element and preserve it across
+rerenders. This is the one explicit native interop attribute, not permission to
+spread arbitrary native attributes. `ResizableRegion` and `CollapsiblePanel`
+remain excluded because their optional restore control makes them multi-root;
+use a slotted single-root child or `CollapsiblePanelToggle` instead.
 
 Before selecting for an application, call the Node-side discovery API in
 `./application-ui-profile.mjs` (or implement its documented filename/order)

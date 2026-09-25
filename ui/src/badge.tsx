@@ -17,6 +17,8 @@ export interface BadgeProps {
   /** Hide a repeated visual badge from assistive technology. */
   ariaHidden?: boolean;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /** Compact, non-interactive metadata whose tone, emphasis, and shape are configured by props. */
@@ -29,6 +31,7 @@ export function Badge({
   label,
   ariaHidden = false,
   className = '',
+  slot,
 }: BadgeProps) {
   return (
     <span
@@ -40,6 +43,7 @@ export function Badge({
       data-size={size}
       aria-label={ariaHidden ? undefined : label}
       aria-hidden={ariaHidden ? 'true' : undefined}
+      slot={slot}
     >
       {children}
     </span>

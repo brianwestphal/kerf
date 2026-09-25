@@ -30,6 +30,8 @@ export interface NavStackProps {
   /** Optional persistent bottom toolbar used when the active view does not provide one. */
   bottomToolbar?: KerfUiContent;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /**
@@ -46,6 +48,7 @@ export function NavStack({
   hideToolbar = false,
   bottomToolbar,
   className = '',
+  slot,
 }: NavStackProps) {
   const topIndex = views.length - 1;
   const top = views[topIndex];
@@ -58,6 +61,7 @@ export function NavStack({
       data-nav-stack-id={id}
       data-depth={String(views.length)}
       aria-label={label}
+      slot={slot}
     >
       {!hideToolbar && (
         <header class="kui-nav-stack__chrome" data-nav-stack-chrome>

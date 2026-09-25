@@ -68,6 +68,13 @@ Property grammars remain distinct: `flex()` returns `CssFlex` for `List.flex`;
 `Skeleton` sizes accept typed lengths plus finite intrinsic keywords;
 `uiColor()` and `colorVar()` return `CssColor` for choice icons. List rows use
 classes, public tokens, and props rather than declaration-string `style` slots.
+
+Public visual components with one stable conceptual root accept an explicit
+native `slot?: string` prop and forward it on every render branch. This supports
+direct light-DOM projection into custom elements without widening component
+props to arbitrary native attributes. `ResizableRegion` and `CollapsiblePanel`
+remain excluded because their optional restore controls make their output
+multi-root; the single-root `CollapsiblePanelToggle` is included.
 Media-query grammar remains separate and semantic pixel inputs remain numbers.
 
 `DisclosureArrow` has an 18px root-scaled default and exposes

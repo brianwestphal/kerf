@@ -36,6 +36,8 @@ export interface WorkbenchProps {
   rightRail?: WorkbenchPanel;
   bottomDrawer?: WorkbenchPanel;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /**
@@ -56,6 +58,7 @@ export function Workbench({
   rightRail,
   bottomDrawer,
   className = '',
+  slot,
 }: WorkbenchProps) {
   return (
     <section
@@ -63,6 +66,7 @@ export function Workbench({
       id={id}
       data-component="workbench"
       aria-label={label}
+      slot={slot}
     >
       {leftRail && (
         <aside

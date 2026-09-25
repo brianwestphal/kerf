@@ -35,6 +35,7 @@
               "controlled-callback",
               "discriminated-union",
               "finite-vocabulary",
+              "explicit-native-attribute",
               "literal-identity",
               "property-specific-css-value",
               "protected-attributes",

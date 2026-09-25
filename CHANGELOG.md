@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added explicit native `slot` support to every stable single-root
+  `@kerfjs/ui` visual component, including alternate render branches, while
+  keeping multi-root `ResizableRegion` and `CollapsiblePanel` excluded.
 - Fixed the UX catalog's desktop grid sizing so both the sidebar and component
   detail can scroll all the way to their final content while narrow layouts
   retain normal document scrolling.

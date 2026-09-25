@@ -12,6 +12,8 @@ export interface SkeletonProps {
   /** Accessible label. Omit to keep the block decorative (`aria-hidden`). */
   label?: string;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 function blockStyle(
@@ -40,6 +42,7 @@ export function Skeleton({
   lines,
   label,
   className = '',
+  slot,
 }: SkeletonProps) {
   const a11y = {
     role: label ? 'img' : undefined,
@@ -53,6 +56,7 @@ export function Skeleton({
         data-component="skeleton"
         style={width ? `width:${width}` : undefined}
         {...a11y}
+        slot={slot}
       >
         {Array.from({ length: lines }, (_, index) => (
           <span
@@ -74,6 +78,7 @@ export function Skeleton({
       data-component="skeleton"
       style={blockStyle(width, height, radius)}
       {...a11y}
+      slot={slot}
     ></span>
   );
 }

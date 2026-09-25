@@ -43,6 +43,8 @@ export interface ListProps {
   /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
   controlInsets?: Sides;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /** A stretch-aligned vertical stack with optional gap, flex, scroll, and dividers. */
@@ -57,6 +59,7 @@ export function List({
   textInsets = '',
   controlInsets = '',
   className = '',
+  slot,
 }: ListProps) {
   const gapValue =
     gap === true
@@ -85,6 +88,7 @@ export function List({
       data-text-insets={textInsets || undefined}
       data-control-insets={controlInsets || undefined}
       style={style || undefined}
+      slot={slot}
     >
       {children}
     </div>

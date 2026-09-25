@@ -60,6 +60,8 @@ export interface ListItemProps {
   /** Render the row as an unanimated loading skeleton, disabling its action. */
   placeholder?: boolean;
   rootAttributes?: ListItemRootAttributes;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 export function ListItem({
@@ -84,6 +86,7 @@ export function ListItem({
   tabIndex,
   placeholder = false,
   rootAttributes = {},
+  slot,
 }: ListItemProps) {
   const extensionAttributes = filterDataAttributes(
     rootAttributes,
@@ -112,6 +115,7 @@ export function ListItem({
       aria-current={selected ? 'page' : undefined}
       aria-pressed={pressed === undefined ? undefined : String(pressed)}
       aria-busy={placeholder || busy ? 'true' : undefined}
+      slot={slot}
     >
       {icon && (
         <span class="kui-list-item__icon">

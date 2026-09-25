@@ -21,6 +21,8 @@ export interface StateBannerProps {
   className?: string;
   /** Render the title, badge, and detail as unanimated loading skeletons, keeping the icon and tone. */
   placeholder?: boolean;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 export function StateBanner({
@@ -33,6 +35,7 @@ export function StateBanner({
   urgency = 'status',
   className = '',
   placeholder = false,
+  slot,
 }: StateBannerProps) {
   const badgeTone = tone === 'info' ? 'brand' : tone;
   return (
@@ -44,6 +47,7 @@ export function StateBanner({
       role={urgency}
       aria-live={urgency === 'alert' ? 'assertive' : 'polite'}
       aria-busy={placeholder ? 'true' : undefined}
+      slot={slot}
     >
       {icon && <span class="kui-state-banner__icon">{icon}</span>}
       <div class="kui-state-banner__copy">

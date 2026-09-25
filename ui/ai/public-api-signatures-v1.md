@@ -95,8 +95,10 @@ interface DisclosureArrowProps {
     /** Replacement icons should use right as their unrotated orientation. */
     icon?: SafeHtml;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
-declare function DisclosureArrow({ open, openDirection, closedDirection, icon, className, }: DisclosureArrowProps): SafeHtml;
+declare function DisclosureArrow({ open, openDirection, closedDirection, icon, className, slot, }: DisclosureArrowProps): SafeHtml;
 
 export { DisclosureArrow, type DisclosureArrowProps, type DisclosureDirection };
 ```
@@ -122,8 +124,10 @@ interface ToolbarProps {
     /** Container width at which `responsive="stack"` activates. */
     responsiveAt?: 'compact' | 'narrow';
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
-declare function Toolbar({ leading, center, trailing, label, dividerSides, centerAlign, responsive, responsiveAt, className, }: ToolbarProps): kerfjs.SafeHtml;
+declare function Toolbar({ leading, center, trailing, label, dividerSides, centerAlign, responsive, responsiveAt, className, slot, }: ToolbarProps): kerfjs.SafeHtml;
 
 export { DividerSides, Toolbar, type ToolbarProps };
 ```
@@ -156,6 +160,8 @@ interface ToolbarTextBaseProps {
      * instead. Default true.
      */
     ellipsis?: boolean;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 type ToolbarTextWrappingProps = {
     /** Wrap onto multiple lines; combine with `maxLines` to cap them. */
@@ -166,7 +172,7 @@ type ToolbarTextWrappingProps = {
     maxLines?: never;
 };
 type ToolbarTextProps = ToolbarTextBaseProps & ToolbarTextWrappingProps;
-declare function ToolbarText({ text, size, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, }: ToolbarTextProps): kerfjs.SafeHtml;
+declare function ToolbarText({ text, size, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, slot, }: ToolbarTextProps): kerfjs.SafeHtml;
 
 export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarTextSize };
 ```
@@ -201,9 +207,11 @@ interface ToolbarActionLinkProps {
     /** Open in a new tab with a safe rel and announce that behavior. */
     external?: boolean;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /** A semantic anchor with ToolbarControlGroup-owned action geometry. */
-declare function ToolbarActionLink({ href, label, icon, detail, ariaLabel, external, className, }: ToolbarActionLinkProps): kerfjs.SafeHtml;
+declare function ToolbarActionLink({ href, label, icon, detail, ariaLabel, external, className, slot, }: ToolbarActionLinkProps): kerfjs.SafeHtml;
 interface ToolbarControlGroupProps {
     children: KerfUiContent;
     label?: string;
@@ -237,8 +245,10 @@ interface ToolbarControlGroupProps {
      * multi-control group paints it only on the pressed selection highlight.
      */
     avatarImage?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, visibility, scrim, avatarImage, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, visibility, scrim, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
 
 export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
 ```
@@ -262,6 +272,8 @@ interface FloatingToolbarProps {
      */
     position?: FloatingToolbarPosition;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /**
  * A toolbar that floats above the main content of its nearest positioned
@@ -272,7 +284,7 @@ interface FloatingToolbarProps {
  * top toolbar's own inset); override that token to move it. The app owns the
  * controls and their behavior — wire them with `delegate()` as usual.
  */
-declare function FloatingToolbar({ children, label, position, className, }: FloatingToolbarProps): kerfjs.SafeHtml;
+declare function FloatingToolbar({ children, label, position, className, slot, }: FloatingToolbarProps): kerfjs.SafeHtml;
 
 export { FloatingToolbar, type FloatingToolbarPosition, type FloatingToolbarProps };
 ```
@@ -314,6 +326,8 @@ interface ListHeaderBaseProps {
     placeholder?: boolean;
     rootAttributes?: ListHeaderRootAttributes;
     triggerAttributes?: ListHeaderTriggerAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 type ListHeaderModeProps = {
     /** Render the title as a controlled disclosure trigger. */
@@ -360,7 +374,7 @@ type ListHeaderIndicatorProps = {
     status?: SafeHtml;
 };
 type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHeaderModeProps;
-declare function ListHeader({ label, count, countLabel, badge, status, density, divider, inline, width, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, }: ListHeaderProps): SafeHtml;
+declare function ListHeader({ label, count, countLabel, badge, status, density, divider, inline, width, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, slot, }: ListHeaderProps): SafeHtml;
 
 export { ListHeader, type ListHeaderProps };
 ```
@@ -394,9 +408,11 @@ interface ListProps {
     /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
     controlInsets?: Sides;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /** A stretch-aligned vertical stack with optional gap, flex, scroll, and dividers. */
-declare function List({ children, gap, flex, hAlign, vAlign, scrollable, dividerSides, textInsets, controlInsets, className, }: ListProps): kerfjs.SafeHtml;
+declare function List({ children, gap, flex, hAlign, vAlign, scrollable, dividerSides, textInsets, controlInsets, className, slot, }: ListProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, DividerSides, HorizontalAlignment, List, type ListProps, ListVerticalAlignment, Sides, UiSpaceName };
 ```
@@ -461,8 +477,10 @@ interface ListActionRowProps {
     className?: string;
     rootAttributes?: ListActionRowRootAttributes;
     trailingActionAttributes?: ListActionRowTrailingAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
-declare function ListActionRow({ label, description, status, busy, density, divider, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, trailingActionVisibility, className, rootAttributes, trailingActionAttributes, }: ListActionRowProps): SafeHtml;
+declare function ListActionRow({ label, description, status, busy, density, divider, icon, action, itemId, selected, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, trailingAction, trailingActionLabel, trailingActionIcon, trailingActionDisabled, trailingActionTitle, trailingActionVisibility, className, rootAttributes, trailingActionAttributes, slot, }: ListActionRowProps): SafeHtml;
 
 export { ListActionRow, type ListActionRowProps };
 ```
@@ -511,8 +529,10 @@ interface ListItemProps {
     /** Render the row as an unanimated loading skeleton, disabling its action. */
     placeholder?: boolean;
     rootAttributes?: ListItemRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
-declare function ListItem({ label, description, icon, trailing, status, busy, density, divider, selected, action, itemId, className, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, rootAttributes, }: ListItemProps): SafeHtml;
+declare function ListItem({ label, description, icon, trailing, status, busy, density, divider, selected, action, itemId, className, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, rootAttributes, slot, }: ListItemProps): SafeHtml;
 
 export { ListItem, type ListItemProps };
 ```
@@ -530,6 +550,8 @@ interface ListInsetControlProps {
     /** Physical inset sides in canonical top/right/bottom/left order. Defaults to all sides. */
     sides?: Sides;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /**
  * Insets a control into a pane/list content region: an 8px inline margin (so its
@@ -537,7 +559,7 @@ interface ListInsetControlProps {
  * Use it for controls that carry their own border and padding but no outer margin
  * — the wrapper adds only the alignment margin and layout, not a second inset.
  */
-declare function ListInsetControl({ children, sides, className, }: ListInsetControlProps): kerfjs.SafeHtml;
+declare function ListInsetControl({ children, sides, className, slot, }: ListInsetControlProps): kerfjs.SafeHtml;
 
 export { ListInsetControl, type ListInsetControlProps, Sides };
 ```
@@ -562,6 +584,8 @@ interface ListInsetTextProps {
      */
     horizontalOnly?: boolean;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /**
  * Gives bare text the content-item geometry — an 8px inline margin, a 1px
@@ -571,7 +595,7 @@ interface ListInsetTextProps {
  * Pass `horizontalOnly` to keep the horizontal inset but drop the vertical box
  * space for tight text layout.
  */
-declare function ListInsetText({ children, sides, horizontalOnly, className, }: ListInsetTextProps): kerfjs.SafeHtml;
+declare function ListInsetText({ children, sides, horizontalOnly, className, slot, }: ListInsetTextProps): kerfjs.SafeHtml;
 
 export { ListInsetText, type ListInsetTextProps, Sides };
 ```
@@ -590,15 +614,19 @@ interface ValueTableRowProps {
     className?: string;
     /** Render the value as an unanimated loading skeleton, keeping the field label. */
     placeholder?: boolean;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
-declare function ValueTableRow({ label, value, icon, className, placeholder, }: ValueTableRowProps): SafeHtml;
+declare function ValueTableRow({ label, value, icon, className, placeholder, slot, }: ValueTableRowProps): SafeHtml;
 
 interface ValueTableProps {
     label: string;
     className?: string;
     children: KerfUiContent;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
-declare function ValueTable({ label, className, children, }: ValueTableProps): kerfjs.SafeHtml;
+declare function ValueTable({ label, className, children, slot, }: ValueTableProps): kerfjs.SafeHtml;
 
 export { ValueTable, type ValueTableProps, ValueTableRow, type ValueTableRowProps };
 ```
@@ -641,8 +669,10 @@ interface AppTabProps {
     /** Render as an unanimated loading skeleton, disabling select/close and dragging. */
     placeholder?: boolean;
     rootAttributes?: AppTabRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
-declare function AppTab({ id, name, selected, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, closeIcon, selectAction, closeAction, className, placeholder, rootAttributes, }: AppTabProps): SafeHtml;
+declare function AppTab({ id, name, selected, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, closeIcon, selectAction, closeAction, className, placeholder, rootAttributes, slot, }: AppTabProps): SafeHtml;
 
 export { AppTab, type AppTabPresentation, type AppTabProps, type AppTabSize };
 ```
@@ -677,9 +707,11 @@ interface TabBarProps {
     presentation?: TabBarPresentation;
     /** Keep a trailing action beside the final tab or at the far edge of the bar. */
     trailingPlacement?: TabBarTrailingPlacement;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
-declare function TabBar({ id, label, children, leading, trailing, className, activation, allocation, presentation, trailingPlacement, }: TabBarProps): kerfjs.SafeHtml;
+declare function TabBar({ id, label, children, leading, trailing, className, activation, allocation, presentation, trailingPlacement, slot, }: TabBarProps): kerfjs.SafeHtml;
 
 export { type TabActivation, TabBar, type TabBarAllocation, type TabBarPresentation, type TabBarProps, type TabBarTrailingPlacement };
 ```
@@ -757,6 +789,8 @@ interface NavStackProps {
     /** Optional persistent bottom toolbar used when the active view does not provide one. */
     bottomToolbar?: KerfUiContent;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /**
  * A navigation stack (iOS-style push/pop). Renders every entry stacked, the last
@@ -764,7 +798,7 @@ interface NavStackProps {
  * cross-fades the chrome across a change. A single-pane layout is a `NavStack`
  * with one entry. See `docs/23-app-layouts.md` §3.1.
  */
-declare function NavStack({ id, label, views, backLabel, hideToolbar, bottomToolbar, className, }: NavStackProps): kerfjs.SafeHtml;
+declare function NavStack({ id, label, views, backLabel, hideToolbar, bottomToolbar, className, slot, }: NavStackProps): kerfjs.SafeHtml;
 
 export { NavStack, type NavStackProps, type NavStackView };
 ```
@@ -827,6 +861,8 @@ interface SplitViewProps {
     /** A resizable separator on roomy classes (min/max px). Omit for a fixed split. */
     resizable?: SplitViewResizable;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /**
  * A list-detail split. On roomy classes it shows both panes side
@@ -835,7 +871,7 @@ interface SplitViewProps {
  * resizable wiring with `wireResizableRegions` and the compact back with
  * `wireNavStack`.
  */
-declare function SplitView({ id, label, list, detail, compact, detailActive, listTitle, detailTitle, backLabel, resizable, className, }: SplitViewProps): kerfjs.SafeHtml;
+declare function SplitView({ id, label, list, detail, compact, detailActive, listTitle, detailTitle, backLabel, resizable, className, slot, }: SplitViewProps): kerfjs.SafeHtml;
 
 export { SplitView, type SplitViewProps, type SplitViewResizable };
 ```
@@ -883,6 +919,8 @@ interface PaneProps {
     footerClassName?: string;
     /** Safe `data-*` metadata; Pane-owned structural attributes remain protected. */
     rootAttributes?: PaneRootAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /**
  * An unpadded application column with optional fixed header/footer slots and one
@@ -890,7 +928,7 @@ interface PaneProps {
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, element, contentElement, separators, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, element, contentElement, separators, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
 export { Pane, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
 ```
@@ -928,6 +966,8 @@ interface WorkbenchProps {
     rightRail?: WorkbenchPanel;
     bottomDrawer?: WorkbenchPanel;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /**
  * The Xcode-like multi-panel workspace: a collapsible left rail, right rail, and
@@ -939,7 +979,7 @@ interface WorkbenchProps {
  * each `collapsed` flag; the collapse is pure CSS (no wire). See
  * `docs/23-app-layouts.md` §3.3.
  */
-declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, className, }: WorkbenchProps): SafeHtml;
+declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, className, slot, }: WorkbenchProps): SafeHtml;
 
 export { Workbench, type WorkbenchPanel, type WorkbenchProps };
 ```
@@ -978,6 +1018,8 @@ interface CollapsiblePanelToggleProps {
     /** Accessible label; defaults to "Collapse"/"Expand". */
     label?: string;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /**
  * A standard collapse/expand toggle button for a {@link CollapsiblePanel}: the
@@ -986,7 +1028,7 @@ interface CollapsiblePanelToggleProps {
  * put it in the panel's own header (to collapse) and somewhere always-visible
  * (to expand while collapsed).
  */
-declare function CollapsiblePanelToggle({ side, collapsed, action, panelId, label, className, }: CollapsiblePanelToggleProps): SafeHtml;
+declare function CollapsiblePanelToggle({ side, collapsed, action, panelId, label, className, slot, }: CollapsiblePanelToggleProps): SafeHtml;
 interface CollapsiblePanelProps {
     /** A stable id for the panel — `wireSidebar` targets it and toggles reference it. */
     id: string;
@@ -1101,6 +1143,8 @@ interface TabScaffoldProps<Id extends string = string> {
     /** The controlled active tab id (the app owns selection). */
     active: NoInfer<Id>;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /**
  * A mobile-first, iOS-like bottom tab scaffold: a bottom tab bar that switches
@@ -1110,7 +1154,7 @@ interface TabScaffoldProps<Id extends string = string> {
  * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
-declare function TabScaffold<Id extends string>({ id, label, tabs, active, className, }: TabScaffoldProps<Id>): SafeHtml;
+declare function TabScaffold<Id extends string>({ id, label, tabs, active, className, slot, }: TabScaffoldProps<Id>): SafeHtml;
 
 export { TabScaffold, type TabScaffoldProps, type TabScaffoldTab };
 ```
@@ -1272,12 +1316,12 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { a as CatalogProps } from './types-BX6kKARG.js';
-export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection } from './types-BX6kKARG.js';
+import { a as CatalogProps } from './types-CzgSrFXP.js';
+export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection } from './types-CzgSrFXP.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 /** Controlled, stateless component-catalog shell. */
-declare function Catalog({ brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, className, }: CatalogProps): kerfjs.SafeHtml;
+declare function Catalog({ brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, className, slot, }: CatalogProps): kerfjs.SafeHtml;
 
 /** How a specimen aligns its visible edge with its `ListHeader` label. */
 type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
@@ -1295,9 +1339,11 @@ interface CatalogExampleProps {
     rootAttributes?: CatalogExampleRootAttributes;
     className?: string;
     children?: KerfUiContent;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /** A labeled catalog specimen with optional explanatory text and alignment. */
-declare function CatalogExample({ label, note, align, rootAttributes, className, children, }: CatalogExampleProps): SafeHtml;
+declare function CatalogExample({ label, note, align, rootAttributes, className, children, slot, }: CatalogExampleProps): SafeHtml;
 
 type CatalogExampleStackRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-catalog-example'?: never;
@@ -1311,9 +1357,11 @@ interface CatalogExampleStackProps {
     rootAttributes?: CatalogExampleStackRootAttributes;
     className?: string;
     children?: KerfUiContent;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /** A vertically stacked group of catalog examples. */
-declare function CatalogExampleStack({ label, rootAttributes, className, children, }: CatalogExampleStackProps): kerfjs.SafeHtml;
+declare function CatalogExampleStack({ label, rootAttributes, className, children, slot, }: CatalogExampleStackProps): kerfjs.SafeHtml;
 
 export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, CatalogProps };
 ```
@@ -1321,7 +1369,7 @@ export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleP
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-BX6kKARG.js';
+import { C as CatalogResource } from './types-CzgSrFXP.js';
 import './semantic-content-BbzjvSu9.js';
 import 'kerfjs';
 
@@ -1450,8 +1498,10 @@ interface SegmentedControlProps<Value extends string = string> {
     className?: string;
     /** Render as an unanimated loading skeleton, disabling every segment. */
     placeholder?: boolean;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
-declare function SegmentedControl<Value extends string>({ id, label, value, choices, action, appearance, shape, size, layout, className, placeholder, }: SegmentedControlProps<Value>): kerfjs.SafeHtml;
+declare function SegmentedControl<Value extends string>({ id, label, value, choices, action, appearance, shape, size, layout, className, placeholder, slot, }: SegmentedControlProps<Value>): kerfjs.SafeHtml;
 
 export { SegmentedControl, type SegmentedControlAppearance, type SegmentedControlChoice, type SegmentedControlLayout, type SegmentedControlProps, type SegmentedControlShape, type SegmentedControlSize };
 ```
@@ -1508,9 +1558,11 @@ interface SelectBaseProps<Value extends string = string> {
     focusRingOwner?: SelectFocusRingOwner;
     /** Maximum closed-control label width in CSS pixels before ellipsis. */
     labelMaxWidth?: number;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 type SelectProps<Value extends string = string> = SelectBaseProps<Value> & SelectAccessibleName;
-declare function Select<Value extends string>({ name, value, label, ariaLabel, choices, className, placeholderText, hint, disabled, fitMenu, renderSelected, placeholder, presentation, size, selectedPresentation, focusRingOwner, labelMaxWidth, }: SelectProps<Value>): SafeHtml;
+declare function Select<Value extends string>({ name, value, label, ariaLabel, choices, className, placeholderText, hint, disabled, fitMenu, renderSelected, placeholder, presentation, size, selectedPresentation, focusRingOwner, labelMaxWidth, slot, }: SelectProps<Value>): SafeHtml;
 
 export { Select, type SelectChoice, type SelectFocusRingOwner, type SelectPresentation, type SelectProps, type SelectSelectedPresentation, type SelectSize };
 ```
@@ -1535,8 +1587,10 @@ interface StateBannerProps {
     className?: string;
     /** Render the title, badge, and detail as unanimated loading skeletons, keeping the icon and tone. */
     placeholder?: boolean;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
-declare function StateBanner({ title, detail, badge, icon, action, tone, urgency, className, placeholder, }: StateBannerProps): SafeHtml;
+declare function StateBanner({ title, detail, badge, icon, action, tone, urgency, className, placeholder, slot, }: StateBannerProps): SafeHtml;
 
 export { StateBanner, type StateBannerProps, type StateBannerTone, type StateBannerUrgency };
 ```
@@ -1554,8 +1608,10 @@ interface EmptyStateProps {
     action?: KerfUiContent;
     busy?: boolean;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
-declare function EmptyState({ title, detail, icon, action, busy, className, }: EmptyStateProps): SafeHtml;
+declare function EmptyState({ title, detail, icon, action, busy, className, slot, }: EmptyStateProps): SafeHtml;
 
 export { EmptyState, type EmptyStateProps };
 ```
@@ -1568,9 +1624,11 @@ import * as kerfjs from 'kerfjs';
 interface LoadingSpinnerProps {
     className?: string;
     label?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /** Stable viewBox-centered progress ring based on svg-spinners' MIT-licensed 180-ring. */
-declare function LoadingSpinner({ className, label }: LoadingSpinnerProps): kerfjs.SafeHtml;
+declare function LoadingSpinner({ className, label, slot, }: LoadingSpinnerProps): kerfjs.SafeHtml;
 
 export { LoadingSpinner, type LoadingSpinnerProps };
 ```
@@ -1593,6 +1651,8 @@ interface SkeletonProps {
     /** Accessible label. Omit to keep the block decorative (`aria-hidden`). */
     label?: string;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /**
  * A subtle, deliberately **unanimated** loading placeholder block. Use it for a
@@ -1600,7 +1660,7 @@ interface SkeletonProps {
  * `placeholder` prop. Decorative by default (`aria-hidden`); pass `label` to
  * announce it. Sizes to its slot unless `width`/`height` are given.
  */
-declare function Skeleton({ width, height, radius, lines, label, className, }: SkeletonProps): kerfjs.SafeHtml;
+declare function Skeleton({ width, height, radius, lines, label, className, slot, }: SkeletonProps): kerfjs.SafeHtml;
 
 export { Skeleton, type SkeletonProps };
 ```
@@ -1619,13 +1679,15 @@ interface SunkenPanelProps {
     /** Corner shape: a rounded rectangle (default) or square corners. */
     shape?: SunkenPanelShape;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /**
  * A lowered application surface with one compact inset and a vertical content
  * stack. The panel owns its background and padding; children own their own
  * borders and internal geometry.
  */
-declare function SunkenPanel({ children, ariaLabel, shape, className, }: SunkenPanelProps): kerfjs.SafeHtml;
+declare function SunkenPanel({ children, ariaLabel, shape, className, slot, }: SunkenPanelProps): kerfjs.SafeHtml;
 
 export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape };
 ```
@@ -1669,6 +1731,8 @@ interface TokenSearchFieldBaseProps {
     clearLabel?: string;
     className?: string;
     editorAttributes?: TokenSearchEditorAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 type TokenSearchCollapsibleProps = {
     /** Allow an empty field to render as one iconic action. */
@@ -1688,7 +1752,7 @@ interface TokenSearchFieldValue {
     query: string;
     tokens: TokenSearchToken[];
 }
-declare function TokenSearchField({ id, label, query, tokens, placeholder, tokenPlaceholder, disabled, autofocus, collapsible, expanded, expandAction, expandLabel, leading, trailing, presentation, editAction, removeAction, clearAction, clearLabel, className, editorAttributes, }: TokenSearchFieldProps): kerfjs.SafeHtml;
+declare function TokenSearchField({ id, label, query, tokens, placeholder, tokenPlaceholder, disabled, autofocus, collapsible, expanded, expandAction, expandLabel, leading, trailing, presentation, editAction, removeAction, clearAction, clearLabel, className, editorAttributes, slot, }: TokenSearchFieldProps): kerfjs.SafeHtml;
 /** Read editable text and ordered token offsets from a rendered TokenSearchField editor. */
 declare function readTokenSearchField(editor: HTMLElement, knownTokens?: readonly TokenSearchToken[]): TokenSearchFieldValue;
 /** Focus an editor and place its caret at a text offset, skipping atomic token chips. */
@@ -1910,9 +1974,11 @@ interface BadgeProps {
     /** Hide a repeated visual badge from assistive technology. */
     ariaHidden?: boolean;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /** Compact, non-interactive metadata whose tone, emphasis, and shape are configured by props. */
-declare function Badge({ children, tone, appearance, shape, size, label, ariaHidden, className, }: BadgeProps): SafeHtml;
+declare function Badge({ children, tone, appearance, shape, size, label, ariaHidden, className, slot, }: BadgeProps): SafeHtml;
 
 export { Badge, type BadgeAppearance, type BadgeProps, type BadgeShape, type BadgeSize, type BadgeTone };
 ```
@@ -1929,9 +1995,11 @@ interface LucideIconProps {
     name: string;
     className?: string;
     label?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /** Render a Lucide-compatible icon node without copying icon SVG strings. */
-declare function LucideIcon({ icon, name, className, label }: LucideIconProps): kerfjs.SafeHtml;
+declare function LucideIcon({ icon, name, className, label, slot, }: LucideIconProps): kerfjs.SafeHtml;
 
 export { LucideIcon, type LucideIconProps, type LucideNode };
 ```
@@ -1952,17 +2020,21 @@ interface DialogSurfaceProps {
     bodyInset?: SurfaceInset;
     footerInset?: SurfaceInset;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /** Configure recurring Web Awesome dialog geometry without consumer ::part() CSS. */
-declare function DialogSurface({ children, size, presentation, bodyInset, footerInset, className, }: DialogSurfaceProps): kerfjs.SafeHtml;
+declare function DialogSurface({ children, size, presentation, bodyInset, footerInset, className, slot, }: DialogSurfaceProps): kerfjs.SafeHtml;
 type PopupSurfaceInset = 'standard' | 'compact' | 'list-zero';
 interface PopupSurfaceProps {
     children: KerfUiContent;
     inset?: PopupSurfaceInset;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
-declare function PopupSurface({ children, inset, className, }: PopupSurfaceProps): kerfjs.SafeHtml;
+declare function PopupSurface({ children, inset, className, slot, }: PopupSurfaceProps): kerfjs.SafeHtml;
 
 export { DialogSurface, type DialogSurfacePresentation, type DialogSurfaceProps, type DialogSurfaceSize, PopupSurface, type PopupSurfaceInset, type PopupSurfaceProps, type SurfaceInset };
 ```
@@ -2030,9 +2102,11 @@ interface RowProps {
     /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
     controlInsets?: Sides;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /** A horizontal flex row with explicit physical-axis alignment and spacing. */
-declare function Row({ children, hAlign, vAlign, gap, flex, wrap, textInsets, controlInsets, className, }: RowProps): kerfjs.SafeHtml;
+declare function Row({ children, hAlign, vAlign, gap, flex, wrap, textInsets, controlInsets, className, slot, }: RowProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, Row, type RowProps, Sides, UiSpaceName, VerticalAlignment };
 ```
@@ -2053,9 +2127,11 @@ interface GridProps {
     /** Allow this grid to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
     flex?: boolean | CssFlexKeyword | CssFlex;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /** A fixed-count grid whose columns share the available width equally. */
-declare function Grid({ children, columns, gap, flex, className, }: GridProps): kerfjs.SafeHtml;
+declare function Grid({ children, columns, gap, flex, className, slot, }: GridProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, Grid, type GridProps, UiSpaceName };
 ```
@@ -2074,9 +2150,11 @@ interface SpacerProps {
     /** A named UI spacing token or typed physical height. */
     height?: UiSpaceName | CssLength;
     className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
 }
 /** A decorative fixed-size or flexible gap for Row, List, and other flex layouts. */
-declare function Spacer({ flex, width, height, className, }: SpacerProps): kerfjs.SafeHtml;
+declare function Spacer({ flex, width, height, className, slot, }: SpacerProps): kerfjs.SafeHtml;
 
 export { CssLength, Spacer, type SpacerProps, UiSpaceName };
 ```

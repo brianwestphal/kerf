@@ -1,12 +1,20 @@
 export interface LoadingSpinnerProps {
   className?: string;
   label?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /** Stable viewBox-centered progress ring based on svg-spinners' MIT-licensed 180-ring. */
-export function LoadingSpinner({ className = '', label }: LoadingSpinnerProps) {
+export function LoadingSpinner({
+  className = '',
+  label,
+  slot,
+}: LoadingSpinnerProps) {
+  const slotAttribute = { slot };
   return (
     <svg
+      {...slotAttribute}
       class={`kui-loading-spinner ${className}`.trim()}
       data-component="loading-spinner"
       viewBox="0 0 24 24"

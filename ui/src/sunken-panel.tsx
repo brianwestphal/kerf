@@ -9,6 +9,8 @@ export interface SunkenPanelProps {
   /** Corner shape: a rounded rectangle (default) or square corners. */
   shape?: SunkenPanelShape;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /**
@@ -21,6 +23,7 @@ export function SunkenPanel({
   ariaLabel,
   shape = 'rounded',
   className = '',
+  slot,
 }: SunkenPanelProps) {
   return (
     <div
@@ -29,6 +32,7 @@ export function SunkenPanel({
       data-shape={shape}
       role={ariaLabel ? 'region' : undefined}
       aria-label={ariaLabel}
+      slot={slot}
     >
       {children}
     </div>

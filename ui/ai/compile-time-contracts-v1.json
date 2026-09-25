@@ -127,6 +127,20 @@
       ],
       "kind": "property-specific-css-value",
       "summary": "List flex, Skeleton dimensions, and Select icon colors use separate typed CSS grammars; row declaration-string props are absent rather than sharing a generic CSS escape hatch."
+    },
+    {
+      "id": "KUI-T014",
+      "publicImport": "@kerfjs/ui",
+      "symbols": [
+        "BadgeProps",
+        "CatalogProps",
+        "CollapsiblePanelToggleProps",
+        "SelectProps",
+        "SkeletonProps",
+        "TextProps"
+      ],
+      "kind": "explicit-native-attribute",
+      "summary": "Stable single-root visual components accept an explicit native slot attribute; multi-root components and arbitrary native attribute spreading remain excluded."
     }
   ]
 }

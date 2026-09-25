@@ -15,6 +15,8 @@ export interface ToolbarProps {
   /** Container width at which `responsive="stack"` activates. */
   responsiveAt?: 'compact' | 'narrow';
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 export function Toolbar({
@@ -27,6 +29,7 @@ export function Toolbar({
   responsive = 'none',
   responsiveAt = 'narrow',
   className = '',
+  slot,
 }: ToolbarProps) {
   return (
     <header
@@ -38,6 +41,7 @@ export function Toolbar({
       data-responsive={responsive}
       data-responsive-at={responsiveAt}
       aria-label={label}
+      slot={slot}
     >
       <div class="kui-toolbar__leading">{leading}</div>
       <div class="kui-toolbar__center">{center}</div>

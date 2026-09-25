@@ -101,6 +101,14 @@ components, or a generic `slots` object. The v2 composition catalog publishes
 sound prop bindings as `zone.jsx.prop`, allowing ESLint to validate statically
 visible content and cardinality without guessing from zone names.
 
+Stable single-root visual components also accept the explicit native
+`slot?: string` prop, so their returned root can participate directly in a web
+component's named slot and keep that assignment through Kerf rerenders. This is
+a narrow interop attribute, not general native-attribute spreading. The
+multi-root `ResizableRegion` and `CollapsiblePanel` intentionally omit it
+because neither has one unambiguous returned root; `CollapsiblePanelToggle`
+supports it as a normal single-root control.
+
 `ListItem.rootAttributes`, `ListHeader.rootAttributes`,
 `ListActionRow.rootAttributes`, `AppTab.rootAttributes`,
 `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` carry typed

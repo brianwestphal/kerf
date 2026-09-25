@@ -63,4 +63,6 @@ export interface CatalogProps {
   toggleThemeAction?: string;
   toggleSecondaryAction?: string;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }

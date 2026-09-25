@@ -10,6 +10,8 @@ export interface ValueTableRowProps {
   className?: string;
   /** Render the value as an unanimated loading skeleton, keeping the field label. */
   placeholder?: boolean;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 export function ValueTableRow({
@@ -18,12 +20,14 @@ export function ValueTableRow({
   icon,
   className = '',
   placeholder = false,
+  slot,
 }: ValueTableRowProps) {
   return (
     <div
       class={`kui-value-table__row ${className}`.trim()}
       data-has-icon={String(Boolean(icon))}
       data-placeholder={placeholder ? 'true' : undefined}
+      slot={slot}
     >
       <dt>
         {icon && <span class="kui-value-table__icon">{icon}</span>}

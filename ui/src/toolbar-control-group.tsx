@@ -26,6 +26,8 @@ export interface ToolbarActionLinkProps {
   /** Open in a new tab with a safe rel and announce that behavior. */
   external?: boolean;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /** A semantic anchor with ToolbarControlGroup-owned action geometry. */
@@ -37,6 +39,7 @@ export function ToolbarActionLink({
   ariaLabel,
   external = false,
   className = '',
+  slot,
 }: ToolbarActionLinkProps) {
   const accessibleLabel =
     ariaLabel ??
@@ -49,6 +52,7 @@ export function ToolbarActionLink({
       target={external ? '_blank' : undefined}
       rel={external ? 'noopener noreferrer' : undefined}
       aria-label={accessibleLabel}
+      slot={slot}
     >
       {icon}
       <span>{label}</span>
@@ -90,6 +94,8 @@ export interface ToolbarControlGroupProps {
    * multi-control group paints it only on the pressed selection highlight.
    */
   avatarImage?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 export function ToolbarControlGroup({
@@ -114,6 +120,7 @@ export function ToolbarControlGroup({
   visibility = 'always',
   scrim = false,
   avatarImage,
+  slot,
 }: ToolbarControlGroupProps) {
   return (
     <div
@@ -143,6 +150,7 @@ export function ToolbarControlGroup({
           ? `--kui-toolbar-avatar-image:url(${JSON.stringify(avatarImage)})`
           : undefined
       }
+      slot={slot}
     >
       {children}
     </div>

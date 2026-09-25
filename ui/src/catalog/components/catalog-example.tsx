@@ -32,6 +32,8 @@ export interface CatalogExampleProps {
   rootAttributes?: CatalogExampleRootAttributes;
   className?: string;
   children?: KerfUiContent;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /** A labeled catalog specimen with optional explanatory text and alignment. */
@@ -42,6 +44,7 @@ export function CatalogExample({
   rootAttributes = {},
   className = '',
   children,
+  slot,
 }: CatalogExampleProps) {
   const safeRootAttributes = filterDataAttributes(
     rootAttributes,
@@ -54,6 +57,7 @@ export function CatalogExample({
       class={`kui-catalog-example ${className}`.trim()}
       data-catalog-example
       data-align={align}
+      slot={slot}
     >
       {label !== undefined ? (
         <ListHeader

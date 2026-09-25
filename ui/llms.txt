@@ -60,6 +60,12 @@ the folder modules, and CSS only imports their owner stylesheets.
    `ListInsetText`. These are typed props, not native `<slot>` elements,
    wrapper slot components, or a generic `slots` object. Leave unresolved
    dynamic expressions unknown.
+   Stable single-root Kerf UI components separately accept the explicit native
+   `slot="name"` prop for light-DOM composition inside a custom element and
+   preserve it across rerenders. Do not infer arbitrary native-attribute
+   spreading from this narrow interop contract. `ResizableRegion` and
+   `CollapsiblePanel` remain excluded because their optional restore controls
+   make their output multi-root; `CollapsiblePanelToggle` remains slot-capable.
 4. **When authoring a component gallery**, load
    [catalog-authoring.json](./ai/catalog-authoring.json), then follow its
    authoritative [Catalog demo authoring contract](./docs/catalog.md#catalog-demo-authoring-contract).

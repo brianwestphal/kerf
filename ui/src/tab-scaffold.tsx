@@ -19,6 +19,8 @@ export interface TabScaffoldProps<Id extends string = string> {
   /** The controlled active tab id (the app owns selection). */
   active: NoInfer<Id>;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /**
@@ -35,6 +37,7 @@ export function TabScaffold<Id extends string>({
   tabs,
   active,
   className = '',
+  slot,
 }: TabScaffoldProps<Id>) {
   return (
     <section
@@ -42,6 +45,7 @@ export function TabScaffold<Id extends string>({
       id={id}
       data-component="tab-scaffold"
       data-tab-scaffold-id={id}
+      slot={slot}
     >
       <div class="kui-tab-scaffold__scenes">
         {tabs.map((tab) => (

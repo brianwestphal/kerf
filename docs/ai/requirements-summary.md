@@ -10,6 +10,11 @@ Their shipped reference adapter makes stable-root delegated actions, form and
 dialog forwarding, resize commits, and retained idempotent disposal copyable
 outside the catalog. A typed application-local command-palette example retains
 custom semantics while reusing the canonical layout and control-cluster roles.
+Stable single-root visual components expose a narrow native `slot?: string`
+interop prop that stays on the root across rerenders; this does not permit
+arbitrary native attributes. Multi-root `ResizableRegion` and
+`CollapsiblePanel` intentionally omit the prop, while
+`CollapsiblePanelToggle` supports it.
 The composer reference uses one visible form surface with a toolbar title and
 supporting-copy hierarchy, shared 8px field/action gutters, and 24px major rhythm;
 a conditional `StateBanner` is its only nested semantic surface. Its controlled Reset clears

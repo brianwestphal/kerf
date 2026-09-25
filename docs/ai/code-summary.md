@@ -465,6 +465,11 @@ kerf/
 └── README.md
 ```
 
+Kerf UI's stable single-root visual components explicitly forward native
+`slot?: string` on every root branch for custom-element light-DOM projection.
+The multi-root `ResizableRegion` and `CollapsiblePanel` intentionally omit it;
+the single-root `CollapsiblePanelToggle` remains covered.
+
 The optional `ui/src/webawesome.css` bridge gives filled badges a contrast-safe
 quiet-fill/normal-text pair with two public override tokens, and maps Dialog
 body padding to the 8px surface tier and footer padding to the 16px container

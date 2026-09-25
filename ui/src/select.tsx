@@ -47,6 +47,8 @@ interface SelectBaseProps<Value extends string = string> {
   focusRingOwner?: SelectFocusRingOwner;
   /** Maximum closed-control label width in CSS pixels before ellipsis. */
   labelMaxWidth?: number;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 export type SelectProps<Value extends string = string> =
@@ -70,6 +72,7 @@ export function Select<Value extends string>({
   selectedPresentation = 'label',
   focusRingOwner = 'select',
   labelMaxWidth,
+  slot,
 }: SelectProps<Value>) {
   if (placeholder) {
     return (
@@ -87,6 +90,7 @@ export function Select<Value extends string>({
             ? undefined
             : `--kui-select-label-max-width:${labelMaxWidth}px`
         }
+        slot={slot}
       >
         {label && <span class="kui-select__placeholder-label">{label}</span>}
         <span
@@ -161,6 +165,7 @@ export function Select<Value extends string>({
           ? undefined
           : `--kui-select-label-max-width:${labelMaxWidth}px`
       }
+      slot={slot}
     >
       {selected &&
         (renderSelected ? (

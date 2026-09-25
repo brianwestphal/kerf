@@ -57,6 +57,8 @@ export interface CollapsiblePanelToggleProps {
   /** Accessible label; defaults to "Collapse"/"Expand". */
   label?: string;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /**
@@ -73,6 +75,7 @@ export function CollapsiblePanelToggle({
   panelId,
   label,
   className = '',
+  slot,
 }: CollapsiblePanelToggleProps) {
   const glyph = collapsiblePanelToggleIcon(side, collapsed);
   const accessible = label ?? (collapsed ? 'Expand' : 'Collapse');
@@ -84,6 +87,7 @@ export function CollapsiblePanelToggle({
       data-collapsible-target={panelId}
       aria-expanded={String(!collapsed)}
       aria-label={accessible}
+      slot={slot}
     >
       <LucideIcon icon={glyph.icon} name={glyph.name} />
     </button>

@@ -32,6 +32,8 @@ export interface SplitViewProps {
   /** A resizable separator on roomy classes (min/max px). Omit for a fixed split. */
   resizable?: SplitViewResizable;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /**
@@ -53,6 +55,7 @@ export function SplitView({
   backLabel = 'Back',
   resizable,
   className = '',
+  slot,
 }: SplitViewProps) {
   if (compact) {
     const views = detailActive
@@ -67,6 +70,7 @@ export function SplitView({
         id={id}
         data-component="split-view"
         data-split-mode="compact"
+        slot={slot}
       >
         <NavStack
           id={`${id}-stack`}
@@ -109,6 +113,7 @@ export function SplitView({
       data-component="split-view"
       data-split-mode="split"
       aria-label={label}
+      slot={slot}
     >
       {listPane}
       <div

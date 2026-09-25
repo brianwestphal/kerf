@@ -24,6 +24,8 @@ export interface CatalogExampleStackProps {
   rootAttributes?: CatalogExampleStackRootAttributes;
   className?: string;
   children?: KerfUiContent;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /** A vertically stacked group of catalog examples. */
@@ -32,6 +34,7 @@ export function CatalogExampleStack({
   rootAttributes = {},
   className = '',
   children,
+  slot,
 }: CatalogExampleStackProps) {
   const safeRootAttributes = filterDataAttributes(
     rootAttributes,
@@ -44,6 +47,7 @@ export function CatalogExampleStack({
       class={`kui-catalog-example-stack ${className}`.trim()}
       data-catalog-example-stack
       aria-label={label}
+      slot={slot}
     >
       {children}
     </section>

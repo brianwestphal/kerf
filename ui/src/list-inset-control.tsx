@@ -7,6 +7,8 @@ export interface ListInsetControlProps {
   /** Physical inset sides in canonical top/right/bottom/left order. Defaults to all sides. */
   sides?: Sides;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /**
@@ -19,12 +21,14 @@ export function ListInsetControl({
   children,
   sides = 'trbl',
   className = '',
+  slot,
 }: ListInsetControlProps) {
   return (
     <div
       class={`kui-list-inset-control ${className}`.trim()}
       data-component="list-inset-control"
       data-sides={sides}
+      slot={slot}
     >
       {children}
     </div>

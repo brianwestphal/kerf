@@ -53,6 +53,8 @@ export interface PaneProps {
   footerClassName?: string;
   /** Safe `data-*` metadata; Pane-owned structural attributes remain protected. */
   rootAttributes?: PaneRootAttributes;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 function paneContent(
@@ -93,6 +95,7 @@ export function Pane({
   contentClassName = '',
   footerClassName = '',
   rootAttributes = {},
+  slot,
 }: PaneProps) {
   const safeRootAttributes = filterDataAttributes(
     rootAttributes,
@@ -131,6 +134,7 @@ export function Pane({
     'data-separator-inline-start': String(separators.includes('inline-start')),
     'data-separator-inline-end': String(separators.includes('inline-end')),
     'aria-label': label,
+    slot,
   };
 
   if (element === 'article') return <article {...attributes}>{body}</article>;

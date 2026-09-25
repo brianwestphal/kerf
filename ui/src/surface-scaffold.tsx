@@ -11,6 +11,8 @@ export interface DialogSurfaceProps {
   bodyInset?: SurfaceInset;
   footerInset?: SurfaceInset;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /** Configure recurring Web Awesome dialog geometry without consumer ::part() CSS. */
@@ -21,6 +23,7 @@ export function DialogSurface({
   bodyInset = 'compact',
   footerInset = 'comfortable',
   className = '',
+  slot,
 }: DialogSurfaceProps) {
   return (
     <div
@@ -30,6 +33,7 @@ export function DialogSurface({
       data-presentation={presentation}
       data-body-inset={bodyInset}
       data-footer-inset={footerInset}
+      slot={slot}
     >
       {children}
     </div>
@@ -42,6 +46,8 @@ export interface PopupSurfaceProps {
   children: KerfUiContent;
   inset?: PopupSurfaceInset;
   className?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /** Configure recurring Web Awesome dropdown-menu geometry without consumer ::part() CSS. */
@@ -49,12 +55,14 @@ export function PopupSurface({
   children,
   inset = 'standard',
   className = '',
+  slot,
 }: PopupSurfaceProps) {
   return (
     <span
       class={`kui-popup-surface ${className}`.trim()}
       data-component="popup-surface"
       data-inset={inset}
+      slot={slot}
     >
       {children}
     </span>

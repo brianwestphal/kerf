@@ -8,12 +8,22 @@ export interface LucideIconProps {
   name: string;
   className?: string;
   label?: string;
+  /** Native named-slot assignment when composed inside a web component. */
+  slot?: string;
 }
 
 /** Render a Lucide-compatible icon node without copying icon SVG strings. */
-export function LucideIcon({ icon, name, className, label }: LucideIconProps) {
+export function LucideIcon({
+  icon,
+  name,
+  className,
+  label,
+  slot,
+}: LucideIconProps) {
+  const slotAttribute = { slot };
   return (
     <svg
+      {...slotAttribute}
       class={className}
       data-lucide={name}
       role={label ? 'img' : undefined}
