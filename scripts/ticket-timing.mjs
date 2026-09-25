@@ -11,6 +11,7 @@ import { promisify } from 'node:util';
 import {
   decideCheckSkip,
   isForced,
+  readCheckEnvironment,
   readCheckPass,
   readWorktreeState,
   treeOf,
@@ -348,7 +349,11 @@ async function checkSkipDecision(input) {
   return decideCheckSkip({
     force: isForced(process.env),
     cached: await readCheckPass(cwd),
-    current: { ...current, node: process.version, pushedTrees },
+    current: {
+      ...current,
+      ...(await readCheckEnvironment(cwd)),
+      pushedTrees,
+    },
   });
 }
 

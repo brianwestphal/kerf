@@ -46,7 +46,9 @@ through unchanged and externally rewritten guidance flows.
 summaries, queue delay, repeated failures, outgoing ticket discovery, and the
 push-hook fan-out bound;
 `tests/unit/ticket-timing-check-pass.test.ts` covers every branch of the
-pre-push skip decision and the `KERF_FORCE_CHECK` override;
+pre-push skip decision (tree, runtime, platform/arch, install fingerprint), the
+install fingerprint's lockfile/installed-tree/absence inputs, and the
+`KERF_FORCE_CHECK` override;
 `tests/unit/ticket-timing-steps-ci.test.ts` covers check-chain splitting and
 step naming against the real `check:core`, step-log sanitizing, and CI run
 record mapping, predecessor pairing, and idempotency (by run id and by
@@ -60,7 +62,7 @@ a twice-run `import-ci`, and an `import-ci` over runs already hand-recorded
 with and without `record --run-id`, through fake `gh`/Hot Sheet boundaries;
 `tests/integration/ticket-timing.test.ts` drives successful and failed commands
 through the real CLI with a faithful Hot Sheet command boundary, plus the
-record-pass → skip → force → dirty → new-tree → failed-rerun sequence in a
+record-pass → skip → force → dirty → reinstall → new-tree → failed-rerun sequence in a
 scratch repository, an over-bound push recorded only against explicit tickets,
 and a read-only `summary --all` over a scratch store.
 `tests/unit/package-gates.test.ts` covers which sibling-package gates (`ui` check, `eslint-plugin` / `create-kerf-component` tests) `scripts/check-package-gates.mjs` selects for a changed-path set, and the red-CI-on-main warning.
@@ -444,7 +446,7 @@ kerf/
 │   │   ├── check-pass-cache.d.mts ← declarations for the check-pass cache helpers consumed by the TypeScript test suite
 │   │   ├── check-steps.d.mts ← declarations for the check-chain step helpers consumed by the TypeScript test suite
 │   │   ├── check-steps.mjs ← splits the `&&` check chain, derives unique low-cardinality step identifiers, and sanitizes a step log into timing-record fields
-│   │   ├── check-pass-cache.mjs ← records the clean tree a passing `npm run check` verified (under the git directory) and the conservative `decideCheckSkip()` rule the pre-push hook uses to skip an identical rerun
+│   │   ├── check-pass-cache.mjs ← records the clean tree a passing `npm run check` verified, with its Node.js version, platform/arch, and a lockfile + `node_modules/.package-lock.json` install fingerprint across the root, gated sibling packages, and `site/` (under the git directory), and the conservative `decideCheckSkip()` rule the pre-push hook uses to skip an identical rerun
 │   │   ├── guidance-integrity.d.mts ← declarations for the guidance-integrity helpers consumed by the TypeScript test suite
 │   │   ├── guidance-integrity.mjs ← byte-level snapshot and comparison helpers for the root check's tracked Hot Sheet guidance guard
 │   │   ├── ticket-timing.d.mts ← timing helper declarations consumed by the TypeScript test suite

@@ -49,6 +49,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   force-push). It prints a notice and records only the explicit
   `KERF_TICKET_TIMING_TICKETS` list, or nothing, so it can no longer write the
   backfill shape the cross-ticket summary has to exclude.
+- The pre-push hook's "already verified" skip now also requires the same
+  platform, architecture, and installed dependencies as the passing run: a
+  fingerprint of every `package-lock.json` and `node_modules/.package-lock.json`
+  across the root, `ui/`, `eslint-plugin/`, `create-kerf-component/`, and
+  `site/`. A reinstall, a lockfile change, or a missing `node_modules` now runs
+  the full gate.
 - `ticket:timing record` accepts `--run-id <n>`, and `import-ci` no longer
   imports a GitHub run a second time when it was already recorded by hand:
   an interval with that run id, or one with no run id for the same phase and

@@ -203,19 +203,48 @@ verification:
 1. `npm run check` runs the guidance-integrity wrapper with `--record-pass`.
    Before the chain starts it deletes any earlier record, so a failed, partial,
    or interrupted run can never leave an older verdict standing. On exit status
-   0 with unchanged Hot Sheet guidance, it writes `{ tree, node, passed_at }` to
+   0 with unchanged Hot Sheet guidance, it writes
+   `{ tree, node, platform, arch, install, passed_at }` to
    `kerf/check-pass.json` inside the repository's git directory (the path
    `git rev-parse --git-path` resolves, which is per worktree), so it is local,
    untracked, and never shared — but only when the
    worktree was clean (no tracked changes and no untracked, non-ignored files)
-   both when the run began and when it ended, with the same `HEAD` tree.
+   both when the run began and when it ended, with the same `HEAD` tree and the
+   same runtime and install fingerprint.
 2. The hook runs `ticket-timing.mjs pre-push --skip-if-verified`. It skips the
    gate only when every one of these holds: `KERF_FORCE_CHECK` is unset (or
    `0`); a record exists; the worktree is clean; `HEAD`'s tree equals the
-   recorded tree; the Node.js version equals the recorded one; and every pushed
-   ref resolves to that same tree. Any other state — including a push of a tag
+   recorded tree; the Node.js version, `process.platform`, and `process.arch`
+   equal the recorded ones; the install fingerprint equals the recorded one;
+   and every pushed ref resolves to that same tree. Any other state — including a push of a tag
    or branch other than the checked-out commit, a deletion-only push, or an
    unreadable record — runs the gate exactly as before.
+
+The **install fingerprint** is a SHA-256 over each package directory's
+committed `package-lock.json` and the `node_modules/.package-lock.json` that npm
+rewrites on every install, for the root, every sibling package that
+`scripts/check-package-gates.mjs` can run (`ui/`, `eslint-plugin/`,
+`create-kerf-component/`), and `site/`. A missing file hashes as absent, so
+installing, reinstalling, or deleting `node_modules` in any of them invalidates
+a recorded pass even though the git tree is unchanged. Records written before
+the fingerprint existed (schema version 1) are never reused.
+
+The key still assumes some inputs are stable, and a skip does not re-verify
+them:
+
+- Playwright browser binaries and other downloaded engines are not in the key.
+  They matter only to the browser gates, which `npm run check` does not run.
+- Global tools (`git`, `gh`, a global `npm`) and their versions are not in the
+  key. `npm run check` runs with the project's own devDependencies, and the
+  sibling-package gate's CI-status warning is advisory.
+- Environment variables are not in the key, except that `KERF_FORCE_CHECK`
+  always runs the gate. A pass recorded with `KERF_SKIP_PACKAGE_GATES=1` is
+  reused by a later push without it.
+- Package contents are trusted to match `node_modules/.package-lock.json`. A
+  hand-edited file under `node_modules`, or an `npm link`, is not detected.
+- Network-dependent state is not in the key; the gate itself runs offline.
+
+Force the gate with `KERF_FORCE_CHECK=1` whenever one of these changed.
 
 Because every Hot Sheet guidance file the integrity guard snapshots is tracked,
 a matching tree plus a clean worktree also proves the guidance is byte-for-byte

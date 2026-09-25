@@ -332,6 +332,33 @@ describe('ticket timing CLI', { timeout: 30_000 }, () => {
     expect((await prePush()).code).toBe(0);
     expect(await runs()).toBe(3);
 
+    // A (re)install changes the install fingerprint even though the tree and
+    // worktree state are unchanged, so the recorded pass no longer applies.
+    await writeFile(
+      join(repo.root, '.git', 'info', 'exclude'),
+      'node_modules/\n',
+    );
+    await mkdir(join(repo.root, 'node_modules'));
+    await writeFile(
+      join(repo.root, 'node_modules', '.package-lock.json'),
+      '{"packages":{}}\n',
+    );
+    expect((await prePush()).code).toBe(0);
+    expect(await runs()).toBe(4);
+    await execFileAsync(
+      process.execPath,
+      [guard, '--record-pass', '--', process.execPath, '-e', ''],
+      { cwd: repo.root },
+    );
+    expect((await prePush()).code).toBe(0);
+    expect(await runs()).toBe(4);
+    await writeFile(
+      join(repo.root, 'node_modules', '.package-lock.json'),
+      '{"packages":{"reinstalled":{}}}\n',
+    );
+    expect((await prePush()).code).toBe(0);
+    expect(await runs()).toBe(5);
+
     // A new commit changes the tree, so the old pass no longer applies.
     await writeFile(join(repo.root, 'fixture.txt'), 'changed\n');
     await repo.git(['commit', '-am', 'KF-NEW222 second change']);
@@ -353,7 +380,7 @@ describe('ticket timing CLI', { timeout: 30_000 }, () => {
         )
       ).code,
     ).toBe(0);
-    expect(await runs()).toBe(4);
+    expect(await runs()).toBe(6);
 
     // A failed rerun invalidates an earlier pass of the same tree.
     await execFileAsync(
@@ -391,7 +418,7 @@ describe('ticket timing CLI', { timeout: 30_000 }, () => {
         )
       ).code,
     ).toBe(0);
-    expect(await runs()).toBe(5);
+    expect(await runs()).toBe(7);
   });
 
   it('summarizes a whole store read-only, excluding a fanned-out backfill', async () => {
