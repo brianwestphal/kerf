@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { signal } from '../../src/index.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { choice, confirm, form, prompt } from '../../src/overlay.js';
 import { clickBtn } from './overlay-test-helpers.js';
@@ -364,6 +365,74 @@ describe('form()', () => {
       const next = form([{ name: 'b', defaultValue: 'ok' }]);
       clickBtn('[data-form="ok"]');
       await expect(next).resolves.toEqual({ b: 'ok' });
+    });
+  });
+
+  describe('a field input removed after open: close + reject naming the field', () => {
+    /** A reactive BYO render whose `token` input a signal can remove. */
+    function openWithRemovableToken(validate: () => string) {
+      const showToken = signal(true);
+      const p = form(
+        [
+          { name: 'host', defaultValue: 'db', validate },
+          { name: 'token', defaultValue: 't', validate },
+        ],
+        {
+          render:
+            ({ fields, ok }) =>
+            () =>
+              jsx('div', {
+                children: [
+                  jsx('input', { ...fields[0].input }),
+                  showToken.value ? jsx('input', { ...fields[1].input }) : '',
+                  jsx('button', { ...ok, class: 'go', children: 'Go' }),
+                ],
+              }),
+        },
+      );
+      return { p, showToken };
+    }
+
+    it('OK click: rejects with a descriptive error, tears down, and does not throw out of the handler', async () => {
+      const trigger = focusedTrigger();
+      const validate = vi.fn(() => '');
+      const { p, showToken } = openWithRemovableToken(validate);
+      showToken.value = false; // a reactive re-render drops the token input
+      expect(document.querySelector('[data-field="token"]')).toBeNull();
+
+      const errors = captureWindowErrors();
+      const go = document.querySelector<HTMLElement>('.go')!;
+      expect(() => go.click()).not.toThrow();
+      errors.stop();
+
+      expect(errors.count).toBe(0);
+      expect(document.querySelector('.kerf-overlay')).toBeNull();
+      expect(document.activeElement).toBe(trigger);
+      await expect(p).rejects.toThrowError(
+        'form(): removed after open: <input data-field="token">.',
+      );
+    });
+
+    it('Enter in a remaining field takes the same path, and a later form works', async () => {
+      const { p, showToken } = openWithRemovableToken(() => '');
+      showToken.value = false;
+      key(document.querySelector('[data-field="host"]')!, 'Enter');
+      expect(document.querySelector('.kerf-overlay')).toBeNull();
+      await expect(p).rejects.toThrowError(
+        'form(): removed after open: <input data-field="token">.',
+      );
+
+      const next = form([{ name: 'b', defaultValue: 'ok' }]);
+      clickBtn('[data-form="ok"]');
+      await expect(next).resolves.toEqual({ b: 'ok' });
+    });
+
+    it('an input removed and restored before OK still resolves the record', async () => {
+      const { p, showToken } = openWithRemovableToken(() => '');
+      showToken.value = false;
+      showToken.value = true;
+      clickBtn('.go');
+      await expect(p).resolves.toEqual({ host: 'db', token: 't' });
     });
   });
 });

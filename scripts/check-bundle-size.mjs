@@ -129,8 +129,9 @@ const BUDGETS = [
     // transaction over the dialog helpers' post-open wiring (listener
     // rollback + close + rethrow via wireDialog); KF-B0CFQP adds the
     // wireDialog `guard` so a throwing validate closes the dialog and rejects
-    // the helper promise instead of escaping the OK handler.
-    budgetKb: 16.97,
+    // the helper promise instead of escaping the OK handler; KF-HRNJ4T makes
+    // form() reject naming a field input removed after open (not resolve null).
+    budgetKb: 17.0,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

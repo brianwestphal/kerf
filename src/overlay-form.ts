@@ -141,13 +141,20 @@ export function form(
         Array.from(
           handle.el.querySelectorAll<HTMLElement>('[data-field-error]'),
         ).find((el) => el.getAttribute('data-field-error') === name) ?? null;
-      const inputFor = (name: string): HTMLInputElement => {
+      // KF-HRNJ4T (a field input removed after open by a reactive re-render):
+      // at construction a missing input is a render bug that rolls back and
+      // throws synchronously; at OK time it throws inside `guard`, so the
+      // dialog closes and the promise rejects naming the field — never a
+      // `null` that reads as a user Cancel.
+      const inputFor = (
+        name: string,
+        problem = 'render missing',
+      ): HTMLInputElement => {
         const input = Array.from(
           handle.el.querySelectorAll<HTMLInputElement>('input[data-field]'),
         ).find((el) => el.getAttribute('data-field') === name);
         if (input !== undefined) return input;
-        handle.close(null);
-        throw new Error(`form(): render missing <input data-field="${name}">.`);
+        throw new Error(`form(): ${problem} <input data-field="${name}">.`);
       };
 
       for (const field of fields) {
@@ -161,7 +168,7 @@ export function form(
         const record: Record<string, string> = {};
         let firstInvalid: HTMLInputElement | null = null;
         for (const field of fields) {
-          const el = inputFor(field.name);
+          const el = inputFor(field.name, 'removed after open:');
           const value = el.value;
           record[field.name] = value;
           const error = field.validate?.(value);

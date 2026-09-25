@@ -15,6 +15,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   OK click or Enter handler, and the dialog stayed open with an OK button that
   could never succeed. Validators are synchronous; this is the error channel
   for a validator bug.
+- `kerfjs/overlay`: when a `form()` field input disappears after the dialog
+  opens (for example a reactive `render` re-render drops it), OK and Enter now
+  close the dialog and reject the promise with an error naming the missing
+  field. Previously `form()` resolved `null`, which
+  reads as a Cancel, and threw from the click handler.
 - `@kerfjs/ui`: a multiline `ListItem` whose label fits on one line now
   centers its icon on that line. The row's 44px minimum used to stretch the
   grid track, which centered the label but left the start-aligned icon about

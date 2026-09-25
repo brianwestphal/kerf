@@ -410,7 +410,9 @@ export function wireDialog<T>(
   settle: (value: unknown) => T,
 ): Promise<T> {
   const disposers: Array<() => void> = [];
-  const failure: { error?: unknown } = {};
+  // Holds a guarded action's error AND is the close() value that marks the
+  // failure, so only a throw that actually settles the dialog rejects it.
+  const failure: unknown[] = [];
   try {
     wire(
       (dispose) => void disposers.push(dispose),
@@ -418,7 +420,7 @@ export function wireDialog<T>(
         try {
           action();
         } catch (error) {
-          failure.error = error;
+          failure[0] = error;
           handle.close(failure);
         }
       },
@@ -431,7 +433,7 @@ export function wireDialog<T>(
   // One hop, not a chain: `settle` maps the value in the same reaction, so a
   // helper's promise settles as soon after `close()` as it always has.
   return handle.result.then((value) => {
-    if (value === failure) throw failure.error;
+    if (value === failure) throw failure[0];
     return settle(value);
   });
 }

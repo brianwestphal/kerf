@@ -156,6 +156,55 @@ test('prompt(): a throwing validate closes the native dialog, restores focus, an
   );
 });
 
+test('form(): a field input removed after open closes the native dialog and rejects naming the field', async ({
+  page,
+}) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  await page.evaluate(() => {
+    const { form } = (window as any).kerfOverlay;
+    const { signal } = (window as any).kerf;
+    const { jsx } = (window as any).jsxRuntime;
+    const trigger = document.createElement('button');
+    trigger.id = 'removed-trigger';
+    trigger.textContent = 'page button';
+    document.body.appendChild(trigger);
+    trigger.focus();
+    const showToken = signal(true);
+    (window as any)._showToken = showToken;
+    (window as any)._removedOutcome = form(
+      [{ name: 'host' }, { name: 'token' }],
+      {
+        native: true,
+        render:
+          ({ fields, ok }: any) =>
+          () =>
+            jsx('div', {
+              children: [
+                jsx('input', { ...fields[0].input }),
+                showToken.value ? jsx('input', { ...fields[1].input }) : '',
+                jsx('button', { ...ok, class: 'go', children: 'Go' }),
+              ],
+            }),
+      },
+    ).then(
+      (value: unknown) => ({ resolved: value }),
+      (error: Error) => ({ rejected: error.message }),
+    );
+  });
+
+  await page.evaluate(() => {
+    (window as any)._showToken.value = false; // reactive re-render
+  });
+  await page.locator('.go').click(); // a real click on OK
+  expect(await page.evaluate(() => (window as any)._removedOutcome)).toEqual({
+    rejected: 'form(): removed after open: <input data-field="token">.',
+  });
+  await expect(page.locator('dialog')).toHaveCount(0);
+  expect(await activeId(page)).toBe('removed-trigger');
+  expect(pageErrors).toEqual([]);
+});
+
 test('popover(): positions below a real anchor, left-aligned (real layout)', async ({
   page,
 }) => {
