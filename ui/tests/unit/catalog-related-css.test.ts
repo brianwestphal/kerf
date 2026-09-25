@@ -37,4 +37,45 @@ describe('Catalog related selector CSS', () => {
     );
     expect(matchingRules).toEqual([]);
   });
+
+  it('lets the desktop detail row shrink while preserving narrow document flow', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/catalog/components/catalog-detail.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const declarations = (rule: Rule) =>
+      Object.fromEntries(
+        rule.nodes
+          .filter((node) => node.type === 'decl')
+          .map((node) => [node.prop, node.value]),
+      );
+    const detail = root.nodes.find(
+      (node): node is Rule =>
+        node.type === 'rule' && node.selector === '.kui-catalog__detail',
+    );
+    if (!detail) throw new Error('Missing catalog detail rule');
+    expect(declarations(detail)).toMatchObject({
+      'min-height': '0',
+      height: '100%',
+    });
+
+    const narrow = root.nodes.find(
+      (node) =>
+        node.type === 'atrule' &&
+        node.name === 'media' &&
+        node.params === '(max-width: remify(832px))',
+    );
+    if (!narrow || narrow.type !== 'atrule')
+      throw new Error('Missing narrow catalog detail rules');
+    const narrowDetail = narrow.nodes?.find(
+      (node): node is Rule =>
+        node.type === 'rule' && node.selector === '.kui-catalog__detail',
+    );
+    if (!narrowDetail) throw new Error('Missing narrow catalog detail rule');
+    expect(declarations(narrowDetail)).toMatchObject({
+      'min-height': 'auto',
+      height: 'auto',
+    });
+  });
 });

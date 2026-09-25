@@ -1621,6 +1621,67 @@ test('applies shared pane and content-item geometry across responsive and 200% z
   await expect(pane.locator('.kui-pane__content')).toHaveClass(/kui-content/);
 });
 
+test('scrolls the complete catalog sidebar and detail at wide and narrow sizes', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 360 });
+  await page.goto('/?component=wa-zoomable-frame');
+
+  const sidebarScroll = page.locator(
+    '.kui-catalog__sidebar .kui-pane__content',
+  );
+  const detailScroll = page.locator(
+    '.kui-catalog__detail > .kui-pane > .kui-pane__content',
+  );
+  for (const scrollOwner of [sidebarScroll, detailScroll]) {
+    const range = await scrollOwner.evaluate(
+      (element) => element.scrollHeight - element.clientHeight,
+    );
+    expect(range).toBeGreaterThan(0);
+    await scrollOwner.evaluate((element) =>
+      element.scrollTo(0, element.scrollHeight),
+    );
+    await expect
+      .poll(() =>
+        scrollOwner.evaluate(
+          (element) =>
+            element.scrollTop + element.clientHeight - element.scrollHeight,
+        ),
+      )
+      .toBeGreaterThanOrEqual(-1);
+  }
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/catalog-scroll-bottom-wide.png',
+    });
+
+  await page.setViewportSize({ width: 390, height: 600 });
+  await page.goto('/?component=wa-zoomable-frame');
+  const documentRange = await page.evaluate(
+    () => document.documentElement.scrollHeight - window.innerHeight,
+  );
+  expect(documentRange).toBeGreaterThan(0);
+  await page.evaluate(() =>
+    window.scrollTo(0, document.documentElement.scrollHeight),
+  );
+  await expect
+    .poll(() =>
+      page.evaluate(
+        () =>
+          window.scrollY +
+          window.innerHeight -
+          document.documentElement.scrollHeight,
+      ),
+    )
+    .toBeGreaterThanOrEqual(-1);
+  await expect(page.locator('.kui-catalog__footer')).toBeInViewport();
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/catalog-scroll-bottom-narrow.png',
+    });
+});
+
 test('reveals controlled Catalog selections only in the desktop sidebar without moving focus', async ({
   page,
 }) => {

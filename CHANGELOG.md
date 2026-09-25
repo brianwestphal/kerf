@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed the UX catalog's desktop grid sizing so both the sidebar and component
+  detail can scroll all the way to their final content while narrow layouts
+  retain normal document scrolling.
 - Fixed single-line `ToolbarText` clipping glyph descenders while retaining its
   horizontal ellipsis behavior.
 - Formalized UX catalog demos as components, compositions, or recipes; catalogs
