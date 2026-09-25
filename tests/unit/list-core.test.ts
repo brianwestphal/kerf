@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { arraySignal } from '../../src/array-signal.js';
+import { ARRAY_SIGNAL_BRAND, arraySignal } from '../../src/array-signal.js';
 import { bindList } from '../../src/list.js';
 import { batch, signal } from '../../src/reactive.js';
 
@@ -380,6 +380,55 @@ describe('bindList() — arraySignal granular patch path (KF-478)', () => {
     expect(texts(p2)).toEqual(['b']);
     d1();
     d2();
+  });
+});
+
+describe('bindList() — arraySignal source validation', () => {
+  it('rejects a branded source without a patch queue before touching the DOM', () => {
+    const parent = host();
+    const malformed = {
+      [ARRAY_SIGNAL_BRAND]: true,
+      value: [{ id: 1, label: 'a' }],
+    };
+    expect(() =>
+      bindList(parent, malformed, { key: (i) => i.id, render: (i) => i.label }),
+    ).toThrow(/bindList: source carries the arraySignal brand/);
+    expect(parent.childNodes.length).toBe(0);
+  });
+
+  it('calls the patch queue with the source as its receiver', () => {
+    const parent = host();
+    const source = arraySignal<Item>([{ id: 1, label: 'a' }]);
+    const consume = source._consumePatches.bind(source);
+    const receivers: unknown[] = [];
+    source._consumePatches = function (this: unknown) {
+      receivers.push(this);
+      return consume();
+    };
+    const dispose = bindList(parent, source, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+    });
+    source.push({ id: 2, label: 'b' });
+    expect(texts(parent)).toEqual(['a', 'b']);
+    expect(receivers.every((receiver) => receiver === source)).toBe(true);
+    expect(receivers.length).toBeGreaterThan(0);
+    dispose();
+  });
+
+  it('ignores the patch queue of a virtualized arraySignal source', () => {
+    const parent = host();
+    const malformed = {
+      [ARRAY_SIGNAL_BRAND]: true,
+      value: [{ id: 1, label: 'a' }],
+    };
+    const dispose = bindList(parent, malformed, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: 20, minRows: 10 },
+    });
+    expect(parent.textContent).toBe('a');
+    dispose();
   });
 });
 

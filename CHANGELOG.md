@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `bindList()` now rejects a source that carries the `arraySignal` brand but
+  has no patch queue with a descriptive error at bind time, instead of failing
+  with a generic `TypeError` on its first render.
 - Added `wa-dialog.hide-actions` support to `@kerfjs/ui/webawesome.css`, hiding
   Web Awesome's directly exported `header-actions` shadow part for dialogs that
   provide their own dismissal affordance.

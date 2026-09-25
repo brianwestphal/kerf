@@ -232,6 +232,28 @@ function assertUniqueListKeys<T>(
 }
 
 /**
+ * The bound patch-queue consumer of an `arraySignal` source, or `undefined` for
+ * a plain signal. A source that carries the `arraySignal` brand but no callable
+ * queue (a hand-rolled or mismatched copy) is rejected with an informative error.
+ */
+function resolvePatchConsumer<T>(
+  source: ListSource<T>,
+): (() => ArrayPatch<T>[]) | undefined {
+  const branded = source as {
+    [ARRAY_SIGNAL_BRAND]?: unknown;
+    _consumePatches?: unknown;
+  };
+  if (branded[ARRAY_SIGNAL_BRAND] !== true) return undefined;
+  const consume = branded._consumePatches;
+  if (typeof consume !== 'function') {
+    throw new TypeError(
+      'bindList: source carries the arraySignal brand but has no _consumePatches() patch queue — pass an arraySignal() from kerfjs/array-signal, or a plain signal.',
+    );
+  }
+  return (consume as () => ArrayPatch<T>[]).bind(source);
+}
+
+/**
  * Bind a keyed, per-row-reactive list to `parent`, driven by `source` (a
  * `signal<readonly T[]>` or an `arraySignal<T>`). Returns a disposer that tears
  * down every row mount, the scroll listener (if virtualized), and the source
@@ -246,12 +268,11 @@ export function bindList<T>(
   let firstRender = true;
   let forceSnapshot = false;
 
-  const patchSource = source as {
-    [ARRAY_SIGNAL_BRAND]?: boolean;
-    _consumePatches?: () => ArrayPatch<T>[];
-  };
-  const granularEligible =
-    virtualize === undefined && patchSource[ARRAY_SIGNAL_BRAND] === true;
+  // The granular path needs the arraySignal patch queue. Resolve it once, as a
+  // bound function, so a branded source without one fails here with a clear
+  // message instead of as a generic TypeError on the first render.
+  const consumePatches =
+    virtualize === undefined ? resolvePatchConsumer(source) : undefined;
 
   const container =
     virtualize === undefined ? parent : document.createElement('div');
@@ -289,8 +310,8 @@ export function bindList<T>(
       virtualization.render(items);
       return;
     }
-    if (granularEligible) {
-      const patches = patchSource._consumePatches!();
+    if (consumePatches !== undefined) {
+      const patches = consumePatches();
       if (
         !firstRender &&
         !forceSnapshot &&
@@ -316,8 +337,8 @@ export function bindList<T>(
     try {
       assertUniqueListKeys(items, key);
     } catch (error) {
-      if (granularEligible) {
-        patchSource._consumePatches!();
+      if (consumePatches !== undefined) {
+        consumePatches();
         forceSnapshot = true;
       }
       throw error;
