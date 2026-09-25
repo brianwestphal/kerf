@@ -125,8 +125,10 @@ const BUDGETS = [
     // overlay stack arbitration so one dismissal affects only the topmost;
     // KF-QKKDVB makes construction transactional (initialFocus selector
     // validation + rollback of every throwing setup phase), stacked on the
-    // KF-KGFJP6 mount() rollback in the shared core.
-    budgetKb: 16.9,
+    // KF-KGFJP6 mount() rollback in the shared core; KF-14ZE8Y extends that
+    // transaction over the dialog helpers' post-open wiring (listener
+    // rollback + close + rethrow via wireDialog).
+    budgetKb: 16.95,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

@@ -1,7 +1,7 @@
 /** `confirm()` implementation and public option types. */
 import { delegate } from './delegate.js';
 import { jsx } from './jsx-runtime.js';
-import { overlay, type OverlayContent } from './overlay-core.js';
+import { overlay, type OverlayContent, wireDialog } from './overlay-core.js';
 
 /** Wiring slots passed to a {@link ConfirmOptions.render}. */
 export interface ConfirmRenderSlots {
@@ -90,8 +90,12 @@ export function confirm(
     native,
   });
 
-  delegate(handle.el, 'click', '[data-confirm]', (_event, el) => {
-    handle.close(el.getAttribute('data-confirm') === 'ok');
+  // Post-open wiring is still construction: a throw closes the overlay. The
+  // click table is the only (and so the last) step, so it needs no rollback.
+  wireDialog(handle, () => {
+    delegate(handle.el, 'click', '[data-confirm]', (_event, el) => {
+      handle.close(el.getAttribute('data-confirm') === 'ok');
+    });
   });
 
   return handle.result.then((value) => value === true);

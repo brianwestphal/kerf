@@ -1,7 +1,7 @@
 /** `prompt()` implementation and public option types. */
 import { delegate } from './delegate.js';
 import { jsx } from './jsx-runtime.js';
-import { overlay, type OverlayContent } from './overlay-core.js';
+import { overlay, type OverlayContent, wireDialog } from './overlay-core.js';
 
 /** Validate a single field's value. */
 export type FieldValidator = (
@@ -108,41 +108,46 @@ export function prompt(
     native,
   });
 
-  const input = handle.el.querySelector<HTMLInputElement>(
-    'input[data-prompt-input]',
-  );
-  if (input === null) {
-    handle.close(null);
-    throw new Error('prompt(): render missing <input data-prompt-input>.');
-  }
-  const promptInput = input;
-  const errorEl = handle.el.querySelector<HTMLElement>('[data-prompt-error]');
-  if (errorEl !== null) errorEl.hidden = true;
+  // Post-open wiring is still construction: a missing required input or any
+  // other throw below removes what was wired, closes the overlay, and rethrows.
+  wireDialog(handle, (track) => {
+    const input = handle.el.querySelector<HTMLInputElement>(
+      'input[data-prompt-input]',
+    );
+    if (input === null)
+      throw new Error('prompt(): render missing <input data-prompt-input>.');
+    const errorEl = handle.el.querySelector<HTMLElement>('[data-prompt-error]');
+    if (errorEl !== null) errorEl.hidden = true;
 
-  function attemptOk(): void {
-    const value = promptInput.value;
-    const error = validate?.(value);
-    if (typeof error === 'string' && error.length > 0) {
-      if (errorEl !== null) {
-        errorEl.textContent = error;
-        errorEl.hidden = false;
+    const attemptOk = (): void => {
+      const value = input.value;
+      const error = validate?.(value);
+      if (typeof error === 'string' && error.length > 0) {
+        if (errorEl !== null) {
+          errorEl.textContent = error;
+          errorEl.hidden = false;
+        }
+        input.focus();
+        return;
       }
-      promptInput.focus();
-      return;
-    }
-    handle.close(value);
-  }
+      handle.close(value);
+    };
 
-  delegate(handle.el, 'click', '[data-prompt]', (_event, el) => {
-    if (el.getAttribute('data-prompt') === 'ok') attemptOk();
-    else handle.close(null);
-  });
+    track(
+      delegate(handle.el, 'click', '[data-prompt]', (_event, el) => {
+        if (el.getAttribute('data-prompt') === 'ok') attemptOk();
+        else handle.close(null);
+      }),
+    );
 
-  handle.el.addEventListener('keydown', (event: KeyboardEvent) => {
-    if (event.key === 'Enter' && event.target === promptInput) {
-      event.preventDefault();
-      attemptOk();
-    }
+    const onKeydown = (event: KeyboardEvent): void => {
+      if (event.key === 'Enter' && event.target === input) {
+        event.preventDefault();
+        attemptOk();
+      }
+    };
+    // Last wiring step: nothing after it can throw, so it needs no rollback.
+    handle.el.addEventListener('keydown', onKeydown);
   });
 
   return handle.result.then((value) =>

@@ -1,7 +1,7 @@
 /** `choice()` implementation and public option types. */
 import { delegate } from './delegate.js';
 import { jsx } from './jsx-runtime.js';
-import { overlay, type OverlayContent } from './overlay-core.js';
+import { overlay, type OverlayContent, wireDialog } from './overlay-core.js';
 
 /** One choosable action in a {@link choice} dialog. */
 export interface ChoiceAction<R> {
@@ -84,20 +84,27 @@ export function choice<R>(
     native,
   });
 
-  delegate(handle.el, 'click', '[data-choice]', (_event, el) => {
-    resolveChoice(actions[Number(el.getAttribute('data-choice'))].value);
-    handle.close();
-  });
-
-  if (hasDefault) {
-    handle.el.addEventListener('keydown', (event: KeyboardEvent) => {
-      if (event.key === 'Enter') {
-        event.preventDefault();
-        resolveChoice(defaultValue as R);
+  // Post-open wiring is still construction: a throw closes the overlay.
+  wireDialog(handle, (track) => {
+    track(
+      delegate(handle.el, 'click', '[data-choice]', (_event, el) => {
+        resolveChoice(actions[Number(el.getAttribute('data-choice'))].value);
         handle.close();
-      }
-    });
-  }
+      }),
+    );
+
+    if (hasDefault) {
+      const onKeydown = (event: KeyboardEvent): void => {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          resolveChoice(defaultValue as R);
+          handle.close();
+        }
+      };
+      // Last wiring step: nothing after it can throw, so it needs no rollback.
+      handle.el.addEventListener('keydown', onKeydown);
+    }
+  });
 
   void handle.result.then(() => resolveChoice(null));
   return result;

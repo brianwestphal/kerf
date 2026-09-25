@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed the dialog helpers (`confirm` / `prompt` / `form` / `choice`) leaving
+  wiring behind when a step after the overlay opened failed. Their post-open
+  wiring (required-slot checks, the click-table `delegate()`, the Enter-key
+  listener) is now part of construction: a failure removes the listeners
+  already wired, closes the overlay (including a `native` `<dialog>`), restores
+  focus, and rethrows the original error, so no pending promise is left
+  attached to an on-screen dialog.
 - `bindList()` now rolls back when its first render throws: rows that pass
   already created are disposed (content mounts and element-mode `dispose`
   callbacks) and removed before the original error is rethrown, instead of

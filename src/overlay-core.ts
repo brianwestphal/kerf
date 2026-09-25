@@ -384,6 +384,30 @@ export function overlay(
   }
 }
 
+/**
+ * Internal: run a promise-dialog helper's post-open wiring (required-slot
+ * lookups, `delegate()` handlers, key listeners) as the tail of `overlay()`'s
+ * construction transaction. `wire` registers a disposer for every listener it
+ * installs via `track`; if any step throws, those listeners are removed, the
+ * just-opened overlay is closed (node, mount, dismissal listeners, stack
+ * entry, top-layer state, focus), and the original error is rethrown — so a
+ * failed helper call returns no promise and leaves no open overlay behind.
+ * Not re-exported from `kerfjs/overlay`.
+ */
+export function wireDialog(
+  handle: OverlayHandle,
+  wire: (track: (dispose: () => void) => void) => void,
+): void {
+  const disposers: Array<() => void> = [];
+  try {
+    wire((dispose) => void disposers.push(dispose));
+  } catch (error) {
+    disposers.forEach((dispose) => dispose());
+    handle.close();
+    throw error;
+  }
+}
+
 // The anchored-positioning primitives — `positionAnchored` / `autoReposition`
 // plus their option types — live in `./overlay-position.ts` (KF-511) since they
 // stand alone (any element, no overlay lifecycle). Re-exported here so the

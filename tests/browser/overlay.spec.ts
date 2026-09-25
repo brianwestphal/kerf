@@ -440,3 +440,58 @@ test('native: a showModal() failure rolls the <dialog> back and a later native o
   await expect(good).toHaveCount(0);
   await expect(page.locator('dialog')).toHaveCount(0);
 });
+
+test('dialog helpers: a render missing its required input closes the native <dialog> and leaves the page interactive', async ({
+  page,
+}) => {
+  const outcome = await page.evaluate(() => {
+    const { form } = (window as any).kerfOverlay;
+    const { jsx } = (window as any).jsxRuntime;
+    const trigger = document.createElement('button');
+    trigger.id = 'helper-trigger';
+    trigger.textContent = 'page button';
+    trigger.addEventListener('click', () => {
+      (window as any)._pageClicks = ((window as any)._pageClicks ?? 0) + 1;
+    });
+    document.body.appendChild(trigger);
+    trigger.focus();
+    try {
+      // The modal <dialog> is already in the top layer (inerting the page)
+      // when form() discovers the missing field input.
+      form([{ name: 'host' }, { name: 'token' }], {
+        native: true,
+        className: 'helper-bad',
+        render: ({ fields, ok }: any) =>
+          jsx('div', {
+            children: [
+              jsx('input', { ...fields[0].input }),
+              jsx('button', { ...ok, children: 'Go' }),
+            ],
+          }),
+      });
+      return 'no error';
+    } catch (error) {
+      return (error as Error).message;
+    }
+  });
+  expect(outcome).toBe('form(): render missing <input data-field="token">.');
+  await expect(page.locator('dialog')).toHaveCount(0);
+  expect(await activeId(page)).toBe('helper-trigger');
+
+  // The page is not left inert: a real click reaches the page button.
+  await page.locator('#helper-trigger').click();
+  expect(await page.evaluate(() => (window as any)._pageClicks)).toBe(1);
+
+  // A later native prompt opens, takes real input, and resolves.
+  await page.evaluate(() => {
+    const { prompt } = (window as any).kerfOverlay;
+    (window as any)._helperResult = prompt('Name', {
+      native: true,
+      className: 'helper-good',
+    });
+  });
+  await page.keyboard.type('ada');
+  await page.keyboard.press('Enter');
+  expect(await page.evaluate(() => (window as any)._helperResult)).toBe('ada');
+  await expect(page.locator('dialog')).toHaveCount(0);
+});
