@@ -92,11 +92,13 @@ export function confirm(
 
   // Post-open wiring is still construction: a throw closes the overlay. The
   // click table is the only (and so the last) step, so it needs no rollback.
-  wireDialog(handle, () => {
-    delegate(handle.el, 'click', '[data-confirm]', (_event, el) => {
-      handle.close(el.getAttribute('data-confirm') === 'ok');
-    });
-  });
-
-  return handle.result.then((value) => value === true);
+  return wireDialog(
+    handle,
+    () => {
+      delegate(handle.el, 'click', '[data-confirm]', (_event, el) => {
+        handle.close(el.getAttribute('data-confirm') === 'ok');
+      });
+    },
+    (value) => value === true,
+  );
 }

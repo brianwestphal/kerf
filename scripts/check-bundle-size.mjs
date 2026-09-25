@@ -127,8 +127,10 @@ const BUDGETS = [
     // validation + rollback of every throwing setup phase), stacked on the
     // KF-KGFJP6 mount() rollback in the shared core; KF-14ZE8Y extends that
     // transaction over the dialog helpers' post-open wiring (listener
-    // rollback + close + rethrow via wireDialog).
-    budgetKb: 16.95,
+    // rollback + close + rethrow via wireDialog); KF-B0CFQP adds the
+    // wireDialog `guard` so a throwing validate closes the dialog and rejects
+    // the helper promise instead of escaping the OK handler.
+    budgetKb: 16.97,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

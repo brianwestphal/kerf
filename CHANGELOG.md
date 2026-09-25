@@ -9,6 +9,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - A local `npm run check` run with `KERF_SKIP_PACKAGE_GATES=1` no longer
   records a verified tree, so the pre-push hook cannot skip the sibling-package
   gates that run left out.
+- `kerfjs/overlay`: a `prompt()` `validate` or `form()` `field.validate` that
+  throws now closes the dialog (full teardown, focus restored) and rejects the
+  returned promise with the original error. Previously the error escaped the
+  OK click or Enter handler, and the dialog stayed open with an OK button that
+  could never succeed. Validators are synchronous; this is the error channel
+  for a validator bug.
 - `@kerfjs/ui`: a multiline `ListItem` whose label fits on one line now
   centers its icon on that line. The row's 44px minimum used to stretch the
   grid track, which centered the label but left the start-aligned icon about

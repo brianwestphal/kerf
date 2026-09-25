@@ -616,7 +616,7 @@ const name = await prompt("Rename layer", { defaultValue: layer.name });
 if (name !== null) rename(name);
 ```
 
-The symmetric sibling of `confirm()` — a promise-based `window.prompt` replacement (also a no-op in Tauri webviews). Renders a one-field dialog on top of `overlay()` and resolves the entered **string** on OK (an empty string is a valid result), or `null` on Cancel / dismissal. **Enter** in the input submits. `message`, the default value, and labels are auto-escaped. Options ([`PromptOptions`](#overlay-types)): `defaultValue` (default `''`), `placeholder`, `inputType` (default `'text'`), `title`, `okText` / `cancelText`, `validate` (return a non-empty error string to block OK — it shows inline), plus `container` / `className`.
+The symmetric sibling of `confirm()` — a promise-based `window.prompt` replacement (also a no-op in Tauri webviews). Renders a one-field dialog on top of `overlay()` and resolves the entered **string** on OK (an empty string is a valid result), or `null` on Cancel / dismissal. **Enter** in the input submits. `message`, the default value, and labels are auto-escaped. Options ([`PromptOptions`](#overlay-types)): `defaultValue` (default `''`), `placeholder`, `inputType` (default `'text'`), `title`, `okText` / `cancelText`, `validate` (a synchronous [`FieldValidator`](#overlay-types): return a non-empty error string to block OK — it shows inline), plus `container` / `className`. A `validate` that **throws** is treated as a programming error: the dialog closes (full teardown, focus restored) and the returned promise **rejects** with that error, so the awaiting caller sees it — nothing is thrown out of the OK click or Enter handler.
 
 ### `form(fields, options?): Promise<Record<string, string> | null>`
 
@@ -633,7 +633,7 @@ const creds = await form([
 if (creds !== null) connect(creds.host, creds.token);
 ```
 
-The two-or-three-input generalization of `prompt()`: renders one labeled input per [`FormField`](#overlay-types) and resolves a `Record<name, value>` on OK (after **every** field's `validate` passes) or `null` on Cancel / dismissal. Enter in any field submits; the first invalid field is focused. Each `FormField` has `name` (the record key + input `name`), optional `label` (defaults to `name`), `defaultValue`, `placeholder`, `type` (default `'text'`), and `validate`. Options ([`FormOptions`](#overlay-types)): `title`, `okText` / `cancelText`, `container` / `className`.
+The two-or-three-input generalization of `prompt()`: renders one labeled input per [`FormField`](#overlay-types) and resolves a `Record<name, value>` on OK (after **every** field's `validate` passes) or `null` on Cancel / dismissal. Enter in any field submits; the first invalid field is focused. Each `FormField` has `name` (the record key + input `name`), optional `label` (defaults to `name`), `defaultValue`, `placeholder`, `type` (default `'text'`), and `validate` (synchronous, as in `prompt()`; a throwing `validate` closes the dialog and rejects the returned promise with that error). Options ([`FormOptions`](#overlay-types)): `title`, `okText` / `cancelText`, `container` / `className`.
 
 ### `choice<R>(message, actions, options?): Promise<R | null>`
 

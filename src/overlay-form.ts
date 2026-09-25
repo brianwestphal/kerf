@@ -134,75 +134,77 @@ export function form(
   // Post-open wiring is still construction: a missing required field input or
   // any other throw below removes what was wired, closes the overlay, and
   // rethrows.
-  wireDialog(handle, (track) => {
-    const errorFor = (name: string): HTMLElement | null =>
-      Array.from(
-        handle.el.querySelectorAll<HTMLElement>('[data-field-error]'),
-      ).find((el) => el.getAttribute('data-field-error') === name) ?? null;
-    const inputFor = (name: string): HTMLInputElement => {
-      const input = Array.from(
-        handle.el.querySelectorAll<HTMLInputElement>('input[data-field]'),
-      ).find((el) => el.getAttribute('data-field') === name);
-      if (input !== undefined) return input;
-      handle.close(null);
-      throw new Error(`form(): render missing <input data-field="${name}">.`);
-    };
+  return wireDialog(
+    handle,
+    (track, guard) => {
+      const errorFor = (name: string): HTMLElement | null =>
+        Array.from(
+          handle.el.querySelectorAll<HTMLElement>('[data-field-error]'),
+        ).find((el) => el.getAttribute('data-field-error') === name) ?? null;
+      const inputFor = (name: string): HTMLInputElement => {
+        const input = Array.from(
+          handle.el.querySelectorAll<HTMLInputElement>('input[data-field]'),
+        ).find((el) => el.getAttribute('data-field') === name);
+        if (input !== undefined) return input;
+        handle.close(null);
+        throw new Error(`form(): render missing <input data-field="${name}">.`);
+      };
 
-    for (const field of fields) {
-      inputFor(field.name);
-      const errorEl = errorFor(field.name);
-      if (errorEl !== null) errorEl.hidden = true;
-    }
-
-    const attemptOk = (): void => {
-      const record: Record<string, string> = {};
-      let firstInvalid: HTMLInputElement | null = null;
       for (const field of fields) {
-        const el = inputFor(field.name);
-        const value = el.value;
-        record[field.name] = value;
-        const error = field.validate?.(value);
+        inputFor(field.name);
         const errorEl = errorFor(field.name);
-        if (typeof error === 'string' && error.length > 0) {
-          if (errorEl !== null) {
-            errorEl.textContent = error;
-            errorEl.hidden = false;
+        if (errorEl !== null) errorEl.hidden = true;
+      }
+
+      // A throwing `field.validate` closes the dialog and rejects the promise.
+      const attemptOk = guard((): void => {
+        const record: Record<string, string> = {};
+        let firstInvalid: HTMLInputElement | null = null;
+        for (const field of fields) {
+          const el = inputFor(field.name);
+          const value = el.value;
+          record[field.name] = value;
+          const error = field.validate?.(value);
+          const errorEl = errorFor(field.name);
+          if (typeof error === 'string' && error.length > 0) {
+            if (errorEl !== null) {
+              errorEl.textContent = error;
+              errorEl.hidden = false;
+            }
+            if (firstInvalid === null) firstInvalid = el;
+          } else if (errorEl !== null) {
+            errorEl.hidden = true;
           }
-          if (firstInvalid === null) firstInvalid = el;
-        } else if (errorEl !== null) {
-          errorEl.hidden = true;
         }
-      }
-      if (firstInvalid !== null) {
-        firstInvalid.focus();
-        return;
-      }
-      handle.close(record);
-    };
+        if (firstInvalid !== null) {
+          firstInvalid.focus();
+          return;
+        }
+        handle.close(record);
+      });
 
-    track(
-      delegate(handle.el, 'click', '[data-form]', (_event, el) => {
-        if (el.getAttribute('data-form') === 'ok') attemptOk();
-        else handle.close(null);
-      }),
-    );
+      track(
+        delegate(handle.el, 'click', '[data-form]', (_event, el) => {
+          if (el.getAttribute('data-form') === 'ok') attemptOk();
+          else handle.close(null);
+        }),
+      );
 
-    const onKeydown = (event: KeyboardEvent): void => {
-      if (
-        event.key === 'Enter' &&
-        (event.target as Element | null)?.matches('[data-field]')
-      ) {
-        event.preventDefault();
-        attemptOk();
-      }
-    };
-    // Last wiring step: nothing after it can throw, so it needs no rollback.
-    handle.el.addEventListener('keydown', onKeydown);
-  });
-
-  return handle.result.then((value) =>
-    value !== null && typeof value === 'object'
-      ? (value as Record<string, string>)
-      : null,
+      const onKeydown = (event: KeyboardEvent): void => {
+        if (
+          event.key === 'Enter' &&
+          (event.target as Element | null)?.matches('[data-field]')
+        ) {
+          event.preventDefault();
+          attemptOk();
+        }
+      };
+      // Last wiring step: nothing after it can throw, so it needs no rollback.
+      handle.el.addEventListener('keydown', onKeydown);
+    },
+    (value) =>
+      value !== null && typeof value === 'object'
+        ? (value as Record<string, string>)
+        : null,
   );
 }

@@ -160,7 +160,63 @@ describe('prompt()', () => {
     clickBtn('[data-prompt="cancel"]');
     await expect(p).resolves.toBeNull();
   });
+
+  describe('a throwing validate is a programming error: close + reject', () => {
+    it('OK click: tears down, restores focus, rejects with the original error, and does not throw out of the handler', async () => {
+      const trigger = focusedTrigger();
+      const boom = new Error('validator bug');
+      const validate = vi.fn(() => {
+        throw boom;
+      });
+      const p = prompt('Name', { defaultValue: 'x', validate });
+      const errors = captureWindowErrors();
+      const ok = document.querySelector<HTMLElement>('[data-prompt="ok"]')!;
+      expect(() => ok.click()).not.toThrow();
+      errors.stop();
+
+      expect(validate).toHaveBeenCalledWith('x');
+      expect(errors.count).toBe(0); // not reported by the host
+      expect(document.querySelector('.kerf-overlay')).toBeNull();
+      expect(document.activeElement).toBe(trigger);
+      await expect(p).rejects.toBe(boom);
+    });
+
+    it('Enter in the field takes the same path, and a later prompt works', async () => {
+      const boom = new Error('enter bug');
+      const p = prompt('Name', {
+        validate: () => {
+          throw boom;
+        },
+      });
+      key(document.querySelector('.kerf-prompt__input')!, 'Enter');
+      expect(document.querySelector('.kerf-overlay')).toBeNull();
+      await expect(p).rejects.toBe(boom);
+
+      const next = prompt('Again', { defaultValue: 'ok' });
+      clickBtn('[data-prompt="ok"]');
+      await expect(next).resolves.toBe('ok');
+    });
+  });
 });
+
+function focusedTrigger(): HTMLButtonElement {
+  const trigger = document.createElement('button');
+  trigger.textContent = 'open';
+  document.body.appendChild(trigger);
+  trigger.focus();
+  return trigger;
+}
+
+function captureWindowErrors(): { count: number; stop(): void } {
+  const box = { count: 0, stop: () => {} };
+  const onError = (event: Event): void => {
+    box.count++;
+    event.preventDefault();
+  };
+  window.addEventListener('error', onError);
+  box.stop = () => window.removeEventListener('error', onError);
+  return box;
+}
 
 describe('form()', () => {
   it('renders one labeled input per field (label defaults to name) and resolves a record on OK', async () => {
@@ -265,6 +321,50 @@ describe('form()', () => {
     expect(document.querySelector('.kerf-form')).not.toBeNull(); // still open
     clickBtn('[data-form="cancel"]');
     await expect(p).resolves.toBeNull();
+  });
+
+  describe('a throwing field.validate is a programming error: close + reject', () => {
+    it('OK click: tears down, restores focus, rejects with the original error, and does not throw out of the handler', async () => {
+      const trigger = focusedTrigger();
+      const boom = new Error('field validator bug');
+      const p = form([
+        { name: 'host', validate: (v) => (v ? '' : 'required') },
+        {
+          name: 'token',
+          validate: () => {
+            throw boom;
+          },
+        },
+      ]);
+      const errors = captureWindowErrors();
+      const ok = document.querySelector<HTMLElement>('[data-form="ok"]')!;
+      expect(() => ok.click()).not.toThrow();
+      errors.stop();
+
+      expect(errors.count).toBe(0);
+      expect(document.querySelector('.kerf-overlay')).toBeNull();
+      expect(document.activeElement).toBe(trigger);
+      await expect(p).rejects.toBe(boom);
+    });
+
+    it('Enter in a field takes the same path, and a later form works', async () => {
+      const boom = new Error('enter bug');
+      const p = form([
+        {
+          name: 'a',
+          validate: () => {
+            throw boom;
+          },
+        },
+      ]);
+      key(document.querySelector('[data-field="a"]')!, 'Enter');
+      expect(document.querySelector('.kerf-overlay')).toBeNull();
+      await expect(p).rejects.toBe(boom);
+
+      const next = form([{ name: 'b', defaultValue: 'ok' }]);
+      clickBtn('[data-form="ok"]');
+      await expect(next).resolves.toEqual({ b: 'ok' });
+    });
   });
 });
 

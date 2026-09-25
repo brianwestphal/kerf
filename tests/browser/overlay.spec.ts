@@ -114,6 +114,48 @@ test('prompt(): real focus lands in the field, typing + Enter resolves the enter
   await expect(page.locator('.kerf-prompt')).toHaveCount(0); // closed
 });
 
+test('prompt(): a throwing validate closes the native dialog, restores focus, and rejects the promise', async ({
+  page,
+}) => {
+  const pageErrors: string[] = [];
+  page.on('pageerror', (error) => pageErrors.push(error.message));
+  await page.evaluate(() => {
+    const { prompt } = (window as any).kerfOverlay;
+    const trigger = document.createElement('button');
+    trigger.id = 'validate-trigger';
+    trigger.textContent = 'page button';
+    trigger.addEventListener('click', () => {
+      (window as any)._validatePageClicks =
+        ((window as any)._validatePageClicks ?? 0) + 1;
+    });
+    document.body.appendChild(trigger);
+    trigger.focus();
+    (window as any)._validateOutcome = prompt('Name', {
+      native: true,
+      validate: () => {
+        throw new Error('validator bug');
+      },
+    }).then(
+      (value: unknown) => ({ resolved: value }),
+      (error: Error) => ({ rejected: error.message }),
+    );
+  });
+
+  await page.locator('[data-prompt="ok"]').click(); // a real click on OK
+  expect(await page.evaluate(() => (window as any)._validateOutcome)).toEqual({
+    rejected: 'validator bug',
+  });
+  await expect(page.locator('dialog')).toHaveCount(0);
+  expect(await activeId(page)).toBe('validate-trigger');
+  expect(pageErrors).toEqual([]); // nothing escaped the click handler
+
+  // The page is not left inert: a real click reaches the page button.
+  await page.locator('#validate-trigger').click();
+  expect(await page.evaluate(() => (window as any)._validatePageClicks)).toBe(
+    1,
+  );
+});
+
 test('popover(): positions below a real anchor, left-aligned (real layout)', async ({
   page,
 }) => {

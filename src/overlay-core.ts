@@ -392,20 +392,48 @@ export function overlay(
  * just-opened overlay is closed (node, mount, dismissal listeners, stack
  * entry, top-layer state, focus), and the original error is rethrown — so a
  * failed helper call returns no promise and leaves no open overlay behind.
- * Not re-exported from `kerfjs/overlay`.
+ *
+ * After construction, `guard` wraps a user-action handler (OK click, Enter).
+ * KF-B0CFQP (a throwing `validate` callback): a throw inside a guarded action
+ * is a programming error, so it closes the dialog (full teardown, focus
+ * restored) and the returned promise REJECTS with the original error, instead
+ * of the error escaping the event handler and stranding an open dialog whose
+ * OK can never succeed. Otherwise the returned promise settles with
+ * `settle(handle.result's value)`. Not re-exported from `kerfjs/overlay`.
  */
-export function wireDialog(
+export function wireDialog<T>(
   handle: OverlayHandle,
-  wire: (track: (dispose: () => void) => void) => void,
-): void {
+  wire: (
+    track: (dispose: () => void) => void,
+    guard: (action: () => void) => () => void,
+  ) => void,
+  settle: (value: unknown) => T,
+): Promise<T> {
   const disposers: Array<() => void> = [];
+  const failure: { error?: unknown } = {};
   try {
-    wire((dispose) => void disposers.push(dispose));
+    wire(
+      (dispose) => void disposers.push(dispose),
+      (action) => () => {
+        try {
+          action();
+        } catch (error) {
+          failure.error = error;
+          handle.close(failure);
+        }
+      },
+    );
   } catch (error) {
     disposers.forEach((dispose) => dispose());
     handle.close();
     throw error;
   }
+  // One hop, not a chain: `settle` maps the value in the same reaction, so a
+  // helper's promise settles as soon after `close()` as it always has.
+  return handle.result.then((value) => {
+    if (value === failure) throw failure.error;
+    return settle(value);
+  });
 }
 
 // The anchored-positioning primitives — `positionAnchored` / `autoReposition`

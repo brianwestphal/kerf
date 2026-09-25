@@ -84,28 +84,31 @@ export function choice<R>(
     native,
   });
 
-  // Post-open wiring is still construction: a throw closes the overlay.
-  wireDialog(handle, (track) => {
-    track(
-      delegate(handle.el, 'click', '[data-choice]', (_event, el) => {
-        resolveChoice(actions[Number(el.getAttribute('data-choice'))].value);
-        handle.close();
-      }),
-    );
-
-    if (hasDefault) {
-      const onKeydown = (event: KeyboardEvent): void => {
-        if (event.key === 'Enter') {
-          event.preventDefault();
-          resolveChoice(defaultValue as R);
+  // Post-open wiring is still construction: a throw closes the overlay. Any
+  // close settles a still-pending choice as a dismissal (`null`).
+  void wireDialog(
+    handle,
+    (track) => {
+      track(
+        delegate(handle.el, 'click', '[data-choice]', (_event, el) => {
+          resolveChoice(actions[Number(el.getAttribute('data-choice'))].value);
           handle.close();
-        }
-      };
-      // Last wiring step: nothing after it can throw, so it needs no rollback.
-      handle.el.addEventListener('keydown', onKeydown);
-    }
-  });
+        }),
+      );
 
-  void handle.result.then(() => resolveChoice(null));
+      if (hasDefault) {
+        const onKeydown = (event: KeyboardEvent): void => {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            resolveChoice(defaultValue as R);
+            handle.close();
+          }
+        };
+        // Last wiring step: nothing after it can throw, so it needs no rollback.
+        handle.el.addEventListener('keydown', onKeydown);
+      }
+    },
+    () => resolveChoice(null),
+  );
   return result;
 }

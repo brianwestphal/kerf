@@ -3,7 +3,12 @@ import { delegate } from './delegate.js';
 import { jsx } from './jsx-runtime.js';
 import { overlay, type OverlayContent, wireDialog } from './overlay-core.js';
 
-/** Validate a single field's value. */
+/**
+ * Validate a single field's value, synchronously: return a non-empty message
+ * to block OK, anything else to accept. A validator that throws is treated as
+ * a programming error — the dialog closes and the returned promise rejects
+ * with that error.
+ */
 export type FieldValidator = (
   value: string,
 ) => string | null | undefined | void;
@@ -110,47 +115,50 @@ export function prompt(
 
   // Post-open wiring is still construction: a missing required input or any
   // other throw below removes what was wired, closes the overlay, and rethrows.
-  wireDialog(handle, (track) => {
-    const input = handle.el.querySelector<HTMLInputElement>(
-      'input[data-prompt-input]',
-    );
-    if (input === null)
-      throw new Error('prompt(): render missing <input data-prompt-input>.');
-    const errorEl = handle.el.querySelector<HTMLElement>('[data-prompt-error]');
-    if (errorEl !== null) errorEl.hidden = true;
+  return wireDialog(
+    handle,
+    (track, guard) => {
+      const input = handle.el.querySelector<HTMLInputElement>(
+        'input[data-prompt-input]',
+      );
+      if (input === null)
+        throw new Error('prompt(): render missing <input data-prompt-input>.');
+      const errorEl = handle.el.querySelector<HTMLElement>(
+        '[data-prompt-error]',
+      );
+      if (errorEl !== null) errorEl.hidden = true;
 
-    const attemptOk = (): void => {
-      const value = input.value;
-      const error = validate?.(value);
-      if (typeof error === 'string' && error.length > 0) {
-        if (errorEl !== null) {
-          errorEl.textContent = error;
-          errorEl.hidden = false;
+      // A throwing `validate` closes the dialog and rejects the promise (guard).
+      const attemptOk = guard((): void => {
+        const value = input.value;
+        const error = validate?.(value);
+        if (typeof error === 'string' && error.length > 0) {
+          if (errorEl !== null) {
+            errorEl.textContent = error;
+            errorEl.hidden = false;
+          }
+          input.focus();
+          return;
         }
-        input.focus();
-        return;
-      }
-      handle.close(value);
-    };
+        handle.close(value);
+      });
 
-    track(
-      delegate(handle.el, 'click', '[data-prompt]', (_event, el) => {
-        if (el.getAttribute('data-prompt') === 'ok') attemptOk();
-        else handle.close(null);
-      }),
-    );
+      track(
+        delegate(handle.el, 'click', '[data-prompt]', (_event, el) => {
+          if (el.getAttribute('data-prompt') === 'ok') attemptOk();
+          else handle.close(null);
+        }),
+      );
 
-    const onKeydown = (event: KeyboardEvent): void => {
-      if (event.key === 'Enter' && event.target === input) {
-        event.preventDefault();
-        attemptOk();
-      }
-    };
-    // Last wiring step: nothing after it can throw, so it needs no rollback.
-    handle.el.addEventListener('keydown', onKeydown);
-  });
-
-  return handle.result.then((value) =>
-    typeof value === 'string' ? value : null,
+      const onKeydown = (event: KeyboardEvent): void => {
+        if (event.key === 'Enter' && event.target === input) {
+          event.preventDefault();
+          attemptOk();
+        }
+      };
+      // Last wiring step: nothing after it can throw, so it needs no rollback.
+      handle.el.addEventListener('keydown', onKeydown);
+    },
+    (value) => (typeof value === 'string' ? value : null),
   );
 }
