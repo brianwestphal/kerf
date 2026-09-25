@@ -295,10 +295,14 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-card': () => (
     <wa-card appearance="sunken" with-header with-footer>
-      <strong slot="header">Release readiness</strong>
+      <Text slot="header">
+        <strong>Release readiness</strong>
+      </Text>
+
       <Text>
         Production components, contracts, and browser checks stay together.
       </Text>
+
       <wa-button slot="footer" appearance="plain">
         View checklist
       </wa-button>
@@ -307,17 +311,17 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-details': () => (
     <div class="wa-demo-stack">
       <wa-details appearance="sunken" summary="Sunken compatibility notes" open>
-        The lowered surface follows the same framed geometry.
+        <Text>The lowered surface follows the same framed geometry.</Text>
       </wa-details>
       <wa-details
         appearance="outlined"
         summary="Outlined compatibility notes"
         open
       >
-        The framed header uses the roomier container inset.
+        <Text>The framed header uses the roomier container inset.</Text>
       </wa-details>
       <wa-details appearance="plain" summary="Plain compatibility notes" open>
-        Header and body align directly with surrounding content.
+        <Text>Header and body align directly with surrounding content.</Text>
       </wa-details>
     </div>
   ),
