@@ -54,7 +54,7 @@ describe('local git gate policy', () => {
 
     expect(preCommit.trim()).toBe('git diff --cached --check');
     expect(prePush.trim()).toBe(
-      'node scripts/ticket-timing.mjs pre-push "$@" -- npm run check',
+      'node scripts/ticket-timing.mjs pre-push "$@" --skip-if-verified -- npm run check',
     );
   });
 

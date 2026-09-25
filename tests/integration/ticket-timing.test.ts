@@ -70,7 +70,9 @@ function runWithInput(
   );
 }
 
-describe('ticket timing CLI', () => {
+// These drive real git/node subprocess round trips (the skip sequence runs
+// about ten), so allow for full-suite CPU contention.
+describe('ticket timing CLI', { timeout: 30_000 }, () => {
   it('runs a real command and appends a sanitized durable interval note', async () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-ticket-timing-'));
     const log = join(root, 'notes.jsonl');
