@@ -197,7 +197,7 @@ kerf/
 │   │   ├── renderDocument.test.ts          ← renderDocument(): doctype prefix on SafeHtml + string + custom doctype
 │   │   ├── actions.test.ts                 ← kerfjs/actions: action() AttrSpec + delegateActions dispatch/closest/direct/custom-attr/unknown-action/disposer/multi-event
 │   │   ├── overlay-construction.test.ts ← transactional overlay construction: initialFocus selector validation + rollback of every throwing setup phase
-│   │   ├── overlay-dialog-construction.test.ts ← confirm/prompt/form/choice post-open wiring failures roll back (listeners, overlay, focus) and rethrow synchronously
+│   │   ├── overlay-dialog-construction.internal.test.ts ← confirm/prompt/form/choice post-open wiring failures roll back (listeners, overlay, focus) and rethrow synchronously
 │   │   ├── overlay-core.test.ts ← overlay wrapper, result, dismissal, focus trap, and lifecycle behavior
 │   │   ├── overlay-dialogs.test.ts ← confirm, prompt, form, choice, validation, custom-render contracts, and immediate required-marker rejection
 │   │   ├── overlay-module-boundaries.internal.test.ts ← source-only public export identity plus static guards that focused dialog implementations import the internal core rather than the public barrel (excluded from dist-full, whose aliases intentionally expose public package modules only)
