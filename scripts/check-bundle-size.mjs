@@ -123,7 +123,7 @@ const BUDGETS = [
     // KF-2TNZPJ: shared render core restores exact contenteditable selections;
     // KF-3HYK5B adds BYO-dialog slot validation; KF-P0AB45 adds fallback
     // overlay stack arbitration so one dismissal affects only the topmost.
-    budgetKb: 16.7,
+    budgetKb: 16.8,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
@@ -166,8 +166,9 @@ const BUDGETS = [
     // for KF-04QBM0 focused keyed-row and virtualization controllers; +0.4
     // for public-boundary input validation and first-render rollback (KF-SH06CP
     // virtualization dimension checks, KF-MKGFHK branded-source check, KF-KBWEBA
-    // row disposal when the initial render throws).
-    budgetKb: 13.1,
+    // row disposal when the initial render throws); +0.1 for KF-KGFJP6 mount()
+    // first-render rollback in the shared core.
+    budgetKb: 13.2,
     description:
       'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `
@@ -204,7 +205,7 @@ const BUDGETS = [
     // ISOLATED size — remountOn mounts each fresh subtree, so it pulls in the
     // render core; marginal cost for an app already using kerf is ~1 KB.
     name: 'remount',
-    budgetKb: 10.4,
+    budgetKb: 10.5,
     description:
       'the remount subpath (remountOn — keyed subtree replacement) — includes shared core',
     entry: `

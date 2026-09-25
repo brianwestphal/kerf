@@ -395,12 +395,8 @@ export function mount(
     devHooks.listInvariants?.(rootEl, bindings, expectedCounts || undefined);
   }
 
-  const disposeEffect = effect(() => {
-    reconcileAndCommitListPhase(renderStaticPhase());
-  });
-
-  return () => {
-    disposeEffect();
+  /** Release everything the mount holds except the effect itself. */
+  const releaseResources = (): void => {
     for (const d of bindingDisposers) d();
     bindingDisposers = [];
     // KF-294: tear down every list row's fine-grained binding effects too.
@@ -410,6 +406,34 @@ export function mount(
     listenerWarnObserver?.disconnect();
     // Clear the mounted marker so `mount(sameEl, ...)` after dispose works.
     setMounted(rootEl, false);
+  };
+
+  // KF-KGFJP6 (transactional first render): the effect's first run is
+  // synchronous, and a throw from it — the user's render, the each() row
+  // contract, a binding whose first write throws, a dev invariant — means
+  // `mount()` returns no disposer. Release everything acquired so far instead,
+  // so a retry on the same element is not refused as "already mounted" and no
+  // half-wired binding effect keeps subscribing to signals, and put back the
+  // child nodes the element held before `mount()` was called. The original
+  // error is rethrown unchanged. `@preact/signals-core`'s `effect()` already
+  // disposed the failed effect before rethrowing, and the render-scoped module
+  // contexts (each.ts / bindings.ts) are restored by their own try/finally
+  // blocks, so neither needs handling here.
+  const priorChildren = rootEl.firstChild ? Array.from(rootEl.childNodes) : [];
+  let disposeEffect: () => void;
+  try {
+    disposeEffect = effect(() => {
+      reconcileAndCommitListPhase(renderStaticPhase());
+    });
+  } catch (err) {
+    releaseResources();
+    rootEl.replaceChildren(...priorChildren);
+    throw err;
+  }
+
+  return () => {
+    disposeEffect();
+    releaseResources();
   };
 }
 
@@ -627,19 +651,13 @@ function bindListsFromMarkers(
       let next: Element | null = marker.nextElementSibling;
       for (let i = 0; i < listSeg.items.length && next !== null; i++) {
         validateInlinedRowMatch(listSeg.items[i].html, i, next, liveParent);
-        const rowBindings = listSeg.items[i].bindings;
-        const bound: BoundItem = {
+        items.push({
           ref: listSeg.items[i].ref,
           cacheKey: listSeg.items[i].cacheKey,
           html: listSeg.items[i].html,
           node: next,
-          bindings: rowBindings,
-        };
-        // KF-294: wire this inlined first-render row's fine-grained bindings.
-        if (rowBindings?.length) {
-          bound.bindingDisposers = wireRowBindings(next, rowBindings);
-        }
-        items.push(bound);
+          bindings: listSeg.items[i].bindings,
+        });
         next = next.nextElementSibling;
       }
     }
@@ -652,6 +670,15 @@ function bindListsFromMarkers(
     // (list rows still update; static reactive siblings are frozen).
     devHooks.eachInMorphSkip?.(id, liveParent, rootEl);
     bindings.set(id, binding);
+    // KF-294: wire the inlined first-render rows' fine-grained bindings — only
+    // once every row passed the contract check and the binding is registered,
+    // so if a row's wiring throws, the rows wired before it are reachable
+    // through `bindings` and mount's failed-first-render rollback disposes them.
+    for (const bound of items) {
+      if (bound.bindings?.length) {
+        bound.bindingDisposers = wireRowBindings(bound.node, bound.bindings);
+      }
+    }
   }
 }
 

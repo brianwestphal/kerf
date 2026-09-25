@@ -22,6 +22,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Added `wa-dialog.hide-actions` support to `@kerfjs/ui/webawesome.css`, hiding
   Web Awesome's directly exported `header-actions` shadow part for dialogs that
   provide their own dismissal affordance.
+- Fixed `mount()` leaving an element permanently "already mounted" when its
+  first render throws. The first render is now transactional: the original
+  error is rethrown, every binding effect and the dev listener observer
+  acquired so far are released, the element's pre-mount child nodes are
+  restored, and a retry on the same element succeeds.
 - Added an opt-in `@kerfjs/ui/document.css` baseline for border-box sizing,
   token-backed body and link presentation, and a `.kui-app-root` full-height
   chain for application shells.

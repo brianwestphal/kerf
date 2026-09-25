@@ -196,7 +196,15 @@ export function wireBindings(
   for (const d of prevDisposers) d();
   if (ctx.list.length === 0) return NO_DISPOSERS;
   const disposers: Array<() => void> = [];
-  wireInto(rootEl, ctx.list, disposers);
+  try {
+    wireInto(rootEl, ctx.list, disposers);
+  } catch (err) {
+    // A hole whose first write threw (a throwing `computed`, a screened URL in
+    // dev) must not strand the effects wired before it: nobody would ever
+    // receive their disposers.
+    for (const d of disposers) d();
+    throw err;
+  }
   return disposers;
 }
 
@@ -226,38 +234,46 @@ export function wireRowBindings(
   let descIndex: Map<string, Element> | null = null;
   let textMarkers: Map<string, Comment> | null = null;
 
-  for (let i = 0; i < bindings.length; i++) {
-    const b = bindings[i];
-    if (b.kind === 'attr') {
-      let onRoot = false;
-      if (rootIds !== null) {
-        if (rootIds === b.id) {
-          onRoot = true;
-        } else if (rootIds.indexOf(',') !== -1) {
-          rootIdSet ??= new Set(rootIds.split(','));
-          onRoot = rootIdSet.has(b.id);
+  try {
+    for (let i = 0; i < bindings.length; i++) {
+      const b = bindings[i];
+      if (b.kind === 'attr') {
+        let onRoot = false;
+        if (rootIds !== null) {
+          if (rootIds === b.id) {
+            onRoot = true;
+          } else if (rootIds.indexOf(',') !== -1) {
+            rootIdSet ??= new Set(rootIds.split(','));
+            onRoot = rootIdSet.has(b.id);
+          }
         }
-      }
-      let el: Element | undefined;
-      if (onRoot) {
-        el = rowNode;
+        let el: Element | undefined;
+        if (onRoot) {
+          el = rowNode;
+        } else {
+          descIndex ??= indexAttrEls(rowNode, BIND_ATTR_ROW);
+          el = descIndex.get(b.id);
+        }
+        /* c8 ignore next -- defensive: a registered binding always emits its marker into the row. */
+        if (el === undefined) continue;
+        disposers[i] = attachAttrEffect(el, b.attr, b.signal);
       } else {
-        descIndex ??= indexAttrEls(rowNode, BIND_ATTR_ROW);
-        el = descIndex.get(b.id);
+        if (textMarkers === null) {
+          textMarkers = new Map();
+          collectComments(rowNode, ROW_TEXT_PREFIX, textMarkers);
+        }
+        const marker = textMarkers.get(b.id);
+        /* c8 ignore next -- defensive: same invariant as the attr branch. */
+        if (marker === undefined) continue;
+        disposers[i] = attachTextEffect(marker, b.signal);
       }
-      /* c8 ignore next -- defensive: a registered binding always emits its marker into the row. */
-      if (el === undefined) continue;
-      disposers[i] = attachAttrEffect(el, b.attr, b.signal);
-    } else {
-      if (textMarkers === null) {
-        textMarkers = new Map();
-        collectComments(rowNode, ROW_TEXT_PREFIX, textMarkers);
-      }
-      const marker = textMarkers.get(b.id);
-      /* c8 ignore next -- defensive: same invariant as the attr branch. */
-      if (marker === undefined) continue;
-      disposers[i] = attachTextEffect(marker, b.signal);
     }
+  } catch (err) {
+    // Same contract as `wireBindings`: a hole that throws on its first write
+    // disposes the row's already-wired effects before the error propagates
+    // (entries past the failing hole are still unset).
+    for (const d of disposers) d?.();
+    throw err;
   }
   return disposers;
 }

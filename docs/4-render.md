@@ -485,6 +485,12 @@ dispose();
 
 After dispose, signal mutations no longer trigger re-renders for this mount. The DOM tree itself is left as-is — kerf doesn't clear it; you do.
 
+### A throwing first render is rolled back
+
+`mount()` runs the first render synchronously, so an error thrown during it — by `render()` itself, by an `each()` row that breaks the one-element row contract, or by a fine-grained binding whose first value throws — propagates out of `mount()` as the original error object, and no disposer is returned. Before rethrowing, `mount()` releases everything it had acquired: the render effect, every binding effect already wired (global holes and `each()` row holes), the list bookkeeping, the opt-in `kerfjs/dev` listener-rebuild observer, and the one-mount-per-tree marker. The element is put back to the child nodes it held before the call — the same node objects, so server-rendered markup survives and an empty element stays empty — rather than left holding a half-rendered tree. Calling `mount()` again on the same element then works normally.
+
+This applies to the first render only. A later re-render that throws propagates to the signal write that triggered it, and the mount stays live: the next signal change re-runs the render.
+
 ## 4.8 What `mount` does NOT do
 
 - It doesn't manage component lifecycle. There's no `onMount` / `onUnmount` / `onUpdate` hook. Use `effect()` directly if you need a side effect tied to a signal.
