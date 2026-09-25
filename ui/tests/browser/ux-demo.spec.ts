@@ -5927,7 +5927,9 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       selectedShadow: buttonStyle.boxShadow,
     };
   });
-  expect(compactSpacing.declaredGap).toBe('0px');
+  // Compact mixed groups declare a 4px gap that their wa-dropdown / wa-button
+  // children offset with -2px margins, so the rendered gap stays closed.
+  expect(compactSpacing.declaredGap).toBe('4px');
   expect(compactSpacing.gap).toBeLessThanOrEqual(0);
   expect(compactSpacing.paddingInline).toBe('8px');
   expect(compactSpacing.separatorWidth).toBe('0px');
@@ -6178,14 +6180,18 @@ test('intrinsically sizes popup, compact mixed, and catalog dropdown content acr
   for (const shape of ['Pill', 'Rounded']) {
     await demo.getByRole('button', { name: shape, exact: true }).click();
     const measured = await geometry();
-    expect(measured.dropdown.left - measured.selected.right).toBeCloseTo(-2, 1);
+    // The 4px compact gap minus the dropdown's -2px margin: the dropdown now
+    // abuts the selected native segment instead of overlapping it by 2px.
+    expect(measured.dropdown.left - measured.selected.right).toBeCloseTo(0, 1);
     expect(measured.trigger.left).toBeCloseTo(measured.dropdown.left, 1);
     expect(measured.base.paddingInlineStart).toBe('8px');
     expect(measured.base.paddingInlineEnd).toBe('8px');
     expect(measured.caret.left).toBeGreaterThan(measured.trigger.left);
     expect(measured.caret.right).toBeLessThanOrEqual(measured.group.right - 1);
+    // The compact mixed -2px margin lets the trailing trigger (and its hover
+    // pill) reach the group's outer border, but never past it.
     expect(measured.trigger.right).toBeLessThanOrEqual(
-      measured.group.right - 1,
+      measured.group.right + 0.5,
     );
     await group.screenshot({
       path: `test-results/toolbar-control-group-compact-${browserName}-${shape.toLowerCase()}.png`,
