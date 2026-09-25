@@ -4,6 +4,7 @@ import { spawn } from 'node:child_process';
 
 import {
   clearCheckPass,
+  gateWeakeningSwitches,
   readCheckEnvironment,
   readWorktreeState,
   sameCheckEnvironment,
@@ -59,7 +60,12 @@ if (changed.length > 0) {
   process.exitCode = 1;
 } else if (typeof outcome.code === 'number') {
   process.exitCode = outcome.code;
-  if (outcome.code === 0 && startState?.clean) {
+  const weakened = gateWeakeningSwitches(process.env);
+  if (recordPass && outcome.code === 0 && weakened.length > 0) {
+    console.warn(
+      `Not recording a verified tree: ${weakened.join(', ')} skipped part of the gate, so the next push runs it in full.`,
+    );
+  } else if (outcome.code === 0 && startState?.clean) {
     const endState = await readWorktreeState(root);
     const endEnvironment = await readCheckEnvironment(root);
     // An install that changed mid-run (npm ci in another terminal) means the

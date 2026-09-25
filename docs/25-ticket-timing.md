@@ -238,8 +238,9 @@ them:
   key. `npm run check` runs with the project's own devDependencies, and the
   sibling-package gate's CI-status warning is advisory.
 - Environment variables are not in the key, except that `KERF_FORCE_CHECK`
-  always runs the gate. A pass recorded with `KERF_SKIP_PACKAGE_GATES=1` is
-  reused by a later push without it.
+  always runs the gate. A run under a gate-weakening switch
+  (`KERF_SKIP_PACKAGE_GATES=1`) records no pass at all, so the next push runs
+  the full gate; the advisory `KERF_SKIP_CI_STATUS` does not affect recording.
 - Package contents are trusted to match `node_modules/.package-lock.json`. A
   hand-edited file under `node_modules`, or an `npm link`, is not detected.
 - Network-dependent state is not in the key; the gate itself runs offline.

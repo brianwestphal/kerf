@@ -63,3 +63,9 @@ export function writeCheckPass(
   tree: string,
   environment: CheckEnvironment,
 ): Promise<void>;
+
+export const GATE_WEAKENING_ENV: readonly string[];
+
+export function gateWeakeningSwitches(
+  env: Record<string, string | undefined>,
+): string[];

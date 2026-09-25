@@ -7,6 +7,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   decideCheckSkip,
+  gateWeakeningSwitches,
   INSTALL_FINGERPRINT_DIRS,
   installFingerprint,
   isForced,
@@ -130,6 +131,19 @@ describe('pre-push check skip decision', () => {
     expect(isForced({ KERF_FORCE_CHECK: '0' })).toBe(false);
     expect(isForced({ KERF_FORCE_CHECK: '1' })).toBe(true);
     expect(isForced({ KERF_FORCE_CHECK: 'yes' })).toBe(true);
+  });
+});
+
+describe('gate-weakening switches', () => {
+  it('blocks recording a pass only while a weakening switch is on', () => {
+    expect(gateWeakeningSwitches({})).toEqual([]);
+    expect(gateWeakeningSwitches({ KERF_SKIP_PACKAGE_GATES: '' })).toEqual([]);
+    expect(gateWeakeningSwitches({ KERF_SKIP_PACKAGE_GATES: '0' })).toEqual([]);
+    expect(gateWeakeningSwitches({ KERF_SKIP_PACKAGE_GATES: '1' })).toEqual([
+      'KERF_SKIP_PACKAGE_GATES',
+    ]);
+    // The CI-status switch only silences an advisory warning.
+    expect(gateWeakeningSwitches({ KERF_SKIP_CI_STATUS: '1' })).toEqual([]);
   });
 });
 

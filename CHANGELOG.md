@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- A local `npm run check` run with `KERF_SKIP_PACKAGE_GATES=1` no longer
+  records a verified tree, so the pre-push hook cannot skip the sibling-package
+  gates that run left out.
 - `@kerfjs/ui`: a multiline `ListItem` whose label fits on one line now
   centers its icon on that line. The row's 44px minimum used to stretch the
   grid track, which centered the label but left the start-aligned icon about

@@ -64,6 +64,21 @@ export function decideCheckSkip({ force, cached, current }) {
   return { skip: true, reason: 'tree_already_verified' };
 }
 
+/**
+ * Environment switches that make `npm run check` verify LESS than the full
+ * gate. A pass recorded under one of them must not let a later push skip the
+ * full gate, so no pass is recorded while any is set.
+ */
+export const GATE_WEAKENING_ENV = ['KERF_SKIP_PACKAGE_GATES'];
+
+/** The weakening switches set in `env` (empty when a pass may be recorded). */
+export function gateWeakeningSwitches(env) {
+  return GATE_WEAKENING_ENV.filter((name) => {
+    const value = env[name];
+    return value !== undefined && value !== '' && value !== '0';
+  });
+}
+
 export function isForced(env) {
   const value = env[FORCE_CHECK_ENV];
   return value !== undefined && value !== '' && value !== '0';

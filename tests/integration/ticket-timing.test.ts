@@ -359,6 +359,17 @@ describe('ticket timing CLI', { timeout: 30_000 }, () => {
     expect((await prePush()).code).toBe(0);
     expect(await runs()).toBe(5);
 
+    // A pass under a gate-weakening switch is not recorded, so the next push
+    // still runs the full gate (the skipped package gates are not excused).
+    const weakened = await execFileAsync(
+      process.execPath,
+      [guard, '--record-pass', '--', process.execPath, '-e', ''],
+      { cwd: repo.root, env: { ...process.env, KERF_SKIP_PACKAGE_GATES: '1' } },
+    );
+    expect(weakened.stderr).toContain('Not recording a verified tree');
+    expect((await prePush()).code).toBe(0);
+    expect(await runs()).toBe(6);
+
     // A new commit changes the tree, so the old pass no longer applies.
     await writeFile(join(repo.root, 'fixture.txt'), 'changed\n');
     await repo.git(['commit', '-am', 'KF-NEW222 second change']);
@@ -380,7 +391,7 @@ describe('ticket timing CLI', { timeout: 30_000 }, () => {
         )
       ).code,
     ).toBe(0);
-    expect(await runs()).toBe(6);
+    expect(await runs()).toBe(7);
 
     // A failed rerun invalidates an earlier pass of the same tree.
     await execFileAsync(
@@ -418,7 +429,7 @@ describe('ticket timing CLI', { timeout: 30_000 }, () => {
         )
       ).code,
     ).toBe(0);
-    expect(await runs()).toBe(7);
+    expect(await runs()).toBe(8);
   });
 
   it('summarizes a whole store read-only, excluding a fanned-out backfill', async () => {
