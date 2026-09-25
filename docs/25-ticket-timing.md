@@ -18,14 +18,35 @@ output, machine paths, or secrets.
 | `publication`        | Registry, release, Pages, CDN, or other propagation waiting |
 
 Queue delay is derived from the ticket's `created_at` timestamp and the first
-recorded `active` interval. Hot Sheet does not yet retain historical lease
-intervals, so workers start and finish active timing explicitly:
+recorded `active` interval.
+
+## Active time: claim and release through the wrapper
+
+Hot Sheet leases are owned by the external `hotsheet-cli`, which retains no
+historical lease intervals and exposes no hook kerf could attach to, so kerf
+cannot observe a bare `hotsheet-cli claim` or `release`. Instead, claim and
+release **through** `ticket:timing`, which performs the Hot Sheet call and
+records the active session around it:
+
+```bash
+npm run ticket:timing -- claim KF-ABC123 --worker agent-1   # hotsheet-cli claim + active start
+# Work on the ticket.
+npm run ticket:timing -- release KF-ABC123 --worker agent-1 # finish every open active session + hotsheet-cli release
+```
+
+`claim` runs `hotsheet-cli claim` first and starts timing only if the claim
+succeeded (`--gate` defaults to `implementation`). `release` finishes every
+open `active` session on the ticket (`--outcome` defaults to `passed`), warns if
+there was none, then runs `hotsheet-cli release`. A worker that claims with the
+bare CLI records no active time; the lower-level `start`/`finish` pair remains
+for sessions that are not tied to a lease:
 
 ```bash
 session=$(npm run --silent ticket:timing -- start KF-ABC123 --phase active --gate implementation)
-# Work on the ticket.
 npm run ticket:timing -- finish KF-ABC123 --session "$session"
 ```
+
+## Push hook and local gates
 
 The pre-push hook derives ticket slugs from commits that are actually outgoing
 to the named remote and records `root:check` automatically. A tag-only push of
@@ -41,10 +62,64 @@ npm run ticket:timing -- run KF-ABC123 \
   npm --prefix ui run check:change
 ```
 
-CI and publication systems cannot write to the computer-local ticket store.
-After observing one of those intervals, record its ISO timestamps and a stable
-gate name. Failures may include a low-cardinality category; raw output and
-paths are deliberately unsupported.
+Every attempt is recorded, not only passes: a non-zero exit records `failed`
+with `failure_category: "command_exit"`, and a gate stopped by Ctrl-C or a
+termination signal records `interrupted` with `failure_category: "signal"`.
+The wrapper forwards `SIGINT`/`SIGTERM`/`SIGHUP` to the gate instead of dying
+first, so the note is still written; an interrupted wrapper exits 130 on
+`SIGINT` (1 for other signals).
+
+### Per-step check durations
+
+`npm run check` runs `check:core` through `scripts/run-check-steps.mjs`, which
+splits the `&&` chain in `package.json` (still its single source of truth),
+runs the segments in order with the same stop-at-first-failure semantics, and
+prints a step-duration table at the end. The chain may only join commands with
+`&&`; the runner refuses `||`, `;`, pipes, or background `&`, which a sequential
+split would change. When `KERF_CHECK_STEP_LOG` names a file, the runner writes
+each step's low-cardinality identifier (`lint`, `test`, `build`,
+`vitest:dist`, `tsc:jsx-typing`, …), duration, and outcome there after every
+step. `pre-push` and `run` set it automatically, so their interval records gain
+an ordered `"steps": { "<step>": <ms>, … }` map and, on failure, the
+`"failed_step"` — including a partial map for a chain that failed or was
+interrupted part-way. Only identifiers and milliseconds are stored.
+
+## CI and publication
+
+CI and publication systems cannot write to the computer-local ticket store, so
+kerf pulls their timing instead. `import-ci` reads recent workflow runs with
+`gh run list --json …` and records one interval per run on every ticket named
+in the commits that run covered:
+
+```bash
+npm run ticket:timing -- import-ci              # the last 30 runs
+npm run ticket:timing -- import-ci --limit 100 --branch main --dry-run
+```
+
+- Only completed `push` runs are imported. Workflows named like
+  `pages`/`release`/`publish`/`deploy` record `publication`; all others record
+  `ci`. The gate is `github:<workflow-slug>`.
+- A run's commit range is `previous..head`, where `previous` is the head commit
+  of the preceding run of the same workflow on the same branch. The oldest run
+  of each group in the fetched window has no known predecessor and is skipped
+  (widen `--limit` to include it). Runs whose commits are not available locally
+  are skipped with a fetch-and-retry warning.
+- A range naming more than 25 tickets is not a coherent push batch (a first
+  push of a long history, a force-push) and is skipped rather than recreating
+  the fan-out shape described under "Backfill" below.
+- `success`/`neutral` record `passed`; `failure`/`timed_out`/`startup_failure`
+  record `failed` with that category (`failure` becomes `workflow_failure`);
+  `cancelled` records `interrupted`. Skipped or still-running runs are ignored.
+- Each record carries the run's numeric `run_id`, and the import skips any
+  ticket that already holds that run id, so repeated imports are idempotent.
+  (A run recorded by hand with `record`, which carries no `run_id`, is not
+  recognized and would be imported once more.)
+
+`gh` must be authenticated for the repository; `KERF_GH_CLI` overrides the
+binary. For an interval no workflow reports — a registry or CDN propagation
+wait — record its ISO timestamps and a stable gate name by hand. Failures may
+include a low-cardinality category; raw output and paths are deliberately
+unsupported.
 
 ```bash
 npm run ticket:timing -- record KF-ABC123 \
@@ -58,6 +133,8 @@ npm run ticket:timing -- record KF-ABC123 \
   --finished-at 2026-09-23T10:07:00Z --outcome failed \
   --failure-category registry_timeout
 ```
+
+## Summaries
 
 Use `npm run ticket:timing -- summary KF-ABC123` for a process-review summary,
 or add `--json` for structured output. The summary totals duration and attempts

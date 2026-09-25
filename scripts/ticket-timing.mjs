@@ -2,6 +2,9 @@
 
 import { execFile, spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
+import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import process from 'node:process';
 import { promisify } from 'node:util';
 
@@ -12,6 +15,7 @@ import {
   readWorktreeState,
   treeOf,
 } from './lib/check-pass-cache.mjs';
+import { stepTimingFields } from './lib/check-steps.mjs';
 import {
   assertIdentifier,
   assertPhase,
@@ -22,9 +26,16 @@ import {
   summarizeTicketTiming,
   ticketSlugsFromSubjects,
 } from './lib/ticket-timing.mjs';
+import {
+  GH_RUN_FIELDS,
+  hasRecordedRun,
+  MAX_TICKETS_PER_RUN,
+  planCiImports,
+} from './lib/ticket-timing-ci.mjs';
 
 const execFileAsync = promisify(execFile);
 const hotsheet = process.env.HOTSHEET_CLI || 'hotsheet-cli';
+const gh = process.env.KERF_GH_CLI || 'gh';
 
 function usage(message) {
   if (message) console.error(message);
@@ -33,7 +44,10 @@ function usage(message) {
   npm run ticket:timing -- finish <ticket> --session <uuid> [--outcome passed|failed] [--failure-category <id>]
   npm run ticket:timing -- run <ticket> --phase <phase> --gate <id> [--failure-category <id>] -- <command> [args...]
   npm run ticket:timing -- record <ticket> --phase <phase> --gate <id> --started-at <iso> --finished-at <iso> --outcome passed|failed|interrupted|skipped
-  npm run ticket:timing -- summary <ticket> [--json]`);
+  npm run ticket:timing -- summary <ticket> [--json]
+  npm run ticket:timing -- claim <ticket> --worker <id> [--gate <id>]
+  npm run ticket:timing -- release <ticket> --worker <id> [--outcome passed|failed|interrupted]
+  npm run ticket:timing -- import-ci [--limit <n>] [--branch <name>] [--dry-run]`);
   process.exit(2);
 }
 
@@ -44,7 +58,7 @@ function options(args) {
     if (!value.startsWith('--')) parsed._.push(value);
     else {
       const name = value.slice(2).replaceAll('-', '_');
-      if (name === 'json') parsed.json = true;
+      if (name === 'json' || name === 'dry_run') parsed[name] = true;
       else parsed[name] = args[++index];
     }
   }
@@ -122,15 +136,69 @@ async function finish(ticket, parsed) {
   await append(ticket, record);
 }
 
-async function runCommand(command, args) {
-  const child = spawn(command, args, { stdio: 'inherit', env: process.env });
-  return new Promise((resolve) => {
-    child.once('error', () => resolve({ code: 1, signal: null }));
-    child.once('exit', (code, signal) => resolve({ code, signal }));
-  });
+const FORWARDED_SIGNALS = ['SIGINT', 'SIGTERM', 'SIGHUP'];
+
+// Runs a command while this wrapper survives Ctrl-C / termination long enough
+// to record the attempt as `interrupted`: the signal is forwarded to the child
+// instead of killing the wrapper before it can write the timing note.
+async function runCommand(command, args, env = process.env) {
+  const child = spawn(command, args, { stdio: 'inherit', env });
+  let interrupted = null;
+  const forward = (signal) => {
+    interrupted = signal;
+    child.kill(signal);
+  };
+  for (const signal of FORWARDED_SIGNALS) process.on(signal, forward);
+  try {
+    return await new Promise((resolve) => {
+      child.once('error', () => resolve({ code: 1, signal: null }));
+      child.once('exit', (code, signal) =>
+        resolve({ code, signal: signal ?? interrupted }),
+      );
+    });
+  } finally {
+    for (const signal of FORWARDED_SIGNALS) process.off(signal, forward);
+  }
 }
 
-async function recordInterval(ticket, parsed, outcome) {
+// Runs a command with a step log a step-timed chain (scripts/run-check-steps.mjs)
+// can fill, and returns the per-step fields for the timing record.
+async function runWithSteps(command) {
+  const directory = await mkdtemp(join(tmpdir(), 'kerf-check-steps-'));
+  const log = join(directory, 'steps.json');
+  try {
+    const result = await runCommand(command[0], command.slice(1), {
+      ...process.env,
+      KERF_CHECK_STEP_LOG: log,
+    });
+    let fields = {};
+    try {
+      fields = stepTimingFields(JSON.parse(await readFile(log, 'utf8')));
+    } catch {
+      // The command was not a step-timed chain, or stopped before step one.
+    }
+    return { result, fields };
+  } finally {
+    await rm(directory, { recursive: true, force: true });
+  }
+}
+
+function commandOutcome(result) {
+  if (result.code === 0 && !result.signal) return { outcome: 'passed' };
+  if (result.signal)
+    return { outcome: 'interrupted', failure_category: 'signal' };
+  return { outcome: 'failed', failure_category: 'command_exit' };
+}
+
+function exitStatus(result) {
+  if (result.signal) {
+    console.error(`Command terminated by ${result.signal}`);
+    return result.signal === 'SIGINT' ? 130 : 1;
+  }
+  return result.code ?? 1;
+}
+
+async function recordInterval(ticket, parsed, outcome, extra = {}) {
   const startedAt = isoTime(parsed.started_at, 'start timestamp');
   const finishedAt = isoTime(parsed.finished_at, 'finish timestamp');
   if (Date.parse(finishedAt) < Date.parse(startedAt))
@@ -152,6 +220,7 @@ async function recordInterval(ticket, parsed, outcome) {
     ...(parsed.skip_reason
       ? { skip_reason: assertIdentifier(parsed.skip_reason, 'skip reason') }
       : {}),
+    ...extra,
   };
   await append(ticket, record);
 }
@@ -159,24 +228,22 @@ async function recordInterval(ticket, parsed, outcome) {
 async function runTimed(ticket, parsed, command) {
   if (command.length === 0) usage('A command is required after --');
   const startedAt = new Date().toISOString();
-  const result = await runCommand(command[0], command.slice(1));
-  const outcome = result.code === 0 ? 'passed' : 'failed';
+  const { result, fields } = await runWithSteps(command);
+  const { outcome, failure_category } = commandOutcome(result);
   await recordInterval(
     ticket,
     {
       ...parsed,
       started_at: startedAt,
       finished_at: new Date().toISOString(),
-      ...(outcome === 'failed' && !parsed.failure_category
-        ? { failure_category: 'command_exit' }
+      ...(failure_category && !parsed.failure_category
+        ? { failure_category }
         : {}),
     },
     outcome,
+    fields,
   );
-  if (result.signal) {
-    console.error(`Command terminated by ${result.signal}`);
-    process.exitCode = 1;
-  } else process.exitCode = result.code ?? 1;
+  process.exitCode = exitStatus(result);
 }
 
 function formatDuration(milliseconds) {
@@ -286,17 +353,16 @@ async function prePush(args) {
     : { skip: false };
   const startedAt = new Date().toISOString();
   let result = { code: 0, signal: null };
+  let fields = {};
   if (decision.skip)
     console.log(
       `[pre-push] Skipping \`${command.join(' ')}\`: this exact tree already passed it locally. Set KERF_FORCE_CHECK=1 to run it anyway.`,
     );
-  else result = await runCommand(command[0], command.slice(1));
+  else ({ result, fields } = await runWithSteps(command));
   const finishedAt = new Date().toISOString();
-  const outcome = decision.skip
-    ? 'skipped'
-    : result.code === 0
-      ? 'passed'
-      : 'failed';
+  const { outcome, failure_category } = decision.skip
+    ? { outcome: 'skipped' }
+    : commandOutcome(result);
   for (const ticket of tickets) {
     try {
       await recordInterval(
@@ -306,10 +372,11 @@ async function prePush(args) {
           gate: 'root:check',
           started_at: startedAt,
           finished_at: finishedAt,
-          ...(outcome === 'failed' ? { failure_category: 'command_exit' } : {}),
+          ...(failure_category ? { failure_category } : {}),
           ...(decision.skip ? { skip_reason: decision.reason } : {}),
         },
         outcome,
+        fields,
       );
     } catch (error) {
       console.warn(
@@ -317,12 +384,119 @@ async function prePush(args) {
       );
     }
   }
-  process.exitCode = result.code ?? 1;
+  process.exitCode = decision.skip ? 0 : exitStatus(result);
+}
+
+// Hot Sheet leases are owned by hotsheet-cli, which has no hook kerf can
+// attach to, so active time is captured by wrapping claim and release.
+async function claim(ticket, parsed) {
+  if (!parsed.worker) usage('--worker is required');
+  await execFileAsync(hotsheet, ['claim', ticket, '--worker', parsed.worker]);
+  await start(ticket, {
+    phase: 'active',
+    gate: parsed.gate ?? 'implementation',
+  });
+}
+
+async function release(ticket, parsed) {
+  if (!parsed.worker) usage('--worker is required');
+  const open = summarizeTicketTiming(
+    await showTicket(ticket),
+  ).in_progress.filter((record) => record.phase === 'active');
+  if (open.length === 0)
+    console.warn(`[ticket-timing] ${ticket} has no open active session`);
+  for (const record of open)
+    await finish(ticket, { ...parsed, session: record.session_id });
+  await execFileAsync(hotsheet, ['release', ticket, '--worker', parsed.worker]);
+}
+
+async function commitExists(sha) {
+  try {
+    await execFileAsync('git', ['cat-file', '-e', `${sha}^{commit}`]);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function importCi(parsed) {
+  const limit = Number(parsed.limit ?? 30);
+  if (!Number.isInteger(limit) || limit < 2 || limit > 1000)
+    usage('--limit must be an integer from 2 to 1000');
+  const args = [
+    'run',
+    'list',
+    '--limit',
+    String(limit),
+    '--json',
+    GH_RUN_FIELDS.join(','),
+  ];
+  if (parsed.branch) args.push('--branch', parsed.branch);
+  const { stdout } = await execFileAsync(gh, args, {
+    encoding: 'utf8',
+    maxBuffer: 16 * 1024 * 1024,
+  });
+  let imported = 0;
+  let existing = 0;
+  for (const plan of planCiImports(JSON.parse(stdout))) {
+    const { record } = plan;
+    if (
+      !(await commitExists(plan.head_sha)) ||
+      !(await commitExists(plan.previous_sha))
+    ) {
+      console.warn(
+        `[ticket-timing] Run ${record.run_id}: commits not available locally; fetch and retry`,
+      );
+      continue;
+    }
+    const { stdout: log } = await execFileAsync('git', [
+      'log',
+      '--format=%s',
+      `${plan.previous_sha}..${plan.head_sha}`,
+    ]);
+    const tickets = ticketSlugsFromSubjects(log.split('\n'));
+    if (tickets.length > MAX_TICKETS_PER_RUN) {
+      console.warn(
+        `[ticket-timing] Run ${record.run_id}: ${tickets.length} tickets exceeds ${MAX_TICKETS_PER_RUN}; not a coherent push, skipped`,
+      );
+      continue;
+    }
+    for (const ticket of tickets) {
+      try {
+        if (
+          hasRecordedRun(
+            parseTimingRecords(await showTicket(ticket)),
+            record.run_id,
+          )
+        ) {
+          existing += 1;
+          continue;
+        }
+        if (parsed.dry_run)
+          console.log(
+            `${ticket} ${record.phase}/${record.gate} run ${record.run_id} ${record.outcome}`,
+          );
+        else await append(ticket, record);
+        imported += 1;
+      } catch (error) {
+        console.warn(
+          `[ticket-timing] Could not record ${ticket}: ${error.message}`,
+        );
+      }
+    }
+  }
+  console.log(
+    `${parsed.dry_run ? 'Would import' : 'Imported'} ${imported} run interval(s); ${existing} already recorded`,
+  );
 }
 
 const [action, ticketValue, ...rest] = process.argv.slice(2);
 try {
   if (action === 'pre-push') await prePush([ticketValue, ...rest]);
+  else if (action === 'import-ci')
+    await importCi(
+      options([ticketValue, ...rest].filter((value) => value !== undefined)),
+    );
   else {
     if (!action || !ticketValue) usage();
     const ticket = assertTicket(ticketValue);
@@ -340,6 +514,8 @@ try {
         throw new Error(`Invalid outcome: ${outcome}`);
       await recordInterval(ticket, parsed, outcome);
     } else if (action === 'summary') await summary(ticket, parsed.json);
+    else if (action === 'claim') await claim(ticket, parsed);
+    else if (action === 'release') await release(ticket, parsed);
     else usage(`Unknown action: ${action}`);
   }
 } catch (error) {

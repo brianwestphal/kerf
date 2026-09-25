@@ -46,6 +46,12 @@ through unchanged and externally rewritten guidance flows.
 summaries, queue delay, repeated failures, and outgoing ticket discovery;
 `tests/unit/ticket-timing-check-pass.test.ts` covers every branch of the
 pre-push skip decision and the `KERF_FORCE_CHECK` override;
+`tests/unit/ticket-timing-steps-ci.test.ts` covers check-chain splitting and
+step naming against the real `check:core`, step-log sanitizing, and CI run
+record mapping, predecessor pairing, and idempotency;
+`tests/integration/ticket-timing-steps-ci.test.ts` drives the real step runner,
+per-step push-hook records, an interrupted gate, the claim/release wrapper, and
+a twice-run `import-ci` through fake `gh`/Hot Sheet boundaries;
 `tests/integration/ticket-timing.test.ts` drives successful and failed commands
 through the real CLI with a faithful Hot Sheet command boundary, plus the
 record-pass → skip → force → dirty → new-tree → failed-rerun sequence in a
@@ -429,13 +435,18 @@ kerf/
 │   ├── lib/
 │   │   ├── ai-bundle.mjs         ← KF-215 — shared logic for sync + check scripts; deterministic `computeBundle()` produces the three `ai/` files in memory from the root source-of-truth files
 │   │   ├── check-pass-cache.d.mts ← declarations for the check-pass cache helpers consumed by the TypeScript test suite
+│   │   ├── check-steps.d.mts ← declarations for the check-chain step helpers consumed by the TypeScript test suite
+│   │   ├── check-steps.mjs ← splits the `&&` check chain, derives unique low-cardinality step identifiers, and sanitizes a step log into timing-record fields
 │   │   ├── check-pass-cache.mjs ← records the clean tree a passing `npm run check` verified (under the git directory) and the conservative `decideCheckSkip()` rule the pre-push hook uses to skip an identical rerun
 │   │   ├── guidance-integrity.d.mts ← declarations for the guidance-integrity helpers consumed by the TypeScript test suite
 │   │   ├── guidance-integrity.mjs ← byte-level snapshot and comparison helpers for the root check's tracked Hot Sheet guidance guard
 │   │   ├── ticket-timing.d.mts ← timing helper declarations consumed by the TypeScript test suite
+│   │   ├── ticket-timing-ci.d.mts ← declarations for the CI-import planning helpers consumed by the TypeScript test suite
+│   │   ├── ticket-timing-ci.mjs ← pure `gh run list` → CI/publication timing-record planning: conclusion mapping, predecessor commit ranges, run-id idempotency
 │   │   └── ticket-timing.mjs ← versioned timing-note parsing, safe identifiers, outgoing ticket discovery, and adversarial phase-summary logic
 │   ├── check-guidance-integrity.mjs ← wraps the root check chain and fails if an external Hot Sheet config synchronizer changes AGENTS.md, CLAUDE.md, or either generated Hot Sheet skill while the gate runs; with `--record-pass` it invalidates, then (on a clean passing run) records, the verified tree
-│   ├── ticket-timing.mjs       ← durable Hot Sheet active/local/push/CI/publication timing CLI; wraps commands without storing output, powers summaries, and records the pre-push gate against ticket slugs in outgoing commits (skipping it, and recording `skipped`, when the pushed clean tree already passed `npm run check` locally)
+│   ├── run-check-steps.mjs     ← runs an `&&` npm script one step at a time with identical stop-on-failure semantics, printing and (via `KERF_CHECK_STEP_LOG`) logging per-step durations; `npm run check` runs `check:core` through it
+│   ├── ticket-timing.mjs       ← durable Hot Sheet active/local/push/CI/publication timing CLI; wraps commands without storing output, powers summaries, and records the pre-push gate against ticket slugs in outgoing commits (skipping it, and recording `skipped`, when the pushed clean tree already passed `npm run check` locally); also wraps `hotsheet-cli claim`/`release` with active sessions, records interrupted attempts, and imports GitHub workflow runs (`import-ci`)
 │   ├── check-packed-jsx-typing.mjs ← packs `kerfjs`, extracts it as an installed dependency, and compiles the downstream JSX fixture so the published tarball must preserve the recursive `JSXChildren` contract
 │   ├── sync-ai-bundle.mjs        ← KF-215 — regenerates `ai/` from `kerf.claude-skill.md` + `kerf.cursorrules`; run after editing either source
 │   ├── check-ai-bundle.mjs       ← KF-215 — in-sync gate; fails when `ai/` drifts from the root sources or the manifest's `kerfjsVersion` is stale. Wired into `npm run check`

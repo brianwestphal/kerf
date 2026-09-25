@@ -18,6 +18,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   already wired, closes the overlay (including a `native` `<dialog>`), restores
   focus, and rethrows the original error, so no pending promise is left
   attached to an on-screen dialog.
+- Ticket timing now records per-step durations of the root `npm run check`
+  chain (printed at the end of every run), interrupted gate attempts, active
+  time through `ticket:timing claim`/`release` wrappers around `hotsheet-cli`,
+  and CI/publication intervals imported idempotently from GitHub Actions with
+  `ticket:timing import-ci`.
 - The pre-push hook no longer reruns `npm run check` when a local run already
   passed on the exact clean tree being pushed; the skip is recorded in ticket
   timing, and any dirty worktree, different tree, Node.js change,
