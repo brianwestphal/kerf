@@ -1,5 +1,12 @@
 import { execFile, spawn } from 'node:child_process';
-import { chmod, mkdtemp, readFile, writeFile } from 'node:fs/promises';
+import {
+  chmod,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { delimiter, join, resolve } from 'node:path';
 import process from 'node:process';
@@ -9,6 +16,41 @@ import { describe, expect, it } from 'vitest';
 
 const execFileAsync = promisify(execFile);
 const script = resolve(import.meta.dirname, '../../scripts/ticket-timing.mjs');
+const guard = resolve(
+  import.meta.dirname,
+  '../../scripts/check-guidance-integrity.mjs',
+);
+
+async function fixtureRepo(prefix: string) {
+  const scratch = await mkdtemp(join(tmpdir(), prefix));
+  const root = join(scratch, 'repo');
+  const log = join(scratch, 'notes.log');
+  const fake = join(scratch, 'hotsheet-cli');
+  await mkdir(root);
+  await writeFile(log, '');
+  await writeFile(
+    fake,
+    `#!/bin/sh\nprintf '%s\\n' "$*" >> "$TIMING_TEST_LOG"\n`,
+  );
+  await chmod(fake, 0o755);
+  const git = (args: string[]) => execFileAsync('git', args, { cwd: root });
+  await git(['init', '-b', 'main']);
+  await git(['config', 'user.name', 'Timing Test']);
+  await git(['config', 'user.email', 'timing@example.test']);
+  await writeFile(join(root, 'fixture.txt'), 'content\n');
+  await git(['add', 'fixture.txt']);
+  await git(['commit', '-m', 'KF-NEW111 outgoing change']);
+  const { stdout } = await git(['rev-parse', 'HEAD']);
+  const head = stdout.trim();
+  return {
+    scratch,
+    root,
+    log,
+    git,
+    pushInput: `refs/heads/main ${head} refs/heads/main ${'0'.repeat(40)}\n`,
+    env: { ...process.env, HOTSHEET_CLI: fake, TIMING_TEST_LOG: log },
+  };
+}
 
 function runWithInput(
   args: string[],
@@ -185,5 +227,146 @@ describe('ticket timing CLI', () => {
     expect(explicit).toEqual({ code: 0, stderr: '' });
     expect(await readFile(log, 'utf8')).toContain('edit KF-RELEASE36');
     expect(await readFile(log, 'utf8')).not.toContain('KF-OLD111');
+  });
+
+  it('skips the pre-push check only for the exact clean tree that already passed', async () => {
+    const repo = await fixtureRepo('kerf-ticket-timing-skip-');
+    const ran = join(repo.scratch, 'check-ran');
+    const check = [
+      process.execPath,
+      '-e',
+      `require("node:fs").appendFileSync(${JSON.stringify(ran)}, "x")`,
+    ];
+    const prePush = (env: typeof process.env = repo.env) =>
+      runWithInput(
+        [
+          'pre-push',
+          'origin',
+          'test://origin',
+          '--skip-if-verified',
+          '--',
+          ...check,
+        ],
+        { cwd: repo.root, env },
+        repo.pushInput,
+      );
+    const runs = async () => {
+      try {
+        return (await readFile(ran, 'utf8')).length;
+      } catch {
+        return 0;
+      }
+    };
+
+    // No local pass recorded yet: the gate runs.
+    expect((await prePush()).code).toBe(0);
+    expect(await runs()).toBe(1);
+
+    // A passing local `npm run check` (the guarded wrapper) records the tree.
+    await execFileAsync(
+      process.execPath,
+      [guard, '--record-pass', '--', process.execPath, '-e', ''],
+      { cwd: repo.root },
+    );
+    expect((await prePush()).code).toBe(0);
+    expect(await runs()).toBe(1);
+    const notes = await readFile(repo.log, 'utf8');
+    expect(notes).toContain('"outcome":"skipped"');
+    expect(notes).toContain('"skip_reason":"tree_already_verified"');
+    expect(notes).toContain('edit KF-NEW111');
+
+    // The explicit override always runs the gate.
+    expect((await prePush({ ...repo.env, KERF_FORCE_CHECK: '1' })).code).toBe(
+      0,
+    );
+    expect(await runs()).toBe(2);
+
+    // A dirty worktree runs the gate even though HEAD's tree matches.
+    await writeFile(join(repo.root, 'untracked.txt'), 'dirty\n');
+    expect((await prePush()).code).toBe(0);
+    expect(await runs()).toBe(3);
+    await rm(join(repo.root, 'untracked.txt'));
+    expect((await prePush()).code).toBe(0);
+    expect(await runs()).toBe(3);
+
+    // A new commit changes the tree, so the old pass no longer applies.
+    await writeFile(join(repo.root, 'fixture.txt'), 'changed\n');
+    await repo.git(['commit', '-am', 'KF-NEW222 second change']);
+    const { stdout: head } = await repo.git(['rev-parse', 'HEAD']);
+    const secondPush = `refs/heads/main ${head.trim()} refs/heads/main ${'0'.repeat(40)}\n`;
+    expect(
+      (
+        await runWithInput(
+          [
+            'pre-push',
+            'origin',
+            'test://origin',
+            '--skip-if-verified',
+            '--',
+            ...check,
+          ],
+          { cwd: repo.root, env: repo.env },
+          secondPush,
+        )
+      ).code,
+    ).toBe(0);
+    expect(await runs()).toBe(4);
+
+    // A failed rerun invalidates an earlier pass of the same tree.
+    await execFileAsync(
+      process.execPath,
+      [guard, '--record-pass', '--', process.execPath, '-e', ''],
+      { cwd: repo.root },
+    );
+    await expect(
+      execFileAsync(
+        process.execPath,
+        [
+          guard,
+          '--record-pass',
+          '--',
+          process.execPath,
+          '-e',
+          'process.exit(3)',
+        ],
+        { cwd: repo.root },
+      ),
+    ).rejects.toMatchObject({ code: 3 });
+    expect(
+      (
+        await runWithInput(
+          [
+            'pre-push',
+            'origin',
+            'test://origin',
+            '--skip-if-verified',
+            '--',
+            ...check,
+          ],
+          { cwd: repo.root, env: repo.env },
+          secondPush,
+        )
+      ).code,
+    ).toBe(0);
+    expect(await runs()).toBe(5);
+  });
+
+  it('does not record a pass when the checked worktree was dirty', async () => {
+    const repo = await fixtureRepo('kerf-ticket-timing-dirty-');
+    await writeFile(join(repo.root, 'fixture.txt'), 'edited\n');
+    await execFileAsync(
+      process.execPath,
+      [guard, '--record-pass', '--', process.execPath, '-e', ''],
+      { cwd: repo.root },
+    );
+    await repo.git(['checkout', 'fixture.txt']);
+    const { stdout } = await repo.git([
+      'rev-parse',
+      '--git-path',
+      'kerf/check-pass.json',
+    ]);
+    await expect(
+      readFile(resolve(repo.root, stdout.trim()), 'utf8'),
+    ).rejects.toMatchObject({ code: 'ENOENT' });
   });
 });

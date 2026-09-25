@@ -5,7 +5,7 @@ export interface TicketTimingSummary {
   queue_delay_ms: number | null;
   phases: Record<
     TicketTimingPhase,
-    { attempts: number; duration_ms: number; failures: number }
+    { attempts: number; duration_ms: number; failures: number; skipped: number }
   >;
   failure_categories: Record<string, number>;
   in_progress: Array<Record<string, unknown>>;

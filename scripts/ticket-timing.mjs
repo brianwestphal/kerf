@@ -6,6 +6,13 @@ import process from 'node:process';
 import { promisify } from 'node:util';
 
 import {
+  decideCheckSkip,
+  isForced,
+  readCheckPass,
+  readWorktreeState,
+  treeOf,
+} from './lib/check-pass-cache.mjs';
+import {
   assertIdentifier,
   assertPhase,
   assertTicket,
@@ -25,7 +32,7 @@ function usage(message) {
   npm run ticket:timing -- start <ticket> --phase <phase> --gate <id>
   npm run ticket:timing -- finish <ticket> --session <uuid> [--outcome passed|failed] [--failure-category <id>]
   npm run ticket:timing -- run <ticket> --phase <phase> --gate <id> [--failure-category <id>] -- <command> [args...]
-  npm run ticket:timing -- record <ticket> --phase <phase> --gate <id> --started-at <iso> --finished-at <iso> --outcome passed|failed
+  npm run ticket:timing -- record <ticket> --phase <phase> --gate <id> --started-at <iso> --finished-at <iso> --outcome passed|failed|interrupted|skipped
   npm run ticket:timing -- summary <ticket> [--json]`);
   process.exit(2);
 }
@@ -142,6 +149,9 @@ async function recordInterval(ticket, parsed, outcome) {
           ),
         }
       : {}),
+    ...(parsed.skip_reason
+      ? { skip_reason: assertIdentifier(parsed.skip_reason, 'skip reason') }
+      : {}),
   };
   await append(ticket, record);
 }
@@ -185,7 +195,7 @@ async function summary(ticket, json) {
   );
   for (const [phase, data] of Object.entries(result.phases))
     console.log(
-      `${phase}: ${formatDuration(data.duration_ms)} across ${data.attempts} attempt(s), ${data.failures} failure(s)`,
+      `${phase}: ${formatDuration(data.duration_ms)} across ${data.attempts} attempt(s), ${data.failures} failure(s)${data.skipped ? `, ${data.skipped} skipped` : ''}`,
     );
   const failures = Object.entries(result.failure_categories);
   console.log(
@@ -203,6 +213,14 @@ async function hasRemoteTrackingRefs(remoteName) {
     `refs/remotes/${remoteName}`,
   ]);
   return stdout.trim().length > 0;
+}
+
+function pushedLocalShas(input) {
+  return input
+    .trim()
+    .split('\n')
+    .map((line) => line.split(/\s+/)[1])
+    .filter((sha) => sha && !/^0+$/.test(sha));
 }
 
 async function subjectsFromPushInput(input, remoteName) {
@@ -231,10 +249,30 @@ function explicitlySuppliedTickets() {
   ]);
 }
 
+async function checkSkipDecision(input) {
+  const cwd = process.cwd();
+  const current = await readWorktreeState(cwd);
+  const pushedTrees = [];
+  try {
+    for (const sha of pushedLocalShas(input))
+      pushedTrees.push(await treeOf(cwd, sha));
+  } catch {
+    return { skip: false, reason: 'unknown_tree' };
+  }
+  return decideCheckSkip({
+    force: isForced(process.env),
+    cached: await readCheckPass(cwd),
+    current: { ...current, node: process.version, pushedTrees },
+  });
+}
+
 async function prePush(args) {
   const separator = args.indexOf('--');
   const command = separator === -1 ? [] : args.slice(separator + 1);
   if (!command.length) usage('A pre-push command is required after --');
+  const skipIfVerified = args
+    .slice(0, separator)
+    .includes('--skip-if-verified');
   let input = '';
   for await (const chunk of process.stdin) input += chunk;
   const tickets = [
@@ -243,9 +281,22 @@ async function prePush(args) {
       ...explicitlySuppliedTickets(),
     ]),
   ].sort();
+  const decision = skipIfVerified
+    ? await checkSkipDecision(input)
+    : { skip: false };
   const startedAt = new Date().toISOString();
-  const result = await runCommand(command[0], command.slice(1));
+  let result = { code: 0, signal: null };
+  if (decision.skip)
+    console.log(
+      `[pre-push] Skipping \`${command.join(' ')}\`: this exact tree already passed it locally. Set KERF_FORCE_CHECK=1 to run it anyway.`,
+    );
+  else result = await runCommand(command[0], command.slice(1));
   const finishedAt = new Date().toISOString();
+  const outcome = decision.skip
+    ? 'skipped'
+    : result.code === 0
+      ? 'passed'
+      : 'failed';
   for (const ticket of tickets) {
     try {
       await recordInterval(
@@ -255,9 +306,10 @@ async function prePush(args) {
           gate: 'root:check',
           started_at: startedAt,
           finished_at: finishedAt,
-          ...(result.code === 0 ? {} : { failure_category: 'command_exit' }),
+          ...(outcome === 'failed' ? { failure_category: 'command_exit' } : {}),
+          ...(decision.skip ? { skip_reason: decision.reason } : {}),
         },
-        result.code === 0 ? 'passed' : 'failed',
+        outcome,
       );
     } catch (error) {
       console.warn(
@@ -284,7 +336,7 @@ try {
       await runTimed(ticket, parsed, rest.slice(separator + 1));
     else if (action === 'record') {
       const outcome = parsed.outcome;
-      if (!['passed', 'failed', 'interrupted'].includes(outcome))
+      if (!['passed', 'failed', 'interrupted', 'skipped'].includes(outcome))
         throw new Error(`Invalid outcome: ${outcome}`);
       await recordInterval(ticket, parsed, outcome);
     } else if (action === 'summary') await summary(ticket, parsed.json);

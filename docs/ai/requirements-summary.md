@@ -399,7 +399,7 @@ utility classes.
 
 ### §25 Ticket phase timing
 
-**Shipped.** `npm run ticket:timing` writes versioned, low-cardinality Hot Sheet activity notes that distinguish active work, local verification, push hooks, CI, and publication without retaining command output, secrets, or machine paths. `start`/`finish` manage explicit active intervals, `run` wraps a local gate while preserving its exit status, `record` captures externally observed intervals, and `summary` reports durations, attempts, repeated failure categories, unfinished sessions, and out-of-order data. The pre-push hook attributes `root:check` only to tickets in outgoing commits unless an explicit ticket override is supplied; telemetry failure warns without blocking a valid push.
+**Shipped.** `npm run ticket:timing` writes versioned, low-cardinality Hot Sheet activity notes that distinguish active work, local verification, push hooks, CI, and publication without retaining command output, secrets, or machine paths. `start`/`finish` manage explicit active intervals, `run` wraps a local gate while preserving its exit status, `record` captures externally observed intervals, and `summary` reports durations, attempts, repeated failure categories, unfinished sessions, and out-of-order data. The pre-push hook attributes `root:check` only to tickets in outgoing commits unless an explicit ticket override is supplied; telemetry failure warns without blocking a valid push. The hook skips `root:check` (recording a `skipped` outcome) only when a clean worktree pushes exactly the tree a passing local `npm run check` recorded; any other state, or `KERF_FORCE_CHECK=1`, runs it.
 
 ## Update triggers
 

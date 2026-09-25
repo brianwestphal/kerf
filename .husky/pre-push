@@ -1,1 +1,1 @@
-node scripts/ticket-timing.mjs pre-push "$@" -- npm run check
+node scripts/ticket-timing.mjs pre-push "$@" --skip-if-verified -- npm run check

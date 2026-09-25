@@ -18,6 +18,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   already wired, closes the overlay (including a `native` `<dialog>`), restores
   focus, and rethrows the original error, so no pending promise is left
   attached to an on-screen dialog.
+- The pre-push hook no longer reruns `npm run check` when a local run already
+  passed on the exact clean tree being pushed; the skip is recorded in ticket
+  timing, and any dirty worktree, different tree, Node.js change,
+  failed/interrupted rerun, or `KERF_FORCE_CHECK=1` runs the full gate.
 - `bindList()` now rolls back when its first render throws: rows that pass
   already created are disposed (content mounts and element-mode `dispose`
   callbacks) and removed before the original error is rethrown, instead of

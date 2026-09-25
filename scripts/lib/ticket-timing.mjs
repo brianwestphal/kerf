@@ -109,12 +109,18 @@ export function summarizeTicketTiming(ticketText) {
   const phases = Object.fromEntries(
     TIMING_PHASES.map((phase) => [
       phase,
-      { attempts: 0, duration_ms: 0, failures: 0 },
+      { attempts: 0, duration_ms: 0, failures: 0, skipped: 0 },
     ]),
   );
   const failureCategories = {};
   for (const interval of intervals) {
     if (!phases[interval.phase]) continue;
+    // A skipped gate (the pre-push hook reusing an identical local pass) did
+    // not run, so it is neither an attempt nor a failure.
+    if (interval.outcome === 'skipped') {
+      phases[interval.phase].skipped += 1;
+      continue;
+    }
     phases[interval.phase].attempts += 1;
     phases[interval.phase].duration_ms += interval.duration_ms;
     if (interval.outcome !== 'passed') phases[interval.phase].failures += 1;
