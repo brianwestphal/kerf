@@ -1,0 +1,19 @@
+.demo-spacer-list {
+  width: min(remify(480px), 100%);
+}
+
+.demo-spacer-marker {
+  display: flex;
+  background: var(--kui-color-accent-subtle);
+}
+
+.demo-spacer-marker--flex {
+  flex: 1 1 auto;
+}
+
+.demo-spacer-list {
+  padding: var(--kui-space-xs);
+  border: 1px solid var(--kui-color-border);
+  border-radius: var(--kui-radius-m);
+  background: var(--kui-color-surface-lowered);
+}

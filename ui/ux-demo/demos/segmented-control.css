@@ -1,0 +1,3 @@
+.segmented-control-demo__equal-frame {
+  min-width: min(remify(384px), 100%);
+}

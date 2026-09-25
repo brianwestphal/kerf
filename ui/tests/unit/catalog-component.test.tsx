@@ -65,11 +65,12 @@ describe('Catalog', () => {
     expect(html).toContain('data-component="catalog"');
     expect(html).toContain('data-sidebar-collapsed="false"');
     expect(html).toContain(
-      'data-component="toolbar-text" data-size="large" role="heading" aria-level="1"><span class="kui-toolbar-text__text">Acme UI</span>',
+      'class="kui-catalog__navigation" aria-label="Acme UI components"',
     );
     expect(html).toContain(
-      'kui-catalog__subtitle" data-component="text" data-tone="quiet" data-size="compact" data-font="default">Design system',
+      'data-component="toolbar-text" data-size="large" role="heading" aria-level="1"><span class="kui-toolbar-text__text">Acme UI</span>',
     );
+    expect(html).toContain('class="kui-catalog__subtitle">Design system');
     expect(html).toContain('src="/logo.svg"');
     // Category groups + items (ListHeader per section, ListItem per entry)
     expect(html).toContain('data-component="list-header"');
@@ -99,6 +100,9 @@ describe('Catalog', () => {
     expect(html).toContain('href="https://example.com/select.ts"');
     expect(html).toContain('data-catalog-related');
     expect(html).toContain('data-menu-inset="compact"');
+    expect(html).toContain(
+      'data-responsive="stack" data-responsive-at="narrow"',
+    );
     expect(html).toContain('<span>Components</span>');
     expect(html).toContain('kui-catalog__related-heading">Used by');
     expect(html).toContain('kui-catalog__related-heading">Uses');
@@ -220,9 +224,7 @@ describe('Catalog', () => {
     );
     expect(open).toContain('kui-catalog__group--secondary');
     expect(open).toContain('data-catalog-secondary');
-    expect(open).toContain(
-      'kui-catalog__secondary-heading" data-component="text" data-tone="default" data-size="default" data-font="default">Forms',
-    );
+    expect(open).toContain('<h3 class="kui-catalog__secondary-heading">Forms');
     expect(open).toContain(
       'data-action="catalog-select" data-item-id="wa-input"',
     );
@@ -284,10 +286,12 @@ describe('CatalogExample', () => {
     expect(html).toContain('data-align="glyph"');
     expect(html).toContain('data-component="list-header"');
     expect(html).toContain('data-catalog-example-label');
+    expect(html).toContain('data-width="content"');
     expect(html).toContain(
-      'data-catalog-example-note class="kui-text kui-catalog-example__note" data-component="text" data-tone="default" data-size="default" data-font="default">A note.',
+      'class="kui-catalog-example__note" data-catalog-example-note>A note.',
     );
     expect(html).toContain('<svg data-icon />');
+    expect(html).not.toContain('kui-catalog-example__specimen');
   });
 
   it('defaults to no inset and omits the note when absent', () => {

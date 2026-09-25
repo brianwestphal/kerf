@@ -419,9 +419,8 @@ test('hovers a lone control-group button as a whole, but keeps inner highlights 
   // group takes the hover background.
   await page.goto('/?component=toolbar-control-group');
   const soloGroup = page
-    .locator(
-      '.toolbar-control-group-demo .kui-toolbar-control-group[data-single="true"]',
-    )
+    .locator('[data-demo="toolbar-control-group"]')
+    .locator('.kui-toolbar-control-group[data-single="true"]')
     .filter({ has: page.locator('wa-button[aria-label="Pin view"]') })
     .first();
   const soloButton = soloGroup.locator('wa-button[aria-label="Pin view"]');
@@ -466,9 +465,8 @@ test('shows a visible hover background on borderless toolbar-group buttons', asy
 }) => {
   await page.goto('/?component=toolbar-control-group');
   const group = page
-    .locator(
-      '.toolbar-control-group-demo .kui-toolbar-control-group[data-appearance="borderless"]',
-    )
+    .locator('[data-demo="toolbar-control-group"]')
+    .locator('.kui-toolbar-control-group[data-appearance="borderless"]')
     .filter({ has: page.locator('> button') })
     .first();
   const button = group.locator('> button').first();
@@ -489,7 +487,7 @@ test('the ToolbarControlGroup demo shape toggle switches every group between pil
   page,
 }) => {
   await page.goto('/?component=toolbar-control-group');
-  const demo = page.locator('.toolbar-control-group-demo');
+  const demo = page.locator('[data-demo="toolbar-control-group"]');
   const roundedGroups = demo.locator(
     '.kui-toolbar-control-group[data-shape="rounded"]',
   );
@@ -753,23 +751,27 @@ test('applies text and control insets only to selected physical sides', async ({
     }, property);
 
   await page.goto('/?component=row');
-  const row = page.locator('.demo-row-insets');
+  const row = page.locator(
+    '[data-demo="row"] [data-text-insets="tbl"][data-control-insets="r"]',
+  );
   await expect(row).toHaveAttribute('data-text-insets', 'tbl');
   await expect(row).toHaveAttribute('data-control-insets', 'r');
   expect(await edges(row, 'padding')).toEqual([17, 8, 17, 17]);
   expect(
-    await edges(row.locator('.demo-row-insets-nested'), 'padding'),
+    await edges(row.locator('[data-control-insets="b"]'), 'padding'),
   ).toEqual([0, 0, 8, 0]);
   if (browserName === 'chromium')
     await row.screenshot({ path: 'test-results/row-selected-insets-wide.png' });
 
   await page.goto('/?component=list');
-  const list = page.locator('.demo-list-insets');
+  const list = page.locator(
+    '[data-demo="list"] [data-text-insets="l"][data-control-insets="rb"]',
+  );
   await expect(list).toHaveAttribute('data-text-insets', 'l');
   await expect(list).toHaveAttribute('data-control-insets', 'rb');
   expect(await edges(list, 'padding')).toEqual([0, 8, 8, 17]);
   expect(
-    await edges(list.locator('.demo-list-insets-nested'), 'padding'),
+    await edges(list.locator('[data-text-insets="t"]'), 'padding'),
   ).toEqual([17, 0, 0, 0]);
   if (browserName === 'chromium')
     await list.screenshot({
@@ -777,7 +779,7 @@ test('applies text and control insets only to selected physical sides', async ({
     });
 
   await page.goto('/?component=list-inset-text');
-  const text = page.locator('.demo-list-inset-text-sides');
+  const text = page.locator('[data-demo="list-inset-text"] [data-sides="tbl"]');
   expect(await edges(text, 'margin')).toEqual([8, 0, 8, 8]);
   expect(await edges(text, 'border')).toEqual([1, 0, 1, 1]);
   expect(await edges(text, 'padding')).toEqual([8, 0, 8, 8]);
@@ -787,7 +789,9 @@ test('applies text and control insets only to selected physical sides', async ({
     });
 
   await page.goto('/?component=list-inset-control');
-  const control = page.locator('.demo-list-inset-control-sides');
+  const control = page.locator(
+    '[data-demo="list-inset-control"] [data-sides="rb"]',
+  );
   expect(await edges(control, 'margin')).toEqual([0, 8, 8, 0]);
 
   await page.setViewportSize({ width: 390, height: 844 });
@@ -820,7 +824,7 @@ test('computes component geometry overlays from live CSS and leaves composition 
   const canvas = page.locator('.kui-catalog__canvas');
   const stageInner = page.locator('.demo-stage-inner');
   await expect(stageInner).toHaveAttribute('data-demo-mode', 'component');
-  const wrapper = page.locator('.demo-list-demo').first();
+  const wrapper = page.locator('[data-demo="list-header"]');
   await expect
     .poll(() =>
       wrapper.evaluate((el) => window.getComputedStyle(el).backgroundColor),
@@ -1536,16 +1540,28 @@ test('applies shared pane and content-item geometry across responsive and 200% z
             .getPropertyValue(property),
         );
       return {
-        panePadding: number('.demo-layout', 'padding-left'),
-        contentGap: number('.demo-layout .kui-content', 'row-gap'),
-        itemMargin: number('.demo-layout .kui-content-item', 'margin-left'),
-        itemPadding: number('.demo-layout .kui-content-item', 'padding-left'),
+        panePadding: number(
+          '[data-demo="layout"] [data-component="pane"]',
+          'padding-left',
+        ),
+        contentGap: number(
+          '[data-demo="layout"] .kui-pane__content',
+          'row-gap',
+        ),
+        itemMargin: number(
+          '[data-demo="layout"] .kui-content-item',
+          'margin-left',
+        ),
+        itemPadding: number(
+          '[data-demo="layout"] .kui-content-item',
+          'padding-left',
+        ),
         itemBorder: number(
-          '.demo-layout .kui-content-item',
+          '[data-demo="layout"] .kui-content-item',
           'border-left-width',
         ),
         itemRadius: number(
-          '.demo-layout .kui-content-item',
+          '[data-demo="layout"] .kui-content-item',
           'border-top-left-radius',
         ),
         scrollOwners: document.querySelectorAll(
@@ -1582,10 +1598,9 @@ test('applies shared pane and content-item geometry across responsive and 200% z
         fullPage: true,
       });
   }
-  await expect(page.locator('.demo-layout')).toHaveClass(/kui-pane/);
-  await expect(page.locator('.demo-layout .kui-pane__content')).toHaveClass(
-    /kui-content/,
-  );
+  const pane = page.locator('[data-demo="layout"] [data-component="pane"]');
+  await expect(pane).toHaveClass(/kui-pane/);
+  await expect(pane.locator('.kui-pane__content')).toHaveClass(/kui-content/);
 });
 
 test('reveals controlled Catalog selections only in the desktop sidebar without moving focus', async ({
@@ -1720,7 +1735,7 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
   const pageHeader = page.locator('.kui-catalog__header');
   const stage = page.locator('.kui-catalog__stage');
   const footer = page.locator('.kui-catalog__footer');
-  const note = stage.locator('.kui-recipe__ownership');
+  const note = stage.locator('.recipe-component__ownership');
 
   await expect(
     sidebar.getByRole('heading', { level: 1, name: 'Kerf' }),
@@ -1804,7 +1819,14 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
   await page.getByRole('button', { name: 'Expand Kerf catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'false');
   await expect(sidebar).toBeVisible();
-  await expect(sidebar.locator(':scope > nav')).toBeVisible();
+  await expect(
+    sidebar.getByRole('navigation', { name: 'Kerf components' }),
+  ).toBeVisible();
+  await expect
+    .poll(() =>
+      sidebar.evaluate((element) => window.getComputedStyle(element).transform),
+    )
+    .toBe('none');
 
   if (browserName === 'chromium') {
     await page.screenshot({
@@ -1833,10 +1855,10 @@ test('aligns a heading-toolbar trailing action with the following content-item b
   await page.goto('/?component=layout');
   const demo = page.locator('[data-demo="layout"]');
   const action = demo.locator(
-    '.demo-layout > .kui-pane__header .kui-toolbar__trailing [data-component="toolbar-control-group"]',
+    '[data-component="pane"] > .kui-pane__header .kui-toolbar__trailing [data-component="toolbar-control-group"]',
   );
   const following = demo.locator(
-    '.demo-layout > .kui-pane__header + .kui-pane__content > .kui-content-item',
+    '[data-component="pane"] > .kui-pane__header + .kui-pane__content > .kui-content-item',
   );
   await expect(action).toHaveCount(1);
   await expect(following).toHaveCount(2);
@@ -2363,16 +2385,22 @@ test('renders an interactive responsive find field inside a toolbar', async ({
 }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=toolbar');
-  const toolbar = page.locator('.demo-toolbar-find-row');
+  const toolbar = page
+    .locator('[data-demo="toolbar"] > [data-component="toolbar"]')
+    .first();
   const editor = toolbar.getByRole('searchbox', { name: 'Find in workspace' });
   const trigger = toolbar.getByRole('button', { name: 'Open find' });
-  const field = toolbar.locator('.demo-toolbar-find-field');
-  const group = toolbar.locator('.demo-toolbar-find');
+  const field = toolbar.locator('[data-component="token-search-field"]');
+  const group = field.locator('..');
   const outsideControl = page.locator('[data-action="toggle-theme"]');
   await expect(editor).toBeHidden();
   await expect(trigger).toBeVisible();
   await expect(field).toHaveAttribute('data-collapsible', 'true');
   await expect(field).toHaveAttribute('data-expanded', 'false');
+  await expect(group).toHaveAttribute(
+    'data-component',
+    'toolbar-control-group',
+  );
   await expect(group).toHaveCSS(
     'transition-property',
     'width, background-color, border-color',
@@ -5434,7 +5462,9 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
   const paneGeometry = () =>
     menu.evaluate((node) => {
       const content = node
-        .querySelector<HTMLElement>('.demo-list__content')!
+        .querySelector<HTMLElement>(
+          '.demo-list__content-frame > [data-component="list"]',
+        )!
         .getBoundingClientRect();
       const toolbar = node
         .querySelector<HTMLElement>('.kui-pane__footer .kui-toolbar')!
@@ -5499,11 +5529,16 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
         .getBoundingClientRect();
       return {
         contentGap: parseFloat(
-          window.getComputedStyle(node.querySelector('.demo-list__content')!)
-            .rowGap,
+          window.getComputedStyle(
+            node.querySelector(
+              '.demo-list__content-frame > [data-component="list"]',
+            )!,
+          ).rowGap,
         ),
         list: (() => {
-          const list = node.querySelector<HTMLElement>('.demo-list__content')!;
+          const list = node.querySelector<HTMLElement>(
+            '.demo-list__content-frame > [data-component="list"]',
+          )!;
           const style = window.getComputedStyle(list);
           return {
             alignItems: style.alignItems,
@@ -5805,7 +5840,9 @@ test('expands and collapses the ToolbarControlGroup collapsible search without s
 }) => {
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=toolbar-control-group');
-  const group = page.locator('.demo-toolbar-group-search');
+  const group = page
+    .locator('.demo-toolbar-group-search-wrap')
+    .locator('[data-component="toolbar-control-group"]');
   const field = group.locator('.kui-token-search');
   const groupHeight = () =>
     group.evaluate((node) => Math.round(node.getBoundingClientRect().height));
@@ -5924,8 +5961,9 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
       const regionElement = element.querySelector<HTMLElement>(
         '[data-component="resizable-region"]',
       )!;
-      const panelElement =
-        element.querySelector<HTMLElement>('.demo-resize-panel')!;
+      const panelElement = element.querySelector<HTMLElement>(
+        '.demo-resize-panel-frame',
+      )!;
       const committedElement =
         document.querySelector<HTMLElement>('[data-region-size]')!;
       const statusElement = committedElement.closest<HTMLElement>(

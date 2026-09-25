@@ -17,6 +17,13 @@ function declarations(root: postcss.Root, selector: string) {
 }
 
 describe('Select toolbar composition CSS', () => {
+  it('does not restyle the nested Skeleton component', async () => {
+    const file = resolve(import.meta.dirname, '../../src/select.css');
+    const css = await readFile(file, 'utf8');
+
+    expect(css).not.toContain('.kui-skeleton');
+  });
+
   it('puts option spacing on the Web Awesome start part', async () => {
     const file = resolve(import.meta.dirname, '../../src/select.css');
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
@@ -56,9 +63,8 @@ describe('Select toolbar composition CSS', () => {
     const rule = root.nodes.find(
       (node) =>
         node.type === 'rule' &&
-        node.selector.includes(
-          '.kui-select[data-focus-ring-owner="group"]:is(:focus-within, [open])',
-        ),
+        node.selector ===
+          '.kui-toolbar-control-group[data-focus-ring="outline"]:focus-within',
     );
     if (!rule || rule.type !== 'rule')
       throw new Error('Missing delegated Select focus rule');

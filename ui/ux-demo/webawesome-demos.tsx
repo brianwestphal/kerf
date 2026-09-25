@@ -1,3 +1,4 @@
+import './webawesome-demos.css';
 import '@awesome.me/webawesome/dist/components/accordion-item/accordion-item.js';
 import '@awesome.me/webawesome/dist/components/accordion/accordion.js';
 import '@awesome.me/webawesome/dist/components/animated-image/animated-image.js';
@@ -111,7 +112,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-copy-button': () => (
     <div class="wa-demo-inline-field">
-      <code>npm i @kerfjs/ui</code>
+      <code class="wa-demo-inline-field__code">npm i @kerfjs/ui</code>
       <wa-copy-button
         value="npm i @kerfjs/ui"
         copy-label="Copy install command"
@@ -330,7 +331,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <wa-button variant="brand" data-action="show-wa-dialog">
         Open dialog
       </wa-button>
-      <span>Footer actions replace the native header action.</span>
+      <span class="wa-demo-launcher__copy">
+        Footer actions replace the native header action.
+      </span>
       <wa-dialog
         id="catalog-wa-dialog"
         class="hide-actions"
@@ -353,14 +356,14 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-divider': () => (
     <div class="wa-demo-divider">
-      <section>
+      <section class="wa-demo-divider__section">
         <strong>Ready</strong>
-        <span>12 components</span>
+        <span class="wa-demo-divider__detail">12 components</span>
       </section>
       <wa-divider></wa-divider>
-      <section>
+      <section class="wa-demo-divider__section">
         <strong>Needs review</strong>
-        <span>3 components</span>
+        <span class="wa-demo-divider__detail">3 components</span>
       </section>
     </div>
   ),
@@ -369,7 +372,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <wa-button variant="brand" data-action="show-wa-drawer">
         Open drawer
       </wa-button>
-      <span>The drawer enters from the trailing edge.</span>
+      <span class="wa-demo-launcher__copy">
+        The drawer enters from the trailing edge.
+      </span>
       <wa-drawer id="catalog-wa-drawer" label="Inspector" with-footer>
         <Text>Theme and accessibility settings live here.</Text>
         <wa-button slot="footer" variant="brand" data-action="hide-wa-drawer">
@@ -379,36 +384,50 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </div>
   ),
   'wa-page': () => (
-    <wa-page class="wa-demo-page" mobile-breakpoint="0">
-      <strong slot="header">Workspace</strong>
-      <a slot="navigation" href="#overview">
-        Overview
-      </a>
-      <strong slot="main-header">Component catalog</strong>
-      <Text>A compact application shell inside the preview canvas.</Text>
-      <small slot="footer">Kerf UI · Web Awesome</small>
-    </wa-page>
+    <div class="wa-demo-page-frame">
+      <wa-page mobile-breakpoint="0">
+        <strong class="wa-demo-page__region" slot="header">
+          Workspace
+        </strong>
+        <a class="wa-demo-page__navigation" slot="navigation" href="#overview">
+          Overview
+        </a>
+        <strong class="wa-demo-page__region" slot="main-header">
+          Component catalog
+        </strong>
+        <p class="wa-demo-page__region">
+          A compact application shell inside the preview canvas.
+        </p>
+        <small class="wa-demo-page__region" slot="footer">
+          Kerf UI · Web Awesome
+        </small>
+      </wa-page>
+    </div>
   ),
   'wa-scroller': () => (
-    <wa-scroller class="wa-demo-scroller">
-      <article>Foundation</article>
-      <article>Navigation</article>
-      <article>Controls</article>
-      <article>Feedback</article>
-      <article>Helpers</article>
-    </wa-scroller>
+    <div class="wa-demo-scroller-frame">
+      <wa-scroller>
+        <article class="wa-demo-scroller__card">Foundation</article>
+        <article class="wa-demo-scroller__card">Navigation</article>
+        <article class="wa-demo-scroller__card">Controls</article>
+        <article class="wa-demo-scroller__card">Feedback</article>
+        <article class="wa-demo-scroller__card">Helpers</article>
+      </wa-scroller>
+    </div>
   ),
   'wa-split-panel': () => (
-    <wa-split-panel class="wa-demo-split" position="42">
-      <div slot="start">
-        <strong>Navigator</strong>
-        <span>Resizable start panel</span>
-      </div>
-      <div slot="end">
-        <strong>Canvas</strong>
-        <span>Resizable end panel</span>
-      </div>
-    </wa-split-panel>
+    <div class="wa-demo-split-frame">
+      <wa-split-panel position="42">
+        <div class="wa-demo-split__pane" slot="start">
+          <strong>Navigator</strong>
+          <span class="wa-demo-split__detail">Resizable start panel</span>
+        </div>
+        <div class="wa-demo-split__pane" slot="end">
+          <strong>Canvas</strong>
+          <span class="wa-demo-split__detail">Resizable end panel</span>
+        </div>
+      </wa-split-panel>
+    </div>
   ),
 
   'wa-breadcrumb': () => (
@@ -488,7 +507,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
 
   'wa-badge': () => (
     <div class="wa-demo-labeled-stack">
-      <span>Status badges · filled pill</span>
+      <span class="wa-demo-labeled-stack__label">
+        Status badges · filled pill
+      </span>
       <div class="wa-demo-row">
         <wa-badge variant="neutral" appearance="filled" pill="pill">
           Draft
@@ -506,7 +527,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           Blocked
         </wa-badge>
       </div>
-      <span>Accent pill</span>
+      <span class="wa-demo-labeled-stack__label">Accent pill</span>
       <div class="wa-demo-row">
         <wa-badge variant="neutral" appearance="accent" pill="pill">
           Neutral
@@ -524,7 +545,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           Danger
         </wa-badge>
       </div>
-      <span>Filled outlined pill</span>
+      <span class="wa-demo-labeled-stack__label">Filled outlined pill</span>
       <div class="wa-demo-row">
         <wa-badge variant="neutral" appearance="filled-outlined" pill="pill">
           Neutral
@@ -561,7 +582,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </div>
   ),
   'wa-progress-ring': () => (
-    <div class="wa-demo-row wa-demo-rings">
+    <div class="wa-demo-row wa-demo-ring-group">
       <wa-progress-ring value="72" label="Build progress">
         72%
       </wa-progress-ring>
@@ -570,21 +591,33 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-skeleton': () => (
     <div class="wa-demo-skeleton">
-      <wa-skeleton effect="sheen"></wa-skeleton>
-      <wa-skeleton effect="sheen"></wa-skeleton>
-      <wa-skeleton effect="sheen"></wa-skeleton>
+      <div class="wa-demo-skeleton__bar-frame wa-demo-skeleton__bar-frame--heading">
+        <wa-skeleton effect="sheen"></wa-skeleton>
+      </div>
+      <div class="wa-demo-skeleton__bar-frame">
+        <wa-skeleton effect="sheen"></wa-skeleton>
+      </div>
+      <div class="wa-demo-skeleton__bar-frame wa-demo-skeleton__bar-frame--closing">
+        <wa-skeleton effect="sheen"></wa-skeleton>
+      </div>
     </div>
   ),
   'wa-spinner': () => (
-    <div class="wa-demo-row wa-demo-spinners">
-      <wa-spinner aria-label="Loading small"></wa-spinner>
-      <wa-spinner aria-label="Loading medium"></wa-spinner>
-      <wa-spinner aria-label="Loading large"></wa-spinner>
+    <div class="wa-demo-row">
+      <span class="wa-demo-spinner-frame wa-demo-spinner-frame--small">
+        <wa-spinner aria-label="Loading small"></wa-spinner>
+      </span>
+      <span class="wa-demo-spinner-frame wa-demo-spinner-frame--medium">
+        <wa-spinner aria-label="Loading medium"></wa-spinner>
+      </span>
+      <span class="wa-demo-spinner-frame wa-demo-spinner-frame--large">
+        <wa-spinner aria-label="Loading large"></wa-spinner>
+      </span>
     </div>
   ),
   'wa-tag': () => (
     <div class="wa-demo-labeled-stack">
-      <span>Tags · rounded rectangle</span>
+      <span class="wa-demo-labeled-stack__label">Tags · rounded rectangle</span>
       <div class="wa-demo-row">
         <wa-tag variant="neutral">frontend</wa-tag>
         <wa-tag variant="brand">design-system</wa-tag>
@@ -593,7 +626,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           needs-review
         </wa-tag>
       </div>
-      <small>
+      <small class="wa-demo-labeled-stack__note">
         Removal is owned by the feature handling the bubbling{' '}
         <code>wa-remove</code> event.
       </small>
@@ -604,7 +637,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <wa-button variant="brand" data-action="show-wa-toast">
         Show toast
       </wa-button>
-      <span>
+      <span class="wa-demo-launcher__copy">
         The notification uses Web Awesome's programmatic stack API. Hot Sheet 2
         currently renders its own app-level toast.
       </span>
@@ -612,13 +645,15 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </div>
   ),
   'wa-toast-item': () => (
-    <wa-toast-item class="wa-demo-toast-item" variant="success" duration="0">
-      The component catalog is ready.
-    </wa-toast-item>
+    <div class="wa-demo-toast-item-frame">
+      <wa-toast-item variant="success" duration="0">
+        The component catalog is ready.
+      </wa-toast-item>
+    </div>
   ),
   'wa-tooltip': () => (
     <div class="wa-demo-labeled-stack">
-      <span>Kerf default · no arrow</span>
+      <span class="wa-demo-labeled-stack__label">Kerf default · no arrow</span>
       <div class="wa-demo-row">
         <wa-button id="catalog-tooltip-target" appearance="outlined">
           Hover or focus
@@ -627,7 +662,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           Uses the shared tooltip palette
         </wa-tooltip>
       </div>
-      <small>
+      <small class="wa-demo-labeled-stack__note">
         Override <code>--wa-tooltip-arrow-size</code> or add{' '}
         <code>without-arrow</code> explicitly when local intent should be
         self-documenting.
@@ -636,50 +671,67 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
 
   'wa-animated-image': () => (
-    <wa-animated-image
-      class="wa-demo-media"
-      src={demoImage}
-      alt="Blue geometric Kerf preview"
-    ></wa-animated-image>
+    <div class="wa-demo-media-frame">
+      <wa-animated-image
+        src={demoImage}
+        alt="Blue geometric Kerf preview"
+      ></wa-animated-image>
+    </div>
   ),
   'wa-avatar': () => (
-    <div class="wa-demo-row wa-demo-avatars">
+    <div class="wa-demo-row wa-demo-avatar-group">
       <wa-avatar initials="KW" label="Kerf workspace"></wa-avatar>
       <wa-avatar initials="UI" label="UI team"></wa-avatar>
       <wa-avatar label="Fallback icon"></wa-avatar>
     </div>
   ),
   'wa-carousel': () => (
-    <wa-carousel class="wa-demo-carousel" navigation pagination mouse-dragging>
-      <wa-carousel-item>
-        <div>Foundation</div>
-      </wa-carousel-item>
-      <wa-carousel-item>
-        <div>Components</div>
-      </wa-carousel-item>
-      <wa-carousel-item>
-        <div>Patterns</div>
-      </wa-carousel-item>
-    </wa-carousel>
+    <div class="wa-demo-carousel-frame">
+      <wa-carousel navigation pagination mouse-dragging>
+        <wa-carousel-item>
+          <div class="wa-demo-carousel__slide">Foundation</div>
+        </wa-carousel-item>
+        <wa-carousel-item>
+          <div class="wa-demo-carousel__slide">Components</div>
+        </wa-carousel-item>
+        <wa-carousel-item>
+          <div class="wa-demo-carousel__slide">Patterns</div>
+        </wa-carousel-item>
+      </wa-carousel>
+    </div>
   ),
   'wa-carousel-item': () => (
-    <wa-carousel class="wa-demo-carousel" navigation>
-      <wa-carousel-item>
-        <div>Focused carousel item</div>
-      </wa-carousel-item>
-      <wa-carousel-item>
-        <div>Neighboring item</div>
-      </wa-carousel-item>
-    </wa-carousel>
+    <div class="wa-demo-carousel-frame">
+      <wa-carousel navigation>
+        <wa-carousel-item>
+          <div class="wa-demo-carousel__slide">Focused carousel item</div>
+        </wa-carousel-item>
+        <wa-carousel-item>
+          <div class="wa-demo-carousel__slide">Neighboring item</div>
+        </wa-carousel-item>
+      </wa-carousel>
+    </div>
   ),
   'wa-comparison': () => (
-    <wa-comparison class="wa-demo-comparison" position="55">
-      <div slot="before">Before</div>
-      <div slot="after">After</div>
-    </wa-comparison>
+    <div class="wa-demo-comparison-frame">
+      <wa-comparison position="55">
+        <div
+          class="wa-demo-comparison__side wa-demo-comparison__side--before"
+          slot="before"
+        >
+          Before
+        </div>
+        <div
+          class="wa-demo-comparison__side wa-demo-comparison__side--after"
+          slot="after"
+        >
+          After
+        </div>
+      </wa-comparison>
+    </div>
   ),
   'wa-icon': () => (
-    <div class="wa-demo-row wa-demo-icons">
+    <div class="wa-demo-row wa-demo-icon-group">
       <wa-icon name="circle-question" library="system" label="Help"></wa-icon>
       <wa-icon name="chevron-right" library="system" label="Next"></wa-icon>
       <wa-icon name="play-circle" library="system" label="Play"></wa-icon>
@@ -687,11 +739,13 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-markdown': () => (
     <div class="wa-demo-labeled-stack">
-      <span>Trusted static Markdown · client-rendered</span>
+      <span class="wa-demo-labeled-stack__label">
+        Trusted static Markdown · client-rendered
+      </span>
       <wa-markdown>
         <script type="text/markdown">{trustedMarkdownDemo}</script>
       </wa-markdown>
-      <small>
+      <small class="wa-demo-labeled-stack__note">
         Do not pass unsanitized or untrusted Markdown to this component.
       </small>
     </div>
@@ -704,12 +758,13 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     ></wa-qr-code>
   ),
   'wa-zoomable-frame': () => (
-    <wa-zoomable-frame
-      class="wa-demo-zoomable-frame"
-      srcdoc={demoFrame}
-      zoom="1"
-      loading="eager"
-    ></wa-zoomable-frame>
+    <div class="wa-demo-zoomable-frame-shell">
+      <wa-zoomable-frame
+        srcdoc={demoFrame}
+        zoom="1"
+        loading="eager"
+      ></wa-zoomable-frame>
+    </div>
   ),
 
   'wa-animation': () => (
@@ -725,11 +780,17 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           iterations="1"
         >
           <div class="wa-demo-animation__target">
-            <strong>Kerf</strong>
-            <span>Animation target</span>
+            <strong class="wa-demo-animation__target-title">Kerf</strong>
+            <span class="wa-demo-animation__target-detail">
+              Animation target
+            </span>
           </div>
         </wa-animation>
-        <output data-animation-output aria-live="polite">
+        <output
+          class="wa-demo-animation__status"
+          data-animation-output
+          aria-live="polite"
+        >
           Ready to play
         </output>
       </section>
@@ -761,10 +822,17 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           ]}
         />
         <label class="wa-demo-animation__range">
-          <span>
-            Duration <output data-animation-duration>900 ms</output>
+          <span class="wa-demo-animation__range-label">
+            Duration{' '}
+            <output
+              class="wa-demo-animation__range-output"
+              data-animation-duration
+            >
+              900 ms
+            </output>
           </span>
           <input
+            class="wa-demo-animation__range-input"
             type="range"
             name="animation-duration"
             min="250"
@@ -774,10 +842,14 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           />
         </label>
         <label class="wa-demo-animation__range">
-          <span>
-            Playback rate <output data-animation-rate>1×</output>
+          <span class="wa-demo-animation__range-label">
+            Playback rate{' '}
+            <output class="wa-demo-animation__range-output" data-animation-rate>
+              1×
+            </output>
           </span>
           <input
+            class="wa-demo-animation__range-input"
             type="range"
             name="animation-rate"
             min="0.5"
@@ -803,15 +875,15 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-format-bytes': () => (
     <dl class="wa-demo-values">
-      <div>
-        <dt>Binary</dt>
-        <dd>
+      <div class="wa-demo-values__row">
+        <dt class="wa-demo-values__term">Binary</dt>
+        <dd class="wa-demo-values__description">
           <wa-format-bytes value="10485760"></wa-format-bytes>
         </dd>
       </div>
-      <div>
-        <dt>Decimal</dt>
-        <dd>
+      <div class="wa-demo-values__row">
+        <dt class="wa-demo-values__term">Decimal</dt>
+        <dd class="wa-demo-values__description">
           <wa-format-bytes
             value="10485760"
             unit="bit"
@@ -823,9 +895,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-format-date': () => (
     <dl class="wa-demo-values">
-      <div>
-        <dt>Date</dt>
-        <dd>
+      <div class="wa-demo-values__row">
+        <dt class="wa-demo-values__term">Date</dt>
+        <dd class="wa-demo-values__description">
           <wa-format-date
             date="2026-09-11T12:00:00Z"
             month="long"
@@ -835,9 +907,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           ></wa-format-date>
         </dd>
       </div>
-      <div>
-        <dt>Time</dt>
-        <dd>
+      <div class="wa-demo-values__row">
+        <dt class="wa-demo-values__term">Time</dt>
+        <dd class="wa-demo-values__description">
           <wa-format-date
             date="2026-09-11T12:00:00Z"
             hour="numeric"
@@ -850,21 +922,21 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-format-number': () => (
     <dl class="wa-demo-values">
-      <div>
-        <dt>Number</dt>
-        <dd>
+      <div class="wa-demo-values__row">
+        <dt class="wa-demo-values__term">Number</dt>
+        <dd class="wa-demo-values__description">
           <wa-format-number value="1284"></wa-format-number>
         </dd>
       </div>
-      <div>
-        <dt>Percent</dt>
-        <dd>
+      <div class="wa-demo-values__row">
+        <dt class="wa-demo-values__term">Percent</dt>
+        <dd class="wa-demo-values__description">
           <wa-format-number value="0.72" type="percent"></wa-format-number>
         </dd>
       </div>
-      <div>
-        <dt>Currency</dt>
-        <dd>
+      <div class="wa-demo-values__row">
+        <dt class="wa-demo-values__term">Currency</dt>
+        <dd class="wa-demo-values__description">
           <wa-format-number
             value="49"
             type="currency"
@@ -895,7 +967,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         >
           <div class="wa-demo-observed" data-observer-target>
             <strong>Observed intersection target</strong>
-            <span>
+            <span class="wa-demo-observed__detail">
               The helper emits when this surface enters or leaves its root.
             </span>
           </div>
@@ -906,7 +978,11 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         <wa-button data-action="toggle-wa-intersection">
           Reveal target
         </wa-button>
-        <output data-observer-output aria-live="polite">
+        <output
+          class="wa-demo-observer__output"
+          data-observer-output
+          aria-live="polite"
+        >
           Waiting for an intersection change
         </output>
       </div>
@@ -917,14 +993,18 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <wa-mutation-observer attr="data-revision" child-list>
         <div class="wa-demo-observed" data-observer-target data-revision="0">
           <strong>Observed mutation target</strong>
-          <span data-observer-copy>
+          <span class="wa-demo-observed__detail" data-observer-copy>
             The helper reports attribute and child-list changes.
           </span>
         </div>
       </wa-mutation-observer>
       <div class="wa-demo-observer__controls">
         <wa-button data-action="mutate-wa-target">Mutate target</wa-button>
-        <output data-observer-output aria-live="polite">
+        <output
+          class="wa-demo-observer__output"
+          data-observer-output
+          aria-live="polite"
+        >
           No mutations observed yet
         </output>
       </div>
@@ -932,41 +1012,39 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-popover': () => (
     <div class="wa-demo-anchor">
-      <span>Kerf default · no arrow</span>
+      <span class="wa-demo-anchor__label">Kerf default · no arrow</span>
       <wa-button id="catalog-popover-target" appearance="outlined">
         Toggle popover
       </wa-button>
       <wa-popover for="catalog-popover-target" placement="bottom">
         <strong>Popover content</strong>
-        <Text>Interactive content stays anchored to its trigger.</Text>
+        <p class="wa-demo-popover__copy">
+          Interactive content stays anchored to its trigger.
+        </p>
         <wa-button size="small">Action</wa-button>
       </wa-popover>
-      <small>
+      <small class="wa-demo-anchor__note">
         Override <code>--kui-wa-popover-arrow-size</code> for a scope or{' '}
         <code>--arrow-size</code> on one popover to restore a pointer.
       </small>
     </div>
   ),
   'wa-popup': () => (
-    <wa-popup
-      class="wa-demo-popup"
-      active
-      placement="bottom"
-      distance="10"
-      arrow
-    >
-      <wa-button slot="anchor" appearance="outlined">
-        Anchor
-      </wa-button>
-      <div class="wa-demo-popup__panel">Low-level positioned content</div>
-    </wa-popup>
+    <div class="wa-demo-popup-frame">
+      <wa-popup active placement="bottom" distance="10" arrow>
+        <wa-button slot="anchor" appearance="outlined">
+          Anchor
+        </wa-button>
+        <div class="wa-demo-popup__panel">Low-level positioned content</div>
+      </wa-popup>
+    </div>
   ),
   'wa-random-content': () => (
     <div class="wa-demo-random">
       <wa-random-content mode="sequence" items="1" animation="fade">
-        <article>Foundation tokens</article>
-        <article>Component primitives</article>
-        <article>Composition patterns</article>
+        <article class="wa-demo-random__card">Foundation tokens</article>
+        <article class="wa-demo-random__card">Component primitives</article>
+        <article class="wa-demo-random__card">Composition patterns</article>
       </wa-random-content>
       <wa-button appearance="outlined" data-action="randomize-wa-content">
         Show another
@@ -986,18 +1064,26 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
   'wa-resize-observer': () => (
     <div class="wa-demo-observer" data-observer-demo="resize">
-      <wa-resize-observer>
-        <div
-          class="wa-demo-observed wa-demo-observed--resizable"
-          data-observer-target
-        >
-          <strong>Observed resize target</strong>
-          <span>The helper emits when this preview changes dimensions.</span>
-        </div>
-      </wa-resize-observer>
+      <div class="wa-demo-observer__resize-frame">
+        <wa-resize-observer>
+          <div
+            class="wa-demo-observed wa-demo-observed--resizable"
+            data-observer-target
+          >
+            <strong>Observed resize target</strong>
+            <span class="wa-demo-observed__detail">
+              The helper emits when this preview changes dimensions.
+            </span>
+          </div>
+        </wa-resize-observer>
+      </div>
       <div class="wa-demo-observer__controls">
         <wa-button data-action="resize-wa-target">Resize target</wa-button>
-        <output data-observer-output aria-live="polite">
+        <output
+          class="wa-demo-observer__output"
+          data-observer-output
+          aria-live="polite"
+        >
           Waiting for a resize
         </output>
       </div>

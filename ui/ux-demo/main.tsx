@@ -55,6 +55,7 @@ import {
   oppositeDemoTheme,
   preferredDemoTheme,
 } from './demo-theme.js';
+import { DemoStage } from './demos/demo-stage.js';
 import {
   popNavStackDemo,
   pushNavStackDemo,
@@ -401,17 +402,14 @@ mount(app, () => {
       }
       geometryOverlay={selected.kind === 'component'}
       content={
-        <div
-          class="demo-stage-inner"
+        <DemoStage
           data-demo-mode={
             selected.kind === 'component' ? 'component' : 'composition'
           }
-          data-recipe-notes-visible={String(
-            isRecipe && recipeNotesVisible.value,
-          )}
+          recipeNotesVisible={isRecipe && recipeNotesVisible.value}
         >
           <Stage />
-        </div>
+        </DemoStage>
       }
     />
   );

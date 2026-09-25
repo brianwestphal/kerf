@@ -400,6 +400,19 @@ roots therefore do not need a transitive stylesheet list, and removing the last
 component import also removes its reachable CSS. This is component-level CSS
 tree shaking; variants within an imported component remain together.
 
+When one public subpath groups several visual components, its source is a
+folder: one component per file and one owned stylesheet per visual component.
+The public JavaScript/TypeScript compatibility entrypoint only re-exports those
+modules, and its CSS compatibility entrypoint only imports the owner
+stylesheets. Do not accumulate multiple visual owners in either compatibility
+file.
+
+`npm run check:css-ownership` keeps that boundary honest: application CSS may
+style only application-owned structure, never package component classes or
+Web Awesome descendants. The UX catalog's `style.css` contains document-shell
+mechanics only, recipes use component-owned styles, and `catalog.css` remains a
+minimal compatibility entrypoint.
+
 The root `@kerfjs/ui` barrel stays JavaScript-only because making a side-effectful
 CSS barrel tree-shakable is not portable across bundlers. If an application uses
 that convenience import, also import `@kerfjs/ui/styles.css`, which deliberately
@@ -480,8 +493,8 @@ Tooltip and Popover surfaces omit pointer arrows by default. Override
 `--wa-tooltip-arrow-size` and `--kui-wa-popover-arrow-size`, or a single
 popover's public `--arrow-size`, when an arrow communicates useful context.
 
-Load application CSS afterward to override semantic values globally, or scope
-them to a subtree. Use Web Awesome's `.wa-light`, `.wa-dark`, and `.wa-invert`
+Configure semantic values globally at the application root, or scope variables
+to a self-owned subtree. Use Web Awesome's `.wa-light`, `.wa-dark`, and `.wa-invert`
 classes for explicit appearance boundaries:
 
 ```css
@@ -499,10 +512,11 @@ warning, or danger. Stateful components also expose
 component variables such as `--kui-state-banner-background`. Override the
 foundation for an application theme, a tone variable for one semantic state, or
 a component variable on one instance without replacing component selectors.
-Prefer an equivalent prop or token. When composition-specific layout still
-needs a selector, the component catalog's `publicClasses` arrays define the
-exact stable anatomy: public-class-to-public-class selectors are supported;
-descendant tag, id, attribute-only, and unlisted-class selectors are not.
+Prefer an equivalent prop or token. The component catalog's `publicClasses`
+arrays support diagnostics, tooling, browser assertions, and package-owned
+composition; they are not an application styling API. Application-owned CSS may
+style new structure rendered by its own component, but it must not select a
+nested Kerf or Web Awesome component. Add missing configuration to the owner.
 
 `StateBanner` has opinionated `neutral`, `info`, `pop`, `success`, `warning`,
 and `danger` palettes. Override an individual banner with
@@ -618,7 +632,8 @@ hover/focus grip. Its optional `handleIcon` replaces only the decorative glyph;
 the component and `wireResizableRegions()` retain separator semantics and
 pointer/keyboard behavior. Typed policies cover separator visibility,
 instant-track/composited-content collapse, popup-safe overflow,
-inline/overlay/hidden responsive presentation, and safe-area restore controls;
+inline/overlay/hidden responsive presentation, `responsiveFillAt` single-track
+replacement, and safe-area restore controls;
 the same policies are available on `Workbench` and `CollapsiblePanel`. Consider
 Web Awesome Popup when its anchored-positioning
 engine removes custom placement code; treat Tree, Animated Image, Comparison,

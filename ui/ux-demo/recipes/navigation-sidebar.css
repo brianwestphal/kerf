@@ -1,0 +1,12 @@
+.recipe-sidebar {
+  display: grid;
+  min-height: 32rem;
+}
+
+.recipe-sidebar__body {
+  min-height: 0;
+}
+
+.recipe-sidebar__footer {
+  border-block-start: 1px solid var(--kui-color-border);
+}

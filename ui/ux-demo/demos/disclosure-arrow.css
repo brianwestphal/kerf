@@ -1,0 +1,22 @@
+.demo-disclosure-toggle {
+  /* The demo's toggle button adds 8px of its own inline padding; drop the leading
+     side so the arrow glyph itself lands on the 16px line under align="glyph". */
+  padding-inline-start: 0;
+}
+
+.demo-disclosure-toggle {
+  display: inline-flex;
+  padding: var(--kui-space-xs);
+  border: 0;
+  border-radius: var(--kui-radius-m);
+  color: var(--kui-color-text);
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  align-items: center;
+  gap: var(--kui-space-xs);
+}
+
+.demo-disclosure-toggle:hover {
+  background: var(--kui-color-neutral-fill-normal);
+}

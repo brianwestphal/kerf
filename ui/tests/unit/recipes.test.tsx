@@ -108,7 +108,7 @@ describe('production composition recipes', () => {
     const more = template.content.querySelector<HTMLButtonElement>(
       '[data-recipe-command="more"]',
     );
-    expect(more?.classList.contains('kui-recipe__button')).toBe(false);
+    expect(more?.classList.length).toBe(0);
     expect(more?.parentElement?.getAttribute('data-component')).toBe(
       'toolbar-control-group',
     );
@@ -125,7 +125,7 @@ describe('production composition recipes', () => {
     const root = template.content.querySelector<HTMLFormElement>(
       '[data-recipe="recipe-composer-form"]',
     )!;
-    expect(root.classList).toContain('kui-recipe__surface');
+    expect(root.classList).toContain('recipe-component__surface');
     expect(root.getAttribute('aria-labelledby')).toBe('recipe-composer-title');
     expect(root.getAttribute('aria-describedby')).toBe(
       'recipe-composer-summary',
@@ -158,7 +158,7 @@ describe('production composition recipes', () => {
       root.querySelector('.recipe-form__footer .recipe-form__actions'),
     ).not.toBeNull();
     expect(
-      root.querySelector('.recipe-form__footer .kui-recipe__ownership'),
+      root.querySelector('.recipe-form__footer .recipe-component__ownership'),
     ).not.toBeNull();
 
     form.action('submit', target());

@@ -1,0 +1,5 @@
+.demo-nav-stack {
+  display: grid;
+  width: min(100%, remify(440px));
+  height: remify(360px);
+}

@@ -6,11 +6,14 @@ export type ToolbarControlGroupButtonAppearance = 'plain' | 'push';
 export type ToolbarControlGroupShape = 'pill' | 'rounded';
 export type ToolbarControlGroupSize = 'default' | 'compact';
 export type ToolbarControlGroupDensity = 'comfortable' | 'tight';
-export type ToolbarControlGroupContent = 'icon' | 'text' | 'mixed' | 'avatar';
+export type ToolbarControlGroupContent =
+  'icon' | 'text' | 'mixed' | 'avatar' | 'search';
+export type ToolbarControlGroupFocusRing = 'control' | 'outline' | 'halo';
 export type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
 export type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 export type ToolbarControlGroupOverflow = 'visible' | 'scroll';
 export type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
+export type ToolbarControlGroupVisibility = 'always' | 'compact-only';
 
 export interface ToolbarActionLinkProps {
   href: string;
@@ -68,6 +71,8 @@ export interface ToolbarControlGroupProps {
   size?: ToolbarControlGroupSize;
   density?: ToolbarControlGroupDensity;
   content?: ToolbarControlGroupContent;
+  /** Whether controls paint focus individually or the group paints an outline/halo on focus-within. */
+  focusRing?: ToolbarControlGroupFocusRing;
   selectedChrome?: ToolbarControlGroupSelectedChrome;
   selectedTone?: ToolbarControlGroupSelectedTone;
   /** Size a nested Web Awesome dropdown trigger as part of this group. */
@@ -76,6 +81,8 @@ export interface ToolbarControlGroupProps {
   menuInset?: ToolbarControlGroupMenuInset;
   /** Keep an overlong row of actions inside the available width with horizontal scrolling. */
   overflow?: ToolbarControlGroupOverflow;
+  /** Responsive visibility owned by the enclosing Toolbar container. */
+  visibility?: ToolbarControlGroupVisibility;
   /** Add contrast behind photo-backed avatar content. */
   scrim?: boolean;
   /**
@@ -98,11 +105,13 @@ export function ToolbarControlGroup({
   size = 'default',
   density = 'comfortable',
   content = 'icon',
+  focusRing = 'control',
   selectedChrome = 'raised',
   selectedTone = 'brand',
   nestedDropdown = false,
   menuInset = 'standard',
   overflow = 'visible',
+  visibility = 'always',
   scrim = false,
   avatarImage,
 }: ToolbarControlGroupProps) {
@@ -121,11 +130,13 @@ export function ToolbarControlGroup({
       data-size={size}
       data-density={density}
       data-content={content}
+      data-focus-ring={focusRing}
       data-selected-chrome={selectedChrome}
       data-selected-tone={selectedTone}
       data-nested-dropdown={String(nestedDropdown)}
       data-menu-inset={menuInset}
       data-overflow={overflow}
+      data-visibility={visibility}
       data-scrim={String(scrim)}
       style={
         avatarImage

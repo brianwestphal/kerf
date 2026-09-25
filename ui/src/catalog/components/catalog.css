@@ -1,0 +1,22 @@
+.kui-catalog {
+  --kui-catalog-sidebar-width: remify(288px);
+  --kui-catalog-content-measure: remify(1120px);
+
+  display: grid;
+  height: 100vh;
+  grid-template-columns: var(--kui-catalog-sidebar-width) minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.kui-catalog[data-sidebar-collapsed="true"] {
+  grid-template-columns: 0 minmax(0, 1fr);
+}
+
+@media (max-width: remify(832px)) {
+  .kui-catalog,
+  .kui-catalog[data-sidebar-collapsed="true"] {
+    height: auto;
+    min-height: 100vh;
+    grid-template-columns: 1fr;
+  }
+}

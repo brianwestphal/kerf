@@ -1,0 +1,7 @@
+.recipe-inspector__controls {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  gap: var(--kui-space-s);
+}

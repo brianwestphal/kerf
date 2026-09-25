@@ -1,3 +1,4 @@
+import './split-view.css';
 import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/list.css';
 import '@kerfjs/ui/list-header.css';
@@ -14,6 +15,8 @@ import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SplitView } from '@kerfjs/ui/split-view';
 import { signal } from 'kerfjs';
 import { ChevronRight, MessageSquareText } from 'lucide';
+
+import { DemoContentItem } from './demo-content-item.js';
 
 interface Message {
   id: string;
@@ -74,38 +77,40 @@ export function clearSplitViewSelection(): void {
 
 function messageList(action: string, selectedId: string | null = null) {
   return (
-    <List className="demo-split-view__list">
-      {[
-        <ListHeader
-          label="Inbox"
-          count={MESSAGES.length}
-          countLabel={`${MESSAGES.length} messages`}
-        />,
-        ...MESSAGES.map((message) => (
-          <ListItem
-            action={action}
-            itemId={message.id}
-            label={message.subject}
-            description={`${message.sender} · ${message.preview}`}
-            icon={<LucideIcon icon={MessageSquareText} name="message" />}
-            trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
-            selected={message.id === selectedId}
-            multiline
-          />
-        )),
-      ]}
-    </List>
+    <div class="demo-split-view__list">
+      <List>
+        {[
+          <ListHeader
+            label="Inbox"
+            count={MESSAGES.length}
+            countLabel={`${MESSAGES.length} messages`}
+          />,
+          ...MESSAGES.map((message) => (
+            <ListItem
+              action={action}
+              itemId={message.id}
+              label={message.subject}
+              description={`${message.sender} · ${message.preview}`}
+              icon={<LucideIcon icon={MessageSquareText} name="message" />}
+              trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
+              selected={message.id === selectedId}
+              multiline
+            />
+          )),
+        ]}
+      </List>
+    </div>
   );
 }
 
 function messageDetail(message: Message) {
   return (
     <div class="demo-split-view__pane kui-content">
-      <div class="kui-content-item">
-        <span class="demo-split-view__eyebrow">From {message.sender}</span>
-        <strong>{message.subject}</strong>
-        <span>{message.body}</span>
-      </div>
+      <DemoContentItem
+        eyebrow={`From ${message.sender}`}
+        title={message.subject}
+        detail={message.body}
+      />
     </div>
   );
 }
@@ -121,38 +126,40 @@ export function SplitViewDemo() {
         note="The public list-width token controls the fixed primary pane; selection stays visible alongside its detail."
         align="none"
       >
-        <SplitView
-          id="catalog-split-view-roomy"
-          label="Messages"
-          className="demo-split-view demo-split-view--roomy"
-          listTitle="Threads"
-          detailTitle={roomySelection.subject}
-          list={messageList(
-            'select-roomy-split-view-message',
-            roomySelection.id,
-          )}
-          detail={messageDetail(roomySelection)}
-        />
+        <div class="demo-split-view demo-split-view--roomy">
+          <SplitView
+            id="catalog-split-view-roomy"
+            label="Messages"
+            listTitle="Threads"
+            detailTitle={roomySelection.subject}
+            list={messageList(
+              'select-roomy-split-view-message',
+              roomySelection.id,
+            )}
+            detail={messageDetail(roomySelection)}
+          />
+        </div>
       </CatalogExample>
       <CatalogExample
         label="Interactive compact drill-down"
         note="Choose a message to push its detail into the controlled navigation stack. Back clears the selection and restores the list."
         align="none"
       >
-        <SplitView
-          id="catalog-split-view-compact"
-          label="Compact messages"
-          className="demo-split-view demo-split-view--compact"
-          compact
-          detailActive={Boolean(compactSelection)}
-          listTitle="Inbox"
-          detailTitle={compactSelection?.subject ?? ''}
-          backLabel="Back to inbox"
-          list={messageList('open-split-view-message')}
-          detail={
-            compactSelection ? messageDetail(compactSelection) : <div></div>
-          }
-        />
+        <div class="demo-split-view demo-split-view--compact">
+          <SplitView
+            id="catalog-split-view-compact"
+            label="Compact messages"
+            compact
+            detailActive={Boolean(compactSelection)}
+            listTitle="Inbox"
+            detailTitle={compactSelection?.subject ?? ''}
+            backLabel="Back to inbox"
+            list={messageList('open-split-view-message')}
+            detail={
+              compactSelection ? messageDetail(compactSelection) : <div></div>
+            }
+          />
+        </div>
       </CatalogExample>
     </CatalogExampleStack>
   );

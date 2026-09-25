@@ -1,8 +1,8 @@
+import './lucide-icon.css';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Bell } from 'lucide';
-
-import { icon } from './state.js';
 
 export function LucideIconDemo() {
   // Both render the same glyph — LucideIcon's two modes differ in semantics, not
@@ -19,7 +19,9 @@ export function LucideIconDemo() {
         }
         align="glyph"
       >
-        {icon(Bell, 'bell')}
+        <span class="demo-lucide-icon-frame">
+          <LucideIcon icon={Bell} name="bell" />
+        </span>
       </CatalogExample>
       <CatalogExample
         label="Meaningful"
@@ -28,11 +30,13 @@ export function LucideIconDemo() {
         }
         align="glyph"
       >
-        <LucideIcon
-          icon={Bell}
-          name="notification"
-          label="Notifications ready"
-        />
+        <span class="demo-lucide-icon-frame">
+          <LucideIcon
+            icon={Bell}
+            name="notification"
+            label="Notifications ready"
+          />
+        </span>
       </CatalogExample>
     </CatalogExampleStack>
   );

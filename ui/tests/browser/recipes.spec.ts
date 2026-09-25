@@ -274,9 +274,11 @@ test('keeps project dialog content on intentional wide and narrow gutters', asyn
       )!;
       const titleRange = document.createRange();
       titleRange.selectNodeContents(title);
-      const pane = bounds('.recipe-dialog__pane');
+      const pane = bounds(
+        ':scope > [data-component="pane"] > .kui-pane__content',
+      );
       const header = bounds(
-        '.recipe-list-detail__detail > .kui-pane__header > .kui-toolbar',
+        '.recipe-list-detail__detail > [data-component="pane"] > .kui-pane__header > .kui-toolbar',
       );
       const masterDetail = bounds('.recipe-list-detail');
       const detail = bounds('.recipe-list-detail__detail');
@@ -345,7 +347,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
       summaryRange.selectNodeContents(summary);
       const ownership = root
         .querySelector<HTMLElement>(
-          '.recipe-form__footer .kui-recipe__ownership',
+          '.recipe-form__footer .recipe-component__ownership',
         )!
         .getBoundingClientRect();
       const input = root.querySelector<HTMLElement>(
@@ -457,7 +459,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
     await expect(form.locator(':scope > .kui-content-item')).toHaveCount(0);
     await expect(
       form.locator(
-        ':scope > :not([data-component="toolbar"]):not(.kui-recipe__heading-summary):not(.recipe-form__section):not([data-component="state-banner"])',
+        ':scope > :not([data-component="toolbar"]):not(.recipe-form__heading-summary):not(.recipe-form__section):not([data-component="state-banner"])',
       ),
     ).toHaveCount(0);
     const banner = form.locator(':scope > [data-component="state-banner"]');
@@ -504,12 +506,14 @@ test('keeps the composer on one labeled surface with shared field and action gut
       measured.textareaHintPadding,
       measured.selectLabelPadding,
     ]) {
-      expect(padding.start).toBeCloseTo(8 * scale, 0);
-      expect(padding.end).toBeCloseTo(8 * scale, 0);
+      // Shared Web Awesome field chrome aligns labels and hints with the value:
+      // the 1px control border plus its 8px inline content inset.
+      expect(padding.start).toBeCloseTo(1 + 8 * scale, 0);
+      expect(padding.end).toBeCloseTo(1 + 8 * scale, 0);
     }
     expect(measured.textareaControlPadding.start).toBeCloseTo(8 * scale, 0);
     expect(measured.textareaControlPadding.end).toBeCloseTo(8 * scale, 0);
-    expect(measured.textareaCountEnd).toBeCloseTo(8 * scale, 0);
+    expect(measured.textareaCountEnd).toBeCloseTo(1 + 8 * scale, 0);
   };
 
   await expectLayout(1);

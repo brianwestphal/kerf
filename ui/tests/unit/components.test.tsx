@@ -208,11 +208,13 @@ describe('production UI primitives', () => {
       size: 'compact',
       density: 'tight',
       content: 'mixed',
+      focusRing: 'outline',
       selectedChrome: 'outline',
       selectedTone: 'pop',
       nestedDropdown: true,
       menuInset: 'compact',
       overflow: 'scroll',
+      visibility: 'compact-only',
       scrim: true,
       avatarImage: '/profile.svg',
       className: 'extra',
@@ -224,18 +226,21 @@ describe('production UI primitives', () => {
         trailing: group,
         label: 'Tools',
         dividerSides: 'tr',
+        centerAlign: 'stretch',
+        responsive: 'center-priority',
+        responsiveAt: 'compact',
         className: 'wide',
       }),
     );
     expect(html).toContain('class="kui-toolbar wide"');
     expect(html).toContain(
-      'divider-sides="tr" data-has-center="true" aria-label="Tools"',
+      'divider-sides="tr" data-has-center="true" data-center-align="stretch" data-responsive="center-priority" data-responsive-at="compact" aria-label="Tools"',
     );
     expect(asHtml(group)).toContain(
       'role="group" aria-label="View" data-appearance="borderless" data-tone="dark" data-button-appearance="push" data-expanded="true" data-single="true"',
     );
     expect(asHtml(group)).toContain(
-      'data-size="compact" data-density="tight" data-content="mixed" data-selected-chrome="outline" data-selected-tone="pop" data-nested-dropdown="true" data-menu-inset="compact" data-overflow="scroll" data-scrim="true"',
+      'data-size="compact" data-density="tight" data-content="mixed" data-focus-ring="outline" data-selected-chrome="outline" data-selected-tone="pop" data-nested-dropdown="true" data-menu-inset="compact" data-overflow="scroll" data-visibility="compact-only" data-scrim="true"',
     );
     expect(asHtml(group)).toContain(
       'style="--kui-toolbar-avatar-image:url(&quot;/profile.svg&quot;)"',
@@ -250,7 +255,9 @@ describe('production UI primitives', () => {
           }),
         }),
       ),
-    ).toContain('data-has-center="false"');
+    ).toContain(
+      'data-has-center="false" data-center-align="center" data-responsive="none" data-responsive-at="narrow"',
+    );
     expect(asHtml(ToolbarText({ text: 'Default' }))).toContain(
       'data-size="default"',
     );
@@ -504,10 +511,10 @@ describe('production UI primitives', () => {
         }),
       ),
     ).toBe(
-      '<h2 id="section-title" aria-label="Section title" data-scope="details" class="kui-text title emphasis" data-component="text" data-tone="default" data-size="default" data-font="default">Details</h2>',
+      '<h2 id="section-title" aria-label="Section title" data-scope="details" class="kui-text title emphasis" data-component="text" data-tone="default" data-size="default" data-font="default" data-border="transparent">Details</h2>',
     );
     expect(asHtml(Text({ children: <span>Body</span> }))).toBe(
-      '<p class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default"><span>Body</span></p>',
+      '<p class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default" data-border="transparent"><span>Body</span></p>',
     );
     expect(
       asHtml(
@@ -653,6 +660,7 @@ describe('production UI primitives', () => {
     );
     expect(toggle).toContain('data-has-badge="false" data-has-count="true"');
     expect(toggle).toContain('data-inline="false"');
+    expect(toggle).toContain('data-width="fill"');
     expect(toggle).toContain('class="kui-list-header__action-layer"');
     expect(toggle.match(/data-component="disclosure-arrow"/g)).toHaveLength(1);
     expect(toggle).toContain(
@@ -713,13 +721,14 @@ describe('production UI primitives', () => {
       }),
     );
     expect(header).toContain(
-      '<h2 aria-label="Workspace, 0 workspaces" class="kui-text kui-list-header__label" data-component="text" data-tone="default" data-size="default" data-font="default">Workspace</h2>',
+      '<h2 aria-label="Workspace, 0 workspaces" class="kui-text kui-list-header__label" data-component="text" data-tone="default" data-size="default" data-font="default" data-border="none">Workspace</h2>',
     );
     expect(header).toContain(
       'data-component="badge" data-tone="neutral" data-appearance="quiet" data-shape="pill" data-size="compact" aria-hidden="true">0</span>',
     );
     expect(header).toContain('data-has-badge="false" data-has-count="true"');
     expect(header).toContain('data-inline="false"');
+    expect(header).toContain('data-width="fill"');
     expect(header).toContain('data-section-id="workspace"');
     expect(header).toContain(
       'popoverTarget="workspace-popover" popoverTargetAction="show" aria-controls="workspace-popover" aria-haspopup="dialog"',
@@ -780,6 +789,9 @@ describe('production UI primitives', () => {
         }),
       ),
     ).toContain('data-inline="true"');
+    expect(asHtml(ListHeader({ label: 'Fitted', width: 'content' }))).toContain(
+      'data-width="content"',
+    );
     ListItem({
       label: 'Unsafe menu role',
       action: 'unsafe',
@@ -819,6 +831,11 @@ describe('production UI primitives', () => {
       label: 'Unsafe inline state',
       // @ts-expect-error Inline presentation remains owned by ListHeader.inline.
       rootAttributes: { 'data-inline': 'true' },
+    });
+    ListHeader({
+      label: 'Unsafe width state',
+      // @ts-expect-error Width presentation remains owned by ListHeader.width.
+      rootAttributes: { 'data-width': 'content' },
     });
     // @ts-expect-error Count labels are required for counted headers.
     ListHeader({ label: 'Missing count label', count: 2 });
@@ -1672,6 +1689,7 @@ describe('production UI primitives', () => {
         size: 240,
         min: 180,
         max: 400,
+        responsiveFillAt: 'narrow',
         handleIcon: <span data-custom-handle-icon>⋮</span>,
         children: icon,
       }),
@@ -1679,6 +1697,7 @@ describe('production UI primitives', () => {
     expect(horizontal).toContain(
       'data-axis="horizontal" data-edge="end" data-collapsed="false"',
     );
+    expect(horizontal).toContain('data-responsive-fill-at="narrow"');
     expect(horizontal).toContain(
       'aria-orientation="vertical" aria-valuemin="180" aria-valuemax="400" aria-valuenow="240"',
     );
@@ -1751,6 +1770,12 @@ describe('production UI primitives', () => {
     );
     expect(resizableRegionCss).toMatch(
       /data-presentation="overlay"\]\[data-axis="vertical"\][\s\S]*--kui-resizable-region-overlay-max-height, 85vh/,
+    );
+    expect(resizableRegionCss).toMatch(
+      /max-width: remify\(704px\)[\s\S]*data-responsive-fill-at="narrow"[\s\S]*flex: 1 1 auto/,
+    );
+    expect(resizableRegionCss).toMatch(
+      /max-width: remify\(448px\)[\s\S]*data-responsive-fill-at="compact"[\s\S]*flex: 1 1 auto/,
     );
   });
 });

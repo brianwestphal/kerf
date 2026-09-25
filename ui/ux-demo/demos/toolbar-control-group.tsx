@@ -38,7 +38,6 @@ export function ToolbarControlGroupDemo() {
   return (
     <CatalogExampleStack
       label="ToolbarControlGroup demo"
-      className="toolbar-control-group-demo"
       rootAttributes={{ 'data-demo': 'toolbar-control-group' }}
     >
       <CatalogExample
@@ -298,8 +297,9 @@ export function ToolbarControlGroupDemo() {
       >
         <div class="demo-toolbar-group-search-wrap">
           <ToolbarControlGroup
-            className="demo-toolbar-group-search"
             shape={shape}
+            content="search"
+            focusRing="halo"
             expanded={toolbarGroupSearchOpen.value}
             single={!toolbarGroupSearchOpen.value}
           >
@@ -308,6 +308,7 @@ export function ToolbarControlGroupDemo() {
               label="Search views"
               collapsible
               expanded={toolbarGroupSearchOpen.value}
+              presentation="toolbar-group"
               placeholder="Search views"
               expandLabel="Open search"
             />

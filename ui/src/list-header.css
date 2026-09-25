@@ -46,6 +46,10 @@
   vertical-align: middle;
 }
 
+.kui-list-header[data-width="content"]:not([data-inline="true"]) {
+  width: auto;
+}
+
 .kui-list-header[data-inline="true"] > .kui-list-header__title,
 .kui-list-header[data-inline="true"] > .kui-list-header__action {
   vertical-align: middle;
@@ -94,13 +98,6 @@
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
-}
-
-/* Passive labels use Text for semantic heading markup. The title wrapper
-   already owns the transparent alignment border, so avoid counting a second
-   border before Text's standard content padding. */
-.kui-list-header__label.kui-text {
-  border: 0;
 }
 
 .kui-list-header__action,

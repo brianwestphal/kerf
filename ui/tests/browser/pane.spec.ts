@@ -55,14 +55,12 @@ test('Pane owns vertical slots, scrolling, and independent separators', async ({
   expect(geometry.order[0]).toBeLessThan(geometry.order[1]);
   expect(geometry.order[1]).toBeLessThan(geometry.order[2]);
 
-  await expect(page.locator('.kui-catalog__sidebar')).toHaveAttribute(
-    'data-component',
-    'pane',
-  );
-  await expect(page.locator('.kui-catalog__detail')).toHaveAttribute(
-    'data-component',
-    'pane',
-  );
+  await expect(
+    page.locator('.kui-catalog__sidebar > [data-component="pane"]'),
+  ).toHaveAttribute('data-component', 'pane');
+  await expect(
+    page.locator('.kui-catalog__detail > [data-component="pane"]'),
+  ).toHaveAttribute('data-component', 'pane');
 
   if (browserName === 'chromium')
     await pane.screenshot({

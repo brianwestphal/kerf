@@ -1,0 +1,9 @@
+.demo-list-inset-pane {
+  display: grid;
+  width: min(remify(480px), 100%);
+  padding-block: remify(8px);
+  gap: remify(8px);
+  border: 1px solid var(--kui-color-border);
+  border-radius: var(--kui-radius-m);
+  background: var(--kui-color-surface);
+}

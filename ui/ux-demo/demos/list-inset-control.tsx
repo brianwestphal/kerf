@@ -1,15 +1,17 @@
+import './list-inset-control.css';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Check } from 'lucide';
 
+import { DemoListInsetPane } from './demo-list-inset-pane.js';
 import { icon } from './state.js';
 
 export function ListInsetControlDemo() {
   return (
     <CatalogExampleStack
       label="ListInsetControl demo"
-      className="list-inset-demo"
       rootAttributes={{ 'data-demo': 'list-inset-control' }}
     >
       <CatalogExample
@@ -24,7 +26,7 @@ export function ListInsetControlDemo() {
         }
         align="none"
       >
-        <div class="list-inset-demo__pane kui-content">
+        <DemoListInsetPane>
           <StateBanner
             tone="info"
             title="A content item, for reference"
@@ -39,18 +41,15 @@ export function ListInsetControlDemo() {
               placeholder="An input that owns its border and padding"
             />
           </ListInsetControl>
-        </div>
+        </DemoListInsetPane>
       </CatalogExample>
       <CatalogExample
         label="Selected physical sides"
         note="The sides prop defaults to all sides and can select any canonical top/right/bottom/left combination."
         align="none"
       >
-        <div class="list-inset-demo__pane kui-content">
-          <ListInsetControl
-            sides="rb"
-            className="demo-list-inset-control-sides"
-          >
+        <DemoListInsetPane>
+          <ListInsetControl sides="rb">
             <input
               class="list-inset-demo__input"
               type="text"
@@ -58,7 +57,7 @@ export function ListInsetControlDemo() {
               placeholder="Right and bottom inset"
             />
           </ListInsetControl>
-        </div>
+        </DemoListInsetPane>
       </CatalogExample>
     </CatalogExampleStack>
   );

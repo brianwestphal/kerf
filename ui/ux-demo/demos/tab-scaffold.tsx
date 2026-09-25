@@ -1,3 +1,4 @@
+import './tab-scaffold.css';
 import '@kerfjs/ui/tab-scaffold.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
@@ -6,14 +7,13 @@ import { TabScaffold, type TabScaffoldTab } from '@kerfjs/ui/tab-scaffold';
 import { signal } from 'kerfjs';
 import { FolderKanban, Search, Settings } from 'lucide';
 
+import { DemoContentItem } from './demo-content-item.js';
+
 type DemoTabId = 'projects' | 'search' | 'settings';
 
 const scene = (title: string, detail: string) => (
   <div class="kui-content">
-    <div class="kui-content-item">
-      <strong>{title}</strong>
-      <span>{detail}</span>
-    </div>
+    <DemoContentItem title={title} detail={detail} />
   </div>
 );
 
@@ -62,13 +62,14 @@ export function TabScaffoldDemo() {
         label="Persistent tab scenes"
         note="The controlled active id changes the visible scene; every tab scene remains mounted so its own stack and scroll position survive."
       >
-        <TabScaffold
-          id="catalog-tab-scaffold"
-          label="Application sections"
-          className="demo-tab-scaffold"
-          tabs={tabs}
-          active={activeTab.value}
-        />
+        <div class="demo-tab-scaffold">
+          <TabScaffold
+            id="catalog-tab-scaffold"
+            label="Application sections"
+            tabs={tabs}
+            active={activeTab.value}
+          />
+        </div>
       </CatalogExample>
     </CatalogExampleStack>
   );

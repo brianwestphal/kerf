@@ -28,16 +28,17 @@ Establish one reading order and one dominant action per decision point. Group fi
 
 The package is designed to look right _unstyled_. A screen built from the
 primitives, their props, and the semantic tokens should already read well, so
-custom CSS is the exception. Before adding any `padding`, `margin`, `width`,
+applications do not carry a component-customization stylesheet. Before adding any `padding`, `margin`, `width`,
 `height`, `border`, `background`, wrapper card, or decoration, check whether the
 component, the pane, or the content-item already owns it — it almost always does,
 and adding more usually **double-insets** or fights the component (the most common
 mistake). Trust component defaults: render a control at its natural size and color
 and fix the surrounding layout rather than overriding the control. Legitimate
-custom CSS is limited to genuinely new structure, and even then may only join a
-component's documented `publicClasses` or override documented `--kui-*` tokens at a
-real composition boundary — never size, space, or re-skin a primitive by hand, and
-never build a heading, toolbar, card, or pane geometry that a primitive provides.
+CSS for genuinely new structure belongs to the application-owned component that
+renders that structure. It must not select a nested Kerf or Web Awesome component;
+configure those children through props and documented tokens instead. Never size,
+space, or re-skin a primitive by hand, and never build a heading, toolbar, card,
+or pane geometry that a primitive provides.
 
 ### Panes share one child-owned geometry
 

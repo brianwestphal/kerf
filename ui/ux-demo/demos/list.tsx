@@ -1,15 +1,17 @@
+import './list.css';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { flex, space } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { Pane } from '@kerfjs/ui/pane';
-import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { CircleHelp, Folder, Inbox, Plus, Settings, Wrench } from 'lucide';
 
+import { DemoContentItem } from './demo-content-item.js';
 import { icon, menuToolsOpen } from './state.js';
 
 export function ListDemo() {
@@ -33,141 +35,135 @@ export function ListDemo() {
         label="Scrollable application list"
         note="Pane owns the header/content/footer anatomy; the content List owns flex growth, scrolling, a typed major gap, and a right divider."
       >
-        <Pane
-          className="demo-list"
-          contentClassName="demo-list__pane-content"
-          header={
-            <Toolbar
-              label="Sidebar toolbar"
-              dividerSides=""
-              leading={<ToolbarText text="Workspace" size="small" />}
-              trailing={
-                <ToolbarControlGroup appearance="borderless" single>
-                  <button
-                    type="button"
-                    aria-label="Add workspace"
-                    data-action="log-add"
-                  >
-                    {icon(Plus, 'plus')}
-                  </button>
-                </ToolbarControlGroup>
-              }
-            />
-          }
-          footer={
-            <Toolbar
-              label="Sidebar footer"
-              dividerSides=""
-              leading={<ToolbarText text="Ready" size="small" />}
-              trailing={
-                <ToolbarControlGroup appearance="borderless" single>
-                  <button
-                    type="button"
-                    aria-label="Sidebar settings"
-                    data-action="log-settings"
-                  >
-                    {icon(Settings, 'settings')}
-                  </button>
-                </ToolbarControlGroup>
-              }
-            />
-          }
-        >
-          <List
-            className="demo-list__content"
-            gap={space('l')}
-            flex={flex(1)}
-            scrollable
-            dividerSides="r"
+        <div class="demo-list">
+          <Pane
+            contentClassName="demo-list__pane-content"
+            header={
+              <Toolbar
+                label="Sidebar toolbar"
+                dividerSides=""
+                leading={<ToolbarText text="Workspace" size="small" />}
+                trailing={
+                  <ToolbarControlGroup appearance="borderless" single>
+                    <button
+                      type="button"
+                      aria-label="Add workspace"
+                      data-action="log-add"
+                    >
+                      {icon(Plus, 'plus')}
+                    </button>
+                  </ToolbarControlGroup>
+                }
+              />
+            }
+            footer={
+              <Toolbar
+                label="Sidebar footer"
+                dividerSides=""
+                leading={<ToolbarText text="Ready" size="small" />}
+                trailing={
+                  <ToolbarControlGroup appearance="borderless" single>
+                    <button
+                      type="button"
+                      aria-label="Sidebar settings"
+                      data-action="log-settings"
+                    >
+                      {icon(Settings, 'settings')}
+                    </button>
+                  </ToolbarControlGroup>
+                }
+              />
+            }
           >
-            <section>
-              <List>
-                {workspaceHeading !== undefined ? (
-                  <ListHeader
-                    label={workspaceHeading}
-                    count={3}
-                    countLabel="3 workspaces"
-                    action="log-add"
-                    actionLabel="Add workspace"
-                    actionIcon={icon(Plus, 'plus')}
-                  />
-                ) : null}
-                <ListItem
-                  action="log-inbox"
-                  itemId="inbox"
-                  label="Inbox"
-                  icon={icon(Inbox, 'inbox')}
-                  trailing={<span>12</span>}
-                  selected
-                />
-                {workspaceRows.map((row) => (
-                  <ListItem {...row} />
-                ))}
+            <div class="demo-list__content-frame">
+              <List gap={space('l')} flex={flex(1)} scrollable dividerSides="r">
+                <section>
+                  <List>
+                    {workspaceHeading !== undefined ? (
+                      <ListHeader
+                        label={workspaceHeading}
+                        count={3}
+                        countLabel="3 workspaces"
+                        action="log-add"
+                        actionLabel="Add workspace"
+                        actionIcon={icon(Plus, 'plus')}
+                      />
+                    ) : null}
+                    <ListItem
+                      action="log-inbox"
+                      itemId="inbox"
+                      label="Inbox"
+                      icon={icon(Inbox, 'inbox')}
+                      trailing={<span>12</span>}
+                      selected
+                    />
+                    {workspaceRows.map((row) => (
+                      <ListItem {...row} />
+                    ))}
+                  </List>
+                </section>
+                <section>
+                  <List gap="xs">
+                    <ListHeader
+                      label="Tools"
+                      toggle
+                      expanded={menuToolsOpen.value}
+                      action="toggle-menu-tools"
+                      triggerAttributes={{
+                        'aria-controls': 'menu-tools-content',
+                      }}
+                    />
+                    <div id="menu-tools-content" hidden={!menuToolsOpen.value}>
+                      <ListItem
+                        action="log-settings"
+                        label="A multiline item demonstrates content that wraps without clipping"
+                        icon={icon(Wrench, 'wrench')}
+                        multiline
+                      />
+                      <ListItem
+                        action="disabled"
+                        label="Unavailable"
+                        icon={icon(CircleHelp, 'circle-help')}
+                        disabled
+                      />
+                      <DemoContentItem
+                        title="Shared item geometry"
+                        detail="The child owns its margin, border, and padding."
+                        rootAttributes={{ 'data-content-item': '' }}
+                      />
+                    </div>
+                  </List>
+                </section>
               </List>
-            </section>
-            <section>
-              <List gap="xs">
-                <ListHeader
-                  label="Tools"
-                  toggle
-                  expanded={menuToolsOpen.value}
-                  action="toggle-menu-tools"
-                  triggerAttributes={{ 'aria-controls': 'menu-tools-content' }}
-                />
-                <div id="menu-tools-content" hidden={!menuToolsOpen.value}>
-                  <ListItem
-                    action="log-settings"
-                    label="A multiline item demonstrates content that wraps without clipping"
-                    icon={icon(Wrench, 'wrench')}
-                    multiline
-                  />
-                  <ListItem
-                    action="disabled"
-                    label="Unavailable"
-                    icon={icon(CircleHelp, 'circle-help')}
-                    disabled
-                  />
-                  <div class="kui-content-item" data-content-item>
-                    <strong>Shared item geometry</strong>
-                    <Text>The child owns its margin, border, and padding.</Text>
-                  </div>
-                </div>
-              </List>
-            </section>
-          </List>
-        </Pane>
+            </div>
+          </Pane>
+        </div>
       </CatalogExample>
       <CatalogExample
         label="Physical-axis alignment"
         note="List keeps its stretch-and-top defaults when omitted; explicit horizontal and vertical alignment use the same vocabulary as Row."
       >
-        <List
-          className="demo-list-alignment"
-          gap="xs"
-          hAlign="right"
-          vAlign="full"
-        >
-          <span>Top</span>
-          <span>Middle</span>
-          <span>Bottom</span>
-        </List>
+        <div class="demo-list-alignment-frame">
+          <List gap="xs" hAlign="right" vAlign="full">
+            <span class="demo-list-chip">Top</span>
+            <span class="demo-list-chip">Middle</span>
+            <span class="demo-list-chip">Bottom</span>
+          </List>
+        </div>
       </CatalogExample>
       <CatalogExample
         label="Side-selectable insets"
         note="Text insets apply the full 8px + 1px + 8px content geometry; control insets apply 8px, and text wins where both select a side."
       >
-        <List
-          className="demo-list-insets"
-          gap="xs"
-          textInsets="l"
-          controlInsets="rb"
-        >
-          <span>Text-aligned left edge</span>
-          <input aria-label="Inset list control" value="Control edge" />
-          <List className="demo-list-insets-nested" textInsets="t">
-            <span>Nested text-aligned top edge</span>
+        <div class="demo-list-insets-frame">
+          <List gap="xs" textInsets="l" controlInsets="rb">
+            <span class="demo-list-chip">Text-aligned left edge</span>
+            <input aria-label="Inset list control" value="Control edge" />
+            <List textInsets="t">
+              <span class="demo-list-chip">Nested text-aligned top edge</span>
+            </List>
           </List>
-        </List>
+        </div>
       </CatalogExample>
     </CatalogExampleStack>
   );

@@ -58,7 +58,7 @@ export function HeadersDemo() {
               </ToolbarControlGroup>
             }
           />
-          <ListInsetText horizontalOnly className="kui-inline-metadata">
+          <ListInsetText horizontalOnly>
             Production-backed primitives with explicit contracts.
           </ListInsetText>
           <ValueTable label="Package metadata">

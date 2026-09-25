@@ -644,7 +644,6 @@
         "publicClasses": [
           "kui-split-view",
           "kui-split-view__list",
-          "kui-resizable-region",
           "kui-split-view__detail",
           "kui-split-view--compact"
         ],

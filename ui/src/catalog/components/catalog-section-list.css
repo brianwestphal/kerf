@@ -1,0 +1,22 @@
+.kui-catalog__group {
+  margin-block-start: var(--kui-space-m);
+}
+
+.kui-catalog__group:first-child {
+  margin-block-start: var(--kui-space-2xs);
+}
+
+.kui-catalog__items {
+  min-width: 0;
+}
+
+@media (max-width: remify(832px)) {
+  .kui-catalog__group,
+  .kui-catalog__group:first-child {
+    min-width: 0;
+    margin: 0;
+  }
+}
+.kui-catalog__sections {
+  display: contents;
+}

@@ -35,6 +35,16 @@
   gap: 0;
 }
 
+.kui-toolbar-control-group[data-visibility="compact-only"] {
+  display: none;
+}
+
+@container kui-toolbar (max-width: remify(704px)) {
+  .kui-toolbar-control-group[data-visibility="compact-only"] {
+    display: inline-flex;
+  }
+}
+
 /* `shape="rounded"` swaps the default pill radius for the design system's softer
    rounded rectangle. The shared highlight contract derives every inner hover or
    selected surface from this outer radius and the group's full inset. */
@@ -68,6 +78,22 @@
 .kui-toolbar-control-group[data-overflow="scroll"] {
   max-width: 100%;
   overflow-x: auto;
+}
+.kui-toolbar-control-group[data-content="search"] {
+  width: min(var(--kui-token-search-expanded-width, remify(480px)), 100%);
+  max-width: 100%;
+  height: auto;
+  min-width: 0;
+  overflow: hidden;
+  flex: 0 1 auto;
+  transition:
+    width 0.25s ease,
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+.kui-toolbar-control-group[data-content="search"][data-expanded="false"] {
+  width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+  flex: 0 0 auto;
 }
 .kui-toolbar-control-group[data-content="text"]
   > :is(button, wa-button, .kui-toolbar-action-link),
@@ -383,14 +409,15 @@
   outline-offset: 1px;
 }
 
-/* A composed Select can delegate focus paint to the group so the visible ring
-   follows the group's selected pill/rounded geometry instead of Web Awesome's
-   form-control radius. */
-.kui-toolbar-control-group:has(
-  > .kui-select[data-focus-ring-owner="group"]:is(:focus-within, [open])
-) {
+.kui-toolbar-control-group[data-focus-ring="outline"]:focus-within {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
+}
+
+.kui-toolbar-control-group[data-focus-ring="halo"]:focus-within {
+  border-color: var(--kui-color-text-link);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--kui-color-text-link) 22%, transparent);
 }
 
 .kui-toolbar-control-group[data-button-appearance="push"][data-single="true"]:has(
@@ -405,6 +432,12 @@
 .kui-toolbar-control-group[data-button-appearance="push"][data-single="true"]
   > :is(button, wa-button)[aria-pressed="true"] {
   color: var(--kui-toolbar-control-pressed-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kui-toolbar-control-group[data-content="search"] {
+    transition-duration: 0s;
+  }
 }
 
 /* Avatar controls paint the image as chrome rather than inserting a replaced

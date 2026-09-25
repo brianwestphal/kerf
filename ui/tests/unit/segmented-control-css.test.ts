@@ -92,7 +92,7 @@ describe('SegmentedControl corner geometry', () => {
       (node) =>
         node.type === 'rule' &&
         node.selector ===
-          '.kui-toolbar-control-group > .kui-token-search[data-collapsible="true"]',
+          '.kui-token-search[data-presentation="toolbar-group"][data-collapsible="true"]',
     );
 
     if (!rule || rule.type !== 'rule')

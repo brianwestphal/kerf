@@ -1,0 +1,14 @@
+.demo-list-popover {
+  max-width: remify(320px);
+  padding: var(--kui-space-m);
+  border: 1px solid var(--kui-color-border);
+  border-radius: var(--kui-radius-m);
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface);
+  box-shadow: var(--kui-shadow-l);
+  font: inherit;
+}
+
+.demo-list-popover:not(:popover-open) {
+  display: none;
+}

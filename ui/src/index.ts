@@ -85,6 +85,7 @@ export {
   type ResizableRegionEdge,
   type ResizableRegionPresentation,
   type ResizableRegionProps,
+  type ResizableRegionResponsiveFillAt,
   type ResizableRegionRestorePosition,
   type ResizableRegionSeparator,
   resizeRegionFromPointer,
@@ -180,6 +181,7 @@ export {
   type ToolbarControlGroupShape,
   type ToolbarControlGroupSize,
   type ToolbarControlGroupTone,
+  type ToolbarControlGroupVisibility,
 } from './toolbar-control-group.js';
 export {
   type HeadingLevel,

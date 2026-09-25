@@ -18,6 +18,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-density',
   'data-divider',
   'data-inline',
+  'data-width',
   'data-indicator-tone',
   'data-toggle',
 ]);
@@ -32,6 +33,7 @@ type ListHeaderRootAttributes = Readonly<
     'data-density'?: never;
     'data-divider'?: never;
     'data-inline'?: never;
+    'data-width'?: never;
     'data-indicator-tone'?: never;
     'data-toggle'?: never;
   }
@@ -53,6 +55,8 @@ interface ListHeaderBaseProps {
   divider?: 'none' | 'before' | 'after' | 'both';
   /** Shrink-wrap the header without its default outer margin, border, or padding. */
   inline?: boolean;
+  /** Fill the available row or shrink-wrap while retaining normal header geometry. */
+  width?: 'fill' | 'content';
   indicatorTone?: 'neutral' | 'accent' | 'pop' | 'danger';
   /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
   placeholder?: boolean;
@@ -110,6 +114,7 @@ export function ListHeader({
   density = 'standard',
   divider = 'none',
   inline = false,
+  width = 'fill',
   indicatorTone = 'neutral',
   action,
   actionLabel,
@@ -180,6 +185,7 @@ export function ListHeader({
         data-density={density}
         data-divider={divider}
         data-inline={String(inline)}
+        data-width={width}
         data-indicator-tone={indicatorTone}
         data-toggle="true"
         data-placeholder={placeholder ? 'true' : undefined}
@@ -216,6 +222,7 @@ export function ListHeader({
       data-density={density}
       data-divider={divider}
       data-inline={String(inline)}
+      data-width={width}
       data-indicator-tone={indicatorTone}
       data-toggle="false"
       data-placeholder={placeholder ? 'true' : undefined}
@@ -225,6 +232,7 @@ export function ListHeader({
         <Text
           variant="h2"
           class="kui-list-header__label"
+          border="none"
           aria-label={accessibleLabel}
         >
           {label}

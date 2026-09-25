@@ -85,12 +85,20 @@ export function SplitView({
       min={resizable.min}
       max={resizable.max}
     >
-      <div class="kui-split-view__list kui-pane" data-split-list>
+      <div
+        class="kui-split-view__list kui-pane"
+        data-split-list
+        data-resizable="true"
+      >
         {list}
       </div>
     </ResizableRegion>
   ) : (
-    <div class="kui-split-view__list kui-pane" data-split-list>
+    <div
+      class="kui-split-view__list kui-pane"
+      data-split-list
+      data-resizable="false"
+    >
       {list}
     </div>
   );

@@ -1,17 +1,21 @@
 import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/toolbar-text.css';
-import './recipes.css';
+import './navigation-stack.css';
 
 import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
-import { Text } from '@kerfjs/ui/text';
 import { signal } from 'kerfjs';
 import { ChevronRight, FileText, Folder } from 'lucide';
 
+import {
+  RecipeMutedText,
+  RecipeOwnershipNote,
+  RecipeRoot,
+} from './recipe-root.js';
 import type { RecipeFactory } from './types.js';
 
 interface LibraryItem {
@@ -46,25 +50,29 @@ export const createRecipe: RecipeFactory = (announce) => {
     key: 'library',
     title: 'Library',
     content: (
-      <List className="recipe-navstack__view" gap="m">
-        <section>
-          <ListHeader label="Components" />
-          {ITEMS.map((item) => (
-            <ListItem
-              action="recipe-action"
-              itemId={item.id}
-              label={item.label}
-              icon={<LucideIcon icon={Folder} name="folder" />}
-              trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
-            />
-          ))}
-        </section>
-        <Text class="kui-recipe__ownership kui-content-item">
-          The recipe owns the stack as a signal of views and pushes/pops it;
-          `NavStack` renders the stack and `wireNavStack` slides the content and
-          settles the chrome. The app owns selection, data, and routing.
-        </Text>
-      </List>
+      <div class="recipe-navstack__view">
+        <List gap="m">
+          <section>
+            <ListHeader label="Components" />
+            {ITEMS.map((item) => (
+              <ListItem
+                action="recipe-action"
+                itemId={item.id}
+                label={item.label}
+                icon={<LucideIcon icon={Folder} name="folder" />}
+                trailing={
+                  <LucideIcon icon={ChevronRight} name="chevron-right" />
+                }
+              />
+            ))}
+          </section>
+          <RecipeOwnershipNote>
+            The recipe owns the stack as a signal of views and pushes/pops it;
+            `NavStack` renders the stack and `wireNavStack` slides the content
+            and settles the chrome. The app owns selection, data, and routing.
+          </RecipeOwnershipNote>
+        </List>
+      </div>
     ),
   });
 
@@ -72,31 +80,32 @@ export const createRecipe: RecipeFactory = (announce) => {
     key: item.id,
     title: item.label,
     content: (
-      <List className="recipe-navstack__view" gap="m">
-        <div class="kui-content-item">
-          <LucideIcon icon={FileText} name="file-text" />
-          <strong>{item.label}</strong>
-          <Text class="kui-recipe__muted">{item.detail}</Text>
-        </div>
-      </List>
+      <div class="recipe-navstack__view">
+        <List gap="m">
+          <div class="kui-content-item">
+            <LucideIcon icon={FileText} name="file-text" />
+            <strong>{item.label}</strong>
+            <RecipeMutedText>{item.detail}</RecipeMutedText>
+          </div>
+        </List>
+      </div>
     ),
   });
 
   const views = signal<NavStackView[]>([listView()]);
 
   const render = () => (
-    <section
-      class="kui-recipe recipe-navstack kui-recipe__surface"
-      data-recipe="recipe-navigation-stack"
-    >
-      <div class="recipe-navstack__stage">
-        <NavStack
-          id="recipe-nav"
-          label="Component library"
-          views={views.value}
-        />
+    <RecipeRoot recipe="recipe-navigation-stack" measure="stack">
+      <div class="recipe-navstack">
+        <div class="recipe-navstack__stage">
+          <NavStack
+            id="recipe-nav"
+            label="Component library"
+            views={views.value}
+          />
+        </div>
       </div>
-    </section>
+    </RecipeRoot>
   );
 
   return {

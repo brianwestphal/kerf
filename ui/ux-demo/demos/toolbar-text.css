@@ -1,0 +1,7 @@
+.toolbar-text-overflow-demo {
+  display: flex;
+  width: remify(280px);
+  max-width: 100%;
+  border: 1px dashed var(--kui-color-border);
+  border-radius: var(--kui-radius-m);
+}

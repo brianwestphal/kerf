@@ -1,3 +1,5 @@
+import './list-item.css';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { CircleHelp, Folder, Inbox, Wrench } from 'lucide';
@@ -6,10 +8,7 @@ import { icon } from './state.js';
 
 export function ListItemDemo() {
   return (
-    <CatalogExampleStack
-      className="demo-list-demo"
-      rootAttributes={{ 'data-demo': 'list-item' }}
-    >
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'list-item' }}>
       <CatalogExample align="none">
         <ListItem
           action="log-projects"

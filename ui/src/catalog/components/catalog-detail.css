@@ -1,0 +1,25 @@
+.kui-catalog__detail {
+  display: grid;
+  min-width: 0;
+  height: 100%;
+  grid-column: 2;
+}
+
+.kui-catalog__header {
+  border-block-end: 1px solid var(--kui-color-border);
+  background: var(--kui-color-surface);
+}
+
+.kui-catalog__description {
+  max-width: var(--kui-catalog-content-measure, remify(1120px));
+  margin-block: 0;
+  background: transparent;
+}
+
+@media (max-width: remify(832px)) {
+  .kui-catalog__detail {
+    height: auto;
+    min-height: auto;
+    grid-column: 1;
+  }
+}

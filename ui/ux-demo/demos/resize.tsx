@@ -1,3 +1,5 @@
+import './resize.css';
+
 import { Pane } from '@kerfjs/ui/pane';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
 import { GripVertical } from 'lucide';
@@ -19,14 +21,16 @@ export function ResizeDemo() {
         max={420}
         handleIcon={icon(GripVertical, 'custom-resize-handle')}
       >
-        <Pane className="demo-resize-panel">
-          <div class="demo-resize-panel__copy kui-content-item">
-            <strong>Resizable panel</strong>
-            <span>
-              Use the handle with a pointer, arrow keys, Home, or End.
-            </span>
-          </div>
-        </Pane>
+        <div class="demo-resize-panel-frame">
+          <Pane>
+            <div class="demo-resize-panel__copy kui-content-item">
+              <strong>Resizable panel</strong>
+              <span class="demo-resize-panel__detail">
+                Use the handle with a pointer, arrow keys, Home, or End.
+              </span>
+            </div>
+          </Pane>
+        </div>
       </ResizableRegion>
     </div>
   );

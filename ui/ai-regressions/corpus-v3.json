@@ -4,24 +4,24 @@
     {
       "id": "extend-application-navigation",
       "prompt": "prompts-v3/extend-application-navigation.md",
-      "contextFiles": ["ux-demo/recipes/app-shell.tsx", "ux-demo/recipes/recipes.css", "ux-demo/recipes/types.ts"],
-      "editableFiles": ["ux-demo/recipes/app-shell.tsx", "ux-demo/recipes/recipes.css"],
+      "contextFiles": ["ux-demo/recipes/app-shell.tsx", "ux-demo/recipes/app-shell.css", "ux-demo/recipes/recipe-root.tsx", "ux-demo/recipes/recipe-root.css", "ux-demo/recipes/types.ts"],
+      "editableFiles": ["ux-demo/recipes/app-shell.tsx", "ux-demo/recipes/app-shell.css"],
       "consumerOwnedSymbols": ["createRecipe", "RecipeFactory"],
       "requiredDiagnostics": ["static.component-selection", "static.consumer-reuse", "static.public-api", "static.wiring-cleanup", "static.composition", "static.geometry-ownership", "static.accessibility", "compile.types", "browser.interaction", "browser.keyboard", "browser.responsive", "visual.hierarchy", "visual.rhythm", "visual.density", "visual.alignment", "visual.scroll-ownership"]
     },
     {
       "id": "add-list-selection-actions",
       "prompt": "prompts-v3/add-list-selection-actions.md",
-      "contextFiles": ["ux-demo/recipes/list-workspace-states.tsx", "ux-demo/recipes/recipes.css", "ux-demo/recipes/types.ts"],
-      "editableFiles": ["ux-demo/recipes/list-workspace-states.tsx", "ux-demo/recipes/recipes.css"],
+      "contextFiles": ["ux-demo/recipes/list-workspace-states.tsx", "ux-demo/recipes/list-workspace-states.css", "ux-demo/recipes/recipe-root.tsx", "ux-demo/recipes/recipe-root.css", "ux-demo/recipes/types.ts"],
+      "editableFiles": ["ux-demo/recipes/list-workspace-states.tsx", "ux-demo/recipes/list-workspace-states.css"],
       "consumerOwnedSymbols": ["createRecipe", "ListState", "items"],
       "requiredDiagnostics": ["static.component-selection", "static.consumer-reuse", "static.public-api", "static.wiring-cleanup", "static.composition", "static.geometry-ownership", "static.accessibility", "compile.types", "browser.interaction", "browser.keyboard", "browser.responsive", "visual.hierarchy", "visual.rhythm", "visual.density", "visual.alignment", "visual.scroll-ownership"]
     },
     {
       "id": "add-form-draft-status",
       "prompt": "prompts-v3/add-form-draft-status.md",
-      "contextFiles": ["ux-demo/recipes/composer-form.tsx", "ux-demo/recipes/recipes.css", "ux-demo/recipes/types.ts"],
-      "editableFiles": ["ux-demo/recipes/composer-form.tsx", "ux-demo/recipes/recipes.css"],
+      "contextFiles": ["ux-demo/recipes/composer-form.tsx", "ux-demo/recipes/composer-form.css", "ux-demo/recipes/recipe-root.tsx", "ux-demo/recipes/recipe-root.css", "ux-demo/recipes/types.ts"],
+      "editableFiles": ["ux-demo/recipes/composer-form.tsx", "ux-demo/recipes/composer-form.css"],
       "consumerOwnedSymbols": ["createRecipe", "syncControlledFieldValues", "RecipeFactory"],
       "requiredDiagnostics": ["static.component-selection", "static.consumer-reuse", "static.public-api", "static.wiring-cleanup", "static.composition", "static.geometry-ownership", "static.accessibility", "compile.types", "browser.interaction", "browser.keyboard", "browser.responsive", "visual.hierarchy", "visual.rhythm", "visual.density", "visual.alignment", "visual.scroll-ownership"]
     }

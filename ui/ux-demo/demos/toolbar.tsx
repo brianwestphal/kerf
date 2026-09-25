@@ -1,3 +1,5 @@
+import './toolbar.css';
+
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -13,7 +15,8 @@ export function ToolbarDemo() {
     <div class="demo-frame" data-demo="toolbar">
       <Toolbar
         label="Document controls"
-        className="demo-toolbar-find-row"
+        centerAlign="stretch"
+        responsive="center-priority"
         leading={
           <ToolbarControlGroup appearance="borderless" single>
             <ToolbarText text="Component library" size="large" />
@@ -21,7 +24,8 @@ export function ToolbarDemo() {
         }
         center={
           <ToolbarControlGroup
-            className="demo-toolbar-find"
+            content="search"
+            focusRing="halo"
             expanded={findExpanded}
             single={!findExpanded}
           >
@@ -31,8 +35,8 @@ export function ToolbarDemo() {
               query={toolbarFindQuery.value}
               collapsible
               expanded={toolbarFindOpen.value}
+              presentation="toolbar-group"
               placeholder="Find in workspace"
-              className="demo-toolbar-find-field"
               expandLabel="Open find"
               clearAction="clear-toolbar-find"
               editorAttributes={{ 'data-demo-toolbar-find': 'true' }}

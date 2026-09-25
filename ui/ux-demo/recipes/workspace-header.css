@@ -1,0 +1,7 @@
+.recipe-header {
+  min-height: 20rem;
+}
+
+.recipe-header__context {
+  margin: 0;
+}

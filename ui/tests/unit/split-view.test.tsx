@@ -20,6 +20,7 @@ describe('SplitView', () => {
     expect(html).toContain('data-component="split-view"');
     expect(html).toContain('data-split-mode="split"');
     expect(html).toContain('data-split-list');
+    expect(html).toContain('data-resizable="false"');
     expect(html).toContain('data-split-detail');
     expect(html).toContain('aria-label="Message"');
     expect(html).not.toContain('kui-resizable-region');
@@ -40,6 +41,7 @@ describe('SplitView', () => {
     expect(html).toContain('aria-valuenow="300"');
     expect(html).toContain('aria-valuemin="220"');
     expect(html).toContain('data-split-list');
+    expect(html).toContain('data-resizable="true"');
   });
 
   it('labels a resizable list region with a default when no listTitle is given', () => {

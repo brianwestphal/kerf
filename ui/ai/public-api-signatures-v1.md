@@ -115,9 +115,15 @@ interface ToolbarProps {
     label?: string;
     /** Physical divider edges in canonical top/right/bottom/left order. Defaults to bottom. */
     dividerSides?: DividerSides;
+    /** Horizontal treatment of the center zone. Defaults to centered content. */
+    centerAlign?: 'center' | 'stretch';
+    /** Component-owned responsive layout; applications choose the policy rather than restyling toolbar internals. */
+    responsive?: 'none' | 'stack' | 'center-priority';
+    /** Container width at which `responsive="stack"` activates. */
+    responsiveAt?: 'compact' | 'narrow';
     className?: string;
 }
-declare function Toolbar({ leading, center, trailing, label, dividerSides, className, }: ToolbarProps): kerfjs.SafeHtml;
+declare function Toolbar({ leading, center, trailing, label, dividerSides, centerAlign, responsive, responsiveAt, className, }: ToolbarProps): kerfjs.SafeHtml;
 
 export { DividerSides, Toolbar, type ToolbarProps };
 ```
@@ -177,11 +183,13 @@ type ToolbarControlGroupButtonAppearance = 'plain' | 'push';
 type ToolbarControlGroupShape = 'pill' | 'rounded';
 type ToolbarControlGroupSize = 'default' | 'compact';
 type ToolbarControlGroupDensity = 'comfortable' | 'tight';
-type ToolbarControlGroupContent = 'icon' | 'text' | 'mixed' | 'avatar';
+type ToolbarControlGroupContent = 'icon' | 'text' | 'mixed' | 'avatar' | 'search';
+type ToolbarControlGroupFocusRing = 'control' | 'outline' | 'halo';
 type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
 type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
 type ToolbarControlGroupOverflow = 'visible' | 'scroll';
 type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
+type ToolbarControlGroupVisibility = 'always' | 'compact-only';
 interface ToolbarActionLinkProps {
     href: string;
     label: string;
@@ -210,6 +218,8 @@ interface ToolbarControlGroupProps {
     size?: ToolbarControlGroupSize;
     density?: ToolbarControlGroupDensity;
     content?: ToolbarControlGroupContent;
+    /** Whether controls paint focus individually or the group paints an outline/halo on focus-within. */
+    focusRing?: ToolbarControlGroupFocusRing;
     selectedChrome?: ToolbarControlGroupSelectedChrome;
     selectedTone?: ToolbarControlGroupSelectedTone;
     /** Size a nested Web Awesome dropdown trigger as part of this group. */
@@ -218,6 +228,8 @@ interface ToolbarControlGroupProps {
     menuInset?: ToolbarControlGroupMenuInset;
     /** Keep an overlong row of actions inside the available width with horizontal scrolling. */
     overflow?: ToolbarControlGroupOverflow;
+    /** Responsive visibility owned by the enclosing Toolbar container. */
+    visibility?: ToolbarControlGroupVisibility;
     /** Add contrast behind photo-backed avatar content. */
     scrim?: boolean;
     /**
@@ -226,9 +238,9 @@ interface ToolbarControlGroupProps {
      */
     avatarImage?: string;
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, scrim, avatarImage, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, visibility, scrim, avatarImage, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
 
-export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupTone };
+export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
 ```
 
 ## `@kerfjs/ui/floating-toolbar`
@@ -278,6 +290,7 @@ type ListHeaderRootAttributes = Readonly<Record<`data-${string}`, string | undef
     'data-density'?: never;
     'data-divider'?: never;
     'data-inline'?: never;
+    'data-width'?: never;
     'data-indicator-tone'?: never;
     'data-toggle'?: never;
 }>;
@@ -294,6 +307,8 @@ interface ListHeaderBaseProps {
     divider?: 'none' | 'before' | 'after' | 'both';
     /** Shrink-wrap the header without its default outer margin, border, or padding. */
     inline?: boolean;
+    /** Fill the available row or shrink-wrap while retaining normal header geometry. */
+    width?: 'fill' | 'content';
     indicatorTone?: 'neutral' | 'accent' | 'pop' | 'danger';
     /** Render as an unanimated loading skeleton: keep the label and action affordance, disable interaction. */
     placeholder?: boolean;
@@ -345,7 +360,7 @@ type ListHeaderIndicatorProps = {
     status?: SafeHtml;
 };
 type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHeaderModeProps;
-declare function ListHeader({ label, count, countLabel, badge, status, density, divider, inline, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, }: ListHeaderProps): SafeHtml;
+declare function ListHeader({ label, count, countLabel, badge, status, density, divider, inline, width, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, }: ListHeaderProps): SafeHtml;
 
 export { ListHeader, type ListHeaderProps };
 ```
@@ -1129,6 +1144,7 @@ type ResizableRegionCollapseMotion = 'none' | 'slide' | 'fade-slide';
 type ResizableRegionContentOverflow = 'clip' | 'auto' | 'visible';
 type ResizableRegionPresentation = 'inline' | 'overlay' | 'hidden';
 type ResizableRegionRestorePosition = 'bottom-start' | 'bottom-end';
+type ResizableRegionResponsiveFillAt = 'compact' | 'narrow';
 interface ResizableRegionProps {
     id: string;
     label: string;
@@ -1151,15 +1167,17 @@ interface ResizableRegionProps {
     restoreControl?: SafeHtml;
     /** Safe-area-aware viewport corner for `restoreControl`. */
     restorePosition?: ResizableRegionRestorePosition;
+    /** Fill the available inline track and hide the separator below a container breakpoint. */
+    responsiveFillAt?: ResizableRegionResponsiveFillAt;
     /** Decorative dormant content for the separator handle. Must not contain interactive descendants. */
     handleIcon?: SafeHtml;
     children: KerfUiContent;
 }
 declare const clampRegionSize: (size: number, min: number, max: number) => number;
 declare const resizeRegionFromPointer: (startSize: number, delta: number, edge: ResizableRegionEdge) => number;
-declare function ResizableRegion({ id, label, size, min, max, axis, edge, collapsed, transitioning, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, handleIcon, children, }: ResizableRegionProps): SafeHtml;
+declare function ResizableRegion({ id, label, size, min, max, axis, edge, collapsed, transitioning, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, responsiveFillAt, handleIcon, children, }: ResizableRegionProps): SafeHtml;
 
-export { ResizableRegion, type ResizableRegionAxis, type ResizableRegionCollapseMotion, type ResizableRegionContentOverflow, type ResizableRegionEdge, type ResizableRegionPresentation, type ResizableRegionProps, type ResizableRegionRestorePosition, type ResizableRegionSeparator, clampRegionSize, resizeRegionFromPointer };
+export { ResizableRegion, type ResizableRegionAxis, type ResizableRegionCollapseMotion, type ResizableRegionContentOverflow, type ResizableRegionEdge, type ResizableRegionPresentation, type ResizableRegionProps, type ResizableRegionResponsiveFillAt, type ResizableRegionRestorePosition, type ResizableRegionSeparator, clampRegionSize, resizeRegionFromPointer };
 ```
 
 ## `@kerfjs/ui/wire-resizable-regions`
@@ -1252,105 +1270,16 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ## `@kerfjs/ui/catalog`
 
 ```ts
+import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
+import { a as CatalogProps } from './types-BX6kKARG.js';
+export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection } from './types-BX6kKARG.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
-/** A reference link shown in the detail footer for the active entry. */
-interface CatalogResource {
-    label: string;
-    href: string;
-    /** Optional machine-readable detail (e.g. a file path) carried by the action link. */
-    detail?: string;
-}
-/** A related entry offered in the detail footer's "Related entries" popup menu. */
-interface CatalogRelated {
-    id: string;
-    name: string;
-    /** Group heading in the menu, e.g. "Uses" / "Used by". */
-    group: string;
-}
-interface CatalogEntry {
-    id: string;
-    name: string;
-    description?: string;
-    /** Short metadata tags shown at the trailing edge of the sidebar row. */
-    tags?: readonly string[];
-    resources?: readonly CatalogResource[];
-    related?: readonly CatalogRelated[];
-}
-interface CatalogSection {
-    category: string;
-    entries: readonly CatalogEntry[];
-}
-/**
- * A secondary group of sections shown below the primary sidebar sections with a
- * quieter "ecosystem" treatment (e.g. third-party components). Optionally
- * collapsible — the app owns `expanded` and toggles it from `wireCatalog`'s
- * `onToggleSecondary`.
- */
-interface CatalogSecondaryGroup {
-    label: string;
-    sections: readonly CatalogSection[];
-    /** When true, the group's label is a disclosure toggle controlling `expanded`. */
-    collapsible?: boolean;
-    /** Whether the group is expanded (controlled). Ignored unless `collapsible`. */
-    expanded?: boolean;
-}
-interface CatalogBrand {
-    title: string;
-    subtitle?: string;
-    /** Logo image URL (rendered decorative). Omit for a text-only brand. */
-    logoUrl?: string;
-}
-interface CatalogProps {
-    brand: CatalogBrand;
-    sections: readonly CatalogSection[];
-    /** The controlled active entry id — the app owns this signal. */
-    active: string;
-    /** The rendered preview for the active entry; the app computes it from `active`. */
-    content: KerfUiContent;
-    /** Whether the sidebar is collapsed (controlled). */
-    collapsed?: boolean;
-    /** Current theme; when set, a theme toggle is shown that switches to the opposite. Omit to hide it. */
-    theme?: 'light' | 'dark';
-    /** Extra header controls placed before the theme toggle (each a `ToolbarControlGroup`). */
-    headerActions?: KerfUiContent;
-    /** A secondary "ecosystem" group of sections below the primary category groups. */
-    secondarySections?: CatalogSecondaryGroup;
-    /** Extra sidebar content below the category groups (and the secondary group). */
-    sidebarFooter?: KerfUiContent;
-    /** Status line content shown at the start of the detail footer. */
-    status?: KerfUiContent;
-    /**
-     * Whether to highlight specimens' computed borders (or transparent outer
-     * bounds) and non-zero margins. Pass a boolean (rather than omitting the
-     * prop) when the active entry can switch between component and composition
-     * previews; `wireCatalogGeometryOverlay` keeps the overlay synchronized.
-     */
-    geometryOverlay?: boolean;
-    selectAction?: string;
-    toggleSidebarAction?: string;
-    toggleThemeAction?: string;
-    /** Action fired by the secondary group's disclosure toggle (when collapsible). */
-    toggleSecondaryAction?: string;
-    className?: string;
-}
-/**
- * A reusable component-catalog shell: a collapsible category sidebar, a titled
- * detail stage that renders the active entry's preview, and a footer with
- * reference links and a related-entry popup menu. Built entirely from public
- * `@kerfjs/ui` primitives. Controlled and stateless — the app owns the `active`,
- * `collapsed`, and `theme` signals and computes `content` from `active` in its own
- * render; wire the sidebar/collapse/theme actions with `wireCatalog`.
- */
-declare function Catalog({ brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, className, }: CatalogProps): SafeHtml;
-/**
- * How a {@link CatalogExample}'s content aligns its visible left edge with the
- * example's `ListHeader` label (which sits 16px in — 8px title + 8px label):
- * - `'glyph'` — a bare glyph/text specimen with no inline geometry insets the full 16px.
- * - `'inline-control'` — a control that already carries ~8px of its own inline padding insets 8px so its content lands on the same line.
- * - `'none'` — a content-item / composition that owns its geometry and already aligns; no inset (default).
- */
+/** Controlled, stateless component-catalog shell. */
+declare function Catalog({ brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, className, }: CatalogProps): kerfjs.SafeHtml;
+
+/** How a specimen aligns its visible edge with its `ListHeader` label. */
 type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
 type CatalogExampleRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-catalog-example'?: never;
@@ -1359,6 +1288,17 @@ type CatalogExampleRootAttributes = Readonly<Record<`data-${string}`, string | u
     'data-catalog-example-note'?: never;
     'data-align'?: never;
 }>;
+interface CatalogExampleProps {
+    label?: string;
+    note?: SafeHtml | string;
+    align?: CatalogExampleAlign;
+    rootAttributes?: CatalogExampleRootAttributes;
+    className?: string;
+    children?: KerfUiContent;
+}
+/** A labeled catalog specimen with optional explanatory text and alignment. */
+declare function CatalogExample({ label, note, align, rootAttributes, className, children, }: CatalogExampleProps): SafeHtml;
+
 type CatalogExampleStackRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-catalog-example'?: never;
     'data-catalog-example-stack'?: never;
@@ -1366,51 +1306,24 @@ type CatalogExampleStackRootAttributes = Readonly<Record<`data-${string}`, strin
     'data-catalog-example-note'?: never;
     'data-align'?: never;
 }>;
-interface CatalogExampleProps {
-    /** The example's label, shown as a `ListHeader` above the specimen. Omit for a bare specimen. */
-    label?: string;
-    /** Optional explanatory note between the label and the specimen. */
-    note?: SafeHtml | string;
-    /** Alignment inset for the specimen — see {@link CatalogExampleAlign}. Default `'none'`. */
-    align?: CatalogExampleAlign;
-    /** Safe authoring `data-*` metadata for the rendered section. Helper-owned structural attributes remain protected. */
-    rootAttributes?: CatalogExampleRootAttributes;
-    className?: string;
-    children?: KerfUiContent;
-}
-/**
- * One labeled example in a catalog preview: a `ListHeader` label, an optional
- * note, and the specimen. `align` insets the specimen so its visible left edge
- * lines up with the label text, encoding the catalog's alignment rules as a
- * first-class prop instead of per-demo CSS. The inset is published as the
- * `--kui-catalog-example-align` custom property so a debug overlay can exclude it
- * from a specimen's measured margin.
- */
-declare function CatalogExample({ label, note, align, rootAttributes, className, children, }: CatalogExampleProps): SafeHtml;
 interface CatalogExampleStackProps {
-    /** Accessible label for the stack region. */
     label?: string;
-    /** Safe authoring `data-*` metadata for the rendered stack. Helper-owned structural attributes remain protected. */
     rootAttributes?: CatalogExampleStackRootAttributes;
     className?: string;
     children?: KerfUiContent;
 }
-/**
- * A vertically-stacked group of {@link CatalogExample}s with the catalog's
- * example rhythm. The semantic `section` becomes a named `region` when `label`
- * is supplied; an unlabeled stack remains an ordinary grouping.
- */
-declare function CatalogExampleStack({ label, rootAttributes, className, children, }: CatalogExampleStackProps): SafeHtml;
+/** A vertically stacked group of catalog examples. */
+declare function CatalogExampleStack({ label, rootAttributes, className, children, }: CatalogExampleStackProps): kerfjs.SafeHtml;
 
-export { Catalog, type CatalogBrand, type CatalogEntry, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, type CatalogProps, type CatalogRelated, type CatalogResource, type CatalogSecondaryGroup, type CatalogSection };
+export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, CatalogProps };
 ```
 
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { CatalogResource } from './catalog.js';
-import 'kerfjs';
+import { C as CatalogResource } from './types-BX6kKARG.js';
 import './semantic-content-BbzjvSu9.js';
+import 'kerfjs';
 
 /**
  * Standard resource labels for a Kerf catalog detail footer. Keep these labels
@@ -1748,6 +1661,8 @@ interface TokenSearchFieldBaseProps {
     autofocus?: boolean;
     leading?: KerfUiContent;
     trailing?: KerfUiContent;
+    /** Standalone field chrome or the inset visual layer of a configured toolbar group. */
+    presentation?: 'standalone' | 'toolbar-group';
     editAction?: string;
     removeAction?: string;
     clearAction?: string;
@@ -1773,7 +1688,7 @@ interface TokenSearchFieldValue {
     query: string;
     tokens: TokenSearchToken[];
 }
-declare function TokenSearchField({ id, label, query, tokens, placeholder, tokenPlaceholder, disabled, autofocus, collapsible, expanded, expandAction, expandLabel, leading, trailing, editAction, removeAction, clearAction, clearLabel, className, editorAttributes, }: TokenSearchFieldProps): kerfjs.SafeHtml;
+declare function TokenSearchField({ id, label, query, tokens, placeholder, tokenPlaceholder, disabled, autofocus, collapsible, expanded, expandAction, expandLabel, leading, trailing, presentation, editAction, removeAction, clearAction, clearLabel, className, editorAttributes, }: TokenSearchFieldProps): kerfjs.SafeHtml;
 /** Read editable text and ordered token offsets from a rendered TokenSearchField editor. */
 declare function readTokenSearchField(editor: HTMLElement, knownTokens?: readonly TokenSearchToken[]): TokenSearchFieldValue;
 /** Focus an editor and place its caret at a text offset, skipping atomic token chips. */
@@ -2063,6 +1978,7 @@ type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
 type TextTone = 'default' | 'quiet' | 'danger';
 type TextSize = 'default' | 'compact';
 type TextFont = 'default' | 'monospace';
+type TextBorder = 'transparent' | 'none';
 type TextContent = KerfUiContent | string | number | readonly TextContent[];
 type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
     /** Native heading or paragraph element to render. Defaults to `p`. */
@@ -2073,6 +1989,8 @@ type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
     size?: TextSize;
     /** Font family independent of the native semantic element. */
     font?: TextFont;
+    /** Transparent alignment border or no border when embedded in owner chrome. */
+    border?: TextBorder;
     children: TextContent;
     class?: string;
     className?: string;
@@ -2081,9 +1999,9 @@ type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
  * Semantic heading or paragraph text with the standard content-item padding.
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
-declare function Text({ variant: Variant, tone, size, font, children, class: classValue, className, ...attributes }: TextProps): kerfjs.SafeHtml;
+declare function Text({ variant: Variant, tone, size, font, border, children, class: classValue, className, ...attributes }: TextProps): kerfjs.SafeHtml;
 
-export { Text, type TextContent, type TextFont, type TextProps, type TextSize, type TextTone, type TextVariant };
+export { Text, type TextBorder, type TextContent, type TextFont, type TextProps, type TextSize, type TextTone, type TextVariant };
 ```
 
 ## `@kerfjs/ui/row`

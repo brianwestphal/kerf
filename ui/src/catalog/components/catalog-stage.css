@@ -1,0 +1,87 @@
+.kui-catalog__stage {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--kui-color-surface-lowered);
+  background-image:
+    linear-gradient(
+      45deg,
+      color-mix(in srgb, var(--kui-color-border-quiet) 42%, transparent) 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      -45deg,
+      color-mix(in srgb, var(--kui-color-border-quiet) 42%, transparent) 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      45deg,
+      transparent 75%,
+      color-mix(in srgb, var(--kui-color-border-quiet) 42%, transparent) 75%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 75%,
+      color-mix(in srgb, var(--kui-color-border-quiet) 42%, transparent) 75%
+    );
+  background-position:
+    0 0,
+    0 remify(12px),
+    remify(12px) remify(-12px),
+    remify(-12px) 0;
+  background-size: remify(24px) remify(24px);
+}
+
+.kui-catalog__canvas {
+  position: relative;
+  display: grid;
+  width: min(100%, var(--kui-catalog-content-measure, remify(1120px)));
+  min-width: 0;
+  min-height: 100%;
+  margin-inline: auto;
+  padding: var(--kui-layout-content-gap);
+  box-sizing: border-box;
+  place-items: center;
+}
+
+/* `wireCatalogGeometryOverlay` appends the bound, border, and margin layers. */
+/* css-ownership: allow-root kui-catalog__geometry-bound -- The catalog wire appends measured specimen bound layers at runtime. */
+/* css-ownership: allow-root kui-catalog__geometry-border -- The catalog wire appends computed border layers at runtime. */
+/* css-ownership: allow-root kui-catalog__geometry-margin -- The catalog wire appends computed margin layers at runtime. */
+.kui-catalog__geometry-overlay {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  inset: 0;
+}
+
+.kui-catalog__geometry-bound,
+.kui-catalog__geometry-border,
+.kui-catalog__geometry-margin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+}
+
+.kui-catalog__geometry-bound {
+  border: 1px dashed color-mix(in srgb, var(--kui-color-text) 40%, transparent);
+}
+
+.kui-catalog__geometry-border {
+  border: 0 solid
+    color-mix(in srgb, var(--kui-color-accent-text) 72%, transparent);
+}
+
+.kui-catalog__geometry-margin {
+  background: color-mix(in srgb, #f6a94c 55%, transparent);
+}
+
+@media (max-width: remify(832px)) {
+  .kui-catalog__stage {
+    min-height: remify(384px);
+  }
+
+  .kui-catalog__canvas {
+    min-height: remify(256px);
+  }
+}

@@ -153,8 +153,9 @@ for (const phrase of ['24px', '8px', '44px', 'content item']) {
 }
 for (const phrase of [
   'publicClasses',
-  'public-class-to-public-class',
-  'descendant tag',
+  'not application styling',
+  'Never target a Kerf or Web Awesome component from application CSS',
+  'one component per file',
 ]) {
   if (!layoutGuidance.includes(phrase))
     fail(`CSS decision guidance is missing the ${phrase} boundary`);
@@ -163,7 +164,14 @@ for (const phrase of [
 // The UX demo dogfoods the shipped @kerfjs/ui/catalog shell, so its sidebar
 // navigation is rendered by the Catalog component. Verify Catalog itself uses the
 // ListItem multiline prop (primary + secondary groups) rather than CSS overrides.
-const catalogSource = await readFile(resolve(root, 'src/catalog.tsx'), 'utf8');
+const catalogSource = (
+  await Promise.all(
+    [
+      'src/catalog/components/catalog-section-list.tsx',
+      'src/catalog/components/catalog-secondary-sections.tsx',
+    ].map((file) => readFile(resolve(root, file), 'utf8')),
+  )
+).join('\n');
 const catalogRows =
   catalogSource.match(
     /<ListItem\s+action=\{selectAction\}[^>]+multiline\s*\/>/g,

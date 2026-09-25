@@ -1,0 +1,11 @@
+.demo-pane {
+  display: grid;
+  width: min(100%, remify(640px));
+  height: remify(360px);
+  background: var(--kui-color-surface);
+}
+
+.demo-pane__secondary {
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+}

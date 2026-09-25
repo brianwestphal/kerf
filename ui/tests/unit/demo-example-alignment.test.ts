@@ -6,12 +6,14 @@ import { describe, expect, it } from 'vitest';
 
 describe('catalog-example note alignment', () => {
   it('insets a CatalogExample note by the margin, border, and content padding so it lines up with the ListHeader label and a content-item component', async () => {
-    const file = resolve(import.meta.dirname, '../../src/catalog.css');
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/catalog/components/catalog-example.css',
+    );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = root.nodes.find(
       (node) =>
-        node.type === 'rule' &&
-        node.selector === '.kui-catalog-example__note.kui-text',
+        node.type === 'rule' && node.selector === '.kui-catalog-example__note',
     );
 
     if (!rule || rule.type !== 'rule')

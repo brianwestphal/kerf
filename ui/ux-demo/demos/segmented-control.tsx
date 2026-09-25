@@ -1,3 +1,5 @@
+import './segmented-control.css';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -14,7 +16,6 @@ export function SegmentedControlDemo() {
   return (
     <CatalogExampleStack
       label="SegmentedControl variants"
-      className="segmented-control-demo"
       rootAttributes={{ 'data-demo': 'segmented-control' }}
     >
       <CatalogExample
@@ -56,46 +57,48 @@ export function SegmentedControlDemo() {
         note={<>An equal-width inspector switcher with labels.</>}
         align="inline-control"
       >
-        <SegmentedControl<string>
-          id="inspector-section"
-          label="Inspector section"
-          value={inspectorSection.value}
-          action="select-segment-demo"
-          shape="rounded"
-          layout="equal"
-          choices={[
-            {
-              value: 'summary',
-              label: 'Summary',
-              content: (
-                <>
-                  {icon(List, 'list')}
-                  <span>Summary</span>
-                </>
-              ),
-            },
-            {
-              value: 'activity',
-              label: 'Activity',
-              content: (
-                <>
-                  {icon(Bell, 'bell')}
-                  <span>Activity</span>
-                </>
-              ),
-            },
-            {
-              value: 'files',
-              label: 'Files',
-              content: (
-                <>
-                  {icon(Folder, 'folder')}
-                  <span>Files</span>
-                </>
-              ),
-            },
-          ]}
-        />
+        <div class="segmented-control-demo__equal-frame">
+          <SegmentedControl<string>
+            id="inspector-section"
+            label="Inspector section"
+            value={inspectorSection.value}
+            action="select-segment-demo"
+            shape="rounded"
+            layout="equal"
+            choices={[
+              {
+                value: 'summary',
+                label: 'Summary',
+                content: (
+                  <>
+                    {icon(List, 'list')}
+                    <span>Summary</span>
+                  </>
+                ),
+              },
+              {
+                value: 'activity',
+                label: 'Activity',
+                content: (
+                  <>
+                    {icon(Bell, 'bell')}
+                    <span>Activity</span>
+                  </>
+                ),
+              },
+              {
+                value: 'files',
+                label: 'Files',
+                content: (
+                  <>
+                    {icon(Folder, 'folder')}
+                    <span>Files</span>
+                  </>
+                ),
+              },
+            ]}
+          />
+        </div>
       </CatalogExample>
       <CatalogExample
         label="Pill"

@@ -1,0 +1,33 @@
+.demo-split-view {
+  display: grid;
+  width: 100%;
+  height: remify(320px);
+  border: 1px solid var(--kui-color-border);
+  border-radius: var(--kui-radius-m);
+}
+
+.demo-split-view--roomy {
+  --kui-split-view-list-width: remify(240px);
+}
+
+.demo-split-view--compact {
+  width: min(100%, remify(440px));
+}
+
+.demo-split-view__pane {
+  min-height: 100%;
+}
+
+.demo-split-view__list {
+  min-height: 100%;
+}
+
+.demo-split-view__eyebrow {
+  font-weight: var(--kui-font-weight-medium);
+}
+
+@media ((max-width: remify(832px))) {
+  .demo-split-view--roomy {
+    display: none;
+  }
+}

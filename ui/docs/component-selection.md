@@ -7,7 +7,7 @@ decision procedure.
 
 1. Search the [Kerf UX catalog](./ux-demo.md) and the supported Web Awesome set.
 2. Reuse a primitive when its purpose, anatomy, state, and interaction match.
-3. Compose primitives for recurring layout. Prefer public props and tokens; when a composition needs a selector, target only classes listed in the catalog's `publicClasses` contract.
+3. Compose primitives for recurring layout through public props and tokens. Do not select one component from another component's stylesheet.
 4. Add a thin application adapter for product copy, domain mapping, actions, routing, persistence, permissions, and transport.
 5. Use custom markup only when the semantic contract differs. If the pattern recurs across products, open an upstream component or recipe request.
 
@@ -15,12 +15,13 @@ The application adapter is usually a plain function that maps domain state to
 component props plus stable `data-action` values. It is not a fork of package
 markup or CSS.
 
-**Don't fight the components.** The package is built to look right unstyled, so
-custom CSS is the exception. Before adding `padding`, `margin`, `width`, `height`,
-`border`, `background`, a wrapper card, or a decoration, check whether the
-component, the pane, or the content-item already owns it — it almost always does,
-and adding more usually double-insets or fights it. Trust component defaults and
-fix the surrounding layout instead of overriding a control. See
+**Don't fight the components.** The package is built to look right without an
+application customization layer. Before adding `padding`, `margin`, `width`,
+`height`, `border`, `background`, a wrapper card, or a decoration, check whether
+the component, the pane, or the content-item already owns it — it almost always
+does. Express presentation through props and tokens. Encapsulate genuinely new
+structure in a self-styled application component, and never reach into a nested
+Kerf or Web Awesome component from that stylesheet. See
 [`design-philosophy.md`](./design-philosophy.md) "Reach for the primitive, not for
 CSS".
 

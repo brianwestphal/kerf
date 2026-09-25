@@ -1,3 +1,5 @@
+import './floating-toolbar.css';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { Toolbar } from '@kerfjs/ui/toolbar';
@@ -12,7 +14,6 @@ export function FloatingToolbarDemo() {
   return (
     <CatalogExampleStack
       label="FloatingToolbar demo"
-      className="floating-toolbar-demo"
       rootAttributes={{ 'data-demo': 'floating-toolbar' }}
     >
       <CatalogExample

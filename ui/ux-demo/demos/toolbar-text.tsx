@@ -1,3 +1,5 @@
+import './toolbar-text.css';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 

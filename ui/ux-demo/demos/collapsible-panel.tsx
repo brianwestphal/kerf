@@ -1,14 +1,14 @@
+import './collapsible-panel.css';
 import '@kerfjs/ui/collapsible-panel.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { CollapsiblePanel } from '@kerfjs/ui/collapsible-panel';
 
+import { DemoContentItem } from './demo-content-item.js';
+
 const content = (title: string, detail: string) => (
   <div class="kui-content">
-    <div class="kui-content-item">
-      <strong>{title}</strong>
-      <span>{detail}</span>
-    </div>
+    <DemoContentItem title={title} detail={detail} />
   </div>
 );
 
@@ -22,35 +22,37 @@ export function CollapsiblePanelDemo() {
         label="Left rail"
         note="The panel owns its width and trailing separator; its child owns internal content geometry."
       >
-        <CollapsiblePanel
-          id="catalog-panel-left"
-          side="left"
-          size={280}
-          label="Project navigator"
-          className="demo-collapsible-panel demo-collapsible-panel--rail"
-        >
-          {content(
-            'Navigator',
-            'Collapse from panel chrome; restore from adjacent chrome.',
-          )}
-        </CollapsiblePanel>
+        <div class="demo-collapsible-panel--rail">
+          <CollapsiblePanel
+            id="catalog-panel-left"
+            side="left"
+            size={280}
+            label="Project navigator"
+          >
+            {content(
+              'Navigator',
+              'Collapse from panel chrome; restore from adjacent chrome.',
+            )}
+          </CollapsiblePanel>
+        </div>
       </CatalogExample>
       <CatalogExample
         label="Right rail"
         note="Right-side panels use the mirrored separator and slide direction."
       >
-        <CollapsiblePanel
-          id="catalog-panel-right"
-          side="right"
-          size={280}
-          label="Selection inspector"
-          className="demo-collapsible-panel demo-collapsible-panel--rail"
-        >
-          {content(
-            'Inspector',
-            'The application owns size and collapsed state.',
-          )}
-        </CollapsiblePanel>
+        <div class="demo-collapsible-panel--rail">
+          <CollapsiblePanel
+            id="catalog-panel-right"
+            side="right"
+            size={280}
+            label="Selection inspector"
+          >
+            {content(
+              'Inspector',
+              'The application owns size and collapsed state.',
+            )}
+          </CollapsiblePanel>
+        </div>
       </CatalogExample>
       <CatalogExample
         label="Bottom drawer"
@@ -61,7 +63,6 @@ export function CollapsiblePanelDemo() {
           side="bottom"
           size={180}
           label="Build output"
-          className="demo-collapsible-panel"
         >
           {content(
             'Build output',

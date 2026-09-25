@@ -1,0 +1,6 @@
+.kui-catalog-example-stack {
+  display: flex;
+  width: min(remify(736px), 100%);
+  flex-direction: column;
+  gap: remify(16px);
+}

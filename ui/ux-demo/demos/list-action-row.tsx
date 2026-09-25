@@ -2,14 +2,12 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { Folder, MoreHorizontal } from 'lucide';
 
+import { DemoListPopover } from './demo-list-popover.js';
 import { icon, menuActionCurrent, menuActionPressed } from './state.js';
 
 export function ListActionRowDemo() {
   return (
-    <CatalogExampleStack
-      className="demo-list-demo"
-      rootAttributes={{ 'data-demo': 'list-action-row' }}
-    >
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'list-action-row' }}>
       <CatalogExample align="none">
         <ListActionRow
           label="generated-report.json"
@@ -102,17 +100,11 @@ export function ListActionRowDemo() {
           rootAttributes={{ 'data-demo-action-row': 'placeholder' }}
         />
       </CatalogExample>
-      <div
-        id="list-action-row-popover"
-        class="demo-list-popover"
-        popover="auto"
-        role="dialog"
-        aria-label="File actions"
-      >
+      <DemoListPopover id="list-action-row-popover" label="File actions">
         <button type="button" data-action="log-more">
           Open details
         </button>
-      </div>
+      </DemoListPopover>
     </CatalogExampleStack>
   );
 }

@@ -157,6 +157,30 @@
   display: none;
 }
 
+@container (max-width: remify(704px)) {
+  .kui-resizable-region[data-responsive-fill-at="narrow"] {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .kui-resizable-region[data-responsive-fill-at="narrow"]
+    > .kui-resizable-region__handle {
+    display: none;
+  }
+}
+
+@container (max-width: remify(448px)) {
+  .kui-resizable-region[data-responsive-fill-at="compact"] {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+
+  .kui-resizable-region[data-responsive-fill-at="compact"]
+    > .kui-resizable-region__handle {
+    display: none;
+  }
+}
+
 /* A collapsed panel can supply its own affordance while Kerf owns consistent,
    safe-area-aware viewport placement. */
 .kui-resizable-region__restore {

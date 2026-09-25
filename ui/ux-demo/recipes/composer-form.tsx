@@ -4,16 +4,16 @@ import '@kerfjs/ui/webawesome.css';
 import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
-import './recipes.css';
+import './composer-form.css';
 
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner } from '@kerfjs/ui/state-banner';
-import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 
+import { RecipeOwnershipNote, RecipeRoot } from './recipe-root.js';
 import type { RecipeFactory } from './types.js';
 
 type ValueField = HTMLElement & { value: string };
@@ -40,11 +40,13 @@ export const createRecipe: RecipeFactory = (announce) => {
   const audience = signal('team');
   const status = signal<'idle' | 'error' | 'saved'>('idle');
   const render = () => (
-    <form
-      class="kui-recipe recipe-form kui-recipe__surface kui-content"
-      data-recipe="recipe-composer-form"
-      aria-labelledby="recipe-composer-title"
-      aria-describedby="recipe-composer-summary"
+    <RecipeRoot
+      element="form"
+      recipe="recipe-composer-form"
+      measure="form"
+      contentLayout
+      ariaLabelledBy="recipe-composer-title"
+      ariaDescribedBy="recipe-composer-summary"
       noValidate
     >
       <Toolbar
@@ -58,11 +60,13 @@ export const createRecipe: RecipeFactory = (announce) => {
           />
         }
       />
-      <ListInsetText className="kui-recipe__heading-summary">
-        <span id="recipe-composer-summary">
-          Share a concise, actionable update with collaborators.
-        </span>
-      </ListInsetText>
+      <div class="recipe-form__heading-summary">
+        <ListInsetText sides="rl">
+          <span id="recipe-composer-summary">
+            Share a concise, actionable update with collaborators.
+          </span>
+        </ListInsetText>
+      </div>
       {status.value === 'error' && (
         <StateBanner
           title="Add a title before publishing"
@@ -124,12 +128,12 @@ export const createRecipe: RecipeFactory = (announce) => {
             Publish update
           </wa-button>
         </div>
-        <Text class="kui-recipe__ownership">
+        <RecipeOwnershipNote contentItem={false}>
           The recipe owns field, message, and action rhythm. The app owns
           validation rules, draft persistence, permissions, and transport.
-        </Text>
+        </RecipeOwnershipNote>
       </footer>
-    </form>
+    </RecipeRoot>
   );
   return {
     render,

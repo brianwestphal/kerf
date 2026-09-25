@@ -1,0 +1,15 @@
+.demo-content-item {
+  display: grid;
+  align-content: start;
+  gap: var(--kui-layout-metadata-gap);
+}
+
+.demo-content-item__title {
+  margin: 0;
+  font-size: var(--kui-font-s);
+}
+
+.demo-content-item__detail {
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+}

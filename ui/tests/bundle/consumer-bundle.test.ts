@@ -219,9 +219,10 @@ describe('consumer bundle boundaries', () => {
     const css = output(result, '.css');
     expect(inputs).toContain('dist/browser/token-search-field.js');
     expect(css).toContain('.kui-token-search');
-    expect(css).toContain('.kui-toolbar-control-group:has');
+    expect(css).toContain('.kui-token-search[data-presentation=toolbar-group]');
     expect(css).toContain('[data-lucide]');
     expect(inputs).not.toContain('dist/styles/toolbar-control-group.css');
+    expect(css).not.toContain('.kui-toolbar-control-group');
     expect(css).not.toContain('.kui-select');
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });

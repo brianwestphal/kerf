@@ -689,7 +689,6 @@
       "publicClasses": [
         "kui-split-view",
         "kui-split-view__list",
-        "kui-resizable-region",
         "kui-split-view__detail",
         "kui-split-view--compact"
       ],
@@ -835,6 +834,7 @@
         "slide, fade-slide, or instant content",
         "clipped, scrolling, or popup-visible content",
         "inline, overlay, or hidden responsive presentation",
+        "narrow or compact single-track responsive fill",
         "safe-area restore control"
       ],
       "accessibility": [
@@ -1191,6 +1191,7 @@
         "nested dropdown trigger",
         "standard, compact, or list-zero dropdown menu inset",
         "visible or horizontally scrollable overflow",
+        "always visible or compact-only responsive visibility",
         "avatar scrim",
         "contained avatar background on a single group or selected multi-button highlight"
       ],

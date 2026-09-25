@@ -39,7 +39,8 @@ const packageSubpath = (specifier) =>
   `.${specifier.slice('@kerfjs/ui'.length)}`;
 const hasStableRecipeMarker = (source, id) =>
   source.includes(`data-recipe="${id}"`) ||
-  source.includes(`'data-recipe': '${id}'`);
+  source.includes(`'data-recipe': '${id}'`) ||
+  source.includes(`recipe="${id}"`);
 for (const entry of recipes) {
   const stem = entry.id.replace(/^recipe-/, '');
   const sourcePath = resolve(root, `ux-demo/recipes/${stem}.tsx`);
@@ -54,6 +55,8 @@ for (const entry of recipes) {
     fail(`${entry.id} is not a literal dynamic import`);
   if (!hasStableRecipeMarker(source, entry.id))
     fail(`${entry.id} source is missing its stable marker`);
+  if (!source.includes(`import './${stem}.css'`))
+    fail(`${entry.id} must import its same-basename owned stylesheet`);
   if (!source.includes('@kerfjs/ui/layout.css'))
     fail(`${entry.id} must import the semantic layout layer`);
   if (
@@ -98,9 +101,10 @@ if (!docs.includes('[`mount-recipe.ts`](../ux-demo/recipes/mount-recipe.ts)'))
 if (!packageJson.files.includes('ux-demo/recipes'))
   fail('package must deliver recipe source and its mount adapter');
 try {
-  await access(resolve(root, 'ux-demo/recipes/recipes.css'));
+  await access(resolve(root, 'ux-demo/recipes/recipe-components.css'));
+  fail('aggregate recipe-components.css must not exist');
 } catch {
-  fail('shared recipe CSS is missing');
+  // Each recipe and shared visual component owns a same-basename stylesheet.
 }
 if (failures.length) {
   console.error('[check-recipes] Recipe catalog drifted:\n');

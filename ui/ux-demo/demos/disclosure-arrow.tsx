@@ -1,3 +1,5 @@
+import './disclosure-arrow.css';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { DisclosureArrow } from '@kerfjs/ui/disclosure-arrow';
 import { ArrowRight } from 'lucide';

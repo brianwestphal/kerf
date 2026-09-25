@@ -32,6 +32,8 @@ interface TokenSearchFieldBaseProps {
   autofocus?: boolean;
   leading?: KerfUiContent;
   trailing?: KerfUiContent;
+  /** Standalone field chrome or the inset visual layer of a configured toolbar group. */
+  presentation?: 'standalone' | 'toolbar-group';
   editAction?: string;
   removeAction?: string;
   clearAction?: string;
@@ -110,6 +112,7 @@ export function TokenSearchField({
   expandLabel,
   leading,
   trailing,
+  presentation = 'standalone',
   editAction = 'edit-search-token',
   removeAction = 'remove-search-token',
   clearAction = 'clear-token-search',
@@ -130,6 +133,7 @@ export function TokenSearchField({
       data-collapsible={String(collapsible)}
       data-expanded={String(resolvedExpanded)}
       data-has-trailing={String(Boolean(trailing))}
+      data-presentation={presentation}
     >
       {!resolvedExpanded ? (
         <button

@@ -1,4 +1,5 @@
 import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { posix } from 'node:path';
 
 const packageJson = JSON.parse(
   await readFile(new URL('../package.json', import.meta.url), 'utf8'),
@@ -55,7 +56,9 @@ async function reachableStyles(moduleName, seen = new Set()) {
     ...source.matchAll(
       /export\s+(?!type\b)(?:\*|\{[^}]*\})\s+from\s+['"]\.\/([^'"]+)\.js['"]/g,
     ),
-  ].map((match) => match[1]);
+  ].map((match) =>
+    posix.normalize(posix.join(posix.dirname(moduleName), match[1])),
+  );
   const styles = [];
   for (const dependency of dependencies) {
     styles.push(...(await reachableStyles(dependency, seen)));

@@ -20,3 +20,7 @@
 .kui-text[data-font="monospace"] {
   font-family: var(--kui-font-mono);
 }
+
+.kui-text[data-border="none"] {
+  border: 0;
+}

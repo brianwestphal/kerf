@@ -9,6 +9,7 @@ export type ResizableRegionCollapseMotion = 'none' | 'slide' | 'fade-slide';
 export type ResizableRegionContentOverflow = 'clip' | 'auto' | 'visible';
 export type ResizableRegionPresentation = 'inline' | 'overlay' | 'hidden';
 export type ResizableRegionRestorePosition = 'bottom-start' | 'bottom-end';
+export type ResizableRegionResponsiveFillAt = 'compact' | 'narrow';
 
 export interface ResizableRegionProps {
   id: string;
@@ -32,6 +33,8 @@ export interface ResizableRegionProps {
   restoreControl?: SafeHtml;
   /** Safe-area-aware viewport corner for `restoreControl`. */
   restorePosition?: ResizableRegionRestorePosition;
+  /** Fill the available inline track and hide the separator below a container breakpoint. */
+  responsiveFillAt?: ResizableRegionResponsiveFillAt;
   /** Decorative dormant content for the separator handle. Must not contain interactive descendants. */
   handleIcon?: SafeHtml;
   children: KerfUiContent;
@@ -88,6 +91,7 @@ export function ResizableRegion({
   restorePosition = axis === 'horizontal' && edge === 'end'
     ? 'bottom-start'
     : 'bottom-end',
+  responsiveFillAt,
   handleIcon,
   children,
 }: ResizableRegionProps) {
@@ -108,6 +112,7 @@ export function ResizableRegion({
         data-collapse-motion={collapseMotion}
         data-content-overflow={contentOverflow}
         data-presentation={presentation}
+        data-responsive-fill-at={responsiveFillAt}
         style={`--kui-resizable-region-size:${resolved}px;--kui-resizable-region-expanded-size:${expandedSize}px`}
         aria-label={label}
         aria-hidden={presentation === 'hidden' ? 'true' : undefined}

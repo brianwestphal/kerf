@@ -1,7 +1,8 @@
+import './application-tabs.css';
+
 import { AppTab } from '@kerfjs/ui/app-tab';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { TabBar } from '@kerfjs/ui/tab-bar';
-import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { PanelLeft, Plus } from 'lucide';
 
@@ -59,14 +60,16 @@ export function ApplicationTabsDemo() {
             role="tabpanel"
             aria-label={activeName}
           >
-            <strong>{activeName}</strong>
+            <strong class="demo-application-tabs__panel-title">
+              {activeName}
+            </strong>
           </section>
-          <Text class="demo-example-readout">
+          <p class="demo-application-tabs__readout">
             Order:{' '}
-            <strong data-tab-order>
+            <strong class="demo-application-tabs__readout-value" data-tab-order>
               {tabBarTabs.value.map((tab) => tab.name).join(' · ')}
             </strong>
-          </Text>
+          </p>
         </section>
       </CatalogExample>
     </CatalogExampleStack>

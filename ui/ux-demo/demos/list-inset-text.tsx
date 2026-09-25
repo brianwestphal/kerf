@@ -3,13 +3,13 @@ import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Check } from 'lucide';
 
+import { DemoListInsetPane } from './demo-list-inset-pane.js';
 import { icon } from './state.js';
 
 export function ListInsetTextDemo() {
   return (
     <CatalogExampleStack
       label="ListInsetText demo"
-      className="list-inset-demo"
       rootAttributes={{ 'data-demo': 'list-inset-text' }}
     >
       <CatalogExample
@@ -23,7 +23,7 @@ export function ListInsetTextDemo() {
         }
         align="none"
       >
-        <div class="list-inset-demo__pane kui-content">
+        <DemoListInsetPane>
           <StateBanner
             tone="neutral"
             title="A content item, for reference"
@@ -34,7 +34,7 @@ export function ListInsetTextDemo() {
             Aligned plain text — its left edge lands at the same inset as the
             item above.
           </ListInsetText>
-        </div>
+        </DemoListInsetPane>
       </CatalogExample>
       <CatalogExample
         label="Horizontal-only inset"
@@ -47,25 +47,25 @@ export function ListInsetTextDemo() {
         }
         align="none"
       >
-        <div class="list-inset-demo__pane kui-content">
+        <DemoListInsetPane>
           <ListInsetText horizontalOnly>
             First tight line — aligned, no vertical box space.
           </ListInsetText>
           <ListInsetText horizontalOnly>
             Second tight line, packed against the first.
           </ListInsetText>
-        </div>
+        </DemoListInsetPane>
       </CatalogExample>
       <CatalogExample
         label="Selected physical sides"
         note="The sides prop uses canonical top/right/bottom/left order; only selected sides receive the full text inset geometry."
         align="none"
       >
-        <div class="list-inset-demo__pane kui-content">
-          <ListInsetText sides="tbl" className="demo-list-inset-text-sides">
+        <DemoListInsetPane>
+          <ListInsetText sides="tbl">
             Top, bottom, and left are inset; the right edge stays flush.
           </ListInsetText>
-        </div>
+        </DemoListInsetPane>
       </CatalogExample>
     </CatalogExampleStack>
   );

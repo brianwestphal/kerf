@@ -11,6 +11,7 @@ import {
   TokenSearchField,
   type TokenSearchToken,
 } from '../../src/token-search-field.js';
+import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
 
 const asHtml = (value: unknown) => String(value);
 
@@ -156,11 +157,31 @@ describe('TokenSearchField', () => {
         label: 'Find records',
         collapsible: true,
         expanded: true,
+        presentation: 'toolbar-group',
       }),
     );
     expect(focused).toContain('data-collapsible="true" data-expanded="true"');
+    expect(focused).toContain('data-presentation="toolbar-group"');
     expect(focused).toContain('role="searchbox"');
     expect(focused).not.toContain('data-action="expand-token-search"');
+
+    const grouped = asHtml(
+      ToolbarControlGroup({
+        children: TokenSearchField({
+          id: 'group-find',
+          label: 'Find grouped records',
+          collapsible: true,
+          expanded: true,
+          presentation: 'toolbar-group',
+        }),
+        content: 'search',
+        focusRing: 'halo',
+        expanded: true,
+      }),
+    );
+    expect(grouped).toContain(
+      'data-expanded="true" data-single="false" data-shape="pill" data-size="default" data-density="comfortable" data-content="search" data-focus-ring="halo"',
+    );
 
     const populated = asHtml(
       TokenSearchField({
@@ -173,17 +194,24 @@ describe('TokenSearchField', () => {
     expect(populated).toContain('data-collapsible="true" data-expanded="true"');
     expect(populated).toContain('role="searchbox"');
 
-    const css = await readFile(
+    const fieldCss = await readFile(
       resolve(import.meta.dirname, '../../src/token-search-field.css'),
       'utf8',
     );
-    expect(css).toMatch(
+    const groupCss = await readFile(
+      resolve(import.meta.dirname, '../../src/toolbar-control-group.css'),
+      'utf8',
+    );
+    expect(fieldCss).toMatch(
       /\.kui-token-search\[data-collapsible="true"\][^{]*\{[^}]+width 0\.25s ease/s,
     );
-    expect(css).toMatch(
-      /\.kui-toolbar-control-group:has\([\s\S]+\.kui-token-search\[data-collapsible="true"\][\s\S]+width 0\.25s ease/,
+    expect(fieldCss).toMatch(
+      /\.kui-token-search\[data-presentation="toolbar-group"\]\[data-collapsible="true"\]/,
     );
-    expect(css).toMatch(
+    expect(groupCss).toMatch(
+      /\.kui-toolbar-control-group\[data-content="search"\][^{]*\{[^}]+width 0\.25s ease/s,
+    );
+    expect(fieldCss).toMatch(
       /@media \(prefers-reduced-motion: reduce\)[\s\S]+transition-duration: 0s/,
     );
   });

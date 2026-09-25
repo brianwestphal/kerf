@@ -17,7 +17,7 @@
   border-inline-end: 1px solid var(--kui-color-border);
 }
 
-.kui-split-view > .kui-resizable-region .kui-split-view__list {
+.kui-split-view__list[data-resizable="true"] {
   width: 100%;
   border-inline-end: 0;
 }

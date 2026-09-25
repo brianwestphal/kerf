@@ -1,0 +1,19 @@
+.recipe-form__section {
+  display: grid;
+  min-width: 0;
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  gap: var(--kui-layout-item-gap);
+}
+
+.recipe-form__heading-summary {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--kui-color-text-quiet);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recipe-form__fields,
+.recipe-form__footer {
+  align-content: start;
+}

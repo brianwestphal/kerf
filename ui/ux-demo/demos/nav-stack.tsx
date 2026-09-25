@@ -1,3 +1,4 @@
+import './nav-stack.css';
 import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/list.css';
 import '@kerfjs/ui/list-header.css';
@@ -15,6 +16,8 @@ import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 import { ChevronRight, FileText, Folder } from 'lucide';
+
+import { DemoContentItem } from './demo-content-item.js';
 
 interface Project {
   id: string;
@@ -50,7 +53,7 @@ const rootView = (): NavStackView => ({
   toolbar: <ToolbarText text="Projects" size="small" />,
   bottomToolbar: footer('2 saved projects'),
   content: (
-    <List className="kui-content">
+    <List>
       {[
         <ListHeader
           label="Saved projects"
@@ -79,18 +82,18 @@ const detailView = (project: Project): NavStackView => ({
   toolbar: <ToolbarText text="Detail" size="small" />,
   bottomToolbar: footer('Updated just now'),
   content: (
-    <List className="kui-content">
-      <div
-        class="kui-content-item"
-        tabindex="-1"
-        data-nav-focus
-        data-nav-detail-focus
-        aria-label={`${project.label} details`}
-      >
-        <LucideIcon icon={FileText} name="file-text" />
-        <strong>{project.label}</strong>
-        <span>{project.summary}</span>
-      </div>
+    <List>
+      <DemoContentItem
+        title={project.label}
+        detail={project.summary}
+        leading={<LucideIcon icon={FileText} name="file-text" />}
+        rootAttributes={{
+          tabindex: '-1',
+          'data-nav-focus': '',
+          'data-nav-detail-focus': '',
+          'aria-label': `${project.label} details`,
+        }}
+      />
     </List>
   ),
 });
@@ -122,13 +125,14 @@ export function NavStackDemo() {
         label="Interactive push and pop"
         note="Choose a project to push its detail. The content slides while the view-owned title, actions, and bottom status cross-fade; Back pops to the preserved list."
       >
-        <NavStack
-          id="catalog-nav-stack"
-          label="Project library"
-          className="demo-nav-stack"
-          views={demoViews.value}
-          backLabel="Back to library"
-        />
+        <div class="demo-nav-stack">
+          <NavStack
+            id="catalog-nav-stack"
+            label="Project library"
+            views={demoViews.value}
+            backLabel="Back to library"
+          />
+        </div>
       </CatalogExample>
     </CatalogExampleStack>
   );

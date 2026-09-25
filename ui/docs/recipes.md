@@ -28,7 +28,7 @@ specific dispatch; either way, wire once at a stable root and retain disposal.
 
 ## Desktop application shell
 
-[Open the recipe](../ux-demo/?component=recipe-app-shell) · [TSX source](../ux-demo/recipes/app-shell.tsx) · [shared CSS](../ux-demo/recipes/recipes.css)
+[Open the recipe](../ux-demo/?component=recipe-app-shell) · [TSX source](../ux-demo/recipes/app-shell.tsx) · [shared composition CSS](../ux-demo/recipes/recipe-components.css)
 
 Use `Toolbar`, controlled `ResizableRegion` panes, and one
 `.kui-pane__content` scroll owner per pane. The recipe owns the shell topology;
@@ -164,9 +164,9 @@ Chromium, Firefox, and WebKit by `tests/browser/collapsible-sidebar-recipe.spec.
 - For direct `wa-*` JSX, import types from `@kerfjs/ui/webawesome`. Import only
   individual Web Awesome registration modules and theme them with
   `@kerfjs/ui/webawesome.css`.
-- Prefer public props and variables at the composition boundary. When a recipe
-  needs responsive topology, join only classes listed in the catalog's
-  `publicClasses`; do not copy component markup or select descendants by tag,
-  id, attribute alone, or an unlisted implementation class.
+- Prefer public props and variables at the composition boundary. A recipe's own
+  component may style the structure it renders, but its stylesheet must not
+  select nested Kerf or Web Awesome components. Add missing configuration to the
+  owning component instead of copying markup or reaching through its boundary.
 - Start from the copyable mount adapter, or reproduce its complete boundary:
   wire stable `data-action` hooks once and retain every disposer.

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
+import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
 describe('Web Awesome consumer guidance', () => {
@@ -74,6 +75,58 @@ describe('Web Awesome consumer guidance', () => {
     expect(guidance).toContain(
       'Plain Accordion and Details remove inline padding',
     );
+  });
+
+  it('keeps plain disclosures flush and framed disclosure bodies compact', () => {
+    const css = readFileSync(
+      resolve(import.meta.dirname, '../../src/webawesome.css'),
+      'utf8',
+    );
+    const rules = postcss.parse(css).nodes;
+    const declarations = (
+      selectorIncludes: readonly string[],
+      selectorExcludes: readonly string[] = [],
+    ) => {
+      const matches: string[] = [];
+      postcss.parse(css).walkRules((rule) => {
+        if (
+          selectorIncludes.every((selector) =>
+            rule.selector.includes(selector),
+          ) &&
+          selectorExcludes.every(
+            (selector) => !rule.selector.includes(selector),
+          )
+        ) {
+          rule.walkDecls('padding-inline', (declaration) => {
+            matches.push(declaration.value);
+          });
+        }
+      });
+      return matches;
+    };
+
+    expect(rules.length).toBeGreaterThan(0);
+    expect(
+      declarations([
+        'wa-details[appearance="plain"]::part(header)',
+        'wa-accordion[appearance="plain"] > wa-accordion-item::part(content)',
+      ]),
+    ).toEqual(['0']);
+    expect(
+      declarations(
+        [
+          'wa-details:is([appearance="outlined"], [appearance="sunken"])::part(header)',
+          'wa-accordion-item::part(button)',
+        ],
+        ['wa-accordion-item::part(content)'],
+      ),
+    ).toEqual(['var(--kui-wa-container-inset)']);
+    expect(
+      declarations([
+        'wa-details:is([appearance="outlined"], [appearance="sunken"])::part(content)',
+        'wa-accordion-item::part(content)',
+      ]),
+    ).toEqual(['var(--kui-wa-surface-inset)']);
   });
 
   it('defines and documents the shared sunken surface appearance', () => {

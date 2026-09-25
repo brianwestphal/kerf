@@ -159,7 +159,7 @@ claim Kerf delivery paths for them.
 - Applications own signals/stores, product copy, domain-state mapping, persistence, routing, permissions, and transport.
 - Actions are `data-action` strings. Wire them at a stable root with `delegate()` or `delegateActions()` and retain the disposer.
 - A reusable component never owns per-instance mutable module state.
-- Consumers style through `--kui-*` semantic tokens and public component classes. Foundation tokens provide opinionated neutral, brand/info, non-status pop, success, warning, and danger fill/border/foreground roles. Stateful components expose local override variables; prefer an equivalent prop or token before writing a selector.
+- Consumers configure presentation through component props and documented `--kui-*` semantic tokens. Foundation tokens provide opinionated neutral, brand/info, non-status pop, success, warning, and danger fill/border/foreground roles. Application stylesheets must not select package component classes or descendants. If genuinely new structure needs CSS, encapsulate that structure and its stylesheet in an application-owned component; configure any nested Kerf components through their public APIs.
 
 `ListItem.rootAttributes`, `ListActionRow.rootAttributes`,
 `ListHeader.rootAttributes`, `AppTab.rootAttributes`,
@@ -194,23 +194,23 @@ visual anchor.
 ### Public CSS anatomy
 
 The `publicClasses` array on each entry in
-[`component-catalog.json`](../ai/component-catalog.json) is the exact supported
-anatomy boundary. A scoped selector may join documented public classes, such as
-`.workspace .kui-toolbar .kui-toolbar__trailing`, when composition-specific
-layout cannot be expressed by a prop or token. A class being public does not
-make copied component markup an invocation or transfer state and accessibility
-ownership to the application.
+[`component-catalog.json`](../ai/component-catalog.json) identifies stable
+anatomy for diagnostics, tooling, browser assertions, and package-owned
+composition. It is not an application customization API. Applications choose
+documented props and tokens; package components may compose other components
+only through those public contracts, never by styling a child's classes from a
+parent stylesheet.
 
 The v2 composition catalog additionally requires `boundaries.rootClass` to be
 either one exact member of `publicClasses` or `null` when the entry has no
 rendered class root. Runtime geometry tooling uses this explicit field; array
 order never implies root ownership.
 
-Do not select a component's descendant by element name, id, attribute alone, or
-an unlisted implementation class. Selectors such as `.kui-state-banner span`,
-`.kui-list-item [data-state]`, and `.kui-list-item .local-label` depend on
-private structure. If no prop, token, or cataloged class expresses a recurring
-need, request a supported hook instead of inferring one from rendered markup.
+Do not select a component root or descendant by class, element name, id, or
+attribute. Selectors such as `.workspace .kui-toolbar`,
+`.kui-state-banner span`, and `.kui-list-item [data-state]` cross the ownership
+boundary. If no prop or token expresses a recurring need, add the configuration
+to the owning component instead of inferring it from rendered markup.
 
 `Badge` owns the complete visual treatment for compact status, count, category,
 and metadata labels. Configure its semantic `tone`, `appearance`, `shape`, and
@@ -307,7 +307,10 @@ a plain `<button>` — the group styles `> button` fully, and it keeps the group
 free of a Web Awesome dependency and shadow DOM. Use `ToolbarActionLink` when
 the action must retain native anchor navigation; the group owns its geometry,
 hover, and focus treatment. Set `overflow="scroll"` when a row of controls must
-stay inside the available toolbar width. Reach for `wa-button` only when you need
+stay inside the available toolbar width. Set `visibility="compact-only"` for a
+group that replaces wider toolbar controls below the Toolbar's compact container
+breakpoint; do not hide the group with an application class. Reach for
+`wa-button` only when you need
 a Web Awesome feature, chiefly the `slot="trigger"` button of a `wa-dropdown`
 popup menu. For a compact mixed-content group, set `nestedDropdown`; a
 text-and-caret trigger grows to its intrinsic width while an icon-only trigger
@@ -318,11 +321,18 @@ over the outer border instead of shrinking to an inset highlight. The short text
 trigger has an engine-stable 66px floor because WebKit
 does not include the shadow caret in the custom-element host's intrinsic width;
 raise `--kui-toolbar-dropdown-trigger-width` for longer localized copy.
+The enclosing `Toolbar` owns zone alignment and responsive topology: use
+`centerAlign="stretch"` when the center group should consume its track, and
+choose `responsive="stack"` with `responsiveAt="compact" | "narrow"` or
+`responsive="center-priority"` instead of selecting its zone classes from a
+parent stylesheet.
 `ListHeader` similarly separates its dormant title and
 optional count or badge from its optional 44px action. Use the mutually
 exclusive `count`/`countLabel` pair for non-negative safe-integer section
 quantities; reserve `badge` for non-count `SafeHtml`. Do not concatenate counts
-into the section label. Do not add padding to pane shells,
+into the section label. Set `width="content"` to shrink-wrap while retaining
+normal header geometry; `inline` is the separate zero-outer-geometry mode. Do
+not add padding to pane shells,
 double child-owned geometry with wrapper insets, or create competing scroll
 owners. The [layout contract](./layout.md) lists the public roles and tokens.
 
@@ -362,6 +372,14 @@ state in a signal it exposes on the returned handle. An app reads that signal in
 render, hands in its own via `collapsible.signals`, drives it through
 `handle.open`/`handle.close`, or disables any individual behavior — so transient
 UI is consistent by default without every app reinventing it.
+
+A public subpath that exposes several visual components is a folder-backed
+surface. Put each component in its own source file and give each visual
+component exactly one owned stylesheet alongside it. Keep the public
+compatibility entrypoints implementation-free: the JavaScript/TypeScript
+entrypoint only re-exports the folder modules, and the CSS entrypoint only
+imports their owner stylesheets. A shared public name is not permission to put
+several component implementations or visual contracts back into one file.
 
 `wireTokenSearchFields` is a deliberate exception, not the rule for `wire…`
 helpers. Its collapse behavior was _rich and error-prone_ — reveal, focus
@@ -430,4 +448,4 @@ Keep product adapters outside the package: connection-state maps, ticket empty-s
 
 ## Testing contract
 
-Each behavior has focused unit coverage and a real-browser flow through the production-backed catalog. Consumer bundle tests enforce subpath CSS reachability, transitive component styles, root/SSR isolation, optional registration boundaries, and the CSS-only Web Awesome theme boundary. Visual evidence supplements—never replaces—keyboard, focus, state, and event assertions.
+Each behavior has focused unit coverage and a real-browser flow through the production-backed catalog. Consumer bundle tests enforce subpath CSS reachability, transitive component styles, root/SSR isolation, optional registration boundaries, and the CSS-only Web Awesome theme boundary. `npm run check:css-ownership` rejects application selectors into Kerf or Web Awesome components, a non-minimal catalog compatibility stylesheet, or a return of the shared recipe stylesheet. Visual evidence supplements—never replaces—keyboard, focus, state, and event assertions.

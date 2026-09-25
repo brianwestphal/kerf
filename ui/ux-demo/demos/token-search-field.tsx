@@ -1,3 +1,5 @@
+import './token-search-field.css';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 
@@ -16,7 +18,6 @@ export function TokenSearchFieldDemo() {
   return (
     <CatalogExampleStack
       label="TokenSearchField states"
-      className="token-search-demo"
       rootAttributes={{ 'data-demo': 'token-search-field' }}
     >
       <CatalogExample
@@ -26,7 +27,7 @@ export function TokenSearchFieldDemo() {
         }
         align="inline-control"
       >
-        <div class="demo-example-cluster">
+        <div class="demo-example-cluster token-search-demo__field-frame">
           <TokenSearchField
             id="catalog-search"
             label="Search tickets"
@@ -53,7 +54,7 @@ export function TokenSearchFieldDemo() {
         }
         align="inline-control"
       >
-        <div class="token-search-demo__collapsible">
+        <div class="token-search-demo__collapsible token-search-demo__field-frame">
           <TokenSearchField
             id="collapsible-search"
             label="Find records"
@@ -71,19 +72,21 @@ export function TokenSearchFieldDemo() {
         }
         align="inline-control"
       >
-        <TokenSearchField
-          id="disabled-search"
-          label="Saved search"
-          query="release"
-          tokens={[
-            {
-              value: 'tag:design-system',
-              label: 'tag:design-system',
-              offset: 7,
-            },
-          ]}
-          disabled
-        />
+        <div class="token-search-demo__field-frame">
+          <TokenSearchField
+            id="disabled-search"
+            label="Saved search"
+            query="release"
+            tokens={[
+              {
+                value: 'tag:design-system',
+                label: 'tag:design-system',
+                offset: 7,
+              },
+            ]}
+            disabled
+          />
+        </div>
       </CatalogExample>
       <CatalogExample
         label="Adoption knobs"

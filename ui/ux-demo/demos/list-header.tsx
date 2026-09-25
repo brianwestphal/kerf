@@ -1,15 +1,15 @@
+import './list-header.css';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { Plus } from 'lucide';
 
+import { DemoListPopover } from './demo-list-popover.js';
 import { icon } from './state.js';
 
 export function ListHeaderDemo() {
   return (
-    <CatalogExampleStack
-      className="demo-list-demo"
-      rootAttributes={{ 'data-demo': 'list-header' }}
-    >
+    <CatalogExampleStack rootAttributes={{ 'data-demo': 'list-header' }}>
       <CatalogExample align="none">
         <ListHeader
           label="Featured"
@@ -19,7 +19,7 @@ export function ListHeaderDemo() {
       </CatalogExample>
       <CatalogExample align="none">
         <div class="demo-list-header-inline-context">
-          <span>Queue:</span>
+          <span class="demo-list-header-inline-context__prefix">Queue:</span>
           <ListHeader
             label="Inline queue"
             count={12}
@@ -30,7 +30,7 @@ export function ListHeaderDemo() {
             divider="both"
             inline
           />
-          <span>ready</span>
+          <span class="demo-list-header-inline-context__suffix">ready</span>
         </div>
       </CatalogExample>
       <CatalogExample align="none">
@@ -84,15 +84,12 @@ export function ListHeaderDemo() {
           placeholder
         />
       </CatalogExample>
-      <div
+      <DemoListPopover
         id="list-header-attachments-popover"
-        class="demo-list-popover"
-        popover="auto"
-        role="dialog"
-        aria-label="Attachment action details"
+        label="Attachment action details"
       >
         Application-owned popover content.
-      </div>
+      </DemoListPopover>
     </CatalogExampleStack>
   );
 }

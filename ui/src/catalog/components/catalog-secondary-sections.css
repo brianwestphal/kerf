@@ -1,0 +1,38 @@
+.kui-catalog__group--secondary {
+  margin-block-start: var(--kui-space-m);
+  padding-block-start: var(--kui-space-s);
+  border-block-start: 1px solid var(--kui-color-border-quiet);
+}
+
+.kui-catalog__secondary {
+  display: grid;
+  padding-block: var(--kui-space-xs);
+  gap: var(--kui-space-s);
+}
+
+.kui-catalog__secondary-group {
+  display: grid;
+  min-width: 0;
+  gap: var(--kui-space-2xs);
+}
+
+.kui-catalog__secondary-heading {
+  margin: 0 remify(8px);
+  padding: remify(1.6px) remify(8.8px);
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-2xs);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kui-catalog__secondary-items {
+  min-width: 0;
+}
+
+@media (max-width: remify(832px)) {
+  .kui-catalog__group--secondary {
+    min-width: 0;
+    margin-block-start: 0;
+  }
+}

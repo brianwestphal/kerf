@@ -183,9 +183,6 @@
   width: max-content;
   max-width: 100%;
 }
-.kui-select__placeholder-box .kui-skeleton {
-  max-width: remify(160px);
-}
 .kui-select__placeholder-hint {
   display: block;
   margin-block-start: remify(4px);

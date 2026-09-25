@@ -12,6 +12,10 @@ npm install kerfjs @kerfjs/ui # kerfjs is a peer; Web Awesome is an optional pee
 Import each component from its own subpath (`@kerfjs/ui/list-item`, `@kerfjs/ui/toolbar`,
 …); the browser build pulls that component's reachable CSS automatically, so do not
 maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
+For a public subpath containing several visual components, use a folder with one
+component per source file and one owned stylesheet per visual component. Keep its
+compatibility entrypoints implementation-free: JavaScript/TypeScript only re-exports
+the folder modules, and CSS only imports their owner stylesheets.
 
 ## How to build a screen (retrieval order)
 
@@ -83,12 +87,12 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 ## Core rules (do the right thing)
 
 - **Reach for the primitive, not for CSS.** The package is built to look right
-  _unstyled_. Before adding `padding`, `margin`, `width`, `height`, `border`,
-  `background`, a wrapper card, or a decoration, check whether the component, the
-  pane, or the content-item already owns it — it almost always does. Prefer a
-  component prop or a `--kui-*` token; write CSS only for genuinely new structure,
-  and then only join a component's documented `publicClasses` (never reach in by
-  tag/id/attribute or an unlisted class).
+  without an application customization layer. Before adding `padding`, `margin`,
+  `width`, `height`, `border`, `background`, a wrapper card, or a decoration,
+  check whether the component, pane, or content-item already owns it. Prefer a
+  component prop or documented `--kui-*` token. CSS for genuinely new structure
+  belongs to the application-owned component that renders it and must not select
+  nested Kerf or Web Awesome components.
 - **Never double-inset.** A `.kui-pane` has no padding; its `.kui-content` children
   own the geometry (8px inline margin + 1px border + 8px padding). Do not add a
   container padding on top of a content-item's own margin — pick one owner. Use

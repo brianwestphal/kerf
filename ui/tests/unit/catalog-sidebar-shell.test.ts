@@ -55,8 +55,12 @@ describe('UX catalog sidebar shell', () => {
 
   it('fully collapses the pane so its restore action can live in the detail toolbar', async () => {
     // The shell is the shipped @kerfjs/ui/catalog component, so its collapse rule
-    // lives in catalog.css (the demo dogfoods it rather than re-declaring it).
-    const file = resolve(import.meta.dirname, '../../src/catalog.css');
+    // lives in Catalog's owned stylesheet (the demo dogfoods it rather than
+    // re-declaring it through application CSS).
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/catalog/components/catalog.css',
+    );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const collapsedShell = root.nodes.find(
       (node) =>
@@ -72,5 +76,50 @@ describe('UX catalog sidebar shell', () => {
     expect(columns?.type === 'decl' ? columns.value : undefined).toBe(
       '0 minmax(0, 1fr)',
     );
+  });
+
+  it('moves the owned sidebar separator from inline-end to block-end when narrow', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/catalog/components/catalog-sidebar.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const base = root.nodes.find(
+      (node) =>
+        node.type === 'rule' && node.selector === '.kui-catalog__sidebar',
+    );
+    if (!base || base.type !== 'rule')
+      throw new Error('Missing catalog sidebar root rule');
+    expect(
+      base.nodes.find(
+        (node) =>
+          node.type === 'decl' && node.prop === 'border-inline-end-width',
+      ),
+    ).toMatchObject({ value: 'var(--kui-pane-separator-width, 1px)' });
+
+    const narrow = root.nodes.find(
+      (node) =>
+        node.type === 'atrule' &&
+        node.name === 'media' &&
+        node.params === '(max-width: remify(832px))',
+    );
+    if (!narrow || narrow.type !== 'atrule')
+      throw new Error('Missing narrow catalog sidebar rules');
+    const sidebar = narrow.nodes?.find(
+      (node) =>
+        node.type === 'rule' && node.selector === '.kui-catalog__sidebar',
+    );
+    if (!sidebar || sidebar.type !== 'rule')
+      throw new Error('Missing narrow catalog sidebar rule');
+    expect(
+      Object.fromEntries(
+        sidebar.nodes
+          .filter((node) => node.type === 'decl')
+          .map((node) => [node.prop, node.value]),
+      ),
+    ).toMatchObject({
+      'border-block-end-width': 'var(--kui-pane-separator-width, 1px)',
+      'border-inline-end-width': '0',
+    });
   });
 });

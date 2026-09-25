@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 279000,
-  "measuredLargestJavaScriptGzip": 128521,
-  "measuredTotalJavaScriptGzip": 278919,
+  "totalJavaScriptGzip": 279700,
+  "measuredLargestJavaScriptGzip": 128879,
+  "measuredTotalJavaScriptGzip": 279692,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -131,6 +131,22 @@
         "measuredTotalJavaScriptGzip": 278919,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 279000
+      }
+    },
+    {
+      "at": "2026-09-25T04:19:50.049Z",
+      "reason": "component-owned demo modules replace monolithic app CSS",
+      "old": {
+        "measuredLargestJavaScriptGzip": 128521,
+        "measuredTotalJavaScriptGzip": 278919,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 279000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 128879,
+        "measuredTotalJavaScriptGzip": 279692,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 279700
       }
     }
   ]

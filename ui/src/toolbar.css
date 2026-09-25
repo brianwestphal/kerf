@@ -85,6 +85,15 @@
   grid-column: 2;
 }
 
+.kui-toolbar[data-center-align="stretch"] > .kui-toolbar__center {
+  justify-content: flex-start;
+}
+
+.kui-toolbar[data-center-align="stretch"] > .kui-toolbar__center > * {
+  width: 100%;
+  flex-basis: 100%;
+}
+
 .kui-toolbar__trailing {
   justify-content: flex-end;
   grid-column: -2 / -1;
@@ -94,4 +103,67 @@
 .kui-toolbar__leading:empty,
 .kui-toolbar__trailing:empty {
   display: none;
+}
+
+@container kui-toolbar (max-width: remify(832px)) {
+  .kui-toolbar[data-responsive="stack"][data-responsive-at="narrow"] {
+    height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "leading" "center" "trailing";
+    row-gap: var(--kui-toolbar-gap, remify(8px));
+  }
+
+  .kui-toolbar[data-responsive="stack"][data-responsive-at="narrow"]
+    > .kui-toolbar__leading,
+  .kui-toolbar[data-responsive="stack"][data-responsive-at="narrow"]
+    > .kui-toolbar__center,
+  .kui-toolbar[data-responsive="stack"][data-responsive-at="narrow"]
+    > .kui-toolbar__trailing {
+    width: 100%;
+    grid-column: 1;
+    justify-content: flex-start;
+  }
+}
+
+@container kui-toolbar (max-width: remify(704px)) {
+  .kui-toolbar[data-responsive="stack"][data-responsive-at="compact"] {
+    height: auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "leading" "center" "trailing";
+    row-gap: var(--kui-toolbar-gap, remify(8px));
+  }
+
+  .kui-toolbar[data-responsive="stack"][data-responsive-at="compact"]
+    > .kui-toolbar__leading,
+  .kui-toolbar[data-responsive="stack"][data-responsive-at="compact"]
+    > .kui-toolbar__center,
+  .kui-toolbar[data-responsive="stack"][data-responsive-at="compact"]
+    > .kui-toolbar__trailing {
+    width: 100%;
+    grid-column: 1;
+    justify-content: flex-start;
+  }
+}
+
+@container kui-toolbar (max-width: remify(672px)) {
+  .kui-toolbar[data-responsive="center-priority"]:has(
+      > .kui-toolbar__center [data-expanded="true"]
+    ) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .kui-toolbar[data-responsive="center-priority"]:has(
+      > .kui-toolbar__center [data-expanded="true"]
+    )
+    > .kui-toolbar__center {
+    width: 100%;
+    grid-column: 1;
+  }
+
+  .kui-toolbar[data-responsive="center-priority"]:has(
+      > .kui-toolbar__center [data-expanded="true"]
+    )
+    > :is(.kui-toolbar__leading, .kui-toolbar__trailing) {
+    display: none;
+  }
 }

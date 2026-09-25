@@ -6,6 +6,7 @@ export type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
 export type TextTone = 'default' | 'quiet' | 'danger';
 export type TextSize = 'default' | 'compact';
 export type TextFont = 'default' | 'monospace';
+export type TextBorder = 'transparent' | 'none';
 
 export type TextContent =
   KerfUiContent | string | number | readonly TextContent[];
@@ -22,6 +23,8 @@ export type TextProps = Omit<
   size?: TextSize;
   /** Font family independent of the native semantic element. */
   font?: TextFont;
+  /** Transparent alignment border or no border when embedded in owner chrome. */
+  border?: TextBorder;
   children: TextContent;
   class?: string;
   className?: string;
@@ -36,6 +39,7 @@ export function Text({
   tone = 'default',
   size = 'default',
   font = 'default',
+  border = 'transparent',
   children,
   class: classValue = '',
   className = '',
@@ -50,6 +54,7 @@ export function Text({
       data-tone={tone}
       data-size={size}
       data-font={font}
+      data-border={border}
     >
       {children}
     </Variant>

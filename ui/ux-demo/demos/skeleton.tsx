@@ -1,3 +1,5 @@
+import './skeleton.css';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { em } from '@kerfjs/ui/css-values';
 import { Skeleton } from '@kerfjs/ui/skeleton';

@@ -85,6 +85,11 @@ popover or context menu.
 
 ## ResizableRegion
 
+Set `responsiveFillAt="narrow"` or `"compact"` when a responsive composition
+shows the region as its only inline track. The component then owns its
+full-width geometry and removes its dormant separator at that container
+breakpoint; the application owns which pane is visible.
+
 The handle exposes separator role, orientation, name, minimum, maximum, and current values. `wireResizableRegions()` adds:
 
 - the axis arrow keys in 16 px steps by default;

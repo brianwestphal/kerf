@@ -1,0 +1,35 @@
+.kui-catalog-example {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: remify(8px);
+}
+
+.kui-catalog-example__note {
+  margin: 0;
+  padding-block: var(--kui-layout-item-padding, remify(8px));
+  padding-inline: calc(
+    var(--kui-layout-inline-margin, remify(8px)) +
+      var(--kui-layout-item-padding, remify(8px))
+  );
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-xs);
+}
+
+/* The published inset lets the geometry overlay exclude this authoring aid. */
+.kui-catalog-example[data-align="glyph"]
+  > :not([data-catalog-example-label]):not([data-catalog-example-note]) {
+  --kui-catalog-example-align: remify(16px);
+  margin-inline-start: var(--kui-catalog-example-align);
+}
+
+.kui-catalog-example[data-align="inline-control"]
+  > :not([data-catalog-example-label]):not([data-catalog-example-note]) {
+  --kui-catalog-example-align: remify(8px);
+  margin-inline-start: var(--kui-catalog-example-align);
+}

@@ -1,0 +1,5 @@
+.demo-state-banner--override {
+  --kui-state-banner-background: light-dark(#f6efff, #2e203d);
+  --kui-state-banner-border: light-dark(#b69ad9, #765a98);
+  --kui-state-banner-foreground: light-dark(#6d3f9c, #e3c7ff);
+}

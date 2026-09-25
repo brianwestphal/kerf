@@ -1,3 +1,5 @@
+import './foundation.css';
+
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 
 const tones = [
@@ -12,7 +14,6 @@ export function FoundationDemo() {
   return (
     <CatalogExampleStack
       label="Foundation token examples"
-      className="demo-foundation"
       rootAttributes={{ 'data-demo': 'foundation' }}
     >
       <CatalogExample
@@ -24,7 +25,9 @@ export function FoundationDemo() {
           {tones.map(([label, tone]) => (
             <div class={`demo-foundation__tone demo-foundation__tone--${tone}`}>
               <strong>{label}</strong>
-              <span>Quiet semantic surface</span>
+              <span class="demo-foundation__caption">
+                Quiet semantic surface
+              </span>
             </div>
           ))}
         </div>
@@ -35,11 +38,13 @@ export function FoundationDemo() {
         align="none"
       >
         <div class="demo-foundation__rhythm">
-          <strong>Application heading</strong>
-          <span>
+          <strong class="demo-foundation__heading">Application heading</strong>
+          <span class="demo-foundation__caption demo-foundation__caption--quiet">
             Body copy uses the shared sans-serif and standard group gap.
           </span>
-          <code>--kui-space-xs · --kui-font-s</code>
+          <code class="demo-foundation__caption demo-foundation__caption--quiet">
+            --kui-space-xs · --kui-font-s
+          </code>
         </div>
       </CatalogExample>
     </CatalogExampleStack>

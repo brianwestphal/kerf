@@ -213,30 +213,7 @@
   margin-inline-start: remify(6px);
 }
 
-.kui-toolbar-control-group:has(> .kui-token-search[data-collapsible="true"]) {
-  width: min(var(--kui-token-search-expanded-width, remify(480px)), 100%);
-  max-width: 100%;
-  height: auto;
-  min-width: 0;
-  overflow: hidden;
-  /* Same reason as the field above (KF-EPEM88): drive the inline size through
-     `width`, not `flex-basis`, so a group placed in a flex column is not
-     stretched to the expanded width in its cross axis. */
-  flex: 0 1 auto;
-  transition:
-    width 0.25s ease,
-    background-color 0.2s ease,
-    border-color 0.2s ease;
-}
-
-.kui-toolbar-control-group[data-expanded="false"]:has(
-    > .kui-token-search[data-collapsible="true"]
-  ) {
-  width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
-  flex: 0 0 auto;
-}
-
-.kui-toolbar-control-group > .kui-token-search[data-collapsible="true"] {
+.kui-token-search[data-presentation="toolbar-group"][data-collapsible="true"] {
   --kui-token-search-line-size: remify(32px);
 
   min-height: remify(40px);
@@ -250,14 +227,12 @@
   box-shadow: none;
 }
 
-.kui-toolbar-control-group
-  > .kui-token-search[data-collapsible="true"]:focus-within {
+.kui-token-search[data-presentation="toolbar-group"][data-collapsible="true"]:focus-within {
   border-color: var(--kui-color-focus);
   background: var(--kui-token-search-background);
 }
 
-.kui-toolbar-control-group
-  > .kui-token-search[data-collapsible="true"][data-expanded="false"] {
+.kui-token-search[data-presentation="toolbar-group"][data-collapsible="true"][data-expanded="false"] {
   width: remify(40px);
   min-width: remify(40px);
   height: remify(40px);
@@ -265,23 +240,13 @@
   padding: 0;
 }
 
-.kui-toolbar-control-group
-  > .kui-token-search[data-collapsible="true"][data-expanded="false"]
+.kui-token-search[data-presentation="toolbar-group"][data-collapsible="true"][data-expanded="false"]
   .kui-token-search__expand {
   padding-inline: 0;
 }
 
-.kui-toolbar-control-group:has(
-    > .kui-token-search[data-collapsible="true"]
-  ):focus-within {
-  border-color: var(--kui-color-text-link);
-  box-shadow: 0 0 0 3px
-    color-mix(in srgb, var(--kui-color-text-link) 22%, transparent);
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .kui-token-search[data-collapsible="true"],
-  .kui-toolbar-control-group:has(> .kui-token-search[data-collapsible="true"]) {
+  .kui-token-search[data-collapsible="true"] {
     transition-duration: 0s;
   }
 }
