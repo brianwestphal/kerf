@@ -2657,12 +2657,12 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Controlled tab strips with typed rail, segmented, and inspector presentation plus intrinsic or fill allocation.",
+      "description": "Controlled tab strips with typed presentation and allocation, a scroll-owning tab region, an optional adjacent trailing action, and a separately pinned far-edge end action.",
       "uses": [
         "tabs",
         "toolbar-control-group"
       ],
-      "purpose": "Controlled tab strips with typed rail, segmented, and inspector presentation plus intrinsic or fill allocation.",
+      "purpose": "Controlled tab strips whose tabs shrink and scroll while fixed leading, trailing, and far-edge end actions remain visible.",
       "publicExports": [
         "TabBar",
         "wireTabBars",
@@ -2703,7 +2703,8 @@
         "reorderable",
         "rail, segmented, and inspector presentation",
         "intrinsic or fill allocation",
-        "separate or adjacent trailing action"
+        "separate or adjacent trailing action",
+        "far-edge end action"
       ],
       "accessibility": [
         "Keep exactly one selected tab at tabindex 0 and preserve the wiring keyboard model."
@@ -2711,7 +2712,10 @@
       "geometry": {
         "margin": "none",
         "border": "self",
-        "padding": "self"
+        "padding": "self",
+        "notes": [
+          "TabBar owns inline flex allocation: tabs shrink and scroll, an adjacent trailing action follows the tab strip, and the end action stays pinned at the far edge; leading, trailing, and end actions do not shrink."
+        ]
       },
       "delivery": {
         "browserImport": "@kerfjs/ui/tab-bar",
@@ -2736,7 +2740,8 @@
         "kui-tab-bar",
         "kui-tab-bar__leading",
         "kui-tab-bar__tabs",
-        "kui-tab-bar__trailing"
+        "kui-tab-bar__trailing",
+        "kui-tab-bar__end"
       ],
       "publicTokens": [
         "--kui-tab-bar-background",

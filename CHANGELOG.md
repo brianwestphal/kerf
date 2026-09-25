@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added a `TabBar.end` action zone for layouts that need a tab-local adjacent
+  `trailing` action and a separate far-edge action; the tab strip now owns the
+  shrink/scroll geometry while all action regions remain visible.
 - Replaced the UX catalog's four-gradient checkerboard with one repeated SVG
   tile so the preview pattern continues through below-fold content.
 - Added explicit native `slot` support to every stable single-root

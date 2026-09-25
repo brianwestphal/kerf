@@ -1299,6 +1299,7 @@ describe('production UI primitives', () => {
         label: 'Open work',
         leading: icon,
         trailing: icon,
+        end: <span data-end-action>End</span>,
         allocation: 'fill',
         presentation: 'inspector',
         trailingPlacement: 'adjacent',
@@ -1310,6 +1311,11 @@ describe('production UI primitives', () => {
     );
     expect(bar).toContain(
       'class="kui-tab-bar__tabs" role="tablist" aria-label="Open work" data-kui-tab-list',
+    );
+    expect(bar).toContain('class="kui-tab-bar__leading"');
+    expect(bar).toContain('class="kui-tab-bar__trailing"');
+    expect(bar).toContain(
+      'class="kui-tab-bar__end"><span data-end-action>End</span>',
     );
     const iconOnly = asHtml(
       AppTab({

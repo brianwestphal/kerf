@@ -123,6 +123,12 @@ describe('component catalog v2 composition contract', () => {
       jsx: { prop: 'children' },
       accepts: ['tabs'],
     });
+    expect(tabBar.zones.map(({ id, jsx }) => [id, jsx?.prop])).toEqual([
+      ['tabs', 'children'],
+      ['leading', 'leading'],
+      ['trailing', 'trailing'],
+      ['end', 'end'],
+    ]);
     expect(workbench.zones).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ id: 'main', jsx: { prop: 'main' } }),

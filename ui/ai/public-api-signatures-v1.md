@@ -693,6 +693,11 @@ interface TabBarProps {
     children: KerfUiContent;
     leading?: KerfUiContent;
     trailing?: KerfUiContent;
+    /**
+     * Action pinned to the far edge of the bar. Combine with an adjacent `trailing`
+     * action when the tab-local and workspace-level actions must remain distinct.
+     */
+    end?: KerfUiContent;
     className?: string;
     /**
      * Keyboard activation mode for this strip, emitted as `data-tab-activation` for
@@ -711,7 +716,7 @@ interface TabBarProps {
     slot?: string;
 }
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
-declare function TabBar({ id, label, children, leading, trailing, className, activation, allocation, presentation, trailingPlacement, slot, }: TabBarProps): kerfjs.SafeHtml;
+declare function TabBar({ id, label, children, leading, trailing, end, className, activation, allocation, presentation, trailingPlacement, slot, }: TabBarProps): kerfjs.SafeHtml;
 
 export { type TabActivation, TabBar, type TabBarAllocation, type TabBarPresentation, type TabBarProps, type TabBarTrailingPlacement };
 ```

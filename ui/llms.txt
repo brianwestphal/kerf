@@ -220,7 +220,11 @@ the folder modules, and CSS only imports their owner stylesheets.
   overflow autoscroll, drag preview, and
   replacement focus after controlled automatic tab activation,
   `wireResizableRegions` the live drag preview; they report committed changes via
-  callbacks. Managed TokenSearchField clear also preserves open state and replacement
+  callbacks. For a tab-local action plus a separate far-edge action, set
+  `TabBar trailingPlacement="adjacent"`, put the local action in `trailing`, and
+  the workspace action in `end`; the component keeps both visible while its tab
+  list shrinks and scrolls, without application descendant CSS. Managed
+  TokenSearchField clear also preserves open state and replacement
   editor focus before the next input task, so shortcut-letter typing stays in search.
   Select All deletion does the same; deletion
   restoration finishes before the next keystroke rather than on a delayed frame.

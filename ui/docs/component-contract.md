@@ -413,6 +413,13 @@ render the section body, so a managed helper would remove no real complexity. Re
 for a managed default only when the transient behavior is substantial enough that
 hand-rolling it produces genuine, inconsistent variation.
 
+TabBar itself owns the inline geometry around those mechanics. Its tab list is
+the only shrinking, horizontally scrolling region; `leading`, `trailing`, and
+`end` action regions remain fixed. Set `trailingPlacement="adjacent"` when the
+trailing action belongs immediately after the final tab and use `end` for a
+separate action pinned to the far edge. Applications own the action content,
+but must not restyle TabBar descendants to recreate that allocation.
+
 CSS, the generated wrappers that make it
 reachable, and the registration module are the package's only declared side
 effects.

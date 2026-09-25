@@ -328,6 +328,9 @@ UI.TabBar({
   id: 'tabs',
   label: 'Tabs',
   children: slottedContent,
+  trailing: slottedContent,
+  end: slottedContent,
+  trailingPlacement: 'adjacent',
   slot: 'named',
 });
 TabScaffold({

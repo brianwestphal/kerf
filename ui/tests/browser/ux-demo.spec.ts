@@ -6416,6 +6416,20 @@ test('separates focused AppTab and TabBar specimens from the application-tabs co
   const tabBars = page.locator('[data-demo="tab-bar"]');
   await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(3);
   await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(3);
+  const splitBar = tabBars.locator('[data-tab-bar-id="inspector-tab-bar"]');
+  const splitTabs = splitBar.locator('[data-kui-tab-list]');
+  const adjacentAction = splitBar.getByRole('button', {
+    name: 'Add inspector section',
+  });
+  const endAction = splitBar.getByRole('button', {
+    name: 'Create workspace item',
+  });
+  await expect(adjacentAction).toBeVisible();
+  await expect(endAction).toBeVisible();
+  await expect(splitBar.locator(':scope > .kui-tab-bar__trailing')).toHaveCount(
+    1,
+  );
+  await expect(splitBar.locator(':scope > .kui-tab-bar__end')).toHaveCount(1);
   if (browserName === 'chromium')
     await tabBars.screenshot({ path: 'test-results/tab-bar-focused-wide.png' });
 
@@ -6427,6 +6441,55 @@ test('separates focused AppTab and TabBar specimens from the application-tabs co
       ),
     )
     .toBe(true);
+  await expect(splitBar).toBeVisible();
+  await splitBar.evaluate((bar) => {
+    bar.style.width = '320px';
+  });
+  await expect(adjacentAction).toBeVisible();
+  await expect(endAction).toBeVisible();
+  const splitDimensions = await splitTabs.evaluate((node) => ({
+    clientWidth: node.clientWidth,
+    scrollWidth: node.scrollWidth,
+    tabWidths: Array.from(node.children).map(
+      (child) => child.getBoundingClientRect().width,
+    ),
+  }));
+  expect(
+    splitDimensions.scrollWidth,
+    JSON.stringify(splitDimensions),
+  ).toBeGreaterThan(splitDimensions.clientWidth);
+  const splitGeometry = await splitBar.evaluate((bar) => {
+    const tabs = bar.querySelector<HTMLElement>('.kui-tab-bar__tabs')!;
+    const trailing = bar.querySelector<HTMLElement>('.kui-tab-bar__trailing')!;
+    const end = bar.querySelector<HTMLElement>('.kui-tab-bar__end')!;
+    const barRect = bar.getBoundingClientRect();
+    const tabsRect = tabs.getBoundingClientRect();
+    const trailingRect = trailing.getBoundingClientRect();
+    const endRect = end.getBoundingClientRect();
+    return {
+      order: Array.from(bar.children).map((child) => child.className),
+      tabsRight: tabsRect.right,
+      trailingLeft: trailingRect.left,
+      trailingRight: trailingRect.right,
+      endLeft: endRect.left,
+      endRight: endRect.right,
+      barRight: barRect.right,
+      trailingFlexShrink:
+        bar.ownerDocument.defaultView!.getComputedStyle(trailing).flexShrink,
+      endFlexShrink:
+        bar.ownerDocument.defaultView!.getComputedStyle(end).flexShrink,
+    };
+  });
+  expect(splitGeometry.order).toEqual([
+    'kui-tab-bar__tabs',
+    'kui-tab-bar__trailing',
+    'kui-tab-bar__end',
+  ]);
+  expect(splitGeometry.tabsRight).toBeLessThan(splitGeometry.trailingLeft);
+  expect(splitGeometry.trailingRight).toBeLessThan(splitGeometry.endLeft);
+  expect(splitGeometry.endRight).toBeLessThanOrEqual(splitGeometry.barRight);
+  expect(splitGeometry.trailingFlexShrink).toBe('0');
+  expect(splitGeometry.endFlexShrink).toBe('0');
   if (browserName === 'chromium')
     await tabBars.screenshot({
       path: 'test-results/tab-bar-focused-narrow.png',

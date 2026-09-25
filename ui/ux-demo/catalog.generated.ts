@@ -429,7 +429,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
-    "description": "Controlled tab strips with typed rail, segmented, and inspector presentation plus intrinsic or fill allocation.",
+    "description": "Controlled tab strips whose tabs shrink and scroll while fixed leading, trailing, and far-edge end actions remain visible.",
     "uses": [
       "tabs",
       "toolbar-control-group"

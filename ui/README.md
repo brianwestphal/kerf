@@ -602,6 +602,11 @@ drag, the scroll strip automatically moves toward either edge with speed based
 on pointer proximity, exposing earlier or later drop targets. Apply the reported
 change with `reorderTabs()` or application-specific state logic. The application
 still owns selection, closing, routing, and persistence.
+For a tab-local action immediately after the final tab plus a workspace action
+at the opposite edge, set `trailingPlacement="adjacent"`, pass the local action
+through `trailing`, and pass the workspace action through `end`. TabBar owns the
+flex geometry: the tab strip shrinks and scrolls while both action regions stay
+visible. Do not recreate that split with descendant CSS overrides.
 Use `AppTab.rootAttributes` for domain `data-*` metadata and `closeIcon` for a
 decorative replacement glyph. The runtime rejects roles and case variants of
 the component- or wiring-owned action, tab identity, selection, drag, drop, and

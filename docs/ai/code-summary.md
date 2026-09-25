@@ -675,7 +675,9 @@ inside the closed control, and loading placeholders retain the visible hint.
 wire-owned drag/drop markers case-insensitively. `AppTab.closeIcon` and
 `ResizableRegion.handleIcon` replace decorative SafeHtml content without
 moving interaction or lifecycle ownership out of their existing controls and
-disposer-returning wiring. `wireTabBars` resolves replacement focus by logical
+disposer-returning wiring. `TabBar.end` provides a separately pinned far-edge
+action while an adjacent `trailing` action follows its shrinkable, horizontally
+scrolling tabs; the component owns that split geometry. `wireTabBars` resolves replacement focus by logical
 bar/tab identity after automatic keyboard activation synchronously rerenders a strip.
 Unit coverage in `ui/tests/unit/wire-tab-bars.test.ts` and the real-browser
 `ui/tests/browser/tab-bar-controlled-focus.spec.ts` cover repeated Arrow/Home/End

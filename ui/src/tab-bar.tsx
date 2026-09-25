@@ -11,6 +11,11 @@ export interface TabBarProps {
   children: KerfUiContent;
   leading?: KerfUiContent;
   trailing?: KerfUiContent;
+  /**
+   * Action pinned to the far edge of the bar. Combine with an adjacent `trailing`
+   * action when the tab-local and workspace-level actions must remain distinct.
+   */
+  end?: KerfUiContent;
   className?: string;
   /**
    * Keyboard activation mode for this strip, emitted as `data-tab-activation` for
@@ -36,6 +41,7 @@ export function TabBar({
   children,
   leading,
   trailing,
+  end,
   className = '',
   activation,
   allocation = 'intrinsic',
@@ -65,6 +71,7 @@ export function TabBar({
         {children}
       </div>
       {trailing && <div class="kui-tab-bar__trailing">{trailing}</div>}
+      {end && <div class="kui-tab-bar__end">{end}</div>}
     </nav>
   );
 }

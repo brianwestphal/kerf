@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 280000,
+  "totalJavaScriptGzip": 280100,
   "measuredLargestJavaScriptGzip": 128881,
-  "measuredTotalJavaScriptGzip": 279918,
+  "measuredTotalJavaScriptGzip": 280013,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -179,6 +179,22 @@
         "measuredTotalJavaScriptGzip": 279918,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 280000
+      }
+    },
+    {
+      "at": "2026-09-25T06:03:18.234Z",
+      "reason": "document and demonstrate split TabBar action zones",
+      "old": {
+        "measuredLargestJavaScriptGzip": 128881,
+        "measuredTotalJavaScriptGzip": 279918,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 280000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 128881,
+        "measuredTotalJavaScriptGzip": 280013,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 280100
       }
     }
   ]

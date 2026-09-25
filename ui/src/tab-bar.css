@@ -61,9 +61,14 @@
 }
 
 .kui-tab-bar__leading,
-.kui-tab-bar__trailing {
+.kui-tab-bar__trailing,
+.kui-tab-bar__end {
   display: flex;
   min-height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   align-items: center;
   flex: none;
+}
+
+.kui-tab-bar__end {
+  margin-inline-start: auto;
 }

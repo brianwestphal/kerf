@@ -2302,6 +2302,13 @@
           "accepts": ["toolbar-control-group"],
           "cardinality": { "min": 0, "max": 1 },
           "exclusiveWith": []
+        },
+        {
+          "id": "end",
+          "jsx": { "prop": "end" },
+          "accepts": ["toolbar-control-group"],
+          "cardinality": { "min": 0, "max": 1 },
+          "exclusiveWith": []
         }
       ],
       "children": {
@@ -2323,7 +2330,14 @@
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
-        "geometry": { "margin": "none", "border": "self", "padding": "self" }
+        "geometry": {
+          "margin": "none",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "TabBar owns inline flex allocation: tabs shrink and scroll, an adjacent trailing action follows the tab strip, and the end action stays pinned at the far edge; leading, trailing, and end actions do not shrink."
+          ]
+        }
       },
       "accessibility": {
         "obligations": [
@@ -2338,7 +2352,8 @@
           "kui-tab-bar",
           "kui-tab-bar__leading",
           "kui-tab-bar__tabs",
-          "kui-tab-bar__trailing"
+          "kui-tab-bar__trailing",
+          "kui-tab-bar__end"
         ],
         "publicTokens": ["--kui-tab-bar-background", "--kui-tab-bar-border"]
       },

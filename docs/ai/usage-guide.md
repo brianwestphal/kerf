@@ -207,7 +207,11 @@ state, routing, and persistence. `wireResizableRegions(root, { onCommit })` and
 `wireTabBars(root, { onReorder })` add the reusable interaction behavior and
 return disposers. Tab dragging automatically scrolls toward a nearby horizontal
 edge to expose earlier or later drop targets. Apply tab reorder reports with
-`reorderTabs()`. Import
+`reorderTabs()`. For a tab-local action immediately after the strip plus a
+workspace action at the far edge, set `trailingPlacement="adjacent"`, put the
+local action in `trailing`, and put the workspace action in `end`; TabBar owns
+the shrinking/scrolling strip and keeps both fixed action regions visible.
+Import
 `@kerfjs/ui/select/register` once only when using Select; that is the explicit
 custom-element side effect and Web Awesome is otherwise optional. Supply
 icon-bearing choices and `renderSelected` output directly: `Select` preserves

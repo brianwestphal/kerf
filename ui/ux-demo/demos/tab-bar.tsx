@@ -2,7 +2,7 @@ import { AppTab } from '@kerfjs/ui/app-tab';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
-import { Plus } from 'lucide';
+import { Plus, SquarePlus } from 'lucide';
 
 import { icon } from './state.js';
 
@@ -24,6 +24,23 @@ const tabs = (presentation: 'pill' | 'segmented' = 'pill') => [
   />,
 ];
 
+const splitTabs = [
+  'Overview',
+  'Backlog',
+  'Activity',
+  'Automations',
+  'Settings',
+].map((name, index) => (
+  <AppTab
+    id={`split-${name.toLowerCase()}`}
+    name={name}
+    selected={index === 0}
+    closable={false}
+    presentation="segmented"
+    size="compact"
+  />
+));
+
 export function TabBarDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'tab-bar' }}>
@@ -42,12 +59,11 @@ export function TabBarDemo() {
           {tabs('segmented')}
         </TabBar>
       </CatalogExample>
-      <CatalogExample label="Inspector · adjacent action" align="none">
+      <CatalogExample label="Inspector · adjacent and end actions" align="none">
         <TabBar
           id="inspector-tab-bar"
           label="Inspector tab bar"
           presentation="inspector"
-          allocation="fill"
           trailingPlacement="adjacent"
           trailing={
             <ToolbarControlGroup appearance="borderless" single>
@@ -56,8 +72,15 @@ export function TabBarDemo() {
               </button>
             </ToolbarControlGroup>
           }
+          end={
+            <ToolbarControlGroup appearance="borderless" single>
+              <button type="button" aria-label="Create workspace item">
+                {icon(SquarePlus, 'square-plus')}
+              </button>
+            </ToolbarControlGroup>
+          }
         >
-          {tabs('segmented')}
+          {splitTabs}
         </TabBar>
       </CatalogExample>
     </CatalogExampleStack>
