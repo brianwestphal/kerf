@@ -18,6 +18,10 @@
   min-width: 0;
   max-width: 100%;
   overflow: hidden;
+  /* Keep the line box larger than the font's em square. Glyph ink can extend
+     below a 1em line box, so clipping for ellipsis must not also shave off
+     descenders such as g, j, p, q, and y. */
+  line-height: 1.2;
   white-space: nowrap;
   text-overflow: ellipsis;
 }

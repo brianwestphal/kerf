@@ -518,6 +518,10 @@ test('ToolbarText overflow modes: single-line ellipsis, wrap, and capped line-cl
   page,
 }) => {
   await page.goto('/?component=toolbar-text');
+  const xlargeText = page
+    .locator('[data-demo="toolbar-text"] .kui-toolbar-text[data-size="xlarge"]')
+    .first()
+    .locator('.kui-toolbar-text__text');
   const demos = page.locator('.toolbar-text-overflow-demo .kui-toolbar-text');
   const ellipsis = demos.nth(0);
   const wrap = demos.nth(1);
@@ -526,6 +530,20 @@ test('ToolbarText overflow modes: single-line ellipsis, wrap, and capped line-cl
   // the flex box itself).
   const ellipsisText = ellipsis.locator('.kui-toolbar-text__text');
   const cappedText = capped.locator('.kui-toolbar-text__text');
+
+  // The clipped text box still needs real leading around the font's em square.
+  // A 1em line box trims descenders in some system fonts even when horizontal
+  // ellipsis behavior is correct.
+  const xlargeMetrics = await xlargeText.evaluate((el) => {
+    const style = window.getComputedStyle(el);
+    return {
+      fontSize: Number.parseFloat(style.fontSize),
+      lineHeight: Number.parseFloat(style.lineHeight),
+      renderedHeight: el.getBoundingClientRect().height,
+    };
+  });
+  expect(xlargeMetrics.lineHeight - xlargeMetrics.fontSize).toBeGreaterThan(1);
+  expect(xlargeMetrics.renderedHeight).toBeCloseTo(xlargeMetrics.lineHeight, 0);
 
   // Default: one line, ellipsized (white-space nowrap + text-overflow ellipsis),
   // and the rendered text is actually clipped (scrollWidth exceeds clientWidth).

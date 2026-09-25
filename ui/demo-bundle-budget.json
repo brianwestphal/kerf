@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 279700,
-  "measuredLargestJavaScriptGzip": 128879,
-  "measuredTotalJavaScriptGzip": 279692,
+  "totalJavaScriptGzip": 279800,
+  "measuredLargestJavaScriptGzip": 128881,
+  "measuredTotalJavaScriptGzip": 279704,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -147,6 +147,22 @@
         "measuredTotalJavaScriptGzip": 279692,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 279700
+      }
+    },
+    {
+      "at": "2026-09-25T04:59:37.280Z",
+      "reason": "ToolbarText descender fix changes generated CSS asset hashes",
+      "old": {
+        "measuredLargestJavaScriptGzip": 128879,
+        "measuredTotalJavaScriptGzip": 279692,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 279700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 128881,
+        "measuredTotalJavaScriptGzip": 279704,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 279800
       }
     }
   ]
