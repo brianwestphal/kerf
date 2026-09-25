@@ -2,6 +2,8 @@
 // rows into CI/publication timing records attributed to the tickets named in
 // the commits each run covers. IO (gh, git, Hot Sheet) stays in the CLI.
 
+import { MAX_COHERENT_TICKETS } from './ticket-timing.mjs';
+
 export const GH_RUN_FIELDS = [
   'databaseId',
   'headSha',
@@ -17,8 +19,9 @@ export const GH_RUN_FIELDS = [
 
 // A run covering more tickets than this is not a coherent push batch (a first
 // push of a long history, a force-push, a rebased branch); importing it would
-// recreate the attach-one-interval-to-hundreds-of-tickets backfill shape.
-export const MAX_TICKETS_PER_RUN = 25;
+// recreate the attach-one-interval-to-hundreds-of-tickets backfill shape that
+// the cross-ticket summary excludes at the same threshold.
+export const MAX_TICKETS_PER_RUN = MAX_COHERENT_TICKETS;
 
 const SHA = /^[0-9a-f]{7,64}$/;
 const PUBLICATION_WORKFLOW = /pages|release|publish|deploy/i;

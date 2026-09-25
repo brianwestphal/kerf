@@ -27,6 +27,12 @@ import {
   ticketSlugsFromSubjects,
 } from './lib/ticket-timing.mjs';
 import {
+  aggregateTicketTiming,
+  formatAggregate,
+  readStoreTickets,
+  resolveStoreDirectory,
+} from './lib/ticket-timing-aggregate.mjs';
+import {
   GH_RUN_FIELDS,
   hasRecordedRun,
   MAX_TICKETS_PER_RUN,
@@ -45,6 +51,7 @@ function usage(message) {
   npm run ticket:timing -- run <ticket> --phase <phase> --gate <id> [--failure-category <id>] -- <command> [args...]
   npm run ticket:timing -- record <ticket> --phase <phase> --gate <id> --started-at <iso> --finished-at <iso> --outcome passed|failed|interrupted|skipped
   npm run ticket:timing -- summary <ticket> [--json]
+  npm run ticket:timing -- summary --all [--store <dir>] [--since <iso>] [--backfill-threshold <n>] [--include-backfill] [--json]
   npm run ticket:timing -- claim <ticket> --worker <id> [--gate <id>]
   npm run ticket:timing -- release <ticket> --worker <id> [--outcome passed|failed|interrupted]
   npm run ticket:timing -- import-ci [--limit <n>] [--branch <name>] [--dry-run]`);
@@ -58,7 +65,8 @@ function options(args) {
     if (!value.startsWith('--')) parsed._.push(value);
     else {
       const name = value.slice(2).replaceAll('-', '_');
-      if (name === 'json' || name === 'dry_run') parsed[name] = true;
+      if (['json', 'dry_run', 'all', 'include_backfill'].includes(name))
+        parsed[name] = true;
       else parsed[name] = args[++index];
     }
   }
@@ -490,6 +498,30 @@ async function importCi(parsed) {
   );
 }
 
+// Reads the store's ticket files directly (read-only) rather than calling
+// `hotsheet-cli show` once per ticket.
+async function summaryAll(parsed) {
+  const threshold =
+    parsed.backfill_threshold === undefined
+      ? undefined
+      : Number(parsed.backfill_threshold);
+  if (
+    threshold !== undefined &&
+    !(Number.isInteger(threshold) && threshold > 0)
+  )
+    usage('--backfill-threshold must be a positive integer');
+  const since = parsed.since ? isoTime(parsed.since, '--since') : undefined;
+  const store = await resolveStoreDirectory(process.cwd(), parsed.store);
+  const result = aggregateTicketTiming(await readStoreTickets(store), {
+    since,
+    backfillThreshold: threshold,
+    includeBackfill: parsed.include_backfill,
+  });
+  console.log(
+    parsed.json ? JSON.stringify(result, null, 2) : formatAggregate(result),
+  );
+}
+
 const [action, ticketValue, ...rest] = process.argv.slice(2);
 try {
   if (action === 'pre-push') await prePush([ticketValue, ...rest]);
@@ -497,6 +529,8 @@ try {
     await importCi(
       options([ticketValue, ...rest].filter((value) => value !== undefined)),
     );
+  else if (action === 'summary' && ticketValue === '--all')
+    await summaryAll(options(rest));
   else {
     if (!action || !ticketValue) usage();
     const ticket = assertTicket(ticketValue);

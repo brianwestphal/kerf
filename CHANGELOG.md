@@ -18,6 +18,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   already wired, closes the overlay (including a `native` `<dialog>`), restores
   focus, and rethrows the original error, so no pending promise is left
   attached to an on-screen dialog.
+- Added `ticket:timing summary --all`, a read-only cross-ticket timing report
+  (median/p90 per phase, gate, and check step) that counts one push shared by
+  a batch of tickets once and detects and excludes fan-out backfill, such as
+  the first timed push that attached one check interval to 374 historical
+  tickets.
 - Ticket timing now records per-step durations of the root `npm run check`
   chain (printed at the end of every run), interrupted gate attempts, active
   time through `ticket:timing claim`/`release` wrappers around `hotsheet-cli`,

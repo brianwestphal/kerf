@@ -72,10 +72,15 @@ function intervalFromRecord(record) {
   return { ...record, duration_ms: Math.max(0, finished - started) };
 }
 
-export function summarizeTicketTiming(ticketText) {
-  const createdMatch = ticketText.match(/^created_at:\s*(\S+)/m);
-  const createdAt = createdMatch ? Date.parse(createdMatch[1]) : Number.NaN;
-  const records = parseTimingRecords(ticketText);
+// A push batch of more tickets than this is not a coherent unit of work: an
+// interval attached to more tickets at once is treated as backfill.
+export const MAX_COHERENT_TICKETS = 25;
+
+/**
+ * Every completed interval in a ticket's records, direct or start/finish
+ * paired, plus the sessions still open and finishes with no start.
+ */
+export function ticketIntervals(records) {
   const starts = new Map();
   const intervals = [];
   const unmatchedFinishes = [];
@@ -106,6 +111,14 @@ export function summarizeTicketTiming(ticketText) {
   }
 
   intervals.sort((a, b) => a.started_at.localeCompare(b.started_at));
+  return { intervals, open: [...starts.values()], unmatchedFinishes };
+}
+
+export function summarizeTicketTiming(ticketText) {
+  const createdMatch = ticketText.match(/^created_at:\s*(\S+)/m);
+  const createdAt = createdMatch ? Date.parse(createdMatch[1]) : Number.NaN;
+  const records = parseTimingRecords(ticketText);
+  const { intervals, open, unmatchedFinishes } = ticketIntervals(records);
   const phases = Object.fromEntries(
     TIMING_PHASES.map((phase) => [
       phase,
@@ -146,7 +159,7 @@ export function summarizeTicketTiming(ticketText) {
         : null,
     phases,
     failure_categories: failureCategories,
-    in_progress: [...starts.values()],
+    in_progress: open,
     unmatched_finishes: unmatchedFinishes,
   };
 }

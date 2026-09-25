@@ -141,6 +141,40 @@ or add `--json` for structured output. The summary totals duration and attempts
 per phase, counts repeated failure categories, and surfaces unfinished or
 out-of-order sessions instead of silently folding them into active time.
 
+### Across tickets
+
+`npm run ticket:timing -- summary --all` aggregates every ticket in the store
+per phase and gate: run count, median, p90, and maximum duration, outcome counts
+(`passed`/`failed`/`interrupted`/`skipped`), and the median and p90 of every
+recorded check step. It also reports each phase's per-ticket total (median and
+p90 across the tickets that have that phase). Options:
+
+- `--since <iso>` keeps only intervals that started at or after the time, for
+  before/after comparisons of the push gate.
+- `--store <dir>` names the store directory (the one holding `tickets/`).
+  Otherwise the gitignored `.hotsheet2/store` pointer is read from the current
+  checkout, then from the main checkout (linked worktrees share its store).
+  Ticket files are only read, never written.
+- `--json` emits the structured result.
+
+Intervals are deduplicated by identity before any statistic: one push attached
+to every ticket in its batch is one `root:check` sample, not one per ticket.
+Identity is phase, gate, start, and finish for interval records, and the
+session id for start/finish pairs.
+
+### Backfill
+
+The first push after the pre-push hook started recording (2026-09-23T11:33Z)
+treated a long stretch of already-published history as outgoing and attached
+one ~55 s `root:check` interval to 374 historical tickets. That single push was
+374 of the 424 `push_hook` records at the time — noise that swamped every
+per-ticket figure. The summary detects the shape instead of rewriting stored
+notes: an interval whose identity is attached to **more than 25 tickets** (the
+same bound `import-ci` uses for a coherent batch; `--backfill-threshold <n>`
+overrides it) is reported as backfill with its ticket count and excluded from
+every statistic. `--include-backfill` keeps it, still counted once. The legit
+batches seen so far attach one push to at most 10 tickets.
+
 ## Skipping a repeated check
 
 Agents commonly run `npm run check` by hand and then push, which used to run the

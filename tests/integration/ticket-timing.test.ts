@@ -351,6 +351,81 @@ describe('ticket timing CLI', () => {
     expect(await runs()).toBe(5);
   });
 
+  it('summarizes a whole store read-only, excluding a fanned-out backfill', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ticket-timing-store-'));
+    const store = join(root, 'store');
+    const checkout = join(root, 'checkout');
+    await mkdir(join(checkout, '.hotsheet2'), { recursive: true });
+    await writeFile(join(checkout, '.hotsheet2', 'store'), `${store}\n`);
+    const interval = (started: string, seconds: number) =>
+      `KERF_TICKET_TIMING_V1 ${JSON.stringify({
+        schema_version: 1,
+        phase: 'push_hook',
+        gate: 'root:check',
+        event: 'interval',
+        started_at: started,
+        finished_at: new Date(
+          Date.parse(started) + seconds * 1000,
+        ).toISOString(),
+        outcome: 'passed',
+      })}`;
+    const backfill = interval('2026-09-23T11:33:48.240Z', 55);
+    for (let index = 0; index < 30; index += 1) {
+      const bucket = join(store, 'tickets', String(index % 3));
+      await mkdir(bucket, { recursive: true });
+      await writeFile(
+        join(bucket, `T${index}.md`),
+        `---\nslug: KF-OLD${index}\n---\n${backfill}\n`,
+      );
+    }
+    await writeFile(
+      join(store, 'tickets', '0', 'NEW.md'),
+      `---\nslug: KF-NEW1\n---\n${interval('2026-09-24T10:00:00.000Z', 75)}\n`,
+    );
+    const before = await readFile(join(store, 'tickets', '0', 'NEW.md'));
+
+    const { stdout } = await execFileAsync(
+      process.execPath,
+      [script, 'summary', '--all'],
+      { cwd: checkout },
+    );
+    expect(stdout).toContain(
+      'Excluded backfill: push_hook/root:check at 2026-09-23T11:33:48.240Z attached to 30 tickets',
+    );
+    expect(stdout).toContain('push_hook/root:check: 1 run(s), median 75.0s');
+
+    const { stdout: json } = await execFileAsync(
+      process.execPath,
+      [
+        script,
+        'summary',
+        '--all',
+        '--store',
+        store,
+        '--include-backfill',
+        '--json',
+      ],
+      { cwd: root },
+    );
+    expect(JSON.parse(json)).toMatchObject({
+      tickets: 31,
+      excluded_records: 0,
+      gates: [{ samples: 2 }],
+    });
+    expect(await readFile(join(store, 'tickets', '0', 'NEW.md'))).toEqual(
+      before,
+    );
+
+    await expect(
+      execFileAsync(process.execPath, [script, 'summary', '--all'], {
+        cwd: root,
+      }),
+    ).rejects.toMatchObject({
+      code: 1,
+      stderr: expect.stringContaining('No Hot Sheet store found'),
+    });
+  });
+
   it('does not record a pass when the checked worktree was dirty', async () => {
     const repo = await fixtureRepo('kerf-ticket-timing-dirty-');
     await writeFile(join(repo.root, 'fixture.txt'), 'edited\n');
