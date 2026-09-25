@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Replaced the UX catalog's four-gradient checkerboard with one repeated SVG
+  tile so the preview pattern continues through below-fold content.
 - Added explicit native `slot` support to every stable single-root
   `@kerfjs/ui` visual component, including alternate render branches, while
   keeping multi-root `ResizableRegion` and `CollapsiblePanel` excluded.

@@ -1682,6 +1682,64 @@ test('scrolls the complete catalog sidebar and detail at wide and narrow sizes',
     });
 });
 
+test('tiles the catalog checkerboard through below-fold preview content', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 600 });
+  await page.goto('/?component=row');
+
+  const stage = page.locator('.kui-catalog__stage');
+  const detailScroll = page.locator(
+    '.kui-catalog__detail > .kui-pane > .kui-pane__content',
+  );
+  const wideGeometry = await page.evaluate(() => {
+    const stage = document.querySelector<HTMLElement>('.kui-catalog__stage')!;
+    const scrollOwner = document.querySelector<HTMLElement>(
+      '.kui-catalog__detail > .kui-pane > .kui-pane__content',
+    )!;
+    return {
+      stageHeight: stage.scrollHeight,
+      viewportHeight: scrollOwner.clientHeight,
+    };
+  });
+  expect(wideGeometry.stageHeight).toBeGreaterThan(wideGeometry.viewportHeight);
+  await detailScroll.evaluate((element) =>
+    element.scrollTo(0, element.scrollHeight),
+  );
+  await expect
+    .poll(() =>
+      detailScroll.evaluate(
+        (element) =>
+          element.scrollTop + element.clientHeight - element.scrollHeight,
+      ),
+    )
+    .toBeGreaterThanOrEqual(-1);
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/catalog-checkerboard-below-fold-wide.png',
+    });
+
+  await expect(stage).toHaveCSS('background-repeat', 'repeat');
+  await expect(stage).toHaveCSS('background-size', '24px 24px');
+  const backgroundImage = await stage.evaluate(
+    (element) => window.getComputedStyle(element).backgroundImage,
+  );
+  expect(backgroundImage).toContain('data:image/svg+xml');
+  expect(backgroundImage).not.toContain('linear-gradient');
+
+  await page.setViewportSize({ width: 390, height: 600 });
+  await page.goto('/?component=row');
+  await page
+    .locator('.kui-catalog__stage')
+    .evaluate((element) => element.scrollIntoView({ block: 'end' }));
+  await expect(page.locator('.kui-catalog__stage')).toBeInViewport();
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/catalog-checkerboard-below-fold-narrow.png',
+    });
+});
+
 test('reveals controlled Catalog selections only in the desktop sidebar without moving focus', async ({
   page,
 }) => {
@@ -1865,7 +1923,7 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
   });
   expect(shellGeometry.headerBackground).not.toBe('rgba(0, 0, 0, 0)');
   expect(shellGeometry.headerBorder).toBe(1);
-  expect(shellGeometry.stageBackgroundImage).toContain('linear-gradient');
+  expect(shellGeometry.stageBackgroundImage).toContain('data:image/svg+xml');
   expect(shellGeometry.footerBackground).not.toBe('rgba(0, 0, 0, 0)');
   expect(shellGeometry.footerBorder).toBe(1);
 

@@ -78,4 +78,30 @@ describe('Catalog related selector CSS', () => {
       height: 'auto',
     });
   });
+
+  it('uses one explicitly repeated SVG tile for the catalog stage checkerboard', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/catalog/components/catalog-stage.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const stage = root.nodes.find(
+      (node): node is Rule =>
+        node.type === 'rule' && node.selector === '.kui-catalog__stage',
+    );
+    if (!stage) throw new Error('Missing catalog stage rule');
+    const declarations = Object.fromEntries(
+      stage.nodes
+        .filter((node) => node.type === 'decl')
+        .map((node) => [node.prop, node.value]),
+    );
+
+    expect(declarations['background-image']).toContain('data:image/svg+xml');
+    expect(declarations['background-image']).not.toContain('linear-gradient');
+    expect(declarations).toMatchObject({
+      'background-position': '0 0',
+      'background-repeat': 'repeat',
+      'background-size': 'remify(24px) remify(24px)',
+    });
+  });
 });
