@@ -90,6 +90,32 @@ describe('Catalog demo conformance analysis', () => {
     );
   });
 
+  it('flags plain-text fragments passed as props, but not fragments with markup', () => {
+    const failures = analyzeCatalogDemoSource({
+      route: 'notes',
+      kind: 'component',
+      filePath: 'ux-demo/demos/notes.tsx',
+      absoluteFilePath: resolve(uiRoot, 'ux-demo/demos/notes.tsx'),
+      source: `
+        import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+        export function NotesDemo() {
+          return <CatalogExampleStack rootAttributes={{ 'data-demo': 'notes' }}>
+            <CatalogExample label="a" note={<>Plain text.</>}><span>A</span></CatalogExample>
+            <CatalogExample label="b" note={<>Uses <code>code</code>.</>}><span>B</span></CatalogExample>
+            <CatalogExample label="c" note="Plain string."><span>C</span></CatalogExample>
+          </CatalogExampleStack>;
+        }
+      `,
+      uiRoot,
+      packageExports,
+    }).filter(
+      (failure) =>
+        failure.rule === catalogDemoConformanceRules.textFragmentProp,
+    );
+    expect(failures).toHaveLength(1);
+    expect(failures[0].message).toContain('note');
+  });
+
   it('requires composition demos to use the public example helpers too', async () => {
     expect(
       await analyzeFixture('valid-composition', 'composition', 'composition'),

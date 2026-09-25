@@ -20,6 +20,7 @@ export const catalogDemoConformanceRules: Readonly<{
   publicImports: string;
   localStylesheet: string;
   inlineStyle: string;
+  textFragmentProp: string;
   customStyleClass: string;
   focusedHelpers: string;
   focusedMetadata: string;

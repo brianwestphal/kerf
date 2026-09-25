@@ -16,7 +16,7 @@ export function SegmentedControlDemo() {
     >
       <CatalogExample
         label="Toolbar"
-        note={<>Pill controls share a toolbar group’s chrome.</>}
+        note="Pill controls share a toolbar group’s chrome."
         align="inline-control"
       >
         <ToolbarControlGroup>
@@ -50,7 +50,7 @@ export function SegmentedControlDemo() {
       </CatalogExample>
       <CatalogExample
         label="Rounded rectangle"
-        note={<>An equal-width inspector switcher with labels.</>}
+        note="An equal-width inspector switcher with labels."
         align="inline-control"
         viewport={{ width: 'control' }}
       >
@@ -97,7 +97,7 @@ export function SegmentedControlDemo() {
       </CatalogExample>
       <CatalogExample
         label="Pill"
-        note={<>A compact standalone choice with a disabled option.</>}
+        note="A compact standalone choice with a disabled option."
         align="inline-control"
       >
         <SegmentedControl
@@ -122,11 +122,7 @@ export function SegmentedControlDemo() {
       </CatalogExample>
       <CatalogExample
         label="Placeholder"
-        note={
-          <>
-            A loading switcher renders inert pill chrome with skeleton labels.
-          </>
-        }
+        note="A loading switcher renders inert pill chrome with skeleton labels."
         align="inline-control"
       >
         <SegmentedControl<string>

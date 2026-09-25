@@ -8,7 +8,7 @@ export function SunkenPanelDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'sunken-panel' }}>
       <CatalogExample
         label="Rounded application work area"
-        note={<>The default shape uses the shared rounded-rectangle radius.</>}
+        note="The default shape uses the shared rounded-rectangle radius."
       >
         <SunkenPanel ariaLabel="Release workspace">
           <StateBanner tone="neutral" title="Release candidate ready" />
@@ -20,7 +20,7 @@ export function SunkenPanelDemo() {
       </CatalogExample>
       <CatalogExample
         label="Square-corner content stack"
-        note={<>Square corners fit a flush or edge-to-edge application area.</>}
+        note="Square corners fit a flush or edge-to-edge application area."
       >
         <SunkenPanel shape="square">
           <strong>Recent activity</strong>

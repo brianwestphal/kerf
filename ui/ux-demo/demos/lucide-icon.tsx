@@ -21,9 +21,7 @@ export function LucideIconDemo() {
       </CatalogExample>
       <CatalogExample
         label="Meaningful"
-        note={
-          <>Named with a label — announced when the icon carries meaning.</>
-        }
+        note="Named with a label — announced when the icon carries meaning."
         align="glyph"
       >
         <LucideIcon

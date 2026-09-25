@@ -10,7 +10,7 @@ export function DisclosureArrowDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'disclosure-arrow' }}>
       <CatalogExample
         label="Default"
-        note={<>Closed points right, open points down. Toggle to animate.</>}
+        note="Closed points right, open points down. Toggle to animate."
         align="glyph"
       >
         <button
@@ -24,7 +24,7 @@ export function DisclosureArrowDemo() {
       </CatalogExample>
       <CatalogExample
         label="Replacement icon"
-        note={<>A replacement glyph, closed left and open up.</>}
+        note="A replacement glyph, closed left and open up."
         align="glyph"
       >
         <button

@@ -21,16 +21,14 @@ export function ToolbarTextDemo() {
       </CatalogExample>
       <CatalogExample
         label="Placeholder"
-        note={
-          <>A loading label skeletons its text while keeping its type slot.</>
-        }
+        note="A loading label skeletons its text while keeping its type slot."
         align="inline-control"
       >
         <ToolbarText text="" size="large" placeholder />
       </CatalogExample>
       <CatalogExample
         label="Ellipsis (default)"
-        note={<>One line, ellipsized when it does not fit.</>}
+        note="One line, ellipsized when it does not fit."
         align="none"
         viewport={{ layout: 'flex', width: 'text', frame: 'dashed' }}
         rootAttributes={{ 'data-demo-toolbar-text-overflow': 'ellipsis' }}

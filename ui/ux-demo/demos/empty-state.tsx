@@ -8,7 +8,7 @@ export function EmptyStateDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'empty-state' }}>
       <CatalogExample
         label="Actionable"
-        note={<>An empty state that offers a recovery action.</>}
+        note="An empty state that offers a recovery action."
         align="none"
       >
         <EmptyState
@@ -24,7 +24,7 @@ export function EmptyStateDemo() {
       </CatalogExample>
       <CatalogExample
         label="Busy"
-        note={<>A busy state; the current view stays stable while loading.</>}
+        note="A busy state; the current view stays stable while loading."
         align="none"
       >
         <EmptyState

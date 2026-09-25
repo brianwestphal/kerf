@@ -7,6 +7,7 @@ export const catalogDemoConformanceRules = Object.freeze({
   publicImports: 'catalog-demo/public-imports',
   localStylesheet: 'catalog-demo/local-stylesheet',
   inlineStyle: 'catalog-demo/inline-style',
+  textFragmentProp: 'catalog-demo/text-fragment-prop',
   customStyleClass: 'catalog-demo/custom-style-class',
   focusedHelpers: 'catalog-demo/focused-public-helpers',
   focusedMetadata: 'catalog-demo/focused-root-metadata',
@@ -256,6 +257,28 @@ export function analyzeCatalogDemoSource({
               route,
               filePath,
               'Focused demos must use component configuration instead of inline styles.',
+              file,
+              property,
+            ),
+          );
+        // `note={<>Plain text.</>}` renders exactly like `note="Plain text."`;
+        // the fragment only adds noise, so plain-text props stay strings.
+        const fragment =
+          property.initializer !== undefined &&
+          ts.isJsxExpression(property.initializer)
+            ? property.initializer.expression
+            : undefined;
+        if (
+          fragment !== undefined &&
+          ts.isJsxFragment(fragment) &&
+          fragment.children.every((child) => ts.isJsxText(child))
+        )
+          diagnostics.push(
+            diagnostic(
+              catalogDemoConformanceRules.textFragmentProp,
+              route,
+              filePath,
+              `Pass plain text to ${attributeName} as a string literal, not a JSX fragment.`,
               file,
               property,
             ),

@@ -9,12 +9,7 @@ export function SkeletonDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'skeleton' }}>
       <CatalogExample
         label="Primitive"
-        note={
-          <>
-            Subtle, unanimated blocks that hold a value's space. Decorative
-            unless labeled.
-          </>
-        }
+        note="Subtle, unanimated blocks that hold a value's space. Decorative unless labeled."
         align="glyph"
       >
         <List gap="m">

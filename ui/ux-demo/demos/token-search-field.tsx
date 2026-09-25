@@ -25,9 +25,7 @@ export function TokenSearchFieldDemo() {
     >
       <CatalogExample
         label="Structured ticket search"
-        note={
-          <>Text and atomic filters remain in one keyboard-focusable editor.</>
-        }
+        note="Text and atomic filters remain in one keyboard-focusable editor."
         align="inline-control"
       >
         <List gap="xs">
@@ -74,9 +72,7 @@ export function TokenSearchFieldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Disabled"
-        note={
-          <>Controlled read-only state preserves the complete expression.</>
-        }
+        note="Controlled read-only state preserves the complete expression."
         align="inline-control"
       >
         <TokenSearchField

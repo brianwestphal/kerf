@@ -142,12 +142,7 @@ export function SelectDemo() {
       </CatalogExample>
       <CatalogExample
         label="Placeholder"
-        note={
-          <>
-            Loading renders a static, inert box in place of the interactive
-            control.
-          </>
-        }
+        note="Loading renders a static, inert box in place of the interactive control."
         align="inline-control"
       >
         <Select

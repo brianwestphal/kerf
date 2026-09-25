@@ -6,14 +6,14 @@ export function LoadingSpinnerDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'loading-spinner' }}>
       <CatalogExample
         label="Meaningful"
-        note={<>Exposes its supplied label to assistive technology.</>}
+        note="Exposes its supplied label to assistive technology."
         align="glyph"
       >
         <LoadingSpinner label="Loading preview" />
       </CatalogExample>
       <CatalogExample
         label="Decorative"
-        note={<>No label — hidden from assistive technology.</>}
+        note="No label — hidden from assistive technology."
         align="glyph"
       >
         <LoadingSpinner />
