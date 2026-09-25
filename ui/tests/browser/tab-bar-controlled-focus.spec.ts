@@ -57,6 +57,15 @@ test('disposing the demo wiring cancels pending tab focus restoration', async ({
     'keyboard-reorder',
   ] as const) {
     await page.goto('/?component=application-tabs');
+    // The catalog renders demos asynchronously; wait for the strip before
+    // reaching into it synchronously below.
+    await expect(
+      page
+        .locator(
+          '[data-demo="application-tabs"] [data-tab-bar-id="catalog-tabs"]',
+        )
+        .getByRole('tab'),
+    ).toHaveCount(7);
     await page.evaluate((kind) => {
       const bar = document.querySelector<HTMLElement>(
         '[data-demo="application-tabs"] [data-tab-bar-id="catalog-tabs"]',
