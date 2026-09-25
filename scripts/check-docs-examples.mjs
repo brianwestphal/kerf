@@ -42,8 +42,8 @@ import { execSync } from 'node:child_process';
 import {
   existsSync,
   mkdirSync,
-  readFileSync,
   readdirSync,
+  readFileSync,
   rmSync,
   writeFileSync,
 } from 'node:fs';
@@ -67,13 +67,11 @@ const distTypingTsconfig = resolve(
 );
 
 function fail(msg) {
-  // eslint-disable-next-line no-console
   console.error(`[check-docs-examples] ${msg}`);
   process.exitCode = 1;
 }
 
 function ok(msg) {
-  // eslint-disable-next-line no-console
   console.log(`[check-docs-examples] ${msg}`);
 }
 

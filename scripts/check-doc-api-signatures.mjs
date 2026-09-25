@@ -299,7 +299,7 @@ function parseParam(seg) {
 function normalizeType(s) {
   return s
     .replace(/\s+/g, ' ')
-    .replace(/\s*([<>(){}\[\],;:|&?=])\s*/g, '$1')
+    .replace(/\s*([<>(){}[\],;:|&?=])\s*/g, '$1')
     .trim();
 }
 

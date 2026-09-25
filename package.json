@@ -138,7 +138,7 @@
     "bench:serve": "bash bench/site.sh",
     "format": "prettier --write . --ignore-unknown",
     "format:check": "prettier --check . --ignore-unknown",
-    "lint:eslint": "eslint src tests",
+    "lint:eslint": "eslint src tests scripts",
     "lint": "npm run lint:eslint && npm run format:check",
     "typecheck": "node node_modules/typescript7/bin/tsc --noEmit",
     "check": "node scripts/check-guidance-integrity.mjs --record-pass -- node scripts/run-check-steps.mjs check:core",

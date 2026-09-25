@@ -109,6 +109,40 @@ export default [
     },
   },
   {
+    // Repository tooling (check gates, release, ticket timing) runs on Node.
+    files: ['scripts/**/*.mjs', 'scripts/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+      globals: {
+        process: 'readonly',
+        console: 'readonly',
+        Buffer: 'readonly',
+        URL: 'readonly',
+        URLSearchParams: 'readonly',
+        setTimeout: 'readonly',
+        clearTimeout: 'readonly',
+        setInterval: 'readonly',
+        clearInterval: 'readonly',
+        structuredClone: 'readonly',
+        AbortController: 'readonly',
+        TextDecoder: 'readonly',
+        TextEncoder: 'readonly',
+        fetch: 'readonly',
+        performance: 'readonly',
+      },
+    },
+    plugins: { 'simple-import-sort': simpleImportSort },
+    rules: {
+      'simple-import-sort/imports': 'error',
+      'simple-import-sort/exports': 'error',
+      'no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+    },
+  },
+  {
     ignores: [
       'dist/**',
       'coverage/**',

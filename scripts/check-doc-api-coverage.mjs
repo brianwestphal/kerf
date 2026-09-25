@@ -135,22 +135,19 @@ function main() {
   }
 
   if (missing.length === 0) {
-    // eslint-disable-next-line no-console
     console.log(
       `[check-doc-api-coverage] OK — docs/8-api-reference.md mentions every public export.`,
     );
     return;
   }
 
-  // eslint-disable-next-line no-console
   console.error(
     '[check-doc-api-coverage] docs/8-api-reference.md is missing entries for:',
   );
   for (const { name, source, label } of missing) {
-    // eslint-disable-next-line no-console
     console.error(`  - ${name}  (exported from ${source}, surface: ${label})`);
   }
-  // eslint-disable-next-line no-console
+
   console.error(
     '\nAdd a heading or at least a prose mention in docs/8-api-reference.md, then re-run.',
   );

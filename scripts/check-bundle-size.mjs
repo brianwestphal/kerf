@@ -45,11 +45,12 @@
  *
  * Wired into `npm run check` (after the build step).
  */
-import { build } from 'esbuild';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
+
+import { build } from 'esbuild';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, '..');
