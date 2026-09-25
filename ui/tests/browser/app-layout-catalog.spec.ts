@@ -57,10 +57,19 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
     await navDemo.screenshot({
       path: 'test-results/nav-stack-detail-wide.png',
     });
+  // The transition attribute is transient (removed when the animation
+  // settles), so a fast engine can clear it before a poll sees it. Reset the
+  // observer's latch and assert that the back navigation raised it instead.
+  await stack.evaluate((element) => {
+    delete (element as HTMLElement).dataset.testSawChromeTransition;
+  });
   await page.getByRole('button', { name: 'Back to library' }).click();
   await expect(stack).toHaveAttribute('data-depth', '1');
   await expect(atlas).toBeFocused();
-  await expect(stack).toHaveAttribute('data-nav-chrome-transition', 'true');
+  await expect(stack).toHaveAttribute(
+    'data-test-saw-chrome-transition',
+    'true',
+  );
   await expect(
     stack.locator(
       ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-nav-stack__title',
