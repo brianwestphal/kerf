@@ -341,18 +341,17 @@ The shipped layouts are represented in the machine-readable component catalog,
 including explicit manual-CSS delivery metadata, focused UX-demo routes, and
 three-engine Playwright coverage.
 
-These are recorded on the implementation tickets so they are resolved as each
-lands rather than blocking the design.
+These decisions are reflected in the shipped implementation, catalog metadata,
+consumer guidance, demos, and tests.
 
 ## 8. Decomposition
 
-Implementation is sequenced; each ticket ships its component + CSS + unit and
-three-engine Playwright coverage + a UX-demo recipe + consumer docs
-(`ui/docs/`), and updates the machine-readable catalog and AI catalog.
+Implementation shipped in six phases; each phase included its component + CSS,
+unit and three-engine Playwright coverage, a UX-demo recipe, consumer docs
+(`ui/docs/`), and machine-readable and AI catalog updates.
 
-1. **Device-class foundation** — `@kerfjs/ui/device-class` (§2). Blocks all
-   others.
-2. **NavStack layout** (§3.1). Blocks SplitView and TabScaffold.
+1. **Device-class foundation** — `@kerfjs/ui/device-class` (§2).
+2. **NavStack layout** (§3.1).
 3. **SplitView / list-detail layout** (§3.2).
 4. **Workbench / multi-panel layout** (§3.3); generalizes the KF-7QKJRK sidebar
    animation.
@@ -360,6 +359,5 @@ three-engine Playwright coverage + a UX-demo recipe + consumer docs
 6. **AI layout-selection guidance** (§5) — decision matrix into `ui/ai/skill.md`,
    `ui/llms.txt`, decision-guidance, and consumer docs.
 
-When the epic ships, flip this doc's status to **Shipped**, add it to the
-`CLAUDE.md` docs reading order, and update
+All phases above are shipped and indexed in `CLAUDE.md` and
 [`docs/ai/requirements-summary.md`](ai/requirements-summary.md).

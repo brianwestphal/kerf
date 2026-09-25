@@ -114,6 +114,7 @@ import {
   type RenderDocumentOptions,
   SafeHtml,
   isSafeHtml,
+  type JSXChildren,
   raw,
   Fragment,
 } from "kerfjs";
@@ -199,6 +200,7 @@ npm run test:integration          # tests/integration only
 npm run test:dist                 # build, then targeted dist regression suite (tests/dist) vs dist/
 npm run test:dist:full            # build, then full unit + integration suite remapped onto dist/
 npm run test:dist:jsx-typing      # KF-123: build, then `tsc -p tests/dist/jsx-typing/tsconfig.json` — typechecks consumer .tsx against dist/jsx-runtime.d.ts
+npm run test:packed:jsx-typing    # pack kerfjs, install the tarball shape into a scratch consumer, and compile its JSXChildren contract
 npm run test:dist:examples        # build, then typechecks the complete example apps (site/src/examples/complete/) against dist/
 npm run test:dist:scaffold-typing # build, then typechecks the create-kerf-component template's src/ against dist/ (the living-proof gate for the scaffold)
 npm run test:browser              # build, then Playwright across chromium/firefox/webkit (tests/browser/) — globalSetup also rebuilds tests/dist/consumer-app/ AND tests/dist/example-apps/ (KF-165)
@@ -379,7 +381,9 @@ Numbered docs in `docs/` cover the design. Reading order:
 20. `20-router.md` — **shipped**: the opt-in `kerfjs/router` subpath (the "postcard router"). `createRouter({ routes, mode?, base?, interceptLinks? })` → a handle with a reactive `route` signal, `navigate`/`back`/`forward`, `match`/`activeClass`, a keyed `outlet()`, and `dispose()`. Route matching (`:param` / `*rest` / `*`) + `delegate()` link interception + the keyed morph for the outlet (page swaps wholesale across routes, morphs in place within a route). Scope is deliberately the postcard — no nested layouts / loaders / lazy routes / guards / SSR. The core stays router-free (docs/1's "Not a router" is about the runtime); the subpath tree-shakes away unless imported.
 21. `21-ui-package.md` — **shipped**: the optional first-party `@kerfjs/ui` sibling package. Covers its HIG-informed design principles, component/API inventory, semantic CSS and side-effect boundaries, Web Awesome registration, accessibility/keyboard contracts, AI entry points, UX catalog, verification, and lockstep release model.
 22. `22-ui-css-authoring.md` — **shipped**: pixel-first `remify(<px>)` source-CSS authoring for `@kerfjs/ui`, compiled against a fixed 16px baseline into standard `rem` CSS for package delivery and transformed live by the UX catalog's Vite dev server; runtime props use separate CSS-free, property-specific branded `@kerfjs/ui/css-values` builders for lengths, flex shorthands, and colors instead of interchangeable raw strings.
-23. `23-app-layouts.md` — **shipped**: the opt-in `@kerfjs/ui` app/dialog layouts — a reactive `deviceClass()` device-class foundation (`@kerfjs/ui/device-class`) and four tree-shakeable whole-screen layouts (`NavStack`, `SplitView`, `Workbench`, `TabScaffold`), plus a standalone `CollapsiblePanel` + `wireSidebar` (`@kerfjs/ui/collapsible-panel`, `@kerfjs/ui/wire-sidebar`) rail/drawer primitive with the standard collapse icons + animation and focus/compact-overlay/persistence semantics — each declarative with a disposer-returning `wire…` helper and a companion CSS import (non-barrel subpaths). Includes the responsive presentation matrix and the AI layout-selection decision guide (`ui/docs/app-layouts.md`). UX-demo recipes + 3-engine Playwright still pending.
+23. `23-app-layouts.md` — **shipped**: the opt-in `@kerfjs/ui` app/dialog layouts — a reactive `deviceClass()` device-class foundation (`@kerfjs/ui/device-class`) and four tree-shakeable whole-screen layouts (`NavStack`, `SplitView`, `Workbench`, `TabScaffold`), plus a standalone `CollapsiblePanel` + `wireSidebar` (`@kerfjs/ui/collapsible-panel`, `@kerfjs/ui/wire-sidebar`) rail/drawer primitive with the standard collapse icons + animation and focus/compact-overlay/persistence semantics — each declarative with a disposer-returning `wire…` helper and a companion CSS import (non-barrel subpaths). Includes the responsive presentation matrix, AI layout-selection decision guide (`ui/docs/app-layouts.md`), focused UX-demo routes, and three-engine Playwright coverage.
+24. `24-ai-first-setup.md` — **shipped**: dry-run-first `npx kerfjs setup`, deterministic workspace/package detection, explicit conflict resolution, transactional writes and rollback, offline package-manager behavior, and the `kerfjs/setup` automation API.
+25. `25-ticket-timing.md` — **shipped**: durable Hot Sheet phase timing for active work, local verification, push hooks, CI, and publication, with safe structured notes and process-review summaries.
 
 **Keep every surface up to date — proactively, without being asked.** Any change to source, API, behavior, or examples must be reflected across all affected surfaces in the same diff. Do not wait for a follow-up prompt. The full checklist:
 

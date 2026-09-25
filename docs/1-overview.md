@@ -72,3 +72,6 @@ In prose: a `count.value += 1` write reaches the DOM down one of two paths. A **
 - [§20 Routing](20-router.md) — the optional, tree-shakeable `kerfjs/router` subpath.
 - [§21 UI package](21-ui-package.md) — the optional `@kerfjs/ui` component package.
 - [§22 Pixel-first UI CSS](22-ui-css-authoring.md) — authoring pixels that compile to `rem` units.
+- [§23 App and dialog layouts](23-app-layouts.md) — responsive whole-screen `@kerfjs/ui` layout contracts.
+- [§24 AI-first project setup](24-ai-first-setup.md) — safe, deterministic `npx kerfjs setup` configuration.
+- [§25 Ticket phase timing](25-ticket-timing.md) — structured Hot Sheet work and verification timing.

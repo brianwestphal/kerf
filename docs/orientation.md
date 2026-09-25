@@ -33,8 +33,8 @@ kerf is **signals + DOM-string rendering + a morph diff**. There is no virtual D
 
 ## Conventions
 
-One coherent concern per file, one primary export per file, ESM-only, kebab-case filenames. Module-level mutable state is confined to the spots CLAUDE.md Design rule 5 enumerates, enforced by `npm run check:design-rule-5`. `npm run check` is the fast gate (lint + typecheck + tests + build + dist suites); `npm run check:full` adds Playwright. Coverage is enforced at 100% lines/functions, 99.5% statements, 98.5% branches on `src/`. Ticket numbers (`KF-NN`) are local-only — always include a self-contained summary. See `CLAUDE.md` § Hot Sheet integration.
+One concern and primary export per file; ESM-only. Mutable module state is limited to `store.ts:REGISTRY`, `each.ts:context`, `dev-hooks.ts:devHooks`, and `bindings.ts:context`/`rowSink` (see CLAUDE.md rule 5; enforced by `npm run check:design-rule-5`). `npm run check` covers lint, types, tests, build, and dist; `check:full` adds Playwright. Coverage: 100% lines/functions, 99.5% statements, 98.5% branches. `KF-NN` tickets are local-only; include a self-contained summary.
 
 ## Deeper reading
 
-`docs/1-overview.md` → `docs/22-ui-css-authoring.md`; `docs/ai/usage-guide.md`; `CLAUDE.md`.
+`docs/1-overview.md` → `docs/25-ticket-timing.md`; `docs/ai/usage-guide.md`; `CLAUDE.md`.
