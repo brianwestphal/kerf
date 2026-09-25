@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `bindList()` now rolls back when its first render throws: rows that pass
+  already created are disposed (content mounts and element-mode `dispose`
+  callbacks) and removed before the original error is rethrown, instead of
+  leaking live row effects with no handle to release them.
 - `bindList()` virtualization now validates its dimensions: heights (fixed,
   estimated, callback-returned, and `setHeight` reports) must be finite and
   non-negative, a fixed window-mode `rowHeight` must be positive, and

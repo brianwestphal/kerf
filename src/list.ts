@@ -250,7 +250,7 @@ function resolvePatchConsumer<T>(
   const consume = branded._consumePatches;
   if (typeof consume !== 'function') {
     throw new TypeError(
-      'bindList: source carries the arraySignal brand but has no _consumePatches() patch queue — pass an arraySignal() from kerfjs/array-signal, or a plain signal.',
+      'bindList: source carries the arraySignal brand but has no _consumePatches() queue',
     );
   }
   return (consume as () => ArrayPatch<T>[]).bind(source);
@@ -335,7 +335,7 @@ export function bindList<T>(
     forceSnapshot = false;
   };
 
-  const stopEffect = effect(() => {
+  const track = (): void => {
     const items = source.value;
     try {
       assertUniqueListKeys(items, key);
@@ -347,7 +347,20 @@ export function bindList<T>(
       throw error;
     }
     renderItems(items);
-  });
+  };
+
+  // The first render runs synchronously inside effect(). If it throws, no
+  // handle ever reaches the caller, so release every row that pass already
+  // created (content mounts, element-mode dispose callbacks, DOM) here — the
+  // effect itself is already disposed by effect() — and rethrow the original.
+  let stopEffect: () => void;
+  try {
+    stopEffect = effect(track);
+  } catch (error) {
+    rows.dispose(true);
+    virtualization?.dispose();
+    throw error;
+  }
 
   if (virtualization !== undefined) {
     parent.appendChild(container);

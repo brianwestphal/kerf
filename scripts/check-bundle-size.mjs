@@ -163,8 +163,11 @@ const BUDGETS = [
     name: 'list',
     // +0.2 for KF-525 content-visibility virtualization mode; +0.1 for
     // KF-Z2CHG2 duplicate-key preflight and recovery before DOM mutation; +0.1
-    // for KF-04QBM0 focused keyed-row and virtualization controllers.
-    budgetKb: 12.7,
+    // for KF-04QBM0 focused keyed-row and virtualization controllers; +0.4
+    // for public-boundary input validation and first-render rollback (KF-SH06CP
+    // virtualization dimension checks, KF-MKGFHK branded-source check, KF-KBWEBA
+    // row disposal when the initial render throws).
+    budgetKb: 13.1,
     description:
       'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `

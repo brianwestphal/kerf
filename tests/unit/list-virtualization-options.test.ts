@@ -526,13 +526,17 @@ describe('bindList() — virtualize dimension validation', () => {
     });
 
   it.each([
-    ['zero fixed height', { rowHeight: 0 }, /greater than 0 in window mode/],
+    ['zero fixed height', { rowHeight: 0 }, /> 0 in window mode/],
     ['negative fixed height', { rowHeight: -4 }, /rowHeight must be a finite/],
     ['NaN fixed height', { rowHeight: Number.NaN }, /got NaN/],
     ['infinite fixed height', { rowHeight: Infinity }, /got Infinity/],
     ['negative estimate', { rowHeight: { estimate: -1 } }, /estimate must/],
-    ['string estimate', { rowHeight: { estimate: '20' } }, /got string/],
-    ['null rowHeight', { rowHeight: null }, /must be a number, an/],
+    [
+      'string estimate',
+      { rowHeight: { estimate: '20' } },
+      /estimate must .*got 20/,
+    ],
+    ['null rowHeight', { rowHeight: null }, /estimate must .*got undefined/],
     ['fractional overscan', { rowHeight: 20, overscan: 1.5 }, /overscan/],
     ['negative overscan', { rowHeight: 20, overscan: -1 }, /overscan/],
     ['NaN minRows', { rowHeight: 20, minRows: Number.NaN }, /minRows/],
@@ -591,7 +595,7 @@ describe('bindList() — virtualize dimension validation', () => {
   it('rejects an invalid setHeight() report and keeps the model intact', () => {
     const handle = bind({ rowHeight: { estimate: 20 } });
     for (const bad of [-1, Number.NaN, Infinity]) {
-      expect(() => handle.setHeight(0, bad)).toThrow(/setHeight\(\) height/);
+      expect(() => handle.setHeight(0, bad)).toThrow(/setHeight\(\) must/);
     }
     expect(pendingFrames.size).toBe(0);
     handle.setHeight(0, 0);

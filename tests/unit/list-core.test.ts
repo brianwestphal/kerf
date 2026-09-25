@@ -432,6 +432,116 @@ describe('bindList() — arraySignal source validation', () => {
   });
 });
 
+describe('bindList() — initial render failure rolls back', () => {
+  const three = (): Item[] => [
+    { id: 1, label: 'a' },
+    { id: 2, label: 'b' },
+    { id: 3, label: 'boom' },
+  ];
+  const failure = new Error('row render failed');
+
+  it('content mode: disposes the rows it already mounted and rethrows the original error', () => {
+    const parent = host();
+    const tick = signal(0);
+    let renders = 0;
+    let thrown: unknown;
+    try {
+      bindList(parent, signal(three()), {
+        key: (i) => i.id,
+        render: (i) => {
+          if (i.label === 'boom') throw failure;
+          renders++;
+          return `${i.label}${tick.value}`;
+        },
+      });
+    } catch (error) {
+      thrown = error;
+    }
+    expect(thrown).toBe(failure);
+    expect(parent.childNodes.length).toBe(0);
+    const before = renders;
+    tick.value = 1;
+    expect(renders).toBe(before); // no surviving row mount still subscribed
+  });
+
+  it('element mode: runs dispose for every row created before the failure', () => {
+    const parent = host();
+    const disposed: number[] = [];
+    expect(() =>
+      bindList(parent, signal(three()), {
+        key: (i) => i.id,
+        render: (i) => {
+          if (i.label === 'boom') throw failure;
+          const el = document.createElement('li');
+          el.textContent = i.label;
+          return { el, dispose: () => disposed.push(i.id) };
+        },
+      }),
+    ).toThrow(failure);
+    expect(disposed.sort()).toEqual([1, 2]);
+    expect(parent.childNodes.length).toBe(0);
+  });
+
+  it('keeps non-row siblings when a `before` anchor is in use', () => {
+    const parent = host();
+    const add = document.createElement('button');
+    parent.appendChild(add);
+    expect(() =>
+      bindList(parent, signal(three()), {
+        key: (i) => i.id,
+        before: add,
+        render: (i) => {
+          if (i.label === 'boom') throw failure;
+          return i.label;
+        },
+      }),
+    ).toThrow(failure);
+    expect(Array.from(parent.childNodes)).toEqual([add]);
+  });
+
+  it('virtualized: never attaches the sizer and releases created rows', () => {
+    const parent = host();
+    Object.defineProperty(parent, 'clientHeight', { value: 100 });
+    const disposed: number[] = [];
+    expect(() =>
+      bindList(parent, signal(three()), {
+        key: (i) => i.id,
+        virtualize: { rowHeight: 20 },
+        render: (i) => {
+          if (i.label === 'boom') throw failure;
+          return {
+            el: document.createElement('div'),
+            dispose: () => disposed.push(i.id),
+          };
+        },
+      }),
+    ).toThrow(failure);
+    expect(parent.childNodes.length).toBe(0);
+    expect(disposed.sort()).toEqual([1, 2]);
+  });
+
+  it('a retry on the same parent succeeds and stays reactive', () => {
+    const parent = host();
+    const items = signal(three());
+    let fail = true;
+    const options = {
+      key: (i: Item) => i.id,
+      render: (i: Item) => {
+        if (fail && i.label === 'boom') throw failure;
+        return i.label;
+      },
+    };
+    expect(() => bindList(parent, items, options)).toThrow(failure);
+    fail = false;
+    const dispose = bindList(parent, items, options);
+    expect(texts(parent)).toEqual(['a', 'b', 'boom']);
+    items.value = [...items.value, { id: 4, label: 'd' }];
+    expect(texts(parent)).toEqual(['a', 'b', 'boom', 'd']);
+    dispose();
+    expect(parent.childNodes.length).toBe(0);
+  });
+});
+
 describe('bindList() — per-row reactivity (the each() cannot)', () => {
   it('updates only the row whose signal changed; siblings do not even re-render', () => {
     const parent = host();
