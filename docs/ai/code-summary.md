@@ -46,6 +46,7 @@ through unchanged and externally rewritten guidance flows.
 summaries, queue delay, repeated failures, and outgoing ticket discovery;
 `tests/integration/ticket-timing.test.ts` drives successful and failed commands
 through the real CLI with a faithful Hot Sheet command boundary.
+`tests/unit/package-gates.test.ts` covers which sibling-package gates (`ui` check, `eslint-plugin` / `create-kerf-component` tests) `scripts/check-package-gates.mjs` selects for a changed-path set, and the red-CI-on-main warning.
 The application-local `ui/docs/examples/command-palette-adapter.tsx` demonstrates
 canonical layout ownership for a recurring concept the package does not export.
 `ui/scripts/check-recipes.mjs` keeps those sources,
