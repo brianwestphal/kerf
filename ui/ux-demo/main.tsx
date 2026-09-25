@@ -1,3 +1,4 @@
+import '@kerfjs/ui/document.css';
 import '@kerfjs/ui/select/register';
 import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/catalog.css';

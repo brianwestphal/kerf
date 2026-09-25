@@ -418,6 +418,27 @@ describe('consumer bundle boundaries', () => {
     expect(css).toContain('var(--kui-layout-inline-margin, 0.5rem)');
   });
 
+  it('ships the document baseline only through its explicit opt-in CSS subpath', async () => {
+    const baseline = await bundle("import '@kerfjs/ui/document.css';");
+    const baselineInputs = Object.keys(baseline.metafile!.inputs).join('\n');
+    const baselineCss = output(baseline, '.css');
+    expect(baselineInputs).toContain('dist/styles/document.css');
+    expect(baselineCss).toContain('.kui-app-root');
+    expect(baselineCss).toContain(':where(a)');
+    expect(baselineCss).toContain('var(--kui-color-text-link)');
+
+    const complete = await bundle("import '@kerfjs/ui/styles.css';");
+    expect(Object.keys(complete.metafile!.inputs).join('\n')).not.toContain(
+      'dist/styles/document.css',
+    );
+    const component = await bundle(
+      "import { Pane } from '@kerfjs/ui/pane'; console.log(Pane);",
+    );
+    expect(Object.keys(component.metafile!.inputs).join('\n')).not.toContain(
+      'dist/styles/document.css',
+    );
+  });
+
   it('ships Pane through an isolated styled browser subpath', async () => {
     const result = await bundle(
       "import { Pane } from '@kerfjs/ui/pane'; console.log(String(Pane({ children: 'Content' })));",

@@ -123,6 +123,7 @@ for (const file of await sourceFiles(resolve(root, 'ux-demo'))) {
 }
 
 const packageClassRoots = new Map([
+  ['document.css', ['kui-app-root']],
   [
     'layout.css',
     [

@@ -19,6 +19,12 @@ Derive responsiveness from `deviceClass()`: `compact` (a handset or portrait
 tablet) means "one pane at a time"; `atLeast('tablet')` / `atLeast('desktop')`
 gate the roomier presentations.
 
+Full-height shells retain `height: 100%` so they remain embeddable. Give a
+top-level shell a definite height chain by importing `@kerfjs/ui/document.css`
+and applying `.kui-app-root` to the direct mount container; see the
+[document baseline](document-baseline.md). Do not replace an embeddable shell's
+height with `100dvh`.
+
 ## Decision matrix
 
 | Situation                                                                    | Layout                                                                                          | Device threshold                                                                                                                   |

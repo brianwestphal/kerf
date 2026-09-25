@@ -1,0 +1,23 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+.kui-app-root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface-lowered);
+  font-family: var(--kui-font-sans);
+  line-height: 1.45;
+}
+
+:where(a) {
+  color: var(--kui-color-text-link);
+}

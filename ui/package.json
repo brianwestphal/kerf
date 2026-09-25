@@ -292,6 +292,7 @@
       "import": "./dist/index.js"
     },
     "./foundation.css": "./dist/styles/foundation.css",
+    "./document.css": "./dist/styles/document.css",
     "./layout.css": "./dist/styles/layout.css",
     "./webawesome.css": "./dist/styles/webawesome.css",
     "./styles.css": "./dist/styles/styles.css",

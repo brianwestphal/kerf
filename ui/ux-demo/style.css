@@ -1,11 +1,6 @@
 :root {
   color-scheme: light dark;
-  font-family: var(--kui-font-sans);
   font-synthesis: none;
-}
-
-* {
-  box-sizing: border-box;
 }
 
 html {
@@ -36,13 +31,6 @@ html.demo-reduced-motion *::after {
   scroll-behavior: auto !important;
   animation-duration: 1ms !important;
   transition-duration: 1ms !important;
-}
-
-body {
-  min-height: 100vh;
-  margin: 0;
-  color: var(--kui-color-text);
-  background: var(--kui-color-surface-lowered);
 }
 
 button {

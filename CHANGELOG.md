@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Added an opt-in `@kerfjs/ui/document.css` baseline for border-box sizing,
+  token-backed body and link presentation, and a `.kui-app-root` full-height
+  chain for application shells.
 - Added an inline `Text` span variant for secondary copy inside rows, labels,
   and table cells, preserving tone, size, and font roles without box geometry.
 - Fixed `ToolbarControlGroup` dropdown triggers that were sized to fixed 48px/66px boxes,

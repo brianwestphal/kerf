@@ -27,6 +27,12 @@ CSS".
 
 ## Foundation tokens
 
+Import the opt-in `@kerfjs/ui/document.css` baseline when the application wants
+Kerf UI to own global box sizing, body typography/colors, plain-link color, and
+the definite full-height chain. Put `.kui-app-root` on the one direct mount
+container only for a full-height shell; ordinary flowing pages can omit it. See
+[Document baseline](document-baseline.md).
+
 Import `@kerfjs/ui/foundation.css` when application-owned composition CSS needs
 the same semantic typography, spacing, device breakpoints, geometry, radii,
 colors, focus ring, or shadows as Kerf components. Its complete supported

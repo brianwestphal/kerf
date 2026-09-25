@@ -12,6 +12,12 @@ import { Workbench } from "@kerfjs/ui/workbench";
 import "@kerfjs/ui/workbench.css";
 ```
 
+A top-level `Workbench` needs a definite containing height. Import the opt-in
+`@kerfjs/ui/document.css` baseline and add `.kui-app-root` to the direct mount
+container, or provide an equivalent definite height in application-owned
+layout. The component intentionally uses `height: 100%` rather than `100dvh` so
+it can also be embedded. See [Document baseline](document-baseline.md).
+
 ## State lives in the app
 
 `Workbench` is declarative and the collapse is **pure CSS** — no wire. The app

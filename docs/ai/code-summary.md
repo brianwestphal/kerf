@@ -717,6 +717,12 @@ transparent border and item padding to block variants while leaving `span`
 without box geometry. Its
 independent `tone`, `size`, and `font` unions expose quiet/danger, compact, and
 monospace roles through stable data attributes and semantic foundation tokens.
+The optional `ui/src/document.css` entry provides global border-box sizing,
+token-backed body/link presentation, and a definite `html` → `body` →
+`.kui-app-root` height chain for top-level percentage-height shells. It is an
+explicit `@kerfjs/ui/document.css` import and stays out of the aggregate and
+component browser styles so consumers never receive document globals
+transitively.
 Compact mixed `ToolbarControlGroup` selections keep standard item padding,
 remove the internal separator, and paint raised selected chrome over the outer
 border. Nested Web Awesome dropdown triggers size from their shadow base's

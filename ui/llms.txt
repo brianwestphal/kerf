@@ -103,6 +103,11 @@ the folder modules, and CSS only imports their owner stylesheets.
   own the geometry (8px inline margin + 1px border + 8px padding). Do not add a
   container padding on top of a content-item's own margin — pick one owner. Use
   `.kui-content` for 24px major vertical rhythm.
+- **Opt into document globals explicitly.** Import `@kerfjs/ui/document.css`
+  once for border-box sizing, token-backed body/link presentation, and zero body
+  margin. Put `.kui-app-root` on the one direct mount container only when a
+  percentage-height shell needs the provided `html` → `body` → app-root height
+  chain. The baseline is not part of `styles.css` or component browser imports.
 - **Use `Row` for horizontal and `List` for vertical layout.** Both expose
   physical `hAlign`/`vAlign` props and typed gaps. Row defaults to left/full,
   an `xs` gap, and no wrapping; List retains full/top and zero-gap defaults.

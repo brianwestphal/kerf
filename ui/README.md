@@ -432,6 +432,13 @@ manual delivery. Its complete supported `--kui-*` token surface is cataloged
 under the `foundation` entry. Load application overrides after package styles,
 or scope variables directly on a component instance.
 
+Applications can separately opt into `@kerfjs/ui/document.css` for border-box
+sizing, token-backed body typography/colors, zero body margin, plain-link color,
+and a definite full-height chain. Add `class="kui-app-root"` to the one direct
+mount container when a percentage-height application shell must fill the
+viewport. This global baseline is deliberately absent from `styles.css` and
+component browser imports. See [Document baseline](./docs/document-baseline.md).
+
 ## Pane and content geometry
 
 Import `@kerfjs/ui/layout.css` and use the same structural vocabulary for a
