@@ -79,29 +79,52 @@ describe('Catalog related selector CSS', () => {
     });
   });
 
-  it('uses one explicitly repeated SVG tile for the catalog stage checkerboard', async () => {
+  it('lets the preview scroll owner tile below the content-sized stage', async () => {
     const file = resolve(
       import.meta.dirname,
       '../../src/catalog/components/catalog-stage.css',
     );
     const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const detailFile = resolve(
+      import.meta.dirname,
+      '../../src/catalog/components/catalog-detail.css',
+    );
+    const detailRoot = postcss.parse(await readFile(detailFile, 'utf8'), {
+      from: detailFile,
+    });
+    const preview = detailRoot.nodes.find(
+      (node): node is Rule =>
+        node.type === 'rule' &&
+        node.selector === '.kui-catalog__detail-preview',
+    );
     const stage = root.nodes.find(
       (node): node is Rule =>
         node.type === 'rule' && node.selector === '.kui-catalog__stage',
     );
+    if (!preview) throw new Error('Missing catalog preview rule');
     if (!stage) throw new Error('Missing catalog stage rule');
-    const declarations = Object.fromEntries(
-      stage.nodes
-        .filter((node) => node.type === 'decl')
-        .map((node) => [node.prop, node.value]),
-    );
+    const declarations = (rule: Rule) =>
+      Object.fromEntries(
+        rule.nodes
+          .filter((node) => node.type === 'decl')
+          .map((node) => [node.prop, node.value]),
+      );
 
-    expect(declarations['background-image']).toContain('data:image/svg+xml');
-    expect(declarations['background-image']).not.toContain('linear-gradient');
-    expect(declarations).toMatchObject({
+    expect(declarations(preview)['background-image']).toContain(
+      'data:image/svg+xml',
+    );
+    expect(declarations(preview)['background-image']).not.toContain(
+      'linear-gradient',
+    );
+    expect(declarations(preview)).toMatchObject({
       'background-position': '0 0',
       'background-repeat': 'repeat',
       'background-size': 'remify(24px) remify(24px)',
     });
+    expect(declarations(stage)).toMatchObject({
+      'min-height': '0',
+      flex: '1 0 auto',
+    });
+    expect(declarations(stage)).not.toHaveProperty('background-image');
   });
 });

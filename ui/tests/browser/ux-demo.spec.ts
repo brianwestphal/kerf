@@ -1689,21 +1689,24 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
   await page.setViewportSize({ width: 1440, height: 600 });
   await page.goto('/?component=row');
 
-  const stage = page.locator('.kui-catalog__stage');
-  const detailScroll = page.locator(
-    '.kui-catalog__detail > .kui-pane > .kui-pane__content',
-  );
+  const detailScroll = page.locator('.kui-catalog__detail-preview');
   const wideGeometry = await page.evaluate(() => {
     const stage = document.querySelector<HTMLElement>('.kui-catalog__stage')!;
     const scrollOwner = document.querySelector<HTMLElement>(
-      '.kui-catalog__detail > .kui-pane > .kui-pane__content',
+      '.kui-catalog__detail-preview',
     )!;
     return {
-      stageHeight: stage.scrollHeight,
+      stageHeight: stage.offsetHeight,
+      stageContentHeight: stage.scrollHeight,
       viewportHeight: scrollOwner.clientHeight,
+      scrollHeight: scrollOwner.scrollHeight,
     };
   });
   expect(wideGeometry.stageHeight).toBeGreaterThan(wideGeometry.viewportHeight);
+  expect(
+    Math.abs(wideGeometry.stageHeight - wideGeometry.stageContentHeight),
+  ).toBeLessThanOrEqual(1);
+  expect(wideGeometry.scrollHeight).toBe(wideGeometry.stageContentHeight);
   await detailScroll.evaluate((element) =>
     element.scrollTo(0, element.scrollHeight),
   );
@@ -1715,14 +1718,45 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
       ),
     )
     .toBeGreaterThanOrEqual(-1);
+
+  const wideBottomGeometry = await page.evaluate(() => {
+    const stage = document
+      .querySelector<HTMLElement>('.kui-catalog__stage')!
+      .getBoundingClientRect();
+    const scrollOwner = document
+      .querySelector<HTMLElement>('.kui-catalog__detail-preview')!
+      .getBoundingClientRect();
+    return {
+      stageBottom: stage.bottom,
+      scrollOwnerBottom: scrollOwner.bottom,
+    };
+  });
+  expect(
+    Math.abs(
+      wideBottomGeometry.stageBottom - wideBottomGeometry.scrollOwnerBottom,
+    ),
+  ).toBeLessThanOrEqual(1);
+
+  const wideBox = await detailScroll.boundingBox();
+  if (!wideBox) throw new Error('Missing wide catalog preview bounds');
+  const widePixelY = Math.floor(wideBox.y + wideBox.height / 2);
+  const widePixelX = Math.floor(wideBox.x + wideBox.width - 48);
+  const wideLightTile = await page.screenshot({
+    clip: { x: widePixelX, y: widePixelY, width: 1, height: 1 },
+  });
+  const wideDarkTile = await page.screenshot({
+    clip: { x: widePixelX + 12, y: widePixelY, width: 1, height: 1 },
+  });
+  expect(wideLightTile.equals(wideDarkTile)).toBe(false);
+
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/catalog-checkerboard-below-fold-wide.png',
     });
 
-  await expect(stage).toHaveCSS('background-repeat', 'repeat');
-  await expect(stage).toHaveCSS('background-size', '24px 24px');
-  const backgroundImage = await stage.evaluate(
+  await expect(detailScroll).toHaveCSS('background-repeat', 'repeat');
+  await expect(detailScroll).toHaveCSS('background-size', '24px 24px');
+  const backgroundImage = await detailScroll.evaluate(
     (element) => window.getComputedStyle(element).backgroundImage,
   );
   expect(backgroundImage).toContain('data:image/svg+xml');
@@ -1734,6 +1768,19 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
     .locator('.kui-catalog__stage')
     .evaluate((element) => element.scrollIntoView({ block: 'end' }));
   await expect(page.locator('.kui-catalog__stage')).toBeInViewport();
+  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+
+  const narrowStage = await page.locator('.kui-catalog__stage').boundingBox();
+  if (!narrowStage) throw new Error('Missing narrow catalog stage bounds');
+  const narrowPixelY = Math.floor(narrowStage.y + narrowStage.height - 48);
+  const narrowLightTile = await page.screenshot({
+    clip: { x: narrowStage.x + 6, y: narrowPixelY, width: 1, height: 1 },
+  });
+  const narrowDarkTile = await page.screenshot({
+    clip: { x: narrowStage.x + 18, y: narrowPixelY, width: 1, height: 1 },
+  });
+  expect(narrowLightTile.equals(narrowDarkTile)).toBe(false);
+
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/catalog-checkerboard-below-fold-narrow.png',
@@ -1908,13 +1955,13 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
   const shellGeometry = await page.evaluate(() => {
     const style = (selector: string) =>
       window.getComputedStyle(document.querySelector<HTMLElement>(selector)!);
-    const stageStyle = style('.kui-catalog__stage');
+    const previewStyle = style('.kui-catalog__detail-preview');
     return {
       headerBackground: style('.kui-catalog__header').backgroundColor,
       headerBorder: Number.parseFloat(
         style('.kui-catalog__header').borderBottomWidth,
       ),
-      stageBackgroundImage: stageStyle.backgroundImage,
+      previewBackgroundImage: previewStyle.backgroundImage,
       footerBackground: style('.kui-catalog__footer').backgroundColor,
       footerBorder: Number.parseFloat(
         style('.kui-catalog__footer').borderTopWidth,
@@ -1923,7 +1970,7 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
   });
   expect(shellGeometry.headerBackground).not.toBe('rgba(0, 0, 0, 0)');
   expect(shellGeometry.headerBorder).toBe(1);
-  expect(shellGeometry.stageBackgroundImage).toContain('data:image/svg+xml');
+  expect(shellGeometry.previewBackgroundImage).toContain('data:image/svg+xml');
   expect(shellGeometry.footerBackground).not.toBe('rgba(0, 0, 0, 0)');
   expect(shellGeometry.footerBorder).toBe(1);
 

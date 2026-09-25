@@ -46,6 +46,7 @@ export function CatalogDetail({
   return (
     <article class="kui-catalog__detail">
       <Pane
+        contentClassName="kui-catalog__detail-preview"
         header={
           <div class="kui-catalog__header">
             <Toolbar
