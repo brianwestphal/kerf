@@ -113,3 +113,37 @@ export function hasRecordedRun(records, runId) {
     (record) => record.event === 'interval' && record.run_id === runId,
   );
 }
+
+// Hand-entered timestamps are approximate, so a hand-recorded interval that
+// misses the run's own window by up to this much still counts as that run.
+export const IMPORT_OVERLAP_TOLERANCE_MS = 60_000;
+
+/**
+ * Whether `records` already hold the run `record` describes: either an
+ * interval carrying its `run_id`, or a hand-recorded interval (`ticket:timing
+ * record`, which may carry no `run_id`) of the same phase and gate whose span
+ * overlaps the run's within `toleranceMs`. An interval carrying a different
+ * `run_id` is a different run and never matches by overlap.
+ */
+export function isAlreadyImported(
+  records,
+  record,
+  toleranceMs = IMPORT_OVERLAP_TOLERANCE_MS,
+) {
+  if (hasRecordedRun(records, record.run_id)) return true;
+  const start = Date.parse(record.started_at);
+  const finish = Date.parse(record.finished_at);
+  return records.some((existing) => {
+    if (
+      existing.event !== 'interval' ||
+      existing.run_id !== undefined ||
+      existing.phase !== record.phase ||
+      existing.gate !== record.gate
+    )
+      return false;
+    return (
+      Date.parse(existing.started_at) <= finish + toleranceMs &&
+      Date.parse(existing.finished_at) >= start - toleranceMs
+    );
+  });
+}

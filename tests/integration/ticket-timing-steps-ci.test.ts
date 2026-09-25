@@ -272,4 +272,117 @@ describe('active and CI timing', () => {
       });
     expect(text).not.toContain(repo);
   });
+
+  it('treats a hand-recorded run, with or without --run-id, as already imported', async () => {
+    const dir = await scratch('kerf-timing-ci-hand-');
+    const repo = join(dir.root, 'repo');
+    await mkdir(repo);
+    const git = (args: string[]) => execFileAsync('git', args, { cwd: repo });
+    await git(['init', '-b', 'main']);
+    await git(['config', 'user.name', 'Timing Test']);
+    await git(['config', 'user.email', 'timing@example.test']);
+    const shas: string[] = [];
+    for (const subject of [
+      'KF-OLD1 base',
+      'KF-HAND1 recorded by id',
+      'KF-HAND2 recorded by time',
+      'KF-HAND3 recorded for another run',
+    ]) {
+      await git(['commit', '--allow-empty', '-m', subject]);
+      shas.push((await git(['rev-parse', 'HEAD'])).stdout.trim());
+    }
+    const ciRun = (databaseId: number, headSha: string, hour: number) => ({
+      databaseId,
+      headSha,
+      headBranch: 'main',
+      workflowName: 'CI',
+      event: 'push',
+      status: 'completed',
+      conclusion: 'success',
+      createdAt: `2026-09-25T${hour}:00:00Z`,
+      startedAt: `2026-09-25T${hour}:00:00Z`,
+      updatedAt: `2026-09-25T${hour}:05:00Z`,
+    });
+    const fakeGh = join(dir.root, 'gh');
+    await writeFile(
+      join(dir.root, 'runs.json'),
+      JSON.stringify([ciRun(1, shas[0], 10), ciRun(2, shas[3], 11)]),
+    );
+    await writeFile(
+      fakeGh,
+      `#!/bin/sh\ncat ${JSON.stringify(join(dir.root, 'runs.json'))}\n`,
+    );
+    await chmod(fakeGh, 0o755);
+    const env = { ...dir.env, KERF_GH_CLI: fakeGh };
+    const record = (ticket: string, extra: string[]) =>
+      execFileAsync(
+        process.execPath,
+        [
+          timing,
+          'record',
+          ticket,
+          '--phase',
+          'ci',
+          '--gate',
+          'github:ci',
+          '--outcome',
+          'passed',
+          ...extra,
+        ],
+        { cwd: repo, env },
+      );
+
+    await record('KF-HAND1', [
+      '--started-at',
+      '2026-09-25T08:00:00Z',
+      '--finished-at',
+      '2026-09-25T08:01:00Z',
+      '--run-id',
+      '2',
+    ]);
+    // Typed from memory: 30 s off the run's real window, and no run id.
+    await record('KF-HAND2', [
+      '--started-at',
+      '2026-09-25T11:05:30Z',
+      '--finished-at',
+      '2026-09-25T11:06:00Z',
+    ]);
+    // Same window, but explicitly a different run.
+    await record('KF-HAND3', [
+      '--started-at',
+      '2026-09-25T11:00:00Z',
+      '--finished-at',
+      '2026-09-25T11:05:00Z',
+      '--run-id',
+      '3',
+    ]);
+    await expect(
+      record('KF-HAND1', [
+        '--started-at',
+        '2026-09-25T08:00:00Z',
+        '--finished-at',
+        '2026-09-25T08:01:00Z',
+        '--run-id',
+        'abc',
+      ]),
+    ).rejects.toMatchObject({
+      stderr: expect.stringContaining('Invalid run id: abc'),
+    });
+
+    const { stdout } = await execFileAsync(
+      process.execPath,
+      [timing, 'import-ci', '--limit', '5'],
+      { cwd: repo, env },
+    );
+    expect(stdout).toContain('Imported 1 run interval(s); 2 already recorded');
+    const records = await dir.records();
+    expect(records).toHaveLength(4);
+    expect(records[0]).toMatchObject({ run_id: '2' });
+    expect(records[1]).not.toHaveProperty('run_id');
+    expect(records[3]).toMatchObject({ run_id: '2' });
+    const text = await readFile(dir.log, 'utf8');
+    expect(text.match(/^edit KF-HAND3$/gm)).toHaveLength(2);
+    expect(text.match(/^edit KF-HAND1$/gm)).toHaveLength(1);
+    expect(text.match(/^edit KF-HAND2$/gm)).toHaveLength(1);
+  });
 });

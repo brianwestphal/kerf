@@ -11,6 +11,8 @@ import {
 import {
   ciRecordFromRun,
   hasRecordedRun,
+  IMPORT_OVERLAP_TOLERANCE_MS,
+  isAlreadyImported,
   planCiImports,
 } from '../../scripts/lib/ticket-timing-ci.mjs';
 
@@ -162,5 +164,75 @@ describe('CI run import planning', () => {
       true,
     );
     expect(hasRecordedRun([{ event: 'interval' }], '7')).toBe(false);
+  });
+
+  it('recognizes a hand-recorded interval of the same run by overlap', () => {
+    const record = ciRecordFromRun(run())!;
+    const hand = (overrides: Record<string, unknown> = {}) => ({
+      schema_version: 1,
+      event: 'interval',
+      phase: 'ci',
+      gate: 'github:ci',
+      started_at: '2026-09-25T12:45:00.000Z',
+      finished_at: '2026-09-25T12:52:00.000Z',
+      outcome: 'passed',
+      ...overrides,
+    });
+    const shifted = (iso: string, ms: number) =>
+      new Date(Date.parse(iso) + ms).toISOString();
+
+    expect(
+      isAlreadyImported([{ event: 'interval', run_id: '100' }], record),
+    ).toBe(true);
+    expect(isAlreadyImported([hand()], record)).toBe(true);
+    // Hand-entered times that miss the run by less than the tolerance.
+    expect(
+      isAlreadyImported(
+        [
+          hand({
+            started_at: shifted(record.finished_at, 30_000),
+            finished_at: shifted(record.finished_at, 90_000),
+          }),
+        ],
+        record,
+      ),
+    ).toBe(true);
+    expect(
+      isAlreadyImported(
+        [
+          hand({
+            started_at: shifted(record.started_at, -120_000),
+            finished_at: shifted(
+              record.started_at,
+              -IMPORT_OVERLAP_TOLERANCE_MS,
+            ),
+          }),
+        ],
+        record,
+      ),
+    ).toBe(true);
+
+    // Beyond the tolerance, another gate or phase, another run id, or a
+    // start/finish session record: not this run.
+    expect(
+      isAlreadyImported(
+        [
+          hand({
+            started_at: shifted(record.finished_at, 61_000),
+            finished_at: shifted(record.finished_at, 120_000),
+          }),
+        ],
+        record,
+      ),
+    ).toBe(false);
+    expect(isAlreadyImported([hand({ gate: 'github:pages' })], record)).toBe(
+      false,
+    );
+    expect(isAlreadyImported([hand({ phase: 'publication' })], record)).toBe(
+      false,
+    );
+    expect(isAlreadyImported([hand({ run_id: '99' })], record)).toBe(false);
+    expect(isAlreadyImported([hand({ event: 'start' })], record)).toBe(false);
+    expect(isAlreadyImported([hand()], record, 0)).toBe(true);
   });
 });

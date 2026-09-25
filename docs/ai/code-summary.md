@@ -49,13 +49,15 @@ push-hook fan-out bound;
 pre-push skip decision and the `KERF_FORCE_CHECK` override;
 `tests/unit/ticket-timing-steps-ci.test.ts` covers check-chain splitting and
 step naming against the real `check:core`, step-log sanitizing, and CI run
-record mapping, predecessor pairing, and idempotency;
+record mapping, predecessor pairing, and idempotency (by run id and by
+overlap with a hand-recorded interval);
 `tests/unit/ticket-timing-aggregate.test.ts` covers percentiles, identity
 deduplication, backfill detection/exclusion/inclusion and threshold, skipped
 and per-step aggregation, `--since`, and start/finish session pairing;
 `tests/integration/ticket-timing-steps-ci.test.ts` drives the real step runner,
 per-step push-hook records, an interrupted gate, the claim/release wrapper, and
-a twice-run `import-ci` through fake `gh`/Hot Sheet boundaries;
+a twice-run `import-ci`, and an `import-ci` over runs already hand-recorded
+with and without `record --run-id`, through fake `gh`/Hot Sheet boundaries;
 `tests/integration/ticket-timing.test.ts` drives successful and failed commands
 through the real CLI with a faithful Hot Sheet command boundary, plus the
 record-pass → skip → force → dirty → new-tree → failed-rerun sequence in a
@@ -449,7 +451,7 @@ kerf/
 │   │   ├── ticket-timing-aggregate.d.mts ← declarations for the cross-ticket aggregation helpers consumed by the TypeScript test suite
 │   │   ├── ticket-timing-aggregate.mjs ← `summary --all`: identity-deduplicated per-gate/per-step median/p90, per-ticket phase totals, fan-out backfill detection/exclusion, read-only store resolution and reading
 │   │   ├── ticket-timing-ci.d.mts ← declarations for the CI-import planning helpers consumed by the TypeScript test suite
-│   │   ├── ticket-timing-ci.mjs ← pure `gh run list` → CI/publication timing-record planning: conclusion mapping, predecessor commit ranges, run-id idempotency
+│   │   ├── ticket-timing-ci.mjs ← pure `gh run list` → CI/publication timing-record planning: conclusion mapping, predecessor commit ranges, run-id and hand-recorded-overlap idempotency
 │   │   └── ticket-timing.mjs ← versioned timing-note parsing, safe identifiers, outgoing ticket discovery and its push-hook fan-out bound, and adversarial phase-summary logic
 │   ├── check-guidance-integrity.mjs ← wraps the root check chain and fails if an external Hot Sheet config synchronizer changes AGENTS.md, CLAUDE.md, or either generated Hot Sheet skill while the gate runs; with `--record-pass` it invalidates, then (on a clean passing run) records, the verified tree
 │   ├── run-check-steps.mjs     ← runs an `&&` npm script one step at a time with identical stop-on-failure semantics, printing and (via `KERF_CHECK_STEP_LOG`) logging per-step durations; `npm run check` runs `check:core` through it

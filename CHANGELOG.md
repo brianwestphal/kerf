@@ -49,6 +49,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   force-push). It prints a notice and records only the explicit
   `KERF_TICKET_TIMING_TICKETS` list, or nothing, so it can no longer write the
   backfill shape the cross-ticket summary has to exclude.
+- `ticket:timing record` accepts `--run-id <n>`, and `import-ci` no longer
+  imports a GitHub run a second time when it was already recorded by hand:
+  an interval with that run id, or one with no run id for the same phase and
+  gate whose span overlaps the run's (within 60 seconds), counts as imported.
 - `bindList()` now rolls back when its first render throws: rows that pass
   already created are disposed (content mounts and element-mode `dispose`
   callbacks) and removed before the original error is rethrown, instead of

@@ -123,8 +123,13 @@ npm run ticket:timing -- import-ci --limit 100 --branch main --dry-run
   `cancelled` records `interrupted`. Skipped or still-running runs are ignored.
 - Each record carries the run's numeric `run_id`, and the import skips any
   ticket that already holds that run id, so repeated imports are idempotent.
-  (A run recorded by hand with `record`, which carries no `run_id`, is not
-  recognized and would be imported once more.)
+- A run recorded by hand is recognized too. `record --run-id <n>` stores the
+  run's numeric id exactly as `import-ci` would, so the id match applies. A
+  hand-recorded interval with no `run_id` counts as the run when it has the
+  same phase and gate and its span overlaps the run's, allowing 60 seconds
+  (`IMPORT_OVERLAP_TOLERANCE_MS`) for timestamps typed from memory. An interval
+  carrying a different `run_id` is a different run and never matches by
+  overlap.
 
 `gh` must be authenticated for the repository; `KERF_GH_CLI` overrides the
 binary. For an interval no workflow reports — a registry or CDN propagation
@@ -136,7 +141,8 @@ unsupported.
 npm run ticket:timing -- record KF-ABC123 \
   --phase ci --gate github:ci \
   --started-at 2026-09-23T10:00:00Z \
-  --finished-at 2026-09-23T10:04:30Z --outcome passed
+  --finished-at 2026-09-23T10:04:30Z --outcome passed \
+  --run-id 17999372510
 
 npm run ticket:timing -- record KF-ABC123 \
   --phase publication --gate npm:propagation \

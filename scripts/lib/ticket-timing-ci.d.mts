@@ -33,3 +33,12 @@ export function hasRecordedRun(
   records: Array<Record<string, unknown>>,
   runId: string,
 ): boolean;
+export const IMPORT_OVERLAP_TOLERANCE_MS: number;
+export function isAlreadyImported(
+  records: Array<Record<string, unknown>>,
+  record: Pick<
+    CiTimingRecord,
+    'phase' | 'gate' | 'started_at' | 'finished_at' | 'run_id'
+  >,
+  toleranceMs?: number,
+): boolean;

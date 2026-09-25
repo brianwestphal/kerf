@@ -36,7 +36,7 @@ import {
 } from './lib/ticket-timing-aggregate.mjs';
 import {
   GH_RUN_FIELDS,
-  hasRecordedRun,
+  isAlreadyImported,
   MAX_TICKETS_PER_RUN,
   planCiImports,
 } from './lib/ticket-timing-ci.mjs';
@@ -51,7 +51,7 @@ function usage(message) {
   npm run ticket:timing -- start <ticket> --phase <phase> --gate <id>
   npm run ticket:timing -- finish <ticket> --session <uuid> [--outcome passed|failed] [--failure-category <id>]
   npm run ticket:timing -- run <ticket> --phase <phase> --gate <id> [--failure-category <id>] -- <command> [args...]
-  npm run ticket:timing -- record <ticket> --phase <phase> --gate <id> --started-at <iso> --finished-at <iso> --outcome passed|failed|interrupted|skipped
+  npm run ticket:timing -- record <ticket> --phase <phase> --gate <id> --started-at <iso> --finished-at <iso> --outcome passed|failed|interrupted|skipped [--failure-category <id>] [--run-id <n>]
   npm run ticket:timing -- summary <ticket> [--json]
   npm run ticket:timing -- summary --all [--store <dir>] [--since <iso>] [--backfill-threshold <n>] [--include-backfill] [--json]
   npm run ticket:timing -- claim <ticket> --worker <id> [--gate <id>]
@@ -208,6 +208,14 @@ function exitStatus(result) {
   return result.code ?? 1;
 }
 
+// A GitHub Actions run's numeric databaseId, as `import-ci` stores it, so a
+// hand-recorded run is recognized as already imported.
+function runId(value) {
+  if (!/^[1-9]\d{0,19}$/.test(String(value)))
+    throw new Error(`Invalid run id: ${value}`);
+  return String(value);
+}
+
 async function recordInterval(ticket, parsed, outcome, extra = {}) {
   const startedAt = isoTime(parsed.started_at, 'start timestamp');
   const finishedAt = isoTime(parsed.finished_at, 'finish timestamp');
@@ -230,6 +238,7 @@ async function recordInterval(ticket, parsed, outcome, extra = {}) {
     ...(parsed.skip_reason
       ? { skip_reason: assertIdentifier(parsed.skip_reason, 'skip reason') }
       : {}),
+    ...(parsed.run_id === undefined ? {} : { run_id: runId(parsed.run_id) }),
     ...extra,
   };
   await append(ticket, record);
@@ -476,9 +485,9 @@ async function importCi(parsed) {
     for (const ticket of tickets) {
       try {
         if (
-          hasRecordedRun(
+          isAlreadyImported(
             parseTimingRecords(await showTicket(ticket)),
-            record.run_id,
+            record,
           )
         ) {
           existing += 1;
