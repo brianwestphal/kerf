@@ -224,3 +224,58 @@ test('content-visibility mode: EVERY row stays in the DOM (findable), off-screen
   await page.evaluate(() => (window as any)._dispose());
   await expect(rows).toHaveCount(0);
 });
+
+test('virtualization rejects invalid dimensions, and zero-height declared rows window correctly', async ({
+  page,
+}) => {
+  const result = await page.evaluate(() => {
+    const style = document.createElement('style');
+    style.textContent = '#vzero{height:100px;overflow:auto}';
+    document.head.appendChild(style);
+    const parent = document.createElement('div');
+    parent.id = 'vzero';
+    document.body.appendChild(parent);
+
+    const { bindList } = (window as any).kerfList;
+    const { signal } = (window as any).kerf;
+    const items = signal(
+      Array.from({ length: 50 }, (_, i) => ({ id: i, label: `row-${i}` })),
+    );
+    const base = { key: (i: any) => i.id, render: (i: any) => i.label };
+
+    const rejected: string[] = [];
+    for (const virtualize of [
+      { rowHeight: 0 },
+      { rowHeight: Number.NaN },
+      { rowHeight: 20, overscan: -1 },
+      { rowHeight: 20, minRows: 2.5 },
+    ]) {
+      try {
+        bindList(parent, items, { ...base, virtualize });
+      } catch (error) {
+        rejected.push((error as Error).message);
+      }
+    }
+    const childrenAfterRejects = parent.childNodes.length;
+
+    // Every odd row is zero-height: rows 0..8 fill the 100px viewport; row 9
+    // (zero-height) sits exactly on the bottom edge and is not visible.
+    const dispose = bindList(parent, items, {
+      ...base,
+      virtualize: { rowHeight: (i: any) => (i.id % 2 ? 0 : 20), overscan: 0 },
+    });
+    const sizer = parent.firstElementChild as HTMLElement;
+    const rows = Array.from(sizer.children).map((el) => el.textContent);
+    const scrollHeight = parent.scrollHeight;
+    dispose();
+    return { rejected, childrenAfterRejects, rows, scrollHeight };
+  });
+
+  expect(result.rejected).toHaveLength(4);
+  for (const message of result.rejected) expect(message).toMatch(/^bindList:/);
+  expect(result.childrenAfterRejects).toBe(0);
+  expect(result.rows[0]).toBe('row-0');
+  expect(result.rows.at(-1)).toBe('row-8');
+  // 25 visible rows × 20px; zero-height rows add nothing.
+  expect(result.scrollHeight).toBe(500);
+});

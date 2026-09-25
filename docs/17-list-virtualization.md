@@ -158,6 +158,23 @@ API decisions (settled at implementation):
   cached, so a function estimate that reads the item stays correct across
   updates.
 
+### Accepted ranges
+
+Heights feed a divisor (fixed mode) and a prefix sum that the window search
+assumes is monotonic, so `bindList` validates them at the public boundary rather
+than producing blank windows, `NaN` CSS, or a corrupted scroll anchor:
+
+- Every height (fixed `rowHeight`, `estimate`, every value a height callback
+  returns, every `setHeight` report) must be finite and non-negative. Zero is
+  allowed — equal adjacent prefix offsets keep both binary searches correct.
+- A fixed `rowHeight` must be greater than 0 in `'window'` mode; under
+  `'content-visibility'` it is only a placeholder size, so 0 is accepted.
+- `overscan` and `minRows` must be non-negative integers.
+
+Configuration errors throw before any DOM mutation. A bad callback return
+throws from the render that asked for it; a bad `setHeight` report throws
+without touching the model or scheduling a frame.
+
 ## 17.7 Sequencing and follow-up tickets
 
 This is a design-then-build feature; it lands in two shippable increments.

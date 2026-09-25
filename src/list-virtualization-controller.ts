@@ -18,11 +18,64 @@ interface ListVirtualizationControllerOptions<T> {
   rows: ListRowController<T>;
 }
 
+const describe = (value: unknown): string =>
+  typeof value === 'number' ? String(value) : typeof value;
+
+/** A pixel height: finite and non-negative (zero-height rows are allowed). */
+function assertHeight(value: unknown, what: string): number {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
+    throw new RangeError(
+      `bindList: ${what} must be a finite, non-negative number of pixels (got ${describe(value)}).`,
+    );
+  }
+  return value;
+}
+
+/** A row count such as `overscan` / `minRows`: a non-negative integer. */
+function assertCount(value: number | undefined, what: string): void {
+  if (value !== undefined && !(Number.isInteger(value) && value >= 0)) {
+    throw new RangeError(
+      `bindList: virtualize.${what} must be a non-negative integer (got ${describe(value)}).`,
+    );
+  }
+}
+
+/** Reject an invalid `virtualize` configuration before any DOM is touched. */
+function validateVirtualize<T>(
+  virtualize: NonNullable<BindListOptions<T>['virtualize']>,
+): void {
+  const { rowHeight, mode } = virtualize;
+  assertCount(virtualize.overscan, 'overscan');
+  assertCount(virtualize.minRows, 'minRows');
+  if (typeof rowHeight === 'number') {
+    assertHeight(rowHeight, 'virtualize.rowHeight');
+    // Window mode divides by a fixed height; content-visibility only uses it as
+    // a placeholder size, where zero is harmless.
+    if (rowHeight === 0 && mode !== 'content-visibility') {
+      throw new RangeError(
+        'bindList: a fixed virtualize.rowHeight must be greater than 0 in window mode.',
+      );
+    }
+    return;
+  }
+  if (typeof rowHeight === 'function') return;
+  if (typeof rowHeight === 'object' && rowHeight !== null) {
+    const { estimate } = rowHeight as { estimate: unknown };
+    if (typeof estimate === 'function') return;
+    assertHeight(estimate, 'virtualize.rowHeight.estimate');
+    return;
+  }
+  throw new TypeError(
+    `bindList: virtualize.rowHeight must be a number, an (item, index) => number function, or { estimate } (got ${describe(rowHeight)}).`,
+  );
+}
+
 /** Own window calculation, height models, scheduling, observers, and CSS strategy. */
 export function createListVirtualizationController<T>(
   options: ListVirtualizationControllerOptions<T>,
 ): ListVirtualizationController<T> {
   const { parent, container, virtualize, key, rows } = options;
+  validateVirtualize(virtualize);
   const overscan = virtualize.overscan ?? 3;
   const { minRows, rowHeight } = virtualize;
   const contentVisibility = virtualize.mode === 'content-visibility';
@@ -43,7 +96,10 @@ export function createListVirtualizationController<T>(
       rowHeight as { estimate: number | ((item: T, index: number) => number) }
     ).estimate;
     return typeof estimate === 'function'
-      ? estimate(items[index], index)
+      ? assertHeight(
+          estimate(items[index], index),
+          `virtualize.rowHeight.estimate(item, ${index})`,
+        )
       : estimate;
   };
   const variableHeightAt: ((index: number) => number) | null =
@@ -53,9 +109,12 @@ export function createListVirtualizationController<T>(
         ? (index): number =>
             measured.get(key(items[index])) ?? estimateAt(index)
         : (index): number =>
-            (rowHeight as (item: T, index: number) => number)(
-              items[index],
-              index,
+            assertHeight(
+              (rowHeight as (item: T, index: number) => number)(
+                items[index],
+                index,
+              ),
+              `virtualize.rowHeight(item, ${index})`,
             );
   const intrinsicSizeAt = (index: number): number =>
     fixedHeight ?? (variableHeightAt as (index: number) => number)(index);
@@ -192,6 +251,7 @@ export function createListVirtualizationController<T>(
   };
 
   const setHeight = (rowKey: ListKey, height: number): void => {
+    assertHeight(height, 'setHeight() height');
     if (!measuring || contentVisibility) return;
     const index = indexByKey.get(rowKey);
     if (index === undefined) return;

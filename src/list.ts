@@ -136,7 +136,10 @@ export interface BindListOptions<T> {
   /**
    * Turn on viewport virtualization. `parent` must be a scroll container (your
    * CSS: a fixed height + `overflow: auto`). `overscan` (default 3) is how many
-   * extra rows to render above and below the viewport.
+   * extra rows to render above and below the viewport. Every height must be a
+   * finite, non-negative number of pixels (a fixed `rowHeight` must be > 0 in
+   * `'window'` mode), and `overscan` / `minRows` non-negative integers; invalid
+   * values throw a descriptive `bindList:` error.
    *
    * `rowHeight` (a {@link RowHeight}) is the height model:
    *  - **`number`** — every row is this fixed pixel height. O(1) windowing, no

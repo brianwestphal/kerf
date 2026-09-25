@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `bindList()` virtualization now validates its dimensions: heights (fixed,
+  estimated, callback-returned, and `setHeight` reports) must be finite and
+  non-negative, a fixed window-mode `rowHeight` must be positive, and
+  `overscan` / `minRows` must be non-negative integers. Invalid values throw a
+  descriptive error instead of producing blank windows or a corrupted scroll
+  anchor.
 - `bindList()` now rejects a source that carries the `arraySignal` brand but
   has no patch queue with a descriptive error at bind time, instead of failing
   with a generic `TypeError` on its first render.

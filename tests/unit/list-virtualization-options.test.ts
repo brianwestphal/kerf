@@ -509,3 +509,93 @@ describe('bindList() — content-visibility virtualization mode (KF-525)', () =>
     expect(parent.children.length).toBe(0);
   });
 });
+
+describe('bindList() — virtualize dimension validation', () => {
+  const items = (count: number) =>
+    signal<Item[]>(
+      Array.from({ length: count }, (_, i) => ({ id: i, label: `r${i}` })),
+    );
+  const bind = (
+    virtualize: NonNullable<Parameters<typeof bindList<Item>>[2]['virtualize']>,
+    source = items(3),
+  ) =>
+    bindList(host(), source, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize,
+    });
+
+  it.each([
+    ['zero fixed height', { rowHeight: 0 }, /greater than 0 in window mode/],
+    ['negative fixed height', { rowHeight: -4 }, /rowHeight must be a finite/],
+    ['NaN fixed height', { rowHeight: Number.NaN }, /got NaN/],
+    ['infinite fixed height', { rowHeight: Infinity }, /got Infinity/],
+    ['negative estimate', { rowHeight: { estimate: -1 } }, /estimate must/],
+    ['string estimate', { rowHeight: { estimate: '20' } }, /got string/],
+    ['null rowHeight', { rowHeight: null }, /must be a number, an/],
+    ['fractional overscan', { rowHeight: 20, overscan: 1.5 }, /overscan/],
+    ['negative overscan', { rowHeight: 20, overscan: -1 }, /overscan/],
+    ['NaN minRows', { rowHeight: 20, minRows: Number.NaN }, /minRows/],
+  ])('rejects %s before touching the DOM', (_label, virtualize, message) => {
+    const parent = host();
+    expect(() =>
+      bindList(parent, items(3), {
+        key: (i) => i.id,
+        render: (i) => i.label,
+        virtualize: virtualize as never,
+      }),
+    ).toThrow(message);
+    expect(parent.childNodes.length).toBe(0);
+  });
+
+  it('allows a zero fixed height in content-visibility mode (placeholder only)', () => {
+    const dispose = bind({ rowHeight: 0, mode: 'content-visibility' });
+    dispose();
+  });
+
+  it('allows zero overscan / minRows and zero-height declared rows', () => {
+    const parent = host();
+    Object.defineProperty(parent, 'clientHeight', { value: 40 });
+    const dispose = bindList(parent, items(4), {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: {
+        rowHeight: (item) => (item.id === 1 ? 0 : 20),
+        overscan: 0,
+        minRows: 0,
+      },
+    });
+    // rows 0..2 fill 40px (row 1 is zero-height); row 3 is windowed out.
+    expect(texts(parent.firstElementChild as HTMLElement)).toEqual([
+      'r0',
+      'r1',
+      'r2',
+    ]);
+    dispose();
+  });
+
+  it.each([
+    ['declared', (i: Item) => (i.id === 2 ? -1 : 20), /rowHeight\(item, 2\)/],
+    [
+      'estimated',
+      { estimate: (i: Item) => (i.id === 1 ? Number.NaN : 20) },
+      /estimate\(item, 1\)/,
+    ],
+  ])(
+    'rejects an invalid %s height callback return',
+    (_l, rowHeight, message) => {
+      expect(() => bind({ rowHeight: rowHeight as never })).toThrow(message);
+    },
+  );
+
+  it('rejects an invalid setHeight() report and keeps the model intact', () => {
+    const handle = bind({ rowHeight: { estimate: 20 } });
+    for (const bad of [-1, Number.NaN, Infinity]) {
+      expect(() => handle.setHeight(0, bad)).toThrow(/setHeight\(\) height/);
+    }
+    expect(pendingFrames.size).toBe(0);
+    handle.setHeight(0, 0);
+    expect(flushAnimationFrame()).toBe(1);
+    handle();
+  });
+});
