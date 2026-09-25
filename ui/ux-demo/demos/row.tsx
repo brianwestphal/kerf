@@ -83,9 +83,10 @@ export function RowDemo() {
       </CatalogExample>
       <CatalogExample
         label="Wrapped row"
+        viewport={{ width: 'compact' }}
         note="Wrapping is opt-in and keeps the same physical alignment and typed gap contract."
       >
-        <DemoFrameShell measure="wrapped">
+        <DemoFrameShell>
           <Row hAlign="full" vAlign="middle" gap="m" wrap>
             {[
               'Alpha',

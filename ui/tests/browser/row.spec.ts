@@ -104,6 +104,18 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
       flexWrap: 'wrap',
       gap: '16px',
     });
+  // The example's compact viewport gives the specimen a measured width, so
+  // the wrap is visible even on a wide stage instead of fitting on one line.
+  expect(
+    await wrapped.evaluate(
+      (row) =>
+        new Set(
+          [...row.children].map((child) =>
+            Math.round(child.getBoundingClientRect().top),
+          ),
+        ).size,
+    ),
+  ).toBeGreaterThan(1);
 
   const flexExample = example('Flex participation');
   const participatingRows = flexExample.locator('[data-component="row"]');
