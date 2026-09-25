@@ -226,7 +226,11 @@ export function wireRowBindings(
   // `getAttribute` + allocation-free id membership check — no `querySelectorAll`,
   // no `collectComments` walk, no Map. The descendant-attr index and the
   // text-comment index are built lazily, only if a hole actually needs them.
-  const disposers: Array<() => void> = new Array(bindings.length);
+  // Dense by construction: disposers are PUSHED, never index-assigned, so a
+  // skipped hole (the defensive missing-marker `continue` below) leaves no gap
+  // for `disposeRowBindings` / `mount()`'s release loop to trip over (KF-5FM1Z6:
+  // a sparse slot would throw a TypeError when called during disposal).
+  const disposers: Array<() => void> = [];
   const rootIds = rowNode.getAttribute(BIND_ATTR_ROW);
   // For the common single-root-binding row, `rootIds === b.id` resolves the
   // node with zero allocation. Only a row with 2+ root bindings builds the Set.
@@ -254,25 +258,25 @@ export function wireRowBindings(
           descIndex ??= indexAttrEls(rowNode, BIND_ATTR_ROW);
           el = descIndex.get(b.id);
         }
-        /* c8 ignore next -- defensive: a registered binding always emits its marker into the row. */
+        // Defensive: a registered binding always emits its marker into the row.
         if (el === undefined) continue;
-        disposers[i] = attachAttrEffect(el, b.attr, b.signal);
+        disposers.push(attachAttrEffect(el, b.attr, b.signal));
       } else {
         if (textMarkers === null) {
           textMarkers = new Map();
           collectComments(rowNode, ROW_TEXT_PREFIX, textMarkers);
         }
         const marker = textMarkers.get(b.id);
-        /* c8 ignore next -- defensive: same invariant as the attr branch. */
+        // Defensive: same invariant as the attr branch.
         if (marker === undefined) continue;
-        disposers[i] = attachTextEffect(marker, b.signal);
+        disposers.push(attachTextEffect(marker, b.signal));
       }
     }
   } catch (err) {
     // Same contract as `wireBindings`: a hole that throws on its first write
     // disposes the row's already-wired effects before the error propagates
-    // (entries past the failing hole are still unset).
-    for (const d of disposers) d?.();
+    // (only wired holes were pushed, so every entry is callable).
+    for (const d of disposers) d();
     throw err;
   }
   return disposers;
