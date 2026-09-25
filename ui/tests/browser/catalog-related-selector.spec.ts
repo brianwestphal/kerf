@@ -66,6 +66,30 @@ test('related Components selector fits its trigger and popup content', async ({
     expect(triggerFit?.left).toBeGreaterThanOrEqual(8);
     expect(triggerFit?.right).toBeGreaterThanOrEqual(8);
 
+    // Toolbar controls never wrap: the icon and label share one row, the icon
+    // leading the label, and the trigger stays a single control height.
+    const row = await trigger.evaluate((element) => {
+      const [icon, label] = [...element.children]
+        .filter((child) => !child.hasAttribute('slot'))
+        .map((child) => child.getBoundingClientRect());
+      const base = element.shadowRoot
+        ?.querySelector<HTMLElement>('[part~="base"]')
+        ?.getBoundingClientRect();
+      return {
+        centerDelta: Math.abs(
+          (icon.top + icon.bottom) / 2 - (label.top + label.bottom) / 2,
+        ),
+        iconLeads: icon.right <= label.left,
+        labelInsideBase:
+          base !== undefined &&
+          label.top >= base.top &&
+          label.bottom <= base.bottom,
+      };
+    });
+    expect(row.centerDelta).toBeLessThanOrEqual(2);
+    expect(row.iconLeads).toBe(true);
+    expect(row.labelInsideBase).toBe(true);
+
     await trigger.click();
     const firstHeading = related
       .locator('.kui-catalog__related-heading')

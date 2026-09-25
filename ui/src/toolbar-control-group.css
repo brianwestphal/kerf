@@ -109,6 +109,15 @@
 .kui-toolbar-control-group[data-content="mixed"] wa-button {
   line-height: normal;
 }
+/* Toolbar controls never wrap. Web Awesome's label part is a plain block, so a
+   slotted icon (a block SVG) and its text would otherwise stack vertically —
+   lay them out on one row the way native mixed buttons already are. */
+.kui-toolbar-control-group wa-button::part(label) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--kui-space-xs);
+  white-space: nowrap;
+}
 .kui-toolbar-control-group[data-content="avatar"][data-scrim="true"] {
   --kui-toolbar-control-background: color-mix(
     in srgb,
