@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import {
   gzipDelta,
   measureDemoBundle,
+  measuringNodeMismatch,
   updateDemoBundleBudget,
 } from './lib/demo-bundle-budget.mjs';
 
@@ -56,6 +57,13 @@ for (const name of stylesheets) {
     );
   }
 }
+
+const nodeMismatch = measuringNodeMismatch(
+  process.version,
+  await readFile(new URL('../../.nvmrc', import.meta.url), 'utf8'),
+);
+if (nodeMismatch && updateBudget) throw new Error(nodeMismatch);
+if (nodeMismatch) console.warn(`Warning: ${nodeMismatch}`);
 
 const measurement = await measureDemoBundle(assetsDir);
 const delta = gzipDelta(measurement, limits);

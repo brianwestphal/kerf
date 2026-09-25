@@ -45,9 +45,11 @@ Run `npm run check:change` after changing a public component. It synchronizes
 both catalog projections, declarations, AI signatures, and compatibility
 digests; names every checked-in projection changed by that synchronization;
 runs the catalog/component contracts, unit coverage, consumer bundle tests,
-source and packed type contracts; builds the production catalog; and reports
-the exact gzip byte delta from the last reviewed baseline. The broader
-`npm run check` remains the release gate.
+source and packed type contracts; rebuilds the package and production catalog
+through the same `demo:bundle` script `npm run demo:build` uses; and reports
+the exact gzip byte delta from the last reviewed baseline. Every step runs on
+the Node that invoked it, so `check:change` and `demo:build` measure the same
+bytes. The broader `npm run check` remains the release gate.
 
 Intentional bundle changes use the same workflow with an explicit review
 reason:
@@ -59,5 +61,8 @@ npm run check:change -- --update-bundle-budget \
 
 That mode writes `demo-bundle-budget.json`, records the previous and new exact
 measurements and budgets with the reason and timestamp, and rounds the total
-budget to the next 100 bytes. Do not edit the budget or add a history comment
+budget to the next 100 bytes. Gzip output depends on the zlib bundled with
+Node, so reviewed baselines are recorded on the repository's pinned Node major
+(`.nvmrc`, also CI's version): an update on another major is refused, and a
+plain check on one prints a warning. Do not edit the budget or add a history comment
 by hand.

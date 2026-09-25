@@ -69,3 +69,17 @@ export function gzipDelta(measurement, budget) {
       measurement.largestJavaScriptGzip - budget.measuredLargestJavaScriptGzip,
   };
 }
+
+/**
+ * Gzip output depends on the zlib bundled with Node, so byte-identical assets
+ * measure differently across Node majors (Node 22's zlib and Node 26's differ
+ * by ~0.8 kB on the catalog). The reviewed baseline is only comparable when it
+ * is measured on the repository's pinned Node (`.nvmrc`, also CI's version).
+ * Returns a human-readable mismatch message, or null when the majors agree.
+ */
+export function measuringNodeMismatch(nodeVersion, pinnedVersion) {
+  const major = (version) =>
+    String(version).trim().replace(/^v/, '').split('.')[0];
+  if (major(nodeVersion) === major(pinnedVersion)) return null;
+  return `UX demo gzip sizes were measured on Node ${nodeVersion}, but the reviewed baseline is recorded on the pinned Node ${String(pinnedVersion).trim()} (.nvmrc). Gzip output depends on Node's bundled zlib, so switch to the pinned Node before recording or comparing a baseline.`;
+}

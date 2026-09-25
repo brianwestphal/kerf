@@ -28,3 +28,7 @@ export function gzipDelta(
   measurement: DemoBundleMeasurement,
   budget: DemoBundleBudget,
 ): { total: number; largest: number };
+export function measuringNodeMismatch(
+  nodeVersion: string,
+  pinnedVersion: string,
+): string | null;

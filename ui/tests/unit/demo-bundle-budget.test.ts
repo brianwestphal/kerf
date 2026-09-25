@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   gzipDelta,
+  measuringNodeMismatch,
   roundedBudget,
   updateDemoBundleBudget,
 } from '../../scripts/lib/demo-bundle-budget.mjs';
@@ -65,5 +66,19 @@ describe('demo bundle budget updates', () => {
     expect(() =>
       updateDemoBundleBudget(budget, measurement, 'tiny', '2026-09-23'),
     ).toThrow('specific review reason');
+  });
+});
+
+describe('demo bundle measuring Node', () => {
+  it('accepts any release of the pinned Node major', () => {
+    expect(measuringNodeMismatch('v22.23.2', '22\n')).toBeNull();
+    expect(measuringNodeMismatch('v22.12.0', 'v22.21.0')).toBeNull();
+  });
+
+  it('names both versions when a different zlib would measure the bundle', () => {
+    const message = measuringNodeMismatch('v26.7.0', '22\n');
+    expect(message).toContain('Node v26.7.0');
+    expect(message).toContain('pinned Node 22 (.nvmrc)');
+    expect(message).toContain('zlib');
   });
 });
