@@ -717,8 +717,9 @@ independent `tone`, `size`, and `font` unions expose quiet/danger, compact, and
 monospace roles through stable data attributes and semantic foundation tokens.
 Compact mixed `ToolbarControlGroup` selections keep standard item padding,
 remove the internal separator, and paint raised selected chrome over the outer
-border. Single avatar hover changes only the color layer so its contained image
-fit remains stable.
+border. Nested Web Awesome dropdown triggers size from their shadow base's
+max-content icon/text/caret geometry rather than fixed host widths. Single avatar
+hover changes only the color layer so its contained image fit remains stable.
 
 Inset hover and selection surfaces use the foundation
 `--kui-layout-highlight-inset` contract: component CSS subtracts the full inset

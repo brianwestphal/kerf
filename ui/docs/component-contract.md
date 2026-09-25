@@ -332,10 +332,9 @@ text-and-caret trigger grows to its intrinsic width while an icon-only trigger
 can remain square. Set `menuInset` to configure the dropdown menu surface
 without application `::part(menu)` CSS. Compact mixed controls retain the standard
 item padding, omit an internal separator, and let the raised selected item paint
-over the outer border instead of shrinking to an inset highlight. The short text
-trigger has an engine-stable 66px floor because WebKit
-does not include the shadow caret in the custom-element host's intrinsic width;
-raise `--kui-toolbar-dropdown-trigger-width` for longer localized copy.
+over the outer border instead of shrinking to an inset highlight. The Web
+Awesome trigger's shadow base owns max-content sizing, so icons, localized text,
+and the shadow caret determine the width without a fixed host measurement.
 The enclosing `Toolbar` owns zone alignment and responsive topology: use
 `centerAlign="stretch"` when the center group should consume its track, and
 choose `responsive="stack"` with `responsiveAt="compact" | "narrow"` or

@@ -105,6 +105,9 @@
   display: flex;
   gap: var(--kui-space-xs);
 }
+.kui-toolbar-control-group[data-content="mixed"] wa-button {
+  line-height: normal;
+}
 .kui-toolbar-control-group[data-content="avatar"][data-scrim="true"] {
   --kui-toolbar-control-background: color-mix(
     in srgb,
@@ -301,20 +304,14 @@
 }
 .kui-toolbar-control-group[data-content="mixed"][data-nested-dropdown="true"]
   > wa-dropdown
-  > wa-button {
-  /* WebKit does not contribute a custom element's shadow-part caret to the
-     host's intrinsic inline size. Give the standard short text trigger an
-     engine-stable floor; max-content still wins for longer light-DOM labels,
-     and consumers can raise the public variable for localized copy. */
-  width: var(--kui-toolbar-dropdown-trigger-width, remify(66px));
+  > wa-button::part(base) {
+  width: max-content;
 }
 
-.kui-toolbar-control-group[data-single="true"] > wa-dropdown,
-.kui-toolbar-control-group[data-single="true"] > wa-dropdown > wa-button,
 .kui-toolbar-control-group[data-single="true"]
   > wa-dropdown
   > wa-button::part(base) {
-  width: remify(48px);
+  width: max-content;
 }
 
 .kui-toolbar-control-group wa-button {

@@ -173,11 +173,13 @@ the folder modules, and CSS only imports their owner stylesheets.
   need a Web Awesome feature, chiefly the `slot="trigger"` button of a `wa-dropdown`
   popup menu. A toolbar popup menu is a `single` `ToolbarControlGroup` around a
   `wa-dropdown` (its `slot="trigger"` `wa-button` is the toolbar button, kept under
-  `data-morph-skip-children`). Compact mixed groups keep standard item padding
-  and raised selected chrome without an internal separator; the selected item
-  paints over the outer border. For an avatar control, set `content="avatar"` and
-  `avatarImage` on the group instead of inserting an `img`; a lone control paints
-  the group and a multi-button group paints only its pressed highlight.
+  `data-morph-skip-children`). Let the group size the trigger from its icon,
+  localized text, and caret; do not force a dropdown or button width. Compact
+  mixed groups keep standard item padding and raised selected chrome without an
+  internal separator; the selected item paints over the outer border. For an
+  avatar control, set `content="avatar"` and `avatarImage` on the group instead of
+  inserting an `img`; a lone control paints the group and a multi-button group
+  paints only its pressed highlight.
 - **Use one direct toolbar composition for panel/dialog/page headings.** Put an
   optional icon in a `ToolbarControlGroup`, an extra-large `ToolbarText` directly
   in the leading zone, and actions in a trailing group. Supporting copy is

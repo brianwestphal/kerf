@@ -106,7 +106,7 @@ describe('SegmentedControl corner geometry', () => {
     expect(radius.value).toBe('var(--kui-control-highlight-radius)');
   });
 
-  it('lets mixed nested dropdown triggers grow for their label and caret', async () => {
+  it('lets nested dropdown shadow bases own intrinsic label, icon, and caret width', async () => {
     const file = resolve(
       import.meta.dirname,
       '../../src/toolbar-control-group.css',
@@ -129,25 +129,52 @@ describe('SegmentedControl corner geometry', () => {
       throw new Error('Missing mixed nested dropdown minimum width');
     expect(minWidth.value).toBe('max-content');
 
-    const hostRule = root.nodes.find(
+    const widthRule = root.nodes.find(
       (node) =>
         node.type === 'rule' &&
         node.selector.includes('[data-content="mixed"]') &&
         node.selector.includes('[data-nested-dropdown="true"]') &&
-        !node.selector.includes('::part(base)') &&
+        node.selector.includes('wa-button::part(base)') &&
         node.nodes.some(
           (child) => child.type === 'decl' && child.prop === 'width',
         ),
     );
-    if (!hostRule || hostRule.type !== 'rule')
-      throw new Error('Missing mixed nested dropdown host-width rule');
-    const width = hostRule.nodes.find(
+    if (!widthRule || widthRule.type !== 'rule')
+      throw new Error('Missing mixed nested dropdown base-width rule');
+    const width = widthRule.nodes.find(
       (node) => node.type === 'decl' && node.prop === 'width',
     );
     if (!width || width.type !== 'decl')
-      throw new Error('Missing mixed nested dropdown host width');
-    expect(width.value).toBe(
-      'var(--kui-toolbar-dropdown-trigger-width, remify(66px))',
+      throw new Error('Missing mixed nested dropdown base width');
+    expect(width.value).toBe('max-content');
+
+    const fixedHostWidth = root.nodes.find(
+      (node) =>
+        node.type === 'rule' &&
+        node.selector.includes('wa-button') &&
+        !node.selector.includes('::part(base)') &&
+        (node.selector.includes('[data-single="true"]') ||
+          (node.selector.includes('[data-content="mixed"]') &&
+            node.selector.includes('[data-nested-dropdown="true"]'))) &&
+        node.nodes.some(
+          (child) => child.type === 'decl' && child.prop === 'width',
+        ),
     );
+    expect(fixedHostWidth).toBeUndefined();
+
+    const mixedTextRule = root.nodes.find(
+      (node) =>
+        node.type === 'rule' &&
+        node.selector ===
+          '.kui-toolbar-control-group[data-content="mixed"] wa-button',
+    );
+    if (!mixedTextRule || mixedTextRule.type !== 'rule')
+      throw new Error('Missing mixed dropdown text line-height rule');
+    const lineHeight = mixedTextRule.nodes.find(
+      (node) => node.type === 'decl' && node.prop === 'line-height',
+    );
+    if (!lineHeight || lineHeight.type !== 'decl')
+      throw new Error('Missing mixed dropdown text line height');
+    expect(lineHeight.value).toBe('normal');
   });
 });

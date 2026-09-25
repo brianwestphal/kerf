@@ -6058,7 +6058,7 @@ test('expands and collapses the ToolbarControlGroup collapsible search without s
     });
 });
 
-test('contains the compact mixed raised selection, dropdown label, and caret for both group shapes', async ({
+test('intrinsically sizes popup, compact mixed, and catalog dropdown content across group shapes', async ({
   page,
   browserName,
 }) => {
@@ -6070,6 +6070,60 @@ test('contains the compact mixed raised selection, dropdown label, and caret for
     .toBe(true);
   const demo = page.getByRole('region', { name: 'ToolbarControlGroup demo' });
   const group = demo.getByRole('group', { name: 'Compact formatting' });
+
+  const expectTriggerContentContained = async (
+    trigger: Locator,
+    contentSelector: string,
+  ) => {
+    const measured = await trigger.evaluate((node, selector) => {
+      const group = node.closest('.kui-toolbar-control-group')!;
+      const base = node.shadowRoot!.querySelector('[part~="base"]')!;
+      const caret = node.shadowRoot!.querySelector('[part~="caret"]')!;
+      const content = node.querySelector(selector)!;
+      const bounds = (element: Element) => {
+        const rect = element.getBoundingClientRect();
+        return { left: rect.left, right: rect.right, width: rect.width };
+      };
+      return {
+        group: bounds(group),
+        trigger: bounds(node),
+        base: bounds(base),
+        caret: bounds(caret),
+        content: bounds(content),
+      };
+    }, contentSelector);
+    expect(measured.content.width).toBeGreaterThan(0);
+    expect(measured.caret.width).toBeGreaterThan(0);
+    for (const part of ['trigger', 'base', 'content', 'caret'] as const) {
+      expect(measured[part].left).toBeGreaterThanOrEqual(
+        measured.group.left - 0.5,
+      );
+      expect(measured[part].right).toBeLessThanOrEqual(
+        measured.group.right + 0.5,
+      );
+    }
+  };
+
+  const popupTrigger = demo.locator('wa-button[aria-label="Sort tickets"]');
+  const relatedTrigger = page
+    .locator('[data-catalog-related]')
+    .locator('wa-button[slot="trigger"]');
+  await expectTriggerContentContained(
+    popupTrigger,
+    '[data-lucide="arrow-down-a-z"]',
+  );
+  await expectTriggerContentContained(relatedTrigger, 'span');
+  await popupTrigger
+    .locator('xpath=ancestor::*[@data-catalog-example]')
+    .screenshot({
+      path: `test-results/toolbar-control-group-popup-${browserName}.png`,
+    });
+  await page
+    .locator('[data-catalog-related]')
+    .locator('xpath=ancestor::*[@data-component="toolbar-control-group"]')
+    .screenshot({
+      path: `test-results/related-components-selector-${browserName}.png`,
+    });
 
   const geometry = () =>
     group.evaluate((node) => {
@@ -6108,10 +6162,9 @@ test('contains the compact mixed raised selection, dropdown label, and caret for
     expect(measured.trigger.right).toBeLessThanOrEqual(
       measured.group.right - 1,
     );
-    if (browserName === 'chromium')
-      await group.screenshot({
-        path: `test-results/toolbar-control-group-compact-${shape.toLowerCase()}.png`,
-      });
+    await group.screenshot({
+      path: `test-results/toolbar-control-group-compact-${browserName}-${shape.toLowerCase()}.png`,
+    });
     if (browserName === 'chromium' && shape === 'Pill')
       await group
         .locator('xpath=ancestor::*[@data-catalog-example]')
@@ -6122,9 +6175,25 @@ test('contains the compact mixed raised selection, dropdown label, and caret for
 
   if (browserName === 'chromium') {
     await page.setViewportSize({ width: 390, height: 844 });
+    await expectTriggerContentContained(
+      popupTrigger,
+      '[data-lucide="arrow-down-a-z"]',
+    );
+    await expectTriggerContentContained(relatedTrigger, 'span');
     await group.locator('xpath=ancestor::*[@data-catalog-example]').screenshot({
       path: 'test-results/toolbar-control-group-compact-narrow.png',
     });
+    await popupTrigger
+      .locator('xpath=ancestor::*[@data-catalog-example]')
+      .screenshot({
+        path: 'test-results/toolbar-control-group-popup-narrow.png',
+      });
+    await page
+      .locator('[data-catalog-related]')
+      .locator('xpath=ancestor::*[@data-component="toolbar-control-group"]')
+      .screenshot({
+        path: 'test-results/related-components-selector-narrow.png',
+      });
   }
 });
 
