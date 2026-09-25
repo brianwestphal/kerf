@@ -59,16 +59,16 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
     });
 
   const horizontal = [
-    ['left', 'flex-start'],
-    ['center', 'space-around'],
-    ['right', 'flex-end'],
-    ['full', 'space-between'],
+    ['Left', 'left', 'flex-start'],
+    ['Center', 'center', 'space-around'],
+    ['Right', 'right', 'flex-end'],
+    ['Full', 'full', 'space-between'],
   ] as const;
-  for (const [name, expected] of horizontal) {
+  for (const [label, name, expected] of horizontal) {
     await expect
       .poll(() =>
         flexGeometry(
-          example('Horizontal distribution').locator(
+          example(`${label} distribution`).locator(
             `[data-component="row"][data-h-align="${name}"]`,
           ),
         ),
@@ -77,17 +77,17 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
   }
 
   const vertical = [
-    ['top', 'flex-start', 'flex-start'],
-    ['middle', 'center', 'space-around'],
-    ['bottom', 'flex-end', 'flex-end'],
-    ['full', 'stretch', 'space-between'],
-    ['baseline', 'baseline', 'baseline'],
+    ['Top', 'top', 'flex-start', 'flex-start'],
+    ['Middle', 'middle', 'center', 'space-around'],
+    ['Bottom', 'bottom', 'flex-end', 'flex-end'],
+    ['Full', 'full', 'stretch', 'space-between'],
+    ['Baseline', 'baseline', 'baseline', 'baseline'],
   ] as const;
-  for (const [name, items, content] of vertical) {
+  for (const [label, name, items, content] of vertical) {
     await expect
       .poll(() =>
         flexGeometry(
-          example('Vertical alignment').locator(
+          example(`${label} alignment`).locator(
             `[data-component="row"][data-v-align="${name}"]`,
           ),
         ),
@@ -129,6 +129,59 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
   await expect
     .poll(() => flexGeometry(participatingRows.nth(1)))
     .toMatchObject({ flex: '0 0 auto' });
+
+  // Each Row variant is its own catalog example, so the geometry overlay
+  // outlines every framed row individually rather than one bound around a
+  // stacked group of variants.
+  const framedLabels = [
+    'Default row',
+    ...horizontal.map(([label]) => `${label} distribution`),
+    ...vertical.map(([label]) => `${label} alignment`),
+    'Wrapped row',
+  ];
+  await expect
+    .poll(() =>
+      page.evaluate((labels) => {
+        const canvas = document.querySelector('.kui-catalog__canvas')!;
+        const base = canvas.getBoundingClientRect();
+        const bounds = [
+          ...document.querySelectorAll<HTMLElement>(
+            '.kui-catalog__geometry-bound',
+          ),
+        ].map((bound) => {
+          const rect = bound.getBoundingClientRect();
+          return {
+            top: Math.round(rect.top - base.top),
+            height: Math.round(rect.height),
+          };
+        });
+        return labels.map((label) => {
+          const example = [
+            ...document.querySelectorAll(
+              '[data-demo="row"] [data-catalog-example]',
+            ),
+          ].find(
+            (candidate) =>
+              candidate.querySelector('[data-catalog-example-label]')
+                ?.textContent === label,
+          );
+          const viewport = example?.querySelector(
+            ':scope > [data-catalog-example-viewport]',
+          );
+          const panels = viewport?.querySelectorAll('.kui-sunken-panel').length;
+          const rect = viewport?.getBoundingClientRect();
+          const top = rect ? Math.round(rect.top - base.top) : -1;
+          const height = rect ? Math.round(rect.height) : -1;
+          const matches = bounds.filter(
+            (bound) =>
+              Math.abs(bound.top - top) <= 1 &&
+              Math.abs(bound.height - height) <= 1,
+          ).length;
+          return `${label}: panels=${panels} bounds=${matches}`;
+        });
+      }, framedLabels),
+    )
+    .toEqual(framedLabels.map((label) => `${label}: panels=1 bounds=1`));
 
   if (browserName === 'chromium') {
     await page.screenshot({

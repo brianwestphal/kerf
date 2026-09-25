@@ -7,23 +7,34 @@ import {
   Row,
   type VerticalAlignment,
 } from '@kerfjs/ui/row';
-import { Text } from '@kerfjs/ui/text';
 
 import { DemoChip } from './demo-chip.js';
 import { DemoFrameShell } from './demo-frame-shell.js';
 
-const horizontal: readonly [string, HorizontalAlignment][] = [
-  ['Left', 'left'],
-  ['Center', 'center'],
-  ['Right', 'right'],
-  ['Full', 'full'],
+const horizontal: readonly [string, HorizontalAlignment, string][] = [
+  ['Left', 'left', 'Left pins the group to the leading edge.'],
+  [
+    'Center',
+    'center',
+    'Center distributes the free space around every child (space-around).',
+  ],
+  ['Right', 'right', 'Right pins the group to the trailing edge.'],
+  [
+    'Full',
+    'full',
+    'Full puts the free space between children (space-between).',
+  ],
 ];
-const vertical: readonly [string, VerticalAlignment][] = [
-  ['Top', 'top'],
-  ['Middle', 'middle'],
-  ['Bottom', 'bottom'],
-  ['Full', 'full'],
-  ['Baseline', 'baseline'],
+const vertical: readonly [string, VerticalAlignment, string][] = [
+  ['Top', 'top', 'Top aligns children to the cross-axis start.'],
+  ['Middle', 'middle', 'Middle centers children on the cross axis.'],
+  ['Bottom', 'bottom', 'Bottom aligns children to the cross-axis end.'],
+  ['Full', 'full', 'Full stretches every child to the row height.'],
+  [
+    'Baseline',
+    'baseline',
+    'Baseline aligns children on their first text baseline.',
+  ],
 ];
 
 const chips = (prefix: string) => [
@@ -37,54 +48,43 @@ export function RowDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'row' }}>
       <CatalogExample
         label="Default row"
+        viewport={{ width: 'compact' }}
         note="Row defaults to left, full-height children, the xs gap, and no wrapping."
       >
         <DemoFrameShell>
           <Row>{chips('Default')}</Row>
         </DemoFrameShell>
       </CatalogExample>
-      <CatalogExample
-        label="Horizontal distribution"
-        note="Center uses space-around while full uses space-between; left and right pin the group to an edge."
-      >
-        <List gap="xs">
-          {horizontal.map(([label, alignment]) => (
-            <List gap="2xs">
-              <Text font="monospace" tone="quiet" size="compact">
-                {label}
-              </Text>
-              <DemoFrameShell>
-                <Row hAlign={alignment} vAlign="middle">
-                  {chips(label)}
-                </Row>
-              </DemoFrameShell>
-            </List>
-          ))}
-        </List>
-      </CatalogExample>
-      <CatalogExample
-        label="Vertical alignment"
-        note="Cross-axis alignment remains valid CSS: top, centered middle, bottom, stretched full, or text baseline. Wrapped lines use the matching distribution."
-      >
-        <List gap="xs">
-          {vertical.map(([label, alignment]) => (
-            <List gap="2xs">
-              <Text font="monospace" tone="quiet" size="compact">
-                {label}
-              </Text>
-              <DemoFrameShell>
-                <Row hAlign="left" vAlign={alignment}>
-                  {chips(label)}
-                </Row>
-              </DemoFrameShell>
-            </List>
-          ))}
-        </List>
-      </CatalogExample>
+      {horizontal.map(([label, alignment, note]) => (
+        <CatalogExample
+          label={`${label} distribution`}
+          viewport={{ width: 'compact' }}
+          note={note}
+        >
+          <DemoFrameShell>
+            <Row hAlign={alignment} vAlign="middle">
+              {chips(label)}
+            </Row>
+          </DemoFrameShell>
+        </CatalogExample>
+      ))}
+      {vertical.map(([label, alignment, note]) => (
+        <CatalogExample
+          label={`${label} alignment`}
+          viewport={{ width: 'compact' }}
+          note={note}
+        >
+          <DemoFrameShell>
+            <Row hAlign="left" vAlign={alignment}>
+              {chips(label)}
+            </Row>
+          </DemoFrameShell>
+        </CatalogExample>
+      ))}
       <CatalogExample
         label="Wrapped row"
         viewport={{ width: 'compact' }}
-        note="Wrapping is opt-in and keeps the same physical alignment and typed gap contract."
+        note="Wrapping is opt-in and keeps the same physical alignment and typed gap contract; wrapped lines use the matching vertical distribution."
       >
         <DemoFrameShell>
           <Row hAlign="full" vAlign="middle" gap="m" wrap>
