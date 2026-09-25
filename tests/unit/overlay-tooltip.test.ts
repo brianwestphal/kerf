@@ -174,3 +174,108 @@ describe('tooltip()', () => {
     stop2();
   });
 });
+
+describe('tooltip() — a failed show from the delay timer', () => {
+  // Contract: the half-built tooltip is rolled back, the ORIGINAL error escapes
+  // the timer callback for the host to report (fake timers surface it at
+  // advanceTimersByTime), and the tooltip stays armed for the next enter.
+  const geometry = { fail: true };
+  const failure = new Error('geometry failed');
+  const failingAnchor = (): HTMLElement => {
+    geometry.fail = true;
+    const anchor = document.createElement('button');
+    document.body.appendChild(anchor);
+    anchor.getBoundingClientRect = () => {
+      if (geometry.fail) throw failure;
+      return new DOMRect(100, 200, 50, 20);
+    };
+    return anchor;
+  };
+
+  it('rolls back, rethrows from the timer, and shows on the next hover once positioning works', () => {
+    vi.useFakeTimers();
+    const anchor = failingAnchor();
+    const stop = tooltip(anchor, 'tip', { delay: 10, hideDelay: 5 });
+
+    anchor.dispatchEvent(new Event('pointerenter'));
+    expect(() => vi.advanceTimersByTime(10)).toThrow(failure);
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+
+    // Leaving after the failure schedules no hide and throws nothing.
+    anchor.dispatchEvent(new Event('pointerleave'));
+    expect(() => vi.advanceTimersByTime(50)).not.toThrow();
+
+    geometry.fail = false;
+    anchor.dispatchEvent(new Event('pointerenter'));
+    vi.advanceTimersByTime(10);
+    const tip = document.querySelector<HTMLElement>('.kerf-tooltip');
+    expect(tip?.textContent).toBe('tip');
+    expect(tip?.getAttribute('role')).toBe('tooltip');
+
+    anchor.dispatchEvent(new Event('pointerleave'));
+    vi.advanceTimersByTime(5);
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+    stop();
+  });
+
+  it('does not retry on its own while the pointer stays, but a focus arriving meanwhile retries', () => {
+    vi.useFakeTimers();
+    const anchor = failingAnchor();
+    const stop = tooltip(anchor, 'tip', { delay: 10 });
+
+    anchor.dispatchEvent(new Event('pointerenter'));
+    expect(() => vi.advanceTimersByTime(10)).toThrow(failure);
+    // No retry storm: nothing further is scheduled while the pointer stays.
+    expect(vi.getTimerCount()).toBe(0);
+
+    geometry.fail = false;
+    anchor.dispatchEvent(new Event('focus'));
+    vi.advanceTimersByTime(10);
+    expect(document.querySelector('.kerf-tooltip')).not.toBeNull();
+    // Both modalities are still tracked: leaving one keeps the tooltip.
+    anchor.dispatchEvent(new Event('pointerleave'));
+    vi.advanceTimersByTime(200);
+    expect(document.querySelector('.kerf-tooltip')).not.toBeNull();
+    stop();
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+  });
+
+  it('a throwing render fn content is rolled back the same way and the next show renders', () => {
+    vi.useFakeTimers();
+    const anchor = anchorAt({ left: 0, right: 10, top: 50, bottom: 60 });
+    const renderFailure = new Error('render failed');
+    let attempts = 0;
+    const stop = tooltip(
+      anchor,
+      () => {
+        attempts++;
+        if (attempts === 1) throw renderFailure;
+        return raw('<b class="rendered">ok</b>');
+      },
+      { delay: 0 },
+    );
+
+    anchor.dispatchEvent(new Event('pointerenter'));
+    expect(() => vi.advanceTimersByTime(1)).toThrow(renderFailure);
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+
+    anchor.dispatchEvent(new Event('pointerleave'));
+    anchor.dispatchEvent(new Event('pointerenter'));
+    vi.advanceTimersByTime(1);
+    expect(document.querySelector('.kerf-tooltip .rendered')).not.toBeNull();
+    stop();
+  });
+
+  it('the disposer is safe after a failed show', () => {
+    vi.useFakeTimers();
+    const anchor = failingAnchor();
+    const stop = tooltip(anchor, 'tip', { delay: 0 });
+    anchor.dispatchEvent(new Event('pointerenter'));
+    expect(() => vi.advanceTimersByTime(1)).toThrow(failure);
+    expect(() => stop()).not.toThrow();
+    geometry.fail = false;
+    anchor.dispatchEvent(new Event('pointerenter'));
+    vi.advanceTimersByTime(1);
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+  });
+});

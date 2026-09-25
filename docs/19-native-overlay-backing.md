@@ -100,7 +100,14 @@ const menu = popover(triggerEl, <Menu />, { native: true });
   `InvalidStateError` for a `container` that is not connected to the document),
   kerf removes the listeners, disposes the mount, removes the node, restores
   focus, and rethrows the original error. It does not call `close()` /
-  `hidePopover()` on an element that never entered the top layer.
+  `hidePopover()` on an element that never entered the top layer. For the
+  dialog helpers the rollback also covers their post-open wiring (a missing
+  required input closes the open `<dialog>` so the page is not left inert).
+  `tooltip()` opens from its `delay` timer, where there is no caller: a failed
+  `showPopover()` there is rolled back the same way, the tooltip stays armed
+  for the next hover/focus, and the error escapes the timer callback for the
+  host to report (a window `error` event) — see `docs/8-api-reference.md`
+  › `tooltip`.
 - **Unchanged everywhere:** the promise API (`{ el, close, result }`), the `render`
   slots, `validate`, Enter-to-submit, `initialFocus`, `outsideIgnore`, and
   focus-restore. kerf's manual focus-restore stays in place — redundant with

@@ -575,6 +575,13 @@ export function tooltip(
   let current: { handle: OverlayHandle; stop: () => void } | undefined;
   let presence = 0;
 
+  // Runs from the `delay` timer, so there is no caller to throw to. A failed
+  // show (a throwing render fn, `native` `showPopover()`, or positioning) is
+  // rolled back before `current` is set — nothing stays on screen and the
+  // next pointerenter / focus schedules a fresh attempt — and the original
+  // error then escapes the timer callback for the host to report as uncaught
+  // (a window `error` event in browsers), the same way kerf's other deferred
+  // callbacks (debounce / throttle timers, attach teardown) surface errors.
   function show(): void {
     const handle = overlay(body, {
       container,

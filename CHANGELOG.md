@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Documented and pinned how `tooltip()` surfaces a failed show from its delay
+  timer: the half-built tooltip is rolled back, the original error escapes the
+  timer for the host to report (a window `error` event in browsers, matching
+  kerf's other deferred callbacks), and the tooltip stays armed so the next
+  hover or focus tries again.
 - Fixed the dialog helpers (`confirm` / `prompt` / `form` / `choice`) leaving
   wiring behind when a step after the overlay opened failed. Their post-open
   wiring (required-slot checks, the click-table `delegate()`, the Enter-key

@@ -441,6 +441,56 @@ test('native: a showModal() failure rolls the <dialog> back and a later native o
   await expect(page.locator('dialog')).toHaveCount(0);
 });
 
+test('tooltip(): a failed show is reported to window error listeners and the next hover shows it', async ({
+  page,
+}) => {
+  await page.evaluate(() => {
+    const anchor = document.createElement('button');
+    anchor.id = 'tip-fail-anchor';
+    anchor.textContent = 'hover me';
+    Object.assign(anchor.style, {
+      position: 'absolute',
+      left: '200px',
+      top: '200px',
+    });
+    document.body.appendChild(anchor);
+    const w = window as any;
+    w._tipErrors = [];
+    window.addEventListener('error', (event) => {
+      w._tipErrors.push((event as ErrorEvent).error?.message ?? 'unknown');
+    });
+    // Positioning fails until the flag is cleared.
+    w._tipGeometryFails = true;
+    const real = anchor.getBoundingClientRect.bind(anchor);
+    anchor.getBoundingClientRect = () => {
+      if (w._tipGeometryFails) throw new Error('geometry failed');
+      return real();
+    };
+    const { tooltip } = w.kerfOverlay;
+    w._tipFailStop = tooltip(anchor, 'Recovered', { delay: 0, hideDelay: 0 });
+  });
+
+  await page.locator('#tip-fail-anchor').hover();
+  await expect
+    .poll(() => page.evaluate(() => (window as any)._tipErrors))
+    .toEqual(['geometry failed']);
+  await expect(page.locator('.kerf-tooltip')).toHaveCount(0);
+
+  // Leave, fix positioning, and hover again: the tooltip is still armed.
+  await page.mouse.move(0, 0);
+  await page.evaluate(() => {
+    (window as any)._tipGeometryFails = false;
+  });
+  await page.locator('#tip-fail-anchor').hover();
+  await expect(page.locator('.kerf-tooltip')).toHaveText('Recovered');
+  await page.mouse.move(0, 0);
+  await expect(page.locator('.kerf-tooltip')).toHaveCount(0);
+  expect(await page.evaluate(() => (window as any)._tipErrors)).toEqual([
+    'geometry failed',
+  ]);
+  await page.evaluate(() => (window as any)._tipFailStop());
+});
+
 test('dialog helpers: a render missing its required input closes the native <dialog> and leaves the page interactive', async ({
   page,
 }) => {
