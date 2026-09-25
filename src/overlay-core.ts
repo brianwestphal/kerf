@@ -136,11 +136,34 @@ function fallbackOverlayStack(wrapper: HTMLElement): HTMLElement[] {
   return (document[FALLBACK_OVERLAY_STACK] ??= []);
 }
 
+// Validate a string `initialFocus` BEFORE any DOM mutation: `querySelector`
+// throws a generic `SyntaxError` DOMException on a malformed selector, and the
+// focus pass runs last — after the wrapper, mount, listeners, and stack entry
+// already exist — so an unvalidated selector would strand all of them with no
+// handle to close. An inert fragment parses the selector without matching.
+function assertInitialFocusSelector(selector: string): void {
+  try {
+    document.createDocumentFragment().querySelector(selector);
+  } catch (cause) {
+    throw new Error(
+      `overlay(): invalid initialFocus selector ${JSON.stringify(selector)}`,
+      { cause },
+    );
+  }
+}
+
 /**
  * Open an overlay: append a wrapper to `container`, `mount()` `content` inside
  * it, wire the requested dismissals + (optionally) a focus trap, and return a
  * handle. Concurrent fallback overlays dismiss from the top down. See
  * {@link OverlayOptions}.
+ *
+ * Construction is transactional: a malformed `initialFocus` selector throws a
+ * descriptive error before anything is touched, and if a later setup phase
+ * throws (the content's first render, `showModal()` / `showPopover()`), every
+ * piece already installed — wrapper node, mount, listeners, fallback-stack
+ * entry, top-layer state, moved focus — is rolled back before the original
+ * error is rethrown.
  */
 export function overlay(
   content: OverlayContent,
@@ -157,6 +180,9 @@ export function overlay(
     outsideIgnore,
     native = false,
   } = options;
+
+  if (typeof initialFocus === 'string')
+    assertInitialFocusSelector(initialFocus);
 
   const triggers: readonly DismissTrigger[] =
     dismiss === false ? [] : Array.isArray(dismiss) ? dismiss : [dismiss];
@@ -180,7 +206,6 @@ export function overlay(
     wrapper.setAttribute('role', role);
     wrapper.setAttribute('aria-modal', 'true');
   }
-  container.appendChild(wrapper);
   const fallback = !useDialog && !usePopover;
   const fallbackStack = fallback ? fallbackOverlayStack(wrapper) : undefined;
 
@@ -188,35 +213,18 @@ export function overlay(
     fallbackStack === undefined ||
     fallbackStack[fallbackStack.length - 1] === wrapper;
 
-  const disposeMount = mount(
-    wrapper,
-    typeof content === 'function' ? content : () => content,
-  );
-  fallbackStack?.push(wrapper);
-
-  // Enter the top layer after the content is mounted + connected. `showModal()`
-  // moves focus into the dialog by default; kerf's `initialFocus` pass below runs
-  // afterward and wins.
-  let nativeOpened = false;
-  if (useDialog) {
-    (wrapper as HTMLDialogElement).showModal();
-    nativeOpened = true;
-  } else if (usePopover) {
-    (wrapper as HTMLElement & { showPopover(): void }).showPopover();
-    // Neutralize the UA `[popover] { inset: 0; margin: auto }` anchoring so
-    // `positionAnchored` (which sets `top`/`left`) controls placement — otherwise
-    // the retained `right`/`bottom` insets would stretch/center the element.
-    wrapper.style.inset = 'auto';
-    nativeOpened = true;
-  }
-
   const removers: Array<() => void> = [];
   const resultBox: { resolve?: (value: unknown) => void } = {};
   const result = new Promise<unknown>((resolve) => {
     resultBox.resolve = resolve;
   });
   const state = { closed: false };
+  let disposeMount: (() => void) | undefined;
+  let nativeOpened = false;
 
+  // Also the construction rollback (see the transaction below): every step
+  // tolerates a phase that never ran — no mount yet, no stack entry, never
+  // appended, never shown.
   function close(value?: unknown): void {
     if (state.closed) return;
     state.closed = true;
@@ -225,7 +233,7 @@ export function overlay(
       if (stackIndex !== -1) fallbackStack.splice(stackIndex, 1);
     }
     for (const remove of removers) remove();
-    disposeMount();
+    disposeMount?.();
     // Exit the top layer before removing the node, so the native close steps run
     // (restore inert, fire the dialog's `close`). `<dialog>` also restores focus
     // itself; kerf's manual restore below stays as the fallback path's behavior.
@@ -245,97 +253,135 @@ export function overlay(
     close();
   }
 
-  const wantEscape = triggers.includes('escape');
-  if (useDialog) {
-    // A native modal `<dialog>` confines Tab focus itself and surfaces Escape as
-    // a `cancel` event. Take that over: `preventDefault` so kerf owns teardown
-    // (and so Escape is swallowed when it isn't a dismiss trigger), then dismiss.
-    const onCancel = (event: Event): void => {
-      event.preventDefault();
-      if (wantEscape) userDismiss();
-    };
-    wrapper.addEventListener('cancel', onCancel);
-    removers.push(() => wrapper.removeEventListener('cancel', onCancel));
-  } else if (wantEscape || trap) {
-    const onKeydown = (event: KeyboardEvent): void => {
-      if (!isTopmostFallback()) return;
-      if (wantEscape && event.key === 'Escape') {
-        event.stopPropagation();
-        userDismiss();
-        return;
-      }
-      if (trap && event.key === 'Tab') {
-        const items = focusable(wrapper);
-        if (items.length === 0) {
-          event.preventDefault();
-          return;
-        }
-        const first = items[0];
-        const last = items[items.length - 1];
-        const active = document.activeElement;
-        const outside = !wrapper.contains(active);
-        if (event.shiftKey && (active === first || outside)) {
-          event.preventDefault();
-          last.focus();
-        } else if (!event.shiftKey && (active === last || outside)) {
-          event.preventDefault();
-          first.focus();
-        }
-      }
-    };
-    document.addEventListener('keydown', onKeydown, true);
-    removers.push(() =>
-      document.removeEventListener('keydown', onKeydown, true),
+  // One transaction: if any phase below throws (the content's first render,
+  // `showModal()` / `showPopover()`, …), roll back whatever the earlier phases
+  // installed via `close()` and rethrow the original error. No handle is
+  // returned on failure, so nothing may outlive the call.
+  try {
+    container.appendChild(wrapper);
+    disposeMount = mount(
+      wrapper,
+      typeof content === 'function' ? content : () => content,
     );
-  }
+    fallbackStack?.push(wrapper);
 
-  if (triggers.includes('backdrop')) {
-    const onClick = (event: Event): void => {
-      if (!isTopmostFallback()) return;
-      if (event.target === wrapper) userDismiss();
-    };
-    wrapper.addEventListener('click', onClick);
-    removers.push(() => wrapper.removeEventListener('click', onClick));
-  }
-
-  if (triggers.includes('outside')) {
-    const ignore =
-      outsideIgnore === undefined
-        ? []
-        : Array.isArray(outsideIgnore)
-          ? outsideIgnore
-          : [outsideIgnore];
-    // Capture phase: the click that opened this overlay already passed
-    // document's capture phase, so this never fires for that opening click.
-    const onDocClick = (event: Event): void => {
-      if (!isTopmostFallback()) return;
-      const target = event.target as Node | null;
-      if (target === null) return;
-      if (wrapper.contains(target)) return;
-      if (ignore.some((el) => el === target || el.contains(target))) return;
-      userDismiss();
-    };
-    document.addEventListener('click', onDocClick, true);
-    removers.push(() =>
-      document.removeEventListener('click', onDocClick, true),
-    );
-  }
-
-  if (initialFocus !== false) {
-    if (typeof initialFocus === 'string') {
-      wrapper.querySelector<HTMLElement>(initialFocus)?.focus();
-    } else {
-      const first = focusable(wrapper)[0];
-      if (first !== undefined) {
-        first.focus();
-      } else {
-        wrapper.tabIndex = -1;
-        wrapper.focus();
-      }
+    // Enter the top layer after the content is mounted + connected.
+    // `showModal()` moves focus into the dialog by default; kerf's
+    // `initialFocus` pass below runs afterward and wins.
+    if (useDialog) {
+      (wrapper as HTMLDialogElement).showModal();
+      nativeOpened = true;
+    } else if (usePopover) {
+      (wrapper as HTMLElement & { showPopover(): void }).showPopover();
+      nativeOpened = true;
+      // Neutralize the UA `[popover] { inset: 0; margin: auto }` anchoring so
+      // `positionAnchored` (which sets `top`/`left`) controls placement —
+      // otherwise the retained `right`/`bottom` insets would stretch/center it.
+      wrapper.style.inset = 'auto';
     }
+
+    installDismissal();
+    applyInitialFocus();
+  } catch (error) {
+    close();
+    throw error;
   }
 
   return { el: wrapper, close, result };
+
+  function installDismissal(): void {
+    const wantEscape = triggers.includes('escape');
+    if (useDialog) {
+      // A native modal `<dialog>` confines Tab focus itself and surfaces Escape as
+      // a `cancel` event. Take that over: `preventDefault` so kerf owns teardown
+      // (and so Escape is swallowed when it isn't a dismiss trigger), then dismiss.
+      const onCancel = (event: Event): void => {
+        event.preventDefault();
+        if (wantEscape) userDismiss();
+      };
+      wrapper.addEventListener('cancel', onCancel);
+      removers.push(() => wrapper.removeEventListener('cancel', onCancel));
+    } else if (wantEscape || trap) {
+      const onKeydown = (event: KeyboardEvent): void => {
+        if (!isTopmostFallback()) return;
+        if (wantEscape && event.key === 'Escape') {
+          event.stopPropagation();
+          userDismiss();
+          return;
+        }
+        if (trap && event.key === 'Tab') {
+          const items = focusable(wrapper);
+          if (items.length === 0) {
+            event.preventDefault();
+            return;
+          }
+          const first = items[0];
+          const last = items[items.length - 1];
+          const active = document.activeElement;
+          const outside = !wrapper.contains(active);
+          if (event.shiftKey && (active === first || outside)) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && (active === last || outside)) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+      };
+      document.addEventListener('keydown', onKeydown, true);
+      removers.push(() =>
+        document.removeEventListener('keydown', onKeydown, true),
+      );
+    }
+
+    if (triggers.includes('backdrop')) {
+      const onClick = (event: Event): void => {
+        if (!isTopmostFallback()) return;
+        if (event.target === wrapper) userDismiss();
+      };
+      wrapper.addEventListener('click', onClick);
+      removers.push(() => wrapper.removeEventListener('click', onClick));
+    }
+
+    if (triggers.includes('outside')) {
+      const ignore =
+        outsideIgnore === undefined
+          ? []
+          : Array.isArray(outsideIgnore)
+            ? outsideIgnore
+            : [outsideIgnore];
+      // Capture phase: the click that opened this overlay already passed
+      // document's capture phase, so this never fires for that opening click.
+      const onDocClick = (event: Event): void => {
+        if (!isTopmostFallback()) return;
+        const target = event.target as Node | null;
+        if (target === null) return;
+        if (wrapper.contains(target)) return;
+        if (ignore.some((el) => el === target || el.contains(target))) return;
+        userDismiss();
+      };
+      document.addEventListener('click', onDocClick, true);
+      removers.push(() =>
+        document.removeEventListener('click', onDocClick, true),
+      );
+    }
+  }
+
+  function applyInitialFocus(): void {
+    if (initialFocus !== false) {
+      if (typeof initialFocus === 'string') {
+        wrapper.querySelector<HTMLElement>(initialFocus)?.focus();
+      } else {
+        const first = focusable(wrapper)[0];
+        if (first !== undefined) {
+          first.focus();
+        } else {
+          wrapper.tabIndex = -1;
+          wrapper.focus();
+        }
+      }
+    }
+  }
 }
 
 // The anchored-positioning primitives — `positionAnchored` / `autoReposition`
@@ -428,12 +474,20 @@ export function popover(
     native,
   });
 
-  // Position + keep it glued while open; drop the listeners on close.
-  const stopReposition = autoReposition(handle.el, anchor, {
-    placement,
-    align,
-    gap,
-  });
+  // Position + keep it glued while open; drop the listeners on close. A throw
+  // while positioning (e.g. an anchor whose geometry read fails) is still part
+  // of construction: close the just-opened overlay before rethrowing.
+  let stopReposition: () => void;
+  try {
+    stopReposition = autoReposition(handle.el, anchor, {
+      placement,
+      align,
+      gap,
+    });
+  } catch (error) {
+    handle.close();
+    throw error;
+  }
   void handle.result.then(stopReposition);
 
   return handle;
@@ -507,7 +561,14 @@ export function tooltip(
       native,
     });
     handle.el.setAttribute('role', role);
-    const stop = autoReposition(handle.el, anchor, { placement, align, gap });
+    let stop: () => void;
+    try {
+      stop = autoReposition(handle.el, anchor, { placement, align, gap });
+    } catch (error) {
+      // Not yet tracked in `current`, so `hide()` could never reach it.
+      handle.close();
+      throw error;
+    }
     current = { handle, stop };
   }
 

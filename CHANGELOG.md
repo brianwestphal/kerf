@@ -27,6 +27,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   error is rethrown, every binding effect and the dev listener observer
   acquired so far are released, the element's pre-mount child nodes are
   restored, and a retry on the same element succeeds.
+- Fixed `overlay()` construction leaking a live wrapper, mount, dismissal
+  listeners, and concurrent-overlay stack entry when setup failed partway. A
+  malformed `initialFocus` selector now throws a descriptive `overlay()` error
+  before anything is touched, and a throwing first render or `native`
+  `showModal()` / `showPopover()` call rolls back everything already installed
+  (restoring focus) before rethrowing. `popover()` and `tooltip()` roll back the
+  same way when positioning fails; the dialog helpers inherit the guarantee.
 - Added an opt-in `@kerfjs/ui/document.css` baseline for border-box sizing,
   token-backed body and link presentation, and a `.kui-app-root` full-height
   chain for application shells.

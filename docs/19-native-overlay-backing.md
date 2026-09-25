@@ -94,6 +94,13 @@ const menu = popover(triggerEl, <Menu />, { native: true });
   stacking. kerf neutralizes the UA `[popover] { inset: 0; margin: auto }`
   anchoring (`style.inset = 'auto'`) so `positionAnchored` keeps controlling
   placement. `close()` calls `hidePopover()` before removing the node.
+- **A failed `showModal()` / `showPopover()` rolls back.** The native call runs
+  after the wrapper is appended and its content mounted, so it is one phase of
+  `overlay()`'s transactional construction: if it throws (e.g. the real
+  `InvalidStateError` for a `container` that is not connected to the document),
+  kerf removes the listeners, disposes the mount, removes the node, restores
+  focus, and rethrows the original error. It does not call `close()` /
+  `hidePopover()` on an element that never entered the top layer.
 - **Unchanged everywhere:** the promise API (`{ el, close, result }`), the `render`
   slots, `validate`, Enter-to-submit, `initialFocus`, `outsideIgnore`, and
   focus-restore. kerf's manual focus-restore stays in place — redundant with
@@ -159,6 +166,11 @@ event) but **not** the Popover API, and neither engine models the real top layer
   platform behavior: a `native` `confirm` is a `<dialog>` with `open` set that
   resolves on click and disappears on close, and a `native` `popover` is
   `:popover-open` in the top layer.
+- **Construction rollback** (`tests/unit/overlay-construction.test.ts` with
+  stubbed throwing `showModal` / `showPopover`; `tests/browser/overlay.spec.ts` ›
+  "native: a showModal() failure rolls the <dialog> back…" with a real detached
+  container) proves a failed top-layer entry leaves no node, mount, or listener
+  behind and a later native overlay still opens and dismisses on Escape.
 
 ## 19.8 Scope and follow-ups
 

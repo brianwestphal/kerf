@@ -354,3 +354,89 @@ test('native: popover is :popover-open in the top layer, positioned at the ancho
   await page.evaluate(() => (window as any)._pop.close());
   await expect(pop).toHaveCount(0);
 });
+
+test('construction is transactional: a bad initialFocus selector or a throwing render leaves no residue', async ({
+  page,
+}) => {
+  const outcome = await page.evaluate(() => {
+    const { overlay } = (window as any).kerfOverlay;
+    const { raw } = (window as any).jsxRuntime;
+    const trigger = document.createElement('button');
+    trigger.id = 'tx-trigger';
+    document.body.appendChild(trigger);
+    trigger.focus();
+    overlay(raw('<button>lower</button>'), { className: 'tx-lower' });
+    const errors: string[] = [];
+    try {
+      overlay(raw('<button>x</button>'), {
+        className: 'tx-bad-focus',
+        initialFocus: '[[',
+      });
+    } catch (error) {
+      errors.push((error as Error).message);
+    }
+    try {
+      overlay(
+        () => {
+          throw new Error('render failed');
+        },
+        { className: 'tx-bad-render' },
+      );
+    } catch (error) {
+      errors.push((error as Error).message);
+    }
+    return errors;
+  });
+
+  expect(outcome).toHaveLength(2);
+  expect(outcome[0]).toContain('overlay(): invalid initialFocus selector "[["');
+  expect(outcome[1]).toBe('render failed');
+  await expect(page.locator('.tx-bad-focus, .tx-bad-render')).toHaveCount(0);
+  // The lower overlay is still topmost, so real Escape dismisses it and focus
+  // returns to the trigger.
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.tx-lower')).toHaveCount(0);
+  expect(await activeId(page)).toBe('tx-trigger');
+});
+
+test('native: a showModal() failure rolls the <dialog> back and a later native overlay still works', async ({
+  page,
+}) => {
+  const outcome = await page.evaluate(() => {
+    const { overlay } = (window as any).kerfOverlay;
+    const { raw } = (window as any).jsxRuntime;
+    // A detached container makes the real showModal() throw InvalidStateError
+    // after the wrapper is appended and its content mounted.
+    const detached = document.createElement('div');
+    try {
+      overlay(raw('<button>x</button>'), {
+        native: true,
+        container: detached,
+        className: 'tx-native-bad',
+      });
+      return { name: 'no error', residue: detached.children.length };
+    } catch (error) {
+      return {
+        name: (error as Error).name,
+        residue: detached.children.length,
+      };
+    }
+  });
+  expect(outcome).toEqual({ name: 'InvalidStateError', residue: 0 });
+
+  await page.evaluate(() => {
+    const { overlay } = (window as any).kerfOverlay;
+    const { raw } = (window as any).jsxRuntime;
+    overlay(raw('<button>ok</button>'), {
+      native: true,
+      className: 'tx-native-good',
+    });
+  });
+  const good = page.locator('dialog.tx-native-good');
+  expect(await good.evaluate((el) => (el as HTMLDialogElement).open)).toBe(
+    true,
+  );
+  await page.keyboard.press('Escape');
+  await expect(good).toHaveCount(0);
+  await expect(page.locator('dialog')).toHaveCount(0);
+});

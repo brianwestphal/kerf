@@ -122,8 +122,11 @@ const BUDGETS = [
     name: 'overlay',
     // KF-2TNZPJ: shared render core restores exact contenteditable selections;
     // KF-3HYK5B adds BYO-dialog slot validation; KF-P0AB45 adds fallback
-    // overlay stack arbitration so one dismissal affects only the topmost.
-    budgetKb: 16.8,
+    // overlay stack arbitration so one dismissal affects only the topmost;
+    // KF-QKKDVB makes construction transactional (initialFocus selector
+    // validation + rollback of every throwing setup phase), stacked on the
+    // KF-KGFJP6 mount() rollback in the shared core.
+    budgetKb: 16.9,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
