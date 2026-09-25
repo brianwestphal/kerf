@@ -7,7 +7,8 @@
 # this file as <name>.json; each drives the app through the same headline
 # interaction its browser smoke spec exercises (todomvc add/toggle, kanban drag,
 # chat streaming, dashboard tick, counter-store inc/fetch, cart-htmx swap,
-# markdown live preview, row-selector fine-grained select, live-poll no-build voting).
+# markdown live preview, row-selector fine-grained select, live-poll no-build
+# voting, virtual-list windowing, and router navigation).
 #
 # Prereqs: Playwright Chromium installed (the repo's browser tests already need
 # it). domotion-svg is a root devDependency — its version is pinned in the

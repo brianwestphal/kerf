@@ -84,7 +84,7 @@
         { "type": "click", "selector": "[data-reset]" },
         { "type": "wait", "ms": 400 }
       ],
-      "duration": 1000
+      "duration": 3000
     }
   ]
 }

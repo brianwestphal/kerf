@@ -54,7 +54,7 @@
       "animations": [
         { "selector": ".kerf-toast", "property": "translateX", "from": "24px", "to": "0px", "duration": 300, "easing": "${easeOut}" }
       ],
-      "duration": 1600
+      "duration": 3000
     }
   ]
 }

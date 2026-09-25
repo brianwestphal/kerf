@@ -59,7 +59,7 @@
       "animations": [
         { "selector": ".rt-view", "property": "translateY", "from": "8px", "to": "0px", "duration": 280, "easing": "${easeOut}" }
       ],
-      "duration": 1000
+      "duration": 3000
     }
   ]
 }

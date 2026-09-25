@@ -3,7 +3,7 @@
 //
 // 1. Each complete app under src/examples/complete/<name>/ → public/run/<name>/.
 //    The docs page for each app links to /kerf/run/<name>/ as 'Run live →'.
-// 2. The seven-section reactivity demo (separate Vite project at
+// 2. The nine-section reactivity demo (separate Vite project at
 //    examples/reactivity-demo/) → public/demo/. Both `npm run site:dev` and
 //    `npm run site:build` read public/demo and serve it at /kerf/demo/.
 //

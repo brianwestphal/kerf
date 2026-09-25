@@ -62,7 +62,7 @@
       "animations": [
         { "selector": "[data-renders]", "property": "scale", "from": "1.4", "to": "1", "duration": 300, "easing": "${easeOut}", "transformOrigin": "center" }
       ],
-      "duration": 1100
+      "duration": 3000
     }
   ]
 }

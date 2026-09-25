@@ -29,9 +29,37 @@ import { describe, expect, it } from 'vitest';
 // vitest is invoked from the repo root, so cwd is the project directory.
 const CONFIG_DIR = join(cwd(), 'site', 'scripts', 'demo-captures');
 const SVG_DIR = join(cwd(), 'site', 'public', 'demos');
+const COMPLETE_APPS_DIR = join(cwd(), 'site', 'src', 'examples', 'complete');
+const CAPTURE_SCRIPT = join(CONFIG_DIR, 'capture-demos.sh');
+const CAPTURE_README = join(CONFIG_DIR, 'README.md');
+const EXAMPLE_APP_SPEC = join(
+  cwd(),
+  'tests',
+  'browser',
+  'example-apps.spec.ts',
+);
 
 const configFiles = readdirSync(CONFIG_DIR).filter((f) => f.endsWith('.json'));
 const svgFiles = readdirSync(SVG_DIR).filter((f) => f.endsWith('.svg'));
+
+function shellArray(name: string): string[] {
+  const script = readFileSync(CAPTURE_SCRIPT, 'utf8');
+  const match = script.match(new RegExp(`^${name}=\\(([^)]*)\\)`, 'm'));
+  expect(match, `${name} must remain a simple shell array`).not.toBeNull();
+  return match![1]!.trim().split(/\s+/).filter(Boolean);
+}
+
+function jsStringArray(file: string, name: string): string[] {
+  const source = readFileSync(join(cwd(), file), 'utf8');
+  const match = source.match(
+    new RegExp(`const ${name} = \\[([\\s\\S]*?)\\n\\];`),
+  );
+  expect(
+    match,
+    `${file} must declare ${name} as a string array`,
+  ).not.toBeNull();
+  return [...match![1]!.matchAll(/'([^']+)'/g)].map((item) => item[1]!);
+}
 
 interface DemoFrame {
   transition?: { type?: string };
@@ -42,6 +70,44 @@ interface DemoConfig {
 }
 
 describe('demo-capture configs', () => {
+  it('keeps every complete app in the build, capture, docs, and browser-test surfaces', () => {
+    const apps = readdirSync(COMPLETE_APPS_DIR, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
+      .map((entry) => entry.name)
+      .sort();
+    const captureApps = shellArray('APPS').sort();
+    const capturePages = shellArray('PAGES').sort();
+    const configNames = configFiles
+      .map((file) => file.replace(/\.json$/, ''))
+      .sort();
+    const captureReadme = readFileSync(CAPTURE_README, 'utf8');
+    const browserSpec = readFileSync(EXAMPLE_APP_SPEC, 'utf8');
+    const siteSources = readdirSync(join(cwd(), 'site', 'src'), {
+      recursive: true,
+      encoding: 'utf8',
+    })
+      .filter((file) => /\.(md|mdx|astro)$/.test(file))
+      .map((file) => readFileSync(join(cwd(), 'site', 'src', file), 'utf8'))
+      .join('\n');
+
+    expect(captureApps).toEqual(apps);
+    expect(configNames).toEqual([...apps, ...capturePages].sort());
+
+    for (const app of apps) {
+      expect(captureReadme).toContain(`| \`${app}\` |`);
+      expect(siteSources).toContain(`/demos/${app}.svg`);
+      expect(browserSpec).toContain(`test.describe('${app}'`);
+    }
+
+    for (const file of [
+      'site/scripts/build-examples.mjs',
+      'site/scripts/build-demos-for-capture.mjs',
+      'tests/dist/example-apps/build.mjs',
+    ]) {
+      expect(jsStringArray(file, 'COMPLETE_APPS').sort()).toEqual(apps);
+    }
+  });
+
   it('finds the demo configs', () => {
     // Sanity: the directory should not be empty, or the guard below is vacuous.
     expect(configFiles.length).toBeGreaterThan(0);

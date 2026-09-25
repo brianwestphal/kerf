@@ -31,14 +31,17 @@ const app = document.getElementById('app')!;
 mount(app, () => (
   <div>
     <button data-action="inc">+</button>
-    <span>{count.value}</span>
+    <span>{count}</span>
   </div>
 ));
 
 delegate(app, 'click', '[data-action="inc"]', () => count.value++);
 ```
 
-That's it. Your JSX renders to HTML strings, kerf's native diff applies the minimum DOM mutations to make the live tree match, and signals re-run the render only when something they read actually changed.
+That's it. Your JSX renders to HTML strings, and handing the signal itself to
+the text hole binds that one node directly. Structural reads still re-run the
+render, where kerf's native diff applies the minimum DOM mutations needed to
+make the live tree match.
 
 Here's the whole development loop — write a component, run the dev server, click around, edit, watch the browser pick it up:
 
@@ -81,7 +84,9 @@ Write plain `.tsx` and build with your existing esbuild / Vite / tsup — no ext
 
 4. **Focus, selection, and listeners survive re-renders — even mid-list.** The reconciler morphs instead of rebuilding, so caret position, IME composition, scroll, and delegated listeners survive every update; keyed rows are patched in place rather than recreated.
 
-5. **Safe by default.** Text and attributes are HTML-escaped automatically, URL attributes are scheme-screened (`javascript:` dropped), and inline `on*` handlers are rejected outright — so untrusted data stays inert. `raw()` is the explicit, auditable opt-out.
+5. **A first-party UI layer when you want one.** `@kerfjs/ui` adds accessible components, responsive application layouts, typed CSS values, and explicit wiring helpers without changing kerf's stateless component model. It is separately installable and tree-shakeable, so the core stays the core. ([tour →](#first-party-ui-separately-installable))
+
+6. **Safe by default.** Text and attributes are HTML-escaped automatically, URL attributes are scheme-screened (`javascript:` dropped), and inline `on*` handlers are rejected outright — so untrusted data stays inert. `raw()` is the explicit, auditable opt-out.
 
 **Plus, nothing you don't ask for:** JSX typed against the HTML standard (not React's props) · a ~18-export API with no hooks, lifecycle, or per-instance state · **nine** tree-shakeable companion subpaths (`router`, `list`, `overlay`, `async`, …) that stay out of the core until imported · an [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) + opt-in dev warnings + `create-kerf-component` scaffold · plain TS/JSX/ESM that drops into esbuild / Vite / tsup — or **no** build at all via the `html` tagged template.
 
@@ -97,7 +102,7 @@ Write plain `.tsx` and build with your existing esbuild / Vite / tsup — no ext
 ### When to reach for something else
 
 - Need a full ecosystem (router + forms + data + SSR streaming) → **Next.js / Remix / SolidStart**.
-- Building a deeply componentised design-system app → **React / Solid / Svelte**.
+- Building a deeply componentized design-system app → **React / Solid / Svelte**.
 - Need React Native / cross-platform mobile → **React** (Kerf + Tauri/Electron also covers many of these cases).
 - Building a static site → **Astro** (we use it for _this_ project's site).
 - Already invested in a framework where switching cost outweighs the bundle size gain.
@@ -278,6 +283,38 @@ mount(app, () => <div><nav>{/* <a href> links, auto-intercepted */}</nav>{router
 
 Each subpath adds nothing to the main barrel until it's imported. See [`docs/8-api-reference.md`](./docs/8-api-reference.md) for the full list (`list`, `router`, `overlay`, `scope`, `async`, `timing`, `remount`, `attach`, `actions`).
 
+### First-party UI, separately installable
+
+`@kerfjs/ui` is the optional component layer for applications that want a
+coherent interface vocabulary without switching frameworks. Components return
+Kerf `SafeHtml`; the application still owns state and wires behavior explicitly.
+Component subpaths pull in only their reachable CSS, while responsive app
+layouts, typed CSS-value builders, Web Awesome adapters, and the checked
+component catalog stay opt-in.
+
+```bash
+npm install kerfjs @kerfjs/ui
+```
+
+```tsx
+import { mount } from "kerfjs";
+import { ListItem } from "@kerfjs/ui/list-item";
+import { Toolbar } from "@kerfjs/ui/toolbar";
+import { ToolbarText } from "@kerfjs/ui/toolbar-text";
+
+const root = document.getElementById("app")!;
+
+mount(root, () => (
+  <>
+    <Toolbar label="Files" leading={<ToolbarText text="Workspace" />} />
+    <ListItem action="open-file" label="src/main.ts" selected />
+  </>
+));
+```
+
+Start with the [component selection matrix](./ui/docs/component-selection.md),
+or read the complete [`@kerfjs/ui` package guide](./ui/README.md).
+
 ## Optional tooling
 
 Install and JSX setup are in [Quick start](#quick-start) above. These companion packages are opt-in.
@@ -314,6 +351,7 @@ See [`docs/13-component-packages.md`](./docs/13-component-packages.md) for the f
 - **Docs:** [`docs/`](./docs/) — overview · reactivity · stores · render · events · jsx · svg · [API reference](./docs/8-api-reference.md)
 - **Migrating:** [coming from another framework?](https://brianwestphal.github.io/kerf/migrating/) — side-by-side TodoMVC translations + per-framework gotchas
 - **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — reference for AI tools fetching kerf docs (linked from `llms.txt`)
+- **UI package:** [`@kerfjs/ui`](./ui/README.md) — accessible components, responsive app layouts, typed CSS values, Web Awesome adapters, and checked AI-facing component metadata
 - **ESLint plugin:** [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — `eslint-plugin-kerfjs`; eight rules (four hard-rule errors + four warns: `require-delegate-disposer`, `prefer-attr-selector`, `no-raw-with-dynamic-arg`, `ai-assistant-configs`) at edit time (source: [`eslint-plugin/`](./eslint-plugin/))
 - **Component scaffold:** `npm create kerf-component@latest <dir>` — `create-kerf-component`; generates a publishable component package with packaging rules plus deterministic, drift-checked AI metadata pre-wired (source: [`create-kerf-component/`](./create-kerf-component/))
 - **Demo:** [live demo](https://brianwestphal.github.io/kerf/demo/) — nine sections exercising every primitive (counter, store-backed cart, focus survival, keyed list, morph-skip, SVG render, Tier-2 capture, `arraySignal` patches, fine-grained signal bindings)

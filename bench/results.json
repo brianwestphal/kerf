@@ -1,12 +1,12 @@
 {
-  "capturedAt": "2026-07-22T01:02:44.242Z",
+  "capturedAt": "2026-09-25T08:48:13.008Z",
   "source": {
     "benchmark": "krausest/js-framework-benchmark",
     "site": "https://krausest.github.io/js-framework-benchmark/current.html",
     "data": "https://raw.githubusercontent.com/krausest/js-framework-benchmark/master/webdriver-ts-results/src/results.ts",
     "statistic": "median of per-iteration totals",
     "note": "Official numbers measured on the krausest reference machine; kerf is a merged upstream entry (frameworks/keyed/kerfjs).",
-    "importedAt": "2026-07-22T01:02:44.242Z"
+    "importedAt": "2026-09-25T08:48:13.008Z"
   },
   "scenarios": [
     {
@@ -53,15 +53,15 @@
       "version": "0.16.0",
       "keyed": true,
       "values": [
-        27.2,
-        29.6,
-        16,
-        6.1,
-        12.8,
-        10,
-        284.5,
-        30.7,
-        10.7
+        27.6,
+        30.3,
+        16.1,
+        6.6,
+        12.6,
+        10.2,
+        280.6,
+        31.2,
+        11.6
       ]
     },
     {
@@ -70,32 +70,32 @@
       "version": "3.2.0",
       "keyed": true,
       "values": [
-        23.1,
-        25.6,
-        11.6,
-        5,
-        16.3,
-        10.7,
-        244,
-        27.3,
-        11.7
+        23.8,
+        26.2,
+        11.8,
+        5.2,
+        15.8,
+        11,
+        249.7,
+        28.4,
+        13.1
       ]
     },
     {
-      "key": "preact-signals-v10.27.1 + 2.3.1-keyed",
+      "key": "preact-signals-v10.29.8 + 2.3.1-keyed",
       "name": "preact-signals",
-      "version": "10.27.1 + 2.3.1",
+      "version": "10.29.8 + 2.3.1",
       "keyed": true,
       "values": [
-        30.4,
-        32,
-        10.3,
-        3.9,
-        14.3,
-        10.9,
-        305.6,
-        31.7,
-        13
+        29.3,
+        31.6,
+        10.6,
+        4.3,
+        13.9,
+        10.8,
+        304.5,
+        32.3,
+        13.9
       ]
     },
     {
@@ -104,15 +104,15 @@
       "version": "19.2.0",
       "keyed": true,
       "values": [
-        23.6,
-        29.1,
-        13.6,
-        4.8,
-        84.9,
-        10.9,
-        424.3,
-        28.1,
-        16.3
+        23.7,
+        30,
+        14,
+        5.5,
+        89.9,
+        11.1,
+        388.9,
+        29.2,
+        17.8
       ]
     },
     {
@@ -121,14 +121,14 @@
       "version": "1.9.3",
       "keyed": true,
       "values": [
-        20.8,
-        23.2,
-        10.2,
-        3.1,
+        21.4,
+        24,
+        10.3,
+        3.3,
         12.6,
-        9.7,
-        225.5,
-        23.4,
+        9.8,
+        227.9,
+        24.9,
         10.7
       ]
     },
@@ -138,15 +138,15 @@
       "version": "",
       "keyed": false,
       "values": [
-        20.2,
-        10.5,
-        10.1,
-        2.5,
-        7.9,
-        17.5,
-        222.9,
-        23.1,
-        8.3
+        20.8,
+        10.4,
+        10,
+        2.3,
+        7.8,
+        17.2,
+        221.8,
+        23.6,
+        8.8
       ]
     },
     {
@@ -155,32 +155,32 @@
       "version": "1.5.2",
       "keyed": true,
       "values": [
-        25.9,
-        27.8,
-        22.6,
-        7.7,
-        11.2,
-        11.6,
-        280,
-        32.4,
-        9.1
+        26.5,
+        28.9,
+        26.6,
+        6.7,
+        11.4,
+        13.5,
+        283.3,
+        30.2,
+        11.6
       ]
     },
     {
-      "key": "vue-v3.6.0-alpha.2-keyed",
+      "key": "vue-v3.5.39-keyed",
       "name": "vue",
-      "version": "3.6.0-alpha.2",
+      "version": "3.5.39",
       "keyed": true,
       "values": [
-        23.8,
-        26.3,
+        24.5,
+        27.1,
+        12.7,
+        3.7,
+        13.4,
         12.2,
-        3.4,
-        13,
-        11.7,
-        253.3,
-        27,
-        11.5
+        264,
+        27.6,
+        12.6
       ]
     }
   ]
