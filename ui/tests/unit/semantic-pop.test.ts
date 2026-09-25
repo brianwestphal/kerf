@@ -66,8 +66,8 @@ describe('pop semantic color', () => {
   });
 
   it('maps pop onto every public semantic-tone surface', async () => {
-    const [banner, header, toolbar] = await Promise.all(
-      ['state-banner.css', 'list-header.css', 'toolbar-control-group.css'].map(
+    const [banner, badge, toolbar] = await Promise.all(
+      ['state-banner.css', 'badge.css', 'toolbar-control-group.css'].map(
         cssRoot,
       ),
     );
@@ -85,15 +85,12 @@ describe('pop semantic color', () => {
       ),
     });
     expect(
-      declarations(
-        findRule(
-          header,
-          '.kui-list-header[data-indicator-tone="pop"]\n  :is(.kui-list-header__count, .kui-list-header__badge)',
-        ),
-      ),
+      declarations(findRule(badge, '.kui-badge[data-tone="pop"]')),
     ).toMatchObject({
-      color: 'var(--kui-color-pop-on-normal)',
-      background: 'var(--kui-color-pop-fill-normal)',
+      '--_kui-badge-fill-quiet': 'var(--kui-color-pop-fill-quiet)',
+      '--_kui-badge-fill-solid': 'var(--kui-color-pop-on-fill)',
+      '--_kui-badge-on-quiet': 'var(--kui-color-pop-on-quiet)',
+      '--_kui-badge-on-solid': 'var(--kui-color-surface)',
     });
     expect(
       declarations(

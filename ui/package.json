@@ -58,6 +58,11 @@
       "browser": "./dist/browser/disclosure-arrow.js",
       "import": "./dist/disclosure-arrow.js"
     },
+    "./badge": {
+      "types": "./dist/badge.d.ts",
+      "browser": "./dist/browser/badge.js",
+      "import": "./dist/badge.js"
+    },
     "./toolbar": {
       "types": "./dist/toolbar.d.ts",
       "browser": "./dist/browser/toolbar.js",
@@ -291,6 +296,7 @@
     "./webawesome.css": "./dist/styles/webawesome.css",
     "./styles.css": "./dist/styles/styles.css",
     "./lucide-icon.css": "./dist/styles/lucide-icon.css",
+    "./badge.css": "./dist/styles/badge.css",
     "./disclosure-arrow.css": "./dist/styles/disclosure-arrow.css",
     "./toolbar.css": "./dist/styles/toolbar.css",
     "./toolbar-control-group.css": "./dist/styles/toolbar-control-group.css",

@@ -5,6 +5,14 @@ export {
   type AppTabSize,
 } from './app-tab.js';
 export {
+  Badge,
+  type BadgeAppearance,
+  type BadgeProps,
+  type BadgeShape,
+  type BadgeSize,
+  type BadgeTone,
+} from './badge.js';
+export {
   calc,
   colorVar,
   type CssColor,

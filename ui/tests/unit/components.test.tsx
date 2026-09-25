@@ -5,6 +5,7 @@ import { Check, Circle, Folder, Plus } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
 import { AppTab } from '../../src/app-tab.js';
+import { Badge } from '../../src/badge.js';
 import { flex, rem, uiColor } from '../../src/css-values.js';
 import { DisclosureArrow } from '../../src/disclosure-arrow.js';
 import { EmptyState } from '../../src/empty-state.js';
@@ -40,6 +41,32 @@ const asHtml = (value: unknown) => String(value);
 const icon = LucideIcon({ icon: Circle, name: 'circle' });
 
 describe('production UI primitives', () => {
+  it('configures Badge semantics and presentation without consumer CSS', () => {
+    const badge = asHtml(
+      Badge({
+        children: '12',
+        label: '12 unread items',
+        tone: 'brand',
+        appearance: 'solid',
+        shape: 'rounded',
+        size: 'compact',
+        className: 'metadata',
+      }),
+    );
+    expect(badge).toContain('class="kui-badge metadata"');
+    expect(badge).toContain('data-component="badge"');
+    expect(badge).toContain('data-tone="brand"');
+    expect(badge).toContain('data-appearance="solid"');
+    expect(badge).toContain('data-shape="rounded"');
+    expect(badge).toContain('data-size="compact"');
+    expect(badge).toContain('aria-label="12 unread items">12</span>');
+    const duplicate = asHtml(
+      Badge({ children: 2, label: 'ignored', ariaHidden: true }),
+    );
+    expect(duplicate).toContain('aria-hidden="true">2</span>');
+    expect(duplicate).not.toContain('aria-label');
+  });
+
   it('configures dialog and popup surface geometry without changing native behavior', () => {
     const dialog = asHtml(
       DialogSurface({
@@ -595,7 +622,7 @@ describe('production UI primitives', () => {
       'aria-label="Tools, 2 tools" aria-expanded="false"',
     );
     expect(toggle).toContain(
-      'class="kui-list-header__count" aria-hidden="true">2</span>',
+      'data-component="badge" data-tone="neutral" data-appearance="quiet" data-shape="pill" data-size="compact" aria-hidden="true">2</span>',
     );
     expect(toggle).toContain('data-has-badge="false" data-has-count="true"');
     expect(toggle).toContain('data-inline="false"');
@@ -662,7 +689,7 @@ describe('production UI primitives', () => {
       '<h2 aria-label="Workspace, 0 workspaces" class="kui-text kui-list-header__label" data-component="text" data-tone="default" data-size="default" data-font="default">Workspace</h2>',
     );
     expect(header).toContain(
-      'class="kui-list-header__count" aria-hidden="true">0</span>',
+      'data-component="badge" data-tone="neutral" data-appearance="quiet" data-shape="pill" data-size="compact" aria-hidden="true">0</span>',
     );
     expect(header).toContain('data-has-badge="false" data-has-count="true"');
     expect(header).toContain('data-inline="false"');
@@ -680,7 +707,8 @@ describe('production UI primitives', () => {
       ListHeader({ label: 'Preview', badge: <span>New</span> }),
     );
     expect(badge).toContain('data-has-badge="true" data-has-count="false"');
-    expect(badge).toContain('class="kui-list-header__badge"><span>New</span>');
+    expect(badge).toContain('class="kui-badge"');
+    expect(badge).toContain('<span>New</span></span>');
     expect(
       asHtml(
         ListHeader({
@@ -702,7 +730,7 @@ describe('production UI primitives', () => {
     expect(status).toContain('data-density="compact"');
     expect(status).toContain('data-divider="before"');
     expect(status).toContain('data-indicator-tone="danger"');
-    expect(status).toContain('class="kui-list-header__badge"');
+    expect(status).toContain('class="kui-badge"');
     expect(
       asHtml(
         ListHeader({
@@ -835,7 +863,8 @@ describe('production UI primitives', () => {
       expect(invalid, String(count)).toContain(
         'data-has-badge="true" data-has-count="false"',
       );
-      expect(invalid, String(count)).not.toContain('kui-list-header__count');
+      expect(invalid, String(count)).toContain('data-component="badge"');
+      expect(invalid, String(count)).not.toContain('aria-hidden="true"');
       expect(invalid, String(count)).toContain(
         '&lt;script&gt;alert(1)&lt;/script&gt;',
       );
@@ -1372,7 +1401,9 @@ describe('production UI primitives', () => {
     expect(banner).toContain(
       'data-tone="danger" role="alert" aria-live="assertive"',
     );
-    expect(banner).toContain('class="kui-state-banner__badge">3</span>');
+    expect(banner).toContain(
+      'data-component="badge" data-tone="danger" data-appearance="solid" data-shape="pill" data-size="compact">3</span>',
+    );
     expect(banner).toContain(
       'class="kui-state-banner__detail">Reconnect</span>',
     );

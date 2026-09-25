@@ -246,10 +246,13 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
   optional string `badge` for a terse count or status beside the title. It
   inherits the banner tone and is announced with the banner, so keep its text
   meaningful and never rely on color alone.
+- **Use `Badge` for compact non-interactive metadata.** Configure its semantic
+  tone, appearance, shape, and size instead of creating badge CSS in an app or
+  consuming component. Use a real button or link for interactive content.
 
 ## Public exports
 
-`LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `FloatingToolbar`, `ToolbarText`, `Text`,
+`Badge`, `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `FloatingToolbar`, `ToolbarText`, `Text`,
 `ListItem`, `ListActionRow`, `ListHeader`, `ListInsetControl`,
 `ListInsetText`, `SegmentedControl`,
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,

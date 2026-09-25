@@ -76,7 +76,7 @@ test('pop stays attractive and readable across themes, contrast, and typed surfa
   await page.goto('/?component=list-header');
   const popBadge = page
     .locator('[data-indicator-tone="pop"]')
-    .locator('.kui-list-header__badge');
+    .locator('[data-component="badge"]');
   await expect(popBadge).toBeVisible();
   await expect.poll(() => contrastRatio(popBadge)).toBeGreaterThanOrEqual(4.5);
 

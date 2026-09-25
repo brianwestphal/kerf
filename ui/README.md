@@ -165,6 +165,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | Component                                                           | Browser import (includes reachable CSS) | Manual CSS export                      |
 | ------------------------------------------------------------------- | --------------------------------------- | -------------------------------------- |
 | `LucideIcon`                                                        | `@kerfjs/ui/lucide-icon`                | `@kerfjs/ui/lucide-icon.css`           |
+| `Badge`                                                             | `@kerfjs/ui/badge`                      | `@kerfjs/ui/badge.css`                 |
 | `DisclosureArrow`                                                   | `@kerfjs/ui/disclosure-arrow`           | `@kerfjs/ui/disclosure-arrow.css`      |
 | `Toolbar`                                                           | `@kerfjs/ui/toolbar`                    | `@kerfjs/ui/toolbar.css`               |
 | `ToolbarControlGroup`                                               | `@kerfjs/ui/toolbar-control-group`      | `@kerfjs/ui/toolbar-control-group.css` |

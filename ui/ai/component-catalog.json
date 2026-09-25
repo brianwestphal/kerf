@@ -5,6 +5,65 @@
   "description": "Machine-readable selection, composition, delivery, ownership, and accessibility metadata for Kerf UI and its supported Web Awesome set.",
   "entries": [
     {
+      "id": "badge",
+      "name": "Badge",
+      "category": "Foundation",
+      "kind": "component",
+      "source": "kerf",
+      "description": "Self-styled, non-interactive status, count, and category metadata configured through semantic tone, appearance, shape, and size props.",
+      "uses": [],
+      "purpose": "Present compact metadata without application-authored badge CSS or consumer styling of component internals.",
+      "publicExports": [
+        "Badge"
+      ],
+      "useWhen": [
+        "Show a short status, count, category, or metadata label whose presentation should be configured rather than restyled."
+      ],
+      "avoidWhen": [
+        "Do not use Badge as a button, link, or removable chip; choose an interactive control with the correct native semantics.",
+        "Do not rely on tone alone to communicate meaning."
+      ],
+      "alternatives": [],
+      "appOwns": [
+        "metadata text",
+        "semantic tone mapping",
+        "accessible label for abbreviated content"
+      ],
+      "variants": [
+        "neutral, brand, pop, success, warning, or danger tone",
+        "quiet, solid, or outline appearance",
+        "pill or rounded shape",
+        "compact or default size",
+        "labeled or decorative duplicate"
+      ],
+      "accessibility": [
+        "Badge is non-interactive. Supply label when visible content is abbreviated, and ariaHidden when it repeats an accessible name owned by the surrounding component.",
+        "Keep meaningful text visible because tone is supplementary."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "self",
+        "padding": "self"
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/badge",
+        "manualCssImport": "@kerfjs/ui/badge.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-badge"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=badge",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
       "id": "lucide-icon",
       "name": "LucideIcon",
       "category": "Foundation",
@@ -1992,11 +2051,12 @@
       "source": "kerf",
       "description": "Configurable section headings with full-width or shrink-wrapped inline presentation, semantic count/status indicators, density, group dividers, a logical-end action, disclosure states, and protected native-popover trigger metadata.",
       "uses": [
+        "badge",
         "lucide-icon",
         "disclosure-arrow",
         "text"
       ],
-      "purpose": "Fill the available section width by default, or shrink-wrap without outer geometry when inline, while splitting a dormant title and mutually exclusive semantic count or legacy badge from an optional logical-end action with an 18px visual; disclosure mode renders the title cluster as a button with a default production DisclosureArrow.",
+      "purpose": "Fill the available section width by default, or shrink-wrap without outer geometry when inline, while splitting a dormant title and mutually exclusive semantic count or badge from an optional logical-end action with an 18px visual; disclosure mode renders the title cluster as a button with a default production DisclosureArrow.",
       "publicExports": [
         "ListHeader"
       ],
@@ -2055,16 +2115,12 @@
         "kui-list-header",
         "kui-list-header__action",
         "kui-list-header__action-layer",
-        "kui-list-header__badge",
-        "kui-list-header__count",
         "kui-list-header__label",
         "kui-list-header__title",
         "kui-list-header__toggle"
       ],
       "publicTokens": [
         "--kui-color-neutral-border-quiet",
-        "--kui-color-neutral-fill-quiet",
-        "--kui-color-neutral-on-quiet",
         "--kui-focus-ring",
         "--kui-font-xs",
         "--kui-list-header-action-icon-size",
@@ -2072,15 +2128,8 @@
         "--kui-layout-inline-margin",
         "--kui-layout-item-gap",
         "--kui-layout-item-padding",
-        "--kui-layout-pill-radius",
-        "--kui-list-header-count-font-size",
         "--kui-list-header-hover-background",
-        "--kui-list-group-divider-color",
-        "--kui-color-brand-on-normal",
-        "--kui-color-pop-fill-normal",
-        "--kui-color-pop-on-normal",
-        "--kui-color-danger-fill-normal",
-        "--kui-color-danger-on-normal"
+        "--kui-list-group-divider-color"
       ],
       "links": {
         "catalogRoute": "?component=list-header",
@@ -3223,6 +3272,7 @@
       "source": "kerf",
       "description": "Polite status and assertive alert feedback with semantic tones, plus non-status pop emphasis for featured or novel content.",
       "uses": [
+        "badge",
         "lucide-icon"
       ],
       "purpose": "Present persistent inline feedback or attractive non-status emphasis with a named semantic tone.",
@@ -3289,7 +3339,6 @@
       "publicClasses": [
         "kui-state-banner",
         "kui-state-banner__action",
-        "kui-state-banner__badge",
         "kui-state-banner__copy",
         "kui-state-banner__detail",
         "kui-state-banner__icon"
@@ -3321,8 +3370,6 @@
         "--kui-state-banner-action-background",
         "--kui-state-banner-action-hover-background",
         "--kui-state-banner-background",
-        "--kui-state-banner-badge-background",
-        "--kui-state-banner-badge-foreground",
         "--kui-state-banner-border",
         "--kui-state-banner-danger-background",
         "--kui-state-banner-danger-border",

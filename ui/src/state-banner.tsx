@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { Badge } from './badge.js';
 import { em } from './css-values.js';
 import type { KerfUiContent } from './semantic-content.js';
 import { Skeleton } from './skeleton.js';
@@ -33,6 +34,7 @@ export function StateBanner({
   className = '',
   placeholder = false,
 }: StateBannerProps) {
+  const badgeTone = tone === 'info' ? 'brand' : tone;
   return (
     <section
       class={`kui-state-banner ${className}`.trim()}
@@ -47,9 +49,9 @@ export function StateBanner({
       <div class="kui-state-banner__copy">
         <strong>{placeholder ? <Skeleton width={em(10)} /> : title}</strong>
         {badge && (
-          <span class="kui-state-banner__badge">
+          <Badge appearance="solid" size="compact" tone={badgeTone}>
             {placeholder ? <Skeleton width={em(1.75)} /> : badge}
-          </span>
+          </Badge>
         )}
         {(placeholder || detail) && (
           <span class="kui-state-banner__detail">

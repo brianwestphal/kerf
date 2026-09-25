@@ -4123,6 +4123,54 @@ test('catalog routes every production component family and supports its stateful
   }
 });
 
+test('renders self-styled Badge variants without app CSS', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=badge');
+  const demo = page.locator('[data-demo="badge"]');
+  const badges = demo.locator('[data-component="badge"]');
+
+  await expect(badges).toHaveCount(4);
+  await expect(badges.nth(0)).toHaveAttribute('data-tone', 'success');
+  await expect(badges.nth(1)).toHaveAttribute('aria-label', '12 unread items');
+  await expect(badges.nth(1)).toHaveAttribute('data-appearance', 'solid');
+  await expect(badges.nth(2)).toHaveAttribute('data-shape', 'rounded');
+  await expect(badges.nth(2)).toHaveAttribute('data-appearance', 'outline');
+  expect(
+    await badges.evaluateAll((nodes) =>
+      nodes.every((node) => {
+        const bounds = node.getBoundingClientRect();
+        const style = window.getComputedStyle(node);
+        return (
+          bounds.height >= 20 &&
+          Number.parseFloat(style.paddingInlineStart) > 0 &&
+          (style.display === 'inline-flex' || style.display === 'flex')
+        );
+      }),
+    ),
+  ).toBe(true);
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/badge-wide.png',
+      fullPage: true,
+    });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(badges.last()).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true);
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/badge-narrow.png',
+      fullPage: true,
+    });
+});
+
 test('renders ListHeader counts as accessible neutral pills across scale and theme', async ({
   page,
   browserName,
@@ -4135,7 +4183,7 @@ test('renders ListHeader counts as accessible neutral pills across scale and the
       .locator('.kui-list-header')
       .filter({ has: page.getByRole('heading', { name }) });
   const attachments = headerWithHeading('Attachments, 12 attachments');
-  const count = attachments.locator('.kui-list-header__count');
+  const count = attachments.locator('[data-component="badge"]');
   const notes = headerWithHeading('Notes, 0 notes');
   const duplicates = headerWithHeading('Duplicates, 2 duplicates');
   const preview = headerWithHeading('Preview');
@@ -4153,14 +4201,14 @@ test('renders ListHeader counts as accessible neutral pills across scale and the
   await expect(
     notes.getByRole('heading', { name: 'Notes, 0 notes' }),
   ).toBeVisible();
-  await expect(notes.locator('.kui-list-header__count')).toHaveText('0');
+  await expect(notes.locator('[data-component="badge"]')).toHaveText('0');
   await expect(
     duplicates.getByRole('heading', { name: 'Duplicates, 2 duplicates' }),
   ).toBeVisible();
-  await expect(duplicates.locator('.kui-list-header__count')).toHaveText('2');
+  await expect(duplicates.locator('[data-component="badge"]')).toHaveText('2');
   await expect(preview).toHaveAttribute('data-has-count', 'false');
   await expect(preview).toHaveAttribute('data-has-badge', 'true');
-  await expect(preview.locator('.kui-list-header__badge')).toHaveText('New');
+  await expect(preview.locator('[data-component="badge"]')).toHaveText('New');
 
   const countGeometry = () =>
     count.evaluate((element) => {
@@ -4181,7 +4229,7 @@ test('renders ListHeader counts as accessible neutral pills across scale and the
         .querySelector<HTMLElement>('.kui-list-header__title')!
         .getBoundingClientRect();
       const countBounds = header
-        .querySelector<HTMLElement>('.kui-list-header__count')!
+        .querySelector<HTMLElement>('[data-component="badge"]')!
         .getBoundingClientRect();
       const action = header
         .querySelector<HTMLElement>('.kui-list-header__action')!
@@ -4748,7 +4796,7 @@ test('renders configured List family density, status, busy, dividers, and intera
   });
   await expect(attention).toHaveAttribute('data-density', 'compact');
   await expect(attention).toHaveAttribute('data-indicator-tone', 'danger');
-  await expect(attention.locator('.kui-list-header__badge')).toHaveText(
+  await expect(attention.locator('[data-component="badge"]')).toHaveText(
     '3 blocked',
   );
 
@@ -6379,7 +6427,7 @@ test('ships semantic banner palettes with scoped overrides', async ({
   const articles = page.locator(
     '[data-demo="state-banner"] .kui-catalog-example:not(:has([data-placeholder="true"]))',
   );
-  const badges = banners.locator('.kui-state-banner__badge');
+  const badges = banners.locator('[data-component="badge"]');
   await expect(banners).toHaveCount(7);
   await expect(articles).toHaveCount(7);
   await expect(badges).toHaveCount(6);

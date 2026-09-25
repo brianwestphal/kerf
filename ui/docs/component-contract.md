@@ -212,6 +212,12 @@ an unlisted implementation class. Selectors such as `.kui-state-banner span`,
 private structure. If no prop, token, or cataloged class expresses a recurring
 need, request a supported hook instead of inferring one from rendered markup.
 
+`Badge` owns the complete visual treatment for compact status, count, category,
+and metadata labels. Configure its semantic `tone`, `appearance`, `shape`, and
+`size`; do not recreate or override badge anatomy in an application or consuming
+component. Use `label` when visible content is abbreviated and `ariaHidden` only
+when a surrounding component already includes the same value in its accessible name.
+
 `ListItem` renders its leading icon and nested SVG at a root-scaled 18px by
 default while retaining the row's 44px minimum interactive target. Multiline
 rows align that 18px visual with the first inherited text line. The row clips
@@ -240,9 +246,8 @@ the logical end while the visible glyph defaults to 18px through
 
 `StateBanner` exposes instance-level `--kui-state-banner-background`,
 `--kui-state-banner-border`, `--kui-state-banner-foreground`,
-`--kui-state-banner-detail`, `--kui-state-banner-badge-background`,
-`--kui-state-banner-badge-foreground`, and action background variables. Its optional
-badge is a compact pill beside the title and follows the banner tone by default. Its five built-in
+`--kui-state-banner-detail` and action background variables. Its optional
+badge composes `Badge` beside the title and follows the banner tone by default. Its five built-in
 tones can be rethemed globally with
 `--kui-state-banner-{tone}-{background|border|foreground}`. Toolbar control,
 segmented-control, app-tab, and tab-bar colors likewise use their public

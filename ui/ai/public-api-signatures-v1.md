@@ -1955,6 +1955,33 @@ declare function delegateActions<E extends Element = Element>(root: HTMLElement,
 export { type ActionHandler, type DelegateActionsOptions, action, delegateActions };
 ```
 
+## `@kerfjs/ui/badge`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+
+type BadgeTone = 'neutral' | 'brand' | 'pop' | 'success' | 'warning' | 'danger';
+type BadgeAppearance = 'quiet' | 'solid' | 'outline';
+type BadgeShape = 'pill' | 'rounded';
+type BadgeSize = 'compact' | 'default';
+interface BadgeProps {
+    children: SafeHtml | string | number;
+    tone?: BadgeTone;
+    appearance?: BadgeAppearance;
+    shape?: BadgeShape;
+    size?: BadgeSize;
+    /** Optional accessible name when the visible content is abbreviated. */
+    label?: string;
+    /** Hide a repeated visual badge from assistive technology. */
+    ariaHidden?: boolean;
+    className?: string;
+}
+/** Compact, non-interactive metadata whose tone, emphasis, and shape are configured by props. */
+declare function Badge({ children, tone, appearance, shape, size, label, ariaHidden, className, }: BadgeProps): SafeHtml;
+
+export { Badge, type BadgeAppearance, type BadgeProps, type BadgeShape, type BadgeSize, type BadgeTone };
+```
+
 ## `@kerfjs/ui/lucide-icon`
 
 ```ts

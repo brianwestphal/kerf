@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { Badge, type BadgeTone } from './badge.js';
 import { em } from './css-values.js';
 import { DisclosureArrow } from './disclosure-arrow.js';
 import {
@@ -148,18 +149,24 @@ export function ListHeader({
     normalizedCount === undefined
       ? undefined
       : `${label}, ${normalizedCountLabel}`;
+  const badgeTone: BadgeTone =
+    indicatorTone === 'accent' ? 'brand' : indicatorTone;
   const indicator = placeholder ? (
     (normalizedCount !== undefined || renderedBadge) && (
-      <span class="kui-list-header__badge">
+      <Badge size="compact" tone={badgeTone}>
         <Skeleton width={em(1.75)} />
-      </span>
+      </Badge>
     )
   ) : normalizedCount === undefined ? (
-    renderedBadge && <span class="kui-list-header__badge">{renderedBadge}</span>
+    renderedBadge && (
+      <Badge size="compact" tone={badgeTone}>
+        {renderedBadge}
+      </Badge>
+    )
   ) : (
-    <span class="kui-list-header__count" aria-hidden="true">
+    <Badge size="compact" tone={badgeTone} ariaHidden>
       {normalizedCount}
-    </span>
+    </Badge>
   );
   const busy = placeholder ? ('true' as const) : undefined;
   if (toggle) {

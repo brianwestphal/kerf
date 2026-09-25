@@ -250,9 +250,10 @@ describe('consumer bundle boundaries', () => {
     const css = output(result, '.css');
     expect(inputs).toContain('dist/browser/list-header.js');
     expect(inputs).toContain('dist/styles/list-header.css');
+    expect(inputs).toContain('dist/styles/badge.css');
     expect(inputs).toContain('dist/styles/disclosure-arrow.css');
     expect(inputs).toContain('dist/styles/lucide-icon.css');
-    expect(css).toContain('.kui-list-header__count');
+    expect(css).toContain('.kui-badge');
     expect(css).toContain('.kui-disclosure-arrow');
     expect(css).toContain('--kui-color-neutral-fill-quiet');
     expect(css).not.toContain('.kui-list-item');
@@ -615,8 +616,6 @@ describe('consumer bundle boundaries', () => {
       'var(--kui-disclosure-arrow-size, 1.125rem)',
     );
     expect(disclosureBuilt).not.toContain('remify(');
-    expect(menuHeaderSource).toContain('min-width: remify(21.6px)');
-    expect(menuHeaderBuilt).toContain('min-width: 1.35rem');
     expect(menuHeaderSource).toContain(
       'width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))))',
     );
@@ -627,8 +626,6 @@ describe('consumer bundle boundaries', () => {
     expect(menuHeaderSource).toContain('remify(18px)');
     expect(menuHeaderBuilt).toContain('--kui-list-header-action-icon-size,');
     expect(menuHeaderBuilt).toContain('1.125rem');
-    expect(menuHeaderBuilt).toContain('.kui-list-header__count');
-    expect(menuHeaderBuilt).toContain('var(--kui-color-neutral-fill-quiet)');
     expect(menuHeaderSource).toContain('.kui-list-header__action-layer > svg');
     expect(menuHeaderSource).not.toContain(
       '.kui-list-header__toggle[aria-expanded',

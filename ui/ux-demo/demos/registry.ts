@@ -1,6 +1,7 @@
 import type { KerfCatalogId } from '../catalog.js';
 import type { RecipeId } from '../recipes/loaders.js';
 import { ApplicationTabsDemo } from './application-tabs.js';
+import { BadgeDemo } from './badge.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
 import { DisclosureArrowDemo } from './disclosure-arrow.js';
 import { EmptyStateDemo } from './empty-state.js';
@@ -42,6 +43,7 @@ import { ValueTableDemo } from './value-table.js';
 import { WorkbenchDemo } from './workbench.js';
 
 export const demos = {
+  badge: BadgeDemo,
   'lucide-icon': LucideIconDemo,
   'disclosure-arrow': DisclosureArrowDemo,
   foundation: FoundationDemo,

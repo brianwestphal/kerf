@@ -437,6 +437,7 @@ describe('UX catalog metadata', () => {
         .filter((entry) => entry.kind === 'component')
         .map((entry) => entry.name),
     ).toEqual([
+      'Badge',
       'LucideIcon',
       'DisclosureArrow',
       'Pane',
