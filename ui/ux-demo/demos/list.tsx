@@ -36,7 +36,7 @@ export function ListDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'list' }}>
       <CatalogExample
         label="Scrollable application list"
-        note="Pane owns the header/content/footer anatomy; the content List owns flex growth, scrolling, a typed major gap, and a right divider."
+        note="Pane owns the header/content/footer anatomy; the content List owns flex growth, scrolling, and a typed major gap."
       >
         <wa-card appearance="outlined">
           <Pane
@@ -77,7 +77,7 @@ export function ListDemo() {
               />
             }
           >
-            <List gap={space('l')} flex={flex(1)} scrollable dividerSides="r">
+            <List gap={space('l')} flex={flex(1)} scrollable>
               <section>
                 <List>
                   {workspaceHeading !== undefined ? (

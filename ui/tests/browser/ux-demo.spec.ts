@@ -5799,7 +5799,8 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     expect(geometry.list).toEqual({
       alignItems: 'stretch',
       display: 'flex',
-      dividerSides: 'r',
+      // The standalone list card has no neighbor, so no side divider.
+      dividerSides: null,
       flex: '1 1 auto',
       overflowY: 'auto',
     });

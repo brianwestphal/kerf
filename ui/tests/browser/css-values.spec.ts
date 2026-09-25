@@ -16,6 +16,19 @@ test('applies property-specific CSS values in a real browser', async ({
     '--_kui-list-gap:var(--kui-space-l);--_kui-list-flex:1 1 auto',
   );
   await expect(content).toHaveCSS('flex', '1 1 auto');
+  // The standalone list card has no neighboring region, so the scrolling
+  // content List draws no side divider (a lone right divider read as a stray
+  // vertical line just inside the card border).
+  await expect(content).not.toHaveAttribute('divider-sides');
+  const visibleDividerShadows = await content.evaluate((element) => {
+    const shadow = window.getComputedStyle(element).boxShadow;
+    if (shadow === 'none') return [];
+    return shadow
+      .split(/,(?![^(]*\))/)
+      .map((part) => part.trim())
+      .filter((part) => !/^rgba\([^)]*,\s*0\)/.test(part));
+  });
+  expect(visibleDividerShadows).toEqual([]);
 
   const tools = content.locator('section').nth(1).locator(':scope > .kui-list');
   await expect(tools).toHaveCSS('gap', '8px');
