@@ -2051,14 +2051,14 @@ import * as kerfjs from 'kerfjs';
 import { KerfBaseAttrs } from 'kerfjs/jsx-runtime';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
-type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
+type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
 type TextTone = 'default' | 'quiet' | 'danger';
 type TextSize = 'default' | 'compact';
 type TextFont = 'default' | 'monospace';
 type TextBorder = 'transparent' | 'none';
 type TextContent = KerfUiContent | string | number | readonly TextContent[];
 type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
-    /** Native heading or paragraph element to render. Defaults to `p`. */
+    /** Native heading, paragraph, or inline span element to render. Defaults to `p`. */
     variant?: TextVariant;
     /** Semantic foreground treatment. Defaults to the inherited foreground. */
     tone?: TextTone;
@@ -2073,7 +2073,8 @@ type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
     className?: string;
 };
 /**
- * Semantic heading or paragraph text with the standard content-item padding.
+ * Semantic heading, paragraph, or inline text. Block variants use the standard
+ * content-item padding; `span` adds no box geometry.
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
 declare function Text({ variant: Variant, tone, size, font, border, children, class: classValue, className, ...attributes }: TextProps): kerfjs.SafeHtml;

@@ -120,14 +120,15 @@ CSS strings.
 
 ## Text
 
-Use `Text` from `@kerfjs/ui/text` for ordinary semantic headings and
-paragraphs. It renders a native `p` by default; set `variant` to `h1`–`h6` when
-the document outline calls for a heading. Ordinary global, `data-*`, and
-`aria-*` attributes pass through. Every variant resets its native margin, owns a
-1px transparent border, and supplies the standard 8px item padding; native
-typography remains available to the surrounding composition. Choose heading
-levels from the document outline, not for visual size. Toolbar identity and
-page-heading compositions continue to use `ToolbarText`.
+Use `Text` from `@kerfjs/ui/text` for ordinary semantic headings, paragraphs,
+and inline secondary text. It renders a native `p` by default; set `variant` to
+`h1`–`h6` when the document outline calls for a heading, or `span` for inline
+copy inside a row, label, or table cell. Ordinary global, `data-*`, and `aria-*`
+attributes pass through. Block variants reset their native margin, own a 1px
+transparent border, and supply the standard 8px item padding. The `span`
+variant owns no margin, border, or padding. Choose heading levels from the
+document outline, not for visual size. Toolbar identity and page-heading
+compositions continue to use `ToolbarText`.
 
 Presentation is independent of the native element: use `tone="quiet"` for
 supporting copy, `tone="danger"` for error or validation copy, `size="compact"`
@@ -141,6 +142,7 @@ import { Text } from "@kerfjs/ui/text";
 <Text variant="h2" id="details-title">Details</Text>;
 <Text aria-describedby="details-title">Supporting copy</Text>;
 <Text tone="quiet" size="compact">Updated yesterday</Text>;
+<strong>Inbox<Text variant="span" tone="quiet" size="compact"> · 3 msg</Text></strong>;
 <Text tone="danger" font="monospace">ERR_INVALID_ID</Text>;
 ```
 

@@ -519,6 +519,18 @@ describe('production UI primitives', () => {
     expect(
       asHtml(
         Text({
+          variant: 'span',
+          tone: 'quiet',
+          size: 'compact',
+          children: ' · 3 msg',
+        }),
+      ),
+    ).toBe(
+      '<span class="kui-text" data-component="text" data-tone="quiet" data-size="compact" data-font="default" data-border="transparent"> · 3 msg</span>',
+    );
+    expect(
+      asHtml(
+        Text({
           tone: 'danger',
           size: 'compact',
           font: 'monospace',

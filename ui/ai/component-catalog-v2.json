@@ -1339,13 +1339,13 @@
           "border": "self",
           "padding": "self",
           "notes": [
-            "Text resets the native variant's margin and adds a 1px transparent border plus the standard 8px item padding."
+            "Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; span has no margin, border, or padding."
           ]
         }
       },
       "accessibility": {
         "obligations": [
-          "Text renders a native paragraph by default; choose an h1 through h6 variant by document outline rather than appearance.",
+          "Text renders a native paragraph by default; choose an h1 through h6 variant by document outline rather than appearance, or span for inline secondary text.",
           "Ordinary global, data, and ARIA attributes pass through to the native element.",
           "Choose tone, size, and font independently of the heading level so appearance does not distort the document outline."
         ]

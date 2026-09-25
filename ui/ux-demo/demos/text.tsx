@@ -40,6 +40,12 @@ export function TextDemo() {
           <Text tone="quiet" size="compact" font="monospace">
             Quiet compact code: PO-1042
           </Text>
+          <strong>
+            Inbox
+            <Text variant="span" tone="quiet" size="compact">
+              {' · 3 msg'}
+            </Text>
+          </strong>
         </div>
       </CatalogExample>
     </CatalogExampleStack>

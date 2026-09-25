@@ -10,7 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
-- Fixed `ToolbarControlGroup` dropdown triggers sizing to fixed 48px/66px boxes,
+- Added an inline `Text` span variant for secondary copy inside rows, labels,
+  and table cells, preserving tone, size, and font roles without box geometry.
+- Fixed `ToolbarControlGroup` dropdown triggers that were sized to fixed 48px/66px boxes,
   which clipped popup icons and let compact mixed-control carets overflow in
   Safari while distorting longer catalog controls.
 - Added a `TabBar.end` action zone for layouts that need a tab-local adjacent

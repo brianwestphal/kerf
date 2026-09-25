@@ -24,3 +24,9 @@
 .kui-text[data-border="none"] {
   border: 0;
 }
+
+span.kui-text {
+  margin: 0;
+  border: 0;
+  padding: 0;
+}

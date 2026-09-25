@@ -38,8 +38,8 @@ test('Text renders semantic variants with standard padded geometry', async ({
       padding: '8px',
     });
 
-  const roles = page.locator('.demo-text-role-stack > .kui-text');
-  await expect(roles).toHaveCount(5);
+  const roles = page.locator('.demo-text-role-stack .kui-text');
+  await expect(roles).toHaveCount(6);
   await expect(roles.nth(0)).toHaveAttribute('data-tone', 'quiet');
   await expect(roles.nth(1)).toHaveAttribute('data-tone', 'danger');
   await expect(roles.nth(2)).toHaveAttribute('data-size', 'compact');
@@ -47,6 +47,27 @@ test('Text renders semantic variants with standard padded geometry', async ({
   await expect(roles.nth(4)).toHaveAttribute('data-tone', 'quiet');
   await expect(roles.nth(4)).toHaveAttribute('data-size', 'compact');
   await expect(roles.nth(4)).toHaveAttribute('data-font', 'monospace');
+  await expect(roles.nth(5)).toHaveJSProperty('tagName', 'SPAN');
+  await expect(roles.nth(5)).toHaveAttribute('data-tone', 'quiet');
+  await expect(roles.nth(5)).toHaveAttribute('data-size', 'compact');
+  await expect
+    .poll(() =>
+      roles.nth(5).evaluate((element) => {
+        const style = globalThis.getComputedStyle(element);
+        return {
+          display: style.display,
+          border: style.borderTopWidth,
+          margin: style.marginTop,
+          padding: style.paddingTop,
+        };
+      }),
+    )
+    .toEqual({
+      display: 'inline',
+      border: '0px',
+      margin: '0px',
+      padding: '0px',
+    });
   await expect
     .poll(() =>
       roles.evaluateAll((elements) => {
@@ -95,9 +116,19 @@ test('Text renders semantic variants with standard padded geometry', async ({
     monoDiffers: true,
   });
 
+  const presentationExample = roles
+    .nth(5)
+    .locator('xpath=ancestor::*[@data-catalog-example]');
+  await presentationExample.screenshot({
+    path: 'test-results/text-inline-wide.png',
+  });
+
   await page.screenshot({ path: 'test-results/text-wide.png', fullPage: true });
   await page.locator('[data-action="toggle-theme"]').click();
   await expect(page.locator('html')).toHaveClass(/demo-dark/);
+  await presentationExample.screenshot({
+    path: 'test-results/text-inline-dark.png',
+  });
   await page.screenshot({
     path: 'test-results/text-dark-wide.png',
     fullPage: true,
@@ -113,6 +144,9 @@ test('Text renders semantic variants with standard padded geometry', async ({
       ),
     )
     .toBeLessThanOrEqual(1);
+  await presentationExample.screenshot({
+    path: 'test-results/text-inline-narrow.png',
+  });
   await page.screenshot({
     path: 'test-results/text-narrow.png',
     fullPage: true,

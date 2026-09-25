@@ -1453,12 +1453,12 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "Semantic native paragraph text by default, with heading variants, composable semantic presentation roles, and standard padded content geometry.",
+      "description": "Semantic native paragraph text by default, with heading and inline-span variants plus composable semantic presentation roles.",
       "uses": [],
-      "purpose": "Render paragraph semantics by default or h1 through h6 when selected, while independently configuring quiet or danger tone, compact size, or monospace font and consistently supplying standard geometry.",
+      "purpose": "Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact size, or monospace font.",
       "publicExports": ["Text"],
       "useWhen": [
-        "Render ordinary application headings or paragraphs that should use native document semantics and the standard text-box inset."
+        "Render ordinary application headings or paragraphs with native document semantics, or inline secondary text inside rows, labels, and table cells."
       ],
       "avoidWhen": [
         "Do not use Text for toolbar identity or title content; use ToolbarText inside a Toolbar zone.",
@@ -1483,13 +1483,13 @@
         "document heading hierarchy"
       ],
       "variants": [
-        "p or h1 through h6 semantic variant",
+        "p, h1 through h6, or inline span semantic variant",
         "default, quiet, or danger tone",
         "default or compact size",
         "default or monospace font"
       ],
       "accessibility": [
-        "Text renders a native paragraph by default; choose an h1 through h6 variant by document outline rather than appearance.",
+        "Text renders a native paragraph by default; choose an h1 through h6 variant by document outline rather than appearance, or span for inline secondary text.",
         "Ordinary global, data, and ARIA attributes pass through to the native element.",
         "Choose tone, size, and font independently of the heading level so appearance does not distort the document outline."
       ],
@@ -1498,7 +1498,7 @@
         "border": "self",
         "padding": "self",
         "notes": [
-          "Text resets the native variant's margin and adds a 1px transparent border plus the standard 8px item padding."
+          "Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; span has no margin, border, or padding."
         ]
       },
       "delivery": {

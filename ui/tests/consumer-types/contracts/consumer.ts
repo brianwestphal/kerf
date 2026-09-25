@@ -97,6 +97,7 @@ import { Workbench } from '@kerfjs/ui/workbench';
 
 const icon = ToolbarText({ text: 'Icon' });
 const textVariant: TextVariant = 'h3';
+const inlineTextVariant: TextVariant = 'span';
 const textTone: TextTone = 'quiet';
 const textSize: TextSize = 'compact';
 const textFont: TextFont = 'monospace';
@@ -111,8 +112,9 @@ Text({
   children: 'Section',
 });
 Text({ children: 'Paragraph by default' });
-// @ts-expect-error Text variants are limited to native headings and paragraphs.
-Text({ variant: 'span', children: 'Invalid' });
+Text({ variant: inlineTextVariant, children: 'Inline metadata' });
+// @ts-expect-error Text variants are limited to native headings, paragraphs, and spans.
+Text({ variant: 'div', children: 'Invalid' });
 // @ts-expect-error Text tones are a finite semantic vocabulary.
 Text({ tone: 'muted', children: 'Invalid' });
 // @ts-expect-error Text sizes are independent of heading variants and finite.

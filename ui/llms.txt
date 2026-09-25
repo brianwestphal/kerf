@@ -185,12 +185,13 @@ the folder modules, and CSS only imports their owner stylesheets.
   in the leading zone, and actions in a trailing group. Supporting copy is
   app-owned content below. Do not create a private heading wrapper or restyle the
   toolbar.
-- **Use `Text` for ordinary semantic headings and paragraphs outside toolbar
-  title zones.** Omit `variant` for the default `p`, or pass `h1`–`h6` based on
-  the document outline. Independently compose `tone="quiet|danger"`,
+- **Use `Text` for ordinary semantic headings, paragraphs, and inline secondary
+  text outside toolbar title zones.** Omit `variant` for the default `p`, pass
+  `h1`–`h6` based on the document outline, or use `variant="span"` inside a row,
+  label, or table cell without adding box geometry. Independently compose `tone="quiet|danger"`,
   `size="compact"`, and `font="monospace"` for supporting, error, compact, and
   code roles instead of global utility classes. It passes native attributes
-  through and owns the standard transparent border plus item padding; keep
+  through; block variants own the standard transparent border plus item padding, while `span` owns none. Keep
   toolbar titles on `ToolbarText` and list-aligned bare prose on `ListInsetText`.
 - **Space by the five-step scale, by relationship not by eye.** `0`
   `--kui-space-none`, `4px` `--kui-space-2xs`, `8px` `--kui-space-xs` (inside a

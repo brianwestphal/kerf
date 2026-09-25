@@ -164,11 +164,13 @@ on `ToolbarText` for page or section landmarks; omit it for a dialog title named
 through `aria-labelledby`. The app owns modal focus, dismissal, command policy,
 ids, supporting copy, and action handling.
 
-Use `Text` from `@kerfjs/ui/text` for ordinary headings and paragraphs outside
-toolbar title zones. It renders `p` by default; set `variant` to `h1`–`h6` only
-when the document hierarchy calls for a heading. It passes ordinary native
-attributes through and owns the standard transparent border plus content
-padding. Keep presentation independent of semantics: compose `tone="quiet"` or
+Use `Text` from `@kerfjs/ui/text` for ordinary headings, paragraphs, and inline
+secondary copy outside toolbar title zones. It renders `p` by default; set
+`variant` to `h1`–`h6` only when the document hierarchy calls for a heading, or
+to `span` inside a row, label, or table cell. It passes ordinary native
+attributes through. Block variants own the standard transparent border plus
+content padding, while `span` owns no box geometry. Keep presentation
+independent of semantics: compose `tone="quiet"` or
 `tone="danger"`, `size="compact"`, and `font="monospace"` for supporting,
 validation, metadata, and code roles instead of global utility classes.
 

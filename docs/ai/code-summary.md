@@ -710,9 +710,11 @@ Heading recipes compose `Toolbar`, direct `ToolbarText`, and optional
 `ToolbarControlGroup` icon/action zones through public subpaths, with app-owned
 supporting copy on a separate row. Page and section titles opt into heading
 semantics through `ToolbarText.headingLevel`.
-Ordinary UI headings and paragraphs use `Text` (`ui/src/text.tsx`), whose
-default `p` and optional `h1`–`h6` variant render native semantics and whose
-companion CSS adds the standard transparent border and item padding. Its
+Ordinary UI headings, paragraphs, and inline secondary copy use `Text`
+(`ui/src/text.tsx`), whose default `p`, optional `h1`–`h6`, and inline `span`
+variants render native semantics. Its companion CSS adds the standard
+transparent border and item padding to block variants while leaving `span`
+without box geometry. Its
 independent `tone`, `size`, and `font` unions expose quiet/danger, compact, and
 monospace roles through stable data attributes and semantic foundation tokens.
 Compact mixed `ToolbarControlGroup` selections keep standard item padding,
