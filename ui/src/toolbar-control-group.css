@@ -71,6 +71,7 @@
 }
 .kui-toolbar-control-group[data-size="compact"] {
   --kui-toolbar-group-size: remify(34px);
+  gap: 4px; /* Compensating for -2px margins */
 }
 .kui-toolbar-control-group[data-density="tight"] {
   --kui-layout-item-padding: remify(5px);
@@ -288,6 +289,13 @@
   height: var(--kui-toolbar-group-size);
   margin: -2px;
   border-radius: var(--kui-toolbar-group-radius);
+}
+
+.kui-toolbar-control-group[data-size="compact"][data-content="mixed"]
+  > wa-dropdown,
+.kui-toolbar-control-group[data-size="compact"][data-content="mixed"]
+  > wa-button {
+  margin: -2px;
 }
 
 /* A compact icon-only trigger may stay square, but a mixed-content dropdown

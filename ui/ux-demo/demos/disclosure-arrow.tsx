@@ -11,7 +11,7 @@ export function DisclosureArrowDemo() {
       <CatalogExample
         label="Default"
         note="Closed points right, open points down. Toggle to animate."
-        align="glyph"
+        align="inline-control"
       >
         <button
           type="button"
@@ -25,7 +25,7 @@ export function DisclosureArrowDemo() {
       <CatalogExample
         label="Replacement icon"
         note="A replacement glyph, closed left and open up."
-        align="glyph"
+        align="inline-control"
       >
         <button
           type="button"
