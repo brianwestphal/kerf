@@ -1,5 +1,3 @@
-import './lucide-icon.css';
-
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Bell } from 'lucide';
@@ -19,9 +17,7 @@ export function LucideIconDemo() {
         }
         align="glyph"
       >
-        <span class="demo-lucide-icon-frame">
-          <LucideIcon icon={Bell} name="bell" />
-        </span>
+        <LucideIcon icon={Bell} name="bell" />
       </CatalogExample>
       <CatalogExample
         label="Meaningful"
@@ -30,13 +26,11 @@ export function LucideIconDemo() {
         }
         align="glyph"
       >
-        <span class="demo-lucide-icon-frame">
-          <LucideIcon
-            icon={Bell}
-            name="notification"
-            label="Notifications ready"
-          />
-        </span>
+        <LucideIcon
+          icon={Bell}
+          name="notification"
+          label="Notifications ready"
+        />
       </CatalogExample>
     </CatalogExampleStack>
   );

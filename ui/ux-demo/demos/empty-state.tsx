@@ -1,8 +1,7 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { EmptyState } from '@kerfjs/ui/empty-state';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Search } from 'lucide';
-
-import { button, icon } from './state.js';
 
 export function EmptyStateDemo() {
   return (
@@ -15,8 +14,12 @@ export function EmptyStateDemo() {
         <EmptyState
           title="Nothing here yet"
           detail="Create the first item when you are ready."
-          icon={icon(Search, 'search')}
-          action={button('Create item', 'log-add')}
+          icon={<LucideIcon icon={Search} name="search" />}
+          action={
+            <button type="button" data-action="log-add">
+              Create item
+            </button>
+          }
         />
       </CatalogExample>
       <CatalogExample

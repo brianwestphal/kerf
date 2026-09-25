@@ -4,6 +4,7 @@ export {
   CatalogExample,
   type CatalogExampleAlign,
   type CatalogExampleProps,
+  type CatalogExampleViewport,
 } from './catalog/components/catalog-example.js';
 export {
   CatalogExampleStack,
@@ -17,4 +18,5 @@ export type {
   CatalogResource,
   CatalogSecondaryGroup,
   CatalogSection,
+  CatalogStageRootAttributes,
 } from './catalog/types.js';

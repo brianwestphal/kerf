@@ -266,7 +266,7 @@ describe('UX catalog metadata', () => {
       artifact.entries.find(({ id }) => id === 'application-tabs'),
     ).toMatchObject({
       kind: 'composition',
-      uses: ['tabs', 'tab-bar', 'toolbar-control-group'],
+      uses: ['tabs', 'tab-bar', 'toolbar-control-group', 'text', 'wa-card'],
       publicExports: [],
     });
     expect(

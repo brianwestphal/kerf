@@ -1,4 +1,3 @@
-import './nav-stack.css';
 import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/list.css';
 import '@kerfjs/ui/list-header.css';
@@ -124,15 +123,14 @@ export function NavStackDemo() {
       <CatalogExample
         label="Interactive push and pop"
         note="Choose a project to push its detail. The content slides while the view-owned title, actions, and bottom status cross-fade; Back pops to the preserved list."
+        viewport={{ layout: 'grid', width: 'compact', height: 'tall' }}
       >
-        <div class="demo-nav-stack">
-          <NavStack
-            id="catalog-nav-stack"
-            label="Project library"
-            views={demoViews.value}
-            backLabel="Back to library"
-          />
-        </div>
+        <NavStack
+          id="catalog-nav-stack"
+          label="Project library"
+          views={demoViews.value}
+          backLabel="Back to library"
+        />
       </CatalogExample>
     </CatalogExampleStack>
   );

@@ -1,4 +1,5 @@
-import './grid.css';
+import '@awesome.me/webawesome/dist/components/card/card.js';
+import '@awesome.me/webawesome/dist/components/input/input.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Grid } from '@kerfjs/ui/grid';
@@ -10,52 +11,32 @@ export function GridDemo() {
         label="Two columns"
         note="Related form fields divide the available width evenly with the standard homogeneous-group gap."
       >
-        <div class="demo-grid-frame">
-          <Grid columns={2} gap="m">
-            <label class="demo-grid-field">
-              <span>Quantity</span>
-              <input
-                class="demo-grid-field__input"
-                value="12"
-                aria-label="Quantity"
-              />
-            </label>
-            <label class="demo-grid-field">
-              <span>Unit</span>
-              <input
-                class="demo-grid-field__input"
-                value="pieces"
-                aria-label="Unit"
-              />
-            </label>
-          </Grid>
-        </div>
+        <Grid columns={2} gap="m">
+          <wa-input label="Quantity" value="12"></wa-input>
+          <wa-input label="Unit" value="pieces"></wa-input>
+        </Grid>
       </CatalogExample>
       <CatalogExample
         label="Four columns"
         note="The same component accepts any positive column count; each minmax track stays equal even when content has different intrinsic widths."
       >
-        <div class="demo-grid-frame">
-          <Grid columns={4} gap="xs">
-            {['Requested', 'Quoted price', 'Reviewed', 'Decided'].map(
-              (label) => (
-                <span class="demo-grid-cell">{label}</span>
-              ),
-            )}
-          </Grid>
-        </div>
+        <Grid columns={4} gap="xs">
+          {['Requested', 'Quoted price', 'Reviewed', 'Decided'].map((label) => (
+            <wa-card appearance="outlined">{label}</wa-card>
+          ))}
+        </Grid>
       </CatalogExample>
       <CatalogExample
         label="Flex participation"
         note="Like Row and List, Grid can explicitly grow inside a flex-owned parent without changing its equal-track contract."
       >
-        <div class="demo-grid-flex-parent">
+        <wa-card appearance="sunken">
           <Grid columns={3} gap="xs" flex>
             {['One', 'Two', 'Three'].map((label) => (
-              <span class="demo-grid-cell">{label}</span>
+              <wa-card appearance="outlined">{label}</wa-card>
             ))}
           </Grid>
-        </div>
+        </wa-card>
       </CatalogExample>
     </CatalogExampleStack>
   );

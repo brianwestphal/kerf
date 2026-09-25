@@ -1,4 +1,3 @@
-import './webawesome-demos.css';
 import '@awesome.me/webawesome/dist/components/accordion-item/accordion-item.js';
 import '@awesome.me/webawesome/dist/components/accordion/accordion.js';
 import '@awesome.me/webawesome/dist/components/animated-image/animated-image.js';
@@ -70,8 +69,12 @@ import '@awesome.me/webawesome/dist/components/tree/tree.js';
 import '@awesome.me/webawesome/dist/components/zoomable-frame/zoomable-frame.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { List } from '@kerfjs/ui/list';
+import { Row } from '@kerfjs/ui/row';
 import { Select } from '@kerfjs/ui/select';
+import { SunkenPanel } from '@kerfjs/ui/sunken-panel';
 import { Text } from '@kerfjs/ui/text';
+import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import type { SafeHtml } from 'kerfjs';
 
 import { webAwesomeCatalog, type WebAwesomeCatalogId } from './catalog.js';
@@ -93,7 +96,7 @@ type DemoRenderer = () => SafeHtml;
 
 const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   'wa-button': () => (
-    <div class="wa-demo-row">
+    <Row hAlign="center" vAlign="middle" wrap>
       <wa-button variant="brand" appearance="accent">
         Primary
       </wa-button>
@@ -101,7 +104,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <wa-button variant="danger" appearance="filled">
         Destructive
       </wa-button>
-    </div>
+    </Row>
   ),
   'wa-button-group': () => (
     <wa-button-group label="Text alignment">
@@ -111,13 +114,15 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </wa-button-group>
   ),
   'wa-copy-button': () => (
-    <div class="wa-demo-inline-field">
-      <code class="wa-demo-inline-field__code">npm i @kerfjs/ui</code>
+    <Row vAlign="middle">
+      <Text variant="span" font="monospace">
+        npm i @kerfjs/ui
+      </Text>
       <wa-copy-button
         value="npm i @kerfjs/ui"
         copy-label="Copy install command"
       ></wa-copy-button>
-    </div>
+    </Row>
   ),
   'wa-dropdown': () => (
     <wa-dropdown>
@@ -130,7 +135,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </wa-dropdown>
   ),
   'wa-dropdown-item': () => (
-    <div class="wa-demo-menu" role="menu">
+    <div role="menu">
       <wa-dropdown-item>Open</wa-dropdown-item>
       <wa-dropdown-item type="checkbox" checked>
         Pin to sidebar
@@ -140,11 +145,11 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
 
   'wa-checkbox': () => (
-    <div class="wa-demo-stack">
+    <List gap="xs">
       <wa-checkbox checked>Include in release</wa-checkbox>
       <wa-checkbox indeterminate>Some child tasks complete</wa-checkbox>
       <wa-checkbox disabled>Locked setting</wa-checkbox>
-    </div>
+    </List>
   ),
   'wa-checkbox-group': () => (
     <wa-checkbox-group
@@ -165,7 +170,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     ></wa-color-picker>
   ),
   'wa-input': () => (
-    <div class="wa-demo-form-stack">
+    <List gap="xs">
       <wa-input
         label="Project name"
         value="Component library"
@@ -173,7 +178,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         with-clear
       ></wa-input>
       <wa-input label="Search" placeholder="Filter components"></wa-input>
-    </div>
+    </List>
   ),
   'wa-known-date': () => (
     <wa-known-date
@@ -209,14 +214,16 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     ></wa-otp-input>
   ),
   'wa-radio': () => (
-    <div class="wa-demo-stack" role="group" aria-label="Radio states">
-      <wa-radio value="selected" checked>
-        Selected choice
-      </wa-radio>
-      <wa-radio value="available">Available choice</wa-radio>
-      <wa-radio value="disabled" disabled>
-        Disabled choice
-      </wa-radio>
+    <div role="group" aria-label="Radio states">
+      <List gap="xs">
+        <wa-radio value="selected" checked>
+          Selected choice
+        </wa-radio>
+        <wa-radio value="available">Available choice</wa-radio>
+        <wa-radio value="disabled" disabled>
+          Disabled choice
+        </wa-radio>
+      </List>
     </div>
   ),
   'wa-radio-group': () => (
@@ -245,11 +252,11 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     ></wa-slider>
   ),
   'wa-switch': () => (
-    <div class="wa-demo-stack">
+    <List gap="xs">
       <wa-switch checked>Live updates</wa-switch>
       <wa-switch>Compact navigation</wa-switch>
       <wa-switch disabled>Managed setting</wa-switch>
-    </div>
+    </List>
   ),
   'wa-textarea': () => (
     <wa-textarea
@@ -269,7 +276,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
 
   'wa-accordion': () => (
-    <div class="wa-demo-stack">
+    <List gap="xs">
       <wa-accordion appearance="sunken">
         <wa-accordion-item label="Sunken disclosure" expanded>
           The lowered surface follows the same framed geometry.
@@ -285,7 +292,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           Header and body align directly with surrounding content.
         </wa-accordion-item>
       </wa-accordion>
-    </div>
+    </List>
   ),
   'wa-accordion-item': () => (
     <wa-accordion>
@@ -310,7 +317,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </wa-card>
   ),
   'wa-details': () => (
-    <div class="wa-demo-stack">
+    <List gap="xs">
       <wa-details appearance="sunken" summary="Sunken compatibility notes" open>
         <Text>The lowered surface follows the same framed geometry.</Text>
       </wa-details>
@@ -324,16 +331,16 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
       <wa-details appearance="plain" summary="Plain compatibility notes" open>
         <Text>Header and body align directly with surrounding content.</Text>
       </wa-details>
-    </div>
+    </List>
   ),
   'wa-dialog': () => (
-    <div class="wa-demo-launcher">
+    <List hAlign="center" gap="xs">
       <wa-button variant="brand" data-action="show-wa-dialog">
         Open dialog
       </wa-button>
-      <span class="wa-demo-launcher__copy">
+      <Text variant="span" tone="quiet" size="compact">
         Footer actions replace the native header action.
-      </span>
+      </Text>
       <wa-dialog
         id="catalog-wa-dialog"
         class="hide-actions"
@@ -352,82 +359,86 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           Publish
         </wa-button>
       </wa-dialog>
-    </div>
+    </List>
   ),
   'wa-divider': () => (
-    <div class="wa-demo-divider">
-      <section class="wa-demo-divider__section">
+    <List gap="m">
+      <Row vAlign="middle" hAlign="space-between">
         <strong>Ready</strong>
-        <span class="wa-demo-divider__detail">12 components</span>
-      </section>
+        <Text variant="span" tone="quiet" size="compact">
+          12 components
+        </Text>
+      </Row>
       <wa-divider></wa-divider>
-      <section class="wa-demo-divider__section">
+      <Row vAlign="middle" hAlign="space-between">
         <strong>Needs review</strong>
-        <span class="wa-demo-divider__detail">3 components</span>
-      </section>
-    </div>
+        <Text variant="span" tone="quiet" size="compact">
+          3 components
+        </Text>
+      </Row>
+    </List>
   ),
   'wa-drawer': () => (
-    <div class="wa-demo-launcher">
+    <List hAlign="center" gap="xs">
       <wa-button variant="brand" data-action="show-wa-drawer">
         Open drawer
       </wa-button>
-      <span class="wa-demo-launcher__copy">
+      <Text variant="span" tone="quiet" size="compact">
         The drawer enters from the trailing edge.
-      </span>
+      </Text>
       <wa-drawer id="catalog-wa-drawer" label="Inspector" with-footer>
         <Text>Theme and accessibility settings live here.</Text>
         <wa-button slot="footer" variant="brand" data-action="hide-wa-drawer">
           Done
         </wa-button>
       </wa-drawer>
-    </div>
+    </List>
   ),
   'wa-page': () => (
-    <div class="wa-demo-page-frame">
+    <SunkenPanel ariaLabel="Compact page example">
       <wa-page mobile-breakpoint="0">
-        <strong class="wa-demo-page__region" slot="header">
-          Workspace
-        </strong>
-        <a class="wa-demo-page__navigation" slot="navigation" href="#overview">
+        <Text variant="span" slot="header">
+          <strong>Workspace</strong>
+        </Text>
+        <a slot="navigation" href="#overview">
           Overview
         </a>
-        <strong class="wa-demo-page__region" slot="main-header">
-          Component catalog
-        </strong>
-        <p class="wa-demo-page__region">
-          A compact application shell inside the preview canvas.
-        </p>
-        <small class="wa-demo-page__region" slot="footer">
+        <Text variant="span" slot="main-header">
+          <strong>Component catalog</strong>
+        </Text>
+        <Text>A compact application shell inside the preview canvas.</Text>
+        <Text variant="span" size="compact" tone="quiet" slot="footer">
           Kerf UI · Web Awesome
-        </small>
+        </Text>
       </wa-page>
-    </div>
+    </SunkenPanel>
   ),
   'wa-scroller': () => (
-    <div class="wa-demo-scroller-frame">
-      <wa-scroller>
-        <article class="wa-demo-scroller__card">Foundation</article>
-        <article class="wa-demo-scroller__card">Navigation</article>
-        <article class="wa-demo-scroller__card">Controls</article>
-        <article class="wa-demo-scroller__card">Feedback</article>
-        <article class="wa-demo-scroller__card">Helpers</article>
-      </wa-scroller>
-    </div>
+    <wa-scroller>
+      <wa-card appearance="sunken">Foundation</wa-card>
+      <wa-card appearance="sunken">Navigation</wa-card>
+      <wa-card appearance="sunken">Controls</wa-card>
+      <wa-card appearance="sunken">Feedback</wa-card>
+      <wa-card appearance="sunken">Helpers</wa-card>
+    </wa-scroller>
   ),
   'wa-split-panel': () => (
-    <div class="wa-demo-split-frame">
+    <SunkenPanel ariaLabel="Resizable split panel example">
       <wa-split-panel position="42">
-        <div class="wa-demo-split__pane" slot="start">
+        <List hAlign="center" vAlign="middle" gap="xs" slot="start">
           <strong>Navigator</strong>
-          <span class="wa-demo-split__detail">Resizable start panel</span>
-        </div>
-        <div class="wa-demo-split__pane" slot="end">
+          <Text variant="span" tone="quiet" size="compact">
+            Resizable start panel
+          </Text>
+        </List>
+        <List hAlign="center" vAlign="middle" gap="xs" slot="end">
           <strong>Canvas</strong>
-          <span class="wa-demo-split__detail">Resizable end panel</span>
-        </div>
+          <Text variant="span" tone="quiet" size="compact">
+            Resizable end panel
+          </Text>
+        </List>
       </wa-split-panel>
-    </div>
+    </SunkenPanel>
   ),
 
   'wa-breadcrumb': () => (
@@ -506,11 +517,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
   ),
 
   'wa-badge': () => (
-    <div class="wa-demo-labeled-stack">
-      <span class="wa-demo-labeled-stack__label">
-        Status badges · filled pill
-      </span>
-      <div class="wa-demo-row">
+    <List hAlign="center" gap="xs">
+      <Text variant="span">Status badges · filled pill</Text>
+      <Row hAlign="center" vAlign="middle" wrap>
         <wa-badge variant="neutral" appearance="filled" pill="pill">
           Draft
         </wa-badge>
@@ -526,9 +535,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         <wa-badge variant="danger" appearance="filled" pill="pill">
           Blocked
         </wa-badge>
-      </div>
-      <span class="wa-demo-labeled-stack__label">Accent pill</span>
-      <div class="wa-demo-row">
+      </Row>
+      <Text variant="span">Accent pill</Text>
+      <Row hAlign="center" vAlign="middle" wrap>
         <wa-badge variant="neutral" appearance="accent" pill="pill">
           Neutral
         </wa-badge>
@@ -544,9 +553,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         <wa-badge variant="danger" appearance="accent" pill="pill">
           Danger
         </wa-badge>
-      </div>
-      <span class="wa-demo-labeled-stack__label">Filled outlined pill</span>
-      <div class="wa-demo-row">
+      </Row>
+      <Text variant="span">Filled outlined pill</Text>
+      <Row hAlign="center" vAlign="middle" wrap>
         <wa-badge variant="neutral" appearance="filled-outlined" pill="pill">
           Neutral
         </wa-badge>
@@ -562,193 +571,159 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         <wa-badge variant="danger" appearance="filled-outlined" pill="pill">
           Danger
         </wa-badge>
-      </div>
-    </div>
+      </Row>
+    </List>
   ),
   'wa-callout': () => (
-    <div class="wa-demo-callouts">
+    <List gap="xs">
       <wa-callout variant="brand">Changes are ready for review.</wa-callout>
       <wa-callout variant="success">All checks passed.</wa-callout>
       <wa-callout variant="warning">One dependency is behind.</wa-callout>
       <wa-callout variant="danger">Publishing is blocked.</wa-callout>
-    </div>
+    </List>
   ),
   'wa-progress-bar': () => (
-    <div class="wa-demo-form-stack">
+    <List gap="xs">
       <wa-progress-bar value="72" label="Build progress">
         72%
       </wa-progress-bar>
       <wa-progress-bar label="Checking dependencies"></wa-progress-bar>
-    </div>
+    </List>
   ),
   'wa-progress-ring': () => (
-    <div class="wa-demo-row wa-demo-ring-group">
+    <Row hAlign="center" vAlign="middle" wrap>
       <wa-progress-ring value="72" label="Build progress">
         72%
       </wa-progress-ring>
       <wa-progress-ring label="Loading"></wa-progress-ring>
-    </div>
+    </Row>
   ),
   'wa-skeleton': () => (
-    <div class="wa-demo-skeleton">
-      <div class="wa-demo-skeleton__bar-frame wa-demo-skeleton__bar-frame--heading">
-        <wa-skeleton effect="sheen"></wa-skeleton>
-      </div>
-      <div class="wa-demo-skeleton__bar-frame">
-        <wa-skeleton effect="sheen"></wa-skeleton>
-      </div>
-      <div class="wa-demo-skeleton__bar-frame wa-demo-skeleton__bar-frame--closing">
-        <wa-skeleton effect="sheen"></wa-skeleton>
-      </div>
-    </div>
+    <List gap="xs">
+      <wa-skeleton effect="sheen"></wa-skeleton>
+      <wa-skeleton effect="sheen"></wa-skeleton>
+      <wa-skeleton effect="sheen"></wa-skeleton>
+    </List>
   ),
-  'wa-spinner': () => (
-    <div class="wa-demo-row">
-      <span class="wa-demo-spinner-frame wa-demo-spinner-frame--small">
-        <wa-spinner aria-label="Loading small"></wa-spinner>
-      </span>
-      <span class="wa-demo-spinner-frame wa-demo-spinner-frame--medium">
-        <wa-spinner aria-label="Loading medium"></wa-spinner>
-      </span>
-      <span class="wa-demo-spinner-frame wa-demo-spinner-frame--large">
-        <wa-spinner aria-label="Loading large"></wa-spinner>
-      </span>
-    </div>
-  ),
+  'wa-spinner': () => <wa-spinner aria-label="Loading"></wa-spinner>,
   'wa-tag': () => (
-    <div class="wa-demo-labeled-stack">
-      <span class="wa-demo-labeled-stack__label">Tags · rounded rectangle</span>
-      <div class="wa-demo-row">
+    <List hAlign="center" gap="xs">
+      <Text variant="span">Tags · rounded rectangle</Text>
+      <Row hAlign="center" vAlign="middle" wrap>
         <wa-tag variant="neutral">frontend</wa-tag>
         <wa-tag variant="brand">design-system</wa-tag>
         <wa-tag variant="success">stable</wa-tag>
         <wa-tag variant="warning" with-remove="with-remove">
           needs-review
         </wa-tag>
-      </div>
-      <small class="wa-demo-labeled-stack__note">
+      </Row>
+      <Text variant="span" tone="quiet" size="compact">
         Removal is owned by the feature handling the bubbling{' '}
         <code>wa-remove</code> event.
-      </small>
-    </div>
+      </Text>
+    </List>
   ),
   'wa-toast': () => (
-    <div class="wa-demo-launcher">
+    <List hAlign="center" gap="xs">
       <wa-button variant="brand" data-action="show-wa-toast">
         Show toast
       </wa-button>
-      <span class="wa-demo-launcher__copy">
+      <Text variant="span" tone="quiet" size="compact">
         The notification uses Web Awesome's programmatic stack API. Hot Sheet 2
         currently renders its own app-level toast.
-      </span>
+      </Text>
       <wa-toast id="catalog-wa-toast" placement="top-end"></wa-toast>
-    </div>
+    </List>
   ),
   'wa-toast-item': () => (
-    <div class="wa-demo-toast-item-frame">
-      <wa-toast-item variant="success" duration="0">
-        The component catalog is ready.
-      </wa-toast-item>
-    </div>
+    <wa-toast-item variant="success" duration="0">
+      The component catalog is ready.
+    </wa-toast-item>
   ),
   'wa-tooltip': () => (
-    <div class="wa-demo-labeled-stack">
-      <span class="wa-demo-labeled-stack__label">Kerf default · no arrow</span>
-      <div class="wa-demo-row">
+    <List hAlign="center" gap="xs">
+      <Text variant="span">Kerf default · no arrow</Text>
+      <Row hAlign="center" vAlign="middle" wrap>
         <wa-button id="catalog-tooltip-target" appearance="outlined">
           Hover or focus
         </wa-button>
         <wa-tooltip for="catalog-tooltip-target">
           Uses the shared tooltip palette
         </wa-tooltip>
-      </div>
-      <small class="wa-demo-labeled-stack__note">
+      </Row>
+      <Text variant="span" tone="quiet" size="compact">
         Override <code>--wa-tooltip-arrow-size</code> or add{' '}
         <code>without-arrow</code> explicitly when local intent should be
         self-documenting.
-      </small>
-    </div>
+      </Text>
+    </List>
   ),
 
   'wa-animated-image': () => (
-    <div class="wa-demo-media-frame">
+    <SunkenPanel ariaLabel="Animated image example">
       <wa-animated-image
         src={demoImage}
         alt="Blue geometric Kerf preview"
       ></wa-animated-image>
-    </div>
+    </SunkenPanel>
   ),
   'wa-avatar': () => (
-    <div class="wa-demo-row wa-demo-avatar-group">
+    <Row hAlign="center" vAlign="middle" wrap>
       <wa-avatar initials="KW" label="Kerf workspace"></wa-avatar>
       <wa-avatar initials="UI" label="UI team"></wa-avatar>
       <wa-avatar label="Fallback icon"></wa-avatar>
-    </div>
+    </Row>
   ),
   'wa-carousel': () => (
-    <div class="wa-demo-carousel-frame">
-      <wa-carousel navigation pagination mouse-dragging>
-        <wa-carousel-item>
-          <div class="wa-demo-carousel__slide">Foundation</div>
-        </wa-carousel-item>
-        <wa-carousel-item>
-          <div class="wa-demo-carousel__slide">Components</div>
-        </wa-carousel-item>
-        <wa-carousel-item>
-          <div class="wa-demo-carousel__slide">Patterns</div>
-        </wa-carousel-item>
-      </wa-carousel>
-    </div>
+    <wa-carousel navigation pagination mouse-dragging>
+      <wa-carousel-item>
+        <wa-card appearance="sunken">Foundation</wa-card>
+      </wa-carousel-item>
+      <wa-carousel-item>
+        <wa-card appearance="sunken">Components</wa-card>
+      </wa-carousel-item>
+      <wa-carousel-item>
+        <wa-card appearance="sunken">Patterns</wa-card>
+      </wa-carousel-item>
+    </wa-carousel>
   ),
   'wa-carousel-item': () => (
-    <div class="wa-demo-carousel-frame">
-      <wa-carousel navigation>
-        <wa-carousel-item>
-          <div class="wa-demo-carousel__slide">Focused carousel item</div>
-        </wa-carousel-item>
-        <wa-carousel-item>
-          <div class="wa-demo-carousel__slide">Neighboring item</div>
-        </wa-carousel-item>
-      </wa-carousel>
-    </div>
+    <wa-carousel navigation>
+      <wa-carousel-item>
+        <wa-card appearance="sunken">Focused carousel item</wa-card>
+      </wa-carousel-item>
+      <wa-carousel-item>
+        <wa-card appearance="sunken">Neighboring item</wa-card>
+      </wa-carousel-item>
+    </wa-carousel>
   ),
   'wa-comparison': () => (
-    <div class="wa-demo-comparison-frame">
-      <wa-comparison position="55">
-        <div
-          class="wa-demo-comparison__side wa-demo-comparison__side--before"
-          slot="before"
-        >
-          Before
-        </div>
-        <div
-          class="wa-demo-comparison__side wa-demo-comparison__side--after"
-          slot="after"
-        >
-          After
-        </div>
-      </wa-comparison>
-    </div>
+    <wa-comparison position="55">
+      <wa-card appearance="sunken" slot="before">
+        <Text>Before</Text>
+      </wa-card>
+      <wa-card appearance="outlined" slot="after">
+        <Text>After</Text>
+      </wa-card>
+    </wa-comparison>
   ),
   'wa-icon': () => (
-    <div class="wa-demo-row wa-demo-icon-group">
+    <Row hAlign="center" vAlign="middle" wrap>
       <wa-icon name="circle-question" library="system" label="Help"></wa-icon>
       <wa-icon name="chevron-right" library="system" label="Next"></wa-icon>
       <wa-icon name="play-circle" library="system" label="Play"></wa-icon>
-    </div>
+    </Row>
   ),
   'wa-markdown': () => (
-    <div class="wa-demo-labeled-stack">
-      <span class="wa-demo-labeled-stack__label">
-        Trusted static Markdown · client-rendered
-      </span>
+    <List hAlign="center" gap="xs">
+      <Text variant="span">Trusted static Markdown · client-rendered</Text>
       <wa-markdown>
         <script type="text/markdown">{trustedMarkdownDemo}</script>
       </wa-markdown>
-      <small class="wa-demo-labeled-stack__note">
+      <Text variant="span" tone="quiet" size="compact">
         Do not pass unsanitized or untrusted Markdown to this component.
-      </small>
-    </div>
+      </Text>
+    </List>
   ),
   'wa-qr-code': () => (
     <wa-qr-code
@@ -758,146 +733,127 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     ></wa-qr-code>
   ),
   'wa-zoomable-frame': () => (
-    <div class="wa-demo-zoomable-frame-shell">
+    <SunkenPanel ariaLabel="Zoomable frame example">
       <wa-zoomable-frame
         srcdoc={demoFrame}
         zoom="1"
         loading="eager"
       ></wa-zoomable-frame>
-    </div>
+    </SunkenPanel>
   ),
 
   'wa-animation': () => (
-    <div class="wa-demo-animation" data-animation-demo>
-      <section
-        class="wa-demo-animation__preview"
-        aria-label="Animation preview"
-      >
-        <wa-animation
-          name="bounce"
-          duration="900"
-          easing="ease-in-out"
-          iterations="1"
-        >
-          <div class="wa-demo-animation__target">
-            <strong class="wa-demo-animation__target-title">Kerf</strong>
-            <span class="wa-demo-animation__target-detail">
-              Animation target
-            </span>
-          </div>
-        </wa-animation>
-        <output
-          class="wa-demo-animation__status"
-          data-animation-output
-          aria-live="polite"
-        >
-          Ready to play
-        </output>
-      </section>
-      <section
-        class="wa-demo-animation__settings"
-        aria-label="Animation settings"
-      >
-        <Select
-          name="animation-preset"
-          value="bounce"
-          label="Preset"
-          choices={[
-            { value: 'bounce', label: 'Bounce' },
-            { value: 'fadeIn', label: 'Fade in' },
-            { value: 'jello', label: 'Jello' },
-            { value: 'shakeX', label: 'Shake horizontally' },
-          ]}
-        />
-        <Select
-          name="animation-easing"
-          value="ease-in-out"
-          label="Easing"
-          choices={[
-            { value: 'linear', label: 'Linear' },
-            { value: 'ease', label: 'Ease' },
-            { value: 'ease-in', label: 'Ease in' },
-            { value: 'ease-out', label: 'Ease out' },
-            { value: 'ease-in-out', label: 'Ease in and out' },
-          ]}
-        />
-        <label class="wa-demo-animation__range">
-          <span class="wa-demo-animation__range-label">
-            Duration{' '}
-            <output
-              class="wa-demo-animation__range-output"
-              data-animation-duration
-            >
-              900 ms
-            </output>
-          </span>
-          <input
-            class="wa-demo-animation__range-input"
-            type="range"
-            name="animation-duration"
-            min="250"
-            max="2000"
-            step="50"
-            value="900"
-          />
-        </label>
-        <label class="wa-demo-animation__range">
-          <span class="wa-demo-animation__range-label">
-            Playback rate{' '}
-            <output class="wa-demo-animation__range-output" data-animation-rate>
-              1×
-            </output>
-          </span>
-          <input
-            class="wa-demo-animation__range-input"
-            type="range"
-            name="animation-rate"
-            min="0.5"
-            max="2"
-            step="0.25"
-            value="1"
-          />
-        </label>
-        <div class="wa-demo-animation__actions">
-          <wa-button
-            variant="brand"
-            appearance="accent"
-            data-action="play-wa-animation"
+    <div data-animation-demo>
+      <List gap="xl">
+        <SunkenPanel ariaLabel="Animation preview">
+          <wa-animation
+            name="bounce"
+            duration="900"
+            easing="ease-in-out"
+            iterations="1"
           >
-            Play
-          </wa-button>
-          <wa-button data-action="pause-wa-animation">Pause</wa-button>
-          <wa-button data-action="finish-wa-animation">Finish</wa-button>
-          <wa-button data-action="cancel-wa-animation">Cancel</wa-button>
-        </div>
-      </section>
+            <wa-card appearance="sunken">
+              <strong>Kerf</strong>
+              <Text variant="span" tone="quiet" size="compact">
+                Animation target
+              </Text>
+            </wa-card>
+          </wa-animation>
+          <output data-animation-output aria-live="polite">
+            Ready to play
+          </output>
+        </SunkenPanel>
+        <section aria-label="Animation settings">
+          <List gap="m">
+            <Select
+              name="animation-preset"
+              value="bounce"
+              label="Preset"
+              choices={[
+                { value: 'bounce', label: 'Bounce' },
+                { value: 'fadeIn', label: 'Fade in' },
+                { value: 'jello', label: 'Jello' },
+                { value: 'shakeX', label: 'Shake horizontally' },
+              ]}
+            />
+            <Select
+              name="animation-easing"
+              value="ease-in-out"
+              label="Easing"
+              choices={[
+                { value: 'linear', label: 'Linear' },
+                { value: 'ease', label: 'Ease' },
+                { value: 'ease-in', label: 'Ease in' },
+                { value: 'ease-out', label: 'Ease out' },
+                { value: 'ease-in-out', label: 'Ease in and out' },
+              ]}
+            />
+            <label>
+              <Text variant="span">
+                Duration <output data-animation-duration>900 ms</output>
+              </Text>
+              <input
+                type="range"
+                name="animation-duration"
+                min="250"
+                max="2000"
+                step="50"
+                value="900"
+              />
+            </label>
+            <label>
+              <Text variant="span">
+                Playback rate <output data-animation-rate>1×</output>
+              </Text>
+              <input
+                type="range"
+                name="animation-rate"
+                min="0.5"
+                max="2"
+                step="0.25"
+                value="1"
+              />
+            </label>
+            <Row vAlign="middle" wrap>
+              <wa-button
+                variant="brand"
+                appearance="accent"
+                data-action="play-wa-animation"
+              >
+                Play
+              </wa-button>
+              <wa-button data-action="pause-wa-animation">Pause</wa-button>
+              <wa-button data-action="finish-wa-animation">Finish</wa-button>
+              <wa-button data-action="cancel-wa-animation">Cancel</wa-button>
+            </Row>
+          </List>
+        </section>
+      </List>
     </div>
   ),
   'wa-format-bytes': () => (
-    <dl class="wa-demo-values">
-      <div class="wa-demo-values__row">
-        <dt class="wa-demo-values__term">Binary</dt>
-        <dd class="wa-demo-values__description">
-          <wa-format-bytes value="10485760"></wa-format-bytes>
-        </dd>
-      </div>
-      <div class="wa-demo-values__row">
-        <dt class="wa-demo-values__term">Decimal</dt>
-        <dd class="wa-demo-values__description">
+    <ValueTable label="Byte formatting examples">
+      <ValueTableRow
+        label="Binary"
+        value={<wa-format-bytes value="10485760"></wa-format-bytes>}
+      />
+      <ValueTableRow
+        label="Decimal"
+        value={
           <wa-format-bytes
             value="10485760"
             unit="bit"
             display="long"
           ></wa-format-bytes>
-        </dd>
-      </div>
-    </dl>
+        }
+      />
+    </ValueTable>
   ),
   'wa-format-date': () => (
-    <dl class="wa-demo-values">
-      <div class="wa-demo-values__row">
-        <dt class="wa-demo-values__term">Date</dt>
-        <dd class="wa-demo-values__description">
+    <ValueTable label="Date formatting examples">
+      <ValueTableRow
+        label="Date"
+        value={
           <wa-format-date
             date="2026-09-11T12:00:00Z"
             month="long"
@@ -905,49 +861,47 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
             year="numeric"
             time-zone="UTC"
           ></wa-format-date>
-        </dd>
-      </div>
-      <div class="wa-demo-values__row">
-        <dt class="wa-demo-values__term">Time</dt>
-        <dd class="wa-demo-values__description">
+        }
+      />
+      <ValueTableRow
+        label="Time"
+        value={
           <wa-format-date
             date="2026-09-11T12:00:00Z"
             hour="numeric"
             minute="2-digit"
             time-zone="UTC"
           ></wa-format-date>
-        </dd>
-      </div>
-    </dl>
+        }
+      />
+    </ValueTable>
   ),
   'wa-format-number': () => (
-    <dl class="wa-demo-values">
-      <div class="wa-demo-values__row">
-        <dt class="wa-demo-values__term">Number</dt>
-        <dd class="wa-demo-values__description">
-          <wa-format-number value="1284"></wa-format-number>
-        </dd>
-      </div>
-      <div class="wa-demo-values__row">
-        <dt class="wa-demo-values__term">Percent</dt>
-        <dd class="wa-demo-values__description">
+    <ValueTable label="Number formatting examples">
+      <ValueTableRow
+        label="Number"
+        value={<wa-format-number value="1284"></wa-format-number>}
+      />
+      <ValueTableRow
+        label="Percent"
+        value={
           <wa-format-number value="0.72" type="percent"></wa-format-number>
-        </dd>
-      </div>
-      <div class="wa-demo-values__row">
-        <dt class="wa-demo-values__term">Currency</dt>
-        <dd class="wa-demo-values__description">
+        }
+      />
+      <ValueTableRow
+        label="Currency"
+        value={
           <wa-format-number
             value="49"
             type="currency"
             currency="USD"
           ></wa-format-number>
-        </dd>
-      </div>
-    </dl>
+        }
+      />
+    </ValueTable>
   ),
   'wa-include': () => (
-    <div class="wa-demo-include">
+    <div>
       <template id="catalog-include-source">
         <wa-callout variant="brand">
           Included from a local template fragment.
@@ -957,102 +911,96 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
     </div>
   ),
   'wa-intersection-observer': () => (
-    <div class="wa-demo-observer" data-observer-demo="intersection">
-      <div id="catalog-intersection-root" class="wa-demo-observer__viewport">
-        <div class="wa-demo-observer__spacer">Target is below</div>
+    <div data-observer-demo="intersection">
+      <List gap="m">
+        <Text tone="quiet" size="compact">
+          Reveal or hide the target to emit a visibility change.
+        </Text>
+        <Row vAlign="middle" hAlign="space-between">
+          <wa-button data-action="toggle-wa-intersection">
+            Reveal target
+          </wa-button>
+          <output data-observer-output aria-live="polite">
+            Waiting for an intersection change
+          </output>
+        </Row>
         <wa-intersection-observer
-          root="catalog-intersection-root"
           threshold="0.6"
           intersect-class="is-intersecting"
         >
-          <div class="wa-demo-observed" data-observer-target>
-            <strong>Observed intersection target</strong>
-            <span class="wa-demo-observed__detail">
-              The helper emits when this surface enters or leaves its root.
-            </span>
+          <div data-observer-target hidden>
+            <SunkenPanel ariaLabel="Observed intersection target">
+              <strong>Observed intersection target</strong>
+              <Text variant="span" tone="quiet" size="compact">
+                The helper emits when this surface enters or leaves its root.
+              </Text>
+            </SunkenPanel>
           </div>
         </wa-intersection-observer>
-        <div class="wa-demo-observer__spacer">Target is above</div>
-      </div>
-      <div class="wa-demo-observer__controls">
-        <wa-button data-action="toggle-wa-intersection">
-          Reveal target
-        </wa-button>
-        <output
-          class="wa-demo-observer__output"
-          data-observer-output
-          aria-live="polite"
-        >
-          Waiting for an intersection change
-        </output>
-      </div>
+      </List>
     </div>
   ),
   'wa-mutation-observer': () => (
-    <div class="wa-demo-observer" data-observer-demo="mutation">
+    <div data-observer-demo="mutation">
       <wa-mutation-observer attr="data-revision" child-list>
-        <div class="wa-demo-observed" data-observer-target data-revision="0">
-          <strong>Observed mutation target</strong>
-          <span class="wa-demo-observed__detail" data-observer-copy>
-            The helper reports attribute and child-list changes.
-          </span>
+        <div data-observer-target data-revision="0">
+          <SunkenPanel ariaLabel="Observed mutation target">
+            <strong>Observed mutation target</strong>
+            <Text variant="span" tone="quiet" size="compact" data-observer-copy>
+              The helper reports attribute and child-list changes.
+            </Text>
+          </SunkenPanel>
         </div>
       </wa-mutation-observer>
-      <div class="wa-demo-observer__controls">
+      <Row vAlign="middle" hAlign="space-between">
         <wa-button data-action="mutate-wa-target">Mutate target</wa-button>
-        <output
-          class="wa-demo-observer__output"
-          data-observer-output
-          aria-live="polite"
-        >
+        <output data-observer-output aria-live="polite">
           No mutations observed yet
         </output>
-      </div>
+      </Row>
     </div>
   ),
   'wa-popover': () => (
-    <div class="wa-demo-anchor">
-      <span class="wa-demo-anchor__label">Kerf default · no arrow</span>
+    <List hAlign="center" gap="xs">
+      <Text variant="span">Kerf default · no arrow</Text>
       <wa-button id="catalog-popover-target" appearance="outlined">
         Toggle popover
       </wa-button>
       <wa-popover for="catalog-popover-target" placement="bottom">
         <strong>Popover content</strong>
-        <p class="wa-demo-popover__copy">
-          Interactive content stays anchored to its trigger.
-        </p>
+        <Text>Interactive content stays anchored to its trigger.</Text>
         <wa-button size="small">Action</wa-button>
       </wa-popover>
-      <small class="wa-demo-anchor__note">
+      <Text variant="span" tone="quiet" size="compact">
         Override <code>--kui-wa-popover-arrow-size</code> for a scope or{' '}
         <code>--arrow-size</code> on one popover to restore a pointer.
-      </small>
-    </div>
+      </Text>
+    </List>
   ),
   'wa-popup': () => (
-    <div class="wa-demo-popup-frame">
+    <SunkenPanel ariaLabel="Positioned popup example">
       <wa-popup active placement="bottom" distance="10" arrow>
         <wa-button slot="anchor" appearance="outlined">
           Anchor
         </wa-button>
-        <div class="wa-demo-popup__panel">Low-level positioned content</div>
+        <wa-card appearance="outlined">Low-level positioned content</wa-card>
       </wa-popup>
-    </div>
+    </SunkenPanel>
   ),
   'wa-random-content': () => (
-    <div class="wa-demo-random">
+    <List hAlign="center" gap="m">
       <wa-random-content mode="sequence" items="1" animation="fade">
-        <article class="wa-demo-random__card">Foundation tokens</article>
-        <article class="wa-demo-random__card">Component primitives</article>
-        <article class="wa-demo-random__card">Composition patterns</article>
+        <wa-card appearance="sunken">Foundation tokens</wa-card>
+        <wa-card appearance="sunken">Component primitives</wa-card>
+        <wa-card appearance="sunken">Composition patterns</wa-card>
       </wa-random-content>
       <wa-button appearance="outlined" data-action="randomize-wa-content">
         Show another
       </wa-button>
-    </div>
+    </List>
   ),
   'wa-relative-time': () => (
-    <div class="wa-demo-inline-field">
+    <Row vAlign="middle" hAlign="space-between">
       <span>Last updated</span>
       <strong>
         <wa-relative-time
@@ -1060,33 +1008,28 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           format="long"
         ></wa-relative-time>
       </strong>
-    </div>
+    </Row>
   ),
   'wa-resize-observer': () => (
-    <div class="wa-demo-observer" data-observer-demo="resize">
-      <div class="wa-demo-observer__resize-frame">
+    <div data-observer-demo="resize">
+      <div>
         <wa-resize-observer>
-          <div
-            class="wa-demo-observed wa-demo-observed--resizable"
-            data-observer-target
-          >
-            <strong>Observed resize target</strong>
-            <span class="wa-demo-observed__detail">
-              The helper emits when this preview changes dimensions.
-            </span>
+          <div data-observer-target>
+            <SunkenPanel ariaLabel="Observed resize target">
+              <strong>Observed resize target</strong>
+              <Text variant="span" tone="quiet" size="compact">
+                The helper emits when this preview changes dimensions.
+              </Text>
+            </SunkenPanel>
           </div>
         </wa-resize-observer>
       </div>
-      <div class="wa-demo-observer__controls">
+      <Row vAlign="middle" hAlign="space-between">
         <wa-button data-action="resize-wa-target">Resize target</wa-button>
-        <output
-          class="wa-demo-observer__output"
-          data-observer-output
-          aria-live="polite"
-        >
+        <output data-observer-output aria-live="polite">
           Waiting for a resize
         </output>
-      </div>
+      </Row>
     </div>
   ),
 };

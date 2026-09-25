@@ -5,6 +5,9 @@ import ts from 'typescript';
 export const catalogDemoConformanceRules = Object.freeze({
   parseError: 'catalog-demo/parse-error',
   publicImports: 'catalog-demo/public-imports',
+  localStylesheet: 'catalog-demo/local-stylesheet',
+  inlineStyle: 'catalog-demo/inline-style',
+  customStyleClass: 'catalog-demo/custom-style-class',
   focusedHelpers: 'catalog-demo/focused-public-helpers',
   focusedMetadata: 'catalog-demo/focused-root-metadata',
   rootAttributes: 'catalog-demo/root-attributes',
@@ -200,6 +203,17 @@ export function analyzeCatalogDemoSource({
           ),
         );
     } else if (specifier.startsWith('.')) {
+      if (/\.css(?:\?|$)/i.test(specifier))
+        diagnostics.push(
+          diagnostic(
+            catalogDemoConformanceRules.localStylesheet,
+            route,
+            filePath,
+            `Focused demos must use component configuration instead of local stylesheet ${specifier}.`,
+            file,
+            statement.moduleSpecifier,
+          ),
+        );
       const target = resolve(dirname(absoluteFilePath), specifier);
       if (isInside(target, resolve(uiRoot, 'src')))
         diagnostics.push(
@@ -235,6 +249,17 @@ export function analyzeCatalogDemoSource({
       for (const property of opening.attributes.properties) {
         if (!ts.isJsxAttribute(property)) continue;
         const attributeName = property.name.getText(file);
+        if (attributeName === 'style')
+          diagnostics.push(
+            diagnostic(
+              catalogDemoConformanceRules.inlineStyle,
+              route,
+              filePath,
+              'Focused demos must use component configuration instead of inline styles.',
+              file,
+              property,
+            ),
+          );
         if (
           ['data-demo', 'data-catalog-geometry-overlay-skip'].includes(
             attributeName,
@@ -244,6 +269,20 @@ export function analyzeCatalogDemoSource({
         if (attributeName === 'data-catalog-geometry-overlay-skip')
           hasSkipMetadata = true;
         if (!['class', 'className'].includes(attributeName)) continue;
+        const customStyleClass = collectStaticStrings(property).find((value) =>
+          /\b(?:demo|wa-demo|token-search)-[a-z0-9_-]+\b/i.test(value),
+        );
+        if (customStyleClass)
+          diagnostics.push(
+            diagnostic(
+              catalogDemoConformanceRules.customStyleClass,
+              route,
+              filePath,
+              `Focused demos must use semantic metadata or component configuration instead of custom styling classes (${customStyleClass}).`,
+              file,
+              property,
+            ),
+          );
         const privateName = collectStaticStrings(property).find((value) =>
           /\bkui-catalog(?:-|__|--)[a-z0-9_-]+\b/i.test(value),
         );
@@ -390,6 +429,15 @@ export function analyzeCatalogShellSource({ filePath, source }) {
           expressionContainsComparison(expression, 'kind', 'component') &&
           collectStaticStrings(expression).includes('component') &&
           collectStaticStrings(expression).includes('composition');
+    }
+    if (
+      ts.isPropertyAssignment(node) &&
+      propertyName(node.name) === 'data-demo-mode'
+    ) {
+      validMode ||=
+        expressionContainsComparison(node.initializer, 'kind', 'component') &&
+        collectStaticStrings(node.initializer).includes('component') &&
+        collectStaticStrings(node.initializer).includes('composition');
     }
     ts.forEachChild(node, visit);
   };

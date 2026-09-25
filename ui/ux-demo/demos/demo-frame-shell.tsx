@@ -1,5 +1,4 @@
-import './demo-frame-shell.css';
-
+import { SunkenPanel } from '@kerfjs/ui/sunken-panel';
 import type { SafeHtml } from 'kerfjs';
 
 interface DemoFrameShellProps {
@@ -12,10 +11,8 @@ export function DemoFrameShell({
   measure = 'default',
 }: DemoFrameShellProps) {
   return (
-    <div
-      class={`demo-frame-shell${measure === 'default' ? '' : ` demo-frame-shell--${measure}`}`}
-    >
+    <SunkenPanel ariaLabel={`${measure} layout example`}>
       {children}
-    </div>
+    </SunkenPanel>
   );
 }

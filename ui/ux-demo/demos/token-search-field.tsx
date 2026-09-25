@@ -1,6 +1,9 @@
-import './token-search-field.css';
+import '@awesome.me/webawesome/dist/components/button/button.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { List } from '@kerfjs/ui/list';
+import { Row } from '@kerfjs/ui/row';
+import { Text } from '@kerfjs/ui/text';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 
 import {
@@ -27,7 +30,7 @@ export function TokenSearchFieldDemo() {
         }
         align="inline-control"
       >
-        <div class="demo-example-cluster token-search-demo__field-frame">
+        <List gap="xs">
           <TokenSearchField
             id="catalog-search"
             label="Search tickets"
@@ -36,11 +39,17 @@ export function TokenSearchFieldDemo() {
             autofocus
             editorAttributes={{ 'data-demo-token-search': 'true' }}
           />
-          <output aria-live="polite" class="demo-example-readout">
+          <Text
+            variant="span"
+            tone="quiet"
+            size="compact"
+            aria-live="polite"
+            data-demo-token-search-readout
+          >
             {tokenSearchTokens.value.length} filters ·{' '}
             {tokenSearchQuery.value || 'No free text'}
-          </output>
-        </div>
+          </Text>
+        </List>
       </CatalogExample>
       <CatalogExample
         label="Collapsible"
@@ -54,16 +63,14 @@ export function TokenSearchFieldDemo() {
         }
         align="inline-control"
       >
-        <div class="token-search-demo__collapsible token-search-demo__field-frame">
-          <TokenSearchField
-            id="collapsible-search"
-            label="Find records"
-            collapsible
-            expanded={collapsibleSearchOpen.value}
-            placeholder="Find records"
-            expandLabel="Open find"
-          />
-        </div>
+        <TokenSearchField
+          id="collapsible-search"
+          label="Find records"
+          collapsible
+          expanded={collapsibleSearchOpen.value}
+          placeholder="Find records"
+          expandLabel="Open find"
+        />
       </CatalogExample>
       <CatalogExample
         label="Disabled"
@@ -72,21 +79,19 @@ export function TokenSearchFieldDemo() {
         }
         align="inline-control"
       >
-        <div class="token-search-demo__field-frame">
-          <TokenSearchField
-            id="disabled-search"
-            label="Saved search"
-            query="release"
-            tokens={[
-              {
-                value: 'tag:design-system',
-                label: 'tag:design-system',
-                offset: 7,
-              },
-            ]}
-            disabled
-          />
-        </div>
+        <TokenSearchField
+          id="disabled-search"
+          label="Saved search"
+          query="release"
+          tokens={[
+            {
+              value: 'tag:design-system',
+              label: 'tag:design-system',
+              offset: 7,
+            },
+          ]}
+          disabled
+        />
       </CatalogExample>
       <CatalogExample
         label="Adoption knobs"
@@ -102,7 +107,7 @@ export function TokenSearchFieldDemo() {
         }
         align="inline-control"
       >
-        <div class="token-search-adoption">
+        <List gap="xs">
           <TokenSearchField
             id="adoption-search"
             clearAction="clear-adoption-search"
@@ -116,32 +121,34 @@ export function TokenSearchFieldDemo() {
             expandLabel="Open filter"
             editorAttributes={{ 'data-demo-adoption-search': 'true' }}
           />
-          <ul
-            class="token-search-adoption__suggestions"
+          <div
             data-token-search-keep-open
+            role="group"
             aria-label="Filter suggestions"
           >
-            {ADOPTION_SUGGESTIONS.map((suggestion) => (
-              <li>
-                <button
-                  type="button"
-                  class="token-search-adoption__suggestion"
+            <Row wrap>
+              {ADOPTION_SUGGESTIONS.map((suggestion) => (
+                <wa-button
+                  size="small"
+                  appearance="outlined"
                   data-action="add-adoption-token"
                   data-token-value={suggestion.value}
                 >
                   {suggestion.label}
-                </button>
-              </li>
-            ))}
-          </ul>
-          <output
+                </wa-button>
+              ))}
+            </Row>
+          </div>
+          <Text
+            variant="span"
+            tone="quiet"
+            size="compact"
             aria-live="polite"
-            class="demo-example-readout"
             data-demo-adoption-readout
           >
             {adoptionReadout.value}
-          </output>
-        </div>
+          </Text>
+        </List>
       </CatalogExample>
     </CatalogExampleStack>
   );

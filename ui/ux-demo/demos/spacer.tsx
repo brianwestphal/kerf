@@ -1,4 +1,4 @@
-import './spacer.css';
+import '@awesome.me/webawesome/dist/components/card/card.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
@@ -15,14 +15,12 @@ export function SpacerDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'spacer' }}>
       <CatalogExample
         label="Named dimensions"
-        note="Width and height accept the finite UI spacing scale or a typed CssLength. The colored area makes the otherwise invisible spacer measurable."
+        note="Width and height accept the finite UI spacing scale or a typed CssLength."
       >
         <DemoFrameShell measure="standard">
           <Row vAlign="middle" gap="none">
             {chip('Before')}
-            <div class="demo-spacer-marker">
-              <Spacer width="m" height="l" />
-            </div>
+            <Spacer width="m" height="l" />
             {chip('After')}
           </Row>
         </DemoFrameShell>
@@ -34,9 +32,7 @@ export function SpacerDemo() {
         <DemoFrameShell measure="standard">
           <Row vAlign="middle" gap="none">
             {chip('Leading')}
-            <div class="demo-spacer-marker demo-spacer-marker--flex">
-              <Spacer flex />
-            </div>
+            <Spacer flex />
             {chip('Trailing')}
           </Row>
         </DemoFrameShell>
@@ -45,15 +41,13 @@ export function SpacerDemo() {
         label="Vertical space"
         note="A height-only spacer separates vertical content without introducing semantics or a wrapper gap policy."
       >
-        <div class="demo-spacer-list">
+        <wa-card appearance="sunken">
           <List gap="none">
             {chip('Above')}
-            <div class="demo-spacer-marker">
-              <Spacer height="m" />
-            </div>
+            <Spacer height="m" />
             {chip('Below')}
           </List>
-        </div>
+        </wa-card>
       </CatalogExample>
     </CatalogExampleStack>
   );

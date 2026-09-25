@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 280100,
-  "measuredLargestJavaScriptGzip": 128881,
-  "measuredTotalJavaScriptGzip": 280013,
+  "totalJavaScriptGzip": 281700,
+  "measuredLargestJavaScriptGzip": 133925,
+  "measuredTotalJavaScriptGzip": 281656,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -195,6 +195,22 @@
         "measuredTotalJavaScriptGzip": 280013,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 280100
+      }
+    },
+    {
+      "at": "2026-09-25T08:07:44.915Z",
+      "reason": "KF-ZYDD6X replaces focused-demo CSS with registered Web Awesome surfaces and catalog-owned viewport configuration",
+      "old": {
+        "measuredLargestJavaScriptGzip": 128881,
+        "measuredTotalJavaScriptGzip": 280013,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 280100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 133925,
+        "measuredTotalJavaScriptGzip": 281656,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 281700
       }
     }
   ]

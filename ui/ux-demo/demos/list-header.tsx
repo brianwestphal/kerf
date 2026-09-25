@@ -1,11 +1,11 @@
-import './list-header.css';
-
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListHeader } from '@kerfjs/ui/list-header';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Row } from '@kerfjs/ui/row';
+import { Text } from '@kerfjs/ui/text';
 import { Plus } from 'lucide';
 
 import { DemoListPopover } from './demo-list-popover.js';
-import { icon } from './state.js';
 
 export function ListHeaderDemo() {
   return (
@@ -17,21 +17,26 @@ export function ListHeaderDemo() {
           indicatorTone="pop"
         />
       </CatalogExample>
-      <CatalogExample align="none">
-        <div class="demo-list-header-inline-context">
-          <span class="demo-list-header-inline-context__prefix">Queue:</span>
+      <CatalogExample
+        align="none"
+        rootAttributes={{ 'data-demo-inline-list-header': '' }}
+      >
+        <Row vAlign="middle">
+          <Text variant="span">Queue:</Text>
           <ListHeader
             label="Inline queue"
             count={12}
             countLabel="12 queued items"
             action="log-add"
             actionLabel="Add queued item"
-            actionIcon={icon(Plus, 'plus')}
+            actionIcon={<LucideIcon icon={Plus} name="plus" />}
             divider="both"
             inline
           />
-          <span class="demo-list-header-inline-context__suffix">ready</span>
-        </div>
+          <Text variant="span" tone="quiet">
+            ready
+          </Text>
+        </Row>
       </CatalogExample>
       <CatalogExample align="none">
         <ListHeader
@@ -49,7 +54,7 @@ export function ListHeaderDemo() {
           countLabel="12 attachments"
           action="log-add"
           actionLabel="Add attachment"
-          actionIcon={icon(Plus, 'plus')}
+          actionIcon={<LucideIcon icon={Plus} name="plus" />}
           triggerAttributes={{
             popoverTarget: 'list-header-attachments-popover',
             popoverTargetAction: 'toggle',
@@ -72,7 +77,7 @@ export function ListHeaderDemo() {
           label="Unavailable"
           action="log-add"
           actionLabel="Unavailable action"
-          actionIcon={icon(Plus, 'plus')}
+          actionIcon={<LucideIcon icon={Plus} name="plus" />}
           actionDisabled
         />
       </CatalogExample>

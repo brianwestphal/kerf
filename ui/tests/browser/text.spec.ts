@@ -6,7 +6,9 @@ test('Text renders semantic variants with standard padded geometry', async ({
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=text');
 
-  const examples = page.locator('.demo-text-stack > .kui-text');
+  const examples = page.locator(
+    '[data-demo-section="semantic-variants"] > .kui-text',
+  );
   await expect(examples).toHaveCount(7);
   await expect(examples.nth(0)).toHaveJSProperty('tagName', 'H1');
   await expect(examples.nth(5)).toHaveJSProperty('tagName', 'H6');
@@ -38,7 +40,9 @@ test('Text renders semantic variants with standard padded geometry', async ({
       padding: '8px',
     });
 
-  const roles = page.locator('.demo-text-role-stack .kui-text');
+  const roles = page.locator(
+    '[data-demo-section="presentation-roles"] .kui-text',
+  );
   await expect(roles).toHaveCount(6);
   await expect(roles.nth(0)).toHaveAttribute('data-tone', 'quiet');
   await expect(roles.nth(1)).toHaveAttribute('data-tone', 'danger');

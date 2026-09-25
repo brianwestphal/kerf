@@ -1,10 +1,7 @@
-import './list-item.css';
-
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListItem } from '@kerfjs/ui/list-item';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { CircleHelp, Folder, Inbox, Wrench } from 'lucide';
-
-import { icon } from './state.js';
 
 export function ListItemDemo() {
   return (
@@ -34,7 +31,7 @@ export function ListItemDemo() {
           action="log-inbox"
           itemId="selected"
           label="Selected item"
-          icon={icon(Inbox, 'inbox')}
+          icon={<LucideIcon icon={Inbox} name="inbox" />}
           trailing={<span>12</span>}
           selected
           rootAttributes={{ 'data-demo-drop-status': 'ready' }}
@@ -45,7 +42,7 @@ export function ListItemDemo() {
           action="log-projects"
           itemId="default"
           label="Default item"
-          icon={icon(Folder, 'folder')}
+          icon={<LucideIcon icon={Folder} name="folder" />}
         />
       </CatalogExample>
       <CatalogExample align="none">
@@ -53,7 +50,7 @@ export function ListItemDemo() {
           action="log-settings"
           itemId="multiline"
           label="A multiline item demonstrates content that wraps without clipping"
-          icon={icon(Wrench, 'wrench')}
+          icon={<LucideIcon icon={Wrench} name="wrench" />}
           multiline
         />
       </CatalogExample>
@@ -62,7 +59,7 @@ export function ListItemDemo() {
           action="disabled"
           itemId="disabled"
           label="Unavailable item"
-          icon={icon(CircleHelp, 'circle-help')}
+          icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
           disabled
         />
       </CatalogExample>
@@ -71,7 +68,7 @@ export function ListItemDemo() {
           action="log-projects"
           itemId="placeholder"
           label="Loading item"
-          icon={icon(Folder, 'folder')}
+          icon={<LucideIcon icon={Folder} name="folder" />}
           trailing={<span>0</span>}
           placeholder
         />

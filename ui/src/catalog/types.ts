@@ -46,6 +46,12 @@ export interface CatalogBrand {
   logoUrl?: string;
 }
 
+export type CatalogStageRootAttributes = Readonly<
+  Record<`data-${string}`, string | undefined> & {
+    'data-catalog-stage'?: never;
+  }
+>;
+
 export interface CatalogProps {
   brand: CatalogBrand;
   sections: readonly CatalogSection[];
@@ -58,6 +64,8 @@ export interface CatalogProps {
   sidebarFooter?: KerfUiContent;
   status?: KerfUiContent;
   geometryOverlay?: boolean;
+  /** Consumer-owned data attributes applied to the preview stage. */
+  stageRootAttributes?: CatalogStageRootAttributes;
   selectAction?: string;
   toggleSidebarAction?: string;
   toggleThemeAction?: string;

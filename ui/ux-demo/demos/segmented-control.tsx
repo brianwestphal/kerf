@@ -1,16 +1,12 @@
-import './segmented-control.css';
+import '@kerfjs/ui/lucide-icon.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { Bell, Columns3, Folder, List, Settings } from 'lucide';
 
-import {
-  displayDensity,
-  icon,
-  inspectorSection,
-  toolbarChoice,
-} from './state.js';
+import { displayDensity, inspectorSection, toolbarChoice } from './state.js';
 
 export function SegmentedControlDemo() {
   return (
@@ -36,17 +32,17 @@ export function SegmentedControlDemo() {
               {
                 value: 'list',
                 label: 'List view',
-                content: icon(List, 'list'),
+                content: <LucideIcon icon={List} name="list" />,
               },
               {
                 value: 'columns',
                 label: 'Columns view',
-                content: icon(Columns3, 'columns-3'),
+                content: <LucideIcon icon={Columns3} name="columns-3" />,
               },
               {
                 value: 'settings',
                 label: 'Settings view',
-                content: icon(Settings, 'settings'),
+                content: <LucideIcon icon={Settings} name="settings" />,
               },
             ]}
           />
@@ -56,49 +52,48 @@ export function SegmentedControlDemo() {
         label="Rounded rectangle"
         note={<>An equal-width inspector switcher with labels.</>}
         align="inline-control"
+        viewport={{ width: 'control' }}
       >
-        <div class="segmented-control-demo__equal-frame">
-          <SegmentedControl<string>
-            id="inspector-section"
-            label="Inspector section"
-            value={inspectorSection.value}
-            action="select-segment-demo"
-            shape="rounded"
-            layout="equal"
-            choices={[
-              {
-                value: 'summary',
-                label: 'Summary',
-                content: (
-                  <>
-                    {icon(List, 'list')}
-                    <span>Summary</span>
-                  </>
-                ),
-              },
-              {
-                value: 'activity',
-                label: 'Activity',
-                content: (
-                  <>
-                    {icon(Bell, 'bell')}
-                    <span>Activity</span>
-                  </>
-                ),
-              },
-              {
-                value: 'files',
-                label: 'Files',
-                content: (
-                  <>
-                    {icon(Folder, 'folder')}
-                    <span>Files</span>
-                  </>
-                ),
-              },
-            ]}
-          />
-        </div>
+        <SegmentedControl<string>
+          id="inspector-section"
+          label="Inspector section"
+          value={inspectorSection.value}
+          action="select-segment-demo"
+          shape="rounded"
+          layout="equal"
+          choices={[
+            {
+              value: 'summary',
+              label: 'Summary',
+              content: (
+                <>
+                  <LucideIcon icon={List} name="list" />
+                  <span>Summary</span>
+                </>
+              ),
+            },
+            {
+              value: 'activity',
+              label: 'Activity',
+              content: (
+                <>
+                  <LucideIcon icon={Bell} name="bell" />
+                  <span>Activity</span>
+                </>
+              ),
+            },
+            {
+              value: 'files',
+              label: 'Files',
+              content: (
+                <>
+                  <LucideIcon icon={Folder} name="folder" />
+                  <span>Files</span>
+                </>
+              ),
+            },
+          ]}
+        />
       </CatalogExample>
       <CatalogExample
         label="Pill"

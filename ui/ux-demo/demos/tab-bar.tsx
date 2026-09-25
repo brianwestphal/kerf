@@ -1,10 +1,9 @@
 import { AppTab } from '@kerfjs/ui/app-tab';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { Plus, SquarePlus } from 'lucide';
-
-import { icon } from './state.js';
 
 const tabs = (presentation: 'pill' | 'segmented' = 'pill') => [
   <AppTab
@@ -68,14 +67,14 @@ export function TabBarDemo() {
           trailing={
             <ToolbarControlGroup appearance="borderless" single>
               <button type="button" aria-label="Add inspector section">
-                {icon(Plus, 'plus')}
+                <LucideIcon icon={Plus} name="plus" />
               </button>
             </ToolbarControlGroup>
           }
           end={
             <ToolbarControlGroup appearance="borderless" single>
               <button type="button" aria-label="Create workspace item">
-                {icon(SquarePlus, 'square-plus')}
+                <LucideIcon icon={SquarePlus} name="square-plus" />
               </button>
             </ToolbarControlGroup>
           }

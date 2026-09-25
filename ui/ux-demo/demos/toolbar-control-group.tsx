@@ -1,4 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 import {
@@ -21,7 +22,6 @@ import {
 } from 'lucide';
 
 import {
-  icon,
   toolbarAvatarChoice,
   toolbarChoice,
   toolbarGroupSearchOpen,
@@ -80,17 +80,17 @@ export function ToolbarControlGroupDemo() {
               {
                 value: 'list',
                 label: 'List view',
-                content: icon(List, 'list'),
+                content: <LucideIcon icon={List} name="list" />,
               },
               {
                 value: 'columns',
                 label: 'Columns view',
-                content: icon(Columns3, 'columns-3'),
+                content: <LucideIcon icon={Columns3} name="columns-3" />,
               },
               {
                 value: 'settings',
                 label: 'Settings view',
-                content: icon(Settings, 'settings'),
+                content: <LucideIcon icon={Settings} name="settings" />,
               },
             ]}
           />
@@ -110,7 +110,7 @@ export function ToolbarControlGroupDemo() {
               with-caret
               aria-label="Sort tickets"
             >
-              {icon(ArrowDownAZ, 'arrow-down-a-z')}
+              <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />
             </wa-button>
             <wa-dropdown-item data-action="sort-recent">
               Recently updated
@@ -127,7 +127,7 @@ export function ToolbarControlGroupDemo() {
             href="https://github.com/brianwestphal/kerf"
             label="Repository"
             external
-            icon={icon(ExternalLink, 'external-link')}
+            icon={<LucideIcon icon={ExternalLink} name="external-link" />}
           />
         </ToolbarControlGroup>
       </CatalogExample>
@@ -138,14 +138,14 @@ export function ToolbarControlGroupDemo() {
             aria-label="Favorite view"
             data-action="log-favorite"
           >
-            {icon(Star, 'star')}
+            <LucideIcon icon={Star} name="star" />
           </wa-button>
           <wa-button
             appearance="plain"
             aria-label="More actions"
             data-action="log-more"
           >
-            {icon(MoreHorizontal, 'ellipsis')}
+            <LucideIcon icon={MoreHorizontal} name="ellipsis" />
           </wa-button>
         </ToolbarControlGroup>
       </CatalogExample>
@@ -156,7 +156,7 @@ export function ToolbarControlGroupDemo() {
             aria-label="Pin view"
             data-action="log-pin"
           >
-            {icon(Pin, 'pin')}
+            <LucideIcon icon={Pin} name="pin" />
           </wa-button>
         </ToolbarControlGroup>
       </CatalogExample>
@@ -167,7 +167,7 @@ export function ToolbarControlGroupDemo() {
             aria-label="Show sidebar"
             data-action="log-sidebar"
           >
-            {icon(PanelLeftOpen, 'panel-left-open')}
+            <LucideIcon icon={PanelLeftOpen} name="panel-left-open" />
           </button>
         </ToolbarControlGroup>
       </CatalogExample>
@@ -179,7 +179,7 @@ export function ToolbarControlGroupDemo() {
             aria-pressed="false"
             data-action="log-resting"
           >
-            {icon(GitCompare, 'git-compare')}
+            <LucideIcon icon={GitCompare} name="git-compare" />
           </button>
         </ToolbarControlGroup>
       </CatalogExample>
@@ -191,7 +191,7 @@ export function ToolbarControlGroupDemo() {
             aria-pressed="true"
             data-action="log-pressed"
           >
-            {icon(GitCompare, 'git-compare')}
+            <LucideIcon icon={GitCompare} name="git-compare" />
           </button>
         </ToolbarControlGroup>
       </CatalogExample>
@@ -208,7 +208,7 @@ export function ToolbarControlGroupDemo() {
             aria-pressed="true"
             data-action="log-featured"
           >
-            {icon(Star, 'star')}
+            <LucideIcon icon={Star} name="star" />
           </button>
         </ToolbarControlGroup>
       </CatalogExample>
@@ -219,10 +219,10 @@ export function ToolbarControlGroupDemo() {
             aria-label="Previous"
             data-action="log-previous"
           >
-            {icon(ChevronLeft, 'chevron-left')}
+            <LucideIcon icon={ChevronLeft} name="chevron-left" />
           </button>
           <button type="button" aria-label="Next" data-action="log-next">
-            {icon(ChevronRight, 'chevron-right')}
+            <LucideIcon icon={ChevronRight} name="chevron-right" />
           </button>
         </ToolbarControlGroup>
       </CatalogExample>
@@ -235,7 +235,7 @@ export function ToolbarControlGroupDemo() {
           shape={shape}
         >
           <button type="button" aria-pressed="true">
-            {icon(Star, 'star')} Favorite
+            <LucideIcon icon={Star} name="star" /> Favorite
           </button>
           <wa-dropdown placement="bottom-start" data-morph-skip-children>
             <wa-button slot="trigger" appearance="plain" with-caret>
@@ -295,7 +295,7 @@ export function ToolbarControlGroupDemo() {
         }
         align="inline-control"
       >
-        <div class="demo-toolbar-group-search-wrap">
+        <div data-demo-section="toolbar-group-search">
           <ToolbarControlGroup
             shape={shape}
             content="search"

@@ -1,13 +1,12 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { Wrench } from 'lucide';
-
-import { button, icon } from './state.js';
 
 export function HeadersDemo() {
   // Page and panel headings are direct Toolbar compositions: identity in the
@@ -33,7 +32,9 @@ export function HeadersDemo() {
             }
             trailing={
               <ToolbarControlGroup appearance="borderless" single>
-                {button('New pattern', 'log-add')}
+                <button type="button" data-action="log-add">
+                  New pattern
+                </button>
               </ToolbarControlGroup>
             }
           />
@@ -43,7 +44,7 @@ export function HeadersDemo() {
             leading={
               <>
                 <ToolbarControlGroup appearance="borderless" single>
-                  {icon(Wrench, 'wrench')}
+                  <LucideIcon icon={Wrench} name="wrench" />
                 </ToolbarControlGroup>
                 <ToolbarText
                   text="Package details"
@@ -54,7 +55,9 @@ export function HeadersDemo() {
             }
             trailing={
               <ToolbarControlGroup appearance="borderless" single>
-                {button('Done', 'log-done')}
+                <button type="button" data-action="log-done">
+                  Done
+                </button>
               </ToolbarControlGroup>
             }
           />

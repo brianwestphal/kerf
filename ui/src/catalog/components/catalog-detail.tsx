@@ -6,7 +6,7 @@ import type { KerfUiContent } from '../../semantic-content.js';
 import { Toolbar } from '../../toolbar.js';
 import { ToolbarControlGroup } from '../../toolbar-control-group.js';
 import { ToolbarText } from '../../toolbar-text.js';
-import type { CatalogEntry } from '../types.js';
+import type { CatalogEntry, CatalogStageRootAttributes } from '../types.js';
 import { CatalogResourceFooter } from './catalog-resource-footer.js';
 import { CatalogStage } from './catalog-stage.js';
 
@@ -20,6 +20,7 @@ interface CatalogDetailProps {
   headerActions?: KerfUiContent;
   status?: KerfUiContent;
   geometryOverlay?: boolean;
+  stageRootAttributes?: CatalogStageRootAttributes;
   selectAction: string;
   toggleSidebarAction: string;
   toggleThemeAction: string;
@@ -36,6 +37,7 @@ export function CatalogDetail({
   headerActions,
   status,
   geometryOverlay,
+  stageRootAttributes,
   selectAction,
   toggleSidebarAction,
   toggleThemeAction,
@@ -121,6 +123,7 @@ export function CatalogDetail({
           name={name}
           content={content}
           geometryOverlay={geometryOverlay}
+          rootAttributes={stageRootAttributes}
         />
       </Pane>
     </article>

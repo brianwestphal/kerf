@@ -18,6 +18,9 @@ export interface CatalogDemoException {
 export const catalogDemoConformanceRules: Readonly<{
   parseError: string;
   publicImports: string;
+  localStylesheet: string;
+  inlineStyle: string;
+  customStyleClass: string;
   focusedHelpers: string;
   focusedMetadata: string;
   rootAttributes: string;

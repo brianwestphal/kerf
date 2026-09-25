@@ -1,4 +1,3 @@
-import './collapsible-panel.css';
 import '@kerfjs/ui/collapsible-panel.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
@@ -21,38 +20,36 @@ export function CollapsiblePanelDemo() {
       <CatalogExample
         label="Left rail"
         note="The panel owns its width and trailing separator; its child owns internal content geometry."
+        viewport={{ layout: 'grid', width: 'full', height: 'short' }}
       >
-        <div class="demo-collapsible-panel--rail">
-          <CollapsiblePanel
-            id="catalog-panel-left"
-            side="left"
-            size={280}
-            label="Project navigator"
-          >
-            {content(
-              'Navigator',
-              'Collapse from panel chrome; restore from adjacent chrome.',
-            )}
-          </CollapsiblePanel>
-        </div>
+        <CollapsiblePanel
+          id="catalog-panel-left"
+          side="left"
+          size={280}
+          label="Project navigator"
+        >
+          {content(
+            'Navigator',
+            'Collapse from panel chrome; restore from adjacent chrome.',
+          )}
+        </CollapsiblePanel>
       </CatalogExample>
       <CatalogExample
         label="Right rail"
         note="Right-side panels use the mirrored separator and slide direction."
+        viewport={{ layout: 'grid', width: 'full', height: 'short' }}
       >
-        <div class="demo-collapsible-panel--rail">
-          <CollapsiblePanel
-            id="catalog-panel-right"
-            side="right"
-            size={280}
-            label="Selection inspector"
-          >
-            {content(
-              'Inspector',
-              'The application owns size and collapsed state.',
-            )}
-          </CollapsiblePanel>
-        </div>
+        <CollapsiblePanel
+          id="catalog-panel-right"
+          side="right"
+          size={280}
+          label="Selection inspector"
+        >
+          {content(
+            'Inspector',
+            'The application owns size and collapsed state.',
+          )}
+        </CollapsiblePanel>
       </CatalogExample>
       <CatalogExample
         label="Bottom drawer"

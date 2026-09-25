@@ -1,12 +1,14 @@
-import './application-tabs.css';
+import '@awesome.me/webawesome/dist/components/card/card.js';
 
 import { AppTab } from '@kerfjs/ui/app-tab';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { TabBar } from '@kerfjs/ui/tab-bar';
+import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { PanelLeft, Plus } from 'lucide';
 
-import { icon, tabBarActive, tabBarTabs } from './state.js';
+import { tabBarActive, tabBarTabs } from './state.js';
 
 export function ApplicationTabsDemo() {
   const activeName = tabBarActive.value;
@@ -15,9 +17,18 @@ export function ApplicationTabsDemo() {
       label="Application tab composition"
       rootAttributes={{ 'data-demo': 'application-tabs' }}
     >
-      <CatalogExample label="Reorderable application tabs">
-        <section class="demo-application-tabs">
+      <CatalogExample
+        label="Reorderable application tabs"
+        viewport={{ width: 'medium' }}
+      >
+        <wa-card
+          appearance="outlined"
+          with-header
+          with-footer
+          data-demo-application-tabs-frame
+        >
           <TabBar
+            slot="header"
             id="catalog-tabs"
             label="Open catalog pages"
             leading={
@@ -27,7 +38,7 @@ export function ApplicationTabsDemo() {
                   aria-label="Show navigation"
                   data-action="log-sidebar"
                 >
-                  {icon(PanelLeft, 'panel-left')}
+                  <LucideIcon icon={PanelLeft} name="panel-left" />
                 </button>
               </ToolbarControlGroup>
             }
@@ -38,7 +49,7 @@ export function ApplicationTabsDemo() {
                   aria-label="Add tab"
                   data-action="add-demo-tab"
                 >
-                  {icon(Plus, 'plus')}
+                  <LucideIcon icon={Plus} name="plus" />
                 </button>
               </ToolbarControlGroup>
             }
@@ -55,22 +66,16 @@ export function ApplicationTabsDemo() {
               />
             ))}
           </TabBar>
-          <section
-            class="demo-application-tabs__panel kui-content-item"
-            role="tabpanel"
-            aria-label={activeName}
-          >
-            <strong class="demo-application-tabs__panel-title">
-              {activeName}
-            </strong>
-          </section>
-          <p class="demo-application-tabs__readout">
+          <Text variant="h3" role="tabpanel" aria-label={activeName}>
+            {activeName}
+          </Text>
+          <Text slot="footer" tone="quiet" size="compact">
             Order:{' '}
-            <strong class="demo-application-tabs__readout-value" data-tab-order>
+            <strong data-tab-order>
               {tabBarTabs.value.map((tab) => tab.name).join(' · ')}
             </strong>
-          </p>
-        </section>
+          </Text>
+        </wa-card>
       </CatalogExample>
     </CatalogExampleStack>
   );

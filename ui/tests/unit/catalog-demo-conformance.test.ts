@@ -57,10 +57,37 @@ describe('Catalog demo conformance analysis', () => {
     });
   });
 
-  it('accepts nested focused specimens, explicit skips, and ordinary margin and border styling', async () => {
+  it('accepts nested focused specimens and explicit overlay skips', async () => {
     expect(
       await analyzeFixture('valid-focused', 'focused', 'component'),
     ).toEqual([]);
+  });
+
+  it('rejects local stylesheets, inline styles, and custom demo styling classes', () => {
+    const failures = analyzeCatalogDemoSource({
+      route: 'styled',
+      kind: 'component',
+      filePath: 'ux-demo/demos/styled.tsx',
+      absoluteFilePath: resolve(uiRoot, 'ux-demo/demos/styled.tsx'),
+      source: `
+        import './styled.css';
+        import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+        export function StyledDemo() {
+          return <CatalogExampleStack rootAttributes={{ 'data-demo': 'styled' }}>
+            <CatalogExample><div class="demo-styled" style="margin: 8px">Styled</div></CatalogExample>
+          </CatalogExampleStack>;
+        }
+      `,
+      uiRoot,
+      packageExports,
+    });
+    expect(failures.map((failure) => failure.rule)).toEqual(
+      expect.arrayContaining([
+        catalogDemoConformanceRules.localStylesheet,
+        catalogDemoConformanceRules.inlineStyle,
+        catalogDemoConformanceRules.customStyleClass,
+      ]),
+    );
   });
 
   it('requires composition demos to use the public example helpers too', async () => {

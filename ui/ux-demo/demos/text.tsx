@@ -9,7 +9,7 @@ export function TextDemo() {
         note="Text renders the selected native heading or paragraph while giving each text box the standard transparent border and content padding."
         align="none"
       >
-        <div class="demo-text-stack">
+        <div data-demo-section="semantic-variants">
           <Text variant="h1">Heading level 1</Text>
           <Text variant="h2">Heading level 2</Text>
           <Text variant="h3">Heading level 3</Text>
@@ -32,7 +32,7 @@ export function TextDemo() {
         note="Tone, size, and font are independent of the native semantic element, so applications can express supporting copy, errors, compact metadata, and code without global utility classes."
         align="none"
       >
-        <div class="demo-text-role-stack">
+        <div data-demo-section="presentation-roles">
           <Text tone="quiet">Quiet supporting copy</Text>
           <Text tone="danger">Danger or validation copy</Text>
           <Text size="compact">Compact metadata</Text>

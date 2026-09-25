@@ -131,6 +131,24 @@ describe('Catalog', () => {
     expect(html).not.toContain('data-catalog-related');
   });
 
+  it('places filtered consumer metadata on the catalog-owned preview stage', () => {
+    const html = asHtml(
+      Catalog({
+        brand: { title: 'Metadata' },
+        sections: [{ category: 'One', entries: [{ id: 'a', name: 'A' }] }],
+        active: 'a',
+        content: raw('<span>a</span>'),
+        stageRootAttributes: {
+          'data-demo-mode': 'component',
+          'data-review-state': 'ready',
+        },
+      }),
+    );
+    expect(html).toContain(
+      'data-demo-mode="component" data-review-state="ready" class="kui-catalog__stage" data-catalog-stage',
+    );
+  });
+
   it('shows the expand affordance and reflects collapse state', () => {
     const collapsed = asHtml(
       Catalog({
@@ -300,6 +318,44 @@ describe('CatalogExample', () => {
     );
     expect(html).toContain('data-align="none"');
     expect(html).not.toContain('kui-catalog-example__note');
+  });
+
+  it('renders catalog-owned viewport constraints and compact guidance', () => {
+    const html = asHtml(
+      CatalogExample({
+        label: 'Layout',
+        viewport: {
+          layout: 'grid',
+          width: 'wide',
+          height: 'reduced',
+          minHeight: 'short',
+          frame: 'dashed',
+          surface: 'lowered',
+          overflow: 'auto-x',
+          responsive: 'roomy-only',
+          shadow: true,
+          fillChildren: true,
+          tokens: { '--kui-pane-width': '18rem' },
+        },
+        compactFallback: 'Open this specimen on a wider viewport.',
+        children: raw('<div data-layout-specimen />'),
+      }),
+    );
+    expect(html).toContain('class="kui-catalog-example__viewport"');
+    expect(html).toContain('data-layout="grid"');
+    expect(html).toContain('data-width="wide"');
+    expect(html).toContain('data-height="reduced"');
+    expect(html).toContain('data-min-height="short"');
+    expect(html).toContain('data-frame="dashed"');
+    expect(html).toContain('data-surface="lowered"');
+    expect(html).toContain('data-overflow="auto-x"');
+    expect(html).toContain('data-responsive="roomy-only"');
+    expect(html).toContain('data-shadow="true"');
+    expect(html).toContain('data-fill-children="true"');
+    expect(html).toContain('style="--kui-pane-width:18rem"');
+    expect(html).toContain(
+      'class="kui-catalog-example__compact-fallback">Open this specimen on a wider viewport.',
+    );
   });
 
   it('omits the label ListHeader for a bare specimen', () => {

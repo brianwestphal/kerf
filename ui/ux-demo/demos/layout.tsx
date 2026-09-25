@@ -1,12 +1,13 @@
-import './layout.css';
+import '@awesome.me/webawesome/dist/components/button-group/button-group.js';
+import '@awesome.me/webawesome/dist/components/button/button.js';
+import '@awesome.me/webawesome/dist/components/card/card.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Pane } from '@kerfjs/ui/pane';
+import { Row } from '@kerfjs/ui/row';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
-
-import { button } from './state.js';
 
 export function LayoutDemo() {
   return (
@@ -15,48 +16,50 @@ export function LayoutDemo() {
       rootAttributes={{ 'data-demo': 'layout' }}
     >
       <CatalogExample label="Pane with child-owned content geometry">
-        <div class="demo-layout-frame">
-          <Pane
-            contentElement="section"
-            header={
-              <Toolbar
-                label="Semantic layout"
-                dividerSides=""
-                leading={
-                  <ToolbarText
-                    text="Semantic layout"
-                    size="xlarge"
-                    id="layout-title"
-                  />
-                }
-                trailing={
-                  <ToolbarControlGroup appearance="borderless" single>
-                    {button('New item', 'log-add')}
-                  </ToolbarControlGroup>
-                }
-              />
-            }
-          >
-            <div class="demo-layout__surface kui-content-item">
-              <p class="demo-layout__copy">
-                <strong>One owner per item</strong>
-              </p>
-              <p class="demo-layout__copy">
-                Each content child owns its margin, border, background, padding,
-                and radius.
-              </p>
-            </div>
-            <div class="demo-layout__actions kui-control-cluster">
-              {button('Primary action', 'log-add')}
-              {button('Secondary action', 'log-more')}
-            </div>
-            <div class="kui-inline-metadata kui-content-item">
-              <span>24px major rhythm</span>
-              <span>·</span>
-              <span>8px internal rhythm</span>
-            </div>
-          </Pane>
-        </div>
+        <Pane
+          contentElement="section"
+          header={
+            <Toolbar
+              label="Semantic layout"
+              dividerSides=""
+              leading={
+                <ToolbarText
+                  text="Semantic layout"
+                  size="xlarge"
+                  id="layout-title"
+                />
+              }
+              trailing={
+                <ToolbarControlGroup appearance="borderless" single>
+                  <button type="button" data-action="log-add">
+                    New item
+                  </button>
+                </ToolbarControlGroup>
+              }
+            />
+          }
+        >
+          <wa-card appearance="outlined" with-header>
+            <strong slot="header">One owner per item</strong>
+            <p>
+              Each content child owns its margin, border, background, padding,
+              and radius.
+            </p>
+          </wa-card>
+          <Row controlInsets="l">
+            <wa-button-group label="Item actions">
+              <wa-button variant="brand" data-action="log-add">
+                Primary action
+              </wa-button>
+              <wa-button data-action="log-more">Secondary action</wa-button>
+            </wa-button-group>
+          </Row>
+          <p>
+            <span>24px major rhythm</span>
+            <span>·</span>
+            <span>8px internal rhythm</span>
+          </p>
+        </Pane>
       </CatalogExample>
     </CatalogExampleStack>
   );

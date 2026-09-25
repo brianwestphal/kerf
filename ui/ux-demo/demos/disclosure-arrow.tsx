@@ -1,10 +1,9 @@
-import './disclosure-arrow.css';
-
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { DisclosureArrow } from '@kerfjs/ui/disclosure-arrow';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { ArrowRight } from 'lucide';
 
-import { customDisclosureOpen, disclosureOpen, icon } from './state.js';
+import { customDisclosureOpen, disclosureOpen } from './state.js';
 
 export function DisclosureArrowDemo() {
   return (
@@ -16,7 +15,6 @@ export function DisclosureArrowDemo() {
       >
         <button
           type="button"
-          class="demo-disclosure-toggle"
           data-action="toggle-disclosure"
           aria-expanded={String(disclosureOpen.value)}
         >
@@ -31,7 +29,6 @@ export function DisclosureArrowDemo() {
       >
         <button
           type="button"
-          class="demo-disclosure-toggle"
           data-action="toggle-custom-disclosure"
           aria-expanded={String(customDisclosureOpen.value)}
         >
@@ -39,7 +36,7 @@ export function DisclosureArrowDemo() {
             open={customDisclosureOpen.value}
             openDirection="up"
             closedDirection="left"
-            icon={icon(ArrowRight, 'arrow-right')}
+            icon={<LucideIcon icon={ArrowRight} name="arrow-right" />}
           />
           <span>Preview</span>
         </button>

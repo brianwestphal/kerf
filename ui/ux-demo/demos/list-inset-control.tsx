@@ -1,12 +1,13 @@
-import './list-inset-control.css';
+import '@awesome.me/webawesome/dist/components/input/input.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { List } from '@kerfjs/ui/list';
 import { ListInsetControl } from '@kerfjs/ui/list-inset-control';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Check } from 'lucide';
 
 import { DemoListInsetPane } from './demo-list-inset-pane.js';
-import { icon } from './state.js';
 
 export function ListInsetControlDemo() {
   return (
@@ -31,15 +32,15 @@ export function ListInsetControlDemo() {
             tone="info"
             title="A content item, for reference"
             detail="Its edges are the alignment reference."
-            icon={icon(Check, 'check')}
+            icon={<LucideIcon icon={Check} name="check" />}
           />
           <ListInsetControl>
-            <input
-              class="list-inset-demo__input"
-              type="text"
-              aria-label="Filter records"
-              placeholder="An input that owns its border and padding"
-            />
+            <List flex>
+              <wa-input
+                label="Filter records"
+                placeholder="An input that owns its border and padding"
+              ></wa-input>
+            </List>
           </ListInsetControl>
         </DemoListInsetPane>
       </CatalogExample>
@@ -50,12 +51,12 @@ export function ListInsetControlDemo() {
       >
         <DemoListInsetPane>
           <ListInsetControl sides="rb">
-            <input
-              class="list-inset-demo__input"
-              type="text"
-              aria-label="Filter selected sides"
-              placeholder="Right and bottom inset"
-            />
+            <List flex>
+              <wa-input
+                label="Filter selected sides"
+                placeholder="Right and bottom inset"
+              ></wa-input>
+            </List>
           </ListInsetControl>
         </DemoListInsetPane>
       </CatalogExample>

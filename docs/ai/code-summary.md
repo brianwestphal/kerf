@@ -53,7 +53,8 @@ canonical `ui/ai/component-catalog.json` facts, package imports, docs, and
 stable catalog routes synchronized.
 `ui/scripts/check-catalog-demo-conformance.mjs` applies an AST-based authoring
 gate to every first-party demo: public package imports, focused public example
-helpers and `rootAttributes`, nonempty specimens, private-markup exclusion, and
+helpers and `rootAttributes`, nonempty specimens, local-stylesheet/inline-style/
+styling-class exclusion, private-markup exclusion, and
 the shell's component-only overlay mode. Narrow structural exceptions live in
 the schema-checked `ui/ux-demo/catalog-conformance-exceptions.json` manifest and
 fail when malformed, unused, or stale.
@@ -691,9 +692,11 @@ repeated mixed-token Select All deletion and refill in real browsers at wide and
 narrow widths. Deletion capture covers native beforeinput and synthetic shortcut
 input, protects replacement blur, and observes the controlled replacement at its
 mutation checkpoint before later user input. The adoption demo persists both query and token edits.
-`CatalogExample.rootAttributes` and `CatalogExampleStack.rootAttributes` use the
+`Catalog.stageRootAttributes`, `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` use the
 same runtime filter for catalog-authoring `data-*` metadata while protecting
-their structure and alignment markers.
+their structure and alignment markers. `CatalogExample.viewport` supplies
+catalog-owned finite specimen constraints so focused demos do not need local
+CSS, inline styles, or styling-only classes.
 `ui/src/spacer.tsx` is the decorative layout-gap primitive: `width` and `height`
 accept finite `UiSpaceName` shorthands or branded `CssLength` values, fixed gaps
 do not shrink, and `flex` consumes remaining space along a flex main axis.

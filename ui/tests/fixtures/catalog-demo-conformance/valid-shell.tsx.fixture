@@ -4,15 +4,11 @@ export function Shell({ selected, content }) {
   return (
     <Catalog
       geometryOverlay={selected.kind === 'component'}
-      content={
-        <div
-          data-demo-mode={
-            selected.kind === 'component' ? 'component' : 'composition'
-          }
-        >
-          {content}
-        </div>
-      }
+      stageRootAttributes={{
+        'data-demo-mode':
+          selected.kind === 'component' ? 'component' : 'composition',
+      }}
+      content={content}
     />
   );
 }

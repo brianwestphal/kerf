@@ -2507,7 +2507,9 @@
       "uses": [
         "tabs",
         "tab-bar",
-        "toolbar-control-group"
+        "toolbar-control-group",
+        "text",
+        "wa-card"
       ],
       "purpose": "Show AppTab and TabBar in a complete controlled composition.",
       "publicExports": [],

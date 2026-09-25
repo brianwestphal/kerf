@@ -12,6 +12,7 @@ import {
 } from '@kerfjs/ui/catalog';
 import { catalogResources } from '@kerfjs/ui/catalog-resources';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -56,7 +57,6 @@ import {
   oppositeDemoTheme,
   preferredDemoTheme,
 } from './demo-theme.js';
-import { DemoStage } from './demos/demo-stage.js';
 import {
   popNavStackDemo,
   pushNavStackDemo,
@@ -81,7 +81,6 @@ import {
   disclosureOpen,
   displayDensity,
   floatingToolbarOpen,
-  icon,
   inspectorSection,
   menuActionCurrent,
   menuActionPressed,
@@ -357,7 +356,7 @@ mount(app, () => {
                 }
                 aria-pressed={String(recipeNotesVisible.value)}
               >
-                {icon(StickyNote, 'sticky-note')}
+                <LucideIcon icon={StickyNote} name="sticky-note" />
               </button>
             </ToolbarControlGroup>
           ) : null}
@@ -373,7 +372,7 @@ mount(app, () => {
               data-action="toggle-contrast"
               aria-pressed={String(increasedContrast.value)}
             >
-              {icon(Contrast, 'contrast')}
+              <LucideIcon icon={Contrast} name="contrast" />
               <span>Contrast</span>
             </button>
             <button
@@ -381,7 +380,7 @@ mount(app, () => {
               data-action="toggle-motion"
               aria-pressed={String(reducedMotion.value)}
             >
-              {icon(ZapOff, 'zap-off')}
+              <LucideIcon icon={ZapOff} name="zap-off" />
               <span>Reduce motion</span>
             </button>
           </ToolbarControlGroup>
@@ -402,16 +401,15 @@ mount(app, () => {
         </>
       }
       geometryOverlay={selected.kind === 'component'}
-      content={
-        <DemoStage
-          data-demo-mode={
-            selected.kind === 'component' ? 'component' : 'composition'
-          }
-          recipeNotesVisible={isRecipe && recipeNotesVisible.value}
-        >
-          <Stage />
-        </DemoStage>
-      }
+      stageRootAttributes={{
+        'data-demo-stage-inner': '',
+        'data-demo-mode':
+          selected.kind === 'component' ? 'component' : 'composition',
+        'data-recipe-notes-visible': String(
+          isRecipe && recipeNotesVisible.value,
+        ),
+      }}
+      content={<Stage />}
     />
   );
 });
@@ -535,16 +533,11 @@ const stopActions = delegateActions(app, 'click', {
     const demo = element.closest<HTMLElement>(
       '[data-observer-demo="intersection"]',
     );
-    const viewport = demo?.querySelector<HTMLElement>(
-      '.wa-demo-observer__viewport',
-    );
     const target = demo?.querySelector<HTMLElement>('[data-observer-target]');
-    if (!demo || !viewport || !target) return;
+    if (!demo || !target) return;
     const revealed = demo.dataset.revealed === 'true';
     demo.dataset.revealed = String(!revealed);
-    viewport.scrollTop = revealed
-      ? 0
-      : target.offsetTop - viewport.offsetTop - 16;
+    target.hidden = revealed;
     element.textContent = revealed ? 'Reveal target' : 'Hide target';
   },
   'mutate-wa-target': (_event, element) => {

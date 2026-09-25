@@ -34,7 +34,14 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=row');
 
-  const defaultRow = page.locator('.demo-row-default');
+  const demo = page.locator('[data-demo="row"]');
+  const example = (label: string) =>
+    demo.locator('[data-catalog-example]').filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: new RegExp(`^${label}$`),
+      }),
+    });
+  const defaultRow = example('Default row').locator('[data-component="row"]');
   await expect(defaultRow).toHaveAttribute('data-h-align', 'left');
   await expect(defaultRow).toHaveAttribute('data-v-align', 'full');
   await expect(defaultRow).toHaveAttribute('data-flex', 'false');
@@ -59,7 +66,13 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
   ] as const;
   for (const [name, expected] of horizontal) {
     await expect
-      .poll(() => flexGeometry(page.locator(`.demo-row-horizontal-${name}`)))
+      .poll(() =>
+        flexGeometry(
+          example('Horizontal distribution').locator(
+            `[data-component="row"][data-h-align="${name}"]`,
+          ),
+        ),
+      )
       .toMatchObject({ justifyContent: expected });
   }
 
@@ -72,11 +85,19 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
   ] as const;
   for (const [name, items, content] of vertical) {
     await expect
-      .poll(() => flexGeometry(page.locator(`.demo-row-vertical-${name}`)))
+      .poll(() =>
+        flexGeometry(
+          example('Vertical alignment').locator(
+            `[data-component="row"][data-v-align="${name}"]`,
+          ),
+        ),
+      )
       .toMatchObject({ alignItems: items, alignContent: content });
   }
 
-  const wrapped = page.locator('.demo-row-wrapped');
+  const wrapped = example('Wrapped row').locator(
+    '[data-component="row"][data-wrap="true"]',
+  );
   await expect
     .poll(() => flexGeometry(wrapped))
     .toMatchObject({
@@ -84,7 +105,9 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
       gap: '16px',
     });
 
-  const growing = page.locator('.demo-row-flex-grow');
+  const flexExample = example('Flex participation');
+  const participatingRows = flexExample.locator('[data-component="row"]');
+  const growing = participatingRows.nth(0);
   await expect(growing).toHaveAttribute('data-flex', 'true');
   await expect
     .poll(() => flexGeometry(growing))
@@ -92,7 +115,7 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
       flex: '1 1 auto',
     });
   await expect
-    .poll(() => flexGeometry(page.locator('.demo-row-flex-none')))
+    .poll(() => flexGeometry(participatingRows.nth(1)))
     .toMatchObject({ flex: '0 0 auto' });
 
   if (browserName === 'chromium') {
@@ -119,7 +142,16 @@ test('List retains defaults and accepts the shared alignment vocabulary', async 
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=list');
 
-  const defaultList = page.locator('[data-demo="list"] .kui-list').first();
+  const demo = page.locator('[data-demo="list"]');
+  const example = (label: string) =>
+    demo.locator('[data-catalog-example]').filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: new RegExp(`^${label}$`),
+      }),
+    });
+  const defaultList = example('Scrollable application list')
+    .locator('[data-component="list"]')
+    .first();
   await expect(defaultList).toHaveAttribute('data-h-align', 'full');
   await expect(defaultList).toHaveAttribute('data-v-align', 'top');
   await expect
@@ -130,7 +162,11 @@ test('List retains defaults and accepts the shared alignment vocabulary', async 
     });
 
   await expect
-    .poll(() => flexGeometry(page.locator('.demo-list-alignment')))
+    .poll(() =>
+      flexGeometry(
+        example('Physical-axis alignment').locator('[data-component="list"]'),
+      ),
+    )
     .toMatchObject({
       alignItems: 'flex-end',
       justifyContent: 'space-between',

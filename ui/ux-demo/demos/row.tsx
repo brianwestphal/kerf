@@ -1,4 +1,4 @@
-import './row.css';
+import '@awesome.me/webawesome/dist/components/card/card.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
@@ -7,6 +7,7 @@ import {
   Row,
   type VerticalAlignment,
 } from '@kerfjs/ui/row';
+import { Text } from '@kerfjs/ui/text';
 
 import { DemoChip } from './demo-chip.js';
 import { DemoFrameShell } from './demo-frame-shell.js';
@@ -48,14 +49,16 @@ export function RowDemo() {
       >
         <List gap="xs">
           {horizontal.map(([label, alignment]) => (
-            <section class="demo-row-gallery__section">
-              <code class="demo-row-gallery__label">{label}</code>
+            <List gap="2xs">
+              <Text font="monospace" tone="quiet" size="compact">
+                {label}
+              </Text>
               <DemoFrameShell>
                 <Row hAlign={alignment} vAlign="middle">
                   {chips(label)}
                 </Row>
               </DemoFrameShell>
-            </section>
+            </List>
           ))}
         </List>
       </CatalogExample>
@@ -65,14 +68,16 @@ export function RowDemo() {
       >
         <List gap="xs">
           {vertical.map(([label, alignment]) => (
-            <section class="demo-row-gallery__section">
-              <code class="demo-row-gallery__label">{label}</code>
+            <List gap="2xs">
+              <Text font="monospace" tone="quiet" size="compact">
+                {label}
+              </Text>
               <DemoFrameShell>
                 <Row hAlign="left" vAlign={alignment}>
                   {chips(label)}
                 </Row>
               </DemoFrameShell>
-            </section>
+            </List>
           ))}
         </List>
       </CatalogExample>
@@ -98,8 +103,8 @@ export function RowDemo() {
         label="Flex participation"
         note="Row accepts the same boolean, finite-keyword, and typed flex grammar as List when it participates in a parent flex layout."
       >
-        <div class="demo-row-flex-stack">
-          <List gap="xs">
+        <wa-card appearance="sunken">
+          <List gap="xs" flex>
             <Row flex vAlign="middle">
               {chips('Growing')}
             </Row>
@@ -107,7 +112,7 @@ export function RowDemo() {
               {chips('Fixed')}
             </Row>
           </List>
-        </div>
+        </wa-card>
       </CatalogExample>
       <CatalogExample
         label="Side-selectable insets"

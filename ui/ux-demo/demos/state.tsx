@@ -1,4 +1,3 @@
-import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import type { TokenSearchToken } from '@kerfjs/ui/token-search-field';
 import { signal } from 'kerfjs';
 
@@ -54,14 +53,4 @@ export const inspectorSection = signal<'summary' | 'activity' | 'files'>(
 );
 export const displayDensity = signal<'compact' | 'comfortable' | 'roomy'>(
   'comfortable',
-);
-
-export const icon = (
-  node: Parameters<typeof LucideIcon>[0]['icon'],
-  name: string,
-) => <LucideIcon icon={node} name={name} />;
-export const button = (label: string, action: string) => (
-  <button type="button" data-action={action}>
-    {label}
-  </button>
 );

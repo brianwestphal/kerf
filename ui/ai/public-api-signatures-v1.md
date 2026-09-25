@@ -1321,15 +1321,29 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { a as CatalogProps } from './types-CzgSrFXP.js';
-export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection } from './types-CzgSrFXP.js';
+import { a as CatalogProps } from './types-CEsieBZi.js';
+export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection, g as CatalogStageRootAttributes } from './types-CEsieBZi.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 /** Controlled, stateless component-catalog shell. */
-declare function Catalog({ brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, className, slot, }: CatalogProps): kerfjs.SafeHtml;
+declare function Catalog({ brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, className, slot, }: CatalogProps): kerfjs.SafeHtml;
 
 /** How a specimen aligns its visible edge with its `ListHeader` label. */
 type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
+interface CatalogExampleViewport {
+    layout?: 'grid' | 'flex' | 'flex-column';
+    width?: 'full' | 'compact' | 'medium' | 'wide' | 'text' | 'control';
+    height?: 'short' | 'reduced' | 'medium' | 'tall' | 'fill';
+    minHeight?: 'short' | 'medium';
+    frame?: 'solid' | 'dashed';
+    surface?: 'default' | 'lowered';
+    overflow?: 'hidden' | 'auto-x';
+    responsive?: 'roomy-only';
+    shadow?: boolean;
+    fillChildren?: boolean;
+    /** Public component custom properties applied to the specimen viewport. */
+    tokens?: Readonly<Record<`--${string}`, string>>;
+}
 type CatalogExampleRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-catalog-example'?: never;
     'data-catalog-example-stack'?: never;
@@ -1341,6 +1355,10 @@ interface CatalogExampleProps {
     label?: string;
     note?: SafeHtml | string;
     align?: CatalogExampleAlign;
+    /** Optional catalog-owned constraints for demonstrating layout components. */
+    viewport?: CatalogExampleViewport;
+    /** Replacement guidance shown when a roomy-only viewport is hidden. */
+    compactFallback?: SafeHtml | string;
     rootAttributes?: CatalogExampleRootAttributes;
     className?: string;
     children?: KerfUiContent;
@@ -1348,7 +1366,7 @@ interface CatalogExampleProps {
     slot?: string;
 }
 /** A labeled catalog specimen with optional explanatory text and alignment. */
-declare function CatalogExample({ label, note, align, rootAttributes, className, children, slot, }: CatalogExampleProps): SafeHtml;
+declare function CatalogExample({ label, note, align, viewport, compactFallback, rootAttributes, className, children, slot, }: CatalogExampleProps): SafeHtml;
 
 type CatalogExampleStackRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-catalog-example'?: never;
@@ -1368,13 +1386,13 @@ interface CatalogExampleStackProps {
 /** A vertically stacked group of catalog examples. */
 declare function CatalogExampleStack({ label, rootAttributes, className, children, slot, }: CatalogExampleStackProps): kerfjs.SafeHtml;
 
-export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, CatalogProps };
+export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleProps, CatalogExampleStack, type CatalogExampleStackProps, type CatalogExampleViewport, CatalogProps };
 ```
 
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-CzgSrFXP.js';
+import { C as CatalogResource } from './types-CEsieBZi.js';
 import './semantic-content-BbzjvSu9.js';
 import 'kerfjs';
 

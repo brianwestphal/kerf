@@ -91,6 +91,12 @@ own overlay implementation.
   generated note, then one specimen or one intentionally coupled specimen
   cluster. Use one row per variant/state; do not hand-author the helper's private
   classes.
+- Focused demos do not import local stylesheets, use inline `style`, or invent
+  styling-only `demo-*` classes. Prefer a public Kerf component, then a Web
+  Awesome surface when Kerf has no equivalent, then ordinary semantic HTML.
+  Use `CatalogExample.viewport` for bounded specimen width, height, frame,
+  surface, overflow, responsive visibility, and public custom-property values;
+  keep those constraints catalog-owned instead of recreating a demo stylesheet.
 - The specimen is an immediate child of `CatalogExample`. A focused component
   row should place the component root there, without a decorative card or
   spacing wrapper. A composition row may place the composition root there.
@@ -143,6 +149,9 @@ from structurally widened or JavaScript objects. Do not copy the helpers'
 private `kui-catalog-*` classes into preview markup.
 
 The app owns entry ids, `kind`, routing, sources, relationships, and test hooks.
+`Catalog.stageRootAttributes` places app-owned `data-*` state on the
+catalog-owned preview stage without an extra wrapper; `data-catalog-stage`
+remains protected.
 The helpers own their structural markers, label/note anatomy, alignment marker,
 and private classes. Component metadata such as margin/border/padding ownership
 lives in `component-catalog.json`; do not infer or overwrite it from overlay
@@ -204,6 +213,8 @@ facts that source can prove without guessing at rendered intent:
   are not empty, and composition routes do not add redundant skip markers;
 - every `@kerfjs/ui` import is a published package export and relative imports
   do not reach into `ui/src`;
+- focused demos have no relative stylesheet imports, inline style attributes,
+  or styling-only `demo-*`, `wa-demo-*`, and token-search class names;
 - demo JSX does not copy private `kui-catalog-*` structural classes; and
 - the shell derives both geometry-overlay enablement and documented demo mode
   from the active entry's source and kind.
@@ -217,7 +228,7 @@ stage geometry is itself the reviewed specimen. Add the narrow waiver to
 [`catalog-conformance-exceptions.json`](../ux-demo/catalog-conformance-exceptions.json)
 with the exact route, source file, stable diagnostic ids, a substantive reason,
 and the reviewing `KF-*` ticket. Only helper/metadata rules are waivable;
-private imports, private markup, empty examples, composition overlay drift, and
+private imports, local styling, private markup, empty examples, composition overlay drift, and
 shell-mode drift always fail. The gate rejects duplicate, malformed, unused,
 and stale exceptions, so delete a waiver when its route adopts the standard
 helpers.

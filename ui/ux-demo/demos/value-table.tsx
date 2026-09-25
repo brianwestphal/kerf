@@ -1,14 +1,13 @@
-import './value-table.css';
+import '@awesome.me/webawesome/dist/components/card/card.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { Wrench } from 'lucide';
 
-import { icon } from './state.js';
-
 export function ValueTableDemo() {
   return (
-    <div class="demo-value-table">
+    <wa-card appearance="outlined">
       <CatalogExampleStack rootAttributes={{ 'data-demo': 'value-table' }}>
         <CatalogExample label="Populated" align="none">
           <ValueTable label="Package metadata">
@@ -16,7 +15,7 @@ export function ValueTableDemo() {
             <ValueTableRow
               label="Rendering"
               value="Kerf SafeHtml"
-              icon={icon(Wrench, 'wrench')}
+              icon={<LucideIcon icon={Wrench} name="wrench" />}
             />
             <ValueTableRow label="Styles" value="Explicit CSS subpaths" />
           </ValueTable>
@@ -36,13 +35,13 @@ export function ValueTableDemo() {
             <ValueTableRow
               label="Rendering"
               value=""
-              icon={icon(Wrench, 'wrench')}
+              icon={<LucideIcon icon={Wrench} name="wrench" />}
               placeholder
             />
             <ValueTableRow label="Styles" value="" placeholder />
           </ValueTable>
         </CatalogExample>
       </CatalogExampleStack>
-    </div>
+    </wa-card>
   );
 }

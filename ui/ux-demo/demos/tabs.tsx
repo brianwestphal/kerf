@@ -1,9 +1,8 @@
 import { AppTab } from '@kerfjs/ui/app-tab';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { CircleDot, PanelLeft, X } from 'lucide';
-
-import { icon } from './state.js';
 
 const extensionAttributes = {
   'data-demo-tab-source': 'workspace',
@@ -23,8 +22,8 @@ export function TabsDemo() {
             id="guidelines"
             name="Guidelines"
             selected
-            leading={icon(PanelLeft, 'panel-left')}
-            closeIcon={icon(X, 'custom-tab-close')}
+            leading={<LucideIcon icon={PanelLeft} name="panel-left" />}
+            closeIcon={<LucideIcon icon={X} name="custom-tab-close" />}
             rootAttributes={extensionAttributes}
           />
         </TabBar>
@@ -47,7 +46,7 @@ export function TabsDemo() {
             id="status"
             name="Status"
             closable={false}
-            leading={icon(CircleDot, 'circle-dot')}
+            leading={<LucideIcon icon={CircleDot} name="circle-dot" />}
             presentation="icon-only"
             size="compact"
           />

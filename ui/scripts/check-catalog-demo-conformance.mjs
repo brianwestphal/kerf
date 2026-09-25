@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -65,6 +65,25 @@ diagnostics.push(
     source: shellSource,
   }),
 );
+const localDemoStyles = (await readdir(resolve(uiRoot, 'ux-demo/demos')))
+  .filter((name) => name.endsWith('.css'))
+  .map((name) => `ux-demo/demos/${name}`);
+try {
+  await readFile(resolve(uiRoot, 'ux-demo/webawesome-demos.css'), 'utf8');
+  localDemoStyles.push('ux-demo/webawesome-demos.css');
+} catch {
+  // The no-local-stylesheet contract expects this file to be absent.
+}
+for (const file of localDemoStyles)
+  diagnostics.push({
+    rule: 'catalog-demo/local-stylesheet',
+    route: '*',
+    file,
+    line: 1,
+    column: 1,
+    message:
+      'Focused demo stylesheets are forbidden; configure Kerf UI, Web Awesome, or catalog-owned specimen geometry instead.',
+  });
 const failures = [
   ...validateCatalogDemoExceptionManifest(exceptionManifest),
   ...applyCatalogDemoExceptions(diagnostics, exceptionManifest.exceptions),

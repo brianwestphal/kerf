@@ -404,7 +404,9 @@ export const generatedKerfCatalog = [
     "uses": [
       "tabs",
       "tab-bar",
-      "toolbar-control-group"
+      "toolbar-control-group",
+      "text",
+      "wa-card"
     ],
     "demoSource": "ui/ux-demo/demos/application-tabs.tsx",
     "documentation": "ui/docs/accessibility.md"

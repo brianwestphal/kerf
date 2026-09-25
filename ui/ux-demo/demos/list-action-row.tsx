@@ -1,9 +1,10 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Folder, MoreHorizontal } from 'lucide';
 
 import { DemoListPopover } from './demo-list-popover.js';
-import { icon, menuActionCurrent, menuActionPressed } from './state.js';
+import { menuActionCurrent, menuActionPressed } from './state.js';
 
 export function ListActionRowDemo() {
   return (
@@ -19,7 +20,9 @@ export function ListActionRowDemo() {
           itemId="status-action"
           trailingAction="open-list-action-row-actions"
           trailingActionLabel="Actions for generated report"
-          trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')}
+          trailingActionIcon={
+            <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+          }
           trailingActionVisibility="interaction"
           rootAttributes={{ 'data-demo-action-row': 'status' }}
         />
@@ -27,14 +30,16 @@ export function ListActionRowDemo() {
       <CatalogExample align="none">
         <ListActionRow
           label="src/main.ts"
-          icon={icon(Folder, 'folder')}
+          icon={<LucideIcon icon={Folder} name="folder" />}
           action="select-list-action-row"
           itemId="src/main.ts"
           selected={menuActionCurrent.value === 'src/main.ts'}
           accessibleLabel="Select src/main.ts"
           trailingAction="open-list-action-row-actions"
           trailingActionLabel="Actions for src/main.ts"
-          trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')}
+          trailingActionIcon={
+            <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+          }
           rootAttributes={{ 'data-demo-action-row': 'selected' }}
           trailingActionAttributes={{
             popoverTarget: 'list-action-row-popover',
@@ -48,7 +53,7 @@ export function ListActionRowDemo() {
       <CatalogExample align="none">
         <ListActionRow
           label="packages/application/src/components/a-long-file-name-that-wraps-at-narrow-width.tsx"
-          icon={icon(Folder, 'folder')}
+          icon={<LucideIcon icon={Folder} name="folder" />}
           action="toggle-list-action-row"
           itemId="long-file"
           pressed={menuActionPressed.value}
@@ -56,7 +61,9 @@ export function ListActionRowDemo() {
           multiline
           trailingAction="open-list-action-row-actions"
           trailingActionLabel="Actions for long file"
-          trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')}
+          trailingActionIcon={
+            <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+          }
           rootAttributes={{ 'data-demo-action-row': 'multiline' }}
         />
       </CatalogExample>
@@ -69,7 +76,9 @@ export function ListActionRowDemo() {
           disabled
           trailingAction="open-list-action-row-actions"
           trailingActionLabel="Actions for unavailable primary"
-          trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')}
+          trailingActionIcon={
+            <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+          }
           rootAttributes={{ 'data-demo-action-row': 'disabled-primary' }}
         />
       </CatalogExample>
@@ -81,7 +90,9 @@ export function ListActionRowDemo() {
           selected={menuActionCurrent.value === 'disabled-trailing'}
           trailingAction="open-list-action-row-actions"
           trailingActionLabel="Unavailable actions"
-          trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')}
+          trailingActionIcon={
+            <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+          }
           trailingActionDisabled
           trailingActionTitle="Actions unavailable"
           rootAttributes={{ 'data-demo-action-row': 'disabled-trailing' }}
@@ -90,13 +101,15 @@ export function ListActionRowDemo() {
       <CatalogExample align="none">
         <ListActionRow
           label="Loading file"
-          icon={icon(Folder, 'folder')}
+          icon={<LucideIcon icon={Folder} name="folder" />}
           action="select-list-action-row"
           itemId="placeholder"
           placeholder
           trailingAction="open-list-action-row-actions"
           trailingActionLabel="Actions"
-          trailingActionIcon={icon(MoreHorizontal, 'more-horizontal')}
+          trailingActionIcon={
+            <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
+          }
           rootAttributes={{ 'data-demo-action-row': 'placeholder' }}
         />
       </CatalogExample>

@@ -21,6 +21,149 @@
   font-size: var(--kui-font-xs);
 }
 
+.kui-catalog-example__viewport {
+  position: relative;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.kui-catalog-example__viewport > * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.kui-catalog-example__viewport[data-layout="grid"] {
+  display: grid;
+}
+
+.kui-catalog-example__viewport[data-layout="flex"] {
+  display: flex;
+}
+
+.kui-catalog-example__viewport[data-layout="flex-column"] {
+  display: flex;
+  flex-direction: column;
+}
+
+.kui-catalog-example__viewport[data-width="full"] {
+  width: 100%;
+}
+
+.kui-catalog-example__viewport[data-width="compact"] {
+  width: min(100%, remify(440px));
+}
+
+.kui-catalog-example__viewport[data-width="medium"] {
+  width: min(100%, remify(640px));
+}
+
+.kui-catalog-example__viewport[data-width="wide"] {
+  width: 100%;
+  max-width: remify(864px);
+}
+
+.kui-catalog-example__viewport[data-width="text"] {
+  width: remify(280px);
+}
+
+.kui-catalog-example__viewport[data-width="control"] {
+  min-width: min(remify(384px), 100%);
+}
+
+.kui-catalog-example__viewport[data-height="short"] {
+  height: remify(220px);
+}
+
+.kui-catalog-example__viewport[data-height="reduced"] {
+  height: remify(280px);
+}
+
+.kui-catalog-example__viewport[data-height="medium"] {
+  height: remify(320px);
+}
+
+.kui-catalog-example__viewport[data-height="tall"] {
+  height: remify(360px);
+}
+
+.kui-catalog-example__viewport[data-height="fill"] {
+  height: 100%;
+}
+
+.kui-catalog-example__viewport[data-min-height="short"] {
+  min-height: remify(256px);
+}
+
+.kui-catalog-example__viewport[data-min-height="medium"] {
+  min-height: remify(320px);
+}
+
+.kui-catalog-example__viewport[data-frame] {
+  border: 1px solid var(--kui-color-border);
+  border-radius: var(--kui-radius-m);
+}
+
+.kui-catalog-example__viewport[data-frame="dashed"] {
+  border-style: dashed;
+}
+
+.kui-catalog-example__viewport[data-surface="default"] {
+  background: var(--kui-color-surface);
+}
+
+.kui-catalog-example__viewport[data-surface="lowered"] {
+  background: var(--kui-color-surface-lowered);
+}
+
+.kui-catalog-example__viewport[data-overflow="hidden"] {
+  overflow: hidden;
+}
+
+.kui-catalog-example__viewport[data-overflow="auto-x"] {
+  overflow-x: auto;
+}
+
+.kui-catalog-example__viewport[data-shadow="true"] {
+  box-shadow: var(--kui-shadow-s);
+}
+
+.kui-catalog-example__viewport[data-fill-children="true"] > * {
+  height: 100%;
+}
+
+.kui-catalog-example__viewport [data-catalog-viewport-fill] {
+  height: 100%;
+}
+
+.kui-catalog-example__compact-fallback {
+  display: none;
+  margin: 0;
+  color: var(--kui-color-text-quiet);
+  font-size: var(--kui-font-s);
+}
+
+@media ((max-width: remify(832px))) {
+  .kui-catalog-example__viewport[data-responsive="roomy-only"] {
+    display: none;
+  }
+
+  .kui-catalog-example__compact-fallback {
+    display: block;
+  }
+}
+
+@media ((max-width: remify(480px))) {
+  .kui-catalog-example__viewport[data-min-height="medium"] {
+    min-height: remify(256px);
+  }
+}
+
+@media ((forced-colors: active)) {
+  .kui-catalog-example__viewport[data-frame] {
+    forced-color-adjust: auto;
+  }
+}
+
 /* The published inset lets the geometry overlay exclude this authoring aid. */
 .kui-catalog-example[data-align="glyph"]
   > :not([data-catalog-example-label]):not([data-catalog-example-note]) {

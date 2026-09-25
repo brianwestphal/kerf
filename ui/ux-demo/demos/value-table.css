@@ -1,8 +1,0 @@
-.demo-value-table {
-  width: min(remify(544px), 100%);
-  padding: var(--demo-surface-padding, remify(16px));
-  border: 1px solid var(--demo-surface-border, var(--kui-color-border));
-  border-radius: var(--kui-radius-m);
-  background: var(--demo-surface-background, var(--kui-color-surface));
-  box-shadow: var(--demo-surface-shadow, var(--kui-shadow-s));
-}

@@ -36,3 +36,18 @@ html.demo-reduced-motion *::after {
 button {
   font: inherit;
 }
+/* Catalog stage state owns the demo-wide presentation variables. */
+[data-demo-stage-inner][data-recipe-notes-visible="false"] {
+  --recipe-ownership-display: none;
+}
+
+[data-demo-stage-inner][data-recipe-notes-visible="true"] {
+  --recipe-ownership-display: block;
+}
+
+[data-demo-stage-inner][data-demo-mode="component"] {
+  --demo-surface-border: transparent;
+  --demo-surface-background: transparent;
+  --demo-surface-shadow: none;
+  --demo-surface-padding: 0;
+}

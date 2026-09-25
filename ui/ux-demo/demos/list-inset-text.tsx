@@ -1,11 +1,10 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Check } from 'lucide';
 
 import { DemoListInsetPane } from './demo-list-inset-pane.js';
-import { icon } from './state.js';
-
 export function ListInsetTextDemo() {
   return (
     <CatalogExampleStack
@@ -28,7 +27,7 @@ export function ListInsetTextDemo() {
             tone="neutral"
             title="A content item, for reference"
             detail="Note where its title text starts."
-            icon={icon(Check, 'check')}
+            icon={<LucideIcon icon={Check} name="check" />}
           />
           <ListInsetText>
             Aligned plain text — its left edge lands at the same inset as the

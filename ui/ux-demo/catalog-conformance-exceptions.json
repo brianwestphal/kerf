@@ -1,26 +1,5 @@
 {
   "$schema": "./catalog-conformance-exceptions.schema.json",
   "schemaVersion": 1,
-  "exceptions": [
-    {
-      "route": "toolbar",
-      "file": "ux-demo/demos/toolbar.tsx",
-      "rules": [
-        "catalog-demo/focused-public-helpers",
-        "catalog-demo/root-attributes"
-      ],
-      "reason": "The route is one intentionally coupled, full-width two-toolbar frame whose shared border and spacing are the specimen being reviewed.",
-      "reviewedIn": "KF-VTDPPY"
-    },
-    {
-      "route": "resize",
-      "file": "ux-demo/demos/resize.tsx",
-      "rules": [
-        "catalog-demo/focused-public-helpers",
-        "catalog-demo/root-attributes"
-      ],
-      "reason": "The interactive resize shell must remain the direct measured stage child, and the shell is skipped because its changing frame is not intrinsic ResizableRegion geometry.",
-      "reviewedIn": "KF-VTDPPY"
-    }
-  ]
+  "exceptions": []
 }

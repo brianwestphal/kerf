@@ -1,5 +1,3 @@
-import './toolbar-text.css';
-
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 
@@ -34,10 +32,10 @@ export function ToolbarTextDemo() {
         label="Ellipsis (default)"
         note={<>One line, ellipsized when it does not fit.</>}
         align="none"
+        viewport={{ layout: 'flex', width: 'text', frame: 'dashed' }}
+        rootAttributes={{ 'data-demo-toolbar-text-overflow': 'ellipsis' }}
       >
-        <div class="toolbar-text-overflow-demo">
-          <ToolbarText text={overflowLabel} size="large" />
-        </div>
+        <ToolbarText text={overflowLabel} size="large" />
       </CatalogExample>
       <CatalogExample
         label="Wrap"
@@ -47,10 +45,10 @@ export function ToolbarTextDemo() {
           </>
         }
         align="none"
+        viewport={{ layout: 'flex', width: 'text', frame: 'dashed' }}
+        rootAttributes={{ 'data-demo-toolbar-text-overflow': 'wrap' }}
       >
-        <div class="toolbar-text-overflow-demo">
-          <ToolbarText text={overflowLabel} size="large" wrap />
-        </div>
+        <ToolbarText text={overflowLabel} size="large" wrap />
       </CatalogExample>
       <CatalogExample
         label="Wrap, capped to 2 lines"
@@ -60,10 +58,10 @@ export function ToolbarTextDemo() {
           </>
         }
         align="none"
+        viewport={{ layout: 'flex', width: 'text', frame: 'dashed' }}
+        rootAttributes={{ 'data-demo-toolbar-text-overflow': 'capped' }}
       >
-        <div class="toolbar-text-overflow-demo">
-          <ToolbarText text={overflowLabel} size="large" wrap maxLines={2} />
-        </div>
+        <ToolbarText text={overflowLabel} size="large" wrap maxLines={2} />
       </CatalogExample>
     </CatalogExampleStack>
   );

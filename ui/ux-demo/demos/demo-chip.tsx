@@ -1,4 +1,4 @@
-import './demo-chip.css';
+import { Badge } from '@kerfjs/ui/badge';
 
 interface DemoChipProps {
   label: string;
@@ -7,8 +7,12 @@ interface DemoChipProps {
 
 export function DemoChip({ label, size = 'default' }: DemoChipProps) {
   return (
-    <span class={`demo-chip${size === 'default' ? '' : ` demo-chip--${size}`}`}>
+    <Badge
+      appearance="outline"
+      shape="rounded"
+      size={size === 'default' ? 'compact' : 'default'}
+    >
       {label}
-    </span>
+    </Badge>
   );
 }

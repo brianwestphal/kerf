@@ -111,13 +111,16 @@ supports it as a normal single-root control.
 
 `ListItem.rootAttributes`, `ListHeader.rootAttributes`,
 `ListActionRow.rootAttributes`, `AppTab.rootAttributes`,
-`CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` carry typed
+`Catalog.stageRootAttributes`, `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` carry typed
 application `data-*` metadata without
 teaching the package domain fields. `ListHeader.triggerAttributes` and
 `ListActionRow.trailingActionAttributes` additionally support native popover
 target and relationship attributes. Roles and component-owned action, selection,
 disclosure, naming, disabled, icon, and catalog-structure semantics remain protected props; an
 isolated `role="menuitem"` is not an extension shortcut.
+`CatalogExample.viewport` owns the finite layout constraints needed by focused
+specimens, so catalog authors do not need route-local stylesheets, inline
+styles, or styling-only demo classes.
 The slots are also filtered at runtime, so structurally widened objects and
 JavaScript callers cannot bypass those protections with case-variant names.
 `ListItem.trailing` is dormant metadata. Use `ListActionRow` when a row needs

@@ -1,4 +1,3 @@
-import './tab-scaffold.css';
 import '@kerfjs/ui/tab-scaffold.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
@@ -61,15 +60,14 @@ export function TabScaffoldDemo() {
       <CatalogExample
         label="Persistent tab scenes"
         note="The controlled active id changes the visible scene; every tab scene remains mounted so its own stack and scroll position survive."
+        viewport={{ layout: 'grid', width: 'compact', height: 'tall' }}
       >
-        <div class="demo-tab-scaffold">
-          <TabScaffold
-            id="catalog-tab-scaffold"
-            label="Application sections"
-            tabs={tabs}
-            active={activeTab.value}
-          />
-        </div>
+        <TabScaffold
+          id="catalog-tab-scaffold"
+          label="Application sections"
+          tabs={tabs}
+          active={activeTab.value}
+        />
       </CatalogExample>
     </CatalogExampleStack>
   );

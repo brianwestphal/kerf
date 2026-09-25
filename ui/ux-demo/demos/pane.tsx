@@ -1,5 +1,3 @@
-import './pane.css';
-
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Pane } from '@kerfjs/ui/pane';
@@ -12,41 +10,43 @@ export function PaneDemo() {
       <CatalogExample
         label="Pane structure and separators"
         note="The header and footer stay fixed while the primary vertical content slot owns scrolling."
+        viewport={{
+          layout: 'grid',
+          width: 'medium',
+          height: 'tall',
+          surface: 'default',
+        }}
       >
-        <div class="demo-pane">
-          <Pane
-            element="section"
-            label="Pane anatomy"
-            separators={[
-              'block-start',
-              'block-end',
-              'inline-start',
-              'inline-end',
-            ]}
-            header={
-              <>
-                <Toolbar
-                  label="Pane header"
-                  dividerSides=""
-                  leading={<ToolbarText text="Pane header" size="large" />}
-                />
-                <div class="demo-pane__secondary">
-                  <ListInsetText>Optional secondary header row</ListInsetText>
-                </div>
-              </>
-            }
-            footer={
+        <Pane
+          element="section"
+          label="Pane anatomy"
+          separators={[
+            'block-start',
+            'block-end',
+            'inline-start',
+            'inline-end',
+          ]}
+          header={
+            <>
               <Toolbar
-                label="Pane footer"
+                label="Pane header"
                 dividerSides=""
-                leading={<ToolbarText text="Optional footer" size="small" />}
+                leading={<ToolbarText text="Pane header" size="large" />}
               />
-            }
-          >
-            <div class="kui-content-item">First content group</div>
-            <div class="kui-content-item">Second content group</div>
-          </Pane>
-        </div>
+              <ListInsetText>Optional secondary header row</ListInsetText>
+            </>
+          }
+          footer={
+            <Toolbar
+              label="Pane footer"
+              dividerSides=""
+              leading={<ToolbarText text="Optional footer" size="small" />}
+            />
+          }
+        >
+          <div class="kui-content-item">First content group</div>
+          <div class="kui-content-item">Second content group</div>
+        </Pane>
       </CatalogExample>
     </CatalogExampleStack>
   );

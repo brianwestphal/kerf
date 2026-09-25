@@ -35,9 +35,10 @@ test('Grid keeps fixed equal tracks, typed gaps, and flex participation', async 
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=grid');
 
-  const two = page.locator('.demo-grid-two');
-  const four = page.locator('.demo-grid-four');
-  const flexible = page.locator('.demo-grid-flex');
+  const demo = page.locator('[data-demo="grid"]');
+  const two = demo.locator('[data-component="grid"][data-columns="2"]');
+  const four = demo.locator('[data-component="grid"][data-columns="4"]');
+  const flexible = demo.locator('[data-component="grid"][data-flex="true"]');
 
   await expect(two).toHaveAttribute('data-columns', '2');
   await expect(four).toHaveAttribute('data-columns', '4');

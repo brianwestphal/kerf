@@ -5,10 +5,7 @@ export function FocusedDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'focused' }}>
       <CatalogExample label="Nested specimen">
-        <div
-          class="fixture-margin fixture-border"
-          style="margin: 8px; border: 1px solid transparent"
-        >
+        <div data-fixture="nested">
           <ListItem label="Parent" />
           <ListItem label="Nested child" />
         </div>
