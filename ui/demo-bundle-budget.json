@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 281000,
-  "measuredLargestJavaScriptGzip": 133630,
-  "measuredTotalJavaScriptGzip": 280938,
+  "totalJavaScriptGzip": 281800,
+  "measuredLargestJavaScriptGzip": 133981,
+  "measuredTotalJavaScriptGzip": 281711,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -227,6 +227,22 @@
         "measuredTotalJavaScriptGzip": 280938,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 281000
+      }
+    },
+    {
+      "at": "2026-09-25T13:21:58.084Z",
+      "reason": "re-measure from a clean demo:build: the previous entry came from check:change, whose intermediate packed-contract step leaves a different ui/dist, under-measuring the demo by ~0.8 kB gzip",
+      "old": {
+        "measuredLargestJavaScriptGzip": 133630,
+        "measuredTotalJavaScriptGzip": 280938,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 281000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 133981,
+        "measuredTotalJavaScriptGzip": 281711,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 281800
       }
     }
   ]
