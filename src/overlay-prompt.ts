@@ -14,6 +14,26 @@ export type FieldValidator = (
 ) => string | null | undefined | void;
 
 /** Options for {@link prompt}. */
+/**
+ * Run a {@link FieldValidator}: the message it reports, or `undefined` when the
+ * value is valid. Validators are synchronous — a promise result is a
+ * programming error that closes the dialog and rejects its promise (the stray
+ * promise's own rejection is silenced so it is not reported twice).
+ * Internal to the dialog helpers.
+ */
+export function runValidator(
+  validate: FieldValidator | undefined,
+  value: string,
+  owner: string,
+): string | undefined {
+  const result: unknown = validate?.(value);
+  if (typeof (result as PromiseLike<unknown> | null)?.then === 'function') {
+    (result as PromiseLike<unknown>).then(undefined, () => undefined);
+    throw new TypeError(`${owner}: validate returned a promise.`);
+  }
+  return typeof result === 'string' && result.length > 0 ? result : undefined;
+}
+
 export interface PromptOptions {
   container?: Element;
   className?: string;
@@ -118,21 +138,30 @@ export function prompt(
   return wireDialog(
     handle,
     (track, guard) => {
-      const input = handle.el.querySelector<HTMLInputElement>(
-        'input[data-prompt-input]',
-      );
-      if (input === null)
-        throw new Error('prompt(): render missing <input data-prompt-input>.');
+      // Looked up again at OK: a reactive re-render may have replaced the
+      // input, and a detached node would report a stale value. Missing at
+      // construction is a render bug (rolls back, throws); missing at OK
+      // rejects the promise through `guard`.
+      const inputFor = (problem = 'render missing'): HTMLInputElement => {
+        const input = handle.el.querySelector<HTMLInputElement>(
+          'input[data-prompt-input]',
+        );
+        if (input !== null) return input;
+        throw new Error(`prompt(): ${problem} <input data-prompt-input>.`);
+      };
+      inputFor();
       const errorEl = handle.el.querySelector<HTMLElement>(
         '[data-prompt-error]',
       );
       if (errorEl !== null) errorEl.hidden = true;
 
-      // A throwing `validate` closes the dialog and rejects the promise (guard).
+      // A throwing (or promise-returning) `validate` closes the dialog and
+      // rejects the promise (guard).
       const attemptOk = guard((): void => {
+        const input = inputFor('removed after open:');
         const value = input.value;
-        const error = validate?.(value);
-        if (typeof error === 'string' && error.length > 0) {
+        const error = runValidator(validate, value, 'prompt()');
+        if (error !== undefined) {
           if (errorEl !== null) {
             errorEl.textContent = error;
             errorEl.hidden = false;
@@ -151,7 +180,10 @@ export function prompt(
       );
 
       const onKeydown = (event: KeyboardEvent): void => {
-        if (event.key === 'Enter' && event.target === input) {
+        if (
+          event.key === 'Enter' &&
+          (event.target as Element | null)?.matches('input[data-prompt-input]')
+        ) {
           event.preventDefault();
           attemptOk();
         }

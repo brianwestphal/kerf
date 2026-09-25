@@ -2,7 +2,7 @@
 import { delegate } from './delegate.js';
 import { jsx } from './jsx-runtime.js';
 import { overlay, type OverlayContent, wireDialog } from './overlay-core.js';
-import type { FieldValidator } from './overlay-prompt.js';
+import { type FieldValidator, runValidator } from './overlay-prompt.js';
 
 /** A single field in a {@link form}. */
 export interface FormField {
@@ -171,9 +171,9 @@ export function form(
           const el = inputFor(field.name, 'removed after open:');
           const value = el.value;
           record[field.name] = value;
-          const error = field.validate?.(value);
+          const error = runValidator(field.validate, value, 'form()');
           const errorEl = errorFor(field.name);
-          if (typeof error === 'string' && error.length > 0) {
+          if (error !== undefined) {
             if (errorEl !== null) {
               errorEl.textContent = error;
               errorEl.hidden = false;

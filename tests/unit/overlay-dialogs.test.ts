@@ -198,6 +198,82 @@ describe('prompt()', () => {
       await expect(next).resolves.toBe('ok');
     });
   });
+
+  describe('a promise-returning validate is a programming error: close + reject', () => {
+    it.each([
+      ['resolving', () => Promise.resolve('')],
+      ['rejecting', () => Promise.reject(new Error('async bug'))],
+    ])(
+      '%s promise: rejects with a TypeError and leaves no unhandled rejection',
+      async (_label, make) => {
+        const trigger = focusedTrigger();
+        const p = prompt('Name', {
+          defaultValue: 'x',
+          validate: make as unknown as () => string,
+        });
+        clickBtn('[data-prompt="ok"]');
+        expect(document.querySelector('.kerf-overlay')).toBeNull();
+        expect(document.activeElement).toBe(trigger);
+        await expect(p).rejects.toThrowError(
+          'prompt(): validate returned a promise.',
+        );
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      },
+    );
+  });
+
+  describe('the input is looked up again at OK (reactive re-render)', () => {
+    /** A reactive BYO render that can replace or drop the prompt input. */
+    function openWithSwappableInput() {
+      const variant = signal<'a' | 'b' | 'none'>('a');
+      const p = prompt('Name', {
+        defaultValue: 'first',
+        render:
+          ({ input, ok }) =>
+          () =>
+            jsx('div', {
+              children: [
+                variant.value === 'none'
+                  ? ''
+                  : jsx(variant.value === 'a' ? 'input' : 'textarea', {
+                      ...input,
+                    }),
+                jsx('button', { ...ok, class: 'go', children: 'Go' }),
+              ],
+            }),
+      });
+      return { p, variant };
+    }
+
+    it('reads the replacement input, not the detached original', async () => {
+      const { p, variant } = openWithSwappableInput();
+      variant.value = 'b';
+      variant.value = 'a';
+      const live = document.querySelector<HTMLInputElement>(
+        'input[data-prompt-input]',
+      )!;
+      live.value = 'second';
+      key(live, 'Enter');
+      await expect(p).resolves.toBe('second');
+    });
+
+    it('rejects naming the input when a re-render removed it', async () => {
+      const trigger = focusedTrigger();
+      const { p, variant } = openWithSwappableInput();
+      variant.value = 'none';
+      const errors = captureWindowErrors();
+      expect(() =>
+        document.querySelector<HTMLElement>('.go')!.click(),
+      ).not.toThrow();
+      errors.stop();
+      expect(errors.count).toBe(0);
+      expect(document.querySelector('.kerf-overlay')).toBeNull();
+      expect(document.activeElement).toBe(trigger);
+      await expect(p).rejects.toThrowError(
+        'prompt(): removed after open: <input data-prompt-input>.',
+      );
+    });
+  });
 });
 
 function focusedTrigger(): HTMLButtonElement {
@@ -433,6 +509,21 @@ describe('form()', () => {
       showToken.value = true;
       clickBtn('.go');
       await expect(p).resolves.toEqual({ host: 'db', token: 't' });
+    });
+
+    it('a promise-returning field.validate rejects with a TypeError', async () => {
+      const p = form([
+        {
+          name: 'a',
+          defaultValue: 'x',
+          validate: (() => Promise.resolve('')) as unknown as () => string,
+        },
+      ]);
+      clickBtn('[data-form="ok"]');
+      expect(document.querySelector('.kerf-overlay')).toBeNull();
+      await expect(p).rejects.toThrowError(
+        'form(): validate returned a promise.',
+      );
     });
   });
 });

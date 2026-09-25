@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `prompt()` / `form()` now reject with a `TypeError` when a validator returns
+  a promise (validators are synchronous), instead of resolving the value and
+  leaving an unhandled rejection. `prompt()` also re-reads its input on every
+  OK, so a reactive `render` that replaces the input no longer submits the
+  detached original's stale value, and a removed input rejects the promise.
 - A local `npm run check` run with `KERF_SKIP_PACKAGE_GATES=1` no longer
   records a verified tree, so the pre-push hook cannot skip the sibling-package
   gates that run left out.

@@ -132,7 +132,9 @@ const BUDGETS = [
     // wireDialog `guard` so a throwing validate closes the dialog and rejects
     // the helper promise instead of escaping the OK handler; KF-HRNJ4T makes
     // form() reject naming a field input removed after open (not resolve null).
-    budgetKb: 17.0,
+    // KF-MB46CW / KF-H3ZFK0: synchronous-validator enforcement (promise
+    // results reject, stray rejection silenced) and prompt()'s input re-query.
+    budgetKb: 17.1,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
