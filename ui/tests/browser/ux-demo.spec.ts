@@ -949,7 +949,7 @@ test('aligns the layout demo action buttons with the card border above them', as
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/?component=layout');
   const surface = page.locator('.demo-layout__surface');
-  const primary = page.locator('.demo-layout__actions .demo-button').first();
+  const primary = page.locator('.demo-layout__actions button').first();
   await expect(surface).toBeVisible();
   const [surfaceLeft, buttonLeft] = await Promise.all([
     surface.evaluate((el) => el.getBoundingClientRect().left),
@@ -1005,7 +1005,7 @@ test('links catalog details to their first-party source and existing guidance', 
     ],
   ] as const) {
     await page.goto(`/?component=${id}`);
-    const resources = page.getByRole('navigation', {
+    const resources = page.getByRole('group', {
       name: `${name} resources`,
     });
     const source = resources.getByRole('link', {
@@ -1074,7 +1074,7 @@ test('links catalog details to their first-party source and existing guidance', 
       await page.locator('html').evaluate((element, size) => {
         element.style.fontSize = size;
       }, layout.rootFontSize);
-    const resources = page.getByRole('navigation', {
+    const resources = page.getByRole('group', {
       name: `${isRecipe ? 'List-detail dialog' : 'Toolbar'} resources`,
     });
     const source = resources.locator('.kui-catalog__resource').first();
@@ -1734,7 +1734,7 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
   ).toBeVisible();
   await expect(pageHeader.getByText('Recipes', { exact: true })).toHaveCount(0);
   await expect(
-    footer.getByRole('navigation', {
+    footer.getByRole('group', {
       name: 'Desktop application shell resources',
     }),
   ).toBeVisible();
@@ -1825,10 +1825,10 @@ test('aligns a heading-toolbar trailing action with the following content-item b
   await page.goto('/?component=layout');
   const demo = page.locator('[data-demo="layout"]');
   const action = demo.locator(
-    ':scope > .kui-pane__header .kui-toolbar__trailing [data-component="toolbar-control-group"]',
+    '.demo-layout > .kui-pane__header .kui-toolbar__trailing [data-component="toolbar-control-group"]',
   );
   const following = demo.locator(
-    ':scope > .kui-pane__header + .kui-pane__content > .kui-content-item',
+    '.demo-layout > .kui-pane__header + .kui-pane__content > .kui-content-item',
   );
   await expect(action).toHaveCount(1);
   await expect(following).toHaveCount(2);
@@ -1903,14 +1903,14 @@ test('renders the header composition as two toolbars over a value table', async 
       ),
     ).toHaveCount(1);
     await expect(demo.locator('.kui-value-table')).toHaveCount(1);
-    const summary = demo.locator(':scope > [data-component="list-inset-text"]');
+    const summary = demo.locator('[data-component="list-inset-text"]');
     await expect(summary).toHaveText(
       'Production-backed primitives with explicit contracts.',
     );
     const geometry = await demo.evaluate((element) => {
       const frame = element.getBoundingClientRect();
       const summaryElement = element.querySelector<HTMLElement>(
-        ':scope > [data-component="list-inset-text"]',
+        '[data-component="list-inset-text"]',
       )!;
       const summaryRange = document.createRange();
       summaryRange.selectNodeContents(summaryElement);
@@ -2500,7 +2500,9 @@ test('aligns Known Date captions and bordered text-field hints with their values
   ] as const) {
     await page.goto(`/?component=${route}`);
     const control = page.locator(selector).first();
-    await expect(control).toBeVisible();
+    await expect
+      .poll(() => control.evaluate((element) => Boolean(element.shadowRoot)))
+      .toBe(true);
     const hintPadding = await control.evaluate((element) => {
       const hint = element.shadowRoot!.querySelector(
         '[part~="hint"]',
@@ -3215,7 +3217,7 @@ test('content surfaces share an overridable 8px outer margin and inner padding',
       }, specimen.part);
     expect(inset).toBe('8px');
 
-    await page.locator('.wa-component-demo__specimen').evaluate((element) => {
+    await page.locator('[data-catalog-example]').evaluate((element) => {
       const specimen = element as HTMLElement;
       specimen.style.setProperty('--kui-wa-surface-margin', '12px');
       specimen.style.setProperty('--kui-wa-surface-inset', '12px');
@@ -3829,10 +3831,10 @@ test('labels composition entries without repeating the kind in their names', asy
   await page.goto('/?component=application-tabs');
 
   await expect(
-    page.locator('.kui-catalog__tag', { hasText: 'Composition' }),
+    page.locator('.kui-list-item__status', { hasText: 'Composition' }),
   ).toHaveCount(5);
   await expect(
-    page.locator('[data-item-id="application-tabs"] .kui-catalog__tag'),
+    page.locator('[data-item-id="application-tabs"] .kui-list-item__status'),
   ).toHaveText('Composition');
   await expect(
     page.locator('[data-item-id="application-tabs"] .kui-list-item__label'),
@@ -3875,15 +3877,15 @@ test('labels discouraged Web Awesome entries in the catalog sidebar', async ({
 
   const secondary = page.locator('[data-catalog-secondary]');
   await expect(secondary).toBeVisible();
-  const discouraged = secondary.locator('.kui-catalog__tag', {
+  const discouraged = secondary.locator('.kui-list-item__status', {
     hasText: 'Discouraged',
   });
   await expect(discouraged).toHaveCount(15);
   await expect(
-    page.locator('[data-item-id="wa-button-group"] .kui-catalog__tag'),
+    page.locator('[data-item-id="wa-button-group"] .kui-list-item__status'),
   ).toHaveText('Discouraged');
   await expect(
-    page.locator('[data-item-id="wa-popup"] .kui-catalog__tag'),
+    page.locator('[data-item-id="wa-popup"] .kui-list-item__status'),
   ).toHaveCount(0);
 
   const sidebar = page.locator('.kui-catalog__sidebar');
@@ -5514,7 +5516,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       'trailingEnd',
     ] as const)
       near(name, geometry[name], 17);
-    near('toolbarTextStart', geometry.toolbarTextStart, 10);
+    near('toolbarTextStart', geometry.toolbarTextStart, 8);
     near('iconLabelStart', geometry.iconLabelStart, 43);
     near('iconWidth', geometry.iconWidth, 18);
     near('surfacePadding', geometry.surfacePadding, 8);

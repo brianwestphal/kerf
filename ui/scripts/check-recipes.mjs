@@ -37,6 +37,9 @@ if (
   fail('canonical catalog must contain the ten recipes in documented order');
 const packageSubpath = (specifier) =>
   `.${specifier.slice('@kerfjs/ui'.length)}`;
+const hasStableRecipeMarker = (source, id) =>
+  source.includes(`data-recipe="${id}"`) ||
+  source.includes(`'data-recipe': '${id}'`);
 for (const entry of recipes) {
   const stem = entry.id.replace(/^recipe-/, '');
   const sourcePath = resolve(root, `ux-demo/recipes/${stem}.tsx`);
@@ -49,13 +52,13 @@ for (const entry of recipes) {
   }
   if (!loaders.includes(`'${entry.id}': () => import('./${stem}.js')`))
     fail(`${entry.id} is not a literal dynamic import`);
-  if (!source.includes(`data-recipe="${entry.id}"`))
+  if (!hasStableRecipeMarker(source, entry.id))
     fail(`${entry.id} source is missing its stable marker`);
   if (!source.includes('@kerfjs/ui/layout.css'))
     fail(`${entry.id} must import the semantic layout layer`);
   if (
     entry.id === 'recipe-navigation-sidebar' &&
-    !source.includes('kui-pane__footer')
+    !(source.includes('<Pane') && source.includes('footer={'))
   )
     fail(
       'recipe-navigation-sidebar must place its footer toolbar in the shared pane footer',

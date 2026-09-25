@@ -61,33 +61,6 @@ button {
   outline: var(--kui-focus-ring);
   outline-offset: -3px;
 }
-.catalog-settings {
-  box-shadow: none;
-}
-.kui-catalog__header-actions .catalog-settings > button {
-  display: inline-flex;
-  align-items: center;
-  gap: remify(6px);
-  white-space: nowrap;
-}
-.catalog-settings > button:focus-visible,
-.demo-button:focus-visible {
-  outline: var(--kui-focus-ring);
-  outline-offset: 2px;
-}
-.catalog-settings svg {
-  width: remify(16px);
-  height: remify(16px);
-}
-.catalog-log {
-  color: var(--kui-color-accent-text);
-  font-weight: 650;
-}
-.catalog-footer__metric {
-  display: inline-flex;
-  align-items: baseline;
-  gap: var(--kui-layout-metadata-gap);
-}
 /* The demo stage wrapper sits inside the Catalog's own canvas; `display: contents`
    lets the demo content and the debug-overlay layer be direct grid children of the
    canvas (which owns the positioning context) while still carrying the
@@ -209,18 +182,6 @@ button {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.demo-button {
-  min-height: remify(32px);
-  padding: 0 remify(12px);
-  border: 1px solid var(--kui-color-border);
-  border-radius: var(--kui-radius-pill);
-  color: var(--kui-color-text);
-  background: var(--kui-color-surface-raised);
-  cursor: pointer;
-}
-.demo-button:hover {
-  background: var(--kui-color-surface-lowered);
-}
 .demo-list {
   width: min(remify(480px), 100%);
   overflow: hidden;
@@ -228,6 +189,9 @@ button {
   border-radius: var(--kui-radius-m);
   background: var(--kui-color-surface);
   box-shadow: var(--kui-shadow-s);
+}
+.demo-list__pane-content {
+  overflow: hidden;
 }
 .demo-list__content {
   max-height: remify(448px);
@@ -725,68 +689,6 @@ button {
   background: var(--kui-color-surface);
   box-shadow: var(--kui-shadow-s);
 }
-.wa-component-demo {
-  display: grid;
-  width: min(remify(768px), 100%);
-  overflow: visible;
-  border: 1px solid var(--wa-color-neutral-border-normal);
-  border-radius: var(--wa-border-radius-l);
-  background: var(--wa-color-surface-default);
-  box-shadow: var(--wa-shadow-s);
-}
-.wa-component-demo > header {
-  display: grid;
-  padding: remify(12.8px) remify(16px);
-  border-block-end: 1px solid var(--wa-color-neutral-border-quiet);
-  gap: remify(1.6px);
-}
-.wa-component-demo > header span {
-  color: var(--wa-color-text-quiet);
-  font-size: var(--wa-font-size-2xs);
-  font-weight: var(--wa-font-weight-semibold);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-}
-.wa-component-demo > header strong {
-  color: var(--wa-color-text-normal);
-  font-size: var(--wa-font-size-l);
-}
-.wa-component-demo__specimen {
-  display: grid;
-  min-width: 0;
-  min-height: remify(224px);
-  padding: clamp(remify(16px), 4vw, remify(32px));
-  align-content: center;
-  justify-items: center;
-  gap: var(--wa-space-m);
-}
-.wa-component-demo__specimen
-  > :where(
-    wa-accordion,
-    wa-card,
-    wa-checkbox-group,
-    wa-color-picker,
-    wa-input,
-    wa-known-date,
-    wa-number-input,
-    wa-otp-input,
-    wa-pagination,
-    wa-radio-group,
-    wa-select,
-    wa-slider,
-    wa-tab-group,
-    wa-textarea,
-    wa-time-input,
-    wa-tree
-  ) {
-  width: min(remify(512px), 100%);
-}
-.wa-component-demo__specimen > :where(wa-accordion, wa-card) {
-  width: min(
-    remify(512px),
-    calc(100% - 2 * var(--kui-wa-surface-margin, remify(8px)))
-  );
-}
 .wa-demo-row {
   display: flex;
   min-width: 0;
@@ -1234,17 +1136,6 @@ button {
   gap: var(--wa-space-xs);
 }
 
-@media (max-width: remify(1024px)) {
-  .catalog-settings button span {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-}
-
 @media (max-width: remify(832px)) {
   [data-demo="split-view"] .demo-split-view--roomy {
     display: none;
@@ -1270,18 +1161,8 @@ button {
   .demo-resize-shell {
     min-height: remify(256px);
   }
-  .catalog-settings {
-    min-width: 0;
-  }
-  .catalog-settings > button {
-    min-width: 0;
-    padding-inline: remify(7px);
-  }
   .demo-spinner-row {
     flex-wrap: wrap;
-  }
-  .wa-component-demo__specimen {
-    min-height: remify(192px);
   }
   .wa-demo-inline-field,
   .wa-demo-random {
@@ -1301,7 +1182,6 @@ button {
 }
 
 @media (forced-colors: active) {
-  .catalog-settings,
   .demo-frame,
   .demo-feedback,
   .demo-control-stack,

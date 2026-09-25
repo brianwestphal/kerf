@@ -25,11 +25,7 @@ export const createRecipe: RecipeFactory = (announce) => {
     >
       <Toolbar
         label="Task workspace controls"
-        leading={
-          <ToolbarControlGroup appearance="borderless" single>
-            <ToolbarText text="Tasks" size="small" />
-          </ToolbarControlGroup>
-        }
+        leading={<ToolbarText text="Tasks" size="small" />}
         center={
           <ToolbarControlGroup>
             <SegmentedControl<string>
@@ -49,19 +45,24 @@ export const createRecipe: RecipeFactory = (announce) => {
           </ToolbarControlGroup>
         }
         trailing={
-          <div class="kui-control-cluster">
-            <Select<string>
-              name="recipe-sort"
-              value={sort.value}
-              ariaLabel="Sort tasks"
-              fitMenu
-              choices={[
-                { value: 'updated', label: 'Recently updated' },
-                { value: 'priority', label: 'Priority' },
-                { value: 'owner', label: 'Owner' },
-                { value: 'created', label: 'Created date' },
-              ]}
-            />
+          <>
+            <ToolbarControlGroup single>
+              <Select<string>
+                name="recipe-sort"
+                value={sort.value}
+                ariaLabel="Sort tasks"
+                fitMenu
+                presentation="toolbar-borderless"
+                size="compact"
+                focusRingOwner="group"
+                choices={[
+                  { value: 'updated', label: 'Recently updated' },
+                  { value: 'priority', label: 'Priority' },
+                  { value: 'owner', label: 'Owner' },
+                  { value: 'created', label: 'Created date' },
+                ]}
+              />
+            </ToolbarControlGroup>
             <ToolbarControlGroup label="Task actions" buttonAppearance="push">
               <button
                 type="button"
@@ -91,7 +92,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                 <LucideIcon icon={MoreHorizontal} name="more-horizontal" />
               </button>
             </ToolbarControlGroup>
-          </div>
+          </>
         }
       />
       <div class="recipe-compact-toolbar__guide kui-content-item">

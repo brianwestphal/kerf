@@ -3,6 +3,7 @@ import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/toolbar-text.css';
 import './recipes.css';
 
+import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
@@ -45,7 +46,7 @@ export const createRecipe: RecipeFactory = (announce) => {
     key: 'library',
     title: 'Library',
     content: (
-      <div class="recipe-navstack__view kui-pane__content kui-content">
+      <List className="recipe-navstack__view" gap="m">
         <section>
           <ListHeader label="Components" />
           {ITEMS.map((item) => (
@@ -63,7 +64,7 @@ export const createRecipe: RecipeFactory = (announce) => {
           `NavStack` renders the stack and `wireNavStack` slides the content and
           settles the chrome. The app owns selection, data, and routing.
         </Text>
-      </div>
+      </List>
     ),
   });
 
@@ -71,13 +72,13 @@ export const createRecipe: RecipeFactory = (announce) => {
     key: item.id,
     title: item.label,
     content: (
-      <div class="recipe-navstack__view kui-pane__content kui-content">
+      <List className="recipe-navstack__view" gap="m">
         <div class="kui-content-item">
           <LucideIcon icon={FileText} name="file-text" />
           <strong>{item.label}</strong>
           <Text class="kui-recipe__muted">{item.detail}</Text>
         </div>
-      </div>
+      </List>
     ),
   });
 

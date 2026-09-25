@@ -1,12 +1,18 @@
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 
 export function CompositionDemo() {
   return (
-    <section data-demo="composition" class="fixture-border">
-      <StateBanner tone="info" title="Together">
-        <ListItem label="Nested component" />
-      </StateBanner>
-    </section>
+    <CatalogExampleStack
+      rootAttributes={{ 'data-demo': 'composition' }}
+      className="fixture-border"
+    >
+      <CatalogExample label="Together">
+        <StateBanner tone="info" title="Together">
+          <ListItem label="Nested component" />
+        </StateBanner>
+      </CatalogExample>
+    </CatalogExampleStack>
   );
 }

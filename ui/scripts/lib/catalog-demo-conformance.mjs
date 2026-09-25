@@ -94,6 +94,24 @@ function rootAttributeValue(opening, metadataName) {
   return undefined;
 }
 
+function hasDynamicEntryId(opening, metadataName) {
+  const attribute = jsxAttribute(opening, 'rootAttributes');
+  if (
+    !attribute?.initializer ||
+    !ts.isJsxExpression(attribute.initializer) ||
+    !attribute.initializer.expression ||
+    !ts.isObjectLiteralExpression(attribute.initializer.expression)
+  )
+    return false;
+  return attribute.initializer.expression.properties.some(
+    (property) =>
+      ts.isPropertyAssignment(property) &&
+      propertyName(property.name) === metadataName &&
+      ts.isPropertyAccessExpression(property.initializer) &&
+      property.initializer.name.text === 'id',
+  );
+}
+
 function collectStaticStrings(node) {
   const values = [];
   const visit = (child) => {
@@ -218,7 +236,6 @@ export function analyzeCatalogDemoSource({
         if (!ts.isJsxAttribute(property)) continue;
         const attributeName = property.name.getText(file);
         if (
-          kind === 'component' &&
           ['data-demo', 'data-catalog-geometry-overlay-skip'].includes(
             attributeName,
           )
@@ -268,14 +285,14 @@ export function analyzeCatalogDemoSource({
   };
   visit(file);
 
-  if (kind === 'component') {
+  if (kind === 'component' || kind === 'composition') {
     if (!helperElements.stacks.length || !helperElements.examples.length)
       diagnostics.push(
         diagnostic(
           catalogDemoConformanceRules.focusedHelpers,
           route,
           filePath,
-          'Focused component routes must use CatalogExampleStack and CatalogExample from @kerfjs/ui/catalog.',
+          'Catalog component and composition routes must use CatalogExampleStack and CatalogExample from @kerfjs/ui/catalog.',
           file,
         ),
       );
@@ -283,7 +300,9 @@ export function analyzeCatalogDemoSource({
       helperElements.stacks.length &&
       !helperElements.stacks.some(
         (node) =>
-          rootAttributeValue(openingElement(node), 'data-demo') === route,
+          rootAttributeValue(openingElement(node), 'data-demo') === route ||
+          (route.startsWith('wa-') &&
+            hasDynamicEntryId(openingElement(node), 'data-demo')),
       )
     )
       diagnostics.push(
@@ -302,12 +321,13 @@ export function analyzeCatalogDemoSource({
           catalogDemoConformanceRules.rootAttributes,
           route,
           filePath,
-          'Focused demo metadata must use CatalogExample or CatalogExampleStack rootAttributes.',
+          'Catalog demo metadata must use CatalogExample or CatalogExampleStack rootAttributes.',
           file,
           directMetadata[0],
         ),
       );
-  } else if (kind === 'composition' && hasSkipMetadata)
+  }
+  if (kind === 'composition' && hasSkipMetadata)
     diagnostics.push(
       diagnostic(
         catalogDemoConformanceRules.compositionSkip,
@@ -360,9 +380,11 @@ export function analyzeCatalogShellSource({ filePath, source }) {
       const expression = node.initializer.expression;
       const name = node.name.getText(file);
       if (expression && name === 'geometryOverlay')
-        validOverlay ||=
-          expressionContainsComparison(expression, 'source', 'kerf') &&
-          expressionContainsComparison(expression, 'kind', 'component');
+        validOverlay ||= expressionContainsComparison(
+          expression,
+          'kind',
+          'component',
+        );
       if (expression && name === 'data-demo-mode')
         validMode ||=
           expressionContainsComparison(expression, 'kind', 'component') &&
@@ -378,7 +400,7 @@ export function analyzeCatalogShellSource({ filePath, source }) {
         catalogDemoConformanceRules.shellOverlay,
         '@catalog-shell',
         filePath,
-        'Catalog geometryOverlay must be true only for first-party component entries.',
+        'Catalog geometryOverlay must be derived from component versus composition kind.',
         file,
       ),
     );

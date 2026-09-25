@@ -68,6 +68,7 @@ import '@awesome.me/webawesome/dist/components/tree-item/tree-item.js';
 import '@awesome.me/webawesome/dist/components/tree/tree.js';
 import '@awesome.me/webawesome/dist/components/zoomable-frame/zoomable-frame.js';
 
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { Select } from '@kerfjs/ui/select';
 import { Text } from '@kerfjs/ui/text';
 import type { SafeHtml } from 'kerfjs';
@@ -782,34 +783,16 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
           />
         </label>
         <div class="wa-demo-animation__actions">
-          <button
-            type="button"
-            class="demo-button demo-button--primary"
+          <wa-button
+            variant="brand"
+            appearance="accent"
             data-action="play-wa-animation"
           >
             Play
-          </button>
-          <button
-            type="button"
-            class="demo-button"
-            data-action="pause-wa-animation"
-          >
-            Pause
-          </button>
-          <button
-            type="button"
-            class="demo-button"
-            data-action="finish-wa-animation"
-          >
-            Finish
-          </button>
-          <button
-            type="button"
-            class="demo-button"
-            data-action="cancel-wa-animation"
-          >
-            Cancel
-          </button>
+          </wa-button>
+          <wa-button data-action="pause-wa-animation">Pause</wa-button>
+          <wa-button data-action="finish-wa-animation">Finish</wa-button>
+          <wa-button data-action="cancel-wa-animation">Cancel</wa-button>
         </div>
       </section>
     </div>
@@ -916,13 +899,9 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         <div class="wa-demo-observer__spacer">Target is above</div>
       </div>
       <div class="wa-demo-observer__controls">
-        <button
-          type="button"
-          class="demo-button"
-          data-action="toggle-wa-intersection"
-        >
+        <wa-button data-action="toggle-wa-intersection">
           Reveal target
-        </button>
+        </wa-button>
         <output data-observer-output aria-live="polite">
           Waiting for an intersection change
         </output>
@@ -940,13 +919,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         </div>
       </wa-mutation-observer>
       <div class="wa-demo-observer__controls">
-        <button
-          type="button"
-          class="demo-button"
-          data-action="mutate-wa-target"
-        >
-          Mutate target
-        </button>
+        <wa-button data-action="mutate-wa-target">Mutate target</wa-button>
         <output data-observer-output aria-live="polite">
           No mutations observed yet
         </output>
@@ -1019,13 +992,7 @@ const specimenRenderers: Record<WebAwesomeCatalogId, DemoRenderer> = {
         </div>
       </wa-resize-observer>
       <div class="wa-demo-observer__controls">
-        <button
-          type="button"
-          class="demo-button"
-          data-action="resize-wa-target"
-        >
-          Resize target
-        </button>
+        <wa-button data-action="resize-wa-target">Resize target</wa-button>
         <output data-observer-output aria-live="polite">
           Waiting for a resize
         </output>
@@ -1041,15 +1008,17 @@ export const webAwesomeComponentDemos: Record<
   webAwesomeCatalog.map((entry) => [
     entry.id,
     () => (
-      <section class="wa-component-demo" data-demo={entry.id}>
-        <header>
-          <span>Web Awesome 3.12 · {entry.category}</span>
-          <strong>{entry.name}</strong>
-        </header>
-        <div class="wa-component-demo__specimen">
+      <CatalogExampleStack
+        label={`${entry.name} Web Awesome demo`}
+        rootAttributes={{ 'data-demo': entry.id }}
+      >
+        <CatalogExample
+          label={entry.name}
+          note={`Web Awesome 3.12 · ${entry.category}`}
+        >
           {specimenRenderers[entry.id]()}
-        </div>
-      </section>
+        </CatalogExample>
+      </CatalogExampleStack>
     ),
   ]),
 ) as Record<WebAwesomeCatalogId, DemoRenderer>;

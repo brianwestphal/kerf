@@ -23,13 +23,14 @@ const [catalog, packageJson, exceptionManifest, shellSource] =
     readFile(resolve(uiRoot, 'ux-demo/main.tsx'), 'utf8'),
   ]);
 const packageExports = new Set(Object.keys(packageJson.exports));
-const demos = catalog.entries.filter(
-  (entry) => entry.source === 'kerf' && entry.kind !== 'recipe',
-);
+const demos = catalog.entries.filter((entry) => entry.kind !== 'recipe');
 const diagnostics = (
   await Promise.all(
     demos.map(async (entry) => {
-      const filePath = `ux-demo/demos/${entry.id}.tsx`;
+      const filePath =
+        entry.source === 'webawesome'
+          ? 'ux-demo/webawesome-demos.tsx'
+          : `ux-demo/demos/${entry.id}.tsx`;
       const absoluteFilePath = resolve(uiRoot, filePath);
       let source;
       try {
@@ -84,5 +85,5 @@ if (failures.length) {
   process.exitCode = 1;
 } else
   console.log(
-    `[check-catalog-demo-conformance] OK — ${demos.length} routes use public imports, sanctioned helpers or reviewed exceptions, and component-only overlays.`,
+    `[check-catalog-demo-conformance] OK — ${demos.length} routes use public imports, sanctioned helpers or reviewed exceptions, and kind-driven overlays.`,
   );

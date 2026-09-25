@@ -7,6 +7,7 @@ import './recipes.css';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Pane } from '@kerfjs/ui/pane';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -50,15 +51,14 @@ export const createRecipe: RecipeFactory = (announce) => {
       class="kui-recipe kui-content"
       data-recipe="recipe-list-detail-dialog"
     >
-      <button
-        class="kui-recipe__button kui-content-item"
-        data-primary="true"
-        type="button"
+      <wa-button
+        variant="brand"
+        appearance="accent"
         data-action="recipe-action"
         data-recipe-command="open"
       >
         Open project details
-      </button>
+      </wa-button>
       <Text class="kui-recipe__ownership kui-content-item">
         Web Awesome owns modal focus and dismissal. The recipe owns
         header/body/list-detail anatomy; the app owns open state, selection, and
@@ -70,106 +70,111 @@ export const createRecipe: RecipeFactory = (announce) => {
         without-header
         open={open.value}
       >
-        <div class="recipe-dialog__pane kui-pane">
-          <div class="recipe-list-detail kui-pane__content">
-            <nav
-              class="recipe-list-detail__list kui-pane"
-              aria-label="Projects"
-            >
-              <ListHeader label="Recent projects" />
-              <div class="kui-pane__content kui-content">
-                <section>
-                  {Object.entries(records).map(([id, record]) => (
-                    <ListItem
-                      action="recipe-action"
-                      itemId={id}
-                      label={record.name}
-                      selected={selected.value === id}
-                      multiline
-                    />
-                  ))}
-                </section>
-              </div>
-            </nav>
-            <section class="recipe-list-detail__detail kui-pane">
-              <Toolbar
-                label="Project details"
-                dividerSides=""
-                leading={
-                  <>
-                    <ToolbarControlGroup appearance="borderless" single>
-                      <LucideIcon icon={FileText} name="file-text" />
-                    </ToolbarControlGroup>
-                    <ToolbarText
-                      text="Project details"
-                      size="xlarge"
-                      id="recipe-dialog-title"
-                    />
-                  </>
-                }
-                trailing={
-                  <ToolbarControlGroup appearance="borderless" single>
-                    <wa-button
-                      appearance="plain"
-                      data-action="recipe-action"
-                      data-recipe-command="close"
-                    >
-                      Close
-                    </wa-button>
-                  </ToolbarControlGroup>
-                }
-              />
-              <Text
-                class="kui-recipe__heading-summary"
-                id="recipe-dialog-summary"
-              >
-                Compare delivery state without leaving the workspace.
-              </Text>
-              <div
-                class="recipe-list-detail__body kui-pane__content kui-content"
-                aria-live="polite"
-              >
-                <Text
-                  variant="h3"
-                  class="recipe-list-detail__title kui-recipe__pane-title kui-content-item"
-                >
-                  {records[selected.value].name}
-                </Text>
-                <ValueTable label="Project details">
-                  <ValueTableRow
-                    label="Owner"
-                    value={records[selected.value].owner}
-                  />
-                  <ValueTableRow
-                    label="Status"
-                    value={records[selected.value].state}
-                  />
-                  <ValueTableRow
-                    label="Updated"
-                    value={records[selected.value].updated}
-                  />
-                </ValueTable>
-                <div class="recipe-list-detail__actions kui-control-cluster">
-                  <wa-button
-                    appearance="outlined"
-                    data-action="recipe-action"
-                    data-recipe-command="archive"
-                  >
-                    Archive
-                  </wa-button>
-                  <wa-button
-                    variant="brand"
-                    appearance="accent"
-                    data-action="recipe-action"
-                    data-recipe-command="open-record"
-                  >
-                    Open project
-                  </wa-button>
-                </div>
-              </div>
+        <Pane
+          className="recipe-dialog__pane"
+          contentClassName="recipe-list-detail"
+        >
+          <Pane
+            className="recipe-list-detail__list"
+            contentElement="nav"
+            contentLabel="Projects"
+          >
+            <ListHeader label="Recent projects" />
+            <section>
+              {Object.entries(records).map(([id, record]) => (
+                <ListItem
+                  action="recipe-action"
+                  itemId={id}
+                  label={record.name}
+                  selected={selected.value === id}
+                  multiline
+                />
+              ))}
             </section>
-          </div>
-        </div>
+          </Pane>
+          <Pane
+            element="section"
+            className="recipe-list-detail__detail"
+            contentClassName="recipe-list-detail__body"
+            header={
+              <>
+                <Toolbar
+                  label="Project details"
+                  dividerSides=""
+                  leading={
+                    <>
+                      <ToolbarControlGroup appearance="borderless" single>
+                        <LucideIcon icon={FileText} name="file-text" />
+                      </ToolbarControlGroup>
+                      <ToolbarText
+                        text="Project details"
+                        size="xlarge"
+                        id="recipe-dialog-title"
+                      />
+                    </>
+                  }
+                  trailing={
+                    <ToolbarControlGroup appearance="borderless" single>
+                      <wa-button
+                        appearance="plain"
+                        data-action="recipe-action"
+                        data-recipe-command="close"
+                      >
+                        Close
+                      </wa-button>
+                    </ToolbarControlGroup>
+                  }
+                />
+                <Text
+                  class="kui-recipe__heading-summary"
+                  id="recipe-dialog-summary"
+                >
+                  Compare delivery state without leaving the workspace.
+                </Text>
+              </>
+            }
+          >
+            <div aria-live="polite">
+              <Text
+                variant="h3"
+                class="recipe-list-detail__title kui-recipe__pane-title kui-content-item"
+              >
+                {records[selected.value].name}
+              </Text>
+              <ValueTable label="Project details">
+                <ValueTableRow
+                  label="Owner"
+                  value={records[selected.value].owner}
+                />
+                <ValueTableRow
+                  label="Status"
+                  value={records[selected.value].state}
+                />
+                <ValueTableRow
+                  label="Updated"
+                  value={records[selected.value].updated}
+                />
+              </ValueTable>
+              <div class="recipe-list-detail__actions kui-control-cluster">
+                <wa-button
+                  appearance="outlined"
+                  data-action="recipe-action"
+                  data-recipe-command="archive"
+                >
+                  Archive
+                </wa-button>
+                <wa-button
+                  variant="brand"
+                  appearance="accent"
+                  data-action="recipe-action"
+                  data-recipe-command="open-record"
+                >
+                  Open project
+                </wa-button>
+              </div>
+            </div>
+          </Pane>
+        </Pane>
       </wa-dialog>
     </section>
   );

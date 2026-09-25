@@ -65,10 +65,10 @@ describe('Catalog', () => {
     expect(html).toContain('data-component="catalog"');
     expect(html).toContain('data-sidebar-collapsed="false"');
     expect(html).toContain(
-      '<h1 class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default">Acme UI</h1>',
+      'data-component="toolbar-text" data-size="large" role="heading" aria-level="1"><span class="kui-toolbar-text__text">Acme UI</span>',
     );
     expect(html).toContain(
-      'kui-catalog__subtitle" data-component="text" data-tone="default" data-size="default" data-font="default">Design system',
+      'kui-catalog__subtitle" data-component="text" data-tone="quiet" data-size="compact" data-font="default">Design system',
     );
     expect(html).toContain('src="/logo.svg"');
     // Category groups + items (ListHeader per section, ListItem per entry)
@@ -79,15 +79,16 @@ describe('Catalog', () => {
     expect(html).toContain(
       'data-action="catalog-select" data-item-id="select"',
     );
-    expect(html).toContain('kui-catalog__tag">Discouraged</span>');
-    expect(html).toContain('kui-catalog__tag">Preview</span>');
+    expect(html).toContain(
+      'class="kui-list-item__status">Discouraged · Preview</span>',
+    );
     // Active item marked selected
     expect(html).toContain(
       'data-item-id="select" data-has-icon="false" data-has-description="false" data-multiline="true" data-density="standard" data-divider="none" aria-current="page"',
     );
     // Detail header shows the active name + description
     expect(html).toContain(
-      '<h2 class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default">Select</h2>',
+      'data-component="toolbar-text" data-size="xlarge" role="heading" aria-level="2"><span class="kui-toolbar-text__text">Select</span>',
     );
     expect(html).toContain('A value list.');
     // Stage renders the app-provided content
@@ -97,7 +98,7 @@ describe('Catalog', () => {
     expect(html).toContain('href="https://example.com/select.ts"');
     expect(html).toContain('data-catalog-related');
     expect(html).toContain('kui-catalog__related-menu');
-    expect(html).toContain('kui-catalog__related-label">Components');
+    expect(html).toContain('<span>Components</span>');
     expect(html).toContain('kui-catalog__related-heading">Used by');
     expect(html).toContain('kui-catalog__related-heading">Uses');
     expect(html).toContain('<wa-divider></wa-divider>');
@@ -159,7 +160,7 @@ describe('Catalog', () => {
       }),
     );
     expect(html).toContain(
-      '<h2 class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default"></h2>',
+      'data-component="toolbar-text" data-size="xlarge" role="heading" aria-level="2"><span class="kui-toolbar-text__text"></span>',
     );
     expect(html).not.toContain('kui-catalog__description');
     expect(html).not.toContain('kui-catalog__resource"');
@@ -262,7 +263,7 @@ describe('Catalog', () => {
       }),
     );
     expect(html).toContain(
-      '<h2 class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default">Input</h2>',
+      'data-component="toolbar-text" data-size="xlarge" role="heading" aria-level="2"><span class="kui-toolbar-text__text">Input</span>',
     );
     expect(html).toContain('A form field.');
   });

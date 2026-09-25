@@ -4,6 +4,7 @@ import './recipes.css';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Pane } from '@kerfjs/ui/pane';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
@@ -32,7 +33,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         label="Atlas workspace"
         leading={<ToolbarText text="Atlas" />}
         trailing={
-          <div class="recipe-shell__toolbar-actions">
+          <>
             <ToolbarControlGroup
               className="recipe-shell__responsive-controls"
               appearance="borderless"
@@ -90,7 +91,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                 <LucideIcon icon={Settings} name="settings" />
               </button>
             </ToolbarControlGroup>
-          </div>
+          </>
         }
       />
       <div class="recipe-shell__body">
@@ -102,84 +103,92 @@ export const createRecipe: RecipeFactory = (announce) => {
             min={180}
             max={320}
           >
-            <aside class="recipe-shell__nav kui-pane">
+            <Pane
+              element="aside"
+              className="recipe-shell__nav"
+              contentElement="nav"
+              contentClassName="recipe-shell__nav-list"
+              contentLabel="Workspace"
+            >
               <ListHeader label="Workspace" />
-              <nav
-                class="recipe-shell__nav-list kui-pane__content kui-content"
-                aria-label="Workspace"
-              >
-                <section>
-                  <ListItem
-                    action="recipe-action"
-                    itemId="inbox"
-                    label="Inbox"
-                    icon={<LucideIcon icon={Inbox} name="inbox" />}
-                    selected={selected.value === 'inbox'}
-                  />
-                  <ListItem
-                    action="recipe-action"
-                    itemId="projects"
-                    label="Projects with a deliberately wrapping title"
-                    icon={<LucideIcon icon={Folder} name="folder" />}
-                    selected={selected.value === 'projects'}
-                    multiline
-                  />
-                </section>
-              </nav>
-            </aside>
+              <section>
+                <ListItem
+                  action="recipe-action"
+                  itemId="inbox"
+                  label="Inbox"
+                  icon={<LucideIcon icon={Inbox} name="inbox" />}
+                  selected={selected.value === 'inbox'}
+                />
+                <ListItem
+                  action="recipe-action"
+                  itemId="projects"
+                  label="Projects with a deliberately wrapping title"
+                  icon={<LucideIcon icon={Folder} name="folder" />}
+                  selected={selected.value === 'projects'}
+                  multiline
+                />
+              </section>
+            </Pane>
           </ResizableRegion>
         </div>
-        <main id="recipe-shell-content" class="recipe-shell__main kui-pane">
-          <Toolbar
-            label="Current workspace view"
-            dividerSides=""
-            leading={
-              <ToolbarText
-                text={
-                  selected.value === 'inbox'
-                    ? 'Inbox triage'
-                    : 'Active projects'
-                }
-                size="xlarge"
-                id="recipe-shell-main-title"
-              />
-            }
-            trailing={
-              <ToolbarControlGroup appearance="borderless" single>
-                <button
-                  class="kui-recipe__button"
-                  data-primary="true"
-                  type="button"
-                  data-action="recipe-action"
-                  data-recipe-command="new"
+        <Pane
+          element="main"
+          id="recipe-shell-content"
+          className="recipe-shell__main"
+          contentClassName="recipe-shell__main-body"
+          header={
+            <Toolbar
+              label="Current workspace view"
+              dividerSides=""
+              leading={
+                <ToolbarText
+                  text={
+                    selected.value === 'inbox'
+                      ? 'Inbox triage'
+                      : 'Active projects'
+                  }
+                  size="xlarge"
+                  id="recipe-shell-main-title"
+                />
+              }
+              trailing={
+                <ToolbarControlGroup
+                  appearance="borderless"
+                  content="text"
+                  single
                 >
-                  New task
-                </button>
-              </ToolbarControlGroup>
-            }
-          />
-          <div class="recipe-shell__main-body kui-pane__content kui-content">
-            <Text class="kui-recipe__ownership kui-content-item">
-              Recipe owns pane geometry and one scroll owner per pane. The app
-              owns routing, data, pane visibility, sizes, and persistence.
-            </Text>
-            <div class="recipe-shell__cards">
-              {[
-                'Release accessibility audit',
-                'Prepare tablet navigation',
-                'Review stale-data states',
-                'Confirm package boundaries',
-              ].map((title) => (
-                <article class="recipe-shell__card kui-content-item">
-                  <strong>{title}</strong>
-                  <Text class="kui-recipe__muted">
-                    Assigned to the interface systems team · due this week
-                  </Text>
-                </article>
-              ))}
-            </div>
+                  <button
+                    type="button"
+                    data-action="recipe-action"
+                    data-recipe-command="new"
+                  >
+                    New task
+                  </button>
+                </ToolbarControlGroup>
+              }
+            />
+          }
+        >
+          <Text class="kui-recipe__ownership kui-content-item">
+            Recipe owns pane geometry and one scroll owner per pane. The app
+            owns routing, data, pane visibility, sizes, and persistence.
+          </Text>
+          <div class="recipe-shell__cards">
+            {[
+              'Release accessibility audit',
+              'Prepare tablet navigation',
+              'Review stale-data states',
+              'Confirm package boundaries',
+            ].map((title) => (
+              <article class="recipe-shell__card kui-content-item">
+                <strong>{title}</strong>
+                <Text class="kui-recipe__muted">
+                  Assigned to the interface systems team · due this week
+                </Text>
+              </article>
+            ))}
           </div>
-        </main>
+        </Pane>
         <div id="recipe-shell-inspector" class="recipe-shell__inspector-region">
           <ResizableRegion
             id="recipe-inspector"
@@ -189,26 +198,30 @@ export const createRecipe: RecipeFactory = (announce) => {
             max={360}
             edge="start"
           >
-            <aside class="recipe-shell__inspector kui-pane">
-              <Toolbar
-                label="Inspector"
-                dividerSides=""
-                leading={
-                  <ToolbarText
-                    text="Inspector"
-                    size="xlarge"
-                    id="recipe-shell-inspector-title"
-                  />
-                }
-              />
-              <div class="recipe-shell__inspector-body kui-pane__content kui-content">
-                <ValueTable label="Selected task">
-                  <ValueTableRow label="Status" value="In review" />
-                  <ValueTableRow label="Owner" value="Mara Chen" />
-                  <ValueTableRow label="Priority" value="High" />
-                </ValueTable>
-              </div>
-            </aside>
+            <Pane
+              element="aside"
+              className="recipe-shell__inspector"
+              contentClassName="recipe-shell__inspector-body"
+              header={
+                <Toolbar
+                  label="Inspector"
+                  dividerSides=""
+                  leading={
+                    <ToolbarText
+                      text="Inspector"
+                      size="xlarge"
+                      id="recipe-shell-inspector-title"
+                    />
+                  }
+                />
+              }
+            >
+              <ValueTable label="Selected task">
+                <ValueTableRow label="Status" value="In review" />
+                <ValueTableRow label="Owner" value="Mara Chen" />
+                <ValueTableRow label="Priority" value="High" />
+              </ValueTable>
+            </Pane>
           </ResizableRegion>
         </div>
       </div>

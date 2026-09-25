@@ -32,9 +32,12 @@ export const createRecipe: RecipeFactory = (announce) => ({
           />
         }
         trailing={
-          <ToolbarControlGroup appearance="borderless">
+          <ToolbarControlGroup
+            appearance="borderless"
+            buttonAppearance="push"
+            content="text"
+          >
             <button
-              class="kui-recipe__button"
               type="button"
               data-action="recipe-action"
               data-recipe-command="share"
@@ -42,7 +45,6 @@ export const createRecipe: RecipeFactory = (announce) => ({
               Share
             </button>
             <button
-              class="kui-recipe__button"
               type="button"
               data-action="recipe-action"
               data-recipe-command="more"
@@ -50,8 +52,6 @@ export const createRecipe: RecipeFactory = (announce) => ({
               More actions
             </button>
             <button
-              class="kui-recipe__button"
-              data-primary="true"
               type="button"
               data-action="recipe-action"
               data-recipe-command="publish"

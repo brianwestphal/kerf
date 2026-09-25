@@ -3,6 +3,7 @@ import './recipes.css';
 
 import { EmptyState } from '@kerfjs/ui/empty-state';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
+import { Pane } from '@kerfjs/ui/pane';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
@@ -46,7 +47,6 @@ export const createRecipe: RecipeFactory = (announce) => {
           busy
           action={
             <button
-              class="kui-recipe__button"
               type="button"
               data-action="recipe-action"
               data-recipe-command="load"
@@ -63,8 +63,6 @@ export const createRecipe: RecipeFactory = (announce) => {
           detail="Create the first task for this milestone."
           action={
             <button
-              class="kui-recipe__button"
-              data-primary="true"
               type="button"
               data-action="recipe-action"
               data-recipe-command="create"
@@ -83,7 +81,6 @@ export const createRecipe: RecipeFactory = (announce) => {
           urgency="alert"
           action={
             <button
-              class="kui-recipe__button"
               type="button"
               data-action="recipe-action"
               data-recipe-command="retry"
@@ -104,7 +101,6 @@ export const createRecipe: RecipeFactory = (announce) => {
               <span class="kui-inline-metadata">
                 <LoadingSpinner label="Refreshing release tasks" />
                 <button
-                  class="kui-recipe__button"
                   type="button"
                   data-action="recipe-action"
                   data-recipe-command="finish"
@@ -120,59 +116,63 @@ export const createRecipe: RecipeFactory = (announce) => {
     );
   };
   const render = () => (
-    <section
-      class="kui-recipe recipe-list kui-recipe__surface kui-pane"
-      data-recipe="recipe-list-workspace-states"
-      data-list-state={state.value}
+    <Pane
+      element="section"
+      className="kui-recipe recipe-list kui-recipe__surface"
+      contentClassName="recipe-list__body"
+      rootAttributes={{
+        'data-recipe': 'recipe-list-workspace-states',
+        'data-list-state': state.value,
+      }}
+      header={
+        <Toolbar
+          label="Release tasks"
+          dividerSides=""
+          leading={
+            <ToolbarText
+              text="Release tasks"
+              size="xlarge"
+              id="recipe-list-title"
+            />
+          }
+          trailing={
+            <ToolbarControlGroup
+              appearance="borderless"
+              content="text"
+              buttonAppearance="push"
+            >
+              <button
+                type="button"
+                data-action="recipe-action"
+                data-recipe-command="empty"
+              >
+                Clear
+              </button>
+              <button
+                type="button"
+                data-action="recipe-action"
+                data-recipe-command="fail"
+              >
+                Simulate failure
+              </button>
+              <button
+                type="button"
+                data-action="recipe-action"
+                data-recipe-command="refresh"
+              >
+                Refresh
+              </button>
+            </ToolbarControlGroup>
+          }
+        />
+      }
     >
-      <Toolbar
-        label="Release tasks"
-        dividerSides=""
-        leading={
-          <ToolbarText
-            text="Release tasks"
-            size="xlarge"
-            id="recipe-list-title"
-          />
-        }
-        trailing={
-          <ToolbarControlGroup appearance="borderless">
-            <button
-              class="kui-recipe__button"
-              type="button"
-              data-action="recipe-action"
-              data-recipe-command="empty"
-            >
-              Clear
-            </button>
-            <button
-              class="kui-recipe__button"
-              type="button"
-              data-action="recipe-action"
-              data-recipe-command="fail"
-            >
-              Simulate failure
-            </button>
-            <button
-              class="kui-recipe__button"
-              data-primary="true"
-              type="button"
-              data-action="recipe-action"
-              data-recipe-command="refresh"
-            >
-              Refresh
-            </button>
-          </ToolbarControlGroup>
-        }
-      />
-      <div class="recipe-list__body kui-pane__content kui-content">
-        {renderBody()}
-        <Text class="kui-recipe__ownership kui-content-item">
-          The recipe owns feedback placement and stable content. The app owns
-          fetching, cache age, retry policy, and domain rows.
-        </Text>
-      </div>
-    </section>
+      {renderBody()}
+      <Text class="kui-recipe__ownership kui-content-item">
+        The recipe owns feedback placement and stable content. The app owns
+        fetching, cache age, retry policy, and domain rows.
+      </Text>
+    </Pane>
   );
   return {
     render,

@@ -7,24 +7,6 @@
 .kui-recipe button {
   font: inherit;
 }
-.kui-recipe__button {
-  min-height: 2rem;
-  padding: var(--kui-space-xs) var(--kui-space-s);
-  border: 1px solid var(--kui-color-border);
-  border-radius: var(--kui-radius-m);
-  color: var(--kui-color-text);
-  background: var(--kui-color-surface);
-  cursor: pointer;
-}
-.kui-recipe__button[data-primary="true"] {
-  color: var(--kui-color-brand-on-normal);
-  border-color: var(--kui-color-brand-border-normal);
-  background: var(--kui-color-brand-fill-normal);
-}
-.kui-recipe__button:focus-visible {
-  outline: var(--kui-focus-ring);
-  outline-offset: 2px;
-}
 .kui-recipe__surface {
   min-width: 0;
   overflow: hidden;
@@ -56,11 +38,6 @@
   display: flex;
   min-width: 0;
   min-height: 0;
-}
-.recipe-shell__toolbar-actions {
-  display: flex;
-  min-width: 0;
-  align-items: center;
 }
 .recipe-shell__responsive-controls {
   display: none;
@@ -286,13 +263,6 @@
   .recipe-compact-toolbar .kui-toolbar__trailing {
     grid-area: trailing;
     justify-content: flex-start;
-  }
-  .recipe-compact-toolbar .kui-toolbar__trailing > .kui-control-cluster {
-    width: 100%;
-  }
-  .recipe-compact-toolbar .kui-toolbar__trailing wa-select {
-    min-width: min(12rem, 100%);
-    flex: 1 1 12rem;
   }
 }
 

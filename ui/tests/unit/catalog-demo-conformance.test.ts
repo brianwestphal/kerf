@@ -63,7 +63,7 @@ describe('Catalog demo conformance analysis', () => {
     ).toEqual([]);
   });
 
-  it('accepts composition demos without imposing focused-example helpers', async () => {
+  it('requires composition demos to use the public example helpers too', async () => {
     expect(
       await analyzeFixture('valid-composition', 'composition', 'composition'),
     ).toEqual([]);
@@ -133,7 +133,7 @@ describe('Catalog demo conformance analysis', () => {
     ).toEqual([catalogDemoConformanceRules.exceptionInvalid]);
   });
 
-  it('pins the shell to component-only overlays and documented stage modes', async () => {
+  it('pins the shell to kind-driven overlays and documented stage modes', async () => {
     const valid = await readFile(
       resolve(fixtureRoot, 'valid-shell.tsx.fixture'),
       'utf8',

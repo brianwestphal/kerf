@@ -1,3 +1,5 @@
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { List } from '@kerfjs/ui/list';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -12,55 +14,60 @@ export function HeadersDemo() {
   // leading zone, actions in the trailing zone, and optional supporting copy
   // as ordinary content below the toolbar.
   return (
-    <div class="demo-frame" data-demo="headers">
-      <Toolbar
-        label="UI foundations"
-        dividerSides=""
-        leading={
-          <ToolbarText
-            text="UI foundations"
-            size="xlarge"
-            id="headers-page-title"
-            headingLevel={1}
+    <CatalogExampleStack
+      label="Heading compositions"
+      rootAttributes={{ 'data-demo': 'headers' }}
+    >
+      <CatalogExample label="Page and panel headings">
+        <List gap="none">
+          <Toolbar
+            label="UI foundations"
+            dividerSides=""
+            leading={
+              <ToolbarText
+                text="UI foundations"
+                size="xlarge"
+                id="headers-page-title"
+                headingLevel={1}
+              />
+            }
+            trailing={
+              <ToolbarControlGroup appearance="borderless" single>
+                {button('New pattern', 'log-add')}
+              </ToolbarControlGroup>
+            }
           />
-        }
-        trailing={
-          <ToolbarControlGroup appearance="borderless" single>
-            {button('New pattern', 'log-add')}
-          </ToolbarControlGroup>
-        }
-      />
-      <Toolbar
-        label="Package details"
-        dividerSides=""
-        leading={
-          <>
-            <ToolbarControlGroup appearance="borderless" single>
-              {icon(Wrench, 'wrench')}
-            </ToolbarControlGroup>
-            <ToolbarText
-              text="Package details"
-              size="xlarge"
-              id="headers-panel-title"
-            />
-          </>
-        }
-        trailing={
-          <ToolbarControlGroup appearance="borderless" single>
-            {button('Done', 'log-done')}
-          </ToolbarControlGroup>
-        }
-      />
-      <ListInsetText horizontalOnly className="kui-inline-metadata">
-        Production-backed primitives with explicit contracts.
-      </ListInsetText>
-      <div class="kui-content">
-        <ValueTable label="Package metadata">
-          <ValueTableRow label="Package" value="@kerfjs/ui" />
-          <ValueTableRow label="Rendering" value="Kerf SafeHtml" />
-          <ValueTableRow label="Styles" value="Explicit CSS subpaths" />
-        </ValueTable>
-      </div>
-    </div>
+          <Toolbar
+            label="Package details"
+            dividerSides=""
+            leading={
+              <>
+                <ToolbarControlGroup appearance="borderless" single>
+                  {icon(Wrench, 'wrench')}
+                </ToolbarControlGroup>
+                <ToolbarText
+                  text="Package details"
+                  size="xlarge"
+                  id="headers-panel-title"
+                />
+              </>
+            }
+            trailing={
+              <ToolbarControlGroup appearance="borderless" single>
+                {button('Done', 'log-done')}
+              </ToolbarControlGroup>
+            }
+          />
+          <ListInsetText horizontalOnly className="kui-inline-metadata">
+            Production-backed primitives with explicit contracts.
+          </ListInsetText>
+          <ValueTable label="Package metadata">
+            <ValueTableRow label="Package" value="@kerfjs/ui" />
+            <ValueTableRow label="Rendering" value="Kerf SafeHtml" />
+            <ValueTableRow label="Styles" value="Explicit CSS subpaths" />
+          </ValueTable>
+        </List>
+      </CatalogExample>
+    </CatalogExampleStack>
   );
 }

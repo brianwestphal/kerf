@@ -11,6 +11,7 @@ import {
 } from '@kerfjs/ui/catalog';
 import { catalogResources } from '@kerfjs/ui/catalog-resources';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
+import { Row } from '@kerfjs/ui/row';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import {
@@ -359,7 +360,10 @@ mount(app, () => {
             </ToolbarControlGroup>
           ) : null}
           <ToolbarControlGroup
-            className="catalog-settings"
+            appearance="borderless"
+            buttonAppearance="push"
+            content="mixed"
+            size="compact"
             label="Catalog display settings"
           >
             <button
@@ -387,24 +391,20 @@ mount(app, () => {
             {actionLog.value}
           </output>
           {selected.id === 'resize' ? (
-            <span class="catalog-footer__metric">
+            <Row vAlign="baseline" gap="2xs">
               <span>Committed width</span>
               <strong data-region-size>{regionSize.value}px</strong>
-            </span>
+            </Row>
           ) : null}
           <span>{statusLabel}</span>
         </>
       }
-      geometryOverlay={
-        selected.source === 'kerf' && selected.kind === 'component'
-      }
+      geometryOverlay={selected.kind === 'component'}
       content={
         <div
           class="demo-stage-inner"
           data-demo-mode={
-            selected.source === 'kerf' && selected.kind === 'component'
-              ? 'component'
-              : 'composition'
+            selected.kind === 'component' ? 'component' : 'composition'
           }
           data-recipe-notes-visible={String(
             isRecipe && recipeNotesVisible.value,

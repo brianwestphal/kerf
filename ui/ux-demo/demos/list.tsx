@@ -3,6 +3,7 @@ import { flex, space } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
+import { Pane } from '@kerfjs/ui/pane';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -30,18 +31,16 @@ export function ListDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'list' }}>
       <CatalogExample
         label="Scrollable application list"
-        note="The outer and content stacks use List; the content owns flex growth, scrolling, a typed major gap, and a right divider."
+        note="Pane owns the header/content/footer anatomy; the content List owns flex growth, scrolling, a typed major gap, and a right divider."
       >
-        <List className="demo-list kui-pane">
-          <div class="kui-pane__toolbar">
+        <Pane
+          className="demo-list"
+          contentClassName="demo-list__pane-content"
+          header={
             <Toolbar
               label="Sidebar toolbar"
               dividerSides=""
-              leading={
-                <ToolbarControlGroup appearance="borderless" single>
-                  <ToolbarText text="Workspace" size="small" />
-                </ToolbarControlGroup>
-              }
+              leading={<ToolbarText text="Workspace" size="small" />}
               trailing={
                 <ToolbarControlGroup appearance="borderless" single>
                   <button
@@ -54,9 +53,28 @@ export function ListDemo() {
                 </ToolbarControlGroup>
               }
             />
-          </div>
+          }
+          footer={
+            <Toolbar
+              label="Sidebar footer"
+              dividerSides=""
+              leading={<ToolbarText text="Ready" size="small" />}
+              trailing={
+                <ToolbarControlGroup appearance="borderless" single>
+                  <button
+                    type="button"
+                    aria-label="Sidebar settings"
+                    data-action="log-settings"
+                  >
+                    {icon(Settings, 'settings')}
+                  </button>
+                </ToolbarControlGroup>
+              }
+            />
+          }
+        >
           <List
-            className="demo-list__content kui-pane__content kui-content"
+            className="demo-list__content"
             gap={space('l')}
             flex={flex(1)}
             scrollable
@@ -117,29 +135,7 @@ export function ListDemo() {
               </List>
             </section>
           </List>
-          <div class="kui-pane__footer">
-            <Toolbar
-              label="Sidebar footer"
-              dividerSides=""
-              leading={
-                <ToolbarControlGroup appearance="borderless" single>
-                  <ToolbarText text="Ready" size="small" />
-                </ToolbarControlGroup>
-              }
-              trailing={
-                <ToolbarControlGroup appearance="borderless" single>
-                  <button
-                    type="button"
-                    aria-label="Sidebar settings"
-                    data-action="log-settings"
-                  >
-                    {icon(Settings, 'settings')}
-                  </button>
-                </ToolbarControlGroup>
-              }
-            />
-          </div>
-        </List>
+        </Pane>
       </CatalogExample>
       <CatalogExample
         label="Physical-axis alignment"

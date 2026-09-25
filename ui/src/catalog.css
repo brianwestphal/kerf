@@ -40,51 +40,6 @@
     visibility 0s linear 200ms;
 }
 
-.kui-catalog__brand .kui-toolbar {
-  padding: var(--kui-space-xs);
-}
-
-/* Scoped to the brand so it outranks the ToolbarControlGroup's own gap rule; a
-   single-class selector would lose that specificity and drop the logo→title gap,
-   which then misaligns the subtitle (whose padding assumes the gap is present). */
-.kui-catalog__brand .kui-catalog__identity {
-  min-width: 0;
-  gap: var(--kui-layout-control-gap, remify(8px));
-}
-
-.kui-catalog__identity h1,
-.kui-catalog__subtitle.kui-text {
-  margin: 0;
-}
-
-.kui-catalog__identity h1 {
-  padding: 0;
-  border: 0;
-  overflow: hidden;
-  font-size: var(--kui-font-m);
-  letter-spacing: 0.07em;
-  line-height: 1.15;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.kui-catalog__subtitle.kui-text {
-  overflow: hidden;
-  border: 0;
-  margin-block-start: calc(-1 * var(--kui-space-xs));
-  padding-block-end: var(--kui-space-xs);
-  padding-inline: calc(
-      var(--kui-space-xs) + remify(2px) + remify(34px) +
-        var(--kui-layout-control-gap, remify(8px))
-    )
-    var(--kui-space-xs);
-  color: var(--kui-color-text-quiet);
-  font-size: var(--kui-font-xs);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .kui-catalog__mark {
   display: block;
   width: remify(34px);
@@ -107,27 +62,6 @@
 
 .kui-catalog__items .kui-list-item {
   grid-template-columns: minmax(0, 1fr) auto;
-}
-
-.kui-catalog__tags {
-  display: inline-flex;
-  min-width: 0;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: var(--kui-space-2xs);
-}
-
-.kui-catalog__tag {
-  display: inline-flex;
-  padding: remify(2px) remify(6px);
-  border: 1px solid var(--kui-color-warning-border-quiet);
-  border-radius: 999px;
-  color: var(--kui-color-warning-text);
-  background: var(--kui-color-warning);
-  font-size: var(--kui-font-2xs);
-  font-weight: 650;
-  line-height: 1.2;
-  white-space: nowrap;
 }
 
 .kui-catalog__group--secondary {
@@ -224,65 +158,9 @@
   background: var(--kui-color-surface);
 }
 
-.kui-catalog__header .kui-toolbar {
-  padding-block-end: 0;
-}
-
-.kui-catalog__title {
-  min-width: 0;
-}
-
-.kui-catalog__title h2,
-.kui-catalog__description {
-  margin: 0;
-}
-
-.kui-catalog__title h2 {
-  overflow: hidden;
-  font-size: var(--kui-font-l);
-  letter-spacing: -0.025em;
-  line-height: 1.2;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .kui-catalog__description {
   max-width: var(--kui-catalog-content-measure, remify(1120px));
-  margin-block: 0 var(--kui-space-xs);
-  color: var(--kui-color-text-quiet);
   background: transparent;
-  line-height: 1.45;
-}
-
-.kui-catalog__header-actions {
-  display: flex;
-  min-width: 0;
-  align-items: center;
-  gap: var(--kui-layout-control-gap);
-}
-
-.kui-catalog__settings {
-  box-shadow: none;
-}
-
-/* Scoped under the header-actions container so it outranks the toolbar group's
-   default `display: grid` icon-over-label button — these settings buttons carry a
-   text label and read as icon-beside-label. */
-.kui-catalog__header-actions .kui-catalog__settings > button {
-  display: inline-flex;
-  align-items: center;
-  gap: remify(6px);
-  white-space: nowrap;
-}
-
-.kui-catalog__settings > button:focus-visible {
-  outline: var(--kui-focus-ring);
-  outline-offset: 2px;
-}
-
-.kui-catalog__settings svg {
-  width: remify(16px);
-  height: remify(16px);
 }
 
 .kui-catalog__stage {
@@ -362,9 +240,6 @@
 }
 
 .kui-catalog__footer {
-  --kui-toolbar-gap: remify(4px);
-  --kui-toolbar-group-size: remify(32px);
-
   border-block-start: 1px solid var(--kui-color-border);
   background: color-mix(
     in srgb,
@@ -382,20 +257,6 @@
   justify-content: space-between;
   gap: var(--kui-layout-control-gap);
   font-size: var(--kui-font-xs);
-}
-
-.kui-catalog__footer .kui-toolbar {
-  min-height: remify(40px);
-  padding: remify(4px) remify(8px) remify(8px);
-}
-
-.kui-catalog__footer .kui-toolbar-control-group {
-  height: remify(32px);
-  min-width: remify(32px);
-}
-
-.kui-catalog__resources {
-  min-width: 0;
 }
 
 .kui-catalog__resource-group {
@@ -447,50 +308,6 @@
   border: 0;
   clip-path: inset(50%);
   white-space: nowrap;
-}
-
-.kui-catalog__related-group {
-  padding: 0;
-}
-
-/* The related-entries trigger is an icon + caret popup button. In the footer
-   toolbar the slotted glyph otherwise collapses to 0 width (a Web Awesome
-   slotted-flex quirk), so pin its box size explicitly. */
-.kui-catalog__related-menu wa-button[slot="trigger"] svg {
-  width: remify(16px) !important;
-  min-width: remify(16px);
-  height: remify(16px) !important;
-}
-
-/* The related trigger carries a text label ("Component") beside the glyph, so let
-   it grow to its content instead of the single-group's fixed 48px icon-button
-   width (from toolbar-control-group.css). */
-.kui-catalog__related-group[data-single="true"] > .kui-catalog__related-menu,
-.kui-catalog__related-group[data-single="true"]
-  > .kui-catalog__related-menu
-  > wa-button,
-.kui-catalog__related-group[data-single="true"]
-  > .kui-catalog__related-menu
-  > wa-button::part(base) {
-  width: auto;
-}
-
-/* The menu owns a standard inner inset so long relationship names never touch
-   the popup border. */
-.kui-catalog__related-menu::part(menu) {
-  padding: var(--kui-wa-surface-inset, remify(8px));
-}
-
-/* Keep the glyph beside the text label (the toolbar group paints the slotted svg
-   `display: block`, which would otherwise drop the label onto a second line). */
-.kui-catalog__related-trigger {
-  display: inline-flex;
-  align-items: center;
-}
-
-/* Text label beside the trigger glyph ("Component"). */
-.kui-catalog__related-label {
-  margin-inline-start: remify(6px);
 }
 
 /* Group heading inside the related-entries popup menu (e.g. "Uses" / "Used by"). */

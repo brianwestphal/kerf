@@ -10,6 +10,7 @@ import { deviceClass } from '@kerfjs/ui/device-class';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Pane } from '@kerfjs/ui/pane';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -79,17 +80,24 @@ export const createRecipe: RecipeFactory = (announce) => {
         size={232}
         collapsed={railCollapsed.value}
         label="Workspace navigation"
-        className="recipe-collapsible-sidebar__rail kui-pane"
+        className="recipe-collapsible-sidebar__rail"
       >
-        <div class="recipe-collapsible-sidebar__rail-head">
-          <ToolbarText text="Atlas" />
-          <ToolbarControlGroup appearance="borderless" single>
-            {railToggle(true)}
-          </ToolbarControlGroup>
-        </div>
-        <nav
-          class="recipe-collapsible-sidebar__nav kui-pane__content kui-content"
-          aria-label="Workspace"
+        <Pane
+          contentElement="nav"
+          contentClassName="recipe-collapsible-sidebar__nav"
+          contentLabel="Workspace"
+          header={
+            <Toolbar
+              label="Workspace navigation"
+              dividerSides=""
+              leading={<ToolbarText text="Atlas" />}
+              trailing={
+                <ToolbarControlGroup appearance="borderless" single>
+                  {railToggle(true)}
+                </ToolbarControlGroup>
+              }
+            />
+          }
         >
           <section>
             <ListHeader label="Workspace" />
@@ -116,70 +124,78 @@ export const createRecipe: RecipeFactory = (announce) => {
               selected={selected.value === 'shared'}
             />
           </section>
-        </nav>
+        </Pane>
       </CollapsiblePanel>
-      <main class="recipe-collapsible-sidebar__main kui-pane">
-        <Toolbar
-          label="Current navigation view"
-          dividerSides=""
-          leading={
-            <>
+      <Pane
+        element="main"
+        className="recipe-collapsible-sidebar__main"
+        contentClassName="recipe-collapsible-sidebar__body"
+        header={
+          <Toolbar
+            label="Current navigation view"
+            dividerSides=""
+            leading={
+              <>
+                <ToolbarControlGroup appearance="borderless" single>
+                  {railToggle(false)}
+                </ToolbarControlGroup>
+                <ToolbarText
+                  text={
+                    selected.value === 'projects'
+                      ? 'Projects'
+                      : selected.value === 'shared'
+                        ? 'Shared with me'
+                        : 'Inbox'
+                  }
+                  size="xlarge"
+                  id="recipe-collapsible-main-title"
+                />
+              </>
+            }
+            trailing={
               <ToolbarControlGroup appearance="borderless" single>
-                {railToggle(false)}
+                {drawerToggle()}
               </ToolbarControlGroup>
-              <ToolbarText
-                text={
-                  selected.value === 'projects'
-                    ? 'Projects'
-                    : selected.value === 'shared'
-                      ? 'Shared with me'
-                      : 'Inbox'
-                }
-                size="xlarge"
-                id="recipe-collapsible-main-title"
-              />
-            </>
-          }
-          trailing={
-            <ToolbarControlGroup appearance="borderless" single>
-              {drawerToggle()}
-            </ToolbarControlGroup>
-          }
-        />
-        <div class="recipe-collapsible-sidebar__body kui-pane__content kui-content">
-          <Text class="kui-recipe__ownership kui-content-item">
-            The app owns each panel's <code>collapsed</code> signal, sizes, and
-            content; <code>wireSidebar</code> owns the toggle, focus
-            move/restore, the compact overlay, and persistence.
+            }
+          />
+        }
+      >
+        <Text class="kui-recipe__ownership kui-content-item">
+          The app owns each panel's <code>collapsed</code> signal, sizes, and
+          content; <code>wireSidebar</code> owns the toggle, focus move/restore,
+          the compact overlay, and persistence.
+        </Text>
+        <article class="recipe-collapsible-sidebar__card kui-content-item">
+          <strong>Narrow the window to a compact width</strong>
+          <Text class="kui-recipe__muted">
+            The rail and drawer become a dismissable overlay: a backdrop,
+            Escape, and a trapped Tab ring, all managed by the wire.
           </Text>
-          <article class="recipe-collapsible-sidebar__card kui-content-item">
-            <strong>Narrow the window to a compact width</strong>
-            <Text class="kui-recipe__muted">
-              The rail and drawer become a dismissable overlay: a backdrop,
-              Escape, and a trapped Tab ring, all managed by the wire.
-            </Text>
-          </article>
-        </div>
-      </main>
+        </article>
+      </Pane>
       <CollapsiblePanel
         id="sidebar-console"
         side="bottom"
         size={168}
         collapsed={drawerCollapsed.value}
         label="Activity"
-        className="recipe-collapsible-sidebar__drawer kui-pane"
+        className="recipe-collapsible-sidebar__drawer"
       >
-        <Toolbar
-          label="Activity"
-          dividerSides="b"
-          leading={<ToolbarText text="Activity" size="small" />}
-          trailing={
-            <ToolbarControlGroup appearance="borderless" single>
-              {drawerToggle()}
-            </ToolbarControlGroup>
+        <Pane
+          contentClassName="recipe-collapsible-sidebar__drawer-body"
+          header={
+            <Toolbar
+              label="Activity"
+              dividerSides="b"
+              leading={<ToolbarText text="Activity" size="small" />}
+              trailing={
+                <ToolbarControlGroup appearance="borderless" single>
+                  {drawerToggle()}
+                </ToolbarControlGroup>
+              }
+            />
           }
-        />
-        <div class="recipe-collapsible-sidebar__drawer-body kui-pane__content kui-content">
+        >
           <ul class="recipe-collapsible-sidebar__log">
             <li>
               <LucideIcon icon={Bell} name="bell" />
@@ -190,7 +206,7 @@ export const createRecipe: RecipeFactory = (announce) => {
               Review requested · 9m ago
             </li>
           </ul>
-        </div>
+        </Pane>
       </CollapsiblePanel>
     </section>
   );

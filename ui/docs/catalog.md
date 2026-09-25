@@ -23,8 +23,8 @@ npm install @kerfjs/ui # kerfjs is a peer; @kerfjs/ui/select/register is needed 
 
 - **`sections`** — category-grouped entries: `{ category, entries: [{ id, name,
 description?, tags?, resources?, related? }] }`. Each entry becomes a sidebar
-  `ListItem` under a `ListHeader` for its category. Short `tags` render as quiet
-  trailing pills for decision metadata such as `Discouraged`.
+  `ListItem` under a `ListHeader` for its category. Short `tags` render through
+  the row's quiet status treatment for decision metadata such as `Discouraged`.
 - **`content`** — the rendered preview for the active entry. Keep a map of `id →
 () => SafeHtml` in your app and call `renderers[active]()` in your render.
 - **`brand`** — `{ title, subtitle?, logoUrl? }` for the sidebar header.

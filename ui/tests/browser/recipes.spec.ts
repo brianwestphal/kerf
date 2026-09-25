@@ -275,7 +275,9 @@ test('keeps project dialog content on intentional wide and narrow gutters', asyn
       const titleRange = document.createRange();
       titleRange.selectNodeContents(title);
       const pane = bounds('.recipe-dialog__pane');
-      const header = bounds('.recipe-list-detail__detail > .kui-toolbar');
+      const header = bounds(
+        '.recipe-list-detail__detail > .kui-pane__header > .kui-toolbar',
+      );
       const masterDetail = bounds('.recipe-list-detail');
       const detail = bounds('.recipe-list-detail__detail');
       const table = bounds('.kui-value-table');

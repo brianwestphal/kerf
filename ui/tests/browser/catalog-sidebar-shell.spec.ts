@@ -5,7 +5,9 @@ const headerGeometry = async (page: Page) =>
     const rect = (selector: string) =>
       document.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
     const logo = rect('.kui-catalog__mark');
-    const title = rect('.kui-catalog__identity h1');
+    const title = rect(
+      '.kui-catalog__brand [data-component="toolbar-text"][aria-level="1"]',
+    );
     const subtitle = rect('.kui-catalog__subtitle');
     const contentStart = (selector: string) => {
       const element = document.querySelector<HTMLElement>(selector)!;
@@ -25,10 +27,11 @@ const headerGeometry = async (page: Page) =>
       collapseTitleCenterDelta: Math.abs(centerY(collapse) - centerY(title)),
       logoTitleCenterDelta: Math.abs(centerY(logo) - centerY(title)),
       subtitleBelowTitle: subtitle.top >= title.bottom - 1,
-      subtitleTitleLeftDelta: Math.abs(
-        contentStart('.kui-catalog__subtitle') -
-          contentStart('.kui-catalog__identity h1'),
-      ),
+      subtitlePrecedesTitle:
+        contentStart('.kui-catalog__subtitle') <
+        contentStart(
+          '.kui-catalog__brand [data-component="toolbar-text"][aria-level="1"]',
+        ),
     };
   });
 
@@ -56,10 +59,10 @@ test('uses the Kerf identity and relocates sidebar restore into the detail toolb
   const wideGeometry = await headerGeometry(page);
   expect(wideGeometry).toMatchObject({
     subtitleBelowTitle: true,
+    subtitlePrecedesTitle: true,
   });
   expect(wideGeometry.collapseTitleCenterDelta).toBeLessThanOrEqual(1);
   expect(wideGeometry.logoTitleCenterDelta).toBeLessThanOrEqual(1);
-  expect(wideGeometry.subtitleTitleLeftDelta).toBeLessThanOrEqual(1);
 
   await sidebar.getByRole('button', { name: 'Collapse Kerf catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'true');

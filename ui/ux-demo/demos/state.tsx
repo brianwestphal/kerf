@@ -61,7 +61,7 @@ export const icon = (
   name: string,
 ) => <LucideIcon icon={node} name={name} />;
 export const button = (label: string, action: string) => (
-  <button type="button" class="demo-button" data-action={action}>
+  <button type="button" data-action={action}>
     {label}
   </button>
 );
