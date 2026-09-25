@@ -106,9 +106,7 @@ export function Pane({
   );
   const body = (
     <>
-      {header === undefined ? (
-        <></>
-      ) : (
+      {header === undefined ? null : (
         <header
           class={`kui-pane__header kui-pane__toolbar ${headerClassName}`.trim()}
         >
@@ -116,9 +114,7 @@ export function Pane({
         </header>
       )}
       {content}
-      {footer === undefined ? (
-        <></>
-      ) : (
+      {footer === undefined ? null : (
         <footer class={`kui-pane__footer ${footerClassName}`.trim()}>
           {footer}
         </footer>

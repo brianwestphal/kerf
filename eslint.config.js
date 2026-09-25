@@ -61,6 +61,14 @@ export default [
       // TypeScript function overloads are legitimate redeclarations; tsc --noEmit
       // catches actual redeclaration bugs, so the JS-only rule is redundant here.
       'no-redeclare': 'off',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'JSXFragment[children.length=0]',
+          message:
+            'Use null for absent JSX; reserve fragments for grouping children.',
+        },
+      ],
     },
   },
   {

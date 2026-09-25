@@ -223,9 +223,7 @@ export function Catalog({
                 >
                   {brand.logoUrl ? (
                     <img class="kui-catalog__mark" src={brand.logoUrl} alt="" />
-                  ) : (
-                    <></>
-                  )}
+                  ) : null}
                   <Text variant="h1">{brand.title}</Text>
                 </ToolbarControlGroup>
               }
@@ -243,9 +241,7 @@ export function Catalog({
             />
             {brand.subtitle ? (
               <Text class="kui-catalog__subtitle">{brand.subtitle}</Text>
-            ) : (
-              <></>
-            )}
+            ) : null}
           </>
         }
       >
@@ -303,14 +299,10 @@ export function Catalog({
                     </section>
                   ))}
                 </div>
-              ) : (
-                <></>
-              )}
+              ) : null}
             </section>
-          ) : (
-            <></>
-          )}
-          {sidebarFooter ?? <></>}
+          ) : null}
+          {sidebarFooter}
         </>
       </Pane>
       <Pane
@@ -340,9 +332,7 @@ export function Catalog({
                         />
                       </button>
                     </ToolbarControlGroup>
-                  ) : (
-                    <></>
-                  )}
+                  ) : null}
                   <ToolbarControlGroup
                     appearance="borderless"
                     className="kui-catalog__title"
@@ -373,9 +363,7 @@ export function Catalog({
                         <span>{nextTheme === 'dark' ? 'Dark' : 'Light'}</span>
                       </button>
                     </ToolbarControlGroup>
-                  ) : (
-                    <></>
-                  )}
+                  ) : null}
                 </div>
               }
             />
@@ -383,15 +371,13 @@ export function Catalog({
               <Text class="kui-catalog__description kui-content-item">
                 {selected.description}
               </Text>
-            ) : (
-              <></>
-            )}
+            ) : null}
           </>
         }
         footerClassName="kui-catalog__footer"
         footer={
           <>
-            {status ? <div class="kui-catalog__status">{status}</div> : <></>}
+            {status ? <div class="kui-catalog__status">{status}</div> : null}
             <Toolbar
               label={`${name} resources`}
               dividerSides=""
@@ -420,16 +406,12 @@ export function Catalog({
                           <span>{resource.label}</span>
                           {resource.detail ? (
                             <code>{resource.detail}</code>
-                          ) : (
-                            <></>
-                          )}
+                          ) : null}
                         </a>
                       ))}
                     </ToolbarControlGroup>
                   </nav>
-                ) : (
-                  <></>
-                )
+                ) : null
               }
               trailing={
                 related.length > 0 ? (
@@ -457,9 +439,7 @@ export function Catalog({
                       </wa-dropdown>
                     </ToolbarControlGroup>
                   </div>
-                ) : (
-                  <></>
-                )
+                ) : null
               }
             />
           </>
@@ -474,9 +454,7 @@ export function Catalog({
               data-morph-skip-children
               aria-hidden="true"
             />
-          ) : (
-            <></>
-          )}
+          ) : null}
         </div>
       </Pane>
     </main>
@@ -565,9 +543,7 @@ export function CatalogExample({
           label={label}
           rootAttributes={{ 'data-catalog-example-label': '' }}
         />
-      ) : (
-        <></>
-      )}
+      ) : null}
       {note !== undefined ? (
         <Text class="kui-catalog-example__note" data-catalog-example-note>
           {note}

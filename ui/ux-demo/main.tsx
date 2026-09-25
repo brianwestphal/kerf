@@ -357,9 +357,7 @@ mount(app, () => {
                 {icon(StickyNote, 'sticky-note')}
               </button>
             </ToolbarControlGroup>
-          ) : (
-            <></>
-          )}
+          ) : null}
           <ToolbarControlGroup
             className="catalog-settings"
             label="Catalog display settings"
@@ -393,9 +391,7 @@ mount(app, () => {
               <span>Committed width</span>
               <strong data-region-size>{regionSize.value}px</strong>
             </span>
-          ) : (
-            <></>
-          )}
+          ) : null}
           <span>{statusLabel}</span>
         </>
       }

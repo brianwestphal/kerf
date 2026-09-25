@@ -71,9 +71,7 @@ export function FloatingToolbarDemo() {
                 </button>
               </ToolbarControlGroup>
             </FloatingToolbar>
-          ) : (
-            <></>
-          )}
+          ) : null}
         </div>
       </CatalogExample>
     </CatalogExampleStack>
