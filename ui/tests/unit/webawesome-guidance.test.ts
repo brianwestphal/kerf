@@ -72,12 +72,13 @@ describe('Web Awesome consumer guidance', () => {
     expect(css).toContain('wa-details[appearance="plain"]::part(header)');
     expect(css).toContain('wa-accordion[appearance="plain"]');
     expect(css).toContain('padding-inline: var(--kui-wa-container-inset)');
-    expect(guidance).toContain(
-      'Plain Accordion and Details remove inline padding',
+    expect(guidance).toContain('Plain Details use the 8px');
+    expect(guidance).toMatch(
+      /framed Accordion items\s+use the 16px container inset for both regions/,
     );
   });
 
-  it('keeps plain disclosures flush and framed disclosure bodies compact', () => {
+  it('assigns disclosure padding by component and appearance', () => {
     const css = readFileSync(
       resolve(import.meta.dirname, '../../src/webawesome.css'),
       'utf8',
@@ -107,26 +108,39 @@ describe('Web Awesome consumer guidance', () => {
 
     expect(rules.length).toBeGreaterThan(0);
     expect(
-      declarations([
-        'wa-details[appearance="plain"]::part(header)',
-        'wa-accordion[appearance="plain"] > wa-accordion-item::part(content)',
-      ]),
+      declarations(['wa-details[appearance="plain"]::part(header)']),
+    ).toEqual(['var(--kui-wa-surface-inset)']);
+    expect(
+      declarations(['wa-details[appearance="plain"]::part(content)']),
     ).toEqual(['0']);
     expect(
-      declarations(
-        [
-          'wa-details:is([appearance="outlined"], [appearance="sunken"])::part(header)',
-          'wa-accordion-item::part(button)',
-        ],
-        ['wa-accordion-item::part(content)'],
-      ),
+      declarations([
+        'wa-accordion[appearance="plain"] > wa-accordion-item::part(button)',
+        'wa-accordion[appearance="plain"] > wa-accordion-item::part(content)',
+      ]),
+    ).toEqual(['var(--kui-wa-surface-inset)']);
+    expect(
+      declarations([
+        'wa-details:is([appearance="outlined"], [appearance="sunken"])::part(header)',
+      ]),
     ).toEqual(['var(--kui-wa-container-inset)']);
     expect(
       declarations([
         'wa-details:is([appearance="outlined"], [appearance="sunken"])::part(content)',
-        'wa-accordion-item::part(content)',
       ]),
     ).toEqual(['var(--kui-wa-surface-inset)']);
+    expect(
+      declarations([
+        'wa-accordion:is([appearance="outlined"], [appearance="sunken"])',
+        'wa-accordion-item::part(button)',
+      ]),
+    ).toEqual(['var(--kui-wa-container-inset)']);
+    expect(
+      declarations([
+        'wa-accordion:is([appearance="outlined"], [appearance="sunken"])',
+        'wa-accordion-item::part(content)',
+      ]),
+    ).toEqual(['var(--kui-wa-container-inset)']);
   });
 
   it('defines and documents the shared sunken surface appearance', () => {

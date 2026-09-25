@@ -18,9 +18,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Removed stale Web Awesome guidance that still advertised the deleted
   aggregate theme route; focused component routes remain the supported catalog
   surface.
-- Aligned Web Awesome Accordion and Details disclosure geometry: plain
-  appearances no longer add inline trigger/body padding, while outlined and
-  sunken headers use the roomier 16px container inset.
+- Aligned Web Awesome Accordion and Details disclosure geometry: plain Details
+  keep a flush body, plain Accordion items use the 8px surface inset throughout,
+  framed Details use 16px on the trigger and 8px on the body, and framed
+  Accordion items use 16px throughout.
 - Added a first-class `@kerfjs/ui/grid` layout primitive for any positive
   equal-width column count, with typed gap and flex values and zero-minimum
   fractional tracks that stay equal when child content has different intrinsic

@@ -122,8 +122,9 @@ the folder modules, and CSS only imports their owner stylesheets.
   `--kui-wa-control-inset` (8px controls/items) and
   `--kui-wa-surface-margin` / `--kui-wa-surface-inset` (8px around/inside
   Accordion, Card, Details, Callout, and Include), while
-  plain Accordion/Details remove inline trigger/body padding and their
-  outlined/sunken headers use the 16px container inset,
+  plain Details keep their body flush while plain Accordion items inset both
+  trigger and body, framed Details use the 16px container inset only on the
+  trigger, and framed Accordion items use it on both regions;
   `--kui-wa-container-inset` keeps Tab Panel at 16px. Dialog body and footer use
   the surface (8px) and container (16px) tiers respectively, independent of the
   dialog's shared `--spacing`. Override the tier at the narrowest useful scope
