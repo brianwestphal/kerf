@@ -231,6 +231,47 @@ describe('ticket timing CLI', { timeout: 30_000 }, () => {
     expect(await readFile(log, 'utf8')).not.toContain('KF-OLD111');
   });
 
+  it('records a push of more outgoing tickets than a coherent batch only against explicit tickets', async () => {
+    const repo = await fixtureRepo('kerf-ticket-timing-fanout-');
+    for (let index = 0; index < 25; index += 1)
+      await repo.git(['commit', '--allow-empty', '-m', `KF-HIST${index} old`]);
+    const { stdout: head } = await repo.git(['rev-parse', 'HEAD']);
+    const pushInput = `refs/heads/main ${head.trim()} refs/heads/main ${'0'.repeat(40)}\n`;
+    const prePush = (env: typeof process.env) =>
+      runWithInput(
+        [
+          'pre-push',
+          'origin',
+          'test://origin',
+          '--',
+          process.execPath,
+          '-e',
+          '',
+        ],
+        { cwd: repo.root, env },
+        pushInput,
+      );
+
+    const bare = await prePush(repo.env);
+    expect(bare.code).toBe(0);
+    expect(bare.stderr).toContain(
+      '26 outgoing tickets exceeds 25; not a coherent push, so recording no push-hook timing',
+    );
+    expect(await readFile(repo.log, 'utf8')).toBe('');
+
+    const explicit = await prePush({
+      ...repo.env,
+      KERF_TICKET_TIMING_TICKETS: 'KF-FIRST1',
+    });
+    expect(explicit.code).toBe(0);
+    expect(explicit.stderr).toContain(
+      'recording only KERF_TICKET_TIMING_TICKETS (KF-FIRST1)',
+    );
+    const notes = (await readFile(repo.log, 'utf8')).trim().split('\n');
+    expect(notes).toHaveLength(1);
+    expect(notes[0]).toMatch(/^edit KF-FIRST1 /);
+  });
+
   it('skips the pre-push check only for the exact clean tree that already passed', async () => {
     const repo = await fixtureRepo('kerf-ticket-timing-skip-');
     const ran = join(repo.scratch, 'check-ran');

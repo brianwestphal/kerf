@@ -22,6 +22,10 @@ export function parseTimingRecords(text: string): Array<Record<string, any>>;
 export function ticketSlugsFromSubjects(subjects: string[]): string[];
 export function summarizeTicketTiming(text: string): TicketTimingSummary;
 export const MAX_COHERENT_TICKETS: number;
+export function pushTimingTickets(
+  derived: string[],
+  explicit: string[],
+): { tickets: string[]; capped: boolean; outgoing: number };
 export function ticketIntervals(records: Array<Record<string, any>>): {
   intervals: Array<Record<string, any> & { duration_ms: number }>;
   open: Array<Record<string, any>>;

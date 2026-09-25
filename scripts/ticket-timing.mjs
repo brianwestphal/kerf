@@ -22,7 +22,9 @@ import {
   assertTicket,
   formatTimingRecord,
   isoTime,
+  MAX_COHERENT_TICKETS,
   parseTimingRecords,
+  pushTimingTickets,
   summarizeTicketTiming,
   ticketSlugsFromSubjects,
 } from './lib/ticket-timing.mjs';
@@ -350,12 +352,14 @@ async function prePush(args) {
     .includes('--skip-if-verified');
   let input = '';
   for await (const chunk of process.stdin) input += chunk;
-  const tickets = [
-    ...new Set([
-      ...ticketSlugsFromSubjects(await subjectsFromPushInput(input, args[0])),
-      ...explicitlySuppliedTickets(),
-    ]),
-  ].sort();
+  const { tickets, capped, outgoing } = pushTimingTickets(
+    ticketSlugsFromSubjects(await subjectsFromPushInput(input, args[0])),
+    explicitlySuppliedTickets(),
+  );
+  if (capped)
+    console.warn(
+      `[ticket-timing] ${outgoing} outgoing tickets exceeds ${MAX_COHERENT_TICKETS}; not a coherent push, so ${tickets.length ? `recording only KERF_TICKET_TIMING_TICKETS (${tickets.join(', ')})` : 'recording no push-hook timing (set KERF_TICKET_TIMING_TICKETS to attribute it)'}`,
+    );
   const decision = skipIfVerified
     ? await checkSkipDecision(input)
     : { skip: false };

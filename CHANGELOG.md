@@ -44,6 +44,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   passed on the exact clean tree being pushed; the skip is recorded in ticket
   timing, and any dirty worktree, different tree, Node.js change,
   failed/interrupted rerun, or `KERF_FORCE_CHECK=1` runs the full gate.
+- The pre-push hook no longer fans its timing record out to every ticket in a
+  push that names more than 25 of them (a first push of a long history, a
+  force-push). It prints a notice and records only the explicit
+  `KERF_TICKET_TIMING_TICKETS` list, or nothing, so it can no longer write the
+  backfill shape the cross-ticket summary has to exclude.
 - `bindList()` now rolls back when its first render throws: rows that pass
   already created are disposed (content mounts and element-mode `dispose`
   callbacks) and removed before the original error is rethrown, instead of

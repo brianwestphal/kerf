@@ -53,8 +53,19 @@ to the named remote and records `root:check` automatically. A tag-only push of
 an already-pushed commit therefore records no historical subjects. Set
 `KERF_TICKET_TIMING_TICKETS` to a comma- or space-separated list when a push
 must be attributed to explicit tickets despite having no outgoing commit (for
-example, `KERF_TICKET_TIMING_TICKETS=KF-ABC123 git push origin <tag>`). Time a
-local gate while preserving its exit status with `run`:
+example, `KERF_TICKET_TIMING_TICKETS=KF-ABC123 git push origin <tag>`).
+
+The hook applies the same 25-ticket coherence bound as `import-ci` and the
+cross-ticket summary (`MAX_COHERENT_TICKETS`) at write time. When the outgoing
+commits name more than 25 tickets — a first push of a long history, a
+force-push, a rebased branch — it does not fan the interval out per ticket: it
+prints a notice and records the interval only against the explicit
+`KERF_TICKET_TIMING_TICKETS` list, or records nothing when that list is empty.
+The gate itself still runs and its exit status is unchanged. An explicit list is
+honored as given, because it is a deliberate attribution rather than a derived
+one.
+
+Time a local gate while preserving its exit status with `run`:
 
 ```bash
 npm run ticket:timing -- run KF-ABC123 \
@@ -168,8 +179,9 @@ The first push after the pre-push hook started recording (2026-09-23T11:33Z)
 treated a long stretch of already-published history as outgoing and attached
 one ~55 s `root:check` interval to 374 historical tickets. That single push was
 374 of the 424 `push_hook` records at the time — noise that swamped every
-per-ticket figure. The summary detects the shape instead of rewriting stored
-notes: an interval whose identity is attached to **more than 25 tickets** (the
+per-ticket figure. The pre-push hook now refuses to write that shape (see
+"Push hook and local gates"), and the summary detects it in notes written before
+that bound existed instead of rewriting them: an interval whose identity is attached to **more than 25 tickets** (the
 same bound `import-ci` uses for a coherent batch; `--backfill-threshold <n>`
 overrides it) is reported as backfill with its ticket count and excluded from
 every statistic. `--include-backfill` keeps it, still counted once. The legit

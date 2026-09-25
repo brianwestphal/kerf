@@ -77,6 +77,24 @@ function intervalFromRecord(record) {
 export const MAX_COHERENT_TICKETS = 25;
 
 /**
+ * The tickets a push-hook interval is written to. Tickets derived from
+ * outgoing commits fan out only while they form a coherent batch; past
+ * `MAX_COHERENT_TICKETS` (a first push of a long history, a force-push) the
+ * derived set is dropped and only the explicit `KERF_TICKET_TIMING_TICKETS`
+ * list is recorded, so the hook never writes the backfill shape the summary
+ * would have to exclude.
+ */
+export function pushTimingTickets(derived, explicit) {
+  const outgoing = [...new Set(derived)];
+  const capped = outgoing.length > MAX_COHERENT_TICKETS;
+  return {
+    tickets: [...new Set([...(capped ? [] : outgoing), ...explicit])].sort(),
+    capped,
+    outgoing: outgoing.length,
+  };
+}
+
+/**
  * Every completed interval in a ticket's records, direct or start/finish
  * paired, plus the sessions still open and finishes with no start.
  */

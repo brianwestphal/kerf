@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 
 import {
   formatTimingRecord,
+  MAX_COHERENT_TICKETS,
   parseTimingRecords,
+  pushTimingTickets,
   summarizeTicketTiming,
   ticketSlugsFromSubjects,
 } from '../../scripts/lib/ticket-timing.mjs';
@@ -107,5 +109,34 @@ describe('ticket timing records', () => {
         'unrelated',
       ]),
     ).toEqual(['KF-ABC123', 'KF-WB8CJB']);
+  });
+
+  it('fans a push out only while its outgoing tickets form a coherent batch', () => {
+    const batch = Array.from(
+      { length: MAX_COHERENT_TICKETS },
+      (_, index) => `KF-B${index}`,
+    );
+    expect(pushTimingTickets(batch, ['KF-EXTRA'])).toEqual({
+      tickets: [...batch, 'KF-EXTRA'].sort(),
+      capped: false,
+      outgoing: MAX_COHERENT_TICKETS,
+    });
+    expect(pushTimingTickets(['KF-A', 'KF-A'], [])).toEqual({
+      tickets: ['KF-A'],
+      capped: false,
+      outgoing: 1,
+    });
+
+    const history = [...batch, 'KF-OVER'];
+    expect(pushTimingTickets(history, [])).toEqual({
+      tickets: [],
+      capped: true,
+      outgoing: MAX_COHERENT_TICKETS + 1,
+    });
+    expect(pushTimingTickets(history, ['KF-B0', 'KF-RELEASE'])).toEqual({
+      tickets: ['KF-B0', 'KF-RELEASE'],
+      capped: true,
+      outgoing: MAX_COHERENT_TICKETS + 1,
+    });
   });
 });
