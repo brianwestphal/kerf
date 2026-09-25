@@ -336,29 +336,35 @@
     box-shadow: none;
   }
 
-  /* Unframed disclosures align directly with their surrounding content.
-     Framed disclosure headers use the roomier container tier so the trigger
-     reads as the surface heading while the body keeps its compact inset. */
-  wa-details[appearance="plain"]::part(header),
-  wa-accordion[appearance="plain"] > wa-accordion-item::part(button),
-  wa-accordion[appearance="plain"] > wa-accordion-item::part(content) {
-    padding-inline: 0;
-  }
-
-  wa-details:is([appearance="outlined"], [appearance="sunken"])::part(header),
-  wa-accordion:is([appearance="outlined"], [appearance="sunken"])
-    > wa-accordion-item::part(button) {
-    padding-inline: var(--kui-wa-container-inset);
+  wa-details[appearance="plain"]::part(header) {
+    padding-inline: var(--kui-wa-surface-inset);
   }
 
   wa-details[appearance="plain"]::part(content) {
     padding-inline: 0;
   }
 
-  wa-details:is([appearance="outlined"], [appearance="sunken"])::part(content),
+  wa-details:is([appearance="outlined"], [appearance="sunken"])::part(header) {
+    padding-inline: var(--kui-wa-container-inset);
+  }
+
+  wa-details:is([appearance="outlined"], [appearance="sunken"])::part(content) {
+    padding-inline: var(--kui-wa-surface-inset);
+  }
+
+  wa-accordion[appearance="plain"] > wa-accordion-item::part(button),
+  wa-accordion[appearance="plain"] > wa-accordion-item::part(content) {
+    padding-inline: var(--kui-wa-surface-inset);
+  }
+
+  wa-accordion:is([appearance="outlined"], [appearance="sunken"])
+    > wa-accordion-item::part(button) {
+    padding-inline: var(--kui-wa-container-inset);
+  }
+
   wa-accordion:is([appearance="outlined"], [appearance="sunken"])
     > wa-accordion-item::part(content) {
-    padding-inline: var(--kui-wa-surface-inset);
+    padding-inline: var(--kui-wa-container-inset);
   }
 
   wa-card,
