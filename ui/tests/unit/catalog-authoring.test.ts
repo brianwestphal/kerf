@@ -54,16 +54,32 @@ describe('Catalog demo authoring guidance', () => {
       apiSignatures: string;
       imports: { layout: string; wiring: string };
       helpers: string[];
+      taxonomy: {
+        kinds: string[];
+        organization: Record<string, string | string[]>;
+        compositionTag: string;
+      };
       metadata: Record<string, string>;
     };
 
     expect(artifact).toMatchObject({
-      schemaVersion: 1,
+      schemaVersion: 2,
       package: '@kerfjs/ui',
       scope: 'catalog-demo-authoring',
       imports: {
         layout: '@kerfjs/ui/catalog',
         wiring: '@kerfjs/ui/wire-catalog',
+      },
+      taxonomy: {
+        kinds: ['component', 'composition', 'recipe'],
+        organization: {
+          grouping: 'functional-category',
+          categoryOrder: 'importance-descending',
+          withinCategoryKindOrder: ['component', 'composition'],
+          withinKindOrder: ['importance-descending', 'name-ascending'],
+          recipes: 'after-all-functional-groups',
+        },
+        compositionTag: 'Composition',
       },
       metadata: {
         slot: 'rootAttributes',
@@ -115,8 +131,13 @@ describe('Catalog demo authoring guidance', () => {
   it('pins mode, nesting, selection, overlay legend, exclusions, and ownership', async () => {
     const guide = await readUi('docs/catalog.md');
     for (const required of [
-      'Focused component',
-      'Composition or recipe',
+      '**Component**',
+      '**Composition**',
+      '**Recipe**',
+      'These three kinds are exhaustive.',
+      'all component demos before all composition',
+      'alphabetically by display name to break ties',
+      'Show a `Composition` tag',
       '`CatalogExampleStack` is the group',
       '`CatalogExample` is one row',
       'immediate child of `CatalogExample`',
@@ -144,6 +165,7 @@ describe('Catalog demo authoring guidance', () => {
     expect(fixture).toContain('CatalogExampleStack({');
     expect(fixture).toContain('CatalogExample({');
     expect(fixture).toContain("rootAttributes: { 'data-demo':");
+    expect(fixture).toContain("tags: ['Composition']");
     expect(fixture).toContain(
       "rootAttributes: { 'data-catalog-geometry-overlay-skip': '' }",
     );

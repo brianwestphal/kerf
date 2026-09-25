@@ -59,6 +59,8 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 4. **When authoring a component gallery**, load
    [catalog-authoring.json](./ai/catalog-authoring.json), then follow its
    authoritative [Catalog demo authoring contract](./docs/catalog.md#catalog-demo-authoring-contract).
+   Use its component/composition/recipe taxonomy and functional-group,
+   importance, alphabetical-tie, and recipes-last ordering policy.
 5. **Apply the rules below and in** [skill.md](./ai/skill.md).
 6. **Before calling an integration complete**, run
    [`kerf-ui-doctor`](./docs/ui-doctor.md). Its portable JSON report merges

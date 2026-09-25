@@ -348,6 +348,12 @@ the detail view derives one grouped `Uses` / `Used by` selector from declared
 component dependencies and hides it for unrelated components. The catalog also
 lists all 70 free Web Awesome 3.12 components in a collapsible ecosystem section,
 with an addressable themed specimen and cross-system relationships for each.
+Catalog authors use exactly three demo kinds: component, composition, and recipe.
+Functional groups are ordered by product importance; components precede
+`Composition`-tagged compositions within each group; importance ties are
+alphabetical; and recipes follow all component/composition groups. The
+authoritative reusable contract is
+[`ui/docs/catalog.md`](../../ui/docs/catalog.md#catalog-demo-authoring-contract).
 
 ## Public API — everything is in one import
 

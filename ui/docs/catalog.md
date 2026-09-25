@@ -54,10 +54,25 @@ chosen component.
 
 Classify every entry before rendering it:
 
-| Entry kind            | Preview purpose                                                         | Geometry overlay                                                                    |
-| --------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| Focused component     | Show one public component, its meaningful variants, and adverse states. | `true`; the overlay inspects each selected specimen.                                |
-| Composition or recipe | Show several components cooperating as one product surface.             | `false`; child geometry remains unmarked so the composition can be read as a whole. |
+| Entry kind      | Preview purpose                                                                                         | Geometry overlay                                                                    |
+| --------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| **Component**   | Show one public component, its meaningful variants, and adverse states.                                 | `true`; the overlay inspects each selected specimen.                                |
+| **Composition** | Show components commonly used together in one focused container or surface.                             | `false`; child geometry remains unmarked so the composition can be read as a whole. |
+| **Recipe**      | Teach the recommended production approach to a specific task, including ownership and application glue. | `false`; child geometry remains unmarked so the complete approach can be read.      |
+
+These three kinds are exhaustive. Theme/foundation showcases use a functional
+category, third-party specimens use source metadata, and state galleries retain
+the kind of the thing they demonstrate; none needs another demo kind.
+
+Organize the catalog by functional group, with groups in descending product
+importance. Within every group, list all component demos before all composition
+demos. Order each kind by descending importance where a meaningful distinction
+exists, then alphabetically by display name to break ties. Put recipes after all
+component/composition groups, ordered by the same importance-then-alphabetical
+rule. Treat source order as the authored importance order when no explicit rank
+field exists. Show a `Composition` tag rather than repeating the word in a
+composition's display name; the generic `Catalog` accepts that through the
+entry's `tags` array.
 
 Keep `geometryOverlay` present and compute it from the active entry. Do not make
 it a permanent catalog-wide `true`, and do not give individual specimens their
@@ -262,7 +277,10 @@ const entries: DemoEntry[] = [
 const sections: CatalogSection[] = [
   {
     category: "Examples",
-    entries: entries.map(({ kind: _kind, ...entry }) => entry),
+    entries: entries.map(({ kind, ...entry }) => ({
+      ...entry,
+      tags: kind === "composition" ? ["Composition"] : undefined,
+    })),
   },
 ];
 

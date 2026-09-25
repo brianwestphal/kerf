@@ -258,9 +258,10 @@ without guessing from a screenshot or private CSS.
 Catalog demo authoring is deliberately separate from the entry inventory. Load
 [`catalog-authoring.json`](./ai/catalog-authoring.json) to discover the
 authoritative [Catalog demo authoring contract](./docs/catalog.md#catalog-demo-authoring-contract),
-the exact API-signature context, public imports/helpers, and sanctioned metadata
-slot. Keeping this as a companion artifact prevents per-entry selection facts
-from duplicating presentation rules.
+the exact API-signature context, public imports/helpers, sanctioned metadata
+slot, three-kind taxonomy, and functional-group/importance ordering policy.
+Keeping this as a companion artifact prevents per-entry selection facts from
+duplicating presentation rules.
 
 Tools that evaluate composition may additionally load
 [`component-catalog-v2.json`](./ai/component-catalog-v2.json). It is a

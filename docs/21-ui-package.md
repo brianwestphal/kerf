@@ -259,7 +259,10 @@ the reason in `ui/demo-bundle-budget.json`.
 package paths, groups routes by category in a master/detail shell, exposes each
 public visual component through an addressable `?component=` route, retains
 focused composition scenarios, and gives the selected entry one centered
-inspection stage. Catalog metadata declares direct component dependencies; the
+inspection stage. Functional groups follow product-importance order, list
+components before `Composition`-tagged composition demos, and use alphabetical
+display-name order to break importance ties; the final Recipes group follows
+the same within-group rule. Catalog metadata declares direct component dependencies; the
 detail view derives one grouped `Uses` / `Used by` selector from that graph and
 omits the relationship footer when neither group exists. Each detail also shows
 the repository-relative first-party demo source and existing guidance path as
@@ -431,7 +434,7 @@ implementation classes.
 
 ## 21.6 Production composition recipes
 
-Seven task-oriented recipes bridge primitives and product adapters: a resizable
+Ten task-oriented recipes bridge primitives and product adapters: a resizable
 application shell, navigation sidebar, workspace header, list-detail dialog,
 composer form, list-state lifecycle, and compact mixed-control toolbar. They
 are lazy catalog modules rather than new runtime exports. Each uses public

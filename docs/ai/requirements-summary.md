@@ -19,9 +19,10 @@ Catalog demo authoring has one shipped authority at
 `ui/docs/catalog.md#catalog-demo-authoring-contract`: focused component versus
 composition modes, public group/row nesting, deterministic specimen selection,
 conditional geometry inspection, skip behavior, and metadata ownership. The
-versioned `ui/ai/catalog-authoring.json` companion makes that contract and its
-exact API context discoverable without adding authoring rules to the per-entry
-component inventory.
+versioned `ui/ai/catalog-authoring.json` companion makes that contract, its
+component/composition/recipe taxonomy, its functional-group and importance-first
+ordering (alphabetical ties, recipes last), and its exact API context discoverable
+without adding authoring rules to the per-entry component inventory.
 The package-qualified component catalog v2 and versioned application UI profile
 make composition and project policy machine-readable. The profile layers
 package defaults, workspace policy, and parent-to-child directory overrides;

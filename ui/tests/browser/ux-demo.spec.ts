@@ -3821,6 +3821,51 @@ test('observer specimens expose visible, user-driven events', async ({
   }
 });
 
+test('labels composition entries without repeating the kind in their names', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 820 });
+  await page.goto('/?component=application-tabs');
+
+  await expect(
+    page.locator('.kui-catalog__tag', { hasText: 'Composition' }),
+  ).toHaveCount(5);
+  await expect(
+    page.locator('[data-item-id="application-tabs"] .kui-catalog__tag'),
+  ).toHaveText('Composition');
+  await expect(
+    page.locator('[data-item-id="application-tabs"] .kui-list-item__label'),
+  ).toHaveText('Application tabs');
+  await expect(
+    page.locator('[data-item-id="headers"] .kui-list-item__label'),
+  ).toHaveText('Headers');
+  await expect(
+    page.locator('[data-item-id="feedback"] .kui-list-item__label'),
+  ).toHaveText('Feedback');
+
+  const sidebar = page.locator('.kui-catalog__sidebar');
+  if (browserName === 'chromium') {
+    await sidebar.screenshot({
+      path: 'test-results/composition-tags-wide.png',
+    });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            document.documentElement.scrollWidth -
+            document.documentElement.clientWidth,
+        ),
+      )
+      .toBeLessThanOrEqual(1);
+    await page.screenshot({
+      path: 'test-results/composition-tags-narrow.png',
+      fullPage: true,
+    });
+  }
+});
+
 test('labels discouraged Web Awesome entries in the catalog sidebar', async ({
   page,
   browserName,

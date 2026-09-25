@@ -226,7 +226,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "headers",
-    "name": "Header composition",
+    "name": "Headers",
     "category": "Structure",
     "kind": "composition",
     "source": "kerf",
@@ -383,7 +383,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "application-tabs",
-    "name": "Application tabs composition",
+    "name": "Application tabs",
     "category": "Navigation",
     "kind": "composition",
     "source": "kerf",
@@ -488,7 +488,7 @@ export const generatedKerfCatalog = [
   },
   {
     "id": "feedback",
-    "name": "Feedback composition",
+    "name": "Feedback",
     "category": "Feedback",
     "kind": "composition",
     "source": "kerf",

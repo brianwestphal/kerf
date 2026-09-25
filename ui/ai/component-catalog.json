@@ -1457,7 +1457,7 @@
     },
     {
       "id": "headers",
-      "name": "Header composition",
+      "name": "Headers",
       "category": "Structure",
       "kind": "composition",
       "source": "kerf",
@@ -2443,7 +2443,7 @@
     },
     {
       "id": "application-tabs",
-      "name": "Application tabs composition",
+      "name": "Application tabs",
       "category": "Navigation",
       "kind": "composition",
       "source": "kerf",
@@ -3146,7 +3146,7 @@
     },
     {
       "id": "feedback",
-      "name": "Feedback composition",
+      "name": "Feedback",
       "category": "Feedback",
       "kind": "composition",
       "source": "kerf",

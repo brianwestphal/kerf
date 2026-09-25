@@ -15,7 +15,7 @@ const sections: CatalogSection[] = [
     category: 'Fixture',
     entries: [
       { id: 'status', name: 'Status banner' },
-      { id: 'workspace', name: 'Workspace composition' },
+      { id: 'workspace', name: 'Workspace', tags: ['Composition'] },
     ],
   },
 ];

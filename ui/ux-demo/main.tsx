@@ -274,14 +274,20 @@ function toKuiSections(
 ): KuiCatalogSection[] {
   return sections.map((section) => ({
     category: section.category,
-    entries: section.entries.map((entry) => ({
-      id: entry.id,
-      name: entry.name,
-      description: entry.description,
-      tags: isDiscouragedWebAwesome(entry) ? ['Discouraged'] : undefined,
-      resources: toCatalogResources(entry),
-      related: toCatalogRelated(entry),
-    })),
+    entries: section.entries.map((entry) => {
+      const tags = [
+        ...(entry.kind === 'composition' ? ['Composition'] : []),
+        ...(isDiscouragedWebAwesome(entry) ? ['Discouraged'] : []),
+      ];
+      return {
+        id: entry.id,
+        name: entry.name,
+        description: entry.description,
+        tags: tags.length > 0 ? tags : undefined,
+        resources: toCatalogResources(entry),
+        related: toCatalogRelated(entry),
+      };
+    }),
   }));
 }
 const kuiCatalogSections = toKuiSections(catalogSections);
@@ -309,7 +315,9 @@ mount(app, () => {
       ? 'Web Awesome component · Kerf theme'
       : selected.kind === 'component'
         ? 'Kerf first-class component · production CSS'
-        : 'Kerf composition · production CSS';
+        : selected.kind === 'composition'
+          ? 'Kerf composition · production CSS'
+          : 'Kerf recipe · production CSS';
   return (
     <Catalog
       className="demo-catalog"

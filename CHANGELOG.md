@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Formalized UX catalog demos as components, compositions, or recipes; catalogs
+  now group and order those kinds consistently and label compositions with a
+  visible tag instead of title suffixes.
 - Removed stale Web Awesome guidance that still advertised the deleted
   aggregate theme route; focused component routes remain the supported catalog
   surface.

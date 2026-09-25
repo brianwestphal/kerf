@@ -11,11 +11,12 @@
     "apiSignatures",
     "imports",
     "helpers",
+    "taxonomy",
     "metadata"
   ],
   "properties": {
     "$schema": { "type": "string" },
-    "schemaVersion": { "const": 1 },
+    "schemaVersion": { "const": 2 },
     "package": { "const": "@kerfjs/ui" },
     "scope": { "const": "catalog-demo-authoring" },
     "authoritativeGuide": { "type": "string", "minLength": 1 },
@@ -43,6 +44,53 @@
       },
       "minItems": 6,
       "uniqueItems": true
+    },
+    "taxonomy": {
+      "type": "object",
+      "required": ["kinds", "organization", "compositionTag"],
+      "properties": {
+        "kinds": {
+          "type": "array",
+          "items": { "enum": ["component", "composition", "recipe"] },
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true
+        },
+        "organization": {
+          "type": "object",
+          "required": [
+            "grouping",
+            "categoryOrder",
+            "withinCategoryKindOrder",
+            "withinKindOrder",
+            "recipes"
+          ],
+          "properties": {
+            "grouping": { "const": "functional-category" },
+            "categoryOrder": { "const": "importance-descending" },
+            "withinCategoryKindOrder": {
+              "type": "array",
+              "items": { "enum": ["component", "composition"] },
+              "minItems": 2,
+              "maxItems": 2,
+              "uniqueItems": true
+            },
+            "withinKindOrder": {
+              "type": "array",
+              "items": {
+                "enum": ["importance-descending", "name-ascending"]
+              },
+              "minItems": 2,
+              "maxItems": 2,
+              "uniqueItems": true
+            },
+            "recipes": { "const": "after-all-functional-groups" }
+          },
+          "additionalProperties": false
+        },
+        "compositionTag": { "const": "Composition" }
+      },
+      "additionalProperties": false
     },
     "metadata": {
       "type": "object",

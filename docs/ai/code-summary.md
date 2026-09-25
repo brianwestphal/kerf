@@ -692,8 +692,10 @@ accept finite `UiSpaceName` shorthands or branded `CssLength` values, fixed gaps
 do not shrink, and `flex` consumes remaining space along a flex main axis.
 `ui/docs/catalog.md#catalog-demo-authoring-contract` is the single authoring
 authority; the separately versioned `ui/ai/catalog-authoring.json` discovery
-artifact points AI tools to it because `component-catalog.json` remains an
-entry-selection and geometry-ownership inventory.
+artifact points AI tools to it and exposes the component/composition/recipe
+taxonomy plus functional-group, importance, alphabetical-tie, and recipes-last
+ordering policy because `component-catalog.json` remains an entry-selection and
+geometry-ownership inventory.
 `@kerfjs/ui/catalog-resources` exports the typed `catalogResources()` builder,
 which standardizes resource kinds, visible labels, and footer order across the
 Kerf catalog and downstream catalogs without importing the catalog shell.

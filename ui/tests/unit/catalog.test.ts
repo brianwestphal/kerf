@@ -415,6 +415,20 @@ describe('UX catalog metadata', () => {
     expect(
       webAwesomeCatalogSections.every((section) => section.entries.length > 0),
     ).toBe(true);
+    expect(catalogSections.at(-1)?.category).toBe('Recipes');
+    for (const section of catalogSections) {
+      const kinds = section.entries.map((entry) => entry.kind);
+      if (section.category === 'Recipes') {
+        expect(new Set(kinds)).toEqual(new Set(['recipe']));
+        continue;
+      }
+      expect(kinds).toEqual(
+        [...kinds].sort(
+          (left, right) =>
+            (left === 'component' ? 0 : 1) - (right === 'component' ? 0 : 1),
+        ),
+      );
+    }
   });
 
   it('lists every public visual component plus composition demos', () => {
@@ -462,14 +476,19 @@ describe('UX catalog metadata', () => {
     expect(
       kerfCatalog
         .filter((entry) => entry.kind === 'composition')
-        .map((entry) => entry.id),
+        .map((entry) => [entry.id, entry.name]),
     ).toEqual([
-      'foundation',
-      'layout',
-      'headers',
-      'application-tabs',
-      'feedback',
+      ['foundation', 'Foundation tokens'],
+      ['layout', 'Application layout'],
+      ['headers', 'Headers'],
+      ['application-tabs', 'Application tabs'],
+      ['feedback', 'Feedback'],
     ]);
+    expect(
+      kerfCatalog
+        .filter((entry) => entry.kind === 'composition')
+        .every((entry) => !/composition/i.test(entry.name)),
+    ).toBe(true);
     expect(webAwesomeCatalog).toHaveLength(70);
     expect(
       webAwesomeCatalog.every(

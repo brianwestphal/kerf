@@ -66,9 +66,10 @@ export const catalog = [
 ] as const satisfies readonly CatalogEntry[];
 export type CatalogId = (typeof catalog)[number]['id'];
 
-// Within each sidebar section, list the single-component demos first and the
-// composition demos last — components are the building blocks, compositions show
-// how they combine (KF-0M719X). Stable so each kind keeps its authored order.
+// Functional sections and their entries are authored in product-importance order.
+// Within each section, list the single-component demos first and composition
+// demos last; the stable sort preserves that authored importance order (with
+// alphabetical source order as the tie-breaker). Recipes occupy the final section.
 const sectionKindRank = (entry: CatalogEntry): number =>
   entry.kind === 'component' ? 0 : 1;
 export const catalogSections = catalogCategories.map((category) => ({
