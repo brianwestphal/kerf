@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed `@kerfjs/ui/webawesome.css` `wa-dialog` titles given as a plain-string
+  `label` sitting at the bare surface inset; they now inset by one bordered
+  item step (`--kui-layout-item-padding` + 1px) so the header label lines up
+  with body text and icons. Slotted label elements are unaffected.
+- Fixed icon + label `wa-button`s inside `ToolbarControlGroup` stacking the
+  icon above the label; their label part now lays out as a single nowrap row,
+  matching native mixed buttons.
 - `prompt()` / `form()` now reject with a `TypeError` when a validator returns
   a promise (validators are synchronous), instead of resolving the value and
   leaving an unhandled rejection. `prompt()` also re-reads its input on every

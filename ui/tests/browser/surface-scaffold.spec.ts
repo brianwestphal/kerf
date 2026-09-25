@@ -44,6 +44,18 @@ test('applies typed dialog and popup surface geometry', async ({
     paddingInline: ['8px', '8px'],
     borderInline: ['1px', '1px'],
   });
+  // A plain-string label is inset to the body's text edge.
+  const labelAlignment = await dialog.evaluate((element) => {
+    const textLeft = (node: Node) => {
+      const range = document.createRange();
+      range.selectNodeContents(node);
+      return range.getBoundingClientRect().left;
+    };
+    const title = element.shadowRoot!.querySelector('[part~="title"]')!;
+    const body = element.querySelector('[data-component="list-inset-text"]')!;
+    return { title: textLeft(title), body: textLeft(body) };
+  });
+  expect(Math.abs(labelAlignment.title - labelAlignment.body)).toBeLessThan(1);
   const wideClip = await dialog.evaluate((element) => {
     const rect = element
       .shadowRoot!.querySelector('[part~="dialog"]')!

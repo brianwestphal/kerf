@@ -403,6 +403,17 @@
     padding: var(--kui-wa-surface-inset);
   }
 
+  /* A plain-string `label` renders straight into the title part, so it would
+     sit at the bare surface inset while body content (list-inset text, Text)
+     starts one bordered item further in. Inset the default title by that item
+     step so the header label lines up with the body's text and icons. A
+     slotted label element owns its own geometry and is left alone. */
+  wa-dialog:not(:has(> [slot="label"]))::part(title) {
+    padding-inline: calc(
+      var(--kui-layout-item-padding, remify(8px)) + remify(1px)
+    );
+  }
+
   wa-dialog::part(body) {
     padding: var(--kui-wa-surface-inset);
   }
