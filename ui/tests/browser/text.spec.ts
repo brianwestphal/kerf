@@ -43,7 +43,7 @@ test('Text renders semantic variants with standard padded geometry', async ({
   const roles = page.locator(
     '[data-demo-section="presentation-roles"] .kui-text',
   );
-  await expect(roles).toHaveCount(6);
+  await expect(roles).toHaveCount(7);
   await expect(roles.nth(0)).toHaveAttribute('data-tone', 'quiet');
   await expect(roles.nth(1)).toHaveAttribute('data-tone', 'danger');
   await expect(roles.nth(2)).toHaveAttribute('data-size', 'compact');
@@ -51,12 +51,16 @@ test('Text renders semantic variants with standard padded geometry', async ({
   await expect(roles.nth(4)).toHaveAttribute('data-tone', 'quiet');
   await expect(roles.nth(4)).toHaveAttribute('data-size', 'compact');
   await expect(roles.nth(4)).toHaveAttribute('data-font', 'monospace');
-  await expect(roles.nth(5)).toHaveJSProperty('tagName', 'SPAN');
-  await expect(roles.nth(5)).toHaveAttribute('data-tone', 'quiet');
-  await expect(roles.nth(5)).toHaveAttribute('data-size', 'compact');
+  // A block Text wraps the bold label so it takes the component typography;
+  // the inline-span count sits inside it.
+  await expect(roles.nth(5).locator(':scope > strong')).toHaveCount(1);
+  await expect(roles.nth(5).locator('.kui-text')).toHaveCount(1);
+  await expect(roles.nth(6)).toHaveJSProperty('tagName', 'SPAN');
+  await expect(roles.nth(6)).toHaveAttribute('data-tone', 'quiet');
+  await expect(roles.nth(6)).toHaveAttribute('data-size', 'compact');
   await expect
     .poll(() =>
-      roles.nth(5).evaluate((element) => {
+      roles.nth(6).evaluate((element) => {
         const style = globalThis.getComputedStyle(element);
         return {
           display: style.display,
