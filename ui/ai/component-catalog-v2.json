@@ -1110,6 +1110,11 @@
       },
       "state": [
         { "id": "actions", "owner": "application", "required": false },
+        {
+          "id": "link destination and copy",
+          "owner": "application",
+          "required": false
+        },
         { "id": "pressed state", "owner": "application", "required": false },
         { "id": "expanded state", "owner": "application", "required": false },
         { "id": "avatar image URL", "owner": "application", "required": false }
@@ -1127,8 +1132,11 @@
       },
       "cssValueProps": [],
       "boundaries": {
-        "rootClass": "kui-toolbar-control-group",
-        "publicClasses": ["kui-toolbar-control-group"],
+        "rootClass": "kui-toolbar-action-link",
+        "publicClasses": [
+          "kui-toolbar-action-link",
+          "kui-toolbar-control-group"
+        ],
         "publicTokens": [
           "--kui-color-brand-on-quiet",
           "--kui-color-pop-border-normal",

@@ -94,10 +94,11 @@ describe('Catalog', () => {
     // Stage renders the app-provided content
     expect(html).toContain('class="preview">Select preview');
     // Footer resource link + related popup menu (a wa-dropdown, grouped by `group`)
-    expect(html).toContain('kui-catalog__resource');
+    expect(html).toContain('data-component="toolbar-action-link"');
+    expect(html).toContain('data-overflow="scroll"');
     expect(html).toContain('href="https://example.com/select.ts"');
     expect(html).toContain('data-catalog-related');
-    expect(html).toContain('kui-catalog__related-menu');
+    expect(html).toContain('data-menu-inset="compact"');
     expect(html).toContain('<span>Components</span>');
     expect(html).toContain('kui-catalog__related-heading">Used by');
     expect(html).toContain('kui-catalog__related-heading">Uses');

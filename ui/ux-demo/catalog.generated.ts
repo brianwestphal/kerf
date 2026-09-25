@@ -173,7 +173,7 @@ export const generatedKerfCatalog = [
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
-    "description": "Typed toolbar groups for compact, mixed, selected, dropdown, and avatar controls.",
+    "description": "Provide complete toolbar action geometry through configuration, including semantic anchors, overflow containment, and dropdown menu insets without application CSS.",
     "uses": [
       "lucide-icon",
       "segmented-control"

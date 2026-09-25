@@ -252,7 +252,7 @@ maintain a central style list. Configure JSX with `"jsxImportSource": "kerfjs"`.
 
 ## Public exports
 
-`Badge`, `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `FloatingToolbar`, `ToolbarText`, `Text`,
+`Badge`, `LucideIcon`, `DisclosureArrow`, `Toolbar`, `ToolbarControlGroup`, `ToolbarActionLink`, `FloatingToolbar`, `ToolbarText`, `Text`,
 `ListItem`, `ListActionRow`, `ListHeader`, `ListInsetControl`,
 `ListInsetText`, `SegmentedControl`,
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,

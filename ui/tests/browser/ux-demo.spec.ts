@@ -164,7 +164,7 @@ test('omits the removed command-palette recipe and safely falls back from its st
     });
 
   await page.goto('/?component=recipe-command-palette');
-  await expect(page.locator('[data-demo="lucide-icon"]')).toBeVisible();
+  await expect(page.locator('[data-demo="badge"]')).toBeVisible();
   await expect(
     page.locator('[data-recipe="recipe-command-palette"]'),
   ).toHaveCount(0);
@@ -203,7 +203,7 @@ test('omits the redundant Web Awesome theme demo and safely falls back from its 
     });
 
   await page.goto('/?component=webawesome-theme');
-  await expect(page.locator('[data-demo="lucide-icon"]')).toBeVisible();
+  await expect(page.locator('[data-demo="badge"]')).toBeVisible();
   await expect(page.locator('[data-demo="webawesome-theme"]')).toHaveCount(0);
 
   await verifyRemoved(390, 844);
@@ -1077,8 +1077,12 @@ test('links catalog details to their first-party source and existing guidance', 
     const resources = page.getByRole('group', {
       name: `${isRecipe ? 'List-detail dialog' : 'Toolbar'} resources`,
     });
-    const source = resources.locator('.kui-catalog__resource').first();
-    const guidance = resources.locator('.kui-catalog__resource').last();
+    const source = resources
+      .locator('[data-component="toolbar-action-link"]')
+      .first();
+    const guidance = resources
+      .locator('[data-component="toolbar-action-link"]')
+      .last();
     await expect(resources).toBeVisible();
     await source.focus();
     await expect(source).toBeFocused();
@@ -1087,7 +1091,9 @@ test('links catalog details to their first-party source and existing guidance', 
         document.documentElement.scrollWidth -
         document.documentElement.clientWidth,
       resourceOverflowX: window.getComputedStyle(
-        document.querySelector<HTMLElement>('.kui-catalog__resource-group')!,
+        document.querySelector<HTMLElement>(
+          '.kui-catalog__footer .kui-toolbar-control-group[data-overflow="scroll"]',
+        )!,
       ).overflowX,
       footerSections: [
         ...document.querySelectorAll<HTMLElement>(
@@ -1101,7 +1107,9 @@ test('links catalog details to their first-party source and existing guidance', 
         width: section.getBoundingClientRect().width,
       })),
       links: [
-        ...document.querySelectorAll<HTMLElement>('.kui-catalog__resource'),
+        ...document.querySelectorAll<HTMLElement>(
+          '.kui-catalog__footer [data-component="toolbar-action-link"]',
+        ),
       ].map((link) => {
         const linkRect = link.getBoundingClientRect();
         const hiddenLabelRect = link
@@ -3949,7 +3957,7 @@ test('catalog routes every production component family and supports its stateful
   ]);
   await ecosystemToggle.click();
   await expect(page.locator('[data-catalog-secondary]')).toHaveCount(0);
-  await expect(page.locator('[data-demo="lucide-icon"]')).toBeVisible();
+  await expect(page.locator('[data-demo="badge"]')).toBeVisible();
   for (const entry of catalog) {
     await page.goto(`/?component=${entry.id}`);
     const stableRouteMarker =
@@ -3970,6 +3978,10 @@ test('catalog routes every production component family and supports its stateful
     page.locator('.kui-catalog__sidebar [data-item-id="list"]'),
   ).toHaveAttribute('aria-current', 'page');
   const menuRelationships = page.locator('[data-catalog-related]');
+  await expect(menuRelationships.locator('..')).toHaveAttribute(
+    'data-menu-inset',
+    'compact',
+  );
   const relatedTrigger = menuRelationships.locator('wa-button[slot="trigger"]');
   await expect(relatedTrigger).toHaveCount(1);
   await expect(relatedTrigger).toContainText('Components');
@@ -5617,6 +5629,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Shape',
     'Segmented choices',
     'Popup menu',
+    'Action link',
     'Button group',
     'Single button',
     'Borderless group',
@@ -5630,7 +5643,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Collapsible search',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  await expect(groups).toHaveCount(14);
+  await expect(groups).toHaveCount(15);
   const standardGroups = demo.locator(
     '[data-component="toolbar-control-group"]:not([data-size="compact"])',
   );
@@ -5778,7 +5791,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       .screenshot({ path: 'test-results/toolbar-control-group-avatar.png' });
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(groups).toHaveCount(14);
+  await expect(groups).toHaveCount(15);
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/toolbar-control-groups-narrow.png',

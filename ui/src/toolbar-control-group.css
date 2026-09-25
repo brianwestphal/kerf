@@ -65,8 +65,14 @@
 .kui-toolbar-control-group[data-density="tight"] {
   --kui-layout-item-padding: remify(5px);
 }
-.kui-toolbar-control-group[data-content="text"] > :is(button, wa-button),
-.kui-toolbar-control-group[data-content="mixed"] > :is(button, wa-button) {
+.kui-toolbar-control-group[data-overflow="scroll"] {
+  max-width: 100%;
+  overflow-x: auto;
+}
+.kui-toolbar-control-group[data-content="text"]
+  > :is(button, wa-button, .kui-toolbar-action-link),
+.kui-toolbar-control-group[data-content="mixed"]
+  > :is(button, wa-button, .kui-toolbar-action-link) {
   min-width: max-content;
 }
 .kui-toolbar-control-group[data-content="mixed"] > button {
@@ -123,7 +129,8 @@
   background: transparent;
 }
 
-.kui-toolbar-control-group > :is(button, wa-button, wa-dropdown) {
+.kui-toolbar-control-group
+  > :is(button, wa-button, wa-dropdown, .kui-toolbar-action-link) {
   flex: 0 0 auto;
 }
 .kui-toolbar-control-group > wa-dropdown {
@@ -154,8 +161,48 @@
   background: var(--kui-toolbar-control-hover-background);
 }
 
+.kui-toolbar-control-group > .kui-toolbar-action-link {
+  position: relative;
+  display: inline-flex;
+  min-width: remify(40px);
+  height: remify(40px);
+  padding-inline: var(--kui-layout-item-padding, remify(8px));
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(
+    --kui-toolbar-item-radius,
+    var(--kui-layout-pill-radius, calc(1px + remify(21px)))
+  );
+  color: inherit;
+  background: transparent;
+  align-items: center;
+  justify-content: center;
+  gap: var(--kui-space-2xs);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.kui-toolbar-control-group > .kui-toolbar-action-link:hover {
+  border-color: var(--kui-toolbar-control-border);
+  background: var(--kui-toolbar-control-hover-background);
+}
+
+.kui-toolbar-action-link code {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .kui-toolbar-control-group > button svg,
-.kui-toolbar-control-group wa-button > svg {
+.kui-toolbar-control-group wa-button > svg,
+.kui-toolbar-control-group > .kui-toolbar-action-link svg {
   display: block;
   width: remify(16px);
   height: remify(16px);
@@ -169,6 +216,7 @@
   height: remify(40px);
 }
 .kui-toolbar-control-group[data-size="compact"] > button,
+.kui-toolbar-control-group[data-size="compact"] > .kui-toolbar-action-link,
 .kui-toolbar-control-group[data-size="compact"] > wa-button,
 .kui-toolbar-control-group[data-size="compact"] > wa-dropdown,
 .kui-toolbar-control-group[data-size="compact"] > wa-dropdown > wa-button,
@@ -184,6 +232,17 @@
   min-width: remify(32px);
   height: remify(32px);
   min-height: remify(32px);
+}
+
+.kui-toolbar-control-group[data-menu-inset="standard"] wa-dropdown::part(menu) {
+  padding: var(--kui-wa-surface-inset, remify(8px));
+}
+.kui-toolbar-control-group[data-menu-inset="compact"] wa-dropdown::part(menu) {
+  padding: remify(4px);
+}
+.kui-toolbar-control-group[data-menu-inset="list-zero"]
+  wa-dropdown::part(menu) {
+  padding: 0;
 }
 
 /* Compact mixed controls keep the default horizontal breathing room. Their
@@ -260,12 +319,13 @@
 }
 
 .kui-toolbar-control-group[data-single="true"]:has(
-    > :is(button, wa-button, wa-dropdown)
+    > :is(button, wa-button, wa-dropdown, .kui-toolbar-action-link)
   ):hover {
   background-color: var(--kui-toolbar-control-hover-background);
 }
 
-.kui-toolbar-control-group[data-single="true"] > :is(button, wa-button):hover,
+.kui-toolbar-control-group[data-single="true"]
+  > :is(button, wa-button, .kui-toolbar-action-link):hover,
 .kui-toolbar-control-group[data-single="true"] wa-button:hover::part(base) {
   border-color: transparent;
   background: transparent;
@@ -276,15 +336,15 @@
    inner layer inset from the border (KF-J9P1ZD — a heading toolbar's lone Close/
    Done action). */
 .kui-toolbar-control-group:not([data-single="true"]):has(
-    > :is(button, wa-button):only-child
+    > :is(button, wa-button, .kui-toolbar-action-link):only-child
   ):hover {
   background-color: var(--kui-toolbar-control-hover-background);
 }
 
 .kui-toolbar-control-group:not([data-single="true"]):has(
-    > :is(button, wa-button):only-child
+    > :is(button, wa-button, .kui-toolbar-action-link):only-child
   )
-  > :is(button, wa-button):hover,
+  > :is(button, wa-button, .kui-toolbar-action-link):hover,
 .kui-toolbar-control-group:not([data-single="true"]):has(
     > :is(button, wa-button):only-child
   )
@@ -317,7 +377,8 @@
   box-shadow: var(--kui-toolbar-control-selected-shadow);
 }
 
-.kui-toolbar-control-group > :is(button, wa-button):focus-visible {
+.kui-toolbar-control-group
+  > :is(button, wa-button, .kui-toolbar-action-link):focus-visible {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }

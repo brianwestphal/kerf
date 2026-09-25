@@ -259,57 +259,6 @@
   font-size: var(--kui-font-xs);
 }
 
-.kui-catalog__resource-group {
-  max-width: 100%;
-  overflow-x: auto;
-}
-
-.kui-catalog__resource {
-  position: relative;
-  display: inline-flex;
-  flex: 0 0 auto;
-  min-width: 0;
-  height: remify(30px);
-  padding: 0 var(--kui-space-xs);
-  border: 1px solid transparent;
-  border-radius: var(--kui-radius-pill);
-  color: var(--kui-color-text);
-  background: transparent;
-  text-decoration: none;
-  white-space: nowrap;
-  align-items: center;
-  gap: var(--kui-space-2xs);
-}
-
-.kui-catalog__resource:hover {
-  border-color: var(--kui-color-border);
-  background: var(--kui-color-surface);
-}
-
-.kui-catalog__resource:focus-visible {
-  outline: var(--kui-focus-ring);
-  outline-offset: 2px;
-}
-
-.kui-catalog__resource svg {
-  width: remify(14px);
-  height: remify(14px);
-}
-
-/* The optional monospace detail is a visually-hidden accessible affordance. */
-.kui-catalog__resource code {
-  position: absolute;
-  inset-block-start: 0;
-  inset-inline-start: 0;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  border: 0;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 /* Group heading inside the related-entries popup menu (e.g. "Uses" / "Used by"). */
 .kui-catalog__related-heading {
   display: block;
@@ -388,7 +337,7 @@
     grid-template-columns: minmax(0, 1fr);
   }
   .kui-catalog__footer .kui-toolbar__leading,
-  .kui-catalog__resource-group {
+  .kui-catalog__footer .kui-toolbar-control-group[data-overflow="scroll"] {
     width: 100%;
   }
   .kui-catalog__footer .kui-toolbar__trailing {

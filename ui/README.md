@@ -168,7 +168,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `Badge`                                                             | `@kerfjs/ui/badge`                      | `@kerfjs/ui/badge.css`                 |
 | `DisclosureArrow`                                                   | `@kerfjs/ui/disclosure-arrow`           | `@kerfjs/ui/disclosure-arrow.css`      |
 | `Toolbar`                                                           | `@kerfjs/ui/toolbar`                    | `@kerfjs/ui/toolbar.css`               |
-| `ToolbarControlGroup`                                               | `@kerfjs/ui/toolbar-control-group`      | `@kerfjs/ui/toolbar-control-group.css` |
+| `ToolbarControlGroup`, `ToolbarActionLink`                          | `@kerfjs/ui/toolbar-control-group`      | `@kerfjs/ui/toolbar-control-group.css` |
 | `DialogSurface`, `PopupSurface`                                     | `@kerfjs/ui/surface-scaffold`           | `@kerfjs/ui/surface-scaffold.css`      |
 | `FloatingToolbar`                                                   | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`      |
 | `ToolbarText`                                                       | `@kerfjs/ui/toolbar-text`               | `@kerfjs/ui/toolbar-text.css`          |

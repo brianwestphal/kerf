@@ -165,11 +165,15 @@ export {
 } from './token-search-field.js';
 export { Toolbar, type ToolbarProps } from './toolbar.js';
 export {
+  ToolbarActionLink,
+  type ToolbarActionLinkProps,
   ToolbarControlGroup,
   type ToolbarControlGroupAppearance,
   type ToolbarControlGroupButtonAppearance,
   type ToolbarControlGroupContent,
   type ToolbarControlGroupDensity,
+  type ToolbarControlGroupMenuInset,
+  type ToolbarControlGroupOverflow,
   type ToolbarControlGroupProps,
   type ToolbarControlGroupSelectedChrome,
   type ToolbarControlGroupSelectedTone,

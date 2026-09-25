@@ -33,7 +33,10 @@ import { DialogSurface, PopupSurface } from '../../src/surface-scaffold.js';
 import { TabBar } from '../../src/tab-bar.js';
 import { Text } from '../../src/text.js';
 import { Toolbar } from '../../src/toolbar.js';
-import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
+import {
+  ToolbarActionLink,
+  ToolbarControlGroup,
+} from '../../src/toolbar-control-group.js';
 import { ToolbarText } from '../../src/toolbar-text.js';
 import { ValueTable, ValueTableRow } from '../../src/value-table.js';
 
@@ -208,6 +211,8 @@ describe('production UI primitives', () => {
       selectedChrome: 'outline',
       selectedTone: 'pop',
       nestedDropdown: true,
+      menuInset: 'compact',
+      overflow: 'scroll',
       scrim: true,
       avatarImage: '/profile.svg',
       className: 'extra',
@@ -230,7 +235,7 @@ describe('production UI primitives', () => {
       'role="group" aria-label="View" data-appearance="borderless" data-tone="dark" data-button-appearance="push" data-expanded="true" data-single="true"',
     );
     expect(asHtml(group)).toContain(
-      'data-size="compact" data-density="tight" data-content="mixed" data-selected-chrome="outline" data-selected-tone="pop" data-nested-dropdown="true" data-scrim="true"',
+      'data-size="compact" data-density="tight" data-content="mixed" data-selected-chrome="outline" data-selected-tone="pop" data-nested-dropdown="true" data-menu-inset="compact" data-overflow="scroll" data-scrim="true"',
     );
     expect(asHtml(group)).toContain(
       'style="--kui-toolbar-avatar-image:url(&quot;/profile.svg&quot;)"',
@@ -259,6 +264,28 @@ describe('production UI primitives', () => {
     expect(
       asHtml(ToolbarControlGroup({ children: icon, shape: 'rounded' })),
     ).toContain('data-shape="rounded"');
+    const link = asHtml(
+      ToolbarActionLink({
+        href: '/guide',
+        label: 'Guide',
+        detail: 'docs/guide.md',
+        icon,
+        external: true,
+      }),
+    );
+    expect(link).toContain(
+      'data-component="toolbar-action-link" href="/guide" target="_blank" rel="noopener noreferrer" aria-label="Guide, docs/guide.md (opens in new tab)"',
+    );
+    expect(link).toContain('<span>Guide</span>');
+    expect(link).toContain('<code aria-hidden="true">docs/guide.md</code>');
+    const internalLink = asHtml(
+      ToolbarActionLink({ href: '/workspace', label: 'Workspace' }),
+    );
+    expect(internalLink).toContain(
+      'class="kui-toolbar-action-link" data-component="toolbar-action-link" href="/workspace" aria-label="Workspace"',
+    );
+    expect(internalLink).not.toContain('target=');
+    expect(internalLink).not.toContain('<code');
   });
 
   it('composes stretch-aligned lists with gap, flex, scroll, and dividers', () => {

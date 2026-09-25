@@ -1,12 +1,16 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import {
+  ToolbarActionLink,
+  ToolbarControlGroup,
+} from '@kerfjs/ui/toolbar-control-group';
 import {
   ArrowDownAZ,
   ChevronLeft,
   ChevronRight,
   Columns3,
+  ExternalLink,
   GitCompare,
   List,
   MoreHorizontal,
@@ -94,7 +98,12 @@ export function ToolbarControlGroupDemo() {
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Popup menu" align="inline-control">
-        <ToolbarControlGroup single shape={shape}>
+        <ToolbarControlGroup
+          single
+          shape={shape}
+          nestedDropdown
+          menuInset="compact"
+        >
           <wa-dropdown placement="bottom-start" data-morph-skip-children>
             <wa-button
               slot="trigger"
@@ -111,6 +120,16 @@ export function ToolbarControlGroupDemo() {
               Priority
             </wa-dropdown-item>
           </wa-dropdown>
+        </ToolbarControlGroup>
+      </CatalogExample>
+      <CatalogExample label="Action link" align="inline-control">
+        <ToolbarControlGroup content="mixed" shape={shape} single>
+          <ToolbarActionLink
+            href="https://github.com/brianwestphal/kerf"
+            label="Repository"
+            external
+            icon={icon(ExternalLink, 'external-link')}
+          />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Button group" align="inline-control">

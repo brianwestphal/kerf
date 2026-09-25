@@ -1141,17 +1141,19 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "Typed toolbar groups for compact, mixed, selected, dropdown, and avatar controls.",
+      "description": "Typed toolbar groups for buttons, semantic action links, compact mixed controls, selected states, dropdown surfaces, and avatar controls.",
       "uses": [
         "lucide-icon",
         "segmented-control"
       ],
-      "purpose": "Typed toolbar groups for compact, mixed, selected, dropdown, and avatar controls.",
+      "purpose": "Provide complete toolbar action geometry through configuration, including semantic anchors, overflow containment, and dropdown menu insets without application CSS.",
       "publicExports": [
+        "ToolbarActionLink",
         "ToolbarControlGroup"
       ],
       "useWhen": [
         "Group related controls inside a toolbar with a supported visual treatment.",
+        "Use ToolbarActionLink for navigation or external resources that must retain native anchor semantics inside a group.",
         "Fill it with plain <button> controls (the group styles > button fully); use wa-button only for a Web Awesome feature such as a wa-dropdown popup trigger.",
         "For an avatar control, set content=avatar and avatarImage instead of inserting an img; one button paints the group and multiple buttons paint only the pressed highlight."
       ],
@@ -1171,6 +1173,7 @@
       ],
       "appOwns": [
         "actions",
+        "link destination and copy",
         "pressed state",
         "expanded state",
         "avatar image URL"
@@ -1186,6 +1189,8 @@
         "raised, filled, or outline selected chrome",
         "brand, neutral, or pop selected tone",
         "nested dropdown trigger",
+        "standard, compact, or list-zero dropdown menu inset",
+        "visible or horizontally scrollable overflow",
         "avatar scrim",
         "contained avatar background on a single group or selected multi-button highlight"
       ],
@@ -1206,6 +1211,7 @@
       },
       "wiring": [],
       "publicClasses": [
+        "kui-toolbar-action-link",
         "kui-toolbar-control-group"
       ],
       "publicTokens": [

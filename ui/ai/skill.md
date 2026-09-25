@@ -114,6 +114,11 @@ choice that should remain only when application context justifies it. Apply the
 same metadata when authoring consumer component catalogs so lint, analyzer, and
 doctor feedback covers local components too.
 
+Toolbar action links and menus are configuration, not application CSS: put
+`ToolbarActionLink` inside `ToolbarControlGroup`, set `overflow="scroll"` for a
+bounded action row, and use `menuInset` for nested dropdown surface padding.
+Never add app-owned anchor chrome, width repairs, or `::part(menu)` overrides.
+
 Hard rules:
 
 1. Import visual components from explicit JavaScript subpaths. In CSS-aware browser builds each subpath brings in its own reachable CSS, including UI subcomponents, while unrelated CSS remains out. The root barrel and `@kerfjs/ui/unstyled` are CSS-free; pair the root barrel with `styles.css` only when the complete layer is intentional. Manual CSS subpaths remain available for custom pipelines.

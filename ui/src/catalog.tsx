@@ -17,14 +17,17 @@ import { Pane } from './pane.js';
 import type { KerfUiContent } from './semantic-content.js';
 import { Text } from './text.js';
 import { Toolbar } from './toolbar.js';
-import { ToolbarControlGroup } from './toolbar-control-group.js';
+import {
+  ToolbarActionLink,
+  ToolbarControlGroup,
+} from './toolbar-control-group.js';
 import { ToolbarText } from './toolbar-text.js';
 
 /** A reference link shown in the detail footer for the active entry. */
 export interface CatalogResource {
   label: string;
   href: string;
-  /** Optional monospace detail (e.g. a file path) shown after the label. */
+  /** Optional machine-readable detail (e.g. a file path) carried by the action link. */
   detail?: string;
 }
 
@@ -378,25 +381,25 @@ export function Catalog({
               leading={
                 resources.length > 0 ? (
                   <ToolbarControlGroup
-                    className="kui-catalog__resource-group"
                     label={`${name} resources`}
                     content="mixed"
                     size="compact"
+                    overflow="scroll"
                   >
                     {resources.map((resource) => (
-                      <a
-                        class="kui-catalog__resource"
+                      <ToolbarActionLink
                         href={resource.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`${name}: ${resource.label} (opens in new tab)`}
-                      >
-                        <LucideIcon icon={ExternalLink} name="external-link" />
-                        <span>{resource.label}</span>
-                        {resource.detail ? (
-                          <code>{resource.detail}</code>
-                        ) : null}
-                      </a>
+                        label={resource.label}
+                        detail={resource.detail}
+                        ariaLabel={`${name}: ${resource.label} (opens in new tab)`}
+                        external
+                        icon={
+                          <LucideIcon
+                            icon={ExternalLink}
+                            name="external-link"
+                          />
+                        }
+                      />
                     ))}
                   </ToolbarControlGroup>
                 ) : null
@@ -407,11 +410,11 @@ export function Catalog({
                     single
                     content="mixed"
                     nestedDropdown
+                    menuInset="compact"
                     size="compact"
                     label="Related entries"
                   >
                     <wa-dropdown
-                      class="kui-catalog__related-menu"
                       placement="top-end"
                       data-key={`kui-catalog-related-${active}`}
                       data-catalog-related

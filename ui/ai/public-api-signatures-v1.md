@@ -180,6 +180,22 @@ type ToolbarControlGroupDensity = 'comfortable' | 'tight';
 type ToolbarControlGroupContent = 'icon' | 'text' | 'mixed' | 'avatar';
 type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
 type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
+type ToolbarControlGroupOverflow = 'visible' | 'scroll';
+type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
+interface ToolbarActionLinkProps {
+    href: string;
+    label: string;
+    icon?: KerfUiContent;
+    /** Optional machine-readable detail hidden visually but included in the default accessible name. */
+    detail?: string;
+    /** Override the accessible name when surrounding context is needed. */
+    ariaLabel?: string;
+    /** Open in a new tab with a safe rel and announce that behavior. */
+    external?: boolean;
+    className?: string;
+}
+/** A semantic anchor with ToolbarControlGroup-owned action geometry. */
+declare function ToolbarActionLink({ href, label, icon, detail, ariaLabel, external, className, }: ToolbarActionLinkProps): kerfjs.SafeHtml;
 interface ToolbarControlGroupProps {
     children: KerfUiContent;
     label?: string;
@@ -198,6 +214,10 @@ interface ToolbarControlGroupProps {
     selectedTone?: ToolbarControlGroupSelectedTone;
     /** Size a nested Web Awesome dropdown trigger as part of this group. */
     nestedDropdown?: boolean;
+    /** Configure the nested dropdown menu inset without consumer ::part() CSS. */
+    menuInset?: ToolbarControlGroupMenuInset;
+    /** Keep an overlong row of actions inside the available width with horizontal scrolling. */
+    overflow?: ToolbarControlGroupOverflow;
     /** Add contrast behind photo-backed avatar content. */
     scrim?: boolean;
     /**
@@ -206,9 +226,9 @@ interface ToolbarControlGroupProps {
      */
     avatarImage?: string;
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, selectedChrome, selectedTone, nestedDropdown, scrim, avatarImage, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, scrim, avatarImage, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
 
-export { ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupTone };
+export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupTone };
 ```
 
 ## `@kerfjs/ui/floating-toolbar`
@@ -1239,7 +1259,7 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 interface CatalogResource {
     label: string;
     href: string;
-    /** Optional monospace detail (e.g. a file path) shown after the label. */
+    /** Optional machine-readable detail (e.g. a file path) carried by the action link. */
     detail?: string;
 }
 /** A related entry offered in the detail footer's "Related entries" popup menu. */

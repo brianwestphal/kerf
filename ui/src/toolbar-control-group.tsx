@@ -9,6 +9,50 @@ export type ToolbarControlGroupDensity = 'comfortable' | 'tight';
 export type ToolbarControlGroupContent = 'icon' | 'text' | 'mixed' | 'avatar';
 export type ToolbarControlGroupSelectedChrome = 'raised' | 'filled' | 'outline';
 export type ToolbarControlGroupSelectedTone = 'brand' | 'neutral' | 'pop';
+export type ToolbarControlGroupOverflow = 'visible' | 'scroll';
+export type ToolbarControlGroupMenuInset = 'standard' | 'compact' | 'list-zero';
+
+export interface ToolbarActionLinkProps {
+  href: string;
+  label: string;
+  icon?: KerfUiContent;
+  /** Optional machine-readable detail hidden visually but included in the default accessible name. */
+  detail?: string;
+  /** Override the accessible name when surrounding context is needed. */
+  ariaLabel?: string;
+  /** Open in a new tab with a safe rel and announce that behavior. */
+  external?: boolean;
+  className?: string;
+}
+
+/** A semantic anchor with ToolbarControlGroup-owned action geometry. */
+export function ToolbarActionLink({
+  href,
+  label,
+  icon,
+  detail,
+  ariaLabel,
+  external = false,
+  className = '',
+}: ToolbarActionLinkProps) {
+  const accessibleLabel =
+    ariaLabel ??
+    `${label}${detail ? `, ${detail}` : ''}${external ? ' (opens in new tab)' : ''}`;
+  return (
+    <a
+      class={`kui-toolbar-action-link ${className}`.trim()}
+      data-component="toolbar-action-link"
+      href={href}
+      target={external ? '_blank' : undefined}
+      rel={external ? 'noopener noreferrer' : undefined}
+      aria-label={accessibleLabel}
+    >
+      {icon}
+      <span>{label}</span>
+      {detail ? <code aria-hidden="true">{detail}</code> : null}
+    </a>
+  );
+}
 
 export interface ToolbarControlGroupProps {
   children: KerfUiContent;
@@ -28,6 +72,10 @@ export interface ToolbarControlGroupProps {
   selectedTone?: ToolbarControlGroupSelectedTone;
   /** Size a nested Web Awesome dropdown trigger as part of this group. */
   nestedDropdown?: boolean;
+  /** Configure the nested dropdown menu inset without consumer ::part() CSS. */
+  menuInset?: ToolbarControlGroupMenuInset;
+  /** Keep an overlong row of actions inside the available width with horizontal scrolling. */
+  overflow?: ToolbarControlGroupOverflow;
   /** Add contrast behind photo-backed avatar content. */
   scrim?: boolean;
   /**
@@ -53,6 +101,8 @@ export function ToolbarControlGroup({
   selectedChrome = 'raised',
   selectedTone = 'brand',
   nestedDropdown = false,
+  menuInset = 'standard',
+  overflow = 'visible',
   scrim = false,
   avatarImage,
 }: ToolbarControlGroupProps) {
@@ -74,6 +124,8 @@ export function ToolbarControlGroup({
       data-selected-chrome={selectedChrome}
       data-selected-tone={selectedTone}
       data-nested-dropdown={String(nestedDropdown)}
+      data-menu-inset={menuInset}
+      data-overflow={overflow}
       data-scrim={String(scrim)}
       style={
         avatarImage
