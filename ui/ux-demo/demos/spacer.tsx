@@ -15,9 +15,10 @@ export function SpacerDemo() {
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'spacer' }}>
       <CatalogExample
         label="Named dimensions"
+        viewport={{ width: 'compact' }}
         note="Width and height accept the finite UI spacing scale or a typed CssLength."
       >
-        <DemoFrameShell measure="standard">
+        <DemoFrameShell>
           <Row vAlign="middle" gap="none">
             {chip('Before')}
             <Spacer width="m" height="l" />
@@ -27,9 +28,10 @@ export function SpacerDemo() {
       </CatalogExample>
       <CatalogExample
         label="Flexible space"
+        viewport={{ width: 'compact' }}
         note="flex fills the available space along a flex parent's main axis while the neighboring controls keep their natural size."
       >
-        <DemoFrameShell measure="standard">
+        <DemoFrameShell>
           <Row vAlign="middle" gap="none">
             {chip('Leading')}
             <Spacer flex />

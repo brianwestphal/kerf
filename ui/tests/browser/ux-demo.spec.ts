@@ -1713,7 +1713,11 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
   expect(
     Math.abs(wideGeometry.stageHeight - wideGeometry.stageContentHeight),
   ).toBeLessThanOrEqual(1);
-  expect(wideGeometry.scrollHeight).toBe(wideGeometry.stageContentHeight);
+  // Both heights round a fractional layout height independently (Firefox on
+  // Linux measured 1791 vs 1792), so allow the same 1px as the stage check.
+  expect(
+    Math.abs(wideGeometry.scrollHeight - wideGeometry.stageContentHeight),
+  ).toBeLessThanOrEqual(1);
   await detailScroll.evaluate((element) =>
     element.scrollTo(0, element.scrollHeight),
   );

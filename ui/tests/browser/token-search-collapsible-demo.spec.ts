@@ -7,9 +7,14 @@ test('the TokenSearchField demo shows and drives the collapsible state', async (
   await page.setViewportSize({ width: 1100, height: 700 });
   await page.goto('/?component=token-search-field');
 
-  const field = page.locator(
-    '.token-search-demo__collapsible [data-component="token-search-field"]',
-  );
+  const example = page
+    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: /^\s*Collapsible\s*$/,
+      }),
+    });
+  const field = example.locator('[data-component="token-search-field"]');
   const trigger = field.getByRole('button', { name: 'Open find' });
   const editor = field.getByRole('searchbox', { name: 'Find records' });
 
@@ -19,9 +24,9 @@ test('the TokenSearchField demo shows and drives the collapsible state', async (
   await expect(trigger).toBeVisible();
   await expect(editor).toBeHidden();
   if (browserName === 'chromium')
-    await page
-      .locator('.token-search-demo__collapsible')
-      .screenshot({ path: 'test-results/token-search-collapsed.png' });
+    await example.screenshot({
+      path: 'test-results/token-search-collapsed.png',
+    });
 
   // Activating reveals the editor and focuses it (helper-managed).
   await trigger.click();
@@ -29,9 +34,9 @@ test('the TokenSearchField demo shows and drives the collapsible state', async (
   await expect(editor).toBeFocused();
   await editor.pressSequentially('priority');
   if (browserName === 'chromium')
-    await page
-      .locator('.token-search-demo__collapsible')
-      .screenshot({ path: 'test-results/token-search-expanded.png' });
+    await example.screenshot({
+      path: 'test-results/token-search-expanded.png',
+    });
 
   // Non-empty field stays open when focus leaves.
   await page.locator('[data-action="toggle-theme"]').first().focus();
@@ -58,9 +63,14 @@ test('disposing the demo wiring cancels pending collapsible focus restoration', 
 }) => {
   for (const transition of ['open', 'close'] as const) {
     await page.goto('/?component=token-search-field');
-    const field = page.locator(
-      '.token-search-demo__collapsible [data-component="token-search-field"]',
-    );
+    const example = page
+      .locator('[data-demo="token-search-field"] [data-catalog-example]')
+      .filter({
+        has: page.locator('[data-catalog-example-label]', {
+          hasText: /^\s*Collapsible\s*$/,
+        }),
+      });
+    const field = example.locator('[data-component="token-search-field"]');
     if (transition === 'close') {
       await field.getByRole('button', { name: 'Open find' }).click();
       await expect(
@@ -68,8 +78,15 @@ test('disposing the demo wiring cancels pending collapsible focus restoration', 
       ).toBeFocused();
     }
     await page.evaluate((kind) => {
-      const container = document.querySelector<HTMLElement>(
-        '.token-search-demo__collapsible',
+      const container = [
+        ...document.querySelectorAll<HTMLElement>(
+          '[data-demo="token-search-field"] [data-catalog-example]',
+        ),
+      ].find(
+        (example) =>
+          example
+            .querySelector('[data-catalog-example-label]')
+            ?.textContent?.trim() === 'Collapsible',
       )!;
       if (kind === 'open') {
         container

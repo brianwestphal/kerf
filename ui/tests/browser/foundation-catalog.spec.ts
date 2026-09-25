@@ -8,11 +8,12 @@ test('catalogs the public foundation token surface without overflow', async ({
 
   const demo = page.locator('[data-demo="foundation"]');
   await expect(demo).toBeVisible();
-  await expect(demo.locator('.demo-foundation__tone')).toHaveCount(5);
-  await expect(demo.locator('.demo-foundation__tone--brand')).toHaveCSS(
-    'color',
-    'rgb(26, 93, 207)',
-  );
+  const palette = demo.locator('[data-catalog-example]').first();
+  await expect(palette.locator('.kui-state-banner')).toHaveCount(5);
+  // The Brand swatch is StateBanner's info tone: brand on-fill text.
+  await expect(
+    palette.locator('.kui-state-banner[data-tone="info"]'),
+  ).toHaveCSS('color', 'rgb(26, 93, 207)');
   await expect
     .poll(() =>
       demo.evaluate((element) => element.scrollWidth <= element.clientWidth),

@@ -20,7 +20,9 @@ test('a collapsible field in a flex column stays a single line tall', async ({
   // Load the page that pulls in token-search-field.css + the foundation tokens.
   await page.goto('/?component=token-search-field');
   await expect(
-    page.locator('.token-search-demo__collapsible').first(),
+    page
+      .locator('[data-demo="token-search-field"] [data-collapsible="true"]')
+      .first(),
   ).toBeVisible();
 
   const heights = await page.evaluate((markup) => {

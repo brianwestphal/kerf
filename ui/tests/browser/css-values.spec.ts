@@ -7,7 +7,9 @@ test('applies property-specific CSS values in a real browser', async ({
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=list');
 
-  const content = page.locator('[data-demo="list"] .demo-list__content');
+  const content = page.locator(
+    '[data-demo="list"] .kui-pane__content > .kui-list',
+  );
   await expect(content).toHaveCSS('gap', '24px');
   await expect(content).toHaveAttribute(
     'style',
@@ -15,7 +17,7 @@ test('applies property-specific CSS values in a real browser', async ({
   );
   await expect(content).toHaveCSS('flex', '1 1 auto');
 
-  const tools = content.locator('section').nth(1).locator('.kui-list');
+  const tools = content.locator('section').nth(1).locator(':scope > .kui-list');
   await expect(tools).toHaveCSS('gap', '8px');
   await expect(tools).toHaveAttribute(
     'style',
@@ -24,7 +26,7 @@ test('applies property-specific CSS values in a real browser', async ({
 
   await page.goto('/?component=skeleton');
   const shapedSkeleton = page
-    .locator('[data-demo="skeleton"] .demo-skeleton-blocks .kui-skeleton')
+    .locator('[data-demo="skeleton"] .kui-list > .kui-skeleton')
     .nth(1);
   await expect(shapedSkeleton).toHaveCSS('width', '128px');
   await expect(shapedSkeleton).toHaveCSS('height', '24px');

@@ -139,6 +139,12 @@
 .kui-list-item[data-multiline="true"] {
   height: fit-content;
   white-space: normal;
+  /* Size the single grid row to its content and center that track in the
+     44px minimum, instead of stretching it. The start-aligned icon then
+     measures its first-line offset from the same edge the centered label
+     starts at; a stretched track left a short label centered 1.4px below
+     the icon's first-line position. */
+  align-content: center;
 }
 
 .kui-list-item[data-multiline="true"] .kui-list-item__label {

@@ -1041,7 +1041,9 @@ const stopAdoptionKeyboardEffect = effect(() => {
     stopAdoptionKeyboard?.();
     stopAdoptionKeyboard = null;
     if (id !== 'token-search-field') return;
-    const container = app.querySelector<HTMLElement>('.token-search-adoption');
+    const container = app
+      .querySelector<HTMLElement>('[data-demo-adoption-search]')
+      ?.closest<HTMLElement>('[data-catalog-example]');
     if (!container) return;
     stopAdoptionKeyboard = wireTokenSearchFields(container, {
       collapsible: false,

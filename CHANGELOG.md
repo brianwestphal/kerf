@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui`: a multiline `ListItem` whose label fits on one line now
+  centers its icon on that line. The row's 44px minimum used to stretch the
+  grid track, which centered the label but left the start-aligned icon about
+  1.4px above it.
+- `@kerfjs/ui`: a `ToolbarControlGroup` with `focusRing="outline"` or
+  `"halo"` keeps its group focus ring while a `Select` inside it has its
+  listbox open. Chromium and WebKit did not carry `:focus-within` from the
+  focused option to the group, so the ring disappeared.
+- UX catalog: the foundation palette's Brand swatch uses the brand on-fill
+  color again, the Spacer demo gives its flexible spacer room to grow again,
+  and the TokenSearchField adoption demo again wires its chip keyboard and
+  `onEdit` readout. The catalog demo rework had broken all three.
 - Documented and pinned how `tooltip()` surfaces a failed show from its delay
   timer: the half-built tooltip is rolled back, the original error escapes the
   timer for the host to report (a window `error` event in browsers, matching

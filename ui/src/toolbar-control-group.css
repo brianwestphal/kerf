@@ -417,6 +417,22 @@
     color-mix(in srgb, var(--kui-color-text-link) 22%, transparent);
 }
 
+/* Chromium and WebKit do not propagate :focus-within from a focused
+   light-DOM child (an open wa-select's active wa-option) through the host's
+   popup shadow tree, so the group ring vanished while its Select listbox was
+   open. A focused light-DOM descendant still owns the group ring. Kept as
+   separate rules so an engine without :has() keeps the :focus-within ring. */
+.kui-toolbar-control-group[data-focus-ring="outline"]:has(:focus) {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+.kui-toolbar-control-group[data-focus-ring="halo"]:has(:focus) {
+  border-color: var(--kui-color-text-link);
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--kui-color-text-link) 22%, transparent);
+}
+
 .kui-toolbar-control-group[data-button-appearance="push"][data-single="true"]:has(
     > :is(button, wa-button)[aria-pressed="true"]
   ) {

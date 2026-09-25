@@ -5,7 +5,13 @@ test('select-all deletion keeps a controlled search open before delayed frames a
   browserName,
 }, testInfo) => {
   await page.goto('/?component=token-search-field');
-  const demo = page.locator('.token-search-adoption');
+  const demo = page
+    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: /^\s*Adoption knobs\s*$/,
+      }),
+    });
   const field = demo.locator('[data-component="token-search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Filter records' });
   const chips = editor.locator('[data-component="token-search-token"]');
@@ -84,14 +90,19 @@ test('the adoption-knobs demo drives keep-open, chip keyboard, and onEdit', asyn
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=token-search-field');
 
-  const field = page.locator(
-    '.token-search-adoption [data-component="token-search-field"]',
-  );
+  const field = page
+    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: /^\s*Adoption knobs\s*$/,
+      }),
+    })
+    .locator('[data-component="token-search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Filter records' });
   const readout = page.locator('[data-demo-adoption-readout]');
   const chips = field.locator('[data-component="token-search-token"]');
   const suggestion = (name: string) =>
-    page.locator('.token-search-adoption__suggestion', { hasText: name });
+    page.locator('[data-token-search-keep-open] wa-button', { hasText: name });
 
   // Starts expanded and empty (the app owns `expanded`).
   await expect(field).toHaveAttribute('data-expanded', 'true');
@@ -189,7 +200,13 @@ test('managed clear keeps immediate typing and later focus ownership before dela
   browserName,
 }, testInfo) => {
   await page.goto('/?component=token-search-field');
-  const demo = page.locator('.token-search-adoption');
+  const demo = page
+    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: /^\s*Adoption knobs\s*$/,
+      }),
+    });
   const field = demo.locator('[data-component="token-search-field"]');
   const editor = field.getByRole('searchbox', { name: 'Filter records' });
   const clear = field.getByRole('button', { name: 'Clear search' });

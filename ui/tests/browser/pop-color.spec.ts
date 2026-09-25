@@ -40,7 +40,7 @@ test('pop stays attractive and readable across themes, contrast, and typed surfa
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=foundation');
   const foundation = page.locator('[data-demo="foundation"]');
-  const popTile = foundation.locator('.demo-foundation__tone--pop');
+  const popTile = foundation.locator('.kui-state-banner[data-tone="pop"]');
   await expect(popTile).toBeVisible();
   await expect(popTile).toHaveCSS('color', 'rgb(121, 36, 152)');
   await expect.poll(() => contrastRatio(popTile)).toBeGreaterThanOrEqual(4.5);

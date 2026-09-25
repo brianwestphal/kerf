@@ -49,9 +49,10 @@ test('the catalog opts into the full-height document baseline', async ({
     bodyHeight: '900px',
     rootHeight: '900px',
     bodyMargin: '0px',
-    bodyLineHeight: '23.2px',
     boxSizing: 'border-box',
   });
+  // WebKit serializes the computed 1.45 line height as 23.200001px.
+  expect(Number.parseFloat(geometry.bodyLineHeight)).toBeCloseTo(23.2, 3);
   expect(geometry.bodyFont).toBe(geometry.tokenFont);
   expect(geometry.bodyColor).toBe(geometry.tokenColor);
   expect(geometry.bodyBackground).toBe(geometry.tokenBackground);

@@ -4,9 +4,9 @@ import { expect, test } from '@playwright/test';
 async function screenshotRelated(page: Page, path: string) {
   const clip = await page.locator('[data-catalog-related]').evaluate((root) => {
     const trigger = root.getBoundingClientRect();
-    const menu = root
-      .querySelector('wa-dropdown')
-      ?.shadowRoot?.querySelector<HTMLElement>('[part~="menu"]')
+    // `[data-catalog-related]` is the wa-dropdown itself.
+    const menu = root.shadowRoot
+      ?.querySelector<HTMLElement>('[part~="menu"]')
       ?.getBoundingClientRect();
     const left = Math.max(
       0,
@@ -45,15 +45,21 @@ test('related Components selector fits its trigger and popup content', async ({
     const triggerFit = await trigger.evaluate((element) => {
       const base =
         element.shadowRoot?.querySelector<HTMLElement>('[part~="base"]');
-      const label = element.querySelector<HTMLElement>(
-        '.kui-catalog__related-trigger',
-      );
+      // The trigger's default-slot content (icon + label) must keep a
+      // real inset from the button chrome on both sides.
+      const content = [...element.children]
+        .filter((child) => !child.hasAttribute('slot'))
+        .map((child) => child.getBoundingClientRect())
+        .filter((bounds) => bounds.width > 0);
       const baseBounds = base?.getBoundingClientRect();
-      const labelBounds = label?.getBoundingClientRect();
-      return baseBounds && labelBounds
+      return baseBounds && content.length >= 2
         ? {
-            left: labelBounds.left - baseBounds.left,
-            right: baseBounds.right - labelBounds.right,
+            left:
+              Math.min(...content.map((bounds) => bounds.left)) -
+              baseBounds.left,
+            right:
+              baseBounds.right -
+              Math.max(...content.map((bounds) => bounds.right)),
           }
         : null;
     });
@@ -66,9 +72,8 @@ test('related Components selector fits its trigger and popup content', async ({
       .first();
     await expect(firstHeading).toBeVisible();
     const popupSpacing = await related.evaluate((root) => {
-      const menu = root
-        .querySelector('wa-dropdown')
-        ?.shadowRoot?.querySelector<HTMLElement>('[part~="menu"]')
+      const menu = root.shadowRoot
+        ?.querySelector<HTMLElement>('[part~="menu"]')
         ?.getBoundingClientRect();
       const textBounds = (element: HTMLElement | null | undefined) => {
         const text = [...(element?.childNodes ?? [])].find(
@@ -93,13 +98,20 @@ test('related Components selector fits its trigger and popup content', async ({
       return menu && heading && longest
         ? {
             headingLeft: heading.left - menu.left,
+            itemLeft: longest.left - menu.left,
             itemRight: menu.right - longest.right,
             menuLeft: menu.left,
             menuRight: menu.right,
           }
         : null;
     });
-    expect(popupSpacing?.headingLeft).toBeGreaterThanOrEqual(15);
+    // Group headings keep a real inset and share the item labels' text edge.
+    expect(popupSpacing?.headingLeft).toBeGreaterThanOrEqual(10);
+    expect(
+      Math.abs(
+        (popupSpacing?.headingLeft ?? 0) - (popupSpacing?.itemLeft ?? 0),
+      ),
+    ).toBeLessThanOrEqual(1);
     expect(popupSpacing?.itemRight).toBeGreaterThanOrEqual(8);
     expect(popupSpacing?.menuLeft).toBeGreaterThanOrEqual(10);
     expect(popupSpacing?.menuRight).toBeLessThanOrEqual(viewport.width - 10);

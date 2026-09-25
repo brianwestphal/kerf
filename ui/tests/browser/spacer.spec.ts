@@ -5,8 +5,10 @@ test('Spacer provides fixed token dimensions and flexible main-axis space', asyn
 }) => {
   await page.setViewportSize({ width: 1100, height: 900 });
   await page.goto('/?component=spacer');
+  // One Spacer per catalog example: named dimensions, flexible, vertical.
+  const examples = page.locator('[data-demo="spacer"] [data-catalog-example]');
 
-  const fixed = page.locator('.demo-spacer-row .kui-spacer');
+  const fixed = examples.nth(0).locator('.kui-spacer');
   await expect(fixed).toHaveAttribute('aria-hidden', 'true');
   await expect(fixed).toHaveAttribute('data-flex', 'false');
   await expect
@@ -18,7 +20,7 @@ test('Spacer provides fixed token dimensions and flexible main-axis space', asyn
     )
     .toEqual({ width: '16px', height: '24px', flex: '0 0 auto' });
 
-  const flexible = page.locator('.demo-spacer-flex .kui-spacer');
+  const flexible = examples.nth(1).locator('.kui-spacer');
   await expect(flexible).toHaveAttribute('data-flex', 'true');
   await expect
     .poll(() =>
@@ -35,7 +37,7 @@ test('Spacer provides fixed token dimensions and flexible main-axis space', asyn
     await flexible.evaluate((element) => element.getBoundingClientRect().width),
   ).toBeGreaterThan(100);
 
-  const vertical = page.locator('.demo-spacer-list .kui-spacer');
+  const vertical = examples.nth(2).locator('.kui-spacer');
   await expect
     .poll(() =>
       vertical.evaluate(

@@ -15,7 +15,7 @@ test('renders the Skeleton primitive demo', async ({ page, browserName }) => {
   await expect(composition).toHaveAttribute('data-align', 'none');
 
   // Primitive blocks render and are decorative by default.
-  const blocks = demo.locator('.demo-skeleton-blocks .kui-skeleton');
+  const blocks = demo.locator('.kui-list .kui-skeleton');
   expect(await blocks.count()).toBeGreaterThanOrEqual(4);
 
   // A component's placeholder mode is shown in composition (ValueTable rows).

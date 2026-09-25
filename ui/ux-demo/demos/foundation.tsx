@@ -1,4 +1,3 @@
-import '@awesome.me/webawesome/dist/components/callout/callout.js';
 import '@awesome.me/webawesome/dist/components/card/card.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
@@ -6,8 +5,10 @@ import { Grid } from '@kerfjs/ui/grid';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Text } from '@kerfjs/ui/text';
 
+// Brand renders through StateBanner's `info` tone, which is the brand
+// on-fill role over the quiet brand fill.
 const tones = [
-  ['Brand', 'brand'],
+  ['Brand', 'info'],
   ['Pop', 'pop'],
   ['Success', 'success'],
   ['Warning', 'warning'],
@@ -26,19 +27,13 @@ export function FoundationDemo() {
         align="none"
       >
         <Grid columns={2} gap="xs">
-          {tones.map(([label, tone]) =>
-            tone === 'brand' ? (
-              <wa-callout variant="brand">
-                <strong>{label}</strong> · Quiet semantic surface
-              </wa-callout>
-            ) : (
-              <StateBanner
-                tone={tone}
-                title={label}
-                detail="Quiet semantic surface"
-              />
-            ),
-          )}
+          {tones.map(([label, tone]) => (
+            <StateBanner
+              tone={tone}
+              title={label}
+              detail="Quiet semantic surface"
+            />
+          ))}
         </Grid>
       </CatalogExample>
       <CatalogExample
