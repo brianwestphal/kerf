@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 283100,
-  "measuredLargestJavaScriptGzip": 134602,
-  "measuredTotalJavaScriptGzip": 283072,
+  "totalJavaScriptGzip": 283300,
+  "measuredLargestJavaScriptGzip": 134753,
+  "measuredTotalJavaScriptGzip": 283248,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -307,6 +307,22 @@
         "measuredTotalJavaScriptGzip": 283072,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 283100
+      }
+    },
+    {
+      "at": "2026-09-26T02:18:13.132Z",
+      "reason": "combine the reviewed KF-W4KNZR ListInsetControl stretch example, KF-X496CM, KF-227KE0, KF-16MVNQ, and KF-A21CSY changes with the Select work",
+      "old": {
+        "measuredLargestJavaScriptGzip": 134602,
+        "measuredTotalJavaScriptGzip": 283072,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 283100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 134753,
+        "measuredTotalJavaScriptGzip": 283248,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 283300
       }
     }
   ]
