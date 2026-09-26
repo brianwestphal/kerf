@@ -1157,7 +1157,7 @@ interface CollapsiblePanelProps {
  * underneath the transform transition. The app owns the `collapsed` signal;
  * pair it with `wireSidebar` for the toggle, focus, compact-overlay, keyboard,
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
- * affordance. See `docs/24-collapsible-panel.md`.
+ * affordance. See `ui/docs/collapsible-panel.md` and `docs/23-app-layouts.md`.
  */
 declare function CollapsiblePanel({ id, side, collapsed, size, label, children, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, className, }: CollapsiblePanelProps): SafeHtml;
 
@@ -1225,7 +1225,7 @@ interface WireSidebarOptions {
  * delegation with focus restore, focus-into on open, an optional compact overlay
  * (backdrop + Escape + focus trap) driven by {@link deviceClass}, and an optional
  * persistence hook. The app owns each `collapsed` signal and the layout; this wire
- * owns the interaction. Returns a disposer. See `docs/24-collapsible-panel.md`.
+ * owns the interaction. Returns a disposer. See `ui/docs/collapsible-panel.md` and `docs/23-app-layouts.md`.
  */
 declare function wireSidebar(root: HTMLElement, { panels, deviceClass, compactPresentation, exclusiveCompact, storage, }: WireSidebarOptions): () => void;
 

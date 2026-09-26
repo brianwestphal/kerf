@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 284500,
+  "totalJavaScriptGzip": 284200,
   "measuredLargestJavaScriptGzip": 135841,
-  "measuredTotalJavaScriptGzip": 284454,
+  "measuredTotalJavaScriptGzip": 284188,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -387,6 +387,22 @@
         "measuredTotalJavaScriptGzip": 284454,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 284500
+      }
+    },
+    {
+      "at": "2026-09-26T05:50:01.744Z",
+      "reason": "ResizableRegion re-clamps aria values at rest (ResizeObserver/MutationObserver) and supports an inset handle",
+      "old": {
+        "measuredLargestJavaScriptGzip": 135841,
+        "measuredTotalJavaScriptGzip": 284454,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 284500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 135841,
+        "measuredTotalJavaScriptGzip": 284188,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 284200
       }
     }
   ]
