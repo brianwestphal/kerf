@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- The `@kerfjs/ui` browser evaluator's target-size check (`KUI-B050`) now
+  measures the pointer-reachable area instead of only the border box: an
+  undersized control is hit-tested outward from its center, so a transparent
+  `::before`/`::after` hit layer (such as the `ListHeader` action's) counts,
+  while `pointer-events: none` decoration, clipping, and overlapping
+  neighbors do not. Diagnostic evidence now carries the measured size plus
+  the border `box`.
 - Fixed the `eslint-plugin-kerfjs` `ui-css-values` messages (`KUI-L013`,
   `KUI-L014`, `KUI-L017`) listing suggested helpers with unbalanced backticks
   (``use `uiColor() or `foregroundColorVar().``); each helper is now wrapped

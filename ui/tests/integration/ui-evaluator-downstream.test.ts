@@ -152,8 +152,23 @@ describe('browser evaluator against running downstream fixtures', () => {
             code: 'KUI-B040',
             selector: 'button.alpha-contrast',
           }),
+          // A ::before that ignores pointer events is decoration, not a hit
+          // layer, so the fitted 36px box is still the whole target.
+          expect.objectContaining({
+            code: 'KUI-B050',
+            selector: '#decorative-layer',
+            evidence: expect.objectContaining({
+              box: { width: 36, height: 36 },
+            }),
+          }),
         ]),
       );
+      const decorative = report.diagnostics.find(
+        ({ code, selector }) =>
+          code === 'KUI-B050' && selector === '#decorative-layer',
+      )?.evidence as { width: number; height: number };
+      expect(decorative.width).toBeLessThan(38);
+      expect(decorative.height).toBeLessThan(38);
       expect(report.artifacts.files).toHaveLength(1);
       expect(report.artifacts.files[0].sha256).toMatch(/^[a-f0-9]{64}$/);
       await expect(

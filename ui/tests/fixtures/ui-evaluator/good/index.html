@@ -21,6 +21,22 @@
         border-color: #005fcc;
         background: #dbeafe;
       }
+      /* A fitted 36px control whose pointer target is extended to 44 x 44 by
+         a transparent hit layer, like the ListHeader action. The layer is
+         positioned against the padding box, so it also spans the 2px border. */
+      .hit-layer {
+        position: relative;
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
+        padding: 0;
+      }
+      .hit-layer::before {
+        content: '';
+        position: absolute;
+        inset: -6px;
+      }
       input { min-width: 44px; min-height: 44px; color: black; background: white; }
       [data-kui-align-group] { display: grid; gap: 8px; }
       [data-kui-align-edge] { margin: 0; }
@@ -44,6 +60,14 @@
       </button>
       <button class="repeated-control" type="button">
         Second repeated control
+      </button>
+      <button
+        id="hit-layer"
+        class="hit-layer"
+        type="button"
+        aria-label="More actions"
+      >
+        +
       </button>
       <input type="submit" value="Apply" />
     </main>

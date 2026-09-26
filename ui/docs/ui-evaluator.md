@@ -61,6 +61,17 @@ shared container and `data-kui-align-edge` on two or more elements whose logical
 start edges must align. Use `data-kui-scroll-scope` only for an application-owned
 scope that is not a `.kui-pane`.
 
+Target size (`KUI-B050`) measures the area the pointer can actually reach, not
+just the border box. When a control's box is under 44 × 44, the evaluator
+hit-tests outward from its center with `elementFromPoint`, so a transparent hit
+layer (a positioned `::before`/`::after` that receives pointer events, as on the
+`ListHeader` action) counts toward the target, while a pseudo-element with
+`pointer-events: none`, a clipping ancestor, or an overlapping neighbor does
+not. Where the probe reaches the viewport edge it mirrors the opposite side's
+reach; a control whose center is off-screen or covered keeps its border box.
+The diagnostic evidence reports the measured `width`/`height` and the border
+`box`.
+
 Accessible names follow ARIA/native naming inputs, including labels, referenced
 content with `aria-hidden` descendants removed, and native input values.
 Geometry checks use each catalog entry's explicit `boundaries.rootClass`; the

@@ -23,6 +23,8 @@
       .duplicate + .duplicate:focus-visible { background: white; }
       .offscreen { position: fixed; left: -200px; top: 0; width: 44px; height: 44px; }
       .alpha-contrast { color: rgba(0, 0, 0, 0.1); width: 120px; height: 44px; }
+      .decorative-layer { position: relative; width: 36px; height: 36px; }
+      .decorative-layer::before { content: ''; position: absolute; inset: -4px; pointer-events: none; }
     </style>
   </head>
   <body>
@@ -34,6 +36,7 @@
       <button class="duplicate" tabindex="0">Second duplicate</button>
       <button class="offscreen">Offscreen action</button>
       <button class="alpha-contrast">Faint action</button>
+      <button id="decorative-layer" class="decorative-layer">+</button>
       <button id="aria-hidden-name">
         <span aria-hidden="true">Decorative only</span>
       </button>

@@ -336,6 +336,50 @@ async function inspectPage(page, geometryContracts) {
       return null;
     };
 
+    const hitExtent = (element, rect) => {
+      const root = element.getRootNode();
+      const probe = root.elementFromPoint ? root : document;
+      const inViewport = (x, y) =>
+        x >= 0 && y >= 0 && x < innerWidth && y < innerHeight;
+      const owns = (x, y) => {
+        const hit = probe.elementFromPoint(x, y);
+        return !!hit && (hit === element || element.contains(hit));
+      };
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+      if (!inViewport(x, y) || !owns(x, y)) return null;
+      // Walk out in 1px steps (no further than the 44px goal needs), then
+      // refine the last step in quarter pixels; the reach is the last owned
+      // sample, so it never overstates the target. A walk stopped by
+      // the viewport edge cannot see the rest of the layer, so it is marked
+      // and mirrored from the opposite side (hit layers are symmetric insets).
+      const reach = (dx, dy) => {
+        const at = (distance) => [x + dx * distance, y + dy * distance];
+        let owned = 0;
+        while (owned < 24) {
+          const point = at(owned + 1);
+          if (!inViewport(...point)) return { distance: owned, clipped: true };
+          if (!owns(...point)) break;
+          owned += 1;
+        }
+        if (owned >= 24) return { distance: owned, clipped: false };
+        while (owns(...at(owned + 0.25))) owned += 0.25;
+        return { distance: owned, clipped: false };
+      };
+      const span = (first, second) =>
+        first.clipped && second.clipped
+          ? first.distance + second.distance
+          : first.clipped
+            ? 2 * second.distance
+            : second.clipped
+              ? 2 * first.distance
+              : first.distance + second.distance;
+      return {
+        width: span(reach(-1, 0), reach(1, 0)),
+        height: span(reach(0, -1), reach(0, 1)),
+      };
+    };
+
     for (const element of interactives) {
       const target = selector(element);
       const rect = element.getBoundingClientRect();
@@ -495,14 +539,28 @@ async function inspectPage(page, geometryContracts) {
           'button,input:not([type="hidden"]),select,textarea,[role]',
         ) &&
         (rect.width < 43.5 || rect.height < 43.5)
-      )
-        diagnostics.push({
-          code: 'KUI-B050',
-          selector: target,
-          message: `Hit target is ${rect.width.toFixed(1)}×${rect.height.toFixed(1)}px; expected at least 44×44px.`,
-          repair: repair.target,
-          evidence: { width: rect.width, height: rect.height },
-        });
+      ) {
+        // The border box understates a control whose pointer target is
+        // extended by a transparent hit layer (a positioned ::before/::after
+        // that receives pointer events). Hit-test outward from the center to
+        // measure the area the pointer can actually reach; a probe that finds
+        // no hit (off-screen, covered center) keeps the border box.
+        const hit = hitExtent(element, rect);
+        const width = Math.max(rect.width, hit?.width ?? 0);
+        const height = Math.max(rect.height, hit?.height ?? 0);
+        if (width < 43.5 || height < 43.5)
+          diagnostics.push({
+            code: 'KUI-B050',
+            selector: target,
+            message: `Hit target is ${width.toFixed(1)}×${height.toFixed(1)}px; expected at least 44×44px.`,
+            repair: repair.target,
+            evidence: {
+              width,
+              height,
+              box: { width: rect.width, height: rect.height },
+            },
+          });
+      }
     }
 
     const parse = (value) => {
