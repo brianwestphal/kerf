@@ -6130,7 +6130,8 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
   // Compact mixed groups declare a 4px gap that their wa-dropdown / wa-button
   // children offset with -2px margins, so the rendered gap stays closed.
   expect(compactSpacing.declaredGap).toBe('4px');
-  expect(compactSpacing.gap).toBeLessThanOrEqual(0);
+  // Sub-pixel tolerance: Linux Firefox measured 0.0000153px here.
+  expect(compactSpacing.gap).toBeLessThanOrEqual(0.01);
   expect(compactSpacing.paddingInline).toBe('8px');
   expect(compactSpacing.separatorWidth).toBe('0px');
   expect(Math.abs(compactSpacing.selectedTop)).toBeLessThanOrEqual(0.5);
