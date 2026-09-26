@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed `kerf-ui-analyze` skipping the CSS-value contracts of `@kerfjs/ui`
+  `Select` and `Skeleton`. Its component lookup was keyed by display name, so
+  the same-named Web Awesome catalog entries (`wa-select`, `wa-skeleton`) —
+  which carry no CSS-value props — shadowed them, and a wrong-grammar helper
+  such as `colorVar()` for `SelectChoice.color` went unreported although the
+  ESLint rule caught it. Entries now resolve by `package:id`, using the
+  selection catalog's public exports and import subpaths.
 - Fixed `@kerfjs/ui` slide-motion `ResizableRegion` content staying at its
   previous width during a live resize until the app re-rendered the committed
   size. `wireResizableRegions` now applies the live size to the sliding content

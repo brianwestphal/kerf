@@ -17,6 +17,14 @@ composition catalog by `package:id`, parses literal JavaScript/TypeScript
 component calls, TSX/JSX, and CSS, and reports portable repository-relative
 locations.
 
+An imported component name is resolved to a catalog entry by `package:id`, not
+by display name: several entries share one (the Kerf `Select` and the Web
+Awesome `wa-select` are both "Select"), so the analyzer joins each composition
+entry to its selection-catalog public exports and import subpaths and picks
+the entry that the import actually names. That keeps the Kerf component's
+CSS-value contracts (`KUI-L013`–`KUI-L017`) in force for `Select` and
+`Skeleton`.
+
 Analysis is scoped per source file. Each TSX/JSX file resolves package,
 workspace, and parent-to-child directory profiles from its own location, then
 follows its relative CSS imports (including nested CSS `@import`s). Stylesheet

@@ -201,12 +201,72 @@ async function loadCatalogs(profileResult) {
           'utf8',
         ),
       );
-      entries.push(...(artifact.entries ?? []));
+      const selection = await loadSelectionFacts(owner, catalog);
+      for (const entry of artifact.entries ?? []) {
+        const selected = selection.get(entry.key);
+        entries.push(
+          selected
+            ? {
+                ...entry,
+                publicExports: entry.publicExports ?? selected.publicExports,
+                moduleImports: selected.moduleImports,
+              }
+            : entry,
+        );
+      }
     } catch {
       // Profile validation reports the precise catalog load failure.
     }
   }
   return entries;
+}
+
+// The composition (v2) catalog carries no import facts, and several of its
+// entries share a display name (the Kerf `Select` and the Web Awesome
+// `wa-select` are both "Select"). The selection (v1) catalog is where each
+// entry's real public exports and import subpaths live, so join it by key.
+async function loadSelectionFacts(owner, catalog) {
+  const facts = new Map();
+  if (!catalog.selection?.path) return facts;
+  let artifact;
+  try {
+    artifact = JSON.parse(
+      await readFile(resolve(dirname(owner), catalog.selection.path), 'utf8'),
+    );
+  } catch {
+    return facts;
+  }
+  const packageName = artifact.package ?? catalog.package;
+  for (const entry of artifact.entries ?? []) {
+    const delivery = entry.delivery ?? {};
+    facts.set(`${packageName}:${entry.id}`, {
+      publicExports: entry.publicExports,
+      moduleImports: [delivery.browserImport, delivery.moduleImport].filter(
+        Boolean,
+      ),
+    });
+  }
+  return facts;
+}
+
+// Pick the catalog entry an imported (or namespace-accessed) export name
+// refers to. Names are not unique across a catalog, so candidates are ranked:
+// an entry whose own import subpath is the module wins, then an entry that
+// declares the name as a public export, then catalog order.
+function resolveExportEntry(candidates, name, module) {
+  const eligible = (candidates ?? []).filter(
+    (entry) =>
+      module === entry.package || module?.startsWith(`${entry.package}/`),
+  );
+  const exported = (entry) =>
+    (entry.publicExports ?? []).some(
+      (item) => (typeof item === 'string' ? item : item.name) === name,
+    );
+  return (
+    eligible.find((entry) => entry.moduleImports?.includes(module)) ??
+    eligible.find(exported) ??
+    eligible[0]
+  );
 }
 
 function catalogFacts(entries) {
@@ -215,10 +275,15 @@ function catalogFacts(entries) {
   const publicParts = new Map();
   const classEntries = new Map();
   const exportEntries = new Map();
+  const addExport = (name, entry) => {
+    const candidates = exportEntries.get(name) ?? [];
+    if (!candidates.includes(entry)) candidates.push(entry);
+    exportEntries.set(name, candidates);
+  };
   for (const entry of entries) {
-    exportEntries.set(entry.name, entry);
+    addExport(entry.name, entry);
     for (const item of entry.publicExports ?? [])
-      exportEntries.set(typeof item === 'string' ? item : item.name, entry);
+      addExport(typeof item === 'string' ? item : item.name, entry);
     for (const className of entry.boundaries?.publicClasses ?? []) {
       publicClasses.add(className);
       const owners = classEntries.get(className) ?? [];
@@ -632,12 +697,12 @@ function inspectTsx(file, sourceText, facts, cssFacts, diagnostics) {
     for (const item of bindings.elements) {
       const exported = item.propertyName?.text ?? item.name.text;
       helperImports.set(item.name.text, { imported: exported, source: module });
-      const entry = facts.exportEntries.get(exported);
-      if (
-        entry &&
-        (module === entry.package || module.startsWith(`${entry.package}/`))
-      )
-        imports.set(item.name.text, entry);
+      const entry = resolveExportEntry(
+        facts.exportEntries.get(exported),
+        exported,
+        module,
+      );
+      if (entry) imports.set(item.name.text, entry);
     }
   }
   const stack = [];
@@ -648,20 +713,13 @@ function inspectTsx(file, sourceText, facts, cssFacts, diagnostics) {
       const namespaceEntry =
         ts.isPropertyAccessExpression(opening.tagName) &&
         ts.isIdentifier(opening.tagName.expression)
-          ? facts.exportEntries.get(opening.tagName.name.text)
+          ? resolveExportEntry(
+              facts.exportEntries.get(opening.tagName.name.text),
+              opening.tagName.name.text,
+              namespaces.get(opening.tagName.expression.text),
+            )
           : undefined;
-      const namespaceSource =
-        ts.isPropertyAccessExpression(opening.tagName) &&
-        ts.isIdentifier(opening.tagName.expression)
-          ? namespaces.get(opening.tagName.expression.text)
-          : undefined;
-      const entry =
-        imports.get(tag) ??
-        (namespaceEntry &&
-        (namespaceSource === namespaceEntry.package ||
-          namespaceSource?.startsWith(`${namespaceEntry.package}/`))
-          ? namespaceEntry
-          : undefined);
+      const entry = imports.get(tag) ?? namespaceEntry;
       const classAttribute = opening.attributes.properties.find(
         (item) =>
           ts.isJsxAttribute(item) &&
@@ -744,20 +802,15 @@ function inspectTsx(file, sourceText, facts, cssFacts, diagnostics) {
       return;
     }
     if (ts.isCallExpression(node)) {
-      const namespaceEntry = ts.isPropertyAccessExpression(node.expression)
-        ? facts.exportEntries.get(node.expression.name.text)
-        : undefined;
-      const namespaceSource =
-        ts.isPropertyAccessExpression(node.expression) &&
-        ts.isIdentifier(node.expression.expression)
-          ? namespaces.get(node.expression.expression.text)
-          : undefined;
       const entry = ts.isIdentifier(node.expression)
         ? imports.get(node.expression.text)
-        : namespaceEntry &&
-            (namespaceSource === namespaceEntry.package ||
-              namespaceSource?.startsWith(`${namespaceEntry.package}/`))
-          ? namespaceEntry
+        : ts.isPropertyAccessExpression(node.expression) &&
+            ts.isIdentifier(node.expression.expression)
+          ? resolveExportEntry(
+              facts.exportEntries.get(node.expression.name.text),
+              node.expression.name.text,
+              namespaces.get(node.expression.expression.text),
+            )
           : undefined;
       if (entry)
         inspectCssValues(

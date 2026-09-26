@@ -241,6 +241,73 @@ export const Values = () => <><ListItem style="color: red" /><Select choices={[{
     ).toHaveLength(2);
   });
 
+  it('resolves same-named catalog entries to the importable Kerf component', async () => {
+    // The composition catalog names both the Kerf Select and the Web Awesome
+    // wa-select "Select" (likewise Skeleton / wa-skeleton, Badge / wa-badge).
+    // Only the Kerf entries carry CSS-value contracts, so a name-keyed lookup
+    // that let the Web Awesome entry win silently skipped them.
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-collide-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'src/barrel.tsx'),
+      `import { Select, colorVar } from '@kerfjs/ui';
+export const A = () => <Select choices={[{ label: 'A', value: 'a', color: colorVar('--app-color') }]} />;
+`,
+    );
+    await writeFile(
+      join(root, 'src/subpath.tsx'),
+      `import { Select } from '@kerfjs/ui/select';
+import { Skeleton } from '@kerfjs/ui/skeleton';
+export const B = () => <><Select choices={[{ label: 'B', value: 'b', color: '#fff' }]} /><Skeleton width="13px" /></>;
+`,
+    );
+    await writeFile(
+      join(root, 'src/namespace.ts'),
+      `import * as ui from '@kerfjs/ui';
+ui.Select({ choices: [{ label: 'C', value: 'c', color: ui.colorVar('--app-color') }] });
+`,
+    );
+
+    const report = await analyzeUiProject({ root, profile: packageProfile });
+    const found = report.diagnostics.map(({ ruleId, location, evidence }) => ({
+      ruleId,
+      file: location.file,
+      component: (evidence as { component?: string } | undefined)?.component,
+    }));
+    expect(found).toEqual(
+      expect.arrayContaining([
+        {
+          ruleId: 'KUI-L014',
+          file: 'src/barrel.tsx',
+          component: '@kerfjs/ui:select',
+        },
+        {
+          ruleId: 'KUI-L013',
+          file: 'src/subpath.tsx',
+          component: '@kerfjs/ui:select',
+        },
+        {
+          ruleId: 'KUI-L013',
+          file: 'src/subpath.tsx',
+          component: '@kerfjs/ui:skeleton',
+        },
+        {
+          ruleId: 'KUI-L014',
+          file: 'src/namespace.ts',
+          component: '@kerfjs/ui:select',
+        },
+      ]),
+    );
+    expect(
+      report.diagnostics.find(
+        ({ ruleId, location }) =>
+          ruleId === 'KUI-L014' && location.file === 'src/barrel.tsx',
+      )?.message,
+    ).toBe(
+      '`colorVar()` has the wrong grammar for `Select.choices[].color`; use `uiColor()` or `foregroundColorVar()`.',
+    );
+  });
+
   it('emits portable text and SARIF contracts', async () => {
     const report = await analyzeUiProject({
       root: await fixture(),
