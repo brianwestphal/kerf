@@ -446,7 +446,8 @@ implementation classes.
 
 Ten task-oriented recipes bridge primitives and product adapters: a resizable
 application shell, navigation sidebar, workspace header, list-detail dialog,
-composer form, list-state lifecycle, and compact mixed-control toolbar. They
+composer form, list-state lifecycle, compact mixed-control toolbar, push/pop
+navigation stack, loading record inspector, and collapsible sidebar. They
 are lazy catalog modules rather than new runtime exports. Each uses public
 component subpaths plus `layout.css`, composes components through their
 public configuration with no stylesheet, inline style, or styling-only class,

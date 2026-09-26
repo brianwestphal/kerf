@@ -59,7 +59,10 @@ export const createRecipe: RecipeFactory = (announce) => {
       noValidate
     >
       <List gap="l" controlInsets="tb">
-        <List>
+        {/* The title and its supporting line are one heading unit: an explicit
+            "none" gap keeps them together instead of inheriting the form's
+            24px section rhythm. */}
+        <List gap="none">
           <Toolbar
             label="Publish workspace update"
             dividerSides=""

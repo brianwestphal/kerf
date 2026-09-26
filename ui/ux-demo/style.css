@@ -36,10 +36,3 @@ html.demo-reduced-motion *::after {
 button {
   font: inherit;
 }
-/* Catalog stage state owns the demo-wide presentation variables. */
-[data-demo-stage-inner][data-demo-mode="component"] {
-  --demo-surface-border: transparent;
-  --demo-surface-background: transparent;
-  --demo-surface-shadow: none;
-  --demo-surface-padding: 0;
-}

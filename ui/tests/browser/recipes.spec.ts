@@ -496,7 +496,12 @@ test('keeps the composer on one labeled surface with shared field and action gut
         fieldsEnd: rootBounds.right - fieldsBounds.right,
         footerStart: footer.left - rootBounds.left,
         footerEnd: rootBounds.right - footer.right,
+        headingGap: parseFloat(
+          window.getComputedStyle(header.parentElement!).rowGap,
+        ),
         headerStart: headerBounds.left - rootBounds.left,
+        summaryAfterHeader:
+          summary.getBoundingClientRect().top - headerBounds.bottom,
         headerEnd: rootBounds.right - headerBounds.right,
         hintCountOverlap,
         rootBackground: rootStyle.backgroundColor,
@@ -572,6 +577,12 @@ test('keeps the composer on one labeled surface with shared field and action gut
       expect(inset).toBeCloseTo(1 + 8 * scale, 0);
     // The heading toolbar is flush with the surface rather than using the
     // content-item gutter, so it sits at the edge rather than the 9px inset.
+    // The title and supporting line are one heading unit: the nested heading
+    // List must not pick up the form's 24px section gap, so the summary sits
+    // directly under the toolbar (only its own 2px line-box offset between).
+    expect(measured.headingGap).toBe(0);
+    expect(measured.summaryAfterHeader).toBeGreaterThanOrEqual(0);
+    expect(measured.summaryAfterHeader).toBeLessThanOrEqual(3 * scale);
     expect(measured.headerStart).toBeLessThanOrEqual(1 + 2 * scale);
     expect(measured.headerEnd).toBeLessThanOrEqual(1 + 2 * scale);
     expect(measured.summaryTextStart).toBeCloseTo(2 + 16 * scale, 0);

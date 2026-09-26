@@ -144,6 +144,16 @@ variant owns no margin, border, or padding. Choose heading levels from the
 document outline, not for visual size. Toolbar identity and page-heading
 compositions continue to use `ToolbarText`.
 
+`Text` is also the answer for a normal-color subsection title. `ToolbarText`
+below `xlarge` (`large`, `default`, `small`) is deliberately quiet: it labels a
+toolbar's identity — a pane name or a status — and must not compete with the
+content and controls around it, so it has no tone option. A subsection title is
+document content, not toolbar identity: use `Text` with the `h2`–`h6` variant
+the outline calls for (inside a `List` with `controlInsets`, its text lines up
+with content items). Use `ListHeader` when the section is a list or menu group
+that needs a count, badge, action, or disclosure, and keep extra-large
+`ToolbarText` for the panel, dialog, or page title.
+
 Presentation is independent of the native element: use `tone="quiet"` for
 supporting copy, `tone="danger"` for error or validation copy, `size="compact"`
 for compact metadata, and `font="monospace"` for code or identifiers. These
@@ -154,6 +164,7 @@ them to inherit the surrounding color, size, and font.
 import { Text } from "@kerfjs/ui/text";
 
 <Text variant="h2" id="details-title">Details</Text>;
+<Text variant="h3">Notifications</Text>; // normal-color subsection title
 <Text aria-describedby="details-title">Supporting copy</Text>;
 <Text tone="quiet" size="compact">Updated yesterday</Text>;
 <strong>Inbox<Text variant="span" tone="quiet" size="compact"> · 3 msg</Text></strong>;

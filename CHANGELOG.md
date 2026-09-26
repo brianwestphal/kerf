@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   elements (`wa-select`, `wa-dropdown`, `wa-dialog`, …) when the template omits
   it — the same user-agent-owned treatment `<details>` / `<dialog>` already
   had. A template can still set `open`; closing stays imperative.
+- The `@kerfjs/ui` composer-form recipe's supporting line now sits directly
+  under its toolbar title instead of 24px lower: its nested heading `List` sets
+  `gap="none"` rather than picking up the form's section gap. The guidance now
+  also states that `ToolbarText` below `xlarge` is intentionally quiet identity
+  text with no tone option. A normal-color subsection title is `Text` with an
+  `h2`–`h6` variant, or `ListHeader` for a list or menu section.
 - Fixed `@kerfjs/ui` `ToolbarText size="small"` labels rendering in a
   monospace fallback face in Chromium. The small size used the code-font token,
   which resolves through Web Awesome's `ui-monospace, monospace` stack; Chromium

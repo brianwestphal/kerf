@@ -1412,9 +1412,21 @@
         "Render toolbar identity or heading text at a supported hierarchy size; pass headingLevel for heading semantics."
       ],
       "avoidWhen": [
-        "Do not omit headingLevel when the text is the page or section heading."
+        "Do not omit headingLevel when the text is the page or section heading.",
+        "Do not use a size below xlarge as a normal-color subsection title: large, default, and small are intentionally quiet toolbar identity text and have no tone option. Use Text with an h2-h6 variant for a content subsection title, or ListHeader for a list or menu section."
       ],
-      "alternatives": [],
+      "alternatives": [
+        {
+          "id": "text",
+          "relationship": "semantic-alternative",
+          "when": "Use Text variant h2-h6 for a normal-color subsection title in content rather than toolbar identity."
+        },
+        {
+          "id": "list-header",
+          "relationship": "semantic-alternative",
+          "when": "Use ListHeader for a list or menu section label with a count, badge, action, or disclosure."
+        }
+      ],
       "appOwns": [
         "text",
         "responsive priority"

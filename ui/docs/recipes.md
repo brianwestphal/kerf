@@ -88,7 +88,9 @@ parts.
 
 A direct `ToolbarText` supplies the task title, with app-owned supporting copy
 below; their ids are referenced by the form. `ListInsetText` gives that bare
-supporting copy the same content-item text inset as the fields. Production
+supporting copy the same content-item text inset as the fields. The title and
+supporting line share a nested heading `List` with `gap="none"`, so the heading
+unit stays together instead of taking the form's 24px section gap. Production
 fields own labels, help, and native focus. One `List` owns the 24px major
 rhythm; the field `List` and the action `Row` use `controlInsets` to sit on the
 shared 8px inline gutter with 8px gaps between related controls, rather than
