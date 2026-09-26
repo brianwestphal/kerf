@@ -272,36 +272,29 @@ describe('production composition recipes', () => {
 
     const rail = root.querySelector('[data-collapsible-panel="sidebar-rail"]')!;
     expect(rail.getAttribute('data-collapsed')).toBe('false');
-    // The reveal toggle lives in the always-visible main header.
-    const reveal = root.querySelector<HTMLButtonElement>(
-      'main [data-collapsible-target="sidebar-rail"]',
-    )!;
-    reveal.click();
-    expect(
-      root
-        .querySelector('[data-collapsible-panel="sidebar-rail"]')
-        ?.getAttribute('data-collapsed'),
-    ).toBe('true');
-    reveal.click();
-    expect(
-      root
-        .querySelector('[data-collapsible-panel="sidebar-rail"]')
-        ?.getAttribute('data-collapsed'),
-    ).toBe('false');
+    // One control owns each action: the rail's own collapse toggle while it is
+    // open, the main header's expand toggle only while it is collapsed.
+    const reveal = () =>
+      root.querySelector<HTMLButtonElement>(
+        'main [data-collapsible-target="sidebar-rail"]',
+      );
+    const collapseToggle = () =>
+      rail.querySelector<HTMLButtonElement>(
+        '[data-collapsible-target="sidebar-rail"]',
+      )!;
+    expect(reveal()).toBeNull();
+    collapseToggle().click();
+    expect(rail.getAttribute('data-collapsed')).toBe('true');
+    expect(document.activeElement).toBe(reveal());
+    reveal()!.click();
+    expect(rail.getAttribute('data-collapsed')).toBe('false');
+    expect(reveal()).toBeNull();
 
     stop();
     stop();
-    root
-      .querySelector<HTMLButtonElement>(
-        'main [data-collapsible-target="sidebar-rail"]',
-      )
-      ?.click();
+    collapseToggle().click();
     // After disposal the toggle no longer flips the panel.
-    expect(
-      root
-        .querySelector('[data-collapsible-panel="sidebar-rail"]')
-        ?.getAttribute('data-collapsed'),
-    ).toBe('false');
+    expect(rail.getAttribute('data-collapsed')).toBe('false');
     root.remove();
   });
 

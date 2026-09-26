@@ -42,7 +42,10 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   - **toggles** the panel's `collapsed` signal when any `[data-action=toggleAction]`
     button is clicked, and remembers the trigger;
   - **manages focus** — moves focus into the panel when it opens, and restores it
-    to the trigger when it closes;
+    to the trigger when it closes. When that trigger is the collapse toggle inside
+    the now-hidden panel, focus goes to the panel's toggle outside it instead, so
+    an app may render its expand toggle only while the panel is collapsed (one
+    control per action, as the recipe does);
   - **presents a compact overlay** when `deviceClass.compact` is true (pass a
     `deviceClass()` signal): the open panel floats over the content with a
     dismissable backdrop, Escape and backdrop-click collapse it, and Tab is trapped

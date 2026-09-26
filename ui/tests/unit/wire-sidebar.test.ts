@@ -76,6 +76,64 @@ describe('wireSidebar', () => {
     stop();
   });
 
+  it('moves focus to the outside toggle when the trigger lives inside the collapsed panel', () => {
+    const root = mount(false);
+    const inner = document.createElement('button');
+    inner.dataset.action = 'toggle-nav';
+    root.querySelector('[data-collapsible-panel="nav"]')!.prepend(inner);
+    const outside = root.querySelector<HTMLButtonElement>(
+      ':scope > [data-action="toggle-nav"]',
+    )!;
+    const collapsed = signal(false);
+    const stop = wireSidebar(root, {
+      panels: [{ id: 'nav', collapsed, toggleAction: 'toggle-nav' }],
+    });
+    inner.focus();
+    inner.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(collapsed.value).toBe(true);
+    // Not the now-hidden trigger: the panel's toggle outside it.
+    expect(document.activeElement).toBe(outside);
+    stop();
+  });
+
+  it('waits for an expand toggle the app renders only once the panel collapses', async () => {
+    const root = mount(false);
+    const outside = root.querySelector<HTMLButtonElement>(
+      ':scope > [data-action="toggle-nav"]',
+    )!;
+    outside.remove();
+    const inner = document.createElement('button');
+    inner.dataset.action = 'toggle-nav';
+    root.querySelector('[data-collapsible-panel="nav"]')!.prepend(inner);
+    const collapsed = signal(false);
+    const stop = wireSidebar(root, {
+      panels: [{ id: 'nav', collapsed, toggleAction: 'toggle-nav' }],
+    });
+    // Stand-in for an app that subscribed AFTER the wire, so it renders its
+    // expand toggle only after the wire's focus effect already looked for it.
+    const stopRender = effect(() => {
+      if (collapsed.value) root.prepend(outside);
+      else outside.remove();
+    });
+    inner.focus();
+    inner.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(collapsed.value).toBe(true);
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(document.activeElement).toBe(outside);
+
+    // Reopened before the retry runs: the retry leaves focus alone.
+    collapsed.value = false;
+    inner.focus();
+    collapsed.value = true;
+    collapsed.value = false;
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(collapsed.value).toBe(false);
+    stopRender();
+    stop();
+  });
+
   it('seeds collapsed state from storage and persists changes', () => {
     const root = mount(false);
     const storage = fakeStorage({ 'sidebar.nav': 'true' });

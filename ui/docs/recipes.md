@@ -163,10 +163,12 @@ which values are still unknown.
 A mini app frame whose left navigation rail and bottom activity drawer are
 standalone `CollapsiblePanel`s (`@kerfjs/ui/collapsible-panel`) driven by
 `wireSidebar` (`@kerfjs/ui/wire-sidebar`). `CollapsiblePanelToggle` supplies the
-standard per-side glyph: a collapse toggle lives inside each panel and an expand
-toggle lives in the always-visible main header, so a collapsed panel is still
+standard per-side glyph: a collapse toggle lives inside each panel, and the
+always-visible main header shows that panel's expand toggle only while it is
+collapsed, so exactly one control owns each action and a collapsed panel is still
 reachable. `wireSidebar` owns the toggle delegation, moves focus into a panel on
-open and restores it to the trigger on close, and — when a `deviceClass()` reports
+open, restores it on close (to the trigger, or to the panel's expand toggle when
+the trigger sits inside the collapsed panel), and — when a `deviceClass()` reports
 `compact` — presents the panels as a dismissable **overlay** (backdrop, Escape
 and backdrop-click collapse, and a trapped Tab ring, the ARIA dialog pattern).
 The overlay starts closed and opens only from a toggle; the rail's signal is

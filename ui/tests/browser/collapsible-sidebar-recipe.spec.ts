@@ -18,6 +18,8 @@ const revealToggle = (page: Page) =>
   page.locator(
     '[data-recipe="recipe-collapsible-sidebar"] main [data-collapsible-target="sidebar-rail"]',
   );
+const railToggles = (page: Page) =>
+  page.locator('[data-collapsible-target="sidebar-rail"]');
 const railInnerToggle = (page: Page) =>
   railPanel(page).locator('.kui-collapsible-panel__toggle');
 const backdrop = (page: Page) =>
@@ -29,17 +31,23 @@ test('collapses and expands the rail, moving focus in and restoring it', async (
   await page.setViewportSize({ width: 1200, height: 820 });
   await page.goto(RECIPE);
 
+  // One control owns each action: while the rail is open only its own
+  // collapse toggle exists, and the main header shows no expand toggle.
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
+  await expect(railToggles(page)).toHaveCount(1);
+  await expect(revealToggle(page)).toHaveCount(0);
 
-  // Collapse via the reveal toggle: the panel hides and focus restores to it.
-  await revealToggle(page).click();
+  // Collapse from inside the rail: focus moves to the main header's expand
+  // toggle rather than staying on the now-hidden collapse toggle.
+  await railInnerToggle(page).click();
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
   await expect(revealToggle(page)).toBeFocused();
 
-  // Expand via the same toggle: focus moves into the panel's first control.
+  // Expand from the main header: focus moves into the panel's first control.
   await revealToggle(page).click();
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
   await expect(railInnerToggle(page)).toBeFocused();
+  await expect(revealToggle(page)).toHaveCount(0);
 });
 
 test('expands and collapses the bottom drawer independently', async ({
@@ -54,8 +62,15 @@ test('expands and collapses the bottom drawer independently', async ({
   // The rail is unaffected by the drawer toggle.
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
 
-  await page.getByRole('button', { name: 'Hide activity' }).first().click();
+  // Open, the drawer's own collapse toggle is its only control.
+  await expect(
+    page.locator('[data-collapsible-target="sidebar-console"]'),
+  ).toHaveCount(1);
+  await page.getByRole('button', { name: 'Hide activity' }).click();
   await expect(drawerPanel(page)).toHaveAttribute('data-collapsed', 'true');
+  await expect(
+    page.getByRole('button', { name: 'Show activity' }),
+  ).toBeFocused();
 });
 
 test('opens the bottom drawer monotonically from its stable bottom edge', async ({
@@ -464,7 +479,7 @@ test.describe('compact overlay initial state', () => {
 
     // An inline choice to hide the rail survives a compact round trip, even
     // when the overlay was opened meanwhile.
-    await revealToggle(page).click();
+    await railInnerToggle(page).click();
     await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
     await page.setViewportSize({ width: 390, height: 844 });
     await expect(canvas).toHaveAttribute('data-collapsible-overlay', 'true');
@@ -489,8 +504,12 @@ test('keeps the compact overlay intact when a nav selection re-renders the recip
   await expect(backdrop(page)).toHaveCount(1);
 
   // Selecting a destination re-renders the recipe (and morphs the wired
-  // canvas) without touching any panel signal.
-  await railPanel(page).getByText('Projects').click();
+  // canvas) without touching any panel signal. Select from the keyboard:
+  // Playwright's WebKit pointer path misplaces its click point for this fixed
+  // overlay inside the catalog's transformed frame (elementFromPoint at the
+  // item hits the item itself, so a real tap is unaffected).
+  await railPanel(page).getByRole('button', { name: 'Projects' }).focus();
+  await page.keyboard.press('Enter');
   await expect(
     page.locator('[data-recipe="recipe-collapsible-sidebar"] main'),
   ).toContainText('Projects');
@@ -502,11 +521,14 @@ test('keeps the compact overlay intact when a nav selection re-renders the recip
   await expect(backdrop(page)).toHaveCount(1);
   await expect(railPanel(page)).toHaveCSS('position', 'fixed');
 
-  // The wiring still owns the rail: its own toggle closes the overlay and
-  // restores focus, and the reveal toggle opens it again.
-  await railInnerToggle(page).click();
+  // The wiring still owns the rail: its own toggle (keyboard, for the same
+  // WebKit reason) closes the overlay and restores focus, and the reveal
+  // toggle opens it again.
+  await railInnerToggle(page).focus();
+  await page.keyboard.press('Enter');
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
   await expect(backdrop(page)).toHaveCount(0);
+  await expect(revealToggle(page)).toBeFocused();
   await revealToggle(page).click();
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
   await expect(backdrop(page)).toHaveCount(1);

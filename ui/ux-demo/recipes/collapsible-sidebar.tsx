@@ -143,8 +143,9 @@ export const createRecipe: RecipeFactory = (announce) => {
     </CollapsiblePanel>
   );
 
-  // The reveal toggle lives in the always-visible main header, so a collapsed
-  // rail stays reachable; the panel's own header holds its collapse toggle.
+  // Each panel's own header holds its collapse toggle; the always-visible main
+  // header holds its expand toggle only while it is collapsed, so exactly one
+  // control owns each action. wireSidebar hands focus between them.
   const main = () => (
     <Pane
       element="main"
@@ -154,9 +155,11 @@ export const createRecipe: RecipeFactory = (announce) => {
           dividerSides=""
           leading={
             <>
-              <ToolbarControlGroup appearance="borderless" single>
-                {railToggle()}
-              </ToolbarControlGroup>
+              {railCollapsed.value ? (
+                <ToolbarControlGroup appearance="borderless" single>
+                  {railToggle()}
+                </ToolbarControlGroup>
+              ) : null}
               <ToolbarText
                 text={labels[selected.value] ?? 'Inbox'}
                 size="xlarge"
@@ -165,9 +168,11 @@ export const createRecipe: RecipeFactory = (announce) => {
             </>
           }
           trailing={
-            <ToolbarControlGroup appearance="borderless" single>
-              {drawerToggle()}
-            </ToolbarControlGroup>
+            drawerCollapsed.value ? (
+              <ToolbarControlGroup appearance="borderless" single>
+                {drawerToggle()}
+              </ToolbarControlGroup>
+            ) : undefined
           }
         />
       }

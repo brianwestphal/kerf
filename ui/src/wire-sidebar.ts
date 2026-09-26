@@ -179,7 +179,27 @@ export function wireSidebar(
     }),
   );
 
-  // Focus: move into the panel when it opens; restore to the trigger when it closes.
+  // Where focus goes when a panel closes: the trigger that toggled it, unless
+  // that trigger sits inside the now-hidden panel (the documented
+  // collapse-inside placement) or was re-rendered away. Then it goes to the
+  // panel's toggle outside it — the always-visible expand toggle, which an app
+  // may render only while the panel is collapsed. Returns whether it moved.
+  const restoreFocus = (panel: WireSidebarPanel): boolean => {
+    const element = panelElement(panel.id);
+    const trigger = returnFocus.get(panel.id);
+    const target =
+      trigger?.isConnected && !element?.contains(trigger)
+        ? trigger
+        : [...root.querySelectorAll<HTMLElement>('[data-action]')].find(
+            (candidate) =>
+              candidate.dataset.action === panel.toggleAction &&
+              !element?.contains(candidate),
+          );
+    target?.focus();
+    return target !== undefined;
+  };
+
+  // Focus: move into the panel when it opens; restore it when it closes.
   for (const panel of panels) {
     let previous = panel.collapsed.value;
     disposers.push(
@@ -191,22 +211,20 @@ export function wireSidebar(
         if (adapting.delete(panel)) {
           // A presentation change, not a user action: only rescue focus that
           // the collapse would strand inside the now-hidden panel.
-          const trigger = returnFocus.get(panel.id);
-          if (
-            collapsed &&
-            element?.contains(ownerDocument.activeElement) &&
-            trigger?.isConnected &&
-            !element.contains(trigger)
-          )
-            trigger.focus();
+          if (collapsed && element?.contains(ownerDocument.activeElement))
+            restoreFocus(panel);
           return;
         }
         const replaced =
           deviceClass?.value.compact && compactPresentation === 'hidden';
         if (!collapsed && element && !replaced) {
           (focusables(element)[0] ?? element).focus();
-        } else if (collapsed) {
-          returnFocus.get(panel.id)?.focus();
+        } else if (collapsed && !restoreFocus(panel)) {
+          // An app that renders after this effect has not produced its
+          // expand toggle yet; look again once the current batch settles.
+          globalThis.queueMicrotask(() => {
+            if (panel.collapsed.peek()) restoreFocus(panel);
+          });
         }
       }),
     );

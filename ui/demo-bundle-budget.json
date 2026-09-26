@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 285100,
-  "measuredLargestJavaScriptGzip": 136324,
-  "measuredTotalJavaScriptGzip": 285095,
+  "totalJavaScriptGzip": 285200,
+  "measuredLargestJavaScriptGzip": 136331,
+  "measuredTotalJavaScriptGzip": 285150,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -435,6 +435,22 @@
         "measuredTotalJavaScriptGzip": 285095,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 285100
+      }
+    },
+    {
+      "at": "2026-09-26T06:37:59.254Z",
+      "reason": "KF-K4AD9F: wireSidebar restores focus to the panel's outside toggle when its trigger sits inside the collapsed panel",
+      "old": {
+        "measuredLargestJavaScriptGzip": 136324,
+        "measuredTotalJavaScriptGzip": 285095,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 136331,
+        "measuredTotalJavaScriptGzip": 285150,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285200
       }
     }
   ]

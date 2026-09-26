@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui`'s `wireSidebar` no longer leaves focus inside a panel it just
+  collapsed. When the collapse was triggered from a toggle inside the panel
+  (the documented placement), focus now moves to that panel's toggle outside
+  it, including one the app renders only once the panel is collapsed. The
+  collapsible-sidebar recipe now shows one control per action: each panel's
+  own collapse toggle while it is open, and the main header's expand toggle
+  only while it is collapsed. Wide widths no longer show two rail toggles.
 - `@kerfjs/ui`'s `wireSidebar` keeps a compact overlay intact when the app
   re-renders the wired root without changing a panel. Previously, selecting a
   destination in an open compact rail morphed the root, which removed the

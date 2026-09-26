@@ -280,7 +280,9 @@ standard per-side collapse/expand glyph (`PanelLeft*` / `PanelRight*` /
 `PanelBottom*`); place a collapse toggle inside the panel and an expand toggle in
 an always-visible location so it is reachable while collapsed. `wireSidebar()`
 moves focus into the panel when it opens and restores it to the trigger when it
-closes. When a `deviceClass()` reports `compact`, an open panel becomes an overlay
+closes; a trigger inside the now-hidden panel hands focus to the panel's toggle
+outside it instead, so an app may render the expand toggle only while the panel
+is collapsed. When a `deviceClass()` reports `compact`, an open panel becomes an overlay
 with a dismissable backdrop, Escape and backdrop-click collapse it, and Tab is
 trapped within it (the ARIA dialog pattern). That modal state only ever begins
 from a user action: at wire-up on a compact device and on a wide → compact
