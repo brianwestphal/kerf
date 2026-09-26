@@ -123,9 +123,35 @@
   padding: var(--kui-layout-item-padding, remify(8px));
   align-items: center;
   justify-content: center;
+  position: relative;
   align-self: center;
   cursor: pointer;
   flex: none;
+}
+
+/* The fitted square is the visual and hover surface; the pointer target is at
+   least 44px in both dimensions. A transparent, out-of-flow layer extends the
+   button's hit area evenly around the square without moving layout or painting
+   anything, and hovering it lights the unchanged fitted square. Standard headers
+   are 44px tall and reserve the 4px inline slot at the logical end, so the
+   extension stays inside the header; the leading 4px falls in the 8px gap before
+   the dormant title. Offsets are from the padding box, hence the extra 1px for the
+   border. */
+.kui-list-header__action::before {
+  --_kui-list-header-action-hit-outset: min(
+    0px,
+    calc((var(--_kui-list-header-action-size) - remify(44px)) / 2)
+  );
+  content: "";
+  position: absolute;
+  inset: calc(var(--_kui-list-header-action-hit-outset) - 1px);
+}
+
+/* Compact headers are 36px tall like the rest of the compact List family, so the
+   hit area widens to 44px but never reaches past the header into a neighboring
+   row or header. */
+.kui-list-header[data-density="compact"] .kui-list-header__action::before {
+  inset-block: -1px;
 }
 
 /* Trailing icon actions share one axis: a toolbar control centers its glyph in a

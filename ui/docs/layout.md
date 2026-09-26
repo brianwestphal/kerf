@@ -98,7 +98,8 @@ Toolbar groups reserve a real 1px outer border around a 42px inner area, even
 when their border and background are transparent.
 Trailing icon actions share one axis: a toolbar control centers its glyph in
 that 44px slot at the 8px inline margin, and a `ListHeader` action centers its
-fitted square in a slot of the same size, so a Pane header's trailing toolbar
+fitted 36px square in a slot of the same size (a transparent hit layer extends
+its pointer target to fill that 44px slot), so a Pane header's trailing toolbar
 action and the `ListHeader` action beneath it line up (30px from the pane edge
 at the default scale).
 Panel, dialog, and page headings are plain `Toolbar` compositions. The leading

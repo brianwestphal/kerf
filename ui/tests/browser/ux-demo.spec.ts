@@ -4837,6 +4837,121 @@ test('fills ListHeader rows and keeps 18px action visuals at the logical end', a
     });
 });
 
+test('extends the fitted ListHeader action to a 44px pointer target without overlapping dense neighbors', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?component=list-header');
+  const demo = page.locator('[data-demo="list-header"]');
+  await expect(
+    demo.getByRole('button', { name: 'Add attachment' }).first(),
+  ).toBeVisible();
+
+  const report = await demo.evaluate((root) => {
+    const source = [...root.querySelectorAll<HTMLElement>('.kui-list-header')]
+      .filter((header) => header.dataset.inline === 'false')
+      .find((header) =>
+        header.querySelector('.kui-list-header__action:not(:disabled)'),
+      )!;
+    // A dense stack: standard and compact headers touching with no gap, so any
+    // hit-area extension that escapes its own header would contest a neighbor.
+    const stack = document.createElement('div');
+    stack.setAttribute('data-dense-list-header-probe', '');
+    for (const density of ['standard', 'standard', 'compact', 'compact']) {
+      const clone = source.cloneNode(true) as HTMLElement;
+      clone.dataset.density = density;
+      clone.dataset.divider = 'none';
+      stack.append(clone);
+    }
+    root.append(stack);
+    // elementFromPoint only resolves points inside the viewport.
+    stack.scrollIntoView({ block: 'center' });
+    const actions = [
+      ...stack.querySelectorAll<HTMLElement>('.kui-list-header__action'),
+    ];
+    const hitOwner = (x: number, y: number) =>
+      document
+        .elementFromPoint(x, y)
+        ?.closest<HTMLElement>('.kui-list-header__action') ?? null;
+    return actions.map((action) => {
+      const header = action.closest<HTMLElement>('.kui-list-header')!;
+      const headerBounds = header.getBoundingClientRect();
+      const bounds = action.getBoundingClientRect();
+      const cx = bounds.left + bounds.width / 2;
+      const cy = bounds.top + bounds.height / 2;
+      const halfWidth = 22;
+      const halfHeight =
+        header.dataset.density === 'compact' ? bounds.height / 2 : 22;
+      // Probe 1px inside and outside each edge: engines snap the fractional
+      // layer box to device pixels, so a half-pixel probe is not stable.
+      const inside = [
+        [cx - halfWidth + 1, cy],
+        [cx + halfWidth - 1, cy],
+        [cx, cy - halfHeight + 1],
+        [cx, cy + halfHeight - 1],
+        [cx - halfWidth + 1, cy - halfHeight + 1],
+        [cx + halfWidth - 1, cy + halfHeight - 1],
+      ] as const;
+      const outside = [
+        [cx - halfWidth - 1, cy],
+        [cx + halfWidth + 1, cy],
+        [cx, cy - halfHeight - 1],
+        [cx, cy + halfHeight + 1],
+      ] as const;
+      return {
+        density: header.dataset.density,
+        visualWidth: bounds.width,
+        visualHeight: bounds.height,
+        layerBackground: window.getComputedStyle(action, '::before')
+          .backgroundColor,
+        // Probe points (relative to the square's center) that resolve wrongly.
+        insideMisses: inside
+          .filter(([x, y]) => hitOwner(x, y) !== action)
+          .map(([x, y]) => [x - cx, y - cy]),
+        outsideHits: outside
+          .filter(([x, y]) => hitOwner(x, y) === action)
+          .map(([x, y]) => [x - cx, y - cy]),
+        hitInsideHeader:
+          cy - halfHeight >= headerBounds.top - 0.5 &&
+          cy + halfHeight <= headerBounds.bottom + 0.5 &&
+          cx - halfWidth >= headerBounds.left - 0.5 &&
+          cx + halfWidth <= headerBounds.right + 0.5,
+      };
+    });
+  });
+  expect(report).toHaveLength(4);
+  for (const entry of report) {
+    expect(entry, entry.density).toMatchObject({
+      insideMisses: [],
+      outsideHits: [],
+      hitInsideHeader: true,
+      layerBackground: 'rgba(0, 0, 0, 0)',
+    });
+    // The visual and hover surface stays the fitted 36px square.
+    expect(Math.abs(entry.visualWidth - 36)).toBeLessThanOrEqual(0.5);
+    expect(Math.abs(entry.visualHeight - 36)).toBeLessThanOrEqual(0.5);
+  }
+
+  // Pointing at the extension (outside the square) hovers the action and paints
+  // only the unchanged fitted square.
+  const probeAction = page
+    .locator('[data-dense-list-header-probe] .kui-list-header__action')
+    .first();
+  const before = await probeAction.boundingBox();
+  await page.mouse.move(
+    before!.x + before!.width + 3,
+    before!.y + before!.height / 2,
+  );
+  expect(await probeAction.evaluate((action) => action.matches(':hover'))).toBe(
+    true,
+  );
+  await expect(probeAction).not.toHaveCSS(
+    'background-color',
+    'rgba(0, 0, 0, 0)',
+  );
+  expect(await probeAction.boundingBox()).toEqual(before);
+});
+
 test('shrink-wraps inline ListHeader without root geometry or split action layout', async ({
   page,
   browserName,

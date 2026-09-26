@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed the `@kerfjs/ui` `ListHeader` action's pointer target being only its
+  fitted 36px square although the guidance promises 44px. A transparent hit
+  layer now extends the target to at least 44 × 44 around the square without
+  moving layout or enlarging the painted hover surface. Compact headers are
+  36px tall like the rest of the compact List family, so their action target is
+  44px wide and clamped to the header height, never reaching into a neighboring
+  row.
 - Fixed re-renders closing open Web Awesome popups: the morph (and the keyed-list
   attribute fast path) no longer removes a live `open` attribute from custom
   elements (`wa-select`, `wa-dropdown`, `wa-dialog`, …) when the template omits
