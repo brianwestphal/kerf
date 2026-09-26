@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 282100,
-  "measuredLargestJavaScriptGzip": 133539,
-  "measuredTotalJavaScriptGzip": 282014,
+  "totalJavaScriptGzip": 282400,
+  "measuredLargestJavaScriptGzip": 133881,
+  "measuredTotalJavaScriptGzip": 282362,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -259,6 +259,22 @@
         "measuredTotalJavaScriptGzip": 282014,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 282100
+      }
+    },
+    {
+      "at": "2026-09-26T00:42:48.760Z",
+      "reason": "combine the reviewed KF-BMZPZM recipe composition and KF-NQ23HS List divider example growth, each measured separately against the same baseline",
+      "old": {
+        "measuredLargestJavaScriptGzip": 133539,
+        "measuredTotalJavaScriptGzip": 282014,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 282100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 133881,
+        "measuredTotalJavaScriptGzip": 282362,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 282400
       }
     }
   ]
