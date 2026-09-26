@@ -39,36 +39,37 @@
   outline: none;
   box-shadow: none;
 }
-/* An icon-only trigger is a square as wide as the control is tall, with the
-   selected icon centered. Inside a ToolbarControlGroup it fills the group's
-   control slot instead (`--_kui-toolbar-slot-*`), so a lone trigger keeps the
-   group square and the group-owned focus ring concentric with it. The
-   disclosure caret cannot fit beside the icon in that square (it overflowed
-   the trigger's trailing edge as a stray speck), so it is omitted, as for
-   other icon-only toolbar triggers. */
+/* An icon-only trigger shows the selected icon and the disclosure caret as one
+   pill, the same control family as a toolbar popup-menu dropdown (an icon +
+   caret wa-button): symmetric 8px inline padding, 12px from the icon to the
+   caret's 20px box, the caret glyph size, and the control height, so the icon
+   sits left of center to balance the caret. Inside a ToolbarControlGroup the
+   trigger takes the group's control-slot height, overlap, and radius
+   (`--_kui-toolbar-slot-*`) so it is inset evenly on every side, the group
+   sizes to the trigger (wider than tall), and the group-owned focus ring
+   stays concentric with it. */
 .kui-select[data-selected-presentation="icon-only"] {
-  --_kui-select-square: remify(44px);
+  --_kui-select-height: remify(44px);
+  width: max-content;
   margin-inline: calc(var(--_kui-toolbar-slot-overlap, 0px) * -1);
 }
 .kui-select[data-selected-presentation="icon-only"][data-size="compact"] {
-  --_kui-select-square: remify(32px);
-}
-.kui-select[data-selected-presentation="icon-only"],
-.kui-select[data-selected-presentation="icon-only"]::part(combobox) {
-  width: var(--_kui-toolbar-slot-size, var(--_kui-select-square));
-  min-width: var(--_kui-toolbar-slot-size, var(--_kui-select-square));
+  --_kui-select-height: remify(32px);
 }
 .kui-select[data-selected-presentation="icon-only"]::part(combobox) {
-  min-height: var(--_kui-toolbar-slot-size, var(--_kui-select-square));
-  padding-inline: 0;
-  justify-content: center;
+  min-height: var(--_kui-toolbar-slot-height, var(--_kui-select-height));
+  padding-inline: remify(8px);
   border-radius: var(
     --_kui-toolbar-slot-radius,
     var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
   );
 }
+/* The popup-menu wa-button draws the same chevron glyph at 0.875em inside a
+   20px box; match its box, spacing, and glyph size rather than the smaller
+   form-field disclosure scale. */
 .kui-select[data-selected-presentation="icon-only"]::part(expand-icon) {
-  display: none;
+  margin-inline-start: remify(12px);
+  transform: scale(0.875);
 }
 .kui-select[data-selected-presentation="icon-only"]::part(display-input) {
   position: absolute;

@@ -51,7 +51,7 @@ test('names plain and custom Select comboboxes without adding visible label geom
           .getBoundingClientRect().width,
       ),
     })),
-  ).toEqual({ width: 32, height: 32, displayInputWidth: 1 });
+  ).toEqual({ width: 66, height: 32, displayInputWidth: 1 });
   expect(
     await navigationHost.evaluate((element) =>
       Math.round(

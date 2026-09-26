@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, type Locator, type Page, test } from '@playwright/test';
 
 test('compact toolbar Select uses group focus geometry and spaced option icons', async ({
   page,
@@ -28,7 +28,7 @@ test('compact toolbar Select uses group focus geometry and spaced option icons',
     outlineStyle: 'solid',
     outlineWidth: 3,
   });
-  expect(focusGeometry.width).toBe(34);
+  expect(focusGeometry.width).toBe(68);
   expect(focusGeometry.borderRadius).toBeGreaterThanOrEqual(17);
 
   const gaps = await select.locator('wa-option').evaluateAll((options) =>
@@ -71,105 +71,208 @@ test('compact toolbar Select uses group focus geometry and spaced option icons',
     await demo.screenshot({ path: 'test-results/select-toolbar-narrow.png' });
 });
 
-// The group paints the composed focus ring for an icon-only Select, so the ring
-// is only concentric with the visible control when the trigger fills the
-// group's control slot exactly: a square group, the combobox inset evenly on
-// every side, and the combobox radius equal to the group radius minus that
-// inset. Before, a 32px compact trigger grew the group into a 36x34 oval and
-// its disclosure caret overflowed the trailing edge.
-test('compact toolbar Select focus ring follows the control box in every state and shape', async ({
+// An icon-only Select shows its icon plus a visible disclosure caret, as one
+// pill in the same control family as the ToolbarControlGroup popup-menu
+// dropdown (an icon + caret wa-button). The group paints the composed focus
+// ring, so the ring only follows the visible control when the trigger is inset
+// evenly on every side with a concentric radius; the group then sizes to the
+// trigger and is wider than tall. Before, a lone default-size trigger was a
+// 32px square left-aligned in a 44px group, and the caret was hidden.
+type TriggerGeometry = {
+  triggerWidth: number;
+  triggerHeight: number;
+  iconStart: number;
+  iconCenter: number;
+  caretCenter: number;
+  caretHeight: number;
+  caretVisible: boolean;
+};
+
+const round = (value: number) => Math.round(value * 100) / 100;
+
+async function popupMenuTrigger(page: Page, size: 'default' | 'compact') {
+  await page.goto('/?component=toolbar-control-group');
+  const dropdown = page
+    .locator('[data-demo="toolbar-control-group"] wa-dropdown')
+    .first();
+  await dropdown.evaluate(
+    (element, nextSize) =>
+      element.parentElement!.setAttribute('data-size', nextSize),
+    size,
+  );
+  return dropdown.locator('wa-button').evaluate((button): TriggerGeometry => {
+    const base = button.shadowRoot!.querySelector('[part~="base"]')!;
+    const trigger = base.getBoundingClientRect();
+    const icon = button.querySelector('svg')!.getBoundingClientRect();
+    const caret =
+      button.shadowRoot!.querySelector<HTMLElement>('[part~="caret"]')!;
+    const glyph = caret
+      .shadowRoot!.querySelector('svg')!
+      .getBoundingClientRect();
+    return {
+      triggerWidth: trigger.width,
+      triggerHeight: trigger.height,
+      iconStart: icon.left - trigger.left,
+      iconCenter: icon.left + icon.width / 2 - trigger.left,
+      caretCenter: glyph.left + glyph.width / 2 - trigger.left,
+      caretHeight: Number.parseFloat(
+        window.getComputedStyle(caret.shadowRoot!.querySelector('svg')!).height,
+      ),
+      caretVisible:
+        window.getComputedStyle(caret).display !== 'none' && glyph.width > 0,
+    };
+  });
+}
+
+function selectGeometry(select: Locator) {
+  return select.evaluate((host) => {
+    const group = host.closest<HTMLElement>('.kui-toolbar-control-group')!;
+    const resolvedRadius = (value: string, box: DOMRect) =>
+      Math.min(Number.parseFloat(value), Math.min(box.width, box.height) / 2);
+    const style = window.getComputedStyle(group);
+    const outer = group.getBoundingClientRect();
+    const combobox =
+      host.shadowRoot!.querySelector<HTMLElement>('[part~="combobox"]')!;
+    const inner = combobox.getBoundingClientRect();
+    const icon = host
+      .querySelector('.kui-select__icon--selected')!
+      .getBoundingClientRect();
+    const caret = host.shadowRoot!.querySelector<HTMLElement>(
+      '[part~="expand-icon"]',
+    )!;
+    const glyphSvg = caret
+      .querySelector('wa-icon')!
+      .shadowRoot!.querySelector('svg')!;
+    const glyph = glyphSvg.getBoundingClientRect();
+    const trigger: TriggerGeometry = {
+      triggerWidth: inner.width,
+      triggerHeight: inner.height,
+      iconStart: icon.left - inner.left,
+      iconCenter: icon.left + icon.width / 2 - inner.left,
+      caretCenter: glyph.left + glyph.width / 2 - inner.left,
+      // The open caret rotates with a transition, so measure the glyph's
+      // layout height times the part's scale rather than its rotating box.
+      caretHeight:
+        Number.parseFloat(window.getComputedStyle(glyphSvg).height) *
+        new DOMMatrix(window.getComputedStyle(caret).transform).a,
+      caretVisible:
+        window.getComputedStyle(caret).display !== 'none' &&
+        Number(window.getComputedStyle(caret).opacity) === 1 &&
+        glyph.width > 0,
+    };
+    return {
+      trigger,
+      groupWidth: outer.width,
+      groupHeight: outer.height,
+      groupRadius: resolvedRadius(style.borderTopLeftRadius, outer),
+      innerRadius: resolvedRadius(
+        window.getComputedStyle(combobox).borderTopLeftRadius,
+        inner,
+      ),
+      insets: [
+        inner.left - outer.left,
+        inner.top - outer.top,
+        outer.right - inner.right,
+        outer.bottom - inner.bottom,
+      ],
+      ring:
+        style.outlineStyle === 'solid'
+          ? `outline ${style.outlineWidth} +${style.outlineOffset}`
+          : style.boxShadow !== 'none'
+            ? 'halo'
+            : 'none',
+    };
+  });
+}
+
+function expectSameTrigger(actual: TriggerGeometry, popup: TriggerGeometry) {
+  expect(actual.caretVisible).toBe(true);
+  expect(popup.caretVisible).toBe(true);
+  expect(round(actual.triggerHeight)).toBe(round(popup.triggerHeight));
+  expect(Math.abs(actual.triggerWidth - popup.triggerWidth)).toBeLessThan(0.5);
+  expect(Math.abs(actual.iconStart - popup.iconStart)).toBeLessThan(0.5);
+  expect(Math.abs(actual.caretCenter - popup.caretCenter)).toBeLessThan(0.5);
+  expect(Math.abs(actual.caretHeight - popup.caretHeight)).toBeLessThan(0.5);
+  // Symmetric inline padding: the icon's leading gap equals the caret glyph
+  // box's trailing gap, so the icon sits left of center to balance the caret.
+  expect(actual.iconCenter).toBeLessThan(actual.triggerWidth / 2);
+  expect(actual.caretCenter).toBeGreaterThan(actual.triggerWidth / 2);
+}
+
+test('icon-only toolbar Select is a caret pill matching the popup-menu dropdown in every size, shape, and ring state', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1100, height: 760 });
+  const popup = {
+    default: await popupMenuTrigger(page, 'default'),
+    compact: await popupMenuTrigger(page, 'compact'),
+  };
+  expect(popup.default.triggerHeight).toBe(40);
+  expect(popup.compact.triggerHeight).toBe(32);
+
   await page.goto('/?component=select');
   const demo = page.locator('[data-demo="select"]');
-  const select = demo.locator('[name="toolbar-rendering-balance"]');
-  const group = select.locator('xpath=..');
-  const ringGeometry = () =>
-    group.evaluate((element) => {
-      const resolvedRadius = (value: string, box: DOMRect) =>
-        Math.min(Number.parseFloat(value), Math.min(box.width, box.height) / 2);
-      const style = window.getComputedStyle(element);
-      const outer = element.getBoundingClientRect();
-      const host = element.querySelector('wa-select')!;
-      const combobox =
-        host.shadowRoot!.querySelector<HTMLElement>('[part~="combobox"]')!;
-      const inner = combobox.getBoundingClientRect();
-      const caret = host.shadowRoot!.querySelector<HTMLElement>(
-        '[part~="expand-icon"]',
-      );
-      return {
-        caretDisplay: caret ? window.getComputedStyle(caret).display : 'none',
-        groupHeight: outer.height,
-        groupRadius: resolvedRadius(style.borderTopLeftRadius, outer),
-        groupWidth: outer.width,
-        insets: [
-          inner.left - outer.left,
-          inner.top - outer.top,
-          outer.right - inner.right,
-          outer.bottom - inner.bottom,
-        ].map((inset) => Math.round(inset * 100) / 100),
-        innerRadius: resolvedRadius(
-          window.getComputedStyle(combobox).borderTopLeftRadius,
-          inner,
-        ),
-        ring:
-          style.outlineStyle === 'solid'
-            ? `outline ${style.outlineWidth} +${style.outlineOffset}`
-            : style.boxShadow !== 'none'
-              ? 'halo'
-              : 'none',
-      };
-    });
-  const expectConcentric = (
-    geometry: Awaited<ReturnType<typeof ringGeometry>>,
-    size: number,
-    inset: number,
+  const expectPill = (
+    geometry: Awaited<ReturnType<typeof selectGeometry>>,
+    size: 'default' | 'compact',
     ring: string,
   ) => {
+    const inset = size === 'compact' ? 1 : 2;
     expect(geometry.ring).toBe(ring);
-    expect(geometry.groupWidth).toBe(size);
-    expect(geometry.groupHeight).toBe(size);
-    expect(geometry.insets).toEqual([inset, inset, inset, inset]);
+    expectSameTrigger(geometry.trigger, popup[size]);
+    expect(geometry.groupHeight).toBe(size === 'compact' ? 34 : 44);
+    expect(geometry.groupWidth).toBeGreaterThan(geometry.groupHeight);
+    expect(geometry.insets.map(round)).toEqual([inset, inset, inset, inset]);
     expect(geometry.innerRadius).toBeCloseTo(geometry.groupRadius - inset, 1);
-    expect(geometry.caretDisplay).toBe('none');
   };
 
-  // Keyboard focus-visible, then the open listbox with a focused option.
-  await demo.getByRole('combobox', { name: 'Rendering preference' }).focus();
-  await page.keyboard.press('Tab');
-  await expect(select).toBeFocused();
-  expectConcentric(await ringGeometry(), 34, 1, 'outline 3px +1px');
-  await page.keyboard.press('Enter');
-  await expect(select).toHaveAttribute('open');
-  await page.keyboard.press('ArrowDown');
-  expectConcentric(await ringGeometry(), 34, 1, 'outline 3px +1px');
-  await page.keyboard.press('Escape');
-  await expect(select).not.toHaveAttribute('open');
+  // The catalog shows both sizes: a default-size group (the reported case)
+  // and a compact one. Walk keyboard focus-visible and the open listbox with a
+  // focused option for each.
+  for (const [name, size] of [
+    ['toolbar-default-rendering-balance', 'default'],
+    ['toolbar-rendering-balance', 'compact'],
+  ] as const) {
+    const select = demo.locator(`[name="${name}"]`);
+    await page.keyboard.press('Shift');
+    await select.getByRole('combobox').focus();
+    await expect(select).toBeFocused();
+    expectPill(await selectGeometry(select), size, 'outline 3px +1px');
+    await page.keyboard.press('Enter');
+    await expect(select).toHaveAttribute('open');
+    await page.keyboard.press('ArrowDown');
+    expectPill(await selectGeometry(select), size, 'outline 3px +1px');
+    await page.keyboard.press('Escape');
+    await expect(select).not.toHaveAttribute('open');
+  }
 
-  // The same contract holds for the rounded shape, the default size, and the
-  // halo ring: the group's typed data attributes drive all of it.
-  for (const [size, shape, ring, box, inset] of [
-    ['compact', 'rounded', 'outline', 34, 1],
-    ['compact', 'pill', 'halo', 34, 1],
-    ['default', 'pill', 'outline', 44, 2],
-    ['default', 'rounded', 'halo', 44, 2],
+  // The rounded shape, both sizes, and the halo ring follow the group's typed
+  // data attributes.
+  const select = demo.locator('[name="toolbar-rendering-balance"]');
+  const group = select.locator('xpath=..');
+  for (const [size, shape, ring] of [
+    ['compact', 'rounded', 'outline'],
+    ['compact', 'pill', 'halo'],
+    ['default', 'pill', 'halo'],
+    ['default', 'rounded', 'outline'],
+    ['default', 'rounded', 'halo'],
   ] as const) {
     await group.evaluate(
       (element, [nextSize, nextShape, nextRing]) => {
         element.setAttribute('data-size', nextSize);
         element.setAttribute('data-shape', nextShape);
         element.setAttribute('data-focus-ring', nextRing);
+        element.querySelector('wa-select')!.setAttribute('data-size', nextSize);
       },
       [size, shape, ring] as const,
     );
     const expected = ring === 'halo' ? 'halo' : 'outline 3px +1px';
     await select.getByRole('combobox').focus();
-    expectConcentric(await ringGeometry(), box, inset, expected);
+    expectPill(await selectGeometry(select), size, expected);
     await select.click();
     await expect(select).toHaveAttribute('open');
     await page.keyboard.press('ArrowDown');
-    expectConcentric(await ringGeometry(), box, inset, expected);
+    expectPill(await selectGeometry(select), size, expected);
     await page.keyboard.press('Escape');
     await expect(select).not.toHaveAttribute('open');
   }

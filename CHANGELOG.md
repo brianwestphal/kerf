@@ -29,14 +29,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   centers in the same 44px slot a toolbar control occupies at the 8px inline
   margin, so trailing icon actions share one axis. The action's size, 18px
   visual, and hover square are unchanged.
+- Changed the `@kerfjs/ui` icon-only `Select`
+  (`selectedPresentation="icon-only"`) to keep its disclosure caret. The
+  selected icon and caret now form one pill with the same geometry as a
+  `ToolbarControlGroup` popup-menu `wa-dropdown` trigger: 8px inline padding on
+  both sides, 12px from the icon to the caret, the same caret glyph size, and a
+  40px default or 32px compact control height, so the icon sits left of center
+  to balance the caret. In a single `ToolbarControlGroup` the group now sizes to
+  the trigger (a 70x44 default or 68x34 compact pill, wider than it is tall)
+  with an even inset on every side and a concentric radius, for pill and
+  rounded shapes, so the group-owned outline or halo ring follows the pill while
+  focused and while the listbox is open. Before, a default-size trigger was a
+  32px square left-aligned in its 44px group, and the caret was hidden. The
+  Select catalog adds a default-size "Toolbar icon" example beside the compact
+  one.
 
 - Fixed the `@kerfjs/ui` icon-only `Select` focus ring in a
   `ToolbarControlGroup` not matching the control: the compact trigger grew its
   group into a 36x34 oval and its disclosure caret overflowed the trailing edge.
-  An icon-only trigger now fills the group's control slot (a square 34px compact
-  or 44px default group, for pill and rounded shapes) and omits the caret, so
-  the group-owned ring stays concentric while focused and while the listbox is
-  open. The Select demo's "Quiet" option icon also used the success fill alias
+  The group-owned ring now stays concentric with the trigger while focused and
+  while the listbox is open. The Select demo's "Quiet" option icon also used the success fill alias
   as its color and was nearly invisible; it now uses `success-on-quiet`, and the
   `SelectChoice.color` guidance names foreground tokens.
 

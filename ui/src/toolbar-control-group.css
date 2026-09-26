@@ -21,12 +21,13 @@
     )
   );
   --kui-toolbar-item-radius: var(--kui-control-highlight-radius);
-  /* Internal group-to-child contract: the square control slot a composed
-     child (an icon-only Select) fills so a lone trigger keeps the group square
-     and the group-owned focus ring concentric with the visible control. A
-     default slot is 40px inside the 2px inset; a compact slot is the full 32px
-     padding box, overlapping the 1px padding on both axes. */
-  --_kui-toolbar-slot-size: remify(40px);
+  /* Internal group-to-child contract: the control slot a composed child (an
+     icon-only Select) fills so it is inset evenly on every side and the
+     group-owned focus ring stays concentric with the visible control. The
+     group sizes to the child's width. A default slot is 40px tall inside the
+     2px inset; a compact slot is the full 32px padding box, overlapping the
+     1px padding on both axes. */
+  --_kui-toolbar-slot-height: remify(40px);
   --_kui-toolbar-slot-overlap: 0px;
   --_kui-toolbar-slot-radius: var(--kui-toolbar-item-radius);
   display: inline-flex;
@@ -79,7 +80,7 @@
 }
 .kui-toolbar-control-group[data-size="compact"] {
   --kui-toolbar-group-size: remify(34px);
-  --_kui-toolbar-slot-size: remify(32px);
+  --_kui-toolbar-slot-height: remify(32px);
   --_kui-toolbar-slot-overlap: 1px;
   --_kui-toolbar-slot-radius: max(
     0px,

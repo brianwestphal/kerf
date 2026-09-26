@@ -29,14 +29,18 @@ adding height or spacing. This also applies to `renderSelected`: selected conten
 stays separate from the control's stable accessible name. Applications do not
 need shadow-DOM patches or extra label styling.
 
-Use `presentation="toolbar-borderless"` with `size="compact"` inside a
-`ToolbarControlGroup`; set `focusRingOwner="group"` when that parent paints the
-composed focus ring. `selectedPresentation="icon-only"` hides only the visible
-selected label—the required `label` or `ariaLabel` still names the combobox.
-Inside a group, an icon-only trigger fills the group's control slot (40px in a
-default group, the full 32px padding box in a compact one) and omits the
-disclosure caret, so the group stays square and its focus ring stays concentric
-with the visible control while focused and while its listbox is open.
+Use `presentation="toolbar-borderless"` inside a `ToolbarControlGroup`, with
+`size="compact"` in a compact group; set `focusRingOwner="group"` when that
+parent paints the composed focus ring. `selectedPresentation="icon-only"` hides
+only the visible selected label—the required `label` or `ariaLabel` still names
+the combobox. An icon-only trigger keeps its disclosure caret: the selected icon
+and caret form one pill with the same geometry as a popup-menu `wa-dropdown`
+trigger (8px inline padding on both sides, 12px from the icon to the caret, a
+40px default or 32px compact control height), so the caret still signals a
+choice list. Inside a group the trigger is inset evenly on every side (2px in a
+default group, 1px in a compact one) with a concentric radius; the group grows
+to the trigger's width, so a single group is wider than it is tall and its
+focus ring follows the pill while focused and while its listbox is open.
 Navigation selects can use intrinsic `presentation="navigation"` plus
 `labelMaxWidth` for component-owned ellipsis. These props own the control's
 appearance; its parent continues to own outer placement.

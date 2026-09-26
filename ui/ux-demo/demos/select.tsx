@@ -10,6 +10,12 @@ import { Bell, SlidersHorizontal, Wrench } from 'lucide';
 
 import { selectedChoice } from './state.js';
 
+const toolbarChoices = [
+  { value: 'quiet', label: 'Quiet', icon: Bell },
+  { value: 'balanced', label: 'Balanced', icon: SlidersHorizontal },
+  { value: 'explicit', label: 'Explicit', icon: Wrench },
+];
+
 export function SelectDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'select' }}>
@@ -93,11 +99,32 @@ export function SelectDemo() {
           ]}
         />
       </CatalogExample>
+      <CatalogExample
+        label="Toolbar icon"
+        note="An icon-only trigger keeps its caret; a single group grows to fit both."
+        align="inline-control"
+      >
+        <ToolbarControlGroup
+          label="Rendering mode"
+          content="icon"
+          focusRing="outline"
+          single
+        >
+          <Select<string>
+            name="toolbar-default-rendering-balance"
+            value={selectedChoice.value}
+            ariaLabel="Default toolbar rendering balance"
+            presentation="toolbar-borderless"
+            selectedPresentation="icon-only"
+            focusRingOwner="group"
+            choices={toolbarChoices}
+          />
+        </ToolbarControlGroup>
+      </CatalogExample>
       <CatalogExample label="Compact toolbar icon" align="inline-control">
         <ToolbarControlGroup
           label="Rendering mode"
           size="compact"
-          density="tight"
           content="icon"
           focusRing="outline"
           single
@@ -110,15 +137,7 @@ export function SelectDemo() {
             size="compact"
             selectedPresentation="icon-only"
             focusRingOwner="group"
-            choices={[
-              { value: 'quiet', label: 'Quiet', icon: Bell },
-              {
-                value: 'balanced',
-                label: 'Balanced',
-                icon: SlidersHorizontal,
-              },
-              { value: 'explicit', label: 'Explicit', icon: Wrench },
-            ]}
+            choices={toolbarChoices}
           />
         </ToolbarControlGroup>
       </CatalogExample>
