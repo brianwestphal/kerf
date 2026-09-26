@@ -1309,6 +1309,9 @@
         "publicClasses": ["kui-toolbar-text"],
         "publicTokens": [
           "--kui-color-neutral-on-quiet",
+          "--kui-color-text",
+          "--kui-font-2xl",
+          "--kui-font-l",
           "--kui-font-m",
           "--kui-font-s",
           "--kui-font-xs"

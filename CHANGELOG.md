@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- The `@kerfjs/ui` component catalog's `ToolbarText` entry now lists every
+  token its `xlarge` size reads (`--kui-color-text`, `--kui-font-l`,
+  `--kui-font-2xl`) in `publicTokens`; previously it named only the tokens of
+  the smaller sizes.
 - The `@kerfjs/ui` browser evaluator's target-size check (`KUI-B050`) now
   measures the pointer-reachable area instead of only the border box: an
   undersized control is hit-tested outward from its center, so a transparent
