@@ -514,6 +514,39 @@ test('the ToolbarControlGroup demo shape toggle switches every group between pil
   await expect(roundedGroups).toHaveCount(0);
 });
 
+test('every ToolbarText size renders in the UI sans stack, never a monospace fallback', async ({
+  page,
+}) => {
+  const families = async () =>
+    page.locator('.kui-toolbar-text').evaluateAll((nodes) => {
+      const sans = window
+        .getComputedStyle(document.body)
+        .getPropertyValue('font-family');
+      return {
+        sans,
+        texts: nodes.map((node) => ({
+          size: node.getAttribute('data-size'),
+          family: window.getComputedStyle(node).fontFamily,
+        })),
+      };
+    });
+
+  await page.goto('/?component=toolbar-text');
+  const catalog = await families();
+  expect(new Set(catalog.texts.map(({ size }) => size))).toEqual(
+    new Set(['xlarge', 'large', 'default', 'small']),
+  );
+  expect(catalog.sans).not.toMatch(/mono/i);
+  for (const { family } of catalog.texts) expect(family).toBe(catalog.sans);
+
+  // The List demo's compact "Workspace" / "Ready" toolbar labels.
+  await page.goto('/?component=list');
+  const list = await families();
+  const small = list.texts.filter(({ size }) => size === 'small');
+  expect(small.length).toBeGreaterThanOrEqual(2);
+  for (const { family } of small) expect(family).toBe(list.sans);
+});
+
 test('ToolbarText overflow modes: single-line ellipsis, wrap, and capped line-clamp', async ({
   page,
 }) => {

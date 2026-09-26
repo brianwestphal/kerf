@@ -46,8 +46,11 @@
   font-size: var(--kui-font-s);
 }
 
+/* Every size keeps the inherited UI sans stack: compact identity text is a
+   label, not code. (A monospace role here resolved through Web Awesome's
+   `ui-monospace, monospace` code stack; Chromium does not
+   recognize `ui-monospace`, so small labels fell back to generic monospace.) */
 .kui-toolbar-text[data-size="small"] {
-  font-family: var(--kui-font-mono);
   font-size: var(--kui-font-xs);
 }
 

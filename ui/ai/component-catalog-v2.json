@@ -1310,7 +1310,6 @@
         "publicTokens": [
           "--kui-color-neutral-on-quiet",
           "--kui-font-m",
-          "--kui-font-mono",
           "--kui-font-s",
           "--kui-font-xs"
         ]

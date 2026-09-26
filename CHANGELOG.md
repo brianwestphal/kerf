@@ -11,6 +11,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   elements (`wa-select`, `wa-dropdown`, `wa-dialog`, …) when the template omits
   it — the same user-agent-owned treatment `<details>` / `<dialog>` already
   had. A template can still set `open`; closing stays imperative.
+- Fixed `@kerfjs/ui` `ToolbarText size="small"` labels rendering in a
+  monospace fallback face in Chromium. The small size used the code-font token,
+  which resolves through Web Awesome's `ui-monospace, monospace` stack; Chromium
+  does not recognize `ui-monospace`, so labels such as a pane's "Workspace" or
+  "Ready" fell back to the generic monospace font. Every `ToolbarText` size now
+  keeps the inherited UI sans stack.
 - Fixed `@kerfjs/ui` `ListInsetControl` not stretching its control as
   documented. Its `justify-content: stretch` is a no-op on a flex row, so a
   `Select`, `wa-input`, or `wa-button` inside stayed at its natural width. Each
