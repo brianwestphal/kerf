@@ -152,7 +152,7 @@ export function ToolbarDemo() {
         rootAttributes={{ 'data-demo-toolbar-overflow': 'wrap' }}
       >
         <Toolbar
-          label="Release plan"
+          label="Q3 release"
           dividerSides=""
           responsive="wrap"
           leading={
@@ -160,7 +160,7 @@ export function ToolbarDemo() {
               <ToolbarControlGroup appearance="borderless" single>
                 <LucideIcon icon={FileText} name="file-text" />
               </ToolbarControlGroup>
-              <ToolbarText text="Release plan" size="xlarge" />
+              <ToolbarText text="Q3 release" size="xlarge" />
             </>
           }
           trailing={

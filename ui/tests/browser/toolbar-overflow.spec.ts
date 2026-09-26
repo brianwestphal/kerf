@@ -156,9 +156,21 @@ test('the focused Toolbar demo shows stacked wrapping and the wrap policy', asyn
       wrapped.locator('[data-catalog-example-viewport]'),
     );
     const titleBox = await title.boundingBox();
-    expect(await topOf(publish)).toBeGreaterThanOrEqual(
-      titleBox!.y + titleBox!.height - 0.5,
-    );
+    const publishBox = await publish.boundingBox();
+    if (width === 1440) {
+      // The 32px heading and its action cannot share the 280px frame in any
+      // font, so the wrap policy moves the action below the whole title.
+      expect(publishBox!.y).toBeGreaterThanOrEqual(
+        titleBox!.y + titleBox!.height - 0.5,
+      );
+    } else {
+      // At 20px whether they share a row depends on the platform font; the
+      // contract is that the action never overlaps the title: it sits beside
+      // it or wraps below it.
+      const beside = publishBox!.x >= titleBox!.x + titleBox!.width - 0.5;
+      const below = publishBox!.y >= titleBox!.y + titleBox!.height - 0.5;
+      expect(beside || below).toBe(true);
+    }
     if (browserName === 'chromium')
       await page.locator('[data-demo="toolbar"]').screenshot({
         path: `test-results/toolbar-overflow-demo-${width}.png`,
