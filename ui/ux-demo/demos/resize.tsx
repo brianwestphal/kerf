@@ -21,13 +21,11 @@ export function ResizeDemo() {
         viewport={{
           layout: 'flex',
           width: 'wide',
-          height: 'fill',
-          minHeight: 'medium',
+          height: 'medium',
           frame: 'solid',
           surface: 'lowered',
           overflow: 'auto-x',
           shadow: true,
-          fillChildren: true,
         }}
         rootAttributes={{ 'data-catalog-geometry-overlay-skip': '' }}
       >
@@ -41,7 +39,7 @@ export function ResizeDemo() {
             <LucideIcon icon={GripVertical} name="custom-resize-handle" />
           }
         >
-          <Pane rootAttributes={{ 'data-catalog-viewport-fill': '' }}>
+          <Pane>
             <DemoContentItem
               title="Resizable panel"
               detail="Use the handle with a pointer, arrow keys, Home, or End."

@@ -6541,8 +6541,8 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
       const regionElement = element.querySelector<HTMLElement>(
         '[data-component="resizable-region"]',
       )!;
-      const panelElement = element.querySelector<HTMLElement>(
-        '[data-catalog-viewport-fill]',
+      const panelElement = regionElement.querySelector<HTMLElement>(
+        '.kui-resizable-region__content > .kui-pane',
       )!;
       const committedElement =
         document.querySelector<HTMLElement>('[data-region-size]')!;
@@ -6582,6 +6582,10 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
         panelFillsRegion:
           Math.abs(panelRect.top - regionRect.top) <= 1 &&
           Math.abs(panelRect.bottom - regionRect.bottom) <= 1,
+        // The region spans the frame's full inner height (1px frame border).
+        regionFillsShell:
+          Math.abs(regionRect.top - shellRect.top) <= 2 &&
+          Math.abs(regionRect.bottom - shellRect.bottom) <= 2,
         panelTextFits: textFits(panelElement),
         shellClientWidth: element.clientWidth,
         shellScrollWidth: element.scrollWidth,
@@ -6603,6 +6607,7 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
     documentOverflow: 0,
     handleInsideShell: true,
     panelFillsRegion: true,
+    regionFillsShell: true,
     panelTextFits: true,
   });
   await expect(iconLayer).toHaveCSS('opacity', '0');
@@ -6663,6 +6668,7 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
     documentOverflow: 0,
     handleInsideShell: true,
     panelFillsRegion: true,
+    regionFillsShell: true,
     panelTextFits: true,
   });
   expect(lightNarrow.shellScrollWidth).toBeLessThanOrEqual(
@@ -6720,6 +6726,7 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
     documentOverflow: 0,
     handleInsideShell: true,
     panelFillsRegion: true,
+    regionFillsShell: true,
     panelTextFits: true,
   });
   if (browserName === 'chromium')
@@ -6787,6 +6794,7 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
     documentOverflow: 0,
     handleInsideShell: true,
     panelFillsRegion: true,
+    regionFillsShell: true,
     panelTextFits: true,
   });
   expect(zoomed.shellScrollWidth).toBeLessThanOrEqual(
