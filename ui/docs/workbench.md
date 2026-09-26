@@ -116,6 +116,16 @@ must classify public application selectors. Prefer the component props and two
 size tokens before selecting internal anatomy, and do not target its data
 attributes or descendant tags as styling contracts.
 
+## Safe areas
+
+Each rail and the drawer grows by the unsafe inset of the screen edge it docks
+to, so its surface and separator paint through while its content keeps the
+configured size and is padded for the edges it touches. The main area pads for
+the edges it reaches, inside its scroller: an expanded inline rail or drawer
+takes that edge away, and collapsing it (or presenting it as an overlay) hands
+the edge back. A region whose only child is a `Pane` or layout lets that child
+own the insets. See [Choosing an app layout › Safe areas](app-layouts.md#safe-areas).
+
 ## How the collapse animates
 
 Collapsing snaps the panel's flex track to zero in a single reflow (so the work

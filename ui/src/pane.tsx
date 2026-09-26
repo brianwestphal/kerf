@@ -1,7 +1,10 @@
 import { filterDataAttributes } from './extension-attributes.js';
 import type { KerfUiContent } from './semantic-content.js';
 
-/** Logical sides that can show a {@link Pane} separator. */
+/**
+ * Logical pane sides: where a {@link Pane} can show a separator and where it can
+ * compensate for a device safe-area inset.
+ */
 export type PaneSeparatorSide =
   'block-start' | 'block-end' | 'inline-start' | 'inline-end';
 
@@ -17,7 +20,18 @@ const paneProtectedAttributes = new Set([
   'data-separator-block-end',
   'data-separator-inline-start',
   'data-separator-inline-end',
+  'data-safe-area-block-start',
+  'data-safe-area-block-end',
+  'data-safe-area-inline-start',
+  'data-safe-area-inline-end',
 ]);
+
+const allPaneSides: readonly PaneSeparatorSide[] = [
+  'block-start',
+  'block-end',
+  'inline-start',
+  'inline-end',
+];
 
 type PaneRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
@@ -26,6 +40,10 @@ type PaneRootAttributes = Readonly<
     'data-separator-block-end'?: never;
     'data-separator-inline-start'?: never;
     'data-separator-inline-end'?: never;
+    'data-safe-area-block-start'?: never;
+    'data-safe-area-block-end'?: never;
+    'data-safe-area-inline-start'?: never;
+    'data-safe-area-inline-end'?: never;
   }
 >;
 
@@ -42,6 +60,14 @@ export interface PaneProps {
   contentElement?: PaneContentElement;
   /** Independent logical-edge separator lines. Defaults to none. */
   separators?: readonly PaneSeparatorSide[];
+  /**
+   * Sides on which the pane may compensate for a device safe-area inset.
+   * Defaults to every side: the pane pads its slots for each side that still
+   * reaches an unsafe screen edge, as its surrounding layout reports, while its
+   * background and separators paint through. List only the sides an app-owned
+   * layout places at a screen edge, or pass `[]` to opt out.
+   */
+  safeAreaEdges?: readonly PaneSeparatorSide[];
   id?: string;
   /** Accessible name for a landmark root such as `aside` or `main`. */
   label?: string;
@@ -87,6 +113,7 @@ export function Pane({
   element = 'div',
   contentElement = 'div',
   separators = [],
+  safeAreaEdges = allPaneSides,
   id,
   label,
   contentLabel,
@@ -133,6 +160,12 @@ export function Pane({
     'data-separator-block-end': String(separators.includes('block-end')),
     'data-separator-inline-start': String(separators.includes('inline-start')),
     'data-separator-inline-end': String(separators.includes('inline-end')),
+    'data-safe-area-block-start': String(safeAreaEdges.includes('block-start')),
+    'data-safe-area-block-end': String(safeAreaEdges.includes('block-end')),
+    'data-safe-area-inline-start': String(
+      safeAreaEdges.includes('inline-start'),
+    ),
+    'data-safe-area-inline-end': String(safeAreaEdges.includes('inline-end')),
     'aria-label': label,
     slot,
   };

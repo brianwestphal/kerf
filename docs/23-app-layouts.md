@@ -272,6 +272,65 @@ compact overlay + Escape/backdrop dismiss, and Tab trap shipped in KF-JP6KVY
 (`ui/tests/browser/collapsible-sidebar-recipe.spec.ts`). The whole-screen layouts
 also ship focused component demos and three-engine catalog coverage.
 
+### 3.6 Safe areas (KF-CZ3CBS: surfaces through unsafe areas, content padded on touched edges)
+
+**Status: Shipped.** Every layout and a plain `Pane` handle device safe-area
+insets structurally, with no per-app configuration. The consumer summary is the
+"Safe areas" section of [`ui/docs/app-layouts.md`](../ui/docs/app-layouts.md).
+
+**Rules.**
+
+1. Surfaces (pane and panel backgrounds, separators, dividers) paint edge to
+   edge through unsafe areas. A pane root never pads. A collapsible rail/drawer
+   (`Workbench` rails and drawer, `CollapsiblePanel`, a `SplitView` list, and a
+   `ResizableRegion` via `--kui-resizable-region-edge-extent`) grows its track
+   by the inset of the edge it docks to, so its content keeps the configured
+   size.
+2. Content gets compensating padding: inline on the sides a region actually
+   touches, block top/bottom as padding inside the scroll owner plus matching
+   `scroll-padding-block`. Content may scroll under an unsafe edge, but its
+   first and last items can always be scrolled into the safe area.
+3. An edge a region does not reach gets no inset. Interior edges (the side of a
+   `Workbench` center next to an expanded inline rail, a `SplitView` detail's
+   list side, a `NavStack` view under its chrome) are cleared. Collapsing a rail,
+   or presenting it as an overlay, hands the edge back.
+4. No double inset: the element that applies an inset clears the context for
+   its descendants.
+
+**Mechanism.** Two custom-property layers:
+
+- `--kui-safe-area-{block-start,block-end,inline-start,inline-end}` on `:root`
+  (foundation.css) default to `env(safe-area-inset-*)` (inline sides swap under
+  `:root:dir(rtl)`). They are the override point for tests and app-owned chrome.
+- `--kui-edge-inset-*` is the inherited **edge context**: how far each edge of
+  the current region still reaches into an unsafe area. Unset means the full
+  device inset, so a top-level `Pane` is inset on every side with no setup.
+  Layout CSS routes it: each region sets `0px` for edges it does not reach
+  (`:has()` and sibling selectors track expanded/collapsed rails, a present
+  chrome/bottom toolbar, and an expanded drawer). Consumers (Pane slots,
+  NavStack chrome/views/bottom, TabScaffold scenes/bar, Workbench main and panel
+  content, CollapsiblePanel content, SplitView list/detail) pad from it and
+  reset it to `0px` for their children.
+
+A layout region whose only child is a `Pane`, `NavStack`, `SplitView`,
+`Workbench`, or `TabScaffold` delegates to that child instead of padding, so the
+child can paint through and own scroll-through padding. A Pane header/footer
+whose only child is a `Toolbar` hands the toolbar the inline edges; the toolbar
+adds them to its own inline padding so its dividers reach the edge. A toolbar
+outside that hand-off treats an unset context as zero.
+
+**Opt-outs / app routing.** `Pane.safeAreaEdges` (typed
+`readonly PaneSeparatorSide[]`, default all four) limits the sides a pane may
+compensate; `[]` opts out. An app-owned layout sets `--kui-edge-inset-*: 0px` on
+its regions. A `CollapsiblePanel` routes its direct flex siblings automatically;
+a panel wrapped in an app grid cell cannot, so the app routes those edges.
+
+**Verification.** `ui/tests/browser/safe-area.spec.ts` renders each layout full
+screen with simulated insets (via the `--kui-safe-area-*` overrides) and asserts
+edge-to-edge surfaces and separators, touched-side padding, scroll-through
+padding, the center regaining an edge when a rail collapses, and no interior or
+nested inset.
+
 ## 4. Responsive presentation matrix
 
 The rule each layout encodes, summarized (`compact` = handset or portrait

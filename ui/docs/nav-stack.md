@@ -65,6 +65,14 @@ When a remembered control was removed during the controlled rerender, the same
 fallback order applies. Disposing the helper stops future transitions and
 cleans up any temporary fallback `tabindex` it added.
 
+## Safe areas
+
+The stack paints through a device's unsafe areas. Its chrome pads for the top
+and side insets, its bottom toolbar for the bottom and side insets, and each
+view pads the remaining edges inside its scroller, so content scrolls under the
+unsafe area but can always be scrolled clear. A view whose only child is a
+`Pane` or layout lets that child own the insets. See [Choosing an app layout › Safe areas](app-layouts.md#safe-areas).
+
 ## Transitions
 
 `wireNavStack(root, { onBack, duration? })` observes the rendered stack and

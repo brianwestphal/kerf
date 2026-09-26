@@ -256,6 +256,10 @@
         "--kui-toolbar-group-inner-size",
         "--kui-toolbar-group-size",
         "--kui-toolbar-gap",
+        "--kui-safe-area-block-start",
+        "--kui-safe-area-block-end",
+        "--kui-safe-area-inline-start",
+        "--kui-safe-area-inline-end",
         "--kui-radius-s",
         "--kui-radius-m",
         "--kui-radius-l",
@@ -453,6 +457,7 @@
         "accessible labels",
         "header, content, and footer children",
         "which logical boundaries show separators",
+        "which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges)",
         "responsive placement and visibility"
       ],
       "variants": [
@@ -473,7 +478,8 @@
         "border": "conditional",
         "padding": "child",
         "notes": [
-          "The pane is unpadded; separators are independently opt-in on logical edges and default off."
+          "The pane is unpadded; separators are independently opt-in on logical edges and default off.",
+          "Safe areas: the root and separators paint through unsafe areas while header, content, and footer pad the sides the pane still reaches (routed by --kui-edge-inset-*); content block insets are scroll padding."
         ]
       },
       "delivery": {
@@ -492,6 +498,10 @@
         "kui-pane__toolbar"
       ],
       "publicTokens": [
+        "--kui-edge-inset-block-end",
+        "--kui-edge-inset-block-start",
+        "--kui-edge-inset-inline-end",
+        "--kui-edge-inset-inline-start",
         "--kui-pane-separator-color",
         "--kui-pane-separator-width"
       ],
@@ -3303,6 +3313,7 @@
         "--kui-color-text-link",
         "--kui-focus-ring",
         "--kui-radius-s",
+        "--kui-resizable-region-edge-extent",
         "--kui-resizable-region-handle-active-color",
         "--kui-resizable-region-handle-color",
         "--kui-resizable-region-overlay-z",

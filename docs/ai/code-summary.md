@@ -730,6 +730,12 @@ repeated mixed-token Select All deletion and refill in real browsers at wide and
 narrow widths. Deletion capture covers native beforeinput and synthetic shortcut
 input, protects replacement blur, and observes the controlled replacement at its
 mutation checkpoint before later user input. The adoption demo persists both query and token edits.
+Safe areas: `ui/src/foundation.css` defines the `--kui-safe-area-*` device insets
+(default `env(safe-area-inset-*)`); the pane and layout stylesheets route the
+inherited `--kui-edge-inset-*` edge context so surfaces paint through unsafe areas
+while only the edges a region reaches get padding (`Pane.safeAreaEdges` for
+app-owned arrangements). `ui/tests/browser/safe-area.spec.ts` renders each layout
+from `ui/tests/browser/fixtures/safe-area-layouts.tsx` with simulated insets.
 `Catalog.stageRootAttributes`, `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` use the
 same runtime filter for catalog-authoring `data-*` metadata while protecting
 their structure and alignment markers. `CatalogExample.viewport` supplies

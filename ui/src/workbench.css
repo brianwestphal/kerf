@@ -6,23 +6,56 @@
   height: 100%;
   overflow: hidden;
   background: var(--kui-color-surface);
+  /* Safe areas: every track paints through the unsafe area it reaches (a rail
+     or drawer grows by that inset), and each region's content compensates only
+     for the edges the region still touches. An expanded inline rail takes its
+     edge away from the center; collapsing it hands the edge back. See pane.css
+     for the `--kui-edge-inset-*` edge context. */
+  --_kui-workbench-safe-block-start: var(
+    --kui-edge-inset-block-start,
+    var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px))
+  );
+  --_kui-workbench-safe-block-end: var(
+    --kui-edge-inset-block-end,
+    var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+  --_kui-workbench-safe-inline-start: var(
+    --kui-edge-inset-inline-start,
+    var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+  );
+  --_kui-workbench-safe-inline-end: var(
+    --kui-edge-inset-inline-end,
+    var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+  );
 }
 
 /* Side rails. Collapsing snaps the flex track to zero (one reflow) while the
    fixed-width content slides out via transform (composited, clipped) — never a
    per-frame width animation. See docs/18 / the KF-7QKJRK catalog sidebar. */
 .kui-workbench__rail {
-  flex: 0 0 var(--kui-workbench-rail-width, remify(280px));
+  --kui-edge-inset-block-start: var(--_kui-workbench-safe-block-start);
+  --kui-edge-inset-block-end: var(--_kui-workbench-safe-block-end);
+  --_kui-workbench-rail-extent: calc(
+    var(--kui-workbench-rail-width, remify(280px)) +
+      var(--_kui-workbench-rail-safe-inset)
+  );
+  flex: 0 0 var(--_kui-workbench-rail-extent);
   min-width: 0;
   overflow: hidden;
   background: var(--kui-color-surface);
 }
 
 .kui-workbench__rail--left {
+  --_kui-workbench-rail-safe-inset: var(--_kui-workbench-safe-inline-start);
+  --kui-edge-inset-inline-start: var(--_kui-workbench-safe-inline-start);
+  --kui-edge-inset-inline-end: 0px;
   border-inline-end: 1px solid var(--kui-color-border);
 }
 
 .kui-workbench__rail--right {
+  --_kui-workbench-rail-safe-inset: var(--_kui-workbench-safe-inline-end);
+  --kui-edge-inset-inline-start: 0px;
+  --kui-edge-inset-inline-end: var(--_kui-workbench-safe-inline-end);
   border-inline-start: 1px solid var(--kui-color-border);
 }
 
@@ -37,6 +70,10 @@
 }
 
 .kui-workbench__center {
+  --kui-edge-inset-block-start: var(--_kui-workbench-safe-block-start);
+  --kui-edge-inset-block-end: var(--_kui-workbench-safe-block-end);
+  --kui-edge-inset-inline-start: var(--_kui-workbench-safe-inline-start);
+  --kui-edge-inset-inline-end: var(--_kui-workbench-safe-inline-end);
   display: flex;
   flex: 1;
   min-width: 0;
@@ -45,16 +82,111 @@
   flex-direction: column;
 }
 
+.kui-workbench:has(
+    > .kui-workbench__rail--left[data-presentation="inline"]:not(
+        [data-collapsed="true"]
+      )
+  )
+  > .kui-workbench__center {
+  --kui-edge-inset-inline-start: 0px;
+}
+
+.kui-workbench:has(
+    > .kui-workbench__rail--right[data-presentation="inline"]:not(
+        [data-collapsed="true"]
+      )
+  )
+  > .kui-workbench__center {
+  --kui-edge-inset-inline-end: 0px;
+}
+
 .kui-workbench__main {
   flex: 1;
   min-height: 0;
   overflow: auto;
 }
 
+.kui-workbench__main:has(
+  ~ .kui-workbench__drawer[data-presentation="inline"]:not(
+      [data-collapsed="true"]
+    )
+) {
+  --kui-edge-inset-block-end: 0px;
+}
+
+/* The main area and each panel's content are the consumers: they pad for the
+   edges their region still touches, the main area inside its scroller so
+   content scrolls under an unsafe edge but can always be scrolled clear. A
+   region whose only child is a Pane or layout lets that child own the insets. */
+.kui-workbench__main:not(
+  :has(
+    > :is(
+        [data-component="pane"],
+        [data-component="nav-stack"],
+        [data-component="split-view"],
+        [data-component="workbench"],
+        [data-component="tab-scaffold"]
+      ):only-child
+  )
+),
+.kui-workbench__panel-content:not(
+  :has(
+    > :is(
+        [data-component="pane"],
+        [data-component="nav-stack"],
+        [data-component="split-view"],
+        [data-component="workbench"],
+        [data-component="tab-scaffold"]
+      ):only-child
+  )
+) {
+  padding-block: var(--kui-edge-inset-block-start)
+    var(--kui-edge-inset-block-end);
+  padding-inline: var(--kui-edge-inset-inline-start)
+    var(--kui-edge-inset-inline-end);
+  scroll-padding-block: var(--kui-edge-inset-block-start)
+    var(--kui-edge-inset-block-end);
+}
+
+.kui-workbench__main:not(
+    :has(
+      > :is(
+          [data-component="pane"],
+          [data-component="nav-stack"],
+          [data-component="split-view"],
+          [data-component="workbench"],
+          [data-component="tab-scaffold"]
+        ):only-child
+    )
+  )
+  > *,
+.kui-workbench__panel-content:not(
+    :has(
+      > :is(
+          [data-component="pane"],
+          [data-component="nav-stack"],
+          [data-component="split-view"],
+          [data-component="workbench"],
+          [data-component="tab-scaffold"]
+        ):only-child
+    )
+  )
+  > * {
+  --kui-edge-inset-block-start: 0px;
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: 0px;
+  --kui-edge-inset-inline-end: 0px;
+}
+
 /* Bottom drawer — the vertical analogue of a rail. */
 .kui-workbench__drawer {
+  --kui-edge-inset-block-start: 0px;
+  --_kui-workbench-drawer-extent: calc(
+    var(--kui-workbench-drawer-height, remify(220px)) +
+      var(--_kui-workbench-safe-block-end)
+  );
   position: relative;
-  flex: 0 0 var(--kui-workbench-drawer-height, remify(220px));
+  flex: 0 0 var(--_kui-workbench-drawer-extent);
   min-height: 0;
   overflow: hidden;
   border-block-start: 1px solid var(--kui-color-border);
@@ -80,7 +212,7 @@
 /* The fixed-size sliding content. The rail/drawer keeps a definite size on its
    content so the transform reads as a slide, not a squeeze. */
 .kui-workbench__rail .kui-workbench__panel-content {
-  width: var(--kui-workbench-rail-width, remify(280px));
+  width: var(--_kui-workbench-rail-extent);
   height: 100%;
   transition: transform 200ms ease;
 }
@@ -90,7 +222,7 @@
   inset-inline: 0;
   inset-block-end: 0;
   width: 100%;
-  height: var(--kui-workbench-drawer-height, remify(220px));
+  height: var(--_kui-workbench-drawer-extent);
   transition: transform 200ms ease;
 }
 

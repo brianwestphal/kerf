@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui` layouts and `Pane` now handle device safe areas as one model.
+  Pane and panel backgrounds, separators, and dividers paint through unsafe
+  areas; content is padded only on the edges a region actually reaches, and
+  block insets become scroll padding so content can scroll under the status bar
+  or home indicator but always scroll clear. `Workbench` rails and drawer,
+  `CollapsiblePanel`, and the `SplitView` list grow by the inset they dock to.
+  A center pane picks up the inset when an adjacent rail collapses, and
+  interior or nested edges are never double-inset. A header or footer `Toolbar`
+  keeps its dividers edge to edge. New: `Pane.safeAreaEdges` (default all
+  sides; `[]` opts out), the `--kui-safe-area-*` device-inset tokens (default
+  `env(safe-area-inset-*)`), the inherited `--kui-edge-inset-*` edge context for
+  app-owned layouts, and `--kui-resizable-region-edge-extent`. Nothing changes
+  on devices or pages without safe-area insets.
 - Fixed a `@kerfjs/ui` `ListHeader` action sitting about 4px outside the
   trailing toolbar action of the Pane header above it. Its fitted action now
   centers in the same 44px slot a toolbar control occupies at the 8px inline

@@ -2,32 +2,156 @@
    to zero (one reflow, no per-frame width/height animation) while the fixed-size
    content slides out via transform (composited, clipped by overflow). The same
    technique as Workbench and the catalog sidebar (docs/18). */
+/* Safe areas: the panel docks to one screen edge, so its surface grows by
+   that edge's unsafe inset and its content compensates for every edge the
+   panel still touches, never its interior edge. An expanded inline panel also
+   takes its edge away from its direct siblings; collapsing it hands the edge
+   back. A panel wrapped in an app-owned grid cell cannot see its siblings, so
+   that app routes `--kui-edge-inset-*` itself (docs/app-layouts.md). */
 .kui-collapsible-panel {
+  --_kui-collapsible-panel-safe-block-start: var(
+    --kui-edge-inset-block-start,
+    var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px))
+  );
+  --_kui-collapsible-panel-safe-block-end: var(
+    --kui-edge-inset-block-end,
+    var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+  --_kui-collapsible-panel-safe-inline-start: var(
+    --kui-edge-inset-inline-start,
+    var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+  );
+  --_kui-collapsible-panel-safe-inline-end: var(
+    --kui-edge-inset-inline-end,
+    var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+  );
   overflow: hidden;
   background: var(--kui-color-surface);
 }
 
 .kui-collapsible-panel--left,
 .kui-collapsible-panel--right {
-  width: var(--kui-collapsible-panel-width, remify(280px));
+  width: var(--_kui-collapsible-panel-extent);
   min-width: 0;
   height: 100%;
 }
 
 .kui-collapsible-panel--left {
+  --_kui-collapsible-panel-extent: calc(
+    var(--kui-collapsible-panel-width, remify(280px)) +
+      var(--_kui-collapsible-panel-safe-inline-start)
+  );
   border-inline-end: 1px solid var(--kui-color-border);
 }
 
 .kui-collapsible-panel--right {
+  --_kui-collapsible-panel-extent: calc(
+    var(--kui-collapsible-panel-width, remify(280px)) +
+      var(--_kui-collapsible-panel-safe-inline-end)
+  );
   border-inline-start: 1px solid var(--kui-color-border);
 }
 
 .kui-collapsible-panel--bottom {
+  --_kui-collapsible-panel-extent: calc(
+    var(--kui-collapsible-panel-height, remify(220px)) +
+      var(--_kui-collapsible-panel-safe-block-end)
+  );
   position: relative;
   width: 100%;
-  height: var(--kui-collapsible-panel-height, remify(220px));
+  height: var(--_kui-collapsible-panel-extent);
   min-height: 0;
   border-block-start: 1px solid var(--kui-color-border);
+}
+
+/* The panel's content sees the edges it touches; its interior edge is clear. */
+.kui-collapsible-panel > .kui-collapsible-panel__content {
+  --kui-edge-inset-block-start: var(--_kui-collapsible-panel-safe-block-start);
+  --kui-edge-inset-block-end: var(--_kui-collapsible-panel-safe-block-end);
+  --kui-edge-inset-inline-start: var(
+    --_kui-collapsible-panel-safe-inline-start
+  );
+  --kui-edge-inset-inline-end: var(--_kui-collapsible-panel-safe-inline-end);
+}
+
+.kui-collapsible-panel--left > .kui-collapsible-panel__content {
+  --kui-edge-inset-inline-end: 0px;
+}
+
+.kui-collapsible-panel--right > .kui-collapsible-panel__content {
+  --kui-edge-inset-inline-start: 0px;
+}
+
+.kui-collapsible-panel--bottom > .kui-collapsible-panel__content {
+  --kui-edge-inset-block-start: 0px;
+}
+
+/* Content whose only child is a Pane or layout lets that child own the insets;
+   anything else is padded here and sees a cleared context. */
+.kui-collapsible-panel__content:not(
+  :has(
+    > :is(
+        [data-component="pane"],
+        [data-component="nav-stack"],
+        [data-component="split-view"],
+        [data-component="workbench"],
+        [data-component="tab-scaffold"]
+      ):only-child
+  )
+) {
+  padding-block: var(--kui-edge-inset-block-start)
+    var(--kui-edge-inset-block-end);
+  padding-inline: var(--kui-edge-inset-inline-start)
+    var(--kui-edge-inset-inline-end);
+}
+
+.kui-collapsible-panel__content:not(
+    :has(
+      > :is(
+          [data-component="pane"],
+          [data-component="nav-stack"],
+          [data-component="split-view"],
+          [data-component="workbench"],
+          [data-component="tab-scaffold"]
+        ):only-child
+    )
+  )
+  > * {
+  --kui-edge-inset-block-start: 0px;
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: 0px;
+  --kui-edge-inset-inline-end: 0px;
+}
+
+/* An expanded inline panel is the region at its edge, so its direct siblings
+   no longer reach that edge. */
+.kui-collapsible-panel--left[data-presentation="inline"]:not(
+    [data-collapsed="true"],
+    [data-collapsible-overlay="true"] *,
+    [data-collapsible-responsive="hidden"] *
+  )
+  ~ * {
+  --kui-edge-inset-inline-start: 0px;
+}
+
+:has(
+  ~ .kui-collapsible-panel--right[data-presentation="inline"]:not(
+      [data-collapsed="true"],
+      [data-collapsible-overlay="true"] *,
+      [data-collapsible-responsive="hidden"] *
+    )
+) {
+  --kui-edge-inset-inline-end: 0px;
+}
+
+:has(
+  ~ .kui-collapsible-panel--bottom[data-presentation="inline"]:not(
+      [data-collapsed="true"],
+      [data-collapsible-overlay="true"] *,
+      [data-collapsible-responsive="hidden"] *
+    )
+) {
+  --kui-edge-inset-block-end: 0px;
 }
 
 .kui-collapsible-panel[data-collapsed="true"] {
@@ -65,7 +189,7 @@
 
 .kui-collapsible-panel--left .kui-collapsible-panel__content,
 .kui-collapsible-panel--right .kui-collapsible-panel__content {
-  width: var(--kui-collapsible-panel-width, remify(280px));
+  width: var(--_kui-collapsible-panel-extent);
 }
 
 .kui-collapsible-panel--bottom .kui-collapsible-panel__content {
@@ -73,7 +197,7 @@
   inset-inline: 0;
   inset-block-end: 0;
   width: 100%;
-  height: var(--kui-collapsible-panel-height, remify(220px));
+  height: var(--_kui-collapsible-panel-extent);
 }
 
 .kui-collapsible-panel[data-collapse-motion="none"]

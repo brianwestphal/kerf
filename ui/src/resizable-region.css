@@ -2,15 +2,25 @@
   --kui-resizable-region-separator-color: var(--kui-color-border);
   --kui-resizable-region-handle-color: var(--kui-color-neutral-on-quiet);
   --kui-resizable-region-handle-active-color: var(--kui-color-text-link);
+  /* Extra track a horizontal region adds when it reaches an unsafe screen edge,
+     so its surface paints through the unsafe area while its committed size
+     stays the content width. A composing layout sets it on the region (a
+     SplitView list does); it never inherits into a nested region. */
+  --kui-resizable-region-edge-extent: 0px;
   position: relative;
   display: flex;
   min-width: 0;
   min-height: 0;
 }
 .kui-resizable-region[data-axis="horizontal"] {
-  width: var(--kui-resizable-region-size);
+  width: calc(
+    var(--kui-resizable-region-size) + var(--kui-resizable-region-edge-extent)
+  );
   height: 100%;
-  flex: 0 0 var(--kui-resizable-region-size);
+  flex: 0 0
+    calc(
+      var(--kui-resizable-region-size) + var(--kui-resizable-region-edge-extent)
+    );
 }
 .kui-resizable-region[data-axis="vertical"] {
   width: 100%;
@@ -62,8 +72,14 @@
     [data-collapse-motion="none"]
   )
   > .kui-resizable-region__content {
-  width: var(--kui-resizable-region-expanded-size);
-  min-width: var(--kui-resizable-region-expanded-size);
+  width: calc(
+    var(--kui-resizable-region-expanded-size) +
+      var(--kui-resizable-region-edge-extent)
+  );
+  min-width: calc(
+    var(--kui-resizable-region-expanded-size) +
+      var(--kui-resizable-region-edge-extent)
+  );
 }
 .kui-resizable-region[data-axis="vertical"][data-collapse-motion]:not(
     [data-collapse-motion="none"]

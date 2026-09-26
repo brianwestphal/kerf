@@ -21,6 +21,47 @@
   grid-template-rows: auto minmax(0, 1fr) auto;
 }
 
+/* Safe areas. The pane root never pads, so its background and separators paint
+   through an unsafe area; its slots compensate on the edges the pane still
+   touches. The inherited `--kui-edge-inset-*` context says how far each edge
+   still reaches into an unsafe area: layouts clear an edge a region does not
+   reach, and an unset edge means the full device inset. Every slot clears the
+   context once it has applied it, so nested content never double-insets. */
+.kui-pane {
+  --_kui-pane-safe-block-start: var(
+    --kui-edge-inset-block-start,
+    var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px))
+  );
+  --_kui-pane-safe-block-end: var(
+    --kui-edge-inset-block-end,
+    var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+  --_kui-pane-safe-inline-start: var(
+    --kui-edge-inset-inline-start,
+    var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+  );
+  --_kui-pane-safe-inline-end: var(
+    --kui-edge-inset-inline-end,
+    var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+  );
+}
+
+.kui-pane[data-safe-area-block-start="false"] {
+  --_kui-pane-safe-block-start: 0px;
+}
+
+.kui-pane[data-safe-area-block-end="false"] {
+  --_kui-pane-safe-block-end: 0px;
+}
+
+.kui-pane[data-safe-area-inline-start="false"] {
+  --_kui-pane-safe-inline-start: 0px;
+}
+
+.kui-pane[data-safe-area-inline-end="false"] {
+  --_kui-pane-safe-inline-end: 0px;
+}
+
 .kui-pane[data-separator-block-start="true"] {
   --kui-pane-separator-block-start-width: var(--kui-pane-separator-width, 1px);
 }
@@ -37,26 +78,70 @@
   --kui-pane-separator-inline-end-width: var(--kui-pane-separator-width, 1px);
 }
 
+/* Child selectors outrank the `.kui-content` reset the content slot also carries. */
+.kui-pane > :is(.kui-pane__header, .kui-pane__content, .kui-pane__footer) {
+  --kui-edge-inset-block-start: 0px;
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: 0px;
+  --kui-edge-inset-inline-end: 0px;
+  padding-inline: var(--_kui-pane-safe-inline-start)
+    var(--_kui-pane-safe-inline-end);
+}
+
 .kui-pane__header,
 .kui-pane__toolbar {
   display: flex;
   min-width: 0;
+  padding-block-start: var(--_kui-pane-safe-block-start);
   flex-direction: column;
   grid-area: header;
 }
 
+/* A header or footer holding only a Toolbar hands the toolbar its inline edges
+   instead of padding around it, so the toolbar's dividers still reach the
+   pane edge while its controls clear the unsafe area. */
+.kui-pane
+  > :is(.kui-pane__header, .kui-pane__footer):has(
+    > [data-component="toolbar"]:only-child
+  ) {
+  --kui-edge-inset-inline-start: var(--_kui-pane-safe-inline-start);
+  --kui-edge-inset-inline-end: var(--_kui-pane-safe-inline-end);
+  padding-inline: 0;
+}
+
+/* The scrolling content takes the block insets as padding inside the scroller
+   (and matching scroll padding), so content scrolls under an unsafe edge yet
+   its first and last items can always be scrolled clear of it. A header or
+   footer already owns that edge. */
 .kui-pane__content {
+  --_kui-pane-content-block-start: var(--_kui-pane-safe-block-start);
+  --_kui-pane-content-block-end: var(--_kui-pane-safe-block-end);
   min-width: 0;
   min-height: 0;
-  padding: 0;
   overflow: auto;
   grid-area: content;
   overscroll-behavior: contain;
+  scroll-padding-block: var(--_kui-pane-content-block-start)
+    var(--_kui-pane-content-block-end);
+}
+
+.kui-pane > .kui-pane__content {
+  padding-block: var(--_kui-pane-content-block-start)
+    var(--_kui-pane-content-block-end);
+}
+
+.kui-pane__header ~ .kui-pane__content {
+  --_kui-pane-content-block-start: 0px;
+}
+
+.kui-pane__content:has(~ .kui-pane__footer) {
+  --_kui-pane-content-block-end: 0px;
 }
 
 .kui-pane__footer {
   display: flex;
   min-width: 0;
+  padding-block-end: var(--_kui-pane-safe-block-end);
   flex-direction: column;
   grid-area: footer;
 }

@@ -64,6 +64,15 @@
   --kui-toolbar-group-inner-size: remify(42px);
   --kui-toolbar-group-size: calc(2px + var(--kui-toolbar-group-inner-size));
   --kui-toolbar-gap: var(--kui-layout-item-gap);
+  /* Device safe-area insets, in logical terms. Panes and layouts read these
+     through the inherited `--kui-edge-inset-*` edge context: surfaces paint
+     through the unsafe area while their content gains compensating padding on
+     the edges it still touches (docs/app-layouts.md "Safe areas"). Override
+     them to simulate a device or to reserve space for app-owned chrome. */
+  --kui-safe-area-block-start: env(safe-area-inset-top, 0px);
+  --kui-safe-area-block-end: env(safe-area-inset-bottom, 0px);
+  --kui-safe-area-inline-start: env(safe-area-inset-left, 0px);
+  --kui-safe-area-inline-end: env(safe-area-inset-right, 0px);
   --kui-radius-s: var(--wa-border-radius-s, remify(3px));
   --kui-radius-m: var(--wa-border-radius-m, remify(6px));
   --kui-radius-l: var(--wa-border-radius-l, remify(12px));
@@ -384,6 +393,11 @@
     --wa-shadow-l,
     0 remify(12px) remify(32px) rgb(0 0 0 / 0.09)
   );
+}
+
+:root:dir(rtl) {
+  --kui-safe-area-inline-start: env(safe-area-inset-right, 0px);
+  --kui-safe-area-inline-end: env(safe-area-inset-left, 0px);
 }
 
 @media (prefers-contrast: more) {

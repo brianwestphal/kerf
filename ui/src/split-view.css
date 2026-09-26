@@ -5,6 +5,26 @@
   height: 100%;
   overflow: hidden;
   background: var(--kui-color-surface);
+  /* Safe areas: the list column grows by the inline-start unsafe inset and each
+     pane compensates only for the edges it touches — never the shared interior
+     edge. The compact form hands the context to its NavStack. See pane.css for
+     the `--kui-edge-inset-*` edge context. */
+  --_kui-split-view-safe-block-start: var(
+    --kui-edge-inset-block-start,
+    var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px))
+  );
+  --_kui-split-view-safe-block-end: var(
+    --kui-edge-inset-block-end,
+    var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+  --_kui-split-view-safe-inline-start: var(
+    --kui-edge-inset-inline-start,
+    var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+  );
+  --_kui-split-view-safe-inline-end: var(
+    --kui-edge-inset-inline-end,
+    var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+  );
 }
 
 /* The list pane; when not resizable it takes an intrinsic column and the detail
@@ -13,7 +33,10 @@
   min-width: 0;
   min-height: 0;
   flex: 0 0 auto;
-  width: var(--kui-split-view-list-width, remify(320px));
+  width: calc(
+    var(--kui-split-view-list-width, remify(320px)) +
+      var(--_kui-split-view-safe-inline-start)
+  );
   border-inline-end: 1px solid var(--kui-color-border);
 }
 
@@ -26,6 +49,89 @@
   flex: 1;
   min-width: 0;
   min-height: 0;
+}
+
+/* A resizable list keeps its committed size as content width; its region's
+   track grows by the unsafe inset it reaches. A collapsed region stays shut. */
+.kui-split-view[data-split-mode="split"]
+  > [data-component="resizable-region"]:not([data-collapsed="true"]) {
+  --kui-resizable-region-edge-extent: var(--_kui-split-view-safe-inline-start);
+}
+
+.kui-split-view__list,
+.kui-split-view__detail {
+  --kui-edge-inset-block-start: var(--_kui-split-view-safe-block-start);
+  --kui-edge-inset-block-end: var(--_kui-split-view-safe-block-end);
+  --kui-edge-inset-inline-start: var(--_kui-split-view-safe-inline-start);
+  --kui-edge-inset-inline-end: var(--_kui-split-view-safe-inline-end);
+}
+
+.kui-split-view__list {
+  --kui-edge-inset-inline-end: 0px;
+}
+
+.kui-split-view__detail {
+  --kui-edge-inset-inline-start: 0px;
+}
+
+/* Each pane pads for the edges it touches unless its only child is a Pane or
+   layout, which then owns the insets. */
+.kui-split-view__list:not(
+  :has(
+    > :is(
+        [data-component="pane"],
+        [data-component="nav-stack"],
+        [data-component="split-view"],
+        [data-component="workbench"],
+        [data-component="tab-scaffold"]
+      ):only-child
+  )
+),
+.kui-split-view__detail:not(
+  :has(
+    > :is(
+        [data-component="pane"],
+        [data-component="nav-stack"],
+        [data-component="split-view"],
+        [data-component="workbench"],
+        [data-component="tab-scaffold"]
+      ):only-child
+  )
+) {
+  padding-block: var(--kui-edge-inset-block-start)
+    var(--kui-edge-inset-block-end);
+  padding-inline: var(--kui-edge-inset-inline-start)
+    var(--kui-edge-inset-inline-end);
+}
+
+.kui-split-view__list:not(
+    :has(
+      > :is(
+          [data-component="pane"],
+          [data-component="nav-stack"],
+          [data-component="split-view"],
+          [data-component="workbench"],
+          [data-component="tab-scaffold"]
+        ):only-child
+    )
+  )
+  > *,
+.kui-split-view__detail:not(
+    :has(
+      > :is(
+          [data-component="pane"],
+          [data-component="nav-stack"],
+          [data-component="split-view"],
+          [data-component="workbench"],
+          [data-component="tab-scaffold"]
+        ):only-child
+    )
+  )
+  > * {
+  --kui-edge-inset-block-start: 0px;
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: 0px;
+  --kui-edge-inset-inline-end: 0px;
 }
 
 /* Compact mode is a full-bleed NavStack. */

@@ -887,7 +887,10 @@ export { SplitView, type SplitViewProps, type SplitViewResizable };
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
-/** Logical sides that can show a {@link Pane} separator. */
+/**
+ * Logical pane sides: where a {@link Pane} can show a separator and where it can
+ * compensate for a device safe-area inset.
+ */
 type PaneSeparatorSide = 'block-start' | 'block-end' | 'inline-start' | 'inline-end';
 /** Semantic root elements supported by {@link Pane}. */
 type PaneElement = 'article' | 'aside' | 'div' | 'main' | 'section';
@@ -899,6 +902,10 @@ type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-separator-block-end'?: never;
     'data-separator-inline-start'?: never;
     'data-separator-inline-end'?: never;
+    'data-safe-area-block-start'?: never;
+    'data-safe-area-block-end'?: never;
+    'data-safe-area-inline-start'?: never;
+    'data-safe-area-inline-end'?: never;
 }>;
 interface PaneProps {
     /** Optional fixed chrome above the scrolling content, arranged vertically. */
@@ -913,6 +920,14 @@ interface PaneProps {
     contentElement?: PaneContentElement;
     /** Independent logical-edge separator lines. Defaults to none. */
     separators?: readonly PaneSeparatorSide[];
+    /**
+     * Sides on which the pane may compensate for a device safe-area inset.
+     * Defaults to every side: the pane pads its slots for each side that still
+     * reaches an unsafe screen edge, as its surrounding layout reports, while its
+     * background and separators paint through. List only the sides an app-owned
+     * layout places at a screen edge, or pass `[]` to opt out.
+     */
+    safeAreaEdges?: readonly PaneSeparatorSide[];
     id?: string;
     /** Accessible name for a landmark root such as `aside` or `main`. */
     label?: string;
@@ -933,7 +948,7 @@ interface PaneProps {
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, element, contentElement, separators, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
 export { Pane, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
 ```

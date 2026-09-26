@@ -7,10 +7,33 @@
   overflow: hidden;
   flex-direction: column;
   background: var(--kui-color-surface);
+  /* Safe areas: the stack's surfaces paint through unsafe areas; its chrome,
+     bottom toolbar, and each view compensate for the edges the stack still
+     touches (see pane.css for the `--kui-edge-inset-*` edge context). */
+  --_kui-nav-stack-safe-block-start: var(
+    --kui-edge-inset-block-start,
+    var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px))
+  );
+  --_kui-nav-stack-safe-block-end: var(
+    --kui-edge-inset-block-end,
+    var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+  --_kui-nav-stack-safe-inline-start: var(
+    --kui-edge-inset-inline-start,
+    var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+  );
+  --_kui-nav-stack-safe-inline-end: var(
+    --kui-edge-inset-inline-end,
+    var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+  );
 }
 
 .kui-nav-stack__chrome,
 .kui-nav-stack__bottom {
+  --kui-edge-inset-block-start: 0px;
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: 0px;
+  --kui-edge-inset-inline-end: 0px;
   transition: opacity var(--kui-nav-stack-transition-duration, 200ms) ease;
 }
 
@@ -38,8 +61,12 @@
 .kui-nav-stack__chrome {
   display: flex;
   min-width: 0;
-  min-height: calc(2px + remify(42px));
-  padding-inline: var(--kui-space-xs);
+  min-height: calc(2px + remify(42px) + var(--_kui-nav-stack-safe-block-start));
+  padding-block-start: var(--_kui-nav-stack-safe-block-start);
+  padding-inline: calc(
+      var(--kui-space-xs) + var(--_kui-nav-stack-safe-inline-start)
+    )
+    calc(var(--kui-space-xs) + var(--_kui-nav-stack-safe-inline-end));
   align-items: center;
   gap: var(--kui-space-xs);
   background: var(--kui-color-surface);
@@ -94,10 +121,26 @@
 }
 
 .kui-nav-stack__viewport {
+  --kui-edge-inset-block-start: var(--_kui-nav-stack-safe-block-start);
+  --kui-edge-inset-block-end: var(--_kui-nav-stack-safe-block-end);
+  --kui-edge-inset-inline-start: var(--_kui-nav-stack-safe-inline-start);
+  --kui-edge-inset-inline-end: var(--_kui-nav-stack-safe-inline-end);
   position: relative;
   flex: 1;
   min-height: 0;
   overflow: hidden;
+}
+
+/* The top chrome and the bottom toolbar own their edges; transient chrome
+   copies from a transition do not. */
+.kui-nav-stack__chrome ~ .kui-nav-stack__viewport {
+  --kui-edge-inset-block-start: 0px;
+}
+
+.kui-nav-stack__viewport:has(
+  ~ .kui-nav-stack__bottom:not(.kui-nav-stack__chrome-copy)
+) {
+  --kui-edge-inset-block-end: 0px;
 }
 
 .kui-nav-stack__view {
@@ -106,6 +149,47 @@
   background: var(--kui-color-surface);
   transition: transform var(--kui-nav-stack-transition-duration, 200ms) ease;
   inset: 0;
+}
+
+/* Each view is its region's scroll owner: block insets become padding inside
+   the scroller so content scrolls under an unsafe edge but can always be
+   scrolled clear. A view whose only child is a Pane or layout lets that child
+   own the insets instead. */
+.kui-nav-stack__view:not(
+  :has(
+    > :is(
+        [data-component="pane"],
+        [data-component="nav-stack"],
+        [data-component="split-view"],
+        [data-component="workbench"],
+        [data-component="tab-scaffold"]
+      ):only-child
+  )
+) {
+  padding-block: var(--kui-edge-inset-block-start)
+    var(--kui-edge-inset-block-end);
+  padding-inline: var(--kui-edge-inset-inline-start)
+    var(--kui-edge-inset-inline-end);
+  scroll-padding-block: var(--kui-edge-inset-block-start)
+    var(--kui-edge-inset-block-end);
+}
+
+.kui-nav-stack__view:not(
+    :has(
+      > :is(
+          [data-component="pane"],
+          [data-component="nav-stack"],
+          [data-component="split-view"],
+          [data-component="workbench"],
+          [data-component="tab-scaffold"]
+        ):only-child
+    )
+  )
+  > * {
+  --kui-edge-inset-block-start: 0px;
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: 0px;
+  --kui-edge-inset-inline-end: 0px;
 }
 
 /* Only the active view (and any view mid-exit) is shown; lower entries stay
@@ -127,6 +211,9 @@
 }
 
 .kui-nav-stack__bottom {
+  padding-block-end: var(--_kui-nav-stack-safe-block-end);
+  padding-inline: var(--_kui-nav-stack-safe-inline-start)
+    var(--_kui-nav-stack-safe-inline-end);
   border-block-start: 1px solid var(--kui-color-border);
   background: var(--kui-color-surface);
 }

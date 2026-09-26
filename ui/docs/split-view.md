@@ -13,6 +13,14 @@ import "@kerfjs/ui/split-view.css";
 // wireResizableRegions / wireNavStack for the interactive behavior.
 ```
 
+## Safe areas
+
+The list pane grows by the inline-start unsafe inset and pads for the edges it
+touches; the detail pads for its own outer edges. Neither is inset on the
+shared interior edge. A pane whose only child is a `Pane` lets that child own
+the insets, and the compact form hands them to its `NavStack`. See
+[Choosing an app layout › Safe areas](app-layouts.md#safe-areas).
+
 ## Responsive by device class
 
 `SplitView` is declarative; the app derives `compact` from the device class and

@@ -35,6 +35,14 @@ each enabled side uses `--kui-pane-separator-width` (1px) and
 `--kui-pane-separator-color` (`--kui-color-border`). Logical sides keep pane
 boundaries correct in both left-to-right and right-to-left layouts.
 
+A pane is safe-area aware. Its background and separators paint through a
+device's unsafe areas while its header, content, and footer pad for each side
+the pane still reaches; the content's block insets are scroll padding, so its
+first and last items can always be scrolled clear. Layouts clear the sides a
+pane does not reach. In an app-owned arrangement, pass `safeAreaEdges` (the
+same logical sides as `separators`; all four by default, `[]` to opt out). See
+[Choosing an app layout › Safe areas](app-layouts.md#safe-areas).
+
 `.kui-content` is a vertical stack with a 24px gap between major children.
 Sections may contain adjacent `ListItem` rows without adding another major gap.
 Ordinary surface-like children use `.kui-content-item` and own their complete
@@ -66,17 +74,18 @@ semantic status.
 
 ## Public roles and tokens
 
-| Need                                     | Class                     | Token / default                       |
-| ---------------------------------------- | ------------------------- | ------------------------------------- |
-| Unpadded header/content/footer structure | `Pane`, `.kui-pane`       | —                                     |
-| Scrolling pane content                   | `.kui-pane__content`      | —                                     |
-| Optional logical-edge separators         | `Pane.separators`         | `--kui-pane-separator-width: 1px`     |
-| Major vertical rhythm                    | `.kui-content`            | `--kui-layout-content-gap: 24px`      |
-| Self-contained child geometry            | `.kui-content-item`       | 8px margin + 1px border + 8px padding |
-| Pill child                               | `.kui-content-item--pill` | `--kui-layout-pill-radius: 22px`      |
-| Related controls                         | `.kui-control-cluster`    | `--kui-layout-control-gap: 8px`       |
-| Inline metadata                          | `.kui-inline-metadata`    | `--kui-layout-metadata-gap: 4px`      |
-| Explicit scroll owner outside a pane     | `.kui-scroll-owner`       | `overflow: auto`                      |
+| Need                                     | Class                     | Token / default                                                             |
+| ---------------------------------------- | ------------------------- | --------------------------------------------------------------------------- |
+| Unpadded header/content/footer structure | `Pane`, `.kui-pane`       | —                                                                           |
+| Scrolling pane content                   | `.kui-pane__content`      | —                                                                           |
+| Optional logical-edge separators         | `Pane.separators`         | `--kui-pane-separator-width: 1px`                                           |
+| Safe-area sides a pane may pad           | `Pane.safeAreaEdges`      | `--kui-safe-area-*: env(safe-area-inset-*)`, routed as `--kui-edge-inset-*` |
+| Major vertical rhythm                    | `.kui-content`            | `--kui-layout-content-gap: 24px`                                            |
+| Self-contained child geometry            | `.kui-content-item`       | 8px margin + 1px border + 8px padding                                       |
+| Pill child                               | `.kui-content-item--pill` | `--kui-layout-pill-radius: 22px`                                            |
+| Related controls                         | `.kui-control-cluster`    | `--kui-layout-control-gap: 8px`                                             |
+| Inline metadata                          | `.kui-inline-metadata`    | `--kui-layout-metadata-gap: 4px`                                            |
+| Explicit scroll owner outside a pane     | `.kui-scroll-owner`       | `overflow: auto`                                                            |
 
 The component layer applies the same contract to `Toolbar`, `ListHeader`,
 `ListItem`, `Toolbar`, `StateBanner`, `ValueTable`,

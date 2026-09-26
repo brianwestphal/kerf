@@ -6,9 +6,32 @@
   overflow: hidden;
   flex-direction: column;
   background: var(--kui-color-surface);
+  /* Safe areas: the scenes and the bar paint through unsafe areas; the bar
+     compensates for the bottom and inline edges, and the scenes for the top
+     and inline edges (see pane.css for the `--kui-edge-inset-*` context). */
+  --_kui-tab-scaffold-safe-block-start: var(
+    --kui-edge-inset-block-start,
+    var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px))
+  );
+  --_kui-tab-scaffold-safe-block-end: var(
+    --kui-edge-inset-block-end,
+    var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+  --_kui-tab-scaffold-safe-inline-start: var(
+    --kui-edge-inset-inline-start,
+    var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+  );
+  --_kui-tab-scaffold-safe-inline-end: var(
+    --kui-edge-inset-inline-end,
+    var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+  );
 }
 
 .kui-tab-scaffold__scenes {
+  --kui-edge-inset-block-start: var(--_kui-tab-scaffold-safe-block-start);
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: var(--_kui-tab-scaffold-safe-inline-start);
+  --kui-edge-inset-inline-end: var(--_kui-tab-scaffold-safe-inline-end);
   position: relative;
   flex: 1;
   min-height: 0;
@@ -23,6 +46,44 @@
   inset: 0;
 }
 
+/* A scene is its region's scroll owner, so its top inset is padding inside
+   the scroller. A scene whose only child is a Pane or layout (usually a
+   NavStack) lets that child own the insets instead. */
+.kui-tab-scaffold__scene:not(
+  :has(
+    > :is(
+        [data-component="pane"],
+        [data-component="nav-stack"],
+        [data-component="split-view"],
+        [data-component="workbench"],
+        [data-component="tab-scaffold"]
+      ):only-child
+  )
+) {
+  padding-block-start: var(--kui-edge-inset-block-start);
+  padding-inline: var(--kui-edge-inset-inline-start)
+    var(--kui-edge-inset-inline-end);
+  scroll-padding-block-start: var(--kui-edge-inset-block-start);
+}
+
+.kui-tab-scaffold__scene:not(
+    :has(
+      > :is(
+          [data-component="pane"],
+          [data-component="nav-stack"],
+          [data-component="split-view"],
+          [data-component="workbench"],
+          [data-component="tab-scaffold"]
+        ):only-child
+    )
+  )
+  > * {
+  --kui-edge-inset-block-start: 0px;
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: 0px;
+  --kui-edge-inset-inline-end: 0px;
+}
+
 .kui-tab-scaffold__scene[data-active="false"] {
   visibility: hidden;
 }
@@ -33,8 +94,10 @@
   padding-block-start: var(--kui-space-2xs);
   /* Respect the home-indicator safe area on iOS-class devices. */
   padding-block-end: calc(
-    var(--kui-space-2xs) + env(safe-area-inset-bottom, 0px)
+    var(--kui-space-2xs) + var(--_kui-tab-scaffold-safe-block-end)
   );
+  padding-inline: var(--_kui-tab-scaffold-safe-inline-start)
+    var(--_kui-tab-scaffold-safe-inline-end);
   border-block-start: 1px solid var(--kui-color-border);
   background: var(--kui-color-surface);
 }

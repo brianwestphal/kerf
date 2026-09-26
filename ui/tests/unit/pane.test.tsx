@@ -52,6 +52,39 @@ describe('Pane', () => {
     expect(html.match(/data-separator-[^=]+="true"/g)).toHaveLength(4);
   });
 
+  it('compensates for safe areas on every side unless the app narrows the sides', () => {
+    const all = String(Pane({ children: <span>Content</span> }));
+    expect(all.match(/data-safe-area-[^=]+="true"/g)).toHaveLength(4);
+
+    const narrowed = String(
+      Pane({
+        children: <span>Content</span>,
+        safeAreaEdges: ['inline-start', 'block-end'],
+      }),
+    );
+    expect(narrowed).toContain('data-safe-area-block-start="false"');
+    expect(narrowed).toContain('data-safe-area-block-end="true"');
+    expect(narrowed).toContain('data-safe-area-inline-start="true"');
+    expect(narrowed).toContain('data-safe-area-inline-end="false"');
+
+    const none = String(
+      Pane({ children: <span>Content</span>, safeAreaEdges: [] }),
+    );
+    expect(none.match(/data-safe-area-[^=]+="false"/g)).toHaveLength(4);
+
+    const forged = String(
+      Pane({
+        children: <span>Content</span>,
+        rootAttributes: {
+          // @ts-expect-error protected Pane safe-area state cannot be supplied by callers.
+          'data-safe-area-block-start': 'false',
+        },
+      }),
+    );
+    expect(forged).toContain('data-safe-area-block-start="true"');
+    expect(forged.match(/data-safe-area-block-start=/g)).toHaveLength(1);
+  });
+
   it('protects structural data attributes while forwarding safe metadata', () => {
     const html = String(
       Pane({

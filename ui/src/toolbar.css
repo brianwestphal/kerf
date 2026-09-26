@@ -16,6 +16,29 @@
   font-family: var(--kui-font-sans);
 }
 
+/* Safe areas: a toolbar compensates only for the inline edges its owner hands
+   it through `--kui-edge-inset-inline-*` (a Pane header or footer does), so its
+   box and dividers keep reaching the edge while its zones clear the unsafe
+   area. Unset means none: a toolbar embedded in content never pads for the
+   device. Its zones then see a cleared context. */
+.kui-toolbar {
+  padding-inline: calc(
+      var(--kui-toolbar-gap, remify(8px)) +
+        var(--kui-edge-inset-inline-start, 0px)
+    )
+    calc(
+      var(--kui-toolbar-gap, remify(8px)) +
+        var(--kui-edge-inset-inline-end, 0px)
+    );
+}
+
+.kui-toolbar > * {
+  --kui-edge-inset-block-start: 0px;
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: 0px;
+  --kui-edge-inset-inline-end: 0px;
+}
+
 .kui-toolbar[data-has-center="false"] {
   grid-template-columns: minmax(0, 1fr) auto;
 }
