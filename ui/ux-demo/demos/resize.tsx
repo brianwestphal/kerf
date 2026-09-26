@@ -41,8 +41,11 @@ export function ResizeDemo() {
         >
           <Pane>
             <DemoContentItem
-              title="Resizable panel"
-              detail="Use the handle with a pointer, arrow keys, Home, or End."
+              title="Catalog panel"
+              // Word joiners and a no-break space keep the width range on one line.
+              detail={
+                'Navigation or inspector content, 180\u2060\u2013\u2060420\u00a0px wide.'
+              }
             />
           </Pane>
         </ResizableRegion>
