@@ -739,7 +739,8 @@ app-owned arrangements). `ui/tests/browser/safe-area.spec.ts` renders each layou
 from `ui/tests/browser/fixtures/safe-area-layouts.tsx` with simulated insets.
 `ui/src/toolbar.css` never clips an action: every trailing zone, and stacked
 center/trailing zones, wrap whole control groups (stacked zones span every grid
-track, because a toolbar cannot container-query itself), and
+track, because a toolbar cannot container-query itself; an expanded
+`center-priority` center spans every track the same way), and
 `Toolbar.responsive="wrap"` moves the trailing zone below a whole heading title.
 `ui/tests/browser/toolbar-overflow.spec.ts` pins the compact-toolbar and
 loading-inspector recipes at 390px plus the focused Toolbar demo states.

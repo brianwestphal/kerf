@@ -58,6 +58,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   over the border with the group's radius, neighboring controls still abut, and
   the trailing dropdown trigger keeps the 1px end inset instead of running onto
   the border. Compact groups are 2px narrower as a result.
+- Fixed `@kerfjs/ui` `Toolbar responsive="center-priority"` leaving an
+  expanded center control at roughly half the row on narrow toolbars. The
+  policy set the toolbar's own grid template inside a container query on the
+  toolbar itself, which can never match, so the center kept only the first
+  column track once the leading and trailing zones left. The dead rule is gone
+  and the expanded center now spans every column track, filling the toolbar's
+  content width at phone widths.
 - Fixed a nested `@kerfjs/ui` `List`, `Row`, or `Grid` inheriting its
   ancestor's `gap` and `flex`. Those props travel through private custom
   properties, which inherit, so a nested `List` without its own `gap` took the

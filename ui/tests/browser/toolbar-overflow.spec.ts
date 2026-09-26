@@ -177,3 +177,63 @@ test('the focused Toolbar demo shows stacked wrapping and the wrap policy', asyn
       });
   }
 });
+
+// KF-HY1QDN: `center-priority` once set the toolbar's own grid template inside
+// a container query on the toolbar itself, which can never match, so an
+// expanded center control kept only the first auto track (about half the row
+// at 390px). The zone rules now give the expanded center every column track.
+test('center-priority gives an expanded center control the whole row at 390px', async ({
+  page,
+}) => {
+  await open(page, 390, 'toolbar');
+  const toolbar = page
+    .locator('[data-demo="toolbar"] [data-component="toolbar"]')
+    .first();
+  await expect(toolbar).toHaveAttribute('data-responsive', 'center-priority');
+  const center = toolbar.locator('.kui-toolbar__center');
+  const group = center.locator('[data-component="toolbar-control-group"]');
+  await expect(toolbar.locator('.kui-toolbar__leading')).toBeVisible();
+
+  await toolbar.getByRole('button', { name: 'Open find' }).click();
+  await expect(
+    toolbar.getByRole('searchbox', { name: 'Find in workspace' }),
+  ).toBeFocused();
+  await expect(toolbar.locator('.kui-toolbar__leading')).toBeHidden();
+  await expect(toolbar.locator('.kui-toolbar__trailing')).toBeHidden();
+
+  const contentBox = await toolbar.evaluate((element) => {
+    const style = globalThis.getComputedStyle(element);
+    const box = element.getBoundingClientRect();
+    return [
+      Math.round(box.left + Number.parseFloat(style.paddingLeft)),
+      Math.round(box.right - Number.parseFloat(style.paddingRight)),
+    ];
+  });
+  const edges = (locator: Locator) =>
+    locator.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return [Math.round(rect.left), Math.round(rect.right)];
+    });
+  // The group animates its width open; poll until it spans the content box.
+  await expect.poll(() => edges(group)).toEqual(contentBox);
+  expect(await edges(center)).toEqual(contentBox);
+});
+
+test('center-priority keeps every zone on one row when the toolbar is wide', async ({
+  page,
+}) => {
+  await open(page, 1440, 'toolbar');
+  const toolbar = page
+    .locator('[data-demo="toolbar"] [data-component="toolbar"]')
+    .first();
+  await toolbar.getByRole('button', { name: 'Open find' }).click();
+  await expect(toolbar.locator('.kui-toolbar__leading')).toBeVisible();
+  await expect(toolbar.locator('.kui-toolbar__trailing')).toBeVisible();
+  const tops = await toolbar.evaluate((element) =>
+    [...element.children]
+      .filter((zone) => globalThis.getComputedStyle(zone).display !== 'none')
+      .map((zone) => Math.round(zone.getBoundingClientRect().top)),
+  );
+  expect(tops.length).toBe(3);
+  expect(new Set(tops).size).toBe(1);
+});

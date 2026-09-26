@@ -193,19 +193,18 @@
   }
 }
 
+/* Center priority. As with the stacked topology, the toolbar cannot query its
+   own width, so these rules style the zones: while the center holds an expanded
+   control, the leading and trailing zones leave and the center spans every
+   column track (including the gaps the vacated tracks still own), taking the
+   whole row. */
 @container kui-toolbar (max-width: remify(672px)) {
-  .kui-toolbar[data-responsive="center-priority"]:has(
-      > .kui-toolbar__center [data-expanded="true"]
-    ) {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
   .kui-toolbar[data-responsive="center-priority"]:has(
       > .kui-toolbar__center [data-expanded="true"]
     )
     > .kui-toolbar__center {
     width: 100%;
-    grid-column: 1;
+    grid-column: 1 / -1;
   }
 
   .kui-toolbar[data-responsive="center-priority"]:has(
