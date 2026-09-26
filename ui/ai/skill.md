@@ -31,7 +31,9 @@ scaffolded by `create-kerf-component` owns the decisions in
 `kerf.components.json`; run `npm run catalog:check` before using its output. If
 no generated extension exists, start from the checked examples and require the
 author to supply missing semantic and geometry decisions; never infer them from
-rendered appearance.
+rendered appearance. A `data-*` attribute listed in an entry's
+`wiring.stateAttributes` belongs to the named helper: never render, remove, or
+branch on it as application state.
 
 Use v1 for selection, delivery, and compatibility. Use v2 when evaluating
 composition. Join catalogs by `key` (`package:id`), never bare `id`. Treat

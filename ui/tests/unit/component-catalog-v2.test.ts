@@ -72,6 +72,36 @@ describe('component catalog v2 composition contract', () => {
     ).toBe(true);
   });
 
+  it('declares wiring-owned state attributes on every entry, flattened with their helper', async () => {
+    const v2 = await readJson<ComponentCatalogV2>(
+      '../../ai/component-catalog-v2.json',
+    );
+    expect(
+      v2.entries.every((entry) => Array.isArray(entry.wiring.stateAttributes)),
+    ).toBe(true);
+    const owned = (id: string) =>
+      v2.entries
+        .find((entry) => entry.id === id)!
+        .wiring.stateAttributes!.map(({ name, helper }) => `${helper}:${name}`);
+    expect(owned('resize')).toEqual([
+      'wireResizableRegions:data-handle-inset',
+      'wireResizableRegions:data-resizing',
+    ]);
+    // A composed layout lists the attributes of every helper it needs.
+    expect(owned('split-view')).toEqual(
+      expect.arrayContaining([
+        'wireResizableRegions:data-handle-inset',
+        'wireNavStack:data-nav-exiting',
+      ]),
+    );
+    expect(owned('collapsible-panel')).toEqual([
+      'wireSidebar:data-collapsible-responsive',
+      'wireSidebar:data-collapsible-overlay',
+      'wireSidebar:data-morph-preserve',
+    ]);
+    expect(owned('list')).toEqual([]);
+  });
+
   it('keeps permissive defaults distinct from authoritative enforceable overrides', async () => {
     const v2 = await readJson<ComponentCatalogV2>(
       '../../ai/component-catalog-v2.json',

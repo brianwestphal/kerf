@@ -92,7 +92,27 @@
     "wiring": {
       "type": "object",
       "required": ["export", "import", "required"],
-      "properties": { "export": { "type": "string" }, "import": { "type": "string" }, "required": { "type": "boolean" }, "reason": { "type": "string" } },
+      "properties": {
+        "export": { "type": "string" },
+        "import": { "type": "string" },
+        "required": { "type": "boolean" },
+        "reason": { "type": "string" },
+        "stateAttributes": {
+          "description": "Wiring-owned state attributes: data-* attributes this helper writes at runtime on the entry's elements. The application must not render, remove, or treat them as its own state.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/stateAttribute" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "stateAttribute": {
+      "type": "object",
+      "required": ["name", "on", "meaning"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1, "pattern": "^data-[a-z0-9]+(-[a-z0-9]+)*$" },
+        "on": { "type": "string", "minLength": 1, "description": "The element that carries it: a public class, or the element passed to the helper." },
+        "meaning": { "type": "string", "minLength": 1, "description": "What its presence or value means." }
+      },
       "additionalProperties": false
     },
     "delivery": {

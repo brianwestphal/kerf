@@ -1,3 +1,4 @@
+const DATA_ATTRIBUTE = /^data-[a-z0-9]+(-[a-z0-9]+)*$/;
 const isStringList = (value) =>
   Array.isArray(value) &&
   value.every((item) => typeof item === 'string' && item.length > 0) &&
@@ -129,6 +130,31 @@ export function validateCatalogV2(catalog, options = {}) {
       fail(`${at} wiring lists must contain unique non-empty strings`);
     if (entry?.wiring?.required && !entry.wiring.helpers.length)
       fail(`${at} required wiring must name a helper or import`);
+    const stateAttributes = entry?.wiring?.stateAttributes;
+    if (stateAttributes !== undefined) {
+      if (!Array.isArray(stateAttributes))
+        fail(`${at} wiring.stateAttributes must be an array`);
+      const attributeNames = new Set();
+      for (const attribute of Array.isArray(stateAttributes)
+        ? stateAttributes
+        : []) {
+        const name = attribute?.name;
+        if (typeof name !== 'string' || !DATA_ATTRIBUTE.test(name))
+          fail(`${at} wiring state attribute ${name} must be a data-* name`);
+        if (attributeNames.has(name))
+          fail(`${at} wiring state attribute ${name} is declared twice`);
+        attributeNames.add(name);
+        for (const field of ['on', 'meaning'])
+          if (typeof attribute?.[field] !== 'string' || !attribute[field])
+            fail(
+              `${at} wiring state attribute ${name} needs a non-empty ${field}`,
+            );
+        if (!entry.wiring.helpers?.includes(attribute?.helper))
+          fail(
+            `${at} wiring state attribute ${name} names helper ${attribute?.helper}, which is not in wiring.helpers`,
+          );
+      }
+    }
     if (
       !['application', 'component', 'shared', 'not-applicable'].includes(
         entry?.responsive?.owner,

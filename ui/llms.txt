@@ -34,7 +34,9 @@ the folder modules, and CSS only imports their owner stylesheets.
    when app-owned components must participate in selection or alignment.
    Load the [Composition catalog v2](./ai/component-catalog-v2.json) to
    mechanically evaluate parents, contexts, zones/cardinality, children, state,
-   wiring, responsive/layout/accessibility rules, and public boundaries. V1
+   wiring (including the wiring-owned `stateAttributes` an app must never
+   render or remove), responsive/layout/accessibility rules, and public
+   boundaries. V1
    remains compatible; v2 joins catalogs by `package:id`. Consumer v2 catalogs
    use [the v2 extension schema](./ai/component-catalog-extension-v2.schema.json).
    Load [compile-time contracts](./ai/compile-time-contracts-v1.json) for stable

@@ -21,6 +21,33 @@
   },
   "additionalProperties": false,
   "$defs": {
+    "stateAttribute": {
+      "type": "object",
+      "required": ["name", "on", "helper", "meaning"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^data-[a-z0-9]+(-[a-z0-9]+)*$"
+        },
+        "on": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The element that carries it: a public class, or the element passed to the helper."
+        },
+        "helper": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The helper, one of wiring.helpers, that writes it."
+        },
+        "meaning": {
+          "type": "string",
+          "minLength": 1,
+          "description": "What its presence or value means."
+        }
+      },
+      "additionalProperties": false
+    },
     "stringList": {
       "type": "array",
       "items": { "type": "string", "minLength": 1 },
@@ -152,7 +179,12 @@
           "properties": {
             "required": { "type": "boolean" },
             "helpers": { "$ref": "#/$defs/stringList" },
-            "obligations": { "$ref": "#/$defs/stringList" }
+            "obligations": { "$ref": "#/$defs/stringList" },
+            "stateAttributes": {
+              "description": "Wiring-owned state attributes: data-* attributes a wiring helper writes at runtime, which the application must not render, remove, or treat as its own state. Optional for extension catalogs; first-party entries always list it, empty when their helpers write none.",
+              "type": "array",
+              "items": { "$ref": "#/$defs/stateAttribute" }
+            }
           },
           "additionalProperties": false
         },

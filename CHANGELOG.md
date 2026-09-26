@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui`'s component catalog now declares **wiring-owned state
+  attributes**. A new optional `wiring.stateAttributes` in
+  `component-catalog-v2` (and per wiring item in v1) lists each `data-*`
+  attribute a wiring helper writes at runtime, such as `data-handle-inset` and
+  `data-resizing` from `wireResizableRegions`. For each one it records the
+  element, the helper, and the meaning, so AI consumers and tools can tell
+  them apart from attributes the app writes. Every first-party wiring helper
+  is declared. `check:catalog` fails when a helper's declarations differ from
+  what its source writes.
 - `@kerfjs/ui`'s `wireSidebar` no longer leaves focus inside a panel it just
   collapsed. When the collapse was triggered from a toggle inside the panel
   (the documented placement), focus now moves to that panel's toggle outside

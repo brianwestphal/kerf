@@ -23,6 +23,18 @@ const defaultGeometry = {
   padding: 'composed',
 };
 
+// Wiring-owned state attributes are declared per helper in v1, where the
+// helper is named; v2 flattens them with the helper that writes each one.
+const stateAttributesOf = (entry) =>
+  (entry.wiring ?? []).flatMap((item) =>
+    (item.stateAttributes ?? []).map(({ name, on, meaning }) => ({
+      name,
+      on,
+      helper: item.export,
+      meaning,
+    })),
+  );
+
 function defaultEntry(entry) {
   const helpers = (entry.wiring ?? []).map((item) => item.export);
   const requiredWiring = (entry.wiring ?? []).filter((item) => item.required);
@@ -53,6 +65,7 @@ function defaultEntry(entry) {
       obligations: requiredWiring.map(
         (item) => item.reason ?? `Use ${item.export} as documented.`,
       ),
+      stateAttributes: stateAttributesOf(entry),
     },
     responsive: {
       owner: isRecipe ? 'application' : 'not-applicable',
@@ -82,9 +95,18 @@ function defaultEntry(entry) {
 function mergeEntry(base, override) {
   if (!override) return base;
   const { _source, ...contract } = override;
+  if (contract.wiring?.stateAttributes)
+    throw new Error(
+      `${base.key} override declares wiring.stateAttributes; declare them on the helper in ai/component-catalog.json.`,
+    );
   return {
     ...base,
     ...contract,
+    // An override restates wiring's helpers and obligations; the state
+    // attributes stay single-sourced from v1.
+    wiring: contract.wiring
+      ? { ...contract.wiring, stateAttributes: base.wiring.stateAttributes }
+      : base.wiring,
     provenance: {
       ...base.provenance,
       composition: _source,

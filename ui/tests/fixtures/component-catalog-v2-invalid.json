@@ -95,5 +95,35 @@
     "path": "entries.0.boundaries.rootClass",
     "value": "private-root",
     "message": "rootClass must be null or name one publicClasses entry"
+  },
+  {
+    "name": "state attributes not a list",
+    "path": "entries.34.wiring.stateAttributes",
+    "value": "data-resizing",
+    "message": "wiring.stateAttributes must be an array"
+  },
+  {
+    "name": "state attribute without the data- prefix",
+    "path": "entries.34.wiring.stateAttributes.0.name",
+    "value": "handle-inset",
+    "message": "must be a data-* name"
+  },
+  {
+    "name": "duplicate state attribute",
+    "path": "entries.34.wiring.stateAttributes.1.name",
+    "copyFrom": "entries.34.wiring.stateAttributes.0.name",
+    "message": "is declared twice"
+  },
+  {
+    "name": "state attribute without an element",
+    "path": "entries.34.wiring.stateAttributes.0.on",
+    "value": "",
+    "message": "needs a non-empty on"
+  },
+  {
+    "name": "state attribute from an unlisted helper",
+    "path": "entries.34.wiring.stateAttributes.0.helper",
+    "value": "wireSomethingElse",
+    "message": "which is not in wiring.helpers"
   }
 ]

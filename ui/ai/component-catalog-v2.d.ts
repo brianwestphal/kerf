@@ -1,4 +1,15 @@
 export type CatalogQualifiedKey = `${string}:${string}`;
+/** A `data-*` attribute a wiring helper writes at runtime. The application
+ *  must not render, remove, or treat it as its own state. */
+export interface CatalogStateAttribute {
+  name: `data-${string}`;
+  /** The element that carries it: a public class, or the element passed to the helper. */
+  on: string;
+  /** The helper, one of `wiring.helpers`, that writes it. */
+  helper: string;
+  /** What its presence or value means. */
+  meaning: string;
+}
 export type CatalogCardinality = {
   min: number;
   max: number | 'unbounded';
@@ -58,7 +69,14 @@ export interface CatalogCompositionEntryV2 {
     owner: 'application' | 'controlled' | 'component';
     required: boolean;
   }>;
-  wiring: { required: boolean; helpers: string[]; obligations: string[] };
+  wiring: {
+    required: boolean;
+    helpers: string[];
+    obligations: string[];
+    /** Wiring-owned `data-*` attributes a helper writes at runtime. Optional
+     *  for extension catalogs; first-party entries always list it. */
+    stateAttributes?: CatalogStateAttribute[];
+  };
   responsive: {
     owner: 'application' | 'component' | 'shared' | 'not-applicable';
     behaviors: string[];

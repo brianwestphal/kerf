@@ -187,6 +187,68 @@ for (const failure of validateCatalogV2(consumerV2Example))
   fail(`consumer v2 example: ${failure}`);
 if (catalogV2Schema.properties?.schemaVersion?.const !== 2)
   fail('v2 schema must require schemaVersion 2');
+
+// Wiring-owned state attributes: a `wire*` helper's declarations must name
+// exactly the data-* attributes its source writes, so a new write can't ship
+// undeclared and a removed one can't linger. First-party v2 entries always
+// carry the list (empty when their helpers write none).
+function writtenDataAttributes(source) {
+  const kebab = (camel) =>
+    `data-${camel.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`;
+  const constants = new Map(
+    [...source.matchAll(/const\s+([A-Z_]+)\s*=\s*'(data-[a-z0-9-]+)'/g)].map(
+      ([, constant, name]) => [constant, name],
+    ),
+  );
+  const names = new Set();
+  for (const [, camel] of source.matchAll(/\.dataset\.([a-zA-Z]+)\s*=(?!=)/g))
+    names.add(kebab(camel));
+  for (const [, camel] of source.matchAll(
+    /delete\s+[\w.?]+\.dataset\.([a-zA-Z]+)/g,
+  ))
+    names.add(kebab(camel));
+  for (const [, literal, constant] of source.matchAll(
+    /\.(?:set|toggle|remove)Attribute\(\s*(?:'(data-[a-z0-9-]+)'|([A-Z_]+)\b)/g,
+  )) {
+    const name = literal ?? constants.get(constant);
+    if (name) names.add(name);
+  }
+  return names;
+}
+for (const entry of artifact.entries) {
+  for (const item of entry.wiring ?? []) {
+    if (
+      !/^wire[A-Z]/.test(item.export) ||
+      !item.import.startsWith('@kerfjs/ui/wire-')
+    )
+      continue;
+    const file = `src/${item.import.slice('@kerfjs/ui/'.length)}.ts`;
+    let source;
+    try {
+      source = await readFile(resolve(root, file), 'utf8');
+    } catch {
+      fail(`${entry.id}: ${item.export} source ${file} is missing`);
+      continue;
+    }
+    const written = writtenDataAttributes(source);
+    const declared = new Set(
+      (item.stateAttributes ?? []).map(({ name }) => name),
+    );
+    for (const name of written)
+      if (!declared.has(name))
+        fail(
+          `${entry.id}: ${item.export} writes ${name} but does not declare it in wiring stateAttributes`,
+        );
+    for (const name of declared)
+      if (!written.has(name))
+        fail(
+          `${entry.id}: ${item.export} declares state attribute ${name}, which ${file} never writes`,
+        );
+  }
+}
+for (const entry of catalogV2.entries)
+  if (!Array.isArray(entry.wiring.stateAttributes))
+    fail(`${entry.key} must list wiring.stateAttributes (empty when none)`);
 if (consumerV2Schema.allOf?.[0]?.$ref !== './component-catalog-v2.schema.json')
   fail('consumer v2 schema must reuse the shipped v2 composition contract');
 validateSchema(

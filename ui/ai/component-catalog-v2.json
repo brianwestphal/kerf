@@ -31,7 +31,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["foundation"],
@@ -70,7 +75,12 @@
         { "id": "icon choice", "owner": "application", "required": false },
         { "id": "meaningful label", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["foundation"],
@@ -113,7 +123,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["foundation"],
@@ -162,7 +177,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["foundation"],
@@ -333,7 +353,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["foundation"],
@@ -444,7 +469,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -530,7 +560,27 @@
       "wiring": {
         "required": true,
         "helpers": ["wireNavStack"],
-        "obligations": ["Use wireNavStack as documented."]
+        "obligations": ["Use wireNavStack as documented."],
+        "stateAttributes": [
+          {
+            "name": "data-nav-chrome-transition",
+            "on": "kui-nav-stack",
+            "helper": "wireNavStack",
+            "meaning": "\"true\" while the chrome cross-fades between the outgoing and incoming view."
+          },
+          {
+            "name": "data-nav-chrome-copy",
+            "on": "kui-nav-stack__chrome-copy",
+            "helper": "wireNavStack",
+            "meaning": "Marks the inert, aria-hidden snapshot of the outgoing chrome shown during the cross-fade."
+          },
+          {
+            "name": "data-nav-exiting",
+            "on": "kui-nav-stack__view",
+            "helper": "wireNavStack",
+            "meaning": "\"true\" on a popped view the helper briefly re-inserts to slide it out."
+          }
+        ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
@@ -632,7 +682,39 @@
       "wiring": {
         "required": true,
         "helpers": ["wireResizableRegions", "wireNavStack"],
-        "obligations": ["Use wireNavStack as documented."]
+        "obligations": ["Use wireNavStack as documented."],
+        "stateAttributes": [
+          {
+            "name": "data-handle-inset",
+            "on": "kui-resizable-region",
+            "helper": "wireResizableRegions",
+            "meaning": "Present while a clipping edge clamps the region: the handle and its focus ring sit inside the region instead of overhanging that edge."
+          },
+          {
+            "name": "data-resizing",
+            "on": "kui-resizable-region",
+            "helper": "wireResizableRegions",
+            "meaning": "\"true\" during an active pointer drag of the handle."
+          },
+          {
+            "name": "data-nav-chrome-transition",
+            "on": "kui-nav-stack",
+            "helper": "wireNavStack",
+            "meaning": "\"true\" while the chrome cross-fades between the outgoing and incoming view."
+          },
+          {
+            "name": "data-nav-chrome-copy",
+            "on": "kui-nav-stack__chrome-copy",
+            "helper": "wireNavStack",
+            "meaning": "Marks the inert, aria-hidden snapshot of the outgoing chrome shown during the cross-fade."
+          },
+          {
+            "name": "data-nav-exiting",
+            "on": "kui-nav-stack__view",
+            "helper": "wireNavStack",
+            "meaning": "\"true\" on a popped view the helper briefly re-inserts to slide it out."
+          }
+        ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
@@ -705,7 +787,8 @@
       "wiring": {
         "required": true,
         "helpers": ["wireTabScaffold"],
-        "obligations": ["Use wireTabScaffold as documented."]
+        "obligations": ["Use wireTabScaffold as documented."],
+        "stateAttributes": []
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
@@ -801,7 +884,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -888,7 +976,27 @@
       "wiring": {
         "required": true,
         "helpers": ["wireSidebar"],
-        "obligations": ["Use wireSidebar as documented."]
+        "obligations": ["Use wireSidebar as documented."],
+        "stateAttributes": [
+          {
+            "name": "data-collapsible-responsive",
+            "on": "the root passed to wireSidebar",
+            "helper": "wireSidebar",
+            "meaning": "With a deviceClass: \"inline\" on a wide device class, otherwise the compact presentation (\"overlay\" or \"hidden\"). Re-applied if a re-render drops it."
+          },
+          {
+            "name": "data-collapsible-overlay",
+            "on": "the root passed to wireSidebar",
+            "helper": "wireSidebar",
+            "meaning": "With a deviceClass on a compact device: \"true\" for the overlay presentation, \"false\" for hidden. Absent on a wide device class. Re-applied if a re-render drops it."
+          },
+          {
+            "name": "data-morph-preserve",
+            "on": "kui-collapsible-panel__backdrop",
+            "helper": "wireSidebar",
+            "meaning": "Keeps the injected compact-overlay backdrop through the application's re-render; the helper creates and removes the backdrop itself."
+          }
+        ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
@@ -962,7 +1070,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -1058,7 +1171,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -1138,7 +1256,12 @@
         { "id": "expanded state", "owner": "application", "required": false },
         { "id": "avatar image URL", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -1208,7 +1331,12 @@
         { "id": "content", "owner": "application", "required": false },
         { "id": "outer placement", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -1252,7 +1380,12 @@
         { "id": "position", "owner": "application", "required": false },
         { "id": "visibility", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -1298,7 +1431,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -1352,7 +1490,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -1406,7 +1549,12 @@
         { "id": "copy", "owner": "application", "required": false },
         { "id": "actions", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -1445,7 +1593,12 @@
         { "id": "formatting", "owner": "application", "required": false },
         { "id": "empty policy", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -1514,7 +1667,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -1599,7 +1757,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -1684,7 +1847,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -1770,7 +1938,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -1844,7 +2017,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [{ "id": "expanded", "owner": "controlled", "required": false }],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -1919,7 +2097,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -2011,7 +2194,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -2088,7 +2276,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -2125,7 +2318,12 @@
       "state": [
         { "id": "the text content", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["structure"],
@@ -2175,7 +2373,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -2243,7 +2446,12 @@
         },
         { "id": "outer placement", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -2347,6 +2555,26 @@
         "obligations": [
           "Retain and invoke the disposer.",
           "Apply onReorder to application-owned order."
+        ],
+        "stateAttributes": [
+          {
+            "name": "data-tab-dragging",
+            "on": "AppTab (data-component=\"app-tab\")",
+            "helper": "wireTabBars",
+            "meaning": "\"true\" on the tab being dragged."
+          },
+          {
+            "name": "data-tab-drop-position",
+            "on": "AppTab (data-component=\"app-tab\")",
+            "helper": "wireTabBars",
+            "meaning": "\"before\" or \"after\" on the tab under the pointer: where the dragged tab would land."
+          },
+          {
+            "name": "data-tab-autoscroll",
+            "on": "kui-tab-bar__tabs",
+            "helper": "wireTabBars",
+            "meaning": "\"start\" or \"end\" while a drag near that edge auto-scrolls the strip."
+          }
         ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
@@ -2404,7 +2632,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [{ "id": "value", "owner": "controlled", "required": true }],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["controls"],
@@ -2494,6 +2727,20 @@
         "obligations": [
           "Retain and invoke the disposer.",
           "Use readTokenSearchField for DOM-owned text."
+        ],
+        "stateAttributes": [
+          {
+            "name": "data-token-search-text",
+            "on": "the text span inside kui-token-search__editor",
+            "helper": "wireTokenSearchFields",
+            "meaning": "Marks the plain-text span the helper inserts when the editor is emptied."
+          },
+          {
+            "name": "data-empty",
+            "on": "the text span inside kui-token-search__editor",
+            "helper": "wireTokenSearchFields",
+            "meaning": "\"true\" on that span while it holds no text."
+          }
         ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
@@ -2574,6 +2821,20 @@
         "obligations": [
           "Retain and invoke the disposer.",
           "Persist committed size in the application when persistence is required."
+        ],
+        "stateAttributes": [
+          {
+            "name": "data-handle-inset",
+            "on": "kui-resizable-region",
+            "helper": "wireResizableRegions",
+            "meaning": "Present while a clipping edge clamps the region: the handle and its focus ring sit inside the region instead of overhanging that edge."
+          },
+          {
+            "name": "data-resizing",
+            "on": "kui-resizable-region",
+            "helper": "wireResizableRegions",
+            "meaning": "\"true\" during an active pointer drag of the handle."
+          }
         ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
@@ -2651,7 +2912,8 @@
         "helpers": ["@kerfjs/ui/select/register"],
         "obligations": [
           "Import the registration module once in the application."
-        ]
+        ],
+        "stateAttributes": []
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
@@ -2732,7 +2994,12 @@
         { "id": "message lifetime", "owner": "application", "required": false },
         { "id": "recovery policy", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -2788,7 +3055,12 @@
         { "id": "retry behavior", "owner": "application", "required": false },
         { "id": "copy", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -2901,7 +3173,12 @@
         { "id": "recovery action", "owner": "application", "required": false },
         { "id": "copy", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -2960,7 +3237,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -3011,7 +3293,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -3090,7 +3377,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["actions"],
@@ -3121,7 +3413,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["actions"],
@@ -3152,7 +3449,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["actions"],
@@ -3183,7 +3485,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["actions"],
@@ -3214,7 +3521,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["actions"],
@@ -3245,7 +3557,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3276,7 +3593,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3307,7 +3629,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3338,7 +3665,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3369,7 +3701,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3400,7 +3737,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3431,7 +3773,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3462,7 +3809,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3493,7 +3845,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3535,7 +3892,12 @@
         "requiredConcepts": ["wa-radio"]
       },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3566,7 +3928,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3608,7 +3975,12 @@
         "requiredConcepts": ["wa-option"]
       },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3639,7 +4011,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3670,7 +4047,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3701,7 +4083,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3732,7 +4119,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["forms"],
@@ -3774,7 +4166,12 @@
         "requiredConcepts": ["wa-accordion-item"]
       },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["layout"],
@@ -3810,7 +4207,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["layout"],
@@ -3841,7 +4243,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["layout"],
@@ -3877,7 +4284,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["layout"],
@@ -3913,7 +4325,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["layout"],
@@ -3944,7 +4361,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["layout"],
@@ -3975,7 +4397,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["layout"],
@@ -4006,7 +4433,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["layout"],
@@ -4037,7 +4469,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["layout"],
@@ -4068,7 +4505,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["layout"],
@@ -4099,7 +4541,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -4130,7 +4577,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -4161,7 +4613,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -4192,7 +4649,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -4240,7 +4702,12 @@
         "requiredConcepts": ["wa-tab", "wa-tab-panel"]
       },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -4278,7 +4745,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -4316,7 +4788,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -4347,7 +4824,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
@@ -4378,7 +4860,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -4413,7 +4900,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -4444,7 +4936,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -4475,7 +4972,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -4506,7 +5008,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -4537,7 +5044,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -4568,7 +5080,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -4599,7 +5116,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -4630,7 +5152,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -4661,7 +5188,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["feedback"],
@@ -4692,7 +5224,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["media"],
@@ -4723,7 +5260,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["media"],
@@ -4754,7 +5296,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["media"],
@@ -4785,7 +5332,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["media"],
@@ -4816,7 +5368,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["media"],
@@ -4847,7 +5404,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["media"],
@@ -4878,7 +5440,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["media"],
@@ -4909,7 +5476,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["media"],
@@ -4940,7 +5512,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["media"],
@@ -4971,7 +5548,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["helpers"],
@@ -5002,7 +5584,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["helpers"],
@@ -5033,7 +5620,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["helpers"],
@@ -5064,7 +5656,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["helpers"],
@@ -5095,7 +5692,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["helpers"],
@@ -5126,7 +5728,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["helpers"],
@@ -5157,7 +5764,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["helpers"],
@@ -5188,7 +5800,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["helpers"],
@@ -5219,7 +5836,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["helpers"],
@@ -5250,7 +5872,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["helpers"],
@@ -5281,7 +5908,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["helpers"],
@@ -5312,7 +5944,12 @@
       "zones": [],
       "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
       "state": [],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["helpers"],
@@ -5352,7 +5989,12 @@
         },
         { "id": "workspace data", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "application", "behaviors": [] },
       "layout": {
         "roles": ["reference-composition"],
@@ -5400,7 +6042,12 @@
         { "id": "permissions", "owner": "application", "required": false },
         { "id": "disclosure state", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "application", "behaviors": [] },
       "layout": {
         "roles": ["reference-composition"],
@@ -5444,7 +6091,12 @@
         { "id": "breadcrumbs", "owner": "application", "required": false },
         { "id": "product copy", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "application", "behaviors": [] },
       "layout": {
         "roles": ["reference-composition"],
@@ -5493,7 +6145,12 @@
         { "id": "dismiss policy", "owner": "application", "required": false },
         { "id": "record actions", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "application", "behaviors": [] },
       "layout": {
         "roles": ["reference-composition"],
@@ -5541,7 +6198,12 @@
         { "id": "permissions", "owner": "application", "required": false },
         { "id": "transport", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "application", "behaviors": [] },
       "layout": {
         "roles": ["reference-composition"],
@@ -5585,7 +6247,12 @@
         { "id": "retry policy", "owner": "application", "required": false },
         { "id": "domain rows", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "application", "behaviors": [] },
       "layout": {
         "roles": ["reference-composition"],
@@ -5637,7 +6304,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "application", "behaviors": [] },
       "layout": {
         "roles": ["reference-composition"],
@@ -5685,7 +6357,12 @@
         { "id": "routing", "owner": "application", "required": false },
         { "id": "data", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "application", "behaviors": [] },
       "layout": {
         "roles": ["reference-composition"],
@@ -5740,7 +6417,12 @@
           "required": false
         }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "application", "behaviors": [] },
       "layout": {
         "roles": ["reference-composition"],
@@ -5792,7 +6474,12 @@
         },
         { "id": "content", "owner": "application", "required": false }
       ],
-      "wiring": { "required": false, "helpers": [], "obligations": [] },
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
       "responsive": { "owner": "application", "behaviors": [] },
       "layout": {
         "roles": ["reference-composition"],

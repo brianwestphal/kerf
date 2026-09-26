@@ -36,6 +36,19 @@ bounded `items[].property` form. Consumer catalogs can publish the same facts;
 ESLint, `kerf-ui-analyze`, and `kerf-ui-doctor` then issue the same stable
 `KUI-L013`–`KUI-L017` feedback for application and third-party components.
 
+`wiring.stateAttributes` lists the **wiring-owned state attributes**: the
+`data-*` attributes a wiring helper writes at runtime, such as
+`data-handle-inset` and `data-resizing`, which `wireResizableRegions` puts on a
+`ResizableRegion`. Each entry names the attribute, the element that carries it
+(`on`), the `helper` that writes it, and what it means. An application must not
+render, remove, or treat these attributes as its own state; tools use the list
+to tell them apart from app-authored attributes. They are declared once, on the
+helper's wiring item in the v1 catalog, and v2 flattens them. `check:catalog`
+reads each `wire*` helper's source and fails when its declarations differ from
+the `data-*` attributes it actually writes. First-party entries always carry
+the list, empty when their helpers write none; it is optional in extension
+catalogs.
+
 The generator starts with permissive defaults. An `any` mode records that the
 catalog has no defensible prohibition; it does not claim every composition is
 recommended. Objective rules live in
