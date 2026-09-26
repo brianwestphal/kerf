@@ -10,7 +10,8 @@ export type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
 export interface CatalogExampleViewport {
   layout?: 'grid' | 'flex' | 'flex-column';
   width?: 'full' | 'compact' | 'medium' | 'wide' | 'text' | 'control';
-  height?: 'short' | 'reduced' | 'medium' | 'tall' | 'fill';
+  /** Fixed specimen height; `app` frames an application-sized recipe or layout. */
+  height?: 'short' | 'reduced' | 'medium' | 'tall' | 'app' | 'fill';
   minHeight?: 'short' | 'medium';
   frame?: 'solid' | 'dashed';
   surface?: 'default' | 'lowered';

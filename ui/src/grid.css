@@ -9,3 +9,9 @@
   grid-template-columns: repeat(var(--_kui-grid-columns), minmax(0, 1fr));
   gap: var(--_kui-grid-gap, var(--kui-grid-gap));
 }
+
+/* `fill`: the layout root of a definite-height parent (an app root or a
+   fixed-height frame) takes its full height. Inside a flex layout use `flex`. */
+.kui-grid[data-fill="true"] {
+  height: 100%;
+}

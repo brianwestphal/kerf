@@ -86,6 +86,12 @@
   height: remify(360px);
 }
 
+/* An application-sized frame for app shells and whole-screen layouts, which
+   read cramped in the component-sized heights above. */
+.kui-catalog-example__viewport[data-height="app"] {
+  height: remify(592px);
+}
+
 .kui-catalog-example__viewport[data-height="fill"] {
   height: 100%;
 }

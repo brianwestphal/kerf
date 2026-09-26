@@ -29,9 +29,8 @@ const DRAWER_ACTION = 'recipe-sidebar-drawer';
 
 export const presentation: RecipePresentation = {
   viewport: {
-    layout: 'grid',
     width: 'full',
-    height: 'tall',
+    height: 'app',
     frame: 'solid',
     surface: 'default',
     overflow: 'hidden',
@@ -222,28 +221,28 @@ export const createRecipe: RecipeFactory = (announce) => {
     </CollapsiblePanel>
   );
 
-  // The root Pane gives the frame one definite height; its Row fills it with
-  // the rail beside a column whose main pane grows above the bottom drawer.
+  // The root Row fills the frame's definite height with the rail beside a
+  // column whose main pane grows above the bottom drawer. Each CollapsiblePanel
+  // docks to a real frame edge, so it paints through that edge's safe area and
+  // hands the edge back to its siblings when it collapses.
   const render = () => (
-    <Pane
-      element="section"
-      label="Atlas workspace"
+    <Row
+      gap="none"
+      fill
       rootAttributes={{
         'data-recipe': 'recipe-collapsible-sidebar',
         'data-rail-collapsed': String(railCollapsed.value),
         'data-drawer-collapsed': String(drawerCollapsed.value),
       }}
     >
-      <Row gap="none" flex>
-        {rail()}
-        <List flex>
-          <Grid columns={1} gap="none" flex>
-            {main()}
-          </Grid>
-          {drawer()}
-        </List>
-      </Row>
-    </Pane>
+      {rail()}
+      <List flex>
+        <Grid columns={1} gap="none" flex>
+          {main()}
+        </Grid>
+        {drawer()}
+      </List>
+    </Row>
   );
 
   return {

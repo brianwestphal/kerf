@@ -30,10 +30,14 @@ specific dispatch; either way, wire once at a stable root and retain disposal.
 
 [Open the recipe](../ux-demo/?component=recipe-app-shell) · [TSX source](../ux-demo/recipes/app-shell.tsx)
 
-A frame `Pane` carries the `Toolbar` header; a `Row` places controlled
-`ResizableRegion` navigation and inspector panes around a content `Pane` that a
-one-column `Grid` grows to fill, and each pane keeps one `.kui-pane__content`
-scroll owner. Below desktop sizes the app reads `deviceClass()` and shows one
+A filling `List` (`fill`, with the recipe's `data-*` markers through
+`rootAttributes`) stacks the app-bar `Toolbar` above a `Row` that places
+controlled `ResizableRegion` navigation and inspector panes around a content
+`Pane` that a one-column `Grid` grows to fill. Only those three real panes own a
+`.kui-pane__content` scroll owner; no frame `Pane` wraps the layout in a scroll
+owner that never scrolls. Each pane lists the screen edges it reaches in
+`safeAreaEdges` (the bottom plus its outer side, or both sides when it is the
+only pane shown). Below desktop sizes the app reads `deviceClass()` and shows one
 pane at a time, switched by a pressed-state `ToolbarControlGroup`. The recipe
 owns the shell topology; the app owns routing, responsive pane visibility,
 sizes, persistence, and data.
@@ -163,9 +167,11 @@ open and restores it to the trigger on close, and — when a `deviceClass()` rep
 `compact` — switches the open panel to a dismissable **overlay** (backdrop, Escape
 and backdrop-click collapse, and a trapped Tab ring, the ARIA dialog pattern). It
 also persists each panel's collapsed state through a supplied storage hook. A
-frame `Pane` gives the arrangement one definite height, a `Row` places the rail
-beside a `List` column, and a one-column `Grid` grows the main pane above the
-drawer; the drawer's activity log is a `ValueTable`. The app owns each
+filling `Row` (`fill` plus `rootAttributes`) is the root: it takes the frame's
+definite height and places the rail beside a `List` column, and a one-column
+`Grid` grows the main pane above the drawer. Because the panels sit at the real
+frame edges, each grows through its edge's safe area and hands that edge back to
+its siblings when it collapses; the drawer's activity log is a `ValueTable`. The app owns each
 `collapsed` signal, the panel sizes, and the content; the wire owns the
 ephemeral interaction. For a full three-pane shell use `Workbench` instead — see
 [`app-layouts.md`](app-layouts.md). This recipe is covered end-to-end across

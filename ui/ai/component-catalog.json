@@ -1796,7 +1796,9 @@
         "typed CssLength gap",
         "boolean, finite-keyword, or typed CssFlex flex",
         "nowrap or wrapping",
-        "top/right/bottom/left text and control inset combinations"
+        "top/right/bottom/left text and control inset combinations",
+        "fill: the layout root fills a definite-height parent",
+        "rootAttributes: safe data-* metadata on the root"
       ],
       "accessibility": [
         "Row adds layout only and no grouping role; children retain responsibility for native or ARIA semantics.",
@@ -1948,7 +1950,9 @@
         "any positive safe-integer equal-track count",
         "named none/2xs/xs/s/m/l/xl token gap",
         "typed CssLength gap",
-        "boolean, finite-keyword, or typed CssFlex flex"
+        "boolean, finite-keyword, or typed CssFlex flex",
+        "fill: the layout root fills a definite-height parent",
+        "rootAttributes: safe data-* metadata on the root"
       ],
       "accessibility": [
         "Grid adds layout only and no grid role; children retain responsibility for native or ARIA semantics.",
@@ -2263,7 +2267,9 @@
         "left/center/right/full horizontal alignment",
         "top/middle/bottom/full vertical alignment",
         "top/right/bottom/left divider combinations",
-        "top/right/bottom/left text and control inset combinations"
+        "top/right/bottom/left text and control inset combinations",
+        "fill: the layout root fills a definite-height parent",
+        "rootAttributes: safe data-* metadata on the root"
       ],
       "accessibility": [
         "List adds layout only and no list role; children retain responsibility for their native or ARIA semantics.",

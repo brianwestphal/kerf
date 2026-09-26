@@ -120,3 +120,9 @@
 .kui-list[divider-sides*="l"] {
   --_kui-list-divider-left: var(--kui-list-divider-color);
 }
+
+/* `fill`: the layout root of a definite-height parent (an app root or a
+   fixed-height frame) takes its full height. Inside a flex layout use `flex`. */
+.kui-list[data-fill="true"] {
+  height: 100%;
+}

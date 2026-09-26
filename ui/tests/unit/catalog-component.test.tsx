@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+
 import { raw } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -355,6 +358,40 @@ describe('CatalogExample', () => {
     expect(html).toContain('style="--kui-pane-width:18rem"');
     expect(html).toContain(
       'class="kui-catalog-example__compact-fallback">Open this specimen on a wider viewport.',
+    );
+  });
+
+  it('offers an application-sized specimen frame taller than the component heights', () => {
+    expect(
+      asHtml(
+        CatalogExample({
+          viewport: { width: 'full', height: 'app' },
+          children: raw('<div data-app-specimen />'),
+        }),
+      ),
+    ).toContain('data-height="app"');
+    const css = readFileSync(
+      resolve(
+        import.meta.dirname,
+        '../../src/catalog/components/catalog-example.css',
+      ),
+      'utf8',
+    );
+    const heights = Object.fromEntries(
+      [
+        ...css.matchAll(
+          /\[data-height="([a-z]+)"\] \{\s*height: remify\((\d+)px\);/g,
+        ),
+      ].map(([, name, px]) => [name, Number(px)]),
+    );
+    expect(heights.app).toBe(592);
+    expect(heights.app).toBeGreaterThan(
+      Math.max(
+        heights.short!,
+        heights.reduced!,
+        heights.medium!,
+        heights.tall!,
+      ),
     );
   });
 

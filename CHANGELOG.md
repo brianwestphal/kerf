@@ -41,6 +41,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `Select`, `wa-input`, or `wa-button` inside stayed at its natural width. Each
   direct child now grows to fill the inset row (several children share it with
   the 8px gap) and may shrink below its intrinsic width instead of overflowing.
+- `@kerfjs/ui` `List`, `Row`, and `Grid` can now be the layout root of a
+  fixed-height parent. New `fill` takes the parent's full height (use `flex`
+  inside a flex layout as before), and new `rootAttributes` carries safe
+  `data-*` metadata while the component's structural attributes stay
+  protected. The app-shell and collapsible-sidebar recipes now use a filling
+  List or Row root instead of a frame `Pane` whose scroll owner never scrolled;
+  the collapsible sidebar's rail and drawer now reach the real frame edges, so
+  they paint through safe areas as the layout model intends. The UX catalog
+  adds an application-sized `height: "app"` (592px) specimen frame, and both
+  recipes use it instead of the cramped 360px `tall` frame.
 - Fixed a `@kerfjs/ui` stacked `Toolbar` clipping its last trailing action at
   phone widths (the compact-toolbar recipe's "More" button at 390px). A
   toolbar's trailing zone now wraps whole control groups onto another

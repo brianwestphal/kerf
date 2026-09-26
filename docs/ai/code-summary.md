@@ -743,6 +743,12 @@ track, because a toolbar cannot container-query itself), and
 `Toolbar.responsive="wrap"` moves the trailing zone below a whole heading title.
 `ui/tests/browser/toolbar-overflow.spec.ts` pins the compact-toolbar and
 loading-inspector recipes at 390px plus the focused Toolbar demo states.
+`List`, `Row`, and `Grid` take `fill` (the layout root of a definite-height
+parent takes its full height) and filtered `rootAttributes`, so the app-shell
+and collapsible-sidebar recipes use a filling List/Row root instead of a frame
+Pane around a scroll owner that never scrolls; `CatalogExample.viewport.height`
+adds `app` (592px) for application-sized recipes.
+`ui/tests/browser/layout-fill.spec.ts` pins the fill chain in both recipes.
 `Catalog.stageRootAttributes`, `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` use the
 same runtime filter for catalog-authoring `data-*` metadata while protecting
 their structure and alignment markers. `CatalogExample.viewport` supplies

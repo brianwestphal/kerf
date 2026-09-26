@@ -2,10 +2,11 @@ import '@kerfjs/ui/layout.css';
 
 import { deviceClass } from '@kerfjs/ui/device-class';
 import { Grid } from '@kerfjs/ui/grid';
+import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { Pane } from '@kerfjs/ui/pane';
+import { Pane, type PaneSeparatorSide } from '@kerfjs/ui/pane';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
 import { Row } from '@kerfjs/ui/row';
 import { Toolbar } from '@kerfjs/ui/toolbar';
@@ -18,6 +19,12 @@ import { Bell, Folder, Inbox, Settings } from 'lucide';
 import type { RecipeFactory, RecipePresentation } from './types.js';
 
 type ShellPane = 'content' | 'navigation' | 'inspector';
+type ScreenEdges = readonly PaneSeparatorSide[];
+
+// Safe areas: the app bar sits along the top edge, so each pane compensates
+// only for the screen edges it actually reaches: the bottom, plus its outer side
+// in the three-pane layout or both sides when it is the only pane shown.
+const soleEdges: ScreenEdges = ['block-end', 'inline-start', 'inline-end'];
 
 const tasks = [
   ['Release accessibility audit', 'Interface systems · due this week'],
@@ -28,9 +35,8 @@ const tasks = [
 
 export const presentation: RecipePresentation = {
   viewport: {
-    layout: 'grid',
     width: 'full',
-    height: 'tall',
+    height: 'app',
     frame: 'solid',
     surface: 'default',
     overflow: 'hidden',
@@ -66,9 +72,10 @@ export const createRecipe: RecipeFactory = (announce) => {
     </button>
   );
 
-  const navigation = () => (
+  const navigation = (edges: ScreenEdges) => (
     <Pane
       element="aside"
+      safeAreaEdges={edges}
       id="recipe-shell-navigation"
       contentElement="nav"
       contentLabel="Workspace"
@@ -94,9 +101,10 @@ export const createRecipe: RecipeFactory = (announce) => {
     </Pane>
   );
 
-  const content = () => (
+  const content = (edges: ScreenEdges) => (
     <Pane
       element="main"
+      safeAreaEdges={edges}
       id="recipe-shell-content"
       header={
         <Toolbar
@@ -139,9 +147,10 @@ export const createRecipe: RecipeFactory = (announce) => {
     </Pane>
   );
 
-  const inspector = () => (
+  const inspector = (edges: ScreenEdges) => (
     <Pane
       element="aside"
+      safeAreaEdges={edges}
       id="recipe-shell-inspector"
       header={
         <Toolbar
@@ -168,73 +177,70 @@ export const createRecipe: RecipeFactory = (announce) => {
   const render = () => {
     const onePane = !device.value.atLeast('desktop');
     return (
-      <Pane
-        element="section"
-        label="Atlas workspace"
+      <List
+        fill
         rootAttributes={{
           'data-recipe': 'recipe-app-shell',
           'data-responsive-pane': onePane ? responsivePane.value : 'all',
         }}
-        header={
-          <Toolbar
-            label="Atlas workspace"
-            leading={<ToolbarText text="Atlas" />}
-            trailing={
-              <>
-                {onePane ? (
-                  <ToolbarControlGroup
-                    appearance="borderless"
-                    buttonAppearance="push"
-                    label="Workspace panes"
-                  >
-                    {paneButton(
-                      'navigation',
-                      'Show navigation',
-                      Folder,
-                      'folder',
-                    )}
-                    {paneButton('content', 'Show content', Inbox, 'inbox')}
-                    {paneButton(
-                      'inspector',
-                      'Show inspector',
-                      Settings,
-                      'settings',
-                    )}
-                  </ToolbarControlGroup>
-                ) : null}
+      >
+        <Toolbar
+          label="Atlas workspace"
+          leading={<ToolbarText text="Atlas" />}
+          trailing={
+            <>
+              {onePane ? (
                 <ToolbarControlGroup
                   appearance="borderless"
-                  label="Workspace controls"
+                  buttonAppearance="push"
+                  label="Workspace panes"
                 >
-                  <button
-                    type="button"
-                    aria-label="Notifications"
-                    data-action="recipe-action"
-                    data-recipe-command="notify"
-                  >
-                    <LucideIcon icon={Bell} name="bell" />
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Settings"
-                    data-action="recipe-action"
-                    data-recipe-command="settings"
-                  >
-                    <LucideIcon icon={Settings} name="settings" />
-                  </button>
+                  {paneButton(
+                    'navigation',
+                    'Show navigation',
+                    Folder,
+                    'folder',
+                  )}
+                  {paneButton('content', 'Show content', Inbox, 'inbox')}
+                  {paneButton(
+                    'inspector',
+                    'Show inspector',
+                    Settings,
+                    'settings',
+                  )}
                 </ToolbarControlGroup>
-              </>
-            }
-          />
-        }
-      >
+              ) : null}
+              <ToolbarControlGroup
+                appearance="borderless"
+                label="Workspace controls"
+              >
+                <button
+                  type="button"
+                  aria-label="Notifications"
+                  data-action="recipe-action"
+                  data-recipe-command="notify"
+                >
+                  <LucideIcon icon={Bell} name="bell" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Settings"
+                  data-action="recipe-action"
+                  data-recipe-command="settings"
+                >
+                  <LucideIcon icon={Settings} name="settings" />
+                </button>
+              </ToolbarControlGroup>
+            </>
+          }
+        />
         {onePane ? (
           <Grid columns={1} gap="none" flex>
             {responsivePane.value === 'navigation'
-              ? navigation()
+              ? navigation(soleEdges)
               : responsivePane.value === 'inspector'
-                ? inspector()
-                : content()}
+                ? inspector(soleEdges)
+                : content(soleEdges)}
           </Grid>
         ) : (
           <Row gap="none" flex>
@@ -245,10 +251,10 @@ export const createRecipe: RecipeFactory = (announce) => {
               min={180}
               max={320}
             >
-              {navigation()}
+              {navigation(['block-end', 'inline-start'])}
             </ResizableRegion>
             <Grid columns={1} gap="none" flex>
-              {content()}
+              {content(['block-end'])}
             </Grid>
             <ResizableRegion
               id="recipe-inspector"
@@ -258,11 +264,11 @@ export const createRecipe: RecipeFactory = (announce) => {
               max={360}
               edge="start"
             >
-              {inspector()}
+              {inspector(['block-end', 'inline-end'])}
             </ResizableRegion>
           </Row>
         )}
-      </Pane>
+      </List>
     );
   };
   return {

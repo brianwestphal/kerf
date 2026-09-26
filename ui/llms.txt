@@ -133,6 +133,10 @@ the folder modules, and CSS only imports their owner stylesheets.
   wider than its peers. The app owns responsive count changes; use custom CSS
   grid for asymmetric/intrinsic tracks and `ResizableRegion` for adjustable
   boundaries. `Grid.gap` and `Grid.flex` use the same typed grammars as Row.
+- **Give a layout root `fill`, not a frame `Pane`.** A Row, List, or Grid that
+  is the sole layout root of a definite-height parent takes its full height
+  with `fill` and carries safe `data-*` markers through `rootAttributes`.
+  Inside a flex layout use `flex` instead.
 - **Keep Web Awesome on the shared inset tiers.** `webawesome.css` uses
   `--kui-wa-control-inset` (8px controls/items) and
   `--kui-wa-surface-margin` / `--kui-wa-surface-inset` (8px around/inside

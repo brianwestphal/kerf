@@ -435,12 +435,29 @@ import { H as HorizontalAlignment, L as ListVerticalAlignment } from './flex-ali
 export { V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
+type ListRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-gap'?: never;
+    'data-flex'?: never;
+    'data-fill'?: never;
+    'data-h-align'?: never;
+    'data-v-align'?: never;
+    'data-scrollable'?: never;
+    'data-text-insets'?: never;
+    'data-control-insets'?: never;
+}>;
 interface ListProps {
     children?: KerfUiContent;
     /** Use the standard item gap, a named UI spacing token, or a typed CSS length. Defaults to no gap. */
     gap?: boolean | UiSpaceName | CssLength;
     /** Allow this list to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
     flex?: boolean | CssFlexKeyword | CssFlex;
+    /**
+     * Fill the height of a parent with a definite height, such as an app root or
+     * a fixed-height frame, when this list is that parent's layout root. Inside a
+     * flex layout use `flex` instead. Defaults to false.
+     */
+    fill?: boolean;
     /** Horizontal alignment. Defaults to full to preserve stretch-aligned list children. */
     hAlign?: HorizontalAlignment;
     /** Vertical distribution. Defaults to top. */
@@ -454,11 +471,13 @@ interface ListProps {
     /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
     controlInsets?: Sides;
     className?: string;
+    /** Safe `data-*` metadata; List-owned structural attributes remain protected. */
+    rootAttributes?: ListRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-/** A stretch-aligned vertical stack with optional gap, flex, scroll, and dividers. */
-declare function List({ children, gap, flex, hAlign, vAlign, scrollable, dividerSides, textInsets, controlInsets, className, slot, }: ListProps): kerfjs.SafeHtml;
+/** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
+declare function List({ children, gap, flex, fill, hAlign, vAlign, scrollable, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, DividerSides, HorizontalAlignment, List, type ListProps, ListVerticalAlignment, Sides, UiSpaceName };
 ```
@@ -1394,7 +1413,8 @@ type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
 interface CatalogExampleViewport {
     layout?: 'grid' | 'flex' | 'flex-column';
     width?: 'full' | 'compact' | 'medium' | 'wide' | 'text' | 'control';
-    height?: 'short' | 'reduced' | 'medium' | 'tall' | 'fill';
+    /** Fixed specimen height; `app` frames an application-sized recipe or layout. */
+    height?: 'short' | 'reduced' | 'medium' | 'tall' | 'app' | 'fill';
     minHeight?: 'short' | 'medium';
     frame?: 'solid' | 'dashed';
     surface?: 'default' | 'lowered';
@@ -2175,6 +2195,16 @@ import { S as Sides } from './divider-sides-BzB6rphT.js';
 import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
+type RowRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-h-align'?: never;
+    'data-v-align'?: never;
+    'data-flex'?: never;
+    'data-fill'?: never;
+    'data-wrap'?: never;
+    'data-text-insets'?: never;
+    'data-control-insets'?: never;
+}>;
 interface RowProps {
     children?: KerfUiContent;
     /** Horizontal distribution. Defaults to left. */
@@ -2185,6 +2215,12 @@ interface RowProps {
     gap?: UiSpaceName | CssLength;
     /** Allow this row to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
     flex?: boolean | CssFlexKeyword | CssFlex;
+    /**
+     * Fill the height of a parent with a definite height, such as an app root or
+     * a fixed-height frame, when this row is that parent's layout root. Inside a
+     * flex layout use `flex` instead. Defaults to false.
+     */
+    fill?: boolean;
     /** Allow children to wrap onto additional lines. */
     wrap?: boolean;
     /** Physical sides that receive the standard 17px text inset. */
@@ -2192,11 +2228,13 @@ interface RowProps {
     /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
     controlInsets?: Sides;
     className?: string;
+    /** Safe `data-*` metadata; Row-owned structural attributes remain protected. */
+    rootAttributes?: RowRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
 /** A horizontal flex row with explicit physical-axis alignment and spacing. */
-declare function Row({ children, hAlign, vAlign, gap, flex, wrap, textInsets, controlInsets, className, slot, }: RowProps): kerfjs.SafeHtml;
+declare function Row({ children, hAlign, vAlign, gap, flex, fill, wrap, textInsets, controlInsets, className, rootAttributes, slot, }: RowProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, Row, type RowProps, Sides, UiSpaceName, VerticalAlignment };
 ```
@@ -2208,6 +2246,12 @@ import * as kerfjs from 'kerfjs';
 import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
+type GridRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-columns'?: never;
+    'data-flex'?: never;
+    'data-fill'?: never;
+}>;
 interface GridProps {
     children?: KerfUiContent;
     /** Number of equal-width columns. Must be a positive safe integer. */
@@ -2216,12 +2260,20 @@ interface GridProps {
     gap?: UiSpaceName | CssLength;
     /** Allow this grid to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
     flex?: boolean | CssFlexKeyword | CssFlex;
+    /**
+     * Fill the height of a parent with a definite height, such as an app root or
+     * a fixed-height frame, when this grid is that parent's layout root. Inside a
+     * flex layout use `flex` instead. Defaults to false.
+     */
+    fill?: boolean;
     className?: string;
+    /** Safe `data-*` metadata; Grid-owned structural attributes remain protected. */
+    rootAttributes?: GridRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
 /** A fixed-count grid whose columns share the available width equally. */
-declare function Grid({ children, columns, gap, flex, className, slot, }: GridProps): kerfjs.SafeHtml;
+declare function Grid({ children, columns, gap, flex, fill, className, rootAttributes, slot, }: GridProps): kerfjs.SafeHtml;
 
 export { CssFlex, CssFlexKeyword, CssLength, Grid, type GridProps, UiSpaceName };
 ```

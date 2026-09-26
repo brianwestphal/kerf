@@ -97,6 +97,9 @@ own overlay implementation.
   Use `CatalogExample.viewport` for bounded specimen width, height, frame,
   surface, overflow, responsive visibility, and public custom-property values;
   keep those constraints catalog-owned instead of recreating a demo stylesheet.
+  Component heights run `short` (220px) through `tall` (360px); frame an app
+  shell, whole-screen layout, or other application-sized recipe with
+  `height: "app"` (592px), and give its root `fill` rather than a frame `Pane`.
 - The specimen is an immediate child of `CatalogExample`. A focused component
   row should place the component root there, without a decorative card or
   spacing wrapper. A composition row may place the composition root there.

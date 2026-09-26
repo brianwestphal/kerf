@@ -249,6 +249,35 @@ for the CSS initial value, pass `true` for `1 1 auto`, select the finite
 shorthand. A `CssLength` is not a flex shorthand, and arbitrary strings are
 rejected by the type contract.
 
+### Filling a fixed-height parent
+
+`flex` sizes a Row, List, or Grid inside a flex layout. When one of them is the
+layout **root** of a parent with a definite height (an app mount container
+with the `.kui-app-root` height chain, a dialog body, or a fixed-height catalog
+frame), pass `fill` instead: the root takes the parent's full height
+(`height: 100%`), so its `flex` children can grow into it. Use `fill` only on
+that sole layout root; a sibling inside a flex layout keeps using `flex`.
+
+Put route, test, or recipe metadata on the same root with `rootAttributes`,
+which accepts safe `data-*` pairs and keeps each component's structural
+attributes (`data-component`, `data-flex`, `data-fill`, alignment, inset, and
+column markers) protected:
+
+```tsx
+<Row gap="none" fill rootAttributes={{ "data-recipe": "sidebar" }}>
+  <CollapsiblePanel id="rail" side="left" collapsed={railCollapsed.value}>
+    …
+  </CollapsiblePanel>
+  <List flex>…</List>
+</Row>
+```
+
+Do not wrap a layout in a frame `Pane` just to get a definite height or a root
+attribute: the pane's content slot becomes a scroll owner that never scrolls,
+and its safe-area padding keeps an edge-docked rail or drawer from painting
+through the unsafe area. A `Pane` is for a real column with a header, one
+scrolling content region, or a footer.
+
 Both components also accept `textInsets` and `controlInsets` using the shared
 physical `Sides` union. Values follow canonical top/right/bottom/left order
 (`t`, `rb`, `tbl`, `trbl`, and so on). A selected control side adds 8px of

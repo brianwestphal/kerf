@@ -49,12 +49,16 @@ describe('production composition recipes', () => {
     const recipe = createAppShell(() => {});
     const template = document.createElement('template');
     template.innerHTML = html(recipe.render());
-    // The shell frame pane plus its navigation, content, and inspector panes.
+    // The shell root is a filling List, not a frame Pane wrapping a scroll
+    // owner that never scrolls: only the three real panes own scrolling.
+    const root = template.content.firstElementChild!;
+    expect(root.getAttribute('data-component')).toBe('list');
+    expect(root.getAttribute('data-fill')).toBe('true');
+    expect(root.getAttribute('data-recipe')).toBe('recipe-app-shell');
     const panes = [
       ...template.content.querySelectorAll('[data-component="pane"]'),
     ];
     expect(panes.map((pane) => pane.id)).toEqual([
-      '',
       'recipe-shell-navigation',
       'recipe-shell-content',
       'recipe-shell-inspector',
@@ -258,8 +262,11 @@ describe('production composition recipes', () => {
     const root = document.createElement('div');
     document.body.append(root);
     const recipe = createCollapsibleSidebar(() => {});
-    expect(html(recipe.render())).toContain(
-      'data-recipe="recipe-collapsible-sidebar"',
+    const markup = html(recipe.render());
+    expect(markup).toContain('data-recipe="recipe-collapsible-sidebar"');
+    // A filling Row is the root; no frame Pane wraps the layout.
+    expect(markup).toMatch(
+      /^<div data-recipe="recipe-collapsible-sidebar"[^>]*class="kui-row"[^>]*data-fill="true"/,
     );
     const stop = mountRecipe(root, recipe);
 

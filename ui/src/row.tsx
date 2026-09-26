@@ -6,6 +6,7 @@ import {
   type UiSpaceName,
 } from './css-values.js';
 import type { Sides } from './divider-sides.js';
+import { filterDataAttributes } from './extension-attributes.js';
 import {
   type HorizontalAlignment,
   horizontalAlignment,
@@ -13,6 +14,30 @@ import {
   verticalAlignment,
 } from './flex-alignment.js';
 import type { KerfUiContent } from './semantic-content.js';
+
+const rowProtectedAttributes = new Set([
+  'data-component',
+  'data-h-align',
+  'data-v-align',
+  'data-flex',
+  'data-fill',
+  'data-wrap',
+  'data-text-insets',
+  'data-control-insets',
+]);
+
+type RowRootAttributes = Readonly<
+  Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-h-align'?: never;
+    'data-v-align'?: never;
+    'data-flex'?: never;
+    'data-fill'?: never;
+    'data-wrap'?: never;
+    'data-text-insets'?: never;
+    'data-control-insets'?: never;
+  }
+>;
 
 const spaceNames: readonly UiSpaceName[] = [
   'none',
@@ -34,6 +59,12 @@ export interface RowProps {
   gap?: UiSpaceName | CssLength;
   /** Allow this row to grow/shrink, use a keyword, or supply a typed CSS flex shorthand. */
   flex?: boolean | CssFlexKeyword | CssFlex;
+  /**
+   * Fill the height of a parent with a definite height, such as an app root or
+   * a fixed-height frame, when this row is that parent's layout root. Inside a
+   * flex layout use `flex` instead. Defaults to false.
+   */
+  fill?: boolean;
   /** Allow children to wrap onto additional lines. */
   wrap?: boolean;
   /** Physical sides that receive the standard 17px text inset. */
@@ -41,6 +72,8 @@ export interface RowProps {
   /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
   controlInsets?: Sides;
   className?: string;
+  /** Safe `data-*` metadata; Row-owned structural attributes remain protected. */
+  rootAttributes?: RowRootAttributes;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 }
@@ -52,12 +85,18 @@ export function Row({
   vAlign = 'full',
   gap = 'xs',
   flex = false,
+  fill = false,
   wrap = false,
   textInsets = '',
   controlInsets = '',
   className = '',
+  rootAttributes = {},
   slot,
 }: RowProps) {
+  const safeRootAttributes = filterDataAttributes(
+    rootAttributes,
+    rowProtectedAttributes,
+  );
   const gapValue = spaceNames.includes(gap as UiSpaceName)
     ? space(gap as UiSpaceName)
     : gap;
@@ -71,11 +110,13 @@ export function Row({
 
   return (
     <div
+      {...safeRootAttributes}
       class={`kui-row ${className}`.trim()}
       data-component="row"
       data-h-align={horizontalAlignment(hAlign)}
       data-v-align={verticalAlignment(vAlign)}
       data-flex={String(Boolean(flex))}
+      data-fill={fill ? 'true' : undefined}
       data-wrap={String(wrap)}
       data-text-insets={textInsets || undefined}
       data-control-insets={controlInsets || undefined}

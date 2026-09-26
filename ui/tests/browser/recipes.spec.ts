@@ -195,7 +195,8 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
   await expect(
     intermediateShell.getByRole('button', { name: 'Show inspector' }),
   ).toBeVisible();
-  await expectOneScrollOwnerPerPane(intermediateShell, 2);
+  // Only the visible content pane; the filling List root owns no scrolling.
+  await expectOneScrollOwnerPerPane(intermediateShell, 1);
   expect(
     await page.evaluate(
       () =>
@@ -750,8 +751,9 @@ test('supports keyboard shell/sidebar controls and controlled toolbar interactio
   page,
 }) => {
   const shell = await openRecipe(page, 'recipe-app-shell');
-  // The shell frame plus navigation, content, and inspector panes.
-  await expectOneScrollOwnerPerPane(shell, 4);
+  // The navigation, content, and inspector panes; the root is a filling List,
+  // not a frame pane with a scroll owner that never scrolls.
+  await expectOneScrollOwnerPerPane(shell, 3);
   const separator = shell.getByRole('separator', { name: 'Resize Navigation' });
   await separator.focus();
   await separator.press('ArrowRight');

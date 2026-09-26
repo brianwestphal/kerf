@@ -340,6 +340,73 @@ describe('production UI primitives', () => {
     );
   });
 
+  it('lets List, Row, and Grid fill a definite-height parent and carry safe root metadata', () => {
+    const list = asHtml(
+      List({
+        fill: true,
+        rootAttributes: {
+          'data-recipe': 'shell',
+          'data-state': 'ready',
+          // Structural attributes stay component-owned even through a cast.
+          ...({ 'data-fill': 'false', 'data-component': 'x' } as object),
+        },
+      }),
+    );
+    expect(list).toMatch(
+      /^<div data-recipe="shell" data-state="ready" class="kui-list"/,
+    );
+    expect(list).toContain('data-component="list"');
+    expect(list).toContain('data-fill="true"');
+    expect(list).not.toContain('data-fill="false"');
+    expect(list).not.toContain('data-component="x"');
+
+    const row = asHtml(
+      Row({
+        fill: true,
+        rootAttributes: {
+          'data-recipe': 'sidebar',
+          ...({ 'data-wrap': 'true', onclick: 'x' } as object),
+        },
+      }),
+    );
+    expect(row).toContain('data-recipe="sidebar"');
+    expect(row).toContain('data-fill="true" data-wrap="false"');
+    expect(row).not.toContain('onclick');
+
+    const grid = asHtml(
+      Grid({
+        columns: 2,
+        fill: true,
+        rootAttributes: {
+          'data-demo': 'grid',
+          ...({ 'data-columns': '9' } as object),
+        },
+      }),
+    );
+    expect(grid).toContain('data-demo="grid"');
+    expect(grid).toContain('data-columns="2"');
+    expect(grid).toContain('data-fill="true"');
+    expect(grid).not.toContain('data-columns="9"');
+
+    // Filling is opt-in: the default markup carries no fill marker.
+    for (const markup of [
+      asHtml(List({})),
+      asHtml(Row({})),
+      asHtml(Grid({ columns: 1 })),
+    ])
+      expect(markup).not.toContain('data-fill');
+
+    for (const name of ['list', 'row', 'grid']) {
+      const css = readFileSync(
+        resolve(import.meta.dirname, `../../src/${name}.css`),
+        'utf8',
+      );
+      expect(css).toMatch(
+        new RegExp(`\\.kui-${name}\\[data-fill="true"\\] \\{\\s*height: 100%;`),
+      );
+    }
+  });
+
   it('composes stretch-aligned lists with gap, flex, scroll, and dividers', () => {
     const html = asHtml(
       List({
