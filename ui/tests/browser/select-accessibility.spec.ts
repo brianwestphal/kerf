@@ -166,3 +166,32 @@ test('names plain and custom Select comboboxes without adding visible label geom
     fullPage: true,
   });
 });
+
+test('a separated Select group draws a single separator before its first choice', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 900 });
+  await page.goto('/?component=select');
+  const host = page.locator('wa-select[name="rendering-balance"]');
+  await host.click();
+  const control = host.locator('[role="group"][aria-label="Control"]');
+  await expect(control).toBeVisible();
+  // The demo marks "Explicit" separatorBefore, but it opens the separated
+  // "Control" group whose border already separates it.
+  await expect(control.locator('wa-divider')).toHaveCount(0);
+  await expect(control).toHaveCSS('border-top-style', 'solid');
+  const gap = await control.evaluate((group) => {
+    const title = group
+      .querySelector('.kui-select__group-title')!
+      .getBoundingClientRect();
+    const option = group.querySelector('wa-option')!.getBoundingClientRect();
+    return option.top - title.bottom;
+  });
+  // The first choice follows its group title directly: no empty band.
+  expect(Math.abs(gap)).toBeLessThanOrEqual(1);
+  if (browserName === 'chromium')
+    await host.locator('[part~="listbox"]').screenshot({
+      path: 'test-results/select-separated-group.png',
+    });
+});

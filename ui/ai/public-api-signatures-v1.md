@@ -1631,6 +1631,11 @@ interface SelectChoice<Value extends string = string> {
      */
     color?: CssForegroundColor;
     group?: string;
+    /**
+     * Draw a divider between this choice and the previous choice in the same
+     * list. A group boundary is already a separator, so the first choice of a
+     * group (or of the whole menu) never draws a second one.
+     */
     separatorBefore?: boolean;
 }
 type SelectAccessibleName = {

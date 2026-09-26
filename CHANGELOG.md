@@ -28,6 +28,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   such as `colorVar()` for `SelectChoice.color` went unreported although the
   ESLint rule caught it. Entries now resolve by `package:id`, using the
   selection catalog's public exports and import subpaths.
+- Fixed an `@kerfjs/ui` `Select` menu drawing two separators when a choice with
+  `separatorBefore` opened a separated group: the group's border plus a
+  `wa-divider` left an empty band between the group title and its first
+  choice. `separatorBefore` now only divides a choice from the previous choice
+  in the same list; a group boundary is already the single separator.
+- Fixed `@kerfjs/ui` compact `ToolbarControlGroup` end highlights not being
+  concentric with the group: controls sat 2px from the sides but 1px from the
+  top and bottom. A compact group now has no padding, so its 32px controls sit
+  on a 1px inset on every side with a radius of the group radius minus 1px
+  (pill and rounded). In compact mixed groups the raised selection still paints
+  over the border with the group's radius, neighboring controls still abut, and
+  the trailing dropdown trigger keeps the 1px end inset instead of running onto
+  the border. Compact groups are 2px narrower as a result.
 - Fixed `@kerfjs/ui` slide-motion `ResizableRegion` content staying at its
   previous width during a live resize until the app re-rendered the committed
   size. `wireResizableRegions` now applies the live size to the sliding content

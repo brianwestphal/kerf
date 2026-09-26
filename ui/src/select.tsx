@@ -18,6 +18,11 @@ export interface SelectChoice<Value extends string = string> {
    */
   color?: CssForegroundColor;
   group?: string;
+  /**
+   * Draw a divider between this choice and the previous choice in the same
+   * list. A group boundary is already a separator, so the first choice of a
+   * group (or of the whole menu) never draws a second one.
+   */
   separatorBefore?: boolean;
 }
 
@@ -131,9 +136,9 @@ export function Select<Value extends string>({
       ) : null}
     </span>
   );
-  const option = (choice: SelectChoice<Value>) => (
+  const option = (choice: SelectChoice<Value>, index: number) => (
     <>
-      {choice.separatorBefore && <wa-divider></wa-divider>}
+      {choice.separatorBefore && index > 0 && <wa-divider></wa-divider>}
       <wa-option value={choice.value}>
         {choice.icon ? icon(choice) : null}
         {choice.label}

@@ -1653,7 +1653,25 @@ describe('production UI primitives', () => {
     );
     expect(grouped).toContain('style="--kui-select-label-max-width:120px"');
     expect(grouped).toContain('role="group" aria-label="Recommended"');
-    expect(grouped).toContain('<wa-divider></wa-divider>');
+    // "Manual" opens the separated "Other" group, whose border is already the
+    // separator, so its separatorBefore must not add a second divider.
+    expect(grouped).not.toContain('<wa-divider></wa-divider>');
+    const divided = asHtml(
+      Select({
+        name: 'divided',
+        value: 'a',
+        label: 'Divided',
+        choices: [
+          { value: 'first', label: 'First', separatorBefore: true },
+          { value: 'a', label: 'A', group: 'Group' },
+          { value: 'b', label: 'B', group: 'Group', separatorBefore: true },
+        ],
+      }),
+    );
+    // Only the within-group divider renders: before "B", not before the
+    // menu's first choice.
+    expect(divided.match(/<wa-divider>/g)).toHaveLength(1);
+    expect(divided).toMatch(/<wa-divider><\/wa-divider><wa-option value="b">/);
     expect(grouped).toContain('<strong>Balanced</strong>');
     expect(grouped).toContain(
       'data-key="mode:balanced:custom-selected" slot="start" class="kui-select__custom-selected"',
