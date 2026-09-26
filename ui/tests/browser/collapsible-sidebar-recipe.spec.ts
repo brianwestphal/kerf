@@ -504,12 +504,11 @@ test('keeps the compact overlay intact when a nav selection re-renders the recip
   await expect(backdrop(page)).toHaveCount(1);
 
   // Selecting a destination re-renders the recipe (and morphs the wired
-  // canvas) without touching any panel signal. Select from the keyboard:
-  // Playwright's WebKit pointer path misplaces its click point for this fixed
-  // overlay inside the catalog's transformed frame (elementFromPoint at the
-  // item hits the item itself, so a real tap is unaffected).
-  await railPanel(page).getByRole('button', { name: 'Projects' }).focus();
-  await page.keyboard.press('Enter');
+  // canvas) without touching any panel signal. A real pointer click also
+  // guards the WebKit hit-testing fix: a pressed ListItem scales, and under a
+  // `contain: layout` frame WebKit lost the click to the item's section.
+  await page.waitForFunction(() => document.getAnimations().length === 0);
+  await railPanel(page).getByRole('button', { name: 'Projects' }).click();
   await expect(
     page.locator('[data-recipe="recipe-collapsible-sidebar"] main'),
   ).toContainText('Projects');
@@ -521,11 +520,9 @@ test('keeps the compact overlay intact when a nav selection re-renders the recip
   await expect(backdrop(page)).toHaveCount(1);
   await expect(railPanel(page)).toHaveCSS('position', 'fixed');
 
-  // The wiring still owns the rail: its own toggle (keyboard, for the same
-  // WebKit reason) closes the overlay and restores focus, and the reveal
-  // toggle opens it again.
-  await railInnerToggle(page).focus();
-  await page.keyboard.press('Enter');
+  // The wiring still owns the rail: its own toggle closes the overlay and
+  // restores focus, and the reveal toggle opens it again.
+  await railInnerToggle(page).click();
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
   await expect(backdrop(page)).toHaveCount(0);
   await expect(revealToggle(page)).toBeFocused();

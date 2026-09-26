@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui/catalog`'s application-sized (`height: "app"`) example frame
+  no longer loses taps in Safari/WebKit. The frame became the containing block
+  for screen-fixed chrome through `contain: layout`. Combined with its clip,
+  that made WebKit mis-hit-test any transformed element inside an open compact
+  overlay. Every pressed `ListItem` scales, so taps on an overlay rail's items
+  went to their section instead. The frame now uses an identity transform,
+  which docks the same chrome without the bug and renders identically.
 - **Breaking (`@kerfjs/ui/catalog`):** `CatalogExample`'s viewport drops
   `height: "fill"` and `fillChildren`. The catalog lays examples out at their
   content height, so neither could give a specimen a definite height, and a

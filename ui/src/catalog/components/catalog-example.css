@@ -91,10 +91,13 @@
    the screen, so it is the containing block for screen-fixed chrome: a compact
    CollapsiblePanel overlay, its backdrop, and restore controls dock to the
    frame's edges instead of the page's, where the frame's inset and clip would
-   cut them off. */
+   cut them off. An identity transform establishes that containing block.
+   `contain: layout` does too, but WebKit then mis-hit-tests any transformed
+   descendant of that fixed chrome once the frame also clips (every pressed
+   ListItem scales), so taps on an open overlay's items were lost. */
 .kui-catalog-example__viewport[data-height="app"] {
   height: remify(592px);
-  contain: layout;
+  transform: translate(0);
 }
 
 .kui-catalog-example__viewport[data-min-height="short"] {
