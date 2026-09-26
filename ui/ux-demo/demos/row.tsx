@@ -117,13 +117,24 @@ export function RowDemo() {
       </CatalogExample>
       <CatalogExample
         label="Side-selectable insets"
-        note="Text insets apply the full 8px + 1px + 8px content geometry; control insets apply 8px. Physical sides use canonical top/right/bottom/left order."
+        note="Text insets apply the full 8px + 1px + 8px content geometry; control insets apply 8px. Physical sides use canonical top/right/bottom/left order. Here the text inset covers top, bottom, and left, and the control inset covers the right."
       >
         <DemoFrameShell>
           <Row textInsets="tbl" controlInsets="r" vAlign="middle">
             {chips('Inset')}
+          </Row>
+        </DemoFrameShell>
+      </CatalogExample>
+      <CatalogExample
+        label="Nested row insets"
+        note="A nested Row owns its own insets: the outer row keeps its left text inset while the nested row adds only an 8px bottom control inset."
+      >
+        <DemoFrameShell>
+          <Row textInsets="l" vAlign="middle">
+            <DemoChip label="Outer" />
             <Row controlInsets="b" vAlign="middle">
-              {chips('Nested')}
+              <DemoChip label="Nested one" />
+              <DemoChip label="Nested two" size="tall" />
             </Row>
           </Row>
         </DemoFrameShell>

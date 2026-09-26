@@ -782,8 +782,14 @@ test('applies text and control insets only to selected physical sides', async ({
   await expect(row).toHaveAttribute('data-text-insets', 'tbl');
   await expect(row).toHaveAttribute('data-control-insets', 'r');
   expect(await edges(row, 'padding')).toEqual([17, 8, 17, 17]);
+  // The nested-row inset is its own example so each specimen fits a
+  // phone-width preview column.
+  const nestedOuter = page.locator(
+    '[data-demo="row"] [data-component="row"][data-text-insets="l"]',
+  );
+  expect(await edges(nestedOuter, 'padding')).toEqual([0, 0, 0, 17]);
   expect(
-    await edges(row.locator('[data-control-insets="b"]'), 'padding'),
+    await edges(nestedOuter.locator('[data-control-insets="b"]'), 'padding'),
   ).toEqual([0, 0, 8, 0]);
   if (browserName === 'chromium')
     await row.screenshot({ path: 'test-results/row-selected-insets-wide.png' });

@@ -201,6 +201,80 @@ test('Row exposes stable defaults, alignment, wrapping, and typed gaps', async (
   }
 });
 
+test('every Row example specimen fits its preview column at 390px', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?component=row');
+
+  const demo = page.locator('[data-demo="row"]');
+  const example = (label: string) =>
+    demo.locator('[data-catalog-example]').filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: new RegExp(`^${label}$`),
+      }),
+    });
+
+  // The side-selectable inset specimen stays legible as two small examples
+  // instead of one six-chip row that overflowed a phone-width column.
+  const insetRow = example('Side-selectable insets').locator(
+    '[data-component="row"]',
+  );
+  await expect(insetRow).toHaveCount(1);
+  await expect(insetRow).toHaveAttribute('data-text-insets', 'tbl');
+  await expect(insetRow).toHaveAttribute('data-control-insets', 'r');
+  await expect(insetRow).toHaveCSS('padding', '17px 8px 17px 17px');
+
+  const nestedRows = example('Nested row insets').locator(
+    '[data-component="row"]',
+  );
+  await expect(nestedRows).toHaveCount(2);
+  await expect(nestedRows.nth(0)).toHaveCSS('padding', '0px 0px 0px 17px');
+  await expect(nestedRows.nth(1)).toHaveCSS('padding', '0px 0px 8px');
+
+  // The specimen is the example's last child (a catalog viewport or the demo
+  // frame itself). It must stay inside the example column, and nothing inside
+  // it may extend past its own right edge or scroll it sideways.
+  await expect
+    .poll(() =>
+      demo.evaluate((root) => {
+        const examples = [
+          ...root.querySelectorAll<HTMLElement>('[data-catalog-example]'),
+        ];
+        if (examples.length === 0) return ['no examples'];
+        return examples
+          .filter((candidate) => {
+            const specimen = candidate.lastElementChild as HTMLElement;
+            const column = candidate.getBoundingClientRect();
+            const box = specimen.getBoundingClientRect();
+            const contentRight = Math.max(
+              box.right,
+              ...[...specimen.querySelectorAll('*')].map(
+                (child) => child.getBoundingClientRect().right,
+              ),
+            );
+            return (
+              box.left < column.left - 0.5 ||
+              box.right > column.right + 0.5 ||
+              contentRight > box.right + 0.5 ||
+              specimen.scrollWidth > specimen.clientWidth
+            );
+          })
+          .map(
+            (candidate) =>
+              candidate.querySelector('[data-catalog-example-label]')
+                ?.textContent ?? '',
+          );
+      }),
+    )
+    .toEqual([]);
+  expect(
+    await page
+      .locator('html')
+      .evaluate((element) => element.scrollWidth <= element.clientWidth),
+  ).toBe(true);
+});
+
 test('List retains defaults and accepts the shared alignment vocabulary', async ({
   page,
 }) => {
