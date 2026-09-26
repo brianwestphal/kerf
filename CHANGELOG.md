@@ -58,6 +58,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   over the border with the group's radius, neighboring controls still abut, and
   the trailing dropdown trigger keeps the 1px end inset instead of running onto
   the border. Compact groups are 2px narrower as a result.
+- Added `Toolbar.safeAreaEdges` to `@kerfjs/ui` so an app bar or bottom bar
+  that sits at a screen edge, outside any `Pane` header or footer, can claim
+  those edges for device safe areas. A toolbar there used to take only the
+  inline edges an owner handed it, so the app-shell recipe's top bar never
+  cleared the status area. Each claimed side pads by the routed
+  `--kui-edge-inset-*` context, or the full device inset when nothing routes
+  it, while the bar's surface and divider still paint through; the minimum
+  height grows with the claimed block insets so a shrinking flex column keeps a
+  whole control row clear. A claim inside a `Pane` header or footer adds
+  nothing, since the pane already owns those edges. The app-shell recipe's app
+  bar now claims the top edge and both sides.
 - Fixed `@kerfjs/ui` slide-motion `ResizableRegion` content overflowing its
   separator when a parent clamps the region. The expanded content kept the
   committed size even when a `max-width` or narrow container held the track

@@ -1,4 +1,5 @@
 import type { DividerSides } from './divider-sides.js';
+import type { PaneSeparatorSide } from './pane.js';
 import type { KerfUiContent } from './semantic-content.js';
 
 export interface ToolbarProps {
@@ -24,10 +25,25 @@ export interface ToolbarProps {
   responsive?: 'none' | 'stack' | 'wrap' | 'center-priority';
   /** Container width at which `responsive="stack"` activates. */
   responsiveAt?: 'compact' | 'narrow';
+  /**
+   * Screen edges this toolbar claims for device safe-area compensation, for an
+   * app bar or bottom bar that sits directly at a screen edge rather than in a
+   * Pane header or footer. Each listed side pads by the inset its surrounding
+   * layout reports through `--kui-edge-inset-*`, or the full device inset when
+   * nothing routes that edge, while the toolbar's box and dividers paint
+   * through. Omitted, the toolbar pads only the inline edges an owner such as
+   * a Pane header hands it, and never a block edge.
+   */
+  safeAreaEdges?: readonly PaneSeparatorSide[];
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 }
+
+const claim = (
+  edges: readonly PaneSeparatorSide[] | undefined,
+  side: PaneSeparatorSide,
+) => (edges?.includes(side) ? 'true' : undefined);
 
 export function Toolbar({
   leading,
@@ -38,6 +54,7 @@ export function Toolbar({
   centerAlign = 'center',
   responsive = 'none',
   responsiveAt = 'narrow',
+  safeAreaEdges,
   className = '',
   slot,
 }: ToolbarProps) {
@@ -50,6 +67,10 @@ export function Toolbar({
       data-center-align={centerAlign}
       data-responsive={responsive}
       data-responsive-at={responsiveAt}
+      data-safe-area-block-start={claim(safeAreaEdges, 'block-start')}
+      data-safe-area-block-end={claim(safeAreaEdges, 'block-end')}
+      data-safe-area-inline-start={claim(safeAreaEdges, 'inline-start')}
+      data-safe-area-inline-end={claim(safeAreaEdges, 'inline-end')}
       aria-label={label}
       slot={slot}
     >

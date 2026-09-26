@@ -25,7 +25,9 @@ type Scenario =
   | 'tab-scaffold'
   | 'split-view'
   | 'split-view-resizable'
-  | 'collapsible';
+  | 'collapsible'
+  | 'app-bars'
+  | 'app-bar-in-header';
 
 interface SafeAreaFixture {
   show(scenario: Scenario): void;
@@ -430,6 +432,89 @@ test('a standalone CollapsiblePanel hands its edge to its sibling when it collap
     8 + INSETS.left,
   ]);
   expect(await box(page, rail)).toMatchObject({ width: 0 });
+});
+
+// KF-EEPPQE: a toolbar outside a Pane header only took the inline edges an
+// owner handed it, so an app shell's top bar never cleared the status area.
+// `Toolbar.safeAreaEdges` lets an app bar or bottom bar claim its screen edges.
+test('an app bar and a bottom bar claim their screen edges with safeAreaEdges', async ({
+  page,
+}) => {
+  await mountFixture(page, 'app-bars');
+  const appBar = '[data-component="toolbar"][aria-label="App bar"]';
+  const bottomBar = '[data-component="toolbar"][aria-label="Bottom bar"]';
+
+  // The bars paint edge to edge; their dividers reach both screen edges.
+  expect(await box(page, appBar)).toMatchObject({
+    top: 0,
+    left: 0,
+    right: 1180,
+  });
+  expect(await box(page, bottomBar)).toMatchObject({
+    bottom: 820,
+    left: 0,
+    right: 1180,
+  });
+  // The top bar pads the top and both sides; the bottom bar the bottom and
+  // both sides. Neither pads the interior edge it shares with the body.
+  expect(await padding(page, appBar)).toEqual([
+    8 + INSETS.top,
+    8 + INSETS.right,
+    8,
+    8 + INSETS.left,
+  ]);
+  expect(await padding(page, bottomBar)).toEqual([
+    8,
+    8 + INSETS.right,
+    8 + INSETS.bottom,
+    8 + INSETS.left,
+  ]);
+  // The controls clear the unsafe areas.
+  const top = await box(page, `${appBar} button`);
+  expect(top.top).toBeGreaterThanOrEqual(INSETS.top);
+  expect(top.right).toBeLessThanOrEqual(1180 - INSETS.right);
+  const bottom = await box(page, `${bottomBar} button`);
+  expect(bottom.bottom).toBeLessThanOrEqual(820 - INSETS.bottom);
+  // Zones see a cleared context, and the body between the bars pads only the
+  // sides it lists.
+  expect(await padding(page, `${appBar} > .kui-toolbar__trailing`)).toEqual([
+    0, 0, 0, 0,
+  ]);
+  expect(
+    await padding(page, '[data-safe-pane="Body"] .kui-pane__content'),
+  ).toEqual([0, INSETS.right, 0, INSETS.left]);
+});
+
+test('a toolbar claiming edges inside a Pane header never double-insets', async ({
+  page,
+}) => {
+  await mountFixture(page, 'app-bar-in-header');
+  const pane = '[data-safe-pane="Claimed"]';
+  const toolbar = `${pane} .kui-pane__header > [data-component="toolbar"]`;
+  // The header already pads the top; the toolbar takes only the inline edges
+  // the header hands it, exactly as an unclaimed toolbar there does.
+  expect(await padding(page, `${pane} .kui-pane__header`)).toEqual([
+    INSETS.top,
+    0,
+    0,
+    0,
+  ]);
+  expect(await padding(page, toolbar)).toEqual([
+    8,
+    8 + INSETS.right,
+    8,
+    8 + INSETS.left,
+  ]);
+});
+
+test('claimed toolbar edges add nothing without device insets', async ({
+  page,
+}) => {
+  await mountFixture(page, 'app-bars', null);
+  for (const label of ['App bar', 'Bottom bar'])
+    expect(
+      await padding(page, `[data-component="toolbar"][aria-label="${label}"]`),
+    ).toEqual([8, 8, 8, 8]);
 });
 
 test('without device insets every layout keeps its unpadded geometry', async ({

@@ -236,6 +236,24 @@ describe('production UI primitives', () => {
     expect(html).toContain(
       'divider-sides="tr" data-has-center="true" data-center-align="stretch" data-responsive="center-priority" data-responsive-at="compact" aria-label="Tools"',
     );
+    expect(html).not.toContain('data-safe-area');
+    // An app bar claims only the screen edges it lists.
+    const appBar = asHtml(
+      Toolbar({
+        label: 'App bar',
+        safeAreaEdges: ['block-start', 'inline-start', 'inline-end'],
+      }),
+    );
+    expect(appBar).toContain(
+      'data-safe-area-block-start="true" data-safe-area-inline-start="true" data-safe-area-inline-end="true" aria-label="App bar"',
+    );
+    expect(appBar).not.toContain('data-safe-area-block-end');
+    expect(
+      asHtml(Toolbar({ label: 'Bottom bar', safeAreaEdges: ['block-end'] })),
+    ).toContain('data-safe-area-block-end="true" aria-label="Bottom bar"');
+    expect(asHtml(Toolbar({ safeAreaEdges: [] }))).not.toContain(
+      'data-safe-area',
+    );
     expect(asHtml(group)).toContain(
       'role="group" aria-label="View" data-appearance="borderless" data-tone="dark" data-button-appearance="push" data-expanded="true" data-single="true"',
     );

@@ -59,6 +59,26 @@ say which sides each pane reaches with `safeAreaEdges`:
 </div>
 ```
 
+An app bar or bottom bar that sits directly at a screen edge, outside any
+`Pane` header or footer, claims its edges the same way. A `Toolbar` only pads
+the inline edges an owner hands it until you list the sides it reaches:
+
+```tsx
+<List fill>
+  <Toolbar
+    label="App bar"
+    safeAreaEdges={['block-start', 'inline-start', 'inline-end']}
+    leading={<ToolbarText text="Atlas" />}
+  />
+  <Row gap="none" flex>…panes that list block-end and their outer side…</Row>
+</List>
+```
+
+Each claimed side pads by the edge context, or the full device inset when
+nothing routes that edge, while the bar's surface and divider still reach the
+screen edge. A claimed toolbar inside a `Pane` header or footer adds nothing
+extra, because the pane already owns those edges.
+
 Pass `safeAreaEdges={[]}` for a pane that never sits at a screen edge. For a
 region you own, set `--kui-edge-inset-block-start`, `--kui-edge-inset-block-end`,
 `--kui-edge-inset-inline-start`, or `--kui-edge-inset-inline-end` to `0px` on the

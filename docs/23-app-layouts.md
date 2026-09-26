@@ -317,19 +317,27 @@ A layout region whose only child is a `Pane`, `NavStack`, `SplitView`,
 child can paint through and own scroll-through padding. A Pane header/footer
 whose only child is a `Toolbar` hands the toolbar the inline edges; the toolbar
 adds them to its own inline padding so its dividers reach the edge. A toolbar
-outside that hand-off treats an unset context as zero.
+outside that hand-off treats an unset context as zero, unless it claims its
+screen edges with `Toolbar.safeAreaEdges` (KF-EEPPQE: an app shell's top app
+bar sat outside any Pane header and never cleared the status area). A claimed
+side pads like a Pane slot — the routed edge context, or the full device inset
+when nothing routes it — and the toolbar's minimum height grows by the claimed
+block insets. Inside a Pane header or footer the context is already cleared, so
+a claim there never double-insets.
 
 **Opt-outs / app routing.** `Pane.safeAreaEdges` (typed
 `readonly PaneSeparatorSide[]`, default all four) limits the sides a pane may
-compensate; `[]` opts out. An app-owned layout sets `--kui-edge-inset-*: 0px` on
+compensate; `[]` opts out. `Toolbar.safeAreaEdges` (same type, default none)
+lets an app bar or bottom bar at a screen edge claim those sides. An app-owned layout sets `--kui-edge-inset-*: 0px` on
 its regions. A `CollapsiblePanel` routes its direct flex siblings automatically;
 a panel wrapped in an app grid cell cannot, so the app routes those edges.
 
 **Verification.** `ui/tests/browser/safe-area.spec.ts` renders each layout full
 screen with simulated insets (via the `--kui-safe-area-*` overrides) and asserts
 edge-to-edge surfaces and separators, touched-side padding, scroll-through
-padding, the center regaining an edge when a rail collapses, and no interior or
-nested inset.
+padding, the center regaining an edge when a rail collapses, an app bar and a
+bottom bar claiming their screen edges with `Toolbar.safeAreaEdges`, and no
+interior or nested inset.
 
 ## 4. Responsive presentation matrix
 

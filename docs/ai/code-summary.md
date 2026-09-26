@@ -737,6 +737,9 @@ inherited `--kui-edge-inset-*` edge context so surfaces paint through unsafe are
 while only the edges a region reaches get padding (`Pane.safeAreaEdges` for
 app-owned arrangements). `ui/tests/browser/safe-area.spec.ts` renders each layout
 from `ui/tests/browser/fixtures/safe-area-layouts.tsx` with simulated insets.
+`Toolbar.safeAreaEdges` lets an app bar or bottom bar outside a Pane header or
+footer claim its screen edges (the `app-bars` / `app-bar-in-header` fixture
+scenarios).
 `ui/src/toolbar.css` never clips an action: every trailing zone, and stacked
 center/trailing zones, wrap whole control groups (stacked zones span every grid
 track, because a toolbar cannot container-query itself; an expanded

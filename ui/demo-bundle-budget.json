@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 283900,
-  "measuredLargestJavaScriptGzip": 135519,
-  "measuredTotalJavaScriptGzip": 283882,
+  "totalJavaScriptGzip": 284000,
+  "measuredLargestJavaScriptGzip": 135572,
+  "measuredTotalJavaScriptGzip": 283913,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -339,6 +339,22 @@
         "measuredTotalJavaScriptGzip": 283882,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 283900
+      }
+    },
+    {
+      "at": "2026-09-26T03:34:49.848Z",
+      "reason": "Toolbar.safeAreaEdges adds four claimable safe-area data attributes to Toolbar and the app-shell recipe's app bar claims the top edge (KF-EEPPQE)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 135519,
+        "measuredTotalJavaScriptGzip": 283882,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 283900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 135572,
+        "measuredTotalJavaScriptGzip": 283913,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 284000
       }
     }
   ]

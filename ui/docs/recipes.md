@@ -39,7 +39,8 @@ Only those three real panes own a
 `.kui-pane__content` scroll owner; no frame `Pane` wraps the layout in a scroll
 owner that never scrolls. Each pane lists the screen edges it reaches in
 `safeAreaEdges` (the bottom plus its outer side, or both sides when it is the
-only pane shown). Below desktop sizes the app reads `deviceClass()` and shows one
+only pane shown), and the app-bar `Toolbar` claims the top edge and both sides
+with its own `safeAreaEdges`, so it clears the status area. Below desktop sizes the app reads `deviceClass()` and shows one
 pane at a time, switched by a pressed-state `ToolbarControlGroup`. The recipe
 owns the shell topology; the app owns routing, responsive pane visibility,
 sizes, persistence, and data.

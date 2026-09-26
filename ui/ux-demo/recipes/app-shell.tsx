@@ -21,9 +21,11 @@ import type { RecipeFactory, RecipePresentation } from './types.js';
 type ShellPane = 'content' | 'navigation' | 'inspector';
 type ScreenEdges = readonly PaneSeparatorSide[];
 
-// Safe areas: the app bar sits along the top edge, so each pane compensates
-// only for the screen edges it actually reaches: the bottom, plus its outer side
-// in the three-pane layout or both sides when it is the only pane shown.
+// Safe areas: the app bar claims the top edge and both sides, so it clears the
+// status area. Each pane below compensates only for the screen edges it
+// actually reaches: the bottom, plus its outer side in the three-pane layout or
+// both sides when it is the only pane shown.
+const appBarEdges: ScreenEdges = ['block-start', 'inline-start', 'inline-end'];
 const soleEdges: ScreenEdges = ['block-end', 'inline-start', 'inline-end'];
 
 const tasks = [
@@ -186,6 +188,7 @@ export const createRecipe: RecipeFactory = (announce) => {
       >
         <Toolbar
           label="Atlas workspace"
+          safeAreaEdges={appBarEdges}
           leading={<ToolbarText text="Atlas" />}
           trailing={
             <>

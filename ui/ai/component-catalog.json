@@ -1101,7 +1101,8 @@
       "appOwns": [
         "actions",
         "command availability",
-        "responsive relocation"
+        "responsive relocation",
+        "which screen edges an app bar or bottom bar outside a Pane header or footer claims for device safe areas (safeAreaEdges)"
       ],
       "variants": [
         "bottom divider (default)",
@@ -1111,7 +1112,8 @@
         "stacked zones at compact or narrow widths",
         "content-driven wrap that keeps a heading title whole",
         "center priority for an expanded center control",
-        "trailing groups wrap instead of clipping"
+        "trailing groups wrap instead of clipping",
+        "app bar or bottom bar claiming its screen edges (safeAreaEdges)"
       ],
       "accessibility": [
         "Supply a label when the toolbar needs an accessible name."
@@ -1121,7 +1123,8 @@
         "border": "conditional",
         "padding": "self",
         "notes": [
-          "Padding belongs to the toolbar; dividerSides selects any canonical combination of its physical top, right, bottom, and left edges."
+          "Padding belongs to the toolbar; dividerSides selects any canonical combination of its physical top, right, bottom, and left edges.",
+          "Safe areas: a Pane header or footer hands a sole Toolbar its inline edges; an app bar or bottom bar at a screen edge claims its sides with safeAreaEdges and pads each claimed side by the --kui-edge-inset-* context or the full device inset, while its box and dividers paint through."
         ]
       },
       "delivery": {

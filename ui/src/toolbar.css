@@ -1,11 +1,7 @@
 .kui-toolbar {
   display: grid;
   width: 100%;
-  min-height: calc(
-    var(--kui-toolbar-group-size, calc(2px + remify(42px))) +
-      (2 * var(--kui-toolbar-gap, remify(8px)))
-  );
-  padding: var(--kui-toolbar-gap, remify(8px));
+  /* min-height and padding: see the safe-area rules below. */
   box-sizing: border-box;
   color: var(--kui-color-text);
   background: transparent;
@@ -20,16 +16,65 @@
    it through `--kui-edge-inset-inline-*` (a Pane header or footer does), so its
    box and dividers keep reaching the edge while its zones clear the unsafe
    area. Unset means none: a toolbar embedded in content never pads for the
-   device. Its zones then see a cleared context. */
+   device. An app bar or bottom bar at a screen edge claims its sides with
+   `safeAreaEdges`; each claimed side pads by the routed edge context, or the
+   full device inset when nothing routes it (the Pane rule), so the top bar of
+   a shell clears the status area. A Pane header or footer clears the context
+   for its children, so a claimed side there never double-insets. Its zones
+   then see a cleared context. */
 .kui-toolbar {
-  padding-inline: calc(
-      var(--kui-toolbar-gap, remify(8px)) +
-        var(--kui-edge-inset-inline-start, 0px)
+  --_kui-toolbar-safe-block-start: 0px;
+  --_kui-toolbar-safe-block-end: 0px;
+  --_kui-toolbar-safe-inline-start: var(--kui-edge-inset-inline-start, 0px);
+  --_kui-toolbar-safe-inline-end: var(--kui-edge-inset-inline-end, 0px);
+  /* The minimum height grows by any claimed block inset, so a toolbar a flex
+     column shrinks still keeps a whole control row clear of the unsafe area. */
+  min-height: calc(
+    var(--kui-toolbar-group-size, calc(2px + remify(42px))) +
+      (2 * var(--kui-toolbar-gap, remify(8px))) +
+      var(--_kui-toolbar-safe-block-start) + var(--_kui-toolbar-safe-block-end)
+  );
+  padding-block: calc(
+      var(--kui-toolbar-gap, remify(8px)) + var(--_kui-toolbar-safe-block-start)
     )
     calc(
-      var(--kui-toolbar-gap, remify(8px)) +
-        var(--kui-edge-inset-inline-end, 0px)
+      var(--kui-toolbar-gap, remify(8px)) + var(--_kui-toolbar-safe-block-end)
     );
+  padding-inline: calc(
+      var(--kui-toolbar-gap, remify(8px)) +
+        var(--_kui-toolbar-safe-inline-start)
+    )
+    calc(
+      var(--kui-toolbar-gap, remify(8px)) + var(--_kui-toolbar-safe-inline-end)
+    );
+}
+
+.kui-toolbar[data-safe-area-block-start="true"] {
+  --_kui-toolbar-safe-block-start: var(
+    --kui-edge-inset-block-start,
+    var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px))
+  );
+}
+
+.kui-toolbar[data-safe-area-block-end="true"] {
+  --_kui-toolbar-safe-block-end: var(
+    --kui-edge-inset-block-end,
+    var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+}
+
+.kui-toolbar[data-safe-area-inline-start="true"] {
+  --_kui-toolbar-safe-inline-start: var(
+    --kui-edge-inset-inline-start,
+    var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+  );
+}
+
+.kui-toolbar[data-safe-area-inline-end="true"] {
+  --_kui-toolbar-safe-inline-end: var(
+    --kui-edge-inset-inline-end,
+    var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+  );
 }
 
 .kui-toolbar > * {

@@ -11,10 +11,12 @@ import '@kerfjs/ui/resizable-region.css';
 import '@kerfjs/ui/workbench.css';
 import '@kerfjs/ui/tab-scaffold.css';
 import '@kerfjs/ui/collapsible-panel.css';
+import '@kerfjs/ui/list.css';
 
 import { CollapsiblePanel } from '@kerfjs/ui/collapsible-panel';
+import { List } from '@kerfjs/ui/list';
 import { NavStack } from '@kerfjs/ui/nav-stack';
-import { Pane } from '@kerfjs/ui/pane';
+import { Pane, type PaneSeparatorSide } from '@kerfjs/ui/pane';
 import { SplitView } from '@kerfjs/ui/split-view';
 import { TabScaffold } from '@kerfjs/ui/tab-scaffold';
 import { Toolbar } from '@kerfjs/ui/toolbar';
@@ -36,7 +38,9 @@ type Scenario =
   | 'tab-scaffold'
   | 'split-view'
   | 'split-view-resizable'
-  | 'collapsible';
+  | 'collapsible'
+  | 'app-bars'
+  | 'app-bar-in-header';
 
 const scenario = signal<Scenario>('pane');
 const leftCollapsed = signal(false);
@@ -61,6 +65,26 @@ const toolbar = (title: string, divider: 'b' | 't' | '' = 'b') => (
     label={title}
     dividerSides={divider}
     leading={<ToolbarText text={title} size="xlarge" />}
+    trailing={
+      <ToolbarControlGroup appearance="borderless" single>
+        <button type="button" aria-label={`${title} action`}>
+          +
+        </button>
+      </ToolbarControlGroup>
+    }
+  />
+);
+
+const claimedBar = (
+  title: string,
+  edges: readonly PaneSeparatorSide[],
+  divider: 'b' | 't',
+) => (
+  <Toolbar
+    label={title}
+    dividerSides={divider}
+    safeAreaEdges={edges}
+    leading={<ToolbarText text={title} />}
     trailing={
       <ToolbarControlGroup appearance="borderless" single>
         <button type="button" aria-label={`${title} action`}>
@@ -155,6 +179,48 @@ function render() {
               : undefined
           }
         />
+      );
+    case 'app-bars':
+      // An app-owned shell: a top app bar and a bottom bar claim their screen
+      // edges; the Pane between them reaches only the two sides.
+      return (
+        <List fill>
+          {claimedBar(
+            'App bar',
+            ['block-start', 'inline-start', 'inline-end'],
+            'b',
+          )}
+          <List flex>
+            <Pane
+              label="Body"
+              safeAreaEdges={['inline-start', 'inline-end']}
+              rootAttributes={{ 'data-safe-pane': 'Body' }}
+            >
+              {items('Body')}
+            </Pane>
+          </List>
+          {claimedBar(
+            'Bottom bar',
+            ['block-end', 'inline-start', 'inline-end'],
+            't',
+          )}
+        </List>
+      );
+    case 'app-bar-in-header':
+      // A Pane header already owns the top edge: a toolbar there that claims
+      // every side must not add the inset a second time.
+      return (
+        <Pane
+          label="Claimed"
+          header={claimedBar(
+            'Claimed header',
+            ['block-start', 'block-end', 'inline-start', 'inline-end'],
+            'b',
+          )}
+          rootAttributes={{ 'data-safe-pane': 'Claimed' }}
+        >
+          {items('Claimed')}
+        </Pane>
       );
     case 'collapsible':
       return (

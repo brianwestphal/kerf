@@ -144,6 +144,7 @@ export { DisclosureArrow, type DisclosureArrowProps, type DisclosureDirection };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { D as DividerSides } from './divider-sides-BzB6rphT.js';
+import { PaneSeparatorSide } from './pane.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface ToolbarProps {
@@ -169,11 +170,21 @@ interface ToolbarProps {
     responsive?: 'none' | 'stack' | 'wrap' | 'center-priority';
     /** Container width at which `responsive="stack"` activates. */
     responsiveAt?: 'compact' | 'narrow';
+    /**
+     * Screen edges this toolbar claims for device safe-area compensation, for an
+     * app bar or bottom bar that sits directly at a screen edge rather than in a
+     * Pane header or footer. Each listed side pads by the inset its surrounding
+     * layout reports through `--kui-edge-inset-*`, or the full device inset when
+     * nothing routes that edge, while the toolbar's box and dividers paint
+     * through. Omitted, the toolbar pads only the inline edges an owner such as
+     * a Pane header hands it, and never a block edge.
+     */
+    safeAreaEdges?: readonly PaneSeparatorSide[];
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function Toolbar({ leading, center, trailing, label, dividerSides, centerAlign, responsive, responsiveAt, className, slot, }: ToolbarProps): kerfjs.SafeHtml;
+declare function Toolbar({ leading, center, trailing, label, dividerSides, centerAlign, responsive, responsiveAt, safeAreaEdges, className, slot, }: ToolbarProps): kerfjs.SafeHtml;
 
 export { DividerSides, Toolbar, type ToolbarProps };
 ```
