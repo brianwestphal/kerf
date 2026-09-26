@@ -1,5 +1,9 @@
 .kui-row {
   --kui-row-gap: var(--kui-layout-item-gap, remify(8px));
+  /* Private per-instance values are reset on every Row so a nested Row never
+     inherits its ancestor's; the inline style overrides them per prop. */
+  --_kui-row-gap: var(--kui-row-gap);
+  --_kui-row-flex: 0 1 auto;
   --_kui-row-inset-top: 0;
   --_kui-row-inset-right: 0;
   --_kui-row-inset-bottom: 0;

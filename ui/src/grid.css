@@ -1,5 +1,9 @@
 .kui-grid {
   --kui-grid-gap: var(--kui-layout-item-gap, remify(8px));
+  /* Private per-instance values are reset on every Grid so a nested Grid never
+     inherits its ancestor's; the inline style overrides them per prop. */
+  --_kui-grid-gap: var(--kui-grid-gap);
+  --_kui-grid-flex: 0 1 auto;
 
   display: grid;
   min-width: 0;

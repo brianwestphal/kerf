@@ -58,6 +58,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   over the border with the group's radius, neighboring controls still abut, and
   the trailing dropdown trigger keeps the 1px end inset instead of running onto
   the border. Compact groups are 2px narrower as a result.
+- Fixed a nested `@kerfjs/ui` `List`, `Row`, or `Grid` inheriting its
+  ancestor's `gap` and `flex`. Those props travel through private custom
+  properties, which inherit, so a nested `List` without its own `gap` took the
+  enclosing `List`'s gap (a heading unit inside a form got a 24px gap between
+  its title and supporting line) and any nested instance without `flex` took the
+  ancestor's flex growth. Every instance now resets its private values, so an
+  omitted prop means that component's own default. The workspace-header recipe's
+  breadcrumb now sits directly above its title and the List demo's section rows
+  sit flush under their header, as intended.
 - Fixed `@kerfjs/ui` slide-motion `ResizableRegion` content staying at its
   previous width during a live resize until the app re-rendered the committed
   size. `wireResizableRegions` now applies the live size to the sliding content
@@ -77,8 +86,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   it — the same user-agent-owned treatment `<details>` / `<dialog>` already
   had. A template can still set `open`; closing stays imperative.
 - The `@kerfjs/ui` composer-form recipe's supporting line now sits directly
-  under its toolbar title instead of 24px lower: its nested heading `List` sets
-  `gap="none"` rather than picking up the form's section gap. The guidance now
+  under its toolbar title instead of 24px lower, because a nested `List` no
+  longer inherits the form's section gap (see the nested `List`/`Row`/`Grid`
+  fix above). The guidance now
   also states that `ToolbarText` below `xlarge` is intentionally quiet identity
   text with no tone option. A normal-color subsection title is `Text` with an
   `h2`–`h6` variant, or `ListHeader` for a list or menu section.

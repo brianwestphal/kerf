@@ -749,6 +749,10 @@ and collapsible-sidebar recipes use a filling List/Row root instead of a frame
 Pane around a scroll owner that never scrolls; `CatalogExample.viewport.height`
 adds `app` (592px) for application-sized recipes.
 `ui/tests/browser/layout-fill.spec.ts` pins the fill chain in both recipes.
+Each `List`/`Row`/`Grid` resets its private `--_kui-*-gap`/`--_kui-*-flex`
+variables, so a nested instance never inherits its ancestor's `gap` or `flex`
+(`ui/tests/browser/nested-layout-variables.spec.ts` with
+`ui/tests/browser/fixtures/nested-layout-variables.tsx`).
 `Catalog.stageRootAttributes`, `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` use the
 same runtime filter for catalog-authoring `data-*` metadata while protecting
 their structure and alignment markers. `CatalogExample.viewport` supplies

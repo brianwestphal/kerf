@@ -287,6 +287,10 @@ padding. A selected text side adds the complete content-item alignment inset —
 container padding. When both props select the same side, the text inset wins.
 Each nested `Row` or `List` resolves its own four inset sides; unselected sides
 reset to zero instead of inheriting a same-type parent's inset selection.
+The same holds for `gap` and `flex` on a nested `List`, `Row`, or `Grid`: an
+omitted prop falls back to that component's own default (no gap for `List`,
+`xs` for `Row` and `Grid`; the CSS initial `flex`) rather than the enclosing
+instance's value.
 
 `ListInsetText` and `ListInsetControl` use the same `sides` vocabulary and
 default to `trbl`. The text wrapper applies its complete 8/1/8 geometry only on
