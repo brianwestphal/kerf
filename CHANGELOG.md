@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed `kerf-ui-analyze` and the `eslint-plugin-kerfjs` UI rules treating
+  every name in a catalog entry's `publicExports` as that entry's component,
+  so a helper such as `uiColor` or `flex` called with an object whose keys
+  matched a contract path (`uiColor({ choices: [...] })`) was checked as a
+  `Select` or `List` call. Only component exports, whose names start with an
+  uppercase letter as JSX component tags do, now resolve to an entry; the
+  `@kerfjs/ui` catalog check fails if a cataloged `SafeHtml` render function
+  is lowercase or any other runtime export is uppercase.
 - The `@kerfjs/ui` component catalog's `ToolbarText` entry now lists every
   token its `xlarge` size reads (`--kui-color-text`, `--kui-font-l`,
   `--kui-font-2xl`) in `publicTokens`; previously it named only the tokens of

@@ -694,6 +694,73 @@ for (const entry of entries.filter(
   }
 }
 
+// kerf-ui-analyze and eslint-plugin-kerfjs attach an entry's contracts only to
+// its component exports and recognize one by name: an uppercase first letter
+// (JSX's own rule for a component tag). A `publicExports` list also carries
+// helpers such as `uiColor` or `px`, so hold every cataloged runtime value to
+// that convention: a render function returning SafeHtml is uppercase, and
+// anything else is lowercase. A lowercase component would escape its
+// contracts; an uppercase helper would inherit its entry's.
+{
+  const config = ts.getParsedCommandLineOfConfigFile(
+    resolve(root, 'tsconfig.json'),
+    {},
+    { ...ts.sys, onUnRecoverableConfigFileDiagnostic: () => {} },
+  );
+  const moduleEntries = entries.filter(
+    (entry) => entry.source === 'kerf' && entry.delivery.moduleImport,
+  );
+  const moduleSource = (entry) =>
+    resolve(
+      root,
+      'src',
+      `${entry.delivery.moduleImport.slice('@kerfjs/ui/'.length)}.tsx`,
+    );
+  const program = ts.createProgram(
+    [
+      resolve(root, 'src/index.ts'),
+      ...moduleEntries.map((entry) => moduleSource(entry)),
+    ],
+    config.options,
+  );
+  const checker = program.getTypeChecker();
+  const moduleExports = (path) => {
+    const file = program.getSourceFile(path);
+    const symbol = file && checker.getSymbolAtLocation(file);
+    return symbol ? checker.getExportsOfModule(symbol) : [];
+  };
+  const inspected = [
+    ...moduleExports(resolve(root, 'src/index.ts')).filter((symbol) =>
+      runtimeExports.includes(symbol.name),
+    ),
+    ...moduleEntries.flatMap((entry) =>
+      moduleExports(moduleSource(entry)).filter((symbol) =>
+        (entry.publicExports ?? []).includes(symbol.name),
+      ),
+    ),
+  ];
+  for (const symbol of inspected) {
+    const target =
+      symbol.flags & ts.SymbolFlags.Alias
+        ? checker.getAliasedSymbol(symbol)
+        : symbol;
+    if (!(target.flags & ts.SymbolFlags.Value)) continue;
+    const signatures = checker.getTypeOfSymbol(target).getCallSignatures();
+    const component =
+      signatures.length > 0 &&
+      signatures.every(
+        (signature) =>
+          checker.typeToString(signature.getReturnType()) === 'SafeHtml',
+      );
+    if (component !== /^[A-Z]/.test(symbol.name))
+      fail(
+        component
+          ? `public component export ${symbol.name} must start with an uppercase letter so contract tools treat it as a component`
+          : `public helper export ${symbol.name} must start with a lowercase letter so contract tools do not treat it as a component`,
+      );
+  }
+}
+
 if (failures.length > 0) {
   console.error('[check-component-catalog] Component catalog drifted:\n');
   for (const failure of failures) console.error(`- ${failure}`);

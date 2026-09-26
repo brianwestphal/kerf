@@ -308,6 +308,39 @@ ui.Select({ choices: [{ label: 'C', value: 'c', color: ui.colorVar('--app-color'
     );
   });
 
+  it('never treats a helper export as the component its entry describes', async () => {
+    // The selection catalog lists helpers beside the render function
+    // (`Select` ships `uiColor`/`colorVar`, `List` ships `flex`/`rem`). A
+    // helper called with an object whose keys match a contract path is not
+    // that component and must not inherit its CSS-value contracts.
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-helpers-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(
+      join(root, 'src/helpers.ts'),
+      `import * as ui from '@kerfjs/ui';
+import { List, Select, flex, uiColor } from '@kerfjs/ui';
+uiColor({ choices: [{ label: 'A', value: 'a', color: '#fff' }] });
+ui.colorVar({ choices: [{ label: 'B', value: 'b', color: 'red' }] });
+flex({ gap: '12px', flex: 'grow' });
+Select({ choices: [{ label: 'C', value: 'c', color: '#000' }] });
+List({ gap: '13px' });
+`,
+    );
+
+    const report = await analyzeUiProject({ root, profile: packageProfile });
+    const found = report.diagnostics
+      .filter(({ ruleId }) => ['KUI-L013', 'KUI-L014'].includes(ruleId))
+      .map(({ ruleId, location, evidence }) => ({
+        ruleId,
+        line: location.line,
+        component: (evidence as { component?: string } | undefined)?.component,
+      }));
+    expect(found).toEqual([
+      { ruleId: 'KUI-L013', line: 6, component: '@kerfjs/ui:select' },
+      { ruleId: 'KUI-L013', line: 7, component: '@kerfjs/ui:list' },
+    ]);
+  });
+
   it('emits portable text and SARIF contracts', async () => {
     const report = await analyzeUiProject({
       root: await fixture(),

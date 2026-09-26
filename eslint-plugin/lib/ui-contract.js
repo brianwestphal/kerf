@@ -9,6 +9,20 @@ const loadCommonJs = createRequire(import.meta.url);
 
 export const UI_CONTRACT_LOAD_CODE = 'KUI-L090';
 
+// A catalog entry's `publicExports` mixes the component render function with
+// helpers the component's props consume (`Select` ships `uiColor`, `List`
+// ships `px`/`rem`/`flex`). Only the render function stands for the entry, so
+// only it may carry the entry's contracts. A component export is one whose
+// name starts with an uppercase letter: JSX itself treats a lowercase tag as an
+// intrinsic element, so a lowercase export can never be a component tag, and
+// `@kerfjs/ui`'s catalog check (`check-component-catalog.mjs`) enforces the
+// converse for the package: every uppercase runtime export returns `SafeHtml`
+// and every lowercase one does not. A default import has no name to inspect
+// and keeps its subpath's entry.
+export function isComponentExport(name) {
+  return name === 'default' || /^[A-Z]/.test(name);
+}
+
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
 
 function packageAsset(cwd, name) {
@@ -135,7 +149,7 @@ export function loadUiContract(context) {
       if (entry.delivery?.moduleImport)
         imports.set(entry.delivery.moduleImport, key);
       for (const name of entry.publicExports ?? []) {
-        exports.set(name, key);
+        if (isComponentExport(name)) exports.set(name, key);
         addHelperSource(name, selection.package);
       }
       for (const wiring of entry.wiring ?? [])
@@ -185,11 +199,12 @@ export function importRegistry(program, contract) {
         specifier.type === 'ImportDefaultSpecifier'
           ? 'default'
           : (specifier.imported.name ?? specifier.imported.value);
-      const key =
-        directKey ??
-        (source === contract.package
-          ? contract.exports?.get(imported)
-          : undefined);
+      const key = !isComponentExport(imported)
+        ? undefined
+        : (directKey ??
+          (source === contract.package
+            ? contract.exports?.get(imported)
+            : undefined));
       if (key) locals.set(specifier.local.name, key);
       helpers.set(specifier.local.name, { imported, source });
     }

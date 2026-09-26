@@ -25,6 +25,17 @@ the entry that the import actually names. That keeps the Kerf component's
 CSS-value contracts (`KUI-L013`–`KUI-L017`) in force for `Select` and
 `Skeleton`.
 
+Only component exports resolve to an entry. A selection-catalog
+`publicExports` list also carries the helpers a component's props consume
+(`Select` ships `uiColor`, `List` ships `px`, `rem`, and `flex`), and a helper
+never inherits its entry's contracts, so `uiColor({ choices: [...] })` is not
+checked as a `Select` call. A component export is one whose name starts with
+an uppercase letter, the same rule JSX uses to tell a component tag from an
+intrinsic element; `eslint-plugin-kerfjs` applies the identical rule, and the
+package's catalog check fails if a cataloged render function (a value
+returning `SafeHtml`) is lowercase or any other runtime value is uppercase.
+Third-party catalogs should follow the same naming convention.
+
 Analysis is scoped per source file. Each TSX/JSX file resolves package,
 workspace, and parent-to-child directory profiles from its own location, then
 follows its relative CSS imports (including nested CSS `@import`s). Stylesheet

@@ -301,6 +301,21 @@ tester.run('ui-css-values', cssValues, {
       code: "import { Stack, rem } from '@acme/ui'; <Stack gap={rem(1)} />;",
       settings: thirdPartySettings,
     },
+    // Helper exports share a catalog entry with a component (`List` ships
+    // `flex`/`uiColor`), but a helper is not that component: an object
+    // argument whose keys match a contract path must not inherit it.
+    {
+      code: "import { flex, uiColor } from '@kerfjs/ui'; flex({ gap: '12px', flex: 'grow' }); uiColor({ gap: 'xl' });",
+      settings,
+    },
+    {
+      code: "import * as ui from '@kerfjs/ui'; ui.flex({ gap: '12px' });",
+      settings,
+    },
+    {
+      code: "import { uiColor } from '@kerfjs/ui/select'; uiColor({ choices: [{ label: 'A', value: 'a', color: 'red' }] });",
+      settings,
+    },
   ],
   invalid: [
     {
@@ -374,6 +389,22 @@ tester.run('ui-css-values', cssValues, {
       code: 'import { Stack } from \'@acme/ui\'; <Stack gap="12px" />;',
       settings: thirdPartySettings,
       errors: [{ messageId: 'raw' }],
+    },
+    // The same shapes still flag through the real component.
+    {
+      code: "import { List, flex } from '@kerfjs/ui'; flex({ gap: '12px' }); List({ gap: '12px' });",
+      settings,
+      errors: [{ messageId: 'raw', line: 1, column: 77 }],
+    },
+    {
+      code: "import * as ui from '@kerfjs/ui'; ui.flex({ gap: '12px' }); ui.List({ gap: '13px' });",
+      settings,
+      errors: [{ messageId: 'raw', column: 76 }],
+    },
+    {
+      code: "import { Select, uiColor } from '@kerfjs/ui/select'; uiColor({ choices: [{ color: 'red' }] }); Select({ choices: [{ color: 'blue' }] });",
+      settings,
+      errors: [{ messageId: 'raw', column: 124 }],
     },
   ],
 });

@@ -249,11 +249,26 @@ async function loadSelectionFacts(owner, catalog) {
   return facts;
 }
 
+// A catalog entry's public exports mix the component render function with
+// helpers its props consume (`Select` ships `uiColor`, `List` ships
+// `px`/`rem`/`flex`). Only the render function stands for the entry, so only
+// it may carry the entry's contracts. A component export is one whose name
+// starts with an uppercase letter: JSX itself treats a lowercase tag as an
+// intrinsic element, so a lowercase export can never be a component tag, and
+// scripts/check-component-catalog.mjs enforces the converse for this package
+// (every uppercase runtime export returns SafeHtml; no lowercase one does).
+// eslint-plugin-kerfjs applies the same rule.
+function isComponentExport(name) {
+  return /^[A-Z]/.test(name);
+}
+
 // Pick the catalog entry an imported (or namespace-accessed) export name
 // refers to. Names are not unique across a catalog, so candidates are ranked:
 // an entry whose own import subpath is the module wins, then an entry that
-// declares the name as a public export, then catalog order.
+// declares the name as a public export, then catalog order. A helper export
+// never resolves to an entry.
 function resolveExportEntry(candidates, name, module) {
+  if (!isComponentExport(name)) return undefined;
   const eligible = (candidates ?? []).filter(
     (entry) =>
       module === entry.package || module?.startsWith(`${entry.package}/`),
@@ -282,8 +297,10 @@ function catalogFacts(entries) {
   };
   for (const entry of entries) {
     addExport(entry.name, entry);
-    for (const item of entry.publicExports ?? [])
-      addExport(typeof item === 'string' ? item : item.name, entry);
+    for (const item of entry.publicExports ?? []) {
+      const name = typeof item === 'string' ? item : item.name;
+      if (isComponentExport(name)) addExport(name, entry);
+    }
     for (const className of entry.boundaries?.publicClasses ?? []) {
       publicClasses.add(className);
       const owners = classEntries.get(className) ?? [];
