@@ -4707,7 +4707,10 @@ test('fills ListHeader rows and keeps 18px action visuals at the logical end', a
       // stretched oval.
       expect(measured.actionWidth).toBeCloseTo((18 + 16) * scale + 2, 0);
       expect(measured.actionHeight).toBeCloseTo((18 + 16) * scale + 2, 0);
-      expect(measured.actionLogicalEnd).toBeCloseTo(0, 0);
+      // The fitted action centers in the 44px toolbar-control slot flush with
+      // the root's end, (2 + 42 - 36) / 2 = 4px in, so its glyph shares the
+      // trailing axis of a Pane header's toolbar action.
+      expect(measured.actionLogicalEnd).toBeCloseTo(4 * scale, 0);
       expect(measured.titleActionOverlap).toBe(0);
       expect(measured.visualInsideAction).toBe(true);
       expect(measured.visualCenterDelta).toBeLessThanOrEqual(1);
@@ -5822,10 +5825,12 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       'rowStart',
       'rowEnd',
       'surfaceStart',
-      'headerActionEnd',
       'toolbarActionEnd',
     ] as const)
       near(name, geometry[name], 8);
+    // The fitted 36px ListHeader action centers in the 44px toolbar-control
+    // slot at the 8px margin, so its glyph shares the toolbar action's axis.
+    near('headerActionEnd', geometry.headerActionEnd, 12);
     for (const name of [
       'plainStart',
       'sectionStart',

@@ -128,6 +128,25 @@
   flex: none;
 }
 
+/* Trailing icon actions share one axis: a toolbar control centers its glyph in a
+   44px group slot flush with the 8px inline margin, so the fitted action centers
+   itself in a slot of that same size instead of sitting flush at the margin
+   (which put its glyph ~4px outside a Pane header's trailing toolbar glyph). The
+   slot, not the button, grows by the difference, so the fitted hover square and
+   its 18px visual are unchanged. Inline headers carry no outer geometry. */
+.kui-list-header:not([data-inline="true"]) > .kui-list-header__action {
+  margin-inline-end: max(
+    0px,
+    calc(
+      (
+          var(--kui-toolbar-group-size, calc(2px + remify(42px))) -
+            var(--_kui-list-header-action-size)
+        ) /
+        2
+    )
+  );
+}
+
 .kui-list-header__toggle {
   padding: var(--kui-layout-item-padding, remify(8px));
   appearance: none;

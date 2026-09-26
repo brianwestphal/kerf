@@ -101,3 +101,39 @@ test('Pane and the migrated catalog remain coherent at a narrow viewport', async
       path: 'test-results/pane-inset-text-narrow.png',
     });
 });
+
+test('Pane header toolbar and ListHeader trailing actions share one axis', async ({
+  page,
+}) => {
+  for (const width of [1200, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=list');
+    const pane = page.locator('[data-demo="list"] [data-component="pane"]');
+    await expect(pane).toBeVisible();
+    const axis = await pane.evaluate((root) => {
+      const glyph = (selector: string) =>
+        root
+          .querySelector(selector)!
+          .querySelector('svg')!
+          .getBoundingClientRect();
+      const toolbar = glyph('.kui-pane__header [data-action="log-add"]');
+      const listHeader = glyph('.kui-list-header__action');
+      const paneRight = root.getBoundingClientRect().right;
+      return {
+        toolbarCenter: paneRight - (toolbar.left + toolbar.width / 2),
+        listHeaderCenter: paneRight - (listHeader.left + listHeader.width / 2),
+        toolbarEnd: paneRight - toolbar.right,
+        listHeaderEnd: paneRight - listHeader.right,
+      };
+    });
+    // Both trailing "+" glyphs center 30px in from the pane edge: the 8px
+    // inline margin plus half of a 44px toolbar-control slot.
+    expect(axis.toolbarCenter).toBeCloseTo(30, 0);
+    expect(
+      Math.abs(axis.listHeaderCenter - axis.toolbarCenter),
+    ).toBeLessThanOrEqual(1);
+    expect(Math.abs(axis.listHeaderEnd - axis.toolbarEnd)).toBeLessThanOrEqual(
+      1,
+    );
+  }
+});

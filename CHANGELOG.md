@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed a `@kerfjs/ui` `ListHeader` action sitting about 4px outside the
+  trailing toolbar action of the Pane header above it. Its fitted action now
+  centers in the same 44px slot a toolbar control occupies at the 8px inline
+  margin, so trailing icon actions share one axis. The action's size, 18px
+  visual, and hover square are unchanged.
+
 - Fixed the `@kerfjs/ui` icon-only `Select` focus ring in a
   `ToolbarControlGroup` not matching the control: the compact trigger grew its
   group into a 36x34 oval and its disclosure caret overflowed the trailing edge.

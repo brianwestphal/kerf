@@ -87,6 +87,11 @@ also keeps 8px of root-scaled block padding independently of its semantic inline
 inset. Most interactive rows and toolbar groups are 44px tall.
 Toolbar groups reserve a real 1px outer border around a 42px inner area, even
 when their border and background are transparent.
+Trailing icon actions share one axis: a toolbar control centers its glyph in
+that 44px slot at the 8px inline margin, and a `ListHeader` action centers its
+fitted square in a slot of the same size, so a Pane header's trailing toolbar
+action and the `ListHeader` action beneath it line up (30px from the pane edge
+at the default scale).
 Panel, dialog, and page headings are plain `Toolbar` compositions. The leading
 zone holds an optional icon `ToolbarControlGroup` and a direct extra-large
 `ToolbarText`; actions belong in a trailing group. Omit empty groups. Supporting
