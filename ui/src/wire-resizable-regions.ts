@@ -37,8 +37,14 @@ interface RegionState {
 
 const REGION_SELECTOR = '[data-component="resizable-region"]';
 const HANDLE_SELECTOR = '[data-kui-resize-handle]';
-/** Handle attributes a re-render can write back over the reported values. */
-const REPORTED_ATTRIBUTES = ['aria-valuenow', 'aria-valuemax'];
+const INSET_ATTRIBUTE = 'data-handle-inset';
+/** Attributes a re-render can write back over the reported state. */
+const REPORTED_ATTRIBUTES = ['aria-valuenow', 'aria-valuemax', INSET_ATTRIBUTE];
+/**
+ * How far the handle's hit target reaches past the separator (the CSS places
+ * the 20px handle at `-10px` on the region's edge).
+ */
+const HANDLE_OVERHANG = 10;
 
 /**
  * The size the region renders or was last resized to. The track's custom
@@ -52,6 +58,23 @@ function renderedSize(region: HTMLElement, handle: HTMLElement) {
   return Number.isFinite(size)
     ? size
     : Number(handle.getAttribute('aria-valuenow'));
+}
+
+/**
+ * Whether the handle must sit inside the region. When a parent clamps the
+ * track, the separator reaches the parent's edge, where a clipping ancestor
+ * (an app shell, a scroll frame) would cut off the half of the hit target
+ * and its focus ring that overhang the region. With less room past the
+ * separator than that overhang, the region carries `data-handle-inset`, and
+ * the CSS moves the handle and its ring inside.
+ */
+function handleInset(state: RegionState, size: number) {
+  return state.max < state.declaredMax && state.max - size < HANDLE_OVERHANG;
+}
+
+function setInset(region: HTMLElement, inset: boolean) {
+  if (region.hasAttribute(INSET_ATTRIBUTE) !== inset)
+    region.toggleAttribute(INSET_ATTRIBUTE, inset);
 }
 
 function setAttributeIfChanged(
@@ -101,6 +124,7 @@ function applySize(state: RegionState, size: number) {
   state.region.style.setProperty('--kui-resizable-region-size', value);
   state.region.style.setProperty('--kui-resizable-region-expanded-size', value);
   state.handle.setAttribute('aria-valuenow', String(size));
+  setInset(state.region, handleInset(state, size));
 }
 
 /** Wire pointer and separator-keyboard behavior for every ResizableRegion below root. */
@@ -119,7 +143,7 @@ export function wireResizableRegions(
   // different aria-valuemax than the one announced here supersedes it.
   const announced = new WeakMap<
     HTMLElement,
-    { declaredMax: number; max: number; size: number }
+    { declaredMax: number; max: number; size: number; inset: boolean }
   >();
 
   function regionState(handle: Element): RegionState | undefined {
@@ -165,34 +189,40 @@ export function wireResizableRegions(
    * committed — the app's size stays its own until the user resizes.
    */
   function announce(state: RegionState) {
+    const inset = handleInset(state, state.size);
     announced.set(state.handle, {
       declaredMax: state.declaredMax,
       max: state.max,
       size: state.size,
+      inset,
     });
     // Unchanged values are not rewritten, so the observer below never sees
     // its own report as a re-render.
     setAttributeIfChanged(state.handle, 'aria-valuemax', String(state.max));
     setAttributeIfChanged(state.handle, 'aria-valuenow', String(state.size));
+    setInset(state.region, inset);
   }
+
+  const handleOf = (region: HTMLElement) =>
+    region.querySelector<HTMLElement>(`:scope > ${HANDLE_SELECTOR}`);
 
   /** Re-measure a region at rest and report what it shows. */
   function sync(region: HTMLElement) {
     if (!region.isConnected || region.dataset.resizing === 'true') return;
-    const handle = region.querySelector<HTMLElement>(
-      `:scope > ${HANDLE_SELECTOR}`,
-    );
+    const handle = handleOf(region);
     const state = handle ? regionState(handle) : undefined;
     if (state) announce(state);
   }
 
-  /** Whether the handle still shows the values this wiring last reported. */
-  function reportedByUs(handle: HTMLElement) {
-    const remembered = announced.get(handle);
+  /** Whether the region still shows the state this wiring last reported. */
+  function reportedByUs(region: HTMLElement) {
+    const handle = handleOf(region);
+    const remembered = handle ? announced.get(handle) : undefined;
     return (
       remembered !== undefined &&
-      handle.getAttribute('aria-valuemax') === String(remembered.max) &&
-      handle.getAttribute('aria-valuenow') === String(remembered.size)
+      handle?.getAttribute('aria-valuemax') === String(remembered.max) &&
+      handle.getAttribute('aria-valuenow') === String(remembered.size) &&
+      region.hasAttribute(INSET_ATTRIBUTE) === remembered.inset
     );
   }
 
@@ -249,10 +279,13 @@ export function wireResizableRegions(
         structural = true;
         continue;
       }
-      const handle = record.target as HTMLElement;
-      if (!handle.matches(HANDLE_SELECTOR) || reportedByUs(handle)) continue;
-      const region = handle.closest<HTMLElement>(REGION_SELECTOR);
-      if (region) regions.add(region);
+      const target = record.target as HTMLElement;
+      const region = target.matches(REGION_SELECTOR)
+        ? target
+        : target.matches(HANDLE_SELECTOR)
+          ? target.closest<HTMLElement>(REGION_SELECTOR)
+          : null;
+      if (region && !reportedByUs(region)) regions.add(region);
     }
     // Newly observed regions are measured by the ResizeObserver's first
     // notification.

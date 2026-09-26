@@ -307,14 +307,54 @@
   .kui-resizable-region__handle {
   top: -10px;
 }
+/* wireResizableRegions sets data-handle-inset when a parent clamps the track
+   and the separator has less room past it than the handle's overhang, which
+   puts it at the parent's edge. The handle then sits wholly inside the region
+   and keeps its separator line on the region's edge, so a clipping ancestor
+   never cuts off half of the hit target or its focus ring. */
+.kui-resizable-region[data-handle-inset][data-axis="horizontal"][data-edge="end"]
+  > .kui-resizable-region__handle {
+  right: 0;
+}
+.kui-resizable-region[data-handle-inset][data-axis="horizontal"][data-edge="end"]
+  > .kui-resizable-region__handle::before {
+  right: 0;
+}
+.kui-resizable-region[data-handle-inset][data-axis="horizontal"][data-edge="start"]
+  > .kui-resizable-region__handle {
+  left: 0;
+}
+.kui-resizable-region[data-handle-inset][data-axis="horizontal"][data-edge="start"]
+  > .kui-resizable-region__handle::before {
+  left: 0;
+}
+.kui-resizable-region[data-handle-inset][data-axis="vertical"][data-edge="end"]
+  > .kui-resizable-region__handle {
+  bottom: 0;
+}
+.kui-resizable-region[data-handle-inset][data-axis="vertical"][data-edge="end"]
+  > .kui-resizable-region__handle::before {
+  bottom: 0;
+}
+.kui-resizable-region[data-handle-inset][data-axis="vertical"][data-edge="start"]
+  > .kui-resizable-region__handle {
+  top: 0;
+}
+.kui-resizable-region[data-handle-inset][data-axis="vertical"][data-edge="start"]
+  > .kui-resizable-region__handle::before {
+  top: 0;
+}
 .kui-resizable-region__handle:hover,
 .kui-resizable-region__handle:focus-visible {
   color: var(--kui-resizable-region-handle-active-color);
 }
+/* The ring stays wholly inside the handle's box (the focus ring is 3px).
+   The handle runs the region's full length, and those ends usually meet a
+   clipping ancestor's edge, which would otherwise shave the ring there. */
 .kui-resizable-region__handle:focus-visible {
   border-radius: var(--kui-radius-s);
   outline: var(--kui-focus-ring);
-  outline-offset: -2px;
+  outline-offset: -3px;
 }
 .kui-resizable-region__handle-icon {
   position: relative;

@@ -17,6 +17,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   class, which avoids an open first frame on a compact device. The
   collapsible-sidebar recipe no longer opens its rail as a blocking overlay
   on load at compact widths.
+- `@kerfjs/ui`'s `ResizableRegion` handle keeps its hit target and focus ring
+  whole at a clipping edge. When a parent clamps the region to its own edge
+  (the catalog's 390px stage, an app shell with a `max-width` container),
+  `wireResizableRegions` marks the region `data-handle-inset` and the handle
+  moves inside it instead of overhanging the edge by 10px, where the frame cut
+  its focus ring in half. The ring is now drawn inside the handle's box
+  (`outline-offset: -3px`), so it is also no longer shaved where the region's
+  ends meet a clipping edge.
 - `@kerfjs/ui`'s `wireResizableRegions` keeps a clamped separator's
   `aria-valuenow`/`aria-valuemax` current at rest. Previously, after a size was
   saved at a wider width, narrowing the parent or any unrelated re-render left

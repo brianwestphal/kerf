@@ -769,7 +769,9 @@ actual track, so a clamped region never shows content past its separator, and
 (probing it at the declared max), announcing the shown size in
 `aria-valuenow`/`aria-valuemax` and keeping that report current at rest via a
 `ResizeObserver` (region + parent) and a `MutationObserver` (re-renders that
-restore the rendered props), both disconnected by the disposer
+restore the rendered props), both disconnected by the disposer; it also sets
+`data-handle-inset` on a region whose separator sits at the clamped edge, which
+the CSS uses to move the handle and its focus ring inside the region
 (`ui/tests/browser/resizable-region-clamp.spec.ts`,
 `ui/tests/unit/wire-resizable-regions.test.ts`).
 `Catalog.stageRootAttributes`, `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` use the

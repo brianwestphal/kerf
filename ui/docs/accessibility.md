@@ -120,6 +120,12 @@ The handle exposes separator role, orientation, name, minimum, maximum, and curr
   them after a re-render writes the rendered props back, so assistive
   technology never reads an unclamped size between interactions (the
   disposer disconnects both observers);
+- a whole hit target and focus ring at a clamped edge: when the separator has
+  less room past it than the handle's 10px overhang (a parent clamps the track
+  to its own edge), the region carries `data-handle-inset` and the handle sits
+  wholly inside it, so a clipping ancestor cannot cut off half the handle or
+  its focus ring. The ring is drawn inside the handle's box, so the region's
+  ends meeting a clipping edge never shave it either;
 - preview callbacks while dragging and one commit callback on release;
 - a live size that also resizes slide-motion content, so the content tracks the
   separator during a drag or key press instead of waiting for the app to

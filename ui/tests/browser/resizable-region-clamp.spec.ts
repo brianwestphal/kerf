@@ -175,14 +175,21 @@ test('the catalog region demo resizes only to the 390px stage and reports the sh
   await page.keyboard.press('Shift+ArrowRight');
   await expect(handle).toHaveAttribute('aria-valuenow', visible);
 
-  // A pointer drag past the stage clamps the same way.
+  // A pointer drag past the stage clamps the same way. The handle sits inside
+  // the clamped region, so its center is reachable (before the inset, the
+  // center fell on the clipped half and Firefox never started the drag). The
+  // drag stays inside the viewport: Firefox reports clientX 0 and no pointerup
+  // for a captured pointer that leaves it.
   const box = (await handle.boundingBox())!;
   const x = box.x + box.width / 2;
   const y = box.y + box.height / 2;
+  const viewportRight = page.viewportSize()!.width - 1;
+  expect(x).toBeLessThan(stageWidth + (await stage.boundingBox())!.x);
   await page.mouse.move(x, y);
   await page.mouse.down();
   await page.mouse.move(x - 80, y, { steps: 4 });
-  await page.mouse.move(x + 200, y, { steps: 4 });
+  await expect(handle).not.toHaveAttribute('aria-valuenow', visible);
+  await page.mouse.move(viewportRight, y, { steps: 4 });
   await page.mouse.up();
   await expect(handle).toHaveAttribute('aria-valuenow', visible);
   await expect(page.locator('[data-region-size]')).toHaveText(`${visible}px`);
@@ -229,6 +236,69 @@ test('a size committed on a wide stage reports the clamped size when focused on 
     String(Number(visible) - 16),
   );
 });
+
+// KF-4F5KAZ: a separator the parent clamps to its edge used to overhang the
+// clipping frame by half the handle, cutting its focus ring in two. The handle
+// moves inside the region there, so the whole ring stays visible; with room
+// past the separator it keeps straddling the edge.
+for (const width of [390, 1440])
+  test(`the focused handle's ring lies within the visible frame at ${width}px`, async ({
+    page,
+    browserName,
+  }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/?component=resize');
+    const region = page.locator(
+      '[data-demo="resize"] [data-component="resizable-region"]',
+    );
+    const handle = region.locator('[data-kui-resize-handle]');
+    await handle.focus();
+    await page.keyboard.press('End');
+    // Keyboard focus shows the ring (:focus-visible).
+    await page.keyboard.press('ArrowLeft');
+    await page.keyboard.press('ArrowRight');
+    await expect(handle).toBeFocused();
+    const geometry = await handle.evaluate((element) => {
+      const style = globalThis.getComputedStyle(element);
+      const reach =
+        Number.parseFloat(style.outlineWidth) +
+        Number.parseFloat(style.outlineOffset);
+      const box = element.getBoundingClientRect();
+      let clip = element.parentElement!;
+      while (globalThis.getComputedStyle(clip).overflowX === 'visible')
+        clip = clip.parentElement!;
+      const frame = clip.getBoundingClientRect();
+      const left = frame.left + clip.clientLeft;
+      const top = frame.top + clip.clientTop;
+      return {
+        outline: style.outlineStyle,
+        ring: {
+          left: box.left - reach,
+          right: box.right + reach,
+          top: box.top - reach,
+          bottom: box.bottom + reach,
+        },
+        frame: {
+          left,
+          right: left + clip.clientWidth,
+          top,
+          bottom: top + clip.clientHeight,
+        },
+        inset: element.parentElement!.hasAttribute('data-handle-inset'),
+      };
+    });
+    expect(geometry.outline).not.toBe('none');
+    expect(geometry.ring.left).toBeGreaterThanOrEqual(geometry.frame.left);
+    expect(geometry.ring.right).toBeLessThanOrEqual(geometry.frame.right);
+    expect(geometry.ring.top).toBeGreaterThanOrEqual(geometry.frame.top);
+    expect(geometry.ring.bottom).toBeLessThanOrEqual(geometry.frame.bottom);
+    // Only the clamped stage pulls the handle inside.
+    expect(geometry.inset).toBe(width === 390);
+    if (browserName === 'chromium')
+      await page.locator('[data-demo="resize"]').screenshot({
+        path: `test-results/resizable-region-ring-${width}.png`,
+      });
+  });
 
 // KF-XZJ0Y8: the reported values stay in sync at rest. Narrowing the viewport
 // re-clamps them, and an unrelated re-render that writes the rendered props

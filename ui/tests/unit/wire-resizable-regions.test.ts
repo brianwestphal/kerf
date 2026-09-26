@@ -540,6 +540,56 @@ describe('wireResizableRegions', () => {
       stop();
     });
 
+    it('insets the handle while the separator sits at the edge the parent clamps it to', async () => {
+      const { root, handle } = region();
+      const host = hostOf(root);
+      clampLayout(host, 240);
+      Object.defineProperty(handle, 'setPointerCapture', { value: vi.fn() });
+      const stop = wireResizableRegions(root, { onCommit: vi.fn() });
+      const inset = () => host.hasAttribute('data-handle-inset');
+      // With room past the separator the handle keeps straddling it.
+      handle.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+      expect(inset()).toBe(false);
+      key(handle, { key: 'End' });
+      expect(inset()).toBe(true);
+      // Sixteen pixels of room clear the 10px overhang...
+      key(handle, { key: 'ArrowLeft' });
+      expect(inset()).toBe(false);
+      // ...and a live drag back to the edge insets it before release.
+      handle.dispatchEvent(
+        new PointerEvent('pointerdown', {
+          button: 0,
+          pointerId: 4,
+          clientX: 0,
+          bubbles: true,
+        }),
+      );
+      handle.dispatchEvent(
+        new PointerEvent('pointermove', {
+          pointerId: 4,
+          clientX: 12,
+          bubbles: true,
+        }),
+      );
+      expect(inset()).toBe(true);
+      handle.dispatchEvent(
+        new PointerEvent('pointerup', { pointerId: 4, bubbles: true }),
+      );
+      expect(inset()).toBe(true);
+
+      // A re-render drops the attribute it does not render; it comes back.
+      host.removeAttribute('data-handle-inset');
+      await new Promise((resolve) => globalThis.setTimeout(resolve));
+      expect(inset()).toBe(true);
+
+      // An unclamped track reaches its declared maximum and never insets.
+      clampLayout(host, 1000);
+      key(handle, { key: 'End' });
+      expect(handle.getAttribute('aria-valuenow')).toBe('300');
+      expect(inset()).toBe(false);
+      stop();
+    });
+
     describe('keeps the reported values current at rest', () => {
       /** A ResizeObserver the test notifies by hand; happy-dom has no layout. */
       class StubResizeObserver {
@@ -657,6 +707,10 @@ describe('wireResizableRegions', () => {
         observer().notify(handleless);
         document.body.append(handleless);
         observer().notify(handleless);
+        root.append(handleless);
+        await settle();
+        handleless.toggleAttribute('data-handle-inset', true);
+        await settle();
         handleless.remove();
         await settle();
         expect(measure).toHaveBeenCalledTimes(1);

@@ -6738,8 +6738,11 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
   expect(visibleMax).toBeLessThan(420);
   await expect(size).toHaveText(`${visibleMax}px`);
   await expect(handle).toHaveAttribute('aria-valuemax', String(visibleMax));
+  // At the clamped edge the handle sits inside the region instead of
+  // overhanging the frame, so the frame has nothing to scroll to and the
+  // whole handle is visible without scrolling.
+  await expect(region).toHaveAttribute('data-handle-inset', '');
   const maxScroll = await shell.evaluate((element) => {
-    element.scrollLeft = element.scrollWidth - element.clientWidth;
     const shellRect = element.getBoundingClientRect();
     const handleRect = element
       .querySelector<HTMLElement>('[data-kui-resize-handle]')!
@@ -6753,8 +6756,8 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
       clientWidth: element.clientWidth,
     };
   });
-  expect(maxScroll.scrollWidth).toBeGreaterThan(maxScroll.clientWidth);
-  expect(maxScroll.scrollLeft).toBeGreaterThan(0);
+  expect(maxScroll.scrollWidth).toBeLessThanOrEqual(maxScroll.clientWidth);
+  expect(maxScroll.scrollLeft).toBe(0);
   expect(maxScroll.handleInsideShell).toBe(true);
   await expect(handle).toBeFocused();
   if (browserName === 'chromium') {
