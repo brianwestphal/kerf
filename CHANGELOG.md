@@ -58,6 +58,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   over the border with the group's radius, neighboring controls still abut, and
   the trailing dropdown trigger keeps the 1px end inset instead of running onto
   the border. Compact groups are 2px narrower as a result.
+- Fixed `@kerfjs/ui` `ResizableRegion` panes stopping at their content's
+  height. The region's content now spans the whole region, like its separator,
+  and a lone child (normally a `Pane`) fills it, so the app-shell recipe's
+  navigation and inspector panes reach the bottom edge and scroll long content
+  inside their own content slot instead of ending partway down the region.
+  Several children still stack at their natural height.
 - Fixed `@kerfjs/ui` `Toolbar responsive="center-priority"` leaving an
   expanded center control at roughly half the row on narrow toolbars. The
   policy set the toolbar's own grid template inside a container query on the

@@ -88,6 +88,64 @@ test('the app-shell recipe root fills the app frame and its body reaches the bot
   }
 });
 
+// KF-1575B8: a lone child of ResizableRegion content fills the region, so the
+// app shell's navigation and inspector Panes reach the bottom edge the
+// separators already did and own scrolling when their content is long.
+test('the app-shell resizable panes fill their regions and scroll long content', async ({
+  page,
+}) => {
+  const { recipe } = await openRecipe(page, 'recipe-app-shell', 1440);
+  const root = await box(recipe);
+  for (const [paneId, regionId] of [
+    ['recipe-shell-navigation', 'recipe-navigation'],
+    ['recipe-shell-inspector', 'recipe-inspector'],
+  ] as const) {
+    const region = await box(
+      recipe.locator(
+        `[data-component="resizable-region"][data-region-id="${regionId}"]`,
+      ),
+    );
+    const pane = recipe.locator(`#${paneId}`);
+    const paneBox = await box(pane);
+    expect(paneBox.top, `${paneId} top`).toBeCloseTo(region.top, 0);
+    expect(paneBox.bottom, `${paneId} bottom`).toBeCloseTo(region.bottom, 0);
+    expect(paneBox.bottom, `${paneId} reaches the root`).toBeCloseTo(
+      root.bottom,
+      0,
+    );
+
+    // Long content scrolls inside the pane's content slot; the pane itself
+    // keeps the region's height instead of growing past it.
+    const scroll = await pane.evaluate((element) => {
+      const content = element.querySelector<HTMLElement>(
+        ':scope > .kui-pane__content',
+      )!;
+      for (let index = 0; index < 40; index += 1) {
+        const item = document.createElement('div');
+        item.className = 'kui-content-item';
+        item.textContent = `Filler ${String(index + 1)}`;
+        content.append(item);
+      }
+      const before = element.getBoundingClientRect().height;
+      content.scrollTop = content.scrollHeight;
+      return {
+        before,
+        overflow: globalThis.getComputedStyle(content).overflowY,
+        scrollable: content.scrollHeight > content.clientHeight,
+        scrolled: content.scrollTop > 0,
+        contentBottom: content.getBoundingClientRect().bottom,
+        paneBottom: element.getBoundingClientRect().bottom,
+      };
+    });
+    expect(scroll.before).toBeCloseTo(paneBox.bottom - paneBox.top, 0);
+    expect(scroll.overflow).toBe('auto');
+    expect(scroll.scrollable).toBe(true);
+    expect(scroll.scrolled).toBe(true);
+    expect(scroll.contentBottom).toBeCloseTo(scroll.paneBottom, 0);
+    expect((await box(pane)).bottom).toBeCloseTo(region.bottom, 0);
+  }
+});
+
 test('the collapsible-sidebar recipe root fills the app frame with edge-docked panels', async ({
   page,
   browserName,

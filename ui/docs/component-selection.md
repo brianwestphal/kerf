@@ -175,6 +175,11 @@ an upstream component or recipe request.
 - `TabBar` changes tabpanels and supports overflow/reorder; `SegmentedControl` chooses among a few compact views; `Select` handles a longer value list.
 - `StateBanner` persists beside affected work; `EmptyState` replaces absent content; `wa-callout` is contextual ecosystem content; `wa-toast` and `wa-toast-item` are transient and must not carry the only copy of important state.
 - `ResizableRegion` is an interactive controlled pane. `Grid` is the right answer for static equal-width columns; application CSS grid remains the answer for asymmetric or intrinsic tracks.
+- A `ResizableRegion`'s content spans the whole region, like its separator. Give
+  it one child — normally a `Pane` — and that child fills the region, so the
+  pane reaches the region's far edge and owns scrolling for long content.
+  Several children stack at their natural height. Do not size the child with
+  application `height` rules.
 - A `ResizableRegion` overlay automatically clamps both its track and fixed-size
   animated content to the responsive overlay maximum. Set the policy and maximum
   on the component instead of adding application descendant width/height fixes.

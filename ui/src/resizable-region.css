@@ -31,11 +31,24 @@
 .kui-resizable-region[data-collapsed="true"] {
   overflow: visible;
 }
+/* The content spans the whole region, like the separator does. A vertical
+   stack keeps several children at their natural height, while a lone child —
+   typically a Pane or a layout — fills the region, so it owns its scrolling
+   and reaches the region's far edge. */
 .kui-resizable-region__content {
+  display: flex;
+  flex-direction: column;
   width: 100%;
   min-width: 0;
   min-height: 0;
   overflow: hidden;
+}
+.kui-resizable-region[data-axis="vertical"] > .kui-resizable-region__content {
+  flex-grow: 1;
+}
+.kui-resizable-region__content > :only-child {
+  flex: 1 1 auto;
+  min-height: 0;
 }
 .kui-resizable-region[data-content-overflow="auto"]
   > .kui-resizable-region__content {

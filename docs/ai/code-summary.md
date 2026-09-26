@@ -754,6 +754,10 @@ Each `List`/`Row`/`Grid` resets its private `--_kui-*-gap`/`--_kui-*-flex`
 variables, so a nested instance never inherits its ancestor's `gap` or `flex`
 (`ui/tests/browser/nested-layout-variables.spec.ts` with
 `ui/tests/browser/fixtures/nested-layout-variables.tsx`).
+`ResizableRegion` content is a column flex container whose lone child fills
+the region (`ui/tests/browser/resizable-region-fill.spec.ts` with
+`ui/tests/browser/fixtures/resizable-region-fill.tsx`, plus the app-shell case in
+`layout-fill.spec.ts`).
 `Catalog.stageRootAttributes`, `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` use the
 same runtime filter for catalog-authoring `data-*` metadata while protecting
 their structure and alignment markers. `CatalogExample.viewport` supplies

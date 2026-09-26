@@ -33,7 +33,9 @@ specific dispatch; either way, wire once at a stable root and retain disposal.
 A filling `List` (`fill`, with the recipe's `data-*` markers through
 `rootAttributes`) stacks the app-bar `Toolbar` above a `Row` that places
 controlled `ResizableRegion` navigation and inspector panes around a content
-`Pane` that a one-column `Grid` grows to fill. Only those three real panes own a
+`Pane` that a one-column `Grid` grows to fill. Each region's lone `Pane` fills
+the region's full height, so it reaches the bottom edge the separator does.
+Only those three real panes own a
 `.kui-pane__content` scroll owner; no frame `Pane` wraps the layout in a scroll
 owner that never scrolls. Each pane lists the screen edges it reaches in
 `safeAreaEdges` (the bottom plus its outer side, or both sides when it is the
