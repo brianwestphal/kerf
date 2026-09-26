@@ -751,7 +751,10 @@ loading-inspector recipes at 390px plus the focused Toolbar demo states.
 parent takes its full height) and filtered `rootAttributes`, so the app-shell
 and collapsible-sidebar recipes use a filling List/Row root instead of a frame
 Pane around a scroll owner that never scrolls; `CatalogExample.viewport.height`
-adds `app` (592px) for application-sized recipes.
+adds `app` (592px) for application-sized recipes. An `app` frame is the
+containing block (`contain: layout`) for screen-fixed chrome, so the compact
+`CollapsiblePanel` overlay and backdrop dock to the frame
+(`ui/tests/browser/collapsible-sidebar-recipe.spec.ts`).
 `ui/tests/browser/layout-fill.spec.ts` pins the fill chain in both recipes.
 Each `List`/`Row`/`Grid` resets its private `--_kui-*-gap`/`--_kui-*-flex`
 variables, so a nested instance never inherits its ancestor's `gap` or `flex`

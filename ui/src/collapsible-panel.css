@@ -288,9 +288,13 @@
   );
 }
 
+/* A button does not stretch between its insets the way a div does, so the
+   backdrop sizes itself to its containing block explicitly. */
 .kui-collapsible-panel__backdrop {
   position: fixed;
   inset: 0;
+  width: 100%;
+  height: 100%;
   z-index: var(--kui-collapsible-panel-backdrop-z, 39);
   border: 0;
   padding: 0;

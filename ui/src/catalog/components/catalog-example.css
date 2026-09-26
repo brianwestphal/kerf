@@ -87,9 +87,14 @@
 }
 
 /* An application-sized frame for app shells and whole-screen layouts, which
-   read cramped in the component-sized heights above. */
+   read cramped in the component-sized heights above. The frame stands in for
+   the screen, so it is the containing block for screen-fixed chrome: a compact
+   CollapsiblePanel overlay, its backdrop, and restore controls dock to the
+   frame's edges instead of the page's, where the frame's inset and clip would
+   cut them off. */
 .kui-catalog-example__viewport[data-height="app"] {
   height: remify(592px);
+  contain: layout;
 }
 
 .kui-catalog-example__viewport[data-height="fill"] {

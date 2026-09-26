@@ -46,7 +46,10 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   - **presents a compact overlay** when `deviceClass.compact` is true (pass a
     `deviceClass()` signal): the open panel floats over the content with a
     dismissable backdrop, Escape and backdrop-click collapse it, and Tab is trapped
-    within the panel (the ARIA dialog pattern);
+    within the panel (the ARIA dialog pattern). The overlay and its backdrop are
+    fixed to the screen; an ancestor that establishes a containing block for
+    fixed descendants (such as the catalog's `height: "app"` frame) docks them to
+    its edges instead;
   - accepts `compactPresentation: "hidden"` when a compact application replaces
     the panel with different navigation instead of overlaying it;
   - keeps compact overlays exclusive by default, collapsing another open panel

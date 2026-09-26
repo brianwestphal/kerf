@@ -100,6 +100,9 @@ own overlay implementation.
   Component heights run `short` (220px) through `tall` (360px); frame an app
   shell, whole-screen layout, or other application-sized recipe with
   `height: "app"` (592px), and give its root `fill` rather than a frame `Pane`.
+  An app frame stands in for the screen: it is the containing block for
+  screen-fixed chrome, so a compact `CollapsiblePanel` overlay, its backdrop,
+  and restore controls dock to the frame's edges rather than the page's.
 - The specimen is an immediate child of `CatalogExample`. A focused component
   row should place the component root there, without a decorative card or
   spacing wrapper. A composition row may place the composition root there.

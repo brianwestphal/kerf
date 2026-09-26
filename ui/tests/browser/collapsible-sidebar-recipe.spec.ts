@@ -226,3 +226,117 @@ test('routes screen-edge safe-area insets between the rail, drawer, and main pan
   await expect(root).toHaveAttribute('data-drawer-collapsed', 'false');
   await expect.poll(mainPadding).toMatchObject({ bottom: '0px' });
 });
+
+// KF-RAWSGQ: the compact overlay is screen-fixed chrome. The recipe's app
+// frame stands in for the screen, so the rail, drawer, and backdrop dock to the
+// frame's edges; docked to the page they started 24px left of the inset frame,
+// which clipped the rail's leading edge.
+test('keeps the compact overlay rail, drawer, and backdrop inside the 390px app frame', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(RECIPE);
+  const root = page.locator('[data-recipe="recipe-collapsible-sidebar"]');
+  const frame = root.locator(
+    'xpath=ancestor::*[contains(concat(" ", @class, " "), " kui-catalog-example__viewport ")][1]',
+  );
+  await expect(page.locator('.kui-catalog__canvas')).toHaveAttribute(
+    'data-collapsible-overlay',
+    'true',
+  );
+  await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
+  await frame.scrollIntoViewIfNeeded();
+
+  const inside = (panelId: string) =>
+    page.evaluate((id) => {
+      const frameElement = document
+        .querySelector('[data-recipe="recipe-collapsible-sidebar"]')!
+        .closest<HTMLElement>('.kui-catalog-example__viewport')!;
+      const panel = document.querySelector<HTMLElement>(
+        `[data-collapsible-panel="${id}"]`,
+      )!;
+      const box = frameElement.getBoundingClientRect();
+      const panelBox = panel.getBoundingClientRect();
+      const backdrop = document.querySelector<HTMLElement>(
+        '.kui-collapsible-panel__backdrop',
+      );
+      const backdropBox = backdrop?.getBoundingClientRect();
+      // Every visible text and icon of the panel lies inside the frame.
+      const leaves = [...panel.querySelectorAll<Element>('*')].filter(
+        (node) =>
+          (node.children.length === 0 && node.textContent?.trim()) ||
+          node.localName === 'svg',
+      );
+      const outside = leaves
+        .map((node) => {
+          const rect = node.getBoundingClientRect();
+          return {
+            text: node.textContent?.trim() || node.localName,
+            left: rect.left,
+            right: rect.right,
+            top: rect.top,
+            bottom: rect.bottom,
+          };
+        })
+        .filter(
+          (rect) =>
+            rect.left < box.left - 0.5 ||
+            rect.right > box.right + 0.5 ||
+            rect.top < box.top - 0.5 ||
+            rect.bottom > box.bottom + 0.5,
+        );
+      const clientLeft = box.left + frameElement.clientLeft;
+      const clientTop = box.top + frameElement.clientTop;
+      return {
+        outside,
+        leaves: leaves.length,
+        panel: {
+          left: panelBox.left - clientLeft,
+          top: panelBox.top - clientTop,
+          right: clientLeft + frameElement.clientWidth - panelBox.right,
+          bottom: clientTop + frameElement.clientHeight - panelBox.bottom,
+        },
+        backdrop: backdropBox && {
+          width: backdropBox.width - frameElement.clientWidth,
+          height: backdropBox.height - frameElement.clientHeight,
+        },
+      };
+    }, panelId);
+
+  const rail = await inside('sidebar-rail');
+  expect(rail.leaves).toBeGreaterThan(0);
+  expect(rail.outside).toEqual([]);
+  // The rail docks to the frame's leading edge and spans its full height.
+  expect(rail.panel.left).toBeCloseTo(0, 0);
+  expect(rail.panel.top).toBeCloseTo(0, 0);
+  expect(rail.panel.bottom).toBeCloseTo(0, 0);
+  // The backdrop scrims the whole frame, not a button-height strip.
+  expect(rail.backdrop!.width).toBeCloseTo(0, 0);
+  expect(rail.backdrop!.height).toBeCloseTo(0, 0);
+  if (browserName === 'chromium')
+    await frame.screenshot({
+      path: 'test-results/collapsible-sidebar-compact-rail-390.png',
+    });
+
+  // The drawer overlay docks to the frame's bottom edge the same way.
+  await page.keyboard.press('Escape');
+  await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
+  await page.getByRole('button', { name: 'Show activity' }).first().click();
+  await expect(drawerPanel(page)).toHaveAttribute('data-collapsed', 'false');
+  await expect
+    .poll(async () => (await inside('sidebar-console')).panel.bottom)
+    .toBeCloseTo(0, 0);
+  // Let the content finish sliding up before measuring it.
+  await expect(
+    drawerPanel(page).locator('.kui-collapsible-panel__content'),
+  ).toHaveCSS('transform', 'none');
+  const drawer = await inside('sidebar-console');
+  expect(drawer.outside).toEqual([]);
+  expect(drawer.panel.left).toBeCloseTo(0, 0);
+  expect(drawer.panel.right).toBeCloseTo(0, 0);
+  if (browserName === 'chromium')
+    await frame.screenshot({
+      path: 'test-results/collapsible-sidebar-compact-drawer-390.png',
+    });
+});

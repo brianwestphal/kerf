@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- The `@kerfjs/ui` catalog's `height: "app"` example frame is now the
+  containing block for screen-fixed chrome, so a compact `CollapsiblePanel`
+  overlay, its backdrop, and restore controls dock to the frame's edges. The
+  collapsible-sidebar recipe's compact rail was fixed to the page's left edge,
+  24px outside the inset frame, so its leading edge looked cut off at 390px.
+- The `CollapsiblePanel` compact-overlay backdrop now covers its whole
+  containing block. As a `<button>`, it did not stretch between its insets and
+  scrimmed only a 35px strip.
 - `@kerfjs/ui`'s `wireResizableRegions` now bounds a resize to the space the
   region's parent actually leaves. When a parent clamps the track (a
   `max-width` stage, a narrow container), pointer and keyboard resizing stop at
