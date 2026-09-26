@@ -249,7 +249,10 @@ reset to zero instead of inheriting a same-type parent's inset selection.
 `ListInsetText` and `ListInsetControl` use the same `sides` vocabulary and
 default to `trbl`. The text wrapper applies its complete 8/1/8 geometry only on
 selected sides; the control wrapper applies its 8px outer margin only on
-selected sides. `ListInsetText.horizontalOnly` remains a deprecated alias for
+selected sides. Every direct child of `ListInsetControl` grows to fill the row
+(a `Select`, a `wa-input`, or a `wa-button` spans the full inset width), and
+several children share the row with an 8px gap; stack controls vertically with
+a `List` using `controlInsets` instead. `ListInsetText.horizontalOnly` remains a deprecated alias for
 `sides="rl"`; an explicit `sides` value takes precedence.
 
 `--kui-space-s` (12px) and `--kui-space-xl` (32px) exist but are **off the

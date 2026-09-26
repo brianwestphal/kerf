@@ -1,9 +1,16 @@
 .kui-list-inset-control {
   display: flex;
   margin: 0;
-  justify-content: stretch;
   align-items: stretch;
   gap: remify(8px);
+}
+
+/* `justify-content: stretch` is a no-op on a flex row, so the documented
+   stretch comes from the children: each grows from its natural width to share
+   the row, and may shrink below its intrinsic minimum instead of overflowing. */
+.kui-list-inset-control > * {
+  min-width: 0;
+  flex: 1 1 auto;
 }
 
 .kui-list-inset-control[data-sides*="t"] {

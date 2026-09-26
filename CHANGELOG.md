@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   elements (`wa-select`, `wa-dropdown`, `wa-dialog`, …) when the template omits
   it — the same user-agent-owned treatment `<details>` / `<dialog>` already
   had. A template can still set `open`; closing stays imperative.
+- Fixed `@kerfjs/ui` `ListInsetControl` not stretching its control as
+  documented. Its `justify-content: stretch` is a no-op on a flex row, so a
+  `Select`, `wa-input`, or `wa-button` inside stayed at its natural width. Each
+  direct child now grows to fill the inset row (several children share it with
+  the 8px gap) and may shrink below its intrinsic width instead of overflowing.
 - `@kerfjs/ui` layouts and `Pane` now handle device safe areas as one model.
   Pane and panel backgrounds, separators, and dividers paint through unsafe
   areas; content is padded only on the edges a region actually reaches, and

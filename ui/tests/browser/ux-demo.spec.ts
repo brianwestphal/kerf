@@ -754,6 +754,38 @@ test('insets a self-bordered control and bare text so their edges line up in a c
   await expect(tight).toHaveAttribute('data-sides', 'rl');
 });
 
+test('ListInsetControl stretches a Select, a text input, and a wa-button across its row', async ({
+  page,
+}) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=list-inset-control');
+    const controls = page.locator(
+      '[data-demo="list-inset-control"] [data-component="list-inset-control"]',
+    );
+    for (const tag of ['wa-select', 'wa-input', 'wa-button']) {
+      const inset = controls.filter({ has: page.locator(`> ${tag}`) }).last();
+      await inset.scrollIntoViewIfNeeded();
+      await expect(inset.locator(`> ${tag}`)).toBeVisible();
+      const widths = await inset.evaluate((element, childTag) => {
+        const child = element.querySelector(`:scope > ${childTag}`)!;
+        const visible = child.shadowRoot?.querySelector(
+          '[part~="combobox"], [part~="base"]',
+        );
+        return {
+          inset: element.getBoundingClientRect().width,
+          child: child.getBoundingClientRect().width,
+          visible: visible?.getBoundingClientRect().width ?? 0,
+        };
+      }, tag);
+      // The host and its visible bordered box both span the whole inset row.
+      expect(widths.inset).toBeGreaterThan(200);
+      expect(Math.abs(widths.inset - widths.child)).toBeLessThanOrEqual(0.5);
+      expect(Math.abs(widths.inset - widths.visible)).toBeLessThanOrEqual(0.5);
+    }
+  }
+});
+
 test('applies text and control insets only to selected physical sides', async ({
   page,
   browserName,
