@@ -96,7 +96,10 @@ with state-derived props:
 ```
 
 `wireResizableRegions` marks the active region with `data-resizing` and the
-package CSS suppresses content motion during pointer resize. A collapsed,
+package CSS suppresses content motion during pointer resize. It applies the
+live size to both the track and the slide-motion content, so content fills the
+region throughout a drag, including any safe-area edge extent, and a later
+collapse slides it out at the resized width. A collapsed,
 overlay, or hidden region is not resizeable. Together these policies replace
 app CSS for separator suppression, instant-track/composited-content collapse,
 popup overflow, mobile overlay/hidden replacement, resize-transition guards,

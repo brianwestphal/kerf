@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed `@kerfjs/ui` slide-motion `ResizableRegion` content staying at its
+  previous width during a live resize until the app re-rendered the committed
+  size. `wireResizableRegions` now applies the live size to the sliding content
+  as well as the track, for pointer drags and key presses, so the content fills
+  the region (including a safe-area edge extent) throughout the drag and a later
+  collapse still slides it out at the resized width.
 - Fixed the `@kerfjs/ui` `ListHeader` action's pointer target being only its
   fitted 36px square although the guidance promises 44px. A transparent hit
   layer now extends the target to at least 44 × 44 around the square without

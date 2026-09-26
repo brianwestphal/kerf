@@ -57,14 +57,26 @@ function regionState(handle: Element): RegionState | undefined {
   return { region, handle, id, axis, edge, min, max, size };
 }
 
+/**
+ * Apply a live size to an expanded region before the app commits it. The
+ * collapse-motion content keeps a fixed width from the expanded size so its
+ * slide reads as a slide, not a squeeze; it has to follow the live size too, or
+ * the content stays at the previous width until the app re-renders.
+ */
+function applySize(state: RegionState, size: number) {
+  const value = `${size}px`;
+  state.region.style.setProperty('--kui-resizable-region-size', value);
+  state.region.style.setProperty('--kui-resizable-region-expanded-size', value);
+  state.handle.setAttribute('aria-valuenow', String(size));
+}
+
 function preview(
   state: RegionState,
   size: number,
   onPreview?: (change: ResizeCommit) => void,
 ) {
   const next = clampRegionSize(size, state.min, state.max);
-  state.region.style.setProperty('--kui-resizable-region-size', `${next}px`);
-  state.handle.setAttribute('aria-valuenow', String(next));
+  applySize(state, next);
   onPreview?.({ id: state.id, size: next, source: 'pointer' });
   return next;
 }
@@ -104,11 +116,7 @@ export function wireResizableRegions(
       if (next === undefined) return;
       keyboardEvent.preventDefault();
       const size = clampRegionSize(next, state.min, state.max);
-      state.region.style.setProperty(
-        '--kui-resizable-region-size',
-        `${size}px`,
-      );
-      state.handle.setAttribute('aria-valuenow', String(size));
+      applySize(state, size);
       onCommit({ id: state.id, size, source: 'keyboard' });
     },
   );

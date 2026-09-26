@@ -109,7 +109,10 @@ The handle exposes separator role, orientation, name, minimum, maximum, and curr
 - Shift+Arrow in 64 px steps;
 - Home and End for minimum and maximum;
 - primary-pointer drag with clamping;
-- preview callbacks while dragging and one commit callback on release.
+- preview callbacks while dragging and one commit callback on release;
+- a live size that also resizes slide-motion content, so the content tracks the
+  separator during a drag or key press instead of waiting for the app to
+  re-render the committed size.
 
 The application owns persistence and collapsed/expanded policy. Keep the last expanded size outside the component and restore it when reopening. An optional `handleIcon` replaces only decorative dormant content; it must not contain controls or interactive roles because the separator remains the sole focus and interaction owner.
 

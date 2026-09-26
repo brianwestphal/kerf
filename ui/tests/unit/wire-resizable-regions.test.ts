@@ -51,6 +51,11 @@ describe('wireResizableRegions', () => {
       size: 210,
       source: 'keyboard',
     });
+    expect(
+      root
+        .querySelector<HTMLElement>('[data-component="resizable-region"]')!
+        .style.getPropertyValue('--kui-resizable-region-expanded-size'),
+    ).toBe('210px');
     handle.dispatchEvent(
       new KeyboardEvent('keydown', {
         key: 'ArrowLeft',
@@ -141,6 +146,17 @@ describe('wireResizableRegions', () => {
       source: 'pointer',
     });
     expect(handle.getAttribute('aria-valuenow')).toBe('235');
+    // The collapse-motion content width follows the live size mid-drag instead
+    // of staying at the previously rendered expanded size.
+    const liveRegion = root.querySelector<HTMLElement>(
+      '[data-component="resizable-region"]',
+    )!;
+    expect(
+      liveRegion.style.getPropertyValue('--kui-resizable-region-size'),
+    ).toBe('235px');
+    expect(
+      liveRegion.style.getPropertyValue('--kui-resizable-region-expanded-size'),
+    ).toBe('235px');
     handle.dispatchEvent(
       new PointerEvent('pointerup', { pointerId: 3, bubbles: true }),
     );

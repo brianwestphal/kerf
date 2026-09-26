@@ -6428,6 +6428,99 @@ test('intrinsically sizes popup, compact mixed, and catalog dropdown content acr
   }
 });
 
+test('keeps slide-motion ResizableRegion content at the live width during a pointer drag', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 760 });
+  await page.goto('/?component=resize');
+  const region = page.locator(
+    '[data-demo="resize"] [data-component="resizable-region"]',
+  );
+  const handle = region.locator('[data-kui-resize-handle]');
+  const size = page.locator('[data-region-size]');
+  await expect(region).toHaveAttribute('data-collapse-motion', 'slide');
+  const widths = () =>
+    region.evaluate((element) => {
+      const content = element.querySelector<HTMLElement>(
+        ':scope > .kui-resizable-region__content',
+      )!;
+      return {
+        content: content.getBoundingClientRect().width,
+        region: element.getBoundingClientRect().width,
+        resizing: element.dataset.resizing ?? null,
+      };
+    });
+  const drag = async (deltas: readonly number[]) => {
+    const bounds = (await handle.boundingBox())!;
+    const x = bounds.x + bounds.width / 2;
+    const y = bounds.y + bounds.height / 2;
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    const samples = [];
+    for (const delta of deltas) {
+      await page.mouse.move(x + delta, y, { steps: 3 });
+      samples.push(await widths());
+    }
+    await page.mouse.up();
+    return samples;
+  };
+
+  const start = (await widths()).region;
+  // Grow, then shrink below the starting width, sampling before release.
+  const samples = await drag([48, 96, -40]);
+  expect(samples.map(({ resizing }) => resizing)).toEqual([
+    'true',
+    'true',
+    'true',
+  ]);
+  for (const [index, delta] of [48, 96, -40].entries()) {
+    const sample = samples[index]!;
+    expect(Math.abs(sample.region - (start + delta))).toBeLessThanOrEqual(1);
+    expect(Math.abs(sample.content - sample.region)).toBeLessThanOrEqual(1);
+  }
+  await expect(size).toHaveText(`${start - 40}px`);
+  const committed = await widths();
+  expect(Math.abs(committed.content - committed.region)).toBeLessThanOrEqual(1);
+
+  // A region that reaches an unsafe screen edge (as a SplitView list does)
+  // grows by the edge extent; its content grows with it mid-drag.
+  await region.evaluate((element) =>
+    element.style.setProperty('--kui-resizable-region-edge-extent', '24px'),
+  );
+  const extentStart = (await widths()).region;
+  const [extended] = await drag([60]);
+  expect(Math.abs(extended!.region - (extentStart + 60))).toBeLessThanOrEqual(
+    1,
+  );
+  expect(Math.abs(extended!.content - extended!.region)).toBeLessThanOrEqual(1);
+  await region.evaluate((element) =>
+    element.style.removeProperty('--kui-resizable-region-edge-extent'),
+  );
+
+  // The slide still reads as a slide after a live resize: collapsing snaps the
+  // track to zero while the content keeps the resized expanded width and
+  // translates out on its transform transition.
+  const expanded = (await widths()).content;
+  const collapse = await region.evaluate((element) => {
+    element.dataset.collapsed = 'true';
+    element.style.setProperty('--kui-resizable-region-size', '0px');
+    const content = element.querySelector<HTMLElement>(
+      ':scope > .kui-resizable-region__content',
+    )!;
+    const style = window.getComputedStyle(content);
+    return {
+      contentWidth: parseFloat(style.width),
+      regionWidth: element.getBoundingClientRect().width,
+      transitionProperty: style.transitionProperty,
+      transform: style.transform,
+    };
+  });
+  expect(collapse.regionWidth).toBe(0);
+  expect(Math.abs(collapse.contentWidth - expanded)).toBeLessThanOrEqual(1);
+  expect(collapse.transitionProperty).toContain('transform');
+  expect(collapse.transform).not.toBe('none');
+});
+
 test('renders the Hot Sheet split treatment on ResizableRegion', async ({
   page,
   browserName,
