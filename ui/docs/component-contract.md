@@ -342,9 +342,11 @@ Awesome trigger's shadow base owns max-content sizing, so icons, localized text,
 and the shadow caret determine the width without a fixed host measurement.
 The enclosing `Toolbar` owns zone alignment and responsive topology: use
 `centerAlign="stretch"` when the center group should consume its track, and
-choose `responsive="stack"` with `responsiveAt="compact" | "narrow"` or
+choose `responsive="stack"` with `responsiveAt="compact" | "narrow"`,
+`responsive="wrap"` for a heading whose title must stay whole, or
 `responsive="center-priority"` instead of selecting its zone classes from a
-parent stylesheet.
+parent stylesheet. No policy clips an action: the trailing zone, and a stacked
+center zone, wrap whole groups onto another row.
 `ListHeader` similarly separates its dormant title and
 optional count or badge from its optional 44px action. Use the mutually
 exclusive `count`/`countLabel` pair for non-negative safe-integer section

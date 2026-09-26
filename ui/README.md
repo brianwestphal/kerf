@@ -235,7 +235,17 @@ icon in a `ToolbarControlGroup`, use a direct extra-large `ToolbarText` for the
 title, and put actions in the trailing zone inside their own control group. Set
 `headingLevel` for page or section headings. Supporting copy is app-owned content
 below the toolbar and should be connected to its host with `aria-describedby`
-when it adds useful context.
+when it adds useful context. Set `responsive="wrap"` on a heading whose title
+must stay whole: it keeps one row while everything fits and otherwise moves the
+trailing actions below the title instead of truncating it.
+
+A toolbar never clips an action. Its trailing zone wraps whole control groups
+onto another trailing-aligned row under every `responsive` policy, and a
+`responsive="stack"` toolbar wraps its stacked center and trailing groups the
+same way. Wrapping keeps every command visible at its full 44px target without
+moving focus or DOM identity. When a product wants fewer visible commands at
+narrow widths, it chooses them: render a lower-priority command inside an
+app-owned "More" popup menu (a `single` group around a `wa-dropdown`).
 
 `DisclosureArrow` defaults to an 18px root-scaled decorative visual. Override
 `--kui-disclosure-arrow-size` at the narrowest useful scope when a consumer

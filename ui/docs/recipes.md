@@ -118,8 +118,10 @@ Use `ToolbarControlGroup` for related commands, `SegmentedControl` for a few
 visible exclusive choices, `Select` for a longer value list, and an ordinary
 button for an independent command. Even that independent button sits in a
 single-control `ToolbarControlGroup`, which keeps its height, pill shape, focus,
-and hover treatment aligned with the adjacent toolbar controls. The app owns
-values, actions, persistence, and responsive priority.
+and hover treatment aligned with the adjacent toolbar controls. At compact
+widths the toolbar stacks its zones and wraps whole trailing groups onto another
+row, so the last action is never clipped. The app owns values, actions,
+persistence, and responsive priority.
 
 ## Navigation stack
 
@@ -142,7 +144,9 @@ value-bearing component (`ToolbarText`, `ValueTable`/`ValueTableRow`, `Select`,
 `SegmentedControl`, `ListItem`, `StateBanner`) takes its `placeholder` from one
 loading flag, so the same real chrome renders a faithful loading state and then
 the populated record — no separate skeleton markup. The composition is the point;
-`Skeleton` is the primitive it builds on. The app owns the loading lifecycle and
+`Skeleton` is the primitive it builds on. Its heading `Toolbar` uses
+`responsive="wrap"`, so on a narrow inspector the toggle moves below a whole
+record title instead of truncating it. The app owns the loading lifecycle and
 which values are still unknown.
 
 ## Collapsible sidebar

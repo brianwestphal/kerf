@@ -41,6 +41,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `Select`, `wa-input`, or `wa-button` inside stayed at its natural width. Each
   direct child now grows to fill the inset row (several children share it with
   the 8px gap) and may shrink below its intrinsic width instead of overflowing.
+- Fixed a `@kerfjs/ui` stacked `Toolbar` clipping its last trailing action at
+  phone widths (the compact-toolbar recipe's "More" button at 390px). A
+  toolbar's trailing zone now wraps whole control groups onto another
+  trailing-aligned row under every `responsive` policy, and a
+  `responsive="stack"` toolbar wraps its stacked center and trailing groups the
+  same way, so no action is ever clipped or shrunk. Stacked zones also span the
+  full toolbar width; they previously lost 16px to empty column tracks. New:
+  `responsive="wrap"` keeps a heading on one row while everything fits and
+  otherwise moves the trailing zone below a whole title instead of truncating
+  it. The loading-inspector recipe uses it, so its narrow heading shows the
+  whole record title instead of an ellipsis.
 - `@kerfjs/ui` layouts and `Pane` now handle device safe areas as one model.
   Pane and panel backgrounds, separators, and dividers paint through unsafe
   areas; content is padded only on the edges a region actually reaches, and

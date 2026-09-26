@@ -1107,7 +1107,11 @@
         "bottom divider (default)",
         "no dividers",
         "top/right/bottom/left divider combinations",
-        "centered content"
+        "centered content",
+        "stacked zones at compact or narrow widths",
+        "content-driven wrap that keeps a heading title whole",
+        "center priority for an expanded center control",
+        "trailing groups wrap instead of clipping"
       ],
       "accessibility": [
         "Supply a label when the toolbar needs an accessible name."

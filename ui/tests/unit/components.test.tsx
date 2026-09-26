@@ -295,6 +295,51 @@ describe('production UI primitives', () => {
     expect(internalLink).not.toContain('<code');
   });
 
+  it('never clips toolbar actions under any responsive policy', () => {
+    expect(
+      asHtml(
+        Toolbar({
+          leading: ToolbarText({ text: 'Release plan', size: 'xlarge' }),
+          trailing: ToolbarControlGroup({ children: icon }),
+          responsive: 'wrap',
+        }),
+      ),
+    ).toContain('data-responsive="wrap"');
+    const toolbarCss = readFileSync(
+      resolve(import.meta.dirname, '../../src/toolbar.css'),
+      'utf8',
+    );
+    // The trailing zone wraps under every policy, so its track floors at one group.
+    expect(toolbarCss).toMatch(
+      /\.kui-toolbar__trailing \{[^}]*flex-wrap: wrap;/,
+    );
+    // Stacked zones span every track (a toolbar cannot container-query itself)
+    // and stacked control zones wrap whole groups.
+    for (const at of ['narrow', 'compact']) {
+      expect(toolbarCss).toMatch(
+        new RegExp(
+          `data-responsive-at="${at}"\\]\\s*> :is\\(\\.kui-toolbar__leading, \\.kui-toolbar__center, \\.kui-toolbar__trailing\\) \\{[^}]*grid-column: 1 / -1;`,
+        ),
+      );
+      expect(toolbarCss).toMatch(
+        new RegExp(
+          `data-responsive-at="${at}"\\]\\s*> :is\\(\\.kui-toolbar__center, \\.kui-toolbar__trailing\\) \\{\\s*flex-wrap: wrap;`,
+        ),
+      );
+    }
+    expect(toolbarCss).not.toMatch(
+      /@container kui-toolbar[^{]*\{\s*\.kui-toolbar\[data-responsive="stack"\][^>{]*\{/,
+    );
+    // The content-driven wrap policy is a wrapping flex row with an end-aligned
+    // trailing zone.
+    expect(toolbarCss).toMatch(
+      /\.kui-toolbar\[data-responsive="wrap"\] \{\s*display: flex;\s*flex-wrap: wrap;/,
+    );
+    expect(toolbarCss).toMatch(
+      /\.kui-toolbar\[data-responsive="wrap"\] > \.kui-toolbar__trailing \{[^}]*margin-inline-start: auto;/,
+    );
+  });
+
   it('composes stretch-aligned lists with gap, flex, scroll, and dividers', () => {
     const html = asHtml(
       List({

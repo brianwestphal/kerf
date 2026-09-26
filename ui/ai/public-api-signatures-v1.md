@@ -155,8 +155,18 @@ interface ToolbarProps {
     dividerSides?: DividerSides;
     /** Horizontal treatment of the center zone. Defaults to centered content. */
     centerAlign?: 'center' | 'stretch';
-    /** Component-owned responsive layout; applications choose the policy rather than restyling toolbar internals. */
-    responsive?: 'none' | 'stack' | 'center-priority';
+    /**
+     * Component-owned responsive layout; applications choose the policy rather
+     * than restyling toolbar internals. Under every policy the trailing zone
+     * wraps its groups instead of clipping an action.
+     * - `none` keeps one row; the leading identity truncates first.
+     * - `stack` stacks the zones at `responsiveAt`, wrapping stacked control
+     *   groups onto further rows.
+     * - `wrap` keeps one row while every zone fits at its natural width, and
+     *   otherwise moves the trailing zone below a whole leading identity.
+     * - `center-priority` gives an expanded center control the full row.
+     */
+    responsive?: 'none' | 'stack' | 'wrap' | 'center-priority';
     /** Container width at which `responsive="stack"` activates. */
     responsiveAt?: 'compact' | 'narrow';
     className?: string;

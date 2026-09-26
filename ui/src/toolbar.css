@@ -120,6 +120,35 @@
 .kui-toolbar__trailing {
   justify-content: flex-end;
   grid-column: -2 / -1;
+  /* Trailing actions never clip (KF-4EYES0): the zone wraps its groups, so its
+     track can shrink only to the widest single group. When one row cannot hold
+     every group, the next group moves to a new trailing-aligned row instead of
+     overflowing the toolbar. */
+  flex-wrap: wrap;
+}
+
+/* Content-driven wrap: one row while every zone fits at its natural width;
+   otherwise the trailing zone moves below the identity, still trailing-aligned,
+   instead of truncating the leading title or clipping an action. For panel,
+   inspector, and dialog headings whose identity must stay whole. */
+.kui-toolbar[data-responsive="wrap"] {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.kui-toolbar[data-responsive="wrap"] > .kui-toolbar__leading {
+  max-width: 100%;
+  flex: 1 1 auto;
+}
+
+.kui-toolbar[data-responsive="wrap"] > .kui-toolbar__center {
+  flex: 1 1 auto;
+}
+
+.kui-toolbar[data-responsive="wrap"] > .kui-toolbar__trailing {
+  max-width: 100%;
+  flex: 0 1 auto;
+  margin-inline-start: auto;
 }
 
 .kui-toolbar[data-has-center="false"] .kui-toolbar__center,
@@ -128,43 +157,39 @@
   display: none;
 }
 
+/* Stacked topology. A container query only matches an ancestor container, so
+   these rules style the zones (whose query container is this toolbar) rather
+   than the toolbar's own grid template, which a self query can never reach.
+   Each zone spans every column track, one zone per row, so no empty track or
+   column gap narrows a stacked zone. Stacked control zones wrap at group
+   granularity (KF-4EYES0: a stacked trailing zone clipped its last action at
+   phone widths), so every group stays whole, reachable, and full size; the
+   leading identity keeps its single-line truncation. */
 @container kui-toolbar (max-width: remify(832px)) {
-  .kui-toolbar[data-responsive="stack"][data-responsive-at="narrow"] {
-    height: auto;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "leading" "center" "trailing";
-    row-gap: var(--kui-toolbar-gap, remify(8px));
+  .kui-toolbar[data-responsive="stack"][data-responsive-at="narrow"]
+    > :is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing) {
+    width: 100%;
+    grid-column: 1 / -1;
+    justify-content: flex-start;
   }
 
   .kui-toolbar[data-responsive="stack"][data-responsive-at="narrow"]
-    > .kui-toolbar__leading,
-  .kui-toolbar[data-responsive="stack"][data-responsive-at="narrow"]
-    > .kui-toolbar__center,
-  .kui-toolbar[data-responsive="stack"][data-responsive-at="narrow"]
-    > .kui-toolbar__trailing {
-    width: 100%;
-    grid-column: 1;
-    justify-content: flex-start;
+    > :is(.kui-toolbar__center, .kui-toolbar__trailing) {
+    flex-wrap: wrap;
   }
 }
 
 @container kui-toolbar (max-width: remify(704px)) {
-  .kui-toolbar[data-responsive="stack"][data-responsive-at="compact"] {
-    height: auto;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "leading" "center" "trailing";
-    row-gap: var(--kui-toolbar-gap, remify(8px));
+  .kui-toolbar[data-responsive="stack"][data-responsive-at="compact"]
+    > :is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing) {
+    width: 100%;
+    grid-column: 1 / -1;
+    justify-content: flex-start;
   }
 
   .kui-toolbar[data-responsive="stack"][data-responsive-at="compact"]
-    > .kui-toolbar__leading,
-  .kui-toolbar[data-responsive="stack"][data-responsive-at="compact"]
-    > .kui-toolbar__center,
-  .kui-toolbar[data-responsive="stack"][data-responsive-at="compact"]
-    > .kui-toolbar__trailing {
-    width: 100%;
-    grid-column: 1;
-    justify-content: flex-start;
+    > :is(.kui-toolbar__center, .kui-toolbar__trailing) {
+    flex-wrap: wrap;
   }
 }
 

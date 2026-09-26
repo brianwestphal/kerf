@@ -737,6 +737,12 @@ inherited `--kui-edge-inset-*` edge context so surfaces paint through unsafe are
 while only the edges a region reaches get padding (`Pane.safeAreaEdges` for
 app-owned arrangements). `ui/tests/browser/safe-area.spec.ts` renders each layout
 from `ui/tests/browser/fixtures/safe-area-layouts.tsx` with simulated insets.
+`ui/src/toolbar.css` never clips an action: every trailing zone, and stacked
+center/trailing zones, wrap whole control groups (stacked zones span every grid
+track, because a toolbar cannot container-query itself), and
+`Toolbar.responsive="wrap"` moves the trailing zone below a whole heading title.
+`ui/tests/browser/toolbar-overflow.spec.ts` pins the compact-toolbar and
+loading-inspector recipes at 390px plus the focused Toolbar demo states.
 `Catalog.stageRootAttributes`, `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` use the
 same runtime filter for catalog-authoring `data-*` metadata while protecting
 their structure and alignment markers. `CatalogExample.viewport` supplies
