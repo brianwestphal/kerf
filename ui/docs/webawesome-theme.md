@@ -58,8 +58,17 @@ Form fields carry the same content-item inset as the Kerf primitives: a 1px
 border with 8px inside it (`--wa-form-control-border-width`,
 `--wa-form-control-padding-block`, and `--wa-form-control-padding-inline` are set
 to the `--kui-layout-item-border-width` / `--kui-layout-item-padding` values), so
-a single-line control lands at the standard ~40px height and the value sits 9px
-in from the field edge. Each field's top label is inset by that same border +
+the value sits 9px in from the field edge. Default-size single-line controls
+share Kerf's 44px control height — the height of a Kerf `Select`, a toolbar
+group, and a list row — so a `wa-input` or `wa-button` sits flush beside a Kerf
+`Select`. The theme sets `--wa-form-control-height` to `2.75em` (44px at the
+16px default) on Button, Color Picker, Input, Known Date, Number Input, Radio
+Group, Select, Textarea (its minimum height), and Time Input, so `size="large"`
+scales proportionally while `size="small"` keeps Web Awesome's compact secondary
+height. The token is scoped to those controls rather than the root because Web
+Awesome also derives tag, copy-button, and toast geometry from it. Buttons
+inside a `ToolbarControlGroup` keep the group's 40px (32px compact) control
+height. Each field's top label is inset by that same border +
 padding (9px) so it lines up with the value inside the field, and is styled
 exactly like a `ListHeader` label — uppercase, `--kui-font-xs`, weight 650, quiet
 foreground. This applies to every free field that exposes a top label

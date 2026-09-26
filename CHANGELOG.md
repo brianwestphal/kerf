@@ -28,6 +28,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   such as `colorVar()` for `SelectChoice.color` went unreported although the
   ESLint rule caught it. Entries now resolve by `package:id`, using the
   selection catalog's public exports and import subpaths.
+- The `@kerfjs/ui` Web Awesome theme now gives default-size single-line
+  controls Kerf's 44px control height, so a plain `wa-input` or `wa-button`
+  sits flush beside a Kerf `Select` instead of about 9px shorter. It sets
+  `--wa-form-control-height` to `2.75em` (44px at the default size) on Button,
+  Color Picker, Input, Known Date, Number Input, Radio Group, Select, Textarea,
+  and Time Input; `size="large"` scales proportionally, `size="small"` keeps Web
+  Awesome's compact height, and buttons inside a `ToolbarControlGroup` keep the
+  group's 40px (32px compact) height. Tags, copy buttons, and toasts are
+  unchanged.
 - Fixed an `@kerfjs/ui` `Select` menu drawing two separators when a choice with
   `separatorBefore` opened a separated group: the group's border plus a
   `wa-divider` left an empty band between the group title and its first

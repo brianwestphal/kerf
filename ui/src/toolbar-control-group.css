@@ -262,6 +262,15 @@
   height: remify(16px);
 }
 
+/* Nested Web Awesome buttons take the group's control height, not the theme's
+   44px standalone control height. */
+.kui-toolbar-control-group wa-button {
+  --wa-form-control-height: remify(40px);
+}
+.kui-toolbar-control-group[data-size="compact"] wa-button {
+  --wa-form-control-height: remify(32px);
+}
+
 .kui-toolbar-control-group > wa-button,
 .kui-toolbar-control-group > wa-dropdown,
 .kui-toolbar-control-group > wa-dropdown > wa-button,

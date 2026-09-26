@@ -177,8 +177,8 @@
     --wa-form-control-activated-color: var(--wa-color-brand-fill-loud);
     /* Field inset: a 1px border with 8px inside it, the same content-item
        geometry the Kerf primitives use (docs/layout.md). WA's defaults are a
-       larger 0.75em/1em pad; this brings every form field onto our 8px rhythm
-       (and a ~40px single-line control height). */
+       larger 0.75em/1em pad; this brings every form field onto our 8px rhythm.
+       The single-line control height is set on the controls below. */
     --wa-form-control-border-width: var(--kui-layout-item-border-width, 1px);
     --wa-form-control-padding-block: var(
       --kui-layout-item-padding,
@@ -466,6 +466,29 @@
 
   wa-popover {
     --arrow-size: var(--kui-wa-popover-arrow-size);
+  }
+
+  /* Default-size single-line controls share Kerf's 44px control height (the
+     Select field, toolbar groups, and list rows), so a Web Awesome field,
+     button, or button radio sits flush beside a Kerf Select instead of 9px
+     shorter. The height is 2.75em of the control's own font size (44px at the
+     16px default), so size="large" grows proportionally; size="small" stays
+     Web Awesome's deliberately compact secondary control. It is scoped to the
+     controls rather than the root because Web Awesome also derives tag, copy
+     button, and toast geometry from this token. A ToolbarControlGroup still
+     sizes its own nested buttons. */
+  :is(
+    wa-button,
+    wa-color-picker,
+    wa-input,
+    wa-known-date,
+    wa-number-input,
+    wa-radio-group,
+    wa-select,
+    wa-textarea,
+    wa-time-input
+  ):not([size="small"]) {
+    --wa-form-control-height: round(2.75em, 1px);
   }
 
   /* A form field's top label is inset by the field's own border + inline padding
