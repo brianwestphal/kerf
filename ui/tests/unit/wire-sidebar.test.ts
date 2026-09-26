@@ -1,4 +1,4 @@
-import { effect, raw, signal } from 'kerfjs';
+import { effect, mount as mount$, raw, signal } from 'kerfjs';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
@@ -593,6 +593,88 @@ describe('wireSidebar', () => {
       expect(root.dataset.collapsibleResponsive).toBe('inline');
       stop();
       stopRender();
+    });
+
+    it('re-applies the overlay host state after a re-render that touches no panel', async () => {
+      // A real kerf mount of the host that also renders unrelated state (a nav
+      // selection). Selecting morphs the host, which strips the wire's
+      // attributes and would drop its injected backdrop; no panel signal
+      // changes, so only the wire's observer can restore them.
+      const collapsed = signal(true);
+      const selected = signal('inbox');
+      const device = signal<DeviceClass>(classifyViewport(390, 'portrait'));
+      const root = document.createElement('div');
+      document.body.append(root);
+      roots.push(root);
+      const stopView = mount$(root, () =>
+        raw(
+          String(
+            CollapsiblePanelToggle({
+              side: 'left',
+              collapsed: collapsed.value,
+              action: 'toggle-nav',
+              panelId: 'nav',
+            }),
+          ) +
+            `<div class="shell" data-selected="${selected.value}">` +
+            String(
+              CollapsiblePanel({
+                id: 'nav',
+                side: 'left',
+                collapsed: collapsed.value,
+                label: 'Navigator',
+                children: raw('<a href="#a" id="a">A</a>'),
+              }),
+            ) +
+            '</div>',
+        ),
+      );
+      const stop = wireSidebar(root, {
+        panels: [{ id: 'nav', collapsed, toggleAction: 'toggle-nav' }],
+        deviceClass: device,
+      });
+      root
+        .querySelector<HTMLElement>('[data-action="toggle-nav"]')!
+        .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      await Promise.resolve();
+      const backdrop = root.querySelector('.kui-collapsible-panel__backdrop');
+      expect(backdrop).not.toBeNull();
+
+      selected.value = 'projects';
+      expect(root.querySelector<HTMLElement>('.shell')!.dataset.selected).toBe(
+        'projects',
+      );
+      await Promise.resolve();
+      expect(root.dataset.collapsibleOverlay).toBe('true');
+      expect(root.dataset.collapsibleResponsive).toBe('overlay');
+      // The same backdrop node survives, still directly before its panel.
+      expect(root.querySelector('.kui-collapsible-panel__backdrop')).toBe(
+        backdrop,
+      );
+      expect(backdrop!.nextElementSibling).toBe(
+        root.querySelector('[data-collapsible-panel="nav"]'),
+      );
+
+      // An app that removes the backdrop outright gets it back before the
+      // panel it covers for.
+      backdrop!.remove();
+      await Promise.resolve();
+      expect(backdrop!.nextElementSibling).toBe(
+        root.querySelector('[data-collapsible-panel="nav"]'),
+      );
+
+      // Closing still tears it all down, and disposal stops the observer.
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+      );
+      expect(root.querySelector('.kui-collapsible-panel__backdrop')).toBeNull();
+      stop();
+      delete root.dataset.collapsibleOverlay;
+      root.dataset.collapsibleResponsive = 'app-owned';
+      await Promise.resolve();
+      expect(root.dataset.collapsibleOverlay).toBeUndefined();
+      expect(root.dataset.collapsibleResponsive).toBe('app-owned');
+      stopView();
     });
 
     it('hands the inline state back on disposal', () => {

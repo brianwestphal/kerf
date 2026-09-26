@@ -216,20 +216,45 @@ export function wireSidebar(
   // and a panel is open.
   if (deviceClass) {
     let backdrop: HTMLButtonElement | undefined;
+    // The host state this wire owns, recorded so it can be re-applied: the
+    // app re-renders (and morphs) the root for reasons that never touch a
+    // panel signal (a nav selection, say), and a morph strips attributes and
+    // nodes the template doesn't emit.
+    let hostResponsive: string | undefined;
+    let hostOverlay: string | undefined;
+    let backdropFor: string | undefined;
     const openPanel = (): WireSidebarPanel | undefined =>
       panels.find((panel) => !panel.collapsed.value);
     const removeBackdrop = (): void => {
       backdrop?.remove();
       backdrop = undefined;
+      backdropFor = undefined;
+    };
+    const setHostData = (
+      name: 'collapsibleResponsive' | 'collapsibleOverlay',
+      value: string | undefined,
+    ): void => {
+      if (root.dataset[name] === value) return;
+      if (value === undefined) delete root.dataset[name];
+      else root.dataset[name] = value;
+    };
+    // Idempotent, so the observer below settles after one corrective write.
+    const syncHost = (): void => {
+      setHostData('collapsibleResponsive', hostResponsive);
+      setHostData('collapsibleOverlay', hostOverlay);
+      if (!backdrop || backdropFor === undefined) return;
+      const element = panelElement(backdropFor);
+      if (element && backdrop.nextElementSibling !== element)
+        element.parentElement?.insertBefore(backdrop, element);
     };
     disposers.push(
       effect(() => {
         const compact = deviceClass.value.compact;
         const overlay = compact && compactPresentation === 'overlay';
         // A crossing adapts the panels here, in the same effect that owns the
-        // host attributes. Every panel's state is read BEFORE that write, so
-        // the write re-runs this effect after the app's own re-render: a host
-        // the app renders (and morphs) still ends up marked.
+        // host state. Every panel's state is read so an open or close moves
+        // the backdrop; re-renders that touch no panel are covered by the
+        // observer below.
         for (const panel of panels) void panel.collapsed.value;
         if (overlay && !inlineState) {
           inlineState = new Map(
@@ -242,29 +267,39 @@ export function wireSidebar(
         const open = overlay
           ? panels.find((panel) => !panel.collapsed.peek())
           : undefined;
-        root.dataset.collapsibleResponsive = compact
-          ? compactPresentation
-          : 'inline';
-        root.dataset.collapsibleOverlay = String(overlay);
-        if (overlay && open) {
+        hostResponsive = compact ? compactPresentation : 'inline';
+        hostOverlay = compact ? String(overlay) : undefined;
+        if (open) {
           if (!backdrop) {
             backdrop = ownerDocument.createElement('button');
             backdrop.type = 'button';
             backdrop.className = 'kui-collapsible-panel__backdrop';
             backdrop.setAttribute('aria-label', 'Close');
+            // Injected after render: the morph's removal pass must skip it.
+            backdrop.dataset.morphPreserve = '';
             backdrop.addEventListener('click', () => {
               const current = openPanel();
               if (current) collapse(current);
             });
-            const element = panelElement(open.id);
-            element?.parentElement?.insertBefore(backdrop, element);
           }
+          backdropFor = open.id;
         } else {
           removeBackdrop();
-          if (!compact) delete root.dataset.collapsibleOverlay;
         }
+        syncHost();
       }),
     );
+    const observer = new MutationObserver(syncHost);
+    observer.observe(root, {
+      attributes: true,
+      attributeFilter: [
+        'data-collapsible-responsive',
+        'data-collapsible-overlay',
+      ],
+      childList: true,
+      subtree: true,
+    });
+    disposers.push(() => observer.disconnect());
 
     const onKeydown = (event: KeyboardEvent): void => {
       if (!deviceClass.value.compact || compactPresentation !== 'overlay')

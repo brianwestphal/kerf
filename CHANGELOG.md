@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui`'s `wireSidebar` keeps a compact overlay intact when the app
+  re-renders the wired root without changing a panel. Previously, selecting a
+  destination in an open compact rail morphed the root, which removed the
+  overlay attributes and the backdrop, and the "overlay" rail fell back into
+  the layout. The wire now re-applies its host attributes and backdrop after
+  any such re-render, and the backdrop carries `data-morph-preserve`.
 - `@kerfjs/ui`'s `wireSidebar` now opens a compact overlay only on a user
   action. Wiring on a compact device, or crossing from a wide device class to
   a compact one, collapses every panel. The page is no longer covered by a

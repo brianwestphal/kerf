@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 285000,
-  "measuredLargestJavaScriptGzip": 136329,
-  "measuredTotalJavaScriptGzip": 284938,
+  "totalJavaScriptGzip": 285100,
+  "measuredLargestJavaScriptGzip": 136324,
+  "measuredTotalJavaScriptGzip": 285095,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -419,6 +419,22 @@
         "measuredTotalJavaScriptGzip": 284938,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 285000
+      }
+    },
+    {
+      "at": "2026-09-26T06:28:40.707Z",
+      "reason": "KF-B2XX8V: wireSidebar re-applies its host attributes and backdrop after a re-render that touches no panel (MutationObserver + idempotent sync)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 136329,
+        "measuredTotalJavaScriptGzip": 284938,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 136324,
+        "measuredTotalJavaScriptGzip": 285095,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285100
       }
     }
   ]

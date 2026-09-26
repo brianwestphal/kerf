@@ -476,3 +476,40 @@ test.describe('compact overlay initial state', () => {
     await expect(backdrop(page)).toHaveCount(0);
   });
 });
+
+test('keeps the compact overlay intact when a nav selection re-renders the recipe, then toggles', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 820 });
+  await page.goto(RECIPE);
+  const canvas = page.locator('.kui-catalog__canvas');
+
+  await revealToggle(page).click();
+  await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
+  await expect(backdrop(page)).toHaveCount(1);
+
+  // Selecting a destination re-renders the recipe (and morphs the wired
+  // canvas) without touching any panel signal.
+  await railPanel(page).getByText('Projects').click();
+  await expect(
+    page.locator('[data-recipe="recipe-collapsible-sidebar"] main'),
+  ).toContainText('Projects');
+  await expect(canvas).toHaveAttribute('data-collapsible-overlay', 'true');
+  await expect(canvas).toHaveAttribute(
+    'data-collapsible-responsive',
+    'overlay',
+  );
+  await expect(backdrop(page)).toHaveCount(1);
+  await expect(railPanel(page)).toHaveCSS('position', 'fixed');
+
+  // The wiring still owns the rail: its own toggle closes the overlay and
+  // restores focus, and the reveal toggle opens it again.
+  await railInnerToggle(page).click();
+  await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
+  await expect(backdrop(page)).toHaveCount(0);
+  await revealToggle(page).click();
+  await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
+  await expect(backdrop(page)).toHaveCount(1);
+  await page.keyboard.press('Escape');
+  await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
+});

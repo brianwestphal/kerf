@@ -58,7 +58,13 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
     when a new one opens (`exclusiveCompact: false` opts out);
   - **persists** the inline collapsed state to `storage` (default
     `localStorage`) under `storageKey`, seeding the signal on wire-up. An
-    overlay's open/closed state is never persisted.
+    overlay's open/closed state is never persisted;
+  - **owns the root's `data-collapsible-responsive` / `data-collapsible-overlay`
+    attributes and the injected backdrop.** Your app may re-render (and morph)
+    the wired root for reasons that never touch a panel signal — a nav
+    selection, say — and the morph drops attributes and nodes its template
+    doesn't emit. The wire observes the root and re-applies them before the
+    next paint, so don't render these attributes yourself.
 
   Returns a disposer. Retain it and call it on teardown.
 
