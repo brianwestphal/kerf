@@ -331,7 +331,10 @@ breakpoint; do not hide the group with an application class. Reach for
 a Web Awesome feature, chiefly the `slot="trigger"` button of a `wa-dropdown`
 popup menu. For a compact mixed-content group, set `nestedDropdown`; a
 text-and-caret trigger grows to its intrinsic width while an icon-only trigger
-can remain square. Set `menuInset` to configure the dropdown menu surface
+can remain square. A compact icon `<button>` is a 32px circle, so a selected
+compact segment never becomes an oval. An icon-only `Select` joins a group as
+one more segment with its siblings' inset, radius, hover, and focus ring; only a
+lone Select grows the group to its icon-and-caret pill. Set `menuInset` to configure the dropdown menu surface
 without application `::part(menu)` CSS. Compact mixed controls retain the standard
 item padding, omit an internal separator, and let the raised selected item paint
 over the outer border instead of shrinking to an inset highlight. The Web

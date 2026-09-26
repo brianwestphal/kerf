@@ -99,6 +99,7 @@ import {
   toolbarFindQuery,
   toolbarGroupSearchOpen,
   toolbarGroupShape,
+  toolbarSort,
 } from './demos/state.js';
 import {
   resetTabScaffoldDemo,
@@ -912,6 +913,8 @@ const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
   const value = (element as HTMLElement & { value?: string }).value;
   if (value === 'quiet' || value === 'balanced' || value === 'explicit')
     selectedChoice.value = value;
+  if (value === 'recent' || value === 'priority' || value === 'title')
+    toolbarSort.value = value;
 });
 // Wire the active recipe's NavStack (slide animation + back control). The
 // nav-stack element persists across pushes/pops, so we only re-wire when the

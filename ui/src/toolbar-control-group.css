@@ -25,8 +25,8 @@
      icon-only Select) fills so it is inset evenly on every side and the
      group-owned focus ring stays concentric with the visible control. The
      group sizes to the child's width. A default slot is 40px tall inside the
-     2px inset; a compact slot is the full 32px padding box, overlapping the
-     1px padding on both axes. */
+     2px inset; a compact slot is the full 32px padding box, and a lone
+     compact child also overlaps the 1px inline padding. */
   --_kui-toolbar-slot-height: remify(40px);
   --_kui-toolbar-slot-overlap: 0px;
   --_kui-toolbar-slot-radius: var(--kui-toolbar-item-radius);
@@ -288,6 +288,13 @@
   min-height: remify(32px);
 }
 
+/* A compact icon button is a 32px circle like its compact wa-button and
+   Select siblings; the default 8px inline padding around a 16px icon made its
+   selected highlight a 34x32 oval. */
+.kui-toolbar-control-group[data-size="compact"][data-content="icon"] > button {
+  padding-inline: 0;
+}
+
 .kui-toolbar-control-group[data-menu-inset="standard"] wa-dropdown::part(menu) {
   padding: var(--kui-wa-surface-inset, remify(8px));
 }
@@ -374,7 +381,7 @@
 }
 
 .kui-toolbar-control-group[data-single="true"]:has(
-    > :is(button, wa-button, wa-dropdown, .kui-toolbar-action-link)
+    > :is(button, wa-button, wa-dropdown, wa-select, .kui-toolbar-action-link)
   ):hover {
   background-color: var(--kui-toolbar-control-hover-background);
 }
@@ -391,7 +398,7 @@
    inner layer inset from the border (KF-J9P1ZD — a heading toolbar's lone Close/
    Done action). */
 .kui-toolbar-control-group:not([data-single="true"]):has(
-    > :is(button, wa-button, .kui-toolbar-action-link):only-child
+    > :is(button, wa-button, wa-select, .kui-toolbar-action-link):only-child
   ):hover {
   background-color: var(--kui-toolbar-control-hover-background);
 }
@@ -406,6 +413,15 @@
   wa-button:hover::part(base) {
   border-color: transparent;
   background: transparent;
+}
+
+/* A toolbar Select beside other controls highlights its own pill on hover,
+   like its button and dropdown siblings; a lone Select instead lifts the whole
+   group (above). */
+.kui-toolbar-control-group:not([data-single="true"])
+  > wa-select:not(:only-child):hover::part(combobox) {
+  border-color: var(--kui-toolbar-control-border);
+  background: var(--kui-toolbar-control-hover-background);
 }
 
 /* A plain <button> child paints its own box for the selected state. */
@@ -434,6 +450,15 @@
 
 .kui-toolbar-control-group
   > :is(button, wa-button, .kui-toolbar-action-link):focus-visible {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
+}
+
+/* With per-control rings, a composed Select paints its own ring even when it
+   was told the group owns it: nothing else would show focus. It matches the
+   sibling controls' ring and offset. */
+.kui-toolbar-control-group[data-focus-ring="control"]
+  > wa-select:focus-within::part(combobox) {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }

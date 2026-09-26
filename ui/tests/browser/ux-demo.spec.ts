@@ -5894,6 +5894,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Popup menu',
     'Action link',
     'Button group',
+    'Select beside actions',
     'Single button',
     'Borderless group',
     'Push button, resting',
@@ -5906,7 +5907,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
     'Collapsible search',
   ]);
   const groups = demo.locator('[data-component="toolbar-control-group"]');
-  await expect(groups).toHaveCount(15);
+  await expect(groups).toHaveCount(16);
   const standardGroups = demo.locator(
     '[data-component="toolbar-control-group"]:not([data-size="compact"])',
   );
@@ -6056,7 +6057,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       .screenshot({ path: 'test-results/toolbar-control-group-avatar.png' });
   }
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(groups).toHaveCount(15);
+  await expect(groups).toHaveCount(16);
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/toolbar-control-groups-narrow.png',

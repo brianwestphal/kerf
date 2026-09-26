@@ -51,7 +51,6 @@
 .kui-select[data-selected-presentation="icon-only"] {
   --_kui-select-height: remify(44px);
   width: max-content;
-  margin-inline: calc(var(--_kui-toolbar-slot-overlap, 0px) * -1);
 }
 .kui-select[data-selected-presentation="icon-only"][data-size="compact"] {
   --_kui-select-height: remify(32px);
@@ -59,6 +58,18 @@
 .kui-select[data-selected-presentation="icon-only"]::part(combobox) {
   min-height: var(--_kui-toolbar-slot-height, var(--_kui-select-height));
   padding-inline: remify(8px);
+  border-radius: var(
+    --kui-toolbar-item-radius,
+    var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
+  );
+}
+/* Only a lone trigger takes the group's slot overlap and radius; beside
+   sibling controls it keeps the group's gap, end insets, and item radius, as
+   they do. */
+.kui-select[data-selected-presentation="icon-only"]:only-child {
+  margin-inline: calc(var(--_kui-toolbar-slot-overlap, 0px) * -1);
+}
+.kui-select[data-selected-presentation="icon-only"]:only-child::part(combobox) {
   border-radius: var(
     --_kui-toolbar-slot-radius,
     var(--kui-layout-rounded-radius, calc(1px + remify(11px)))

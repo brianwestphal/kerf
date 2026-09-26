@@ -29,6 +29,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   centers in the same 44px slot a toolbar control occupies at the 8px inline
   margin, so trailing icon actions share one axis. The action's size, 18px
   visual, and hover square are unchanged.
+- Fixed an `@kerfjs/ui` icon-only `Select` beside other controls in one
+  `ToolbarControlGroup`. A compact Select no longer eats 1px of the group's
+  4px gap on each side (the lone-trigger padding overlap now applies only when
+  it is the group's only child), a compact rounded Select uses its siblings'
+  item radius instead of the lone-slot radius, and the Select now shows the
+  same hover pill as its sibling buttons (a lone Select lifts the whole group,
+  like a popup-menu dropdown). In a group with per-control focus rings
+  (`focusRing="control"`, the default) the Select paints the same ring as its
+  siblings even when `focusRingOwner="group"` was set, which previously left it
+  with no visible focus. A compact icon-only `<button>` is now a 32px circle,
+  so a selected compact segment is no longer a 34x32 oval. The
+  ToolbarControlGroup catalog adds a "Select beside actions" example.
+
 - Changed the `@kerfjs/ui` icon-only `Select`
   (`selectedPresentation="icon-only"`) to keep its disclosure caret. The
   selected icon and caret now form one pill with the same geometry as a

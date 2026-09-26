@@ -41,6 +41,11 @@ choice list. Inside a group the trigger is inset evenly on every side (2px in a
 default group, 1px in a compact one) with a concentric radius; the group grows
 to the trigger's width, so a single group is wider than it is tall and its
 focus ring follows the pill while focused and while its listbox is open.
+Beside other controls in one group, the icon-only trigger is one more segment:
+it keeps the group's gap and its siblings' block inset, height, item radius,
+and hover pill. In a group with per-control rings (`focusRing="control"`, the
+default) it paints the same ring as its sibling buttons, even when
+`focusRingOwner="group"` was set, because no group ring would show focus.
 Navigation selects can use intrinsic `presentation="navigation"` plus
 `labelMaxWidth` for component-owned ellipsis. These props own the control's
 appearance; its parent continues to own outer placement.

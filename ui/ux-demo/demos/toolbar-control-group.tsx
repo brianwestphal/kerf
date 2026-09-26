@@ -1,6 +1,7 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
+import { Select } from '@kerfjs/ui/select';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
 import {
   ToolbarActionLink,
@@ -8,10 +9,12 @@ import {
 } from '@kerfjs/ui/toolbar-control-group';
 import {
   ArrowDownAZ,
+  CalendarClock,
   ChevronLeft,
   ChevronRight,
   Columns3,
   ExternalLink,
+  Flag,
   GitCompare,
   List,
   MoreHorizontal,
@@ -26,12 +29,19 @@ import {
   toolbarChoice,
   toolbarGroupSearchOpen,
   toolbarGroupShape,
+  toolbarSort,
 } from './state.js';
 
 const profileImageUrl = new URL(
   '../../../assets/logo.svg?no-inline',
   import.meta.url,
 ).href;
+
+const sortChoices = [
+  { value: 'recent', label: 'Recently updated', icon: CalendarClock },
+  { value: 'priority', label: 'Priority', icon: Flag },
+  { value: 'title', label: 'Title', icon: ArrowDownAZ },
+];
 
 export function ToolbarControlGroupDemo() {
   const shape = toolbarGroupShape.value;
@@ -147,6 +157,41 @@ export function ToolbarControlGroupDemo() {
           >
             <LucideIcon icon={MoreHorizontal} name="ellipsis" />
           </wa-button>
+        </ToolbarControlGroup>
+      </CatalogExample>
+      <CatalogExample
+        label="Select beside actions"
+        note="An icon-only Select shares the group's inset, hover, and per-control focus ring with its sibling buttons."
+        align="inline-control"
+      >
+        <ToolbarControlGroup label="Ticket view" shape={shape}>
+          <button
+            type="button"
+            aria-label="Pin view"
+            aria-pressed="true"
+            data-action="log-pin"
+          >
+            <LucideIcon icon={Pin} name="pin" />
+          </button>
+          <Select<string>
+            name="toolbar-group-sort"
+            value={toolbarSort.value}
+            ariaLabel="Sort tickets"
+            presentation="toolbar-borderless"
+            selectedPresentation="icon-only"
+            choices={sortChoices}
+          />
+          <wa-dropdown placement="bottom-start" data-morph-skip-children>
+            <wa-button
+              slot="trigger"
+              appearance="plain"
+              with-caret
+              aria-label="More actions"
+            >
+              <LucideIcon icon={MoreHorizontal} name="ellipsis" />
+            </wa-button>
+            <wa-dropdown-item data-action="log-more">Archive</wa-dropdown-item>
+          </wa-dropdown>
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Single button" align="inline-control">
