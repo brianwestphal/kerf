@@ -33,9 +33,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   Web Awesome's `ui-monospace, monospace`, which Chromium does not resolve, and
   the trailing generic `monospace` kept Kerf's named fallbacks from ever
   applying. `--kui-font-mono` is now Kerf's own stack (`ui-monospace,
-  SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace`),
+SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace`),
   and the Web Awesome theme points `--wa-font-family-code` at it so Kerf `Text
-  font="monospace"` and Web Awesome code text match.
+font="monospace"` and Web Awesome code text match.
 - The `@kerfjs/ui` Web Awesome theme now gives default-size single-line
   controls Kerf's 44px control height, so a plain `wa-input` or `wa-button`
   sits flush beside a Kerf `Select` instead of about 9px shorter. It sets
