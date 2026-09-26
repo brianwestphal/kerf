@@ -9,10 +9,19 @@ import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
+import { Row } from '@kerfjs/ui/row';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
-import { CircleHelp, Folder, Inbox, Plus, Settings, Wrench } from 'lucide';
+import {
+  CircleHelp,
+  FileText,
+  Folder,
+  Inbox,
+  Plus,
+  Settings,
+  Wrench,
+} from 'lucide';
 
 import { DemoContentItem } from './demo-content-item.js';
 import { menuToolsOpen } from './state.js';
@@ -167,6 +176,46 @@ export function ListDemo() {
             </List>
           </List>
         </wa-card>
+      </CatalogExample>
+      <CatalogExample
+        label="Divider between regions"
+        note="dividerSides draws a 1px edge on the named physical sides. A navigation list beside a detail region takes a right divider, so the line marks the real boundary between the two."
+        viewport={{
+          width: 'compact',
+          frame: 'solid',
+          surface: 'default',
+          overflow: 'hidden',
+        }}
+      >
+        <Row gap="none">
+          <List flex="none" dividerSides="r">
+            <ListItem
+              action="log-inbox"
+              itemId="divider-inbox"
+              label="Inbox"
+              icon={<LucideIcon icon={Inbox} name="inbox" />}
+              selected
+            />
+            <ListItem
+              action="log-projects"
+              itemId="divider-projects"
+              label="Projects"
+              icon={<LucideIcon icon={Folder} name="folder" />}
+            />
+            <ListItem
+              action="log-drafts"
+              itemId="divider-drafts"
+              label="Drafts"
+              icon={<LucideIcon icon={FileText} name="file-text" />}
+            />
+          </List>
+          <List flex>
+            <DemoContentItem
+              title="Inbox"
+              detail="12 unread conversations. The selected folder's contents appear in this region."
+            />
+          </List>
+        </Row>
       </CatalogExample>
     </CatalogExampleStack>
   );

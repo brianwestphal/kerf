@@ -311,3 +311,75 @@ test('List retains defaults and accepts the shared alignment vocabulary', async 
       justifyContent: 'space-between',
     });
 });
+
+test('List dividerSides draws a real boundary between a list and its detail region', async ({
+  page,
+}) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto('/?component=list');
+
+    const example = page
+      .locator('[data-demo="list"] [data-catalog-example]')
+      .filter({
+        has: page.locator('[data-catalog-example-label]', {
+          hasText: /^Divider between regions$/,
+        }),
+      });
+    const frame = example.locator(':scope > [data-catalog-example-viewport]');
+    const regions = frame.locator(
+      ':scope > [data-component="row"] > [data-component="list"]',
+    );
+    await expect(regions).toHaveCount(2);
+    await expect(regions.nth(0)).toHaveAttribute('divider-sides', 'r');
+    await expect(regions.nth(1)).not.toHaveAttribute('divider-sides');
+
+    const geometry = await frame.evaluate((element) => {
+      const visibleShadows = (node: Element) => {
+        const shadow = globalThis.getComputedStyle(node).boxShadow;
+        if (shadow === 'none') return [];
+        return shadow
+          .split(/,(?![^(]*\))/)
+          .map((part) => part.trim())
+          .filter((part) => !/^rgba\([^)]*,\s*0\)/.test(part));
+      };
+      const [navigationList, detailList] = [
+        ...element.querySelectorAll(
+          ':scope > [data-component="row"] > [data-component="list"]',
+        ),
+      ];
+      const box = element.getBoundingClientRect();
+      const style = globalThis.getComputedStyle(element);
+      const nav = navigationList.getBoundingClientRect();
+      const rest = detailList.getBoundingClientRect();
+      return {
+        navigationShadows: visibleShadows(navigationList),
+        detailShadows: visibleShadows(detailList),
+        // The divider is the navigation list's inner right edge, which must
+        // meet the detail region exactly and run the frame's full height.
+        seam: Math.abs(nav.right - rest.left),
+        topGap: Math.abs(
+          nav.top - (box.top + Number.parseFloat(style.borderTopWidth)),
+        ),
+        bottomGap: Math.abs(
+          nav.bottom -
+            (box.bottom - Number.parseFloat(style.borderBottomWidth)),
+        ),
+        detailWidth: rest.width,
+        fits:
+          element.scrollWidth <= element.clientWidth &&
+          box.right <=
+            element.parentElement!.getBoundingClientRect().right + 0.5,
+      };
+    });
+    expect(geometry.navigationShadows).toHaveLength(1);
+    expect(geometry.navigationShadows[0]).toContain('-1px 0px 0px');
+    expect(geometry.navigationShadows[0]).toContain('inset');
+    expect(geometry.detailShadows).toEqual([]);
+    expect(geometry.seam).toBeLessThanOrEqual(0.5);
+    expect(geometry.topGap).toBeLessThanOrEqual(0.5);
+    expect(geometry.bottomGap).toBeLessThanOrEqual(0.5);
+    expect(geometry.detailWidth).toBeGreaterThan(120);
+    expect(geometry.fits).toBe(true);
+  }
+});
