@@ -3,7 +3,8 @@ import { expect, type Page, test } from '@playwright/test';
 // End-to-end coverage of the collapsible-sidebar recipe (CollapsiblePanel +
 // CollapsiblePanelToggle + wireSidebar) across Chromium, Firefox, and WebKit:
 // collapse/expand, focus move-in and restore, the compact overlay with a
-// dismissable backdrop + Escape, and the Tab focus trap.
+// dismissable backdrop + Escape, the Tab focus trap, and the compact initial
+// state (the overlay only ever opens on a user action).
 
 const RECIPE = '/?component=recipe-collapsible-sidebar';
 
@@ -145,9 +146,14 @@ test('presents a compact overlay dismissed by Escape and the backdrop', async ({
   await page.goto(RECIPE);
   const canvas = page.locator('.kui-catalog__canvas');
 
-  // Narrow to a compact width: the open rail becomes an overlay with a backdrop.
+  // Narrow to a compact width: the overlay presentation starts closed; the
+  // reveal toggle opens the rail as an overlay with a backdrop.
   await page.setViewportSize({ width: 430, height: 820 });
   await expect(canvas).toHaveAttribute('data-collapsible-overlay', 'true');
+  await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
+  await expect(backdrop(page)).toHaveCount(0);
+  await revealToggle(page).click();
+  await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
   await expect(backdrop(page)).toHaveCount(1);
 
   // Escape collapses the overlay and removes the backdrop.
@@ -170,6 +176,8 @@ test('traps Tab focus within the open compact overlay', async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 820 });
   await page.goto(RECIPE);
   await page.setViewportSize({ width: 430, height: 820 });
+  await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
+  await revealToggle(page).click();
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
 
   // Focus the last control in the rail; Tab wraps back to the first.
@@ -245,8 +253,13 @@ test('keeps the compact overlay rail, drawer, and backdrop inside the 390px app 
     'data-collapsible-overlay',
     'true',
   );
-  await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
   await frame.scrollIntoViewIfNeeded();
+  await revealToggle(page).click();
+  await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
+  // Let the rail finish sliding in before measuring it.
+  await expect(
+    railPanel(page).locator('.kui-collapsible-panel__content'),
+  ).toHaveCSS('transform', 'none');
 
   const inside = (panelId: string) =>
     page.evaluate((id) => {
@@ -339,4 +352,127 @@ test('keeps the compact overlay rail, drawer, and backdrop inside the 390px app 
     await frame.screenshot({
       path: 'test-results/collapsible-sidebar-compact-drawer-390.png',
     });
+});
+
+// KF-717E65: a compact overlay is transient and user-initiated. The recipe used
+// to open its rail as a blocking overlay (backdrop + focus trap) on load at
+// compact widths; it now starts collapsed there, keeps its open inline default
+// on wide screens, and a wide → compact crossing collapses it while the way
+// back restores the inline state.
+test.describe('compact overlay initial state', () => {
+  test('first load at 390 opens no overlay, backdrop, or focus trap', async ({
+    page,
+    browserName,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(RECIPE);
+    const canvas = page.locator('.kui-catalog__canvas');
+    await expect(canvas).toHaveAttribute('data-collapsible-overlay', 'true');
+    await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
+    await expect(drawerPanel(page)).toHaveAttribute('data-collapsed', 'true');
+    await expect(backdrop(page)).toHaveCount(0);
+    // The rail never painted open: its content already sits off-screen.
+    await expect(
+      railPanel(page).locator('.kui-collapsible-panel__content'),
+    ).not.toHaveCSS('transform', 'none');
+    expect(
+      await railPanel(page).evaluate(
+        (panel) => panel.getBoundingClientRect().width,
+      ),
+    ).toBe(0);
+
+    // No focus trap: Tab moves on from the reveal toggle instead of wrapping
+    // inside a panel, and Escape changes nothing.
+    await revealToggle(page).focus();
+    await page.keyboard.press('Tab');
+    const escaped = await page.evaluate(() => {
+      const active = document.activeElement;
+      return {
+        inRail: Boolean(
+          active?.closest('[data-collapsible-panel="sidebar-rail"]'),
+        ),
+        stayed: Boolean(
+          active?.closest('main [data-collapsible-target="sidebar-rail"]'),
+        ),
+      };
+    });
+    expect(escaped).toEqual({ inRail: false, stayed: false });
+    await page.keyboard.press('Escape');
+    await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
+
+    const frame = page
+      .locator('[data-recipe="recipe-collapsible-sidebar"]')
+      .locator(
+        'xpath=ancestor::*[contains(concat(" ", @class, " "), " kui-catalog-example__viewport ")][1]',
+      );
+    if (browserName === 'chromium')
+      await frame.screenshot({
+        path: 'test-results/collapsible-sidebar-compact-initial-390.png',
+      });
+  });
+
+  test('the reveal control still opens the rail as an overlay at 390', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(RECIPE);
+    await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
+    await revealToggle(page).click();
+    await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
+    await expect(backdrop(page)).toHaveCount(1);
+    await expect(railInnerToggle(page)).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
+    await expect(backdrop(page)).toHaveCount(0);
+    await expect(revealToggle(page)).toBeFocused();
+  });
+
+  test('keeps the open inline default at 1440', async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(RECIPE);
+    const canvas = page.locator('.kui-catalog__canvas');
+    await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
+    await expect(railPanel(page)).toHaveAttribute(
+      'data-presentation',
+      'inline',
+    );
+    await expect(canvas).not.toHaveAttribute('data-collapsible-overlay', /./);
+    await expect(backdrop(page)).toHaveCount(0);
+    await expect(
+      railPanel(page).locator('.kui-collapsible-panel__content'),
+    ).toHaveCSS('transform', 'none');
+  });
+
+  test('collapses on a wide → compact crossing and restores the inline rail on the way back', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(RECIPE);
+    const canvas = page.locator('.kui-catalog__canvas');
+    await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(canvas).toHaveAttribute('data-collapsible-overlay', 'true');
+    await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
+    await expect(backdrop(page)).toHaveCount(0);
+
+    // Back to wide: the open inline rail returns, with no overlay chrome.
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(canvas).not.toHaveAttribute('data-collapsible-overlay', /./);
+    await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
+    await expect(backdrop(page)).toHaveCount(0);
+
+    // An inline choice to hide the rail survives a compact round trip, even
+    // when the overlay was opened meanwhile.
+    await revealToggle(page).click();
+    await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(canvas).toHaveAttribute('data-collapsible-overlay', 'true');
+    await revealToggle(page).click();
+    await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'false');
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(canvas).not.toHaveAttribute('data-collapsible-overlay', /./);
+    await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
+    await expect(backdrop(page)).toHaveCount(0);
+  });
 });

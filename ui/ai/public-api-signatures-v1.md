@@ -1183,9 +1183,18 @@ interface WireSidebarPanel {
     collapsed: Signal<boolean>;
     /** `data-action` value the panel's toggle button(s) carry. */
     toggleAction: string;
-    /** When set, the collapsed state is loaded from and saved to `storage` under
-     *  this key (a persistence hook), so the panel remembers its state. */
+    /** When set, the panel's inline collapsed state is loaded from and saved to
+     *  `storage` under this key (a persistence hook), so the panel remembers the
+     *  user's inline choice. A compact overlay's open/closed state is transient
+     *  and is never persisted. */
     storageKey?: string;
+    /** The panel's inline (non-compact) collapsed state when `storage` holds no
+     *  choice for it; wire-up seeds the signal with it. Defaults to the signal's
+     *  own value. Set it when the app seeds the signal from the device class
+     *  (`signal(device.value.compact)`) so a compact first render already starts
+     *  collapsed while a later crossing to a wide class still restores this
+     *  inline default. */
+    inlineCollapsed?: boolean;
 }
 interface WireSidebarOptions {
     panels: readonly WireSidebarPanel[];
@@ -1195,6 +1204,12 @@ interface WireSidebarOptions {
      * dismissable backdrop, Escape and backdrop-click collapse it, and focus is
      * trapped within the open panel (the ARIA dialog pattern). Without it the panel
      * is always inline.
+     *
+     * An overlay is transient and user-initiated: whenever the compact overlay
+     * presentation begins (wire-up on a compact device, or a crossing from a wide
+     * class), every panel starts collapsed so nothing blocks the page until the
+     * user opens it. The inline state is remembered and restored when the device
+     * crosses back to a wide class (and on disposal).
      */
     deviceClass?: ReadonlySignal<DeviceClass>;
     /** Compact devices either overlay the panels (default) or hide them in favor

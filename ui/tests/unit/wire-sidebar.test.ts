@@ -1,4 +1,4 @@
-import { raw, signal } from 'kerfjs';
+import { effect, raw, signal } from 'kerfjs';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import {
@@ -108,6 +108,13 @@ describe('wireSidebar', () => {
     });
 
     expect(root.dataset.collapsibleOverlay).toBe('true');
+    // The overlay starts closed; a user toggle opens it with its backdrop.
+    expect(collapsed.value).toBe(true);
+    expect(root.querySelector('.kui-collapsible-panel__backdrop')).toBeNull();
+    root
+      .querySelector<HTMLElement>('[data-action="toggle-nav"]')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(collapsed.value).toBe(false);
     const backdrop = root.querySelector('.kui-collapsible-panel__backdrop');
     expect(backdrop).not.toBeNull();
 
@@ -177,6 +184,10 @@ describe('wireSidebar', () => {
       deviceClass: device,
     });
     root
+      .querySelector<HTMLElement>('[data-action="toggle-nav"]')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(nav.value).toBe(false);
+    root
       .querySelector<HTMLElement>('[data-action="toggle-inspector"]')!
       .dispatchEvent(new MouseEvent('click', { bubbles: true }));
     expect(inspector.value).toBe(false);
@@ -196,6 +207,7 @@ describe('wireSidebar', () => {
       panels: [{ id: 'nav', collapsed, toggleAction: 'toggle-nav' }],
       deviceClass: device,
     });
+    collapsed.value = false; // the user opens the overlay
     const a = root.querySelector<HTMLElement>('#a')!;
     const b = root.querySelector<HTMLElement>('#b')!;
 
@@ -386,5 +398,225 @@ describe('wireSidebar', () => {
       new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
     );
     expect(collapsed.value).toBe(false);
+  });
+  describe('compact overlay initial-state contract', () => {
+    const wire = (
+      collapsed: ReturnType<typeof signal<boolean>>,
+      device: ReturnType<typeof signal<DeviceClass>>,
+      storage?: SidebarStorage,
+    ) =>
+      wireSidebar(mount(collapsed.value), {
+        panels: [
+          {
+            id: 'nav',
+            collapsed,
+            toggleAction: 'toggle-nav',
+            storageKey: 'sidebar.nav',
+          },
+        ],
+        deviceClass: device,
+        storage: storage ?? fakeStorage(),
+      });
+
+    it('starts collapsed on a compact device even when the inline default is open', () => {
+      const collapsed = signal(false);
+      const device = signal<DeviceClass>(classifyViewport(390, 'portrait'));
+      const outside = document.createElement('button');
+      document.body.append(outside);
+      outside.focus();
+      const stop = wire(collapsed, device);
+      expect(collapsed.value).toBe(true);
+      expect(document.querySelector('.kui-collapsible-panel__backdrop')).toBe(
+        null,
+      );
+      // No overlay is open, so nothing traps Tab or intercepts Escape, and the
+      // presentation change never moved focus.
+      expect(document.activeElement).toBe(outside);
+      document.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }),
+      );
+      expect(collapsed.value).toBe(true);
+      stop();
+      outside.remove();
+    });
+
+    it('does not restore a persisted open state as a compact overlay, and never persists the overlay', () => {
+      const storage = fakeStorage({ 'sidebar.nav': 'false' });
+      const collapsed = signal(true);
+      const device = signal<DeviceClass>(classifyViewport(390, 'portrait'));
+      const stop = wire(collapsed, device, storage);
+      expect(collapsed.value).toBe(true);
+      // An explicit open/close in compact is transient.
+      collapsed.value = false;
+      collapsed.value = true;
+      expect(storage.data['sidebar.nav']).toBe('false');
+      // Crossing to a wide class restores (and keeps) the stored inline choice.
+      device.value = classifyViewport(1440, 'landscape');
+      expect(collapsed.value).toBe(false);
+      expect(storage.data['sidebar.nav']).toBe('false');
+      stop();
+    });
+
+    it('collapses on a wide → compact crossing and restores the inline state on the way back', () => {
+      const storage = fakeStorage();
+      const collapsed = signal(false);
+      const device = signal<DeviceClass>(classifyViewport(1440, 'landscape'));
+      const stop = wire(collapsed, device, storage);
+      expect(collapsed.value).toBe(false);
+      expect(storage.data['sidebar.nav']).toBe('false');
+
+      device.value = classifyViewport(390, 'portrait');
+      expect(collapsed.value).toBe(true);
+      expect(document.querySelector('.kui-collapsible-panel__backdrop')).toBe(
+        null,
+      );
+      // Another compact class is not a new crossing: an opened overlay stays.
+      collapsed.value = false;
+      device.value = classifyViewport(375, 'portrait');
+      expect(collapsed.value).toBe(false);
+
+      device.value = classifyViewport(1440, 'landscape');
+      expect(collapsed.value).toBe(false);
+      expect(document.querySelector('.kui-collapsible-panel__backdrop')).toBe(
+        null,
+      );
+
+      // A collapsed inline choice is also restored after a compact round trip.
+      collapsed.value = true;
+      device.value = classifyViewport(390, 'portrait');
+      collapsed.value = false; // opened as an overlay
+      device.value = classifyViewport(1440, 'landscape');
+      expect(collapsed.value).toBe(true);
+      expect(storage.data['sidebar.nav']).toBe('true');
+      stop();
+    });
+
+    it('rescues focus stranded in a panel the presentation collapses', () => {
+      const collapsed = signal(true);
+      const device = signal<DeviceClass>(classifyViewport(1440, 'landscape'));
+      const root = mount(false);
+      const stop = wireSidebar(root, {
+        panels: [{ id: 'nav', collapsed, toggleAction: 'toggle-nav' }],
+        deviceClass: device,
+      });
+      const toggle = root.querySelector<HTMLElement>(
+        '[data-action="toggle-nav"]',
+      )!;
+      toggle.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+      expect(document.activeElement).toBe(root.querySelector('#a'));
+      device.value = classifyViewport(390, 'portrait');
+      expect(collapsed.value).toBe(true);
+      expect(document.activeElement).toBe(toggle);
+
+      // Restoring the inline state on the way back does not steal focus.
+      device.value = classifyViewport(1440, 'landscape');
+      expect(collapsed.value).toBe(false);
+      expect(document.activeElement).toBe(toggle);
+
+      // Focus outside the panel is left alone by a presentation collapse.
+      root.querySelector<HTMLElement>('#b')!.focus();
+      toggle.remove(); // the remembered trigger is gone: nowhere to rescue to
+      device.value = classifyViewport(390, 'portrait');
+      expect(collapsed.value).toBe(true);
+      stop();
+    });
+
+    it('seeds an app-declared inline default so a compact-seeded signal restores it on a wide crossing', () => {
+      const device = signal<DeviceClass>(classifyViewport(390, 'portrait'));
+      const collapsed = signal(device.value.compact); // compact first render
+      const storage = fakeStorage();
+      const panel = {
+        id: 'nav',
+        collapsed,
+        toggleAction: 'toggle-nav',
+        storageKey: 'sidebar.nav',
+        inlineCollapsed: false,
+      };
+      const stop = wireSidebar(mount(true), {
+        panels: [panel],
+        deviceClass: device,
+        storage,
+      });
+      expect(collapsed.value).toBe(true);
+      device.value = classifyViewport(1440, 'landscape');
+      expect(collapsed.value).toBe(false);
+      stop();
+
+      // A stored inline choice outranks the declared default.
+      const stored = signal(true);
+      const stopStored = wireSidebar(mount(true), {
+        panels: [{ ...panel, collapsed: stored }],
+        deviceClass: signal<DeviceClass>(classifyViewport(1440, 'landscape')),
+        storage: fakeStorage({ 'sidebar.nav': 'true' }),
+      });
+      expect(stored.value).toBe(true);
+      stopStored();
+
+      // Without storage the declared default seeds a wide wire-up directly.
+      const plain = signal(true);
+      const stopPlain = wireSidebar(mount(true), {
+        panels: [
+          {
+            id: 'nav',
+            collapsed: plain,
+            toggleAction: 'toggle-nav',
+            inlineCollapsed: false,
+          },
+        ],
+      });
+      expect(plain.value).toBe(false);
+      stopPlain();
+    });
+
+    it('re-marks a host the app re-renders when a crossing collapses the panels', () => {
+      const collapsed = signal(false);
+      const device = signal<DeviceClass>(classifyViewport(1440, 'landscape'));
+      const root = mount(false);
+      // Stand-in for an app mount that morphs the host: it re-renders on the
+      // collapsed state and drops attributes its template does not emit. It
+      // subscribes first, like a real app that renders before wiring.
+      const stopRender = effect(() => {
+        void collapsed.value;
+        delete root.dataset.collapsibleOverlay;
+        delete root.dataset.collapsibleResponsive;
+      });
+      const stop = wireSidebar(root, {
+        panels: [{ id: 'nav', collapsed, toggleAction: 'toggle-nav' }],
+        deviceClass: device,
+      });
+      device.value = classifyViewport(390, 'portrait');
+      expect(collapsed.value).toBe(true);
+      expect(root.dataset.collapsibleOverlay).toBe('true');
+      expect(root.dataset.collapsibleResponsive).toBe('overlay');
+      device.value = classifyViewport(1440, 'landscape');
+      expect(collapsed.value).toBe(false);
+      expect(root.dataset.collapsibleResponsive).toBe('inline');
+      stop();
+      stopRender();
+    });
+
+    it('hands the inline state back on disposal', () => {
+      const collapsed = signal(false);
+      const device = signal<DeviceClass>(classifyViewport(390, 'portrait'));
+      const stop = wire(collapsed, device);
+      expect(collapsed.value).toBe(true);
+      stop();
+      expect(collapsed.value).toBe(false);
+      expect(document.querySelector('.kui-collapsible-panel__backdrop')).toBe(
+        null,
+      );
+    });
+
+    it('leaves the hidden compact presentation alone', () => {
+      const collapsed = signal(false);
+      const device = signal<DeviceClass>(classifyViewport(390, 'portrait'));
+      const stop = wireSidebar(mount(false), {
+        panels: [{ id: 'nav', collapsed, toggleAction: 'toggle-nav' }],
+        deviceClass: device,
+        compactPresentation: 'hidden',
+      });
+      expect(collapsed.value).toBe(false);
+      stop();
+    });
   });
 });

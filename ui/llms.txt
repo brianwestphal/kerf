@@ -295,7 +295,7 @@ tree-shakeable, declarative with `wire…` helpers, each with a companion CSS im
 `@kerfjs/ui/device-class`. For a standalone collapsible rail/drawer outside a full
 shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelToggle`)
 
-- `@kerfjs/ui/wire-sidebar` (`wireSidebar`: toggle, focus, compact overlay, persistence).
+- `@kerfjs/ui/wire-sidebar` (`wireSidebar`: toggle, focus, compact overlay, persistence; a compact overlay starts closed and opens only on a user action, and `inlineCollapsed` declares a panel's inline default).
   `@kerfjs/ui/catalog` is another opt-in shell — a
   `Catalog` component + `wireCatalog` helper for building a component-gallery catalog
   (collapsible category sidebar + preview stage + resources footer, with an opt-in

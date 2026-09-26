@@ -167,9 +167,12 @@ standard per-side glyph: a collapse toggle lives inside each panel and an expand
 toggle lives in the always-visible main header, so a collapsed panel is still
 reachable. `wireSidebar` owns the toggle delegation, moves focus into a panel on
 open and restores it to the trigger on close, and — when a `deviceClass()` reports
-`compact` — switches the open panel to a dismissable **overlay** (backdrop, Escape
-and backdrop-click collapse, and a trapped Tab ring, the ARIA dialog pattern). It
-also persists each panel's collapsed state through a supplied storage hook. A
+`compact` — presents the panels as a dismissable **overlay** (backdrop, Escape
+and backdrop-click collapse, and a trapped Tab ring, the ARIA dialog pattern).
+The overlay starts closed and opens only from a toggle; the rail's signal is
+seeded from the device class with `inlineCollapsed: false`, so the first compact
+render has no overlay and a wide crossing restores the open inline rail. It
+also persists each panel's inline collapsed state through a supplied storage hook. A
 filling `Row` (`fill` plus `rootAttributes`) is the root: it takes the frame's
 definite height and places the rail beside a `List` column, and a one-column
 `Grid` grows the main pane above the drawer. Because the panels sit at the real

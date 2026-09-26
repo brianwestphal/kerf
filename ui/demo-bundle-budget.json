@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 284300,
-  "measuredLargestJavaScriptGzip": 135851,
-  "measuredTotalJavaScriptGzip": 284203,
+  "totalJavaScriptGzip": 284500,
+  "measuredLargestJavaScriptGzip": 135841,
+  "measuredTotalJavaScriptGzip": 284454,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -371,6 +371,22 @@
         "measuredTotalJavaScriptGzip": 284203,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 284300
+      }
+    },
+    {
+      "at": "2026-09-26T05:16:40.681Z",
+      "reason": "wireSidebar compact initial-state contract: overlays open only on a user action, inline state remembered across crossings (KF-717E65)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 135851,
+        "measuredTotalJavaScriptGzip": 284203,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 284300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 135841,
+        "measuredTotalJavaScriptGzip": 284454,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 284500
       }
     }
   ]

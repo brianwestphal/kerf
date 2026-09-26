@@ -271,7 +271,9 @@ an always-visible location so it is reachable while collapsed. `wireSidebar()`
 moves focus into the panel when it opens and restores it to the trigger when it
 closes. When a `deviceClass()` reports `compact`, an open panel becomes an overlay
 with a dismissable backdrop, Escape and backdrop-click collapse it, and Tab is
-trapped within it (the ARIA dialog pattern). The application owns each `collapsed`
+trapped within it (the ARIA dialog pattern). That modal state only ever begins
+from a user action: at wire-up on a compact device and on a wide → compact
+crossing, every panel starts collapsed, so no page load or resize traps focus. The application owns each `collapsed`
 signal, the panels, their sizes, and content; the wire may persist the collapsed
 state per panel.
 

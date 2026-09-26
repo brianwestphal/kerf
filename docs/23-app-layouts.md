@@ -261,7 +261,13 @@ convention (`PanelLeft*` / `PanelRight*` / `PanelBottom*`). `wireSidebar(root, {
 panels, deviceClass?, storage? })` adds the semantics: toggle delegation with
 focus restore, focus-into on open, a compact overlay (dismissable backdrop +
 Escape + Tab focus trap, driven by a §2 `deviceClass()` signal), and a per-panel
-persistence hook. The app owns each `collapsed` signal, the panels, sizes, and
+persistence hook. An overlay is transient and opens only on a user action
+(KF-717E65: the recipe used to open its rail as a blocking overlay on load at
+compact widths): wire-up on a compact device and a wide → compact crossing
+collapse every panel, a compact → wide crossing (or disposal) restores the
+remembered inline state, and persistence records only that inline choice. A
+per-panel `inlineCollapsed` declares the inline default when the app seeds its
+signal from the device class for a flash-free compact first render. The app owns each `collapsed` signal, the panels, sizes, and
 content; drag-resize composes `ResizableRegion`. Subpath-only with a companion
 CSS import. See [`ui/docs/collapsible-panel.md`](../../ui/docs/collapsible-panel.md).
 

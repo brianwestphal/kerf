@@ -61,12 +61,15 @@ const labels: Record<string, string> = {
 
 export const createRecipe: RecipeFactory = (announce) => {
   const selected = signal('inbox');
-  const railCollapsed = signal(false);
-  const drawerCollapsed = signal(true);
-  const storage = memoryStorage();
   // A shared window-backed device class: when the viewport is compact the wire
   // switches the rail/drawer to a dismissable overlay presentation.
   const device = deviceClass();
+  // A compact overlay only opens on a user action, so the first render already
+  // matches: collapsed on a compact device, open inline otherwise. The wire's
+  // `inlineCollapsed` keeps the open inline default for a later wide crossing.
+  const railCollapsed = signal(device.value.compact);
+  const drawerCollapsed = signal(true);
+  const storage = memoryStorage();
 
   const railToggle = () => (
     <CollapsiblePanelToggle
@@ -175,8 +178,8 @@ export const createRecipe: RecipeFactory = (announce) => {
             <strong>Narrow the window to a compact width</strong>
           </Text>
           <Text variant="span" tone="quiet" size="compact">
-            The rail and drawer become a dismissable overlay: a backdrop,
-            Escape, and a trapped Tab ring, all managed by the wire.
+            The rail and drawer start closed and open as a dismissable overlay:
+            a backdrop, Escape, and a trapped Tab ring, all managed by the wire.
           </Text>
         </List>
       </div>
@@ -266,6 +269,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             collapsed: railCollapsed,
             toggleAction: RAIL_ACTION,
             storageKey: 'recipe-sidebar-rail',
+            inlineCollapsed: false,
           },
           {
             id: 'sidebar-console',

@@ -37,8 +37,8 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   is the app's: put a collapse toggle in the panel's own header and an expand toggle
   somewhere always-visible (a toolbar) so it is reachable while collapsed.
 - **`wireSidebar(root, { panels, deviceClass?, storage? })`** — the interaction
-  semantics. Each `panels` entry is `{ id, collapsed, toggleAction, storageKey? }`.
-  It:
+  semantics. Each `panels` entry is
+  `{ id, collapsed, toggleAction, storageKey?, inlineCollapsed? }`. It:
   - **toggles** the panel's `collapsed` signal when any `[data-action=toggleAction]`
     button is clicked, and remembers the trigger;
   - **manages focus** — moves focus into the panel when it opens, and restores it
@@ -52,12 +52,60 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
     its edges instead;
   - accepts `compactPresentation: "hidden"` when a compact application replaces
     the panel with different navigation instead of overlaying it;
+  - **starts every compact overlay closed** (see
+    [Compact initial state](#compact-initial-state));
   - keeps compact overlays exclusive by default, collapsing another open panel
     when a new one opens (`exclusiveCompact: false` opts out);
-  - **persists** the collapsed state to `storage` (default `localStorage`) under
-    `storageKey`, seeding the signal on wire-up.
+  - **persists** the inline collapsed state to `storage` (default
+    `localStorage`) under `storageKey`, seeding the signal on wire-up. An
+    overlay's open/closed state is never persisted.
 
   Returns a disposer. Retain it and call it on teardown.
+
+## Compact initial state
+
+A compact overlay is transient chrome the user summons, like a slide-over
+sidebar on a phone: it covers the content, traps focus, and must be dismissed.
+It therefore opens **only on a user action** (a toggle, or the app setting the
+signal in response to one), never by itself:
+
+- **Wire-up on a compact device.** Every panel starts collapsed, whatever its
+  signal, `inlineCollapsed`, or stored choice says. No backdrop, focus trap, or
+  Escape handling is active until the user opens a panel.
+- **Wide → compact crossing.** Open panels collapse; nothing covers the page.
+- **Compact → wide crossing.** Each panel returns to its remembered inline state
+  (open or collapsed), whatever the user did with the overlay meanwhile.
+- **Disposal** hands the inline state back to the signals.
+- **Persistence** records only the inline choice. A stored "open" rail restores
+  inline on a wide screen and is remembered, not opened, on a compact one.
+
+These presentation changes never move focus, except to rescue focus that a
+collapse would strand inside the hidden panel (it returns to the panel's last
+trigger). `compactPresentation: "hidden"` leaves the signals alone.
+
+`wireSidebar` runs after the first render, so an app that seeds an open inline
+default would render the rail open for that first frame on a compact device.
+Seed the signal from the device class instead, and declare the inline default
+with `inlineCollapsed` so a later wide crossing still opens it:
+
+```ts
+const device = deviceClass();
+const navCollapsed = signal(device.value.compact);
+// …
+wireSidebar(app, {
+  panels: [
+    {
+      id: "nav",
+      collapsed: navCollapsed,
+      toggleAction: "toggle-nav",
+      inlineCollapsed: false,
+    },
+  ],
+  deviceClass: device,
+});
+```
+
+A stored inline choice takes precedence over `inlineCollapsed`.
 
 ## Example
 
@@ -71,8 +119,10 @@ import {
 import { wireSidebar } from "@kerfjs/ui/wire-sidebar";
 import "@kerfjs/ui/collapsible-panel.css";
 
-const navCollapsed = signal(false);
 const device = deviceClass();
+// Start collapsed on a compact device; `inlineCollapsed` keeps the open inline
+// default for wide screens.
+const navCollapsed = signal(device.value.compact);
 
 const app = document.querySelector("#app")!;
 mount(app, () => (
@@ -114,6 +164,7 @@ const stop = wireSidebar(app, {
       collapsed: navCollapsed,
       toggleAction: "toggle-nav",
       storageKey: "app.nav-collapsed",
+      inlineCollapsed: false,
     },
   ],
   deviceClass: device,
@@ -150,5 +201,6 @@ persistence: [open it](../ux-demo/?component=recipe-collapsible-sidebar) or read
 [`recipes.md`](recipes.md#collapsible-sidebar) · [TSX source](../ux-demo/recipes/collapsible-sidebar.tsx).
 It is covered end-to-end across Chromium, Firefox, and WebKit by
 `tests/browser/collapsible-sidebar-recipe.spec.ts` (collapse/expand, focus
-move/restore, the compact overlay + Escape/backdrop dismiss, and the Tab trap),
+move/restore, the compact overlay + Escape/backdrop dismiss, the Tab trap, and
+the compact initial state across first load and wide/compact crossings),
 alongside the component/wire unit tests.

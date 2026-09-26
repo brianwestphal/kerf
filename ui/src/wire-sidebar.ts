@@ -16,9 +16,18 @@ export interface WireSidebarPanel {
   collapsed: Signal<boolean>;
   /** `data-action` value the panel's toggle button(s) carry. */
   toggleAction: string;
-  /** When set, the collapsed state is loaded from and saved to `storage` under
-   *  this key (a persistence hook), so the panel remembers its state. */
+  /** When set, the panel's inline collapsed state is loaded from and saved to
+   *  `storage` under this key (a persistence hook), so the panel remembers the
+   *  user's inline choice. A compact overlay's open/closed state is transient
+   *  and is never persisted. */
   storageKey?: string;
+  /** The panel's inline (non-compact) collapsed state when `storage` holds no
+   *  choice for it; wire-up seeds the signal with it. Defaults to the signal's
+   *  own value. Set it when the app seeds the signal from the device class
+   *  (`signal(device.value.compact)`) so a compact first render already starts
+   *  collapsed while a later crossing to a wide class still restores this
+   *  inline default. */
+  inlineCollapsed?: boolean;
 }
 
 export interface WireSidebarOptions {
@@ -29,6 +38,12 @@ export interface WireSidebarOptions {
    * dismissable backdrop, Escape and backdrop-click collapse it, and focus is
    * trapped within the open panel (the ARIA dialog pattern). Without it the panel
    * is always inline.
+   *
+   * An overlay is transient and user-initiated: whenever the compact overlay
+   * presentation begins (wire-up on a compact device, or a crossing from a wide
+   * class), every panel starts collapsed so nothing blocks the page until the
+   * user opens it. The inline state is remembered and restored when the device
+   * crosses back to a wide class (and on disposal).
    */
   deviceClass?: ReadonlySignal<DeviceClass>;
   /** Compact devices either overlay the panels (default) or hide them in favor
@@ -79,16 +94,63 @@ export function wireSidebar(
   const byAction = new Map(panels.map((panel) => [panel.toggleAction, panel]));
   const returnFocus = new Map<string, HTMLElement>();
   const disposers: Array<() => void> = [];
+  // Panels whose next collapsed change is presentation-driven, not a user
+  // action, so it must not move focus the way a toggle does. A set rather than
+  // a flag: writes made inside an effect are batched, so the focus effects run
+  // after the writer returns.
+  const adapting = new Set<WireSidebarPanel>();
+  const overlayActive = (): boolean =>
+    Boolean(deviceClass?.value.compact) && compactPresentation === 'overlay';
 
-  // Persistence: seed from storage, then mirror on change.
+  // Initial-state contract: an overlay is transient and only ever opens on a
+  // user action. Entering the overlay presentation (at wire-up or on a wide →
+  // compact crossing) remembers each panel's inline state and collapses it;
+  // leaving it (compact → wide, or disposal) restores the remembered state.
+  let inlineState: Map<WireSidebarPanel, boolean> | undefined;
+  const setAll = (value: (panel: WireSidebarPanel) => boolean): void => {
+    for (const panel of panels) {
+      const next = value(panel);
+      if (panel.collapsed.peek() === next) continue;
+      adapting.add(panel);
+      panel.collapsed.value = next;
+    }
+  };
+  const restoreInline = (): void => {
+    const remembered = inlineState;
+    if (!remembered) return;
+    inlineState = undefined;
+    setAll((panel) => remembered.get(panel)!);
+  };
+
+  // Seed each panel's inline state from storage or `inlineCollapsed`. On a
+  // compact overlay device the seed is only remembered: the panel starts
+  // collapsed, synchronously and before any effect exists, so the first render
+  // after wire-up already has no overlay open.
+  if (overlayActive()) inlineState = new Map();
+  for (const panel of panels) {
+    const stored =
+      panel.storageKey && storage ? storage.getItem(panel.storageKey) : null;
+    const seed =
+      stored === 'true' || stored === 'false'
+        ? stored === 'true'
+        : panel.inlineCollapsed;
+    if (inlineState) {
+      inlineState.set(panel, seed ?? panel.collapsed.peek());
+      panel.collapsed.value = true;
+    } else if (seed !== undefined) {
+      panel.collapsed.value = seed;
+    }
+  }
+
+  // Persistence mirrors inline changes only. An overlay's open/closed state is
+  // transient, so it is never written.
   for (const panel of panels) {
     if (!panel.storageKey || !storage) continue;
-    const stored = storage.getItem(panel.storageKey);
-    if (stored === 'true' || stored === 'false')
-      panel.collapsed.value = stored === 'true';
     disposers.push(
       effect(() => {
-        storage.setItem(panel.storageKey!, String(panel.collapsed.value));
+        const collapsed = panel.collapsed.value;
+        if (overlayActive()) return;
+        storage.setItem(panel.storageKey!, String(collapsed));
       }),
     );
   }
@@ -110,12 +172,7 @@ export function wireSidebar(
       returnFocus.set(panel.id, trigger);
       const next = !panel.collapsed.value;
       panel.collapsed.value = next;
-      if (
-        !next &&
-        exclusiveCompact &&
-        deviceClass?.value.compact &&
-        compactPresentation === 'overlay'
-      ) {
+      if (!next && exclusiveCompact && overlayActive()) {
         for (const other of panels)
           if (other !== panel) other.collapsed.value = true;
       }
@@ -131,6 +188,19 @@ export function wireSidebar(
         if (collapsed === previous) return;
         previous = collapsed;
         const element = panelElement(panel.id);
+        if (adapting.delete(panel)) {
+          // A presentation change, not a user action: only rescue focus that
+          // the collapse would strand inside the now-hidden panel.
+          const trigger = returnFocus.get(panel.id);
+          if (
+            collapsed &&
+            element?.contains(ownerDocument.activeElement) &&
+            trigger?.isConnected &&
+            !element.contains(trigger)
+          )
+            trigger.focus();
+          return;
+        }
         const replaced =
           deviceClass?.value.compact && compactPresentation === 'hidden';
         if (!collapsed && element && !replaced) {
@@ -156,7 +226,22 @@ export function wireSidebar(
       effect(() => {
         const compact = deviceClass.value.compact;
         const overlay = compact && compactPresentation === 'overlay';
-        const open = overlay ? openPanel() : undefined;
+        // A crossing adapts the panels here, in the same effect that owns the
+        // host attributes. Every panel's state is read BEFORE that write, so
+        // the write re-runs this effect after the app's own re-render: a host
+        // the app renders (and morphs) still ends up marked.
+        for (const panel of panels) void panel.collapsed.value;
+        if (overlay && !inlineState) {
+          inlineState = new Map(
+            panels.map((panel) => [panel, panel.collapsed.peek()]),
+          );
+          setAll(() => true);
+        } else if (!overlay) {
+          restoreInline();
+        }
+        const open = overlay
+          ? panels.find((panel) => !panel.collapsed.peek())
+          : undefined;
         root.dataset.collapsibleResponsive = compact
           ? compactPresentation
           : 'inline';
@@ -216,6 +301,9 @@ export function wireSidebar(
 
   return () => {
     for (const dispose of disposers.splice(0)) dispose();
+    // After every effect is gone, so handing the inline state back cannot
+    // re-create overlay chrome or persist anything.
+    restoreInline();
     delete root.dataset.collapsibleOverlay;
     delete root.dataset.collapsibleResponsive;
   };

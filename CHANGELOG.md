@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui`'s `wireSidebar` now opens a compact overlay only on a user
+  action. Wiring on a compact device, or crossing from a wide device class to
+  a compact one, collapses every panel. The page is no longer covered by a
+  backdrop and focus trap until dismissed. Crossing back to a wide class, or
+  disposing the wire, restores each panel's remembered inline state.
+  Persistence now stores only that inline choice, never an overlay's
+  open/closed state. A new optional `WireSidebarPanel.inlineCollapsed`
+  declares the inline default when an app seeds its signal from the device
+  class, which avoids an open first frame on a compact device. The
+  collapsible-sidebar recipe no longer opens its rail as a blocking overlay
+  on load at compact widths.
 - The `@kerfjs/ui` catalog's `height: "app"` example frame is now the
   containing block for screen-fixed chrome, so a compact `CollapsiblePanel`
   overlay, its backdrop, and restore controls dock to the frame's edges. The
