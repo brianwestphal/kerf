@@ -183,3 +183,46 @@ test('traps Tab focus within the open compact overlay', async ({ page }) => {
     railPanel(page).getByRole('button', { name: 'Shared with me' }),
   ).toBeFocused();
 });
+
+test('routes screen-edge safe-area insets between the rail, drawer, and main pane', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1200, height: 820 });
+  await page.goto(RECIPE);
+  const root = page.locator('[data-recipe="recipe-collapsible-sidebar"]');
+  await expect(root).toBeVisible();
+  // Simulate the recipe reaching every screen edge with unequal insets (a
+  // stylesheet, so re-renders cannot morph it away).
+  await page.addStyleTag({
+    content:
+      '[data-recipe="recipe-collapsible-sidebar"]{--kui-edge-inset-block-start:44px;--kui-edge-inset-block-end:34px;--kui-edge-inset-inline-start:47px;--kui-edge-inset-inline-end:43px}',
+  });
+  const mainPadding = () =>
+    root.evaluate((element) => {
+      const main = [...element.querySelectorAll('.kui-pane')].find(
+        (pane) => !pane.closest('.kui-collapsible-panel'),
+      )!;
+      const content = main.querySelector(':scope > .kui-pane__content')!;
+      const style = window.getComputedStyle(content);
+      return {
+        left: style.paddingLeft,
+        right: style.paddingRight,
+        bottom: style.paddingBottom,
+      };
+    });
+
+  // The expanded rail owns the left edge: the main pane must not inset again.
+  await expect.poll(mainPadding).toEqual({
+    left: '0px',
+    right: '43px',
+    bottom: '34px',
+  });
+  // Collapsing the rail hands the left edge back to the main pane.
+  await page.getByRole('button', { name: 'Hide navigation' }).first().click();
+  await expect(root).toHaveAttribute('data-rail-collapsed', 'true');
+  await expect.poll(mainPadding).toMatchObject({ left: '47px' });
+  // Opening the drawer takes the bottom edge from the main pane.
+  await page.getByRole('button', { name: 'Show activity' }).first().click();
+  await expect(root).toHaveAttribute('data-drawer-collapsed', 'false');
+  await expect.poll(mainPadding).toMatchObject({ bottom: '0px' });
+});
