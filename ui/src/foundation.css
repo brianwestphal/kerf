@@ -10,13 +10,13 @@
     "Segoe UI",
     sans-serif
   );
-  --kui-font-mono: var(
-    --wa-font-family-code,
-    ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    monospace
-  );
+  /* Kerf owns the code stack rather than deferring to Web Awesome's
+     `ui-monospace, monospace`: Chromium does not recognize `ui-monospace`, and
+     the generic `monospace` ends any stack, so named fallbacks after it would
+     never apply. Kerf's Web Awesome theme points `--wa-font-family-code` here. */
+  --kui-font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
   --kui-font-2xs: var(--wa-font-size-2xs, 11px);
   --kui-font-xs: var(--wa-font-size-xs, 12px);
   --kui-font-s: var(--wa-font-size-s, 14px);

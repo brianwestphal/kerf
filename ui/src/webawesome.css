@@ -193,6 +193,18 @@
     --wa-tooltip-content-color: var(--wa-color-neutral-on-loud);
     --wa-tooltip-arrow-size: 0px;
     --kui-wa-popover-arrow-size: 0px;
+    /* Web Awesome's own `ui-monospace, monospace` renders the generic face
+       (Courier) in Chromium; use Kerf's named code stack for its components. */
+    --wa-font-family-code: var(
+      --kui-font-mono,
+      ui-monospace,
+      SFMono-Regular,
+      "SF Mono",
+      Menlo,
+      Consolas,
+      "Liberation Mono",
+      monospace
+    );
     --kui-wa-carousel-dot-size: 7px;
     --kui-wa-carousel-dot-hit-size: 20px;
     --kui-wa-carousel-control-size: 28px;

@@ -157,7 +157,8 @@ that needs a count, badge, action, or disclosure, and keep extra-large
 
 Presentation is independent of the native element: use `tone="quiet"` for
 supporting copy, `tone="danger"` for error or validation copy, `size="compact"`
-for compact metadata, and `font="monospace"` for code or identifiers. These
+for compact metadata, and `font="monospace"` for code or identifiers (the
+`--kui-font-mono` stack, which Kerf owns even with Web Awesome loaded). These
 finite props compose with each other and with every semantic `variant`; omit
 them to inherit the surrounding color, size, and font.
 

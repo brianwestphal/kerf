@@ -54,6 +54,15 @@ pointer targets. Override `--kui-wa-carousel-icon-size`,
 `--kui-wa-carousel-dot-hit-size` on a carousel or containing scope when a
 product needs different geometry.
 
+Code text uses Kerf's named monospace stack, `--kui-font-mono`
+(`ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+monospace`), and the theme points `--wa-font-family-code` at it. Web Awesome's
+own `ui-monospace, monospace` renders the generic face (Courier on macOS) in
+Chromium, which does not recognize `ui-monospace`; because the generic
+`monospace` ends any stack, Kerf's token owns the stack rather than appending
+fallbacks after Web Awesome's. Override `--kui-font-mono` to change code text in
+both Kerf and Web Awesome components.
+
 Form fields carry the same content-item inset as the Kerf primitives: a 1px
 border with 8px inside it (`--wa-form-control-border-width`,
 `--wa-form-control-padding-block`, and `--wa-form-control-padding-inline` are set

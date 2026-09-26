@@ -160,3 +160,46 @@ test('Text renders semantic variants with standard padded geometry', async ({
     fullPage: true,
   });
 });
+
+test('Text font="monospace" resolves to the Kerf code stack with Web Awesome loaded', async ({
+  page,
+  browserName,
+}) => {
+  await page.goto('/?component=text');
+  const mono = page.locator('.kui-text[data-font="monospace"]').first();
+  await expect(mono).toBeVisible();
+  // WebKit serializes family names without quotes; compare unquoted.
+  const unquote = (value: string) => value.replaceAll('"', '').trim();
+  const stack =
+    'ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace';
+  // Web Awesome's own `ui-monospace, monospace` must not replace the stack,
+  // and the theme points Web Awesome's code family at the same stack.
+  expect(
+    unquote(
+      await mono.evaluate((node) => window.getComputedStyle(node).fontFamily),
+    ),
+  ).toBe(stack);
+  expect(
+    unquote(
+      await page.evaluate(() =>
+        window
+          .getComputedStyle(document.documentElement)
+          .getPropertyValue('--wa-font-family-code'),
+      ),
+    ),
+  ).toBe(stack);
+  if (browserName !== 'chromium') return;
+  // Chromium does not recognize `ui-monospace`; the named fallbacks must
+  // render instead of the generic monospace face (Courier on macOS).
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send('DOM.enable');
+  await cdp.send('CSS.enable');
+  const { root } = await cdp.send('DOM.getDocument', { depth: -1 });
+  const { nodeId } = await cdp.send('DOM.querySelector', {
+    nodeId: root.nodeId,
+    selector: '.kui-text[data-font="monospace"]',
+  });
+  const { fonts } = await cdp.send('CSS.getPlatformFontsForNode', { nodeId });
+  expect(fonts.length).toBeGreaterThan(0);
+  for (const font of fonts) expect(font.familyName).not.toMatch(/^Courier/);
+});
