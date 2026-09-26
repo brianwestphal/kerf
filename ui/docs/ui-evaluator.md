@@ -72,6 +72,12 @@ reach; a control whose center is off-screen or covered keeps its border box.
 The diagnostic evidence reports the measured `width`/`height` and the border
 `box`.
 
+Compact density is a documented exception. Inside `[data-density="compact"]` —
+the compact `List`/`ListHeader` family, whose rows are 36px tall — a target
+still needs the full 44px width but only the 36px row height, because a taller
+hit layer would reach into the neighboring row. The evidence's `required` field
+names the floor that applied (`44×44`, or `44×36` in compact density).
+
 Accessible names follow ARIA/native naming inputs, including labels, referenced
 content with `aria-hidden` descendants removed, and native input values.
 Geometry checks use each catalog entry's explicit `boundaries.rootClass`; the

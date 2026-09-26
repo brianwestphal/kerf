@@ -548,16 +548,23 @@ async function inspectPage(page, geometryContracts) {
         const hit = hitExtent(element, rect);
         const width = Math.max(rect.width, hit?.width ?? 0);
         const height = Math.max(rect.height, hit?.height ?? 0);
-        if (width < 43.5 || height < 43.5)
+        // Compact density is a deliberate trade-off: its rows are 36px tall,
+        // and a taller hit layer would reach into the neighboring row. Inside
+        // `[data-density="compact"]` a target still needs the full 44px width
+        // but only the 36px compact row height.
+        const compact = element.closest('[data-density="compact"]') !== null;
+        const requiredHeight = compact ? 36 : 44;
+        if (width < 43.5 || height < requiredHeight - 0.5)
           diagnostics.push({
             code: 'KUI-B050',
             selector: target,
-            message: `Hit target is ${width.toFixed(1)}×${height.toFixed(1)}px; expected at least 44×44px.`,
+            message: `Hit target is ${width.toFixed(1)}×${height.toFixed(1)}px; expected at least 44×${requiredHeight}px${compact ? ' (compact density)' : ''}.`,
             repair: repair.target,
             evidence: {
               width,
               height,
               box: { width: rect.width, height: rect.height },
+              required: { width: 44, height: requiredHeight },
             },
           });
       }

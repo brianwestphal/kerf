@@ -169,6 +169,19 @@ describe('browser evaluator against running downstream fixtures', () => {
       )?.evidence as { width: number; height: number };
       expect(decorative.width).toBeLessThan(38);
       expect(decorative.height).toBeLessThan(38);
+      // Compact density lowers only the height floor (to the 36px row):
+      // 44x36 still fails outside a compact row, and a compact target shorter
+      // than the row still fails.
+      const target = (selector: string) =>
+        report.diagnostics.find(
+          (item) => item.code === 'KUI-B050' && item.selector === selector,
+        );
+      expect(target('#standard-44x36')?.evidence).toMatchObject({
+        required: { width: 44, height: 44 },
+      });
+      expect(target('#compact-44x30')?.evidence).toMatchObject({
+        required: { width: 44, height: 36 },
+      });
       expect(report.artifacts.files).toHaveLength(1);
       expect(report.artifacts.files[0].sha256).toMatch(/^[a-f0-9]{64}$/);
       await expect(

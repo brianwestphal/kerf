@@ -25,6 +25,10 @@
       .alpha-contrast { color: rgba(0, 0, 0, 0.1); width: 120px; height: 44px; }
       .decorative-layer { position: relative; width: 36px; height: 36px; }
       .decorative-layer::before { content: ''; position: absolute; inset: -4px; pointer-events: none; }
+      .wide-short { position: relative; width: 36px; height: 36px; padding: 0; border: 0; }
+      .wide-short::before { content: ''; position: absolute; inset-block: 0; inset-inline: -4px; }
+      .too-short { position: relative; width: 36px; height: 30px; padding: 0; border: 0; }
+      .too-short::before { content: ''; position: absolute; inset-block: 0; inset-inline: -4px; }
     </style>
   </head>
   <body>
@@ -37,6 +41,18 @@
       <button class="offscreen">Offscreen action</button>
       <button class="alpha-contrast">Faint action</button>
       <button id="decorative-layer" class="decorative-layer">+</button>
+      <button
+        id="standard-44x36"
+        class="wide-short"
+        aria-label="Standard 44x36"
+      >
+        +
+      </button>
+      <div data-density="compact">
+        <button id="compact-44x30" class="too-short" aria-label="Compact 44x30">
+          +
+        </button>
+      </div>
       <button id="aria-hidden-name">
         <span aria-hidden="true">Decorative only</span>
       </button>

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- The UI evaluator's `KUI-B050` target-size rule now accepts a 44×36 target
+  inside compact density (`[data-density="compact"]`), matching the 36px
+  compact row height; standard density still requires 44×44, and the width
+  floor is unchanged.
 - Fixed `kerf-ui-analyze` and the `eslint-plugin-kerfjs` UI rules treating
   every name in a catalog entry's `publicExports` as that entry's component,
   so a helper such as `uiColor` or `flex` called with an object whose keys

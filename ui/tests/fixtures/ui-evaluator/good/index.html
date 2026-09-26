@@ -48,6 +48,24 @@
       @media (prefers-reduced-motion: no-preference) {
         button { transition: color 100ms linear; }
       }
+      /* A compact-density row (36px tall, like a compact ListHeader): its
+         action target widens to 44px but stays within the row's height. */
+      .compact-row { display: flex; align-items: center; height: 36px; }
+      .compact-action {
+        position: relative;
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        min-height: 36px;
+        padding: 0;
+        border: 0;
+      }
+      .compact-action::before {
+        content: '';
+        position: absolute;
+        inset-block: 0;
+        inset-inline: -4px;
+      }
     </style>
   </head>
   <body>
@@ -69,6 +87,16 @@
       >
         +
       </button>
+      <div class="compact-row" data-density="compact">
+        <button
+          id="compact-action"
+          class="compact-action"
+          type="button"
+          aria-label="Add item"
+        >
+          +
+        </button>
+      </div>
       <input type="submit" value="Apply" />
     </main>
   </body>
