@@ -33,6 +33,10 @@ Use `presentation="toolbar-borderless"` with `size="compact"` inside a
 `ToolbarControlGroup`; set `focusRingOwner="group"` when that parent paints the
 composed focus ring. `selectedPresentation="icon-only"` hides only the visible
 selected label—the required `label` or `ariaLabel` still names the combobox.
+Inside a group, an icon-only trigger fills the group's control slot (40px in a
+default group, the full 32px padding box in a compact one) and omits the
+disclosure caret, so the group stays square and its focus ring stays concentric
+with the visible control while focused and while its listbox is open.
 Navigation selects can use intrinsic `presentation="navigation"` plus
 `labelMaxWidth` for component-owned ellipsis. These props own the control's
 appearance; its parent continues to own outer placement.

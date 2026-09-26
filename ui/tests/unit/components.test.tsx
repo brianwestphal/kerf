@@ -1513,7 +1513,7 @@ describe('production UI primitives', () => {
             label: 'Balanced',
             icon: Check,
             iconName: 'check',
-            color: uiColor('success'),
+            color: uiColor('success-on-quiet'),
             group: 'Recommended',
           },
           {

@@ -2653,7 +2653,7 @@
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
           "examples": [
-            "color: uiColor(\"success\")",
+            "color: uiColor(\"success-on-quiet\")",
             "color: colorVar(\"--app-choice-color\")"
           ]
         }

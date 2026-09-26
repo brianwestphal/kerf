@@ -1542,7 +1542,11 @@ interface SelectChoice<Value extends string = string> {
     label: string;
     icon?: LucideNode;
     iconName?: string;
-    /** Typed semantic or application-owned color for the optional icon. */
+    /**
+     * Typed semantic or application-owned color for the optional icon. Use a
+     * foreground token (`uiColor('success-on-quiet')`), not a fill such as
+     * `uiColor('success')`, which is a pale background tint.
+     */
     color?: CssColor;
     group?: string;
     separatorBefore?: boolean;

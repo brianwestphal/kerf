@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed the `@kerfjs/ui` icon-only `Select` focus ring in a
+  `ToolbarControlGroup` not matching the control: the compact trigger grew its
+  group into a 36x34 oval and its disclosure caret overflowed the trailing edge.
+  An icon-only trigger now fills the group's control slot (a square 34px compact
+  or 44px default group, for pill and rounded shapes) and omits the caret, so
+  the group-owned ring stays concentric while focused and while the listbox is
+  open. The Select demo's "Quiet" option icon also used the success fill alias
+  as its color and was nearly invisible; it now uses `success-on-quiet`, and the
+  `SelectChoice.color` guidance names foreground tokens.
+
 - Fixed `@kerfjs/ui/webawesome.css` `wa-dialog` titles given as a plain-string
   `label` sitting at the bare surface inset; they now inset by one bordered
   item step (`--kui-layout-item-padding` + 1px) so the header label lines up

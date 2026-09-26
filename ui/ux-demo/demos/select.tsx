@@ -25,7 +25,7 @@ export function SelectDemo() {
                 label: 'Quiet',
                 icon: Bell,
                 iconName: 'bell',
-                color: colorVar('--kui-color-success'),
+                color: colorVar('--kui-color-success-on-quiet'),
                 group: 'Attention',
               },
               {

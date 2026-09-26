@@ -52,7 +52,7 @@ test('applies property-specific CSS values in a real browser', async ({
     .first();
   await expect(semanticIcon).toHaveAttribute(
     'style',
-    'color:var(--kui-color-success)',
+    'color:var(--kui-color-success-on-quiet)',
   );
   await expect(semanticIcon).toHaveCSS('color', /^(?:rgba?|color)\(/);
 

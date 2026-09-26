@@ -307,7 +307,9 @@ sanitizer or security boundary.
 `Row.flex` and `List.flex` likewise accept their boolean default, finite keywords, or `CssFlex`
 from `flex(grow, shrink, basis)`. `Skeleton` width/height use `CssSize`, radius
 uses `CssLength`, and `SelectChoice.color` uses `CssColor` from `uiColor()` or
-`colorVar()`. Never exchange these property grammars. List rows expose
+`colorVar()`; give an icon a foreground token such as `success-on-quiet`, never a
+fill such as `success`, which is a pale background tint. Never exchange these
+property grammars. List rows expose
 `className`, public tokens, and semantic props instead of unrestricted `style`
 declarations.
 `.kui-content` gives major children 24px vertical separation.
