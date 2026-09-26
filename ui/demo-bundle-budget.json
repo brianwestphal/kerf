@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 283300,
-  "measuredLargestJavaScriptGzip": 134753,
-  "measuredTotalJavaScriptGzip": 283248,
+  "totalJavaScriptGzip": 283900,
+  "measuredLargestJavaScriptGzip": 135519,
+  "measuredTotalJavaScriptGzip": 283882,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -323,6 +323,22 @@
         "measuredTotalJavaScriptGzip": 283248,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 283300
+      }
+    },
+    {
+      "at": "2026-09-26T02:23:05.432Z",
+      "reason": "combine the reviewed KF-4EYES0 toolbar wrap demo states and KF-KMKM0G fill/app-frame recipes with the merged tree",
+      "old": {
+        "measuredLargestJavaScriptGzip": 134753,
+        "measuredTotalJavaScriptGzip": 283248,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 283300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 135519,
+        "measuredTotalJavaScriptGzip": 283882,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 283900
       }
     }
   ]
