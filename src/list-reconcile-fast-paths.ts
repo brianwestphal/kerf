@@ -37,6 +37,7 @@ const AMP = 0x26; // &
 const EQ = 0x3d; // =
 const SLASH = 0x2f; // /
 const TEXT_NODE = 3;
+import { isUserAgentOwnedAttr } from './utils/isUserAgentOwnedAttr.js';
 import { syncFormProp } from './utils/syncFormProp.js';
 
 const ELEMENT_NODE = 1;
@@ -368,15 +369,4 @@ function unescapeAttrValue(s: string): string {
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&amp;/g, '&');
-}
-
-/**
- * `<details>` and `<dialog>` toggle `open` themselves in response to user
- * interaction. Mirror `morphAttributes`' rule: never remove `open` on them
- * during the fast path — the user-driven state would be wiped.
- */
-function isUserAgentOwnedAttr(tagNameUpper: string, name: string): boolean {
-  return (
-    name === 'open' && (tagNameUpper === 'DETAILS' || tagNameUpper === 'DIALOG')
-  );
 }

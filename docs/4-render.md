@@ -359,6 +359,8 @@ A handful of HTML elements have boolean attributes that the _user agent_ sets in
 
 To keep uncontrolled `<details>` and `<dialog>` working naturally, the morph **never removes `open` from these elements**. The attribute is treated as user-agent-owned: the diff doesn't know whether the developer or the browser put it there, so the safe default is to leave it alone.
 
+The same rule covers **`open` on custom elements** (any hyphenated tag). Web Awesome's popups — `wa-select`, `wa-dropdown`, `wa-details`, `wa-dialog`, `wa-drawer`, `wa-popover` — reflect their live open state to `open`, so stripping it on an unrelated re-render closed an open popup under the user (KF-900A8V, surfaced by a consumer's flaky "select closes right after opening" test). A template can still _set_ `open`; it just can't remove one the element owns. The rule lives in one helper, `src/utils/isUserAgentOwnedAttr.ts`, shared by the morph and the keyed-list attribute fast path.
+
 ### Trade-off
 
 Controlled-style usage where a signal flips `open` from `true` → `false` does NOT auto-collapse the element:

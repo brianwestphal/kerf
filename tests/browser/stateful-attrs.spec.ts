@@ -135,3 +135,61 @@ test('imperative attribute IS wiped when the surrounds change between renders', 
   expect(result.value).toBe(null);
   expect(result.text).toBe('second');
 });
+
+test('a custom element that reflects open stays open across an unrelated re-render', async ({
+  page,
+}) => {
+  // Web Awesome popups (wa-select, wa-dropdown, wa-details, …) reflect their
+  // live open state to `open`. A minimal element with the same contract: its
+  // `show()` sets the attribute and a `hide` event fires if it is removed.
+  const result = await page.evaluate(() => {
+    const { mount, signal } = (window as any).kerf;
+    const { jsx } = (window as any).jsxRuntime;
+    const hides: string[] = [];
+    if (!window.customElements.get('x-popup'))
+      window.customElements.define(
+        'x-popup',
+        class extends HTMLElement {
+          static observedAttributes = ['open'];
+          show() {
+            this.setAttribute('open', '');
+          }
+          attributeChangedCallback(
+            _: string,
+            old: string | null,
+            next: string | null,
+          ) {
+            if (old !== null && next === null) hides.push('hide');
+          }
+        },
+      );
+    const root = document.getElementById('root')!;
+    const count = signal(0);
+    mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('span', { children: `Renders: ${count.value}` }),
+          jsx('x-popup', { class: count.value % 2 ? 'odd' : 'even' }),
+        ],
+      }),
+    );
+    const popup = root.querySelector('x-popup') as HTMLElement & {
+      show(): void;
+    };
+    popup.show();
+    count.value = 1;
+    count.value = 2;
+    return {
+      open: popup.hasAttribute('open'),
+      sameNode: root.querySelector('x-popup') === popup,
+      className: popup.className,
+      hides,
+    };
+  });
+  expect(result).toEqual({
+    open: true,
+    sameNode: true,
+    className: 'even',
+    hides: [],
+  });
+});

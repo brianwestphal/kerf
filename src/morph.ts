@@ -56,6 +56,7 @@ import {
 import type { SafeHtml } from './jsx-runtime.js';
 import { captureFocus, restoreFocus } from './list-reconcile-focus.js';
 import { LIST_MARKER_PREFIX } from './segment.js';
+import { isUserAgentOwnedAttr } from './utils/isUserAgentOwnedAttr.js';
 import { moveNode } from './utils/moveNode.js';
 import { syncFormProp } from './utils/syncFormProp.js';
 
@@ -584,10 +585,6 @@ function morphElement(
  * inside an action) or wrap with a state-toggle pattern. The uncontrolled
  * case is the common one and the one that was silently broken before.
  */
-function isUserAgentOwnedAttr(tagName: string, name: string): boolean {
-  return name === 'open' && (tagName === 'DETAILS' || tagName === 'DIALOG');
-}
-
 function morphAttributes(fromEl: Element, toEl: Element): void {
   // Set/update every attribute on toEl.
   const toAttrs = toEl.attributes;

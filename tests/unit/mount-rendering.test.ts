@@ -6,6 +6,7 @@
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { arraySignal } from '../../src/array-signal.js';
 import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
@@ -379,6 +380,69 @@ describe('mount()', () => {
     tick.value = 1;
     // Template is unchanged → no diff → imperative attr survives.
     expect(div.getAttribute('data-imperative')).toBe('set');
+  });
+
+  it("preserves a custom element's reflected open across an unrelated re-render", () => {
+    // Web Awesome popups (wa-select, wa-dropdown, …) reflect their live open
+    // state to `open`; the morph used to strip it and close the popup.
+    const tick = signal(0);
+    mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('span', { children: String(tick.value) }),
+          jsx('wa-select', { className: tick.value % 2 ? 'b' : 'a' }),
+        ],
+      }),
+    );
+    const select = root.querySelector('wa-select')!;
+    select.setAttribute('open', '');
+    tick.value = 1;
+    expect(select.getAttribute('class')).toBe('b'); // the diff ran
+    expect(select.hasAttribute('open')).toBe(true);
+    expect(root.querySelector('span')!.textContent).toBe('1');
+  });
+
+  it('still lets the template set open on a custom element', () => {
+    const isOpen = signal(false);
+    mount(root, () =>
+      jsx('wa-dropdown', { ...(isOpen.value ? { open: true } : {}) }),
+    );
+    const dropdown = root.querySelector('wa-dropdown')!;
+    expect(dropdown.hasAttribute('open')).toBe(false);
+    isOpen.value = true;
+    expect(dropdown.hasAttribute('open')).toBe(true);
+  });
+
+  it("keeps a custom element's open through the keyed-list attribute fast path", () => {
+    // An arraySignal update whose row differs only in attributes takes the
+    // list reconciler's attribute fast path instead of the morph.
+    const rows = arraySignal([{ id: 1, tone: 'a' }]);
+    mount(root, () =>
+      jsx('div', {
+        children: each(rows, (row) =>
+          jsx('wa-select', {
+            'data-key': String(row.id),
+            'data-tone': row.tone,
+          }),
+        ),
+      }),
+    );
+    const select = root.querySelector('wa-select')!;
+    select.setAttribute('open', '');
+    rows.update(0, (row) => ({ ...row, tone: 'b' }));
+    const live = root.querySelector('wa-select')!;
+    expect(live).toBe(select); // reconciled in place, not replaced
+    expect(live.getAttribute('data-tone')).toBe('b');
+    expect(live.hasAttribute('open')).toBe(true);
+  });
+
+  it('still strips a stray open from a plain (non-custom) element', () => {
+    const cls = signal('a');
+    mount(root, () => jsx('div', { className: cls.value, children: 'x' }));
+    const div = root.querySelector('div')!;
+    div.setAttribute('open', '');
+    cls.value = 'b';
+    expect(div.hasAttribute('open')).toBe(false);
   });
 
   it('still removes <details open> when the developer explicitly toggles it via the template (controlled mode)', () => {

@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed re-renders closing open Web Awesome popups: the morph (and the keyed-list
+  attribute fast path) no longer removes a live `open` attribute from custom
+  elements (`wa-select`, `wa-dropdown`, `wa-dialog`, …) when the template omits
+  it — the same user-agent-owned treatment `<details>` / `<dialog>` already
+  had. A template can still set `open`; closing stays imperative.
 - `@kerfjs/ui` layouts and `Pane` now handle device safe areas as one model.
   Pane and panel backgrounds, separators, and dividers paint through unsafe
   areas; content is padded only on the edges a region actually reaches, and
