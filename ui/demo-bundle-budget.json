@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 284200,
-  "measuredLargestJavaScriptGzip": 135841,
-  "measuredTotalJavaScriptGzip": 284188,
+  "totalJavaScriptGzip": 285000,
+  "measuredLargestJavaScriptGzip": 136329,
+  "measuredTotalJavaScriptGzip": 284938,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -403,6 +403,22 @@
         "measuredTotalJavaScriptGzip": 284188,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 284200
+      }
+    },
+    {
+      "at": "2026-09-26T06:02:41.520Z",
+      "reason": "Re-measure on the combined KF-717E65 + KF-XZJ0Y8 + KF-4F5KAZ tree; the prior entry was measured without KF-717E65's compact-collapse sidebar changes",
+      "old": {
+        "measuredLargestJavaScriptGzip": 135841,
+        "measuredTotalJavaScriptGzip": 284188,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 284200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 136329,
+        "measuredTotalJavaScriptGzip": 284938,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285000
       }
     }
   ]
