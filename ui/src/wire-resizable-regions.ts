@@ -35,6 +35,33 @@ interface RegionState {
   size: number;
 }
 
+const REGION_SELECTOR = '[data-component="resizable-region"]';
+const HANDLE_SELECTOR = '[data-kui-resize-handle]';
+/** Handle attributes a re-render can write back over the reported values. */
+const REPORTED_ATTRIBUTES = ['aria-valuenow', 'aria-valuemax'];
+
+/**
+ * The size the region renders or was last resized to. The track's custom
+ * property is the source, not aria-valuenow, which reports the shown size and
+ * can sit below the rendered size while a parent clamps the track.
+ */
+function renderedSize(region: HTMLElement, handle: HTMLElement) {
+  const size = Number.parseFloat(
+    region.style.getPropertyValue('--kui-resizable-region-size'),
+  );
+  return Number.isFinite(size)
+    ? size
+    : Number(handle.getAttribute('aria-valuenow'));
+}
+
+function setAttributeIfChanged(
+  element: HTMLElement,
+  name: string,
+  value: string,
+) {
+  if (element.getAttribute(name) !== value) element.setAttribute(name, value);
+}
+
 /**
  * The largest size a parent lets the region show. The track is
  * `size + edge extent` (its flex basis), but a parent may clamp it (a
@@ -92,13 +119,11 @@ export function wireResizableRegions(
   // different aria-valuemax than the one announced here supersedes it.
   const announced = new WeakMap<
     HTMLElement,
-    { declaredMax: number; max: number }
+    { declaredMax: number; max: number; size: number }
   >();
 
   function regionState(handle: Element): RegionState | undefined {
-    const region = handle.closest<HTMLElement>(
-      '[data-component="resizable-region"]',
-    );
+    const region = handle.closest<HTMLElement>(REGION_SELECTOR);
     if (!(region instanceof HTMLElement) || !(handle instanceof HTMLElement))
       return undefined;
     const id = region.dataset.regionId;
@@ -109,7 +134,7 @@ export function wireResizableRegions(
     const remembered = announced.get(handle);
     const declaredMax =
       remembered?.max === valueMax ? remembered.declaredMax : valueMax;
-    const size = Number(handle.getAttribute('aria-valuenow'));
+    const size = renderedSize(region, handle);
     if (
       !id ||
       region.dataset.collapsed === 'true' ||
@@ -143,10 +168,104 @@ export function wireResizableRegions(
     announced.set(state.handle, {
       declaredMax: state.declaredMax,
       max: state.max,
+      size: state.size,
     });
-    state.handle.setAttribute('aria-valuemax', String(state.max));
-    state.handle.setAttribute('aria-valuenow', String(state.size));
+    // Unchanged values are not rewritten, so the observer below never sees
+    // its own report as a re-render.
+    setAttributeIfChanged(state.handle, 'aria-valuemax', String(state.max));
+    setAttributeIfChanged(state.handle, 'aria-valuenow', String(state.size));
   }
+
+  /** Re-measure a region at rest and report what it shows. */
+  function sync(region: HTMLElement) {
+    if (!region.isConnected || region.dataset.resizing === 'true') return;
+    const handle = region.querySelector<HTMLElement>(
+      `:scope > ${HANDLE_SELECTOR}`,
+    );
+    const state = handle ? regionState(handle) : undefined;
+    if (state) announce(state);
+  }
+
+  /** Whether the handle still shows the values this wiring last reported. */
+  function reportedByUs(handle: HTMLElement) {
+    const remembered = announced.get(handle);
+    return (
+      remembered !== undefined &&
+      handle.getAttribute('aria-valuemax') === String(remembered.max) &&
+      handle.getAttribute('aria-valuenow') === String(remembered.size)
+    );
+  }
+
+  // Keep the reported values current without a focus or an interaction.
+  // A ResizeObserver on every region and its parent re-measures when the
+  // space changes (a narrowed viewport, a parent that grows back); a
+  // MutationObserver catches a re-render that writes the rendered props back
+  // over the reported values, and regions a re-render adds or removes. Both
+  // measure once per affected region per batch, after layout or in a
+  // microtask, never per frame.
+  const observed = new Set<Element>();
+  const resizeObserver =
+    typeof ResizeObserver === 'function'
+      ? new ResizeObserver((entries) => {
+          const regions = new Set<HTMLElement>();
+          for (const { target } of entries) {
+            if (target.matches(REGION_SELECTOR))
+              regions.add(target as HTMLElement);
+            for (const child of target.querySelectorAll<HTMLElement>(
+              `:scope > ${REGION_SELECTOR}`,
+            ))
+              regions.add(child);
+          }
+          for (const region of regions) sync(region);
+        })
+      : undefined;
+
+  /** Observe every region below root and its parent; release the rest. */
+  function observeRegions() {
+    if (!resizeObserver) return;
+    const wanted = new Set<Element>();
+    for (const region of root.querySelectorAll(REGION_SELECTOR)) {
+      wanted.add(region);
+      // A region found below root always has a parent element.
+      wanted.add(region.parentElement as Element);
+    }
+    for (const element of observed)
+      if (!wanted.has(element)) {
+        resizeObserver.unobserve(element);
+        observed.delete(element);
+      }
+    for (const element of wanted)
+      if (!observed.has(element)) {
+        resizeObserver.observe(element);
+        observed.add(element);
+      }
+  }
+
+  const mutationObserver = new MutationObserver((records) => {
+    const regions = new Set<HTMLElement>();
+    let structural = false;
+    for (const record of records) {
+      if (record.type === 'childList') {
+        structural = true;
+        continue;
+      }
+      const handle = record.target as HTMLElement;
+      if (!handle.matches(HANDLE_SELECTOR) || reportedByUs(handle)) continue;
+      const region = handle.closest<HTMLElement>(REGION_SELECTOR);
+      if (region) regions.add(region);
+    }
+    // Newly observed regions are measured by the ResizeObserver's first
+    // notification.
+    if (structural) observeRegions();
+    for (const region of regions) sync(region);
+  });
+  mutationObserver.observe(root, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    attributeFilter: REPORTED_ATTRIBUTES,
+  });
+  observeRegions();
 
   /**
    * Commit a size, then re-announce: an app that re-renders the committed
@@ -163,7 +282,7 @@ export function wireResizableRegions(
   const stopFocus = delegate(
     root,
     'focusin',
-    '[data-kui-resize-handle]',
+    HANDLE_SELECTOR,
     (_event, handle) => {
       const state = regionState(handle);
       if (state) announce(state);
@@ -173,7 +292,7 @@ export function wireResizableRegions(
   const stopKeydown = delegate(
     root,
     'keydown',
-    '[data-kui-resize-handle]',
+    HANDLE_SELECTOR,
     (event, handle) => {
       const keyboardEvent = event as KeyboardEvent;
       const state = regionState(handle);
@@ -202,7 +321,7 @@ export function wireResizableRegions(
   const stopPointerDown = delegate(
     root,
     'pointerdown',
-    '[data-kui-resize-handle]',
+    HANDLE_SELECTOR,
     (event, handle) => {
       const pointerEvent = event as PointerEvent;
       if (pointerEvent.button !== 0) return;
@@ -249,6 +368,9 @@ export function wireResizableRegions(
   );
 
   return () => {
+    mutationObserver.disconnect();
+    resizeObserver?.disconnect();
+    observed.clear();
     stopPointer?.();
     stopFocus();
     stopKeydown();

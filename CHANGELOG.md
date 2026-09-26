@@ -17,6 +17,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   class, which avoids an open first frame on a compact device. The
   collapsible-sidebar recipe no longer opens its rail as a blocking overlay
   on load at compact widths.
+- `@kerfjs/ui`'s `wireResizableRegions` keeps a clamped separator's
+  `aria-valuenow`/`aria-valuemax` current at rest. Previously, after a size was
+  saved at a wider width, narrowing the parent or any unrelated re-render left
+  the handle reporting the unclamped rendered size until it was next focused or
+  resized. A `ResizeObserver` on each region and its parent and a
+  `MutationObserver` for re-renders now re-clamp the report; the disposer
+  disconnects both.
 - The `@kerfjs/ui` catalog's `height: "app"` example frame is now the
   containing block for screen-fixed chrome, so a compact `CollapsiblePanel`
   overlay, its backdrop, and restore controls dock to the frame's edges. The

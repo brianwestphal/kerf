@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ResizableRegion } from '../../src/resizable-region.js';
 import { wireResizableRegions } from '../../src/wire-resizable-regions.js';
@@ -538,6 +538,198 @@ describe('wireResizableRegions', () => {
         source: 'keyboard',
       });
       stop();
+    });
+
+    describe('keeps the reported values current at rest', () => {
+      /** A ResizeObserver the test notifies by hand; happy-dom has no layout. */
+      class StubResizeObserver {
+        static instances: StubResizeObserver[] = [];
+        readonly targets = new Set<Element>();
+        disconnected = false;
+        constructor(private readonly callback: ResizeObserverCallback) {
+          StubResizeObserver.instances.push(this);
+        }
+        observe(target: Element) {
+          this.targets.add(target);
+        }
+        unobserve(target: Element) {
+          this.targets.delete(target);
+        }
+        disconnect() {
+          this.targets.clear();
+          this.disconnected = true;
+        }
+        notify(...targets: Element[]) {
+          this.callback(
+            targets.map((target) => ({ target }) as ResizeObserverEntry),
+            this as unknown as ResizeObserver,
+          );
+        }
+      }
+      const observer = () => StubResizeObserver.instances.at(-1)!;
+      /** Let the MutationObserver deliver its records. */
+      const settle = () =>
+        new Promise((resolve) => globalThis.setTimeout(resolve));
+
+      beforeEach(() => {
+        StubResizeObserver.instances = [];
+        vi.stubGlobal('ResizeObserver', StubResizeObserver);
+      });
+      afterEach(() => {
+        vi.unstubAllGlobals();
+      });
+
+      it('re-clamps the reported values when the parent narrows or grows, without focus or a commit', () => {
+        const { root, handle } = region();
+        const host = hostOf(root);
+        host.style.setProperty('--kui-resizable-region-size', '300px');
+        const onCommit = vi.fn();
+        const stop = wireResizableRegions(root, { onCommit });
+        expect([...observer().targets]).toEqual([host, root]);
+
+        clampLayout(host, 240);
+        observer().notify(root);
+        expect(handle.getAttribute('aria-valuenow')).toBe('240');
+        expect(handle.getAttribute('aria-valuemax')).toBe('240');
+        // Reporting never commits and never changes the rendered size.
+        expect(onCommit).not.toHaveBeenCalled();
+        expect(host.style.getPropertyValue('--kui-resizable-region-size')).toBe(
+          '300px',
+        );
+
+        // Growing back reports the rendered size again, not the last report.
+        clampLayout(host, 1000);
+        observer().notify(host);
+        expect(handle.getAttribute('aria-valuenow')).toBe('300');
+        expect(handle.getAttribute('aria-valuemax')).toBe('300');
+        stop();
+      });
+
+      it('re-clamps after an unrelated re-render writes the rendered props back', async () => {
+        const { root, handle } = region();
+        const host = hostOf(root);
+        host.style.setProperty('--kui-resizable-region-size', '300px');
+        const stop = wireResizableRegions(root, { onCommit: vi.fn() });
+        clampLayout(host, 240);
+        observer().notify(host);
+        expect(handle.getAttribute('aria-valuenow')).toBe('240');
+
+        // A re-render restores the rendered props; the layout is unchanged, so
+        // no resize notification follows.
+        handle.setAttribute('aria-valuemax', '300');
+        handle.setAttribute('aria-valuenow', '300');
+        await settle();
+        expect(handle.getAttribute('aria-valuenow')).toBe('240');
+        expect(handle.getAttribute('aria-valuemax')).toBe('240');
+        stop();
+      });
+
+      it('does not re-measure its own report, a resizing region, or other aria values', async () => {
+        const { root, handle } = region();
+        const host = hostOf(root);
+        const stop = wireResizableRegions(root, { onCommit: vi.fn() });
+        clampLayout(host, 240);
+        const measure = vi.mocked(host.getBoundingClientRect);
+        observer().notify(host);
+        expect(measure).toHaveBeenCalledTimes(1);
+        // The report's own attribute writes come back as mutation records.
+        await settle();
+        expect(measure).toHaveBeenCalledTimes(1);
+
+        // Another aria-valuenow below the root is not a separator.
+        const meter = document.createElement('div');
+        meter.setAttribute('aria-valuenow', '1');
+        root.append(meter);
+        await settle();
+        meter.setAttribute('aria-valuenow', '2');
+        await settle();
+        expect(measure).toHaveBeenCalledTimes(1);
+
+        // A stray handle outside any region, and a region whose handle a
+        // re-render dropped, are skipped.
+        const stray = document.createElement('div');
+        stray.setAttribute('data-kui-resize-handle', '');
+        root.append(stray);
+        await settle();
+        stray.setAttribute('aria-valuenow', '5');
+        const handleless = document.createElement('section');
+        handleless.dataset.component = 'resizable-region';
+        observer().notify(handleless);
+        document.body.append(handleless);
+        observer().notify(handleless);
+        handleless.remove();
+        await settle();
+        expect(measure).toHaveBeenCalledTimes(1);
+
+        // A drag in progress owns the reported values.
+        host.dataset.resizing = 'true';
+        handle.setAttribute('aria-valuenow', '300');
+        observer().notify(host);
+        await settle();
+        expect(measure).toHaveBeenCalledTimes(1);
+        expect(handle.getAttribute('aria-valuenow')).toBe('300');
+
+        // A collapsed region is left as rendered.
+        delete host.dataset.resizing;
+        host.dataset.collapsed = 'true';
+        observer().notify(host);
+        expect(handle.getAttribute('aria-valuenow')).toBe('300');
+        stop();
+      });
+
+      it('observes regions a re-render adds, releases removed ones, and disconnects on dispose', async () => {
+        const { root, handle } = region();
+        const host = hostOf(root);
+        const stop = wireResizableRegions(root, { onCommit: vi.fn() });
+        const stub = observer();
+
+        const nested = document.createElement('div');
+        nested.innerHTML = String(
+          ResizableRegion({
+            id: 'second',
+            label: 'Second',
+            size: 150,
+            min: 100,
+            max: 300,
+            children: 'More' as never,
+          }),
+        );
+        root.append(nested);
+        await settle();
+        const second = nested.querySelector<HTMLElement>(
+          '[data-component="resizable-region"]',
+        )!;
+        expect(stub.targets).toEqual(new Set([host, root, second, nested]));
+
+        nested.remove();
+        await settle();
+        expect(stub.targets).toEqual(new Set([host, root]));
+        // A detached region is not measured even if a late notification names it.
+        stub.notify(second);
+
+        stop();
+        expect(stub.disconnected).toBe(true);
+        clampLayout(host, 240);
+        handle.setAttribute('aria-valuemax', '299');
+        await settle();
+        expect(handle.getAttribute('aria-valuemax')).toBe('299');
+      });
+
+      it('still re-clamps after a re-render where ResizeObserver is unavailable', async () => {
+        vi.stubGlobal('ResizeObserver', undefined);
+        const { root, handle } = region();
+        const host = hostOf(root);
+        host.style.setProperty('--kui-resizable-region-size', '300px');
+        const stop = wireResizableRegions(root, { onCommit: vi.fn() });
+        expect(StubResizeObserver.instances).toHaveLength(0);
+        clampLayout(host, 240);
+        handle.setAttribute('aria-valuenow', '300');
+        await settle();
+        expect(handle.getAttribute('aria-valuenow')).toBe('240');
+        root.append(document.createElement('span'));
+        await settle();
+        stop();
+      });
     });
   });
 });

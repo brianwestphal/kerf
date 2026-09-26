@@ -114,7 +114,12 @@ The handle exposes separator role, orientation, name, minimum, maximum, and curr
   at the size actually shown, and the handle announces that size in
   `aria-valuenow` and that bound in `aria-valuemax`. Focusing the handle
   reports a stale larger committed size as the shown size without committing
-  it, so the first key press moves the visible separator;
+  it, so the first key press moves the visible separator. The reported values
+  also stay current at rest: a `ResizeObserver` on each region and its parent
+  re-clamps them when the space changes, and a `MutationObserver` re-clamps
+  them after a re-render writes the rendered props back, so assistive
+  technology never reads an unclamped size between interactions (the
+  disposer disconnects both observers);
 - preview callbacks while dragging and one commit callback on release;
 - a live size that also resizes slide-motion content, so the content tracks the
   separator during a drag or key press instead of waiting for the app to

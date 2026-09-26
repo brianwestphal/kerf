@@ -229,3 +229,43 @@ test('a size committed on a wide stage reports the clamped size when focused on 
     String(Number(visible) - 16),
   );
 });
+
+// KF-XZJ0Y8: the reported values stay in sync at rest. Narrowing the viewport
+// re-clamps them, and an unrelated re-render that writes the rendered props
+// back is re-clamped too, without the handle ever being focused.
+test('the reported size stays clamped at rest through a resize and an unrelated re-render', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=resize');
+  const region = page.locator(
+    '[data-demo="resize"] [data-component="resizable-region"]',
+  );
+  const handle = region.locator('[data-kui-resize-handle]');
+  await handle.focus();
+  await page.keyboard.press('End');
+  await expect(handle).toHaveAttribute('aria-valuenow', '420');
+  await handle.blur();
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const visible = async () => String(Math.floor((await widths(region)).region));
+  await expect.poll(visible).not.toBe('420');
+  const shown = await visible();
+  await expect(handle).toHaveAttribute('aria-valuenow', shown);
+  await expect(handle).toHaveAttribute('aria-valuemax', shown);
+
+  // An unrelated re-render: the contrast setting re-renders the whole catalog.
+  const contrast = page.locator('[data-action="toggle-contrast"]');
+  await contrast.click();
+  await expect(contrast).toHaveAttribute('aria-pressed', 'true');
+  await expect(handle).not.toBeFocused();
+  await expect(handle).toHaveAttribute('aria-valuenow', shown);
+  await expect(handle).toHaveAttribute('aria-valuemax', shown);
+  // The app keeps its committed size; only the report is clamped.
+  await expect(page.locator('[data-region-size]')).toHaveText('420px');
+
+  // Growing the viewport again reports the committed size once it fits.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(handle).toHaveAttribute('aria-valuenow', '420');
+  await expect(handle).toHaveAttribute('aria-valuemax', '420');
+});
