@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 282500,
-  "measuredLargestJavaScriptGzip": 133960,
-  "measuredTotalJavaScriptGzip": 282433,
+  "totalJavaScriptGzip": 283100,
+  "measuredLargestJavaScriptGzip": 134602,
+  "measuredTotalJavaScriptGzip": 283072,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -291,6 +291,22 @@
         "measuredTotalJavaScriptGzip": 282433,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 282500
+      }
+    },
+    {
+      "at": "2026-09-26T01:59:10.600Z",
+      "reason": "combine the reviewed KF-Y3YZBE icon+caret Select, KF-VAV2JT sibling-segment example, and KF-CW8DVX foreground color helpers with the merged safe-area tree",
+      "old": {
+        "measuredLargestJavaScriptGzip": 133960,
+        "measuredTotalJavaScriptGzip": 282433,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 282500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 134602,
+        "measuredTotalJavaScriptGzip": 283072,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 283100
       }
     }
   ]
