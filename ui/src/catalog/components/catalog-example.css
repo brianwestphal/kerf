@@ -97,10 +97,6 @@
   contain: layout;
 }
 
-.kui-catalog-example__viewport[data-height="fill"] {
-  height: 100%;
-}
-
 .kui-catalog-example__viewport[data-min-height="short"] {
   min-height: remify(256px);
 }
@@ -136,14 +132,6 @@
 
 .kui-catalog-example__viewport[data-shadow="true"] {
   box-shadow: var(--kui-shadow-s);
-}
-
-.kui-catalog-example__viewport[data-fill-children="true"] > * {
-  height: 100%;
-}
-
-.kui-catalog-example__viewport [data-catalog-viewport-fill] {
-  height: 100%;
 }
 
 .kui-catalog-example__compact-fallback {

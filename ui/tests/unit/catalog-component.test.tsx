@@ -337,7 +337,6 @@ describe('CatalogExample', () => {
           overflow: 'auto-x',
           responsive: 'roomy-only',
           shadow: true,
-          fillChildren: true,
           tokens: { '--kui-pane-width': '18rem' },
         },
         compactFallback: 'Open this specimen on a wider viewport.',
@@ -354,7 +353,7 @@ describe('CatalogExample', () => {
     expect(html).toContain('data-overflow="auto-x"');
     expect(html).toContain('data-responsive="roomy-only"');
     expect(html).toContain('data-shadow="true"');
-    expect(html).toContain('data-fill-children="true"');
+    expect(html).not.toContain('data-fill-children');
     expect(html).toContain('style="--kui-pane-width:18rem"');
     expect(html).toContain(
       'class="kui-catalog-example__compact-fallback">Open this specimen on a wider viewport.',

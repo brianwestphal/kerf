@@ -1439,15 +1439,19 @@ type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
 interface CatalogExampleViewport {
     layout?: 'grid' | 'flex' | 'flex-column';
     width?: 'full' | 'compact' | 'medium' | 'wide' | 'text' | 'control';
-    /** Fixed specimen height; `app` frames an application-sized recipe or layout. */
-    height?: 'short' | 'reduced' | 'medium' | 'tall' | 'app' | 'fill';
+    /** Fixed specimen height; `app` frames an application-sized recipe or layout.
+     *  A fixed height is definite, so a child that fills with `height: 100%`
+     *  (a horizontal `ResizableRegion`, say) spans the whole frame. */
+    height?: 'short' | 'reduced' | 'medium' | 'tall' | 'app';
+    /** A minimum the frame may grow past. It is not a definite height: a child
+     *  sized with `height: 100%` falls back to its content height, so use
+     *  `height` when the specimen must fill the frame. */
     minHeight?: 'short' | 'medium';
     frame?: 'solid' | 'dashed';
     surface?: 'default' | 'lowered';
     overflow?: 'hidden' | 'auto-x';
     responsive?: 'roomy-only';
     shadow?: boolean;
-    fillChildren?: boolean;
     /** Public component custom properties applied to the specimen viewport. */
     tokens?: Readonly<Record<`--${string}`, string>>;
 }

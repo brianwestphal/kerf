@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Breaking (`@kerfjs/ui/catalog`):** `CatalogExample`'s viewport drops
+  `height: "fill"` and `fillChildren`. The catalog lays examples out at their
+  content height, so neither could give a specimen a definite height, and a
+  child sized with `height: 100%` (a horizontal `ResizableRegion`, say)
+  collapsed to its content. Use a fixed `height` (`short` through `app`) when
+  a specimen must fill its frame. `minHeight` remains, documented as a minimum
+  rather than a fill.
 - `create-kerf-component`'s `kerf.components.json` now accepts an optional
   `composition.wiring.stateAttributes` declaration (the wiring-owned state
   attributes `@kerfjs/ui`'s catalog now carries), so third-party
