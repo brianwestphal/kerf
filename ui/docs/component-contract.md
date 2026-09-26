@@ -306,10 +306,10 @@ props. Its opaque string brand improves authoring correctness; it is not a CSS
 sanitizer or security boundary.
 `Row.flex` and `List.flex` likewise accept their boolean default, finite keywords, or `CssFlex`
 from `flex(grow, shrink, basis)`. `Skeleton` width/height use `CssSize`, radius
-uses `CssLength`, and `SelectChoice.color` uses `CssColor` from `uiColor()` or
-`colorVar()`; give an icon a foreground token such as `success-on-quiet`, never a
-fill such as `success`, which is a pale background tint. Never exchange these
-property grammars. List rows expose
+uses `CssLength`, and `SelectChoice.color` uses `CssForegroundColor` from
+`uiColor()` with a foreground token such as `success-on-quiet`, or from
+`foregroundColorVar()`. Fill tokens such as `success` are pale background tints
+and do not type-check there. Never exchange these property grammars. List rows expose
 `className`, public tokens, and semantic props instead of unrestricted `style`
 declarations.
 `.kui-content` gives major children 24px vertical separation.

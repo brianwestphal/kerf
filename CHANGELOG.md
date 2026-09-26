@@ -29,6 +29,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   centers in the same 44px slot a toolbar control occupies at the 8px inline
   margin, so trailing icon actions share one axis. The action's size, 18px
   visual, and hover square are unchanged.
+- **Breaking (`@kerfjs/ui`, 5.0 beta):** `SelectChoice.color` now accepts only
+  a foreground color, the new `CssForegroundColor` brand from
+  `@kerfjs/ui/css-values`. `uiColor()` returns it for foreground token names
+  (the new `UiForegroundColorName`: the `*-on-*` roles, `text`, `text-quiet`,
+  `text-link`, and the `*-text` aliases), and the new
+  `foregroundColorVar('--app-icon-color', fallback?)` returns it for an
+  application-owned property. The `--kui-color-success` / `warning` / `danger`
+  / `pop` / `accent` compatibility aliases are quiet fills that read like
+  foreground colors; colored with one, an icon rendered at about 1.2:1
+  contrast. `uiColor('success')` and the other fill, border, and surface tokens
+  still return a plain `CssColor` and no longer type-check as an icon color,
+  and neither does a plain `colorVar()` value. Migrate
+  `color: uiColor('success')` to `uiColor('success-on-quiet')` and
+  `color: colorVar('--app-color')` to `foregroundColorVar('--app-color')`;
+  `uiColor('…-on-…')` calls keep compiling unchanged. The catalog's CSS-value
+  contract for `choices[].color` lists `uiColor` and `foregroundColorVar`, so
+  `eslint-plugin-kerfjs` also reports `colorVar()` there (`KUI-L014`), and
+  the source and packed consumer type contracts pin the rejected fills.
+
 - Fixed an `@kerfjs/ui` icon-only `Select` beside other controls in one
   `ToolbarControlGroup`. A compact Select no longer eats 1px of the group's
   4px gap on each side (the lone-trigger padding overlap now applies only when

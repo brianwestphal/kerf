@@ -2662,14 +2662,14 @@
         {
           "path": "choices[].color",
           "grammar": "color",
-          "helpers": ["uiColor", "colorVar"],
+          "helpers": ["uiColor", "foregroundColorVar"],
           "shorthands": [],
           "canonicalShorthands": [],
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
           "examples": [
             "color: uiColor(\"success-on-quiet\")",
-            "color: colorVar(\"--app-choice-color\")"
+            "color: foregroundColorVar(\"--app-choice-color\")"
           ]
         }
       ],

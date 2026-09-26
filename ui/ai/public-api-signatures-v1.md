@@ -10,6 +10,7 @@ declare const cssLengthBrand: unique symbol;
 declare const cssLengthExpressionBrand: unique symbol;
 declare const cssFlexBrand: unique symbol;
 declare const cssColorBrand: unique symbol;
+declare const cssForegroundColorBrand: unique symbol;
 /**
  * A complete typed CSS value minted by a property-specific Kerf UI builder.
  *
@@ -42,6 +43,18 @@ type CssFlex = CssValue & {
 type CssColor = CssValue & {
     readonly [cssColorBrand]: 'CssColor';
 };
+/**
+ * A complete CSS color meant to paint a foreground: text or an icon drawn over
+ * a surface. Mint it with {@link uiColor} and a foreground token name
+ * ({@link UiForegroundColorName}) or with {@link foregroundColorVar}. It is a
+ * {@link CssColor}, but a plain `CssColor` is not a foreground color: fill,
+ * border, and surface tokens (including the `success` / `warning` / `danger` /
+ * `pop` fill aliases) are pale backgrounds that leave a foreground nearly
+ * invisible.
+ */
+type CssForegroundColor = CssColor & {
+    readonly [cssForegroundColorBrand]: 'CssForegroundColor';
+};
 type CssFlexKeyword = 'none' | 'auto' | 'initial';
 type CssFlexBasis = CssLength | 'auto' | 'content' | 'min-content' | 'max-content' | 'fit-content';
 type CssSizeKeyword = 'auto' | 'min-content' | 'max-content' | 'fit-content';
@@ -50,6 +63,13 @@ type CssSize = CssLength | CssSizeKeyword;
 declare const uiColorNames: readonly ["accent", "accent-text", "border", "border-quiet", "brand-border-loud", "brand-border-normal", "brand-border-quiet", "brand-fill-loud", "brand-fill-normal", "brand-fill-quiet", "brand-on-fill", "brand-on-loud", "brand-on-normal", "brand-on-quiet", "danger", "danger-border-loud", "danger-border-normal", "danger-border-quiet", "danger-fill-loud", "danger-fill-normal", "danger-fill-quiet", "danger-on-loud", "danger-on-normal", "danger-on-quiet", "danger-text", "neutral-border-loud", "neutral-border-normal", "neutral-border-quiet", "neutral-fill-loud", "neutral-fill-normal", "neutral-fill-quiet", "neutral-on-loud", "neutral-on-normal", "neutral-on-quiet", "pop", "pop-border-loud", "pop-border-normal", "pop-border-quiet", "pop-fill-loud", "pop-fill-normal", "pop-fill-quiet", "pop-on-fill", "pop-on-loud", "pop-on-normal", "pop-on-quiet", "pop-text", "success", "success-border-loud", "success-border-normal", "success-border-quiet", "success-fill-loud", "success-fill-normal", "success-fill-quiet", "success-on-fill", "success-on-loud", "success-on-normal", "success-on-quiet", "success-text", "surface", "surface-lowered", "surface-raised", "text", "text-link", "text-quiet", "warning", "warning-border-loud", "warning-border-normal", "warning-border-quiet", "warning-fill-loud", "warning-fill-normal", "warning-fill-quiet", "warning-on-fill", "warning-on-loud", "warning-on-normal", "warning-on-quiet", "warning-text"];
 /** Names of the public `--kui-color-*` semantic tokens. */
 type UiColorName = (typeof uiColorNames)[number];
+/**
+ * The semantic tokens that paint a foreground: the `*-on-*` roles, the text
+ * roles, and their `*-text` compatibility aliases. The bare `success`,
+ * `warning`, `danger`, `pop`, and `accent` aliases are quiet fills, not
+ * foregrounds.
+ */
+type UiForegroundColorName = Extract<UiColorName, `${string}-on-${string}` | `${string}-text` | 'text' | 'text-quiet' | 'text-link'>;
 /** Kerf UI's complete spacing-token vocabulary. `s` and `xl` are exceptions. */
 type UiSpaceName = 'none' | '2xs' | 'xs' | 's' | 'm' | 'l' | 'xl';
 /** Create a complete pixel length. */
@@ -74,12 +94,28 @@ declare function plus(first: CssLength, second: CssLength, ...rest: readonly Css
 declare function calc(expression: CssLengthExpression): CssLength;
 /** Build a complete, structured CSS flex shorthand. */
 declare function flex(grow: number, shrink?: number, basis?: CssFlexBasis): CssFlex;
-/** Resolve a public Kerf UI semantic color token. */
-declare function uiColor(name: UiColorName): CssColor;
+/**
+ * The brand {@link uiColor} returns for a token name: a
+ * {@link CssForegroundColor} for a foreground token, otherwise a plain
+ * {@link CssColor}.
+ */
+type UiColor<Name extends UiColorName> = Name extends UiForegroundColorName ? CssForegroundColor : CssColor;
+/**
+ * Resolve a public Kerf UI semantic color token. A foreground token name
+ * (`success-on-quiet`, `text-quiet`, …) returns a {@link CssForegroundColor};
+ * any other token returns a plain {@link CssColor}.
+ */
+declare function uiColor<Name extends UiColorName>(name: Name): UiColor<Name>;
 /** Reference an application-owned custom property whose contract is a color. */
 declare function colorVar(name: `--${string}`, fallback?: CssColor): CssColor;
+/**
+ * Reference an application-owned custom property whose contract is a
+ * foreground color (text or an icon over a surface). Use it where a prop
+ * accepts only {@link CssForegroundColor}, such as `SelectChoice.color`.
+ */
+declare function foregroundColorVar(name: `--${string}`, fallback?: CssForegroundColor): CssForegroundColor;
 
-export { type CssColor, type CssFlex, type CssFlexBasis, type CssFlexKeyword, type CssLength, type CssLengthExpression, type CssSize, type CssSizeKeyword, type CssValue, type UiColorName, type UiSpaceName, calc, colorVar, em, flex, lengthVar, pct, plus, px, rem, space, uiColor };
+export { type CssColor, type CssFlex, type CssFlexBasis, type CssFlexKeyword, type CssForegroundColor, type CssLength, type CssLengthExpression, type CssSize, type CssSizeKeyword, type CssValue, type UiColor, type UiColorName, type UiForegroundColorName, type UiSpaceName, calc, colorVar, em, flex, foregroundColorVar, lengthVar, pct, plus, px, rem, space, uiColor };
 ```
 
 ## `@kerfjs/ui/disclosure-arrow`
@@ -1548,7 +1584,7 @@ export { SegmentedControl, type SegmentedControlAppearance, type SegmentedContro
 
 ```ts
 import { SafeHtml } from 'kerfjs';
-import { CssColor } from './css-values.js';
+import { CssForegroundColor } from './css-values.js';
 import { LucideNode } from './lucide-icon.js';
 import 'lucide';
 
@@ -1558,11 +1594,12 @@ interface SelectChoice<Value extends string = string> {
     icon?: LucideNode;
     iconName?: string;
     /**
-     * Typed semantic or application-owned color for the optional icon. Use a
-     * foreground token (`uiColor('success-on-quiet')`), not a fill such as
-     * `uiColor('success')`, which is a pale background tint.
+     * Foreground color for the optional icon: a semantic foreground token such
+     * as `uiColor('success-on-quiet')`, or an application-owned
+     * `foregroundColorVar('--app-icon-color')`. Fill tokens such as
+     * `uiColor('success')` are pale background tints and do not type-check.
      */
-    color?: CssColor;
+    color?: CssForegroundColor;
     group?: string;
     separatorBefore?: boolean;
 }

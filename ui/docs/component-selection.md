@@ -79,12 +79,17 @@ expressions fail during typechecking rather than in the browser.
 Other CSS-valued props use distinct contracts: `Spacer.width` and
 `Spacer.height` take `UiSpaceName | CssLength`; `flex()` creates `CssFlex` for
 `Row.flex`, `Grid.flex`, and `List.flex`; `Skeleton` dimensions take typed lengths (plus finite intrinsic
-keywords for width/height); and `uiColor()`/`colorVar()` create `CssColor` for
-`SelectChoice.color`. Do not substitute one brand for another. Row components
+keywords for width/height); and `SelectChoice.color` takes a
+`CssForegroundColor` from `uiColor()` with a foreground token (`*-on-*`, a text
+role, or a `*-text` alias) or from `foregroundColorVar()`. The bare `success`,
+`warning`, `danger`, `pop`, and `accent` tokens are quiet fills, not
+foregrounds, and are rejected there; `colorVar()` returns a plain `CssColor`.
+Do not substitute one brand for another. Row components
 have no declaration-string `style` prop; use `className`, documented public
 tokens, and semantic component props. Catalog media queries remain strings and
 semantic pixel measurements remain numbers because those are different APIs.
-The corresponding public builders are `flex`, `uiColor`, and `colorVar`.
+The corresponding public builders are `flex`, `uiColor`, `colorVar`, and
+`foregroundColorVar`.
 
 ## Production recipes
 

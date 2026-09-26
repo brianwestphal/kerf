@@ -1,5 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { colorVar } from '@kerfjs/ui/css-values';
+import { uiColor } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
@@ -31,7 +31,7 @@ export function SelectDemo() {
                 label: 'Quiet',
                 icon: Bell,
                 iconName: 'bell',
-                color: colorVar('--kui-color-success-on-quiet'),
+                color: uiColor('success-on-quiet'),
                 group: 'Attention',
               },
               {

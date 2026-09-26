@@ -167,7 +167,9 @@ for asymmetric or intrinsic tracks and `ResizableRegion` for adjustable ones.
 The same property-specific boundary applies beyond spacing: use `flex()` (or a
 finite keyword) for `Row.flex`, `Grid.flex`, and `List.flex`; length builders and intrinsic-size keywords for
 `Skeleton.width`/`height`; length builders for `Skeleton.radius`; and
-`uiColor()` or `colorVar()` for `SelectChoice.color`. These grammars are not
+a foreground color for `SelectChoice.color` — `uiColor()` with a foreground
+token such as `success-on-quiet`, or `foregroundColorVar()` (fill aliases such
+as `uiColor('success')` are rejected). These grammars are not
 interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 `style` declarations; use `className`, public tokens, and component props.
 

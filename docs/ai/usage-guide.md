@@ -104,8 +104,9 @@ responsive count changes; use application CSS grid for asymmetric or intrinsic
 tracks and `ResizableRegion` for adjustable boundaries.
 
 Keep runtime CSS grammars property-specific: use `flex()` for Row/Grid/List flex,
-length builders for Skeleton dimensions, and `uiColor()`/`colorVar()` for
-choice-icon colors. Do not cast between their opaque brands or generate raw
+length builders for Skeleton dimensions, and a foreground color for choice
+icons (`uiColor('success-on-quiet')` or `foregroundColorVar()`; the bare
+`success`/`warning`/`danger`/`pop` fill aliases are rejected). Do not cast between their opaque brands or generate raw
 row `style` strings; use `className`, public tokens, and cataloged props.
 
 Menu adapters may pass product event/drop metadata through the typed

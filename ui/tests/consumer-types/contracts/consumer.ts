@@ -35,10 +35,12 @@ import {
   colorVar,
   type CssColor,
   type CssFlex,
+  type CssForegroundColor,
   type CssLength,
   type CssLengthExpression,
   type CssSize,
   flex,
+  foregroundColorVar,
   lengthVar,
   pct,
   plus,
@@ -158,10 +160,16 @@ lengthVar('app-gap');
 // grammar, while semantic keywords remain finite and media queries stay raw.
 const listFlex: CssFlex = flex(2, 1, rem(20));
 const skeletonWidth: CssSize = pct(60);
-const choiceColor: CssColor = colorVar(
+const choiceColor: CssForegroundColor = foregroundColorVar(
   '--app-choice-color',
-  uiColor('success'),
+  uiColor('success-on-quiet'),
 );
+const semanticChoiceColor: CssForegroundColor = uiColor('text-quiet');
+const aliasChoiceColor: CssForegroundColor = uiColor('warning-text');
+// A foreground color is still a complete color; a fill stays a plain color.
+const foregroundIsColor: CssColor = choiceColor;
+const fillColor: CssColor = colorVar('--app-fill-color', uiColor('success'));
+void [semanticChoiceColor, aliasChoiceColor, foregroundIsColor, fillColor];
 List({ flex: listFlex });
 List({ flex: 'none' });
 Row({ flex: listFlex });
@@ -237,6 +245,36 @@ const lengthColorChoice: SelectChoice = {
   color: px(1),
 };
 void lengthColorChoice;
+const fillAliasChoice: SelectChoice = {
+  value: 'fill',
+  label: 'Fill',
+  // @ts-expect-error KUI-T013 the success fill alias is a pale background, not an icon foreground.
+  color: uiColor('success'),
+};
+void fillAliasChoice;
+const popAliasChoice: SelectChoice = {
+  value: 'pop',
+  label: 'Pop',
+  // @ts-expect-error KUI-T013 the pop fill alias is a pale background, not an icon foreground.
+  color: uiColor('pop'),
+};
+void popAliasChoice;
+const fillTokenChoice: SelectChoice = {
+  value: 'fill-token',
+  label: 'Fill token',
+  // @ts-expect-error KUI-T013 fill tokens are not foreground tokens.
+  color: uiColor('danger-fill-quiet'),
+};
+void fillTokenChoice;
+const plainVarChoice: SelectChoice = {
+  value: 'plain-var',
+  label: 'Plain var',
+  // @ts-expect-error KUI-T013 an unqualified app color may be a fill; use foregroundColorVar().
+  color: colorVar('--app-choice-color'),
+};
+void plainVarChoice;
+// @ts-expect-error KUI-T013 a foreground fallback cannot be a fill alias.
+foregroundColorVar('--app-choice-color', uiColor('warning'));
 // @ts-expect-error KUI-T013 row declaration strings were removed; use className and public tokens.
 ListItem({ label: 'Item', style: 'color:red' });
 // @ts-expect-error KUI-T013 row declaration strings were removed; use className and public tokens.

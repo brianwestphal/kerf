@@ -121,12 +121,15 @@
         "CssFlex",
         "CssSize",
         "CssColor",
+        "CssForegroundColor",
+        "UiForegroundColorName",
         "flex",
         "uiColor",
-        "colorVar"
+        "colorVar",
+        "foregroundColorVar"
       ],
       "kind": "property-specific-css-value",
-      "summary": "List flex, Skeleton dimensions, and Select icon colors use separate typed CSS grammars; row declaration-string props are absent rather than sharing a generic CSS escape hatch."
+      "summary": "List flex, Skeleton dimensions, and Select icon colors use separate typed CSS grammars; Select icon colors accept only foreground colors, so fill aliases such as uiColor('success') and unqualified colorVar() values are rejected. Row declaration-string props are absent rather than sharing a generic CSS escape hatch."
     },
     {
       "id": "KUI-T014",

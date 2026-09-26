@@ -5,6 +5,7 @@ import {
   colorVar,
   em,
   flex,
+  foregroundColorVar,
   lengthVar,
   pct,
   plus,
@@ -67,6 +68,18 @@ describe('typed CSS values', () => {
     );
   });
 
+  it('builds foreground colors from foreground tokens and app properties', () => {
+    expect(uiColor('success-on-quiet')).toBe(
+      'var(--kui-color-success-on-quiet)',
+    );
+    expect(foregroundColorVar('--app-icon-color')).toBe(
+      'var(--app-icon-color)',
+    );
+    expect(
+      foregroundColorVar('--app-icon-color', uiColor('neutral-on-quiet')),
+    ).toBe('var(--app-icon-color, var(--kui-color-neutral-on-quiet))');
+  });
+
   it('rejects invalid flex factors and semantic color names', () => {
     for (const value of [Number.NaN, Number.POSITIVE_INFINITY, -Infinity])
       expect(() => flex(value)).toThrow(
@@ -121,5 +134,12 @@ describe('typed CSS values', () => {
           'colorVar() requires an ASCII custom property name such as --app-color.',
         ),
       );
+    expect(() =>
+      foregroundColorVar('--icon;color:red' as `--${string}`),
+    ).toThrow(
+      new TypeError(
+        'foregroundColorVar() requires an ASCII custom property name such as --app-icon-color.',
+      ),
+    );
   });
 });

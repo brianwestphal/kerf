@@ -294,8 +294,10 @@ primitive `CssLength` values are distinct from non-standalone
 input, and `Row.gap`/`Grid.gap`/`List.gap` plus `Spacer` width/height accept direct `UiSpaceName` shorthands or a complete typed
 length instead of unrestricted CSS strings. Source and packed-tarball type
 contracts pin that distinction.
-`CssFlex`, `CssSize`, and `CssColor` extend the same property-specific rule to
-Row/Grid/List flex, Skeleton geometry, and Select choice icons. Row declaration-string
+`CssFlex`, `CssSize`, and `CssForegroundColor` (a `CssColor` subtype minted
+only from foreground tokens or `foregroundColorVar()`) extend the same
+property-specific rule to Row/Grid/List flex, Skeleton geometry, and Select
+choice icons. Row declaration-string
 props are removed before 5.0 stable in favor of classes, public tokens, and
 semantic props; media queries and numeric pixel APIs keep their own grammars.
 

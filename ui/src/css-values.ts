@@ -3,6 +3,7 @@ declare const cssLengthBrand: unique symbol;
 declare const cssLengthExpressionBrand: unique symbol;
 declare const cssFlexBrand: unique symbol;
 declare const cssColorBrand: unique symbol;
+declare const cssForegroundColorBrand: unique symbol;
 
 /**
  * A complete typed CSS value minted by a property-specific Kerf UI builder.
@@ -39,6 +40,19 @@ export type CssFlex = CssValue & {
 /** A complete CSS color value. It is not interchangeable with a length. */
 export type CssColor = CssValue & {
   readonly [cssColorBrand]: 'CssColor';
+};
+
+/**
+ * A complete CSS color meant to paint a foreground: text or an icon drawn over
+ * a surface. Mint it with {@link uiColor} and a foreground token name
+ * ({@link UiForegroundColorName}) or with {@link foregroundColorVar}. It is a
+ * {@link CssColor}, but a plain `CssColor` is not a foreground color: fill,
+ * border, and surface tokens (including the `success` / `warning` / `danger` /
+ * `pop` fill aliases) are pale backgrounds that leave a foreground nearly
+ * invisible.
+ */
+export type CssForegroundColor = CssColor & {
+  readonly [cssForegroundColorBrand]: 'CssForegroundColor';
 };
 
 export type CssFlexKeyword = 'none' | 'auto' | 'initial';
@@ -135,6 +149,21 @@ const uiColorNames = [
 
 /** Names of the public `--kui-color-*` semantic tokens. */
 export type UiColorName = (typeof uiColorNames)[number];
+
+/**
+ * The semantic tokens that paint a foreground: the `*-on-*` roles, the text
+ * roles, and their `*-text` compatibility aliases. The bare `success`,
+ * `warning`, `danger`, `pop`, and `accent` aliases are quiet fills, not
+ * foregrounds.
+ */
+export type UiForegroundColorName = Extract<
+  UiColorName,
+  | `${string}-on-${string}`
+  | `${string}-text`
+  | 'text'
+  | 'text-quiet'
+  | 'text-link'
+>;
 
 /** Kerf UI's complete spacing-token vocabulary. `s` and `xl` are exceptions. */
 export type UiSpaceName = 'none' | '2xs' | 'xs' | 's' | 'm' | 'l' | 'xl';
@@ -243,17 +272,42 @@ export function flex(
   return `${serializeNonnegativeNumber(grow, 'flex')} ${serializeNonnegativeNumber(shrink, 'flex')} ${basis}` as CssFlex;
 }
 
-/** Resolve a public Kerf UI semantic color token. */
-export function uiColor(name: UiColorName): CssColor {
+/**
+ * The brand {@link uiColor} returns for a token name: a
+ * {@link CssForegroundColor} for a foreground token, otherwise a plain
+ * {@link CssColor}.
+ */
+export type UiColor<Name extends UiColorName> =
+  Name extends UiForegroundColorName ? CssForegroundColor : CssColor;
+
+/**
+ * Resolve a public Kerf UI semantic color token. A foreground token name
+ * (`success-on-quiet`, `text-quiet`, …) returns a {@link CssForegroundColor};
+ * any other token returns a plain {@link CssColor}.
+ */
+export function uiColor<Name extends UiColorName>(name: Name): UiColor<Name> {
   if (!(uiColorNames as readonly string[]).includes(name))
     throw new RangeError(
       `uiColor() received unknown color name ${String(name)}.`,
     );
-  return `var(--kui-color-${name})` as CssColor;
+  return `var(--kui-color-${name})` as UiColor<Name>;
 }
 
 /** Reference an application-owned custom property whose contract is a color. */
 export function colorVar(name: `--${string}`, fallback?: CssColor): CssColor {
   validateCustomPropertyName(name, 'colorVar', '--app-color');
   return `var(${name}${fallback === undefined ? '' : `, ${fallback}`})` as CssColor;
+}
+
+/**
+ * Reference an application-owned custom property whose contract is a
+ * foreground color (text or an icon over a surface). Use it where a prop
+ * accepts only {@link CssForegroundColor}, such as `SelectChoice.color`.
+ */
+export function foregroundColorVar(
+  name: `--${string}`,
+  fallback?: CssForegroundColor,
+): CssForegroundColor {
+  validateCustomPropertyName(name, 'foregroundColorVar', '--app-icon-color');
+  return `var(${name}${fallback === undefined ? '' : `, ${fallback}`})` as CssForegroundColor;
 }

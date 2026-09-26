@@ -124,7 +124,9 @@ the folder modules, and CSS only imports their owner stylesheets.
   shorthand (`gap="xs"`, `gap="m"`) or a complete `CssLength` from the CSS-free
   `@kerfjs/ui/css-values` builders; raw CSS strings are rejected. Use `flex()`
   for List flex, typed lengths for Skeleton geometry, and
-  `uiColor()`/`colorVar()` for choice-icon colors. These brands are intentionally
+  foreground colors for choice icons: `uiColor()` with an `*-on-*`/text token
+  or `foregroundColorVar()`; fill aliases such as `uiColor('success')` do not
+  type-check. These brands are intentionally
   not interchangeable; rows use classes/tokens/props rather than raw `style`.
 - **Use `Grid` for a fixed positive count of equal-width columns.** It uses
   zero-minimum fractional tracks, so intrinsic content cannot make one column

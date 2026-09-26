@@ -3345,7 +3345,8 @@
       "publicExports": [
         "Select",
         "uiColor",
-        "colorVar"
+        "colorVar",
+        "foregroundColorVar"
       ],
       "cssValueProps": [
         {
@@ -3353,18 +3354,18 @@
           "grammar": "color",
           "helpers": [
             "uiColor",
-            "colorVar"
+            "foregroundColorVar"
           ],
           "shorthands": [],
           "canonicalShorthands": [],
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
-          "examples": ["color: uiColor(\"success-on-quiet\")", "color: colorVar(\"--app-choice-color\")"]
+          "examples": ["color: uiColor(\"success-on-quiet\")", "color: foregroundColorVar(\"--app-choice-color\")"]
         }
       ],
       "useWhen": [
         "Choose a controlled value from a moderate or long list, including grouped and icon-bearing choices.",
-        "Color an optional choice icon with uiColor() or colorVar() using a foreground token such as success-on-quiet; fill tokens such as success are backgrounds and leave the icon nearly invisible. The CssColor contract intentionally rejects lengths and raw color strings."
+        "Color an optional choice icon with a CssForegroundColor: uiColor() with a foreground token such as success-on-quiet, or foregroundColorVar() for an app-owned property. Fill tokens such as success are backgrounds that leave the icon nearly invisible, so they, lengths, raw color strings, and unqualified colorVar() values are rejected."
       ],
       "avoidWhen": [
         "Do not use for commands or a small choice set that should stay visible."

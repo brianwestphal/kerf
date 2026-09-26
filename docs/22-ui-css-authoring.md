@@ -51,13 +51,24 @@ global baseline.
 brands plus deterministic builders:
 
 ```ts
-import { calc, flex, pct, plus, rem, space, uiColor } from "@kerfjs/ui/css-values";
+import {
+  calc,
+  flex,
+  foregroundColorVar,
+  pct,
+  plus,
+  rem,
+  space,
+  uiColor,
+} from "@kerfjs/ui/css-values";
 
 space("xs"); // var(--kui-space-xs)
 rem(0.25); // 0.25rem
 calc(plus(rem(0.25), pct(10))); // calc(0.25rem + 10%)
 flex(2, 1, rem(20)); // 2 1 20rem
-uiColor("success"); // var(--kui-color-success)
+uiColor("success-on-quiet"); // var(--kui-color-success-on-quiet), a CssForegroundColor
+uiColor("success"); // var(--kui-color-success), a CssColor fill
+foregroundColorVar("--app-icon-color"); // var(--app-icon-color), a CssForegroundColor
 ```
 
 `CssLength` pragmatically includes percentages for dimension-valued UI props.
@@ -73,8 +84,15 @@ The public props keep CSS property grammars separate. `Row.gap` and `List.gap` a
 complete `CssLength`; `List.flex` accepts its boolean default, finite keywords,
 or `CssFlex` from `flex()`. `Skeleton.width`/`height` accept typed lengths and
 finite intrinsic-size keywords, while `radius` accepts only `CssLength`.
-`SelectChoice.color` accepts `CssColor` from `uiColor()` or restrictive
-`colorVar()`. Media-query strings remain a separate grammar, and semantic pixel
+`SelectChoice.color` paints an icon, so it accepts only `CssForegroundColor`: a
+`CssColor` subtype that `uiColor()` returns for a foreground token name
+(`UiForegroundColorName`: the `*-on-*` roles, `text`, `text-quiet`,
+`text-link`, and the `*-text` aliases) and that `foregroundColorVar()` returns
+for an application-owned property. The bare `success`, `warning`, `danger`,
+`pop`, and `accent` tokens are compatibility aliases for quiet fills; they, the
+other fill/border/surface tokens, and a plain `colorVar()` value stay
+`CssColor` and are rejected there, because a fill paints a nearly invisible
+icon. Media-query strings remain a separate grammar, and semantic pixel
 props remain numbers. Raw CSS string compatibility and row-level `style`
 declarations were intentionally removed before 5.0 stable so invalid or
 cross-property values fail at typecheck time. Use row `className`, public

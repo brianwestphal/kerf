@@ -1,7 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 import { ChevronDown } from 'lucide';
 
-import { type CssColor, em } from './css-values.js';
+import { type CssForegroundColor, em } from './css-values.js';
 import { LucideIcon, type LucideNode } from './lucide-icon.js';
 import { Skeleton } from './skeleton.js';
 
@@ -11,11 +11,12 @@ export interface SelectChoice<Value extends string = string> {
   icon?: LucideNode;
   iconName?: string;
   /**
-   * Typed semantic or application-owned color for the optional icon. Use a
-   * foreground token (`uiColor('success-on-quiet')`), not a fill such as
-   * `uiColor('success')`, which is a pale background tint.
+   * Foreground color for the optional icon: a semantic foreground token such
+   * as `uiColor('success-on-quiet')`, or an application-owned
+   * `foregroundColorVar('--app-icon-color')`. Fill tokens such as
+   * `uiColor('success')` are pale background tints and do not type-check.
    */
-  color?: CssColor;
+  color?: CssForegroundColor;
   group?: string;
   separatorBefore?: boolean;
 }
