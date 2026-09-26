@@ -488,6 +488,148 @@ export function analyzeCatalogShellSource({ filePath, source }) {
   return diagnostics;
 }
 
+export const recipeConformanceRules = Object.freeze({
+  parseError: 'recipe/parse-error',
+  publicImports: 'recipe/public-imports',
+  localStylesheet: 'recipe/local-stylesheet',
+  inlineStyle: 'recipe/inline-style',
+  customStyleClass: 'recipe/custom-style-class',
+});
+
+const stylesheetSpecifier = /\.css(?:\?|$)/i;
+
+/**
+ * The class names a recipe may author by hand: the public layout vocabulary
+ * (`.kui-content`, `.kui-content-item`, …) and the public classes of themed Web
+ * Awesome entries. Component-internal public classes are excluded, because a
+ * recipe configures those components through props instead of their markup.
+ */
+export function recipeClassVocabulary(catalog) {
+  return new Set(
+    (catalog?.entries ?? [])
+      .filter((entry) => entry.id === 'layout' || entry.source === 'webawesome')
+      .flatMap((entry) => entry.publicClasses ?? []),
+  );
+}
+
+/**
+ * Recipes compose public components through their configuration. A recipe
+ * source may not import a stylesheet that is not a public `@kerfjs/ui` export,
+ * set an inline style, or name a class outside the supplied public vocabulary
+ * (the layout classes and themed Web Awesome classes the catalog publishes).
+ */
+export function analyzeRecipeSource({
+  route,
+  filePath,
+  absoluteFilePath = filePath,
+  source,
+  uiRoot,
+  packageExports = new Set(),
+  allowedClasses = new Set(),
+}) {
+  const file = sourceFile(filePath, source);
+  const diagnostics = file.parseDiagnostics.map((problem) =>
+    diagnostic(
+      recipeConformanceRules.parseError,
+      route,
+      filePath,
+      ts.flattenDiagnosticMessageText(problem.messageText, ' '),
+      file,
+      problem.start === undefined
+        ? file
+        : ts.getTokenAtPosition(file, problem.start),
+    ),
+  );
+
+  for (const statement of file.statements) {
+    if (
+      !ts.isImportDeclaration(statement) ||
+      !ts.isStringLiteral(statement.moduleSpecifier)
+    )
+      continue;
+    const specifier = statement.moduleSpecifier.text;
+    const publicUi =
+      specifier.startsWith('@kerfjs/ui') &&
+      !specifier.includes('/src/') &&
+      packageExported(specifier, packageExports);
+    if (specifier.startsWith('@kerfjs/ui') && !publicUi)
+      diagnostics.push(
+        diagnostic(
+          recipeConformanceRules.publicImports,
+          route,
+          filePath,
+          `Import ${specifier} is not a public @kerfjs/ui package export.`,
+          file,
+          statement.moduleSpecifier,
+        ),
+      );
+    if (stylesheetSpecifier.test(specifier) && !publicUi)
+      diagnostics.push(
+        diagnostic(
+          recipeConformanceRules.localStylesheet,
+          route,
+          filePath,
+          `Recipes compose component configuration instead of importing stylesheet ${specifier}; only public @kerfjs/ui stylesheets are allowed.`,
+          file,
+          statement.moduleSpecifier,
+        ),
+      );
+    if (
+      specifier.startsWith('.') &&
+      isInside(
+        resolve(dirname(absoluteFilePath), specifier),
+        resolve(uiRoot, 'src'),
+      )
+    )
+      diagnostics.push(
+        diagnostic(
+          recipeConformanceRules.publicImports,
+          route,
+          filePath,
+          `Import ${specifier} reaches into ui/src instead of a public production API.`,
+          file,
+          statement.moduleSpecifier,
+        ),
+      );
+  }
+
+  const visit = (node) => {
+    if (ts.isJsxAttribute(node)) {
+      const attributeName = node.name.getText(file);
+      if (attributeName === 'style')
+        diagnostics.push(
+          diagnostic(
+            recipeConformanceRules.inlineStyle,
+            route,
+            filePath,
+            'Recipes must configure components instead of setting inline styles.',
+            file,
+            node,
+          ),
+        );
+      if (['class', 'className'].includes(attributeName)) {
+        const unlisted = collectStaticStrings(node)
+          .flatMap((value) => value.split(/\s+/))
+          .filter((name) => name && !allowedClasses.has(name));
+        if (unlisted.length)
+          diagnostics.push(
+            diagnostic(
+              recipeConformanceRules.customStyleClass,
+              route,
+              filePath,
+              `Recipes may only use published public classes; configure a component instead of adding ${unlisted.map((name) => `"${name}"`).join(', ')}.`,
+              file,
+              node,
+            ),
+          );
+      }
+    }
+    ts.forEachChild(node, visit);
+  };
+  visit(file);
+  return diagnostics;
+}
+
 function exceptionDiagnostic(rule, message) {
   return {
     rule,

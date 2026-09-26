@@ -4,17 +4,29 @@ import '@kerfjs/ui/webawesome.css';
 import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
-import './composer-form.css';
 
+import { List } from '@kerfjs/ui/list';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
+import { Row } from '@kerfjs/ui/row';
 import { Select } from '@kerfjs/ui/select';
 import { StateBanner } from '@kerfjs/ui/state-banner';
+import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 
-import { RecipeOwnershipNote, RecipeRoot } from './recipe-root.js';
-import type { RecipeFactory } from './types.js';
+import type { RecipeFactory, RecipePresentation } from './types.js';
+
+export const presentation: RecipePresentation = {
+  viewport: {
+    width: 'medium',
+    frame: 'solid',
+    surface: 'default',
+    overflow: 'hidden',
+    shadow: true,
+  },
+  note: 'The recipe owns field, message, and action rhythm. The app owns validation rules, draft persistence, permissions, and transport.',
+};
 
 type ValueField = HTMLElement & { value: string };
 
@@ -40,78 +52,75 @@ export const createRecipe: RecipeFactory = (announce) => {
   const audience = signal('team');
   const status = signal<'idle' | 'error' | 'saved'>('idle');
   const render = () => (
-    <RecipeRoot
-      element="form"
-      recipe="recipe-composer-form"
-      measure="form"
-      contentLayout
-      ariaLabelledBy="recipe-composer-title"
-      ariaDescribedBy="recipe-composer-summary"
+    <form
+      data-recipe="recipe-composer-form"
+      aria-labelledby="recipe-composer-title"
+      aria-describedby="recipe-composer-summary"
       noValidate
     >
-      <Toolbar
-        label="Publish workspace update"
-        dividerSides=""
-        leading={
-          <ToolbarText
-            text="Publish workspace update"
-            size="xlarge"
-            id="recipe-composer-title"
+      <List gap="l" controlInsets="tb">
+        <List>
+          <Toolbar
+            label="Publish workspace update"
+            dividerSides=""
+            leading={
+              <ToolbarText
+                text="Publish workspace update"
+                size="xlarge"
+                id="recipe-composer-title"
+              />
+            }
           />
-        }
-      />
-      <div class="recipe-form__heading-summary">
-        <ListInsetText sides="rl">
-          <span id="recipe-composer-summary">
-            Share a concise, actionable update with collaborators.
-          </span>
-        </ListInsetText>
-      </div>
-      {status.value === 'error' && (
-        <StateBanner
-          title="Add a title before publishing"
-          detail="The update body and audience are preserved."
-          tone="danger"
-          urgency="alert"
-        />
-      )}
-      {status.value === 'saved' && (
-        <StateBanner
-          title="Update published"
-          detail="The team audience can now read it."
-          tone="success"
-        />
-      )}
-      <div class="recipe-form__section recipe-form__fields">
-        <wa-input
-          name="recipe-title"
-          label="Update title"
-          hint="Summarize the outcome in one line."
-          required
-          value={title.value}
-        ></wa-input>
-        <wa-textarea
-          name="recipe-body"
-          label="Details"
-          hint="Include decisions, owners, and the next checkpoint."
-          rows="5"
-          maxlength="400"
-          with-count
-          value={body.value}
-        ></wa-textarea>
-        <Select<string>
-          name="recipe-audience"
-          value={audience.value}
-          label="Audience"
-          choices={[
-            { value: 'team', label: 'Workspace team' },
-            { value: 'reviewers', label: 'Reviewers' },
-            { value: 'organization', label: 'Entire organization' },
-          ]}
-        />
-      </div>
-      <footer class="recipe-form__section recipe-form__footer">
-        <div class="recipe-form__actions kui-control-cluster">
+          <ListInsetText sides="rl">
+            <Text variant="span" tone="quiet" id="recipe-composer-summary">
+              Share a concise, actionable update with collaborators.
+            </Text>
+          </ListInsetText>
+        </List>
+        {status.value === 'error' && (
+          <StateBanner
+            title="Add a title before publishing"
+            detail="The update body and audience are preserved."
+            tone="danger"
+            urgency="alert"
+          />
+        )}
+        {status.value === 'saved' && (
+          <StateBanner
+            title="Update published"
+            detail="The team audience can now read it."
+            tone="success"
+          />
+        )}
+        <List gap="xs" controlInsets="rl">
+          <wa-input
+            name="recipe-title"
+            label="Update title"
+            hint="Summarize the outcome in one line."
+            required
+            value={title.value}
+          ></wa-input>
+          <wa-textarea
+            name="recipe-body"
+            label="Details"
+            hint="Include decisions, owners, and the next checkpoint."
+            rows="5"
+            maxlength="400"
+            with-count
+            value={body.value}
+          ></wa-textarea>
+          <Select<string>
+            name="recipe-audience"
+            value={audience.value}
+            label="Audience"
+            choices={[
+              { value: 'team', label: 'Workspace team' },
+              { value: 'reviewers', label: 'Reviewers' },
+              { value: 'organization', label: 'Entire organization' },
+            ]}
+          />
+        </List>
+        <Row gap="xs" wrap controlInsets="rl">
           <wa-button
             appearance="outlined"
             data-action="recipe-action"
@@ -127,13 +136,9 @@ export const createRecipe: RecipeFactory = (announce) => {
           >
             Publish update
           </wa-button>
-        </div>
-        <RecipeOwnershipNote contentItem={false}>
-          The recipe owns field, message, and action rhythm. The app owns
-          validation rules, draft persistence, permissions, and transport.
-        </RecipeOwnershipNote>
-      </footer>
-    </RecipeRoot>
+        </Row>
+      </List>
+    </form>
   );
   return {
     render,

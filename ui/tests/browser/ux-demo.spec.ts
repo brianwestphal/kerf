@@ -1918,7 +1918,7 @@ test('routes the generated application-layout composition at wide and narrow siz
     });
 });
 
-test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating recipe notes', async ({
+test('uses a collapsible pane shell, toolbar page chrome, and opt-in recipe notes', async ({
   page,
   browserName,
 }) => {
@@ -1930,7 +1930,8 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
   const pageHeader = page.locator('.kui-catalog__header');
   const stage = page.locator('.kui-catalog__stage');
   const footer = page.locator('.kui-catalog__footer');
-  const note = stage.locator('.recipe-component__ownership');
+  // Recipe notes are catalog-owned example notes, not recipe markup.
+  const note = stage.locator('[data-catalog-example-note]');
 
   await expect(
     sidebar.getByRole('heading', { level: 1, name: 'Kerf' }),
@@ -1991,7 +1992,13 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in floating re
     'true',
   );
   await expect(note).toBeVisible();
-  await expect(note).toHaveCSS('position', 'absolute');
+  await expect(note).toContainText('The app owns routing');
+  // The note precedes the framed specimen instead of covering it.
+  const noteBox = (await note.boundingBox())!;
+  const specimenBox = (await stage
+    .locator('[data-catalog-example-viewport]')
+    .boundingBox())!;
+  expect(noteBox.y + noteBox.height).toBeLessThanOrEqual(specimenBox.y + 1);
   await expect(page.locator('.catalog-log')).toHaveText('Recipe notes shown');
 
   await page.getByRole('button', { name: 'Collapse Kerf catalog' }).click();

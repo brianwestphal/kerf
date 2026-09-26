@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 281800,
-  "measuredLargestJavaScriptGzip": 133981,
-  "measuredTotalJavaScriptGzip": 281711,
+  "totalJavaScriptGzip": 282100,
+  "measuredLargestJavaScriptGzip": 133539,
+  "measuredTotalJavaScriptGzip": 282014,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -243,6 +243,22 @@
         "measuredTotalJavaScriptGzip": 281711,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 281800
+      }
+    },
+    {
+      "at": "2026-09-26T00:23:28.283Z",
+      "reason": "KF-BMZPZM: recipes compose SplitView, NavStack, DialogSurface, Grid, Row, List, and Text through component configuration instead of route stylesheets; the removed recipe CSS is smaller than the added component modules and catalog framing.",
+      "old": {
+        "measuredLargestJavaScriptGzip": 133981,
+        "measuredTotalJavaScriptGzip": 281711,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 281800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 133539,
+        "measuredTotalJavaScriptGzip": 282014,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 282100
       }
     }
   ]

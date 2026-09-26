@@ -53,6 +53,32 @@ export function validateCatalogDemoExceptionManifest(
   manifest: unknown,
 ): CatalogDemoDiagnostic[];
 
+export const recipeConformanceRules: Readonly<{
+  parseError: string;
+  publicImports: string;
+  localStylesheet: string;
+  inlineStyle: string;
+  customStyleClass: string;
+}>;
+
+export function recipeClassVocabulary(catalog: {
+  entries?: readonly {
+    id: string;
+    source?: string;
+    publicClasses?: readonly string[];
+  }[];
+}): Set<string>;
+
+export function analyzeRecipeSource(options: {
+  route: string;
+  filePath: string;
+  absoluteFilePath?: string;
+  source: string;
+  uiRoot: string;
+  packageExports?: ReadonlySet<string>;
+  allowedClasses?: ReadonlySet<string>;
+}): CatalogDemoDiagnostic[];
+
 export function applyCatalogDemoExceptions(
   diagnostics: CatalogDemoDiagnostic[],
   exceptions: CatalogDemoException[],

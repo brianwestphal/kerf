@@ -1,4 +1,4 @@
-import type { RecipeFactory } from './types.js';
+import type { RecipeFactory, RecipePresentation } from './types.js';
 
 export const recipeIds = [
   'recipe-app-shell',
@@ -17,7 +17,10 @@ export type RecipeId = (typeof recipeIds)[number];
 
 export const recipeLoaders: Record<
   RecipeId,
-  () => Promise<{ createRecipe: RecipeFactory }>
+  () => Promise<{
+    createRecipe: RecipeFactory;
+    presentation: RecipePresentation;
+  }>
 > = {
   'recipe-app-shell': () => import('./app-shell.js'),
   'recipe-navigation-sidebar': () => import('./navigation-sidebar.js'),

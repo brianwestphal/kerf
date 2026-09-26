@@ -5462,6 +5462,11 @@
       "state": [
         { "id": "open state", "owner": "application", "required": false },
         { "id": "selected record", "owner": "application", "required": false },
+        {
+          "id": "pushed compact detail",
+          "owner": "application",
+          "required": false
+        },
         { "id": "dismiss policy", "owner": "application", "required": false },
         { "id": "record actions", "owner": "application", "required": false }
       ],
@@ -5477,7 +5482,7 @@
       },
       "accessibility": {
         "obligations": [
-          "Web Awesome owns modal focus and Escape; the application adapter restores the invoking control after hide, and Toolbar plus ToolbarText supply the visible hierarchy."
+          "Web Awesome owns modal focus, Escape, and the labeled header with its close control; the application adapter restores the invoking control after hide, and the compact NavStack back control returns to the list."
         ]
       },
       "cssValueProps": [],

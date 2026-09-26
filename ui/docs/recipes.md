@@ -1,10 +1,10 @@
 # Production composition recipes
 
-These seven reference compositions sit between individual primitives and product
-code. Open each stable UX-catalog route to run it, then copy the linked TSX and
-CSS. The examples import public package subpaths, use semantic layout owners,
-and keep state in a per-instance application adapter. They are not new
-monolithic components.
+These ten reference compositions sit between individual primitives and product
+code. Open each stable UX-catalog route to run it, then copy the linked TSX. The
+examples import public package subpaths, compose components through their
+props and tokens, and keep state in a per-instance application adapter. They
+ship no stylesheet of their own and are not new monolithic components.
 
 Copy the recipe source together with the catalog-independent
 [`mount-recipe.ts`](../ux-demo/recipes/mount-recipe.ts) adapter. It mounts the
@@ -28,11 +28,15 @@ specific dispatch; either way, wire once at a stable root and retain disposal.
 
 ## Desktop application shell
 
-[Open the recipe](../ux-demo/?component=recipe-app-shell) · [TSX source](../ux-demo/recipes/app-shell.tsx) · [shared composition CSS](../ux-demo/recipes/recipe-components.css)
+[Open the recipe](../ux-demo/?component=recipe-app-shell) · [TSX source](../ux-demo/recipes/app-shell.tsx)
 
-Use `Toolbar`, controlled `ResizableRegion` panes, and one
-`.kui-pane__content` scroll owner per pane. The recipe owns the shell topology;
-the app owns routing, responsive pane visibility, sizes, persistence, and data.
+A frame `Pane` carries the `Toolbar` header; a `Row` places controlled
+`ResizableRegion` navigation and inspector panes around a content `Pane` that a
+one-column `Grid` grows to fill, and each pane keeps one `.kui-pane__content`
+scroll owner. Below desktop sizes the app reads `deviceClass()` and shows one
+pane at a time, switched by a pressed-state `ToolbarControlGroup`. The recipe
+owns the shell topology; the app owns routing, responsive pane visibility,
+sizes, persistence, and data.
 Keep each visible pane's collapse action in its own toolbar. Once hidden, put
 its restore action in the adjacent main toolbar on the same logical edge:
 leading for an inline-start sidebar and trailing for an inline-end inspector.
@@ -64,17 +68,19 @@ controls relocate without changing focus order.
 
 [Open the recipe](../ux-demo/?component=recipe-list-detail-dialog) · [TSX source](../ux-demo/recipes/list-detail-dialog.tsx)
 
-The production Web Awesome dialog owns modal focus and Escape; the thin recipe
-adapter restores the invoking control consistently after the hide event.
-`Toolbar`, `ListHeader`, `ListItem`, and `ValueTable` own their included
-anatomy. The application owns open state, selection, dismissal policy, and
-record actions. A `ToolbarControlGroup` places the app's trailing controls in
-the top toolbar's trailing zone.
-The header sits on the dialog edge while retaining its internal control inset;
-the selected title receives the full content gutter, the metadata table fills
-the available detail width between the usual outer margins, and the action
-cluster uses one outer gutter without a second content-item inset.
-Do not rebuild the dialog or reach into private shadow parts.
+The production Web Awesome dialog owns modal focus, Escape, its labeled header,
+and its close control; the thin recipe adapter restores the invoking control
+after the hide event. `DialogSurface` chooses the large modal with no body
+inset, because `SplitView` and its rows own list geometry, and a comfortable
+footer inset for the record actions. On roomy devices `SplitView` shows the
+project list beside its detail; each pane opens with a `ListHeader` on one
+shared line, and the dialog title, both headers, and the list text share the
+17px text edge while the `ValueTable` keeps the 8px outer margin. On compact
+devices the dialog becomes a full-screen sheet and `SplitView` becomes a
+`NavStack` drill-down whose back control the application pops. The
+application owns open state, selection, the pushed detail, dismissal policy,
+and record actions. Do not rebuild the dialog or reach into private shadow
+parts.
 
 ## Composer form
 
@@ -82,12 +88,11 @@ Do not rebuild the dialog or reach into private shadow parts.
 
 A direct `ToolbarText` supplies the task title, with app-owned supporting copy
 below; their ids are referenced by the form. `ListInsetText` gives that bare
-supporting copy the same content-item text inset as the fields instead of
-duplicating its geometry in recipe CSS. Production fields own labels, help, and
-native focus. The field
-and footer control edges sit directly on the shared 8px inline gutter rather
-than acquiring a second content-item padding inset; major children remain 24px
-apart and related controls use 8px gaps. The app owns
+supporting copy the same content-item text inset as the fields. Production
+fields own labels, help, and native focus. One `List` owns the 24px major
+rhythm; the field `List` and the action `Row` use `controlInsets` to sit on the
+shared 8px inline gutter with 8px gaps between related controls, rather than
+acquiring a second content-item padding inset. The app owns
 validation, drafts, permissions, and transport. Persistent error or success
 feedback is the only nested semantic surface and uses `StateBanner`, not a toast.
 Because upgraded Web Awesome fields retain live value properties, controlled
@@ -121,8 +126,8 @@ values, actions, persistence, and responsive priority.
 Drill from a library list into a detail and back with `NavStack`
 (`@kerfjs/ui/nav-stack`): the app owns the stack as a signal of views and
 pushes/pops it, `NavStack` renders it, and `wireNavStack` slides the content and
-settles the chrome (reduced motion collapses the slide to instant). A live
-`deviceClass()` badge shows the current size/orientation. See the layout guide
+settles the chrome (reduced motion collapses the slide to instant). See the
+layout guide
 [`app-layouts.md`](app-layouts.md) for choosing among `NavStack`, `SplitView`,
 `Workbench`, and `TabScaffold`.
 
@@ -151,8 +156,11 @@ reachable. `wireSidebar` owns the toggle delegation, moves focus into a panel on
 open and restores it to the trigger on close, and — when a `deviceClass()` reports
 `compact` — switches the open panel to a dismissable **overlay** (backdrop, Escape
 and backdrop-click collapse, and a trapped Tab ring, the ARIA dialog pattern). It
-also persists each panel's collapsed state through a supplied storage hook. The app
-owns each `collapsed` signal, the panel sizes, and the content; the wire owns the
+also persists each panel's collapsed state through a supplied storage hook. A
+frame `Pane` gives the arrangement one definite height, a `Row` places the rail
+beside a `List` column, and a one-column `Grid` grows the main pane above the
+drawer; the drawer's activity log is a `ValueTable`. The app owns each
+`collapsed` signal, the panel sizes, and the content; the wire owns the
 ephemeral interaction. For a full three-pane shell use `Workbench` instead — see
 [`app-layouts.md`](app-layouts.md). This recipe is covered end-to-end across
 Chromium, Firefox, and WebKit by `tests/browser/collapsible-sidebar-recipe.spec.ts`.
@@ -164,9 +172,16 @@ Chromium, Firefox, and WebKit by `tests/browser/collapsible-sidebar-recipe.spec.
 - For direct `wa-*` JSX, import types from `@kerfjs/ui/webawesome`. Import only
   individual Web Awesome registration modules and theme them with
   `@kerfjs/ui/webawesome.css`.
-- Prefer public props and variables at the composition boundary. A recipe's own
-  component may style the structure it renders, but its stylesheet must not
-  select nested Kerf or Web Awesome components. Add missing configuration to the
-  owning component instead of copying markup or reaching through its boundary.
+- Compose, don't style. A recipe ships no stylesheet, sets no inline style, and
+  names no class outside the published layout vocabulary (`.kui-content`,
+  `.kui-content-item`, …) and themed Web Awesome classes; it configures
+  components through props, `rootAttributes`, and tokens. When a recipe needs a
+  capability no component offers, record it as a component gap rather than
+  papering over it with CSS. `npm run check:recipes` enforces these rules on
+  every file in `ux-demo/recipes/`.
+- Each recipe also exports a catalog-only `presentation`: the `CatalogExample`
+  viewport that frames it in the UX catalog and its ownership note. An
+  application that copies the recipe ignores that export and mounts the
+  controller into its own container.
 - Start from the copyable mount adapter, or reproduce its complete boundary:
   wire stable `data-action` hooks once and retain every disposer.

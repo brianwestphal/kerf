@@ -14,7 +14,9 @@ const drawerPanel = (page: Page) =>
 // The reveal toggle lives in the always-visible main header (distinct from the
 // identically-named collapse toggle inside the rail).
 const revealToggle = (page: Page) =>
-  page.locator('.recipe-collapsible-sidebar__reveal');
+  page.locator(
+    '[data-recipe="recipe-collapsible-sidebar"] main [data-collapsible-target="sidebar-rail"]',
+  );
 const railInnerToggle = (page: Page) =>
   railPanel(page).locator('.kui-collapsible-panel__toggle');
 const backdrop = (page: Page) =>

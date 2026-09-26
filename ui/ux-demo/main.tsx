@@ -7,6 +7,8 @@ import './style.css';
 
 import {
   Catalog,
+  CatalogExample,
+  CatalogExampleStack,
   type CatalogRelated,
   type CatalogSection as KuiCatalogSection,
 } from '@kerfjs/ui/catalog';
@@ -103,7 +105,7 @@ import {
   selectTabScaffoldDemo,
 } from './demos/tab-scaffold.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
-import type { RecipeController } from './recipes/types.js';
+import type { RecipeController, RecipePresentation } from './recipes/types.js';
 
 const app = document.querySelector<HTMLElement>('#app');
 if (!app) throw new Error('Missing #app');
@@ -150,6 +152,7 @@ let webAwesomeDemos:
   | undefined;
 let webAwesomeLoad: Promise<void> | undefined;
 const recipeControllers = new Map<RecipeId, RecipeController>();
+const recipePresentations = new Map<RecipeId, RecipePresentation>();
 const recipeLoads = new Map<RecipeId, Promise<void>>();
 const recipeRevision = signal(0);
 
@@ -187,7 +190,8 @@ function ensureWebAwesomeDemos(): Promise<void> {
 function ensureRecipe(id: RecipeId): Promise<void> {
   const pending = recipeLoads.get(id);
   if (pending) return pending;
-  const load = recipeLoaders[id]().then(({ createRecipe }) => {
+  const load = recipeLoaders[id]().then(({ createRecipe, presentation }) => {
+    recipePresentations.set(id, presentation);
     recipeControllers.set(
       id,
       createRecipe((message) => {
@@ -216,7 +220,25 @@ function Stage() {
       void ensureRecipe(selected.id);
       return <LoadingSpinner label={`Loading ${selected.name} recipe`} />;
     }
-    return controller.render();
+    // The catalog frames every recipe in its declared specimen viewport and
+    // shows its ownership note on request; the recipe renders only app UI. A
+    // full-width recipe (a whole application arrangement) spans the canvas
+    // measure; narrower recipes sit in the same centered example column as
+    // focused component demos.
+    const presentation = recipePresentations.get(selected.id)!;
+    const example = (
+      <CatalogExample
+        note={recipeNotesVisible.value ? presentation.note : undefined}
+        viewport={presentation.viewport}
+      >
+        {controller.render()}
+      </CatalogExample>
+    );
+    return presentation.viewport?.width === 'full' ? (
+      example
+    ) : (
+      <CatalogExampleStack>{example}</CatalogExampleStack>
+    );
   }
   if (needsWebAwesome(selected) && !webAwesomeReady.value) {
     void ensureWebAwesomeDemos();

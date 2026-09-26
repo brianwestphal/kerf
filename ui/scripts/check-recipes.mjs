@@ -1,21 +1,36 @@
-import { access, readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import {
+  analyzeRecipeSource,
+  recipeClassVocabulary,
+} from './lib/catalog-demo-conformance.mjs';
+
 const root = fileURLToPath(new URL('..', import.meta.url));
-const [artifact, packageJson, loaders, docs, selection, skill, llms, adapter] =
-  await Promise.all([
-    readFile(resolve(root, 'ai/component-catalog.json'), 'utf8').then(
-      JSON.parse,
-    ),
-    readFile(resolve(root, 'package.json'), 'utf8').then(JSON.parse),
-    readFile(resolve(root, 'ux-demo/recipes/loaders.ts'), 'utf8'),
-    readFile(resolve(root, 'docs/recipes.md'), 'utf8'),
-    readFile(resolve(root, 'docs/component-selection.md'), 'utf8'),
-    readFile(resolve(root, 'ai/skill.md'), 'utf8'),
-    readFile(resolve(root, 'llms.txt'), 'utf8'),
-    readFile(resolve(root, 'ux-demo/recipes/mount-recipe.ts'), 'utf8'),
-  ]);
+const [
+  artifact,
+  packageJson,
+  loaders,
+  docs,
+  selection,
+  skill,
+  llms,
+  adapter,
+  shellStyles,
+] = await Promise.all([
+  readFile(resolve(root, 'ai/component-catalog.json'), 'utf8').then(JSON.parse),
+  readFile(resolve(root, 'package.json'), 'utf8').then(JSON.parse),
+  readFile(resolve(root, 'ux-demo/recipes/loaders.ts'), 'utf8'),
+  readFile(resolve(root, 'docs/recipes.md'), 'utf8'),
+  readFile(resolve(root, 'docs/component-selection.md'), 'utf8'),
+  readFile(resolve(root, 'ai/skill.md'), 'utf8'),
+  readFile(resolve(root, 'llms.txt'), 'utf8'),
+  readFile(resolve(root, 'ux-demo/recipes/mount-recipe.ts'), 'utf8'),
+  readFile(resolve(root, 'ux-demo/style.css'), 'utf8'),
+]);
+const packageExports = new Set(Object.keys(packageJson.exports));
+const allowedClasses = recipeClassVocabulary(artifact);
 const expected = [
   'recipe-app-shell',
   'recipe-navigation-sidebar',
@@ -55,8 +70,22 @@ for (const entry of recipes) {
     fail(`${entry.id} is not a literal dynamic import`);
   if (!hasStableRecipeMarker(source, entry.id))
     fail(`${entry.id} source is missing its stable marker`);
-  if (!source.includes(`import './${stem}.css'`))
-    fail(`${entry.id} must import its same-basename owned stylesheet`);
+  if (!/^export const presentation: RecipePresentation = \{/m.test(source))
+    fail(
+      `${entry.id} must export its catalog presentation (viewport and ownership note)`,
+    );
+  for (const problem of analyzeRecipeSource({
+    route: entry.id,
+    filePath: `ux-demo/recipes/${stem}.tsx`,
+    absoluteFilePath: sourcePath,
+    source,
+    uiRoot: root,
+    packageExports,
+    allowedClasses,
+  }))
+    fail(
+      `ux-demo/recipes/${stem}.tsx:${problem.line}:${problem.column} [${problem.rule}] ${problem.message}`,
+    );
   if (!source.includes('@kerfjs/ui/layout.css'))
     fail(`${entry.id} must import the semantic layout layer`);
   if (
@@ -100,12 +129,37 @@ if (!docs.includes('[`mount-recipe.ts`](../ux-demo/recipes/mount-recipe.ts)'))
   fail('recipes.md must link the copyable mount adapter');
 if (!packageJson.files.includes('ux-demo/recipes'))
   fail('package must deliver recipe source and its mount adapter');
-try {
-  await access(resolve(root, 'ux-demo/recipes/recipe-components.css'));
-  fail('aggregate recipe-components.css must not exist');
-} catch {
-  // Each recipe and shared visual component owns a same-basename stylesheet.
+// Recipes compose components through configuration: no route stylesheet may
+// exist beside them, the shared adapter files obey the same source rules, and
+// the catalog shell stylesheet carries no recipe-specific rules.
+const recipeFiles = await readdir(resolve(root, 'ux-demo/recipes'));
+for (const name of recipeFiles.filter((file) => /\.css$/i.test(file)))
+  fail(
+    `ux-demo/recipes/${name} must not exist; recipes compose Kerf components, layouts, and Web Awesome surfaces through their public configuration`,
+  );
+for (const name of recipeFiles.filter(
+  (file) =>
+    /\.tsx?$/.test(file) &&
+    !recipes.some(({ id }) => `${id.replace(/^recipe-/, '')}.tsx` === file),
+)) {
+  const sourcePath = resolve(root, `ux-demo/recipes/${name}`);
+  for (const problem of analyzeRecipeSource({
+    route: '@recipes',
+    filePath: `ux-demo/recipes/${name}`,
+    absoluteFilePath: sourcePath,
+    source: await readFile(sourcePath, 'utf8'),
+    uiRoot: root,
+    packageExports,
+    allowedClasses,
+  }))
+    fail(
+      `ux-demo/recipes/${name}:${problem.line}:${problem.column} [${problem.rule}] ${problem.message}`,
+    );
 }
+if (/recipe/i.test(shellStyles))
+  fail(
+    'ux-demo/style.css must not carry recipe-specific rules; the catalog frames recipes through CatalogExample',
+  );
 if (failures.length) {
   console.error('[check-recipes] Recipe catalog drifted:\n');
   failures.forEach((failure) => console.error(`- ${failure}`));

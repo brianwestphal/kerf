@@ -16,6 +16,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   as its color and was nearly invisible; it now uses `success-on-quiet`, and the
   `SelectChoice.color` guidance names foreground tokens.
 
+- `@kerfjs/ui` UX catalog: the ten production recipes now compose Kerf
+  components, layouts, and Web Awesome surfaces through their public
+  configuration alone, with no route stylesheets, inline styles, or
+  styling-only classes. The list-detail dialog is rebuilt from `DialogSurface`,
+  the dialog's own labeled header and close control, `SplitView` (a full-screen
+  list-to-detail drill-down on compact devices), aligned `ListHeader`s, a
+  `ValueTable`, and footer actions. The desktop application shell switches to one
+  pane at a time below desktop sizes through `deviceClass()`. Page and pane
+  headings stack instead of hiding their titles at narrow widths, and supporting
+  copy, content-item text, and loading skeletons sit on the shared 17px text
+  inset. The catalog frames each recipe in a `CatalogExample` viewport that the
+  recipe declares through an exported `presentation`, and recipe ownership notes
+  render as that example's note. `npm run check:recipes` now fails on a recipe
+  stylesheet, an inline style, a class outside the published layout and Web
+  Awesome vocabulary, a non-public stylesheet import, or recipe-specific rules in
+  the catalog shell stylesheet.
 - Fixed `@kerfjs/ui/webawesome.css` `wa-dialog` titles given as a plain-string
   `label` sitting at the bare surface inset; they now inset by one bordered
   item step (`--kui-layout-item-padding` + 1px) so the header label lines up

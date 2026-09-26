@@ -445,8 +445,10 @@ Ten task-oriented recipes bridge primitives and product adapters: a resizable
 application shell, navigation sidebar, workspace header, list-detail dialog,
 composer form, list-state lifecycle, and compact mixed-control toolbar. They
 are lazy catalog modules rather than new runtime exports. Each uses public
-component subpaths plus `layout.css`, declares what the recipe
-owns versus application policy, and has a stable `?component=recipe-*` route.
+component subpaths plus `layout.css`, composes components through their
+public configuration with no stylesheet, inline style, or styling-only class,
+declares what the recipe owns versus application policy, and has a stable
+`?component=recipe-*` route.
 The composer reference keeps one visible form surface with toolbar title and
 supporting-copy hierarchy, fields and actions on the shared 8px control gutter,
 and 24px major rhythm; only its conditional `StateBanner` adds another semantic
@@ -455,8 +457,8 @@ the upgraded Web Awesome fields' live value properties with their rendered
 empty attributes and announces the reset through the catalog live region.
 `ui/docs/recipes.md` is the copyable guide; canonical recipe facts live beside
 component facts in `ui/ai/component-catalog.json` and project into the typed
-catalog. A dedicated drift gate checks sources, imports, loaders, routes, and AI
-links. Browser coverage exercises keyboard flows, deterministic transitions,
+catalog. A dedicated drift gate checks sources, imports, loaders, routes, AI
+links, and the no-route-styling rule. Browser coverage exercises keyboard flows, deterministic transitions,
 light/dark/contrast/reduced-motion, wide/intermediate/narrow layout, and 200%
 zoom.
 

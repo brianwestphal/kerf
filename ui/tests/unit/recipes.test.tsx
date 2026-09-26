@@ -47,7 +47,22 @@ describe('production composition recipes', () => {
 
   it('keeps one scroll owner for each application-shell pane and updates controlled resize state', () => {
     const recipe = createAppShell(() => {});
-    expect(html(recipe.render()).match(/kui-pane__content/g)).toHaveLength(3);
+    const template = document.createElement('template');
+    template.innerHTML = html(recipe.render());
+    // The shell frame pane plus its navigation, content, and inspector panes.
+    const panes = [
+      ...template.content.querySelectorAll('[data-component="pane"]'),
+    ];
+    expect(panes.map((pane) => pane.id)).toEqual([
+      '',
+      'recipe-shell-navigation',
+      'recipe-shell-content',
+      'recipe-shell-inspector',
+    ]);
+    for (const pane of panes)
+      expect(pane.querySelectorAll(':scope > .kui-pane__content')).toHaveLength(
+        1,
+      );
     recipe.resize?.('recipe-navigation', 288);
     expect(html(recipe.render())).toContain(
       '--kui-resizable-region-size:288px',
@@ -125,13 +140,17 @@ describe('production composition recipes', () => {
     const root = template.content.querySelector<HTMLFormElement>(
       '[data-recipe="recipe-composer-form"]',
     )!;
-    expect(root.classList).toContain('recipe-component__surface');
+    // The form carries no styling hook: one List owns its 24px major rhythm.
+    expect(root.tagName).toBe('FORM');
+    expect(root.getAttribute('class')).toBeNull();
+    const stack = root.querySelector<HTMLElement>(':scope > .kui-list')!;
+    expect(stack.dataset.gap).toBe('true');
     expect(root.getAttribute('aria-labelledby')).toBe('recipe-composer-title');
     expect(root.getAttribute('aria-describedby')).toBe(
       'recipe-composer-summary',
     );
     expect(
-      root.querySelector(':scope > [data-component="toolbar"]'),
+      stack.querySelector(':scope > .kui-list > [data-component="toolbar"]'),
     ).not.toBeNull();
     expect(root.querySelector('#recipe-composer-title')?.textContent).toBe(
       'Publish workspace update',
@@ -143,22 +162,16 @@ describe('production composition recipes', () => {
       root.querySelector('#recipe-composer-summary')?.parentElement?.dataset
         .component,
     ).toBe('list-inset-text');
-    expect(
-      [...root.children].filter((child) =>
-        child.classList.contains('recipe-form__section'),
-      ),
-    ).toHaveLength(2);
-    expect(
-      [...root.children].filter((child) =>
-        child.classList.contains('kui-content-item'),
-      ),
-    ).toHaveLength(0);
+    // Heading group, field stack, and action row; no card-like content items.
+    expect([...stack.children].map((child) => child.className)).toEqual([
+      'kui-list',
+      'kui-list',
+      'kui-row',
+    ]);
+    expect(root.querySelectorAll('.kui-content-item')).toHaveLength(0);
     expect(root.querySelector('[data-component="state-banner"]')).toBeNull();
     expect(
-      root.querySelector('.recipe-form__footer .recipe-form__actions'),
-    ).not.toBeNull();
-    expect(
-      root.querySelector('.recipe-form__footer .recipe-component__ownership'),
+      stack.querySelector(':scope > .kui-row [data-recipe-command="submit"]'),
     ).not.toBeNull();
 
     form.action('submit', target());
@@ -167,13 +180,10 @@ describe('production composition recipes', () => {
       '[data-recipe="recipe-composer-form"]',
     )!;
     const banner = errorRoot.querySelector('[data-component="state-banner"]');
-    expect(banner?.parentElement).toBe(errorRoot);
+    const errorStack = errorRoot.querySelector(':scope > .kui-list');
+    expect(banner?.parentElement).toBe(errorStack);
     expect(banner?.getAttribute('role')).toBe('alert');
-    expect(
-      [...errorRoot.children].filter((child) =>
-        child.classList.contains('recipe-form__section'),
-      ),
-    ).toHaveLength(2);
+    expect(errorStack?.children).toHaveLength(4);
   });
 
   it('resets the composer signals and upgraded field values together', () => {
@@ -255,8 +265,9 @@ describe('production composition recipes', () => {
 
     const rail = root.querySelector('[data-collapsible-panel="sidebar-rail"]')!;
     expect(rail.getAttribute('data-collapsed')).toBe('false');
+    // The reveal toggle lives in the always-visible main header.
     const reveal = root.querySelector<HTMLButtonElement>(
-      '.recipe-collapsible-sidebar__reveal',
+      'main [data-collapsible-target="sidebar-rail"]',
     )!;
     reveal.click();
     expect(
@@ -274,7 +285,9 @@ describe('production composition recipes', () => {
     stop();
     stop();
     root
-      .querySelector<HTMLButtonElement>('.recipe-collapsible-sidebar__reveal')
+      .querySelector<HTMLButtonElement>(
+        'main [data-collapsible-target="sidebar-rail"]',
+      )
       ?.click();
     // After disposal the toggle no longer flips the panel.
     expect(

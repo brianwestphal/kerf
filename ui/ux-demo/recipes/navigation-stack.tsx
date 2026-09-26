@@ -1,22 +1,31 @@
 import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/toolbar-text.css';
-import './navigation-stack.css';
 
 import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { NavStack, type NavStackView } from '@kerfjs/ui/nav-stack';
+import { Row } from '@kerfjs/ui/row';
+import { Text } from '@kerfjs/ui/text';
 import { signal } from 'kerfjs';
 import { ChevronRight, FileText, Folder } from 'lucide';
 
-import {
-  RecipeMutedText,
-  RecipeOwnershipNote,
-  RecipeRoot,
-} from './recipe-root.js';
-import type { RecipeFactory } from './types.js';
+import type { RecipeFactory, RecipePresentation } from './types.js';
+
+export const presentation: RecipePresentation = {
+  viewport: {
+    layout: 'grid',
+    width: 'compact',
+    height: 'tall',
+    frame: 'solid',
+    surface: 'default',
+    overflow: 'hidden',
+    shadow: true,
+  },
+  note: 'The recipe owns the stack as a signal of views and pushes/pops it; NavStack renders the stack and wireNavStack slides the content and settles the chrome. The app owns selection, data, and routing.',
+};
 
 interface LibraryItem {
   id: string;
@@ -50,29 +59,20 @@ export const createRecipe: RecipeFactory = (announce) => {
     key: 'library',
     title: 'Library',
     content: (
-      <div class="recipe-navstack__view">
-        <List gap="m">
-          <section>
-            <ListHeader label="Components" />
-            {ITEMS.map((item) => (
-              <ListItem
-                action="recipe-action"
-                itemId={item.id}
-                label={item.label}
-                icon={<LucideIcon icon={Folder} name="folder" />}
-                trailing={
-                  <LucideIcon icon={ChevronRight} name="chevron-right" />
-                }
-              />
-            ))}
-          </section>
-          <RecipeOwnershipNote>
-            The recipe owns the stack as a signal of views and pushes/pops it;
-            `NavStack` renders the stack and `wireNavStack` slides the content
-            and settles the chrome. The app owns selection, data, and routing.
-          </RecipeOwnershipNote>
-        </List>
-      </div>
+      <List>
+        <section>
+          <ListHeader label="Components" />
+          {ITEMS.map((item) => (
+            <ListItem
+              action="recipe-action"
+              itemId={item.id}
+              label={item.label}
+              icon={<LucideIcon icon={Folder} name="folder" />}
+              trailing={<LucideIcon icon={ChevronRight} name="chevron-right" />}
+            />
+          ))}
+        </section>
+      </List>
     ),
   });
 
@@ -80,32 +80,33 @@ export const createRecipe: RecipeFactory = (announce) => {
     key: item.id,
     title: item.label,
     content: (
-      <div class="recipe-navstack__view">
-        <List gap="m">
-          <div class="kui-content-item">
+      <List controlInsets="t">
+        <div class="kui-content-item">
+          <Row gap="xs">
             <LucideIcon icon={FileText} name="file-text" />
-            <strong>{item.label}</strong>
-            <RecipeMutedText>{item.detail}</RecipeMutedText>
-          </div>
-        </List>
-      </div>
+            <List gap="2xs">
+              <Text variant="span">
+                <strong>{item.label}</strong>
+              </Text>
+              <Text variant="span" tone="quiet" size="compact">
+                {item.detail}
+              </Text>
+            </List>
+          </Row>
+        </div>
+      </List>
     ),
   });
 
   const views = signal<NavStackView[]>([listView()]);
 
   const render = () => (
-    <RecipeRoot recipe="recipe-navigation-stack" measure="stack">
-      <div class="recipe-navstack">
-        <div class="recipe-navstack__stage">
-          <NavStack
-            id="recipe-nav"
-            label="Component library"
-            views={views.value}
-          />
-        </div>
-      </div>
-    </RecipeRoot>
+    <section
+      data-recipe="recipe-navigation-stack"
+      aria-label="Component library"
+    >
+      <NavStack id="recipe-nav" label="Component library" views={views.value} />
+    </section>
   );
 
   return {

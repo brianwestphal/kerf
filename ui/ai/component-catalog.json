@@ -1456,7 +1456,9 @@
       "description": "Semantic native paragraph text by default, with heading and inline-span variants plus composable semantic presentation roles.",
       "uses": [],
       "purpose": "Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact size, or monospace font.",
-      "publicExports": ["Text"],
+      "publicExports": [
+        "Text"
+      ],
       "useWhen": [
         "Render ordinary application headings or paragraphs with native document semantics, or inline secondary text inside rows, labels, and table cells."
       ],
@@ -1504,10 +1506,14 @@
       "delivery": {
         "browserImport": "@kerfjs/ui/text",
         "manualCssImport": "@kerfjs/ui/text.css",
-        "sideEffects": ["browser-condition-css"]
+        "sideEffects": [
+          "browser-condition-css"
+        ]
       },
       "wiring": [],
-      "publicClasses": ["kui-text"],
+      "publicClasses": [
+        "kui-text"
+      ],
       "publicTokens": [
         "--kui-color-danger-text",
         "--kui-color-text-quiet",
@@ -1652,60 +1658,107 @@
     {
       "id": "row",
       "name": "Row",
-    "category": "Structure",
+      "category": "Structure",
       "kind": "component",
       "source": "kerf",
       "description": "A horizontal flex row with physical-axis alignment, side-selectable text/control insets, a typed xs gap by default, flex participation, and opt-in wrapping.",
       "uses": [],
       "purpose": "Arrange related content horizontally with consistent spacing, optional physical-side text/control insets, and explicit left/center/right/full plus top/middle/bottom/full/baseline alignment instead of application-owned flex wrappers.",
-    "publicExports": ["Row"],
+      "publicExports": [
+        "Row"
+      ],
       "cssValueProps": [
         {
           "path": "gap",
           "grammar": "length",
-          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
-          "nonStandaloneHelpers": ["plus"],
-          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
-          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
-          "exceptionalShorthands": ["s", "xl"],
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [
+            "none",
+            "2xs",
+            "xs",
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "canonicalShorthands": [
+            "none",
+            "2xs",
+            "xs",
+            "m",
+            "l"
+          ],
+          "exceptionalShorthands": [
+            "s",
+            "xl"
+          ],
           "rawPolicy": "forbid",
-          "examples": ["gap=\"xs\"", "gap={space(\"m\")}", "gap={calc(plus(rem(0.25), pct(10)))}"]
+          "examples": [
+            "gap=\"xs\"",
+            "gap={space(\"m\")}",
+            "gap={calc(plus(rem(0.25), pct(10)))}"
+          ]
         },
         {
           "path": "flex",
           "grammar": "flex",
-          "helpers": ["flex"],
-          "shorthands": ["none", "auto", "initial"],
-          "canonicalShorthands": ["none", "auto", "initial"],
+          "helpers": [
+            "flex"
+          ],
+          "shorthands": [
+            "none",
+            "auto",
+            "initial"
+          ],
+          "canonicalShorthands": [
+            "none",
+            "auto",
+            "initial"
+          ],
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
-          "examples": ["flex", "flex=\"none\"", "flex={flex(1, 1, rem(20))}"]
+          "examples": [
+            "flex",
+            "flex=\"none\"",
+            "flex={flex(1, 1, rem(20))}"
+          ]
         }
       ],
       "useWhen": [
         "Arrange a group of sibling components horizontally.",
         "Choose physical horizontal distribution and vertical alignment without writing one-off flex CSS.",
         "Use a finite flex keyword or the flex() builder when Row participates in a flexible parent layout.",
-        "Allow a bounded group to wrap while retaining the same typed gap and alignment contract."
-        ,"Apply the standard text or control inset to selected physical sides without an application wrapper."
+        "Allow a bounded group to wrap while retaining the same typed gap and alignment contract.",
+        "Apply the standard text or control inset to selected physical sides without an application wrapper."
       ],
       "avoidWhen": [
         "Do not use Row when content belongs in a semantic list or when a named-zone component such as Toolbar owns the composition.",
         "Do not pass raw CSS strings to gap or flex, mix their distinct grammars, or use s/xl spacing steps without a deliberate exception.",
         "Do not use alignment to replace semantic grouping or responsive relocation."
       ],
-    "alternatives": [
-      {
-        "id": "list",
-        "relationship": "axis-alternative",
-        "when": "Use List when the main layout axis is vertical."
-      },
-      {
-        "id": "toolbar",
-        "relationship": "semantic-alternative",
-        "when": "Use Toolbar when content belongs to named leading, center, and trailing application-chrome zones."
-      }
-    ],
+      "alternatives": [
+        {
+          "id": "list",
+          "relationship": "axis-alternative",
+          "when": "Use List when the main layout axis is vertical."
+        },
+        {
+          "id": "toolbar",
+          "relationship": "semantic-alternative",
+          "when": "Use Toolbar when content belongs to named leading, center, and trailing application-chrome zones."
+        }
+      ],
       "appOwns": [
         "child semantics and content",
         "alignment and wrapping policy",
@@ -1735,11 +1788,18 @@
       "delivery": {
         "browserImport": "@kerfjs/ui/row",
         "manualCssImport": "@kerfjs/ui/row.css",
-        "sideEffects": ["browser-condition-css"]
+        "sideEffects": [
+          "browser-condition-css"
+        ]
       },
       "wiring": [],
-      "publicClasses": ["kui-row"],
-      "publicTokens": ["--kui-layout-item-gap", "--kui-row-gap"],
+      "publicClasses": [
+        "kui-row"
+      ],
+      "publicTokens": [
+        "--kui-layout-item-gap",
+        "--kui-row-gap"
+      ],
       "links": {
         "catalogRoute": "?component=row",
         "documentation": "docs/layout.md",
@@ -1755,28 +1815,75 @@
       "description": "A fixed positive number of evenly distributed minmax columns with a typed xs gap by default and optional flex participation.",
       "uses": [],
       "purpose": "Arrange related siblings in equal-width columns without repeating application-owned grid-template-columns CSS.",
-      "publicExports": ["Grid"],
+      "publicExports": [
+        "Grid"
+      ],
       "cssValueProps": [
         {
           "path": "gap",
           "grammar": "length",
-          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
-          "nonStandaloneHelpers": ["plus"],
-          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
-          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
-          "exceptionalShorthands": ["s", "xl"],
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [
+            "none",
+            "2xs",
+            "xs",
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "canonicalShorthands": [
+            "none",
+            "2xs",
+            "xs",
+            "m",
+            "l"
+          ],
+          "exceptionalShorthands": [
+            "s",
+            "xl"
+          ],
           "rawPolicy": "forbid",
-          "examples": ["gap=\"m\"", "gap={space(\"m\")}", "gap={calc(plus(rem(0.25), pct(10)))}"]
+          "examples": [
+            "gap=\"m\"",
+            "gap={space(\"m\")}",
+            "gap={calc(plus(rem(0.25), pct(10)))}"
+          ]
         },
         {
           "path": "flex",
           "grammar": "flex",
-          "helpers": ["flex"],
-          "shorthands": ["none", "auto", "initial"],
-          "canonicalShorthands": ["none", "auto", "initial"],
+          "helpers": [
+            "flex"
+          ],
+          "shorthands": [
+            "none",
+            "auto",
+            "initial"
+          ],
+          "canonicalShorthands": [
+            "none",
+            "auto",
+            "initial"
+          ],
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
-          "examples": ["flex", "flex=\"none\"", "flex={flex(1, 1, rem(20))}"]
+          "examples": [
+            "flex",
+            "flex=\"none\"",
+            "flex={flex(1, 1, rem(20))}"
+          ]
         }
       ],
       "useWhen": [
@@ -1833,11 +1940,18 @@
       "delivery": {
         "browserImport": "@kerfjs/ui/grid",
         "manualCssImport": "@kerfjs/ui/grid.css",
-        "sideEffects": ["browser-condition-css"]
+        "sideEffects": [
+          "browser-condition-css"
+        ]
       },
       "wiring": [],
-      "publicClasses": ["kui-grid"],
-      "publicTokens": ["--kui-grid-gap", "--kui-layout-item-gap"],
+      "publicClasses": [
+        "kui-grid"
+      ],
+      "publicTokens": [
+        "--kui-grid-gap",
+        "--kui-layout-item-gap"
+      ],
       "links": {
         "catalogRoute": "?component=grid",
         "documentation": "docs/layout.md",
@@ -1853,29 +1967,92 @@
       "description": "A decorative, non-shrinking fixed gap or flexible main-axis spacer with typed physical width and height.",
       "uses": [],
       "purpose": "Express an intentional empty dimension or consume remaining flex space without application-owned spacer markup or raw CSS lengths.",
-      "publicExports": ["Spacer"],
+      "publicExports": [
+        "Spacer"
+      ],
       "cssValueProps": [
         {
           "path": "width",
           "grammar": "length",
-          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
-          "nonStandaloneHelpers": ["plus"],
-          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
-          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
-          "exceptionalShorthands": ["s", "xl"],
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [
+            "none",
+            "2xs",
+            "xs",
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "canonicalShorthands": [
+            "none",
+            "2xs",
+            "xs",
+            "m",
+            "l"
+          ],
+          "exceptionalShorthands": [
+            "s",
+            "xl"
+          ],
           "rawPolicy": "forbid",
-          "examples": ["width=\"m\"", "width={space(\"m\")}", "width={calc(plus(rem(0.25), pct(10)))}"]
+          "examples": [
+            "width=\"m\"",
+            "width={space(\"m\")}",
+            "width={calc(plus(rem(0.25), pct(10)))}"
+          ]
         },
         {
           "path": "height",
           "grammar": "length",
-          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
-          "nonStandaloneHelpers": ["plus"],
-          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
-          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
-          "exceptionalShorthands": ["s", "xl"],
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [
+            "none",
+            "2xs",
+            "xs",
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "canonicalShorthands": [
+            "none",
+            "2xs",
+            "xs",
+            "m",
+            "l"
+          ],
+          "exceptionalShorthands": [
+            "s",
+            "xl"
+          ],
           "rawPolicy": "forbid",
-          "examples": ["height=\"xs\"", "height={rem(1)}"]
+          "examples": [
+            "height=\"xs\"",
+            "height={rem(1)}"
+          ]
         }
       ],
       "useWhen": [
@@ -1925,10 +2102,14 @@
       "delivery": {
         "browserImport": "@kerfjs/ui/spacer",
         "manualCssImport": "@kerfjs/ui/spacer.css",
-        "sideEffects": ["browser-condition-css"]
+        "sideEffects": [
+          "browser-condition-css"
+        ]
       },
       "wiring": [],
-      "publicClasses": ["kui-spacer"],
+      "publicClasses": [
+        "kui-spacer"
+      ],
       "publicTokens": [],
       "links": {
         "catalogRoute": "?component=spacer",
@@ -1965,23 +2146,67 @@
         {
           "path": "gap",
           "grammar": "length",
-          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
-          "nonStandaloneHelpers": ["plus"],
-          "shorthands": ["none", "2xs", "xs", "s", "m", "l", "xl"],
-          "canonicalShorthands": ["none", "2xs", "xs", "m", "l"],
-          "exceptionalShorthands": ["s", "xl"],
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [
+            "none",
+            "2xs",
+            "xs",
+            "s",
+            "m",
+            "l",
+            "xl"
+          ],
+          "canonicalShorthands": [
+            "none",
+            "2xs",
+            "xs",
+            "m",
+            "l"
+          ],
+          "exceptionalShorthands": [
+            "s",
+            "xl"
+          ],
           "rawPolicy": "forbid",
-          "examples": ["gap=\"xs\"", "gap={rem(0.25)}", "gap={calc(plus(rem(0.25), pct(10)))}"]
+          "examples": [
+            "gap=\"xs\"",
+            "gap={rem(0.25)}",
+            "gap={calc(plus(rem(0.25), pct(10)))}"
+          ]
         },
         {
           "path": "flex",
           "grammar": "flex",
-          "helpers": ["flex"],
-          "shorthands": ["none", "auto", "initial"],
-          "canonicalShorthands": ["none", "auto", "initial"],
+          "helpers": [
+            "flex"
+          ],
+          "shorthands": [
+            "none",
+            "auto",
+            "initial"
+          ],
+          "canonicalShorthands": [
+            "none",
+            "auto",
+            "initial"
+          ],
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
-          "examples": ["flex=\"none\"", "flex={flex(1, 1, rem(20))}"]
+          "examples": [
+            "flex=\"none\"",
+            "flex={flex(1, 1, rem(20))}"
+          ]
         }
       ],
       "useWhen": [
@@ -1989,8 +2214,8 @@
         "Let one bounded list own vertical scrolling, flex growth, or one or more physical-edge dividers.",
         "Choose a finite gap shorthand such as xs or m, or compose a typed length with @kerfjs/ui/css-values when the spacing scale is insufficient.",
         "Use a finite flex keyword or the flex() builder when List participates in flexible layout.",
-        "Apply the standard text or control inset to selected physical sides without an application wrapper."
-        ,"Align children horizontally or distribute them vertically with the same physical alignment vocabulary as Row."
+        "Apply the standard text or control inset to selected physical sides without an application wrapper.",
+        "Align children horizontally or distribute them vertically with the same physical alignment vocabulary as Row."
       ],
       "avoidWhen": [
         "Do not use List as semantic list markup; use ul/ol when list semantics are required and apply layout deliberately.",
@@ -2168,7 +2393,9 @@
           "canonicalShorthands": [],
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
-          "examples": ["className=\"app-row\""]
+          "examples": [
+            "className=\"app-row\""
+          ]
         }
       ],
       "useWhen": [
@@ -2294,7 +2521,9 @@
           "canonicalShorthands": [],
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
-          "examples": ["className=\"app-row\""]
+          "examples": [
+            "className=\"app-row\""
+          ]
         }
       ],
       "useWhen": [
@@ -3111,7 +3340,10 @@
         {
           "path": "choices[].color",
           "grammar": "color",
-          "helpers": ["uiColor", "colorVar"],
+          "helpers": [
+            "uiColor",
+            "colorVar"
+          ],
           "shorthands": [],
           "canonicalShorthands": [],
           "exceptionalShorthands": [],
@@ -3572,35 +3804,92 @@
         {
           "path": "width",
           "grammar": "size",
-          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
-          "nonStandaloneHelpers": ["plus"],
-          "shorthands": ["auto", "min-content", "max-content", "fit-content"],
-          "canonicalShorthands": ["auto", "min-content", "max-content", "fit-content"],
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [
+            "auto",
+            "min-content",
+            "max-content",
+            "fit-content"
+          ],
+          "canonicalShorthands": [
+            "auto",
+            "min-content",
+            "max-content",
+            "fit-content"
+          ],
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
-          "examples": ["width={em(12)}", "width=\"fit-content\""]
+          "examples": [
+            "width={em(12)}",
+            "width=\"fit-content\""
+          ]
         },
         {
           "path": "height",
           "grammar": "size",
-          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
-          "nonStandaloneHelpers": ["plus"],
-          "shorthands": ["auto", "min-content", "max-content", "fit-content"],
-          "canonicalShorthands": ["auto", "min-content", "max-content", "fit-content"],
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [
+            "auto",
+            "min-content",
+            "max-content",
+            "fit-content"
+          ],
+          "canonicalShorthands": [
+            "auto",
+            "min-content",
+            "max-content",
+            "fit-content"
+          ],
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
-          "examples": ["height={em(1.5)}"]
+          "examples": [
+            "height={em(1.5)}"
+          ]
         },
         {
           "path": "radius",
           "grammar": "length",
-          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
-          "nonStandaloneHelpers": ["plus"],
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
           "shorthands": [],
           "canonicalShorthands": [],
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
-          "examples": ["radius={px(999)}"]
+          "examples": [
+            "radius={px(999)}"
+          ]
         }
       ],
       "useWhen": [
@@ -6414,13 +6703,17 @@
       "source": "kerf",
       "purpose": "Toolbar, navigation, content, and inspector shell with controlled resizing and explicit pane scroll owners.",
       "uses": [
+        "pane",
         "toolbar",
         "toolbar-text",
         "toolbar-control-group",
+        "row",
+        "grid",
+        "resize",
         "list-header",
         "list-item",
-        "resize",
         "value-table",
+        "lucide-icon",
         "layout"
       ],
       "useWhen": [
@@ -6457,10 +6750,15 @@
       "source": "kerf",
       "purpose": "Navigation sections with icon and iconless rows, a content-item surface, disclosure, and pane footer actions.",
       "uses": [
+        "pane",
         "list-header",
         "list-item",
+        "list",
+        "text",
         "toolbar",
-        "toolbar-control-group"
+        "toolbar-control-group",
+        "lucide-icon",
+        "layout"
       ],
       "useWhen": [
         "A workspace sidebar needs the shared toolbar/content/footer pane model, 24px major section rhythm, and 44px row and utility-action targets."
@@ -6499,6 +6797,9 @@
         "toolbar",
         "toolbar-control-group",
         "toolbar-text",
+        "list",
+        "list-inset-text",
+        "text",
         "state-banner",
         "layout"
       ],
@@ -6534,14 +6835,17 @@
       "category": "Recipes",
       "kind": "recipe",
       "source": "kerf",
-      "purpose": "Production modal containing a Toolbar heading, navigable record master list, and ValueTable detail.",
+      "purpose": "Production modal whose labeled Web Awesome header frames a SplitView record list and ValueTable detail, becoming a full-screen drill-down on compact devices.",
       "uses": [
-        "toolbar",
-        "toolbar-control-group",
-        "toolbar-text",
+        "surface-scaffold",
+        "split-view",
+        "nav-stack",
+        "row",
+        "list",
         "list-header",
         "list-item",
         "value-table",
+        "lucide-icon",
         "wa-dialog",
         "wa-button"
       ],
@@ -6554,11 +6858,12 @@
       "appOwns": [
         "open state",
         "selected record",
+        "pushed compact detail",
         "dismiss policy",
         "record actions"
       ],
       "accessibility": [
-        "Web Awesome owns modal focus and Escape; the application adapter restores the invoking control after hide, and Toolbar plus ToolbarText supply the visible hierarchy."
+        "Web Awesome owns modal focus, Escape, and the labeled header with its close control; the application adapter restores the invoking control after hide, and the compact NavStack back control returns to the list."
       ],
       "delivery": {
         "sideEffects": [
@@ -6581,8 +6886,11 @@
       "purpose": "One visible publishing-form surface with Toolbar heading hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
       "uses": [
         "toolbar",
-        "toolbar-control-group",
         "toolbar-text",
+        "list",
+        "list-inset-text",
+        "text",
+        "row",
         "select",
         "state-banner",
         "wa-input",
@@ -6625,9 +6933,12 @@
       "source": "kerf",
       "purpose": "Deterministic loading, empty, populated, stale refresh, and error states around one stable list workspace.",
       "uses": [
+        "pane",
         "toolbar",
         "toolbar-control-group",
         "toolbar-text",
+        "list-item",
+        "row",
         "state-banner",
         "empty-state",
         "loading-spinner",
@@ -6672,7 +6983,11 @@
         "toolbar-control-group",
         "segmented-control",
         "select",
-        "lucide-icon"
+        "lucide-icon",
+        "grid",
+        "list",
+        "list-inset-text",
+        "text"
       ],
       "useWhen": [
         "A dense workspace toolbar mixes a few distinct control semantics."
@@ -6709,8 +7024,12 @@
       "source": "kerf",
       "purpose": "A push/pop navigation stack drill-down with animated slides and a live device class.",
       "uses": [
+        "nav-stack",
+        "list",
         "list-header",
         "list-item",
+        "row",
+        "text",
         "lucide-icon",
         "layout"
       ],
@@ -6748,9 +7067,13 @@
       "source": "kerf",
       "purpose": "A record inspector whose per-record values load asynchronously — every value-bearing component takes a shared placeholder flag, so the same chrome renders a faithful loading state and then the populated record.",
       "uses": [
+        "pane",
         "toolbar",
         "toolbar-control-group",
         "toolbar-text",
+        "list-inset-text",
+        "text",
+        "list",
         "value-table",
         "select",
         "segmented-control",
@@ -6793,11 +7116,20 @@
       "source": "kerf",
       "purpose": "A mini app frame whose left navigation rail and bottom activity drawer are standalone CollapsiblePanels driven by wireSidebar: per-side collapse/expand toggles, focus move-in and restore, a dismissable compact overlay, and per-panel persistence.",
       "uses": [
+        "collapsible-panel",
+        "pane",
+        "row",
+        "list",
+        "grid",
         "list-header",
         "list-item",
+        "text",
         "toolbar",
         "toolbar-control-group",
-        "toolbar-text"
+        "toolbar-text",
+        "value-table",
+        "lucide-icon",
+        "layout"
       ],
       "useWhen": [
         "A rail or drawer must collapse and expand outside a full Workbench shell, keeping the app's collapsed signals, sizes, and content while the wire owns toggle, focus, the compact overlay, and persistence."

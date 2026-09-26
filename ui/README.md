@@ -20,7 +20,7 @@ geometry inspection, and metadata ownership. AI tools can discover that
 contract and its public imports through the shipped
 [`catalog-authoring.json`](./ai/catalog-authoring.json) artifact.
 
-For connective application patterns, use the seven [production composition
+For connective application patterns, use the ten [production composition
 recipes](./docs/recipes.md). Each has a stable catalog route, runnable state,
 public-subpath source, semantic layout ownership, and explicit application
 customization boundaries. The composer recipe demonstrates one coherent form
@@ -421,7 +421,9 @@ file.
 `npm run check:css-ownership` keeps that boundary honest: application CSS may
 style only application-owned structure, never package component classes or
 Web Awesome descendants. The UX catalog's `style.css` contains document-shell
-mechanics only, recipes use component-owned styles, and `catalog.css` remains a
+mechanics only, recipes ship no stylesheets (`npm run check:recipes` rejects
+route stylesheets, inline styles, and styling-only classes), and `catalog.css`
+remains a
 minimal compatibility entrypoint.
 
 The root `@kerfjs/ui` barrel stays JavaScript-only because making a side-effectful

@@ -1,26 +1,23 @@
 import '@kerfjs/ui/layout.css';
+import '@kerfjs/ui/nav-stack.css';
+import '@kerfjs/ui/split-view.css';
 import '@kerfjs/ui/webawesome.css';
 import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/dialog/dialog.js';
-import './list-detail-dialog.css';
 
+import { deviceClass } from '@kerfjs/ui/device-class';
+import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { Pane } from '@kerfjs/ui/pane';
-import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
-import { ToolbarText } from '@kerfjs/ui/toolbar-text';
+import { Row } from '@kerfjs/ui/row';
+import { SplitView } from '@kerfjs/ui/split-view';
+import { DialogSurface } from '@kerfjs/ui/surface-scaffold';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { signal } from 'kerfjs';
-import { FileText } from 'lucide';
+import { ChevronRight, FileText } from 'lucide';
 
-import {
-  RecipeHeadingSummary,
-  RecipeOwnershipNote,
-  RecipeRoot,
-} from './recipe-root.js';
-import type { RecipeFactory } from './types.js';
+import type { RecipeFactory, RecipePresentation } from './types.js';
 
 const records = {
   alpha: {
@@ -43,144 +40,132 @@ const records = {
   },
 } as const;
 
+type RecordId = keyof typeof records;
+
 interface RecipeDialogElement extends HTMLElement {
   open: boolean;
 }
 
+export const presentation: RecipePresentation = {
+  viewport: { layout: 'grid', width: 'full' },
+  note: 'Web Awesome owns modal focus, Escape, and the close control; DialogSurface owns dialog geometry; SplitView owns the list-detail panes and their compact drill-down. The app owns open state, selection, and record actions.',
+};
+
 export const createRecipe: RecipeFactory = (announce) => {
-  const selected = signal<keyof typeof records>('alpha');
+  const selected = signal<RecordId>('alpha');
+  // Compact devices drill from the list into the detail; this flag is the
+  // pushed detail view. Roomy devices show both panes side by side.
+  const detailOpen = signal(false);
   const open = { value: false };
-  const render = () => (
-    <RecipeRoot recipe="recipe-list-detail-dialog" surface={false}>
-      <div class="recipe-list-detail-dialog kui-content">
-        <wa-button
-          variant="brand"
-          appearance="accent"
-          data-action="recipe-action"
-          data-recipe-command="open"
-        >
-          Open project details
-        </wa-button>
-        <RecipeOwnershipNote>
-          Web Awesome owns modal focus and dismissal. The recipe owns
-          header/body/list-detail anatomy; the app owns open state, selection,
-          and policy.
-        </RecipeOwnershipNote>
-        <wa-dialog
-          class="recipe-dialog"
-          label="Project details"
-          without-header
-          open={open.value}
-          style="--spacing:0;--width:min(62rem, calc(100vw - 2rem))"
-        >
-          <Pane>
-            <div class="recipe-list-detail">
-              <div class="recipe-list-detail__list">
-                <Pane contentElement="nav" contentLabel="Projects">
-                  <ListHeader label="Recent projects" />
-                  <section>
-                    {Object.entries(records).map(([id, record]) => (
-                      <ListItem
-                        action="recipe-action"
-                        itemId={id}
-                        label={record.name}
-                        selected={selected.value === id}
-                        multiline
-                      />
-                    ))}
-                  </section>
-                </Pane>
-              </div>
-              <div class="recipe-list-detail__detail">
-                <Pane
-                  element="section"
-                  header={
-                    <>
-                      <Toolbar
-                        label="Project details"
-                        dividerSides=""
-                        leading={
-                          <>
-                            <ToolbarControlGroup appearance="borderless" single>
-                              <LucideIcon icon={FileText} name="file-text" />
-                            </ToolbarControlGroup>
-                            <ToolbarText
-                              text="Project details"
-                              size="xlarge"
-                              id="recipe-dialog-title"
-                            />
-                          </>
-                        }
-                        trailing={
-                          <ToolbarControlGroup appearance="borderless" single>
-                            <wa-button
-                              appearance="plain"
-                              data-action="recipe-action"
-                              data-recipe-command="close"
-                            >
-                              Close
-                            </wa-button>
-                          </ToolbarControlGroup>
-                        }
-                      />
-                      <RecipeHeadingSummary id="recipe-dialog-summary">
-                        Compare delivery state without leaving the workspace.
-                      </RecipeHeadingSummary>
-                    </>
-                  }
-                >
-                  <div class="recipe-list-detail__body">
-                    <div aria-live="polite">
-                      <h3 class="recipe-list-detail__title kui-content-item">
-                        {records[selected.value].name}
-                      </h3>
-                      <ValueTable label="Project details">
-                        <ValueTableRow
-                          label="Owner"
-                          value={records[selected.value].owner}
-                        />
-                        <ValueTableRow
-                          label="Status"
-                          value={records[selected.value].state}
-                        />
-                        <ValueTableRow
-                          label="Updated"
-                          value={records[selected.value].updated}
-                        />
-                      </ValueTable>
-                      <div class="recipe-list-detail__actions kui-control-cluster">
-                        <wa-button
-                          appearance="outlined"
-                          data-action="recipe-action"
-                          data-recipe-command="archive"
-                        >
-                          Archive
-                        </wa-button>
-                        <wa-button
-                          variant="brand"
-                          appearance="accent"
-                          data-action="recipe-action"
-                          data-recipe-command="open-record"
-                        >
-                          Open project
-                        </wa-button>
-                      </div>
-                    </div>
-                  </div>
-                </Pane>
-              </div>
-            </div>
-          </Pane>
-        </wa-dialog>
-      </div>
-    </RecipeRoot>
+  const device = deviceClass();
+
+  const projectList = (compact: boolean) => (
+    <List>
+      {compact ? null : <ListHeader label="Recent projects" />}
+      <section aria-label="Projects">
+        {Object.entries(records).map(([id, record]) => (
+          <ListItem
+            action="recipe-action"
+            itemId={id}
+            label={record.name}
+            description={`${record.owner} · ${record.state}`}
+            icon={<LucideIcon icon={FileText} name="file-text" />}
+            trailing={
+              compact ? (
+                <LucideIcon icon={ChevronRight} name="chevron-right" />
+              ) : undefined
+            }
+            selected={!compact && selected.value === id}
+            multiline
+          />
+        ))}
+      </section>
+    </List>
   );
+
+  const projectDetail = (compact: boolean) => {
+    const record = records[selected.value];
+    return (
+      <List>
+        {compact ? null : <ListHeader label={record.name} />}
+        <ValueTable label="Project details">
+          <ValueTableRow label="Owner" value={record.owner} />
+          <ValueTableRow label="Status" value={record.state} />
+          <ValueTableRow label="Updated" value={record.updated} />
+        </ValueTable>
+      </List>
+    );
+  };
+
+  const render = () => {
+    const compact = device.value.compact;
+    return (
+      <section
+        data-recipe="recipe-list-detail-dialog"
+        aria-label="Project details dialog"
+      >
+        <Row hAlign="center">
+          <DialogSurface
+            size="large"
+            presentation={compact ? 'fullscreen' : 'modal'}
+            bodyInset="none"
+            footerInset="comfortable"
+          >
+            <wa-button
+              variant="brand"
+              appearance="accent"
+              data-action="recipe-action"
+              data-recipe-command="open"
+            >
+              Open project details
+            </wa-button>
+            <wa-dialog label="Project details" open={open.value} with-footer>
+              <SplitView
+                id="recipe-projects"
+                label="Projects"
+                compact={compact}
+                detailActive={compact && detailOpen.value}
+                listTitle="Recent projects"
+                detailTitle={records[selected.value].name}
+                backLabel="Back to projects"
+                list={projectList(compact)}
+                detail={projectDetail(compact)}
+              />
+              <wa-button
+                slot="footer"
+                appearance="outlined"
+                data-action="recipe-action"
+                data-recipe-command="archive"
+              >
+                Archive
+              </wa-button>
+              <wa-button
+                slot="footer"
+                variant="brand"
+                appearance="accent"
+                data-action="recipe-action"
+                data-recipe-command="open-record"
+              >
+                Open project
+              </wa-button>
+            </wa-dialog>
+          </DialogSurface>
+        </Row>
+      </section>
+    );
+  };
   return {
     render,
     action(command, element) {
+      if (command === 'nav-back') {
+        detailOpen.value = false;
+        announce('Back to projects');
+        return;
+      }
       const id = element.dataset.itemId;
       if (id && id in records) {
-        selected.value = id as keyof typeof records;
+        selected.value = id as RecordId;
+        detailOpen.value = true;
         announce(`Selected ${records[selected.value].name}`);
         return;
       }
@@ -193,14 +178,11 @@ export const createRecipe: RecipeFactory = (announce) => {
         dialog.open = true;
         return;
       }
-      if (command === 'close' && dialog) {
-        dialog.open = false;
-        return;
-      }
       announce(`${command} requested`);
     },
     afterHide() {
       open.value = false;
+      detailOpen.value = false;
     },
   };
 };

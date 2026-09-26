@@ -215,7 +215,11 @@ facts that source can prove without guessing at rendered intent:
   do not reach into `ui/src`;
 - focused demos have no relative stylesheet imports, inline style attributes,
   or styling-only `demo-*`, `wa-demo-*`, and token-search class names;
-- demo JSX does not copy private `kui-catalog-*` structural classes; and
+- demo JSX does not copy private `kui-catalog-*` structural classes;
+- recipe sources (checked by `npm run check:recipes` with the same shared
+  analyzer) import no stylesheet other than public `@kerfjs/ui` CSS, set no
+  inline style, and name only published layout and Web Awesome classes; each
+  recipe declares its catalog frame through an exported `presentation`; and
 - the shell derives both geometry-overlay enablement and documented demo mode
   from the active entry's source and kind.
 

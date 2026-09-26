@@ -581,13 +581,17 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Toolbar, navigation, content, and inspector shell with controlled resizing and explicit pane scroll owners.",
     "uses": [
+      "pane",
       "toolbar",
       "toolbar-text",
       "toolbar-control-group",
+      "row",
+      "grid",
+      "resize",
       "list-header",
       "list-item",
-      "resize",
       "value-table",
+      "lucide-icon",
       "layout"
     ],
     "demoSource": "ui/ux-demo/recipes/app-shell.tsx",
@@ -601,10 +605,15 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Navigation sections with icon and iconless rows, a content-item surface, disclosure, and pane footer actions.",
     "uses": [
+      "pane",
       "list-header",
       "list-item",
+      "list",
+      "text",
       "toolbar",
-      "toolbar-control-group"
+      "toolbar-control-group",
+      "lucide-icon",
+      "layout"
     ],
     "demoSource": "ui/ux-demo/recipes/navigation-sidebar.tsx",
     "documentation": "ui/docs/recipes.md#navigation-sidebar"
@@ -620,6 +629,9 @@ export const generatedKerfCatalog = [
       "toolbar",
       "toolbar-control-group",
       "toolbar-text",
+      "list",
+      "list-inset-text",
+      "text",
       "state-banner",
       "layout"
     ],
@@ -632,14 +644,17 @@ export const generatedKerfCatalog = [
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
-    "description": "Production modal containing a Toolbar heading, navigable record master list, and ValueTable detail.",
+    "description": "Production modal whose labeled Web Awesome header frames a SplitView record list and ValueTable detail, becoming a full-screen drill-down on compact devices.",
     "uses": [
-      "toolbar",
-      "toolbar-control-group",
-      "toolbar-text",
+      "surface-scaffold",
+      "split-view",
+      "nav-stack",
+      "row",
+      "list",
       "list-header",
       "list-item",
       "value-table",
+      "lucide-icon",
       "wa-dialog",
       "wa-button"
     ],
@@ -655,8 +670,11 @@ export const generatedKerfCatalog = [
     "description": "One visible publishing-form surface with Toolbar heading hierarchy, fields and actions on the shared 8px control gutter, 24px major rhythm, and a conditional StateBanner as its only nested semantic surface.",
     "uses": [
       "toolbar",
-      "toolbar-control-group",
       "toolbar-text",
+      "list",
+      "list-inset-text",
+      "text",
+      "row",
       "select",
       "state-banner",
       "wa-input",
@@ -675,9 +693,12 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Deterministic loading, empty, populated, stale refresh, and error states around one stable list workspace.",
     "uses": [
+      "pane",
       "toolbar",
       "toolbar-control-group",
       "toolbar-text",
+      "list-item",
+      "row",
       "state-banner",
       "empty-state",
       "loading-spinner",
@@ -699,7 +720,11 @@ export const generatedKerfCatalog = [
       "toolbar-control-group",
       "segmented-control",
       "select",
-      "lucide-icon"
+      "lucide-icon",
+      "grid",
+      "list",
+      "list-inset-text",
+      "text"
     ],
     "demoSource": "ui/ux-demo/recipes/compact-toolbar.tsx",
     "documentation": "ui/docs/recipes.md#compact-toolbar-choices-and-actions"
@@ -712,8 +737,12 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "A push/pop navigation stack drill-down with animated slides and a live device class.",
     "uses": [
+      "nav-stack",
+      "list",
       "list-header",
       "list-item",
+      "row",
+      "text",
       "lucide-icon",
       "layout"
     ],
@@ -728,9 +757,13 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "A record inspector whose per-record values load asynchronously — every value-bearing component takes a shared placeholder flag, so the same chrome renders a faithful loading state and then the populated record.",
     "uses": [
+      "pane",
       "toolbar",
       "toolbar-control-group",
       "toolbar-text",
+      "list-inset-text",
+      "text",
+      "list",
       "value-table",
       "select",
       "segmented-control",
@@ -750,11 +783,20 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "A mini app frame whose left navigation rail and bottom activity drawer are standalone CollapsiblePanels driven by wireSidebar: per-side collapse/expand toggles, focus move-in and restore, a dismissable compact overlay, and per-panel persistence.",
     "uses": [
+      "collapsible-panel",
+      "pane",
+      "row",
+      "list",
+      "grid",
       "list-header",
       "list-item",
+      "text",
       "toolbar",
       "toolbar-control-group",
-      "toolbar-text"
+      "toolbar-text",
+      "value-table",
+      "lucide-icon",
+      "layout"
     ],
     "demoSource": "ui/ux-demo/recipes/collapsible-sidebar.tsx",
     "documentation": "ui/docs/recipes.md#collapsible-sidebar"

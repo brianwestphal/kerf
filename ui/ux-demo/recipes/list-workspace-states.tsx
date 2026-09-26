@@ -1,46 +1,51 @@
 import '@kerfjs/ui/layout.css';
-import './list-workspace-states.css';
 
 import { EmptyState } from '@kerfjs/ui/empty-state';
+import { ListItem } from '@kerfjs/ui/list-item';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { Pane } from '@kerfjs/ui/pane';
+import { Row } from '@kerfjs/ui/row';
 import { StateBanner } from '@kerfjs/ui/state-banner';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
 
-import {
-  RecipeMutedText,
-  RecipeOwnershipNote,
-  RecipeRoot,
-} from './recipe-root.js';
-import type { RecipeFactory } from './types.js';
+import type { RecipeFactory, RecipePresentation } from './types.js';
 
 type ListState = 'loading' | 'empty' | 'populated' | 'stale' | 'error';
 const items = [
-  'Audit keyboard focus order',
-  'Verify 200% zoom layout',
-  'Publish package migration notes',
-];
+  ['Audit keyboard focus order', 'In review · Mara'],
+  ['Verify 200% zoom layout', 'Ready · Sam'],
+  ['Publish package migration notes', 'Draft · Inez'],
+] as const;
+
+export const presentation: RecipePresentation = {
+  viewport: {
+    layout: 'grid',
+    width: 'full',
+    minHeight: 'medium',
+    frame: 'solid',
+    surface: 'default',
+    overflow: 'hidden',
+    shadow: true,
+  },
+  note: 'The recipe owns feedback placement and stable content. The app owns fetching, cache age, retry policy, and domain rows.',
+};
 
 export const createRecipe: RecipeFactory = (announce) => {
   const state = signal<ListState>('loading');
   const populated = () => (
-    <ul class="recipe-list__items" aria-label="Release tasks">
-      {items.map((item, index) => (
-        <li>
-          <strong>{item}</strong>
-          <RecipeMutedText>
-            {index === 0
-              ? 'In review · Mara'
-              : index === 1
-                ? 'Ready · Sam'
-                : 'Draft · Inez'}
-          </RecipeMutedText>
-        </li>
+    <section aria-label="Release task list">
+      {items.map(([title, detail]) => (
+        <ListItem
+          action="recipe-action"
+          label={title}
+          description={detail}
+          rootAttributes={{ 'data-recipe-command': 'open-task' }}
+        />
       ))}
-    </ul>
+    </section>
   );
   const renderBody = () => {
     if (state.value === 'loading')
@@ -102,7 +107,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             detail="Refreshing in the background."
             tone="warning"
             action={
-              <span class="kui-inline-metadata">
+              <Row gap="xs" vAlign="middle">
                 <LoadingSpinner label="Refreshing release tasks" />
                 <button
                   type="button"
@@ -111,7 +116,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                 >
                   Finish refresh
                 </button>
-              </span>
+              </Row>
             }
           />
         )}
@@ -120,65 +125,60 @@ export const createRecipe: RecipeFactory = (announce) => {
     );
   };
   const render = () => (
-    <RecipeRoot
-      recipe="recipe-list-workspace-states"
-      dataAttributes={{ 'data-list-state': state.value }}
-    >
-      <div class="recipe-list">
-        <Pane
-          element="section"
-          contentClassName="recipe-list__body"
-          header={
-            <Toolbar
-              label="Release tasks"
-              dividerSides=""
-              leading={
-                <ToolbarText
-                  text="Release tasks"
-                  size="xlarge"
-                  id="recipe-list-title"
-                />
-              }
-              trailing={
-                <ToolbarControlGroup
-                  appearance="borderless"
-                  content="text"
-                  buttonAppearance="push"
-                >
-                  <button
-                    type="button"
-                    data-action="recipe-action"
-                    data-recipe-command="empty"
-                  >
-                    Clear
-                  </button>
-                  <button
-                    type="button"
-                    data-action="recipe-action"
-                    data-recipe-command="fail"
-                  >
-                    Simulate failure
-                  </button>
-                  <button
-                    type="button"
-                    data-action="recipe-action"
-                    data-recipe-command="refresh"
-                  >
-                    Refresh
-                  </button>
-                </ToolbarControlGroup>
-              }
+    <Pane
+      element="section"
+      label="Release tasks"
+      rootAttributes={{
+        'data-recipe': 'recipe-list-workspace-states',
+        'data-list-state': state.value,
+      }}
+      header={
+        <Toolbar
+          label="Release tasks"
+          dividerSides=""
+          responsive="stack"
+          responsiveAt="compact"
+          leading={
+            <ToolbarText
+              text="Release tasks"
+              size="xlarge"
+              id="recipe-list-title"
             />
           }
-        >
-          {renderBody()}
-          <RecipeOwnershipNote>
-            The recipe owns feedback placement and stable content. The app owns
-            fetching, cache age, retry policy, and domain rows.
-          </RecipeOwnershipNote>
-        </Pane>
-      </div>
-    </RecipeRoot>
+          trailing={
+            <ToolbarControlGroup
+              appearance="borderless"
+              content="text"
+              buttonAppearance="push"
+            >
+              <button
+                type="button"
+                data-action="recipe-action"
+                data-recipe-command="empty"
+              >
+                Clear
+              </button>
+              <button
+                type="button"
+                data-action="recipe-action"
+                data-recipe-command="fail"
+              >
+                Simulate failure
+              </button>
+              <button
+                type="button"
+                data-action="recipe-action"
+                data-recipe-command="refresh"
+              >
+                Refresh
+              </button>
+            </ToolbarControlGroup>
+          }
+        />
+      }
+    >
+      {renderBody()}
+    </Pane>
   );
   return {
     render,

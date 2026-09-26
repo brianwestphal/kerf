@@ -6,8 +6,9 @@ The optional `ui/ux-demo/demos/` directory contains one focused renderer per
 first-party component or composition route plus a typed shared context and
 registry; `ui/ux-demo/main.tsx` retains the catalog shell, shared state, routing,
 and interaction wiring. The sibling `ui/ux-demo/recipes/` directory contains
-seven literal dynamic recipe chunks, a shared per-instance controller contract,
-and semantic container-responsive CSS. The composer recipe uses one visible form surface,
+ten literal dynamic recipe chunks and a shared per-instance controller contract;
+each recipe composes public components with no stylesheet and exports a
+catalog-only `presentation` (its `CatalogExample` viewport and ownership note). The composer recipe uses one visible form surface,
 toolbar title/supporting-copy hierarchy, shared 8px field/action gutters, and a
 conditional StateBanner as its only nested semantic surface. The copyable `mount-recipe.ts` adapter owns stable-root
 delegation, form/dialog forwarding, resize commits, and idempotent disposal.
@@ -70,7 +71,10 @@ The application-local `ui/docs/examples/command-palette-adapter.tsx` demonstrate
 canonical layout ownership for a recurring concept the package does not export.
 `ui/scripts/check-recipes.mjs` keeps those sources,
 canonical `ui/ai/component-catalog.json` facts, package imports, docs, and
-stable catalog routes synchronized.
+stable catalog routes synchronized, and applies the shared
+`analyzeRecipeSource` rule to every recipe file: no route stylesheet, inline
+style, class outside the published layout and Web Awesome vocabulary, or
+non-public stylesheet import, and no recipe rules in `ux-demo/style.css`.
 `ui/scripts/check-catalog-demo-conformance.mjs` applies an AST-based authoring
 gate to every first-party demo: public package imports, focused public example
 helpers and `rootAttributes`, nonempty specimens, local-stylesheet/inline-style/

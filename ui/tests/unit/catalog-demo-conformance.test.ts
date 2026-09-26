@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
@@ -6,8 +6,11 @@ import { describe, expect, it } from 'vitest';
 import {
   analyzeCatalogDemoSource,
   analyzeCatalogShellSource,
+  analyzeRecipeSource,
   applyCatalogDemoExceptions,
   catalogDemoConformanceRules,
+  recipeClassVocabulary,
+  recipeConformanceRules,
   validateCatalogDemoExceptionManifest,
 } from '../../scripts/lib/catalog-demo-conformance.mjs';
 
@@ -207,5 +210,131 @@ describe('Catalog demo conformance analysis', () => {
       catalogDemoConformanceRules.shellOverlay,
       catalogDemoConformanceRules.shellMode,
     ]);
+  });
+});
+
+describe('Recipe conformance analysis', () => {
+  const recipeExports = new Set([
+    ...packageExports,
+    './layout.css',
+    './pane',
+    './webawesome.css',
+  ]);
+  const allowedClasses = new Set([
+    'kui-content',
+    'kui-content-item',
+    'hide-actions',
+  ]);
+  const analyze = (source: string) =>
+    analyzeRecipeSource({
+      route: 'recipe-styled',
+      filePath: 'ux-demo/recipes/styled.tsx',
+      absoluteFilePath: resolve(uiRoot, 'ux-demo/recipes/styled.tsx'),
+      source,
+      uiRoot,
+      packageExports: recipeExports,
+      allowedClasses,
+    });
+
+  it('accepts public stylesheets, component configuration, and the published class vocabulary', () => {
+    expect(
+      analyze(`
+        import '@kerfjs/ui/layout.css';
+        import '@kerfjs/ui/webawesome.css';
+        import '@awesome.me/webawesome/dist/components/dialog/dialog.js';
+        import { Pane } from '@kerfjs/ui/pane';
+        export const render = () => (
+          <Pane rootAttributes={{ 'data-recipe': 'recipe-styled' }}>
+            <div class="kui-content-item">Owned geometry</div>
+            <wa-dialog class="hide-actions" label="Details"></wa-dialog>
+          </Pane>
+        );
+      `),
+    ).toEqual([]);
+  });
+
+  it('rejects route stylesheets, inline styles, and styling-only classes with stable ids', () => {
+    const failures = analyze(`
+      import './styled.css';
+      import '@awesome.me/webawesome/dist/styles/utilities.css';
+      import { Pane } from '@kerfjs/ui/pane';
+      export const render = () => (
+        <section data-recipe="recipe-styled" class="recipe-shell kui-content">
+          <Pane className="recipe-shell__main" />
+          <wa-dialog style="--width: 40rem"></wa-dialog>
+          <div style={{ margin: 8 }}></div>
+        </section>
+      );
+    `);
+    expect(failures.map(({ rule, line }) => [rule, line])).toEqual([
+      [recipeConformanceRules.localStylesheet, 2],
+      [recipeConformanceRules.localStylesheet, 3],
+      [recipeConformanceRules.customStyleClass, 6],
+      [recipeConformanceRules.customStyleClass, 7],
+      [recipeConformanceRules.inlineStyle, 8],
+      [recipeConformanceRules.inlineStyle, 9],
+    ]);
+    expect(failures[2]!.message).toContain('"recipe-shell"');
+    expect(failures[2]!.message).not.toContain('kui-content');
+  });
+
+  it('rejects private or source imports and reports malformed TSX', () => {
+    const failures = analyze(`
+      import { Pane } from '@kerfjs/ui/src/pane';
+      import { Hidden } from '@kerfjs/ui/not-exported';
+      import { Private } from '../../src/pane.js';
+      export const render = () => <Pane>
+    `);
+    expect(failures.map((failure) => failure.rule)).toEqual(
+      expect.arrayContaining([
+        recipeConformanceRules.publicImports,
+        recipeConformanceRules.parseError,
+      ]),
+    );
+    expect(
+      failures.filter(
+        (failure) => failure.rule === recipeConformanceRules.publicImports,
+      ),
+    ).toHaveLength(3);
+  });
+
+  it('derives the class vocabulary from the layout entry and themed Web Awesome entries only', async () => {
+    const catalog = JSON.parse(
+      await readFile(resolve(uiRoot, 'ai/component-catalog.json'), 'utf8'),
+    );
+    const vocabulary = recipeClassVocabulary(catalog);
+    expect(vocabulary).toContain('kui-content');
+    expect(vocabulary).toContain('kui-content-item');
+    expect(vocabulary).toContain('kui-control-cluster');
+    expect(vocabulary).toContain('hide-actions');
+    expect(vocabulary).not.toContain('kui-pane__content');
+    expect(vocabulary).not.toContain('kui-list-item');
+    expect(recipeClassVocabulary({})).toEqual(new Set());
+  });
+
+  it('keeps every shipped recipe source free of route styling', async () => {
+    const [catalog, packageJson] = await Promise.all([
+      readFile(resolve(uiRoot, 'ai/component-catalog.json'), 'utf8').then(
+        JSON.parse,
+      ),
+      readFile(resolve(uiRoot, 'package.json'), 'utf8').then(JSON.parse),
+    ]);
+    const directory = resolve(uiRoot, 'ux-demo/recipes');
+    const files = await readdir(directory);
+    expect(files.filter((file) => file.endsWith('.css'))).toEqual([]);
+    for (const file of files.filter((name) => /\.tsx?$/.test(name))) {
+      const absoluteFilePath = resolve(directory, file);
+      expect(
+        analyzeRecipeSource({
+          route: file,
+          filePath: `ux-demo/recipes/${file}`,
+          absoluteFilePath,
+          source: await readFile(absoluteFilePath, 'utf8'),
+          uiRoot,
+          packageExports: new Set(Object.keys(packageJson.exports)),
+          allowedClasses: recipeClassVocabulary(catalog),
+        }),
+      ).toEqual([]);
+    }
   });
 });

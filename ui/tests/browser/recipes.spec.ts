@@ -44,6 +44,22 @@ async function activateDialogAndWaitForShow(
   await expect(dialog).toHaveJSProperty('open', true);
 }
 
+/** Every pane in a recipe owns exactly one scrolling content region. */
+async function expectOneScrollOwnerPerPane(recipe: Locator, panes: number) {
+  const owners = await recipe.evaluate((root) =>
+    [
+      ...(root.matches('[data-component="pane"]') ? [root] : []),
+      ...root.querySelectorAll('[data-component="pane"]'),
+    ].map(
+      (pane) => pane.querySelectorAll(':scope > .kui-pane__content').length,
+    ),
+  );
+  expect(owners).toEqual(Array.from({ length: panes }, () => 1));
+}
+
+const projectDialog = (page: Page) =>
+  page.locator('[data-recipe="recipe-list-detail-dialog"] wa-dialog');
+
 async function expectToolbarZonesNotToOverlap(recipe: Locator) {
   const zones = await Promise.all(
     ['leading', 'center', 'trailing'].map((zone) =>
@@ -106,14 +122,10 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
       ),
     ).toBeLessThanOrEqual(1);
     if (id === 'recipe-app-shell') {
-      await expect(recipe.locator('.recipe-shell__nav-region')).toHaveCSS(
-        'display',
-        'none',
-      );
-      await expect(recipe.locator('.recipe-shell__inspector-region')).toHaveCSS(
-        'display',
-        'none',
-      );
+      // One pane at a time on a handset: content first, the others on demand.
+      await expect(recipe.locator('#recipe-shell-content')).toBeVisible();
+      await expect(recipe.locator('#recipe-shell-navigation')).toBeHidden();
+      await expect(recipe.locator('#recipe-shell-inspector')).toBeHidden();
       const navigation = recipe.getByRole('button', {
         name: 'Show navigation',
       });
@@ -123,7 +135,8 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
       await navigation.press('Enter');
       await expect(navigation).toBeFocused();
       await expect(navigation).toHaveAttribute('aria-pressed', 'true');
-      await expect(recipe.locator('.recipe-shell__nav-region')).toBeVisible();
+      await expect(recipe.locator('#recipe-shell-navigation')).toBeVisible();
+      await expect(recipe.locator('#recipe-shell-content')).toBeHidden();
       await recipe
         .getByRole('button', {
           name: 'Projects with a deliberately wrapping title',
@@ -141,9 +154,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
       await inspector.press('Enter');
       await expect(inspector).toBeFocused();
       await expect(inspector).toHaveAttribute('aria-pressed', 'true');
-      await expect(
-        recipe.locator('.recipe-shell__inspector-region'),
-      ).toBeVisible();
+      await expect(recipe.locator('#recipe-shell-inspector')).toBeVisible();
       await expect(
         recipe.locator(
           '[data-component="value-table"][aria-label="Selected task"]',
@@ -153,7 +164,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
     if (id === 'recipe-compact-toolbar')
       await expectToolbarZonesNotToOverlap(recipe);
     if (id === 'recipe-list-detail-dialog') {
-      const dialog = page.locator('wa-dialog.recipe-dialog');
+      const dialog = projectDialog(page);
       await activateDialogAndWaitForShow(dialog, () =>
         recipe.getByRole('button', { name: 'Open project details' }).click(),
       );
@@ -176,7 +187,15 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
 
   await page.setViewportSize({ width: 900, height: 900 });
   const intermediateShell = await openRecipe(page, 'recipe-app-shell');
-  expect(await intermediateShell.locator('.kui-pane__content').count()).toBe(3);
+  // A tablet-class viewport shows one pane at a time behind the pane switcher.
+  await expect(intermediateShell).toHaveAttribute(
+    'data-responsive-pane',
+    'content',
+  );
+  await expect(
+    intermediateShell.getByRole('button', { name: 'Show inspector' }),
+  ).toBeVisible();
+  await expectOneScrollOwnerPerPane(intermediateShell, 2);
   expect(
     await page.evaluate(
       () =>
@@ -188,7 +207,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
     page,
     'recipe-list-detail-dialog',
   );
-  const intermediateDialog = page.locator('wa-dialog.recipe-dialog');
+  const intermediateDialog = projectDialog(page);
   await activateDialogAndWaitForShow(intermediateDialog, () =>
     intermediateDialogRecipe
       .getByRole('button', { name: 'Open project details' })
@@ -232,11 +251,9 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
       });
       await expect(navigation).toBeVisible();
       await navigation.click();
-      await expect(recipe.locator('.recipe-shell__nav-region')).toBeVisible();
+      await expect(recipe.locator('#recipe-shell-navigation')).toBeVisible();
       await recipe.getByRole('button', { name: 'Show inspector' }).click();
-      await expect(
-        recipe.locator('.recipe-shell__inspector-region'),
-      ).toBeVisible();
+      await expect(recipe.locator('#recipe-shell-inspector')).toBeVisible();
     }
     if (id === 'recipe-compact-toolbar')
       await expectToolbarZonesNotToOverlap(recipe);
@@ -254,7 +271,7 @@ test('keeps project dialog content on intentional wide and narrow gutters', asyn
   ]) {
     await page.setViewportSize(viewport);
     const recipe = await openRecipe(page, 'recipe-list-detail-dialog');
-    const dialog = page.locator('wa-dialog.recipe-dialog');
+    const dialog = projectDialog(page);
     await activateDialogAndWaitForShow(dialog, () =>
       recipe.getByRole('button', { name: 'Open project details' }).click(),
     );
@@ -267,47 +284,96 @@ test('keeps project dialog content on intentional wide and narrow gutters', asyn
     ).toBeLessThanOrEqual(1);
 
     const geometry = await dialog.evaluate((root) => {
+      const measureText = (element: Element) => {
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        return range.getBoundingClientRect().left;
+      };
+      const panel = root
+        .shadowRoot!.querySelector<HTMLElement>('[part~="dialog"]')!
+        .getBoundingClientRect();
+      const title = root.shadowRoot!.querySelector('[part~="title"]')!;
       const bounds = (selector: string) =>
         root.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
-      const title = root.querySelector<HTMLElement>(
-        '.recipe-list-detail__title',
-      )!;
-      const titleRange = document.createRange();
-      titleRange.selectNodeContents(title);
-      const pane = bounds(
-        ':scope > [data-component="pane"] > .kui-pane__content',
-      );
-      const header = bounds(
-        '.recipe-list-detail__detail > [data-component="pane"] > .kui-pane__header > .kui-toolbar',
-      );
-      const masterDetail = bounds('.recipe-list-detail');
-      const detail = bounds('.recipe-list-detail__detail');
-      const table = bounds('.kui-value-table');
-      const actions = bounds('.recipe-list-detail__actions');
-      const archive = bounds('[data-recipe-command="archive"]');
+      const split = bounds('[data-component="split-view"]');
+      const firstRow = bounds('[data-item-id="alpha"]');
+      const footer = [
+        ...root.querySelectorAll<HTMLElement>('[slot="footer"]'),
+      ].map((button) => button.getBoundingClientRect());
+      const common = {
+        compact:
+          root
+            .querySelector('[data-component="split-view"]')!
+            .getAttribute('data-split-mode') === 'compact',
+        footerEndInset: panel.right - footer.at(-1)!.right,
+        footerTopDelta: Math.abs(footer[0]!.top - footer[1]!.top),
+        footerOrdered: footer[0]!.right <= footer[1]!.left,
+        panelWidth: panel.width,
+        rowInset: firstRow.left - split.left,
+        splitEndInset: panel.right - split.right,
+        splitStartInset: split.left - panel.left,
+        titleTextStart: measureText(title) - panel.left,
+      };
+      if (common.compact) return { ...common, roomy: undefined };
+      const list = bounds('[data-split-list]');
+      const detail = bounds('[data-split-detail]');
+      const table = bounds('[data-split-detail] .kui-value-table');
+      const headers = [
+        ...root.querySelectorAll<HTMLElement>('.kui-list-header__label'),
+      ];
       return {
-        actionInset: actions.left - detail.left,
-        archiveInset: archive.left - actions.left,
-        headerEndInset: detail.right - header.right,
-        headerStartInset: header.left - detail.left,
-        masterDetailEndInset: pane.right - masterDetail.right,
-        tableEndInset: detail.right - table.right,
-        tableStartInset: table.left - detail.left,
-        titleInset: titleRange.getBoundingClientRect().left - detail.left,
+        ...common,
+        roomy: {
+          detailHeaderInset: measureText(headers[1]!) - detail.left,
+          headerTopDelta: Math.abs(
+            headers[0]!.getBoundingClientRect().top -
+              headers[1]!.getBoundingClientRect().top,
+          ),
+          listHeaderInset: measureText(headers[0]!) - list.left,
+          listHeaderTextStart: measureText(headers[0]!) - panel.left,
+          tableEndInset: detail.right - table.right,
+          tableStartInset: table.left - detail.left,
+        },
       };
     });
 
-    expect(geometry.headerStartInset).toBeCloseTo(0, 1);
-    expect(geometry.headerEndInset).toBeCloseTo(0, 1);
-    expect(geometry.masterDetailEndInset).toBeCloseTo(0, 1);
-    expect(geometry.actionInset).toBeGreaterThan(5);
-    expect(geometry.tableStartInset).toBeCloseTo(geometry.actionInset, 1);
-    expect(geometry.tableEndInset).toBeCloseTo(geometry.actionInset, 1);
-    expect(geometry.archiveInset).toBeCloseTo(0, 1);
-    expect(geometry.titleInset).toBeGreaterThan(geometry.actionInset * 1.8);
-    expect(geometry.titleInset).toBeLessThan(geometry.actionInset * 2.3);
+    // The split view sits flush in the dialog body; the dialog owns no second
+    // inset around list-owned geometry.
+    expect(geometry.splitStartInset).toBeCloseTo(0, 0);
+    expect(geometry.splitEndInset).toBeCloseTo(0, 0);
+    expect(geometry.rowInset).toBeCloseTo(8, 0);
+    // Footer actions: one comfortable 16px gutter, trailing primary action.
+    expect(geometry.footerEndInset).toBeCloseTo(16, 0);
+    expect(geometry.footerTopDelta).toBeLessThanOrEqual(1);
+    expect(geometry.footerOrdered).toBe(true);
+    if (viewport.width === 1440) {
+      expect(geometry.compact).toBe(false);
+      const roomy = geometry.roomy!;
+      // Both panes open with a section header on one shared line, text on the
+      // standard 17px content inset, and the dialog title on that same edge.
+      expect(roomy.headerTopDelta).toBeLessThanOrEqual(1);
+      expect(roomy.listHeaderInset).toBeCloseTo(17, 0);
+      expect(roomy.detailHeaderInset).toBeCloseTo(17, 0);
+      expect(geometry.titleTextStart).toBeCloseTo(roomy.listHeaderTextStart, 0);
+      expect(roomy.tableStartInset).toBeCloseTo(8, 0);
+      expect(roomy.tableEndInset).toBeCloseTo(8, 0);
+    } else {
+      // Handsets get a full-screen sheet whose split view drills list → detail.
+      expect(geometry.compact).toBe(true);
+      expect(geometry.panelWidth).toBeCloseTo(viewport.width, 0);
+      const stack = dialog.locator('[data-component="nav-stack"]');
+      await expect(stack).toHaveAttribute('data-depth', '1');
+      await dialog.locator('[data-item-id="beta"]').click();
+      await expect(stack).toHaveAttribute('data-depth', '2');
+      await expect(
+        dialog.locator('.kui-value-table', { hasText: 'Sam Rivera' }),
+      ).toBeVisible();
+      await dialog.getByRole('button', { name: 'Back to projects' }).click();
+      await expect(stack).toHaveAttribute('data-depth', '1');
+    }
 
     await page.keyboard.press('Escape');
+    await expect(dialog).toHaveJSProperty('open', false);
   }
 });
 
@@ -317,42 +383,59 @@ test('keeps the composer on one labeled surface with shared field and action gut
 }) => {
   await page.setViewportSize({ width: 1100, height: 1000 });
   const form = await openRecipe(page, 'recipe-composer-form');
-  const sections = form.locator(':scope > .recipe-form__section');
+  // One List owns the form's major rhythm; its direct children are the heading
+  // group, an optional StateBanner, the field stack, and the action row.
+  const stack = form.locator(':scope > [data-component="list"]');
 
   const geometry = () =>
     form.evaluate((root) => {
-      const rootBounds = root.getBoundingClientRect();
-      const rootStyle = window.getComputedStyle(root);
-      const header = root.querySelector<HTMLElement>(
-        ':scope > [data-component="toolbar"]',
+      // The single visible surface is the frame the form sits on directly.
+      const surface = root.closest<HTMLElement>(
+        '[data-catalog-example-viewport]',
       )!;
-      const fields = root.querySelector<HTMLElement>(
-        ':scope > .recipe-form__fields',
+      const rootBounds = surface.getBoundingClientRect();
+      const rootStyle = window.getComputedStyle(surface);
+      const stack = root.querySelector<HTMLElement>(
+        ':scope > [data-component="list"]',
       )!;
-      const footer = root
-        .querySelector<HTMLElement>('.recipe-form__footer')!
-        .getBoundingClientRect();
-      const actions = root
-        .querySelector<HTMLElement>('.recipe-form__actions')!
-        .getBoundingClientRect();
-      const firstField = root
-        .querySelector<HTMLElement>('.recipe-form__fields > :first-child')!
-        .getBoundingClientRect();
-      const fieldsBounds = fields.getBoundingClientRect();
+      const header = stack.querySelector<HTMLElement>(
+        ':scope > [data-component="list"] > [data-component="toolbar"]',
+      )!;
+      const input = root.querySelector<HTMLElement>(
+        'wa-input[name="recipe-title"]',
+      )!;
+      const fields = input.parentElement!;
+      const footerRow = stack.querySelector<HTMLElement>(
+        ':scope > [data-component="row"]',
+      )!;
+      const contentBox = (element: HTMLElement) => {
+        const bounds = element.getBoundingClientRect();
+        const style = window.getComputedStyle(element);
+        return {
+          left: bounds.left + parseFloat(style.paddingInlineStart),
+          right: bounds.right - parseFloat(style.paddingInlineEnd),
+          top: bounds.top,
+          bottom: bounds.bottom,
+        };
+      };
+      const footer = contentBox(footerRow);
+      const buttons = [...footerRow.children].map((button) =>
+        button.getBoundingClientRect(),
+      );
+      const actions = {
+        left: Math.min(...buttons.map(({ left }) => left)),
+        right: Math.max(...buttons.map(({ right }) => right)),
+        top: Math.min(...buttons.map(({ top }) => top)),
+        bottom: Math.max(...buttons.map(({ bottom }) => bottom)),
+      };
+      const firstField = input.getBoundingClientRect();
+      const fieldsBounds = contentBox(fields);
       const headerBounds = header.getBoundingClientRect();
       const summary = root.querySelector<HTMLElement>(
         '#recipe-composer-summary',
       )!;
       const summaryRange = document.createRange();
       summaryRange.selectNodeContents(summary);
-      const ownership = root
-        .querySelector<HTMLElement>(
-          '.recipe-form__footer .recipe-component__ownership',
-        )!
-        .getBoundingClientRect();
-      const input = root.querySelector<HTMLElement>(
-        'wa-input[name="recipe-title"]',
-      )!;
       const textarea = root.querySelector<HTMLElement>(
         'wa-textarea[name="recipe-body"]',
       )!;
@@ -403,7 +486,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
           actions.top >= footer.top &&
           actions.bottom <= footer.bottom,
         actionStart: actions.left - rootBounds.left,
-        directGap: parseFloat(rootStyle.rowGap),
+        directGap: parseFloat(window.getComputedStyle(stack).rowGap),
         documentOverflow:
           document.documentElement.scrollWidth -
           document.documentElement.clientWidth,
@@ -411,11 +494,6 @@ test('keeps the composer on one labeled surface with shared field and action gut
         fieldsGap: parseFloat(window.getComputedStyle(fields).rowGap),
         fieldsStart: fieldsBounds.left - rootBounds.left,
         fieldsEnd: rootBounds.right - fieldsBounds.right,
-        footerContentOverlap: Math.max(
-          0,
-          Math.min(actions.bottom, ownership.bottom) -
-            Math.max(actions.top, ownership.top),
-        ),
         footerStart: footer.left - rootBounds.left,
         footerEnd: rootBounds.right - footer.right,
         headerStart: headerBounds.left - rootBounds.left,
@@ -446,23 +524,22 @@ test('keeps the composer on one labeled surface with shared field and action gut
       'aria-describedby',
       'recipe-composer-summary',
     );
-    await expect(
-      form.locator(':scope > [data-component="toolbar"]'),
-    ).toHaveCount(1);
+    await expect(form.locator('[data-component="toolbar"]')).toHaveCount(1);
     await expect(form.locator('#recipe-composer-title')).toHaveText(
       'Publish workspace update',
     );
     await expect(form.locator('#recipe-composer-summary')).toHaveText(
       'Share a concise, actionable update with collaborators.',
     );
-    await expect(sections).toHaveCount(2);
-    await expect(form.locator(':scope > .kui-content-item')).toHaveCount(0);
-    await expect(
-      form.locator(
-        ':scope > :not([data-component="toolbar"]):not(.recipe-form__heading-summary):not(.recipe-form__section):not([data-component="state-banner"])',
+    await expect(form.locator('.kui-content-item')).toHaveCount(0);
+    expect(
+      await stack.evaluate((element) =>
+        [...element.children].map((child) =>
+          child.getAttribute('data-component'),
+        ),
       ),
-    ).toHaveCount(0);
-    const banner = form.locator(':scope > [data-component="state-banner"]');
+    ).toEqual(['list', ...(bannerRole ? ['state-banner'] : []), 'list', 'row']);
+    const banner = stack.locator(':scope > [data-component="state-banner"]');
     await expect(banner).toHaveCount(bannerRole ? 1 : 0);
     if (bannerRole) await expect(banner).toHaveAttribute('role', bannerRole);
     for (const field of [
@@ -481,7 +558,6 @@ test('keeps the composer on one labeled surface with shared field and action gut
     expect(measured.rootBorderWidth).toBe(1);
     expect(measured.rootBackground).not.toBe('rgba(0, 0, 0, 0)');
     expect(measured.actionsInsideFooter).toBe(true);
-    expect(measured.footerContentOverlap).toBe(0);
     expect(measured.documentOverflow).toBeLessThanOrEqual(1);
     expect(measured.fieldsGap).toBeCloseTo(8 * scale, 0);
     expect(measured.hintCountOverlap).toBe(false);
@@ -563,9 +639,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
   if (browserName === 'chromium')
     await form.screenshot({ path: 'test-results/composer-layout-success.png' });
   await form.getByRole('button', { name: 'Reset' }).click();
-  await expect(
-    form.locator(':scope > [data-component="state-banner"]'),
-  ).toHaveCount(0);
+  await expect(form.locator('[data-component="state-banner"]')).toHaveCount(0);
   await expect(page.locator('.catalog-log')).toHaveText('Draft reset');
   const resetValues = await form.evaluate((root) => {
     const readValue = (selector: string, controlSelector: string) => {
@@ -621,7 +695,9 @@ test('keeps the composer on one labeled surface with shared field and action gut
       const banner = root.querySelector<HTMLElement>(
         '[data-component="state-banner"]',
       )!;
-      const rootStyle = window.getComputedStyle(root);
+      const rootStyle = window.getComputedStyle(
+        root.closest('[data-catalog-example-viewport]')!,
+      );
       const bannerStyle = window.getComputedStyle(banner);
       return {
         bannerBorderStyle: bannerStyle.borderStyle,
@@ -630,7 +706,7 @@ test('keeps the composer on one labeled surface with shared field and action gut
         rootBorderWidth: parseFloat(rootStyle.borderLeftWidth),
         sectionBorders: [
           ...root.querySelectorAll<HTMLElement>(
-            ':scope > .recipe-form__section',
+            ':scope > [data-component="list"] > :is([data-component="list"]:has(wa-input), [data-component="row"])',
           ),
         ].map((section) => {
           const style = window.getComputedStyle(section);
@@ -663,7 +739,8 @@ test('supports keyboard shell/sidebar controls and controlled toolbar interactio
   page,
 }) => {
   const shell = await openRecipe(page, 'recipe-app-shell');
-  expect(await shell.locator('.kui-pane__content').count()).toBe(3);
+  // The shell frame plus navigation, content, and inspector panes.
+  await expectOneScrollOwnerPerPane(shell, 4);
   const separator = shell.getByRole('separator', { name: 'Resize Navigation' });
   await separator.focus();
   await separator.press('ArrowRight');
@@ -765,7 +842,7 @@ test('runs dialog focus lifecycle, form validation, and every list transition', 
     name: 'Open project details',
   });
   await launcher.focus();
-  const dialog = page.locator('wa-dialog.recipe-dialog');
+  const dialog = projectDialog(page);
   await activateDialogAndWaitForShow(dialog, () => launcher.press('Enter'));
   if (browserName === 'chromium')
     await page.screenshot({
