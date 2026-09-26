@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Fixed the `eslint-plugin-kerfjs` `ui-css-values` messages (`KUI-L013`,
+  `KUI-L014`, `KUI-L017`) listing suggested helpers with unbalanced backticks
+  (``use `uiColor() or `foregroundColorVar().``); each helper is now wrapped
+  as `` `uiColor()` ``.
 - Fixed `kerf-ui-analyze` skipping the CSS-value contracts of `@kerfjs/ui`
   `Select` and `Skeleton`. Its component lookup was keyed by display name, so
   the same-named Web Awesome catalog entries (`wa-select`, `wa-skeleton`) —

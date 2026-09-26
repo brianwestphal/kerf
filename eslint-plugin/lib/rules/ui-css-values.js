@@ -100,7 +100,7 @@ export default {
             ...(cssContract.canonicalShorthands ?? []).map(
               (item) => `\`${item}\``,
             ),
-            ...(cssContract.helpers ?? []).map((item) => `\`${item}()`),
+            ...(cssContract.helpers ?? []).map((item) => `\`${item}()\``),
           ].join(' or ') || 'a cataloged component prop';
         for (const value of valuesFor(cssContract.path)) {
           if (!value) continue;

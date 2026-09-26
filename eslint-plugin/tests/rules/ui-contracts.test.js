@@ -349,6 +349,28 @@ tester.run('ui-css-values', cssValues, {
       errors: [{ messageId: 'raw' }],
     },
     {
+      // Pins the full text so every suggested helper stays wrapped in its own
+      // balanced pair of backticks.
+      code: "import { Select, flex } from '@kerfjs/ui'; <Select choices={[{ label: 'A', value: 'a', color: flex(1) }]} />;",
+      settings,
+      errors: [
+        {
+          message:
+            'KUI-L014: `flex()` produces the wrong grammar for `Select.choices[].color`; use `uiColor()` or `colorVar()`.',
+        },
+      ],
+    },
+    {
+      code: "import { Select } from '@kerfjs/ui'; <Select choices={[{ label: 'A', value: 'a', color: 'red' }]} />;",
+      settings,
+      errors: [
+        {
+          message:
+            'KUI-L013: `Select.choices[].color` uses color grammar; replace raw `red` with `uiColor()` or `colorVar()`.',
+        },
+      ],
+    },
+    {
       code: 'import { Stack } from \'@acme/ui\'; <Stack gap="12px" />;',
       settings: thirdPartySettings,
       errors: [{ messageId: 'raw' }],
