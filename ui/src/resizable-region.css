@@ -101,6 +101,25 @@
   height: var(--kui-resizable-region-expanded-size);
   min-height: var(--kui-resizable-region-expanded-size);
 }
+/* While expanded, the sliding content follows the region's actual track, so a
+   region its parent clamps (a max-width, a narrow container) never shows
+   content past its separator. The fixed expanded size above only matters once
+   the track collapses to zero and the content slides out. */
+.kui-resizable-region[data-axis="horizontal"][data-collapse-motion]:not(
+    [data-collapsed="true"]
+  )
+  > .kui-resizable-region__content {
+  width: 100%;
+  min-width: 0;
+}
+.kui-resizable-region[data-axis="vertical"][data-collapse-motion]:not(
+    [data-collapsed="true"]
+  )
+  > .kui-resizable-region__content {
+  height: auto;
+  min-height: 0;
+  flex: 1 1 0;
+}
 .kui-resizable-region[data-axis="horizontal"][data-edge="end"][data-collapsed="true"]
   > .kui-resizable-region__content {
   transform: translateX(-100%);

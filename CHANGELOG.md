@@ -58,6 +58,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   over the border with the group's radius, neighboring controls still abut, and
   the trailing dropdown trigger keeps the 1px end inset instead of running onto
   the border. Compact groups are 2px narrower as a result.
+- Fixed `@kerfjs/ui` slide-motion `ResizableRegion` content overflowing its
+  separator when a parent clamps the region. The expanded content kept the
+  committed size even when a `max-width` or narrow container held the track
+  smaller, so in the catalog at 390px a region resized to 420px showed text
+  running past its handle. Expanded content now follows the region's actual
+  track on both axes; the fixed expanded size still applies while collapsing, so
+  the collapse keeps reading as a slide.
 - Fixed `@kerfjs/ui` `ResizableRegion` panes stopping at their content's
   height. The region's content now spans the whole region, like its separator,
   and a lone child (normally a `Pane`) fills it, so the app-shell recipe's

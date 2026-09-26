@@ -179,7 +179,10 @@ an upstream component or recipe request.
   it one child — normally a `Pane` — and that child fills the region, so the
   pane reaches the region's far edge and owns scrolling for long content.
   Several children stack at their natural height. Do not size the child with
-  application `height` rules.
+  application `height` rules. While expanded, slide-motion content follows the
+  region's actual track, so a region its parent clamps (a `max-width`, a narrow
+  container) never shows content past its separator; the fixed expanded size
+  applies only while the collapsed content slides out.
 - A `ResizableRegion` overlay automatically clamps both its track and fixed-size
   animated content to the responsive overlay maximum. Set the policy and maximum
   on the component instead of adding application descendant width/height fixes.
