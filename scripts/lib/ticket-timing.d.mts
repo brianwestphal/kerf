@@ -19,7 +19,12 @@ export function assertIdentifier(value: string, label?: string): string;
 export function isoTime(value: string, label?: string): string;
 export function formatTimingRecord(record: Record<string, unknown>): string;
 export function parseTimingRecords(text: string): Array<Record<string, any>>;
-export function ticketSlugsFromSubjects(subjects: string[]): string[];
+export const TICKET_PREFIX: string;
+
+export function ticketSlugsFromSubjects(
+  subjects: string[],
+  prefix?: string,
+): string[];
 export function summarizeTicketTiming(text: string): TicketTimingSummary;
 export const MAX_COHERENT_TICKETS: number;
 export function pushTimingTickets(

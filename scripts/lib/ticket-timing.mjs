@@ -55,11 +55,19 @@ export function parseTimingRecords(text) {
   return records;
 }
 
-export function ticketSlugsFromSubjects(subjects) {
+/** This project's Hot Sheet ticket prefix (`KF-ABC123`). */
+export const TICKET_PREFIX = 'KF';
+
+/**
+ * Ticket slugs named in commit subjects. Only this project's prefix counts, so
+ * rule and diagnostic IDs that share the shape (`KUI-B050`, `TS2304`) are not
+ * mistaken for tickets.
+ */
+export function ticketSlugsFromSubjects(subjects, prefix = TICKET_PREFIX) {
+  const pattern = new RegExp(`\\b${prefix}-[A-Z0-9]+\\b`, 'g');
   const slugs = new Set();
   for (const subject of subjects) {
-    for (const match of subject.matchAll(/\b[A-Z][A-Z0-9]*-[A-Z0-9]+\b/g))
-      slugs.add(match[0]);
+    for (const match of subject.matchAll(pattern)) slugs.add(match[0]);
   }
   return [...slugs].sort();
 }

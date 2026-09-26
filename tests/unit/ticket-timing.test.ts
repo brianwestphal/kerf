@@ -111,6 +111,18 @@ describe('ticket timing records', () => {
     ).toEqual(['KF-ABC123', 'KF-WB8CJB']);
   });
 
+  it('ignores rule and diagnostic IDs that share the slug shape', () => {
+    expect(
+      ticketSlugsFromSubjects([
+        'KF-8YP32A: measure KUI-B050 target size by hit-testing',
+        'fix TS2304 and ESLINT-L014 noise',
+      ]),
+    ).toEqual(['KF-8YP32A']);
+    expect(ticketSlugsFromSubjects(['HS2-ABC123 upstream'], 'HS2')).toEqual([
+      'HS2-ABC123',
+    ]);
+  });
+
   it('fans a push out only while its outgoing tickets form a coherent batch', () => {
     const batch = Array.from(
       { length: MAX_COHERENT_TICKETS },
