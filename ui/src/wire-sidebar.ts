@@ -78,7 +78,7 @@ function defaultStorage(): SidebarStorage | undefined {
  * delegation with focus restore, focus-into on open, an optional compact overlay
  * (backdrop + Escape + focus trap) driven by {@link deviceClass}, and an optional
  * persistence hook. The app owns each `collapsed` signal and the layout; this wire
- * owns the interaction. Returns a disposer. See `docs/24-collapsible-panel.md`.
+ * owns the interaction. Returns a disposer. See `ui/docs/collapsible-panel.md` and `docs/23-app-layouts.md`.
  */
 export function wireSidebar(
   root: HTMLElement,

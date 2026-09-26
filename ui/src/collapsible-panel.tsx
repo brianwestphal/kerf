@@ -127,7 +127,7 @@ export interface CollapsiblePanelProps {
  * underneath the transform transition. The app owns the `collapsed` signal;
  * pair it with `wireSidebar` for the toggle, focus, compact-overlay, keyboard,
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
- * affordance. See `docs/24-collapsible-panel.md`.
+ * affordance. See `ui/docs/collapsible-panel.md` and `docs/23-app-layouts.md`.
  */
 export function CollapsiblePanel({
   id,
