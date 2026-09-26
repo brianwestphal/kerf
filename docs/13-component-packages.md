@@ -292,8 +292,11 @@ source manifest and these scripts:
 The source manifest requires the package author to decide purpose, named public
 exports and subpaths, parent/child composition, zones, state and wiring owners,
 responsive behavior, margin/border/padding ownership, public classes and
-tokens, accessibility obligations, and source/provenance links. The generator
-does not inspect screenshots or CSS to guess those decisions. Missing decisions,
+tokens, accessibility obligations, and source/provenance links. A component
+whose wiring helper writes runtime `data-*` state may also declare it under the
+optional `composition.wiring.stateAttributes` (`{ name, on, helper, meaning }`),
+so tools can tell those wiring-owned attributes from app-authored ones. The
+generator does not inspect screenshots or CSS to guess those decisions. Missing decisions,
 missing source files, stale named exports, duplicate ids, and stale generated
 output produce path-specific errors. Both author metadata and generated output
 are validated against the shipped, `additionalProperties: false` schemas;

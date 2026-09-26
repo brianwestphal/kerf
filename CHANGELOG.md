@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `create-kerf-component`'s `kerf.components.json` now accepts an optional
+  `composition.wiring.stateAttributes` declaration (the wiring-owned state
+  attributes `@kerfjs/ui`'s catalog now carries), so third-party
+  component authors can list the `data-*` attributes their wiring helpers write
+  (`{ name, on, helper, meaning }`). `kerf-component-catalog` passes them
+  through to the generated `component-catalog-v2.json` and reports a non-`data-*`
+  name, a duplicate name, an empty `on` or `meaning`, or a helper missing from
+  `wiring.helpers` at its exact path.
 - `@kerfjs/ui`'s component catalog now declares **wiring-owned state
   attributes**. A new optional `wiring.stateAttributes` in
   `component-catalog-v2` (and per wiring item in v1) lists each `data-*`

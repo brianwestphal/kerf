@@ -47,6 +47,13 @@ A ready-to-publish component package that encodes the rules from the kerf docs
   string/template/regular-expression literals cannot masquerade as public
   exports. The scaffold already declares TypeScript; run `npm install` before
   invoking its copied local checker in a fresh offline directory.
+  A component whose wiring helper writes runtime `data-*` state onto its DOM
+  can declare it under `composition.wiring.stateAttributes` — each item is
+  `{ name, on, helper, meaning }`, where `name` is a `data-*` name, `on` is the
+  element that carries it, and `helper` is one of `wiring.helpers`. Apps must
+  not render, remove, or treat those attributes as their own state. The field
+  is optional; names must be unique per component, and the checker rejects a
+  helper that is not listed in `wiring.helpers`.
 
 ## Layout produced
 

@@ -237,6 +237,104 @@ test('rejects unknown fields and wrong types at exact author metadata paths', ()
   });
 });
 
+function withStateAttributes(target, stateAttributes) {
+  const value = metadata(target);
+  value.components[0].composition.wiring.stateAttributes = stateAttributes;
+  writeMetadata(target, value);
+}
+
+function assertCatalogDiagnostic(target, suffix) {
+  assert.throws(
+    () => generateCatalogs(target),
+    (error) => {
+      assert.ok(error instanceof CatalogError);
+      assert.ok(
+        error.diagnostics.some((diagnostic) => diagnostic.endsWith(suffix)),
+        `expected a diagnostic ending in ${suffix}, got:\n${error.diagnostics.join('\n')}`,
+      );
+      return true;
+    },
+  );
+}
+
+const pressedAttribute = {
+  name: 'data-pressed',
+  on: 'kerf-counter__button',
+  helper: 'wireCounter',
+  meaning: 'Present while the pointer holds a step button down.',
+};
+
+test('passes declared wiring-owned state attributes through to the v2 catalog', () => {
+  withScaffold(({ target }) => {
+    withStateAttributes(target, [pressedAttribute]);
+    const [result] = runCatalogCommand({ root: target });
+    assert.deepEqual(result.catalog.entries[0].wiring.stateAttributes, [
+      pressedAttribute,
+    ]);
+    assert.deepEqual(validateCatalogV2(result.catalog), []);
+    assert.deepEqual(
+      JSON.parse(readFileSync(result.outputPath, 'utf8')).entries[0].wiring
+        .stateAttributes,
+      [pressedAttribute],
+    );
+
+    const withoutDeclaration = metadata(target);
+    delete withoutDeclaration.components[0].composition.wiring.stateAttributes;
+    writeMetadata(target, withoutDeclaration);
+    const [withoutAttributes] = generateCatalogs(target);
+    assert.equal(
+      'stateAttributes' in withoutAttributes.catalog.entries[0].wiring,
+      false,
+    );
+  });
+});
+
+test('rejects malformed wiring-owned state attributes at exact paths', () => {
+  withScaffold(({ target }) => {
+    const wiring = '.components[0].composition.wiring.stateAttributes';
+
+    withStateAttributes(target, 'data-pressed');
+    assertCatalogDiagnostic(target, `${wiring}: expected array`);
+
+    withStateAttributes(target, [{ ...pressedAttribute, name: 'pressed' }]);
+    assertCatalogDiagnostic(
+      target,
+      `${wiring}[0].name: must match ^data-[a-z0-9]+(-[a-z0-9]+)*$`,
+    );
+
+    withStateAttributes(target, [{ ...pressedAttribute, on: '' }]);
+    assertCatalogDiagnostic(
+      target,
+      `${wiring}[0].on: expected at least 1 character(s)`,
+    );
+
+    const withoutMeaning = { ...pressedAttribute };
+    delete withoutMeaning.meaning;
+    withStateAttributes(target, [withoutMeaning]);
+    assertCatalogDiagnostic(target, `${wiring}[0].meaning: is required`);
+
+    withStateAttributes(target, [{ ...pressedAttribute, owner: 'app' }]);
+    assertCatalogDiagnostic(
+      target,
+      `${wiring}[0].owner: additional property is not allowed`,
+    );
+
+    withStateAttributes(target, [pressedAttribute, pressedAttribute]);
+    assertCatalogDiagnostic(
+      target,
+      'composition.wiring.stateAttributes.data-pressed.name: declared more than once',
+    );
+
+    withStateAttributes(target, [
+      { ...pressedAttribute, helper: 'wireSomethingElse' },
+    ]);
+    assertCatalogDiagnostic(
+      target,
+      'composition.wiring.stateAttributes.data-pressed.helper: wireSomethingElse is not listed in composition.wiring.helpers',
+    );
+  });
+});
+
 test('validates emitted catalogs against the shipped v2 schema', () => {
   withScaffold(({ target }) => {
     const [result] = generateCatalogs(target);

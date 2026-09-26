@@ -400,6 +400,32 @@ function validateComposition(component, at, diagnostics) {
     `${at}.composition.wiring.obligations`,
     diagnostics,
   );
+  const stateAttributes = composition.wiring?.stateAttributes;
+  if (stateAttributes !== undefined && !Array.isArray(stateAttributes))
+    diagnostics.push(
+      `${at}.composition.wiring.stateAttributes: expected an array`,
+    );
+  const stateAttributeNames = new Set();
+  for (const attribute of Array.isArray(stateAttributes)
+    ? stateAttributes
+    : []) {
+    const name = attribute?.name;
+    const attributeAt = `${at}.composition.wiring.stateAttributes.${name}`;
+    if (typeof name !== 'string' || !/^data-[a-z0-9]+(-[a-z0-9]+)*$/.test(name))
+      diagnostics.push(`${attributeAt}.name: expected a data-* attribute name`);
+    if (stateAttributeNames.has(name))
+      diagnostics.push(`${attributeAt}.name: declared more than once`);
+    stateAttributeNames.add(name);
+    for (const field of ['on', 'meaning'])
+      if (typeof attribute?.[field] !== 'string' || !attribute[field])
+        diagnostics.push(
+          `${attributeAt}.${field}: expected a non-empty string`,
+        );
+    if (!composition.wiring.helpers?.includes(attribute?.helper))
+      diagnostics.push(
+        `${attributeAt}.helper: ${attribute?.helper} is not listed in composition.wiring.helpers`,
+      );
+  }
   if (
     !['application', 'component', 'shared', 'not-applicable'].includes(
       composition.responsive?.owner,
