@@ -6730,7 +6730,14 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
 
   await handle.focus();
   await handle.press('End');
-  await expect(size).toHaveText('420px');
+  // The narrow stage clamps the track below the declared 420 maximum, so End
+  // stops at the visible width and the separator reports it.
+  const visibleMax = await region.evaluate((element) =>
+    Math.floor(element.getBoundingClientRect().width),
+  );
+  expect(visibleMax).toBeLessThan(420);
+  await expect(size).toHaveText(`${visibleMax}px`);
+  await expect(handle).toHaveAttribute('aria-valuemax', String(visibleMax));
   const maxScroll = await shell.evaluate((element) => {
     element.scrollLeft = element.scrollWidth - element.clientWidth;
     const shellRect = element.getBoundingClientRect();

@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui`'s `wireResizableRegions` now bounds a resize to the space the
+  region's parent actually leaves. When a parent clamps the track (a
+  `max-width` stage, a narrow container), pointer and keyboard resizing stop at
+  the visible size, and the separator reports that size in `aria-valuenow` and
+  its visible maximum in `aria-valuemax`. Previously a region resized to 420
+  inside a 340px stage announced 420 and needed several key presses before the
+  separator moved. Focusing the handle reports a stale larger committed size as
+  the shown size without committing it.
 - The UI evaluator's `KUI-B050` target-size rule now accepts a 44×36 target
   inside compact density (`[data-density="compact"]`), matching the 36px
   compact row height; standard density still requires 44×44, and the width

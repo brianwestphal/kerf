@@ -124,7 +124,11 @@ test('a clamped vertical region keeps its content inside the separator', async (
   expect(heights.content).toBeCloseTo(heights.region, 0);
 });
 
-test('the catalog region demo resized past the 390px stage keeps its text inside the handle', async ({
+// KF-DTZY4N: the resize itself is clamped to the space the parent leaves, so
+// the separator reports the size that is shown. Keyboard resizing moves the
+// visible separator on the first key press instead of sticking beyond the
+// clamped track, and aria-valuemax announces the visible maximum.
+test('the catalog region demo resizes only to the 390px stage and reports the shown size', async ({
   page,
   browserName,
 }) => {
@@ -136,38 +140,92 @@ test('the catalog region demo resized past the 390px stage keeps its text inside
   const handle = region.locator('[data-kui-resize-handle]');
   await handle.focus();
   await page.keyboard.press('End');
-  await expect(handle).toHaveAttribute('aria-valuenow', '420');
 
   const stage = region.locator('xpath=..');
-  const geometry = await region.evaluate((element) => {
-    const content = element.querySelector<HTMLElement>(
-      ':scope > .kui-resizable-region__content',
-    )!;
-    const text = [...content.querySelectorAll('*')].filter(
+  const stageWidth = await stage.evaluate(
+    (element) => element.getBoundingClientRect().width,
+  );
+  const shown = await widths(region);
+  // The separator reports exactly the visible width, never the declared 420.
+  expect(shown.region).toBeLessThan(420);
+  expect(shown.region).toBeLessThanOrEqual(stageWidth + 0.5);
+  const visible = String(Math.floor(shown.region));
+  await expect(handle).toHaveAttribute('aria-valuenow', visible);
+  await expect(handle).toHaveAttribute('aria-valuemax', visible);
+  await expect(page.locator('[data-region-size]')).toHaveText(`${visible}px`);
+  expect(shown.content).toBeCloseTo(shown.region, 0);
+  const textRight = await region.evaluate((element) => {
+    const text = [...element.querySelectorAll('*')].filter(
       (node) => node.children.length === 0 && node.textContent?.trim(),
     );
-    return {
-      region: element.getBoundingClientRect().right,
-      content: content.getBoundingClientRect().right,
-      text: Math.max(...text.map((node) => node.getBoundingClientRect().right)),
-    };
+    return Math.max(...text.map((node) => node.getBoundingClientRect().right));
   });
-  const stageRight = await stage.evaluate(
-    (element) => element.getBoundingClientRect().right,
-  );
-  expect(geometry.region).toBeLessThanOrEqual(stageRight + 0.5);
-  expect(geometry.content).toBeCloseTo(geometry.region, 0);
-  expect(geometry.text).toBeLessThanOrEqual(geometry.region + 0.5);
+  expect(textRight).toBeLessThanOrEqual(shown.regionRight + 0.5);
   if (browserName === 'chromium')
     await page.locator('[data-demo="resize"]').screenshot({
       path: 'test-results/resizable-region-clamp-390.png',
     });
 
+  // The first key press away from the maximum moves the visible separator.
+  await page.keyboard.press('ArrowLeft');
+  const stepped = Number(visible) - 16;
+  await expect(handle).toHaveAttribute('aria-valuenow', String(stepped));
+  expect((await widths(region)).region).toBeCloseTo(stepped, 0);
+  // Growing again stops at the visible maximum.
+  await page.keyboard.press('Shift+ArrowRight');
+  await expect(handle).toHaveAttribute('aria-valuenow', visible);
+
+  // A pointer drag past the stage clamps the same way.
+  const box = (await handle.boundingBox())!;
+  const x = box.x + box.width / 2;
+  const y = box.y + box.height / 2;
+  await page.mouse.move(x, y);
+  await page.mouse.down();
+  await page.mouse.move(x - 80, y, { steps: 4 });
+  await page.mouse.move(x + 200, y, { steps: 4 });
+  await page.mouse.up();
+  await expect(handle).toHaveAttribute('aria-valuenow', visible);
+  await expect(page.locator('[data-region-size]')).toHaveText(`${visible}px`);
+
   // Shrinking with the keyboard below the stage width moves the separator and
   // content together again.
+  await handle.focus();
   await page.keyboard.press('Home');
   await expect(handle).toHaveAttribute('aria-valuenow', '180');
   const shrunk = await widths(region);
   expect(shrunk.region).toBeCloseTo(180, 0);
   expect(shrunk.content).toBeCloseTo(shrunk.region, 0);
+});
+
+test('a size committed on a wide stage reports the clamped size when focused on a narrow one', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=resize');
+  const region = page.locator(
+    '[data-demo="resize"] [data-component="resizable-region"]',
+  );
+  const handle = region.locator('[data-kui-resize-handle]');
+  await handle.focus();
+  await page.keyboard.press('End');
+  // With room to spare the declared maximum is reachable and announced.
+  await expect(handle).toHaveAttribute('aria-valuenow', '420');
+  await expect(handle).toHaveAttribute('aria-valuemax', '420');
+  expect((await widths(region)).region).toBeCloseTo(420, 0);
+
+  await handle.blur();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await handle.focus();
+  const shown = await widths(region);
+  const visible = String(Math.floor(shown.region));
+  expect(shown.region).toBeLessThan(420);
+  await expect(handle).toHaveAttribute('aria-valuenow', visible);
+  await expect(handle).toHaveAttribute('aria-valuemax', visible);
+  // Focus reports without committing; the app keeps its size until a resize.
+  await expect(page.locator('[data-region-size]')).toHaveText('420px');
+  await page.keyboard.press('ArrowLeft');
+  await expect(handle).toHaveAttribute(
+    'aria-valuenow',
+    String(Number(visible) - 16),
+  );
 });

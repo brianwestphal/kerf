@@ -761,8 +761,12 @@ variables, so a nested instance never inherits its ancestor's `gap` or `flex`
 the region (`ui/tests/browser/resizable-region-fill.spec.ts` with
 `ui/tests/browser/fixtures/resizable-region-fill.tsx`, plus the app-shell case in
 `layout-fill.spec.ts`). Expanded slide-motion content follows the region's
-actual track, so a clamped region never shows content past its separator
-(`ui/tests/browser/resizable-region-clamp.spec.ts`).
+actual track, so a clamped region never shows content past its separator, and
+`wireResizableRegions` bounds pointer/keyboard resizing to that visible track
+(probing it at the declared max), announcing the shown size in
+`aria-valuenow`/`aria-valuemax`
+(`ui/tests/browser/resizable-region-clamp.spec.ts`,
+`ui/tests/unit/wire-resizable-regions.test.ts`).
 `Catalog.stageRootAttributes`, `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` use the
 same runtime filter for catalog-authoring `data-*` metadata while protecting
 their structure and alignment markers. `CatalogExample.viewport` supplies

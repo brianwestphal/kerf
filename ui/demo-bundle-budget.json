@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 284000,
-  "measuredLargestJavaScriptGzip": 135572,
-  "measuredTotalJavaScriptGzip": 283913,
+  "totalJavaScriptGzip": 284300,
+  "measuredLargestJavaScriptGzip": 135851,
+  "measuredTotalJavaScriptGzip": 284203,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -355,6 +355,22 @@
         "measuredTotalJavaScriptGzip": 283913,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 284000
+      }
+    },
+    {
+      "at": "2026-09-26T04:30:16.980Z",
+      "reason": "KF-DTZY4N: wireResizableRegions probes the visible track so resizing and aria-valuenow/aria-valuemax stay within a parent-clamped region",
+      "old": {
+        "measuredLargestJavaScriptGzip": 135572,
+        "measuredTotalJavaScriptGzip": 283913,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 284000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 135851,
+        "measuredTotalJavaScriptGzip": 284203,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 284300
       }
     }
   ]

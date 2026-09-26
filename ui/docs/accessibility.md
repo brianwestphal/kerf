@@ -109,6 +109,12 @@ The handle exposes separator role, orientation, name, minimum, maximum, and curr
 - Shift+Arrow in 64 px steps;
 - Home and End for minimum and maximum;
 - primary-pointer drag with clamping;
+- a visible maximum: when a parent clamps the track below the requested size
+  (a `max-width` stage, a narrow container), pointer and keyboard resizing stop
+  at the size actually shown, and the handle announces that size in
+  `aria-valuenow` and that bound in `aria-valuemax`. Focusing the handle
+  reports a stale larger committed size as the shown size without committing
+  it, so the first key press moves the visible separator;
 - preview callbacks while dragging and one commit callback on release;
 - a live size that also resizes slide-motion content, so the content tracks the
   separator during a drag or key press instead of waiting for the app to
