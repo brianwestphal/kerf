@@ -72,7 +72,11 @@ test('opens the bottom drawer monotonically from its stable bottom edge', async 
     }> = [];
     let sawMotion = false;
     let settled = false;
-    for (let index = 0; index < 90; index += 1) {
+    // Sample on a time budget, not a frame count: sampling starts before the
+    // click, and under full-suite load a slow click or a slow frame rate could
+    // spend a fixed frame budget before the drawer even begins to open.
+    const deadline = performance.now() + 5000;
+    while (performance.now() < deadline) {
       await new Promise(window.requestAnimationFrame);
       const panel = document.querySelector<HTMLElement>(
         '[data-collapsible-panel="sidebar-console"]',
