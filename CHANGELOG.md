@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- The opt-in `rebuiltListeners` dev warning no longer reports a popover or
+  tooltip closing inside a modal dialog's host slot. Removals inside a
+  `[data-kerf-overlay-host][data-morph-skip]` slot belong to the surface's own
+  mount, so the enclosing mount now ignores them, as its re-renders already
+  did. A listener lost to a re-render inside the surface is still reported,
+  once.
 - **A popover or tooltip in a modal `<dialog>` no longer lingers after the
   dialog is removed when its anchor was moved out first.** A surface rendered
   into a dialog's host slot left with the dialog, but because its anchor was

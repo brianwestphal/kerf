@@ -177,7 +177,8 @@ data-morph-skip></div>` anywhere inside the dialog (both attributes are
     (`src/utils/overlay-host.ts`) is where that rule stops: `mount()`'s nesting
     guard does not walk past it in either direction, the enclosing mount's
     morph skips it (`data-morph-skip`), and its binding wiring and `each()`
-    list-marker scans never descend into it — so the inner surface's
+    list-marker scans never descend into it (nor does the opt-in
+    `rebuiltListeners` dev observer, KF-J31B0Q) — so the inner surface's
     `data-kfb` / `kfb:` / `kf-list:` markers, which reuse the same per-mount
     counters, can never be taken for the outer mount's own. This boundary is
     what costs the shared core ~0.08 KB min+gzip.

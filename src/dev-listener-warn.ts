@@ -36,6 +36,7 @@
  */
 
 import { devFlag, silenceHint } from './dev-warn-config.js';
+import { isOverlayHost, OVERLAY_HOST_SELECTOR } from './utils/overlay-host.js';
 
 const LISTENER_MARKER = Symbol.for('kerfjs.devListener');
 
@@ -90,20 +91,29 @@ function patchAddEventListenerOnce(): void {
 }
 
 function hasMarkedListener(el: Element): boolean {
-  if ((el as unknown as Record<symbol, boolean>)[LISTENER_MARKER] === true)
-    return true;
   // Walk descendants — when the morph removes a whole subtree, only the root
   // appears in the MutationRecord's removedNodes; an imperative listener on a
-  // grandchild would otherwise be invisible.
-  const stack: Element[] = [];
-  for (let i = 0; i < el.children.length; i++) stack.push(el.children[i]);
+  // grandchild would otherwise be invisible. The walk stops at an overlay
+  // host slot: what lives inside belongs to another mount.
+  const stack: Element[] = [el];
   while (stack.length > 0) {
     const cur = stack.pop() as Element;
     if ((cur as unknown as Record<symbol, boolean>)[LISTENER_MARKER] === true)
       return true;
+    if (isOverlayHost(cur)) continue;
     for (let i = 0; i < cur.children.length; i++) stack.push(cur.children[i]);
   }
   return false;
+}
+
+// KF-J31B0Q: a removal inside an overlay host slot (below `rootEl`) is another
+// mount's — a `kerfjs/overlay` surface closing, or that surface's own
+// re-render, which its own mount's observer reports. The enclosing mount's
+// morph never touches the slot (`data-morph-skip`), so it must not claim
+// those removals, just as its binding and list-marker scans stop there.
+function insideHostSlot(target: Node, rootEl: Element): boolean {
+  const host = (target as Element).closest(OVERLAY_HOST_SELECTOR);
+  return host !== null && host !== rootEl && rootEl.contains(host);
 }
 
 function emitWarning(): void {
@@ -126,6 +136,7 @@ export function installListenerRebuildWarn(
   const observer = new MutationObserver((mutations) => {
     if (warned) return;
     for (const m of mutations) {
+      if (insideHostSlot(m.target, rootEl)) continue;
       for (let i = 0; i < m.removedNodes.length; i++) {
         const removed = m.removedNodes[i];
         /* c8 ignore next — text/comment-node removals from morph; never carry the addEventListener marker but we filter to keep the Element-only contract explicit */

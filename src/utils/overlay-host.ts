@@ -9,7 +9,9 @@
  * and the enclosing mount leaves it alone — its morph skips the subtree
  * (`data-morph-skip`), its nested-mount check stops there, and its binding and
  * list-marker scans never descend into it, so the inner mounts' markers can
- * never be mistaken for the outer mount's own.
+ * never be mistaken for the outer mount's own. The opt-in rebuilt-listeners
+ * dev observer stops there too: a removal inside the slot is the inner
+ * mount's to report.
  */
 export const OVERLAY_HOST_SELECTOR =
   '[data-kerf-overlay-host][data-morph-skip]';

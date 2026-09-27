@@ -91,6 +91,14 @@ removals; any removed Element (or descendant of a removed subtree) carrying
 the marker fires the one-shot warning. The fix message points at
 `delegate()` and `data-morph-skip` as the canonical fixes.
 
+**Overlay host slots are another mount's.** Removals inside a
+`[data-kerf-overlay-host][data-morph-skip]` slot below the mount root — a
+`kerfjs/overlay` popover or tooltip closing, or that surface's own re-render —
+are not reported by the enclosing mount, and the descendant walk of a removed
+subtree does not descend into a slot. The enclosing morph never touches a
+slot, so those removals are not its rebuilds; a genuine rebuild inside the
+surface is still reported once, by the surface's own mount (KF-J31B0Q).
+
 **Dedup scope.** Once per `mount()`. The one-shot flag lives on each mount's
 observer, so a second mount with the same antipattern still warns once after
 the first has.

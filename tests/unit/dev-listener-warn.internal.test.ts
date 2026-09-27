@@ -24,8 +24,9 @@ import {
 import { devHooks } from '../../src/dev-hooks.js';
 import { maybeWarnMissingRowKey } from '../../src/dev-row-key-warn.js';
 import { each } from '../../src/each.js';
-import { jsx } from '../../src/jsx-runtime.js';
+import { jsx, raw } from '../../src/jsx-runtime.js';
 import { mount } from '../../src/mount.js';
+import { popover } from '../../src/overlay.js';
 import { signal } from '../../src/reactive.js';
 import {
   enterProductionShape,
@@ -266,6 +267,125 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
     li1.remove();
     await flushMutationObserver();
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+});
+
+describe('dev-listener-warn at the overlay host slot boundary (KF-J31B0Q)', () => {
+  // A `kerfjs/overlay` surface in a `[data-kerf-overlay-host][data-morph-skip]`
+  // slot is another mount's territory: the enclosing mount's morph never
+  // touches it, so a removal there is never "rebuilt by this mount".
+  function mountWithSlot(): HTMLElement {
+    mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('button', { id: 'anchor', children: 'open' }),
+          jsx('div', {
+            'data-kerf-overlay-host': '',
+            'data-morph-skip': '',
+          }),
+        ],
+      }),
+    );
+    return root.querySelector('[data-kerf-overlay-host]') as HTMLElement;
+  }
+
+  it('closing a slot-hosted popover whose control carries a listener does not warn', async () => {
+    const slot = mountWithSlot();
+    const pop = popover(
+      document.getElementById('anchor') as HTMLElement,
+      raw('<button id="pick">pick</button>'),
+      { container: slot },
+    );
+    (document.getElementById('pick') as HTMLElement).addEventListener(
+      'click',
+      () => {},
+    );
+    pop.close();
+    await flushMutationObserver();
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it("a genuine rebuild inside the surface is reported once, by the surface's own mount", async () => {
+    const slot = mountWithSlot();
+    const rows = signal([{ id: 1 }]);
+    const pop = popover(
+      document.getElementById('anchor') as HTMLElement,
+      () =>
+        jsx('ul', {
+          children: each(rows.value, (r) =>
+            jsx('li', { 'data-key': String(r.id), children: String(r.id) }),
+          ),
+        }) as never,
+      { container: slot },
+    );
+    (pop.el.querySelector('li') as HTMLElement).addEventListener(
+      'click',
+      () => {},
+    );
+    rows.value = [{ id: 1 }]; // fresh ref: the row node is rebuilt
+    await flushMutationObserver();
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    pop.close();
+  });
+
+  it("the enclosing mount removing the slot itself does not report the surface's listeners", async () => {
+    const withSlot = signal(true);
+    mount(root, () =>
+      jsx('div', {
+        children: [
+          jsx('button', { id: 'anchor', children: 'open' }),
+          withSlot.value
+            ? jsx('div', {
+                'data-kerf-overlay-host': '',
+                'data-morph-skip': '',
+              })
+            : '',
+        ],
+      }),
+    );
+    const slot = root.querySelector('[data-kerf-overlay-host]') as HTMLElement;
+    const inner = document.createElement('button');
+    slot.appendChild(inner);
+    inner.addEventListener('click', () => {});
+    withSlot.value = false;
+    await flushMutationObserver();
+    expect(slot.isConnected).toBe(false);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('a mount whose own root is a slot still reports its own rebuilds', async () => {
+    root.setAttribute('data-kerf-overlay-host', '');
+    root.setAttribute('data-morph-skip', '');
+    const show = signal(true);
+    mount(root, () =>
+      show.value ? jsx('button', { id: 'gone', children: 'x' }) : jsx('p', {}),
+    );
+    (document.getElementById('gone') as HTMLElement).addEventListener(
+      'click',
+      () => {},
+    );
+    show.value = false;
+    await flushMutationObserver();
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('a listener-bearing node removed outside the slot still warns', async () => {
+    const show = signal(true);
+    mount(root, () =>
+      jsx('div', {
+        children: [
+          show.value ? jsx('button', { id: 'gone', children: 'x' }) : '',
+          jsx('div', { 'data-kerf-overlay-host': '', 'data-morph-skip': '' }),
+        ],
+      }),
+    );
+    (document.getElementById('gone') as HTMLElement).addEventListener(
+      'click',
+      () => {},
+    );
+    show.value = false;
+    await flushMutationObserver();
+    expect(warnSpy).toHaveBeenCalledTimes(1);
   });
 });
 
