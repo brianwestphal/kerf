@@ -108,8 +108,10 @@ same syntax under `ui/ux-demo/`. The PostCSS plugin in
 `ui/scripts/build-css.mjs` writes publishable component styles to
 `ui/dist/styles/`; package CSS exports and generated browser entry wrappers
 refer only to those compiled files. Component author CSS is not included in the
-npm package. The copyable recipe source under `ui/ux-demo/recipes/` remains
-ordinary CSS because it is deliberately included in the package for consumers.
+npm package. The copyable recipe source under `ui/ux-demo/recipes/` is
+deliberately included in the package for consumers; it is TSX/TS only and
+ships no stylesheet, so it has no `remify()` source to compile — recipes style
+themselves through the published component CSS, public tokens, and props.
 
 The UX catalog's Vite configuration resolves package CSS imports back to the
 author files and applies the same transform. Consequently `cd ui && npm run
