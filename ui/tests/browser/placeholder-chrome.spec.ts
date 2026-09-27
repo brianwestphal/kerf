@@ -15,6 +15,11 @@ interface ChromeSpec {
   root: string;
   /** Chrome descendants compared by rect (relative to the root) and style. */
   parts: readonly string[];
+  /**
+   * Descendants compared by rect only: their styling carries a value (for
+   * example the selected segment, since a placeholder's selection is unknown).
+   */
+  rectParts?: readonly string[];
   /** The root is inline and sized by its value: compare its height only. */
   inlineValue?: boolean;
 }
@@ -29,12 +34,19 @@ const CHROME: readonly ChromeSpec[] = [
     root: '.kui-list-item',
     parts: ['.kui-list-item__icon', '.kui-list-item__label'],
   },
+  {
+    root: '.kui-segmented-control',
+    parts: [
+      '[data-segment-value="activity"]',
+      '[data-segment-value="activity"] svg',
+      '[data-segment-value="files"]',
+    ],
+    rectParts: ['[data-segment-value="details"]'],
+  },
 ];
 
 // Components whose placeholder currently drifts from the live chrome and are
 // therefore not yet in CHROME. Move each into CHROME with its fix:
-// - SegmentedControl: `:disabled` opacity 0.45; icon choices become 4em text
-//   skeletons, widening every segment.
 // - ListHeader: the action button (0.48) and toggle title (Web Awesome native
 //   0.5) dim, taking the label with them in toggle mode.
 // - AppTab: Web Awesome native `button:disabled` dims the pill to 0.5.
@@ -93,6 +105,10 @@ async function chrome(inspector: Locator) {
               const part = root.querySelector(selector);
               return part ? { rect: rect(part), styles: styles(part) } : null;
             }),
+            rectParts: (spec.rectParts ?? []).map((selector) => {
+              const part = root.querySelector(selector);
+              return part ? rect(part) : null;
+            }),
           };
         }),
       );
@@ -111,7 +127,7 @@ test('placeholder components keep the live chrome; only values are skeletons', a
   await page.evaluate(() => document.fonts.ready);
 
   const loading = await chrome(inspector);
-  expect(loading.map((instances) => instances.length)).toEqual([1, 4, 2]);
+  expect(loading.map((instances) => instances.length)).toEqual([1, 4, 2, 1]);
   // A placeholder is loading, not unavailable: nothing advertises `not-allowed`.
   const roots = CHROME.map((spec) => spec.root).join(', ');
   expect(

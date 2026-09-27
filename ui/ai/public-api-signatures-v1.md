@@ -1641,7 +1641,7 @@ interface SegmentedControlProps<Value extends string = string> {
     size?: SegmentedControlSize;
     layout?: SegmentedControlLayout;
     className?: string;
-    /** Render as an unanimated loading skeleton, disabling every segment. */
+    /** Render as a loading placeholder: every choice keeps its live label or icon, none is selected, and every segment is disabled. */
     placeholder?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;

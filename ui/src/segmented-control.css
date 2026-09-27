@@ -148,7 +148,18 @@
   outline-offset: 1px;
 }
 
-.kui-segmented-control__item:disabled {
+/* A placeholder is disabled to stay inert, but it is loading, not unavailable:
+   its choices keep the live tone. SegmentedControl renders no skeleton (its
+   choices are known; only the selection is unknown), so it does not load
+   skeleton.css and neutralizes disabled chrome itself, including Web Awesome's
+   native button:disabled. */
+.kui-segmented-control[data-placeholder="true"] .kui-segmented-control__item {
+  opacity: 1;
+  cursor: default;
+}
+
+.kui-segmented-control:not([data-placeholder="true"])
+  .kui-segmented-control__item:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }

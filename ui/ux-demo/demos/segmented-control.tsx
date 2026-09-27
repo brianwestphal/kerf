@@ -122,7 +122,7 @@ export function SegmentedControlDemo() {
       </CatalogExample>
       <CatalogExample
         label="Placeholder"
-        note="A loading switcher renders inert pill chrome with skeleton labels."
+        note="A loading switcher keeps its known choices, inert, with no selection until the value loads."
         align="inline-control"
       >
         <SegmentedControl<string>

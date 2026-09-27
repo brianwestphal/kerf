@@ -20,6 +20,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   bindings, first-render row-contract validation, orphan pruning) into its own
   internal module, so `mount.ts` holds only the render orchestration. No
   behavior or public API change.
+- `@kerfjs/ui`'s `SegmentedControl` placeholder now keeps its choices. The
+  choices are known; only the selection is unknown, so a placeholder renders
+  every choice's live label or icon at its live size, selects none, and stays
+  inert. Previously every segment became a 4em text skeleton (widening icon
+  segments from 40px to 60px) and was dimmed to 45%.
 - `@kerfjs/ui`'s `ListItem` and `ListActionRow` placeholders now match the
   live row. They are no longer dimmed (the rows' own `:disabled` tone and
   hover highlight skip placeholders), and a row with a `description` (or a

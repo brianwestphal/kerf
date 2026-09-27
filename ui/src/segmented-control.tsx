@@ -1,6 +1,4 @@
-import { em } from './css-values.js';
 import type { KerfUiContent } from './semantic-content.js';
-import { Skeleton } from './skeleton.js';
 
 export type SegmentedControlAppearance = 'filled' | 'outlined' | 'toolbar';
 export type SegmentedControlShape = 'rounded' | 'pill';
@@ -26,7 +24,7 @@ export interface SegmentedControlProps<Value extends string = string> {
   size?: SegmentedControlSize;
   layout?: SegmentedControlLayout;
   className?: string;
-  /** Render as an unanimated loading skeleton, disabling every segment. */
+  /** Render as a loading placeholder: every choice keeps its live label or icon, none is selected, and every segment is disabled. */
   placeholder?: boolean;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -63,7 +61,9 @@ export function SegmentedControl<Value extends string>({
       slot={slot}
     >
       {choices.map((choice) => {
-        const selected = choice.value === value;
+        // The choices are known chrome; only the selection is unknown while
+        // loading, so a placeholder shows every choice and selects none.
+        const selected = !placeholder && choice.value === value;
         return (
           <button
             type="button"
@@ -77,11 +77,7 @@ export function SegmentedControl<Value extends string>({
             disabled={choice.disabled || placeholder}
             tabindex={placeholder ? '-1' : '0'}
           >
-            {placeholder ? (
-              <Skeleton width={em(4)} />
-            ) : (
-              (choice.content ?? <span>{choice.label}</span>)
-            )}
+            {choice.content ?? <span>{choice.label}</span>}
           </button>
         );
       })}

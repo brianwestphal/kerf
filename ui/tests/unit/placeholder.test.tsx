@@ -304,7 +304,7 @@ describe('component placeholder mode', () => {
     expect(html).not.toMatch(/role="tab"[^>]*aria-label=/);
   });
 
-  it('SegmentedControl disables every segment and skeletons their content', () => {
+  it('SegmentedControl disables every segment, keeps its choices, and selects none', () => {
     const html = asHtml(
       SegmentedControl({
         id: 'view',
@@ -328,8 +328,31 @@ describe('component placeholder mode', () => {
     );
     expect(html).toContain('data-placeholder="true"');
     expect(html).not.toContain('data-action="select-view"');
-    expect(html.match(/class="kui-skeleton"/g)).toHaveLength(2);
-    expect(html).toContain('disabled');
+    // The choices are known chrome; only the selection is unknown.
+    expect(html).not.toContain('kui-skeleton');
+    expect(html).toContain('data-lucide="list"');
+    expect(html).toContain('data-lucide="columns-3"');
+    expect(html).not.toContain('data-selected="true"');
+    expect(html).not.toContain('aria-pressed="true"');
+    expect(html.match(/ disabled/g)).toHaveLength(2);
+  });
+
+  it('SegmentedControl placeholder keeps text choices as their live labels', () => {
+    const html = asHtml(
+      SegmentedControl({
+        id: 'range',
+        label: 'Range',
+        value: 'day',
+        choices: [
+          { value: 'day', label: 'Day' },
+          { value: 'week', label: 'Week' },
+        ],
+        placeholder: true,
+      }),
+    );
+    expect(html).toContain('<span>Day</span>');
+    expect(html).toContain('<span>Week</span>');
+    expect(html).not.toContain('data-selected="true"');
   });
 
   it('StateBanner skeletons the title and detail, keeping the icon', () => {
