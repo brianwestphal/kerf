@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 287400,
-  "measuredLargestJavaScriptGzip": 138474,
-  "measuredTotalJavaScriptGzip": 287350,
+  "totalJavaScriptGzip": 287500,
+  "measuredLargestJavaScriptGzip": 138564,
+  "measuredTotalJavaScriptGzip": 287438,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -547,6 +547,22 @@
         "measuredTotalJavaScriptGzip": 287350,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 287400
+      }
+    },
+    {
+      "at": "2026-09-27T10:30:30.763Z",
+      "reason": "Combined growth of the resizable Workbench demo (KF-2FG7VB) and the core overlay host-slot boundary (KF-FBHQEP), each re-baselined on its own branch",
+      "old": {
+        "measuredLargestJavaScriptGzip": 138474,
+        "measuredTotalJavaScriptGzip": 287350,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 287400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 138564,
+        "measuredTotalJavaScriptGzip": 287438,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 287500
       }
     }
   ]
