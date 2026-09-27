@@ -53,6 +53,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   opener. Panels opening inline never move focus. Focus returned on close
   also skips an opener inside another panel that has closed since.
   `dismissOverlays: false` leaves all of this to the app.
+- **A `@kerfjs/ui` Workbench rail squeezed below its minimum now reports the
+  width it shows.** When the Workbench was too narrow for a rail's `min`
+  beside the work-area minimum, the rail showed about 172px while its
+  separator still announced `aria-valuenow="180"`. The separator now reports
+  the shown width, with `aria-valuemin` and `aria-valuemax` pinned to it: the
+  WAI-ARIA window splitter's value is the separator's actual position and must
+  sit inside its range, and the separator cannot move a rail the container
+  holds there. Resizing still commits no less than `min`, and the configured
+  range returns once there is room. A `ResizableRegion` a parent clamps below
+  its `min` reports the same way.
 - The `@kerfjs/ui` heading guidance (`ai/skill.md`, `llms.txt`,
   `docs/component-selection.md`, `docs/layout.md`) now sizes a panel title to
   its track: extra-large `ToolbarText` stays the title size for a page, view,

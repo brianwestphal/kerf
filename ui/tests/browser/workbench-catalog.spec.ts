@@ -408,12 +408,30 @@ test.describe('resizable Workbench panels', () => {
       Math.abs((await width(content)) - (await width(left))),
     ).toBeLessThanOrEqual(1);
 
+    // The inspector now shows less than its 160 px minimum. Its separator
+    // reports the width actually shown, in a range pinned there, since the
+    // separator cannot move a track the container holds.
+    const inspector = workbench.getByRole('separator', {
+      name: 'Resize Inspector',
+    });
+    const shown = Math.floor(await width(right));
+    expect(shown).toBeLessThan(160);
+    const range = () =>
+      inspector.evaluate((element) =>
+        ['aria-valuemin', 'aria-valuenow', 'aria-valuemax'].map((name) =>
+          element.getAttribute(name),
+        ),
+      );
+    await expect.poll(range).toEqual([`${shown}`, `${shown}`, `${shown}`]);
+
     await workbench.evaluate((element) => {
       element.style.removeProperty('width');
     });
     await expect
       .poll(async () => Math.round(await width(left)))
       .toBe(Math.floor(room));
+    // Room to show the minimum again restores the configured range.
+    await expect.poll(range).toEqual(['160', '160', '160']);
   });
 
   test('rails present as overlays below the narrow Workbench breakpoint', async ({

@@ -175,6 +175,16 @@ const stop = wireWorkbench(root, {
   in proportion to their sizes (their content follows the shown width) while
   the work area holds its minimum; a squeezed rail can still be made smaller,
   never larger, and never below its own `min`. The drawer is unaffected.
+- **Squeezed below `min`:** when the Workbench is too narrow for a rail's
+  `min` beside the work-area minimum, the rail shows less than its `min` (a
+  172px Navigator whose `min` is 180). Its separator then reports that shown
+  width in `aria-valuenow`, and `aria-valuemin`/`aria-valuemax` pin to the
+  same value: the WAI-ARIA window splitter's value is the separator's actual
+  position, and the range must contain it, so a screen reader hears the width
+  on screen rather than a configured limit the layout cannot honor — and a
+  range that does not move, because the separator cannot move a rail the
+  container holds. Resizing still commits no less than `min`, and the
+  configured range returns once there is room.
 - **Collapse:** `collapsed` never changes a size. A collapsed panel keeps its
   size (its content slides out at that width), its separator leaves the tab
   order, and expanding it returns it at the size it had.

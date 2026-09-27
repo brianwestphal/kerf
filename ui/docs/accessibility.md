@@ -120,6 +120,13 @@ The handle exposes separator role, orientation, name, minimum, maximum, and curr
   them after a re-render writes the rendered props back, so assistive
   technology never reads an unclamped size between interactions (the
   disposer disconnects both observers);
+- a truthful value below the minimum: when the container shows the track at
+  less than `min` (a narrowing `Workbench` squeezes its resizable rails), the
+  handle reports that shown size in `aria-valuenow` and pins `aria-valuemin`
+  and `aria-valuemax` to it — WAI-ARIA requires the value to lie inside the
+  range, and the separator cannot move a track its container holds. Resizing
+  still commits no less than the rendered `min`, and the rendered range returns
+  once the track has room;
 - a whole hit target and focus ring at a clamped edge: when the separator has
   less room past it than the handle's 10px overhang (a parent clamps the track
   to its own edge), the region carries `data-handle-inset` and the handle sits

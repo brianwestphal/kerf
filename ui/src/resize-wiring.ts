@@ -26,6 +26,7 @@ interface RegionState {
   id: string;
   axis: ResizableRegionAxis;
   edge: ResizableRegionEdge;
+  /** The rendered `min` prop: every size the wiring commits stays at or above it. */
   min: number;
   /** The rendered `max` prop. */
   declaredMax: number;
@@ -33,6 +34,11 @@ interface RegionState {
   max: number;
   /** The shown size, which a parent clamp can hold below the rendered size. */
   size: number;
+  /**
+   * The size the track shows when its container squeezes it below `min` (a
+   * narrowing Workbench shrinks its resizable rails), otherwise undefined.
+   */
+  squeezed?: number;
 }
 
 /**
@@ -48,7 +54,12 @@ export type ResizeLimit = (
 const HANDLE_SELECTOR = '[data-kui-resize-handle]';
 const INSET_ATTRIBUTE = 'data-handle-inset';
 /** Attributes a re-render can write back over the reported state. */
-const REPORTED_ATTRIBUTES = ['aria-valuenow', 'aria-valuemax', INSET_ATTRIBUTE];
+const REPORTED_ATTRIBUTES = [
+  'aria-valuenow',
+  'aria-valuemin',
+  'aria-valuemax',
+  INSET_ATTRIBUTE,
+];
 /**
  * How far the handle's hit target reaches past the separator (the CSS places
  * the 20px handle at `-10px` on the region's edge).
@@ -123,6 +134,41 @@ function visibleMax(
 }
 
 /**
+ * The size the track shows at its rendered size, when that is less than the
+ * rendered size: a container that lets the region shrink (a narrowing
+ * Workbench squeezes its resizable rails in proportion) can show it below its
+ * own minimum. Undefined without layout or when the whole size shows.
+ */
+function shownSize(
+  region: HTMLElement,
+  axis: ResizableRegionAxis,
+  size: number,
+) {
+  const basis = Number.parseFloat(
+    globalThis.getComputedStyle(region).flexBasis,
+  );
+  const box = region.getBoundingClientRect();
+  const track = axis === 'horizontal' ? box.width : box.height;
+  if (!Number.isFinite(basis) || track <= 0 || track >= basis - 0.5)
+    return undefined;
+  return Math.max(0, Math.floor(track - (basis - size)));
+}
+
+/**
+ * The separator's reported range and value. A squeezed region reports the
+ * size it actually shows as its value and pins its minimum and maximum there:
+ * WAI-ARIA requires the value to sit inside the range, and the separator
+ * cannot move a track its container holds below the minimum. The configured
+ * limits still bound every size the wiring commits.
+ */
+function reported(state: RegionState) {
+  const { squeezed } = state;
+  return squeezed === undefined
+    ? { min: state.min, max: state.max, now: state.size }
+    : { min: squeezed, max: squeezed, now: squeezed };
+}
+
+/**
  * Apply a live size to an expanded region before the app commits it. The
  * collapse-motion content keeps a fixed width from the expanded size so its
  * slide reads as a slide, not a squeeze; it has to follow the live size too, or
@@ -132,7 +178,10 @@ function applySize(state: RegionState, size: number) {
   const value = `${size}px`;
   state.region.style.setProperty('--kui-resizable-region-size', value);
   state.region.style.setProperty('--kui-resizable-region-expanded-size', value);
-  state.handle.setAttribute('aria-valuenow', String(size));
+  // A squeezed region's container holds it where it is, so its reported
+  // value stays the squeezed size.
+  if (state.squeezed === undefined)
+    state.handle.setAttribute('aria-valuenow', String(size));
   setInset(state.region, handleInset(state, size));
 }
 
@@ -164,7 +213,14 @@ export function wireResizeHandles(
   // different aria-valuemax than the one announced here supersedes it.
   const announced = new WeakMap<
     HTMLElement,
-    { declaredMax: number; max: number; size: number; inset: boolean }
+    {
+      declaredMin: number;
+      declaredMax: number;
+      min: number;
+      max: number;
+      size: number;
+      inset: boolean;
+    }
   >();
 
   function regionState(handle: Element): RegionState | undefined {
@@ -181,9 +237,13 @@ export function wireResizeHandles(
     const id = region.dataset.regionId;
     const axis = region.dataset.axis;
     const edge = region.dataset.edge;
-    const min = Number(handle.getAttribute('aria-valuemin'));
+    const valueMin = Number(handle.getAttribute('aria-valuemin'));
     const valueMax = Number(handle.getAttribute('aria-valuemax'));
     const remembered = announced.get(handle);
+    // A squeezed region reports a lowered minimum; the rendered one stands
+    // until a re-render writes a different value.
+    const min =
+      remembered?.min === valueMin ? remembered.declaredMin : valueMin;
     const declaredMax =
       remembered?.max === valueMax ? remembered.declaredMax : valueMax;
     const size = renderedSize(region, handle);
@@ -198,6 +258,9 @@ export function wireResizeHandles(
       !Number.isFinite(size)
     )
       return undefined;
+    // The shown size is read before the probe, from the layout already in
+    // place, so the probe stays the one forced layout.
+    const shown = shownSize(region, axis, size);
     const visible = visibleMax(region, axis, min, declaredMax);
     // A composition bound never takes a region below its own minimum.
     const max = limit
@@ -213,25 +276,31 @@ export function wireResizeHandles(
       declaredMax,
       max,
       size: clampRegionSize(size, min, max),
+      squeezed: shown !== undefined && shown < min ? shown : undefined,
     };
   }
 
   /**
-   * Report what is shown: the visible maximum and the shown size. Nothing is
-   * committed — the app's size stays its own until the user resizes.
+   * Report what is shown: the visible maximum and the shown size, or the
+   * squeezed size a container holds the region at. Nothing is committed — the
+   * app's size stays its own until the user resizes.
    */
   function announce(state: RegionState) {
     const inset = handleInset(state, state.size);
+    const { min, max, now } = reported(state);
     announced.set(state.handle, {
+      declaredMin: state.min,
       declaredMax: state.declaredMax,
-      max: state.max,
-      size: state.size,
+      min,
+      max,
+      size: now,
       inset,
     });
     // Unchanged values are not rewritten, so the observer below never sees
     // its own report as a re-render.
-    setAttributeIfChanged(state.handle, 'aria-valuemax', String(state.max));
-    setAttributeIfChanged(state.handle, 'aria-valuenow', String(state.size));
+    setAttributeIfChanged(state.handle, 'aria-valuemin', String(min));
+    setAttributeIfChanged(state.handle, 'aria-valuemax', String(max));
+    setAttributeIfChanged(state.handle, 'aria-valuenow', String(now));
     setInset(state.region, inset);
   }
 
@@ -252,7 +321,8 @@ export function wireResizeHandles(
     const remembered = handle ? announced.get(handle) : undefined;
     return (
       remembered !== undefined &&
-      handle?.getAttribute('aria-valuemax') === String(remembered.max) &&
+      handle?.getAttribute('aria-valuemin') === String(remembered.min) &&
+      handle.getAttribute('aria-valuemax') === String(remembered.max) &&
       handle.getAttribute('aria-valuenow') === String(remembered.size) &&
       region.hasAttribute(INSET_ATTRIBUTE) === remembered.inset
     );

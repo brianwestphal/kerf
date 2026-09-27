@@ -674,6 +674,45 @@ describe('wireResizableRegions', () => {
         stop();
       });
 
+      it('reports a track clamped below its minimum as a pinned range at the shown size', async () => {
+        const { root, handle } = region();
+        const host = hostOf(root);
+        host.style.setProperty('--kui-resizable-region-size', '300px');
+        const onCommit = vi.fn();
+        const stop = wireResizableRegions(root, { onCommit });
+        const range = () =>
+          ['aria-valuemin', 'aria-valuenow', 'aria-valuemax'].map((name) =>
+            handle.getAttribute(name),
+          );
+        clampLayout(host, 80);
+        observer().notify(host);
+        expect(range()).toEqual(['80', '80', '80']);
+        expect(onCommit).not.toHaveBeenCalled();
+
+        // A re-render restoring the rendered limits is re-reported.
+        handle.setAttribute('aria-valuemin', '100');
+        handle.setAttribute('aria-valuemax', '300');
+        handle.setAttribute('aria-valuenow', '300');
+        await settle();
+        expect(range()).toEqual(['80', '80', '80']);
+
+        // Resizing still commits no less than the rendered minimum; the
+        // reported value stays at the size the track shows.
+        key(handle, { key: 'ArrowLeft' });
+        expect(onCommit).toHaveBeenLastCalledWith({
+          id: 'panel',
+          size: 100,
+          source: 'keyboard',
+        });
+        expect(range()).toEqual(['80', '80', '80']);
+
+        // Room to show it again reports the rendered minimum.
+        clampLayout(host, 1000);
+        observer().notify(host);
+        expect(range()).toEqual(['100', '100', '300']);
+        stop();
+      });
+
       it('does not re-measure its own report, a resizing region, or other aria values', async () => {
         const { root, handle } = region();
         const host = hostOf(root);
@@ -681,10 +720,11 @@ describe('wireResizableRegions', () => {
         clampLayout(host, 240);
         const measure = vi.mocked(host.getBoundingClientRect);
         observer().notify(host);
-        expect(measure).toHaveBeenCalledTimes(1);
+        // One measurement reads the shown track, one the probe.
+        expect(measure).toHaveBeenCalledTimes(2);
         // The report's own attribute writes come back as mutation records.
         await settle();
-        expect(measure).toHaveBeenCalledTimes(1);
+        expect(measure).toHaveBeenCalledTimes(2);
 
         // Another aria-valuenow below the root is not a separator.
         const meter = document.createElement('div');
@@ -693,7 +733,7 @@ describe('wireResizableRegions', () => {
         await settle();
         meter.setAttribute('aria-valuenow', '2');
         await settle();
-        expect(measure).toHaveBeenCalledTimes(1);
+        expect(measure).toHaveBeenCalledTimes(2);
 
         // A stray handle outside any region, and a region whose handle a
         // re-render dropped, are skipped.
@@ -713,14 +753,14 @@ describe('wireResizableRegions', () => {
         await settle();
         handleless.remove();
         await settle();
-        expect(measure).toHaveBeenCalledTimes(1);
+        expect(measure).toHaveBeenCalledTimes(2);
 
         // A drag in progress owns the reported values.
         host.dataset.resizing = 'true';
         handle.setAttribute('aria-valuenow', '300');
         observer().notify(host);
         await settle();
-        expect(measure).toHaveBeenCalledTimes(1);
+        expect(measure).toHaveBeenCalledTimes(2);
         expect(handle.getAttribute('aria-valuenow')).toBe('300');
 
         // A collapsed region is left as rendered.

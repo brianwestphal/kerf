@@ -410,6 +410,17 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
     rails as shown, and the rail's own safe-area extent — and never below the
     rail's own `min`; a rail the container has already squeezed can shrink but
     not grow. The vertical drawer is unaffected.
+  - a rail the container squeezes below its own `min` (KF-4MBYRQ: a 180px-min
+    Navigator showing ~172px reported `aria-valuenow="180"`) reports the width
+    it shows: `aria-valuenow` is that width and `aria-valuemin` /
+    `aria-valuemax` pin to it. Decision rationale: the WAI-ARIA window-splitter
+    value is the separator's actual position, ARIA requires the value to lie
+    inside the range, and a screen-reader user needs the layout that is on
+    screen, not a configured limit it cannot honor; the pinned range says the
+    separator cannot move a track its container holds. The configured `min`
+    still bounds every committed size, and the configured range returns when
+    there is room. The shared resize wiring applies the same rule to a
+    `ResizableRegion` a parent clamps below its `min`.
 - Appropriate for **desktop-size devices**. On smaller classes the guidance is to
   present the rails' contents through a different layout (a `NavStack` or overlay
   drawers), not to shrink the three-panel shell.

@@ -804,7 +804,9 @@ the drawer collapses (`ui/tests/browser/restore-anchor.spec.ts` with
 actual track, so a clamped region never shows content past its separator, and
 `wireResizableRegions` bounds pointer/keyboard resizing to that visible track
 (probing it at the declared max), announcing the shown size in
-`aria-valuenow`/`aria-valuemax` and keeping that report current at rest via a
+`aria-valuenow`/`aria-valuemax` (a track its container squeezes below `min`
+reports the shown size with `aria-valuemin`/`aria-valuemax` pinned to it) and
+keeping that report current at rest via a
 `ResizeObserver` (region + parent) and a `MutationObserver` (re-renders that
 restore the rendered props), both disconnected by the disposer; it also sets
 `data-handle-inset` on a region whose separator sits at the clamped edge, which
