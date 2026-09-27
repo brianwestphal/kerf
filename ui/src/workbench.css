@@ -422,8 +422,8 @@
 
 /* Overlay stacking order: both rails stack above the bottom drawer, one below
    the overlay z-index, as inline rails span the Workbench's full height beside
-   the drawer's column; the right rail stacks above the left (document order);
-   restore controls stack above every overlay. */
+   the drawer's column; the right rail stacks above the left (document order).
+   Restore controls stack below every overlay (see .kui-workbench__restore). */
 .kui-workbench__rail[data-presentation="overlay"],
 .kui-workbench__drawer[data-presentation="overlay"] {
   position: absolute;
@@ -675,7 +675,11 @@
    page chrome outside it. It is inset from the corner plus the unsafe area of
    each edge that corner reaches. The drawer's control sits in the work-area
    column it restores (the center is its containing block), inset from the
-   edges that column still reaches, so it never lands on an expanded rail. */
+   edges that column still reaches, so it never lands on an expanded rail.
+   It belongs to the layer beneath the overlays, two below the overlay
+   z-index: an open overlay covers it as it covers the rest of the work area,
+   so no other panel's control floats over the overlay's content. A collapsed
+   overlay drops its pointer events, so the control stays usable beneath it. */
 .kui-workbench__restore {
   --_kui-workbench-restore-inset: var(
     --kui-workbench-restore-inset,
@@ -685,7 +689,10 @@
      from this point instead of adding its own inset on top. */
   --kui-floating-toolbar-inset: 0px;
   position: absolute;
-  z-index: var(--kui-workbench-restore-z, 42);
+  z-index: var(
+    --kui-workbench-restore-z,
+    calc(var(--kui-workbench-overlay-z, 41) - 2)
+  );
   inset-block-end: calc(
     var(--_kui-workbench-restore-inset) + var(--_kui-workbench-safe-block-end)
   );

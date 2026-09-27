@@ -680,7 +680,7 @@ describe('Workbench', () => {
     });
   });
 
-  it('stacks overlay rails above an overlay drawer, and restore controls above both', async () => {
+  it('stacks overlay rails above an overlay drawer, and both above restore controls', async () => {
     const file = resolve(import.meta.dirname, '../../src/workbench.css');
     const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const normalize = (selector: string) => selector.replace(/\s+/g, ' ');
@@ -695,7 +695,7 @@ describe('Workbench', () => {
         )
           return;
         rule.walkDecls('z-index', (decl) => {
-          found.push(decl.value);
+          found.push(normalize(decl.value));
         });
       });
       return found;
@@ -719,9 +719,9 @@ describe('Workbench', () => {
         zIndexes(`.kui-workbench__drawer[data-responsive-overlay-at="${at}"]`),
       ).toEqual([DRAWER_Z]);
     }
-    // Restore controls stay above every overlay.
+    // Restore controls stack below every overlay, tied to its z-index.
     expect(zIndexes('.kui-workbench__restore')).toEqual([
-      'var(--kui-workbench-restore-z, 42)',
+      'var( --kui-workbench-restore-z, calc(var(--kui-workbench-overlay-z, 41) - 2) )',
     ]);
   });
 

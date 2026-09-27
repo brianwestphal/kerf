@@ -370,9 +370,23 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
     drawer's column, and the right rail above the left (document order at an
     equal z-index). Rails keep `--kui-workbench-overlay-z` (default 41), the
     drawer takes that value minus one (static and responsive overlays alike),
-    and restore controls stay at `--kui-workbench-restore-z` (42), above every
-    overlay. The order is static CSS, not most-recently-opened, so it needs no
-    wiring;
+    and restore controls take `--kui-workbench-restore-z`. The order is static
+    CSS, not most-recently-opened, so it needs no wiring;
+  - restore controls beneath open overlays (KF-J0HC37: restore controls sat at
+    z 42, above every overlay, so the collapsed drawer's corner restore
+    control floated over an open right-rail overlay's content in that
+    corner). Decided that an open overlay is the top layer of the Workbench,
+    as a sheet or popover covers the view beneath it: a restore control is
+    base-layer chrome for a collapsed panel, so it must not float over
+    another panel's open overlay, where it covers that panel's content and
+    reads as part of it. Keyboard users cannot reach it anyway while the
+    overlay traps Tab, and Escape, an outside press, or the overlay's own
+    close control reveals it again. `--kui-workbench-restore-z` now defaults
+    to `calc(var(--kui-workbench-overlay-z, 41) - 2)` (39), below the drawer
+    (40) and the rails (41), so it follows an app's overlay z-index. A
+    collapsed overlay keeps its box for the slide-out but drops
+    `pointer-events`, so a restore control beneath it stays clickable, and
+    its sliding content passes over the control only while it slides away;
   - the UX catalog's Workbench route demonstrates a responsive overlay drawer
     (KF-T3XMZW: `responsiveOverlayAt` on the drawer was only exercised by an
     injected test scenario): a Workbench with just a work area and an

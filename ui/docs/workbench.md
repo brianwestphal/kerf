@@ -79,9 +79,12 @@ an optional `label`. Common shell behavior is configured rather than restyled:
   covers. When overlays meet, the order is fixed rather than by which opened
   last: both rails stack above the drawer, as inline rails span the
   Workbench's full height beside the drawer's column, and the right rail
-  stacks above the left. Rails take `--kui-workbench-overlay-z` (41), the
-  drawer one less, and restore controls `--kui-workbench-restore-z` (42),
-  above every overlay;
+  stacks above the left. Rails take `--kui-workbench-overlay-z` (41) and the
+  drawer one less. Restore controls take `--kui-workbench-restore-z`, which
+  defaults to two less than the overlay z-index (39), so they sit beneath
+  every overlay: an open overlay covers another panel's restore control as
+  it covers the rest of the work area, and a collapsed overlay, which drops
+  its pointer events, leaves the control beneath it usable;
 - `restoreControl` places an application-owned restore affordance in a
   corner of the Workbench itself while the panel is collapsed
   (`restorePosition` chooses the corner), inset by

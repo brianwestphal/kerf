@@ -760,6 +760,54 @@ test.describe('resizable Workbench panels', () => {
       });
   });
 
+  test("an open overlay covers other panels' restore controls", async ({
+    page,
+  }, testInfo) => {
+    const workbench = page.locator('#catalog-workbench-collapsed');
+    const inspector = workbench.locator('[data-workbench-rail="right"]');
+    const restore = workbench.getByRole('button', { name: 'Show console' });
+    await workbench.scrollIntoViewIfNeeded();
+    await expect(restore).toBeVisible();
+
+    // Present the open inspector as an overlay: it now spans the Workbench's
+    // end edge, over the work-area corner where the collapsed console's
+    // restore control floats.
+    await inspector.evaluate((element) => {
+      element.dataset.presentation = 'overlay';
+    });
+    await expect(inspector).toHaveCSS('position', 'absolute');
+    const topmost = () =>
+      restore.evaluate((button) => {
+        const box = button.getBoundingClientRect();
+        const hit = document.elementFromPoint(
+          box.x + box.width / 2,
+          box.y + box.height / 2,
+        );
+        if (button.contains(hit)) return 'restore';
+        return hit?.closest('[data-workbench-rail="right"]')
+          ? 'inspector'
+          : String(hit?.className);
+      });
+    // The open overlay is the top layer: the control sits beneath it.
+    expect(await topmost()).toBe('inspector');
+    if (testInfo.project.name === 'chromium')
+      await workbench.screenshot({
+        path: 'test-results/workbench-overlay-covers-restore.png',
+      });
+
+    // Collapsed, the overlay drops its surface and pointer events, so the
+    // control beneath it is visible and usable again.
+    await inspector.evaluate((element) => {
+      element.dataset.collapsed = 'true';
+    });
+    await expect.poll(topmost).toBe('restore');
+    await restore.click();
+    await expect(workbench.locator('[data-workbench-drawer]')).toHaveAttribute(
+      'data-collapsed',
+      'false',
+    );
+  });
+
   test('opening one overlay rail closes the other, so neither hides its controls', async ({
     page,
   }, testInfo) => {

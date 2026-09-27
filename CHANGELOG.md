@@ -34,6 +34,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   inside the work area's own content, does not move it. This uses CSS anchor
   positioning; engines without it keep the container corner.
 
+- **An open `@kerfjs/ui` `Workbench` overlay now covers other panels'
+  restore controls.** Restore controls stacked above every overlay, so a
+  collapsed drawer's corner restore control floated over an open right-rail
+  overlay's content. An open overlay is now the top layer, like a sheet over
+  the view beneath it: `--kui-workbench-restore-z` defaults to two less than
+  `--kui-workbench-overlay-z` (39 by default, previously 42), below the
+  drawer and rail overlays. When the overlay closes, the control shows and
+  works again; a collapsed overlay passes pointer events through to it.
 - **`@kerfjs/ui` `wireWorkbench` overlay panels now take focus and keep Tab
   inside them,** like `wireSidebar`'s compact overlay (the ARIA dialog
   pattern). An open overlay covers the work area, yet focus stayed on the
