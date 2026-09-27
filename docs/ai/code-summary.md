@@ -725,6 +725,14 @@ hidden without adding geometry, also with custom selected content. See
 `hint` renders persistent supporting text below the control through Web
 Awesome's native hint relationship; `placeholderText` remains the empty value
 inside the closed control, and loading placeholders retain the visible hint.
+Placeholders change only their unknown values: `ui/src/skeleton.css` keeps a
+`[data-placeholder="true"]` control `disabled` but undimmed (including Web
+Awesome's native `button:disabled`), `ui/tests/browser/placeholder-chrome.spec.ts`
+diffs the Loading inspector recipe's loading and loaded chrome, and
+`ui/tests/browser/placeholder-fixture.spec.ts` renders every placeholder
+component live and as a placeholder from identical props
+(`ui/tests/browser/fixtures/placeholder-chrome-cases.tsx`) and diffs each
+element's rect and computed chrome by structural path, excluding value slots.
 `AppTab.rootAttributes` uses the shared extension filter to accept only domain
 `data-*` values while protecting component/action/identity/selection and
 wire-owned drag/drop markers case-insensitively. `AppTab.closeIcon` and

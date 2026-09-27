@@ -477,6 +477,9 @@ live state: a placeholder is not clickable, so it never advertises a pointer.
 `SegmentedControl` is the one placeholder without a skeleton: its choices are known
 chrome and only the selection is unknown, so it renders every choice's live label or
 icon at its live geometry, selects none, and neutralizes its own disabled chrome.
+`tests/browser/placeholder-fixture.spec.ts` enforces the rule: it renders every
+placeholder component live and as a placeholder from identical props and diffs each
+element's geometry and computed chrome, excluding only the value slots.
 
 Package source styles express root-scaled geometry with `remify(<px>)`; the
 build converts it against the 16px authoring baseline and exposes only ordinary

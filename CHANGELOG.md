@@ -20,6 +20,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   bindings, first-render row-contract validation, orphan pruning) into its own
   internal module, so `mount.ts` holds only the render orchestration. No
   behavior or public API change.
+- `@kerfjs/ui` adds a browser test that renders every placeholder-capable
+  component live and as a placeholder from identical props and diffs each
+  element's geometry and computed chrome, so any future drift outside a value
+  slot fails. It caught one more: a `ListActionRow` placeholder's `status`
+  line was 3.5px shorter than the live line; the status line now always
+  keeps a full line height.
 - `@kerfjs/ui`'s `Select` placeholder hint now matches the live hint: 14px
   text at a 1.6 line height, 7px below the box. It was 12px / 1.4 with a 4px
   gap, so a placeholder with a `hint` was 8.6px shorter than the loaded

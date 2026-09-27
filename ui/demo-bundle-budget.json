@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 285600,
-  "measuredLargestJavaScriptGzip": 136670,
-  "measuredTotalJavaScriptGzip": 285535,
+  "totalJavaScriptGzip": 285700,
+  "measuredLargestJavaScriptGzip": 136759,
+  "measuredTotalJavaScriptGzip": 285631,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -499,6 +499,22 @@
         "measuredTotalJavaScriptGzip": 285535,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 285600
+      }
+    },
+    {
+      "at": "2026-09-27T05:12:36.875Z",
+      "reason": "Placeholder chrome fixes: demos show described and actionable placeholders, the Loading inspector Select has a hint, and value-slot skeletons follow their live props",
+      "old": {
+        "measuredLargestJavaScriptGzip": 136670,
+        "measuredTotalJavaScriptGzip": 285535,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 136759,
+        "measuredTotalJavaScriptGzip": 285631,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285700
       }
     }
   ]

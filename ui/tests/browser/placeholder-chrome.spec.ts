@@ -58,7 +58,9 @@ const CHROME: readonly ChromeSpec[] = [
 
 // Select's placeholder is a separate static box (not the live wa-select), so its
 // label, box, chevron, and hint are compared part-by-part in placeholder.spec.ts.
-// ListHeader and AppTab are not in the recipe; their own tests below cover them.
+// ListHeader and AppTab are not in the recipe; their own tests below cover them,
+// and placeholder-fixture.spec.ts diffs every placeholder component against a
+// live render with identical props.
 
 const STYLE_PROPS = [
   'opacity',

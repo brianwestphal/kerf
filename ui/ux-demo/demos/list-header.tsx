@@ -87,7 +87,7 @@ export function ListHeaderDemo() {
           count={0}
           countLabel="Loading attachments"
           action="log-add"
-          actionLabel="Add attachment"
+          actionLabel="Upload attachment"
           actionIcon={<LucideIcon icon={Plus} name="plus" />}
           placeholder
         />

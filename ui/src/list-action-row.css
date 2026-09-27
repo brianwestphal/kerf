@@ -151,6 +151,9 @@
 
 .kui-list-action-row__status {
   display: inline-flex;
+  /* A full line even when it holds only a placeholder skeleton, which is
+     shorter than the text line it stands in for. */
+  min-block-size: 1lh;
   align-items: center;
   gap: remify(4px);
 }
