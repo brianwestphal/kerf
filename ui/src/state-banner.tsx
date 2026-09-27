@@ -19,7 +19,7 @@ export interface StateBannerProps {
   tone?: StateBannerTone;
   urgency?: StateBannerUrgency;
   className?: string;
-  /** Render the title, badge, and detail as unanimated loading skeletons, keeping the icon and tone. */
+  /** Render the title, badge, and detail as unanimated loading skeletons, keeping the icon and tone. The detail line appears only when `detail` is set, as in the live banner. */
   placeholder?: boolean;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -57,7 +57,7 @@ export function StateBanner({
             {placeholder ? <Skeleton width={em(1.75)} /> : badge}
           </Badge>
         )}
-        {(placeholder || detail) && (
+        {detail && (
           <span class="kui-state-banner__detail">
             {placeholder ? <Skeleton width={em(16)} /> : detail}
           </span>

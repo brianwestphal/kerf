@@ -22,6 +22,11 @@ interface ChromeSpec {
   rectParts?: readonly string[];
   /** The root is inline and sized by its value: compare its height only. */
   inlineValue?: boolean;
+  /**
+   * The root's styling carries a value (the recipe's StateBanner tone follows
+   * the loaded status): compare the root's size but not its styles.
+   */
+  rootRectOnly?: boolean;
 }
 
 const CHROME: readonly ChromeSpec[] = [
@@ -43,12 +48,16 @@ const CHROME: readonly ChromeSpec[] = [
     ],
     rectParts: ['[data-segment-value="details"]'],
   },
+  {
+    root: '.kui-state-banner',
+    parts: [],
+    rectParts: ['.kui-state-banner__icon', '.kui-state-banner__copy'],
+    rootRectOnly: true,
+  },
 ];
 
 // Components whose placeholder currently drifts from the live chrome and are
 // therefore not yet in CHROME. Move each into CHROME with its fix:
-// - StateBanner: a placeholder always adds a detail skeleton, even without
-//   `detail`.
 // - Select: the hint row is 12px / 4px gap instead of the live 14px / 7px.
 
 const STYLE_PROPS = [
@@ -97,7 +106,7 @@ async function chrome(inspector: Locator) {
             size: spec.inlineValue
               ? [round(origin.height)]
               : [round(origin.width), round(origin.height)],
-            styles: styles(root),
+            styles: spec.rootRectOnly ? [] : styles(root),
             parts: spec.parts.map((selector) => {
               const part = root.querySelector(selector);
               return part ? { rect: rect(part), styles: styles(part) } : null;
@@ -124,7 +133,7 @@ test('placeholder components keep the live chrome; only values are skeletons', a
   await page.evaluate(() => document.fonts.ready);
 
   const loading = await chrome(inspector);
-  expect(loading.map((instances) => instances.length)).toEqual([1, 4, 2, 1]);
+  expect(loading.map((instances) => instances.length)).toEqual([1, 4, 2, 1, 1]);
   // A placeholder is loading, not unavailable: nothing advertises `not-allowed`.
   const roots = CHROME.map((spec) => spec.root).join(', ');
   expect(

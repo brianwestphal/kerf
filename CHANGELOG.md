@@ -20,6 +20,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   bindings, first-render row-contract validation, orphan pruning) into its own
   internal module, so `mount.ts` holds only the render orchestration. No
   behavior or public API change.
+- `@kerfjs/ui`'s `StateBanner` placeholder adds a detail skeleton only when
+  `detail` is set, matching the live banner. Previously every placeholder
+  showed a detail line, so a banner without one changed shape when loading
+  finished. Pass the banner's real `title` and `detail` with `placeholder`;
+  an empty `detail` now means no detail line.
 - `@kerfjs/ui`'s `AppTab` placeholder pill is no longer dimmed to 50% with a
   `not-allowed` cursor when `webawesome.css` is loaded; it keeps the live
   tab's tone, and only its name is a skeleton.

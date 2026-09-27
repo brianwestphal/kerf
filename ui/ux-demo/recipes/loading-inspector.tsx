@@ -176,8 +176,8 @@ export const createRecipe: RecipeFactory = (announce) => {
         {p ? (
           <StateBanner
             tone="info"
-            title=""
-            detail=""
+            title="Up to date"
+            detail="All checks passed on the latest revision."
             icon={icon(FileText, 'file-text')}
             placeholder
           />

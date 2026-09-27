@@ -372,6 +372,14 @@ describe('component placeholder mode', () => {
     expect(html).not.toContain('>4</span>');
   });
 
+  it('StateBanner adds a detail skeleton only when the live banner has a detail', () => {
+    const html = asHtml(
+      StateBanner({ title: 'Syncing', icon, placeholder: true }),
+    );
+    expect(html).not.toContain('kui-state-banner__detail');
+    expect(html.match(/class="kui-skeleton"/g)).toHaveLength(1);
+  });
+
   it('Select renders a static control box instead of the interactive wa-select', () => {
     const html = asHtml(
       Select({

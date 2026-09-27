@@ -61,7 +61,12 @@ export function StateBannerDemo() {
         />
       </CatalogExample>
       <CatalogExample label="Placeholder" align="none">
-        <StateBanner tone="neutral" title="" detail="" placeholder />
+        <StateBanner
+          tone="neutral"
+          title="Syncing workspace"
+          detail="Fetching the latest changes."
+          placeholder
+        />
       </CatalogExample>
     </CatalogExampleStack>
   );
