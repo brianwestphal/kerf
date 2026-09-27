@@ -35,7 +35,7 @@ export interface Throttled<A extends unknown[]> {
   (...args: A): void;
   /** Drop any pending trailing call and reset the rate window, including from inside `fn`. */
   cancel(): void;
-  /** Invoke the pending trailing call now (if any). */
+  /** Invoke the pending trailing call now (if any); the current cooldown keeps running. */
   flush(): void;
 }
 
@@ -85,7 +85,8 @@ export function debounce<A extends unknown[]>(
  * at most once per `ms`. Calls during a cooldown collapse to a single trailing
  * call at the window's end (with the latest arguments). `cancel()` drops a
  * pending trailing call and resets the window, even when called by a leading
- * or trailing callback; `flush()` runs a pending trailing call now.
+ * or trailing callback; `flush()` runs a pending trailing call now but leaves
+ * the current cooldown running (unlike `debounce`'s `flush()`).
  */
 export function throttle<A extends unknown[]>(
   fn: (...args: A) => void,

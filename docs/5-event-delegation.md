@@ -16,6 +16,8 @@ Bubbling events handled directly: `click`, `input`, `change`, `submit`, `mousedo
 
 Non-bubbling events that `delegate()` auto-promotes to capture phase under the hood: `focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`. Selector matching stays `closest()`-style — same as for bubbling events — so a wrapper selector still matches when the event fires on a descendant.
 
+Both `delegate()` and `delegateCapture()` validate `selector` when you register: an invalid CSS selector throws an `Error` naming the helper and the selector right away, instead of installing a listener that could never match.
+
 ```ts
 import { delegate } from "kerfjs";
 

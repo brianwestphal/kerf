@@ -83,7 +83,8 @@ export interface RouterOptions {
   base?: string;
   /**
    * Auto-intercept clicks on in-app `<a href>` links (same-origin, left-click, no
-   * modifier keys / `target` / `download`) and route them instead of reloading.
+   * modifier keys / `download` / `target` other than `_self`) and route them
+   * instead of reloading.
    * Opt a single link out with `data-router-ignore` or `rel="external"`. Default
    * `true`; set `false` to wire navigation entirely yourself.
    */
@@ -101,9 +102,12 @@ export interface RouterHandle {
   /** History forward — `history.forward()`. */
   forward: () => void;
   /**
-   * A reactive "is this path active?" — true when the current path equals
-   * `pattern` or is nested under it (`match('/users')` is true on `/users/7`).
-   * `match('/')` is exact (only true on `/`). Bind it for active-nav styling.
+   * A reactive "is this path active?" — a literal path-prefix comparison: true
+   * when the current path equals `pattern` or continues it at a `/` boundary
+   * (`match('/users')` is true on `/users/7`). `match('/')` is exact (only true
+   * on `/`). `pattern` is NOT run through the route matcher, so `:param` / `*`
+   * segments compare as literal text (`match('/users/:id')` is never true) —
+   * pass the static prefix. Bind it for active-nav styling.
    */
   match: (pattern: string) => ReadonlySignal<boolean>;
   /** Convenience: a bound class signal — `className` while {@link match}`(pattern)` is active, else `''`. */

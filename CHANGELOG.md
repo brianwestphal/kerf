@@ -41,6 +41,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   overlay first leaves focus in the overlay that holds it. An overlay opened
   from inside it then restores focus to the closed overlay's opener, not a
   detached node.
+- Documentation: the companion-utility reference now matches the code. The
+  router's `match()` / `activeClass()` compare a literal path prefix, so
+  `match('/users/:id')` is never true. Link interception still applies to
+  `target="_self"`, the no-match `outlet()` is `null` with `params` `{}`,
+  components receive `(params, route)`, and hash mode keeps `route.hash` at
+  `''`. Invalid `bindList` configuration throws only `RangeError`. `popover()`
+  defaults `className` to `'kerf-popover'`, and the toast region is a reused
+  `.kerf-toasts` element when one exists. A `resource()` `cacheKey` applies
+  only to `run(input, fetcher)`, and throttle's `flush()` leaves the cooldown
+  running. `delegate()` / `delegateCapture()` throw on an invalid selector at
+  registration. The reference also now lists the `kerfjs/jsx-dev-runtime`
+  alias, the `DEV_HOOKS` export of `kerfjs/dev`, and `Signal#peek()`.
 - Documentation: `morph(liveRoot, template)` is now described as it behaves.
   It reconciles only the root's children and never touches the root's own
   attributes, so `template` describes the content inside the root (an

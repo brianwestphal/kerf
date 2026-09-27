@@ -77,18 +77,27 @@ mount(document.getElementById('app')!, () => (
 state, like `defineStore`):
 
 - **`route`** — a `ReadonlySignal<{ path, params, query, hash }>`. `params` is a
-  `Record<string, string>` from the matched pattern; `query` is a `URLSearchParams`.
-  Read `.value` (tracked) in a render / `computed` / `effect`.
+  `Record<string, string>` from the matched pattern (`{}` when no route matches);
+  `query` is a `URLSearchParams`. Read `.value` (tracked) in a render / `computed` /
+  `effect`. In hash mode the route lives after `#` (`#/users/7?tab=1` → `path`
+  `/users/7`, `query` `tab=1`), `route.hash` is always `''`, and the router listens
+  to `hashchange` as well as `popstate`.
 - **`navigate(path, { replace?, state? })`** — push (or replace) a history entry
   and update `route`. `path` may include `?query` and `#hash`.
 - **`back()` / `forward()`** — `history.back()` / `history.forward()`.
 - **`match(pattern)`** → `ReadonlySignal<boolean>` — reactive "is this active?":
-  true when `route.path` equals `pattern` or is nested under it
-  (`match('/users')` is true on `/users/7`). `match('/')` is **exact**.
+  a **literal path-prefix** comparison, true when `route.path` equals `pattern` or
+  continues it at a `/` boundary (`match('/users')` is true on `/users/7`, not on
+  `/users-admin`). `match('/')` is **exact**. The pattern never goes through the
+  route matcher, so `:param` / `*` segments are compared as literal text —
+  `match('/users/:id')` is never true; pass the static prefix (`'/users'`).
 - **`activeClass(pattern, className)`** → `ReadonlySignal<string>` — `className`
   while `match(pattern)` is active, else `''`. Spread into a `class` hole.
-- **`outlet()`** → the routed view (call it inside a `mount()` render).
-- **`dispose()`** — remove the popstate / link listeners. Idempotent.
+- **`outlet()`** → the routed view (call it inside a `mount()` render). The
+  matched component is called as `component(params, route)`; when no route matches
+  (no `*` fallback), `outlet()` returns `null` and renders nothing.
+- **`dispose()`** — remove the `popstate` (plus hash-mode `hashchange`) and link
+  listeners. Idempotent.
 
 ### Route patterns
 

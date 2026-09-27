@@ -25,6 +25,7 @@ Run `fn`, deferring effect re-runs until `fn` returns. Multiple writes inside `f
 ```ts
 interface Signal<T> {
   value: T;
+  peek(): T; // read without subscribing
 }
 ```
 
@@ -33,6 +34,7 @@ interface Signal<T> {
 ```ts
 interface ReadonlySignal<T> {
   readonly value: T;
+  peek(): T; // read without subscribing
 }
 ```
 
@@ -171,7 +173,12 @@ that one prints its coverage boundary once.
 
 The subpath also re-exports `clearDevHooks()`, `installDevHooks()` and
 `devHooks` so a consumer's own test suite can assert production-shaped
-behavior without reloading modules.
+behavior without reloading modules. It also exports `DEV_HOOKS`, the standard
+hook bundle the entry installs on import: a suite can `clearDevHooks()` for a
+production-shaped test and `installDevHooks(DEV_HOOKS)` afterwards to restore
+it (re-importing `kerfjs/dev` would not reinstall, because a module evaluates
+once). `installDevHooks()` merges into the installed set rather than replacing
+it.
 
 Order matters in one place: `signal()` chooses its constructor at creation
 time, so signals created before the dev entry runs are invisible to
@@ -300,6 +307,8 @@ delegate(rootEl, 'focus', '.field-row',          (event, row)     => { ... });
 One root listener with `closest(selector)`-style walk-up matching; fires `handler(event, matched)` if the match is inside `rootEl`. Returns a `() => void` disposer — **capture it and call it when the delegate's scope ends** (closing a modal, leaving a route, tearing down a widget). Discarding the disposer is only safe for genuinely page-lifetime registrations: top-level mount on a root that never tears down. Everywhere else the closure pins `rootEl`, `handler`, and everything the handler closes over, so an undisposed listener leaks the app graph and re-mounts stack listeners. `mount()`'s disposer does NOT remove delegates for you. See `docs/5-event-delegation.md` §5.3 — and §5.3's "When capturing the disposer still isn't enough" for the cluster of cases where capturing alone isn't sufficient (delegate inside `effect()`, delegate on `toElement()` output that's replaced, disposer variable overwrites, nested transient roots).
 
 Auto-promotes the well-known non-bubbling event types (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) to capture phase under the hood, so the call site looks identical regardless of whether the event bubbles. Selector matching stays `closest()`-style for every event type — wrapper selectors still match when the event lands on a descendant.
+
+`selector` is validated at registration: an invalid CSS selector throws an `Error` naming `delegate` and the selector immediately, rather than installing a listener that could never match (the same check applies to `delegateCapture()`).
 
 The optional fifth argument is `{ match?: 'closest' | 'direct' }` (see [`DelegateOptions`](#delegateoptions-type) below). It defaults to `'closest'`; pass `'direct'` to fire only when `event.target` itself matches the selector (no walk-up).
 
@@ -682,7 +691,7 @@ const trigger = document.querySelector('#menu-btn')!;
 const pop = popover(trigger, <Menu />); // opens below the button, dismisses on outside click
 ```
 
-An **anchored, non-modal** overlay: positions `content` relative to `anchor` (below by default, flipping above if it would overflow the viewport, and clamped horizontally) and repositions on scroll / resize while open. It's a thin wrapper over `overlay()` with non-modal defaults — `trap: false`, `dismiss: ['outside']`, and the anchor added to `outsideIgnore` so the click that opened it doesn't immediately close it. Returns the same [`OverlayHandle`](#overlay-types); `close()` also drops the reposition listeners. `position: fixed` is set inline (you style everything else — kerf ships no CSS). Options ([`PopoverOptions`](#overlay-types)): `placement` (`'bottom'` | `'top'`, default `'bottom'`, auto-flips), `align` (`'start'` | `'end'`, default `'start'`), `gap` (px, default `4`), `dismiss`, `initialFocus` (default `false`), `outsideIgnore` (merged with the anchor), `onDismiss`, `container` / `className`, and **`native`** (host in the top layer via the Popover API where supported — `[popover]` + `showPopover()` — else a plain `<div>`; kerf keeps owning positioning + dismiss). The positioning is dependency-free (below/above + clamp); for complex cases (arrow, collision on both axes) drive `overlay()` yourself.
+An **anchored, non-modal** overlay: positions `content` relative to `anchor` (below by default, flipping above if it would overflow the viewport, and clamped horizontally) and repositions on scroll / resize while open. It's a thin wrapper over `overlay()` with non-modal defaults — `trap: false`, `dismiss: ['outside']`, and the anchor added to `outsideIgnore` so the click that opened it doesn't immediately close it. Returns the same [`OverlayHandle`](#overlay-types); `close()` also drops the reposition listeners. `position: fixed` is set inline (you style everything else — kerf ships no CSS). Options ([`PopoverOptions`](#overlay-types)): `placement` (`'bottom'` | `'top'`, default `'bottom'`, auto-flips), `align` (`'start'` | `'end'`, default `'start'`), `gap` (px, default `4`), `dismiss`, `initialFocus` (default `false`), `outsideIgnore` (merged with the anchor), `onDismiss`, `container` / `className` (default `'kerf-popover'`), and **`native`** (host in the top layer via the Popover API where supported — `[popover]` + `showPopover()` — else a plain `<div>`; kerf keeps owning positioning + dismiss). The positioning is dependency-free (below/above + clamp); for complex cases (arrow, collision on both axes) drive `overlay()` yourself.
 
 ### `positionAnchored(el, anchor, options?): void` / `autoReposition(el, anchor, options?): () => void`
 
@@ -711,7 +720,7 @@ const { el, dismiss } = toast("Uploading…", { duration: 0 }); // sticky; dismi
 toast("Only the latest shows", { mode: "replace" }); // collapse-to-latest
 ```
 
-Shows a non-modal, auto-dismissing notification, stacked in a shared body-level region (lazily created, or `options.container`). `content` is a [`ToastContent`](#overlay-types): plain strings are escaped and rendered as text, while `SafeHtml` and render functions are the explicit trusted-markup paths. Returns a [`ToastHandle`](#overlay-types) `{ el, dismiss }` — `el` is the node (inspect it, wire an action button, or run your own entrance/exit transitions) and `dismiss()` removes it early (idempotent). `dismiss({ instant: true })` removes it **synchronously**, skipping the exit transition — for an action button that immediately shows a replacement toast in a single centered slot (no cross-fade); `mode: 'replace'` with `collapse: 'instant'` likewise cleans up a toast that is already mid-fade. Options ([`ToastOptions`](#overlay-types)): `duration` (ms; `0` = sticky; default `4000`), `mode` (`'stack'` default, or `'replace'` — dismiss the region's current toast(s) first for collapse-to-latest), `collapse` (how `'replace'` drops the prior toast(s): `'fade'` default = run their exit transition, good for a **stacking** region; `'instant'` = remove them synchronously, what a single **centered** slot wants so messages never cross-fade in the same spot), `variant` (`'info'` | `'success'` | `'warning'` → adds a `${className}--${variant}` accent class), `enterClass` (added on the next animation frame, so a CSS **entrance** transition runs), `exitClass` + `exitDuration` (CSS owns the **exit**: on dismiss the `enterClass` is REMOVED — so `exitClass` needn't out-specify it, and a symmetric single-class fade works by setting only `enterClass` + `exitDuration` — then the node is removed `exitDuration` ms later, delayed whenever `exitClass` is set OR `exitDuration > 0`), `className` (default `'kerf-toast'`), `role` (default `'status'`), `container`.
+Shows a non-modal, auto-dismissing notification, stacked in a shared body-level region — a `<div class="kerf-toasts" aria-live="polite">` appended to `document.body` on first use; an existing `.kerf-toasts` element anywhere in the document is reused instead, so you can place (and style) the region yourself — or in `options.container`. `content` is a [`ToastContent`](#overlay-types): plain strings are escaped and rendered as text, while `SafeHtml` and render functions are the explicit trusted-markup paths. Returns a [`ToastHandle`](#overlay-types) `{ el, dismiss }` — `el` is the node (inspect it, wire an action button, or run your own entrance/exit transitions) and `dismiss()` removes it early (idempotent). `dismiss({ instant: true })` removes it **synchronously**, skipping the exit transition — for an action button that immediately shows a replacement toast in a single centered slot (no cross-fade); `mode: 'replace'` with `collapse: 'instant'` likewise cleans up a toast that is already mid-fade. Options ([`ToastOptions`](#overlay-types)): `duration` (ms; `0` = sticky; default `4000`), `mode` (`'stack'` default, or `'replace'` — dismiss the region's current toast(s) first for collapse-to-latest), `collapse` (how `'replace'` drops the prior toast(s): `'fade'` default = run their exit transition, good for a **stacking** region; `'instant'` = remove them synchronously, what a single **centered** slot wants so messages never cross-fade in the same spot), `variant` (`'info'` | `'success'` | `'warning'` → adds a `${className}--${variant}` accent class), `enterClass` (added on the next animation frame, so a CSS **entrance** transition runs), `exitClass` + `exitDuration` (CSS owns the **exit**: on dismiss the `enterClass` is REMOVED — so `exitClass` needn't out-specify it, and a symmetric single-class fade works by setting only `enterClass` + `exitDuration` — then the node is removed `exitDuration` ms later, delayed whenever `exitClass` is set OR `exitDuration > 0`), `className` (default `'kerf-toast'`), `role` (default `'status'`), `container`.
 
 ### Overlay types
 
@@ -782,7 +791,7 @@ Returns a [`Resource<T, I>`](#resource-types). `resource.value` is a **tracking 
 - **`reset(): void`** — back to `idle`, clearing data/error/progress/input **and the per-key cache**, and invalidating any in-flight run.
 - **`cached(key): T | undefined`** / **`cachedKeys(): string[]`** / **`clearCache(key?): void`** — a read-only view of the `cacheKey` cache, plus eviction. `cached(key)` returns a slice without running it (so a test or app can ask "is this window cached?"); `cachedKeys()` lists the cached keys (`.length` is the size); `clearCache(key)` evicts one key (or the whole cache with no argument) **without** touching `value`.
 
-**Per-input cache + SWR** ([`ResourceOptions`](#resource-types)): pass `cacheKey(input)` to keep the last value **per key**. Starting a run for a previously-loaded key paints its cached slice immediately (still `running`) while it revalidates; a never-loaded key starts with no `data`. Without `cacheKey`, a run keeps the previous run's `data` (single-slot stale-while-revalidate), as before.
+**Per-input cache + SWR** ([`ResourceOptions`](#resource-types)): pass `cacheKey(input)` to keep the last value **per key**. Starting a run for a previously-loaded key paints its cached slice immediately (still `running`) while it revalidates; a never-loaded key starts with no `data`. Without `cacheKey`, a run keeps the previous run's `data` (single-slot stale-while-revalidate), as before. `cacheKey` applies only to the two-argument `run(input, fetcher)`: on a resource that has a `cacheKey`, a no-input `run(fetcher)` has no key, so it clears `data` while running and never writes to the cache.
 
 **Paint dedup** (`value.revision`): a counter that bumps **only when `data` actually changes** — by `options.equals` (default `Object.is`). Compare it to the revision you last painted to skip a redundant re-render (a poll returning identical data leaves it untouched, so you don't wipe scroll / sort / hover). Pass a structural `equals` to dedup a fresh-but-equal object.
 
@@ -848,7 +857,7 @@ Binds a keyed list to `parent` (whose children `bindList` owns — by default it
   - **`minRows`** — render **every** row (no windowing, zero padding) while the list is shorter than `minRows`, and window only at or above it. The DOM structure (the inner sizer) is identical either way, so the **call site never branches** on list length. A fully-rendered short list is friendlier to find-in-page (Cmd+F), screen readers, and DOM-count assertions, which only see rows actually in the DOM. Crossing the threshold in either direction switches automatically. (No effect under `mode: 'content-visibility'`, which renders all rows regardless.)
   - **`containerClass`** / **`containerId`** — set on the inner sizer kerf creates, so it's reachable from CSS and test selectors without guessing at `parent.lastElementChild`.
   - **Resizing.** kerf re-windows on `parent`'s `scroll` **and**, where `ResizeObserver` exists, when `parent` itself resizes. So a list mounted before layout (a hidden tab, `clientHeight` 0) fills in once it's sized, and a container resized while open re-windows — neither needs a synthetic scroll. (Absent `ResizeObserver`, it's scroll-only, so ensure `parent` is laid out at mount.)
-  - **Accepted ranges.** Every height — a fixed `rowHeight`, an `estimate`, each value a height callback returns, and each `setHeight(key, px)` report — must be a finite, non-negative number of pixels; zero-height rows are allowed. A fixed `rowHeight` must be greater than 0 in `'window'` mode (it divides the scroll offset). `overscan` and `minRows` must be non-negative integers. Invalid configuration throws a `bindList:`-prefixed `RangeError` / `TypeError` before any DOM is touched; an invalid callback return throws from that render, and an invalid `setHeight` report throws without changing the height model.
+  - **Accepted ranges.** Every height — a fixed `rowHeight`, an `estimate`, each value a height callback returns, and each `setHeight(key, px)` report — must be a finite, non-negative number of pixels; zero-height rows are allowed. A fixed `rowHeight` must be greater than 0 in `'window'` mode (it divides the scroll offset). `overscan` and `minRows` must be non-negative integers. Invalid configuration throws a `bindList:`-prefixed `RangeError` before any DOM is touched; an invalid callback return throws a `RangeError` from that render, and an invalid `setHeight` report throws one without changing the height model. (The only `TypeError` `bindList` throws is for a malformed source: an object carrying the `arraySignal` brand but no patch queue.)
   - **Findability & a11y tradeoff.** Off-window rows are **removed from the DOM** (not just hidden), so a virtualized list is only partially reachable: **find-in-page (Cmd/Ctrl+F)**, **screen readers / the accessibility tree**, and **anchor links / `scrollIntoView`** all match only the visible window — a hit, an announced row, or a linked element that's been windowed out isn't in the DOM to find. Convey the true total through ARIA (`aria-rowcount` / `aria-setsize`) if it matters, and to deep-link a specific off-window row, scroll the window to its offset first. When full findability matters more than the DOM node ceiling, don't virtualize — render a plain `bindList`, or set **`minRows`** above the list's length (same DOM shape, no windowing) so every row stays live. See [`docs/17-list-virtualization.md`](17-list-virtualization.md) §17.10.
 
 `bindList` returns a [`BindListHandle`](#list-types) — the disposer you call to tear the list down, with a `setHeight(key, px)` method for the measured mode (a no-op otherwise) and a **`container`** property (the inner sizer for a virtualized list, `undefined` otherwise). If the **first** render throws (a row `render`, a height callback, a duplicate key), `bindList` releases every row that pass already created — content-row mounts, element-mode `dispose` callbacks, and their DOM; a virtualized sizer is never attached — and rethrows the original error, so the same `parent` can be bound again.
@@ -857,7 +866,7 @@ Options ([`BindListOptions<T>`](#list-types)): `key` (stable, unique per-row key
 
 ### `observeRowHeights(handle): () => void`
 
-The batteries-included measurement path for a `{ estimate }` virtualized list: installs **one** `ResizeObserver` over the current visible rows and forwards each row's `offsetHeight` to `handle.setHeight`, re-observing as the window shifts. Returns a disposer. It is deliberately **separate** from `bindList` (which never depends on `ResizeObserver`) — measure however you like and call `handle.setHeight` yourself instead. A no-op for a non-virtualized handle or where `ResizeObserver` is unavailable (SSR).
+The batteries-included measurement path for a `{ estimate }` virtualized list: installs **one** `ResizeObserver` over the current visible rows and forwards each row's `offsetHeight` to `handle.setHeight`, re-observing as the window shifts. Returns a disposer. It is deliberately **separate** from `bindList`, which never observes rows (its only `ResizeObserver` is the optional window-mode one on `parent`, used to re-window when the scroll parent resizes) — measure however you like and call `handle.setHeight` yourself instead. A no-op for a non-virtualized handle or where `ResizeObserver` is unavailable (SSR).
 
 ```ts
 const list = bindList(scrollEl, source, {
@@ -893,7 +902,7 @@ const onScroll = throttle(() => measure(), 100);
 window.addEventListener("scroll", onScroll);
 ```
 
-Leading-plus-trailing throttle: `fn` runs immediately on the first call, then **at most once per `ms`**; calls during a cooldown collapse to a single trailing call (with the latest arguments) at the window's end. Returns a [`Throttled<A>`](#timing-types) with the same `cancel()` / `flush()` shape. The cooldown is active while `fn` runs, including for the trailing invocation, so `fn` may call `cancel()` itself to reset the window immediately; a reentrant call stays throttled unless the callback first cancels.
+Leading-plus-trailing throttle: `fn` runs immediately on the first call, then **at most once per `ms`**; calls during a cooldown collapse to a single trailing call (with the latest arguments) at the window's end. Returns a [`Throttled<A>`](#timing-types) with `cancel()` (drop a pending trailing call and reset the window) and `flush()`. Unlike `debounce`'s, throttle's `flush()` runs a pending trailing call now but leaves the current cooldown running, so a call made right after a flush is still collapsed into the window's trailing call. The cooldown is active while `fn` runs, including for the trailing invocation, so `fn` may call `cancel()` itself to reset the window immediately; a reentrant call stays throttled unless the callback first cancels.
 
 ### `debouncedSignal<T>(source, ms): ReadonlySignal<T>`
 
@@ -966,7 +975,7 @@ attach(canvasEl, (el) => {
 
 Optional subpath (`import { createRouter } from 'kerfjs/router'`) providing a **client-side router** — the "postcard router": route matching + `navigate` + `delegate()`-based link interception + a keyed outlet, and deliberately nothing more. The kerf **core** stays router-free (docs/1's "Not a router" is about the runtime); this adds nothing to the main barrel until imported, on the same footing as `kerfjs/list` / `kerfjs/overlay`. See [`docs/20-router.md`](20-router.md) for the full design and the scope boundary (no nested layouts / loaders / lazy routes / guards / SSR — compose those with kerf primitives).
 
-### `createRouter<>(options): RouterHandle`
+### `createRouter(options): RouterHandle`
 
 ```ts
 const router = createRouter({
@@ -992,17 +1001,17 @@ Creates a router bound to the browser history (reads the current location immedi
 
 In history mode, `base` is stripped only on an exact match or at a following `/` segment boundary; a base of `/app` therefore owns `/app` and `/app/users`, but not `/apple`.
 
-- **`route`** — `ReadonlySignal<`[`RouteState`](#router-types)`>` = `{ path, params, query, hash }`. `params` is a `Record<string, string>` from the matched pattern (URL-decoded); `query` is a `URLSearchParams`. A tracked read.
+- **`route`** — `ReadonlySignal<`[`RouteState`](#router-types)`>` = `{ path, params, query, hash }`. `params` is a `Record<string, string>` from the matched pattern (URL-decoded), or `{}` when no route matches; `query` is a `URLSearchParams`. A tracked read. In hash mode the route lives after `#` (`#/users/7?tab=1` → `path` `/users/7`, `query` `tab=1`) and `route.hash` is always `''`.
 - **`navigate(path, { replace?, state? })`** — push (or replace) a history entry and update `route`; `path` may include `?query` / `#hash`.
 - **`back()` / `forward()`** — `history.back()` / `history.forward()`.
-- **`match(pattern)`** → `ReadonlySignal<boolean>` — reactive active-check: true when `route.path` equals `pattern` or is nested under it (`match('/users')` is true on `/users/7`); `match('/')` is **exact**.
+- **`match(pattern)`** → `ReadonlySignal<boolean>` — reactive active-check: a **literal path-prefix** comparison, true when `route.path` equals `pattern` or continues it at a `/` boundary (`match('/users')` is true on `/users/7`, not on `/users-admin`); `match('/')` is **exact**. The pattern never goes through the route matcher, so `:param` / `*` segments are compared as literal text — `match('/users/:id')` is never true; pass the static prefix (`'/users'`).
 - **`activeClass(pattern, className)`** → `ReadonlySignal<string>` — `className` while `match(pattern)` is active, else `''`; spread into a `class` hole.
-- **`outlet()`** → the routed view — call it inside a `mount()` render. It renders the matched component in a **keyed wrapper** (`data-key` = the matched route's _pattern_), so kerf's keyed morph **replaces the page wholesale on a route change** (fresh DOM) and **reconciles in place on a same-route param change** (preserving scroll / focus). No new machinery.
-- **`dispose()`** — remove the popstate / link listeners (idempotent).
+- **`outlet()`** → the routed view — call it inside a `mount()` render. It renders the matched component in a **keyed wrapper** (`data-key` = the matched route's _pattern_), so kerf's keyed morph **replaces the page wholesale on a route change** (fresh DOM) and **reconciles in place on a same-route param change** (preserving scroll / focus). No new machinery. The matched component is called as `component(params, route)`; when no route matches (no `*` fallback), `outlet()` returns `null` and renders nothing.
+- **`dispose()`** — remove the `popstate` (plus hash-mode `hashchange`) and link listeners (idempotent).
 
 **Route patterns** (tried in order, first match wins): static (`/about`), `:param` (`/users/:id` → `params.id`), a trailing `*rest` wildcard (`/files/*rest` → `params.rest`, the remaining segments joined by `/`; a bare `*` segment matches without capturing), and `*` as the catch-all fallback (list it last).
 
-**Link interception** intercepts only plain in-app navigations — left-click, no modifier keys, not already `defaultPrevented`, no `target`/`download`, not `rel="external"` / `data-router-ignore`, same-origin (under `base` in history mode; an in-app `#/…` link in hash mode). Everything else falls through to the browser.
+**Link interception** intercepts only plain in-app navigations — left-click, no modifier keys, not already `defaultPrevented`, no `download`, no `target` other than `_self` (a `target="_self"` link is still intercepted), not `rel="external"` / `data-router-ignore`, same-origin (under `base` in history mode; an in-app `#/…` link in hash mode). Everything else falls through to the browser.
 
 ### Router types
 

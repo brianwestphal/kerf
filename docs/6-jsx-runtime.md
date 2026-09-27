@@ -14,7 +14,7 @@ kerf ships its own JSX runtime at `kerfjs/jsx-runtime`. JSX renders to `SafeHtml
 }
 ```
 
-That's the entire setup. The TypeScript / esbuild / vitest JSX transform looks for `kerfjs/jsx-runtime` and finds the `jsx`, `jsxs`, `jsxDEV`, and `Fragment` exports there.
+That's the entire setup. The TypeScript / esbuild / vitest JSX transform looks for `kerfjs/jsx-runtime` and finds the `jsx`, `jsxs`, `jsxDEV`, and `Fragment` exports there. Transforms in development mode (`"jsx": "react-jsxdev"`, Vite / vitest dev builds) import `kerfjs/jsx-dev-runtime` instead; that subpath is an alias of `kerfjs/jsx-runtime` (same module, same types), so no extra configuration is needed.
 
 **Mixing kerf with another JSX runtime (e.g. React).** A project can only set one `jsxImportSource` default, so when kerf coexists with React in the same codebase, override per file with the standard TypeScript pragma — a block comment on the first line:
 

@@ -98,6 +98,8 @@ function display(s: ReadonlySignal<number>) {
 }
 ```
 
+Both types also carry `peek()`, which returns the current value **without** subscribing: reading `s.peek()` inside a `computed()`, `effect()`, or `mount()` render does not make it re-run when `s` changes. Use it for a value you need once (a starting point, a log line) where a `.value` read would add an unwanted dependency.
+
 `computed()` returns `ReadonlySignal<T>`. `signal()` returns `Signal<T>`. Stores expose `state: ReadonlySignal<TState>` so consumers can't bypass the action layer.
 
 ## 2.6 `arraySignal(initial)` (granular collection signal)
