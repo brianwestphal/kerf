@@ -189,9 +189,11 @@
 
 /* A placeholder is disabled to stay inert, but it is loading, not unavailable:
    it keeps the live tone and gives no hover feedback (see the placeholder rule
-   in skeleton.css). */
-.kui-list-header:not([data-placeholder="true"]) .kui-list-header__action:hover,
-.kui-list-header:not([data-placeholder="true"]) .kui-list-header__toggle:hover {
+   in skeleton.css). A disabled control gives none either. */
+.kui-list-header:not([data-placeholder="true"])
+  .kui-list-header__action:hover:not(:disabled),
+.kui-list-header:not([data-placeholder="true"])
+  .kui-list-header__toggle:hover:not(:disabled) {
   border-color: var(--kui-color-neutral-border-normal);
   background: var(--kui-list-header-hover-background);
 }
@@ -203,21 +205,20 @@
 }
 
 /* The disabled tone follows the author's `actionDisabled` (the
-   data-kui-disabled marker), so a disabled action's placeholder is dimmed like
-   the loaded one; only the `not-allowed` cursor is reserved for the live
-   header. */
-.kui-list-header__action[data-kui-disabled="true"] {
+   data-kui-disabled marker), so a disabled action or toggle's placeholder is
+   dimmed like the loaded one; only the `not-allowed` cursor is reserved for
+   the live header. The tone is the component's own, never Web Awesome's
+   native `button:disabled`, so it holds without webawesome.css. */
+.kui-list-header__action[data-kui-disabled="true"],
+.kui-list-header__toggle[data-kui-disabled="true"] {
   opacity: 0.48;
 }
 
 .kui-list-header:not([data-placeholder="true"])
-  .kui-list-header__action:disabled {
+  .kui-list-header__action:disabled,
+.kui-list-header:not([data-placeholder="true"])
+  .kui-list-header__toggle:disabled {
   cursor: not-allowed;
-}
-
-.kui-list-header__action:disabled:hover {
-  border-color: transparent;
-  background: transparent;
 }
 
 .kui-list-header__action > svg,

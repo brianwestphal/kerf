@@ -484,7 +484,9 @@ placeholder keeps the live disabled tone. Each such control carries the componen
 a `SegmentedControl` choice's `disabled`, and `ListHeader` `actionDisabled` (on the
 action or disclosure toggle). The placeholder reset skips the marker and components key
 their disabled tone on it, so only the `placeholder`-only `disabled` attribute is
-neutralized. The marker is reserved: the extension-attribute channels
+neutralized. That tone is each component's own, never Web Awesome's native
+`button:disabled`, so an author-disabled control is dimmed with or without
+`webawesome.css`. The marker is reserved: the extension-attribute channels
 (`rootAttributes`, `trailingActionAttributes`, `triggerAttributes`) cannot set it. A
 disabled placeholder still shows the `default` cursor, never `not-allowed`.
 Chrome a component draws itself from a known prop stays live, even inside a slot that

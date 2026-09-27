@@ -12,20 +12,47 @@ import { build } from 'esbuild';
  * a skeleton in the placeholder, are excluded with their subtrees; an element
  * present in only one render is a structural difference and fails.
  */
-const fixtureBundle = build({
-  entryPoints: [
-    resolve(import.meta.dirname, 'fixtures/placeholder-chrome-cases.tsx'),
-  ],
-  bundle: true,
-  format: 'iife',
-  outdir: 'out',
-  platform: 'browser',
-  write: false,
-  // The package marks select/register side-effect-free for consumers' tree
-  // shaking; the fixture imports it only for its registration.
-  ignoreAnnotations: true,
-  loader: { '.woff2': 'empty', '.woff': 'empty', '.ttf': 'empty' },
-});
+const bundleFixture = (webAwesome: boolean) =>
+  build({
+    entryPoints: [
+      resolve(import.meta.dirname, 'fixtures/placeholder-chrome-cases.tsx'),
+    ],
+    bundle: true,
+    format: 'iife',
+    outdir: 'out',
+    platform: 'browser',
+    write: false,
+    // The package marks select/register side-effect-free for consumers' tree
+    // shaking; the fixture imports it only for its registration.
+    ignoreAnnotations: true,
+    loader: { '.woff2': 'empty', '.woff': 'empty', '.ttf': 'empty' },
+    // Without Web Awesome's stylesheet nothing dims a native `button:disabled`,
+    // so a component's own disabled tone is the only one left to observe.
+    plugins: webAwesome
+      ? []
+      : [
+          {
+            name: 'omit-webawesome-css',
+            setup(pluginBuild) {
+              pluginBuild.onResolve(
+                { filter: /^@kerfjs\/ui\/webawesome\.css$/ },
+                () => ({ path: 'webawesome.css', namespace: 'omitted' }),
+              );
+              pluginBuild.onLoad(
+                { filter: /.*/, namespace: 'omitted' },
+                () => ({
+                  contents: '',
+                  loader: 'css',
+                }),
+              );
+            },
+          },
+        ],
+  });
+const fixtureBundles = {
+  withWebAwesome: bundleFixture(true),
+  withoutWebAwesome: bundleFixture(false),
+};
 
 interface CaseRule {
   /**
@@ -95,8 +122,10 @@ const STYLE_PROPS = [
   // default cursor where a live control shows a pointer (asserted below).
 ] as const;
 
-async function mountFixture(page: Page) {
-  const result = await fixtureBundle;
+async function mountFixture(page: Page, { webAwesome = true } = {}) {
+  const result = await (webAwesome
+    ? fixtureBundles.withWebAwesome
+    : fixtureBundles.withoutWebAwesome);
   const javascript = result.outputFiles.find((file) =>
     file.path.endsWith('.js'),
   );
@@ -199,6 +228,32 @@ async function fingerprints(page: Page) {
   );
 }
 
+/**
+ * Every control an author disabled (the reserved `data-kui-disabled` marker)
+ * is dimmed, live and as a placeholder, in every `*-disabled` case.
+ */
+async function expectAuthorDisabledDimmed(page: Page, caseNames: string[]) {
+  const disabledTone = await page.evaluate(() =>
+    [...document.querySelectorAll<HTMLElement>('[data-case$="-disabled"]')].map(
+      (wrapper) => {
+        const marked = [
+          ...wrapper.querySelectorAll('[data-kui-disabled="true"]'),
+        ];
+        const dimmed =
+          marked.length > 0 &&
+          marked.every(
+            (element) => Number(window.getComputedStyle(element).opacity) < 1,
+          );
+        return { name: wrapper.dataset.case!, dimmed };
+      },
+    ),
+  );
+  expect(disabledTone.length).toBe(
+    2 * caseNames.filter((name) => name.endsWith('-disabled')).length,
+  );
+  expect(disabledTone.filter(({ dimmed }) => !dimmed)).toEqual([]);
+}
+
 for (const width of [1280, 390]) {
   test(`every placeholder matches its live component except in value slots (${String(width)}px)`, async ({
     page,
@@ -266,25 +321,7 @@ for (const width of [1280, 390]) {
 
     // An author-disabled control is dimmed in both renders: the diff above
     // proves the renders match, this proves neither lost the disabled tone.
-    const disabledTone = await page.evaluate(() =>
-      [
-        ...document.querySelectorAll<HTMLElement>('[data-case$="-disabled"]'),
-      ].map((wrapper) => {
-        const marked = [
-          ...wrapper.querySelectorAll('[data-kui-disabled="true"]'),
-        ];
-        const dimmed =
-          marked.length > 0 &&
-          marked.every(
-            (element) => Number(window.getComputedStyle(element).opacity) < 1,
-          );
-        return { name: wrapper.dataset.case!, dimmed };
-      }),
-    );
-    expect(disabledTone.length).toBe(
-      2 * Object.keys(live).filter((name) => name.endsWith('-disabled')).length,
-    );
-    expect(disabledTone.filter(({ dimmed }) => !dimmed)).toEqual([]);
+    await expectAuthorDisabledDimmed(page, Object.keys(live));
 
     // Every case really rendered a placeholder, and none advertises `not-allowed`.
     expect(
@@ -335,4 +372,49 @@ test('hovering an interaction-revealed placeholder row reveals nothing', async (
   // keeps the live resting state, hidden until an interaction it cannot take.
   expect(await opacityOnHover('live')).toBe('1');
   expect(await opacityOnHover('placeholder')).toBe('0');
+});
+
+test('author-disabled controls keep their own disabled tone without Web Awesome', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await mountFixture(page, { webAwesome: false });
+  // Nothing native dims a disabled button here, so every dimmed control is
+  // dimmed by its component, keyed on the data-kui-disabled marker.
+  expect(
+    await page.evaluate(() => {
+      const probe = document.createElement('button');
+      probe.disabled = true;
+      document.body.append(probe);
+      const opacity = window.getComputedStyle(probe).opacity;
+      probe.remove();
+      return opacity;
+    }),
+  ).toBe('1');
+  const caseNames = await page.evaluate(() =>
+    [
+      ...document.querySelectorAll<HTMLElement>(
+        '[data-state="live"] > [data-case]',
+      ),
+    ].map((wrapper) => wrapper.dataset.case!),
+  );
+  await expectAuthorDisabledDimmed(page, caseNames);
+
+  // A disabled ListHeader toggle takes the action's tone and gives no hover
+  // feedback, live or as a placeholder.
+  for (const state of ['live', 'placeholder']) {
+    const toggle = page.locator(
+      `[data-state="${state}"] > [data-case="list-header-toggle-disabled"] .kui-list-header__toggle`,
+    );
+    await toggle.hover({ force: true });
+    expect(
+      await toggle.evaluate((element) => {
+        const computed = window.getComputedStyle(element);
+        return {
+          opacity: computed.opacity,
+          background: computed.backgroundColor,
+        };
+      }),
+    ).toEqual({ opacity: '0.48', background: 'rgba(0, 0, 0, 0)' });
+  }
 });

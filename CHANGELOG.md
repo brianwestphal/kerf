@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- A `@kerfjs/ui` `ListHeader` disclosure toggle disabled with `actionDisabled`
+  is dimmed by the component itself, at the same tone as a disabled action
+  button, and shows the `not-allowed` cursor. It used to rely on Web Awesome's
+  native `button:disabled` dimming, so without `webawesome.css` it looked
+  enabled. Disabled toggles and action buttons also no longer show hover
+  feedback without `webawesome.css`.
 - A `@kerfjs/ui` `ListActionRow` placeholder keeps its `busy` spinner. The
   whole status line used to collapse into one skeleton, dropping the spinner
   the component draws from a known prop. Now only the `status` text becomes a
