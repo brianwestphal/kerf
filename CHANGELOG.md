@@ -73,6 +73,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   holds there. Resizing still commits no less than `min`, and the configured
   range returns once there is room. A `ResizableRegion` a parent clamps below
   its `min` reports the same way.
+- **`kerf-ui-doctor` and the `kerfjs/ui-public-boundaries` ESLint rule no
+  longer flag the documented `class="kui-app-root"` as KUI-L101 private
+  anatomy.** The `@kerfjs/ui` component catalog now has a `document-baseline`
+  composition entry for `@kerfjs/ui/document.css` that lists `kui-app-root`
+  as its public class, with a catalog demo route showing a `SplitView` filling
+  the root's definite height.
 - The `@kerfjs/ui` heading guidance (`ai/skill.md`, `llms.txt`,
   `docs/component-selection.md`, `docs/layout.md`) now sizes a panel title to
   its track: extra-large `ToolbarText` stays the title size for a page, view,

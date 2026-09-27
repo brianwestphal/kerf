@@ -354,6 +354,67 @@
       }
     },
     {
+      "id": "document-baseline",
+      "name": "Document baseline",
+      "category": "Foundation",
+      "kind": "composition",
+      "source": "kerf",
+      "description": "Opt-in document-level defaults: border-box sizing, body margin/font/surface, link color, and the html → body → .kui-app-root full-height chain.",
+      "uses": [],
+      "purpose": "Let an application opt into Kerf UI-owned document defaults and a definite full-height chain for a percentage-height application shell.",
+      "publicExports": [],
+      "useWhen": [
+        "An application wants Kerf UI to own document-level box sizing, body typography, surface, and link color.",
+        "A full-height shell (Workbench, SplitView, NavStack, or TabScaffold) mounts into one direct container: put .kui-app-root on that container."
+      ],
+      "avoidWhen": [
+        "Do not put .kui-app-root on several sibling containers; each requests the full available document height.",
+        "Do not import it where the host page already owns document-level defaults it would override."
+      ],
+      "alternatives": [
+        {
+          "id": "foundation",
+          "relationship": "composes-with",
+          "when": "Import the foundation tokens the baseline reads; the baseline itself adds only global document selectors."
+        }
+      ],
+      "appOwns": [
+        "the one direct mount container",
+        "application overrides loaded after the baseline"
+      ],
+      "variants": [
+        "document-flow page (no .kui-app-root)",
+        "full-height application root"
+      ],
+      "accessibility": [
+        "Links keep the semantic link color at zero specificity so application focus and link styles still apply."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "none",
+        "padding": "none",
+        "notes": [
+          "The body margin is removed; .kui-app-root only sets height: 100% and owns no inset."
+        ]
+      },
+      "delivery": {
+        "manualCssImport": "@kerfjs/ui/document.css",
+        "sideEffects": [
+          "css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-app-root"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=document-baseline",
+        "documentation": "docs/document-baseline.md",
+        "recipe": "docs/document-baseline.md"
+      }
+    },
+    {
       "id": "layout",
       "name": "Application layout",
       "category": "Foundation",

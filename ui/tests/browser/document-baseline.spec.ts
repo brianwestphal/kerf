@@ -77,3 +77,31 @@ test('the catalog opts into the full-height document baseline', async ({
     fullPage: true,
   });
 });
+
+test('the document-baseline route shows kui-app-root filling a definite height', async ({
+  page,
+}) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 820 });
+    await page.goto('/?component=document-baseline');
+    const root = page.locator('[data-document-baseline-root]');
+    await expect(root).toHaveClass('kui-app-root');
+    const geometry = await root.evaluate((element) => {
+      const frame = element.parentElement!.getBoundingClientRect();
+      const box = element.getBoundingClientRect();
+      const shell = element.firstElementChild!.getBoundingClientRect();
+      return {
+        frame: frame.height,
+        root: box.height,
+        shell: shell.height,
+        overflow:
+          document.documentElement.scrollWidth -
+          document.documentElement.clientWidth,
+      };
+    });
+    expect(geometry.root).toBeGreaterThan(100);
+    expect(Math.abs(geometry.root - geometry.shell)).toBeLessThan(1);
+    expect(geometry.frame - geometry.root).toBeLessThan(4);
+    expect(geometry.overflow).toBeLessThanOrEqual(1);
+  }
+});

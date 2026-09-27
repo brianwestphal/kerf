@@ -4165,7 +4165,10 @@ test('labels composition entries without repeating the kind in their names', asy
 
   await expect(
     page.locator('.kui-list-item__status', { hasText: 'Composition' }),
-  ).toHaveCount(5);
+  ).toHaveCount(6);
+  await expect(
+    page.locator('[data-item-id="document-baseline"] .kui-list-item__label'),
+  ).toHaveText('Document baseline');
   await expect(
     page.locator('[data-item-id="application-tabs"] .kui-list-item__status'),
   ).toHaveText('Composition');

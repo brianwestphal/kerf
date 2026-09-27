@@ -330,6 +330,64 @@
       }
     },
     {
+      "key": "@kerfjs/ui:document-baseline",
+      "package": "@kerfjs/ui",
+      "id": "document-baseline",
+      "name": "Document baseline",
+      "kind": "composition",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "the one direct mount container",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "application overrides loaded after the baseline",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["foundation"],
+        "geometry": {
+          "margin": "none",
+          "border": "none",
+          "padding": "none",
+          "notes": [
+            "The body margin is removed; .kui-app-root only sets height: 100% and owns no inset."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "Links keep the semantic link color at zero specificity so application focus and link styles still apply."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-app-root",
+        "publicClasses": ["kui-app-root"],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:layout",
       "package": "@kerfjs/ui",
       "id": "layout",

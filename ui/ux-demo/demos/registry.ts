@@ -4,6 +4,7 @@ import { ApplicationTabsDemo } from './application-tabs.js';
 import { BadgeDemo } from './badge.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
 import { DisclosureArrowDemo } from './disclosure-arrow.js';
+import { DocumentBaselineDemo } from './document-baseline.js';
 import { EmptyStateDemo } from './empty-state.js';
 import { FeedbackDemo } from './feedback.js';
 import { FloatingToolbarDemo } from './floating-toolbar.js';
@@ -47,6 +48,7 @@ export const demos = {
   'lucide-icon': LucideIconDemo,
   'disclosure-arrow': DisclosureArrowDemo,
   foundation: FoundationDemo,
+  'document-baseline': DocumentBaselineDemo,
   layout: LayoutDemo,
   toolbar: ToolbarDemo,
   'toolbar-control-group': ToolbarControlGroupDemo,

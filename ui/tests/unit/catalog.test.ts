@@ -492,6 +492,7 @@ describe('UX catalog metadata', () => {
         .map((entry) => [entry.id, entry.name]),
     ).toEqual([
       ['foundation', 'Foundation tokens'],
+      ['document-baseline', 'Document baseline'],
       ['layout', 'Application layout'],
       ['headers', 'Headers'],
       ['application-tabs', 'Application tabs'],

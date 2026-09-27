@@ -13,6 +13,20 @@ import cssValues from '../../lib/rules/ui-css-values.js';
 
 const tester = createRuleTester();
 const settings = uiSettings();
+// The catalogs @kerfjs/ui actually ships, so documented public anatomy is
+// checked against the real contract rather than the fixture.
+const shippedUiSettings = uiSettings({
+  catalog: undefined,
+  selectionCatalog: undefined,
+  catalogPath: join(
+    import.meta.dirname,
+    '../../../ui/ai/component-catalog-v2.json',
+  ),
+  selectionCatalogPath: join(
+    import.meta.dirname,
+    '../../../ui/ai/component-catalog.json',
+  ),
+});
 const thirdPartyCatalog = {
   schemaVersion: 2,
   package: '@acme/ui',
@@ -60,6 +74,16 @@ const thirdPartySettings = uiSettings({
 tester.run('ui-public-boundaries', boundaries, {
   valid: [
     { code: '<div class="kui-toolbar" />;', settings },
+    // The documented @kerfjs/ui/document.css mount container (ui/README.md,
+    // ui/docs/document-baseline.md), in the exact downstream shape.
+    {
+      code: '<div id="app" class="kui-app-root" />;',
+      settings: shippedUiSettings,
+    },
+    {
+      code: '<div id="app" className="kui-app-root" />;',
+      settings: shippedUiSettings,
+    },
     {
       code: '<div class="kui-workbench kui-workbench__rail kui-workbench__rail--left kui-workbench__rail--right kui-workbench__center kui-workbench__main kui-workbench__drawer kui-workbench__panel-content" />;',
       settings,
@@ -92,6 +116,11 @@ tester.run('ui-public-boundaries', boundaries, {
       code: '<div className="kui-private" />;',
       settings,
       errors: [{ messageId: 'class' }],
+    },
+    {
+      code: '<div id="app" class="kui-app-root kui-private" />;',
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'class', data: { name: 'kui-private' } }],
     },
     {
       code: "const css = 'color: var(--kui-secret)';",

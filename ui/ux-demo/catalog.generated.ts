@@ -50,6 +50,17 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "document-baseline",
+    "name": "Document baseline",
+    "category": "Foundation",
+    "kind": "composition",
+    "source": "kerf",
+    "description": "Let an application opt into Kerf UI-owned document defaults and a definite full-height chain for a percentage-height application shell.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/document-baseline.tsx",
+    "documentation": "ui/docs/document-baseline.md"
+  },
+  {
     "id": "layout",
     "name": "Application layout",
     "category": "Foundation",

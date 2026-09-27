@@ -25,6 +25,10 @@ height shell. Ordinary document-flow pages can import the baseline without the
 class. Do not put `.kui-app-root` on several sibling containers: each requests
 the full available document height.
 
+`kui-app-root` is the public class of the component catalog's
+`document-baseline` entry, so `kerf-ui-doctor` and the
+`kerfjs/ui-public-boundaries` ESLint rule accept it (no KUI-L101 finding).
+
 The stylesheet is intentionally absent from `@kerfjs/ui/styles.css` and every
 component browser import because its global selectors would otherwise change
 consumer documents implicitly. Import it once and load application overrides
