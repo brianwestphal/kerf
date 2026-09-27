@@ -614,4 +614,89 @@ describe('TabBar wiring', () => {
     document.dispatchEvent(new FocusEvent('focusin'));
     documentStop();
   });
+
+  describe('revealing an application-driven selection', () => {
+    /** Lay the strip out 100px wide with 80px tabs side by side. */
+    function layout(root: HTMLElement) {
+      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+      Object.defineProperty(strip, 'scrollWidth', { value: 240 });
+      Object.defineProperty(strip, 'clientWidth', { value: 100 });
+      const rect = (left: number, width: number) =>
+        ({ left, right: left + width, width }) as DOMRect;
+      vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 100));
+      root
+        .querySelectorAll<HTMLElement>('[role="tab"]')
+        .forEach((tab, index) =>
+          vi
+            .spyOn(tab, 'getBoundingClientRect')
+            .mockImplementation(() => rect(index * 80 - strip.scrollLeft, 80)),
+        );
+      return strip;
+    }
+    const select = (root: HTMLElement, id: string) =>
+      root.querySelectorAll<HTMLElement>('[role="tab"]').forEach((tab) => {
+        tab.setAttribute('aria-selected', String(tab.dataset.tabId === id));
+      });
+    const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+    it('scrolls only the strip to a tab the application selects', async () => {
+      const root = bar();
+      const strip = layout(root);
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      vi.mocked(Element.prototype.scrollIntoView).mockClear();
+      select(root, 'three');
+      await settle();
+      // Tab three spans 160–240: the strip scrolls 140px to show it whole.
+      expect(strip.scrollLeft).toBe(140);
+      // The page itself never scrolls toward the bar.
+      expect(Element.prototype.scrollIntoView).not.toHaveBeenCalled();
+      // Back to the first tab, the strip returns to its start.
+      select(root, 'one');
+      await settle();
+      expect(strip.scrollLeft).toBe(0);
+      stop();
+    });
+
+    it('leaves a strip the user scrolled alone when the selection is unchanged', async () => {
+      const root = bar();
+      const strip = layout(root);
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      strip.scrollLeft = 120;
+      // A re-render that rewrites the same selection is not a new selection.
+      select(root, 'one');
+      root
+        .querySelector('[data-kui-tab-list]')!
+        .append(document.createElement('span'));
+      await settle();
+      expect(strip.scrollLeft).toBe(120);
+      stop();
+    });
+
+    it('leaves a focused selection to focus handling and stops after disposal', async () => {
+      const root = bar();
+      const strip = layout(root);
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      const two = root.querySelector<HTMLElement>('[data-tab-id="two"]')!;
+      const twoButton = two.querySelector<HTMLElement>('[role="tab"]')!;
+      twoButton.focus();
+      strip.scrollLeft = 0;
+      select(root, 'two');
+      await settle();
+      expect(strip.scrollLeft).toBe(0);
+      stop();
+      select(root, 'three');
+      await settle();
+      expect(strip.scrollLeft).toBe(0);
+    });
+
+    it('does not scroll a strip that fits', async () => {
+      const root = bar();
+      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      select(root, 'three');
+      await settle();
+      expect(strip.scrollLeft).toBe(0);
+      stop();
+    });
+  });
 });

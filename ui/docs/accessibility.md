@@ -208,8 +208,11 @@ and must not contain interactive descendants.
 activation, same-bar pointer reordering, `Alt+Shift+ArrowLeft/ArrowRight`
 reordering, focus restoration, scroll-into-view, and pointer-proximity
 autoscroll at either horizontal edge. Edge autoscroll is direct manipulation,
-stops on drop/drag end/disposal, and does not change keyboard behavior. It
-returns a disposer.
+stops on drop/drag end/disposal, and does not change keyboard behavior. When
+the application changes a bar's selected tab without focus (adding and
+selecting a tab), the wiring scrolls that tab's strip — never the page — so
+the new selection is fully visible; a re-render that keeps the same selection
+leaves a strip the user scrolled where it is. It returns a disposer.
 
 Arrow / Home / End follow the ARIA Tabs **automatic-activation** pattern by
 default: they move roving focus and select the focused tab. If selection synchronously

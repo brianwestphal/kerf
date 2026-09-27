@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 291100,
-  "measuredLargestJavaScriptGzip": 143577,
-  "measuredTotalJavaScriptGzip": 291047,
+  "totalJavaScriptGzip": 291300,
+  "measuredLargestJavaScriptGzip": 143788,
+  "measuredTotalJavaScriptGzip": 291247,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -739,6 +739,22 @@
         "measuredTotalJavaScriptGzip": 291047,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 291100
+      }
+    },
+    {
+      "at": "2026-09-27T23:51:24.251Z",
+      "reason": "wireTabBars reveals an application-selected tab in its strip (KF-KZ5CJC)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 143577,
+        "measuredTotalJavaScriptGzip": 291047,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 291100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 143788,
+        "measuredTotalJavaScriptGzip": 291247,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 291300
       }
     }
   ]

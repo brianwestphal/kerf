@@ -7456,6 +7456,8 @@ test('opens an added tab pending with a placeholder panel, selectable until it l
   const panel = demo.getByRole('tabpanel');
   await expect(panel).toHaveAttribute('aria-busy', 'true');
   await expect(panel.locator('.kui-skeleton')).toBeVisible();
+  // The application's selection of the added tab scrolls the strip to it.
+  await expect(added).toBeInViewport();
   if (testInfo.project.name === 'chromium')
     await demo.screenshot({
       path: testInfo.outputPath('application-tabs-pending.png'),

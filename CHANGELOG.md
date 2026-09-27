@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui`'s `wireTabBars` reveals a tab the application selects.** A
+  tab added and selected by the app in an overflowing `TabBar` stayed
+  off-screen, because the wiring revealed a selection only at wire-up, on
+  focus, and after its own keyboard/drag changes. A change of a bar's selected
+  tab now scrolls that bar's strip (never the page) to show it; re-renders that
+  keep the selection leave a user-scrolled strip alone.
+
 - **`eslint-plugin-kerfjs`'s `ui-composition` rule resolves application
   wrappers imported through a barrel.** A cataloged wrapper registered only by
   its defining source file, so `import { DemandSegmentsControl } from

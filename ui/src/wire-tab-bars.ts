@@ -88,6 +88,40 @@ function reveal(tab: HTMLElement | null | undefined): void {
   tab?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
 }
 
+/**
+ * Scroll a tab's own strip, and nothing else, so the tab is fully visible.
+ * Used for selection changes the application makes without focus (adding and
+ * selecting a tab): unlike `scrollIntoView`, it never scrolls the page to a
+ * bar that is out of view.
+ */
+function revealInStrip(tab: HTMLElement): void {
+  const strip = tab.closest<HTMLElement>('[data-kui-tab-list]');
+  if (!strip || strip.scrollWidth <= strip.clientWidth) return;
+  const bounds = strip.getBoundingClientRect();
+  const box = tab.getBoundingClientRect();
+  if (box.left < bounds.left) strip.scrollLeft -= bounds.left - box.left;
+  else if (box.right > bounds.right)
+    strip.scrollLeft += Math.min(
+      box.right - bounds.right,
+      box.left - bounds.left,
+    );
+}
+
+/** The selected tab button of every bar below root, keyed by bar. */
+function selectedTabs(root: HTMLElement | Document) {
+  const selected = new Map<TabBarRoot, HTMLElement>();
+  root
+    .querySelectorAll<HTMLElement>(
+      '[data-kui-tab-list] [role="tab"][aria-selected="true"]',
+    )
+    .forEach((button) => {
+      const tab = tabRoot(button);
+      const bar = tab && tabBar(tab);
+      if (bar && !selected.has(bar)) selected.set(bar, button);
+    });
+  return selected;
+}
+
 /** Wire reordering and keyboard navigation while leaving controlled state in the application. */
 export function wireTabBars(
   root: HTMLElement | Document,
@@ -391,8 +425,40 @@ export function wireTabBars(
     )
     .forEach(reveal);
 
+  // Reveal a tab the application selects without focus (for example a tab it
+  // adds and selects) once its controlled render lands. Only a change of a
+  // bar's selected tab reveals, so a re-render that keeps the selection never
+  // pulls a strip the user scrolled back to it.
+  const selectedIds = new Map<string, string>();
+  const recordSelection = () => {
+    const changed: HTMLElement[] = [];
+    for (const [bar, button] of selectedTabs(root)) {
+      const id = barId(bar);
+      const tab = tabRoot(button);
+      const selectedId = tab && tabId(tab);
+      if (!id || !selectedId) continue;
+      if (selectedIds.has(id) && selectedIds.get(id) !== selectedId)
+        changed.push(button);
+      selectedIds.set(id, selectedId);
+    }
+    return changed;
+  };
+  recordSelection();
+  const selectionObserver = new view.MutationObserver(() => {
+    if (disposed) return;
+    for (const button of recordSelection())
+      if (ownerDocument.activeElement !== button) revealInStrip(button);
+  });
+  selectionObserver.observe(root, {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    attributeFilter: ['aria-selected'],
+  });
+
   return () => {
     disposed = true;
+    selectionObserver.disconnect();
     clear();
     root.removeEventListener('dragstart', onDragStart);
     root.removeEventListener('dragover', onDragOver);
