@@ -69,10 +69,12 @@ export default defineConfig({
         // the old line-range mapping silently credited as covered. Same
         // source, same tests: branches 99.41 -> 98.71, statements 100 -> 99.75.
         //
-        // The seventeen it newly resolves, all of the same shape:
+        // The seventeen it newly resolved, all of the same shape. Line numbers
+        // are as of that switch and drift with edits; the file and the guard
+        // shape are what identify each one:
         //
-        //   mount.ts 707,711 ................ `parentElement !== null` on a node
-        //                                     the reconciler just found attached
+        //   mount-list-bindings.ts .......... `parentElement !== null` on a node
+        //   (then mount.ts 707,711)           the reconciler just found attached
         //   morph.ts 455,537,579 ............ nodeType discriminators + an
         //                                     attribute-equality arm
         //   list-reconcile-fast-paths.ts .... 81,90,153,166,251,269,286 —
