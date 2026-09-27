@@ -19,6 +19,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   the pairing, not the contrast; pass `--fail-on-review` to gate it. The
   `webawesome-theme.md` customization example now sets both halves of each
   pair.
+- **Tooltips and popovers also stay visible when your own code opens a modal
+  `<dialog>`.** `kerfjs/overlay` already moved every open tooltip and popover
+  above a modal dialog it opened itself, but a dialog opened with a bare
+  `dialog.showModal()` went unnoticed and left them inert beneath it. While
+  any kerf surface is open, one capture-phase listener on the document now
+  catches the dialog's `toggle` event and re-hosts them the same way, one task
+  after the `showModal()` call. The listener is removed once nothing is open.
+  An engine that fires no `toggle` event for `<dialog>` still misses such a
+  dialog; open it through `overlay()` there.
 - **A popover inside a modal `<dialog>` is clickable.** Browsers make
   everything outside an open modal dialog inert, so a popover lifted above the
   dialog was visible but its buttons could not be clicked or focused, and

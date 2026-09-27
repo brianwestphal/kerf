@@ -187,10 +187,23 @@ data-morph-skip></div>` anywhere inside the dialog (both attributes are
   the new dialog (the top layer orders by most recent show). Open modal
   surfaces are left alone: they belong beneath the new modal. The same two
   `kerfjs/dev` warnings apply (`hidden` without the Popover API, `inert` for a
-  re-hosted surface with focusable controls). **Limitation:** a modal
-  `<dialog>` the app opens itself, outside kerf, is not observed, so surfaces
-  already showing then stay beneath it; open the dialog through `overlay()`
-  (or close the surface first).
+  re-hosted surface with focusable controls).
+- **App-owned modal dialogs are observed too (KF-AHY6H4).** A modal
+  `<dialog>` the app opens itself, outside kerf, gets the same re-hosting. A
+  `<dialog>` fires a `toggle` event once it opens (it does not bubble, so kerf
+  listens in the capture phase): while at least one kerf surface is open, one
+  capture listener on the document (added when the open-order stack goes from
+  empty to one surface, removed when it empties again, so a page with nothing
+  open pays nothing) checks that the target is an open modal `<dialog>` kerf
+  does not own, and lifts or re-shows every open non-modal kerf surface outside
+  it. kerf's own dialogs are skipped because `overlay()` already re-hosted
+  synchronously. Because `toggle` is queued as a task, the re-host lands one
+  task after the app's `showModal()` call rather than inside it. **Gap:** an
+  engine that fires no `toggle` event for `<dialog>` (engines that predate
+  dialog toggle events) never reports the open, so surfaces already showing
+  stay beneath such a dialog there; open the dialog through `overlay()` (or
+  close the surface first). Chromium, Firefox, and WebKit as run by the test
+  suite all fire it.
 - **Unchanged everywhere:** the promise API (`{ el, close, result }`), the `render`
   slots, `validate`, Enter-to-submit, `initialFocus`, `outsideIgnore`, and
   focus-restore. kerf's manual focus-restore stays in place — redundant with

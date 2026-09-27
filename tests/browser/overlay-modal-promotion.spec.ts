@@ -173,3 +173,41 @@ for (const native of [false, true]) {
     expect(await paintedAboveModal(page, '.kerf-tooltip')).toBe(true);
   });
 }
+
+test('a plain tooltip already showing is re-hosted above a modal <dialog> the app opens itself, outside kerf', async ({
+  page,
+}) => {
+  await page.evaluate(() => {
+    const anchor = document.createElement('button');
+    anchor.id = 'page-anchor';
+    anchor.textContent = 'page control';
+    Object.assign(anchor.style, {
+      position: 'absolute',
+      left: '40px',
+      top: '120px',
+    });
+    document.body.appendChild(anchor);
+    const { tooltip } = (window as any).kerfOverlay;
+    tooltip(anchor, 'Still here', { delay: 0, hideDelay: 10_000 });
+  });
+  await page.locator('#page-anchor').hover();
+  await expect(page.locator('.kerf-tooltip')).toHaveText('Still here');
+
+  await page.evaluate(() => {
+    const dialog = document.createElement('dialog');
+    dialog.className = 'late-dialog';
+    dialog.textContent = 'app dialog';
+    document.body.appendChild(dialog);
+    dialog.showModal(); // not through kerf: seen via the dialog's toggle event
+  });
+  // The dialog's `toggle` event is queued as a task, so the re-host follows
+  // the showModal() call rather than happening inside it.
+  await expect
+    .poll(() =>
+      page
+        .locator('.kerf-tooltip')
+        .evaluate((el) => el.matches(':popover-open')),
+    )
+    .toBe(true);
+  expect(await paintedAboveModal(page, '.kerf-tooltip')).toBe(true);
+});

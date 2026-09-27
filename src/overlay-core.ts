@@ -157,6 +157,8 @@ interface OverlaySurface {
 interface OverlayArbitration {
   stack: OverlaySurface[];
   handled: WeakSet<Event>;
+  /** Document capture listener, installed only while the stack is non-empty. */
+  onToggle: (event: Event) => void;
 }
 
 type ArbitratedDocument = Document & {
@@ -164,10 +166,34 @@ type ArbitratedDocument = Document & {
 };
 
 function overlayArbitration(doc: Document): OverlayArbitration {
-  return ((doc as ArbitratedDocument)[OVERLAY_ARBITRATION] ??= {
+  const arbitrated = doc as ArbitratedDocument;
+  return (arbitrated[OVERLAY_ARBITRATION] ??= {
     stack: [],
     handled: new WeakSet(),
+    // KF-AHY6H4: an app-owned modal `<dialog>` opened outside kerf would leave
+    // the kerf surfaces already showing inert beneath it. A dialog fires
+    // `toggle` after it opens (it does not bubble, so listen in the capture
+    // phase); re-host above it exactly as kerf does for its own dialogs, which
+    // are skipped here because `overlay()` already re-hosted synchronously.
+    onToggle: (event) => {
+      const dialog = event.target as Element;
+      const arbitration = arbitrated[OVERLAY_ARBITRATION] as OverlayArbitration;
+      if (
+        dialog.tagName === 'DIALOG' &&
+        !arbitration.stack.some(({ el }) => el === dialog) &&
+        isOpenModal(dialog, arbitration)
+      )
+        rehostAbove(arbitration, dialog);
+    },
   });
+}
+
+// Every non-modal kerf surface already open is blocked beneath a modal
+// `<dialog>` that just opened: lift (or re-show) it above (KF-FJ9VD8). One
+// inside that dialog is part of its subtree already.
+function rehostAbove(arbitration: OverlayArbitration, dialog: Element): void {
+  for (const { el, liftAbove } of arbitration.stack)
+    if (el !== dialog && el.isConnected && !dialog.contains(el)) liftAbove?.();
 }
 
 // Is `dialog` an open modal `<dialog>`? kerf's own are known from the stack;
@@ -380,6 +406,8 @@ export function overlay(
     const { stack } = arbitration;
     const stackIndex = stack.indexOf(surface);
     if (stackIndex !== -1) stack.splice(stackIndex, 1);
+    if (stack.length === 0)
+      document.removeEventListener('toggle', arbitration.onToggle, true);
     // A surface opened from inside this one would restore focus into a node
     // that is about to be detached: hand it this surface's own restore target.
     for (const other of stack)
@@ -433,7 +461,9 @@ export function overlay(
       wrapper,
       typeof content === 'function' ? content : () => content,
     );
-    arbitration.stack.push(surface);
+    // Watch for app-owned modal dialogs while any kerf surface is open.
+    if (arbitration.stack.push(surface) === 1)
+      document.addEventListener('toggle', arbitration.onToggle, true);
 
     // Enter the top layer after the content is mounted + connected.
     // `showModal()` moves focus into the dialog by default; kerf's
@@ -441,10 +471,7 @@ export function overlay(
     if (useDialog) {
       (wrapper as HTMLDialogElement).showModal();
       nativeOpened = true;
-      // Every non-modal kerf surface already open is now blocked beneath this
-      // dialog: lift (or re-show) it above.
-      for (const other of arbitration.stack)
-        if (other !== surface && other.el.isConnected) other.liftAbove?.();
+      rehostAbove(arbitration, wrapper);
     } else if (usePopover) {
       (wrapper as HTMLElement & { showPopover(): void }).showPopover();
       nativeOpened = true;

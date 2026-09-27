@@ -5,8 +5,10 @@
  * opened later stayed a plain `<div>` beneath it — inert and hidden. Whenever
  * kerf itself opens a modal `<dialog>` (a `native: true` modal, or a lifted
  * one), it now re-hosts every open non-modal kerf surface in the top layer
- * above the new dialog. An app-owned dialog opened outside kerf is not
- * observed (documented limitation).
+ * above the new dialog. KF-AHY6H4 extends that to an app-owned modal dialog
+ * opened outside kerf: a document capture listener for the dialog's `toggle`
+ * event, installed only while a kerf surface is open, re-hosts the same way.
+ * An engine that fires no `toggle` for dialogs is the documented gap.
  *
  * happy-dom has no Popover API, so it is stubbed with a call log; the real
  * paint order is pinned in `tests/browser/overlay-modal-promotion.spec.ts`.
@@ -147,6 +149,11 @@ describe('opening a kerf modal <dialog> re-hosts surfaces already showing', () =
     expect(calls).toEqual([]);
 
     void confirm('Sure?', { className: 'inner' });
+    disposers.unshift(() =>
+      document
+        .querySelector('dialog.inner')!
+        .dispatchEvent(new Event('cancel', { cancelable: true })),
+    );
     expect(document.querySelector('dialog.inner')).not.toBeNull();
     expect(calls).toEqual(['show:kerf-tooltip']);
     expect(tip.dataset.shown).toBe('true');
@@ -171,13 +178,110 @@ describe('opening a kerf modal <dialog> re-hosts surfaces already showing', () =
     expect(calls).toEqual([]);
   });
 
-  it('an app-owned dialog opened outside kerf does not re-host (documented limitation)', () => {
+  it('an engine that fires no dialog toggle event leaves an app-owned dialog unobserved (documented gap)', () => {
     stubPopoverApi();
     const tip = showTooltip(button('anchor'));
     const dialog = document.createElement('dialog');
     document.body.appendChild(dialog);
-    dialog.showModal();
+    dialog.showModal(); // happy-dom dispatches no `toggle` here
     expect(tip.hasAttribute('popover')).toBe(false);
     dialog.close();
+  });
+});
+
+const realMatches = Element.prototype.matches;
+
+/** An app-owned modal dialog opened outside kerf, then its `toggle` event. */
+function openAppDialog(): HTMLDialogElement {
+  const dialog = document.createElement('dialog');
+  dialog.innerHTML = '<p>app</p>';
+  document.body.appendChild(dialog);
+  dialog.showModal();
+  // happy-dom has no `:modal`: report this dialog as the modal one.
+  const matches = vi
+    .spyOn(Element.prototype, 'matches')
+    .mockImplementation(function (this: Element, selector: string) {
+      return selector === ':modal'
+        ? this === dialog
+        : realMatches.call(this, selector);
+    });
+  disposers.push(() => {
+    matches.mockRestore();
+    dialog.close();
+  });
+  dialog.dispatchEvent(new Event('toggle')); // does not bubble, like the real one
+  return dialog;
+}
+
+describe('an app-owned modal <dialog> opened outside kerf', () => {
+  it('re-hosts a plain tooltip already showing above it when the dialog toggles open', () => {
+    stubPopoverApi();
+    const tip = showTooltip(button('anchor'));
+    openAppDialog();
+    expect(tip.getAttribute('popover')).toBe('manual');
+    expect(tip.dataset.shown).toBe('true');
+    expect(calls).toEqual(['show:kerf-tooltip']);
+  });
+
+  it('re-shows a surface already in the top layer, and warns inert for one with controls', () => {
+    stubPopoverApi();
+    const pop = popover(button('anchor'), raw('<button>pick</button>'), {
+      className: 'menu',
+      native: true,
+    });
+    disposers.push(() => pop.close());
+    openAppDialog();
+    expect(calls).toEqual(['show:menu', 'hide:menu', 'show:menu']);
+    expect(String(warn.mock.calls[0][0])).toMatch(/inert/);
+  });
+
+  it('ignores a toggle from kerf’s own dialog (already re-hosted synchronously)', () => {
+    stubPopoverApi();
+    showTooltip(button('anchor'));
+    const modal = openNativeModal();
+    expect(calls).toEqual(['show:kerf-tooltip']);
+    modal.el.dispatchEvent(new Event('toggle'));
+    expect(calls).toEqual(['show:kerf-tooltip']);
+  });
+
+  it('ignores toggles from non-dialogs, closed dialogs, and non-modal dialogs', () => {
+    stubPopoverApi();
+    const tip = showTooltip(button('anchor'));
+    const details = document.createElement('details');
+    document.body.appendChild(details);
+    details.dispatchEvent(new Event('toggle'));
+    const closed = document.createElement('dialog');
+    document.body.appendChild(closed);
+    closed.dispatchEvent(new Event('toggle'));
+    const nonModal = document.createElement('dialog');
+    document.body.appendChild(nonModal);
+    nonModal.show(); // open, but not :modal
+    nonModal.dispatchEvent(new Event('toggle'));
+    expect(tip.hasAttribute('popover')).toBe(false);
+    expect(calls).toEqual([]);
+    nonModal.close();
+  });
+
+  it('listens only while a kerf surface is open', () => {
+    stubPopoverApi();
+    const add = vi.spyOn(document, 'addEventListener');
+    const remove = vi.spyOn(document, 'removeEventListener');
+    const toggles = (spy: typeof add) =>
+      spy.mock.calls.filter(([type]) => type === 'toggle');
+    const a = popover(button('a'), raw('<p>a</p>'), { className: 'a' });
+    const b = popover(button('b'), raw('<p>b</p>'), { className: 'b' });
+    expect(toggles(add).length).toBeGreaterThan(0);
+    a.close();
+    expect(toggles(remove)).toHaveLength(0); // b is still open
+    b.close();
+    expect(toggles(remove)).toHaveLength(1);
+    const listener = toggles(remove)[0][1];
+    expect(toggles(add).every(([, fn]) => fn === listener)).toBe(true);
+    add.mockRestore();
+    remove.mockRestore();
+
+    // Nothing open: an app dialog opening later reaches no kerf listener.
+    openAppDialog();
+    expect(calls).toEqual([]);
   });
 });

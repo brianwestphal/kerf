@@ -149,7 +149,10 @@ const BUDGETS = [
     // [data-kerf-overlay-host] element (created on demand for kerf's own
     // dialogs) so their controls are not inert, plus the nested-mount boundary
     // the shared core honors for that slot (~0.08 KB of the growth).
-    budgetKb: 18.1,
+    // KF-AHY6H4 (+0.10 KB): one document capture `toggle` listener, installed
+    // only while a kerf surface is open, re-hosts showing surfaces above an
+    // app-owned modal <dialog> opened outside kerf.
+    budgetKb: 18.2,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
