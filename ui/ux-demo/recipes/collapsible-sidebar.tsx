@@ -1,11 +1,13 @@
 import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/collapsible-panel.css';
+import '@kerfjs/ui/floating-toolbar.css';
 
 import {
   CollapsiblePanel,
   CollapsiblePanelToggle,
 } from '@kerfjs/ui/collapsible-panel';
 import { deviceClass } from '@kerfjs/ui/device-class';
+import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { Grid } from '@kerfjs/ui/grid';
 import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
@@ -143,9 +145,10 @@ export const createRecipe: RecipeFactory = (announce) => {
     </CollapsiblePanel>
   );
 
-  // Each panel's own header holds its collapse toggle; the always-visible main
-  // header holds its expand toggle only while it is collapsed, so exactly one
-  // control owns each action. wireSidebar hands focus between them.
+  // Each panel's own header holds its collapse toggle; its expand toggle shows
+  // only while it is collapsed, so exactly one control owns each action. The
+  // rail's sits in the main header; the drawer's floats at the bottom edge the
+  // drawer opens from. wireSidebar hands focus between them.
   const main = () => (
     <Pane
       element="main"
@@ -166,13 +169,6 @@ export const createRecipe: RecipeFactory = (announce) => {
                 id="recipe-collapsible-main-title"
               />
             </>
-          }
-          trailing={
-            drawerCollapsed.value ? (
-              <ToolbarControlGroup appearance="borderless" single>
-                {drawerToggle()}
-              </ToolbarControlGroup>
-            ) : undefined
           }
         />
       }
@@ -203,7 +199,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         header={
           <Toolbar
             label="Activity"
-            dividerSides="b"
+            dividerSides=""
             leading={<ToolbarText text="Activity" size="small" />}
             trailing={
               <ToolbarControlGroup appearance="borderless" single>
@@ -250,6 +246,11 @@ export const createRecipe: RecipeFactory = (announce) => {
         </Grid>
         {drawer()}
       </List>
+      {drawerCollapsed.value ? (
+        <FloatingToolbar label="Activity drawer">
+          <ToolbarControlGroup single>{drawerToggle()}</ToolbarControlGroup>
+        </FloatingToolbar>
+      ) : null}
     </Row>
   );
 

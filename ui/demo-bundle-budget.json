@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 285200,
-  "measuredLargestJavaScriptGzip": 136331,
-  "measuredTotalJavaScriptGzip": 285150,
+  "totalJavaScriptGzip": 285300,
+  "measuredLargestJavaScriptGzip": 136355,
+  "measuredTotalJavaScriptGzip": 285216,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -451,6 +451,22 @@
         "measuredTotalJavaScriptGzip": 285150,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 285200
+      }
+    },
+    {
+      "at": "2026-09-27T00:39:07.269Z",
+      "reason": "KF-EFWNWW: the collapsible-sidebar recipe floats its drawer's expand toggle in a FloatingToolbar",
+      "old": {
+        "measuredLargestJavaScriptGzip": 136331,
+        "measuredTotalJavaScriptGzip": 285150,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 136355,
+        "measuredTotalJavaScriptGzip": 285216,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285300
       }
     }
   ]

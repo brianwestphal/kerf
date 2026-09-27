@@ -218,7 +218,10 @@ export function wireSidebar(
         const replaced =
           deviceClass?.value.compact && compactPresentation === 'hidden';
         if (!collapsed && element && !replaced) {
-          (focusables(element)[0] ?? element).focus();
+          // Without preventScroll the browser scrolls the panel's clipped,
+          // still-sliding content to reveal the focus target, which then
+          // unwinds as the slide finishes: the content jumps and drifts back.
+          (focusables(element)[0] ?? element).focus({ preventScroll: true });
         } else if (collapsed && !restoreFocus(panel)) {
           // An app that renders after this effect has not produced its
           // expand toggle yet; look again once the current batch settles.

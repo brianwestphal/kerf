@@ -56,6 +56,18 @@ test('expands and collapses the bottom drawer independently', async ({
   await page.setViewportSize({ width: 1200, height: 820 });
   await page.goto(RECIPE);
 
+  // The drawer's expand control floats at the bottom edge it opens from, not
+  // in the main header far above it.
+  const floatingShow = page.locator(
+    '[data-recipe="recipe-collapsible-sidebar"] [data-component="floating-toolbar"] [data-collapsible-target="sidebar-console"]',
+  );
+  await expect(floatingShow).toHaveCount(1);
+  await expect(
+    page.locator(
+      '[data-recipe="recipe-collapsible-sidebar"] main [data-collapsible-target="sidebar-console"]',
+    ),
+  ).toHaveCount(0);
+
   await expect(drawerPanel(page)).toHaveAttribute('data-collapsed', 'true');
   await page.getByRole('button', { name: 'Show activity' }).first().click();
   await expect(drawerPanel(page)).toHaveAttribute('data-collapsed', 'false');
@@ -88,6 +100,10 @@ test('opens the bottom drawer monotonically from its stable bottom edge', async 
     }> = [];
     let sawMotion = false;
     let settled = false;
+    // Focus moves into the opening drawer. A focus() that scrolls would scroll
+    // the clipped, still-sliding panel to reveal its target, so the content
+    // jumped up and drifted back while the slide unwound it.
+    let maxPanelScroll = 0;
     // Sample on a time budget, not a frame count: sampling starts before the
     // click, and under full-suite load a slow click or a slow frame rate could
     // spend a fixed frame budget before the drawer even begins to open.
@@ -98,6 +114,7 @@ test('opens the bottom drawer monotonically from its stable bottom edge', async 
         '[data-collapsible-panel="sidebar-console"]',
       )!;
       if (panel.dataset.collapsed !== 'false') continue;
+      maxPanelScroll = Math.max(maxPanelScroll, panel.scrollTop);
       const motion = panel.querySelector<HTMLElement>(
         '.kui-collapsible-panel__content',
       )!;
@@ -121,12 +138,13 @@ test('opens the bottom drawer monotonically from its stable bottom edge', async 
       }
       if (sawMotion) frames.push(frame);
     }
-    return { sawMotion, settled, frames };
+    return { sawMotion, settled, frames, maxPanelScroll };
   });
   await page.getByRole('button', { name: 'Show activity' }).first().click();
   const samples = await samplesPromise;
 
   expect(samples.settled).toBe(true);
+  expect(samples.maxPanelScroll).toBe(0);
   expect(samples.sawMotion).toBe(true);
   // The panel's bottom edge is the motion anchor. A changing normal-flow origin
   // caused the old content overshoot and snap even while this edge stayed put.

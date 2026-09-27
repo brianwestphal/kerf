@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui`'s `wireSidebar` moves focus into an opening panel without
+  scrolling it. A plain `focus()` scrolled the panel's clipped content to the
+  target while it was still sliding in, then the slide unwound that scroll:
+  a bottom drawer's content jumped up past its top and drifted back. The
+  collapsible-sidebar recipe also floats the drawer's expand toggle in a
+  `FloatingToolbar` at the bottom edge the drawer opens from, and drops the
+  divider under the drawer's toolbar.
 - `@kerfjs/ui`'s `Skeleton` takes `block` (default `false`). It lays the
   placeholder out as `display: block` instead of `inline-block`, for a
   skeleton that stands in for a box rather than text: no text line and no

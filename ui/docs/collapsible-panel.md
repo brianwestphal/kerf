@@ -41,7 +41,8 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   `{ id, collapsed, toggleAction, storageKey?, inlineCollapsed? }`. It:
   - **toggles** the panel's `collapsed` signal when any `[data-action=toggleAction]`
     button is clicked, and remembers the trigger;
-  - **manages focus** — moves focus into the panel when it opens, and restores it
+  - **manages focus** — moves focus into the panel when it opens (without
+    scrolling, so the sliding content doesn't jump), and restores it
     to the trigger when it closes. When that trigger is the collapse toggle inside
     the now-hidden panel, focus goes to the panel's toggle outside it instead, so
     an app may render its expand toggle only while the panel is collapsed (one

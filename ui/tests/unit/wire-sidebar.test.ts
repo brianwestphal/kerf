@@ -134,6 +134,28 @@ describe('wireSidebar', () => {
     stop();
   });
 
+  it('moves focus into an opening panel without scrolling it', () => {
+    const root = mount(false);
+    const collapsed = signal(true);
+    const stop = wireSidebar(root, {
+      panels: [{ id: 'nav', collapsed, toggleAction: 'toggle-nav' }],
+    });
+    const first = root.querySelector<HTMLAnchorElement>('#a')!;
+    const calls: Array<FocusOptions | undefined> = [];
+    const focus = first.focus.bind(first);
+    first.focus = (options?: FocusOptions) => {
+      calls.push(options);
+      focus(options);
+    };
+    root
+      .querySelector<HTMLElement>('[data-action="toggle-nav"]')!
+      .dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    // The panel is still sliding in; a scrolling focus() would scroll its
+    // clipped content to the target and let the slide unwind it.
+    expect(calls).toEqual([{ preventScroll: true }]);
+    stop();
+  });
+
   it('seeds collapsed state from storage and persists changes', () => {
     const root = mount(false);
     const storage = fakeStorage({ 'sidebar.nav': 'true' });
