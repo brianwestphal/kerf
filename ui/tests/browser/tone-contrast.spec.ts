@@ -8,8 +8,9 @@ import { build } from 'esbuild';
 /** WCAG AA for body text; badge text and banner detail are small type. */
 const TEXT_AA = 4.5;
 /**
- * A placeholder skeleton inside a solid badge is a non-text loading shape, so
- * it is held to a regression floor rather than AA: the dark danger badge's
+ * A placeholder skeleton inside a solid badge is decorative loading chrome,
+ * deliberately exempt from the WCAG 3:1 non-text target (ui/docs/accessibility.md
+ * › Shared rules), so it is held to a regression floor rather than AA: the dark danger badge's
  * skeleton sat alone at 2.25:1 on a mid-red fill before the danger tone got
  * its own on-fill token. Each floor is the weakest tone's current value.
  */
