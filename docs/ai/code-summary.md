@@ -825,7 +825,9 @@ internal `ui/src/workbench-overlays.ts` (`wireWorkbenchOverlays`,
 `dismissOverlays` on by default): a panel collapses when its
 `responsiveOverlayAt` breakpoint begins to apply (a `ResizeObserver` on the
 Workbench plus a `MutationObserver` for late renders and presentation changes)
-and gets its inline state back when it ends, an open overlay closes on
+and gets its inline state back when it ends, an open overlay takes focus on
+its first control and keeps Tab inside it (the ARIA dialog pattern of
+`wireSidebar`'s compact overlay), it closes on
 Escape or an outside press, and opening an overlay closes the other open
 overlays (`exclusiveOverlays`, default on); focus stranded in any wired panel that closes,
 however it closed, returns to its opener, its restore control, or a control

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 290000,
-  "measuredLargestJavaScriptGzip": 141084,
-  "measuredTotalJavaScriptGzip": 289972,
+  "totalJavaScriptGzip": 290200,
+  "measuredLargestJavaScriptGzip": 141251,
+  "measuredTotalJavaScriptGzip": 290145,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -659,6 +659,22 @@
         "measuredTotalJavaScriptGzip": 289972,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 290000
+      }
+    },
+    {
+      "at": "2026-09-27T13:30:56.929Z",
+      "reason": "wireWorkbench overlay panels move focus in and keep Tab inside the open overlay (ARIA dialog pattern, matching wireSidebar's compact overlay)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 141084,
+        "measuredTotalJavaScriptGzip": 289972,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 290000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 141251,
+        "measuredTotalJavaScriptGzip": 290145,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 290200
       }
     }
   ]

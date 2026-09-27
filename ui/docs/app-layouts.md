@@ -119,8 +119,8 @@ device in tests.
   suspended on `compact`, where the rails become overlay drawers — or give each
   rail `responsiveOverlayAt: "narrow"` and let the Workbench's own width decide
   when it overlays, with no device check; pass each rail's `collapsed` signal
-  to `wireWorkbench` so the overlay starts collapsed and closes on Escape or an
-  outside press. Resizable
+  to `wireWorkbench` so the overlay starts collapsed, takes focus and keeps Tab
+  inside it while open, and closes on Escape or an outside press. Resizable
   rails leave the editor its `mainMinSize` (320px by default) and shrink in
   proportion when the window narrows.
 - **Social app (tabbed):** `TabScaffold` with Home / Search / Profile tabs, each

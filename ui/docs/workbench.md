@@ -148,7 +148,7 @@ const stop = wireWorkbench(root, {
     leftRail: {
       size: navSize,
       storageKey: "studio.nav-width",
-      collapsed: navCollapsed, // closes the overlay on Escape / outside press
+      collapsed: navCollapsed, // a transient overlay: takes focus, closes on Escape / outside press
     },
     bottomDrawer: { size: consoleSize, storageKey: "studio.console-height" },
   },
@@ -204,6 +204,14 @@ presents as one, mirroring `wireSidebar`'s compact overlay:
   nothing covers the work area until the user opens it. When the breakpoint
   stops applying (and on disposal) the remembered inline state comes back.
   These presentation changes skip the collapse motion.
+- **Focus moves in, and Tab stays in:** a panel that opens while it presents
+  as an overlay takes focus on its first focusable control (typically the
+  close control in its header), because it covers the work area and the
+  control that opened it. While it is open, Tab and Shift+Tab cycle through
+  its controls and never reach the covered work area; Escape, its own close
+  control, or an outside press leaves it. This is the ARIA dialog pattern
+  `wireSidebar`'s compact overlay follows. A panel opening inline never moves
+  focus.
 - **Escape** closes the open overlay panel that holds focus, else the most
   recently opened one. An Escape another handler already handled
   (`defaultPrevented`) is left alone.
@@ -213,7 +221,8 @@ presents as one, mirroring `wireSidebar`'s compact overlay:
   closes it.
 - **Focus:** when a panel closes with focus inside it — whatever closed it,
   including the app's own control inside the panel — focus returns to the
-  control that had it when the panel opened (typically its toggle), else to
+  control that had it when the panel opened (typically its toggle; one inside
+  another panel that has closed since is skipped), else to
   the first focusable control in the panel's `restoreControl`, else to a
   focusable control outside the panel whose `aria-controls` names the panel
   (or an element inside it). The last is what a panel already open at
@@ -279,7 +288,7 @@ Escape and outside-press dismissal apply to static `presentation: "overlay"`
 panels too; entering and leaving the collapsed state around a breakpoint is
 only for `responsiveOverlayAt`, because a static presentation is the app's
 choice. Inline panels are never touched. Pass `dismissOverlays: false` to
-leave every `collapsed` write to the app.
+leave every `collapsed` write, and all focus handling, to the app.
 
 Overlays are exclusive by default, like `wireSidebar`'s compact overlays:
 opening a panel while it presents as an overlay closes every other open
@@ -287,7 +296,9 @@ overlay panel, the bottom drawer included. At a narrow width two rails are
 wider than the Workbench, so without this the right rail would cover the
 navigator's own close control. Panels presenting inline are never closed by
 it, so a wide Workbench keeps both rails open. Pass `exclusiveOverlays: false`
-to let overlays stay open together; they then stack in the fixed order above.
+to let overlays stay open together; they then stack in the fixed order above,
+and Tab stays in the one that holds focus (else the most recently opened
+one).
 
 Where the browser supports `overflow-clip-margin`, the 20px hit target
 straddles the panel's separator line like a `ResizableRegion` handle;

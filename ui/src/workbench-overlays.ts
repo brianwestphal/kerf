@@ -1,7 +1,8 @@
 // The transient-overlay behavior `wireWorkbench` gives Workbench panels that
 // present as overlays: a responsive overlay starts collapsed when its
-// breakpoint begins to apply, and an open overlay closes on Escape or a press
-// outside it. It mirrors `wireSidebar`'s compact overlay. Internal.
+// breakpoint begins to apply, an open overlay takes focus and keeps Tab inside
+// it, and it closes on Escape or a press outside it. It mirrors `wireSidebar`'s
+// compact overlay (the ARIA dialog pattern). Internal.
 
 import { effect, type Signal } from 'kerfjs';
 
@@ -27,7 +28,22 @@ const RESTORE_PANELS: Record<WorkbenchPanelKey, string> = {
 };
 
 const FOCUSABLE =
-  'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+  'a[href],area[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
+/**
+ * The panel's focusable controls, in tab order. Only an open panel is ever
+ * asked. The selector drops disabled controls and `tabindex="-1"`; a
+ * rendered control the CSS hides (the separator of a panel whose responsive
+ * overlay breakpoint applies is `display: none`) is dropped too, or Tab would
+ * wrap from a control focus can never reach. Where `checkVisibility` is
+ * missing, every matched control counts.
+ */
+const focusables = (element: HTMLElement): HTMLElement[] =>
+  [...element.querySelectorAll<HTMLElement>(FOCUSABLE)].filter(
+    (control) =>
+      typeof control.checkVisibility !== 'function' ||
+      control.checkVisibility(),
+  );
 
 /**
  * Wire transient overlay behavior for the given panels of the Workbench that
@@ -41,6 +57,13 @@ const FOCUSABLE =
  *   until the user opens it. When the breakpoint stops applying (or on
  *   disposal) the remembered state comes back. These presentation changes
  *   skip the collapse motion.
+ * - A panel that opens while it presents as an overlay takes focus: its
+ *   first focusable control (else the panel itself) is focused, without
+ *   scrolling its sliding content. While an overlay is open, Tab and
+ *   Shift+Tab cycle through the controls of the overlay that holds focus
+ *   (else the most recently opened one) and never reach the work area it
+ *   covers — the ARIA dialog pattern `wireSidebar`'s compact overlay follows.
+ *   Inline panels are left alone.
  * - Escape closes the open overlay panel that holds focus, else the most
  *   recently opened one; a press that starts and ends outside an open overlay
  *   panel closes it. Static `presentation: "overlay"` panels are included.
@@ -86,7 +109,17 @@ export function wireWorkbenchOverlays(
     element: HTMLElement | null,
   ): HTMLElement | undefined => {
     const opener = openers.get(panel);
-    if (opener?.isConnected && !element?.contains(opener)) return opener;
+    // An opener inside another panel that has closed since (an exclusive
+    // overlay closes the one it was opened from) would strand focus there too.
+    if (
+      opener?.isConnected &&
+      !element?.contains(opener) &&
+      !panels.some(
+        (other) =>
+          other.collapsed.peek() && panelElement(other)?.contains(opener),
+      )
+    )
+      return opener;
     const side = RESTORE_PANELS[panel.key];
     const restore = findWorkbench()
       ?.querySelector<HTMLElement>(
@@ -244,11 +277,18 @@ export function wireWorkbenchOverlays(
         )
           openers.set(panel, active);
         else openers.delete(panel);
-        // Opening an overlay closes the others, whose collapse effects then
-        // return any focus left in them.
-        if (exclusive && element && overlaid(element))
+        if (!element || !overlaid(element)) return;
+        // Opening an overlay closes the others. Their collapse effects run
+        // after this one, by which time focus has moved into this panel, so
+        // none of them hands it back to an opener.
+        if (exclusive)
           for (const [other] of openOverlays())
             if (other !== panel) other.collapsed.value = true;
+        // An overlay covers the work area, so focus moves in with it rather
+        // than staying on a control it may cover. Without preventScroll the
+        // browser scrolls the panel's clipped, still-sliding content to reveal
+        // the target, which then unwinds as the slide finishes.
+        (focusables(element)[0] ?? element).focus({ preventScroll: true });
       }),
     );
   }
@@ -263,16 +303,38 @@ export function wireWorkbenchOverlays(
     });
 
   const onKeydown = (event: KeyboardEvent): void => {
-    if (event.key !== 'Escape' || event.defaultPrevented) return;
+    if (
+      (event.key !== 'Escape' && event.key !== 'Tab') ||
+      event.defaultPrevented
+    )
+      return;
     const open = openOverlays();
     if (open.length === 0) return;
     const active = ownerDocument.activeElement;
-    const target =
-      open.find(([, element]) => element.contains(active)) ??
+    const [panel, element] =
+      open.find(([, candidate]) => candidate.contains(active)) ??
       open[open.length - 1]!;
-    event.preventDefault();
-    // The collapse effect returns focus stranded inside it.
-    target[0].collapsed.value = true;
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      // The collapse effect returns focus stranded inside it.
+      panel.collapsed.value = true;
+      return;
+    }
+    // Tab stays inside the open overlay: it wraps at either end, and focus
+    // that is somewhere else (the app moved it, or the panel had no control
+    // to take it when it opened) comes back in.
+    const items = focusables(element);
+    if (items.length === 0) return;
+    const first = items[0]!;
+    const last = items[items.length - 1]!;
+    const inside = element.contains(active);
+    if (event.shiftKey && (!inside || active === first)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (!inside || active === last)) {
+      event.preventDefault();
+      first.focus();
+    }
   };
 
   // An outside press closes an open overlay when it both starts and ends

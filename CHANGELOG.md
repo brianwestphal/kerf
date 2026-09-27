@@ -34,6 +34,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   inside the work area's own content, does not move it. This uses CSS anchor
   positioning; engines without it keep the container corner.
 
+- **`@kerfjs/ui` `wireWorkbench` overlay panels now take focus and keep Tab
+  inside them,** like `wireSidebar`'s compact overlay (the ARIA dialog
+  pattern). An open overlay covers the work area, yet focus stayed on the
+  control that opened it and Tab walked through the covered editor. A wired
+  panel that opens while it presents as an overlay now focuses its first
+  focusable control (usually the close control in its header); while it is
+  open, Tab and Shift+Tab cycle through its controls, and Escape, its own
+  close control, or an outside press leaves it, returning focus to the
+  opener. Panels opening inline never move focus. Focus returned on close
+  also skips an opener inside another panel that has closed since.
+  `dismissOverlays: false` leaves all of this to the app.
 - The `@kerfjs/ui` heading guidance (`ai/skill.md`, `llms.txt`,
   `docs/component-selection.md`, `docs/layout.md`) now sizes a panel title to
   its track: extra-large `ToolbarText` stays the title size for a page, view,

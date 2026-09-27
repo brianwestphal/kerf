@@ -620,6 +620,75 @@ test.describe('resizable Workbench panels', () => {
     await expect(showInspector).toBeFocused();
   });
 
+  test('an open overlay rail takes focus and keeps Tab inside it; an inline rail does not', async ({
+    page,
+  }, testInfo) => {
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const left = workbench.locator('[data-workbench-rail="left"]');
+    const toolbar = workbench.locator('.kui-workbench__main');
+    const toggle = toolbar.getByRole('button', { name: /navigator$/ });
+    await workbench.scrollIntoViewIfNeeded();
+
+    // Wide, the rail is inline: showing it leaves focus on the toggle.
+    await toggle.focus();
+    await page.keyboard.press('Enter');
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+    await page.keyboard.press('Enter');
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    await expect(toggle).toBeFocused();
+
+    // Narrow, it is an overlay over the editor: focus moves to its first
+    // control, the header's own close control.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+    await workbench.scrollIntoViewIfNeeded();
+    await toggle.focus();
+    await page.keyboard.press('Enter');
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    const close = left.getByRole('button', { name: 'Hide navigator' });
+    await expect(close).toBeFocused();
+    await expect(close).toBeInViewport();
+    // The rail's content never scrolled to reveal it mid-slide.
+    expect(
+      await left
+        .locator('.kui-workbench__panel-content')
+        .evaluate((content) => content.parentElement!.scrollLeft),
+    ).toBe(0);
+    if (testInfo.project.name === 'chromium')
+      await workbench.screenshot({
+        path: 'test-results/workbench-overlay-focus-in.png',
+      });
+
+    // Tab and Shift+Tab cycle inside the rail and never reach the editor it
+    // covers.
+    const count = await left.evaluate(
+      (rail) =>
+        rail.querySelectorAll(
+          'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])',
+        ).length,
+    );
+    const insideRail = () =>
+      page.evaluate(
+        () =>
+          document.activeElement?.closest('[data-workbench-rail="left"]') !==
+          null,
+      );
+    for (let step = 0; step < count + 2; step += 1) {
+      await page.keyboard.press('Tab');
+      expect(await insideRail()).toBe(true);
+    }
+    for (let step = 0; step < count + 2; step += 1) {
+      await page.keyboard.press('Shift+Tab');
+      expect(await insideRail()).toBe(true);
+    }
+
+    // Escape closes it and returns focus to the toggle that opened it.
+    await page.keyboard.press('Escape');
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+    await expect(toggle).toBeFocused();
+    await expect(toggle).toHaveAccessibleName('Show navigator');
+  });
+
   test('overlay rails stack above an overlay drawer, the right rail above the left', async ({
     page,
   }, testInfo) => {

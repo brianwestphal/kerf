@@ -38,8 +38,8 @@ export interface WireWorkbenchPanel {
    * `dismissOverlays`, on by default) `wireWorkbench` treats the panel as a
    * transient overlay while it presents as one: it collapses when its
    * `responsiveOverlayAt` breakpoint begins to apply and gets its inline state
-   * back when the breakpoint stops applying, and an open overlay closes on
-   * Escape or a press outside it.
+   * back when the breakpoint stops applying, an open overlay takes focus and
+   * keeps Tab inside it, and it closes on Escape or a press outside it.
    */
   collapsed?: Signal<boolean>;
 }
@@ -80,13 +80,18 @@ export interface WireWorkbenchOptions {
    * starts collapsed, with no collapse motion, and gets its inline collapsed
    * state back when the breakpoint stops applying (and on disposal); an open
    * overlay panel, responsive or `presentation: "overlay"`, closes on Escape
-   * or a press that starts and ends outside it. Focus stranded in a closing
+   * or a press that starts and ends outside it. A panel that opens as an
+   * overlay takes focus on its first focusable control, and while it is open
+   * Tab and Shift+Tab cycle through its controls instead of reaching the
+   * work area it covers (the ARIA dialog pattern of `wireSidebar`'s compact
+   * overlay); inline panels never move focus. Focus stranded in a closing
    * panel — however it closed, the app's own control inside it included —
    * returns to the control that had it when the panel opened, else to the
    * panel's restore control, else to a control outside the panel whose
    * `aria-controls` names it (each panel's `id` is its region id, e.g.
    * `studio-left-rail`) — the fallback for a panel already open at wire-up.
-   * `false` leaves every `collapsed` write to the app.
+   * An opener inside a panel that has closed since is skipped. `false` leaves
+   * every `collapsed` write and all focus handling to the app.
    */
   dismissOverlays?: boolean;
   /**
@@ -166,7 +171,8 @@ const mainRoomLimit: ResizeLimit = (region, { max }) => {
  * suspends resizing on compact classes. Collapse stays the app's `collapsed`
  * flag and never changes a size. For panels given a `collapsed` signal,
  * overlays are transient (`dismissOverlays`): a responsive overlay starts
- * collapsed, an open overlay closes on Escape or an outside press, and
+ * collapsed, an open overlay takes focus and keeps Tab inside it, it closes
+ * on Escape or an outside press, and
  * opening one overlay closes the others (`exclusiveOverlays`). Returns a disposer. See `docs/23-app-layouts.md` §3.3.
  */
 export function wireWorkbench(

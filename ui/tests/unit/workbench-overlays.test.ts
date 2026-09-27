@@ -86,6 +86,8 @@ interface StudioOptions {
   render?: boolean;
   /** Render the app's toggles with `aria-controls` naming their panels. */
   controls?: boolean;
+  /** Render the console with no focusable control of its own. */
+  bareConsole?: boolean;
 }
 
 /** A mounted Workbench whose panels' collapsed flags are app-owned signals. */
@@ -94,6 +96,7 @@ function studio({
   rightPresentation = 'inline',
   render = true,
   controls = false,
+  bareConsole = false,
 }: StudioOptions = {}) {
   const root = document.createElement('div');
   document.body.append(root);
@@ -139,7 +142,9 @@ function studio({
             ),
           },
           bottomDrawer: {
-            content: panelContent('console'),
+            content: bareConsole
+              ? raw('<div id="console-body">Build log</div>')
+              : panelContent('console'),
             label: 'Console',
             collapsed: drawer.value,
             responsiveOverlayAt: at,
@@ -424,7 +429,7 @@ describe('wireWorkbench transient overlays', () => {
     expect(escape().defaultPrevented).toBe(false);
   });
 
-  it('keeps overlays exclusive: opening one closes the other open overlays', () => {
+  it('keeps overlays exclusive: opening one closes the other open overlays', async () => {
     const app = studio({ rightPresentation: 'overlay' });
     narrow = true;
     app.wire();
@@ -445,7 +450,8 @@ describe('wireWorkbench transient overlays', () => {
     expect(app.drawer.value).toBe(true);
     expect(app.left.value).toBe(true);
 
-    // Focus left in the overlay that closed returns to its opener.
+    // Focus moves into the overlay that opens, so none is left in the one
+    // that closed; closing the new one skips an opener inside the closed one.
     const opener = app.button('Show nav');
     opener.focus();
     app.left.value = false;
@@ -453,7 +459,10 @@ describe('wireWorkbench transient overlays', () => {
     app.button('nav item').focus();
     app.right.value = false;
     expect(app.left.value).toBe(true);
-    expect(document.activeElement).toBe(opener);
+    expect(document.activeElement?.textContent).toBe('Close inspector');
+    app.right.value = true;
+    await Promise.resolve();
+    expect(document.activeElement?.hasAttribute('data-restore')).toBe(true);
 
     // Inline panels are never closed by it: wide, the navigator and drawer
     // are inline and stay open while the static overlay inspector opens.
@@ -468,6 +477,145 @@ describe('wireWorkbench transient overlays', () => {
     app.left.value = true;
     app.left.value = false;
     expect(app.right.value).toBe(false);
+  });
+
+  it('moves focus into an overlay that opens, never into an inline panel', () => {
+    const app = studio({ rightPresentation: 'overlay', bareConsole: true });
+    app.wire();
+    const focus = vi.spyOn(HTMLElement.prototype, 'focus');
+
+    // Wide: the navigator opens inline and focus stays on its toggle.
+    app.left.value = true;
+    const hideNav = app.button('Show nav');
+    hideNav.focus();
+    hideNav.click();
+    expect(app.left.value).toBe(false);
+    expect(document.activeElement).toBe(hideNav);
+
+    // The static overlay inspector takes focus on its first control, without
+    // scrolling its sliding content, and Escape hands it back to the toggle.
+    const showInspector = app.button('Show inspector');
+    showInspector.focus();
+    focus.mockClear();
+    showInspector.click();
+    expect(document.activeElement?.textContent).toBe('Close inspector');
+    expect(focus).toHaveBeenLastCalledWith({ preventScroll: true });
+    escape();
+    expect(document.activeElement).toBe(showInspector);
+
+    // Narrow: the responsive navigator is an overlay now, so it takes focus.
+    resize(true);
+    expect(app.left.value).toBe(true);
+    app.button('Show nav').focus();
+    app.button('Show nav').click();
+    expect(document.activeElement?.textContent).toBe('Close nav');
+
+    // A panel with no control of its own is focused itself.
+    app.left.value = true;
+    app.button('Plain').focus();
+    focus.mockClear();
+    app.drawer.value = false;
+    expect(focus.mock.contexts.at(-1)).toBe(app.drawerPanel());
+  });
+
+  it('keeps Tab inside the open overlay, wrapping at either end', () => {
+    const app = studio({ rightPresentation: 'overlay', bareConsole: true });
+    narrow = true;
+    app.wire({ exclusiveOverlays: false });
+    const tab = (shiftKey = false) => {
+      const event = new KeyboardEvent('keydown', {
+        key: 'Tab',
+        shiftKey,
+        bubbles: true,
+        cancelable: true,
+      });
+      (document.activeElement ?? document.body).dispatchEvent(event);
+      return event;
+    };
+
+    // Nothing open: Tab passes through.
+    app.button('Plain').focus();
+    expect(tab().defaultPrevented).toBe(false);
+
+    app.button('Show nav').click();
+    expect(document.activeElement?.textContent).toBe('Close nav');
+    // Inside the panel, Tab moves on natively until the last control, which
+    // wraps to the first; Shift+Tab on the first wraps to the last.
+    expect(tab().defaultPrevented).toBe(false);
+    app.button('nav item').focus();
+    expect(tab().defaultPrevented).toBe(true);
+    expect(document.activeElement?.textContent).toBe('Close nav');
+    expect(tab(true).defaultPrevented).toBe(true);
+    expect(document.activeElement?.textContent).toBe('nav item');
+    expect(tab(true).defaultPrevented).toBe(false);
+
+    // Focus the app moved outside comes back in, at the matching end.
+    app.button('Plain').focus();
+    expect(tab().defaultPrevented).toBe(true);
+    expect(document.activeElement?.textContent).toBe('Close nav');
+    app.button('Plain').focus();
+    tab(true);
+    expect(document.activeElement?.textContent).toBe('nav item');
+
+    // Two open overlays: Tab stays in the one holding focus, else it goes to
+    // the most recently opened one.
+    app.right.value = false;
+    expect(document.activeElement?.textContent).toBe('Close inspector');
+    app.button('nav item').focus();
+    tab();
+    expect(document.activeElement?.textContent).toBe('Close nav');
+    app.button('Plain').focus();
+    tab();
+    expect(document.activeElement?.textContent).toBe('Close inspector');
+
+    // A Tab another handler took is left alone.
+    app.button('inspector item').focus();
+    const handled = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      bubbles: true,
+      cancelable: true,
+    });
+    handled.preventDefault();
+    document.activeElement!.dispatchEvent(handled);
+    expect(document.activeElement?.textContent).toBe('inspector item');
+
+    // An overlay with no focusable control does not trap.
+    app.right.value = true;
+    app.left.value = true;
+    app.drawer.value = false;
+    app.button('Plain').focus();
+    expect(tab().defaultPrevented).toBe(false);
+  });
+
+  it('skips a control the CSS hides when it wraps Tab', () => {
+    const app = studio();
+    narrow = true;
+    app.wire();
+    app.button('Show nav').click();
+    // A trailing control that is rendered but not displayed, like the
+    // separator of a responsive overlay.
+    const hidden = document.createElement('button');
+    hidden.textContent = 'hidden';
+    hidden.style.display = 'none';
+    app.leftRail().append(hidden);
+    const tab = () => {
+      const event = new KeyboardEvent('keydown', {
+        key: 'Tab',
+        bubbles: true,
+        cancelable: true,
+      });
+      document.activeElement!.dispatchEvent(event);
+      return event;
+    };
+    app.button('nav item').focus();
+    expect(tab().defaultPrevented).toBe(true);
+    expect(document.activeElement?.textContent).toBe('Close nav');
+
+    // Without checkVisibility every matched control counts.
+    for (const button of app.leftRail().querySelectorAll('button'))
+      Object.defineProperty(button, 'checkVisibility', { value: undefined });
+    app.button('nav item').focus();
+    expect(tab().defaultPrevented).toBe(false);
   });
 
   it('with exclusiveOverlays false lets overlays stay open together', () => {
@@ -584,7 +732,7 @@ describe('wireWorkbench transient overlays', () => {
     expect(document.activeElement?.hasAttribute('data-late')).toBe(true);
     late.remove();
 
-    // Reopened before the look: focus stays where the user put it.
+    // Reopened before the look: focus stays in the reopened panel.
     (document.activeElement as HTMLElement | null)?.blur();
     app.drawer.value = false;
     app.button('console item').focus();
@@ -592,7 +740,7 @@ describe('wireWorkbench transient overlays', () => {
     app.drawer.value = false;
     lateRestore();
     await Promise.resolve();
-    expect(document.activeElement?.textContent).toBe('console item');
+    expect(document.activeElement?.textContent).toBe('Close console');
     workbench.querySelector('[data-late]')!.parentElement!.remove();
 
     // Nothing to return to: focus leaves the hidden panel.

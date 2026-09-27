@@ -342,6 +342,27 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
     wide Workbench keeps both rails open. It is part of the overlay wiring, so
     it applies only with `dismissOverlays`; `false` restores simultaneous
     overlays, which then stack in the fixed order below;
+  - overlay focus (KF-Q7AN1Z: overlays dismissed and returned focus but left
+    it on the covered toggle, and Tab walked into the work area the overlay
+    covers). Decided to match `wireSidebar`'s compact overlay — the ARIA
+    dialog pattern — rather than stay non-modal: an overlay covers the work
+    area, so a keyboard user left behind it tabs through controls they cannot
+    see (WCAG 2.4.11, focus not obscured), and the two collapsible-panel
+    wires should behave alike. A wired panel that opens while it presents as
+    an overlay moves focus to its first focusable control (else the panel
+    element), with `preventScroll` so the clipped, sliding content is not
+    scrolled; the opener is recorded first, and exclusive closes of other
+    overlays run after the focus move, so none of them hands focus back. A
+    document `keydown` listener (skipping `defaultPrevented`) keeps Tab and
+    Shift+Tab inside the open overlay that holds focus, else the most
+    recently opened one: it wraps at either end and pulls focus that is
+    elsewhere back in. Its focusable list drops `display: none` controls via
+    `checkVisibility()` (a responsive overlay's separator is rendered with
+    `tabindex="0"` but hidden by the container query). Inline panels never
+    move focus. Returning focus on close skips an opener inside another wired
+    panel that has closed since (an exclusive overlay opened from inside the
+    one it closed), falling through to the restore control and the
+    `aria-controls` toggle;
   - overlay stacking order (KF-3FM7G6: with the drawer and a rail both
     overlays, their order followed document order, so the drawer covered the
     left rail while the right rail covered the drawer): both rails stack above
@@ -400,7 +421,7 @@ Shipped shape:
   leftRail={{ content: <Nav />, label: "Navigator", size: navSize.value, resizable: { min: 200, max: 420 }, responsiveOverlayAt: "narrow" }}
 />
 // once: wireWorkbench(root, { id: "ide", panels: { leftRail: { size: navSize, storageKey: "ide.nav", collapsed: leftCollapsed } }, deviceClass: device });
-// a panel given `collapsed` is a transient overlay: collapsed on entering its breakpoint, closed by Escape / an outside press
+// a panel given `collapsed` is a transient overlay: collapsed on entering its breakpoint, takes focus and keeps Tab inside while open, closed by Escape / an outside press
 // the editor keeps 320px by default; mainMinSize={400} asks for more, 0 turns it off
 ```
 
