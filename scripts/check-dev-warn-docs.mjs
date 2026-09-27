@@ -119,8 +119,12 @@ headingNumbers.forEach((num, i) => {
 const canonicalDiagnosticHeadings = [
   ...doc.matchAll(/^### 11\.2\.\d+ (.+)$/gm),
 ].map((m) => m[1]);
+// A published heading may start with an empty `<span id="…"></span>` that
+// keeps an older anchor working after a retitle; compare the visible text.
 const publishedHeadings = new Set(
-  [...publishedDoc.matchAll(/^### (.+)$/gm)].map((m) => m[1]),
+  [...publishedDoc.matchAll(/^### (.+)$/gm)].map((m) =>
+    m[1].replace(/^<span id="[^"]*"><\/span>/, ''),
+  ),
 );
 for (const heading of canonicalDiagnosticHeadings) {
   if (!publishedHeadings.has(heading)) {

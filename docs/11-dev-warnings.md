@@ -72,7 +72,9 @@ information no static checker has.
 
 ## 11.2 The warning family
 
-### 11.2.1 `KERF_DEV_WARN_REBUILT_LISTENERS=1` (Rule 4)
+### 11.2.1 `rebuiltListeners` (Rule 4)
+
+**Switch:** `enableWarnings({ rebuiltListeners: true })` · env fallback `KERF_DEV_WARN_REBUILT_LISTENERS=1`
 
 **Module:** [`src/dev-listener-warn.ts`](../src/dev-listener-warn.ts).
 **Trigger:** a node carrying an imperative `addEventListener` listener is
@@ -99,7 +101,9 @@ correctly. False-positive surface includes custom elements that attach
 listeners in their constructor and library-owned subtrees the consumer
 forgot to wrap in `data-morph-skip`.
 
-### 11.2.2 `KERF_DEV_WARN_UNTRACKED_SIGNALS=1` (Rule 8)
+### 11.2.2 `untrackedSignals` (Rule 8)
+
+**Switch:** `enableWarnings({ untrackedSignals: true })` · env fallback `KERF_DEV_WARN_UNTRACKED_SIGNALS=1`
 
 **Module:** [`src/dev-signal.ts`](../src/dev-signal.ts).
 **Trigger:** a signal's `.value` is written when no subscriber has ever
@@ -151,7 +155,9 @@ exactly the coupling the hook registry exists to avoid. The
 non-configurability is asserted by a test, so if signals-core ever relaxes
 it the better fix becomes available and the suite says so.
 
-### 11.2.3 `KERF_DEV_WARN_NARROW_SET=1` (Rule 9)
+### 11.2.3 `narrowSet` (Rule 9)
+
+**Switch:** `enableWarnings({ narrowSet: true })` · env fallback `KERF_DEV_WARN_NARROW_SET=1`
 
 **Module:** [`src/dev-store-warn.ts`](../src/dev-store-warn.ts).
 **Trigger:** `defineStore.set(next)` is called with at least one key from
@@ -188,7 +194,9 @@ intentionally.
 is missing in next"; key-count is just an implementation detail that
 would have missed same-count-different-keys cases.
 
-### 11.2.4 `KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1`
+### 11.2.4 `duplicateEachKeys`
+
+**Switch:** `enableWarnings({ duplicateEachKeys: true })` · env fallback `KERF_DEV_WARN_DUPLICATE_EACH_KEYS=1`
 
 **Module:** [`src/dev-each-warn.ts`](../src/dev-each-warn.ts).
 **Trigger:** `eachSnapshotById` (the core render path of `each()`) discovers that two or more items in the same list produce the same value from the `cacheKey` function. Only fires when a `cacheKey` function was actually provided (if no third arg is passed to `each()`, the check is skipped entirely).
@@ -201,7 +209,9 @@ would have missed same-count-different-keys cases.
 
 **Why opt-in.** Duplicate cacheKey values are not a correctness bug — they're a code-smell. Projects that intentionally use a coarse cacheKey (e.g. grouping rows by type so a type change invalidates the whole group) would see spurious warnings.
 
-### 11.2.5 `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1`
+### 11.2.5 `eachInMorphSkip`
+
+**Switch:** `enableWarnings({ eachInMorphSkip: true })` · env fallback `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1`
 
 **Module:** [`src/dev-each-warn.ts`](../src/dev-each-warn.ts).
 **Trigger:** `bindListsFromMarkers` (called by `mount()` on every first-render or newly-appearing list) discovers that a new list binding's `liveParent` has a `data-morph-skip` ancestor between it and the mount `rootEl`. **What it catches:** the asymmetric-freeze pattern — `each()` rows inside a `data-morph-skip` subtree still update (the keyed reconciler operates directly on the live parent independently of the morph), but static signal-reactive JSX inside the same skipped ancestor is frozen because the morph short-circuits before visiting that element's children.
@@ -212,7 +222,9 @@ would have missed same-count-different-keys cases.
 
 **Why opt-in.** Placing an `each()` list inside a library-owned `data-morph-skip` element is uncommon but occasionally intentional (e.g., the library provides the host while kerf manages the rows). The warning would fire on every such legitimately-structured mount otherwise.
 
-### 11.2.6 `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1`
+### 11.2.6 `delegateInEffect`
+
+**Switch:** `enableWarnings({ delegateInEffect: true })` · env fallback `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1`
 
 **Module:** [`src/dev-delegate-warn.ts`](../src/dev-delegate-warn.ts).
 **Trigger:** `delegate()` or `delegateCapture()` is called while the call stack is inside an `effect()` body. **What it catches:** the listener-stacking pattern documented in `docs/5-event-delegation.md` §5.3 "When capturing the disposer still isn't enough" — every effect re-run executes its body fresh, so a `delegate()` call inside the body installs a NEW root listener on each re-run. The effect's disposer cleans up the reactive subscription but not the side-effects the body produced, so previous listeners stay attached, the per-listener closures pin `rootEl` / `handler` / everything the handler closes over, and listener count grows linearly with signal churn.
@@ -223,7 +235,9 @@ would have missed same-count-different-keys cases.
 
 **Why opt-in.** No realistic kerf code legitimately calls `delegate()` inside an `effect()` body — but the wrap of `effect()` itself adds a microscopic call-frame overhead, so the bare `coreEffect` re-export stays the default path when the warning switch is off. A production bundle that omits `kerfjs/dev` cannot reach the wrapper at all; `NODE_ENV` is not consulted.
 
-### 11.2.7 `KERF_DEV_WARN_STALE_BINDING=1`
+### 11.2.7 `staleBinding`
+
+**Switch:** `enableWarnings({ staleBinding: true })` · env fallback `KERF_DEV_WARN_STALE_BINDING=1`
 
 **Module:** [`src/dev-binding-warn.ts`](../src/dev-binding-warn.ts).
 **Trigger:** `mount()` takes its fast path (a re-render whose static-surrounds
@@ -260,7 +274,9 @@ without penalising projects that pass a fresh inline computed into a global
 hole. (Row holes inside `each()` are wired per-row-node and disposed on row
 removal, so they never reach this warner.)
 
-### 11.2.8 `KERF_DEV_WARN_VALUE_ONLY_RERENDER=1`
+### 11.2.8 `valueOnlyRerender`
+
+**Switch:** `enableWarnings({ valueOnlyRerender: true })` · env fallback `KERF_DEV_WARN_VALUE_ONLY_RERENDER=1`
 
 **Module:** [`src/dev-rerender-warn.ts`](../src/dev-rerender-warn.ts).
 **Trigger:** a `mount()` re-render whose static-surrounds HTML _changed_ (the byte-compare failed, so the full morph pass runs) but where every difference is confined to **text content and attribute values** — no element added, removed, moved, or retagged.
@@ -272,7 +288,9 @@ removal, so they never reach this warner.)
 
 **Why opt-in.** Re-rendering on `.value` reads is _correct_ — this is a migration aid for adopting the bound-first idiom, not a lint on broken code. The parse-and-compare also has real (dev-only) cost, so it runs only when asked, and only on the already-slow surrounds-changed path; the per-warning switch short-circuits everything else.
 
-### 11.2.9 `KERF_DEV_WARN_LIST_REBIND=1`
+### 11.2.9 `listRebind`
+
+**Switch:** `enableWarnings({ listRebind: true })` · env fallback `KERF_DEV_WARN_LIST_REBIND=1`
 
 **Module:** [`src/dev-list-rebind-warn.ts`](../src/dev-list-rebind-warn.ts).
 **Trigger:** `bindListsFromMarkers` takes its **self-heal branch** — a list
@@ -317,7 +335,9 @@ element changes driven by state — and the rebuild-with-repopulate behavior is
 then exactly what the author wants. The opt-in keeps the diagnostic available
 for projects that want it without penalising that pattern.
 
-### 11.2.10 `KERF_DEV_WARN_STALE_INDEX=1`
+### 11.2.10 `staleIndex`
+
+**Switch:** `enableWarnings({ staleIndex: true })` · env fallback `KERF_DEV_WARN_STALE_INDEX=1`
 
 **Module:** [`src/dev-list-index-warn.ts`](../src/dev-list-index-warn.ts).
 **Trigger:** an `each()` reconcile reuses a memoized row at an index different from
@@ -358,7 +378,9 @@ a structural change), which a list whose index only labels never-reordered rows
 should not pay. Opt-in keeps the diagnostic available without penalising either
 shape.
 
-### 11.2.11 Parser repairs (`KERF_DEV_WARN_PARSER_REPAIR=1`)
+### 11.2.11 Parser repairs (`parserRepair`)
+
+**Switch:** `enableWarnings({ parserRepair: true })` · env fallback `KERF_DEV_WARN_PARSER_REPAIR=1`
 
 **Module:** [`src/dev-parser-repair-warn.ts`](../src/dev-parser-repair-warn.ts), called from [`src/mount.ts`](../src/mount.ts) on first render.
 **Trigger:** the rendered markup puts a block-level element inside a `<p>`. **What it catches:** the structure you wrote silently not being the structure you get.
@@ -472,7 +494,9 @@ but remains unreachable when `kerfjs/dev` is not imported.
 
 **Like the double-mount guard, this is always-on (unconditional), not opt-in** — there is no env var to silence it, only the mode split. A dropped-but-silent dangerous URL in dev is the exact failure mode the throw fixes (nobody reads the console; the attribute just quietly vanishes). Production keeps the non-crashing warn+drop so attacker-influenced data can never take down a shipped app — **production output is byte-identical to before this split.** This is the one place kerf changes behavior between dev and prod for the _same_ input; it's justified because the dev throw only ever fires on input a correct app would never produce (a dangerous URL that isn't wrapped in `raw()`).
 
-### 11.2.16 Structural invariant checks (`KERF_DEV_INVARIANTS`)
+### 11.2.16 Structural invariant checks (`invariants`)
+
+**Switch:** `enableWarnings({ invariants: true })` (warn) or `enableWarnings({ invariants: 'throw' })` · env fallback `KERF_DEV_INVARIANTS=1` / `=throw`
 
 **Module:** [`src/dev-invariants.ts`](../src/dev-invariants.ts), called from [`src/mount.ts`](../src/mount.ts) after each render's reconcile pass.
 **Trigger:** a list binding disagrees with the live DOM. **What it catches:** the _state_ that precedes a wrong render, at the render that created it.
