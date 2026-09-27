@@ -27,8 +27,10 @@ test('a popover opened from inside a native kerf modal <dialog> is clickable, fo
     const w = window as any;
     w._picked = 0;
     w._dialog = overlay(
-      // Explicit tabindex: WebKit on macOS skips implicitly tabbable buttons
-      // unless the system keyboard-navigation preference is on.
+      // Explicit tabindex on the dialog's own buttons: WebKit on macOS skips
+      // implicitly tabbable buttons unless the system keyboard-navigation
+      // preference is on. The popover's `#pick` deliberately has none — kerf
+      // makes a slot-hosted surface's stops explicit itself.
       raw(
         '<button id="first" tabindex="0">first</button><button id="open" tabindex="0">open</button>',
       ),
@@ -36,7 +38,7 @@ test('a popover opened from inside a native kerf modal <dialog> is clickable, fo
     );
     w._pop = popover(
       document.getElementById('open'),
-      raw('<button id="pick" tabindex="0">pick</button>'),
+      raw('<button id="pick">pick</button>'),
       { className: 'menu', dismiss: ['escape', 'outside'] },
     );
     document
@@ -131,6 +133,10 @@ test('an app-owned, kerf-mounted modal <dialog> opts in with a data-kerf-overlay
 
   await page.locator('#pick').click();
   expect(await page.evaluate(() => (window as any)._picked)).toBe(1);
+  // Tab-reachable without an authored tabindex, in every engine.
+  await page.locator('#open').focus();
+  await page.keyboard.press('Tab');
+  expect(await page.evaluate(() => document.activeElement?.id)).toBe('pick');
   expect(
     await page
       .locator('.menu')

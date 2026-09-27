@@ -152,7 +152,10 @@ const BUDGETS = [
     // KF-AHY6H4 (+0.10 KB): one document capture `toggle` listener, installed
     // only while a kerf surface is open, re-hosts showing surfaces above an
     // app-owned modal <dialog> opened outside kerf.
-    budgetKb: 18.2,
+    // KF-QZ9SFG (~+0.03 KB): a slot-hosted surface's implicitly tabbable
+    // controls become explicit Tab stops (on open + a Tab keydown listener),
+    // so macOS WebKit reaches them in the modal's native Tab order.
+    budgetKb: 18.3,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

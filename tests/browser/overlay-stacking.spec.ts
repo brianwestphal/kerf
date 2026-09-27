@@ -30,7 +30,12 @@ for (const native of [false, true]) {
       const { overlay, tooltip } = (window as any).kerfOverlay;
       const { raw } = (window as any).jsxRuntime;
       (window as any)._modal = overlay(
-        raw('<button id="m1">one</button><button id="m2">two</button>'),
+        // Explicit tabindex: WebKit on macOS skips implicitly tabbable buttons
+        // unless the system keyboard-navigation preference is on, and a native
+        // <dialog> leaves Tab order to the engine (kerf's trap is not in play).
+        raw(
+          '<button id="m1" tabindex="0">one</button><button id="m2" tabindex="0">two</button>',
+        ),
         { className: 'stack-modal', native, initialFocus: '#m1' },
       );
       // A focus-triggered tooltip on the first control shows immediately.
@@ -71,11 +76,17 @@ test('fallback modal beneath a native <dialog>: one Escape closes only the dialo
       className: 'low-modal',
       initialFocus: '#low',
     });
-    overlay(raw('<button id="d1">d1</button><button id="d2">d2</button>'), {
-      className: 'top-dialog',
-      native: true,
-      initialFocus: '#d1',
-    });
+    overlay(
+      // Explicit tabindex for macOS WebKit (see the first test above).
+      raw(
+        '<button id="d1" tabindex="0">d1</button><button id="d2" tabindex="0">d2</button>',
+      ),
+      {
+        className: 'top-dialog',
+        native: true,
+        initialFocus: '#d1',
+      },
+    );
   });
 
   // The fallback modal's trap must not hijack the dialog's own Tab order.

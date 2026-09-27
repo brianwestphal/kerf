@@ -178,6 +178,79 @@ describe('a popover anchored inside a modal <dialog> kerf opened', () => {
   });
 });
 
+describe("a slot-hosted surface's controls are Tab-reachable", () => {
+  // WebKit on macOS skips implicitly tabbable controls unless the system
+  // keyboard-navigation preference is on; a slot-hosted popover sits in the
+  // modal's own Tab order, so kerf makes its stops explicit (as its focus trap
+  // does), preserving authored tabindexes.
+  const tab = () =>
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }),
+    );
+
+  it('makes implicit stops explicit on open and preserves authored tabindexes', () => {
+    openKerfDialog();
+    const pop = popover(
+      byId('anchor'),
+      raw(
+        '<button id="pick">pick</button><a id="link" href="#x">x</a>' +
+          '<button id="skip" tabindex="-1">skip</button><input id="auth" tabindex="2">' +
+          '<button id="off" disabled>off</button>',
+      ),
+    );
+    cleanups.unshift(() => pop.close());
+    expect(byId('pick').getAttribute('tabindex')).toBe('0');
+    expect(byId('link').getAttribute('tabindex')).toBe('0');
+    expect(byId('skip').getAttribute('tabindex')).toBe('-1');
+    expect(byId('auth').getAttribute('tabindex')).toBe('2');
+    expect(byId('off').hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('re-applies on Tab, so a control a re-render added is reachable too', () => {
+    openKerfDialog();
+    const more = signal(false);
+    const pop = popover(
+      byId('anchor'),
+      () =>
+        html`<button id="pick">pick</button>${more.value ? html`<button id="late">late</button>` : ''}`,
+    );
+    cleanups.unshift(() => pop.close());
+    more.value = true;
+    expect(byId('late').hasAttribute('tabindex')).toBe(false);
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
+    );
+    expect(byId('late').hasAttribute('tabindex')).toBe(false); // Tab only
+    tab();
+    expect(byId('late').getAttribute('tabindex')).toBe('0');
+    expect(byId('pick').getAttribute('tabindex')).toBe('0');
+
+    pop.close();
+    const orphan = document.createElement('button');
+    pop.el.appendChild(orphan);
+    tab(); // the Tab listener left with the surface
+    expect(orphan.hasAttribute('tabindex')).toBe(false);
+  });
+
+  it('an app-owned slot gets the same treatment', () => {
+    openAppDialog(
+      '<button id="anchor">a</button><div data-kerf-overlay-host data-morph-skip></div>',
+    );
+    const pop = popover(byId('anchor'), raw('<button id="pick">pick</button>'));
+    cleanups.unshift(() => pop.close());
+    expect(byId('pick').getAttribute('tabindex')).toBe('0');
+  });
+
+  it('a surface outside any slot is left alone', () => {
+    const anchor = document.createElement('button');
+    document.body.appendChild(anchor);
+    const pop = popover(anchor, raw('<button id="pick">pick</button>'));
+    cleanups.push(() => pop.close());
+    tab();
+    expect(byId('pick').hasAttribute('tabindex')).toBe(false);
+  });
+});
+
 describe('an app-owned modal <dialog>', () => {
   it('opts in by marking an element: the popover renders there and never warns', () => {
     const dialog = openAppDialog(

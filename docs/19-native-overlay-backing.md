@@ -142,7 +142,14 @@ const menu = popover(triggerEl, <Menu />, { native: true });
   `data-morph-skip` whose nearest `<dialog>` is that dialog — the surface is
   appended there instead of to `document.body`. It is then part of the modal
   subtree: clickable, focusable, reached by the dialog's native Tab order, and
-  never lifted (so the `inert` dev warning cannot fire for it). Placement is
+  never lifted (so the `inert` dev warning cannot fire for it). Because that
+  Tab order is the engine's, not a kerf trap's, kerf makes every implicitly
+  tabbable control in a slot-hosted surface an explicit stop (`tabindex="0"`,
+  authored tabindexes and disabled / `hidden` controls untouched) on open and
+  again before each Tab keypress, so a control a re-render added is covered
+  too — exactly what its fallback focus trap does (KF-QZ9SFG: macOS WebKit
+  skips implicitly tabbable buttons unless the system keyboard-navigation
+  preference is on). Placement is
   unchanged — `positionAnchored` still sets `position: fixed`, and a
   `<dialog>` without a `transform` / `filter` / `contain` is not a containing
   block for fixed descendants, so viewport coordinates still land next to the

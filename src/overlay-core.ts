@@ -482,6 +482,7 @@ export function overlay(
     }
 
     installDismissal();
+    if (container.closest(OVERLAY_HOST_SELECTOR) !== null) makeTabReachable();
     applyInitialFocus();
   } catch (error) {
     close();
@@ -582,6 +583,21 @@ export function overlay(
         document.removeEventListener('click', onDocClick, true),
       );
     }
+  }
+
+  // KF-QZ9SFG (slot-hosted controls unreachable by Tab in macOS WebKit): a
+  // surface in an overlay host slot sits in the modal dialog's own Tab order,
+  // not behind a kerf trap, so WebKit's system keyboard-navigation preference
+  // would skip its implicitly tabbable controls. Make those stops explicit, as
+  // the trap does — now, and again before each Tab so a control a re-render
+  // added (or whose tabindex the morph dropped) is reachable too.
+  function makeTabReachable(): void {
+    focusable(wrapper);
+    const onTab = (event: KeyboardEvent): void => {
+      if (event.key === 'Tab') focusable(wrapper);
+    };
+    document.addEventListener('keydown', onTab, true);
+    removers.push(() => document.removeEventListener('keydown', onTab, true));
   }
 
   function applyInitialFocus(): void {

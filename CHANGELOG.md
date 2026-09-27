@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **A popover inside a modal `<dialog>` is reachable by Tab in Safari on
+  macOS.** A popover or tooltip rendered into a dialog's host slot follows the
+  dialog's own Tab order, and WebKit on macOS skips buttons and links there
+  unless the system keyboard-navigation setting is on. kerf now gives each
+  implicitly tabbable control in a slot-hosted surface an explicit
+  `tabindex="0"` when it opens and again before each Tab keypress, the same
+  way its focus trap already did. Authored tabindexes, disabled controls, and
+  surfaces outside a slot are left alone.
 - `@kerfjs/ui`'s static analyzer (`kerf-ui-analyze`, and the analyzer stage of
   `kerf-ui-doctor`) reports a new review finding, `KUI-L018`, when a
   stylesheet overrides a loud tone fill (`--wa-color-{tone}-fill-loud` for
