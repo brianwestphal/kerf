@@ -33,7 +33,8 @@ probably wrong:**
   first; a border must mark a _real_ distinction. A component sitting directly on
   the surface is usually correct.
 - A **fixed heading row** with custom geometry — compose a plain `Toolbar` with a
-  direct xl `ToolbarText` title and grouped controls. Do not restyle the toolbar.
+  direct `ToolbarText` title (xl, or the default size in a narrow rail — see
+  "One heading composition") and grouped controls. Do not restyle the toolbar.
 
 ## Pre-flight checklist (the mistakes to not repeat)
 
@@ -49,6 +50,16 @@ probably wrong:**
   compositions: a direct xl `ToolbarText`, optional grouped icon, and grouped
   trailing controls. Set `headingLevel` for page/section landmarks. Supporting
   copy is app-owned content below the toolbar.
+- **Size the title to its track.** xl is for a page, view, dialog, or pane
+  that holds it at its narrowest size. A narrow peripheral rail or drawer — a
+  navigator, inspector, or console beside a work area that already carries the
+  xl title, especially one whose header also holds its own close control —
+  takes the **default** size: xl truncates there ("Inspector" becomes "Ins…"
+  in a 160px Workbench rail), and the quiet default reads as pane identity
+  instead of competing with the work-area title. The collapsible-sidebar
+  recipe's rail and the Workbench catalog's rails do this. Never ship a
+  truncated title to satisfy the size rule; check the panel at its minimum
+  size.
 - **Toolbars hold only `ToolbarText` and `ToolbarControlGroup`.** Never a bare
   button, input, link, or loose markup in a zone. A title is `ToolbarText`, not an
   `<h2>`. (Popup menu = a `single` ToolbarControlGroup around a `wa-dropdown`.)

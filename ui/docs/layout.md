@@ -153,7 +153,11 @@ document content, not toolbar identity: use `Text` with the `h2`–`h6` variant
 the outline calls for (inside a `List` with `controlInsets`, its text lines up
 with content items). Use `ListHeader` when the section is a list or menu group
 that needs a count, badge, action, or disclosure, and keep extra-large
-`ToolbarText` for the panel, dialog, or page title.
+`ToolbarText` for the panel, dialog, or page title. A narrow peripheral rail or
+drawer is the exception that proves the rule: beside a work area that already
+carries the extra-large title, its header names the pane with the default size,
+because extra-large would truncate there ("Inspector" becomes "Ins…" in a 160px
+rail) and pane identity should stay quiet.
 
 Presentation is independent of the native element: use `tone="quiet"` for
 supporting copy, `tone="danger"` for error or validation copy, `size="compact"`

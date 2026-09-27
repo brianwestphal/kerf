@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- The `@kerfjs/ui` heading guidance (`ai/skill.md`, `llms.txt`,
+  `docs/component-selection.md`, `docs/layout.md`) now sizes a panel title to
+  its track: extra-large `ToolbarText` stays the title size for a page, view,
+  dialog, or pane that holds it, while a narrow peripheral rail or drawer
+  names itself with the default size, since extra-large truncated "Inspector"
+  to "Ins…" in a 160px Workbench rail.
 - **A `@kerfjs/ui` `Workbench` panel open when `wireWorkbench` wired up no
   longer drops focus to the page when it closes from inside.** Such a panel
   had no recorded opener, so without a restore control closing it from its
