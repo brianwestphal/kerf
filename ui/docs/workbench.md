@@ -264,7 +264,11 @@ presents as one, mirroring `wireSidebar`'s compact overlay:
   focusable control outside the panel whose `aria-controls` names the panel
   (or an element inside it). The last is what a panel already open at
   wire-up relies on, since nothing opened it: give the app's toggle
-  `aria-controls` naming the panel. Each panel's `id` derives from the
+  `aria-controls` naming the panel. A pointer press inside the panel that
+  drops focus to the page counts as focus inside: Safari never focuses a
+  clicked button, so pressing the panel's own Hide control blurs the focused
+  control before the click closes it, and focus still returns. Focus the user
+  has moved to another element since is left alone. Each panel's `id` derives from the
   Workbench's — `<id>-left-rail`, `<id>-right-rail`, `<id>-bottom-drawer`:
 
   ```tsx

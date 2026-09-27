@@ -374,6 +374,70 @@ describe('wireWorkbench transient overlays', () => {
     expect(document.activeElement?.textContent).toBe('Plain');
   });
 
+  it('returns focus a press on its own close control dropped to the body', () => {
+    const app = studio();
+    narrow = true;
+    app.wire();
+    // Safari and macOS WebKit never focus a clicked button: the press blurs
+    // the focused control to the body before the click closes the panel.
+    const safariPress = (target: HTMLElement) => {
+      target.dispatchEvent(
+        new PointerEvent('pointerdown', { bubbles: true, composed: true }),
+      );
+      (document.activeElement as HTMLElement | null)?.blur();
+      target.click();
+    };
+
+    // An overlay opened from the toolbar takes focus; its header's close
+    // control closes it by pointer and focus returns to the opener.
+    const showNav = app.button('Show nav');
+    showNav.focus();
+    showNav.click();
+    expect(app.left.value).toBe(false);
+    expect(app.leftRail().contains(document.activeElement)).toBe(true);
+    safariPress(app.button('Close nav'));
+    expect(app.left.value).toBe(true);
+    expect(document.activeElement).toBe(showNav);
+
+    // Inline too: the collapsed track must not leave focus on the body.
+    resize(false);
+    app.left.value = true;
+    showNav.focus();
+    showNav.click();
+    app.button('nav item').focus();
+    safariPress(app.button('Close nav'));
+    expect(app.left.value).toBe(true);
+    expect(document.activeElement).toBe(showNav);
+
+    // Focus the user moves anywhere after the press is left alone.
+    showNav.click();
+    app.button('nav item').focus();
+    app
+      .button('Close nav')
+      .dispatchEvent(
+        new PointerEvent('pointerdown', { bubbles: true, composed: true }),
+      );
+    app.button('Plain').focus();
+    app.left.value = true;
+    expect(document.activeElement?.textContent).toBe('Plain');
+
+    // A press inside with focus already outside it rescues nothing.
+    showNav.click();
+    (document.activeElement as HTMLElement).blur();
+    safariPress(app.button('Close nav'));
+    expect(app.left.value).toBe(true);
+    expect(document.activeElement).toBe(document.body);
+
+    // Neither does a press outside the panel that drops focus to the body.
+    resize(true);
+    showNav.focus();
+    showNav.click();
+    expect(app.left.value).toBe(false);
+    safariPress(document.body);
+    expect(app.left.value).toBe(true);
+    expect(document.activeElement).toBe(document.body);
+  });
+
   it('returns focus stranded in an open overlay when disposal collapses it', () => {
     const app = studio();
     app.left.value = true;

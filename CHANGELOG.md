@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Closing a `@kerfjs/ui` `Workbench` panel from its own control by mouse
+  returns focus in Safari.** Safari never focuses a clicked button, so
+  pressing an open panel's Hide control blurred the focused control to the
+  page before the click collapsed the panel, and `wireWorkbench` — which
+  returns focus only when it is inside the closing panel — left focus on the
+  page body instead of the toggle that opened it. A press that starts inside
+  the panel while focus is there now counts as focus inside, so the close
+  returns it; focus the user has moved to another element since is left
+  alone.
+
 - **A collapsed `@kerfjs/ui` `Workbench` rail's restore control no longer
   covers an expanded bottom drawer.** A `leftRail` / `rightRail`
   `restoreControl` floats in the Workbench's bottom corner, which the bottom

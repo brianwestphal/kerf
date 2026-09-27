@@ -391,7 +391,15 @@ anchor(--kui-restore-drawer top, <safe-area fallback>))` with
     move focus. Returning focus on close skips an opener inside another wired
     panel that has closed since (an exclusive overlay opened from inside the
     one it closed), falling through to the restore control and the
-    `aria-controls` toggle;
+    `aria-controls` toggle. A close also returns focus when the latest
+    `pointerdown` (capture) started inside the open panel while focus was
+    inside it and focus is now on the body, until the next `focusin` anywhere
+    clears that record (KF-SSW2B2: Safari and macOS WebKit never focus a
+    clicked button, so pressing a panel's own Hide control blurred the focused
+    control to the body before the click collapsed the panel, and the
+    focus-inside check at collapse time saw the body and returned nothing).
+    `wireSidebar` needs no counterpart: its toggle close always restores
+    focus, independent of where focus is;
   - overlay stacking order (KF-3FM7G6: with the drawer and a rail both
     overlays, their order followed document order, so the drawer covered the
     left rail while the right rail covered the drawer): both rails stack above

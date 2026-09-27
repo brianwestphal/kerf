@@ -72,7 +72,11 @@ const focusables = (element: HTMLElement): HTMLElement[] =>
  *   had it when the panel opened, else to the panel's restore control, else
  *   to a control outside it whose `aria-controls` names the panel (or an
  *   element inside it). The last covers a panel that was already open at
- *   wire-up, which has no recorded opener.
+ *   wire-up, which has no recorded opener. Focus a press inside the panel
+ *   dropped to the body counts as stranded too: Safari and macOS WebKit
+ *   never focus a clicked button, so pressing the panel's own close control
+ *   blurs the focused control before the click closes the panel. Focus the
+ *   user has since moved to any element is left where it is.
  * - With `exclusive`, a panel that opens while it presents as an overlay
  *   closes every other open overlay panel, so overlays never cover each
  *   other's controls. Inline panels are never closed by it.
@@ -91,6 +95,12 @@ export function wireWorkbenchOverlays(
   // control that had focus when it opened.
   const openOrder: WorkbenchOverlayPanel[] = [];
   const openers = new Map<WorkbenchOverlayPanel, HTMLElement>();
+  // The open panel the latest press started in while focus was inside it,
+  // until focus next lands anywhere. Safari and macOS WebKit never focus a
+  // clicked button, so pressing a panel's own close control blurs the focused
+  // control to the body before the click closes the panel; this is how the
+  // close still counts as leaving focus stranded in it.
+  let pressedFocus: WorkbenchOverlayPanel | undefined;
 
   const panelElement = (panel: WorkbenchOverlayPanel): HTMLElement | null =>
     findWorkbench()?.querySelector<HTMLElement>(PANEL_SELECTORS[panel.key]) ??
@@ -262,8 +272,14 @@ export function wireWorkbenchOverlays(
         if (collapsed) {
           // Whatever closed the panel — Escape, an outside press, a
           // breakpoint, or the app's own control inside it — focus left in
-          // it would be stranded in a hidden panel.
-          if (panelElement(panel)?.contains(ownerDocument.activeElement))
+          // it would be stranded in a hidden panel. So would focus that a
+          // press inside it dropped to the body (see `pressedFocus`).
+          const active = ownerDocument.activeElement;
+          if (
+            panelElement(panel)?.contains(active) ||
+            (pressedFocus === panel &&
+              (active === null || active === ownerDocument.body))
+          )
             rescueFocus(panel);
           return;
         }
@@ -346,6 +362,18 @@ export function wireWorkbenchOverlays(
     pressed = openOverlays()
       .filter(([, element]) => !path.includes(element))
       .map(([panel]) => panel);
+    // Before the press's default action moves focus: the open panel it
+    // started in, when focus was inside that panel too.
+    const active = ownerDocument.activeElement;
+    pressedFocus = panels.find((panel) => {
+      if (panel.collapsed.peek()) return false;
+      const element = panelElement(panel);
+      return !!element && path.includes(element) && element.contains(active);
+    });
+  };
+  // Focus landing anywhere is a deliberate move the rescue must not undo.
+  const onFocusin = (): void => {
+    pressedFocus = undefined;
   };
   const onClick = (event: MouseEvent): void => {
     const candidates = pressed;
@@ -358,10 +386,12 @@ export function wireWorkbenchOverlays(
   ownerDocument.addEventListener('keydown', onKeydown);
   ownerDocument.addEventListener('pointerdown', onPointerdown, true);
   ownerDocument.addEventListener('click', onClick);
+  ownerDocument.addEventListener('focusin', onFocusin, true);
   disposers.push(() => {
     ownerDocument.removeEventListener('keydown', onKeydown);
     ownerDocument.removeEventListener('pointerdown', onPointerdown, true);
     ownerDocument.removeEventListener('click', onClick);
+    ownerDocument.removeEventListener('focusin', onFocusin, true);
   });
 
   return () => {
