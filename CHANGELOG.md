@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui` toned text stays readable in dark mode without the optional
+  `@kerfjs/ui/webawesome.css` theme. The foundation's fallbacks for the
+  success, warning, and danger `on-quiet` and `on-normal` tokens were single
+  light-mode colors, so dark danger `Text` rendered dark red on a dark surface
+  (under 3:1). Every tone token now falls back to the same light and dark
+  pair the theme assigns, including `brand-on-loud` (dark text on the pale dark
+  brand fill instead of white) and `neutral-border-quiet`. Light-mode colors
+  are unchanged. A browser test bundles the package with and without the theme
+  and asserts that every tone token resolves identically in both color schemes
+  and that toned text clears WCAG AA in dark mode.
 - `@kerfjs/ui` danger text and badges are readable in dark mode, and every
   tone's `StateBanner` detail and quiet or outline `Badge` text now clears
   WCAG AA. The danger tone was the only one without an on-fill foreground: its

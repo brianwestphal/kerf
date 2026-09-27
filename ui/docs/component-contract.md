@@ -529,7 +529,9 @@ Kerf JSX declaration boundary for every catalog-supported `wa-*` tag.
 Consumers register only the individual Web Awesome modules they render and can
 override `--wa-*` values after the theme import. The shared `--wa-*` values feed
 both Web Awesome controls and Kerf's `--kui-*` foundation aliases, preventing a
-second application palette.
+second application palette. Without the theme, each foundation token falls back
+to the same value the theme assigns, including its `light-dark()` pair, so tone
+text and fills keep their light and dark appearance and contrast either way.
 
 `Select` owns its custom-element reconciliation seam. It gives each slotted
 option icon a stable key and leaves the upgraded Web Awesome-owned slot subtree

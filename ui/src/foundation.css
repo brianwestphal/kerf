@@ -80,6 +80,12 @@
   --kui-radius-pill: var(--wa-border-radius-pill, 999px);
   --kui-disclosure-icon-scale: 0.5;
   /* macOS Tahoe light semantics used by Hot Sheet 2, with a compatible dark extension. */
+  /* Each neutral/brand/success/warning/danger tone token's fallback below
+     mirrors the value src/webawesome.css assigns to the matching --wa-* token,
+     including its light-dark() pair, so a page without the Web Awesome theme
+     resolves the same tone palette in both color schemes. A single light color
+     here would render, e.g., dark red danger text on a dark surface.
+     tests/browser/tone-contrast.spec.ts pins the parity. */
   --kui-color-surface: var(
     --wa-color-surface-default,
     light-dark(#fff, #1c1c1e)
@@ -116,7 +122,7 @@
   );
   --kui-color-neutral-border-quiet: var(
     --wa-color-neutral-border-quiet,
-    var(--kui-color-neutral-fill-normal)
+    light-dark(#e5e5ea, #38383a)
   );
   --kui-color-neutral-border-normal: var(
     --wa-color-neutral-border-normal,
@@ -187,7 +193,10 @@
     --wa-color-brand-on-normal,
     var(--kui-color-brand-on-quiet)
   );
-  --kui-color-brand-on-loud: var(--wa-color-brand-on-loud, #fff);
+  --kui-color-brand-on-loud: var(
+    --wa-color-brand-on-loud,
+    light-dark(#fff, #111113)
+  );
   /* Brand accent text placed directly ON a brand fill (quiet or normal), such as
      the info StateBanner and Select's current option. Darker than brand-on-quiet
      so it clears WCAG AA (>=4.5:1): brand-on-quiet (#1e6ef4) resolves to only
@@ -266,8 +275,14 @@
       var(--kui-color-neutral-on-normal)
     )
   );
-  --kui-color-success-on-quiet: var(--wa-color-success-on-quiet, #008932);
-  --kui-color-success-on-normal: var(--wa-color-success-on-normal, #006d28);
+  --kui-color-success-on-quiet: var(
+    --wa-color-success-on-quiet,
+    light-dark(#008932, #63e685)
+  );
+  --kui-color-success-on-normal: var(
+    --wa-color-success-on-normal,
+    light-dark(#006d28, #8cea9f)
+  );
   --kui-color-success-on-loud: var(--wa-color-success-on-loud, #fff);
   /* Success text placed ON a success fill (e.g. the success StateBanner). Darker
      than success-on-quiet so it clears WCAG AA (>=4.5:1) over success-fill-quiet
@@ -315,8 +330,14 @@
       var(--kui-color-neutral-on-normal)
     )
   );
-  --kui-color-warning-on-quiet: var(--wa-color-warning-on-quiet, #a16a00);
-  --kui-color-warning-on-normal: var(--wa-color-warning-on-normal, #5f3f00);
+  --kui-color-warning-on-quiet: var(
+    --wa-color-warning-on-quiet,
+    light-dark(#a16a00, #ffd84a)
+  );
+  --kui-color-warning-on-normal: var(
+    --wa-color-warning-on-normal,
+    light-dark(#5f3f00, #ffe27a)
+  );
   --kui-color-warning-on-loud: var(--wa-color-warning-on-loud, #1d1d1f);
   /* Warning text placed ON a warning fill (e.g. the warning StateBanner). Darker
      than warning-on-quiet so it clears WCAG AA (>=4.5:1) over warning-fill-quiet
@@ -364,8 +385,14 @@
       var(--kui-color-neutral-on-normal)
     )
   );
-  --kui-color-danger-on-quiet: var(--wa-color-danger-on-quiet, #c20b20);
-  --kui-color-danger-on-normal: var(--wa-color-danger-on-normal, #8e0717);
+  --kui-color-danger-on-quiet: var(
+    --wa-color-danger-on-quiet,
+    light-dark(#c20b20, #ff696c)
+  );
+  --kui-color-danger-on-normal: var(
+    --wa-color-danger-on-normal,
+    light-dark(#8e0717, #ff8a8c)
+  );
   --kui-color-danger-on-loud: var(--wa-color-danger-on-loud, #fff);
   /* Danger text placed ON a danger fill (e.g. the danger StateBanner) and the
      danger Badge's solid fill. The light value matches danger-on-quiet, which

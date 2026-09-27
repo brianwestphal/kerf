@@ -1,5 +1,8 @@
+import { resolve } from 'node:path';
+
 import type { Page } from '@playwright/test';
 import { expect, test } from '@playwright/test';
+import { build } from 'esbuild';
 
 /** WCAG AA for body text; badge text and banner detail are small type. */
 const TEXT_AA = 4.5;
@@ -168,3 +171,177 @@ test('every tone keeps AA text contrast on its fills in light and dark', async (
     }
   }
 });
+
+/**
+ * The tone-text fixture bundled with and without `@kerfjs/ui/webawesome.css`.
+ * Without it, the foundation's `var(--wa-*, fallback)` fallbacks are what the
+ * page resolves: those once held single light-mode colors, so dark danger text
+ * rendered dark red on a dark surface.
+ */
+const bundleToneText = (webAwesome: boolean) =>
+  build({
+    entryPoints: [resolve(import.meta.dirname, 'fixtures/tone-text-cases.tsx')],
+    bundle: true,
+    format: 'iife',
+    outdir: 'out',
+    platform: 'browser',
+    write: false,
+    loader: { '.woff2': 'empty', '.woff': 'empty', '.ttf': 'empty' },
+    plugins: webAwesome
+      ? []
+      : [
+          {
+            name: 'omit-webawesome-css',
+            setup(pluginBuild) {
+              pluginBuild.onResolve(
+                { filter: /^@kerfjs\/ui\/webawesome\.css$/ },
+                () => ({ path: 'webawesome.css', namespace: 'omitted' }),
+              );
+              pluginBuild.onLoad(
+                { filter: /.*/, namespace: 'omitted' },
+                () => ({ contents: '', loader: 'css' }),
+              );
+            },
+          },
+        ],
+  });
+const toneTextBundles = {
+  withWebAwesome: bundleToneText(true),
+  withoutWebAwesome: bundleToneText(false),
+};
+
+async function mountToneText(
+  page: Page,
+  webAwesome: boolean,
+  colorScheme: 'light' | 'dark',
+) {
+  const result = await (webAwesome
+    ? toneTextBundles.withWebAwesome
+    : toneTextBundles.withoutWebAwesome);
+  const javascript = result.outputFiles.find((file) =>
+    file.path.endsWith('.js'),
+  );
+  const css = result.outputFiles.find((file) => file.path.endsWith('.css'));
+  if (!javascript || !css) throw new Error('Tone-text fixture emitted no JS');
+  await page.emulateMedia({ colorScheme });
+  // Pin the scheme on the root: Web Awesome's theme layer otherwise sets
+  // `color-scheme: light` on `:root` unless a `.wa-dark` class opts out.
+  await page.setContent(
+    `<!doctype html><html lang="en" style="color-scheme:${colorScheme}"><body><main class="kui-app-root" style="display:block;height:auto" data-tone-text-cases></main></body></html>`,
+  );
+  // The fixture resolves package CSS from source, so apply the pixel-first
+  // remify() authoring transform the package build performs.
+  await page.addStyleTag({
+    content: css.text.replace(
+      /remify\(([\d.]+)px\)/g,
+      (_, pixels: string) => `${String(Number(pixels) / 16)}rem`,
+    ),
+  });
+  await page.addScriptTag({ content: javascript.text });
+}
+
+/** Tones Web Awesome's theme also defines; pop is Kerf-only. */
+const WA_TONES = ['neutral', 'brand', 'success', 'warning', 'danger'] as const;
+
+/** Every tone token as the page resolves it, keyed by its custom property. */
+function resolveToneTokens(page: Page) {
+  return page.evaluate((tones) => {
+    const probe = document.createElement('span');
+    document.body.append(probe);
+    const out: Record<string, string> = {};
+    for (const tone of tones)
+      for (const role of ['fill', 'border', 'on'])
+        for (const level of ['quiet', 'normal', 'loud']) {
+          const name = `--kui-color-${tone}-${role}-${level}`;
+          probe.style.color = `var(${name})`;
+          out[name] = window.getComputedStyle(probe).color;
+        }
+    probe.remove();
+    return out;
+  }, WA_TONES);
+}
+
+/** Toned text contrast over the surface and the page (surface-lowered). */
+function measureTonedText(page: Page) {
+  return page.evaluate((tones) => {
+    const context = document
+      .createElement('canvas')
+      .getContext('2d', { willReadFrequently: true })!;
+    context.canvas.width = 1;
+    context.canvas.height = 1;
+    const paint = (color: string) => {
+      context.clearRect(0, 0, 1, 1);
+      context.fillStyle = color;
+      context.fillRect(0, 0, 1, 1);
+      return [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+    };
+    const luminance = (rgb: number[]) => {
+      const [r = 0, g = 0, b = 0] = rgb.map((channel) => {
+        const value = channel / 255;
+        return value <= 0.04045
+          ? value / 12.92
+          : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const ratio = (a: string, b: string) => {
+      const [light, dark] = [luminance(paint(a)), luminance(paint(b))].sort(
+        (x, y) => y - x,
+      );
+      return (light! + 0.05) / (dark! + 0.05);
+    };
+    const probe = document.createElement('span');
+    document.body.append(probe);
+    const resolveColor = (token: string) => {
+      probe.style.color = `var(${token})`;
+      return window.getComputedStyle(probe).color;
+    };
+    const backgrounds = {
+      surface: resolveColor('--kui-color-surface'),
+      page: window.getComputedStyle(document.body).backgroundColor,
+    };
+    const foregrounds: Record<string, string> = {
+      'Text danger': window.getComputedStyle(
+        document.querySelector('.kui-text[data-tone="danger"]')!,
+      ).color,
+    };
+    for (const tone of tones)
+      for (const level of ['quiet', 'normal'])
+        foregrounds[`${tone}-on-${level}`] = resolveColor(
+          `--kui-color-${tone}-on-${level}`,
+        );
+    probe.remove();
+    const results: Record<string, number> = {};
+    for (const [name, foreground] of Object.entries(foregrounds))
+      for (const [where, background] of Object.entries(backgrounds))
+        results[`${name} over ${where}`] = ratio(foreground, background);
+    return results;
+  }, WA_TONES);
+}
+
+for (const colorScheme of ['light', 'dark'] as const) {
+  test(`without webawesome.css the foundation resolves Web Awesome's tone palette and toned text keeps AA (${colorScheme})`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await mountToneText(page, true, colorScheme);
+    const themed = await resolveToneTokens(page);
+    await mountToneText(page, false, colorScheme);
+    // Parity: every tone token the theme defines resolves identically from
+    // the foundation's own fallback in this color scheme.
+    expect(await resolveToneTokens(page)).toEqual(themed);
+
+    const contrast = await measureTonedText(page);
+    for (const [where, value] of Object.entries(contrast)) {
+      // The light brand/success/warning on-quiet values sit just under AA on
+      // the lowered page background (~4.1:1) with or without the theme; this
+      // test guards the fallback regression, so light is held over the
+      // surface, where every toned text clears AA.
+      if (colorScheme === 'light' && where.endsWith(' over page')) continue;
+      expect(
+        value,
+        `${where} (${colorScheme}, no Web Awesome)`,
+      ).toBeGreaterThanOrEqual(TEXT_AA);
+    }
+  });
+}

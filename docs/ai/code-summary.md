@@ -532,7 +532,11 @@ tier independently of Web Awesome's shared `--spacing`, with static guidance
 and real-browser computed-style coverage. Its opt-in `wa-dialog.hide-actions` host class hides
 the directly exported `header-actions` part for dialogs with another dismissal
 affordance; the contract deliberately avoids unsupported chained shadow-part
-selectors.
+selectors. Without that bridge, `ui/src/foundation.css`'s `var(--wa-*, fallback)`
+fallbacks mirror its values, including each `light-dark()` pair, so tone tokens
+keep their dark-mode appearance; `ui/tests/browser/tone-contrast.spec.ts`
+bundles `ui/tests/browser/fixtures/tone-text-cases.tsx` with and without the
+bridge and asserts token parity in both schemes plus AA toned text in dark mode.
 
 Within `ui/ai/`, the compatible selection catalog and package-qualified v2
 composition projection are joined by `application-ui-profile.*`: shipped
