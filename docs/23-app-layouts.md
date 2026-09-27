@@ -569,6 +569,34 @@ declaration and keeps the container corner (the prior behavior). The corner
 sets `position-visibility: always` so it is never hidden with a scrolled-away
 anchor. `Workbench`'s own rail corners are out of this rule's scope.
 
+The corner stacks beneath open overlays, the rule §3.3's Workbench corners
+follow (KF-JHG76H: both corners stacked at z 42, above their own overlays —
+`CollapsiblePanel`'s at 40 with `wireSidebar`'s compact backdrop at 39, and an
+overlay `ResizableRegion` at 41 — so another panel's collapsed restore control
+floated over an open compact overlay's backdrop, or over an overlay drawer's
+content in its corner, and stayed clickable behind the overlay's focus trap).
+Decided for consistency with the Workbench decision rather than as a taste
+call: an open overlay is the top layer of the page, as a sheet or dialog
+covers the view beneath it, and `wireSidebar`'s compact overlay is modal in
+every other respect — it traps Tab and dismisses on a backdrop press — so a
+pointer should not reach base-layer chrome that the keyboard cannot. A restore
+control is base-layer chrome for a collapsed panel. Escape, a backdrop or
+outside press, or the overlay's own close control reveals it again.
+`--kui-collapsible-panel-restore-z` defaults to
+`calc(var(--kui-collapsible-panel-overlay-z, 40) - 2)` (38) and
+`--kui-resizable-region-restore-z` to
+`calc(var(--kui-resizable-region-overlay-z, 41) - 2)` (39). The compact
+backdrop's `--kui-collapsible-panel-backdrop-z` now defaults to
+`calc(var(--kui-collapsible-panel-overlay-z, 40) - 1)` (still 39) instead of a
+literal, so an app that moves the overlay z-index moves the backdrop and the
+restore control with it and the order holds. A collapsed overlay passes
+pointer events through (a collapsed overlay panel's track is zero-sized; a
+collapsed overlay region drops `pointer-events`), so the control beneath it is
+usable as soon as the overlay closes. The corner still stacks above ordinary
+content, content-overflow popups (5), and app `FloatingToolbar`s (4).
+Covered by `ui/tests/browser/restore-anchor.spec.ts` (hit-tests at 1280 and
+390 in all three engines) and the CSS unit tests.
+
 **Implementation:** shipped (KF-T17Q1X). UX-demo recipe (the "Collapsible sidebar"
 recipe: a left rail + bottom drawer with toggles, compact overlay, and persistence)
 and three-engine Playwright coverage of collapse/expand, focus move/restore, the

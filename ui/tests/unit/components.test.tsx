@@ -1976,6 +1976,33 @@ describe('production UI primitives', () => {
     ).toContain('--kui-edge-inset-inline-end');
   });
 
+  it('stacks the region restore control beneath open overlays, tied to the overlay z-index', () => {
+    const css = readFileSync(
+      resolve(import.meta.dirname, '../../src/resizable-region.css'),
+      'utf8',
+    ).replace(/\s+/g, ' ');
+    const rule = (selector: string) => {
+      const start = css.indexOf(`${selector} {`);
+      if (start < 0) throw new Error(`Missing ${selector}`);
+      return css.slice(start, css.indexOf('}', start));
+    };
+    // An open overlay is the top layer (the Workbench rule): the restore
+    // control sits two below the overlay z-index, so it follows an app's
+    // override and never floats over an open overlay region.
+    expect(
+      rule('.kui-resizable-region[data-presentation="overlay"]'),
+    ).toContain('z-index: var(--kui-resizable-region-overlay-z, 41);');
+    expect(rule('.kui-resizable-region__restore')).toContain(
+      'z-index: var( --kui-resizable-region-restore-z, calc(var(--kui-resizable-region-overlay-z, 41) - 2) );',
+    );
+    // A collapsed overlay passes pointer events through to the control.
+    expect(
+      rule(
+        '.kui-resizable-region[data-presentation="overlay"][data-collapsed="true"]',
+      ),
+    ).toContain('pointer-events: none;');
+  });
+
   it('lifts the region restore corner above an expanded bottom drawer beside it, scoped to the container', () => {
     const css = readFileSync(
       resolve(import.meta.dirname, '../../src/resizable-region.css'),

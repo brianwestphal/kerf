@@ -42,7 +42,15 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   positioning, so a drag-resize moves it too; an engine without anchor
   positioning keeps the container's bottom corner. A drawer nested deeper,
   inside the work area's own content, belongs to that content and does not move
-  the corner. `ResizableRegion`'s `restoreControl` follows the same rules.
+  the corner. The corner stacks beneath open overlays: an open overlay is the
+  page's top layer, so it covers another panel's restore control as it covers
+  the rest of the page, including under the compact overlay's backdrop. The
+  control takes `--kui-collapsible-panel-restore-z`, which defaults to two less
+  than `--kui-collapsible-panel-overlay-z` (38); the backdrop defaults to one
+  less (39), so moving the overlay z-index moves both. Escape, a backdrop
+  press, or the panel's own close control reveals the control again, and a
+  collapsed overlay leaves it clickable. `ResizableRegion`'s `restoreControl`
+  follows the same rules, two below `--kui-resizable-region-overlay-z` (39).
   Overlay presentation also clamps fixed-size animated content to the configured
   responsive overlay maximum, so a remembered desktop size cannot escape a narrow
   viewport.

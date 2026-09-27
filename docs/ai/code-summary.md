@@ -803,7 +803,9 @@ the region (`ui/tests/browser/resizable-region-fill.spec.ts` with
 once even around a `FloatingToolbar`, both embedded in a scrolling page and in
 a full-viewport shell, and lifts above an expanded bottom drawer beside it
 (sibling or work-area column) but not one nested deeper, dropping back when
-the drawer collapses (`ui/tests/browser/restore-anchor.spec.ts` with
+the drawer collapses, and stacks beneath an open `wireSidebar` compact overlay
+(and its backdrop) or overlay `ResizableRegion`, usable again once it closes
+(`ui/tests/browser/restore-anchor.spec.ts` with
 `ui/tests/browser/fixtures/restore-anchor.tsx`). Expanded slide-motion content follows the region's
 actual track, so a clamped region never shows content past its separator, and
 `wireResizableRegions` bounds pointer/keyboard resizing to that visible track

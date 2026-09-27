@@ -15,6 +15,7 @@ import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { Pane } from '@kerfjs/ui/pane';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
 import { mount, signal } from 'kerfjs';
 
 /**
@@ -26,8 +27,13 @@ import { mount, signal } from 'kerfjs';
  * scenario holds a collapsed rail beside an expanded bottom drawer: as a
  * sibling in the rail's own container, in a work-area column of that container,
  * and nested deeper inside the work-area content (which must not move it).
+ * The `overlay` scenario opens a `wireSidebar` compact overlay (backdrop +
+ * focus trap) beside another panel's collapsed restore control, and the
+ * `region-overlay` scenario opens an overlay ResizableRegion drawer over a
+ * collapsed rail's restore corner: an open overlay covers both.
  */
-type Scenario = 'embedded' | 'viewport' | 'drawer';
+type Scenario =
+  'embedded' | 'viewport' | 'drawer' | 'overlay' | 'region-overlay';
 
 const scenario = signal<Scenario>('embedded');
 /** Whether the drawer scenario's drawers are collapsed. */
@@ -121,6 +127,86 @@ const region = () => (
   </ResizableRegion>
 );
 
+/** The overlay scenarios' open panel / region state. */
+const navCollapsed = signal(true);
+const inspectorCollapsed = signal(true);
+const consoleCollapsed = signal(false);
+
+const compactOverlay = () => (
+  <div
+    data-restore-host="overlay"
+    style="display:flex;height:100vh;height:100dvh"
+  >
+    <CollapsiblePanel
+      id="overlay-nav"
+      side="left"
+      collapsed={navCollapsed.value}
+      label="Navigator"
+    >
+      {content('Navigator')}
+    </CollapsiblePanel>
+    {fill('App content')}
+    <CollapsiblePanel
+      id="overlay-inspector"
+      side="right"
+      collapsed={inspectorCollapsed.value}
+      label="Inspector"
+      restoreControl={
+        <CollapsiblePanelToggle
+          side="right"
+          collapsed
+          action="toggle-overlay-inspector"
+          label="Show inspector"
+        />
+      }
+    >
+      {content('Inspector')}
+    </CollapsiblePanel>
+  </div>
+);
+
+const regionOverlay = () => (
+  <div
+    data-restore-host="region-overlay"
+    style="display:flex;height:100vh;height:100dvh"
+  >
+    <ResizableRegion
+      id="overlay-rail"
+      label="Navigator"
+      size={240}
+      min={160}
+      max={320}
+      collapsed
+      restoreControl={
+        <CollapsiblePanelToggle
+          side="left"
+          collapsed
+          action="toggle-overlay-rail"
+          label="Show navigator"
+        />
+      }
+    >
+      {content('Navigator')}
+    </ResizableRegion>
+    <div style="position:relative;display:flex;flex-direction:column;flex:1;min-width:0;overflow:hidden">
+      {fill('App content')}
+      <ResizableRegion
+        id="overlay-console"
+        label="Console"
+        axis="vertical"
+        edge="start"
+        size={200}
+        min={120}
+        max={320}
+        presentation="overlay"
+        collapsed={consoleCollapsed.value}
+      >
+        {content('Console')}
+      </ResizableRegion>
+    </div>
+  </div>
+);
+
 const intro = (
   <p data-page-text="intro" style="margin:0;height:160px">
     Unrelated page content above the components.
@@ -175,7 +261,11 @@ const drawers = () => (
 );
 
 const view = () =>
-  scenario.value === 'drawer' ? (
+  scenario.value === 'overlay' ? (
+    compactOverlay()
+  ) : scenario.value === 'region-overlay' ? (
+    regionOverlay()
+  ) : scenario.value === 'drawer' ? (
     drawers()
   ) : scenario.value === 'embedded' ? (
     <main style="display:grid;gap:24px;padding:24px">
@@ -216,6 +306,36 @@ mount(document.querySelector<HTMLElement>('[data-restore-fixture]')!, view);
 (globalThis as unknown as Record<string, unknown>).restoreFixture = {
   show(value: Scenario) {
     scenario.value = value;
+    if (value !== 'overlay') return;
+    // A compact device, so wireSidebar presents the panels as an overlay with
+    // a backdrop and a focus trap. Wire-up starts every panel collapsed.
+    const compact = signal({
+      size: 'mobile' as const,
+      orientation: 'portrait' as const,
+      segments: 1,
+      verticalSegments: 1,
+      handset: true,
+      compact: true,
+      atLeast: () => false,
+    });
+    wireSidebar(document.querySelector<HTMLElement>('[data-restore-host]')!, {
+      deviceClass: compact,
+      storage: { getItem: () => null, setItem: () => undefined },
+      panels: [
+        { id: 'overlay-nav', collapsed: navCollapsed, toggleAction: 'x' },
+        {
+          id: 'overlay-inspector',
+          collapsed: inspectorCollapsed,
+          toggleAction: 'toggle-overlay-inspector',
+        },
+      ],
+    });
+  },
+  openNav() {
+    navCollapsed.value = false;
+  },
+  collapseConsole(value: boolean) {
+    consoleCollapsed.value = value;
   },
   collapseDrawers(value: boolean) {
     drawersCollapsed.value = value;

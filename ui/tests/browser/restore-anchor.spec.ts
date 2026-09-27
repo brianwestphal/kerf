@@ -21,7 +21,7 @@ const fixtureBundle = build({
 
 async function mountFixture(
   page: Page,
-  scenario: 'embedded' | 'viewport' | 'drawer',
+  scenario: 'embedded' | 'viewport' | 'drawer' | 'overlay' | 'region-overlay',
 ): Promise<void> {
   const result = await fixtureBundle;
   const javascript = result.outputFiles.find((file) =>
@@ -253,4 +253,115 @@ test('the lifted restore corner returns to the container corner when the drawer 
       ),
     ),
   ).toBe(16);
+});
+
+// KF-JHG76H: an open overlay is the top layer, so it covers another panel's
+// restore control the way it covers the rest of the page (the Workbench rule:
+// restore controls sit two below the overlay z-index). The control used to
+// stack at 42, above a wireSidebar compact overlay and its backdrop and above
+// an overlay ResizableRegion, where it floated over the overlay and stayed
+// clickable behind the overlay's focus trap.
+const overlayControl = (page: Page, scenario: 'overlay' | 'region-overlay') =>
+  scenario === 'overlay'
+    ? page
+        .locator('[data-panel-restore="overlay-inspector"]')
+        .getByRole('button', { name: 'Show inspector' })
+    : page
+        .locator('[data-region-restore="overlay-rail"]')
+        .getByRole('button', { name: 'Show navigator' });
+
+/** What the topmost element at the control's center belongs to. */
+const hitAtCenter = (control: Locator) =>
+  control.evaluate((button) => {
+    const box = button.getBoundingClientRect();
+    const hit = document.elementFromPoint(
+      box.left + box.width / 2,
+      box.top + box.height / 2,
+    );
+    if (!hit) return 'nothing';
+    if (button.contains(hit)) return 'control';
+    if (hit.closest('.kui-collapsible-panel__backdrop')) return 'backdrop';
+    if (hit.closest('[data-component="resizable-region"]')) return 'region';
+    if (hit.closest('[data-component="collapsible-panel"]')) return 'panel';
+    return 'other';
+  });
+
+const callFixture = (page: Page, name: string, value?: boolean) =>
+  page.evaluate(
+    ([method, argument]) => {
+      (
+        globalThis as unknown as {
+          restoreFixture: Record<string, (value?: boolean) => void>;
+        }
+      ).restoreFixture[method]!(argument);
+    },
+    [name, value] as const,
+  );
+
+for (const width of [1280, 390]) {
+  test(`an open compact overlay and its backdrop cover another panel's restore control (${width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await mountFixture(page, 'overlay');
+    const control = overlayControl(page, 'overlay');
+    await expect(control).toBeVisible();
+    await expect(
+      page.locator('[data-panel-restore="overlay-inspector"]'),
+    ).toHaveCSS('z-index', '38');
+    expect(await hitAtCenter(control)).toBe('control');
+
+    await callFixture(page, 'openNav');
+    const backdrop = page.locator('.kui-collapsible-panel__backdrop');
+    await expect(backdrop).toHaveCSS('z-index', '39');
+    await expect.poll(() => hitAtCenter(control)).toBe('backdrop');
+
+    // Escape closes the overlay, and the control shows and works again.
+    await page.keyboard.press('Escape');
+    await expect(backdrop).toHaveCount(0);
+    await expect.poll(() => hitAtCenter(control)).toBe('control');
+    await control.click();
+    await expect(
+      page.locator('[data-collapsible-panel="overlay-inspector"]'),
+    ).toHaveAttribute('data-collapsed', 'false');
+  });
+
+  test(`an open overlay ResizableRegion covers a collapsed rail's restore control (${width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 800 });
+    await mountFixture(page, 'region-overlay');
+    const control = overlayControl(page, 'region-overlay');
+    await expect(control).toBeAttached();
+    await expect(
+      page.locator('[data-region-restore="overlay-rail"]'),
+    ).toHaveCSS('z-index', '39');
+    await expect.poll(() => hitAtCenter(control)).toBe('region');
+
+    // A collapsed overlay drops its pointer events, so the control beneath it
+    // is reachable again once the overlay closes.
+    await callFixture(page, 'collapseConsole', true);
+    await expect.poll(() => hitAtCenter(control)).toBe('control');
+  });
+}
+
+test("restore controls follow an app's overlay z-index, still beneath the backdrop", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 800 });
+  await mountFixture(page, 'overlay');
+  await page.addStyleTag({
+    content: ':root { --kui-collapsible-panel-overlay-z: 100; }',
+  });
+  await expect(
+    page.locator('[data-panel-restore="overlay-inspector"]'),
+  ).toHaveCSS('z-index', '98');
+  await callFixture(page, 'openNav');
+  await expect(page.locator('.kui-collapsible-panel__backdrop')).toHaveCSS(
+    'z-index',
+    '99',
+  );
+  await expect
+    .poll(() => hitAtCenter(overlayControl(page, 'overlay')))
+    .toBe('backdrop');
 });

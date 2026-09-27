@@ -34,6 +34,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   inside the work area's own content, does not move it. This uses CSS anchor
   positioning; engines without it keep the container corner.
 
+- **An open `@kerfjs/ui` `CollapsiblePanel` or `ResizableRegion` overlay now
+  covers other panels' restore controls, as a `Workbench` overlay does.** A
+  collapsed panel's `restoreControl` stacked at z-index 42, above
+  `wireSidebar`'s compact overlay and its backdrop and above an overlay
+  `ResizableRegion`, so it floated over an open overlay and stayed clickable
+  behind the overlay's focus trap. `--kui-collapsible-panel-restore-z` now
+  defaults to two less than `--kui-collapsible-panel-overlay-z` (38),
+  `--kui-resizable-region-restore-z` to two less than
+  `--kui-resizable-region-overlay-z` (39), and the compact backdrop's
+  `--kui-collapsible-panel-backdrop-z` to one less than the overlay (still
+  39), so an app that moves the overlay z-index keeps the order. When the
+  overlay closes, the control shows and works again.
 - **An open `@kerfjs/ui` `Workbench` overlay now covers other panels'
   restore controls.** Restore controls stacked above every overlay, so a
   collapsed drawer's corner restore control floated over an open right-rail

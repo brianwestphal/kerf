@@ -120,6 +120,41 @@ describe('CollapsiblePanel', () => {
     ).toContain('--kui-edge-inset-inline-end');
   });
 
+  it('stacks the restore control beneath an open overlay and its backdrop, tied to the overlay z-index', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/collapsible-panel.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const zIndex = (selector: string): string => {
+      const rule = root.nodes.find(
+        (node) => node.type === 'rule' && node.selector === selector,
+      );
+      if (rule?.type !== 'rule') throw new Error(`Missing ${selector} rule`);
+      const decl = rule.nodes.find(
+        (node) => node.type === 'decl' && node.prop === 'z-index',
+      );
+      if (decl?.type !== 'decl') throw new Error(`No z-index on ${selector}`);
+      return decl.value.replace(/\s+/g, ' ');
+    };
+
+    // An open overlay is the top layer (the Workbench rule). The backdrop sits
+    // one below the overlay and the restore control two below, so a moved
+    // overlay z-index moves both and the control never floats over the
+    // backdrop or the open panel.
+    expect(
+      zIndex(
+        '[data-collapsible-overlay="true"] .kui-collapsible-panel,\n.kui-collapsible-panel[data-presentation="overlay"]',
+      ),
+    ).toBe('var(--kui-collapsible-panel-overlay-z, 40)');
+    expect(zIndex('.kui-collapsible-panel__backdrop')).toBe(
+      'var( --kui-collapsible-panel-backdrop-z, calc(var(--kui-collapsible-panel-overlay-z, 40) - 1) )',
+    );
+    expect(zIndex('.kui-collapsible-panel__restore')).toBe(
+      'var( --kui-collapsible-panel-restore-z, calc(var(--kui-collapsible-panel-overlay-z, 40) - 2) )',
+    );
+  });
+
   it('lifts the restore corner above an expanded drawer beside the panel, but not one nested in the work area', async () => {
     const file = resolve(
       import.meta.dirname,

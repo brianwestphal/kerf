@@ -235,7 +235,11 @@
    container becomes the corner's containing block and isolates its stacking
    only while a restore control is shown, at zero specificity so an app's own
    positioning of that container wins. The corner is inset from the
-   container's edges plus the unsafe area of each edge it reaches. */
+   container's edges plus the unsafe area of each edge it reaches. The
+   control belongs to the layer beneath open overlays, two below the overlay
+   z-index: an open overlay region covers it as it covers the rest of the
+   work area, the Workbench rule. A collapsed overlay drops its pointer
+   events, so the control is usable again as soon as the overlay closes. */
 :where(:has(> .kui-resizable-region__restore)) {
   position: relative;
   isolation: isolate;
@@ -266,7 +270,10 @@
      from this point instead of adding its own inset on top. */
   --kui-floating-toolbar-inset: 0px;
   position: absolute;
-  z-index: var(--kui-resizable-region-restore-z, 42);
+  z-index: var(
+    --kui-resizable-region-restore-z,
+    calc(var(--kui-resizable-region-overlay-z, 41) - 2)
+  );
   position-visibility: always;
   inset-block-end: calc(
     var(--_kui-resizable-region-restore-inset) +

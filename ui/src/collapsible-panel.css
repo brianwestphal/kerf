@@ -271,7 +271,11 @@
    corner's containing block and isolates its stacking only while a restore
    control is shown, at zero specificity so an app's own positioning of that
    container wins. The corner is inset from the container's edges plus the
-   unsafe area of each edge it reaches. */
+   unsafe area of each edge it reaches. The control belongs to the layer
+   beneath open overlays, two below the overlay z-index and so below the
+   compact overlay's backdrop: an open overlay covers it as it covers the rest
+   of the page, the Workbench rule. A collapsed overlay passes pointer events
+   through, so the control is usable again as soon as the overlay closes. */
 :where(:has(> .kui-collapsible-panel__restore)) {
   position: relative;
   isolation: isolate;
@@ -306,7 +310,10 @@
      from this point instead of adding its own inset on top. */
   --kui-floating-toolbar-inset: 0px;
   position: absolute;
-  z-index: var(--kui-collapsible-panel-restore-z, 42);
+  z-index: var(
+    --kui-collapsible-panel-restore-z,
+    calc(var(--kui-collapsible-panel-overlay-z, 40) - 2)
+  );
   position-visibility: always;
   inset-block-end: calc(
     var(--_kui-collapsible-panel-restore-inset) +
@@ -349,13 +356,18 @@
 }
 
 /* A button does not stretch between its insets the way a div does, so the
-   backdrop sizes itself to its containing block explicitly. */
+   backdrop sizes itself to its containing block explicitly. It sits one below
+   the overlay z-index, so an app that moves the overlay moves the backdrop
+   with it, and the restore controls stay beneath both. */
 .kui-collapsible-panel__backdrop {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: var(--kui-collapsible-panel-backdrop-z, 39);
+  z-index: var(
+    --kui-collapsible-panel-backdrop-z,
+    calc(var(--kui-collapsible-panel-overlay-z, 40) - 1)
+  );
   border: 0;
   padding: 0;
   background: var(--kui-color-scrim, rgb(0 0 0 / 32%));
