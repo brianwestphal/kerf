@@ -797,7 +797,9 @@ the region (`ui/tests/browser/resizable-region-fill.spec.ts` with
 `layout-fill.spec.ts`). A collapsed `CollapsiblePanel`'s or `ResizableRegion`'s
 `restoreControl` floats in a corner of its container (not the viewport), inset
 once even around a `FloatingToolbar`, both embedded in a scrolling page and in
-a full-viewport shell (`ui/tests/browser/restore-anchor.spec.ts` with
+a full-viewport shell, and lifts above an expanded bottom drawer beside it
+(sibling or work-area column) but not one nested deeper, dropping back when
+the drawer collapses (`ui/tests/browser/restore-anchor.spec.ts` with
 `ui/tests/browser/fixtures/restore-anchor.tsx`). Expanded slide-motion content follows the region's
 actual track, so a clamped region never shows content past its separator, and
 `wireResizableRegions` bounds pointer/keyboard resizing to that visible track

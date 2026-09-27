@@ -1975,4 +1975,37 @@ describe('production UI primitives', () => {
       rule('.kui-resizable-region__restore[data-position="bottom-end"]'),
     ).toContain('--kui-edge-inset-inline-end');
   });
+
+  it('lifts the region restore corner above an expanded bottom drawer beside it, scoped to the container', () => {
+    const css = readFileSync(
+      resolve(import.meta.dirname, '../../src/resizable-region.css'),
+      'utf8',
+    ).replace(/\s+/g, ' ');
+    const rule = (selector: string) => {
+      const start = css.indexOf(`${selector} {`);
+      if (start < 0) throw new Error(`Missing ${selector}`);
+      return css.slice(start, css.indexOf('}', start));
+    };
+    expect(rule(':where(:has(> .kui-resizable-region__restore))')).toContain(
+      'anchor-scope: --kui-restore-drawer;',
+    );
+    // Only an expanded, inline bottom region publishes the drawer anchor.
+    expect(
+      rule(
+        '.kui-resizable-region[data-axis="vertical"][data-edge="start"][data-presentation="inline"]:not( [data-collapsed="true"] )',
+      ),
+    ).toContain('anchor-name: --kui-restore-drawer;');
+    expect(
+      rule(':where(:has(> .kui-resizable-region__restore)) > * > * > *'),
+    ).toContain('anchor-scope: --kui-restore-drawer;');
+    const corner = rule('.kui-resizable-region__restore');
+    // The container-edge declaration comes first, so an engine without
+    // anchor positioning keeps it.
+    expect(corner.indexOf('+ var( --kui-edge-inset-block-end,')).toBeLessThan(
+      corner.indexOf('anchor( --kui-restore-drawer top,'),
+    );
+    expect(corner).toContain(
+      'anchor( --kui-restore-drawer top, var( --kui-edge-inset-block-end,',
+    );
+  });
 });

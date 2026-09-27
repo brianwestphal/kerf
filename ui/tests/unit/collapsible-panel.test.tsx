@@ -83,13 +83,29 @@ describe('CollapsiblePanel', () => {
     // positioning of that container win.
     expect(
       declarations(':where(:has(> .kui-collapsible-panel__restore))'),
-    ).toEqual({ position: 'relative', isolation: 'isolate' });
+    ).toEqual({
+      position: 'relative',
+      isolation: 'isolate',
+      'anchor-scope': '--kui-restore-drawer',
+    });
     const corner = declarations('.kui-collapsible-panel__restore');
     expect(corner).toMatchObject({
       position: 'absolute',
       '--kui-floating-toolbar-inset': '0px',
     });
-    expect(corner['inset-block-end']).toContain(
+    // Without anchor positioning, the first inset-block-end (the container's
+    // bottom edge) is the one that applies.
+    const cornerRule = root.nodes.find(
+      (node) =>
+        node.type === 'rule' &&
+        node.selector === '.kui-collapsible-panel__restore',
+    );
+    if (cornerRule?.type !== 'rule') throw new Error('Missing corner rule');
+    const blockEnds = cornerRule.nodes
+      .filter((node) => node.type === 'decl' && node.prop === 'inset-block-end')
+      .map((node) => (node.type === 'decl' ? node.value : ''));
+    expect(blockEnds).toHaveLength(2);
+    expect(blockEnds[0]!.replace(/\s+/g, ' ')).toContain(
       'var(--_kui-collapsible-panel-restore-inset) + var( --kui-edge-inset-block-end,',
     );
     expect(
@@ -102,6 +118,47 @@ describe('CollapsiblePanel', () => {
         '.kui-collapsible-panel__restore[data-position="bottom-end"]',
       )['inset-inline-end'],
     ).toContain('--kui-edge-inset-inline-end');
+  });
+
+  it('lifts the restore corner above an expanded drawer beside the panel, but not one nested in the work area', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/collapsible-panel.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const rule = (selector: string) => {
+      const found = root.nodes.find(
+        (node) =>
+          node.type === 'rule' &&
+          node.selector.replace(/\s+/g, ' ') === selector,
+      );
+      if (found?.type !== 'rule') throw new Error(`Missing ${selector} rule`);
+      return found.nodes.flatMap((node) =>
+        node.type === 'decl'
+          ? [[node.prop, node.value.replace(/\s+/g, ' ')] as const]
+          : [],
+      );
+    };
+
+    // Only an expanded, inline bottom drawer publishes the anchor.
+    expect(
+      rule(
+        '.kui-collapsible-panel--bottom[data-presentation="inline"]:not( [data-collapsed="true"], [data-collapsible-overlay="true"] *, [data-collapsible-responsive="hidden"] * )',
+      ),
+    ).toEqual([['anchor-name', '--kui-restore-drawer']]);
+    // Drawers at depth three or more below the restore's container are
+    // another layout's, so they are scoped out of the corner's lookup.
+    expect(
+      rule(':where(:has(> .kui-collapsible-panel__restore)) > * > * > *'),
+    ).toEqual([['anchor-scope', '--kui-restore-drawer']]);
+    // The corner floats above the drawer's top edge, falling back to the
+    // container's bottom edge when no drawer is in scope.
+    const blockEnds = rule('.kui-collapsible-panel__restore').filter(
+      ([prop]) => prop === 'inset-block-end',
+    );
+    expect(blockEnds[1]![1]).toBe(
+      'calc( var(--_kui-collapsible-panel-restore-inset) + anchor( --kui-restore-drawer top, var( --kui-edge-inset-block-end, var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px)) ) ) )',
+    );
   });
 
   it('bottom-anchors drawer content so the slide has one stable motion origin', async () => {

@@ -239,6 +239,23 @@
 :where(:has(> .kui-resizable-region__restore)) {
   position: relative;
   isolation: isolate;
+  anchor-scope: --kui-restore-drawer;
+}
+/* An expanded bottom region (a vertical region resized from its top edge)
+   beside the collapsed one — a direct child of that container or of one of
+   its direct children (the app's work-area column) — owns the container's
+   bottom, so the corner floats above the drawer's top edge instead of over
+   it. CollapsiblePanel drawers publish the same anchor. A drawer nested
+   deeper, inside the work area's own content, belongs to another layout and
+   is scoped out. Without anchor positioning the corner keeps the container's
+   bottom edge. */
+.kui-resizable-region[data-axis="vertical"][data-edge="start"][data-presentation="inline"]:not(
+    [data-collapsed="true"]
+  ) {
+  anchor-name: --kui-restore-drawer;
+}
+:where(:has(> .kui-resizable-region__restore)) > * > * > * {
+  anchor-scope: --kui-restore-drawer;
 }
 .kui-resizable-region__restore {
   --_kui-resizable-region-restore-inset: var(
@@ -250,11 +267,23 @@
   --kui-floating-toolbar-inset: 0px;
   position: absolute;
   z-index: var(--kui-resizable-region-restore-z, 42);
+  position-visibility: always;
   inset-block-end: calc(
     var(--_kui-resizable-region-restore-inset) +
       var(
         --kui-edge-inset-block-end,
         var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+      )
+  );
+  /* Above an expanded drawer's top edge when one is in scope (see above). */
+  inset-block-end: calc(
+    var(--_kui-resizable-region-restore-inset) +
+      anchor(
+        --kui-restore-drawer top,
+        var(
+          --kui-edge-inset-block-end,
+          var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+        )
       )
   );
 }

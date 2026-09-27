@@ -482,6 +482,25 @@ Workbench corner, it sets `--kui-floating-toolbar-inset: 0px`, so a
 `FloatingToolbar` hosting the control floats from the corner instead of
 doubling the inset.
 
+The corner also routes around an expanded bottom drawer beside the collapsed
+component (KF-S5VYVM: a collapsed rail's control used to float over an open
+drawer sharing its container). An expanded inline bottom `CollapsiblePanel`,
+or an expanded inline bottom `ResizableRegion` (`axis="vertical"`,
+`edge="start"`), publishes a CSS anchor (`anchor-name: --kui-restore-drawer`).
+While a restore control is shown, its container scopes that name
+(`anchor-scope`) and so do the container's great-grandchildren, which leaves
+exactly the drawers that are direct children of the container or of one of its
+direct children (the app's work-area column) in scope. The corner's second
+`inset-block-end` declaration is the restore inset plus
+`anchor(--kui-restore-drawer top, <container bottom edge inset>)`: with a drawer
+in scope it floats that inset above the drawer's top edge — and follows a
+drag-resize — and without one it falls back to the container corner. A drawer
+nested deeper, inside the work area's own content, belongs to that content and
+never moves the corner. An engine without anchor positioning drops the second
+declaration and keeps the container corner (the prior behavior). The corner
+sets `position-visibility: always` so it is never hidden with a scrolled-away
+anchor. `Workbench`'s own rail corners are out of this rule's scope.
+
 **Implementation:** shipped (KF-T17Q1X). UX-demo recipe (the "Collapsible sidebar"
 recipe: a left rail + bottom drawer with toggles, compact overlay, and persistence)
 and three-engine Playwright coverage of collapse/expand, focus move/restore, the

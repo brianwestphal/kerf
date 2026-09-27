@@ -21,7 +21,7 @@ const fixtureBundle = build({
 
 async function mountFixture(
   page: Page,
-  scenario: 'embedded' | 'viewport',
+  scenario: 'embedded' | 'viewport' | 'drawer',
 ): Promise<void> {
   const result = await fixtureBundle;
   const javascript = result.outputFiles.find((file) =>
@@ -155,4 +155,102 @@ test('a full-viewport shell still floats restore controls in the screen corners'
   expect(Math.round(800 - (buttonBox.y + buttonBox.height))).toBe(16);
   expect(Math.round(1280 - (groupBox.x + groupBox.width))).toBe(16);
   expect(Math.round(800 - (groupBox.y + groupBox.height))).toBe(16);
+});
+
+// KF-S5VYVM: a collapsed rail's restore corner lifts clear of an expanded
+// bottom drawer that sits beside it (a direct sibling in the rail's own
+// container) or in a work-area column of that container, so the control
+// floats over the work area instead of the drawer. A drawer nested deeper
+// inside the work-area content is someone else's layout and leaves the corner
+// alone.
+const collapseDrawers = (page: Page, value: boolean) =>
+  page.evaluate((collapsed) => {
+    (
+      globalThis as unknown as {
+        restoreFixture: { collapseDrawers(value: boolean): void };
+      }
+    ).restoreFixture.collapseDrawers(collapsed);
+  }, value);
+
+const navButton = (page: Page, id: string) =>
+  page
+    .locator(`[data-panel-restore="${id}"]`)
+    .getByRole('button', { name: 'Show navigator' });
+
+/** Distance (px) from the control's bottom to the drawer's top edge. */
+const clearance = async (control: Locator, drawer: Locator) => {
+  const button = (await control.boundingBox())!;
+  const edge = (await drawer.boundingBox())!;
+  return Math.round(edge.y - (button.y + button.height));
+};
+
+for (const width of [1280, 390]) {
+  test(`a collapsed rail's restore corner lifts above an expanded sibling or column drawer (${width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await mountFixture(page, 'drawer');
+
+    const siblingHost = page.locator('[data-restore-host="sibling-drawer"]');
+    const siblingDrawer = page.locator(
+      '[data-collapsible-panel="restore-sibling-drawer"]',
+    );
+    const sibling = navButton(page, 'restore-sibling-nav');
+    await expect(sibling).toBeVisible();
+    expect(await clearance(sibling, siblingDrawer)).toBe(16);
+    expect(await insets(siblingHost, sibling)).toMatchObject({ start: 16 });
+
+    const columnDrawer = page.locator(
+      '[data-region-id="restore-open-console"][data-component="resizable-region"]',
+    );
+    const column = navButton(page, 'restore-column-nav');
+    expect(await clearance(column, columnDrawer)).toBe(16);
+
+    // A drawer nested inside the work-area content does not move the corner.
+    const deepHost = page.locator('[data-restore-host="deep-drawer"]');
+    await expect(
+      page.locator('[data-collapsible-panel="restore-deep-drawer"]'),
+    ).toBeVisible();
+    expect(
+      await insets(deepHost, navButton(page, 'restore-deep-nav')),
+    ).toMatchObject({ start: 16, bottom: 16 });
+  });
+}
+
+test('the lifted restore corner returns to the container corner when the drawer collapses, and lifts again when it expands', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await mountFixture(page, 'drawer');
+  const siblingHost = page.locator('[data-restore-host="sibling-drawer"]');
+  const columnHost = page.locator('[data-restore-host="column-drawer"]');
+  const sibling = navButton(page, 'restore-sibling-nav');
+  const column = navButton(page, 'restore-column-nav');
+
+  await collapseDrawers(page, true);
+  await expect
+    .poll(async () => (await insets(siblingHost, sibling)).bottom)
+    .toBe(16);
+  expect(await insets(columnHost, column)).toMatchObject({
+    start: 16,
+    bottom: 16,
+  });
+
+  await collapseDrawers(page, false);
+  await expect
+    .poll(async () =>
+      clearance(
+        sibling,
+        page.locator('[data-collapsible-panel="restore-sibling-drawer"]'),
+      ),
+    )
+    .toBe(16);
+  expect(
+    await clearance(
+      column,
+      page.locator(
+        '[data-region-id="restore-open-console"][data-component="resizable-region"]',
+      ),
+    ),
+  ).toBe(16);
 });

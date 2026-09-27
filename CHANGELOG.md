@@ -17,6 +17,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   containing block with a transient 1px probe and maps its viewport
   coordinates into it, compensating translation and scale. Rotated or skewed
   containing blocks are not compensated.
+- **A `@kerfjs/ui` collapsed rail's restore control no longer covers an open
+  bottom drawer beside it.** When a `CollapsiblePanel` or `ResizableRegion`
+  with a `restoreControl` shared its container with an expanded bottom
+  drawer — a bottom `CollapsiblePanel` or bottom `ResizableRegion` — as a
+  sibling or inside the app's work-area column, the control floated in the
+  container's bottom corner, on top of the drawer. It now floats the same
+  inset above the drawer's top edge, follows the drawer as it resizes, and
+  returns to the corner when the drawer collapses. A drawer nested deeper,
+  inside the work area's own content, does not move it. This uses CSS anchor
+  positioning; engines without it keep the container corner.
+
 - The `@kerfjs/ui` heading guidance (`ai/skill.md`, `llms.txt`,
   `docs/component-selection.md`, `docs/layout.md`) now sizes a panel title to
   its track: extra-large `ToolbarText` stays the title size for a page, view,

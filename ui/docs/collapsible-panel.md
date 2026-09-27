@@ -32,8 +32,17 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   and isolates its stacking (an app's own `position` on the container still
   wins). The corner is inset by `--kui-collapsible-panel-restore-inset` plus the
   container's edge insets, and it owns that inset, so a `FloatingToolbar` hosting
-  the control floats from the corner without adding its own. `ResizableRegion`'s
-  `restoreControl` follows the same rule.
+  the control floats from the corner without adding its own. When the same
+  container also holds an expanded inline bottom drawer — a bottom
+  `CollapsiblePanel` or a bottom `ResizableRegion` (`axis="vertical"`,
+  `edge="start"`) — as a direct child, or inside one of its direct children
+  (the app's work-area column), the corner floats that inset above the
+  drawer's top edge instead of over the drawer, and returns to the container's
+  bottom when the drawer collapses. It follows the drawer through CSS anchor
+  positioning, so a drag-resize moves it too; an engine without anchor
+  positioning keeps the container's bottom corner. A drawer nested deeper,
+  inside the work area's own content, belongs to that content and does not move
+  the corner. `ResizableRegion`'s `restoreControl` follows the same rules.
   Overlay presentation also clamps fixed-size animated content to the configured
   responsive overlay maximum, so a remembered desktop size cannot escape a narrow
   viewport.

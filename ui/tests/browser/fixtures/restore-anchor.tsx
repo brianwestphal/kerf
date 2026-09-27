@@ -22,11 +22,16 @@ import { mount, signal } from 'kerfjs';
  * `restoreControl`, in two placements: embedded in a scrolling page between
  * unrelated content (`embedded`), and as a full-viewport app shell
  * (`viewport`). The restore control must float in a corner of the component's
- * own container in both, never in a corner of the viewport.
+ * own container in both, never in a corner of the viewport. The `drawer`
+ * scenario holds a collapsed rail beside an expanded bottom drawer: as a
+ * sibling in the rail's own container, in a work-area column of that container,
+ * and nested deeper inside the work-area content (which must not move it).
  */
-type Scenario = 'embedded' | 'viewport';
+type Scenario = 'embedded' | 'viewport' | 'drawer';
 
 const scenario = signal<Scenario>('embedded');
+/** Whether the drawer scenario's drawers are collapsed. */
+const drawersCollapsed = signal(false);
 
 const content = (title: string) => (
   <Pane>
@@ -43,9 +48,9 @@ const fill = (title: string) => (
   </div>
 );
 
-const panel = () => (
+const panel = (id = 'restore-nav') => (
   <CollapsiblePanel
-    id="restore-nav"
+    id={id}
     side="left"
     collapsed
     label="Navigator"
@@ -60,6 +65,33 @@ const panel = () => (
   >
     {content('Navigator')}
   </CollapsiblePanel>
+);
+
+const drawer = (id: string) => (
+  <CollapsiblePanel
+    id={id}
+    side="bottom"
+    size={96}
+    label="Drawer"
+    collapsed={drawersCollapsed.value}
+  >
+    {content('Drawer')}
+  </CollapsiblePanel>
+);
+
+const openRegion = () => (
+  <ResizableRegion
+    id="restore-open-console"
+    label="Console"
+    axis="vertical"
+    edge="start"
+    size={96}
+    min={80}
+    max={200}
+    collapsed={drawersCollapsed.value}
+  >
+    {content('Console')}
+  </ResizableRegion>
 );
 
 const region = () => (
@@ -95,8 +127,57 @@ const intro = (
   </p>
 );
 
+// The sibling-drawer host is an app grid: the rail spans both rows and the
+// drawer sits under the work area, both direct children of the rail's
+// container.
+const gridStyle = document.createElement('style');
+gridStyle.textContent = `
+  [data-restore-host="sibling-drawer"] > .kui-collapsible-panel--left { grid-row: 1 / -1; }
+  [data-restore-host="sibling-drawer"] > .kui-collapsible-panel--bottom { grid-column: 2; }
+`;
+document.head.append(gridStyle);
+
+const hostStyle = (extra: string) =>
+  `height:240px;overflow:hidden;outline:1px dashed var(--kui-color-border);${extra}`;
+
+const drawers = () => (
+  <main style="display:grid;gap:24px;padding:24px">
+    <div
+      data-restore-host="sibling-drawer"
+      style={hostStyle(
+        'display:grid;grid-template-columns:auto 1fr;grid-template-rows:1fr auto',
+      )}
+    >
+      {panel('restore-sibling-nav')}
+      <div style="display:flex;min-width:0;min-height:0">
+        {content('Work area')}
+      </div>
+      {drawer('restore-sibling-drawer')}
+    </div>
+    <div data-restore-host="column-drawer" style={hostStyle('display:flex')}>
+      {panel('restore-column-nav')}
+      <div style="display:flex;flex-direction:column;flex:1;min-width:0;overflow:hidden">
+        {fill('Work area')}
+        {openRegion()}
+      </div>
+    </div>
+    <div data-restore-host="deep-drawer" style={hostStyle('display:flex')}>
+      {panel('restore-deep-nav')}
+      <div style="display:flex;flex:1 1 0;min-width:0;min-height:0">
+        {/* Work-area content that happens to hold its own drawer. */}
+        <div style="display:flex;flex-direction:column;flex:1;min-width:0">
+          {fill('Work-area content')}
+          {drawer('restore-deep-drawer')}
+        </div>
+      </div>
+    </div>
+  </main>
+);
+
 const view = () =>
-  scenario.value === 'embedded' ? (
+  scenario.value === 'drawer' ? (
+    drawers()
+  ) : scenario.value === 'embedded' ? (
     <main style="display:grid;gap:24px;padding:24px">
       {intro}
       <div
@@ -135,5 +216,8 @@ mount(document.querySelector<HTMLElement>('[data-restore-fixture]')!, view);
 (globalThis as unknown as Record<string, unknown>).restoreFixture = {
   show(value: Scenario) {
     scenario.value = value;
+  },
+  collapseDrawers(value: boolean) {
+    drawersCollapsed.value = value;
   },
 };

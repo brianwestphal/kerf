@@ -275,6 +275,26 @@
 :where(:has(> .kui-collapsible-panel__restore)) {
   position: relative;
   isolation: isolate;
+  anchor-scope: --kui-restore-drawer;
+}
+
+/* An expanded bottom drawer beside the collapsed panel — a direct child of
+   that container or of one of its direct children (the app's work-area
+   column) — owns the container's bottom, so the corner floats above the
+   drawer's top edge instead of over it. The drawer publishes that edge as an
+   anchor; a drawer nested deeper, inside the work area's own content, belongs
+   to another layout and is scoped out. Without anchor positioning the corner
+   keeps the container's bottom edge. */
+.kui-collapsible-panel--bottom[data-presentation="inline"]:not(
+    [data-collapsed="true"],
+    [data-collapsible-overlay="true"] *,
+    [data-collapsible-responsive="hidden"] *
+  ) {
+  anchor-name: --kui-restore-drawer;
+}
+
+:where(:has(> .kui-collapsible-panel__restore)) > * > * > * {
+  anchor-scope: --kui-restore-drawer;
 }
 
 .kui-collapsible-panel__restore {
@@ -287,11 +307,23 @@
   --kui-floating-toolbar-inset: 0px;
   position: absolute;
   z-index: var(--kui-collapsible-panel-restore-z, 42);
+  position-visibility: always;
   inset-block-end: calc(
     var(--_kui-collapsible-panel-restore-inset) +
       var(
         --kui-edge-inset-block-end,
         var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+      )
+  );
+  /* Above an expanded drawer's top edge when one is in scope (see above). */
+  inset-block-end: calc(
+    var(--_kui-collapsible-panel-restore-inset) +
+      anchor(
+        --kui-restore-drawer top,
+        var(
+          --kui-edge-inset-block-end,
+          var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+        )
       )
   );
 }
