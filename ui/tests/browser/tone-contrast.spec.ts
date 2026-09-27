@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import type { Page } from '@playwright/test';
@@ -243,22 +244,43 @@ async function mountToneText(
 /** Tones Web Awesome's theme also defines; pop is Kerf-only. */
 const WA_TONES = ['neutral', 'brand', 'success', 'warning', 'danger'] as const;
 
-/** Every tone token as the page resolves it, keyed by its custom property. */
-function resolveToneTokens(page: Page) {
-  return page.evaluate((tones) => {
+/**
+ * Every color token foundation.css declares, read from the stylesheet itself
+ * so a newly added token is covered without editing this list. Tokens with no
+ * Web Awesome counterpart (pop, the on-fill family) resolve identically by
+ * construction; the rest must fall back to exactly the theme's value.
+ */
+const FOUNDATION_COLOR_TOKENS = [
+  ...new Set(
+    [
+      ...readFileSync(
+        resolve(import.meta.dirname, '../../src/foundation.css'),
+        'utf8',
+      ).matchAll(/^\s*(--kui-color-[a-z-]+):/gm),
+    ].map((match) => match[1]!),
+  ),
+];
+
+/**
+ * Every foundation color token as the page resolves it, keyed by its custom
+ * property, plus the focus ring's resolved outline.
+ */
+function resolveColorTokens(page: Page) {
+  return page.evaluate((tokens) => {
     const probe = document.createElement('span');
     document.body.append(probe);
     const out: Record<string, string> = {};
-    for (const tone of tones)
-      for (const role of ['fill', 'border', 'on'])
-        for (const level of ['quiet', 'normal', 'loud']) {
-          const name = `--kui-color-${tone}-${role}-${level}`;
-          probe.style.color = `var(${name})`;
-          out[name] = window.getComputedStyle(probe).color;
-        }
+    for (const name of tokens) {
+      probe.style.color = `var(${name})`;
+      out[name] = window.getComputedStyle(probe).color;
+    }
+    probe.style.outline = 'var(--kui-focus-ring)';
+    const ring = window.getComputedStyle(probe);
+    out['--kui-focus-ring'] =
+      `${ring.outlineStyle} ${ring.outlineWidth} ${ring.outlineColor}`;
     probe.remove();
     return out;
-  }, WA_TONES);
+  }, FOUNDATION_COLOR_TOKENS);
 }
 
 /** Toned text contrast over the surface and the page (surface-lowered). */
@@ -320,16 +342,26 @@ function measureTonedText(page: Page) {
 }
 
 for (const colorScheme of ['light', 'dark'] as const) {
-  test(`without webawesome.css the foundation resolves Web Awesome's tone palette and toned text keeps AA (${colorScheme})`, async ({
+  test(`without webawesome.css the foundation resolves Web Awesome's color palette and toned text keeps AA (${colorScheme})`, async ({
     page,
   }) => {
     await page.setViewportSize({ width: 1280, height: 900 });
+    // The token list is parsed from the stylesheet: guard against a parse
+    // that silently matches nothing or misses the non-tone tokens.
+    expect(FOUNDATION_COLOR_TOKENS).toEqual(
+      expect.arrayContaining([
+        '--kui-color-surface-raised',
+        '--kui-color-text-link',
+        '--kui-color-border',
+        ...WA_TONES.map((tone) => `--kui-color-${tone}-on-loud`),
+      ]),
+    );
     await mountToneText(page, true, colorScheme);
-    const themed = await resolveToneTokens(page);
+    const themed = await resolveColorTokens(page);
     await mountToneText(page, false, colorScheme);
-    // Parity: every tone token the theme defines resolves identically from
-    // the foundation's own fallback in this color scheme.
-    expect(await resolveToneTokens(page)).toEqual(themed);
+    // Parity: every foundation color token (not only the tones) and the focus
+    // ring resolve identically from the foundation's own fallback.
+    expect(await resolveColorTokens(page)).toEqual(themed);
 
     const contrast = await measureTonedText(page);
     for (const [where, value] of Object.entries(contrast)) {

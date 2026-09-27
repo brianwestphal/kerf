@@ -533,10 +533,11 @@ and real-browser computed-style coverage. Its opt-in `wa-dialog.hide-actions` ho
 the directly exported `header-actions` part for dialogs with another dismissal
 affordance; the contract deliberately avoids unsupported chained shadow-part
 selectors. Without that bridge, `ui/src/foundation.css`'s `var(--wa-*, fallback)`
-fallbacks mirror its values, including each `light-dark()` pair, so tone tokens
-keep their dark-mode appearance; `ui/tests/browser/tone-contrast.spec.ts`
+fallbacks mirror its values, including each `light-dark()` pair, so every color
+token and the focus ring keep the themed appearance; `ui/tests/browser/tone-contrast.spec.ts`
 bundles `ui/tests/browser/fixtures/tone-text-cases.tsx` with and without the
-bridge and asserts token parity in both schemes plus AA toned text in dark mode.
+bridge and asserts parity for every `--kui-color-*` token it parses from
+`foundation.css` (plus the focus ring) in both schemes, and AA toned text.
 
 Within `ui/ai/`, the compatible selection catalog and package-qualified v2
 composition projection are joined by `application-ui-profile.*`: shipped

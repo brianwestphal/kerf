@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui` surfaces, links, and focus rings match the optional
+  `@kerfjs/ui/webawesome.css` theme without it. Three foundation fallbacks
+  pointed at a different token than the theme: `--kui-color-surface-raised`
+  fell back to the surface color (the theme's dark raised surface is
+  `#2c2c2e`), `--kui-color-text-link` fell back to the brand fill (`#0088ff`,
+  about 3.5:1 on white) instead of the brand on-quiet text color, and the focus
+  ring used the brand fill instead of the theme's focus color (`#007aff`). Each
+  now falls back to the theme's value. The browser parity test now covers every
+  `--kui-color-*` token the foundation declares, plus the focus ring, instead of
+  only the tone tokens.
 - The `@kerfjs/ui` UX catalog's `StateBanner` route adds a placeholder with a
   badge for every tone, next to the existing badge-less placeholder, so visual
   review and captures show the solid badge's loading skeleton on each tone's
