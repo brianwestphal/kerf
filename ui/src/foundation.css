@@ -367,6 +367,14 @@
   --kui-color-danger-on-quiet: var(--wa-color-danger-on-quiet, #c20b20);
   --kui-color-danger-on-normal: var(--wa-color-danger-on-normal, #8e0717);
   --kui-color-danger-on-loud: var(--wa-color-danger-on-loud, #fff);
+  /* Danger text placed ON a danger fill (e.g. the danger StateBanner) and the
+     danger Badge's solid fill. The light value matches danger-on-quiet, which
+     already clears WCAG AA (5.7:1) over danger-fill-quiet. The dark value is
+     lighter than danger-on-quiet (#ff696c), which reached only 5.7:1 over the
+     dark fill-quiet (4.0:1 as dimmed banner detail) and left the solid badge's
+     dark text and placeholder skeleton the weakest of any tone on a mid-red
+     fill; #ffa0a2 matches the other tones' pale dark on-fill values. */
+  --kui-color-danger-on-fill: light-dark(#c20b20, #ffa0a2);
 
   /* Compatibility aliases retained for existing @kerfjs/ui consumers. */
   --kui-color-border: var(

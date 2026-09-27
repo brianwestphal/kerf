@@ -27,7 +27,7 @@
   --_kui-badge-fill-quiet: var(--kui-color-brand-fill-quiet);
   --_kui-badge-fill-solid: var(--kui-color-brand-on-fill);
   --_kui-badge-border: var(--kui-color-brand-border-normal);
-  --_kui-badge-on-quiet: var(--kui-color-brand-on-quiet);
+  --_kui-badge-on-quiet: var(--kui-color-brand-on-fill);
   --_kui-badge-on-solid: var(--kui-color-surface);
 }
 
@@ -35,7 +35,7 @@
   --_kui-badge-fill-quiet: var(--kui-color-pop-fill-quiet);
   --_kui-badge-fill-solid: var(--kui-color-pop-on-fill);
   --_kui-badge-border: var(--kui-color-pop-border-normal);
-  --_kui-badge-on-quiet: var(--kui-color-pop-on-quiet);
+  --_kui-badge-on-quiet: var(--kui-color-pop-on-fill);
   --_kui-badge-on-solid: var(--kui-color-surface);
 }
 
@@ -43,7 +43,7 @@
   --_kui-badge-fill-quiet: var(--kui-color-success-fill-quiet);
   --_kui-badge-fill-solid: var(--kui-color-success-on-fill);
   --_kui-badge-border: var(--kui-color-success-border-normal);
-  --_kui-badge-on-quiet: var(--kui-color-success-on-quiet);
+  --_kui-badge-on-quiet: var(--kui-color-success-on-fill);
   --_kui-badge-on-solid: var(--kui-color-surface);
 }
 
@@ -51,15 +51,15 @@
   --_kui-badge-fill-quiet: var(--kui-color-warning-fill-quiet);
   --_kui-badge-fill-solid: var(--kui-color-warning-on-fill);
   --_kui-badge-border: var(--kui-color-warning-border-normal);
-  --_kui-badge-on-quiet: var(--kui-color-warning-on-quiet);
+  --_kui-badge-on-quiet: var(--kui-color-warning-on-fill);
   --_kui-badge-on-solid: var(--kui-color-surface);
 }
 
 .kui-badge[data-tone="danger"] {
   --_kui-badge-fill-quiet: var(--kui-color-danger-fill-quiet);
-  --_kui-badge-fill-solid: var(--kui-color-danger-on-quiet);
+  --_kui-badge-fill-solid: var(--kui-color-danger-on-fill);
   --_kui-badge-border: var(--kui-color-danger-border-normal);
-  --_kui-badge-on-quiet: var(--kui-color-danger-on-quiet);
+  --_kui-badge-on-quiet: var(--kui-color-danger-on-fill);
   --_kui-badge-on-solid: var(--kui-color-surface);
 }
 

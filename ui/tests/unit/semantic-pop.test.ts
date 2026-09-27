@@ -89,7 +89,7 @@ describe('pop semantic color', () => {
     ).toMatchObject({
       '--_kui-badge-fill-quiet': 'var(--kui-color-pop-fill-quiet)',
       '--_kui-badge-fill-solid': 'var(--kui-color-pop-on-fill)',
-      '--_kui-badge-on-quiet': 'var(--kui-color-pop-on-quiet)',
+      '--_kui-badge-on-quiet': 'var(--kui-color-pop-on-fill)',
       '--_kui-badge-on-solid': 'var(--kui-color-surface)',
     });
     expect(

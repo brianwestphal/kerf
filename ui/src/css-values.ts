@@ -90,6 +90,7 @@ const uiColorNames = [
   'danger-fill-loud',
   'danger-fill-normal',
   'danger-fill-quiet',
+  'danger-on-fill',
   'danger-on-loud',
   'danger-on-normal',
   'danger-on-quiet',

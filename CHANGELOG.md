@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui` danger text and badges are readable in dark mode, and every
+  tone's `StateBanner` detail and quiet or outline `Badge` text now clears
+  WCAG AA. The danger tone was the only one without an on-fill foreground: its
+  solid badge fill and `StateBanner` text reused `danger-on-quiet`, a mid red
+  in dark mode (banner detail 4.0:1, badge placeholder skeleton 2.25:1). A new
+  `--kui-color-danger-on-fill` token (also accepted by `uiColor()`) matches the
+  other tones' pale dark values, lifting the dark danger banner text to 8.2:1.
+  The banner detail no longer dims to 78% opacity, which left the light info,
+  success, warning, and danger details at 3.4 to 4.3:1; it reads as secondary
+  through its smaller type, and the neutral detail uses the quiet text color.
+  Quiet and outline badges use their tone's on-fill text, lifting light brand,
+  success, and warning from about 4.1:1 to at least 5:1.
+
 - A `@kerfjs/ui` placeholder skeleton inside a solid `Badge`, such as the
   badge of a `StateBanner` placeholder, is now clearly visible. The generic
   skeleton tint, 12% of the text color, almost disappeared on the badge's

@@ -248,6 +248,9 @@ and metadata labels. Configure its semantic `tone`, `appearance`, `shape`, and
 `size`; do not recreate or override badge anatomy in an application or consuming
 component. Use `label` when visible content is abbreviated and `ariaHidden` only
 when a surrounding component already includes the same value in its accessible name.
+Every tone's text and solid fill use that tone's `--kui-color-{tone}-on-fill`
+token (`neutral` uses the text colors), the foreground tuned to clear WCAG AA
+(4.5:1) on the tone's fills in light and dark mode.
 
 `ListItem` renders its leading icon and nested SVG at a root-scaled 18px by
 default while retaining the row's 44px minimum interactive target. Multiline
@@ -282,7 +285,10 @@ badge composes `Badge` beside the title and follows the banner tone by default. 
 title, badge, and detail flow as inline text: a wrapping title keeps the badge one item
 gap after its last word, and a detail that does not fit whole beside them moves to its
 own line and truncates at the full copy width (below 576px it always takes its own
-line). Its five built-in
+line). The title and detail both use the tone's `--kui-color-{tone}-on-fill`
+foreground (`info` uses `brand`) at full strength, clearing WCAG AA over the tone's fill in light and dark
+mode; the detail reads as secondary through its smaller, regular-weight type, and
+only the neutral tone quiets it, to `--kui-color-neutral-on-quiet`. Its five built-in
 tones can be rethemed globally with
 `--kui-state-banner-{tone}-{background|border|foreground}`. Toolbar control,
 segmented-control, app-tab, and tab-bar colors likewise use their public

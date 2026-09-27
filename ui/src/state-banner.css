@@ -41,6 +41,15 @@
   align-items: center;
   gap: var(--kui-layout-item-gap, remify(8px));
 }
+/* The detail is secondary through its smaller, regular-weight type, not a
+   dimmed color: an opacity cut toned details below WCAG AA over their fills.
+   Only the neutral tone has a quieter text color that still clears AA. */
+.kui-state-banner[data-tone="neutral"] {
+  --_kui-state-banner-detail: var(
+    --kui-state-banner-detail,
+    var(--kui-color-neutral-on-quiet)
+  );
+}
 .kui-state-banner[data-tone="info"] {
   --_kui-state-banner-background: var(
     --kui-state-banner-background,
@@ -123,7 +132,7 @@
   );
   --_kui-state-banner-foreground: var(
     --kui-state-banner-foreground,
-    var(--kui-state-banner-danger-foreground, var(--kui-color-danger-on-quiet))
+    var(--kui-state-banner-danger-foreground, var(--kui-color-danger-on-fill))
   );
 }
 .kui-state-banner__icon {
@@ -176,7 +185,6 @@
   overflow: clip;
   color: var(--_kui-state-banner-detail);
   font-size: var(--kui-font-2xs);
-  opacity: 0.78;
   text-overflow: ellipsis;
   vertical-align: baseline;
   white-space: nowrap;
