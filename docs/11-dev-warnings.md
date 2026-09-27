@@ -479,7 +479,7 @@ but remains unreachable when `kerfjs/dev` is not imported.
 **Module:** [`src/mount.ts`](../src/mount.ts).
 **Trigger:** `mount(el, render)` is called on an element that is already the root of a live mount, or on a descendant or ancestor of such an element. **What it catches:** the "two competing effects" pattern — two `mount()` calls on the same DOM subtree both install `effect()` watchers that fight over the same live nodes, producing conflicting DOM mutations and unpredictable rendering output with no runtime error.
 
-**Mechanism.** `mount()` assigns a non-enumerable `Symbol.for('kerfjs.mounted')` marker to the `rootEl` at mount time. `assertNotInsideMountedTree()` checks the element itself (same-element double-mount), all ancestors (descendant-of-mounted mount), and all descendants (ancestor-of-mounted mount) before allowing the mount to proceed. If any check fires, it throws with a message naming the element (`<tagName>` or `<tagName#id>`) and pointing at the disposer as the fix. The disposer returned by `mount()` deletes the marker, so a legitimate unmount + remount cycle never false-positives.
+**Mechanism.** `mount()` assigns a non-enumerable `Symbol.for('kerfjs.mounted')` marker to the `rootEl` at mount time. `assertNotInsideMountedTree()` checks the element itself (same-element double-mount), all ancestors (descendant-of-mounted mount), and all descendants (ancestor-of-mounted mount) before allowing the mount to proceed. Both walks stop at an **overlay host slot** — an element carrying `data-kerf-overlay-host` and `data-morph-skip` (`src/utils/overlay-host.ts`, KF-FBHQEP: the in-dialog slot a popover renders into so a modal `<dialog>` does not inert it) — the one sanctioned boundary between two mounts; the enclosing mount's morph, binding wiring, and `each()` marker scans skip that subtree too, so the two mounts never see each other's markers. If any check fires, it throws with a message naming the element (`<tagName>` or `<tagName#id>`) and pointing at the disposer as the fix. The disposer returned by `mount()` deletes the marker, so a legitimate unmount + remount cycle never false-positives.
 
 **This guard is unconditional — it does not even require the dev entry.** Double-mounting is almost never intentional — it's a programming error in every realistic scenario (hot-reload teardown missing, copy-paste island setup, conditional `mount()` hitting the same element on re-evaluation). A `console.warn` would let the broken two-effect state continue running, which is harder to debug than an immediate throw. The nested-mount cases (`mount(ancestor)` after `mount(descendant)`) are structural errors that must also fail hard. Unlike the opt-in family, there is no env var to silence this guard.
 
@@ -540,10 +540,19 @@ what is left:
 - **`inert`** — a non-modal surface was lifted and is visible, but it contains
   focusable controls, and every engine (verified in Chromium, Firefox, and
   WebKit) keeps a popover outside the modal dialog inert even in the top
-  layer. A tooltip has no controls, so it never triggers this.
+  layer. A tooltip has no controls, so it never triggers this. KF-FBHQEP
+  (the in-dialog host slot) narrowed it to the case where **no slot was
+  used**: a `popover()` / `tooltip()` anchored inside the modal dialog renders
+  into the dialog's `[data-kerf-overlay-host][data-morph-skip]` element (one is
+  created automatically for a dialog kerf opened), stays inside the modal
+  subtree, is never lifted, and never warns. It still fires for an anchor
+  outside the dialog, an app-owned dialog without a slot, an explicit
+  `container` outside the dialog, and a surface re-hosted above a dialog opened
+  later.
 
-The message points at rendering interactive content inside the dialog's own
-markup, or opening the dialog without `native: true`.
+The message points at anchoring the popover inside the dialog and giving the
+dialog a `data-kerf-overlay-host` element, or passing a `container` inside the
+dialog.
 
 **Dedup scope.** Once per reason per page.
 

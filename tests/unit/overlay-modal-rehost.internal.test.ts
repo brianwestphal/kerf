@@ -136,19 +136,19 @@ describe('opening a kerf modal <dialog> re-hosts surfaces already showing', () =
     expect(tip.dataset.shown).toBe('true');
   });
 
-  it('a lifted modal (confirm() inside a native dialog) re-shows a lifted tooltip above itself', () => {
+  it('a lifted modal (confirm() inside a native dialog) re-hosts a tooltip from the dialog host slot above itself', () => {
     stubPopoverApi();
     openNativeModal();
     const tip = showTooltip(document.getElementById('in-dialog')!);
-    expect(calls).toEqual(['show:kerf-tooltip']); // lifted at open
+    // Anchored inside the dialog: rendered into its host slot, not lifted.
+    expect(tip.parentElement!.hasAttribute('data-kerf-overlay-host')).toBe(
+      true,
+    );
+    expect(calls).toEqual([]);
 
     void confirm('Sure?', { className: 'inner' });
     expect(document.querySelector('dialog.inner')).not.toBeNull();
-    expect(calls).toEqual([
-      'show:kerf-tooltip',
-      'hide:kerf-tooltip',
-      'show:kerf-tooltip',
-    ]);
+    expect(calls).toEqual(['show:kerf-tooltip']);
     expect(tip.dataset.shown).toBe('true');
   });
 

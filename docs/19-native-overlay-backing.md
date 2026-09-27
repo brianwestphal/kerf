@@ -131,7 +131,53 @@ const menu = popover(triggerEl, <Menu />, { native: true });
   lifted non-modal surface with focusable controls, because every engine keeps
   a popover outside the modal dialog inert even in the top layer (verified in
   Chromium, Firefox, and WebKit). Tooltips have no controls, so the lift fully
-  repairs them; an interactive menu belongs inside the dialog's own markup.
+  repairs them; an interactive popover anchored inside the dialog avoids the
+  lift entirely by rendering into the dialog's host slot (next bullet).
+- **A popover anchored inside a modal `<dialog>` renders into its host slot
+  (KF-FBHQEP).** The lift above keeps a surface visible, but a lifted popover
+  with controls is still inert: every engine inerts content outside the modal,
+  top layer or not. So `popover()` and `tooltip()` first ask whether their
+  anchor sits inside an open modal `<dialog>`; if it does, and that dialog has
+  a **host slot** — an element carrying both `data-kerf-overlay-host` and
+  `data-morph-skip` whose nearest `<dialog>` is that dialog — the surface is
+  appended there instead of to `document.body`. It is then part of the modal
+  subtree: clickable, focusable, reached by the dialog's native Tab order, and
+  never lifted (so the `inert` dev warning cannot fire for it). Placement is
+  unchanged — `positionAnchored` still sets `position: fixed`, and a
+  `<dialog>` without a `transform` / `filter` / `contain` is not a containing
+  block for fixed descendants, so viewport coordinates still land next to the
+  anchor. Stack arbitration is unchanged too: the popover is above the dialog
+  on the open-order stack, so an Escape-dismissible popover consumes the first
+  Escape (and `preventDefault`s it so the dialog never sees the close request)
+  and the next Escape reaches the dialog's `cancel`.
+  - **kerf's own dialogs get a slot automatically.** When the anchor's dialog
+    is one kerf opened (a `native: true` modal, or a lifted one) and has no
+    slot yet, kerf appends `<div data-kerf-overlay-host data-morph-skip
+data-morph-preserve style="display:contents">` to it on first use: no
+    layout box (so it cannot disturb a flex/grid `gap`), skipped and never
+    removed by the dialog content's own `mount()` re-renders, and gone with
+    the dialog. It is created lazily so a dialog that never hosts a popover
+    keeps exactly the markup its content rendered.
+  - **App-owned dialogs opt in** by rendering `<div data-kerf-overlay-host
+data-morph-skip></div>` anywhere inside the dialog (both attributes are
+    required — the slot rule is one selector everywhere), or by passing
+    `container` explicitly. An element marked without `data-morph-skip` is not
+    a slot. A slot inside a nested `<dialog>` belongs to that dialog, not the
+    outer one.
+  - **The slot is the one sanctioned nested-mount boundary.** The dialog is
+    usually already a `mount()` root (kerf's own dialog mounts its content
+    into the `<dialog>` itself), and kerf allows one mount per tree. The slot
+    (`src/utils/overlay-host.ts`) is where that rule stops: `mount()`'s nesting
+    guard does not walk past it in either direction, the enclosing mount's
+    morph skips it (`data-morph-skip`), and its binding wiring and `each()`
+    list-marker scans never descend into it — so the inner surface's
+    `data-kfb` / `kfb:` / `kf-list:` markers, which reuse the same per-mount
+    counters, can never be taken for the outer mount's own. This boundary is
+    what costs the shared core ~0.08 KB min+gzip.
+  - An explicit `container` always wins. A `container` inside an open modal
+    `<dialog>` is also never lifted, since the surface is already part of the
+    modal subtree (for a kerf-mounted dialog that container must be a slot, or
+    the nesting guard throws and construction rolls back).
 - **Surfaces already showing are re-hosted when kerf opens a modal
   `<dialog>` (KF-FJ9VD8).** The lift above is decided when a surface opens, so
   kerf also repairs the reverse order: whenever it calls `showModal()` itself
@@ -163,6 +209,14 @@ const menu = popover(triggerEl, <Menu />, { native: true });
   _appears_ (it still governs which document the element is created in, which
   matters for nested-document / Tauri cases). No dev warning is emitted — it is
   documented behavior.
+- **A host slot relies on `position: fixed` escaping the dialog.** A
+  surface rendered into a modal dialog's host slot is positioned in viewport
+  coordinates. If the app styles that `<dialog>` with a `transform`, `filter`,
+  `perspective`, or `contain: layout/paint` (a common centering or animation
+  trick), the dialog becomes the containing block for fixed descendants and the
+  popover lands offset by the dialog's position. Animate `opacity` or use
+  `margin: auto` centering instead, or pass a `container` outside the dialog
+  (visible but inert — see §19.4).
 - **Focus-restore is doubly handled.** `<dialog>` restores focus on close and kerf
   also restores it; the result is the same, and there is no conflict.
 
@@ -210,6 +264,15 @@ event) but **not** the Popover API, and neither engine models the real top layer
   platform behavior: a `native` `confirm` is a `<dialog>` with `open` set that
   resolves on click and disappears on close, and a `native` `popover` is
   `:popover-open` in the top layer.
+- **The in-dialog host slot** (`tests/unit/overlay-modal-host.internal.test.ts`)
+  pins slot selection, on-demand creation for kerf's dialogs, the app opt-in,
+  explicit-container precedence, Escape ordering, and the nested-mount
+  boundary (an outer mount re-rendering its bindings and `each()` lists while a
+  popover with its own bindings and list lives in the slot);
+  `tests/browser/overlay-modal-host.spec.ts` proves in real engines that the
+  popover's button is clickable and focusable, Tab stays inside the modal,
+  Escape closes the popover before the dialog, and fixed placement still lands
+  below the anchor.
 - **Construction rollback** (`tests/unit/overlay-construction.test.ts` with
   stubbed throwing `showModal` / `showPopover`; `tests/browser/overlay.spec.ts` ›
   "native: a showModal() failure rolls the <dialog> back…" with a real detached

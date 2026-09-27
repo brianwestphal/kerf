@@ -29,6 +29,7 @@ import {
   type PopoverPlacement,
   positionAnchored,
 } from './overlay-position.js';
+import { OVERLAY_HOST_SELECTOR } from './utils/overlay-host.js';
 
 /** A user-initiated dismissal trigger. */
 export type DismissTrigger = 'escape' | 'backdrop' | 'outside';
@@ -169,25 +170,63 @@ function overlayArbitration(doc: Document): OverlayArbitration {
   });
 }
 
-// Is a modal `<dialog>` open (KF-0V9RTE: a plain surface opened in that state
-// is inert and painted beneath the dialog's top layer)? kerf's own native
-// dialogs are known from the stack; an app-owned one is found through
-// `:modal`, which an older engine may not parse (then only kerf's count).
-function modalDialogOpen(doc: Document, arbitration: OverlayArbitration) {
-  if (
-    arbitration.stack.some(
-      ({ el, modal }) =>
-        modal && el.isConnected && (el as HTMLDialogElement).open === true,
-    )
-  )
+// Is `dialog` an open modal `<dialog>`? kerf's own are known from the stack;
+// an app-owned one is found through `:modal`, which an older engine may not
+// parse (then only kerf's own count).
+function isOpenModal(
+  dialog: Element,
+  arbitration: OverlayArbitration,
+): boolean {
+  if (!dialog.isConnected || (dialog as HTMLDialogElement).open !== true)
+    return false;
+  if (arbitration.stack.some(({ el, modal }) => modal && el === dialog))
     return true;
   try {
-    for (const dialog of doc.querySelectorAll('dialog[open]'))
-      if (dialog.matches(':modal')) return true;
+    return dialog.matches(':modal');
   } catch {
-    // `:modal` unsupported — kerf-opened dialogs above are all we can see.
+    return false; // `:modal` unsupported
   }
-  return false;
+}
+
+// Is a modal `<dialog>` open (KF-0V9RTE: a plain surface opened in that state
+// is inert and painted beneath the dialog's top layer)?
+function modalDialogOpen(
+  doc: Document,
+  arbitration: OverlayArbitration,
+): boolean {
+  return (
+    arbitration.stack.some(({ el }) => isOpenModal(el, arbitration)) ||
+    Array.from(doc.querySelectorAll('dialog[open]')).some((dialog) =>
+      isOpenModal(dialog, arbitration),
+    )
+  );
+}
+
+// The in-dialog host slot (KF-FBHQEP: a surface lifted over a modal
+// `<dialog>` is visible but inert, because every engine inerts content outside
+// the modal). A `popover()` / `tooltip()` whose anchor sits inside an open
+// modal `<dialog>` renders into that dialog's `[data-kerf-overlay-host]`
+// element instead, so it is part of the modal subtree and fully interactive.
+// An app-owned dialog opts in by marking an element; a dialog kerf opened
+// itself gets one on demand — `display: contents` so it adds no layout box,
+// and `data-morph-skip` + `data-morph-preserve` so the dialog content's own
+// `mount()` neither re-renders nor removes it (`utils/overlay-host.ts` makes
+// the slot a nested-mount boundary).
+function overlayHost(anchor: Element): Element | undefined {
+  const arbitration = overlayArbitration(document);
+  const dialog = anchor.closest('dialog');
+  if (dialog === null || !isOpenModal(dialog, arbitration)) return undefined;
+  let host = Array.from(dialog.querySelectorAll(OVERLAY_HOST_SELECTOR)).find(
+    (el) => el.closest('dialog') === dialog,
+  );
+  if (host === undefined && arbitration.stack.some(({ el }) => el === dialog)) {
+    dialog.insertAdjacentHTML(
+      'beforeend',
+      '<div data-kerf-overlay-host data-morph-skip data-morph-preserve style="display:contents"></div>',
+    );
+    host = dialog.lastElementChild as Element;
+  }
+  return host;
 }
 
 // `self` is on the stack and handles `kind` (its callers are exactly the
@@ -264,7 +303,13 @@ export function overlay(
   // is lifted the same way even without `native` (KF-0V9RTE), because a plain
   // `<div>` would be inert and painted beneath the dialog.
   const arbitration = overlayArbitration(document);
-  const liftOverModal = !native && modalDialogOpen(document, arbitration);
+  // A surface placed inside an open modal `<dialog>` (its host slot, or an
+  // explicit `container` there) is already part of the modal subtree: no lift.
+  const containerDialog = container.closest('dialog');
+  const liftOverModal =
+    !native &&
+    !(containerDialog !== null && isOpenModal(containerDialog, arbitration)) &&
+    modalDialogOpen(document, arbitration);
   const topLayer = native || liftOverModal;
   const useDialog = topLayer && trap && supportsDialog();
   const usePopover = topLayer && !trap && supportsPopover();
@@ -597,7 +642,12 @@ export {
 
 /** Options for {@link popover}. */
 export interface PopoverOptions {
-  /** Where to append the popover wrapper. Default `document.body`. */
+  /**
+   * Where to append the popover wrapper. Default: when `anchor` sits inside an
+   * open modal `<dialog>`, that dialog's `[data-kerf-overlay-host]` element (a
+   * dialog kerf opened gets one automatically), so the popover is part of the
+   * modal subtree and stays interactive; otherwise `document.body`.
+   */
   container?: Element;
   /** Class on the wrapper. Default `'kerf-popover'`. */
   className?: string;
@@ -663,7 +713,7 @@ export function popover(
         : [outsideIgnore];
 
   const handle = overlay(content, {
-    container,
+    container: container ?? overlayHost(anchor),
     className,
     dismiss,
     trap: false,
@@ -702,7 +752,7 @@ export type TooltipContent = string | SafeHtml | (() => MountResult);
 
 /** Options for {@link tooltip}. */
 export interface TooltipOptions extends AnchorPositionOptions {
-  /** Where to append the tooltip wrapper. Default `document.body`. */
+  /** Where to append the tooltip wrapper. Default: the anchor's modal-dialog host slot (see {@link PopoverOptions.container}), else `document.body`. */
   container?: Element;
   /** Class on the wrapper. Default `'kerf-tooltip'`. */
   className?: string;
@@ -768,7 +818,7 @@ export function tooltip(
     // The anchor left the document while the show was pending (KF-BAVCEV).
     if (!anchor.isConnected) return;
     const handle = overlay(body, {
-      container,
+      container: container ?? overlayHost(anchor),
       className,
       dismiss: false,
       trap: false,

@@ -19,6 +19,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   the pairing, not the contrast; pass `--fail-on-review` to gate it. The
   `webawesome-theme.md` customization example now sets both halves of each
   pair.
+- **A popover inside a modal `<dialog>` is clickable.** Browsers make
+  everything outside an open modal dialog inert, so a popover lifted above the
+  dialog was visible but its buttons could not be clicked or focused, and
+  kerf's one-mount-per-tree rule kept it from rendering inside a kerf-mounted
+  dialog. `popover()` and `tooltip()` whose anchor sits inside an open modal
+  `<dialog>` now render into the dialog's host slot, an element marked
+  `data-kerf-overlay-host data-morph-skip`, so they are part of the modal and
+  fully interactive: Tab reaches them, and Escape closes the popover before the
+  dialog. A dialog `kerfjs/overlay` opened gets the slot automatically (an
+  empty `display: contents` element added on first use). For your own
+  `<dialog>`, add `<div data-kerf-overlay-host data-morph-skip></div>` to its
+  markup, or pass `container`. The slot is the one place a second `mount()`
+  may live inside a mounted tree: the enclosing mount's morph, nesting guard,
+  and binding and `each()` marker scans all stop there. The `kerfjs/dev`
+  `inert` warning now fires only when no slot was used.
 - `@kerfjs/ui` elevation shadows follow the color scheme, with or without the
   optional `@kerfjs/ui/webawesome.css` theme. Kerf's theme layer set
   `--wa-shadow-s` / `-m` / `-l` to fixed light-mode shadows (14%, 11%, and 9%

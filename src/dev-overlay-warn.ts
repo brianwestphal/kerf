@@ -15,7 +15,11 @@
  * - `inert`: a non-modal surface WAS lifted and is visible, but it contains
  *   focusable controls — and browsers keep a popover outside the modal dialog
  *   inert even in the top layer, so those controls cannot be focused or
- *   clicked. (A tooltip has no controls, so the lift fully repairs it.)
+ *   clicked. (A tooltip has no controls, so the lift fully repairs it.) It
+ *   fires only when no in-dialog host slot was used (KF-FBHQEP): a
+ *   `popover()` anchored inside the dialog renders into the dialog's
+ *   `[data-kerf-overlay-host]` element instead, is never lifted, and so
+ *   never warns.
  *
  * Reachable only through the `overlayBlockedByModal` hook slot, so it drops out
  * of production bundles with the rest of the family.
@@ -36,8 +40,9 @@ const MESSAGES: Record<OverlayBlockedReason, string> = {
   inert:
     'kerf overlay(): a non-modal surface opened while a modal <dialog> is open was lifted into the top ' +
     'layer so it is visible, but browsers keep everything outside a modal dialog inert — its focusable ' +
-    "controls cannot be focused or clicked. Render interactive content inside the dialog's own markup " +
-    '(for example a <details> menu), or open the dialog without `native: true`.',
+    'controls cannot be focused or clicked. Anchor the popover inside the dialog and give the dialog a ' +
+    '`data-kerf-overlay-host` element (dialogs kerf opens get one automatically), or pass a `container` ' +
+    'inside the dialog.',
 };
 
 export function maybeWarnOverlayBlockedByModal(

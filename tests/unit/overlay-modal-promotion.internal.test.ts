@@ -64,13 +64,20 @@ const openNativeModal = () =>
     initialFocus: '#anchor',
   });
 const anchor = () => document.getElementById('anchor') as HTMLElement;
+// An explicit container OUTSIDE the dialog: an anchor inside a kerf dialog
+// would otherwise render into its host slot (overlay-modal-host.internal.test.ts)
+// and never take the lift path pinned here.
+const outsideDialog = { container: document.body };
 
 describe('a non-native surface opened over a native modal <dialog>', () => {
   it('a tooltip is lifted into the top layer via the Popover API', () => {
     stubPopoverApi();
     vi.useFakeTimers();
     openNativeModal();
-    const dispose = tooltip(anchor(), 'tip', { delay: 0 });
+    const dispose = tooltip(anchor(), 'tip', {
+      delay: 0,
+      container: document.body,
+    });
     anchor().dispatchEvent(new Event('pointerenter'));
     vi.advanceTimersByTime(0);
 
@@ -85,12 +92,12 @@ describe('a non-native surface opened over a native modal <dialog>', () => {
   it('a popover with controls is lifted, and dev warns that its controls stay inert', () => {
     stubPopoverApi();
     openNativeModal();
-    const h = popover(anchor(), raw('<button>pick</button>'));
+    const h = popover(anchor(), raw('<button>pick</button>'), outsideDialog);
     expect(h.el.getAttribute('popover')).toBe('manual');
     expect(warn).toHaveBeenCalledTimes(1);
     expect(String(warn.mock.calls[0][0])).toMatch(/inert/);
 
-    popover(anchor(), raw('<button>again</button>')).close();
+    popover(anchor(), raw('<button>again</button>'), outsideDialog).close();
     expect(warn).toHaveBeenCalledTimes(1); // one-shot
     h.close();
     expect(h.el.dataset.shown).toBeUndefined(); // hidePopover ran
@@ -110,7 +117,7 @@ describe('a non-native surface opened over a native modal <dialog>', () => {
 
   it('without the Popover API the surface stays a plain <div> and dev warns that it is hidden', () => {
     openNativeModal(); // happy-dom: no Popover API
-    const h = popover(anchor(), raw('<p>menu</p>'));
+    const h = popover(anchor(), raw('<p>menu</p>'), outsideDialog);
     expect(h.el.hasAttribute('popover')).toBe(false);
     expect(warn).toHaveBeenCalledTimes(1);
     expect(String(warn.mock.calls[0][0])).toMatch(/beneath/);
@@ -142,10 +149,12 @@ describe('a non-native surface opened over a native modal <dialog>', () => {
     const dialog = document.createElement('dialog');
     document.body.appendChild(dialog);
     dialog.showModal();
+    const realMatches = Element.prototype.matches;
     const matches = vi
       .spyOn(Element.prototype, 'matches')
-      .mockImplementation(() => {
-        throw new SyntaxError(':modal');
+      .mockImplementation(function (this: Element, selector: string) {
+        if (selector === ':modal') throw new SyntaxError(':modal');
+        return realMatches.call(this, selector);
       });
     try {
       const h = popover(document.body, raw('<p>menu</p>'));
@@ -180,7 +189,7 @@ describe('a non-native surface opened over a native modal <dialog>', () => {
     enterProductionShape();
     try {
       openNativeModal();
-      const h = popover(anchor(), raw('<p>menu</p>'));
+      const h = popover(anchor(), raw('<p>menu</p>'), outsideDialog);
       h.close();
       expect(warn).not.toHaveBeenCalled();
     } finally {

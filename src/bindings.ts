@@ -43,6 +43,7 @@
  */
 
 import { effect, isSignal, type Signal } from './reactive.js';
+import { isOverlayHost, OVERLAY_HOST_SELECTOR } from './utils/overlay-host.js';
 import { syncFormProp } from './utils/syncFormProp.js';
 import { isDangerousUrlValue, reportDangerousUrl } from './utils/url-screen.js';
 
@@ -379,7 +380,12 @@ function wireInto(
  */
 function indexAttrEls(scope: Element, attrName: string): Map<string, Element> {
   const map = new Map<string, Element>();
+  // Skip another mount's markers inside an overlay host slot below `scope`.
+  // One lookup decides whether any slot exists, so the common case pays no
+  // per-element walk.
+  const hasHost = scope.querySelector(OVERLAY_HOST_SELECTOR);
   for (const el of scope.querySelectorAll(`[${attrName}]`)) {
+    if (hasHost && scope.contains(el.closest(OVERLAY_HOST_SELECTOR))) continue;
     for (const id of (el.getAttribute(attrName) as string).split(','))
       map.set(id, el);
   }
@@ -528,7 +534,10 @@ function collectComments(
       const data = (c as Comment).data;
       if (data.startsWith(prefix))
         out.set(data.slice(prefix.length), c as Comment);
-    } else if (c.nodeType === Node.ELEMENT_NODE) {
+    } else if (
+      c.nodeType === Node.ELEMENT_NODE &&
+      !isOverlayHost(c as Element) // another mount's markers live there
+    ) {
       collectComments(c, prefix, out);
     }
   }

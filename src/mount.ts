@@ -56,6 +56,7 @@ import {
   flattenWithoutListItems,
   type Segment,
 } from './segment.js';
+import { isOverlayHost } from './utils/overlay-host.js';
 
 /** What `mount()`'s render function may return; non-SafeHtml values coerce (nullish/boolean → render nothing). */
 export type MountResult =
@@ -99,19 +100,21 @@ function assertNotInsideMountedTree(rootEl: HTMLElement): void {
         'kerf supports one mount per element — compose with plain functions that return JSX instead of nesting mounts.',
     );
   }
-  // Ancestors — walk up.
+  // Ancestors — walk up, stopping at an overlay host slot: the one sanctioned
+  // nested-mount boundary (see `utils/overlay-host.ts`).
   let ancestor: Element | null = rootEl.parentElement;
-  while (ancestor) {
+  while (ancestor && !isOverlayHost(ancestor)) {
     if (isMounted(ancestor)) throw new Error(NESTED_MOUNT_MSG);
     ancestor = ancestor.parentElement;
   }
-  // Descendants — DFS.
+  // Descendants — DFS, not descending into overlay host slots.
   const stack: Element[] = [];
   for (let i = 0; i < rootEl.children.length; i++)
     stack.push(rootEl.children[i]);
   while (stack.length > 0) {
     const cur = stack.pop() as Element;
     if (isMounted(cur)) throw new Error(NESTED_MOUNT_MSG);
+    if (isOverlayHost(cur)) continue;
     for (let i = 0; i < cur.children.length; i++) stack.push(cur.children[i]);
   }
 }

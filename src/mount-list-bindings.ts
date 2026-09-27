@@ -23,6 +23,7 @@ import {
   type ListSegment,
   type Segment,
 } from './segment.js';
+import { isOverlayHost } from './utils/overlay-host.js';
 import { parseRowTemplate, rowContractError } from './utils/row-contract.js';
 
 /**
@@ -284,6 +285,8 @@ export function cleanupOrphanBindings(
 function collectComments(node: Node, out: Comment[]): void {
   for (let c: Node | null = node.firstChild; c; c = c.nextSibling) {
     if (c.nodeType === Node.COMMENT_NODE) out.push(c as Comment);
-    else if (c.nodeType === Node.ELEMENT_NODE) collectComments(c, out);
+    // An overlay host slot holds another mount's list markers.
+    else if (c.nodeType === Node.ELEMENT_NODE && !isOverlayHost(c as Element))
+      collectComments(c, out);
   }
 }

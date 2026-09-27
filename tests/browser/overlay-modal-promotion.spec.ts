@@ -27,9 +27,13 @@ test('a non-native tooltip over a native modal <dialog> is lifted into the top l
       native: true,
       initialFocus: '#in-dialog',
     });
+    // An explicit container outside the dialog takes the lift path; left to
+    // its default, an anchor inside the dialog renders into the dialog's host
+    // slot instead (overlay-modal-host.spec.ts).
     tooltip(document.getElementById('in-dialog'), 'Opens settings', {
       delay: 0,
       hideDelay: 0,
+      container: document.body,
     });
   });
 

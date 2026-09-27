@@ -470,7 +470,7 @@ mount(footerEl, () => <div>{cartTotal.value.toFixed(2)}</div>);
 
 Each region re-renders only when its own dependencies change. Adding an item to the cart triggers all three; changing an unrelated piece of state triggers none.
 
-The regions must be disjoint: mounting the same element twice, or an element inside (or containing) an already-mounted tree, throws immediately — one mount per tree. Compose with plain functions that return JSX instead of nesting mounts; see [`docs/11-dev-warnings.md`](/kerf/docs/dev-warnings/) for the guard's details.
+The regions must be disjoint: mounting the same element twice, or an element inside (or containing) an already-mounted tree, throws immediately — one mount per tree. Compose with plain functions that return JSX instead of nesting mounts; see [`docs/11-dev-warnings.md`](/kerf/docs/dev-warnings/) for the guard's details. **One sanctioned exception:** an element carrying both `data-kerf-overlay-host` and `data-morph-skip` (the overlay host slot, see `popover()` in the API reference) is a boundary between two mounts. `kerfjs/overlay` mounts surfaces inside it, and the enclosing mount leaves it alone: its morph skips the subtree, the nesting guard stops there, and its binding and `each()` marker scans never descend into it.
 
 ## Server-rendering
 

@@ -78,7 +78,9 @@ const BUDGETS = [
   },
   {
     name: 'barrel',
-    budgetKb: 14.3,
+    // +0.1 for KF-FBHQEP: the overlay host slot is a nested-mount boundary the
+    // shared core (mount's nesting check, binding + list-marker scans) honors.
+    budgetKb: 14.4,
     description: 'the whole public barrel — worst case for a consumer',
     entry: `
       import * as kerf from '${DIST}/index.js';
@@ -142,7 +144,12 @@ const BUDGETS = [
     // KF-BAVCEV (+0.38 KB): popover/tooltip close when their anchor leaves the
     // document, reusing attach()'s removal lifecycle (MutationObserver +
     // shadow-root / first-connection handling) rather than a second copy.
-    budgetKb: 17.9,
+    // KF-FBHQEP (+0.19 KB): the in-dialog host slot — popover()/tooltip()
+    // anchored inside an open modal <dialog> render into its
+    // [data-kerf-overlay-host] element (created on demand for kerf's own
+    // dialogs) so their controls are not inert, plus the nested-mount boundary
+    // the shared core honors for that slot (~0.08 KB of the growth).
+    budgetKb: 18.1,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
@@ -186,8 +193,9 @@ const BUDGETS = [
     // for public-boundary input validation and first-render rollback (KF-SH06CP
     // virtualization dimension checks, KF-MKGFHK branded-source check, KF-KBWEBA
     // row disposal when the initial render throws); +0.1 for KF-KGFJP6 mount()
-    // first-render rollback in the shared core.
-    budgetKb: 13.2,
+    // first-render rollback in the shared core; +0.1 for KF-FBHQEP's
+    // overlay-host nested-mount boundary in the shared core.
+    budgetKb: 13.3,
     description:
       'the bindList subpath (keyed per-row mount + virtualization) — includes shared core',
     entry: `
@@ -224,7 +232,8 @@ const BUDGETS = [
     // ISOLATED size — remountOn mounts each fresh subtree, so it pulls in the
     // render core; marginal cost for an app already using kerf is ~1 KB.
     name: 'remount',
-    budgetKb: 10.5,
+    // +0.1 for KF-FBHQEP's overlay-host nested-mount boundary in the shared core.
+    budgetKb: 10.6,
     description:
       'the remount subpath (remountOn — keyed subtree replacement) — includes shared core',
     entry: `
