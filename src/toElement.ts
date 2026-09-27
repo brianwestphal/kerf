@@ -26,41 +26,41 @@ import type { SafeHtml } from './jsx-runtime.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
-// Written in the SVG spec's own casing for readability, but stored lowercased:
-// the lookup key is the HTML parser's `tagName.toLowerCase()`, and the HTML
-// parser has already folded `<linearGradient>` to `lineargradient` by then. A
-// camelCase entry here would never match (the orphan `clipPath` /
-// `linearGradient` / `radialGradient` / `foreignObject` fragments used to fall
-// through to the XHTML namespace). The XML re-parse restores the camelCase
-// localName on the returned element. `image` is not listed: the HTML parser
-// rewrites `<image>` to `<img>`, so it is detected from the raw input instead
-// (see `ORPHAN_SVG_IMAGE`).
-const SVG_FRAGMENT_TAGS: ReadonlySet<string> = new Set(
-  [
-    'g',
-    'path',
-    'circle',
-    'rect',
-    'line',
-    'polygon',
-    'polyline',
-    'ellipse',
-    'text',
-    'tspan',
-    'defs',
-    'use',
-    'symbol',
-    'clipPath',
-    'mask',
-    'pattern',
-    'filter',
-    'marker',
-    'linearGradient',
-    'radialGradient',
-    'stop',
-    'foreignObject',
-  ].map((tag) => tag.toLowerCase()),
-);
+// Entries are lowercase: the lookup key is the HTML parser's
+// `tagName.toLowerCase()`, and the HTML parser has already folded
+// `<linearGradient>` to `lineargradient` by then. A camelCase entry would never
+// match (the orphan `clipPath` / `linearGradient` / `radialGradient` /
+// `foreignObject` fragments used to fall through to the XHTML namespace). The
+// XML re-parse restores the camelCase localName on the returned element. Keep
+// this a plain array literal — no `.map()` — so esbuild still marks the `Set`
+// pure and the whole module tree-shakes out of bundles that never import
+// `toElement`. `image` is not listed: the HTML parser rewrites `<image>` to
+// `<img>`, so it is detected from the raw input instead (see
+// `ORPHAN_SVG_IMAGE`).
+const SVG_FRAGMENT_TAGS: ReadonlySet<string> = new Set([
+  'g',
+  'path',
+  'circle',
+  'rect',
+  'line',
+  'polygon',
+  'polyline',
+  'ellipse',
+  'text',
+  'tspan',
+  'defs',
+  'use',
+  'symbol',
+  'clippath',
+  'mask',
+  'pattern',
+  'filter',
+  'marker',
+  'lineargradient',
+  'radialgradient',
+  'stop',
+  'foreignobject',
+]);
 
 // A leading `<image` start tag (after whitespace), case-insensitive. The HTML
 // parser turns an orphan SVG `<image>` into an HTML `<img>`, so by the time
