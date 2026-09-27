@@ -26,6 +26,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   compared the HTML parser's lowercased tag against camelCase names. The
   fragment is now wrapped in `<svg>` and XML-parsed like `<path>` or `<g>`,
   and the returned element keeps its camelCase `localName`.
+- **A tooltip shown inside a modal no longer disables the modal.** `kerfjs/overlay`
+  used to treat the most recently opened overlay as the only one that could
+  react to input, so a `tooltip()` (which handles no input) inside an open
+  modal left Escape doing nothing and let Tab leave the dialog. Every overlay,
+  native or fallback, now joins one open-order stack, and each Escape, backdrop
+  click, outside click, or trapped Tab goes to the topmost surface that handles
+  it. A modal still blocks everything beneath it, and a surface that handles
+  nothing never intercepts. A popover that dismisses on Escape gets it before
+  the modal beneath. One click that is both outside a popover and on a modal's
+  backdrop now closes only the popover. A native `<dialog>` is arbitrated with
+  the fallback surfaces: one Escape closes one surface, and a fallback modal
+  beneath an open dialog no longer takes the dialog's Tab. Closing a lower
+  overlay first leaves focus in the overlay that holds it. An overlay opened
+  from inside it then restores focus to the closed overlay's opener, not a
+  detached node.
 - `create-kerf-component` accepts an explicit `boundaries.rootClass: null` as
   an author decision, as its schema always allowed. A wrapper whose root
   element belongs to another catalog (a `rendersAs` wrapper) no longer has to

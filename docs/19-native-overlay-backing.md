@@ -108,6 +108,17 @@ const menu = popover(triggerEl, <Menu />, { native: true });
   for the next hover/focus, and the error escapes the timer callback for the
   host to report (a window `error` event) — see `docs/8-api-reference.md`
   › `tooltip`.
+- **Native surfaces share the arbitration stack.** A native `<dialog>` or
+  `[popover]` joins the same per-document, open-order stack as the `<div>`
+  fallbacks (see `docs/8-api-reference.md` › `overlay`): the dialog's `cancel`
+  dismisses it only when it owns Escape, a fallback modal beneath an open
+  dialog leaves the dialog's `Tab` order and Escape alone, and a surface above
+  a dialog that consumes an Escape `preventDefault`s the keydown so the UA's
+  close request never reaches the dialog — one Escape closes one surface. A
+  `tooltip()` handles no input, so it never takes Escape or the trap from a
+  modal it is shown inside. (A plain-`<div>` surface opened while a native
+  modal is open lives in the inert document beneath the top layer; open it
+  with `native: true` too so it is visible and interactive.)
 - **Unchanged everywhere:** the promise API (`{ el, close, result }`), the `render`
   slots, `validate`, Enter-to-submit, `initialFocus`, `outsideIgnore`, and
   focus-restore. kerf's manual focus-restore stays in place — redundant with

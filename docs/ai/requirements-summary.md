@@ -146,7 +146,7 @@ Three-tier model:
 
 The `kerfjs/overlay` toast helper treats plain-string content as untrusted text: strings are HTML-escaped before mounting. Callers must use `SafeHtml` or a render function when they intentionally need markup.
 
-Concurrent plain-element fallback overlays in one document share a document-owned open-order stack. Escape, backdrop, and outside-click dismissal applies only to the topmost active fallback surface, for both modal and non-modal overlays; closing a lower surface programmatically removes only its own stack entry.
+Concurrent overlays in one document (fallback and native) share a document-owned open-order stack. Each Escape, backdrop click, outside click, or trapped Tab goes to the topmost surface that handles it; a modal surface blocks everything beneath it; a surface that handles nothing (a tooltip) never intercepts, so a tooltip inside a modal leaves the modal's Escape and focus trap working. One user action closes exactly one surface. Closing a lower surface programmatically removes only its own stack entry, keeps focus in the surface that holds it, and re-points focus restoration of surfaces opened from inside it to its own opener.
 
 The `kerfjs/overlay` public entry is composition-only. Overlay lifecycle and types live in an internal core, while `confirm`, `prompt`, `form`, and `choice` each have a focused implementation module that imports the core directly; this preserves the public surface without the former barrel/helper module cycle.
 

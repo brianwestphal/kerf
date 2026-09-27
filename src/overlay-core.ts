@@ -126,14 +126,60 @@ function supportsPopover(): boolean {
   );
 }
 
-const FALLBACK_OVERLAY_STACK = Symbol('kerf.fallbackOverlayStack');
-type FallbackOverlayDocument = Document & {
-  [FALLBACK_OVERLAY_STACK]?: HTMLElement[];
+// Stacked-surface arbitration (KF-CW7GJ8: a tooltip inside a modal used to
+// become "topmost" and disable the modal's Escape, backdrop, and focus trap).
+// Every open overlay — native or fallback — is recorded, in open order, on a
+// per-document stack. An input kind (Escape, a backdrop / outside click, Tab
+// for the trap) belongs to the topmost surface that HANDLES that kind; a
+// surface that doesn't handle it is transparent, except that a modal surface
+// is a barrier nothing beneath it sees past. A tooltip (or any overlay with no
+// dismiss trigger and no trap) handles nothing, so it never intercepts. The
+// `handled` set marks an event a surface already acted on, so one click that is
+// both "outside" a popover and on the modal backdrop closes only the popover.
+const OVERLAY_ARBITRATION = Symbol('kerf.overlayArbitration');
+
+/** An arbitration input: a dismiss trigger, or Tab for the focus trap. */
+type ArbitrationKind = DismissTrigger | 'trap';
+
+interface OverlaySurface {
+  el: HTMLElement;
+  triggers: readonly DismissTrigger[];
+  modal: boolean;
+  /** Where focus returns on close; re-pointed when the surface holding it closes first. */
+  restoreTo: Element | null;
+}
+
+interface OverlayArbitration {
+  stack: OverlaySurface[];
+  handled: WeakSet<Event>;
+}
+
+type ArbitratedDocument = Document & {
+  [OVERLAY_ARBITRATION]?: OverlayArbitration;
 };
 
-function fallbackOverlayStack(wrapper: HTMLElement): HTMLElement[] {
-  const document = wrapper.ownerDocument as FallbackOverlayDocument;
-  return (document[FALLBACK_OVERLAY_STACK] ??= []);
+function overlayArbitration(wrapper: HTMLElement): OverlayArbitration {
+  const document = wrapper.ownerDocument as ArbitratedDocument;
+  return (document[OVERLAY_ARBITRATION] ??= {
+    stack: [],
+    handled: new WeakSet(),
+  });
+}
+
+// `self` is on the stack and handles `kind` (its callers are exactly the
+// handlers it installed for that kind), so it owns `kind` unless some surface
+// above it handles `kind` too or is modal.
+function ownsInput(
+  stack: readonly OverlaySurface[],
+  self: OverlaySurface,
+  kind: ArbitrationKind,
+): boolean {
+  for (let i = stack.indexOf(self) + 1; i < stack.length; i++) {
+    const above = stack[i];
+    if (above.modal || (kind !== 'trap' && above.triggers.includes(kind)))
+      return false;
+  }
+  return true;
 }
 
 // Validate a string `initialFocus` BEFORE any DOM mutation: `querySelector`
@@ -186,7 +232,6 @@ export function overlay(
 
   const triggers: readonly DismissTrigger[] =
     dismiss === false ? [] : Array.isArray(dismiss) ? dismiss : [dismiss];
-  const restoreTo = document.activeElement;
 
   // Native top-layer backing (KF-526), feature-detected: a modal overlay
   // (`trap`) → `<dialog>.showModal()`; a non-modal one → `[popover]`. Each falls
@@ -206,12 +251,18 @@ export function overlay(
     wrapper.setAttribute('role', role);
     wrapper.setAttribute('aria-modal', 'true');
   }
-  const fallback = !useDialog && !usePopover;
-  const fallbackStack = fallback ? fallbackOverlayStack(wrapper) : undefined;
+  const arbitration = overlayArbitration(wrapper);
+  const surface: OverlaySurface = {
+    el: wrapper,
+    triggers,
+    modal: trap,
+    restoreTo: document.activeElement,
+  };
 
-  const isTopmostFallback = (): boolean =>
-    fallbackStack === undefined ||
-    fallbackStack[fallbackStack.length - 1] === wrapper;
+  // Does this surface own `kind` right now (and has no surface acted on `event`)?
+  const owns = (kind: ArbitrationKind, event?: Event): boolean =>
+    !(event !== undefined && arbitration.handled.has(event)) &&
+    ownsInput(arbitration.stack, surface, kind);
 
   const removers: Array<() => void> = [];
   const resultBox: { resolve?: (value: unknown) => void } = {};
@@ -228,10 +279,15 @@ export function overlay(
   function close(value?: unknown): void {
     if (state.closed) return;
     state.closed = true;
-    if (fallbackStack !== undefined) {
-      const stackIndex = fallbackStack.indexOf(wrapper);
-      if (stackIndex !== -1) fallbackStack.splice(stackIndex, 1);
-    }
+    const { stack } = arbitration;
+    const stackIndex = stack.indexOf(surface);
+    if (stackIndex !== -1) stack.splice(stackIndex, 1);
+    // A surface opened from inside this one would restore focus into a node
+    // that is about to be detached: hand it this surface's own restore target.
+    for (const other of stack)
+      if (other.restoreTo !== null && wrapper.contains(other.restoreTo))
+        other.restoreTo = surface.restoreTo;
+    const active = document.activeElement;
     for (const remove of removers) remove();
     disposeMount?.();
     // Exit the top layer before removing the node, so the native close steps run
@@ -243,9 +299,25 @@ export function overlay(
       else (wrapper as HTMLElement & { hidePopover(): void }).hidePopover();
     }
     wrapper.remove();
+    restoreFocus(active);
+    resultBox.resolve?.(value);
+  }
+
+  // Closing a surface that doesn't hold focus (an out-of-order close beneath
+  // another open surface) must not pull focus out of the surface that does;
+  // otherwise focus returns to where it was when this surface opened.
+  function restoreFocus(active: Element | null): void {
+    if (
+      active instanceof HTMLElement &&
+      active.isConnected &&
+      arbitration.stack.some((other) => other.el.contains(active))
+    ) {
+      if (document.activeElement !== active) active.focus();
+      return;
+    }
+    const { restoreTo } = surface;
     if (restoreTo instanceof HTMLElement && restoreTo.isConnected)
       restoreTo.focus();
-    resultBox.resolve?.(value);
   }
 
   function userDismiss(): void {
@@ -263,7 +335,7 @@ export function overlay(
       wrapper,
       typeof content === 'function' ? content : () => content,
     );
-    fallbackStack?.push(wrapper);
+    arbitration.stack.push(surface);
 
     // Enter the top layer after the content is mounted + connected.
     // `showModal()` moves focus into the dialog by default; kerf's
@@ -295,21 +367,27 @@ export function overlay(
       // A native modal `<dialog>` confines Tab focus itself and surfaces Escape as
       // a `cancel` event. Take that over: `preventDefault` so kerf owns teardown
       // (and so Escape is swallowed when it isn't a dismiss trigger), then dismiss.
+      // A surface stacked above that handles Escape (or is modal) owns it; a
+      // stray `cancel` then leaves this dialog open.
       const onCancel = (event: Event): void => {
         event.preventDefault();
-        if (wantEscape) userDismiss();
+        if (wantEscape && owns('escape')) userDismiss();
       };
       wrapper.addEventListener('cancel', onCancel);
       removers.push(() => wrapper.removeEventListener('cancel', onCancel));
     } else if (wantEscape || trap) {
       const onKeydown = (event: KeyboardEvent): void => {
-        if (!isTopmostFallback()) return;
         if (wantEscape && event.key === 'Escape') {
+          if (!owns('escape', event)) return;
+          // `preventDefault` also withholds the close request from a native
+          // `<dialog>` beneath, so one Escape closes exactly one surface.
           event.stopPropagation();
+          event.preventDefault();
+          arbitration.handled.add(event);
           userDismiss();
           return;
         }
-        if (trap && event.key === 'Tab') {
+        if (trap && event.key === 'Tab' && owns('trap')) {
           const items = focusable(wrapper);
           if (items.length === 0) {
             event.preventDefault();
@@ -336,8 +414,9 @@ export function overlay(
 
     if (triggers.includes('backdrop')) {
       const onClick = (event: Event): void => {
-        if (!isTopmostFallback()) return;
-        if (event.target === wrapper) userDismiss();
+        if (event.target !== wrapper || !owns('backdrop', event)) return;
+        arbitration.handled.add(event);
+        userDismiss();
       };
       wrapper.addEventListener('click', onClick);
       removers.push(() => wrapper.removeEventListener('click', onClick));
@@ -353,11 +432,12 @@ export function overlay(
       // Capture phase: the click that opened this overlay already passed
       // document's capture phase, so this never fires for that opening click.
       const onDocClick = (event: Event): void => {
-        if (!isTopmostFallback()) return;
         const target = event.target as Node | null;
         if (target === null) return;
         if (wrapper.contains(target)) return;
         if (ignore.some((el) => el === target || el.contains(target))) return;
+        if (!owns('outside', event)) return;
+        arbitration.handled.add(event);
         userDismiss();
       };
       document.addEventListener('click', onDocClick, true);
