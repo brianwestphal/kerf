@@ -23,7 +23,7 @@
  * off, the predicate short-circuits before any depth state is touched.
  */
 
-import { devFlag } from './dev-warn-config.js';
+import { devFlag, silenceHint } from './dev-warn-config.js';
 
 let depth = 0;
 let warned = false;
@@ -65,7 +65,7 @@ export function warnIfInsideEffect(fn: 'delegate' | 'delegateCapture'): void {
       'churn and each listener pins its handler closure. Register the delegate once at module ' +
       'or setup scope and gate behavior on the signal *inside the handler* where the read is free. ' +
       'See docs/5-event-delegation.md §5.3 "When capturing the disposer still isn\'t enough". ' +
-      'Set KERF_DEV_WARN_DELEGATE_IN_EFFECT=0 (or unset it) to silence this warning.',
+      silenceHint('delegateInEffect'),
   );
 }
 

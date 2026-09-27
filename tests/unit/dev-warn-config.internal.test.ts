@@ -28,6 +28,7 @@ import { _resetCoverageNoticeForTests } from '../../src/dev-signal.js';
 import {
   _resetWarningOptionsForTests,
   devFlag,
+  silenceHint,
 } from '../../src/dev-warn-config.js';
 import type { ListBinding } from '../../src/list-binding.js';
 import { defineStore } from '../../src/store.js';
@@ -269,5 +270,14 @@ describe('browser shape — no `process` object at all (the KF-434 defect)', () 
     } finally {
       (globalThis as { process?: unknown }).process = realProcess;
     }
+  });
+});
+
+describe('silenceHint() — the closing sentence of every switch-gated warning', () => {
+  it('leads with the enableWarnings() switch and keeps the env var as the Node fallback', () => {
+    expect(silenceHint('staleIndex')).toBe(
+      'Silence it with enableWarnings({ staleIndex: false }) from kerfjs/dev, ' +
+        'or set KERF_DEV_WARN_STALE_INDEX=0 (or unset it) under Node.',
+    );
   });
 });

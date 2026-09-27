@@ -68,6 +68,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   as well as `<details>` / `<dialog>`, and a content-only row change inside an
   `each()` list keeps its DOM node (and focus) unless the row's top-level tag
   changes or the same render also inserts, removes, or moves rows.
+- Every opt-in `kerfjs/dev` warning now ends with a silence hint that leads
+  with the browser-reachable switch, for example "Silence it with
+  enableWarnings({ narrowSet: false }) from kerfjs/dev, or set
+  KERF_DEV_WARN_NARROW_SET=0 (or unset it) under Node." Previously the
+  messages named only the environment variable, which a browser cannot reach.
+  The docs now teach `enableWarnings()` wherever they showed an env-only
+  switch, and name all three creation-time boundaries: `signal()`
+  (`untrackedSignals`), `effect()` (`delegateInEffect`), and `mount()`
+  (`rebuiltListeners`) decide once when created, so anything created before
+  the install or the opt-in stays uncovered.
 - The `kerfjs/dev` rebuilt-listeners warning (`rebuiltListeners` /
   `KERF_DEV_WARN_REBUILT_LISTENERS`) now dedups once per `mount()`, as
   documented. Previously the first warning silenced every other mount for

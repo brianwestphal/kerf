@@ -21,17 +21,23 @@
  *
  * ## Install ordering
  *
- * Every hook except one is read at CALL time (render, reconcile, `set()`,
- * `delegate()`), so installing any time before your first `mount()` is enough.
+ * Most hooks are read at CALL time (render, reconcile, `set()`, `delegate()`).
+ * Three are decided once, when their host is CREATED, so both installation and
+ * the warning's switch must precede it:
  *
- * The exception is `signalFactory`: `signal()` picks its constructor when the
- * signal is CREATED. Static imports are hoisted above a top-level
- * `await import()`, so module-scope signals in imported modules are created
- * before this module runs and the untracked-signal warning will not see them.
- * To cover those, make `import 'kerfjs/dev'` the FIRST STATIC import of a
- * dev-only entry file, then load the rest of your app.
+ *  - `signalFactory` — `signal()` picks its constructor (untracked signals).
+ *  - `wrapEffect` — `effect()` decides whether to wrap its body with the
+ *    effect-depth counter (delegate-in-effect).
+ *  - `listenerRebuild` — `mount()` decides whether to attach its
+ *    rebuilt-listeners `MutationObserver`.
  *
- * Opting into that warning prints this boundary once, so the gap is loud
+ * Static imports are hoisted above a top-level `await import()`, so
+ * module-scope signals and effects in imported modules are created before this
+ * module runs. To cover those, make `import 'kerfjs/dev'` the FIRST STATIC
+ * import of a dev-only entry file (calling `enableWarnings()` there), then load
+ * the rest of your app.
+ *
+ * Opting into the untracked-signal warning prints its boundary once, so the gap is loud
  * rather than silent. It cannot be closed by retro-fitting existing signals:
  * `Signal.prototype`'s `value` accessor is non-configurable, and reaching live
  * instances would require a per-signal registry that production would pay for.
@@ -116,9 +122,11 @@ export type { DevWarningOptions } from './dev-warn-config.js';
  * goes through `globalThis.process` into a local binding), so the environment
  * variables are unreachable there.
  *
- * Call it as early as you can. Every diagnostic reads its switch at call time
- * except the untracked-signal warning, which is chosen when a signal is
- * CREATED — enabling that one prints its coverage boundary once.
+ * Call it as early as you can. Most diagnostics read their switch at call
+ * time, but three are decided when their host is CREATED: `untrackedSignals`
+ * per `signal()`, `delegateInEffect` per `effect()`, and `rebuiltListeners` per
+ * `mount()`. A signal, effect, or mount created before this call stays
+ * uncovered. Enabling `untrackedSignals` prints its coverage boundary once.
  */
 export function enableWarnings(options: DevWarningOptions): void {
   applyWarningOptions(options);

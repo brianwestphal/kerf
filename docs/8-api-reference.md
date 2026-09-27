@@ -91,7 +91,7 @@ defineStore({
 
 Creates a store with `state: ReadonlySignal<TState>`, `actions: TActions`, `reset(): void`. Registers in the global registry consumed by `resetAllStores()`.
 
-`set(next)` REPLACES state; it does NOT merge. Pass the full state object on every call, or use `set({ ...get(), ...patch })` to merge. When the diagnostics are installed (`import 'kerfjs/dev'`), `get()` returns a deep read-only `Proxy` so that any mutation of it — including a nested `get().nested.x = 1` — throws a `TypeError`; reads (spread, `JSON.stringify`, `Object.keys`, iteration) are transparent, and the live state object is never frozen. Production returns the bare reference for zero overhead. Opt in to the runtime narrow-set warning with `KERF_DEV_WARN_NARROW_SET=1` to catch partial-set bugs at the moment they happen. The warning hook is resolved on every `set()` call, so a store created before `kerfjs/dev` is installed starts warning on later actions as soon as diagnostics are available (see [docs/11-dev-warnings.md](11-dev-warnings.md) for the full dev-warn family).
+`set(next)` REPLACES state; it does NOT merge. Pass the full state object on every call, or use `set({ ...get(), ...patch })` to merge. When the diagnostics are installed (`import 'kerfjs/dev'`), `get()` returns a deep read-only `Proxy` so that any mutation of it — including a nested `get().nested.x = 1` — throws a `TypeError`; reads (spread, `JSON.stringify`, `Object.keys`, iteration) are transparent, and the live state object is never frozen. Production returns the bare reference for zero overhead. Opt in to the runtime narrow-set warning with `enableWarnings({ narrowSet: true })` from `kerfjs/dev` (or `KERF_DEV_WARN_NARROW_SET=1` under Node) to catch partial-set bugs at the moment they happen. The warning hook is resolved on every `set()` call, so a store created before `kerfjs/dev` is installed starts warning on later actions as soon as diagnostics are available (see [docs/11-dev-warnings.md](11-dev-warnings.md) for the full dev-warn family).
 
 ### `resetAllStores(): void`
 
@@ -167,9 +167,10 @@ ambient variable.
 environment variables are unreachable in the environment where these warnings
 are most wanted.
 
-Call it as early as you can: every diagnostic reads its switch at call time
-except `untrackedSignals`, which is chosen when a signal is created — enabling
-that one prints its coverage boundary once.
+Call it as early as you can: most diagnostics read their switch at call time,
+but three are decided when their host is created — `untrackedSignals` per
+`signal()`, `delegateInEffect` per `effect()`, and `rebuiltListeners` per
+`mount()`. Enabling `untrackedSignals` prints its coverage boundary once.
 
 The subpath also re-exports `clearDevHooks()`, `installDevHooks()` and
 `devHooks` so a consumer's own test suite can assert production-shaped
@@ -180,15 +181,18 @@ it (re-importing `kerfjs/dev` would not reinstall, because a module evaluates
 once). `installDevHooks()` merges into the installed set rather than replacing
 it.
 
-Order matters in one place: `signal()` chooses its constructor at creation
-time, so signals created before the dev entry runs are invisible to
-`KERF_DEV_WARN_UNTRACKED_SIGNALS` — and since static imports hoist above a
-top-level `await import()`, that is the common case. To cover module-scope
-signals, make `import 'kerfjs/dev'` the first static import of a dev-only entry
-file. Opting into that warning prints the boundary once so the gap is never
-silent. Every other hook is read at call time, including store hooks: an
-already-created store observes a later `kerfjs/dev` installation on its next
-`get()` or `set()` call. See
+Order matters in three places, all decided at creation: `signal()` chooses
+its constructor (untracked signals), `effect()` decides whether to wrap its
+body (delegate-in-effect), and `mount()` decides whether to attach the
+rebuilt-listeners observer. A signal, effect, or mount created before the dev
+entry runs, or before its warning is switched on, stays uncovered — and since
+static imports hoist above a top-level `await import()`, that is the common
+case for module-scope code. To cover it, make `import 'kerfjs/dev'` the first
+static import of a dev-only entry file and call `enableWarnings()` there.
+Opting into the untracked-signals warning prints the boundary once so that gap
+is never silent. Every other hook is read at call time, including store hooks:
+an already-created store observes a later `kerfjs/dev` installation on its
+next `get()` or `set()` call. See
 [`docs/11-dev-warnings.md`](11-dev-warnings.md) §11.2.2 and §11.3.6.
 
 ## 8.3 Render
@@ -272,7 +276,7 @@ Keyed list iteration with per-item memoization, routed through `mount()`'s nativ
 
 `cacheKey` is a passive comparator (not a reactive subscription): kerf calls it once per item per mount-effect run and compares the returned value against the previous run's. Use it when external state, not the item itself, drives what the row should render (e.g. a "currently selected" id flips a CSS class). Distinct from `data-key` on the rendered element, which is the DOM-reconciliation identity that morph uses — `cacheKey` controls when the cached HTML is invalidated; `data-key` controls how a row maps to its existing live DOM node. (Renamed from `key` for clarity; positional callers — the canonical form — are unaffected.)
 
-`render` receives `(item, index)`. The `index` is the row's position at render time; it is **not** part of the memo key (only item identity, `cacheKey`, and content version are). So a row that keeps its identity while its position changes — a reorder, or an insert/remove/move ahead of it — keeps the HTML it rendered at its old index, and any use of `index` in the output (a `{index + 1}.` prefix, zebra striping, an "N of M" label) goes stale on the moved rows. When the output depends on the index, fold it into the memo key so displaced rows re-render: `each(items, render, { cacheKey: (_, i) => i })` (add a `key` if the list needs one). The opt-in `KERF_DEV_WARN_STALE_INDEX=1` surfaces the hazard at runtime. (One edge this workaround doesn't cover — an `arraySignal` batch whose fresh inserts displace _each other_ — is noted in [`docs/4-render.md`](4-render.md) §4.2; for index-labeled rows with multi-insert batches, prefer immutable `signal<T[]>` updates.)
+`render` receives `(item, index)`. The `index` is the row's position at render time; it is **not** part of the memo key (only item identity, `cacheKey`, and content version are). So a row that keeps its identity while its position changes — a reorder, or an insert/remove/move ahead of it — keeps the HTML it rendered at its old index, and any use of `index` in the output (a `{index + 1}.` prefix, zebra striping, an "N of M" label) goes stale on the moved rows. When the output depends on the index, fold it into the memo key so displaced rows re-render: `each(items, render, { cacheKey: (_, i) => i })` (add a `key` if the list needs one). The opt-in `enableWarnings({ staleIndex: true })` (or `KERF_DEV_WARN_STALE_INDEX=1` under Node) surfaces the hazard at runtime. (One edge this workaround doesn't cover — an `arraySignal` batch whose fresh inserts displace _each other_ — is noted in [`docs/4-render.md`](4-render.md) §4.2; for index-labeled rows with multi-insert batches, prefer immutable `signal<T[]>` updates.)
 
 `key` gives the list a **stable identity**. Without one, a list is identified by its call order — "the n-th `each()` in this render" — so any render that changes how many `each()` calls run _before_ it reassigns its identity, and kerf rebuilds the list from scratch: rows lose their DOM nodes, and with them focus, scroll position and in-progress IME composition. The common trigger is a conditional list rendered above another list. Give a key to any list that can be preceded by one:
 

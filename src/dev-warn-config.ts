@@ -111,6 +111,18 @@ export function devFlag(envName: string): string | undefined {
   return proc?.env?.[envName];
 }
 
+/**
+ * The closing sentence every switch-gated warning ends with (docs/11 §11.3.3).
+ * It leads with `enableWarnings()` — the only switch that reaches a browser —
+ * and keeps the environment variable as the Node / SSR / CI fallback.
+ */
+export function silenceHint(key: keyof DevWarningOptions): string {
+  return (
+    `Silence it with enableWarnings({ ${key}: false }) from kerfjs/dev, ` +
+    `or set ${ENV_NAME[key]}=0 (or unset it) under Node.`
+  );
+}
+
 /** Test helper — drops every `enableWarnings()` override. */
 export function _resetWarningOptionsForTests(): void {
   overrides.clear();

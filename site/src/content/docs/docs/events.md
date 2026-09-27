@@ -243,7 +243,7 @@ delegate(root, "keydown", "[data-edit]", (e, el) => {
 });
 ```
 
-This is the same shape as the addEventListener-inside-mount foot-gun (Hard Rule 4) wearing different clothes. Opt-in dev warn: set `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1` to surface this at runtime when it happens.
+This is the same shape as the addEventListener-inside-mount foot-gun (Hard Rule 4) wearing different clothes. Opt-in dev warn: install `kerfjs/dev` and call `enableWarnings({ delegateInEffect: true })` (or set `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1` under Node) to surface this at runtime when it happens. The switch is read when each `effect()` is created, so enable it before the effects you want covered.
 
 #### `delegate()` on a `toElement()` node that gets replaced
 

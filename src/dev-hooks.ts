@@ -85,7 +85,9 @@ export interface DevHooks {
   signalFactory?: <T>(value: T) => Signal<T>;
   /**
    * Wraps an `effect()` body so `delegate()` can detect that it is running
-   * inside one. Returns the body to actually run.
+   * inside one. Returns the body to actually run. Resolved at effect-CREATION
+   * time (the delegate-in-effect switch too), so an effect created before the
+   * install or the opt-in is never wrapped.
    */
   wrapEffect?: (fn: () => void | (() => void)) => () => void | (() => void);
 
@@ -100,6 +102,12 @@ export interface DevHooks {
   storeToRaw?: <T>(next: T) => T;
 
   // --- mount.ts ----------------------------------------------------------
+  /**
+   * Attaches the rebuilt-listeners observer to a mount root. Called once per
+   * `mount()`, at creation — and it returns `null` when the warning is switched
+   * off then — so a mount created before the install or the opt-in is never
+   * observed.
+   */
   listenerRebuild?: (rootEl: Element) => MutationObserver | null;
   listIdShift?: (id: string) => void;
   parserRepair?: (html: string) => void;

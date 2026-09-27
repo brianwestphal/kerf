@@ -37,7 +37,7 @@
  * the predicate returns before the key comparison.
  */
 
-import { devFlag } from './dev-warn-config.js';
+import { devFlag, silenceHint } from './dev-warn-config.js';
 
 export interface NarrowSetWarnContext {
   /** Set once per store; the warner reads/writes this to enforce the per-store one-shot dedup. */
@@ -49,7 +49,7 @@ const WARNING_PREFIX =
 const WARNING_SUFFIX =
   '. set() REPLACES state; the missing keys will be undefined after this call. ' +
   'Use `set({ ...get(), ...next })` to merge instead, or update each call site to pass the full state. ' +
-  'Set KERF_DEV_WARN_NARROW_SET=0 (or unset it) to silence this warning.';
+  silenceHint('narrowSet');
 
 export function isOptedIn(): boolean {
   return devFlag('KERF_DEV_WARN_NARROW_SET') === '1';

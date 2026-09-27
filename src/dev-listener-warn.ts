@@ -35,7 +35,7 @@
  * predicate returns before patching `EventTarget` or creating an observer.
  */
 
-import { devFlag } from './dev-warn-config.js';
+import { devFlag, silenceHint } from './dev-warn-config.js';
 
 const LISTENER_MARKER = Symbol.for('kerfjs.devListener');
 
@@ -112,7 +112,7 @@ function emitWarning(): void {
       "The listener is gone with the old node. Use `delegate(rootEl, 'click', '[data-action=\"...\"]', handler)` " +
       'so the listener lives on a stable ancestor and survives re-renders, or wrap the host in `data-morph-skip` if ' +
       'the subtree is library-owned (Monaco, xterm, D3 charts). ' +
-      'Set KERF_DEV_WARN_REBUILT_LISTENERS=0 (or unset it) to silence this warning.',
+      silenceHint('rebuiltListeners'),
   );
 }
 

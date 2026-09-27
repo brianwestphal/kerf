@@ -63,7 +63,7 @@ If the rows should survive, keep ancestor tags stable, and **give the list's own
 </div>
 ```
 
-A key makes the container ineligible for positional matching _and_ findable by key, so no sibling can take its place from either direction. Note the asymmetry: keying the _conditional sibling_ instead only helps when the sibling is being removed — when it reappears, its key has no live counterpart, the diff falls back to position, and the unkeyed container is taken over anyway. Key the container, not the sibling. The opt-in dev warning `KERF_DEV_WARN_LIST_REBIND=1` surfaces each list the first time such a rebuild happens (see [`docs/11-dev-warnings.md`](/kerf/docs/dev-warnings/)).
+A key makes the container ineligible for positional matching _and_ findable by key, so no sibling can take its place from either direction. Note the asymmetry: keying the _conditional sibling_ instead only helps when the sibling is being removed — when it reappears, its key has no live counterpart, the diff falls back to position, and the unkeyed container is taken over anyway. Key the container, not the sibling. The opt-in dev warning — `enableWarnings({ listRebind: true })` from `kerfjs/dev`, or `KERF_DEV_WARN_LIST_REBIND=1` under Node — surfaces each list the first time such a rebuild happens (see [`docs/11-dev-warnings.md`](/kerf/docs/dev-warnings/)).
 
 ```tsx
 // Reorderable list — give each row a stable data-key
@@ -114,7 +114,7 @@ import { each } from "kerfjs";
 > // combine with your own key if you use one: { key: 'list', cacheKey: (_, i) => i }
 > ```
 >
-> This trades the memo's benefit for those rows (a reorder now re-renders every displaced row, O(n) on a structural change) for correctness — pay it only when the index actually appears in the output. The opt-in dev warning `KERF_DEV_WARN_STALE_INDEX=1` fires the first time a list reuses a memoized row at a changed index while its render function reads the index (see [`docs/11-dev-warnings.md`](/kerf/docs/dev-warnings/)).
+> This trades the memo's benefit for those rows (a reorder now re-renders every displaced row, O(n) on a structural change) for correctness — pay it only when the index actually appears in the output. The opt-in dev warning — `enableWarnings({ staleIndex: true })` from `kerfjs/dev`, or `KERF_DEV_WARN_STALE_INDEX=1` under Node — fires the first time a list reuses a memoized row at a changed index while its render function reads the index (see [`docs/11-dev-warnings.md`](/kerf/docs/dev-warnings/)).
 >
 > One edge the `cacheKey` fix does _not_ cover: a single `arraySignal` batch in which freshly-inserted rows displace _each other_ — e.g. `batch(() => { rows.insert(1, a); rows.insert(1, b) })`, where the second insert pushes the first to a later index. The workaround re-renders rows that already existed, but a row inserted earlier in the same batch is rendered once at its insert-time index and isn't revisited, so it can show a stale index until the next unrelated re-render heals it. The DOM order is correct; only the `index` value on those brand-new rows lags. The dev warning still flags it. If you index-label rows _and_ do multi-insert batches at the same position, prefer immutable whole-array updates (`signal<T[]>` + `each(items.value, …)`), which always render every row at its final index.
 
@@ -225,7 +225,7 @@ On subsequent re-renders, the diff sees `data-morph-skip` on the host and short-
 >
 > `each()` lists inside a skipped element are a special case: the keyed reconciler operates directly on the live parent and is independent of the morph, so list rows DO still update. This means a `data-morph-skip` element can contain an `each()` list whose rows update while other signal-reactive siblings are frozen — a confusing asymmetry. As a rule: if any direct JSX inside the element reads a signal, don't mark it `data-morph-skip`.
 >
-> Enable `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1` (see the dev-warnings guide) to get a runtime warning when an `each()` list's parent chain crosses a `data-morph-skip` boundary.
+> Install `kerfjs/dev` and call `enableWarnings({ eachInMorphSkip: true })` (or set `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1` under Node; see §11 dev-warnings) to get a runtime warning when an `each()` list's parent chain crosses a `data-morph-skip` boundary.
 
 ### `data-morph-skip-children` — client-hydrated slot
 

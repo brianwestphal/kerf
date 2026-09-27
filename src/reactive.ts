@@ -15,11 +15,13 @@
  * Both are `undefined` unless the consumer imported `kerfjs/dev`, so production
  * sees the bare `@preact/signals-core` exports behind one property read.
  *
- * ORDERING: `signalFactory` is resolved at signal-CREATION time, so signals
- * created before `kerfjs/dev` is installed stay plain and the untracked-signal
- * warning never sees them. Static imports hoist above a `await import()`, so a
- * module-scope signal in an imported module is created first. See
- * docs/11-dev-warnings.md for the install-ordering rules.
+ * ORDERING: both slots are resolved at CREATION time. A signal created before
+ * `kerfjs/dev` is installed (or before `untrackedSignals` is switched on) stays
+ * plain, and an effect created before the install (or before
+ * `delegateInEffect` is switched on) is never wrapped. Static imports hoist
+ * above a `await import()`, so module-scope signals and effects in imported
+ * modules are created first. `mount()`'s `listenerRebuild` hook is the third
+ * creation-time boundary. See docs/11-dev-warnings.md §11.3.6.
  */
 
 import {

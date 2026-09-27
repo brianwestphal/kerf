@@ -48,19 +48,22 @@ before the program runs:
   Hard Rule 9 partial-set bugs as type errors. All complete example apps in
   this repo are under that gate.
 - **`eslint-plugin-kerfjs`** — a separate publishable package, in
-  [`eslint-plugin/`](../eslint-plugin/README.md), with eight rules
-  that fire at edit time for hard-rule violations the dev-warns can't see
-  syntactically. Four are errors: `no-inline-jsx-event-handlers` (Rule 10),
-  `require-data-key-in-each` (Rule 2), `no-nested-mount` (Rule 6),
-  `prefer-module-jsx-augmentation` (Rule 12). Four warn:
-  `require-delegate-disposer` (Rule 5), `prefer-attr-selector`,
-  `no-raw-with-dynamic-arg`, `ai-assistant-configs`.
-  Three additional rules cover non-hard-rule patterns:
-  `no-raw-with-dynamic-arg` (XSS audit trail — warns on every dynamic `raw()`
-  argument so the `eslint-disable` suppression becomes the permanent
-  acknowledgment), `prefer-attr-selector` (rename-safety nudge for `delegate()`
-  literal selectors), and `ai-assistant-configs` (project hygiene — checks that
-  the bundled AI configs are installed and current).
+  [`eslint-plugin/`](../eslint-plugin/README.md), with thirteen rules: eight
+  core rules in its `recommended` config plus five `ui-*` rules for
+  `@kerfjs/ui` consumers. The core rules fire at edit time for hard-rule
+  violations the dev-warns can't see syntactically. Four are errors:
+  `no-inline-jsx-event-handlers` (Rule 10), `require-data-key-in-each`
+  (Rule 2), `no-nested-mount` (Rule 6), `prefer-module-jsx-augmentation`
+  (Rule 12). Four warn: `require-delegate-disposer` (Rule 5), and three that
+  cover non-hard-rule patterns — `no-raw-with-dynamic-arg` (XSS audit trail —
+  warns on every dynamic `raw()` argument so the `eslint-disable` suppression
+  becomes the permanent acknowledgment), `prefer-attr-selector` (rename-safety
+  nudge for `delegate()` literal selectors), and `ai-assistant-configs`
+  (project hygiene — checks that the bundled AI configs are installed and
+  current). The `ui-*` rules — `ui-public-boundaries`, `ui-composition`,
+  `ui-css-values`, `ui-preferences`, `ui-wiring` — are enabled only by the
+  `recommended-ui` and `strict-ui` configs, which add them on top of the core
+  set.
 
 The three layers are complementary, not redundant. Lint catches AST-shaped
 antipatterns at edit time; tsc catches type-shaped bugs at build time; the
@@ -168,8 +171,9 @@ any key is missing, the warning fires once for this store and the context
 flips to `warned: true`. The warning message names the missing keys (e.g.,
 `` `items`, `editingId` ``) and points at `set({ ...get(), ...next })` as
 the canonical merge fix. Resolving the hook at call time means a store created
-before `kerfjs/dev` is installed begins warning on later actions; only
-`signalFactory` has an install-order boundary.
+before `kerfjs/dev` is installed begins warning on later actions. (The
+creation-time boundaries are `signal()`, `effect()`, and `mount()`; see
+§11.3.6.)
 
 **Why opt-in.** Narrow-set IS legal — a `reset()` action that drops keys,
 a feature-flag-driven schema change, a state shape that genuinely needs to
@@ -561,14 +565,17 @@ them.
 
 ### 11.3.3 Warning message shape
 
-Every switch-gated warning message ends with:
+Every switch-gated warning message ends with the sentence
+`silenceHint(key)` in `src/dev-warn-config.ts` builds:
 
 ```
-Set KERF_DEV_WARN_<NOUN>=0 (or unset it) to silence this warning.
+Silence it with enableWarnings({ <key>: false }) from kerfjs/dev, or set KERF_DEV_WARN_<NOUN>=0 (or unset it) under Node.
 ```
 
-This is the consumer's escape hatch — they can disable the warning
-without rolling back the env var entirely. The message also names the
+This is the consumer's escape hatch. It leads with `enableWarnings()` because
+that is the only switch a browser can reach, and keeps the environment
+variable as the Node / SSR / CI fallback; an explicit `false` wins over an
+ambient variable. The message also names the
 canonical fix (e.g., "Use `delegate()`," "Use `set({ ...get(), ...next })`")
 so the developer doesn't need to fetch additional docs to act on it.
 
@@ -677,16 +684,29 @@ expression that is simultaneously foldable, dev-by-default, and safe without a
 `process` binding. Handing the decision to the consumer dissolves the problem
 instead of working around it.
 
-**Install ordering.** Every hook except one is read at _call_ time — render,
+**Install ordering.** Most hooks are read at _call_ time — render,
 reconcile, `set()`, `delegate()` — so installation only needs to precede the
 operation you want diagnosed. Existing stores observe later installation on
 their next `get()` or `set()`; render diagnostics observe it on the next render.
-The exception is `signal()`, which picks its constructor
-when the signal is _created_. Static imports are hoisted above a top-level
-`await import()`, so module-scope signals in imported modules are created
-before the dev entry runs and `KERF_DEV_WARN_UNTRACKED_SIGNALS` will not see
-them. To cover those, make `import 'kerfjs/dev'` the first static import of a
-dev-only entry file, or load your app through a dynamic import after it.
+
+Three hooks are decided once, when their host is _created_, and both the
+install and the warning's switch must come before that moment:
+
+- `signal()` picks its constructor — the untracked-signals warning
+  (`untrackedSignals`).
+- `effect()` decides whether to wrap its body with the effect-depth counter —
+  the delegate-in-effect warning (`delegateInEffect`).
+- `mount()` decides whether to attach the rebuilt-listeners
+  `MutationObserver` — the rebuilt-listeners warning (`rebuiltListeners`).
+
+A signal, effect, or mount created earlier stays uncovered for its lifetime.
+Static imports are hoisted above a top-level `await import()`, so module-scope
+signals and effects in imported modules are created before the dev entry runs.
+To cover those, make `import 'kerfjs/dev'` the first static import of a
+dev-only entry file (and call `enableWarnings()` there), or load your app
+through a dynamic import after it. Only the untracked-signals warning prints
+this boundary when you enable it; for the other two, enable the switch before
+you create the effects and mounts you want checked.
 
 **Two layers, not one.** Installation decides whether the diagnostics are
 _present_; each opt-in warner then reads its own switch through
@@ -714,13 +734,13 @@ place: whether you imported them.
 
 ## 11.4 Where each opt-in warning is referenced
 
-| Surface        | rebuilt listeners                               | untracked signals                        | narrow set                                   | duplicate cacheKey                          | each-in-morph-skip                       | delegate-in-effect                                          | stale binding                                  | value-only re-render                             | list rebind                                        | stale index                                        |
-| -------------- | ----------------------------------------------- | ---------------------------------------- | -------------------------------------------- | ------------------------------------------- | ---------------------------------------- | ----------------------------------------------------------- | ---------------------------------------------- | ------------------------------------------------ | -------------------------------------------------- | -------------------------------------------------- |
-| Source module  | `src/dev-listener-warn.ts`                      | `src/dev-signal.ts`                      | `src/dev-store-warn.ts`                      | `src/dev-each-warn.ts`                      | `src/dev-each-warn.ts`                   | `src/dev-delegate-warn.ts`                                  | `src/dev-binding-warn.ts`                      | `src/dev-rerender-warn.ts`                       | `src/dev-list-rebind-warn.ts`                      | `src/dev-list-index-warn.ts`                       |
-| Wired in       | `src/mount.ts`                                  | `src/reactive.ts`                        | `src/store.ts`                               | `src/each.ts`                               | `src/mount.ts`                           | `src/reactive.ts` (effect wrap) + `src/delegate.ts` (check) | `src/mount.ts` (fast path)                     | `src/mount.ts` (surrounds-changed path)          | `src/mount.ts` (self-heal branch)                  | `src/each.ts` (snapshot + granular)                |
-| Numbered doc   | `docs/5-event-delegation.md` (Rule 4)           | `docs/2-reactivity.md` (Rule 8)          | `docs/3-stores.md` (Rule 9)                  | `docs/4-render.md` §4.2                     | `docs/4-render.md` §4.3                  | `docs/5-event-delegation.md` §5.3                           | `docs/2-reactivity.md` §2.9                    | `docs/2-reactivity.md` §2.9                      | `docs/4-render.md` §4.2                            | `docs/4-render.md` §4.2                            |
-| AI usage guide | `docs/ai/usage-guide.md` "Hard rules"           | same                                     | same                                         | n/a                                         | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 5 + "Common errors"      | `docs/ai/usage-guide.md` "Common errors"       | `docs/ai/usage-guide.md` Hard Rule 9 family list | `docs/ai/usage-guide.md` "Common errors"           | `docs/ai/usage-guide.md` "Common errors"           |
-| Test fixture   | `tests/unit/dev-listener-warn.internal.test.ts` | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same                                     | `tests/unit/dev-delegate-warn.internal.test.ts`             | `tests/unit/dev-binding-warn.internal.test.ts` | `tests/unit/dev-rerender-warn.internal.test.ts`  | `tests/unit/dev-list-rebind-warn.internal.test.ts` | `tests/unit/dev-list-index-warn.internal.test.tsx` |
+| Surface                               | rebuilt listeners                                   | untracked signals                        | narrow set                                   | duplicate cacheKey                          | each-in-morph-skip                       | delegate-in-effect                                                        | stale binding                                                       | value-only re-render                                          | list rebind                                        | stale index                                                              |
+| ------------------------------------- | --------------------------------------------------- | ---------------------------------------- | -------------------------------------------- | ------------------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------ |
+| Source module                         | `src/dev-listener-warn.ts`                          | `src/dev-signal.ts`                      | `src/dev-store-warn.ts`                      | `src/dev-each-warn.ts`                      | `src/dev-each-warn.ts`                   | `src/dev-delegate-warn.ts`                                                | `src/dev-binding-warn.ts`                                           | `src/dev-rerender-warn.ts`                                    | `src/dev-list-rebind-warn.ts`                      | `src/dev-list-index-warn.ts`                                             |
+| Wired in (hook slot → core call site) | `listenerRebuild` → `src/mount.ts` (once per mount) | `signalFactory` → `src/reactive.ts`      | `narrowSet` → `src/store.ts`                 | `duplicateCacheKeys` → `src/each.ts`        | `eachInMorphSkip` → `src/mount.ts`       | `wrapEffect` → `src/reactive.ts` + `delegateInEffect` → `src/delegate.ts` | `staleBindingEnabled` / `staleBinding` → `src/mount.ts` (fast path) | `valueOnlyRerender` → `src/mount.ts` (surrounds-changed path) | `listRebind` → `src/mount.ts` (self-heal branch)   | `staleIndexEnabled` / `staleIndex` → `src/each.ts` (snapshot + granular) |
+| Numbered doc                          | `docs/5-event-delegation.md` (Rule 4)               | `docs/2-reactivity.md` (Rule 8)          | `docs/3-stores.md` (Rule 9)                  | `docs/4-render.md` §4.2                     | `docs/4-render.md` §4.3                  | `docs/5-event-delegation.md` §5.3                                         | `docs/2-reactivity.md` §2.9                                         | `docs/2-reactivity.md` §2.9                                   | `docs/4-render.md` §4.2                            | `docs/4-render.md` §4.2                                                  |
+| AI usage guide                        | `docs/ai/usage-guide.md` "Hard rules"               | same                                     | same                                         | n/a                                         | `docs/ai/usage-guide.md` "Common errors" | `docs/ai/usage-guide.md` Hard Rule 5 + "Common errors"                    | `docs/ai/usage-guide.md` "Common errors"                            | `docs/ai/usage-guide.md` Hard Rule 9 family list              | `docs/ai/usage-guide.md` "Common errors"           | `docs/ai/usage-guide.md` "Common errors"                                 |
+| Test fixture                          | `tests/unit/dev-listener-warn.internal.test.ts`     | covered in `tests/unit/reactive.test.ts` | `tests/unit/dev-store-warn.internal.test.ts` | `tests/unit/dev-each-warn.internal.test.ts` | same                                     | `tests/unit/dev-delegate-warn.internal.test.ts`                           | `tests/unit/dev-binding-warn.internal.test.ts`                      | `tests/unit/dev-rerender-warn.internal.test.ts`               | `tests/unit/dev-list-rebind-warn.internal.test.ts` | `tests/unit/dev-list-index-warn.internal.test.tsx`                       |
 
 The remaining diagnostics do not fit every column in that table. The always-on
 list-identity and missing-row-key warnings live in `src/dev-list-key-warn.ts` and
@@ -738,20 +758,35 @@ their dedicated tests are `tests/unit/dev-invariants.internal.test.ts` and
 ## 11.5 Adding a new warning
 
 If a future Hard Rule violation lands a similar "silent until later" failure
-mode, the right shape is another env-var-gated, opt-in, one-shot warner in
-this family. To add one:
+mode, the right shape is another switch-gated, opt-in, one-shot warner in
+this family. Core never imports a warner — the dev-hook registry is the only
+seam (§11.3.5) — so adding one touches both sides of it:
 
-1. Create `src/dev-<area>-warn.ts` exporting `isOptedIn()`, a
-   warning-emitter function, and `_resetWarnedForTests()` /
-   `_resetWarnContext(ctx)`.
-2. Wire it into the host primitive's module (e.g., `src/mount.ts` for the
-   rebuilt-listeners warner, `src/store.ts` for the narrow-set warner).
-3. Write `tests/unit/dev-<area>-warn.internal.test.ts` exercising the
-   opt-out / opt-in / dedup paths.
-4. Update this doc with a new §11.2.N subsection and a row in §11.4.
-5. Add the env var to `docs/ai/usage-guide.md` and the relevant numbered
-   doc.
-6. CHANGELOG entry naming the ticket and the env var.
+1. Create `src/dev-<area>-warn.ts` with the warning emitter. It checks its
+   own switch first (`devFlag('KERF_DEV_WARN_<NOUN>') === '1'`), dedups at
+   its owner scope (§11.3.2), and ends its message with
+   `silenceHint('<key>')` (§11.3.3). Export `_resetWarnedForTests()` /
+   `_resetWarnContext(ctx)` only if the dedup state is module-level.
+2. Add the switch in `src/dev-warn-config.ts`: a `<key>?: boolean` member on
+   `DevWarningOptions` and its `ENV_NAME` entry.
+   `npm run check:docs:dev-warns` fails until this doc names the same
+   variable, so steps 2 and 5 land together.
+3. Add a nullable slot to `DevHooks` in `src/dev-hooks.ts` (plus an
+   `…Enabled` predicate slot if the call site must skip expensive
+   preparatory work while the warning is off), and fill it in `DEV_HOOKS` in
+   `src/dev.ts`.
+4. Call it from the host primitive through the guarded slot —
+   `devHooks.<slot>?.(…)` in `src/mount.ts`, `src/store.ts`, `src/each.ts`,
+   and so on. Prefer a call-time slot; if the decision must be made when the
+   host is created, add it to the creation-time boundaries in §11.3.6.
+5. Update this doc with a new §11.2.N subsection and a column in §11.4, and
+   the published guide at `site/src/content/docs/docs/dev-warnings.md`.
+6. Write `tests/unit/dev-<area>-warn.internal.test.ts` exercising the
+   switch-off / switch-on / production-shape (hooks uninstalled) / dedup
+   paths.
+7. Add the `enableWarnings()` key and env var to `docs/8-api-reference.md`,
+   `docs/ai/usage-guide.md`, and the relevant numbered doc, plus a
+   CHANGELOG entry naming the switch.
 
 The shape is rigid on purpose — every new warning should be a
 copy-paste-and-modify of an existing one, not a fresh design.

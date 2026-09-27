@@ -20,7 +20,7 @@
  * that intentionally use this pattern.
  */
 
-import { devFlag } from './dev-warn-config.js';
+import { devFlag, silenceHint } from './dev-warn-config.js';
 
 const warnedIds = new Set<string>();
 
@@ -53,7 +53,7 @@ export function maybeWarnEachInMorphSkip(
       'inside the same skipped ancestor (e.g. <p>{count.value}</p>) is frozen — ' +
       'the morph never visits it. Remove data-morph-skip from any element that contains ' +
       'reactive JSX content and reserve it for truly library-owned hosts. ' +
-      'Set KERF_DEV_WARN_EACH_IN_MORPH_SKIP=0 (or unset it) to silence this warning.',
+      silenceHint('eachInMorphSkip'),
   );
 }
 
@@ -100,7 +100,7 @@ export function maybeWarnDuplicateCacheKeys(
           'The cacheKey function should return a unique value per row so kerf can tell apart items ' +
           'for memoization — duplicate values cause some rows to return stale cached HTML when ' +
           'external state that affects their render changes. ' +
-          'Set KERF_DEV_WARN_DUPLICATE_EACH_KEYS=0 (or unset it) to silence this warning.',
+          silenceHint('duplicateEachKeys'),
       );
       return;
     }

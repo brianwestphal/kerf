@@ -23,7 +23,7 @@
  * available for projects that want it without penalising that pattern.
  */
 
-import { devFlag } from './dev-warn-config.js';
+import { devFlag, silenceHint } from './dev-warn-config.js';
 
 const warnedIds = new Set<string>();
 
@@ -48,7 +48,7 @@ export function maybeWarnListRebind(id: string, liveParent: Element): void {
       "the old row nodes are lost. If the rows should survive, give the LIST'S OWN container a stable " +
       'id/data-key (keying the conditional sibling instead only helps when it is removed, not when it ' +
       "reappears) and keep the tags of the list's ancestors stable across renders. " +
-      'Set KERF_DEV_WARN_LIST_REBIND=0 (or unset it) to silence this warning.',
+      silenceHint('listRebind'),
   );
 }
 

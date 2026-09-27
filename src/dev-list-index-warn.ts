@@ -33,7 +33,7 @@
  * either shape.
  */
 
-import { devFlag } from './dev-warn-config.js';
+import { devFlag, silenceHint } from './dev-warn-config.js';
 
 const warnedIds = new Set<string>();
 
@@ -57,7 +57,7 @@ export function maybeWarnStaleIndex(id: string): void {
       'numbered list, zebra striping, or an "N of M" label will silently show the wrong value. If the row ' +
       'output depends on the index, fold it into the memo key: each(items, render, { cacheKey: (_, i) => i }) ' +
       '(combine with your own key if you have one). If the index is not used in the output, ignore this. ' +
-      'Set KERF_DEV_WARN_STALE_INDEX=0 (or unset it) to silence this warning.',
+      silenceHint('staleIndex'),
   );
 }
 

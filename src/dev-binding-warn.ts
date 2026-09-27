@@ -41,7 +41,7 @@
  */
 
 import type { Binding } from './bindings.js';
-import { devFlag } from './dev-warn-config.js';
+import { devFlag, silenceHint } from './dev-warn-config.js';
 
 /** Per-hole one-shot dedup — keyed by the stable per-hole binding id. */
 const warnedHoles = new Set<string>();
@@ -82,7 +82,7 @@ export function maybeWarnStaleBinding(
         'tracks the FIRST signal instance and will not reflect the new one. Bind one computed that ' +
         'switches internally (e.g. class={computed(() => cond.value ? sigA.value : sigB.value)}) instead ' +
         'of switching which signal instance you bind (see docs/2-reactivity §2.9). ' +
-        'Set KERF_DEV_WARN_STALE_BINDING=0 (or unset it) to silence this warning.',
+        silenceHint('staleBinding'),
     );
   }
 }

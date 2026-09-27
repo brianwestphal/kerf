@@ -27,7 +27,7 @@
  * happens only on the already-slow surrounds-changed path.
  */
 
-import { devFlag } from './dev-warn-config.js';
+import { devFlag, silenceHint } from './dev-warn-config.js';
 
 /** Per-mount one-shot context — created by `mount()`, mirrors NarrowSetWarnContext. */
 export interface ValueOnlyWarnContext {
@@ -97,6 +97,6 @@ export function maybeWarnValueOnlyRerender(
       'structure re-renders: pass the signal/computed itself ({count}, class={sig}) rather than ' +
       'reading .value in the hole, and each change updates just that node with no render re-run ' +
       '(a mount whose render reads no .value never re-renders at all). See docs/2-reactivity §2.9. ' +
-      'Set KERF_DEV_WARN_VALUE_ONLY_RERENDER=0 (or unset it) to silence this warning.',
+      silenceHint('valueOnlyRerender'),
   );
 }

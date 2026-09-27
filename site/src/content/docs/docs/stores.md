@@ -109,16 +109,25 @@ actions: (set, get) => ({
 
 `set(next)` REPLACES the entire state object — it does NOT merge. A partial-set call like `set({ filter })` against a 3-key state of `{items, filter, editingId}` silently wipes `items` and `editingId` to `undefined`. The TypeScript signature catches this (TState is inferred from `initial()`, so any partial object fails to typecheck), but only if your consumer code is in a strict `tsc --noEmit` run — projects on partial-TS migrations, with `noImplicitAny: false`, or with the type assertion `as TState` in front of a partial literal will slip past the static check.
 
-To catch this at runtime, set the opt-in env var in dev or CI:
+To catch this at runtime, install the diagnostics and switch the warning on from your dev entry:
+
+```js
+if (import.meta.env.DEV) {
+  const dev = await import("kerfjs/dev");
+  dev.enableWarnings({ narrowSet: true });
+}
+```
+
+`enableWarnings()` is the switch that works in a browser, where there is no `process` object and a bundler `define` cannot reach kerf's read of the environment (see [`enableWarnings()`](/kerf/api/)). Under Node, SSR, or CI — including a test run — the environment variable does the same job once `kerfjs/dev` is installed:
 
 ```sh
-KERF_DEV_WARN_NARROW_SET=1 npm run dev
+KERF_DEV_WARN_NARROW_SET=1 npx vitest
 ```
 
 When the diagnostics are installed and this warning is enabled, every `defineStore.set(next)` call checks whether any key from the current state is missing in `next`. The hook is resolved at `set()` call time, so a store created before `kerfjs/dev` is installed starts checking on its next action after installation. The first violation per store emits a one-shot `console.warn` naming the missing keys and pointing at the canonical merge fix:
 
 ```
-kerf: defineStore.set() called with keys missing from the current state — `items`, `editingId`. set() REPLACES state; the missing keys will be undefined after this call. Use `set({ ...get(), ...next })` to merge instead, or update each call site to pass the full state. Set KERF_DEV_WARN_NARROW_SET=0 (or unset it) to silence this warning.
+kerf: defineStore.set() called with keys missing from the current state — `items`, `editingId`. set() REPLACES state; the missing keys will be undefined after this call. Use `set({ ...get(), ...next })` to merge instead, or update each call site to pass the full state. Silence it with enableWarnings({ narrowSet: false }) from kerfjs/dev, or set KERF_DEV_WARN_NARROW_SET=0 (or unset it) under Node.
 ```
 
 The warn is off by default because narrow-set IS legal — a `reset()` that drops keys, a feature-flag-driven schema change, a state shape that genuinely needs to shrink would all warn under this heuristic. Opt-in keeps the diagnostic available without penalizing the legitimate cases. When the dev entry is absent, the hook slot is empty and no warning work runs; when it is installed, the warning's own switch short-circuits before the key comparison. See [Dev-mode warnings](/kerf/docs/dev-warnings/) for the full dev-warn family and the rules that keep them coherent.

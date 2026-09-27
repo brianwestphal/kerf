@@ -32,7 +32,7 @@
  * the family's opt-in default keeps that judgement with the consumer.
  */
 
-import { devFlag } from './dev-warn-config.js';
+import { devFlag, silenceHint } from './dev-warn-config.js';
 
 /**
  * Elements that close an open `<p>`. Per the HTML spec's "a p element's end tag
@@ -128,7 +128,7 @@ export function maybeWarnParserRepair(html: string): void {
       'correctly, so updates still work; what you lose is the structure you wrote, along with ' +
       'any CSS or querySelector that assumed it. Use a <div> (or a phrasing element like ' +
       '<span>) in place of the <p>, or move the block content outside it. ' +
-      'Set KERF_DEV_WARN_PARSER_REPAIR=0 (or unset it) to silence this warning.',
+      silenceHint('parserRepair'),
   );
 }
 

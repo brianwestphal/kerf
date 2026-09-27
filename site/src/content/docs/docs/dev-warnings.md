@@ -49,19 +49,22 @@ before the program runs:
   Hard Rule 9 partial-set bugs as type errors. All complete example apps in
   this repo are under that gate.
 - **`eslint-plugin-kerfjs`** — a separate publishable package, in
-  [`eslint-plugin/`](../eslint-plugin/README.md), with eight rules
-  that fire at edit time for hard-rule violations the dev-warns can't see
-  syntactically. Four are errors: `no-inline-jsx-event-handlers` (Rule 10),
-  `require-data-key-in-each` (Rule 2), `no-nested-mount` (Rule 6),
-  `prefer-module-jsx-augmentation` (Rule 12). Four warn:
-  `require-delegate-disposer` (Rule 5), `prefer-attr-selector`,
-  `no-raw-with-dynamic-arg`, `ai-assistant-configs`.
-  Three additional rules cover non-hard-rule patterns:
-  `no-raw-with-dynamic-arg` (XSS audit trail — warns on every dynamic `raw()`
-  argument so the `eslint-disable` suppression becomes the permanent
-  acknowledgment), `prefer-attr-selector` (rename-safety nudge for `delegate()`
-  literal selectors), and `ai-assistant-configs` (project hygiene — checks that
-  the bundled AI configs are installed and current).
+  [`eslint-plugin/`](../eslint-plugin/README.md), with thirteen rules: eight
+  core rules in its `recommended` config plus five `ui-*` rules for
+  `@kerfjs/ui` consumers. The core rules fire at edit time for hard-rule
+  violations the dev-warns can't see syntactically. Four are errors:
+  `no-inline-jsx-event-handlers` (Rule 10), `require-data-key-in-each`
+  (Rule 2), `no-nested-mount` (Rule 6), `prefer-module-jsx-augmentation`
+  (Rule 12). Four warn: `require-delegate-disposer` (Rule 5), and three that
+  cover non-hard-rule patterns — `no-raw-with-dynamic-arg` (XSS audit trail —
+  warns on every dynamic `raw()` argument so the `eslint-disable` suppression
+  becomes the permanent acknowledgment), `prefer-attr-selector` (rename-safety
+  nudge for `delegate()` literal selectors), and `ai-assistant-configs`
+  (project hygiene — checks that the bundled AI configs are installed and
+  current). The `ui-*` rules — `ui-public-boundaries`, `ui-composition`,
+  `ui-css-values`, `ui-preferences`, `ui-wiring` — are enabled only by the
+  `recommended-ui` and `strict-ui` configs, which add them on top of the core
+  set.
 
 The three layers are complementary, not redundant. Lint catches AST-shaped
 antipatterns at edit time; tsc catches type-shaped bugs at build time; the
@@ -157,8 +160,9 @@ any key is missing, the warning fires once for this store and the context
 flips to `warned: true`. The warning message names the missing keys (e.g.,
 `` `items`, `editingId` ``) and points at `set({ ...get(), ...next })` as
 the canonical merge fix. Resolving the hook at call time means a store created
-before `kerfjs/dev` is installed begins warning on later actions; only signal
-creation has an install-order boundary.
+before `kerfjs/dev` is installed begins warning on later actions. (Only
+signal, effect, and mount creation have install-order boundaries; see
+"Install ordering" below.)
 
 **Why opt-in.** Narrow-set IS legal — a `reset()` action that drops keys,
 a feature-flag-driven schema change, a state shape that genuinely needs to
@@ -520,14 +524,16 @@ per-call (which would spam every render).
 
 ### Warning message shape
 
-Every warning message ends with:
+Every switch-gated warning message ends with:
 
 ```
-Set KERF_DEV_WARN_<NOUN>=0 (or unset it) to silence this warning.
+Silence it with enableWarnings({ <key>: false }) from kerfjs/dev, or set KERF_DEV_WARN_<NOUN>=0 (or unset it) under Node.
 ```
 
-This is the consumer's escape hatch — they can disable the warning
-without rolling back the env var entirely. The message also names the
+This is the consumer's escape hatch. It leads with `enableWarnings()` because
+that is the only switch a browser can reach, and keeps the environment
+variable as the Node / SSR / CI fallback; an explicit `false` wins over an
+ambient variable. The message also names the
 canonical fix (e.g., "Use `delegate()`," "Use `set({ ...get(), ...next })`")
 so the developer doesn't need to fetch additional docs to act on it.
 
@@ -607,16 +613,29 @@ support it for `format: 'esm'`; an `iife`/`cjs` build fails to emit). And it
 needs `import.meta.env` to be typed — real apps get that from
 `/// <reference types="vite/client" />`.
 
-**Install ordering.** Every hook except one is read at _call_ time — render,
+**Install ordering.** Most hooks are read at _call_ time — render,
 reconcile, `set()`, `delegate()` — so installation only needs to precede the
 operation you want diagnosed. Existing stores observe later installation on
 their next `get()` or `set()`; render diagnostics observe it on the next render.
-The exception is `signal()`, which picks its constructor
-when the signal is _created_. Static imports are hoisted above a top-level
-`await import()`, so module-scope signals in imported modules are created
-before the dev entry runs and `KERF_DEV_WARN_UNTRACKED_SIGNALS` will not see
-them. To cover those, make `import 'kerfjs/dev'` the first static import of a
-dev-only entry file, or load your app through a dynamic import after it.
+
+Three hooks are decided once, when their host is _created_, and both the
+install and the warning's switch must come before that moment:
+
+- `signal()` picks its constructor — the untracked-signals warning
+  (`untrackedSignals`).
+- `effect()` decides whether to wrap its body with the effect-depth counter —
+  the delegate-in-effect warning (`delegateInEffect`).
+- `mount()` decides whether to attach the rebuilt-listeners
+  `MutationObserver` — the rebuilt-listeners warning (`rebuiltListeners`).
+
+A signal, effect, or mount created earlier stays uncovered for its lifetime.
+Static imports are hoisted above a top-level `await import()`, so module-scope
+signals and effects in imported modules are created before the dev entry runs.
+To cover those, make `import 'kerfjs/dev'` the first static import of a
+dev-only entry file (and call `enableWarnings()` there), or load your app
+through a dynamic import after it. Only the untracked-signals warning prints
+this boundary when you enable it; for the other two, enable the switch before
+you create the effects and mounts you want checked.
 
 **Two layers, not one.** Installation decides whether the diagnostics are
 _present_; each opt-in warner then reads its own switch through

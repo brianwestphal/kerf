@@ -148,6 +148,7 @@ describe('dev-store-warn (KF-212, opt-in)', () => {
       expect(msg).toContain('`c`');
       expect(msg).not.toContain('`a`');
       expect(msg).toContain('KERF_DEV_WARN_NARROW_SET=0');
+      expect(msg).toContain('enableWarnings({ narrowSet: false })');
     });
 
     it('warns when the same total count of keys but with at least one missing key', () => {
