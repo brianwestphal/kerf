@@ -534,6 +534,11 @@ the focus-ring color fall back to the same value the theme assigns, including
 its `light-dark()` pair, so surfaces (including the dark `surface-raised`),
 links (`text-link` is the brand on-quiet text color, not the brand fill), tone
 text, and fills keep their light and dark appearance and contrast either way.
+Kerf owns the light `brand`, `success`, and `warning` `on-quiet` values in that
+theme layer: each keeps its hue but is dark enough to clear WCAG AA (4.5:1) on
+the lowered page background (`--kui-color-surface-lowered`, `#f2f2f7`), not
+only on the white surface, so toned text reads on every background a page
+paints.
 
 `Select` owns its custom-element reconciliation seam. It gives each slotted
 option icon a stable key and leaves the upgraded Web Awesome-owned slot subtree

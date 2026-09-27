@@ -66,7 +66,10 @@
       var(--wa-color-surface-default)
     );
     --wa-color-brand-border-loud: var(--wa-color-brand-fill-loud);
-    --wa-color-brand-on-quiet: light-dark(#1e6ef4, #8acbff);
+    /* Kerf-owned light on-quiet values: darkened from Hot Sheet 2's hues so
+       they clear AA on the lowered page background (#f2f2f7) as well as on
+       the surface; src/foundation.css mirrors them as fallbacks. */
+    --wa-color-brand-on-quiet: light-dark(#0c62f3, #8acbff);
     --wa-color-brand-on-normal: var(--wa-color-brand-on-quiet);
     --wa-color-brand-on-loud: light-dark(#fff, #111113);
 
@@ -106,7 +109,7 @@
       var(--wa-color-success-fill-loud) 78%,
       var(--wa-color-neutral-on-normal)
     );
-    --wa-color-success-on-quiet: light-dark(#008932, #63e685);
+    --wa-color-success-on-quiet: light-dark(#007f2e, #63e685);
     --wa-color-success-on-normal: light-dark(#006d28, #8cea9f);
     --wa-color-success-on-loud: #fff;
 
@@ -136,7 +139,7 @@
       var(--wa-color-warning-fill-loud) 78%,
       var(--wa-color-neutral-on-normal)
     );
-    --wa-color-warning-on-quiet: light-dark(#a16a00, #ffd84a);
+    --wa-color-warning-on-quiet: light-dark(#966200, #ffd84a);
     --wa-color-warning-on-normal: light-dark(#5f3f00, #ffe27a);
     --wa-color-warning-on-loud: #1d1d1f;
 

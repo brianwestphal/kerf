@@ -187,9 +187,15 @@
     --wa-color-brand-border-loud,
     var(--kui-color-brand-fill-loud)
   );
+  /* The light brand/success/warning on-quiet values are Kerf-owned (mirrored
+     in src/webawesome.css): each is the Hot Sheet 2 hue darkened just enough to
+     clear WCAG AA (>=4.5:1) on the lowered page background (#f2f2f7), not only
+     on the white surface. The prior #1e6ef4 / #008932 / #a16a00 reached ~4.1:1
+     there. Brand #0c62f3 is 4.64:1, success #007f2e 4.62:1, warning #966200
+     4.65:1 on the page (5.2:1 on white). */
   --kui-color-brand-on-quiet: var(
     --wa-color-brand-on-quiet,
-    light-dark(#1e6ef4, #8acbff)
+    light-dark(#0c62f3, #8acbff)
   );
   --kui-color-brand-on-normal: var(
     --wa-color-brand-on-normal,
@@ -201,10 +207,10 @@
   );
   /* Brand accent text placed directly ON a brand fill (quiet or normal), such as
      the info StateBanner and Select's current option. Darker than brand-on-quiet
-     so it clears WCAG AA (>=4.5:1): brand-on-quiet (#1e6ef4) resolves to only
-     3.77:1 over brand-fill-normal (#d6ecff) and 4.15:1 over brand-fill-quiet
-     (#ebf6ff), while #1a5dcf (same hue) clears ~4.9:1 and ~5.2:1 there. The dark
-     value matches brand-on-quiet, which already passes over the dark fills. */
+     so it clears WCAG AA (>=4.5:1): brand-on-quiet (#0c62f3) resolves to only
+     4.26:1 over brand-fill-normal (#d6ecff), while #1a5dcf (same hue) clears
+     ~4.9:1 there and ~5.5:1 over brand-fill-quiet (#ebf6ff). The dark value
+     matches brand-on-quiet, which already passes over the dark fills. */
   --kui-color-brand-on-fill: light-dark(#1a5dcf, #8acbff);
 
   /* Pop is attractive emphasis without status meaning: use it for featured,
@@ -279,7 +285,7 @@
   );
   --kui-color-success-on-quiet: var(
     --wa-color-success-on-quiet,
-    light-dark(#008932, #63e685)
+    light-dark(#007f2e, #63e685)
   );
   --kui-color-success-on-normal: var(
     --wa-color-success-on-normal,
@@ -287,8 +293,9 @@
   );
   --kui-color-success-on-loud: var(--wa-color-success-on-loud, #fff);
   /* Success text placed ON a success fill (e.g. the success StateBanner). Darker
-     than success-on-quiet so it clears WCAG AA (>=4.5:1) over success-fill-quiet
-     (#e3f7e8), where #008932 reached only 4.05:1. Dark matches success-on-quiet. */
+     than success-on-quiet for margin over success-fill-quiet (#e3f7e8): the
+     original on-quiet #008932 reached only 4.05:1 there and today's #007f2e sits
+     at 4.60:1, while #00792c clears ~5:1. Dark matches success-on-quiet. */
   --kui-color-success-on-fill: light-dark(#00792c, #63e685);
 
   --kui-color-warning-fill-loud: var(--wa-color-warning-fill-loud, #ffcc00);
@@ -334,7 +341,7 @@
   );
   --kui-color-warning-on-quiet: var(
     --wa-color-warning-on-quiet,
-    light-dark(#a16a00, #ffd84a)
+    light-dark(#966200, #ffd84a)
   );
   --kui-color-warning-on-normal: var(
     --wa-color-warning-on-normal,
@@ -342,8 +349,9 @@
   );
   --kui-color-warning-on-loud: var(--wa-color-warning-on-loud, #1d1d1f);
   /* Warning text placed ON a warning fill (e.g. the warning StateBanner). Darker
-     than warning-on-quiet so it clears WCAG AA (>=4.5:1) over warning-fill-quiet
-     (#fffae8), where #a16a00 reached only 4.39:1. Dark matches warning-on-quiet. */
+     than warning-on-quiet for margin over warning-fill-quiet (#fffae8): the
+     original on-quiet #a16a00 reached only 4.39:1 there (today's #966200 is
+     4.97:1), while #8f5e00 clears ~5.3:1. Dark matches warning-on-quiet. */
   --kui-color-warning-on-fill: light-dark(#8f5e00, #ffd84a);
 
   --kui-color-danger-fill-loud: var(--wa-color-danger-fill-loud, #ff383c);

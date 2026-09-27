@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui` brand, success, and warning text clears WCAG AA on the lowered
+  page background in light mode, with or without the optional
+  `@kerfjs/ui/webawesome.css` theme. Their light `on-quiet` values (`#1e6ef4`,
+  `#008932`, `#a16a00`) passed on the white surface but reached only about
+  4.1:1 on `#f2f2f7`. Kerf's theme layer and the foundation fallbacks now use
+  the same hues a step darker: `#0c62f3` (4.64:1), `#007f2e` (4.62:1), and
+  `#966200` (4.65:1) on the page, about 5.2:1 on white. Links, selected tabs,
+  segmented and toolbar selections, and token-search accents that read
+  `brand-on-quiet` darken with it. Dark mode is unchanged. The browser contrast
+  test no longer skips light text over the page background.
 - `@kerfjs/ui` surfaces, links, and focus rings match the optional
   `@kerfjs/ui/webawesome.css` theme without it. Three foundation fallbacks
   pointed at a different token than the theme: `--kui-color-surface-raised`

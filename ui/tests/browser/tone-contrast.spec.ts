@@ -364,12 +364,14 @@ for (const colorScheme of ['light', 'dark'] as const) {
     expect(await resolveColorTokens(page)).toEqual(themed);
 
     const contrast = await measureTonedText(page);
+    // Toned text is held to AA over the lowered page background as well as
+    // the surface, in both schemes. The light brand/success/warning on-quiet
+    // values once reached only ~4.1:1 on the page (#f2f2f7); the parity check
+    // above makes this measurement hold with the theme too.
+    expect(
+      Object.keys(contrast).filter((where) => where.endsWith(' over page')),
+    ).toHaveLength(1 + 2 * WA_TONES.length);
     for (const [where, value] of Object.entries(contrast)) {
-      // The light brand/success/warning on-quiet values sit just under AA on
-      // the lowered page background (~4.1:1) with or without the theme; this
-      // test guards the fallback regression, so light is held over the
-      // surface, where every toned text clears AA.
-      if (colorScheme === 'light' && where.endsWith(' over page')) continue;
       expect(
         value,
         `${where} (${colorScheme}, no Web Awesome)`,

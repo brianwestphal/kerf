@@ -6184,7 +6184,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
   ).toHaveAttribute('aria-pressed', 'true');
   await expect(demo.getByRole('button', { name: 'Columns view' })).toHaveCSS(
     'color',
-    'rgb(30, 110, 244)',
+    'rgb(12, 98, 243)',
   );
   const dropdown = demo.locator('wa-dropdown').first();
   const dropdownItems = dropdown.locator('wa-dropdown-item');
