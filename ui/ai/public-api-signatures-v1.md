@@ -746,11 +746,20 @@ interface AppTabProps {
     className?: string;
     /** Render as an unanimated loading skeleton, disabling select/close and dragging. */
     placeholder?: boolean;
+    /**
+     * Dormant but named: the tab is known and still opening. Keeps `name`
+     * visible in the quiet text color and as the tab's accessible name, shows
+     * `trailing` (for example a `LoadingSpinner`), and disables select, close,
+     * and dragging with `aria-busy`, like `placeholder`. Same pill geometry as
+     * the live tab, so swapping it in place does not shift the bar.
+     * `placeholder` wins when both are set.
+     */
+    pending?: boolean;
     rootAttributes?: AppTabRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function AppTab({ id, name, selected, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, closeIcon, selectAction, closeAction, className, placeholder, rootAttributes, slot, }: AppTabProps): SafeHtml;
+declare function AppTab({ id, name, selected, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: AppTabProps): SafeHtml;
 
 export { AppTab, type AppTabPresentation, type AppTabProps, type AppTabSize };
 ```

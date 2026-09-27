@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui`'s `AppTab` adds `pending` for a known tab that is still
+  opening. It keeps the name visible in the quiet text color and uses it as
+  the tab's accessible name, so a trailing spinner's label is not folded in.
+  Like `placeholder`, it disables select and close, turns off dragging, and
+  sets `aria-busy`, and it shows the consumer's `trailing` spinner. It keeps
+  the live tab's pill geometry, so it swaps in place without shifting the bar.
+  Dormant tabs (placeholder or pending) no longer reveal their disabled close
+  button on hover.
 - `@kerfjs/ui`'s `wireSidebar` moves focus into an opening panel without
   scrolling it. A plain `focus()` scrolled the panel's clipped content to the
   target while it was still sliding in, then the slide unwound that scroll:

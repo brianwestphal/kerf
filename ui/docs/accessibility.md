@@ -178,7 +178,10 @@ trailing, and end actions remain visible and do not shrink. The component owns
 that geometry; applications must not override its anatomy to create the split.
 `AppTab` provides compact 32px, segmented, truncating-label, and icon-only
 presentations. Icon-only tabs keep the required `name` as the tab button's
-accessible name while visually hiding the duplicate label. These props own
+accessible name while visually hiding the duplicate label. A `pending` tab (known,
+still opening) keeps its visible name as the tab button's accessible name, so a
+trailing spinner's own label is not folded into it; like `placeholder`, it is
+`aria-busy`, disabled, out of the tab order, and not draggable. These props own
 component appearance only; the application still owns the bar's outer placement.
 `AppTab.rootAttributes` accepts application `data-*` metadata only; runtime
 filtering rejects roles plus case variants of component- or wiring-owned

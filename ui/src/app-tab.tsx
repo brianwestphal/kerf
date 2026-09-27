@@ -49,6 +49,15 @@ export interface AppTabProps {
   className?: string;
   /** Render as an unanimated loading skeleton, disabling select/close and dragging. */
   placeholder?: boolean;
+  /**
+   * Dormant but named: the tab is known and still opening. Keeps `name`
+   * visible in the quiet text color and as the tab's accessible name, shows
+   * `trailing` (for example a `LoadingSpinner`), and disables select, close,
+   * and dragging with `aria-busy`, like `placeholder`. Same pill geometry as
+   * the live tab, so swapping it in place does not shift the bar.
+   * `placeholder` wins when both are set.
+   */
+  pending?: boolean;
   rootAttributes?: AppTabRootAttributes;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -86,9 +95,13 @@ export function AppTab({
   closeAction = 'close-tab',
   className = '',
   placeholder = false,
+  pending = false,
   rootAttributes = {},
   slot,
 }: AppTabProps) {
+  // Both loading states leave the tab dormant; only `placeholder` hides the name.
+  const dormant = placeholder || pending;
+  const named = pending && !placeholder;
   const keyshortcuts = [
     closable ? 'Delete Backspace' : '',
     draggable ? 'Alt+Shift+ArrowLeft Alt+Shift+ArrowRight' : '',
@@ -109,8 +122,9 @@ export function AppTab({
       data-presentation={presentation}
       data-size={size}
       data-placeholder={placeholder ? 'true' : undefined}
-      draggable={placeholder ? 'false' : draggable ? 'true' : 'false'}
-      aria-busy={placeholder ? 'true' : undefined}
+      data-pending={named ? 'true' : undefined}
+      draggable={dormant ? 'false' : draggable ? 'true' : 'false'}
+      aria-busy={dormant ? 'true' : undefined}
       style={
         labelMaxWidth === undefined
           ? undefined
@@ -123,9 +137,9 @@ export function AppTab({
           type="button"
           tabindex="-1"
           class="kui-app-tab__close"
-          data-action={placeholder ? undefined : closeAction}
+          data-action={dormant ? undefined : closeAction}
           data-tab-id={id}
-          disabled={placeholder || undefined}
+          disabled={dormant || undefined}
           aria-label={`Close ${name}`}
           title={`Close ${name}`}
         >
@@ -139,12 +153,12 @@ export function AppTab({
         class="kui-app-tab__select"
         role="tab"
         aria-selected={String(selected)}
-        aria-label={presentation === 'icon-only' ? name : undefined}
-        aria-keyshortcuts={placeholder ? undefined : keyshortcuts || undefined}
-        data-action={placeholder ? undefined : selectAction}
+        aria-label={presentation === 'icon-only' || named ? name : undefined}
+        aria-keyshortcuts={dormant ? undefined : keyshortcuts || undefined}
+        data-action={dormant ? undefined : selectAction}
         data-tab-id={id}
-        disabled={placeholder || undefined}
-        tabindex={placeholder ? '-1' : selected ? '0' : '-1'}
+        disabled={dormant || undefined}
+        tabindex={dormant ? '-1' : selected ? '0' : '-1'}
       >
         {leading}
         <span

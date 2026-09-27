@@ -1,3 +1,4 @@
+import { raw } from 'kerfjs';
 import { Columns3, List, Settings } from 'lucide';
 import { describe, expect, it } from 'vitest';
 
@@ -203,6 +204,45 @@ describe('component placeholder mode', () => {
     expect(html).not.toContain('data-action="pick"');
     expect(html).toContain('kui-skeleton');
     expect(html).not.toContain('>Overview<');
+  });
+
+  it('AppTab pending keeps its name but is dormant, busy, and named by it', () => {
+    const html = asHtml(
+      AppTab({
+        id: 'alpha',
+        name: 'alpha',
+        draggable: true,
+        selected: true,
+        selectAction: 'pick',
+        closeAction: 'drop',
+        trailing: raw('<span class="spinner" aria-label="Opening"></span>'),
+        pending: true,
+      }),
+    );
+    expect(html).toContain('data-pending="true"');
+    expect(html).not.toContain('data-placeholder');
+    expect(html).toContain('aria-busy="true"');
+    expect(html).toContain('draggable="false"');
+    expect(html).not.toContain('data-action="pick"');
+    expect(html).not.toContain('data-action="drop"');
+    expect(html).not.toContain('aria-keyshortcuts');
+    expect(html).not.toContain('kui-skeleton');
+    // The visible label stays, and names the tab so a spinner label is not
+    // folded into its accessible name.
+    expect(html).toContain('>alpha</span>');
+    expect(html).toMatch(/role="tab"[^>]*aria-label="alpha"/);
+    expect(html).toMatch(/role="tab"[^>]*disabled[^>]*tabindex="-1"/);
+    expect(html).toContain('class="spinner"');
+  });
+
+  it('AppTab placeholder wins over pending', () => {
+    const html = asHtml(
+      AppTab({ id: 'a', name: 'alpha', placeholder: true, pending: true }),
+    );
+    expect(html).toContain('data-placeholder="true"');
+    expect(html).not.toContain('data-pending');
+    expect(html).toContain('kui-skeleton');
+    expect(html).not.toMatch(/role="tab"[^>]*aria-label=/);
   });
 
   it('SegmentedControl disables every segment and skeletons their content', () => {

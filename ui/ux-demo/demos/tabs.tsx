@@ -1,5 +1,6 @@
 import { AppTab } from '@kerfjs/ui/app-tab';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { CircleDot, PanelLeft, X } from 'lucide';
@@ -66,6 +67,22 @@ export function TabsDemo() {
       <CatalogExample label="Placeholder" align="none">
         <TabBar id="app-tab-placeholder" label="Loading AppTab specimen">
           <AppTab id="loading" name="" placeholder />
+        </TabBar>
+      </CatalogExample>
+      <CatalogExample
+        label="Pending"
+        note="A known tab that is still opening keeps its name, dormant, with a trailing spinner. It has the live tab's geometry, so it swaps in place."
+        align="none"
+      >
+        <TabBar id="app-tab-pending" label="Pending AppTab specimen">
+          <AppTab id="hot-sheet" name="hot-sheet" selected />
+          <AppTab
+            id="alpha"
+            name="alpha"
+            pending
+            trailing={<LoadingSpinner />}
+          />
+          <AppTab id="beta" name="beta" />
         </TabBar>
       </CatalogExample>
     </CatalogExampleStack>

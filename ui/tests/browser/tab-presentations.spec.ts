@@ -61,3 +61,57 @@ test('renders typed tab presentations without consumer descendant CSS', async ({
     path: testInfo.outputPath('tab-presentations.png'),
   });
 });
+
+test('a pending AppTab keeps its name, stays dormant, and swaps in place', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 850 });
+  await page.goto('/?component=tabs');
+  const bar = page.locator('[data-tab-bar-id="app-tab-pending"]');
+  const pending = bar.locator(
+    '[data-component="app-tab"][data-tab-id="alpha"]',
+  );
+  await expect(pending).toHaveAttribute('data-pending', 'true');
+  await expect(pending).toHaveAttribute('aria-busy', 'true');
+
+  // The label is visible and names the tab, without the spinner's label.
+  const tab = pending.getByRole('tab', { name: 'alpha', exact: true });
+  await expect(tab).toBeDisabled();
+  await expect(pending.locator('.kui-app-tab__name')).toHaveText('alpha');
+  const colors = await pending.evaluate((element) => {
+    const probe = document.createElement('span');
+    probe.style.color = 'var(--kui-color-text-quiet)';
+    element.append(probe);
+    const quiet = window.getComputedStyle(probe).color;
+    probe.remove();
+    return {
+      name: window.getComputedStyle(
+        element.querySelector('.kui-app-tab__name')!,
+      ).color,
+      quiet,
+    };
+  });
+  expect(colors.name).toBe(colors.quiet);
+  await expect(
+    pending.locator('.kui-app-tab__trailing .kui-loading-spinner'),
+  ).toBeVisible();
+
+  // Hovering never reveals the disabled close button.
+  await pending.hover();
+  await expect(pending.locator('.kui-app-tab__close')).toBeHidden();
+
+  // Swapping to the live tab in place keeps the pill's geometry.
+  const pendingBox = await pending.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { width: rect.width, height: rect.height };
+  });
+  const liveBox = await pending.evaluate((element) => {
+    element.removeAttribute('data-pending');
+    element.removeAttribute('aria-busy');
+    element.querySelector('.kui-app-tab__trailing')!.replaceChildren();
+    const rect = element.getBoundingClientRect();
+    return { width: rect.width, height: rect.height };
+  });
+  expect(liveBox.height).toBe(pendingBox.height);
+  expect(Math.abs(liveBox.width - pendingBox.width)).toBeLessThanOrEqual(0.5);
+});

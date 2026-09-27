@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 285300,
-  "measuredLargestJavaScriptGzip": 136355,
-  "measuredTotalJavaScriptGzip": 285216,
+  "totalJavaScriptGzip": 285500,
+  "measuredLargestJavaScriptGzip": 136531,
+  "measuredTotalJavaScriptGzip": 285405,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -467,6 +467,22 @@
         "measuredTotalJavaScriptGzip": 285216,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 285300
+      }
+    },
+    {
+      "at": "2026-09-27T00:44:24.763Z",
+      "reason": "KF-8913PN: AppTab pending state and its tabs-demo Pending example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 136355,
+        "measuredTotalJavaScriptGzip": 285216,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 136531,
+        "measuredTotalJavaScriptGzip": 285405,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285500
       }
     }
   ]

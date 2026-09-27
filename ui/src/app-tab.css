@@ -148,6 +148,15 @@
 .kui-app-tab__close:hover {
   color: var(--kui-color-text);
 }
+/* A dormant tab keeps its close button's space, so it matches the live tab's
+   geometry, but never shows a control it has disabled. */
+.kui-app-tab:is([data-placeholder="true"], [data-pending="true"])
+  .kui-app-tab__close {
+  visibility: hidden;
+}
+.kui-app-tab[data-pending="true"] .kui-app-tab__name {
+  color: var(--kui-color-text-quiet);
+}
 .kui-app-tab__close-icon {
   display: grid;
   width: remify(10.2px);
