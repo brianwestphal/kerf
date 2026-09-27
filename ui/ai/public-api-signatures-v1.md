@@ -1051,6 +1051,12 @@ import { SafeHtml } from 'kerfjs';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
+/**
+ * The Workbench container breakpoint below which a rail presents as an
+ * overlay: `narrow` (704px or less) or `compact` (448px or less) — the same
+ * breakpoints as `ResizableRegion`'s `responsiveFillAt`.
+ */
+type WorkbenchResponsiveOverlayAt = 'compact' | 'narrow';
 /** Drag-resize limits for a resizable Workbench panel, in px. */
 interface WorkbenchPanelResizable {
     /** Smallest size (default 180 for a rail, 120 for the drawer). */
@@ -1082,6 +1088,12 @@ interface WorkbenchPanel {
     collapseMotion?: ResizableRegionCollapseMotion;
     contentOverflow?: ResizableRegionContentOverflow;
     presentation?: ResizableRegionPresentation;
+    /**
+     * Present a rail as an overlay, without a separator, below a Workbench
+     * container breakpoint, and inline above it — the CSS decides, so the app
+     * needs no device-class check. Rails only; the bottom drawer ignores it.
+     */
+    responsiveOverlayAt?: WorkbenchResponsiveOverlayAt;
     /** Control shown in a safe-area-aware viewport corner while collapsed. */
     restoreControl?: SafeHtml;
     restorePosition?: ResizableRegionRestorePosition;
@@ -1118,7 +1130,7 @@ interface WorkbenchProps {
  */
 declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainMinSize, className, slot, }: WorkbenchProps): SafeHtml;
 
-export { Workbench, type WorkbenchPanel, type WorkbenchPanelResizable, type WorkbenchProps };
+export { Workbench, type WorkbenchPanel, type WorkbenchPanelResizable, type WorkbenchProps, type WorkbenchResponsiveOverlayAt };
 ```
 
 ## `@kerfjs/ui/wire-workbench`

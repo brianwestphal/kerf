@@ -282,8 +282,9 @@
   flex-shrink: 1;
 }
 
-.kui-workbench__rail[data-resizable="true"][data-presentation="inline"]:not(
-    [data-collapsed="true"]
+/* Low specificity, so a responsive overlay (below) restores the fixed width. */
+.kui-workbench__rail[data-resizable="true"]:where(
+    [data-presentation="inline"]:not([data-collapsed="true"])
   )
   > .kui-workbench__panel-content {
   width: 100%;
@@ -435,14 +436,135 @@
   inset-block-end: 0;
 }
 
+/* A collapsed overlay keeps its box for the slide-out, so it drops its surface
+   and shadow; the sliding content carries the surface instead. */
 .kui-workbench__rail[data-presentation="overlay"][data-collapsed="true"],
 .kui-workbench__drawer[data-presentation="overlay"][data-collapsed="true"] {
+  background: transparent;
+  box-shadow: none;
   pointer-events: none;
+}
+
+.kui-workbench__rail[data-presentation="overlay"]
+  > .kui-workbench__panel-content {
+  background: var(--kui-color-surface);
 }
 
 .kui-workbench__rail[data-presentation="hidden"],
 .kui-workbench__drawer[data-presentation="hidden"] {
   display: none;
+}
+
+/* Responsive overlay rails. A rail with `responsiveOverlayAt` presents as an
+   overlay — out of flow, over the work area, without a separator — below the
+   Workbench's own container breakpoint (`narrow`: 704px or less, `compact`:
+   448px or less, as `ResizableRegion`'s `responsiveFillAt`), and inline above
+   it. The Workbench becomes a named inline-size container only when a rail
+   opts in. The work area keeps its safe-area inset under an overlay rail. */
+.kui-workbench:has(> .kui-workbench__rail[data-responsive-overlay-at]) {
+  container: kui-workbench / inline-size;
+}
+
+@container kui-workbench (max-width: remify(704px)) {
+  .kui-workbench__rail[data-responsive-overlay-at="narrow"] {
+    position: absolute;
+    z-index: var(--kui-workbench-overlay-z, 41);
+    width: var(--_kui-workbench-rail-extent);
+    max-width: var(--kui-workbench-overlay-max-width, 85vw);
+    max-height: var(--kui-workbench-overlay-max-height, 85vh);
+    inset-block: 0;
+    box-shadow: var(--kui-shadow-l);
+  }
+
+  .kui-workbench__rail--left[data-responsive-overlay-at="narrow"] {
+    inset-inline-start: 0;
+  }
+
+  .kui-workbench__rail--right[data-responsive-overlay-at="narrow"] {
+    inset-inline-end: 0;
+  }
+
+  .kui-workbench__rail[data-responsive-overlay-at="narrow"][data-collapsed="true"] {
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+  }
+
+  .kui-workbench__rail[data-responsive-overlay-at="narrow"]
+    > .kui-workbench__panel-content {
+    width: var(--_kui-workbench-rail-extent);
+    background: var(--kui-color-surface);
+  }
+
+  .kui-workbench__rail[data-responsive-overlay-at="narrow"]
+    > .kui-workbench__handle {
+    display: none;
+  }
+
+  .kui-workbench:has(
+      > .kui-workbench__rail--left[data-responsive-overlay-at="narrow"][data-presentation="inline"]
+    )
+    > .kui-workbench__center {
+    --kui-edge-inset-inline-start: var(--_kui-workbench-safe-inline-start);
+  }
+
+  .kui-workbench:has(
+      > .kui-workbench__rail--right[data-responsive-overlay-at="narrow"][data-presentation="inline"]
+    )
+    > .kui-workbench__center {
+    --kui-edge-inset-inline-end: var(--_kui-workbench-safe-inline-end);
+  }
+}
+
+@container kui-workbench (max-width: remify(448px)) {
+  .kui-workbench__rail[data-responsive-overlay-at="compact"] {
+    position: absolute;
+    z-index: var(--kui-workbench-overlay-z, 41);
+    width: var(--_kui-workbench-rail-extent);
+    max-width: var(--kui-workbench-overlay-max-width, 85vw);
+    max-height: var(--kui-workbench-overlay-max-height, 85vh);
+    inset-block: 0;
+    box-shadow: var(--kui-shadow-l);
+  }
+
+  .kui-workbench__rail--left[data-responsive-overlay-at="compact"] {
+    inset-inline-start: 0;
+  }
+
+  .kui-workbench__rail--right[data-responsive-overlay-at="compact"] {
+    inset-inline-end: 0;
+  }
+
+  .kui-workbench__rail[data-responsive-overlay-at="compact"][data-collapsed="true"] {
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+  }
+
+  .kui-workbench__rail[data-responsive-overlay-at="compact"]
+    > .kui-workbench__panel-content {
+    width: var(--_kui-workbench-rail-extent);
+    background: var(--kui-color-surface);
+  }
+
+  .kui-workbench__rail[data-responsive-overlay-at="compact"]
+    > .kui-workbench__handle {
+    display: none;
+  }
+
+  .kui-workbench:has(
+      > .kui-workbench__rail--left[data-responsive-overlay-at="compact"][data-presentation="inline"]
+    )
+    > .kui-workbench__center {
+    --kui-edge-inset-inline-start: var(--_kui-workbench-safe-inline-start);
+  }
+
+  .kui-workbench:has(
+      > .kui-workbench__rail--right[data-responsive-overlay-at="compact"][data-presentation="inline"]
+    )
+    > .kui-workbench__center {
+    --kui-edge-inset-inline-end: var(--_kui-workbench-safe-inline-end);
+  }
 }
 
 .kui-workbench__restore {

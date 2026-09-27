@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 288000,
-  "measuredLargestJavaScriptGzip": 139079,
-  "measuredTotalJavaScriptGzip": 287950,
+  "totalJavaScriptGzip": 288200,
+  "measuredLargestJavaScriptGzip": 139202,
+  "measuredTotalJavaScriptGzip": 288103,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -579,6 +579,22 @@
         "measuredTotalJavaScriptGzip": 287950,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 288000
+      }
+    },
+    {
+      "at": "2026-09-27T11:02:35.079Z",
+      "reason": "Workbench rails gain a responsiveOverlayAt container-query overlay presentation, and the catalog's collapsed console restore becomes a working ToolbarControlGroup panel toggle",
+      "old": {
+        "measuredLargestJavaScriptGzip": 139079,
+        "measuredTotalJavaScriptGzip": 287950,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 288000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 139202,
+        "measuredTotalJavaScriptGzip": 288103,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 288200
       }
     }
   ]

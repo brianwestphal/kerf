@@ -377,8 +377,143 @@ describe('Workbench', () => {
     const expanded =
       '.kui-workbench__rail[data-resizable="true"][data-presentation="inline"]:not( [data-collapsed="true"] )';
     expect(rule(expanded)).toEqual({ 'flex-shrink': '1' });
-    expect(rule(`${expanded} > .kui-workbench__panel-content`)).toEqual({
-      width: '100%',
-    });
+    expect(
+      rule(
+        '.kui-workbench__rail[data-resizable="true"]:where( [data-presentation="inline"]:not([data-collapsed="true"]) ) > .kui-workbench__panel-content',
+      ),
+    ).toEqual({ width: '100%' });
+  });
+
+  it('renders a rail responsive overlay breakpoint and ignores it on the drawer', () => {
+    const html = String(
+      Workbench({
+        id: 'wb',
+        label: 'Studio',
+        main,
+        leftRail: {
+          content: panel('nav'),
+          resizable: true,
+          responsiveOverlayAt: 'narrow',
+        },
+        rightRail: {
+          content: panel('inspector'),
+          responsiveOverlayAt: 'compact',
+        },
+        bottomDrawer: {
+          content: panel('console'),
+          responsiveOverlayAt: 'narrow',
+        },
+      }),
+    );
+    const root = document.createElement('div');
+    root.innerHTML = html;
+    const attr = (selector: string) =>
+      root.querySelector(selector)!.getAttribute('data-responsive-overlay-at');
+    expect(attr('[data-workbench-rail="left"]')).toBe('narrow');
+    expect(attr('[data-workbench-rail="right"]')).toBe('compact');
+    expect(attr('[data-workbench-drawer]')).toBeNull();
+    // The inline presentation stays the rendered state; the CSS decides.
+    expect(
+      root
+        .querySelector('[data-workbench-rail="left"]')!
+        .getAttribute('data-presentation'),
+    ).toBe('inline');
+    expect(
+      String(
+        Workbench({
+          id: 'wb',
+          label: 'Studio',
+          main,
+          leftRail: { content: panel('nav') },
+        }),
+      ),
+    ).not.toContain('data-responsive-overlay-at');
+  });
+
+  it('presents opted-in rails as overlays below their Workbench container breakpoint', async () => {
+    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const normalize = (selector: string) =>
+      selector.replace(/\s+/g, ' ').replace(/\( /g, '(').replace(/ \)/g, ')');
+    const container = css.nodes.find(
+      (node) =>
+        node.type === 'rule' &&
+        normalize(node.selector) ===
+          '.kui-workbench:has(> .kui-workbench__rail[data-responsive-overlay-at])',
+    );
+    expect(container?.type === 'rule' && container.toString()).toContain(
+      'container: kui-workbench / inline-size',
+    );
+    for (const [at, width] of [
+      ['narrow', '704px'],
+      ['compact', '448px'],
+    ]) {
+      const query = css.nodes.find(
+        (node) =>
+          node.type === 'atrule' &&
+          node.name === 'container' &&
+          node.params === `kui-workbench (max-width: remify(${width}))`,
+      );
+      if (!query || query.type !== 'atrule')
+        throw new Error(`Missing ${at} container query`);
+      const decls = (selector: string) => {
+        const rule = query.nodes?.find(
+          (node) =>
+            node.type === 'rule' && normalize(node.selector) === selector,
+        );
+        if (!rule || rule.type !== 'rule')
+          throw new Error(`Missing ${selector} in ${at}`);
+        return Object.fromEntries(
+          rule.nodes
+            .filter((node) => node.type === 'decl')
+            .map((node) => [node.prop, node.value]),
+        );
+      };
+      const rail = `.kui-workbench__rail[data-responsive-overlay-at="${at}"]`;
+      expect(decls(rail)).toMatchObject({
+        position: 'absolute',
+        width: 'var(--_kui-workbench-rail-extent)',
+        'inset-block': '0',
+        'box-shadow': 'var(--kui-shadow-l)',
+      });
+      expect(decls(`${rail} > .kui-workbench__handle`)).toEqual({
+        display: 'none',
+      });
+      expect(decls(`${rail} > .kui-workbench__panel-content`)).toEqual({
+        width: 'var(--_kui-workbench-rail-extent)',
+        background: 'var(--kui-color-surface)',
+      });
+      // A collapsed overlay keeps its box for the slide-out but paints nothing.
+      expect(decls(`${rail}[data-collapsed="true"]`)).toEqual({
+        background: 'transparent',
+        'box-shadow': 'none',
+        'pointer-events': 'none',
+      });
+    }
+  });
+
+  it('drops a collapsed static overlay rail surface so it covers nothing', async () => {
+    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const css = await readFile(file, 'utf8');
+    const root = postcss.parse(css, { from: file });
+    const rule = root.nodes.find(
+      (node) =>
+        node.type === 'rule' &&
+        node.selector.includes(
+          '.kui-workbench__rail[data-presentation="overlay"][data-collapsed="true"]',
+        ),
+    );
+    if (!rule || rule.type !== 'rule') throw new Error('Missing rule');
+    expect(rule.toString()).toContain('background: transparent');
+    expect(rule.toString()).toContain('box-shadow: none');
+    const content = root.nodes.find(
+      (node) =>
+        node.type === 'rule' &&
+        node.selector.replace(/\s+/g, ' ') ===
+          '.kui-workbench__rail[data-presentation="overlay"] > .kui-workbench__panel-content',
+    );
+    expect(content?.toString()).toContain(
+      'background: var(--kui-color-surface)',
+    );
   });
 });

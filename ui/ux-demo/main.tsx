@@ -109,6 +109,7 @@ import {
 import {
   resetWorkbenchDemo,
   RESIZABLE_WORKBENCH_ID,
+  toggleWorkbenchConsole,
   toggleWorkbenchInspector,
   toggleWorkbenchNavigator,
   workbenchConsoleSize,
@@ -857,6 +858,11 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = toggleWorkbenchNavigator()
       ? 'Navigator hidden'
       : 'Navigator shown';
+  },
+  'toggle-workbench-console': () => {
+    actionLog.value = toggleWorkbenchConsole()
+      ? 'Console hidden'
+      : 'Console shown';
   },
   'toggle-workbench-inspector': () => {
     actionLog.value = toggleWorkbenchInspector()

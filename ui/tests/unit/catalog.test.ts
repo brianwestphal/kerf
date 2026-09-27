@@ -128,6 +128,7 @@ describe('UX catalog metadata', () => {
         'WorkbenchPanel',
         'WorkbenchPanelResizable',
         'WorkbenchProps',
+        'WorkbenchResponsiveOverlayAt',
       ],
       delivery: {
         moduleImport: '@kerfjs/ui/workbench',
@@ -178,6 +179,7 @@ describe('UX catalog metadata', () => {
           'WorkbenchPanel',
           'WorkbenchPanelResizable',
           'WorkbenchProps',
+          'WorkbenchResponsiveOverlayAt',
         ],
       },
       {

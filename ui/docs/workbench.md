@@ -64,8 +64,18 @@ an optional `label`. Common shell behavior is configured rather than restyled:
 - `presentation: "inline" | "overlay" | "hidden"` supports compact overlays
   or a responsive replacement. Overlay panels clamp both their track and fixed-size
   animated content to the configured viewport-relative maximum;
+- `responsiveOverlayAt: "narrow" | "compact"` (rails only) presents a rail
+  as an overlay below a Workbench container breakpoint — 704px or less for
+  `narrow`, 448px or less for `compact`, the breakpoints of
+  `ResizableRegion`'s `responsiveFillAt` — and inline above it. The CSS
+  decides, so the app needs no `deviceClass` check for presentation; a
+  collapsed overlay drops its surface and shadow so nothing covers the work
+  area;
 - `restoreControl` places an application-owned restore affordance in a
   safe-area-aware viewport corner (`restorePosition` chooses the corner).
+  Compose it from the package controls — a `single` `ToolbarControlGroup`
+  around one icon button carrying `collapsiblePanelToggleIcon(side, true)` —
+  rather than a bare button.
 
 - `resizable: true | { min, max }` opts the panel in to drag and keyboard
   resizing, driven by `wireWorkbench` (off by default).
@@ -86,7 +96,6 @@ handle. `wireWorkbench` drives it:
 ```tsx
 import { wireWorkbench } from "@kerfjs/ui/wire-workbench";
 
-const device = deviceClass();
 const navSize = signal(280);
 const consoleSize = signal(200);
 
@@ -101,7 +110,7 @@ const consoleSize = signal(200);
     collapsed: navCollapsed.value,
     size: navSize.value,
     resizable: { min: 200, max: 420 },
-    presentation: device.value.compact ? "overlay" : "inline",
+    responsiveOverlayAt: "narrow", // an overlay when the Workbench is 704px or narrower
   }}
   bottomDrawer={{
     content: <Console />,
@@ -118,7 +127,6 @@ const stop = wireWorkbench(root, {
     leftRail: { size: navSize, storageKey: "studio.nav-width" },
     bottomDrawer: { size: consoleSize, storageKey: "studio.console-height" },
   },
-  deviceClass: device,
 });
 ```
 
@@ -145,9 +153,12 @@ const stop = wireWorkbench(root, {
 - **Persistence:** with a `storageKey`, the size is loaded from `storage`
   (default `localStorage`) at wire-up and saved on every change, like
   `wireSidebar`'s collapsed state.
-- **Compact classes:** pass `deviceClass` and resizing is suspended while
-  `compact` is true — where rails present as overlay drawers or are replaced.
-  An overlay or hidden panel is never resizable, and its separator is hidden.
+- **Overlays never resize:** an overlay or hidden panel — including a rail
+  whose `responsiveOverlayAt` breakpoint currently applies — hides its
+  separator and is never resizable, and it leaves the work-area minimum to the
+  rails still in flow. With `responsiveOverlayAt` no device check is needed;
+  otherwise pass `deviceClass` and resizing is suspended while `compact` is
+  true, where rails present as overlay drawers or are replaced.
 - `wireWorkbench` drives only the panels it is given, matched by the
   Workbench `id`, so it never double-drives a `ResizableRegion` (or another
   Workbench) under the same root. `onResize({ panel, size, source })` reports
@@ -177,7 +188,13 @@ with state-derived props:
   collapseMotion="fade-slide"
   contentOverflow={createMenuOpen.value ? "visible" : "clip"}
   presentation={mobile.value ? "overlay" : "inline"}
-  restoreControl={<button data-action="show-drawer">Show terminals</button>}
+  restoreControl={
+    <ToolbarControlGroup label="Terminals" single>
+      <button data-action="show-drawer" aria-label="Show terminals">
+        <LucideIcon {...collapsiblePanelToggleIcon("bottom", true)} />
+      </button>
+    </ToolbarControlGroup>
+  }
 >
   <TerminalDrawer />
 </ResizableRegion>

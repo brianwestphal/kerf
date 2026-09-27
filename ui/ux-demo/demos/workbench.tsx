@@ -27,6 +27,7 @@ export const workbenchInspectorSize = signal(160);
 export const workbenchConsoleSize = signal(160);
 const navigatorCollapsed = signal(false);
 const inspectorCollapsed = signal(true);
+const consoleCollapsed = signal(true);
 
 /**
  * Start each visit with the navigator shown and the inspector hidden; the
@@ -35,6 +36,7 @@ const inspectorCollapsed = signal(true);
 export function resetWorkbenchDemo(): void {
   navigatorCollapsed.value = false;
   inspectorCollapsed.value = true;
+  consoleCollapsed.value = true;
 }
 
 export function toggleWorkbenchNavigator(): boolean {
@@ -47,9 +49,14 @@ export function toggleWorkbenchInspector(): boolean {
   return inspectorCollapsed.value;
 }
 
-/** A main-toolbar toggle carrying the standard per-side panel glyph. */
+export function toggleWorkbenchConsole(): boolean {
+  consoleCollapsed.value = !consoleCollapsed.value;
+  return consoleCollapsed.value;
+}
+
+/** A toggle carrying the standard per-side panel glyph. */
 function panelToggle(
-  side: 'left' | 'right',
+  side: 'left' | 'right' | 'bottom',
   name: string,
   collapsed: boolean,
   action: string,
@@ -64,6 +71,53 @@ function panelToggle(
     >
       <LucideIcon icon={glyph.icon} name={glyph.name} />
     </button>
+  );
+}
+
+/**
+ * The collapsed console's restore affordance: a floating control group in the
+ * corner the Workbench reserves while the console is collapsed.
+ */
+function consoleRestore() {
+  return (
+    <ToolbarControlGroup label="Console" single>
+      {panelToggle('bottom', 'console', true, 'toggle-workbench-console')}
+    </ToolbarControlGroup>
+  );
+}
+
+/** The collapsed example's editor; it hides the console while it is shown. */
+function collapsedEditor() {
+  return (
+    <Pane
+      header={
+        <Toolbar
+          label="Editor"
+          leading={<ToolbarText text="Editor" size="xlarge" />}
+          trailing={
+            consoleCollapsed.value ? undefined : (
+              <ToolbarControlGroup
+                label="Console"
+                appearance="borderless"
+                single
+              >
+                {panelToggle(
+                  'bottom',
+                  'console',
+                  false,
+                  'toggle-workbench-console',
+                )}
+              </ToolbarControlGroup>
+            )
+          }
+        />
+      }
+    >
+      {region(
+        'The app owns every collapsed flag',
+        'Hide the console from this toolbar; restore it from the corner control.',
+      )}
+    </Pane>
   );
 }
 
@@ -141,16 +195,14 @@ export function WorkbenchDemo() {
       </CatalogExample>
       <CatalogExample
         label="Resizable panels"
-        note="Resizing is opt-in per panel, and wireWorkbench drives the separators. Resizable rails leave the work area its 320 px minimum: they stop growing there and shrink in proportion when the workbench narrows."
+        note="Resizing is opt-in per panel, and wireWorkbench drives the separators. Resizable rails leave the work area its 320 px minimum: they stop growing there and shrink in proportion when the workbench narrows. Below 704 px of workbench width the rails present as overlays, which do not resize."
         align="none"
-        compactFallback="Resizable rails are a desktop affordance. Compact layouts present rails as overlay drawers, which do not resize."
         viewport={{
           layout: 'grid',
           width: 'full',
           height: 'tall',
           frame: 'solid',
           surface: 'lowered',
-          responsive: 'roomy-only',
         }}
       >
         <Workbench
@@ -162,6 +214,7 @@ export function WorkbenchDemo() {
             collapsed: navigatorCollapsed.value,
             size: workbenchNavigatorSize.value,
             resizable: { min: 180, max: 400 },
+            responsiveOverlayAt: 'narrow',
           }}
           main={resizableEditor()}
           rightRail={{
@@ -170,6 +223,7 @@ export function WorkbenchDemo() {
             collapsed: inspectorCollapsed.value,
             size: workbenchInspectorSize.value,
             resizable: { min: 160, max: 360 },
+            responsiveOverlayAt: 'narrow',
           }}
           bottomDrawer={{
             label: 'Console',
@@ -201,7 +255,7 @@ export function WorkbenchDemo() {
             content: region('Navigator', 'Still mounted'),
             collapsed: true,
           }}
-          main={region('Editor', 'The app owns every collapsed flag.')}
+          main={collapsedEditor()}
           rightRail={{
             label: 'Inspector',
             content: region('Inspector', 'Visible peripheral panel'),
@@ -209,15 +263,12 @@ export function WorkbenchDemo() {
           bottomDrawer={{
             label: 'Console',
             content: region('Console', 'Still mounted'),
-            collapsed: true,
+            collapsed: consoleCollapsed.value,
+            size: 120,
             separator: 'hidden',
             collapseMotion: 'fade-slide',
             contentOverflow: 'visible',
-            restoreControl: (
-              <button type="button" aria-label="Show collapsed console">
-                Show console
-              </button>
-            ),
+            restoreControl: consoleRestore(),
           }}
         />
       </CatalogExample>

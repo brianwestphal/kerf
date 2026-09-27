@@ -261,6 +261,18 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
   - no resizing where rails become drawers: an overlay or hidden panel's handle
     is hidden and inert, and with `deviceClass` the wire suspends resizing while
     `compact` is true;
+  - responsive overlay rails (KF-0KXZT2: an overlay presentation that needs no
+    app device-class check): a rail's `responsiveOverlayAt: "narrow" |
+"compact"` mirrors `ResizableRegion`'s `responsiveFillAt` — same names,
+    same 704px / 448px breakpoints, measured on the component's container. The
+    rail renders `data-responsive-overlay-at`, the Workbench becomes a named
+    `kui-workbench` inline-size container only when a rail opts in, and below
+    the breakpoint the CSS applies the overlay presentation (out of flow at its
+    edge, the overlay z-index/maximums/shadow, separator hidden, the work area
+    keeping its safe-area inset) while `data-presentation` stays `inline`.
+    Rails only; the drawer ignores it. A collapsed overlay (static or
+    responsive) drops its surface and shadow — the sliding content carries the
+    surface — so an invisible box no longer covers the work area;
   - the wire matches only its own panels by Workbench `id`, so it never
     double-drives a `ResizableRegion` or another Workbench under the same root;
   - the work area keeps a minimum width beside resizable rails (KF-D79A29:
@@ -298,7 +310,7 @@ Shipped shape:
   id="ide"
   label="Editor workspace"
   main={<Editor />}
-  leftRail={{ content: <Nav />, label: "Navigator", size: navSize.value, resizable: { min: 200, max: 420 } }}
+  leftRail={{ content: <Nav />, label: "Navigator", size: navSize.value, resizable: { min: 200, max: 420 }, responsiveOverlayAt: "narrow" }}
 />
 // once: wireWorkbench(root, { id: "ide", panels: { leftRail: { size: navSize, storageKey: "ide.nav" } }, deviceClass: device });
 // the editor keeps 320px by default; mainMinSize={400} asks for more, 0 turns it off

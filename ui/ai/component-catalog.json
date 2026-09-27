@@ -858,7 +858,8 @@
         "Workbench",
         "WorkbenchPanel",
         "WorkbenchPanelResizable",
-        "WorkbenchProps"
+        "WorkbenchProps",
+        "WorkbenchResponsiveOverlayAt"
       ],
       "useWhen": [
         "A desktop-class tool needs a central work area plus independently collapsible navigator, inspector, or console regions.",
@@ -867,7 +868,7 @@
       "avoidWhen": [
         "Do not shrink the full multi-panel shell onto compact devices; present peripheral content through NavStack or overlay drawers instead.",
         "Do not use Workbench for one standalone collapsible rail or drawer; use CollapsiblePanel.",
-        "Do not offer resizing where rails present as compact overlay drawers or are replaced; pass deviceClass so wireWorkbench suspends resizing on compact classes."
+        "Do not offer resizing where rails present as compact overlay drawers or are replaced; set a rail's responsiveOverlayAt, or pass deviceClass so wireWorkbench suspends resizing on compact classes."
       ],
       "alternatives": [
         {
@@ -892,6 +893,7 @@
         "independently collapsed panels",
         "opt-in drag and keyboard resizable panels with min/max limits",
         "resizable rails that leave the work area a minimum width and shrink in proportion when the Workbench narrows",
+        "rails that present as overlays below a narrow or compact Workbench container breakpoint",
         "hidden separator",
         "slide, fade-slide, or instant content",
         "clipped, scrolling, or popup-visible content",

@@ -377,11 +377,104 @@ test.describe('resizable Workbench panels', () => {
       .toBe(Math.floor(room));
   });
 
-  test('compact viewports present no resizable shell', async ({ page }) => {
+  test('rails present as overlays below the narrow Workbench breakpoint', async ({
+    page,
+  }) => {
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const left = workbench.locator('[data-workbench-rail="left"]');
+    const handle = left.locator('[data-kui-resize-handle]');
+    const center = workbench.locator('.kui-workbench__center');
+    await workbench.scrollIntoViewIfNeeded();
+    // Wide: inline, resizable, beside the work area.
+    await expect(left).toHaveAttribute('data-responsive-overlay-at', 'narrow');
+    await expect(left).toHaveCSS('position', 'relative');
+    await expect(handle).toBeVisible();
+
+    // A workbench 704 px or narrower presents the rail as an overlay: out of
+    // flow over the full-width work area, with no separator to resize. A
+    // 1024 px viewport leaves the catalog example narrower than that.
+    await page.setViewportSize({ width: 1024, height: 900 });
+    await workbench.scrollIntoViewIfNeeded();
+    const narrow = (await workbench.boundingBox())!.width;
+    expect(narrow).toBeLessThanOrEqual(704);
+    await expect(left).toHaveCSS('position', 'absolute');
+    await expect(left).toHaveCSS('width', '240px');
+    await expect(left).not.toHaveCSS('box-shadow', 'none');
+    await expect(handle).toBeHidden();
+    await expect
+      .poll(async () => Math.round((await center.boundingBox())!.width))
+      .toBe(Math.round(narrow));
+    // The rendered presentation stays inline; only the container decides.
+    await expect(left).toHaveAttribute('data-presentation', 'inline');
+
+    // Collapsing the overlay drops its surface so nothing covers the editor.
+    await workbench.getByRole('button', { name: 'Hide navigator' }).click();
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+    await expect(left).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(left).toHaveCSS('box-shadow', 'none');
+    await expect(left).toHaveCSS('pointer-events', 'none');
+    await workbench.getByRole('button', { name: 'Show navigator' }).click();
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+
+    // Wide again: inline and resizable, at the size it had.
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(left).toHaveCSS('position', 'relative');
+    await expect(handle).toBeVisible();
+    await handle.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(left).toHaveCSS('width', '256px');
+  });
+
+  test('compact viewports keep the work area with overlay rails', async ({
+    page,
+  }, testInfo) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await expect(page.locator('#catalog-workbench-resizable')).toBeHidden();
+    const workbench = page.locator('#catalog-workbench-resizable');
+    await workbench.scrollIntoViewIfNeeded();
+    await expect(workbench).toBeVisible();
+    const left = workbench.locator('[data-workbench-rail="left"]');
+    await expect(left).toHaveCSS('position', 'absolute');
+    await expect(left.locator('[data-kui-resize-handle]')).toBeHidden();
+    const width = (await workbench.boundingBox())!.width;
+    expect(
+      Math.round(
+        (await workbench.locator('.kui-workbench__center').boundingBox())!
+          .width,
+      ),
+    ).toBe(Math.round(width));
+    await workbench.getByRole('button', { name: 'Hide navigator' }).click();
+    await expect(workbench.getByText('Resize the panels')).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => document.documentElement.scrollWidth <= window.innerWidth,
+        ),
+      )
+      .toBe(true);
+    if (testInfo.project.name === 'chromium')
+      await workbench.screenshot({
+        path: 'test-results/workbench-overlay-rails-compact.png',
+      });
+  });
+
+  test('the collapsed console restores from its corner control', async ({
+    page,
+  }) => {
+    const workbench = page.locator('#catalog-workbench-collapsed');
+    const drawer = workbench.locator('[data-workbench-drawer]');
+    await workbench.scrollIntoViewIfNeeded();
+    const restore = workbench.locator('.kui-workbench__restore');
     await expect(
-      page.getByText('Resizable rails are a desktop affordance.'),
+      restore.locator('[data-component="toolbar-control-group"]'),
+    ).toBeVisible();
+    await restore.getByRole('button', { name: 'Show console' }).click();
+    await expect(drawer).toHaveAttribute('data-collapsed', 'false');
+    await expect(drawer).toHaveCSS('height', '120px');
+    await expect(restore).toHaveCount(0);
+    await workbench.getByRole('button', { name: 'Hide console' }).click();
+    await expect(drawer).toHaveAttribute('data-collapsed', 'true');
+    await expect(
+      workbench.getByRole('button', { name: 'Show console' }),
     ).toBeVisible();
   });
 });

@@ -116,7 +116,9 @@ device in tests.
   signal. Only offer this `atLeast('desktop')`. To let people size the
   navigator or console, opt those panels in with `resizable` and call
   `wireWorkbench` with their size signals and `deviceClass`; resizing is
-  suspended on `compact`, where the rails become overlay drawers. Resizable
+  suspended on `compact`, where the rails become overlay drawers — or give each
+  rail `responsiveOverlayAt: "narrow"` and let the Workbench's own width decide
+  when it overlays, with no device check. Resizable
   rails leave the editor its `mainMinSize` (320px by default) and shrink in
   proportion when the window narrows.
 - **Social app (tabbed):** `TabScaffold` with Home / Search / Profile tabs, each

@@ -33,6 +33,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `tabindex="0"` when it opens and again before each Tab keypress, the same
   way its focus trap already did. Authored tabindexes, disabled controls, and
   surfaces outside a slot are left alone.
+- `@kerfjs/ui` `Workbench` rails gain `responsiveOverlayAt: "narrow" |
+"compact"`, mirroring `ResizableRegion`'s `responsiveFillAt`: below the
+  Workbench's own 704px (`narrow`) or 448px (`compact`) width the rail
+  presents as an overlay over the work area, without a separator and never
+  resizable, and inline above it — the CSS decides, so apps no longer derive
+  `presentation` from a `deviceClass()` check. The bottom drawer ignores it.
+  A collapsed overlay rail (with `presentation: "overlay"` too) now drops its
+  surface and shadow instead of leaving an empty panel-sized box over the work
+  area. The UX catalog's resizable example uses it and now renders at phone
+  widths, and its collapsed console's restore control is a `ToolbarControlGroup`
+  toggle that actually restores the console.
 - `@kerfjs/ui` `Workbench` keeps a minimum work area beside resizable rails.
   Two rails dragged near their 480px maximum on a ~1024px Workbench used to
   leave the editor a sliver; now the work area keeps at least `mainMinSize`

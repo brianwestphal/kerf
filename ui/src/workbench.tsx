@@ -19,6 +19,13 @@ import {
   workbenchRegionId,
 } from './workbench-resize.js';
 
+/**
+ * The Workbench container breakpoint below which a rail presents as an
+ * overlay: `narrow` (704px or less) or `compact` (448px or less) — the same
+ * breakpoints as `ResizableRegion`'s `responsiveFillAt`.
+ */
+export type WorkbenchResponsiveOverlayAt = 'compact' | 'narrow';
+
 /** Drag-resize limits for a resizable Workbench panel, in px. */
 export interface WorkbenchPanelResizable {
   /** Smallest size (default 180 for a rail, 120 for the drawer). */
@@ -51,6 +58,12 @@ export interface WorkbenchPanel {
   collapseMotion?: ResizableRegionCollapseMotion;
   contentOverflow?: ResizableRegionContentOverflow;
   presentation?: ResizableRegionPresentation;
+  /**
+   * Present a rail as an overlay, without a separator, below a Workbench
+   * container breakpoint, and inline above it — the CSS decides, so the app
+   * needs no device-class check. Rails only; the bottom drawer ignores it.
+   */
+  responsiveOverlayAt?: WorkbenchResponsiveOverlayAt;
   /** Control shown in a safe-area-aware viewport corner while collapsed. */
   restoreControl?: SafeHtml;
   restorePosition?: ResizableRegionRestorePosition;
@@ -206,6 +219,7 @@ function Rail({
       data-collapse-motion={panel.collapseMotion ?? 'slide'}
       data-content-overflow={panel.contentOverflow ?? 'clip'}
       data-presentation={panel.presentation ?? 'inline'}
+      data-responsive-overlay-at={panel.responsiveOverlayAt}
       {...resizeAttributes(resize)}
       aria-label={panel.label || undefined}
       aria-hidden={panel.presentation === 'hidden' ? 'true' : undefined}
