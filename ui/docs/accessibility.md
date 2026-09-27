@@ -303,6 +303,20 @@ crossing, every panel starts collapsed, so no page load or resize traps focus. T
 signal, the panels, their sizes, and content; the wire may persist the collapsed
 state per panel.
 
+## Workbench
+
+Each `Workbench` rail and drawer is a labeled region (`aside` for a rail, `section`
+for the drawer). While a panel is collapsed its content wrapper is `inert`, rendered
+from the app's `collapsed` flag, so its controls leave the Tab order and the
+accessibility tree even while the content is still sliding out, and focusing one can
+never scroll clipped content back into view. The panel's `restoreControl` renders
+outside that content and stays reachable; a resizable panel's separator also leaves
+the Tab order while collapsed or not inline. `wireWorkbench`, given a panel's
+`collapsed` signal, returns focus stranded in a closing panel to the control that
+opened it, else the restore control, else a control whose `aria-controls` names the
+panel; an open overlay panel takes focus and keeps Tab inside it (the ARIA dialog
+pattern). See [`workbench.md`](workbench.md).
+
 ## Verification matrix
 
 For each changed component, inspect default, hover, focus, disabled, selected/pressed, busy/error, long-content, wide, narrow, light, dark, increased-contrast, reduced-motion, keyboard-only, and 200%-zoom states where applicable. DOM order must match reading and focus order, with no clipping or unreachable action.

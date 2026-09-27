@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **A collapsed `@kerfjs/ui` `Workbench` panel's content leaves the Tab order.**
+  A collapsed rail or bottom drawer kept its content in the DOM, only slid out
+  and clipped, so Tab still reached its controls; focusing one (at a narrow
+  width, the collapsed inspector's or output drawer's own Hide control)
+  scrolled the clipped panel and slid its hidden content back over the work
+  area. The panel's content wrapper now renders `inert` while `collapsed`, with
+  no wiring needed, so neither Tab nor assistive technology reaches it; the
+  slide-out still animates and the `restoreControl`, which lives outside the
+  content, stays reachable.
+
 - **A `kerfjs/overlay` popover or tooltip in a transformed or filtered modal
   `<dialog>` now lands against its anchor.** A surface rendered into a
   dialog's `[data-kerf-overlay-host][data-morph-skip]` slot is

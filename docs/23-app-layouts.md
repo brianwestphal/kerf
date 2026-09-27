@@ -234,6 +234,19 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
 - **The collapse is pure CSS.** The app owns each panel's `collapsed` flag and
   re-renders; the component reflects it as `data-collapsed` and the stylesheet
   animates the change. No wire is involved.
+- **A collapsed panel's content is inert (KF-0WARYA: a collapsed rail or
+  drawer kept its controls in the Tab order, and focusing one scrolled the
+  clipped panel so its hidden content slid back over the work area).** The
+  panel's `.kui-workbench__panel-content` wrapper renders `inert` whenever
+  `collapsed` is true, straight from the markup, so no wire is needed: neither
+  Tab nor assistive technology reaches a control that has slid out of view,
+  and nothing can scroll it back into view. `inert` does not affect rendering,
+  so the slide-out still animates, and the `restoreControl` sits outside the
+  content (and the resize handle already leaves the tab order), so both stay
+  as reachable as before. Expanding removes the attribute in the same render.
+  With `wireWorkbench` given the panel's `collapsed` signal, focus inside a
+  closing panel is handed back as described below; an app that closes a
+  panel without it owns that focus move.
 - **Panels are fixed-size by default.** A panel's `size` sets the rail width or
   drawer height in px (overriding the CSS default). Panels reuse `ResizableRegion`'s
   presentation vocabulary as options — `separator` (`auto` | `hidden`),

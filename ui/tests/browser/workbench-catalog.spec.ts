@@ -994,6 +994,96 @@ test.describe('resizable Workbench panels', () => {
     await expect(editorToggle).toBeFocused();
   });
 
+  test('a collapsed panel leaves the Tab order and reveals nothing, and still slides out', async ({
+    page,
+  }, testInfo) => {
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const toolbar = workbench.locator('.kui-workbench__main');
+    const left = workbench.locator('[data-workbench-rail="left"]');
+    const right = workbench.locator('[data-workbench-rail="right"]');
+    const content = (panel: typeof left) =>
+      panel.locator('> .kui-workbench__panel-content');
+    await workbench.scrollIntoViewIfNeeded();
+
+    // Wide, the inline navigator hides from its own header's control: its
+    // content still slides out, becomes inert, and focus returns to the
+    // editor toolbar's toggle rather than staying on a control that left.
+    const hide = left.getByRole('button', { name: 'Hide navigator' });
+    await hide.focus();
+    const animating = await hide.evaluate((button: HTMLElement) => {
+      button.click();
+      return button
+        .closest('.kui-workbench__panel-content')!
+        .getAnimations()
+        .some((animation) => animation.playState === 'running');
+    });
+    expect(animating).toBe(true);
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+    await expect(content(left)).toHaveAttribute('inert', '');
+    const navigatorToggle = toolbar.getByRole('button', {
+      name: 'Show navigator',
+    });
+    await expect(navigatorToggle).toBeFocused();
+    await navigatorToggle.press('Enter');
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    await expect(content(left)).not.toHaveAttribute('inert');
+
+    // Narrow, both rails are collapsed overlays: Tab and Shift+Tab from the
+    // editor toolbar never reach either, and nothing hidden scrolls into view.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+    await expect(right).toHaveAttribute('data-collapsed', 'true');
+    await expect(content(right)).toHaveAttribute('inert', '');
+    await workbench.scrollIntoViewIfNeeded();
+    const inCollapsedPanel = () =>
+      page.evaluate(
+        () =>
+          document.activeElement?.closest(
+            '[data-workbench-rail][data-collapsed="true"], [data-workbench-drawer][data-collapsed="true"]',
+          ) != null,
+      );
+    for (const key of ['Tab', 'Shift+Tab']) {
+      await toolbar.getByRole('button', { name: 'Show inspector' }).focus();
+      for (let step = 0; step < 6; step += 1) {
+        await page.keyboard.press(key);
+        expect(await inCollapsedPanel()).toBe(false);
+      }
+    }
+    for (const rail of [left, right])
+      expect(await rail.evaluate((element) => element.scrollLeft)).toBe(0);
+    if (testInfo.project.name === 'chromium')
+      await workbench.screenshot({
+        path: 'test-results/workbench-collapsed-inert.png',
+      });
+
+    // The collapsed responsive output drawer is out of the Tab order too;
+    // showing it makes its content reachable again.
+    const drawerWorkbench = page.locator(
+      '#catalog-workbench-responsive-drawer',
+    );
+    const drawer = drawerWorkbench.locator('[data-workbench-drawer]');
+    await drawerWorkbench.scrollIntoViewIfNeeded();
+    await expect(drawer).toHaveAttribute('data-collapsed', 'true');
+    await expect(content(drawer)).toHaveAttribute('inert', '');
+    const outputToggle = drawerWorkbench
+      .locator('.kui-workbench__main')
+      .getByRole('button', { name: 'Show output' });
+    for (const key of ['Tab', 'Shift+Tab']) {
+      await outputToggle.focus();
+      for (let step = 0; step < 3; step += 1) {
+        await page.keyboard.press(key);
+        expect(await inCollapsedPanel()).toBe(false);
+      }
+    }
+    await outputToggle.focus();
+    await page.keyboard.press('Enter');
+    await expect(drawer).toHaveAttribute('data-collapsed', 'false');
+    await expect(content(drawer)).not.toHaveAttribute('inert');
+    await expect(
+      drawer.getByRole('button', { name: 'Hide output' }),
+    ).toBeFocused();
+  });
+
   test('a rail open at wire-up returns focus to its aria-controls toggle when it closes from inside', async ({
     page,
   }) => {

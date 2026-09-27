@@ -1146,9 +1146,11 @@ interface WorkbenchProps {
  * a composited transform — the instant-width / sliding-content technique, so the
  * work area relayouts once, not per frame. Bottom-drawer content stays anchored
  * to the shell's stable bottom edge throughout that transition. The app owns
- * each `collapsed` flag; the collapse is pure CSS. A panel may opt in to drag
- * and keyboard resizing with `resizable`, which `wireWorkbench` drives. See
- * `docs/23-app-layouts.md` §3.3.
+ * each `collapsed` flag; the collapse is pure CSS. A collapsed panel's content
+ * renders `inert`, so neither Tab nor assistive technology reaches controls that
+ * have slid out of view (its restore control lives outside it and stays
+ * reachable). A panel may opt in to drag and keyboard resizing with
+ * `resizable`, which `wireWorkbench` drives. See `docs/23-app-layouts.md` §3.3.
  */
 declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainMinSize, mainMinHeight, className, slot, }: WorkbenchProps): SafeHtml;
 

@@ -27,6 +27,16 @@ and keyboard resizing (see [Resizable panels](#resizable-panels)), and
 `wireWorkbench` can make overlay panels transient (see
 [Transient overlays](#transient-overlays)).
 
+A collapsed panel's content renders `inert`, straight from `collapsed`, so
+neither Tab nor assistive technology reaches controls that have slid out of
+view and none of them can scroll back into view. The slide-out still animates,
+and the panel's `restoreControl` lives outside the inert content, so it stays
+reachable. Expanding the panel makes its content reachable again in the same
+render. When the panel closes with focus inside it, `wireWorkbench` (given the
+panel's `collapsed` signal) moves focus back out (see
+[Transient overlays](#transient-overlays)); without it, that focus move is the
+app's.
+
 ```tsx
 const navCollapsed = signal(false);
 

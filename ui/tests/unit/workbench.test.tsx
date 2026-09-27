@@ -54,6 +54,57 @@ describe('Workbench', () => {
     expect(html).toContain('<section id="wb-bottom-drawer"');
   });
 
+  it('makes a collapsed panel content inert and leaves its restore control reachable', () => {
+    const render = (collapsed: boolean) => {
+      const root = document.createElement('div');
+      root.innerHTML = String(
+        Workbench({
+          id: 'wb',
+          label: 'Studio',
+          main,
+          leftRail: {
+            content: raw('<button type="button">Hide navigator</button>'),
+            collapsed,
+            restoreControl: raw(
+              '<button type="button">Show navigator</button>',
+            ),
+          },
+          rightRail: {
+            content: raw('<button type="button">Hide inspector</button>'),
+            collapsed,
+            responsiveOverlayAt: 'narrow',
+          },
+          bottomDrawer: {
+            content: raw('<button type="button">Hide console</button>'),
+            collapsed,
+            restoreControl: raw('<button type="button">Show console</button>'),
+          },
+        }),
+      );
+      return root;
+    };
+    const contents = (root: HTMLElement) => [
+      ...root.querySelectorAll<HTMLElement>('.kui-workbench__panel-content'),
+    ];
+
+    const collapsed = render(true);
+    expect(contents(collapsed)).toHaveLength(3);
+    for (const content of contents(collapsed))
+      expect(content.hasAttribute('inert')).toBe(true);
+    // The restore controls live outside the inert content.
+    const restores = [
+      ...collapsed.querySelectorAll<HTMLElement>('.kui-workbench__restore'),
+    ];
+    expect(restores).toHaveLength(2);
+    for (const restore of restores)
+      expect(restore.closest('[inert]')).toBe(null);
+
+    const expanded = render(false);
+    for (const content of contents(expanded))
+      expect(content.hasAttribute('inert')).toBe(false);
+    expect(expanded.querySelector('[inert]')).toBe(null);
+  });
+
   it('defaults collapsed to false and omits an unset size style', () => {
     const html = String(
       Workbench({
