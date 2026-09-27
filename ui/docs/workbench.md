@@ -62,15 +62,18 @@ an optional `label`. Common shell behavior is configured rather than restyled:
 - `contentOverflow: "clip" | "auto" | "visible"` lets a drawer temporarily
   expose an open popup without a descendant override;
 - `presentation: "inline" | "overlay" | "hidden"` supports compact overlays
-  or a responsive replacement. Overlay panels clamp both their track and fixed-size
-  animated content to the configured viewport-relative maximum;
-- `responsiveOverlayAt: "narrow" | "compact"` (rails only) presents a rail
-  as an overlay below a Workbench container breakpoint — 704px or less for
-  `narrow`, 448px or less for `compact`, the breakpoints of
+  or a responsive replacement. An overlay rail spans the Workbench height at
+  its side and an overlay drawer spans the work-area column at the bottom, each at its
+  configured size; the drawer's fixed-size animated content is clamped to the
+  viewport-relative maximum height;
+- `responsiveOverlayAt: "narrow" | "compact"` presents a rail or the bottom
+  drawer as an overlay below a Workbench container breakpoint — 704px or less
+  for `narrow`, 448px or less for `compact`, the breakpoints of
   `ResizableRegion`'s `responsiveFillAt` — and inline above it. The CSS
   decides, so the app needs no `deviceClass` check for presentation; a
   collapsed overlay drops its surface and shadow so nothing covers the work
-  area;
+  area, and the work area keeps the safe-area inset of the edge the overlay
+  covers;
 - `restoreControl` places an application-owned restore affordance in a
   safe-area-aware viewport corner (`restorePosition` chooses the corner).
   Compose it from the package controls — a `single` `ToolbarControlGroup`

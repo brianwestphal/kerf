@@ -192,8 +192,9 @@ an upstream component or recipe request.
   cover separator suppression, one-reflow collapse with composited motion,
   bottom-drawer popups, compact overlays or replacements, and safe-area restore
   placement without descendant `.kui-*` overrides. A `Workbench` rail's
-  `responsiveOverlayAt` (like `ResizableRegion`'s `responsiveFillAt`) switches
-  it to an overlay below a container breakpoint without a device-class check.
+  or bottom drawer's `responsiveOverlayAt` (like `ResizableRegion`'s
+  `responsiveFillAt`) switches it to an overlay below a container breakpoint
+  without a device-class check.
   `wireSidebar` also accepts a
   hidden compact replacement and keeps compact overlays exclusive by default.
 - `TokenSearchField` is a structured editor. A native input or `wa-input` is the right answer for ordinary text.

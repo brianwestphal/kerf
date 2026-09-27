@@ -69,7 +69,10 @@
   border-color: transparent;
 }
 
+/* The center is the overlay drawer's containing block, so a drawer that
+   leaves the flow still covers exactly the work-area column it docks under. */
 .kui-workbench__center {
+  position: relative;
   --kui-edge-inset-block-start: var(--_kui-workbench-safe-block-start);
   --kui-edge-inset-block-end: var(--_kui-workbench-safe-block-end);
   --kui-edge-inset-inline-start: var(--_kui-workbench-safe-inline-start);
@@ -431,7 +434,11 @@
   inset-inline-end: 0;
 }
 
+/* The drawer's content is absolutely positioned against its bottom edge, so
+   an out-of-flow drawer has no content height of its own: it takes its extent
+   explicitly, as the in-flow track does through its flex basis. */
 .kui-workbench__drawer[data-presentation="overlay"] {
+  height: var(--_kui-workbench-drawer-extent);
   inset-inline: 0;
   inset-block-end: 0;
 }
@@ -450,18 +457,30 @@
   background: var(--kui-color-surface);
 }
 
+/* The overlay content fills the drawer box below its separator border, so it
+   is clamped with the box and carries the surface through the slide-out. */
+.kui-workbench__drawer[data-presentation="overlay"]
+  > .kui-workbench__panel-content {
+  height: 100%;
+  background: var(--kui-color-surface);
+}
+
 .kui-workbench__rail[data-presentation="hidden"],
 .kui-workbench__drawer[data-presentation="hidden"] {
   display: none;
 }
 
-/* Responsive overlay rails. A rail with `responsiveOverlayAt` presents as an
-   overlay — out of flow, over the work area, without a separator — below the
-   Workbench's own container breakpoint (`narrow`: 704px or less, `compact`:
-   448px or less, as `ResizableRegion`'s `responsiveFillAt`), and inline above
-   it. The Workbench becomes a named inline-size container only when a rail
-   opts in. The work area keeps its safe-area inset under an overlay rail. */
-.kui-workbench:has(> .kui-workbench__rail[data-responsive-overlay-at]) {
+/* Responsive overlay panels. A rail or the drawer with `responsiveOverlayAt`
+   presents as an overlay — out of flow, over the work area, without a
+   separator — below the Workbench's own container breakpoint (`narrow`: 704px
+   or less, `compact`: 448px or less, as `ResizableRegion`'s
+   `responsiveFillAt`), and inline above it. The Workbench becomes a named
+   inline-size container only when a panel opts in. The work area keeps its
+   safe-area inset under an overlay panel. */
+.kui-workbench:has(
+  > .kui-workbench__rail[data-responsive-overlay-at],
+  > .kui-workbench__center > .kui-workbench__drawer[data-responsive-overlay-at]
+) {
   container: kui-workbench / inline-size;
 }
 
@@ -514,6 +533,39 @@
     > .kui-workbench__center {
     --kui-edge-inset-inline-end: var(--_kui-workbench-safe-inline-end);
   }
+
+  .kui-workbench__drawer[data-responsive-overlay-at="narrow"] {
+    position: absolute;
+    z-index: var(--kui-workbench-overlay-z, 41);
+    height: var(--_kui-workbench-drawer-extent);
+    max-height: var(--kui-workbench-overlay-max-height, 85vh);
+    inset-inline: 0;
+    inset-block-end: 0;
+    box-shadow: var(--kui-shadow-l);
+  }
+
+  .kui-workbench__drawer[data-responsive-overlay-at="narrow"][data-collapsed="true"] {
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+  }
+
+  .kui-workbench__drawer[data-responsive-overlay-at="narrow"]
+    > .kui-workbench__panel-content {
+    height: 100%;
+    background: var(--kui-color-surface);
+  }
+
+  .kui-workbench__drawer[data-responsive-overlay-at="narrow"]
+    > .kui-workbench__handle {
+    display: none;
+  }
+
+  .kui-workbench__main:has(
+    ~ .kui-workbench__drawer[data-responsive-overlay-at="narrow"][data-presentation="inline"]
+  ) {
+    --kui-edge-inset-block-end: var(--_kui-workbench-safe-block-end);
+  }
 }
 
 @container kui-workbench (max-width: remify(448px)) {
@@ -564,6 +616,39 @@
     )
     > .kui-workbench__center {
     --kui-edge-inset-inline-end: var(--_kui-workbench-safe-inline-end);
+  }
+
+  .kui-workbench__drawer[data-responsive-overlay-at="compact"] {
+    position: absolute;
+    z-index: var(--kui-workbench-overlay-z, 41);
+    height: var(--_kui-workbench-drawer-extent);
+    max-height: var(--kui-workbench-overlay-max-height, 85vh);
+    inset-inline: 0;
+    inset-block-end: 0;
+    box-shadow: var(--kui-shadow-l);
+  }
+
+  .kui-workbench__drawer[data-responsive-overlay-at="compact"][data-collapsed="true"] {
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+  }
+
+  .kui-workbench__drawer[data-responsive-overlay-at="compact"]
+    > .kui-workbench__panel-content {
+    height: 100%;
+    background: var(--kui-color-surface);
+  }
+
+  .kui-workbench__drawer[data-responsive-overlay-at="compact"]
+    > .kui-workbench__handle {
+    display: none;
+  }
+
+  .kui-workbench__main:has(
+    ~ .kui-workbench__drawer[data-responsive-overlay-at="compact"][data-presentation="inline"]
+  ) {
+    --kui-edge-inset-block-end: var(--_kui-workbench-safe-block-end);
   }
 }
 

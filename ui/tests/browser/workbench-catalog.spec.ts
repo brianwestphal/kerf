@@ -425,6 +425,66 @@ test.describe('resizable Workbench panels', () => {
     await expect(left).toHaveCSS('width', '256px');
   });
 
+  test('an overlay drawer keeps its height, statically and responsively', async ({
+    page,
+  }) => {
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const drawer = workbench.locator('[data-workbench-drawer]');
+    const content = drawer.locator('.kui-workbench__panel-content');
+    await workbench.scrollIntoViewIfNeeded();
+
+    // A static overlay drawer used to collapse to its 1px border: its content
+    // is absolutely positioned, so the out-of-flow box had no height.
+    await drawer.evaluate((element) => {
+      element.dataset.presentation = 'overlay';
+    });
+    await expect(drawer).toHaveCSS('position', 'absolute');
+    await expect(drawer).toHaveCSS('height', '160px');
+    // It covers the bottom of the work-area column it docks under, not the
+    // inline navigator beside it.
+    const box = (await drawer.boundingBox())!;
+    const column = (await workbench
+      .locator('.kui-workbench__center')
+      .boundingBox())!;
+    expect(
+      Math.abs(box.y + box.height - (column.y + column.height)),
+    ).toBeLessThanOrEqual(1);
+    expect(Math.abs(box.x - column.x)).toBeLessThanOrEqual(1);
+    expect(Math.abs(box.width - column.width)).toBeLessThanOrEqual(1);
+    await expect(content).toBeVisible();
+    await expect(drawer.getByText('Console')).toBeInViewport();
+    await drawer.evaluate((element) => {
+      element.dataset.presentation = 'inline';
+    });
+    await expect(drawer).toHaveCSS('position', 'relative');
+
+    // A responsive overlay drawer switches below the Workbench breakpoint.
+    await drawer.evaluate((element) => {
+      element.dataset.responsiveOverlayAt = 'narrow';
+    });
+    await expect(drawer).toHaveCSS('position', 'relative');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await workbench.scrollIntoViewIfNeeded();
+    await expect(drawer).toHaveCSS('position', 'absolute');
+    await expect(drawer).toHaveCSS('height', '160px');
+    await expect(drawer.locator('[data-kui-resize-handle]')).toBeHidden();
+    // The work area takes the full height beneath the overlay.
+    const narrow = (await workbench.boundingBox())!;
+    await expect
+      .poll(async () =>
+        Math.round(
+          (await workbench.locator('.kui-workbench__main').boundingBox())!
+            .height,
+        ),
+      )
+      .toBe(Math.round(narrow.height));
+    expect(
+      await content.evaluate(
+        (element) => window.getComputedStyle(element).backgroundColor,
+      ),
+    ).not.toBe('rgba(0, 0, 0, 0)');
+  });
+
   test('compact viewports keep the work area with overlay rails', async ({
     page,
   }, testInfo) => {

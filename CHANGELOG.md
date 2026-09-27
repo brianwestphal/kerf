@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **A `@kerfjs/ui` `Workbench` bottom drawer with `presentation: "overlay"`
+  is visible again.** Its content is positioned against the drawer's bottom
+  edge, so the out-of-flow overlay box had no height of its own and collapsed
+  to its 1px border. An overlay drawer now takes its configured height (220px
+  by default, or its `size`), covers the bottom of the work-area column, and
+  clamps its content to the overlay maximum height. The drawer also accepts
+  `responsiveOverlayAt: "narrow" | "compact"` like the rails: below that
+  Workbench width it presents as the same overlay, without a separator and
+  never resizable, while the work area takes the full height and keeps its
+  bottom safe-area inset beneath it.
 - The bundled AI assistant configs (`ai/skill.md`, `ai/cursorrules`) now
   explain the `data-kerf-overlay-host` opt-in next to the one-`mount()`-per-root
   rule: a modal `<dialog>` of your own that anchors kerf popovers or tooltips

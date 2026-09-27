@@ -261,16 +261,22 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
   - no resizing where rails become drawers: an overlay or hidden panel's handle
     is hidden and inert, and with `deviceClass` the wire suspends resizing while
     `compact` is true;
-  - responsive overlay rails (KF-0KXZT2: an overlay presentation that needs no
+  - responsive overlay panels (KF-0KXZT2: an overlay presentation that needs no
     app device-class check): a rail's `responsiveOverlayAt: "narrow" |
 "compact"` mirrors `ResizableRegion`'s `responsiveFillAt` — same names,
     same 704px / 448px breakpoints, measured on the component's container. The
     rail renders `data-responsive-overlay-at`, the Workbench becomes a named
-    `kui-workbench` inline-size container only when a rail opts in, and below
+    `kui-workbench` inline-size container only when a panel opts in, and below
     the breakpoint the CSS applies the overlay presentation (out of flow at its
     edge, the overlay z-index/maximums/shadow, separator hidden, the work area
     keeping its safe-area inset) while `data-presentation` stays `inline`.
-    Rails only; the drawer ignores it. A collapsed overlay (static or
+    The bottom drawer takes the same prop (KF-N64H06: an overlay drawer used
+    to collapse to its 1px border because its content is absolutely
+    positioned): it overlays the work-area column (the center is its containing block) from the bottom edge at
+    its configured height, and the work area keeps its bottom safe-area inset
+    beneath it. Every overlay drawer, static or responsive, now takes that
+    explicit height, with its content clamped to the overlay maximum. A
+    collapsed overlay (static or
     responsive) drops its surface and shadow — the sliding content carries the
     surface — so an invisible box no longer covers the work area;
   - the wire matches only its own panels by Workbench `id`, so it never

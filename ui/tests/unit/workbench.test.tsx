@@ -384,7 +384,7 @@ describe('Workbench', () => {
     ).toEqual({ width: '100%' });
   });
 
-  it('renders a rail responsive overlay breakpoint and ignores it on the drawer', () => {
+  it('renders a responsive overlay breakpoint on rails and the drawer', () => {
     const html = String(
       Workbench({
         id: 'wb',
@@ -411,7 +411,7 @@ describe('Workbench', () => {
       root.querySelector(selector)!.getAttribute('data-responsive-overlay-at');
     expect(attr('[data-workbench-rail="left"]')).toBe('narrow');
     expect(attr('[data-workbench-rail="right"]')).toBe('compact');
-    expect(attr('[data-workbench-drawer]')).toBeNull();
+    expect(attr('[data-workbench-drawer]')).toBe('narrow');
     // The inline presentation stays the rendered state; the CSS decides.
     expect(
       root
@@ -425,6 +425,7 @@ describe('Workbench', () => {
           label: 'Studio',
           main,
           leftRail: { content: panel('nav') },
+          bottomDrawer: { content: panel('console') },
         }),
       ),
     ).not.toContain('data-responsive-overlay-at');
@@ -439,7 +440,7 @@ describe('Workbench', () => {
       (node) =>
         node.type === 'rule' &&
         normalize(node.selector) ===
-          '.kui-workbench:has(> .kui-workbench__rail[data-responsive-overlay-at])',
+          '.kui-workbench:has(> .kui-workbench__rail[data-responsive-overlay-at], > .kui-workbench__center > .kui-workbench__drawer[data-responsive-overlay-at])',
     );
     expect(container?.type === 'rule' && container.toString()).toContain(
       'container: kui-workbench / inline-size',
@@ -466,7 +467,7 @@ describe('Workbench', () => {
         return Object.fromEntries(
           rule.nodes
             .filter((node) => node.type === 'decl')
-            .map((node) => [node.prop, node.value]),
+            .map((node) => [node.prop, node.value.replace(/\s+/g, ' ')]),
         );
       };
       const rail = `.kui-workbench__rail[data-responsive-overlay-at="${at}"]`;
@@ -489,7 +490,72 @@ describe('Workbench', () => {
         'box-shadow': 'none',
         'pointer-events': 'none',
       });
+
+      // The drawer overlays from the bottom at full width, with an explicit
+      // height: its content is absolutely positioned, so the out-of-flow box
+      // would otherwise collapse to its border.
+      const drawer = `.kui-workbench__drawer[data-responsive-overlay-at="${at}"]`;
+      expect(decls(drawer)).toMatchObject({
+        position: 'absolute',
+        height: 'var(--_kui-workbench-drawer-extent)',
+        'inset-inline': '0',
+        'inset-block-end': '0',
+        'box-shadow': 'var(--kui-shadow-l)',
+      });
+      expect(decls(`${drawer} > .kui-workbench__handle`)).toEqual({
+        display: 'none',
+      });
+      expect(decls(`${drawer} > .kui-workbench__panel-content`)).toEqual({
+        height: '100%',
+        background: 'var(--kui-color-surface)',
+      });
+      expect(decls(`${drawer}[data-collapsed="true"]`)).toEqual({
+        background: 'transparent',
+        'box-shadow': 'none',
+        'pointer-events': 'none',
+      });
+      // The work area keeps its bottom safe-area inset under the overlay.
+      expect(
+        decls(
+          `.kui-workbench__main:has(~ .kui-workbench__drawer[data-responsive-overlay-at="${at}"][data-presentation="inline"])`,
+        ),
+      ).toEqual({
+        '--kui-edge-inset-block-end': 'var(--_kui-workbench-safe-block-end)',
+      });
     }
+  });
+
+  it('gives a static overlay drawer an explicit height instead of collapsing to its border', async () => {
+    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const decls = (selector: string) => {
+      const rule = css.nodes.find(
+        (node) =>
+          node.type === 'rule' &&
+          node.selector.replace(/\s+/g, ' ') === selector,
+      );
+      if (!rule || rule.type !== 'rule') throw new Error(`Missing ${selector}`);
+      return Object.fromEntries(
+        rule.nodes
+          .filter((node) => node.type === 'decl')
+          .map((node) => [node.prop, node.value.replace(/\s+/g, ' ')]),
+      );
+    };
+    expect(
+      decls('.kui-workbench__drawer[data-presentation="overlay"]'),
+    ).toEqual({
+      height: 'var(--_kui-workbench-drawer-extent)',
+      'inset-inline': '0',
+      'inset-block-end': '0',
+    });
+    expect(
+      decls(
+        '.kui-workbench__drawer[data-presentation="overlay"] > .kui-workbench__panel-content',
+      ),
+    ).toEqual({
+      height: '100%',
+      background: 'var(--kui-color-surface)',
+    });
   });
 
   it('drops a collapsed static overlay rail surface so it covers nothing', async () => {
