@@ -22,7 +22,10 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-indicator-tone',
   'data-toggle',
 ]);
-const PROTECTED_TRIGGER_DATA_ATTRIBUTES = new Set(['data-action']);
+const PROTECTED_TRIGGER_DATA_ATTRIBUTES = new Set([
+  'data-action',
+  'data-kui-disabled',
+]);
 
 type ListHeaderRootAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
@@ -42,6 +45,7 @@ type ListHeaderRootAttributes = Readonly<
 type ListHeaderTriggerAttributes = Readonly<
   Record<`data-${string}`, string | undefined> & {
     'data-action'?: never;
+    'data-kui-disabled'?: never;
     popoverTarget?: string;
     popoverTargetAction?: 'toggle' | 'show' | 'hide';
     'aria-controls'?: string;
@@ -202,6 +206,7 @@ export function ListHeader({
           data-action={placeholder ? undefined : action}
           title={actionDisabled ? disabledReason : undefined}
           disabled={actionDisabled || placeholder || undefined}
+          data-kui-disabled={actionDisabled ? 'true' : undefined}
           aria-label={accessibleLabel}
           aria-expanded={String(Boolean(expanded))}
         >
@@ -253,6 +258,7 @@ export function ListHeader({
           aria-label={actionLabel}
           title={actionDisabled ? disabledReason : actionLabel}
           disabled={actionDisabled || placeholder || undefined}
+          data-kui-disabled={actionDisabled ? 'true' : undefined}
         >
           {renderedActionIcon}
         </button>

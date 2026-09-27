@@ -35,10 +35,15 @@
    Opacity carries zero specificity so a component's own opacity rules (a
    hover-revealed control that is invisible until interaction) still win;
    components exclude placeholders from their own disabled tone. The cursor is
-   the non-interactive default, never `not-allowed`. */
+   the non-interactive default, never `not-allowed`.
+
+   A control the author disabled carries `data-kui-disabled="true"` (set from
+   the component's own disabled prop, independent of placeholder). It is
+   unavailable once loaded, so its placeholder keeps the live disabled tone:
+   the reset skips it, and components key their disabled tone on the marker. */
 :where(
-  [data-placeholder="true"]:disabled,
-  [data-placeholder="true"] :disabled
+  [data-placeholder="true"]:disabled:not([data-kui-disabled="true"]),
+  [data-placeholder="true"] :disabled:not([data-kui-disabled="true"])
 ) {
   opacity: 1;
 }

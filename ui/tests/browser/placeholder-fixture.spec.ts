@@ -59,6 +59,9 @@ const RULES: Record<string, CaseRule> = {
   'segmented-control-text': {
     ignoreStyles: ['[data-segment-value="comfortable"]'],
   },
+  'segmented-control-choice-disabled': {
+    ignoreStyles: ['[data-segment-value="name"]'],
+  },
   // The Select placeholder is a static box standing in for the live
   // wa-select's shadow tree; placeholder.spec.ts compares it part by part.
   select: { rootOnly: true },
@@ -240,6 +243,28 @@ for (const width of [1280, 390]) {
       }
     }
     expect(differences).toEqual([]);
+
+    // An author-disabled control is dimmed in both renders: the diff above
+    // proves the renders match, this proves neither lost the disabled tone.
+    const disabledTone = await page.evaluate(() =>
+      [
+        ...document.querySelectorAll<HTMLElement>('[data-case$="-disabled"]'),
+      ].map((wrapper) => {
+        const marked = [
+          ...wrapper.querySelectorAll('[data-kui-disabled="true"]'),
+        ];
+        const dimmed =
+          marked.length > 0 &&
+          marked.every(
+            (element) => Number(window.getComputedStyle(element).opacity) < 1,
+          );
+        return { name: wrapper.dataset.case!, dimmed };
+      }),
+    );
+    expect(disabledTone.length).toBe(
+      2 * Object.keys(live).filter((name) => name.endsWith('-disabled')).length,
+    );
+    expect(disabledTone.filter(({ dimmed }) => !dimmed)).toEqual([]);
 
     // Every case really rendered a placeholder, and none advertises `not-allowed`.
     expect(

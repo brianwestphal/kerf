@@ -431,3 +431,156 @@ describe('component placeholder mode', () => {
     expect(html).toContain('placeholder="Choose a status"');
   });
 });
+
+describe('author-disabled marker', () => {
+  const marker = 'data-kui-disabled="true"';
+  const count = (html: string) => html.split(marker).length - 1;
+
+  it('marks exactly the controls whose disabled prop is set, live or placeholder', () => {
+    for (const placeholder of [false, true]) {
+      expect(
+        count(
+          asHtml(
+            ListItem({
+              label: 'A',
+              action: 'open',
+              disabled: true,
+              placeholder,
+            }),
+          ),
+        ),
+      ).toBe(1);
+      expect(
+        count(asHtml(ListItem({ label: 'A', action: 'open', placeholder }))),
+      ).toBe(0);
+      const row = (props: {
+        disabled?: boolean;
+        trailingActionDisabled?: boolean;
+      }) =>
+        asHtml(
+          ListActionRow({
+            label: 'Task',
+            action: 'open',
+            trailingAction: 'more',
+            trailingActionLabel: 'More',
+            trailingActionIcon: icon,
+            placeholder,
+            ...props,
+          }),
+        );
+      expect(count(row({}))).toBe(0);
+      expect(row({ disabled: true })).toMatch(
+        /class="kui-list-action-row__primary"[^>]*data-kui-disabled="true"/,
+      );
+      expect(count(row({ disabled: true }))).toBe(1);
+      expect(row({ trailingActionDisabled: true })).toMatch(
+        /class="kui-list-action-row__trailing-action"[^>]*data-kui-disabled="true"/,
+      );
+      expect(count(row({ trailingActionDisabled: true }))).toBe(1);
+      expect(count(row({ disabled: true, trailingActionDisabled: true }))).toBe(
+        2,
+      );
+      const segmented = asHtml(
+        SegmentedControl({
+          id: 'sort',
+          label: 'Sort',
+          value: 'name',
+          choices: [
+            { value: 'name', label: 'Name' },
+            { value: 'size', label: 'Size', disabled: true },
+          ],
+          placeholder,
+        }),
+      );
+      expect(count(segmented)).toBe(1);
+      expect(segmented).toMatch(
+        /data-segment-value="size"[^>]*data-kui-disabled="true"/,
+      );
+      const header = (actionDisabled: boolean, toggle: boolean) =>
+        asHtml(
+          toggle
+            ? ListHeader({
+                label: 'Files',
+                toggle: true,
+                action: 'toggle',
+                expanded: false,
+                actionDisabled,
+                placeholder,
+              })
+            : ListHeader({
+                label: 'Files',
+                action: 'add',
+                actionLabel: 'Add',
+                actionIcon: icon,
+                actionDisabled,
+                placeholder,
+              }),
+        );
+      expect(count(header(true, false))).toBe(1);
+      expect(count(header(true, true))).toBe(1);
+      expect(count(header(false, false))).toBe(0);
+      expect(count(header(false, true))).toBe(0);
+    }
+  });
+
+  it('keeps the marker component-owned against extension attributes', () => {
+    const widened = { 'data-kui-disabled': 'true' } as Record<string, string>;
+    expect(
+      count(
+        asHtml(
+          ListItem({ label: 'A', action: 'open', rootAttributes: widened }),
+        ),
+      ),
+    ).toBe(0);
+    expect(
+      count(
+        asHtml(
+          ListActionRow({
+            label: 'Task',
+            action: 'open',
+            trailingAction: 'more',
+            trailingActionLabel: 'More',
+            trailingActionIcon: icon,
+            trailingActionAttributes: widened,
+          }),
+        ),
+      ),
+    ).toBe(0);
+    expect(
+      count(
+        asHtml(
+          ListHeader({
+            label: 'Files',
+            action: 'add',
+            actionLabel: 'Add',
+            actionIcon: icon,
+            triggerAttributes: widened,
+          }),
+        ),
+      ),
+    ).toBe(0);
+    ListItem({
+      label: 'A',
+      action: 'open',
+      // @ts-expect-error The disabled marker is owned by ListItem.disabled.
+      rootAttributes: { 'data-kui-disabled': 'true' },
+    });
+    ListActionRow({
+      label: 'Task',
+      action: 'open',
+      trailingAction: 'more',
+      trailingActionLabel: 'More',
+      trailingActionIcon: icon,
+      // @ts-expect-error The disabled marker is owned by trailingActionDisabled.
+      trailingActionAttributes: { 'data-kui-disabled': 'true' },
+    });
+    ListHeader({
+      label: 'Files',
+      action: 'add',
+      actionLabel: 'Add',
+      actionIcon: icon,
+      // @ts-expect-error The disabled marker is owned by ListHeader.actionDisabled.
+      triggerAttributes: { 'data-kui-disabled': 'true' },
+    });
+  });
+});

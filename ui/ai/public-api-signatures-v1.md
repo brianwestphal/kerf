@@ -367,6 +367,7 @@ type ListHeaderRootAttributes = Readonly<Record<`data-${string}`, string | undef
 }>;
 type ListHeaderTriggerAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-action'?: never;
+    'data-kui-disabled'?: never;
     popoverTarget?: string;
     popoverTargetAction?: 'toggle' | 'show' | 'hide';
     'aria-controls'?: string;
@@ -518,6 +519,7 @@ type ListActionRowTrailingAttributes = Readonly<Record<`data-${string}`, string 
     'data-component'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
+    'data-kui-disabled'?: never;
     popoverTarget?: string;
     popoverTargetAction?: 'toggle' | 'show' | 'hide';
     'aria-controls'?: string;
@@ -580,6 +582,7 @@ type ListItemRootAttributes = Readonly<Record<`data-${string}`, string | undefin
     'data-divider'?: never;
     'data-busy'?: never;
     'data-state'?: never;
+    'data-kui-disabled'?: never;
 }>;
 interface ListItemProps {
     label: string | SafeHtml;

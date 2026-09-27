@@ -74,6 +74,16 @@ export function ListItemDemo() {
           placeholder
         />
       </CatalogExample>
+      <CatalogExample align="none">
+        <ListItem
+          action="disabled"
+          itemId="disabled-placeholder"
+          label="Unavailable item"
+          icon={<LucideIcon icon={CircleHelp} name="circle-help" />}
+          disabled
+          placeholder
+        />
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

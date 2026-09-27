@@ -474,12 +474,24 @@ carries zero specificity, so a component's own opacity (a control hidden until
 interaction) still wins, and each component excludes placeholders from its own
 disabled tone and hover feedback. The cursor is the one intentional difference from the
 live state: a placeholder is not clickable, so it never advertises a pointer.
+
+A control the author disabled is different: it will be unavailable once loaded, so its
+placeholder keeps the live disabled tone. Each such control carries the component-owned
+`data-kui-disabled="true"` marker whenever its own disabled prop is set, independent of
+`placeholder` — `ListItem` and `ListActionRow` `disabled`, `trailingActionDisabled`,
+a `SegmentedControl` choice's `disabled`, and `ListHeader` `actionDisabled` (on the
+action or disclosure toggle). The placeholder reset skips the marker and components key
+their disabled tone on it, so only the `placeholder`-only `disabled` attribute is
+neutralized. The marker is reserved: the extension-attribute channels
+(`rootAttributes`, `trailingActionAttributes`, `triggerAttributes`) cannot set it. A
+disabled placeholder still shows the `default` cursor, never `not-allowed`.
 `SegmentedControl` is the one placeholder without a skeleton: its choices are known
 chrome and only the selection is unknown, so it renders every choice's live label or
 icon at its live geometry, selects none, and neutralizes its own disabled chrome.
 `tests/browser/placeholder-fixture.spec.ts` enforces the rule: it renders every
 placeholder component live and as a placeholder from identical props and diffs each
-element's geometry and computed chrome, excluding only the value slots.
+element's geometry and computed chrome, excluding only the value slots, and checks that
+every author-disabled control is dimmed in both renders.
 
 Package source styles express root-scaled geometry with `remify(<px>)`; the
 build converts it against the 16px authoring baseline and exposes only ordinary

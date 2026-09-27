@@ -84,11 +84,17 @@
 }
 
 /* A placeholder is disabled to stay inert, but it is loading, not unavailable:
-   it keeps the live row's tone (see the placeholder rule in skeleton.css). */
-.kui-list-item:disabled:not([data-placeholder="true"]) {
+   it keeps the live row's tone (see the placeholder rule in skeleton.css). The
+   disabled tone follows the author's `disabled` prop (the data-kui-disabled
+   marker), so a disabled row's placeholder is dimmed like the loaded row; only
+   the `not-allowed` cursor is reserved for the live row. */
+.kui-list-item[data-kui-disabled="true"] {
   color: var(--kui-color-neutral-on-quiet);
-  cursor: not-allowed;
   opacity: 0.58;
+}
+
+.kui-list-item:disabled:not([data-placeholder="true"]) {
+  cursor: not-allowed;
 }
 
 .kui-list-item[aria-current="page"],

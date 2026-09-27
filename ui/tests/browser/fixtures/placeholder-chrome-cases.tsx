@@ -109,6 +109,17 @@ export const cases: Record<string, Case> = {
       placeholder={placeholder}
     />
   ),
+  // An author-disabled control is unavailable once loaded, so its
+  // placeholder keeps the live disabled tone.
+  'list-item-disabled': (placeholder) => (
+    <ListItem
+      action="open"
+      label="Archived project"
+      icon={inbox()}
+      disabled
+      placeholder={placeholder}
+    />
+  ),
   'list-action-row': (placeholder) => (
     <ListActionRow
       action="open"
@@ -141,6 +152,30 @@ export const cases: Record<string, Case> = {
       trailingActionLabel="Actions"
       trailingActionIcon={<LucideIcon icon={MoreHorizontal} name="more" />}
       trailingActionVisibility="interaction"
+      placeholder={placeholder}
+    />
+  ),
+  'list-action-row-disabled': (placeholder) => (
+    <ListActionRow
+      action="open"
+      label="locked.ts"
+      description="Read only"
+      trailingAction="more"
+      trailingActionLabel="Actions"
+      trailingActionIcon={<LucideIcon icon={MoreHorizontal} name="more" />}
+      disabled
+      trailingActionDisabled
+      placeholder={placeholder}
+    />
+  ),
+  'list-action-row-trailing-disabled': (placeholder) => (
+    <ListActionRow
+      action="open"
+      label="src/main.ts"
+      trailingAction="more"
+      trailingActionLabel="Actions"
+      trailingActionIcon={<LucideIcon icon={MoreHorizontal} name="more" />}
+      trailingActionDisabled
       placeholder={placeholder}
     />
   ),
@@ -182,6 +217,20 @@ export const cases: Record<string, Case> = {
       ]}
     />
   ),
+  'segmented-control-choice-disabled': (placeholder) => (
+    <SegmentedControl
+      id="sort"
+      label="Sort"
+      value="name"
+      shape="pill"
+      placeholder={placeholder}
+      choices={[
+        { value: 'name', label: 'Name' },
+        { value: 'date', label: 'Date' },
+        { value: 'size', label: 'Size', disabled: true },
+      ]}
+    />
+  ),
   'list-header-action': (placeholder) => (
     <ListHeader
       label="Attachments"
@@ -201,6 +250,27 @@ export const cases: Record<string, Case> = {
       action="toggle-recent"
       toggle
       expanded
+      placeholder={placeholder}
+    />
+  ),
+  'list-header-action-disabled': (placeholder) => (
+    <ListHeader
+      label="Attachments"
+      action="add"
+      actionLabel="Add file"
+      actionIcon={<LucideIcon icon={Plus} name="plus" />}
+      actionDisabled
+      disabledReason="Read only"
+      placeholder={placeholder}
+    />
+  ),
+  'list-header-toggle-disabled': (placeholder) => (
+    <ListHeader
+      label="Archived"
+      action="toggle-archived"
+      toggle
+      expanded={false}
+      actionDisabled
       placeholder={placeholder}
     />
   ),

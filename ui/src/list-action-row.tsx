@@ -26,6 +26,7 @@ const PROTECTED_TRAILING_DATA_ATTRIBUTES = new Set([
   'data-component',
   'data-action',
   'data-item-id',
+  'data-kui-disabled',
 ]);
 
 type ListActionRowRootAttributes = Readonly<
@@ -50,6 +51,7 @@ type ListActionRowTrailingAttributes = Readonly<
     'data-component'?: never;
     'data-action'?: never;
     'data-item-id'?: never;
+    'data-kui-disabled'?: never;
     popoverTarget?: string;
     popoverTargetAction?: 'toggle' | 'show' | 'hide';
     'aria-controls'?: string;
@@ -157,6 +159,7 @@ export function ListActionRow({
         title={placeholder ? undefined : title}
         disabled={disabled || placeholder}
         tabindex={placeholder ? -1 : tabIndex}
+        data-kui-disabled={disabled ? 'true' : undefined}
         data-action={placeholder ? undefined : action}
         data-item-id={itemId}
         aria-label={accessibleLabel}
@@ -204,6 +207,7 @@ export function ListActionRow({
         aria-label={trailingActionLabel}
         title={trailingActionTitle ?? trailingActionLabel}
         disabled={trailingActionDisabled || placeholder || undefined}
+        data-kui-disabled={trailingActionDisabled ? 'true' : undefined}
       >
         {trailingActionIcon}
       </button>

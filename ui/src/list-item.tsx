@@ -17,6 +17,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-divider',
   'data-busy',
   'data-state',
+  'data-kui-disabled',
 ]);
 
 type ListItemRootAttributes = Readonly<
@@ -31,6 +32,7 @@ type ListItemRootAttributes = Readonly<
     'data-divider'?: never;
     'data-busy'?: never;
     'data-state'?: never;
+    'data-kui-disabled'?: never;
   }
 >;
 
@@ -110,6 +112,7 @@ export function ListItem({
       data-divider={divider}
       data-busy={busy ? 'true' : undefined}
       data-state={state}
+      data-kui-disabled={disabled ? 'true' : undefined}
       data-placeholder={placeholder ? 'true' : undefined}
       aria-label={accessibleLabel}
       aria-current={selected ? 'page' : undefined}

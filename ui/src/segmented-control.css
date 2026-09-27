@@ -152,15 +152,24 @@
    its choices keep the live tone. SegmentedControl renders no skeleton (its
    choices are known; only the selection is unknown), so it does not load
    skeleton.css and neutralizes disabled chrome itself, including Web Awesome's
-   native button:disabled. */
+   native button:disabled. A choice the author disabled (the data-kui-disabled
+   marker) keeps the live disabled tone; only the `not-allowed` cursor is
+   reserved for the live control. */
 .kui-segmented-control[data-placeholder="true"] .kui-segmented-control__item {
-  opacity: 1;
   cursor: default;
+}
+
+.kui-segmented-control[data-placeholder="true"]
+  .kui-segmented-control__item:not([data-kui-disabled="true"]) {
+  opacity: 1;
+}
+
+.kui-segmented-control__item[data-kui-disabled="true"] {
+  opacity: 0.45;
 }
 
 .kui-segmented-control:not([data-placeholder="true"])
   .kui-segmented-control__item:disabled {
-  opacity: 0.45;
   cursor: not-allowed;
 }
 

@@ -202,10 +202,17 @@
   outline-offset: 1px;
 }
 
+/* The disabled tone follows the author's `actionDisabled` (the
+   data-kui-disabled marker), so a disabled action's placeholder is dimmed like
+   the loaded one; only the `not-allowed` cursor is reserved for the live
+   header. */
+.kui-list-header__action[data-kui-disabled="true"] {
+  opacity: 0.48;
+}
+
 .kui-list-header:not([data-placeholder="true"])
   .kui-list-header__action:disabled {
   cursor: not-allowed;
-  opacity: 0.48;
 }
 
 .kui-list-header__action:disabled:hover {

@@ -76,6 +76,7 @@ export function SegmentedControl<Value extends string>({
             title={placeholder ? undefined : choice.title}
             disabled={choice.disabled || placeholder}
             tabindex={placeholder ? '-1' : '0'}
+            data-kui-disabled={choice.disabled ? 'true' : undefined}
           >
             {choice.content ?? <span>{choice.label}</span>}
           </button>

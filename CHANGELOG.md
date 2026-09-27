@@ -20,6 +20,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   bindings, first-render row-contract validation, orphan pruning) into its own
   internal module, so `mount.ts` holds only the render orchestration. No
   behavior or public API change.
+- `@kerfjs/ui` placeholders keep the live disabled tone of a control the
+  author disabled. A disabled `ListItem` or `ListActionRow`, a
+  `trailingActionDisabled` button, a disabled `SegmentedControl` choice, or a
+  `ListHeader` with `actionDisabled` rendered at full opacity as a
+  placeholder, because the placeholder reset could not tell its own
+  `disabled` attribute from the author's. Those controls now carry a
+  component-owned `data-kui-disabled="true"` marker whenever their disabled
+  prop is set; the disabled tone keys on it and the placeholder reset skips
+  it. The marker is reserved: the extension-attribute props cannot set it.
 - `@kerfjs/ui` adds a browser test that renders every placeholder-capable
   component live and as a placeholder from identical props and diffs each
   element's geometry and computed chrome, so any future drift outside a value
