@@ -200,10 +200,11 @@
   opacity: 0;
 }
 
-.kui-list-action-row[data-trailing-visibility="interaction"]:is(
-    :hover,
-    :focus-within
-  )
+/* A placeholder is inert, so hovering it reveals nothing: the trailing action
+   keeps the live resting state (hidden until interaction). */
+.kui-list-action-row[data-trailing-visibility="interaction"]:not(
+    [data-placeholder="true"]
+  ):is(:hover, :focus-within)
   .kui-list-action-row__trailing-action {
   opacity: 1;
 }

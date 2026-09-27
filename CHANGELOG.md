@@ -20,6 +20,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   bindings, first-render row-contract validation, orphan pruning) into its own
   internal module, so `mount.ts` holds only the render orchestration. No
   behavior or public API change.
+- Hovering a `@kerfjs/ui` `ListActionRow` placeholder with
+  `trailingActionVisibility="interaction"` no longer reveals its disabled
+  trailing button. A placeholder is inert, so it keeps the live row's resting
+  state, with the trailing action hidden until an interaction it cannot take.
 - A `@kerfjs/ui` `ListItem` placeholder keeps its `busy` spinner. The whole
   trailing slot used to collapse into one skeleton, dropping the spinner the
   component draws from a known prop and shifting the label's width. Now only

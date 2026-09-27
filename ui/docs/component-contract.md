@@ -472,7 +472,9 @@ disabled styling under `[data-placeholder="true"]` — including Web Awesome's n
 loaded — to full opacity and the non-interactive `default` cursor. That opacity reset
 carries zero specificity, so a component's own opacity (a control hidden until
 interaction) still wins, and each component excludes placeholders from its own
-disabled tone and hover feedback. The cursor is the one intentional difference from the
+disabled tone and hover feedback — including hover reveals: a `ListActionRow` with
+`trailingActionVisibility="interaction"` keeps its trailing action hidden when its
+placeholder is hovered, as the resting live row does. The cursor is the one intentional difference from the
 live state: a placeholder is not clickable, so it never advertises a pointer.
 
 A control the author disabled is different: it will be unavailable once loaded, so its

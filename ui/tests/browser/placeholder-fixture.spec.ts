@@ -316,3 +316,23 @@ for (const width of [1280, 390]) {
     ).toEqual([]);
   });
 }
+
+test('hovering an interaction-revealed placeholder row reveals nothing', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await mountFixture(page);
+  const opacityOnHover = async (state: string) => {
+    const row = page.locator(
+      `[data-state="${state}"] > [data-case="list-action-row-interaction"] .kui-list-action-row`,
+    );
+    await row.hover();
+    return row
+      .locator('.kui-list-action-row__trailing-action')
+      .evaluate((element) => window.getComputedStyle(element).opacity);
+  };
+  // The live row reveals its trailing action on hover; the inert placeholder
+  // keeps the live resting state, hidden until an interaction it cannot take.
+  expect(await opacityOnHover('live')).toBe('1');
+  expect(await opacityOnHover('placeholder')).toBe('0');
+});
