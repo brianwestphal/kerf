@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- A `@kerfjs/ui` `StateBanner` placeholder's badge sits at the live badge's
+  height on every platform. With a skeleton instead of text, the badge took a
+  baseline from the skeleton's bottom edge and sat about a pixel higher, by an
+  amount that depended on the platform's font metrics.
 - A `@kerfjs/ui` `StateBanner` with a long, wrapping title keeps its badge
   one item gap after the title's last word, and its detail uses the full copy
   width. The wide flex layout shrank the title and detail together, which left

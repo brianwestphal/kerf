@@ -352,6 +352,48 @@ for (const width of [1280, 390]) {
       ),
     ).toEqual([]);
   });
+
+  test(`a StateBanner placeholder's title line and badge match the live ones on any font (${String(width)}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await mountFixture(page);
+    // Font-independent by construction: the title-only copy is exactly one
+    // title line box, and the badge (a value slot the diff above excludes)
+    // sits at the live badge's height. Platform font metrics once grew the
+    // placeholder's copy line by a pixel where macOS showed no difference.
+    const read = (state: string) =>
+      page
+        .locator(
+          `[data-state="${state}"] > [data-case="state-banner-no-detail"]`,
+        )
+        .evaluate((wrapper) => {
+          const banner = wrapper
+            .querySelector('.kui-state-banner')!
+            .getBoundingClientRect();
+          const copy = wrapper.querySelector('.kui-state-banner__copy')!;
+          const title = wrapper.querySelector(
+            '.kui-state-banner__copy > strong',
+          )!;
+          const badge = wrapper
+            .querySelector('.kui-state-banner__badge')!
+            .getBoundingClientRect();
+          return {
+            copyHeight: copy.getBoundingClientRect().height,
+            titleLineHeight: Number.parseFloat(
+              window.getComputedStyle(title).lineHeight,
+            ),
+            badgeTop: badge.top - banner.top,
+            badgeHeight: badge.height,
+          };
+        });
+    const live = await read('live');
+    const placeholder = await read('placeholder');
+    expect(live.copyHeight).toBeCloseTo(live.titleLineHeight, 1);
+    expect(placeholder.copyHeight).toBeCloseTo(placeholder.titleLineHeight, 1);
+    expect(placeholder.badgeTop).toBeCloseTo(live.badgeTop, 1);
+    expect(placeholder.badgeHeight).toBeCloseTo(live.badgeHeight, 1);
+  });
 }
 
 test('hovering an interaction-revealed placeholder row reveals nothing', async ({
