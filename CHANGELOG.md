@@ -20,6 +20,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   bindings, first-render row-contract validation, orphan pruning) into its own
   internal module, so `mount.ts` holds only the render orchestration. No
   behavior or public API change.
+- `@kerfjs/ui`'s `AppTab` placeholder pill is no longer dimmed to 50% with a
+  `not-allowed` cursor when `webawesome.css` is loaded; it keeps the live
+  tab's tone, and only its name is a skeleton.
 - `@kerfjs/ui`'s `ListHeader` placeholder no longer dims its action button
   (48%) or, in `toggle` mode, the whole title and label (Web Awesome's native
   50%), and its inert action and toggle give no hover feedback. A live

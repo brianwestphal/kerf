@@ -47,7 +47,6 @@ const CHROME: readonly ChromeSpec[] = [
 
 // Components whose placeholder currently drifts from the live chrome and are
 // therefore not yet in CHROME. Move each into CHROME with its fix:
-// - AppTab: Web Awesome native `button:disabled` dims the pill to 0.5.
 // - StateBanner: a placeholder always adds a detail skeleton, even without
 //   `detail`.
 // - Select: the hint row is 12px / 4px gap instead of the live 14px / 7px.
@@ -226,4 +225,44 @@ test('a placeholder ListHeader keeps its action at the live tone', async ({
       (element) => window.getComputedStyle(element).backgroundColor,
     ),
   ).toBe('rgba(0, 0, 0, 0)');
+});
+
+test('a placeholder AppTab keeps the live pill tone; only the name is a skeleton', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/?component=tabs');
+  const demo = page.locator('[data-demo="tabs"]');
+  await expect(demo).toBeVisible();
+  const read = (selector: string) =>
+    demo
+      .locator(selector)
+      .first()
+      .evaluate((tab) => {
+        const pick = (element: Element) => {
+          const computed = window.getComputedStyle(element);
+          return {
+            opacity: computed.opacity,
+            color: computed.color,
+            background: computed.backgroundColor,
+            radius: computed.borderTopLeftRadius,
+            height: element.getBoundingClientRect().height,
+          };
+        };
+        const select = tab.querySelector('.kui-app-tab__select')!;
+        return {
+          root: pick(tab),
+          select: pick(select),
+          cursor: window.getComputedStyle(select).cursor,
+        };
+      });
+  // Web Awesome's native `button:disabled` used to dim the placeholder pill
+  // to 50% with a not-allowed cursor.
+  const placeholder = await read('.kui-app-tab[data-placeholder="true"]');
+  const live = await read(
+    '.kui-app-tab[data-selected="false"][data-presentation="pill"][data-size="default"]:not([data-placeholder]):not([data-pending])',
+  );
+  expect(placeholder.root).toEqual(live.root);
+  expect(placeholder.select).toEqual(live.select);
+  expect(placeholder.cursor).toBe('default');
 });
