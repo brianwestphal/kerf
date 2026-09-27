@@ -364,7 +364,12 @@ the same run, or to an installed package's shipped catalog (its
 `eslint-plugin-kerfjs`'s `ui-composition` rule, and so `kerf-ui-doctor`, reads
 the catalogs your `.kerf-ui-profile.json` declares under `catalogs` and resolves
 a wrapper by its package subpath (a bare import) or by its `source` file (an
-app's relative import). A zone accepts the wrapper only if it accepts **every**
+app's relative import). A private, bundled application
+(`package.json#private: true`) declares its wrappers' `publicExports` by name
+alone — no `subpath`, so no placeholder `exports` map pointing at `dist/` files
+that its bundle never emits — and the generator verifies each name against the
+component's `source` file instead. A publishable package still needs every
+subpath in `exports`. A zone accepts the wrapper only if it accepts **every**
 declared root; each root's parent contract applies wherever the wrapper is
 placed; and a wrapper used as a parent counts as its roots. A wrapper without
 `rendersAs` keeps the unknown-element behavior (`KUI-L202`).

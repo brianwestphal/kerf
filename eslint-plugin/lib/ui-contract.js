@@ -201,11 +201,15 @@ export function loadUiContract(context) {
           const name = exportName(item);
           if (!name || !isComponentExport(name)) continue;
           const subpath = typeof item === 'string' ? '.' : item.subpath;
-          const specifier =
-            subpath && subpath !== '.'
-              ? `${entry.package ?? artifact.package}/${subpath.replace(/^\.\//, '')}`
-              : (entry.package ?? artifact.package);
-          packageExports.set(`${specifier}\0${name}`, key);
+          // A private application's export has no subpath: it is never
+          // imported by package name, only through its source file below.
+          if (typeof subpath === 'string') {
+            const specifier =
+              subpath !== '.'
+                ? `${entry.package ?? artifact.package}/${subpath.replace(/^\.\//, '')}`
+                : (entry.package ?? artifact.package);
+            packageExports.set(`${specifier}\0${name}`, key);
+          }
           if (entry.source)
             sourceExports.set(`${resolve(root, entry.source)}\0${name}`, key);
         }

@@ -214,7 +214,10 @@ a generated or installed catalog. The UI rules load the application and
 third-party catalogs a `.kerf-ui-profile.json` declares, resolve their
 components by package subpath or source file, and check a `rendersAs` wrapper
 as each root, so an app wrapper around a `ToolbarControlGroup` passes Toolbar
-zones. An explicit `boundaries.rootClass: null` is an accepted decision.
+zones. An explicit `boundaries.rootClass: null` is an accepted decision. A
+private application (`package.json#private: true`) may omit a
+`publicExports[].subpath`; the generator then verifies the name against the
+component's `source` file, and the UI rules resolve it only by that file.
 
 ### §14 Feature coverage
 

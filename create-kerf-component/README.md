@@ -59,6 +59,13 @@ A ready-to-publish component package that encodes the rules from the kerf docs
   `["@kerfjs/ui:toolbar-control-group"]`), so the `ui-composition` lint treats
   it as that root. Every key must resolve to an entry generated in the same run
   or to an installed package's catalog.
+  Each `publicExports` item names a `package.json#exports` subpath that maps to
+  the `src/` file exporting it. A private, bundled application
+  (`package.json#private: true`) has no per-file `dist/` entries and is never
+  imported by package name, so its items may omit `subpath`
+  (`{ "name": "DemandSegmentsControl" }`); the checker then verifies the name
+  against the component's `source` file, which is how the UI lint resolves the
+  wrapper. A subpath it does declare is still checked against `exports`.
 
 ## Layout produced
 

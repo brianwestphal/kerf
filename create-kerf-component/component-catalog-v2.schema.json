@@ -137,10 +137,11 @@
         "kind": { "enum": ["component", "composition", "recipe"] },
         "purpose": { "type": "string", "minLength": 1 },
         "publicExports": {
+          "description": "Each export's name and the package.json#exports subpath that serves it. An entry from a private application omits subpath: the application is bundled, never imported by package name, so the name resolves through the entry's source file.",
           "type": "array",
           "items": {
             "type": "object",
-            "required": ["name", "subpath"],
+            "required": ["name"],
             "properties": {
               "name": { "type": "string", "minLength": 1 },
               "subpath": { "type": "string", "pattern": "^\\." }

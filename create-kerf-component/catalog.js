@@ -532,6 +532,11 @@ function validateComponent(
     diagnostics.push(`${at}.source: file does not exist: ${component.source}`);
 
   const exports = packageJson.exports ?? {};
+  // A private application (package.json#private) is bundled, never imported
+  // by package name, and has no per-file dist entries. Its exports may omit
+  // `subpath`; each name is then verified against the component's own
+  // `source` file, which is how the Kerf UI rules resolve its wrappers.
+  const privateApplication = packageJson.private === true;
   if (
     !Array.isArray(component.publicExports) ||
     !component.publicExports.length
@@ -541,13 +546,34 @@ function validateComponent(
     const seen = new Set();
     for (const item of component.publicExports) {
       const exportAt = `${at}.publicExports`;
-      if (!item?.name || typeof item?.subpath !== 'string') {
-        diagnostics.push(`${exportAt}: every export requires name and subpath`);
+      const sourceOnly =
+        privateApplication &&
+        Boolean(item?.name) &&
+        !Object.hasOwn(item, 'subpath');
+      if (!item?.name || (!sourceOnly && typeof item?.subpath !== 'string')) {
+        diagnostics.push(
+          `${exportAt}: every export requires name and subpath (only a private application, package.json#private, may omit subpath)`,
+        );
         continue;
       }
-      const key = `${item.subpath}:${item.name}`;
-      if (seen.has(key)) diagnostics.push(`${exportAt}: duplicate ${key}`);
+      const key = sourceOnly
+        ? `source:${item.name}`
+        : `${item.subpath}:${item.name}`;
+      if (seen.has(key))
+        diagnostics.push(
+          `${exportAt}: duplicate ${sourceOnly ? item.name : key}`,
+        );
       seen.add(key);
+      if (sourceOnly) {
+        if (
+          existsSync(sourcePath) &&
+          !exportedNamesFromFile(sourcePath).has(item.name)
+        )
+          diagnostics.push(
+            `${exportAt}: ${item.name} is not exported by ${component.source}`,
+          );
+        continue;
+      }
       if (!(item.subpath in exports))
         diagnostics.push(
           `${exportAt}: package.json does not export subpath ${item.subpath}`,

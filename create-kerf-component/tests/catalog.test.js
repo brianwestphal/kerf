@@ -129,6 +129,73 @@ test('reports renamed public exports instead of guessing replacements', () => {
   });
 });
 
+function makePrivateApplication(target) {
+  const manifestPath = join(target, 'package.json');
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+  manifest.private = true;
+  delete manifest.exports;
+  writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+}
+
+function withPublicExports(target, publicExports) {
+  const value = metadata(target);
+  value.components[0].publicExports = publicExports;
+  writeMetadata(target, value);
+}
+
+const rejectsWith = (target, fragment) =>
+  assert.throws(
+    () => generateCatalogs(target),
+    (error) =>
+      error instanceof CatalogError &&
+      error.diagnostics.some((diagnostic) => diagnostic.includes(fragment)),
+  );
+
+test('a private application declares exports by source without an exports map', () => {
+  withScaffold(({ target }) => {
+    makePrivateApplication(target);
+    withPublicExports(target, [{ name: 'Counter' }]);
+    const [result] = generateCatalogs(target);
+    assert.deepEqual(result.catalog.entries[0].publicExports, [
+      { name: 'Counter' },
+    ]);
+    assert.equal(result.catalog.entries[0].source, 'src/counter.tsx');
+    assert.deepEqual(validateCatalogV2(result.catalog), []);
+
+    // The name is still verified, against the component's source file.
+    withPublicExports(target, [{ name: 'RenamedCounter' }]);
+    rejectsWith(target, 'RenamedCounter is not exported by src/counter.tsx');
+
+    withPublicExports(target, [{ name: 'Counter' }, { name: 'Counter' }]);
+    rejectsWith(target, 'publicExports: duplicate Counter');
+
+    // A subpath a private application does declare is checked as before.
+    withPublicExports(target, [{ name: 'Counter', subpath: './counter' }]);
+    rejectsWith(target, 'package.json does not export subpath ./counter');
+
+    withPublicExports(target, [{ name: 'Counter', subpath: null }]);
+    rejectsWith(target, 'publicExports[0].subpath: expected string');
+  });
+});
+
+test('a publishable package still requires an exports subpath', () => {
+  withScaffold(({ target }) => {
+    withPublicExports(target, [{ name: 'Counter' }]);
+    rejectsWith(
+      target,
+      'only a private application, package.json#private, may omit subpath',
+    );
+
+    // `private` without an exports map is what opts in, not a missing map.
+    const manifestPath = join(target, 'package.json');
+    const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+    delete manifest.exports;
+    writeFileSync(manifestPath, JSON.stringify(manifest));
+    withPublicExports(target, [{ name: 'Counter', subpath: '.' }]);
+    rejectsWith(target, 'package.json does not export subpath .');
+  });
+});
+
 test('requires an explicit public geometry root', () => {
   withScaffold(({ target }) => {
     const value = metadata(target);

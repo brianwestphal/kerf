@@ -38,10 +38,13 @@ export function validateCatalogV2(catalog, options = {}) {
       const publicExports = new Set();
       for (const publicExport of entry.publicExports ?? []) {
         const exportKey = `${publicExport?.subpath}:${publicExport?.name}`;
+        // A private application's export omits subpath (it resolves through
+        // the entry's source file); a declared subpath must still be one.
         if (
           !publicExport?.name ||
-          typeof publicExport?.subpath !== 'string' ||
-          !publicExport.subpath.startsWith('.')
+          (publicExport.subpath !== undefined &&
+            (typeof publicExport.subpath !== 'string' ||
+              !publicExport.subpath.startsWith('.')))
         )
           fail(`${at} has an invalid public export`);
         if (publicExports.has(exportKey))

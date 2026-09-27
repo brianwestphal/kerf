@@ -97,9 +97,10 @@
         "publicExports": {
           "type": "array",
           "minItems": 1,
+          "description": "Each export's name and package.json#exports subpath. A private application (package.json#private) may omit subpath; the name is then verified against the component's source file.",
           "items": {
             "type": "object",
-            "required": ["name", "subpath"],
+            "required": ["name"],
             "properties": {
               "name": { "type": "string", "minLength": 1 },
               "subpath": { "type": "string", "pattern": "^\\." }

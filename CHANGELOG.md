@@ -73,6 +73,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   holds there. Resizing still commits no less than `min`, and the configured
   range returns once there is room. A `ResizableRegion` a parent clamps below
   its `min` reports the same way.
+- **`kerf-component-catalog` lets a private application declare components
+  without a fake `exports` map.** In a private package
+  (`"private": true`), a component's `publicExports` items may omit `subpath`; the generator
+  verifies each name against the component's `source` file instead of
+  requiring a `./dist/<path>.js` export the bundled app never emits. Publishable
+  packages still need every subpath in `exports`. The v2 catalog schema makes
+  `subpath` optional to match, and the `kerfjs/ui-composition` rule resolves a
+  subpath-less export only by its source file.
 - **`kerf-ui-doctor` and the `kerfjs/ui-public-boundaries` ESLint rule no
   longer flag the documented `class="kui-app-root"` as KUI-L101 private
   anatomy.** The `@kerfjs/ui` component catalog now has a `document-baseline`

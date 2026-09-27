@@ -262,6 +262,14 @@ writeJson('component-catalog-v2.json', {
     wrapper('app-toolbar', 'AppToolbar', ['@kerfjs/ui:toolbar']),
     wrapper('status-chip', 'StatusChip', ['@kerfjs/ui:segmented-control']),
     wrapper('plain-widget', 'PlainWidget'),
+    // A private, bundled application declares an export by name alone: it
+    // resolves through its source file, never through a package subpath.
+    wrapper(
+      'source-only-group',
+      'SourceOnlyGroup',
+      ['@kerfjs/ui:toolbar-control-group'],
+      { publicExports: [{ name: 'SourceOnlyGroup' }] },
+    ),
   ],
 });
 writeJson('vendor/acme/catalog.json', {
@@ -323,6 +331,10 @@ tester.run('ui-composition rendersAs wrappers', composition, {
     appCase(
       "import { GroupWrap } from '@acme/bits/group-wrap'; <Toolbar trailing={<><GroupWrap /><GroupWrap /></>} />;",
     ),
+    // A subpath-less private-application export resolves by source file.
+    appCase(
+      "import { SourceOnlyGroup } from './source-only-group.js'; <Toolbar trailing={<SourceOnlyGroup />} />;",
+    ),
     // Wrappers may render nothing, so two in a max-1 zone are not a certain overflow.
     appCase(
       "import { TitleText } from './title-text.js'; <Toolbar center={<><TitleText /><TitleText /></>} />;",
@@ -347,6 +359,11 @@ tester.run('ui-composition rendersAs wrappers', composition, {
     // An undeclared app component keeps today's KUI-L202 behavior.
     appCase(
       "import { PlainWidget } from './plain-widget.js'; <Toolbar trailing={<PlainWidget />} />;",
+      { errors: [{ messageId: 'zone' }] },
+    ),
+    // A subpath-less export registers no package-name import.
+    appCase(
+      "import { SourceOnlyGroup } from 'karwan-app'; <Toolbar trailing={<SourceOnlyGroup />} />;",
       { errors: [{ messageId: 'zone' }] },
     ),
     // An import that does not name the cataloged source file stays unresolved.

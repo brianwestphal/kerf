@@ -11,7 +11,9 @@ resolved `.kerf-ui-profile.json` declares under `catalogs`. Their components
 resolve by package subpath (`import { GroupWrap } from '@acme/bits/group-wrap'`,
 matched to the entry's `publicExports`) or, for an application's own relative
 imports, by source file (matched to the entry's `source`, trying the TypeScript
-ESM extensions a `.js` specifier stands for).
+ESM extensions a `.js` specifier stands for). An export without a `subpath` (a
+private application's, which is never imported by package name) resolves only
+by source file.
 
 An entry that declares `rendersAs` (a wrapper that renders one of the listed
 cataloged roots, or nothing) is checked as those roots:
