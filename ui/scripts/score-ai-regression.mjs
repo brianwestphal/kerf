@@ -21,7 +21,7 @@ if (!caseId || !responsePath) {
 }
 if (suiteVersion === 3)
   throw new Error(
-    'Suite v3 uses separate static, compile, browser, and human-visual evidence records; it has no single structural score command.',
+    'Suite v3 uses separate static, compile, browser, and human-visual evidence records; it has no single structural score command. Use ai:regressions:record-v3 / ai:regressions:replay-v3.',
   );
 if (suiteVersion !== 1 && suiteVersion !== 2)
   throw new Error(`Unknown AI regression suite: ${suiteVersion}`);
