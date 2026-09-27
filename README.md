@@ -209,12 +209,13 @@ The class lives in its own subpath so apps that don't need it shed ~1 KB. Reads 
 ```ts
 import { morph, raw } from "kerfjs";
 
-morph(liveCard, freshlyBuiltCardEl); // Element template
-morph(liveCard, '<article class="card">…</article>'); // raw HTML string
+// `template` describes liveCard's CHILDREN; liveCard's own attributes are untouched
+morph(liveCard, freshlyBuiltCardEl); // Element template: its child nodes are used
+morph(liveCard, '<h2 class="card-title">…</h2><p>…</p>'); // raw HTML string
 morph(liveCard, raw(htmlFromServer)); // SafeHtml
 ```
 
-Same algorithm `mount()` uses internally — `data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focused-input value + selection preservation, the `<details>` / `<dialog>` user-agent-owned `open` rule all carry over. Use it for SSR-fragment hydration, page-refresh diffs, third-party widget remounts. See [`docs/4-render.md`](./docs/4-render.md) §4.4.3.
+Same algorithm `mount()` uses internally — `data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focused-input value + selection preservation, the user-agent-owned `open` rule (`<details>`, `<dialog>`, custom elements) all carry over. Only the live root's children are reconciled — the root's own attributes are never touched. Use it for SSR-fragment hydration, page-refresh diffs, third-party widget remounts. See [`docs/4-render.md`](./docs/4-render.md) §4.4.3.
 
 ### No build step at all: the `html` tagged template
 

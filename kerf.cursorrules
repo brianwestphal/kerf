@@ -1,4 +1,4 @@
-<!-- kerf-skill-version: 1.21.0 -->
+<!-- kerf-skill-version: 1.21.1 -->
 
 # kerf.cursorrules — rules for building apps with kerf
 
@@ -207,7 +207,8 @@ const cart = defineStore({
 });
 
 // One-shot reconcile against existing DOM (no signals)
-morph(liveCard, '<article class="card">…</article>');
+// the template describes liveCard's CHILDREN; liveCard's own attributes are untouched
+morph(liveCard, '<h2 class="card-title">…</h2><p>…</p>');
 
 // No build step (CDN / importmap): the html tagged template instead of JSX.
 // Same runtime semantics as JSX; write real HTML attribute names; a hole must

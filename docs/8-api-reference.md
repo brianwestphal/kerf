@@ -207,35 +207,36 @@ The diff:
 - Short-circuits on the live element when:
   - It has `data-morph-skip` (element AND subtree preserved as-is; no attribute morphing).
   - It has `data-morph-skip-children` (attributes morph; subtree preserved as-is).
-  - It's a list parent owned by `each(...)` (children-only short-circuit; `each`'s reconciler owns those rows). Attribute morphing on the parent itself still happens.
   - `fromEl.isEqualNode(toEl)` (no work needed).
   - It's the focused `[contenteditable]` (entire subtree preserved on this morph; see §8.7 below and `docs/4-render.md` §4.4).
 - The trailing-removal pass (unmatched live children that the new template doesn't emit) skips elements marked `data-morph-preserve` — imperatively-injected nodes whose lifetime the consumer manages outside kerf.
 - Otherwise preserves the focused text-entry's value + selection range, then proceeds.
+- A list parent owned by `each(...)` is not short-circuited: the diff still morphs its attributes and walks all of its children, skipping only the rows `each`'s reconciler owns, so non-list siblings before or after the rows reconcile normally.
 
 Lists rendered with `each(...)` go through a separate keyed reconciler that operates directly on the live parent's children. The snapshot path scans O(rows) to classify the new list but limits rendering and DOM mutations to cache misses and structural changes; an `arraySignal` patch queue can skip that scan and run in O(patches). See `each` below.
 
 ### `morph(liveRoot: Element, template: Element | SafeHtml | string): void`
 
-One-shot in-place reconciliation primitive — the same algorithm `mount()` uses internally, exported for consumers that have an already-populated element they need to reconcile against a freshly-built template. Unlike `mount()`, `morph()` doesn't wrap an `effect()` and doesn't bulk-write `innerHTML` first: it runs once per call against the live tree as-is. When it mutates a `checked` / `value` / `selected` attribute it syncs the matching DOM property too, so controlled form state holds up after user interaction (the dirty-state flags would otherwise detach the visible state from the attribute). Ordinary live attributes that the template omits are removed. The attribute-removal exceptions are user-agent-owned `open` on `<details>` / `<dialog>` and an element whose own attribute diff is skipped by `data-morph-skip`; `data-morph-skip-children` and `data-morph-preserve` do not by themselves protect a matched element's attributes.
+One-shot in-place reconciliation primitive — the same algorithm `mount()` uses internally, exported for consumers that have an already-populated element they need to reconcile against a freshly-built template. Unlike `mount()`, `morph()` doesn't wrap an `effect()` and doesn't bulk-write `innerHTML` first: it runs once per call against the live tree as-is. When it mutates a `checked` / `value` / `selected` attribute it syncs the matching DOM property too, so controlled form state holds up after user interaction (the dirty-state flags would otherwise detach the visible state from the attribute). Only `liveRoot`'s **children** are reconciled: the root element is never replaced and its own attributes are never touched, so `template` describes the content inside the root (for an `Element` template, its child nodes are used and its own tag and attributes are ignored). Ordinary live attributes on descendants that the template omits are removed. The attribute-removal exceptions are user-agent-owned `open` on `<details>`, `<dialog>`, and custom elements (any hyphenated tag), and an element whose own attribute diff is skipped by `data-morph-skip`; `data-morph-skip-children` and `data-morph-preserve` do not by themselves protect a matched element's attributes.
 
 ```ts
 import { morph, raw } from "kerfjs";
 
-morph(liveCard, freshlyBuiltCardEl); // Element template
-morph(liveCard, '<article class="card">…</article>'); // raw HTML string
+// `template` describes liveCard's CHILDREN; liveCard's own attributes are untouched
+morph(liveCard, freshlyBuiltCardEl); // Element template: its child nodes are used
+morph(liveCard, '<h2 class="card-title">…</h2><p>…</p>'); // raw HTML string
 morph(liveCard, raw(htmlFromServer)); // SafeHtml
 ```
 
 When `template` is a string or `SafeHtml`, kerf creates a transient element by cloning `liveRoot`'s shell (so the parsed children land inside an element with the same tag, which keeps `innerHTML` parsing rules consistent) and assigns the stringified template to its `innerHTML`. The transient is discarded after the reconciliation.
 
-Every short-circuit `mount()`'s morph honors carries over: `data-morph-skip` (element + subtree preserved), `data-morph-skip-children` (attrs morph, subtree preserved), `data-morph-preserve` (element survives the trailing-removal pass), `isEqualNode` byte-identity skip, focused text-input value + selection preservation, focused-`[contenteditable]` subtree preservation, and `<details>` / `<dialog>`'s user-agent-owned `open` attribute. Match keys (`id`, then `data-key`) behave the same way.
+Every short-circuit `mount()`'s morph honors carries over: `data-morph-skip` (element + subtree preserved), `data-morph-skip-children` (attrs morph, subtree preserved), `data-morph-preserve` (element survives the trailing-removal pass), `isEqualNode` byte-identity skip, focused text-input value + selection preservation, focused-`[contenteditable]` subtree preservation, and the user-agent-owned `open` attribute on `<details>`, `<dialog>`, and custom elements. Match keys (`id`, then `data-key`) behave the same way.
 
 `morph()` does NOT subscribe to signals. If you want re-renders, use `mount()`. If you want a one-shot reconciliation against a tree you own, this is the primitive. See `docs/4-render.md` §4.4.3.
 
 A `null` / `undefined` `liveRoot` throws immediately with a descriptive error (the usual cause is a `getElementById` typo returning `null` at runtime despite the TypeScript types) — the same guard `mount()` applies to its `rootEl`.
 
-> **Security — trusted templates only.** A `string` / `SafeHtml` template is parsed as HTML with **no escaping and no URL screening** — the same trust model as `innerHTML` / `raw()`. An `Element` template's attributes are copied to the live tree **verbatim**, including `on*` inline handlers and `javascript:` URLs. So a `morph()` template must be markup you trust: built via JSX, or sanitized upstream (DOMPurify). Never pass unsanitized user input as a `morph()` template. (This is distinct from the `mount()` render path, where JSX escapes values and screens dangerous URLs — `morph()` bypasses that because its template is already-built markup.)
+> **Security — trusted templates only.** A `string` / `SafeHtml` template is parsed as HTML with **no escaping and no URL screening** — the same trust model as `innerHTML` / `raw()`. The attributes of an `Element` template's descendants are copied to the live tree **verbatim**, including `on*` inline handlers and `javascript:` URLs. So a `morph()` template must be markup you trust: built via JSX, or sanitized upstream (DOMPurify). Never pass unsanitized user input as a `morph()` template. (This is distinct from the `mount()` render path, where JSX escapes values and screens dangerous URLs — `morph()` bypasses that because its template is already-built markup.)
 
 ### `renderDocument(node: SafeHtml | string, options?: RenderDocumentOptions): string`
 

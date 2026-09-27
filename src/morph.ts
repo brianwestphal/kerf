@@ -85,7 +85,10 @@ const EMPTY_OWNED: ReadonlySet<Element> = new Set();
 /**
  * Reconcile the children of `liveRoot` to match `template`.
  *
- * `template` can be an `Element` (used directly), a `SafeHtml`, or a raw
+ * Only the children are reconciled: `liveRoot` itself is never replaced and
+ * its own attributes are never touched, so `template` describes the content
+ * that goes INSIDE the root. `template` can be an `Element` (its child nodes
+ * are used; its own tag and attributes are ignored), a `SafeHtml`, or a raw
  * HTML string — the latter two are stringified and parsed into a transient
  * element whose tag matches `liveRoot`. The active text-entry / focused-
  * contenteditable preservation rules apply in all cases.
@@ -574,7 +577,8 @@ function morphElement(
 /**
  * Attributes the user agent toggles in response to user interaction.
  * `<details>` and `<dialog>` add/remove `open=""` themselves when the user
- * expands or closes the element. If the developer's JSX never mentions
+ * expands or closes the element, and custom elements (any hyphenated tag)
+ * reflect their live open state to `open` — see `isUserAgentOwnedAttr`. If the developer's JSX never mentions
  * `open`, treating that attribute as user-agent-owned and leaving it alone
  * during the morph keeps the user-driven state intact across re-renders.
  *

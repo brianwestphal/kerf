@@ -41,6 +41,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   overlay first leaves focus in the overlay that holds it. An overlay opened
   from inside it then restores focus to the closed overlay's opener, not a
   detached node.
+- Documentation: `morph(liveRoot, template)` is now described as it behaves.
+  It reconciles only the root's children and never touches the root's own
+  attributes, so `template` describes the content inside the root (an
+  `Element` template contributes its child nodes). The examples no longer
+  nest a duplicate `<article>` inside the live one. An `each()` list parent is
+  not a children-only short-circuit: the diff still walks it and skips only
+  the owned rows. The user-agent-owned `open` exception covers custom elements
+  as well as `<details>` / `<dialog>`, and a content-only row change inside an
+  `each()` list keeps its DOM node (and focus) unless the row's top-level tag
+  changes or the same render also inserts, removes, or moves rows.
 - `create-kerf-component` accepts an explicit `boundaries.rootClass: null` as
   an author decision, as its schema always allowed. A wrapper whose root
   element belongs to another catalog (a `rendersAs` wrapper) no longer has to

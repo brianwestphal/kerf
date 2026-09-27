@@ -315,7 +315,7 @@ When the keyed list reconciler moves a row whose descendant is the focused eleme
 
 Where the engine supports `Node.prototype.moveBefore()` (Chromium 133+, spreading), connected-row moves are performed atomically without disconnecting the node, preserving richer state such as `<iframe>` documents, playing media, and running CSS animations. The focus snapshot still runs: Firefox can keep the contenteditable focused while retargeting its live Selection (and even a cloned Range) to the list parent during `moveBefore()`. Kerf therefore records raw boundary-node references plus offsets and reconstructs the selection after the move. This is fully transparent; see [`docs/18-state-preserving-moves.md`](18-state-preserving-moves.md).
 
-Replaced rows (cache miss — the row's HTML changed) are a different story: the old node is removed before the new one is inserted, so focus that lived inside it is genuinely gone. That matches the behavior of any framework that re-renders a row.
+A row whose HTML changed (cache miss) usually keeps its node too. When the render leaves the list's structure alone — the same items in the same order, no inserts, removes, or moves — the snapshot reconciler updates each changed row in place, and an `arraySignal` `update()` patch does the same: an attribute-only or text-only change is patched directly on the live row, anything else goes through an element-level morph. Focus, caret, and IME state inside the row survive. The row's node is replaced — the old one removed and a freshly parsed one inserted, so focus that lived inside it is genuinely gone — only when the row's top-level tag changes, or when its content changes in the same render that also inserts, removes, or moves rows (a structural snapshot reconcile, which takes the general fresh-node path for changed rows).
 
 ### Choosing a form pattern
 
@@ -433,23 +433,27 @@ The alternative — running the diff on every render even when nothing changed �
 `morph(liveRoot, template)` is the same reconciliation primitive `mount()` uses internally, exported for one-shot use against an already-populated element. Reach for it when `mount()`'s "wipe and bulk-render on first paint" semantics don't fit — typical cases:
 
 - **SSR / static-fragment hydration.** The server delivered an HTML fragment; you want to reconcile it toward a freshly-built version after some client-side state arrives, without throwing away the DOM nodes the server already streamed.
-- **Page-refresh diffs.** You hold a freshly-built `<article>` and want the live `<article>` on screen to morph to match — preserving focused input state and user-toggled `<details open>` while making ordinary attributes and children match the template. Imperative attributes absent from the template are removed unless an ownership escape hatch applies.
+- **Page-refresh diffs.** You hold freshly-built content for a card and want the live card's children on screen to morph to match — preserving focused input state and user-toggled `<details open>` while making the descendants' attributes and children match the template (the card element's own attributes are not touched). Imperative attributes absent from the template are removed unless an ownership escape hatch applies.
 - **Third-party widget remounts.** The widget rendered something; you have a new version of "what it should look like" as HTML and need an in-place update.
 
 ```ts
 import { morph } from "kerfjs";
 
-// Element template
+// Element template: its CHILDREN become liveCard's children; the template
+// element's own tag and attributes are ignored
 morph(liveCard, freshlyBuiltCard);
 
-// Raw HTML string (parsed into a transient element whose tag matches liveCard)
-morph(liveCard, '<article class="card">…</article>');
+// Raw HTML string: describes liveCard's children, not liveCard itself
+// (parsed into a transient element whose tag matches liveCard)
+morph(liveCard, '<h2 class="card-title">…</h2><p>…</p>');
 
 // SafeHtml (e.g. from `raw()` or a JSX expression)
 morph(liveCard, raw(htmlFromServer));
 ```
 
-`morph()` honors every short-circuit `mount()`'s internal pipeline uses: `data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focused-input value + selection preservation, focused-`[contenteditable]` subtree preservation, and `<details>`/`<dialog>`'s user-agent-owned `open` attribute. Match keys (`id`, then `data-key`) work the same way as inside a mount.
+`morph()` reconciles only `liveRoot`'s **children**. The root element itself is never replaced and its own attributes are never touched — set them directly if they need to change. `template` therefore describes the content that goes inside the root: for an `Element` template, its child nodes are used and its own tag and attributes are ignored.
+
+`morph()` honors every short-circuit `mount()`'s internal pipeline uses: `data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focused-input value + selection preservation, focused-`[contenteditable]` subtree preservation, and the user-agent-owned `open` attribute on `<details>`, `<dialog>`, and custom elements (any hyphenated tag). Match keys (`id`, then `data-key`) work the same way as inside a mount.
 
 What `morph()` doesn't do: it isn't reactive (no signal subscription, no effect). It runs once per call. If you want re-renders, use `mount()`. If you want a one-shot reconciliation against a tree you already own, `morph()` is the primitive — five lines of glue away from what would otherwise force you back to `mount()`'s wipe-and-rebuild semantics or to a third-party morph library.
 
