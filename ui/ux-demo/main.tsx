@@ -962,70 +962,89 @@ const stopRecipeNavEffect = effect(() => {
     }
   });
 });
-// Focused app-layout routes use the same public wiring consumers do. Reset each
-// controlled specimen when its route becomes active so repeated catalog visits
-// always begin in the documented state.
-let stopFocusedLayout: (() => void) | null = null;
-const stopFocusedLayoutEffect = effect(() => {
-  const id = selectedDemo.value;
-  if (id === 'nav-stack') resetNavStackDemo();
-  if (id === 'split-view') resetSplitViewDemo();
-  if (id === 'tab-scaffold') resetTabScaffoldDemo();
+/**
+ * How a focused route wires its specimen with the public helpers consumers
+ * use. `reset` returns the controlled specimen to its documented state each
+ * time the route becomes active. A `canvas` wire attaches after the route's
+ * canvas renders (on the next frame); an `app` wire attaches to the app root
+ * as soon as the route is active, before the example first paints.
+ */
+interface RouteWire {
+  reset?: () => void;
+  target: 'app' | 'canvas';
+  wire: (root: HTMLElement) => () => void;
+}
+
+const routeWires: Partial<Record<string, RouteWire>> = {
+  'nav-stack': {
+    reset: resetNavStackDemo,
+    target: 'canvas',
+    wire: (canvas) => wireNavStack(canvas, { onBack: popNavStackDemo }),
+  },
+  'split-view': {
+    reset: resetSplitViewDemo,
+    target: 'canvas',
+    wire: (canvas) => wireNavStack(canvas, { onBack: clearSplitViewSelection }),
+  },
+  'tab-scaffold': {
+    reset: resetTabScaffoldDemo,
+    target: 'canvas',
+    wire: (canvas) =>
+      wireTabScaffold(canvas, { onSelect: selectTabScaffoldDemo }),
+  },
+  // The resizable example has real persistence (its sizes survive a reload),
+  // so it wires on the app root right away: a remembered size is in place
+  // before the example first paints.
+  workbench: {
+    reset: resetWorkbenchDemo,
+    target: 'app',
+    wire: (root) =>
+      wireWorkbench(root, {
+        id: RESIZABLE_WORKBENCH_ID,
+        panels: {
+          leftRail: {
+            size: workbenchNavigatorSize,
+            storageKey: 'kerf-ui-demo.workbench.navigator',
+          },
+          rightRail: {
+            size: workbenchInspectorSize,
+            storageKey: 'kerf-ui-demo.workbench.inspector',
+          },
+          bottomDrawer: {
+            size: workbenchConsoleSize,
+            storageKey: 'kerf-ui-demo.workbench.console',
+          },
+        },
+        onResize: ({ panel, size }) => {
+          const name = {
+            leftRail: 'Navigator',
+            rightRail: 'Inspector',
+            bottomDrawer: 'Console',
+          }[panel];
+          actionLog.value = `${name} resized to ${size}px`;
+        },
+      }),
+  },
+};
+
+// One wiring per target: switching routes disposes the previous route's wire
+// (an app wire at once, a canvas wire on the next frame) before the new one.
+const stopRouteWire: Record<RouteWire['target'], (() => void) | null> = {
+  app: null,
+  canvas: null,
+};
+const stopRouteWireEffect = effect(() => {
+  const route = routeWires[selectedDemo.value];
+  stopRouteWire.app?.();
+  stopRouteWire.app = null;
+  route?.reset?.();
+  if (route?.target === 'app') stopRouteWire.app = route.wire(app);
   window.requestAnimationFrame(() => {
-    stopFocusedLayout?.();
-    stopFocusedLayout = null;
+    stopRouteWire.canvas?.();
+    stopRouteWire.canvas = null;
     const canvas = document.querySelector<HTMLElement>('.kui-catalog__canvas');
-    if (!canvas) return;
-    if (id === 'nav-stack') {
-      stopFocusedLayout = wireNavStack(canvas, {
-        onBack: popNavStackDemo,
-      });
-    } else if (id === 'split-view') {
-      stopFocusedLayout = wireNavStack(canvas, {
-        onBack: clearSplitViewSelection,
-      });
-    } else if (id === 'tab-scaffold') {
-      stopFocusedLayout = wireTabScaffold(canvas, {
-        onSelect: selectTabScaffoldDemo,
-      });
-    }
-  });
-});
-// The resizable Workbench example uses the public wiring consumers do, with
-// real persistence: its sizes survive a reload. It is wired on the app root as
-// soon as the route is active, so a remembered size is in place before the
-// example first paints.
-let stopWorkbench: (() => void) | null = null;
-const stopWorkbenchEffect = effect(() => {
-  const active = selectedDemo.value === 'workbench';
-  stopWorkbench?.();
-  stopWorkbench = null;
-  if (!active) return;
-  resetWorkbenchDemo();
-  stopWorkbench = wireWorkbench(app, {
-    id: RESIZABLE_WORKBENCH_ID,
-    panels: {
-      leftRail: {
-        size: workbenchNavigatorSize,
-        storageKey: 'kerf-ui-demo.workbench.navigator',
-      },
-      rightRail: {
-        size: workbenchInspectorSize,
-        storageKey: 'kerf-ui-demo.workbench.inspector',
-      },
-      bottomDrawer: {
-        size: workbenchConsoleSize,
-        storageKey: 'kerf-ui-demo.workbench.console',
-      },
-    },
-    onResize: ({ panel, size }) => {
-      const name = {
-        leftRail: 'Navigator',
-        rightRail: 'Inspector',
-        bottomDrawer: 'Console',
-      }[panel];
-      actionLog.value = `${name} resized to ${size}px`;
-    },
+    if (route?.target === 'canvas' && canvas)
+      stopRouteWire.canvas = route.wire(canvas);
   });
 });
 // Wire the active recipe's own imperative helpers (e.g. `wireSidebar` for the
@@ -1322,10 +1341,9 @@ window.addEventListener(
     stopSelect();
     stopRecipeNav?.();
     stopRecipeNavEffect();
-    stopFocusedLayout?.();
-    stopFocusedLayoutEffect();
-    stopWorkbench?.();
-    stopWorkbenchEffect();
+    stopRouteWire.app?.();
+    stopRouteWire.canvas?.();
+    stopRouteWireEffect();
     stopRecipeWire?.();
     stopRecipeWireEffect();
     stopRecipeChanges();
