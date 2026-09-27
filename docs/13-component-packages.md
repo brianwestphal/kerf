@@ -364,7 +364,9 @@ the same run, or to an installed package's shipped catalog (its
 `eslint-plugin-kerfjs`'s `ui-composition` rule, and so `kerf-ui-doctor`, reads
 the catalogs your `.kerf-ui-profile.json` declares under `catalogs` and resolves
 a wrapper by its package subpath (a bare import) or by its `source` file (an
-app's relative import). A private, bundled application
+app's relative import, directly or through relative re-exports such as a
+`./components/index.js` barrel's `export { X } from` / `export * from`, chains
+included). A private, bundled application
 (`package.json#private: true`) declares its wrappers' `publicExports` by name
 alone — no `subpath`, so no placeholder `exports` map pointing at `dist/` files
 that its bundle never emits — and the generator verifies each name against the

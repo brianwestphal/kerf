@@ -15,6 +15,16 @@ ESM extensions a `.js` specifier stands for). An export without a `subpath` (a
 private application's, which is never imported by package name) resolves only
 by source file.
 
+A relative import may also reach the source file through relative re-exports,
+the way apps import wrappers through a components barrel:
+`import { DemandSegmentsControl } from './components/index.js'` resolves when
+`index.ts` has `export { DemandSegmentsControl } from '../demand-segments-control.js'`,
+a renamed `export { X as Y } from …` (import `Y`), or `export * from …`, and
+through chains of them (a directory import tries its `index` file). Type-only
+and namespace (`export * as ns`) re-exports, a component defined in the barrel
+itself, and re-exports of anything the catalogs do not declare stay unresolved,
+and cycles stop without resolving.
+
 An entry that declares `rendersAs` (a wrapper that renders one of the listed
 cataloged roots, or nothing) is checked as those roots:
 

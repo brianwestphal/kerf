@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`eslint-plugin-kerfjs`'s `ui-composition` rule resolves application
+  wrappers imported through a barrel.** A cataloged wrapper registered only by
+  its defining source file, so `import { DemandSegmentsControl } from
+'./components/index.js'` (where `index.ts` re-exports it) was an unknown
+  element and reported `KUI-L202` in a toolbar zone despite its `rendersAs`.
+  Relative re-exports — `export { X } from`, `export { X as Y } from`,
+  `export * from`, and chains of them — are now followed to the cataloged
+  source file. Type-only and namespace re-exports and non-cataloged components
+  stay unresolved.
+
 - **A collapsed `@kerfjs/ui` `Workbench` panel or `ResizableRegion` leaves
   the accessibility tree.** Only its content was `inert`, so the labeled
   `aside` / `section` stayed behind as an empty complementary or region

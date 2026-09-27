@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, extname, relative, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import process from 'node:process';
@@ -300,11 +300,93 @@ function declaredComponentKey(contract, source, imported, filename) {
   if (byPackage) return byPackage;
   if (!filename || !source.startsWith('.') || !contract.sourceExports?.size)
     return undefined;
-  for (const candidate of relativeImportCandidates(filename, source)) {
+  return sourceComponentKey(contract, filename, source, imported, new Set());
+}
+
+// A relative import names a cataloged component by its defining source file,
+// or through relative re-exports (`export { X } from './x.js'`, `export * from
+// './x.js'`, chains of either) that reach one: apps commonly import wrappers
+// through a components barrel. Anything else — a bare re-export, a local
+// definition, a file that cannot be read — stays unresolved.
+const MAX_REEXPORT_VISITS = 64;
+function sourceComponentKey(contract, fromFile, specifier, imported, seen) {
+  const candidates = relativeImportCandidates(fromFile, specifier);
+  for (const candidate of candidates) {
     const key = contract.sourceExports.get(`${candidate}\0${imported}`);
     if (key) return key;
   }
+  // `seen` holds each (file, name) already followed: it breaks re-export
+  // cycles and bounds the work a pathological barrel graph can cost.
+  if (seen.size >= MAX_REEXPORT_VISITS) return undefined;
+  for (const candidate of candidates) {
+    const reExports = relativeReExports(candidate);
+    if (!reExports) continue;
+    const visit = `${candidate}\0${imported}`;
+    if (seen.has(visit)) return undefined;
+    seen.add(visit);
+    for (const { name, local, from } of reExports) {
+      if (name !== undefined && name !== imported) continue;
+      const key = sourceComponentKey(
+        contract,
+        candidate,
+        from,
+        name === undefined ? imported : local,
+        seen,
+      );
+      if (key) return key;
+    }
+    // The first file that exists is the one the import resolves to.
+    return undefined;
+  }
   return undefined;
+}
+
+// The relative value re-exports of one module file, read from its source text:
+// `{ name, local, from }` for `export { local as name } from`, and
+// `{ from }` (every name) for `export * from`. Type-only re-exports and
+// namespace re-exports (`export * as ns`) are skipped. Cached by modification
+// time, so a long-lived editor session sees barrel edits. Undefined when the
+// file does not exist.
+const reExportCache = new Map();
+function relativeReExports(file) {
+  let mtime;
+  try {
+    const stats = statSync(file);
+    if (!stats.isFile()) return undefined;
+    mtime = stats.mtimeMs;
+  } catch {
+    return undefined;
+  }
+  const cached = reExportCache.get(file);
+  if (cached?.mtime === mtime) return cached.reExports;
+  let text;
+  try {
+    text = readFileSync(file, 'utf8');
+  } catch {
+    return undefined;
+  }
+  const code = text
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/(^|[^:\\])\/\/[^\n]*/g, '$1');
+  const reExports = [];
+  const named = /\bexport\s+(type\s+)?\{([^}]*)\}\s*from\s*(['"])([^'"]+)\3/g;
+  for (const match of code.matchAll(named)) {
+    const [, typeOnly, list, , from] = match;
+    if (typeOnly || !from.startsWith('.')) continue;
+    for (const raw of list.split(',')) {
+      const part = raw.trim();
+      if (!part || /^type\s/.test(part)) continue;
+      const [local, name = local] = part.split(/\s+as\s+/).map((x) => x.trim());
+      reExports.push({ name, local, from });
+    }
+  }
+  const star = /\bexport\s+\*\s+from\s*(['"])([^'"]+)\1/g;
+  for (const match of code.matchAll(star)) {
+    const from = match[2];
+    if (from.startsWith('.')) reExports.push({ from });
+  }
+  reExportCache.set(file, { mtime, reExports });
+  return reExports;
 }
 
 export function jsxKey(name, registry, contract) {

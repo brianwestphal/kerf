@@ -1,6 +1,6 @@
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 
 import { createRuleTester } from '../helpers/rule-tester.js';
 import { profile, uiSettings } from '../helpers/ui-contract-fixture.js';
@@ -300,6 +300,38 @@ writeJson('.kerf-ui-profile.json', {
     },
   ],
 });
+// Barrels that re-export cataloged wrappers (and one that is not cataloged),
+// as an app imports them: `import { X } from './components/index.js'`.
+const writeSource = (path, text) => {
+  mkdirSync(dirname(join(appRoot, path)), { recursive: true });
+  writeFileSync(join(appRoot, path), text);
+};
+writeSource(
+  'src/components/index.ts',
+  [
+    "/* export { SourceOnlyGroup } from '../source-only-group.js'; */",
+    "export { DemandSegmentsControl } from '../demand-segments-control.js';",
+    "export { TitleText as HeadingText, type TitleTextProps } from '../title-text.js';",
+    "export type { StatusChipProps } from '../status-chip.js';",
+    "export { Mystery } from '../mystery.js';",
+    "export { LocalGroup } from './local-group.js';",
+  ].join('\n'),
+);
+writeSource(
+  'src/components/local-group.tsx',
+  'export function LocalGroup() { return null; }\n',
+);
+writeSource(
+  'src/segments.ts',
+  "// A star re-export barrel.\nexport * from './view-segmented-control.js';\n",
+);
+writeSource('src/barrel/index.ts', "export * from '../components/index.js';\n");
+writeSource(
+  'src/namespace.ts',
+  "export * as widgets from './demand-segments-control.js';\n",
+);
+writeSource('src/cycle-a.ts', "export * from './cycle-b.js';\n");
+writeSource('src/cycle-b.ts', "export * from './cycle-a.js';\n");
 const appSettings = uiSettings({
   profile: undefined,
   workspaceRoot: appRoot,
@@ -335,6 +367,21 @@ tester.run('ui-composition rendersAs wrappers', composition, {
     appCase(
       "import { SourceOnlyGroup } from './source-only-group.js'; <Toolbar trailing={<SourceOnlyGroup />} />;",
     ),
+    // A wrapper imported through a barrel's named re-export.
+    appCase(
+      "import { DemandSegmentsControl } from './components/index.js'; <Toolbar trailing={<DemandSegmentsControl />} />;",
+    ),
+    // A renamed re-export resolves to the cataloged export it renames.
+    appCase(
+      "import { HeadingText } from './components/index.js'; <Toolbar center={<HeadingText />} />;",
+    ),
+    // A star re-export, and a chain through a directory index.
+    appCase(
+      "import { ViewSegmentedControl } from './segments.js'; <Toolbar leading={<ViewSegmentedControl />} />;",
+    ),
+    appCase(
+      "import { DemandSegmentsControl } from './barrel'; <Toolbar trailing={<DemandSegmentsControl />} />;",
+    ),
     // Wrappers may render nothing, so two in a max-1 zone are not a certain overflow.
     appCase(
       "import { TitleText } from './title-text.js'; <Toolbar center={<><TitleText /><TitleText /></>} />;",
@@ -369,6 +416,35 @@ tester.run('ui-composition rendersAs wrappers', composition, {
     // An import that does not name the cataloged source file stays unresolved.
     appCase(
       "import { DemandSegmentsControl } from '../elsewhere/demand-segments-control.js'; <Toolbar trailing={<DemandSegmentsControl />} />;",
+      { errors: [{ messageId: 'zone' }] },
+    ),
+    // A barrel's re-export of a non-cataloged component stays unresolved, as
+    // does a component the barrel reaches through a non-cataloged local file.
+    appCase(
+      "import { Mystery } from './components/index.js'; <Toolbar trailing={<Mystery />} />;",
+      { errors: [{ messageId: 'zone' }] },
+    ),
+    appCase(
+      "import { LocalGroup } from './components/index.js'; <Toolbar trailing={<LocalGroup />} />;",
+      { errors: [{ messageId: 'zone' }] },
+    ),
+    // A renamed re-export is reachable only by its new name.
+    appCase(
+      "import { TitleText } from './components/index.js'; <Toolbar trailing={<TitleText />} />;",
+      { errors: [{ messageId: 'zone' }] },
+    ),
+    // Commented-out and namespace re-exports are not followed.
+    appCase(
+      "import { SourceOnlyGroup } from './components/index.js'; <Toolbar trailing={<SourceOnlyGroup />} />;",
+      { errors: [{ messageId: 'zone' }] },
+    ),
+    appCase(
+      "import { DemandSegmentsControl } from './namespace.js'; <Toolbar trailing={<DemandSegmentsControl />} />;",
+      { errors: [{ messageId: 'zone' }] },
+    ),
+    // A re-export cycle terminates without resolving.
+    appCase(
+      "import { DemandSegmentsControl } from './cycle-a.js'; <Toolbar trailing={<DemandSegmentsControl />} />;",
       { errors: [{ messageId: 'zone' }] },
     ),
     // A wrapper parent that renders a group is not the Toolbar the child needs.
