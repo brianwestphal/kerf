@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- A `@kerfjs/ui` `ListActionRow` placeholder keeps its `busy` spinner. The
+  whole status line used to collapse into one skeleton, dropping the spinner
+  the component draws from a known prop. Now only the `status` text becomes a
+  skeleton, matching `ListItem`.
 - **A tooltip or popover already showing stays visible when a modal opens.**
   Lifting a surface above an open modal `<dialog>` was decided only when the
   surface opened, so a tooltip or popover already on screen when a modal

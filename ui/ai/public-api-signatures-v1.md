@@ -545,7 +545,7 @@ interface ListActionRowProps {
     state?: string;
     disabled?: boolean;
     tabIndex?: number;
-    /** Render as an unanimated loading skeleton, disabling both actions. */
+    /** Render as an unanimated loading skeleton, disabling both actions: label, description, icon, and status text become skeletons; the `busy` indicator stays live. */
     placeholder?: boolean;
     trailingAction: string;
     trailingActionLabel: string;

@@ -492,6 +492,8 @@ also holds values. `ListItem`'s trailing slot has three inputs: the `busy` spinn
 component-owned chrome and stays live, while `status` text and author-supplied
 `trailing` content are values and each become a skeleton (the component cannot tell an
 author's chevron from a count, so all `trailing` content is treated as a value).
+`ListActionRow`'s status line follows the same split: its `busy` spinner stays live and
+only the `status` text becomes a skeleton.
 `SegmentedControl` is the one placeholder without a skeleton: its choices are known
 chrome and only the selection is unknown, so it renders every choice's live label or
 icon at its live geometry, selects none, and neutralizes its own disabled chrome.

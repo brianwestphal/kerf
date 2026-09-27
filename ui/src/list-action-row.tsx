@@ -79,7 +79,7 @@ export interface ListActionRowProps {
   state?: string;
   disabled?: boolean;
   tabIndex?: number;
-  /** Render as an unanimated loading skeleton, disabling both actions. */
+  /** Render as an unanimated loading skeleton, disabling both actions: label, description, icon, and status text become skeletons; the `busy` indicator stays live. */
   placeholder?: boolean;
   trailingAction: string;
   trailingActionLabel: string;
@@ -186,14 +186,11 @@ export function ListActionRow({
           )}
           {(busy || status) && (
             <span class="kui-list-action-row__status">
-              {placeholder ? (
-                <Skeleton width={em(6)} />
-              ) : (
-                <>
-                  {busy && <LoadingSpinner />}
-                  {status}
-                </>
-              )}
+              {/* The busy spinner is component-owned chrome drawn from a
+                  known prop, so a placeholder keeps it live; only the status
+                  text is a value and becomes a skeleton. */}
+              {busy && <LoadingSpinner />}
+              {status && (placeholder ? <Skeleton width={em(6)} /> : status)}
             </span>
           )}
         </span>

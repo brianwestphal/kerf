@@ -220,6 +220,36 @@ describe('component placeholder mode', () => {
     expect(bare).not.toContain('kui-list-action-row__status');
   });
 
+  it('ListActionRow keeps its busy spinner live and skeletons only the status text', () => {
+    const statusLine = (html: string) =>
+      html.slice(html.indexOf('class="kui-list-action-row__status"'));
+    const row = (status?: string) =>
+      statusLine(
+        asHtml(
+          ListActionRow({
+            label: 'Sync',
+            status,
+            busy: true,
+            action: 'open',
+            trailingAction: 'more',
+            trailingActionLabel: 'More',
+            trailingActionIcon: icon,
+            placeholder: true,
+          }),
+        ),
+      );
+    const busyOnly = row();
+    expect(busyOnly).toContain('kui-loading-spinner');
+    expect(busyOnly).not.toContain('kui-skeleton');
+
+    const withStatus = row('Uploading');
+    expect(withStatus).toMatch(
+      /kui-loading-spinner[\s\S]*class="kui-skeleton"/,
+    );
+    expect(withStatus.match(/class="kui-skeleton"/g)).toHaveLength(1);
+    expect(withStatus).not.toContain('Uploading');
+  });
+
   it('ListActionRow disables both buttons and drops their actions', () => {
     const html = asHtml(
       ListActionRow({

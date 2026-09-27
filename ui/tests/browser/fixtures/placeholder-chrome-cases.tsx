@@ -164,6 +164,33 @@ export const cases: Record<string, Case> = {
       placeholder={placeholder}
     />
   ),
+  // The busy spinner is component-owned chrome from a known prop, so it
+  // stays live in a placeholder; only the status text becomes a skeleton.
+  'list-action-row-busy': (placeholder) => (
+    <ListActionRow
+      action="open"
+      label="Syncing folder"
+      icon={file()}
+      busy
+      trailingAction="more"
+      trailingActionLabel="Actions"
+      trailingActionIcon={<LucideIcon icon={MoreHorizontal} name="more" />}
+      placeholder={placeholder}
+    />
+  ),
+  'list-action-row-busy-status': (placeholder) => (
+    <ListActionRow
+      action="open"
+      label="generated-report.json"
+      status="Uploading"
+      icon={file()}
+      busy
+      trailingAction="more"
+      trailingActionLabel="Actions"
+      trailingActionIcon={<LucideIcon icon={MoreHorizontal} name="more" />}
+      placeholder={placeholder}
+    />
+  ),
   'list-action-row-interaction': (placeholder) => (
     <ListActionRow
       action="open"

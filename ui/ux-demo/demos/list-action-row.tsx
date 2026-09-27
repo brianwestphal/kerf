@@ -102,6 +102,8 @@ export function ListActionRowDemo() {
         <ListActionRow
           label="Loading file"
           description="Loading description"
+          status="Syncing"
+          busy
           icon={<LucideIcon icon={Folder} name="folder" />}
           action="select-list-action-row"
           itemId="placeholder"
