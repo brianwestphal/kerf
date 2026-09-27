@@ -202,6 +202,16 @@ load/config failures, and derive Toolbar and wiring facts from the catalogs.
 Real packed downstream installation is exercised under every supported ESLint
 major.
 
+**Shipped (2026-09-27):** the manifest also carries two optional declarations
+the generator validates and passes through. `composition.wiring.stateAttributes`
+lists the `data-*` state a wiring helper writes. `composition.rendersAs` names
+the cataloged roots a wrapper component renders, and every key must resolve to
+a generated or installed catalog. The UI rules load the application and
+third-party catalogs a `.kerf-ui-profile.json` declares, resolve their
+components by package subpath or source file, and check a `rendersAs` wrapper
+as each root, so an app wrapper around a `ToolbarControlGroup` passes Toolbar
+zones. An explicit `boundaries.rootClass: null` is an accepted decision.
+
 ### §14 Feature coverage
 
 **Overall status: Shipped.** The behavior index and gate inventory the core, array-signal, and router public value surfaces, deduplicating shared re-exports. Every built complete example also has an independent row tied to a smoke test inside that app's Playwright describe block.
