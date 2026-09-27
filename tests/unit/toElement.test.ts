@@ -160,6 +160,36 @@ describe('toElement() — SVG', () => {
     );
   });
 
+  // The HTML parser rewrites `<image>` to `<img>` before kerf sees the tag, so
+  // the orphan `<image>` is detected from the raw input instead.
+  it.each([
+    '<image href="a.png" width="10" />',
+    '  \n<image href="a.png" width="10"></image>',
+  ])(
+    'parses an orphan <image> fragment (%j) into the SVG namespace',
+    (input) => {
+      const el = toElement(input) as Element;
+      expect(el.namespaceURI).toBe('http://www.w3.org/2000/svg');
+      expect(el.localName).toBe('image');
+      expect(el.getAttribute('href')).toBe('a.png');
+      expect(el.getAttribute('width')).toBe('10');
+    },
+  );
+
+  // Detection is case-insensitive like the other orphan tags. The XML re-parse
+  // is case-sensitive, so the element keeps the input's spelling, exactly as
+  // `<PATH/>` does.
+  it('detects an orphan <IMAGE> case-insensitively and routes it through the SVG path', () => {
+    const el = toElement('<IMAGE href="a.png"/>') as Element;
+    expect(el.namespaceURI).toBe('http://www.w3.org/2000/svg');
+  });
+
+  it('keeps a real <img> in the HTML namespace', () => {
+    const img = toElement('<img src="a.png" alt="">') as Element;
+    expect(img.namespaceURI).toBe('http://www.w3.org/1999/xhtml');
+    expect(img.localName).toBe('img');
+  });
+
   it('does NOT route plain HTML through the SVG path', () => {
     const el = toElement('<button>click</button>');
     expect(el).toBeInstanceOf(Element);

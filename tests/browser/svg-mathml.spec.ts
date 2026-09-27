@@ -93,6 +93,28 @@ test('orphan camelCase SVG fragments via toElement() keep the SVG namespace and 
   }
 });
 
+test('orphan <image> via toElement() is an SVG <image>, not the HTML parser’s <img>', async ({
+  page,
+}) => {
+  const result = await page.evaluate(() => {
+    const { toElement } = (window as any).kerf;
+    const image = toElement('  <image href="a.png" width="10" />');
+    const img = toElement('<img src="a.png" alt="">');
+    return {
+      imageNs: image.namespaceURI,
+      imageName: image.localName,
+      href: image.getAttribute('href'),
+      imgNs: img.namespaceURI,
+      imgName: img.localName,
+    };
+  });
+  expect(result.imageNs).toBe('http://www.w3.org/2000/svg');
+  expect(result.imageName).toBe('image');
+  expect(result.href).toBe('a.png');
+  expect(result.imgNs).toBe('http://www.w3.org/1999/xhtml');
+  expect(result.imgName).toBe('img');
+});
+
 test('<svg> with <foreignObject> containing HTML — children are HTML namespace', async ({
   page,
 }) => {

@@ -32,7 +32,9 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 // camelCase entry here would never match (the orphan `clipPath` /
 // `linearGradient` / `radialGradient` / `foreignObject` fragments used to fall
 // through to the XHTML namespace). The XML re-parse restores the camelCase
-// localName on the returned element.
+// localName on the returned element. `image` is not listed: the HTML parser
+// rewrites `<image>` to `<img>`, so it is detected from the raw input instead
+// (see `ORPHAN_SVG_IMAGE`).
 const SVG_FRAGMENT_TAGS: ReadonlySet<string> = new Set(
   [
     'g',
@@ -56,10 +58,15 @@ const SVG_FRAGMENT_TAGS: ReadonlySet<string> = new Set(
     'linearGradient',
     'radialGradient',
     'stop',
-    'image',
     'foreignObject',
   ].map((tag) => tag.toLowerCase()),
 );
+
+// A leading `<image` start tag (after whitespace), case-insensitive. The HTML
+// parser turns an orphan SVG `<image>` into an HTML `<img>`, so by the time
+// the tag name is inspected the only trace of the author's intent is the raw
+// input; this regex distinguishes it from a genuine `<img>`.
+const ORPHAN_SVG_IMAGE = /^\s*<image[\s/>]/i;
 
 const EXCERPT_MAX_LEN = 100;
 
@@ -153,7 +160,10 @@ export function toElement(jsx: SafeHtml | string): Element | DocumentFragment {
     // Single orphan SVG-namespace fragment (`<path/>`, `<g>`, …) — the HTML5
     // parser puts these in the XHTML namespace, so wrap in `<svg>` and
     // XML-parse to get the right namespace on the returned element.
-    if (SVG_FRAGMENT_TAGS.has(tag)) {
+    if (
+      SVG_FRAGMENT_TAGS.has(tag) ||
+      (tag === 'img' && ORPHAN_SVG_IMAGE.test(html))
+    ) {
       const wrapped = `<svg xmlns="${SVG_NS}">${html}</svg>`;
       const doc = parseSvgOrThrow(wrapped, 'SVG fragment', html);
       const first = doc.documentElement.firstElementChild;

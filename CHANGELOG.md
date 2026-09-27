@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `toElement('<image href="…" />')` now returns an SVG `<image>`. The HTML
+  parser rewrites an orphan `<image>` to an HTML `<img>` before kerf sees the
+  tag, so it previously came back as an XHTML `img` that no `<svg>` would
+  render. kerf now recognizes a leading `<image` tag in the raw input
+  (case-insensitive, after leading whitespace) and parses it through the SVG
+  wrapper. A genuine `<img>` is unchanged.
 - `delegateActions()` (`kerfjs/actions`) dispatches only the table's own
   entries. It used to look the action up with a plain property read, so a
   `data-action` naming an inherited `Object.prototype` member resolved:
