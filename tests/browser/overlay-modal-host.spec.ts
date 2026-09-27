@@ -145,3 +145,89 @@ test('an app-owned, kerf-mounted modal <dialog> opts in with a data-kerf-overlay
       ),
   ).toBe(true);
 });
+
+// A `transform`, `filter`, `perspective`, or `contain` on the dialog makes it
+// the containing block for its fixed descendants, so a slot-hosted surface's
+// viewport-coordinate `left`/`top` would land offset by the dialog's position
+// (and scaled with it). `positionAnchored` measures that containing block and
+// compensates; only a real layout engine can show the surface still lands
+// against its anchor.
+for (const style of [
+  'top:50%;left:50%;margin:0;transform:translate(-50%,-50%)',
+  'margin:60px 0 0 120px;filter:drop-shadow(0 0 4px black)',
+  'margin:60px 0 0 120px;contain:paint',
+  'margin:60px 0 0 120px;perspective:500px',
+  'margin:60px 0 0 120px;will-change:transform',
+  'margin:60px 0 0 120px;transform:scale(0.8)',
+]) {
+  test(`a slot-hosted popover and tooltip land against their anchors inside a dialog styled "${style}"`, async ({
+    page,
+  }) => {
+    await page.evaluate((dialogStyle) => {
+      const { mount } = (window as any).kerf;
+      const html = (window as any).kerfHtml;
+      const { popover, tooltip } = (window as any).kerfOverlay;
+      const { raw } = (window as any).jsxRuntime;
+      const dialog = document.createElement('dialog');
+      dialog.className = 'styled-dialog';
+      dialog.setAttribute(
+        'style',
+        `${dialogStyle};padding:24px;border:3px solid`,
+      );
+      document.body.appendChild(dialog);
+      mount(
+        dialog,
+        () =>
+          html`<p style="margin:0 0 40px 50px"><button id="open">open</button></p><button id="tip">tip</button><div data-kerf-overlay-host data-morph-skip></div>`,
+      );
+      dialog.showModal();
+      popover(
+        document.getElementById('open'),
+        raw('<button id="pick">pick</button>'),
+        { className: 'menu', gap: 6 },
+      );
+      tooltip(document.getElementById('tip'), 'hint', {
+        className: 'tip',
+        delay: 0,
+        placement: 'bottom',
+        gap: 4,
+      });
+    }, style);
+
+    const menu = page.locator('.menu');
+    expect(
+      await menu.evaluate((el) =>
+        el.parentElement!.hasAttribute('data-kerf-overlay-host'),
+      ),
+    ).toBe(true);
+    const [anchorBox, menuBox] = await Promise.all([
+      page.locator('#open').boundingBox(),
+      menu.boundingBox(),
+    ]);
+    // `gap` is honored in viewport pixels, even through a scaled dialog.
+    expect(
+      Math.abs(menuBox!.y - (anchorBox!.y + anchorBox!.height + 6)),
+    ).toBeLessThan(1.5);
+    expect(Math.abs(menuBox!.x - anchorBox!.x)).toBeLessThan(1.5);
+    // The probe that measured the containing block is gone.
+    expect(
+      await page.evaluate(
+        () =>
+          document.querySelector('[data-kerf-overlay-host]')!.children.length,
+      ),
+    ).toBe(1);
+
+    // A tooltip rides the same placement core.
+    await page.locator('#tip').hover();
+    const tip = page.locator('.tip');
+    await expect(tip).toBeVisible();
+    const [tipAnchor, tipBox] = await Promise.all([
+      page.locator('#tip').boundingBox(),
+      tip.boundingBox(),
+    ]);
+    expect(
+      Math.abs(tipBox!.y - (tipAnchor!.y + tipAnchor!.height + 4)),
+    ).toBeLessThan(1.5);
+    expect(Math.abs(tipBox!.x - tipAnchor!.x)).toBeLessThan(1.5);
+  });
+}

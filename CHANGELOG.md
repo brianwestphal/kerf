@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **A `kerfjs/overlay` popover or tooltip in a transformed or filtered modal
+  `<dialog>` now lands against its anchor.** A surface rendered into a
+  dialog's `[data-kerf-overlay-host][data-morph-skip]` slot is
+  `position: fixed`, and a dialog styled with `transform`, `filter`,
+  `perspective`, `contain`, or `will-change` becomes the containing block for
+  fixed descendants, so the surface used to land offset by the dialog's
+  position (and scale). `positionAnchored` (and so `autoReposition`,
+  `popover()`, and `tooltip()`) now measures the element's fixed-position
+  containing block with a transient 1px probe and maps its viewport
+  coordinates into it, compensating translation and scale. Rotated or skewed
+  containing blocks are not compensated.
 - The `@kerfjs/ui` heading guidance (`ai/skill.md`, `llms.txt`,
   `docs/component-selection.md`, `docs/layout.md`) now sizes a panel title to
   its track: extra-large `ToolbarText` stays the title size for a page, view,

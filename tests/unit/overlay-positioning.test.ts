@@ -308,4 +308,104 @@ describe('positionAnchored() / autoReposition()', () => {
     window.dispatchEvent(new Event('scroll'));
     expect(el.style.top).toBe('320px'); // stopped following
   });
+  describe('a containing block for fixed descendants (a transformed/filtered dialog)', () => {
+    const anchorRect = {
+      left: 100,
+      right: 150,
+      top: 200,
+      bottom: 220,
+      width: 50,
+      height: 20,
+    };
+
+    // happy-dom has no layout; stand in for the engine by answering the
+    // positioning probe (the only element here without its own rect stub) with
+    // where a `left:0; top:0` fixed box lands inside the containing block.
+    function stubProbe(rect: {
+      left: number;
+      top: number;
+      width: number;
+      height: number;
+    }): { probes: Element[] } {
+      const probes: Element[] = [];
+      vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(
+        function (this: Element) {
+          probes.push(this);
+          return {
+            ...rect,
+            right: rect.left + rect.width,
+            bottom: rect.top + rect.height,
+            x: rect.left,
+            y: rect.top,
+            toJSON: () => ({}),
+          } as DOMRect;
+        },
+      );
+      return { probes };
+    }
+
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('subtracts the containing block origin so the element still lands next to the anchor', () => {
+      setViewport(1000, 800);
+      const anchor = anchorAt(anchorRect);
+      const dialog = document.createElement('dialog');
+      const slot = document.createElement('div');
+      dialog.appendChild(slot);
+      document.body.appendChild(dialog);
+      const el = document.createElement('div');
+      slot.appendChild(el);
+      el.getBoundingClientRect = rectFn({ width: 80, height: 40 });
+      const { probes } = stubProbe({ left: 30, top: 50, width: 1, height: 1 });
+
+      positionAnchored(el, anchor, { gap: 4 });
+      expect(el.style.left).toBe('70px'); // viewport 100 − origin 30
+      expect(el.style.top).toBe('174px'); // viewport 224 − origin 50
+      // Exactly one probe measured, as a sibling of `el`, and gone afterwards.
+      expect(probes).toHaveLength(1);
+      expect(probes[0]!.isConnected).toBe(false);
+      expect(slot.children).toHaveLength(1);
+    });
+
+    it('divides out a scaled containing block', () => {
+      setViewport(1000, 800);
+      const anchor = anchorAt(anchorRect);
+      const el = document.createElement('div');
+      document.body.appendChild(el);
+      el.getBoundingClientRect = rectFn({ width: 80, height: 40 });
+      stubProbe({ left: 20, top: 24, width: 0.5, height: 2 });
+
+      positionAnchored(el, anchor, { gap: 4 });
+      expect(el.style.left).toBe('160px'); // (100 − 20) / 0.5
+      expect(el.style.top).toBe('100px'); // (224 − 24) / 2
+    });
+
+    it('treats a zero-size probe (no layout, or a scale(0) animation) as unscaled', () => {
+      setViewport(1000, 800);
+      const anchor = anchorAt(anchorRect);
+      const el = document.createElement('div');
+      document.body.appendChild(el);
+      el.getBoundingClientRect = rectFn({ width: 80, height: 40 });
+      stubProbe({ left: 10, top: 10, width: 0, height: 0 });
+
+      positionAnchored(el, anchor, { gap: 4 });
+      expect(el.style.left).toBe('90px');
+      expect(el.style.top).toBe('214px');
+    });
+
+    it('skips the probe for a detached element (viewport coordinates as-is)', () => {
+      setViewport(1000, 800);
+      const anchor = anchorAt(anchorRect);
+      const el = document.createElement('div');
+      el.getBoundingClientRect = rectFn({ width: 80, height: 40 });
+      const { probes } = stubProbe({ left: 30, top: 50, width: 1, height: 1 });
+
+      positionAnchored(el, anchor, { gap: 4 });
+      expect(probes).toHaveLength(0);
+      expect(el.style.left).toBe('100px');
+      expect(el.style.top).toBe('224px');
+    });
+  });
 });

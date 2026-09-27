@@ -24,7 +24,11 @@ export interface AnchorPositionOptions {
  * One-shot: position `el` relative to `anchor` — below by default, flipping above
  * if it would overflow the viewport, aligned to a horizontal edge and clamped into
  * view. Sets `el.style` `position: fixed`, `margin: 0`, `left`, and `top` (fixed so
- * `left`/`top` are viewport coordinates, matching `getBoundingClientRect`). This is
+ * `left`/`top` are viewport coordinates, matching `getBoundingClientRect`). When an
+ * ancestor makes itself the containing block for fixed descendants (a
+ * `transform`, `filter`, `perspective`, or `contain` on a wrapping `<dialog>`),
+ * `left`/`top` are translated (and unscaled) into that box's coordinates so `el`
+ * still lands next to the anchor. This is
  * `popover()`'s placement core, usable on any element (an inline hint, a tooltip) —
  * no overlay lifecycle. Pair with {@link autoReposition} to keep it glued while open.
  */
@@ -63,8 +67,37 @@ export function positionAnchored(
     align === 'end' ? anchorRect.right - elementRect.width : anchorRect.left;
   left = Math.max(0, Math.min(left, viewportWidth - elementRect.width));
 
-  el.style.left = `${left}px`;
-  el.style.top = `${below ? belowTop : aboveTop}px`;
+  // `left`/`top` so far are viewport coordinates. They are only the CSS values
+  // too when `el`'s fixed-position containing block is the viewport; an
+  // ancestor with a `transform`, `filter`, `perspective`, `contain`, … (say a
+  // modal `<dialog>` holding an overlay host slot) captures fixed descendants,
+  // so map the coordinates into that box's space.
+  const [originX, originY, scaleX, scaleY] = fixedOrigin(el);
+  el.style.left = `${(left - originX) / scaleX}px`;
+  el.style.top = `${((below ? belowTop : aboveTop) - originY) / scaleY}px`;
+}
+
+/**
+ * Where `left: 0; top: 0` actually lands for a fixed-position child of `el`'s
+ * parent, plus that containing block's scale — `[x, y, scaleX, scaleY]`, which
+ * is `[0, 0, 1, 1]` when the viewport is the containing block. Measured with a
+ * 1px probe rather than `el` itself so `el`'s own transform or running entrance
+ * animation cannot skew it. The probe is inserted and removed synchronously, so
+ * it is never painted. Translation and scale are compensated; a rotated or
+ * skewed containing block is not.
+ */
+function fixedOrigin(el: HTMLElement): [number, number, number, number] {
+  const parent = el.parentNode;
+  if (!parent) return [0, 0, 1, 1];
+  const probe = el.ownerDocument.createElement('div');
+  probe.style.cssText =
+    'position:fixed;left:0;top:0;width:1px;height:1px;margin:0;padding:0;border:0';
+  parent.insertBefore(probe, el);
+  const rect = probe.getBoundingClientRect();
+  probe.remove();
+  // A zero size (a containing block mid `scale(0)` animation, or a DOM without
+  // layout) would divide by zero; treat it as unscaled.
+  return [rect.left, rect.top, rect.width || 1, rect.height || 1];
 }
 
 /**

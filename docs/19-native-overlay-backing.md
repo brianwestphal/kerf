@@ -150,10 +150,12 @@ const menu = popover(triggerEl, <Menu />, { native: true });
   too — exactly what its fallback focus trap does (KF-QZ9SFG: macOS WebKit
   skips implicitly tabbable buttons unless the system keyboard-navigation
   preference is on). Placement is
-  unchanged — `positionAnchored` still sets `position: fixed`, and a
-  `<dialog>` without a `transform` / `filter` / `contain` is not a containing
-  block for fixed descendants, so viewport coordinates still land next to the
-  anchor. Stack arbitration is unchanged too: the popover is above the dialog
+  unchanged — `positionAnchored` still sets `position: fixed`. A `<dialog>`
+  without a `transform` / `filter` / `contain` is not a containing block for
+  fixed descendants, so viewport coordinates land next to the anchor as they
+  are; one with such a style is, and `positionAnchored` measures that
+  containing block and compensates (see §19.5, KF-QKW22R: probe-measured
+  containing-block compensation). Stack arbitration is unchanged too: the popover is above the dialog
   on the open-order stack, so an Escape-dismissible popover consumes the first
   Escape (and `preventDefault`s it so the dialog never sees the close request)
   and the next Escape reaches the dialog's `cancel`.
@@ -238,14 +240,26 @@ data-morph-skip></div>` anywhere inside the dialog (both attributes are
   _appears_ (it still governs which document the element is created in, which
   matters for nested-document / Tauri cases). No dev warning is emitted — it is
   documented behavior.
-- **A host slot relies on `position: fixed` escaping the dialog.** A
-  surface rendered into a modal dialog's host slot is positioned in viewport
-  coordinates. If the app styles that `<dialog>` with a `transform`, `filter`,
-  `perspective`, or `contain: layout/paint` (a common centering or animation
-  trick), the dialog becomes the containing block for fixed descendants and the
-  popover lands offset by the dialog's position. Animate `opacity` or use
-  `margin: auto` centering instead, or pass a `container` outside the dialog
-  (visible but inert — see §19.4).
+- **A host slot inside a transformed or filtered dialog is compensated.** A
+  surface rendered into a modal dialog's host slot is `position: fixed`. If
+  the app styles that `<dialog>` with a `transform`, `filter`, `perspective`,
+  `contain: layout/paint`, `will-change: transform`, or anything else that
+  makes it the containing block for fixed descendants (a common centering or
+  entrance-animation trick), fixed `left`/`top` are relative to the dialog
+  instead of the viewport. `positionAnchored` detects this on every placement
+  (KF-QKW22R): it inserts a 1px `position: fixed; left: 0; top: 0` probe next
+  to the element, reads where it actually lands and how large it renders, and
+  removes it again synchronously (never painted), then maps the viewport
+  coordinates into the containing block's space — subtracting its origin and
+  dividing out its scale. A probe rather than the element itself is measured
+  so the element's own transform or a running entrance animation cannot skew
+  the result. Translation and scale are compensated (the `gap` stays in
+  viewport pixels); a **rotated or skewed** containing block is not, and no
+  dev warning reports it. Two effects remain the app's to style around: a
+  dialog with `contain: paint` or `overflow: hidden` still **clips** a
+  slot-hosted surface to its box, and the probe is a transient DOM child, so
+  an app `MutationObserver` over the slot's parent sees one add/remove pair
+  per placement.
 - **Focus-restore is doubly handled.** `<dialog>` restores focus on close and kerf
   also restores it; the result is the same, and there is no conflict.
 

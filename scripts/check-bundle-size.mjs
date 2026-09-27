@@ -155,7 +155,11 @@ const BUDGETS = [
     // KF-QZ9SFG (~+0.03 KB): a slot-hosted surface's implicitly tabbable
     // controls become explicit Tab stops (on open + a Tab keydown listener),
     // so macOS WebKit reaches them in the modal's native Tab order.
-    budgetKb: 18.3,
+    // KF-QKW22R (~+0.12 KB): positionAnchored measures el's fixed-position
+    // containing block with a transient 1px probe and maps its viewport
+    // coordinates into it, so a slot-hosted surface inside a transformed /
+    // filtered / contained <dialog> still lands against its anchor.
+    budgetKb: 18.5,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
