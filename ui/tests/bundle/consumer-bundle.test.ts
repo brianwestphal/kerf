@@ -359,7 +359,7 @@ describe('consumer bundle boundaries', () => {
     );
     expect(css).toContain('@layer wa-theme-overrides');
     expect(css).toContain(
-      '--wa-color-brand-fill-loud: light-dark(#0088ff, #64d2ff)',
+      '--wa-color-brand-fill-loud: light-dark(#0075db, #64d2ff)',
     );
     expect(css).toContain(
       '--wa-form-control-border-color: var(--wa-color-neutral-border-normal)',

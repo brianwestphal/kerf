@@ -44,7 +44,13 @@
     );
     --wa-color-shadow: light-dark(rgb(0 0 0 / 0.14), rgb(0 0 0 / 0.5));
     --wa-color-focus: light-dark(#007aff, #64d2ff);
-    --wa-color-brand-fill-loud: light-dark(#0088ff, #64d2ff);
+    /* Kerf-owned loud fills and on-loud text: every on-loud/fill-loud pair
+       clears WCAG AA (4.5:1) in both schemes. Light brand and danger keep
+       white text on a slightly deeper fill of the same hue (#0088ff ->
+       #0075db, #ff383c -> #eb0005); success keeps its bright green with dark
+       text, as warning already does; dark brand and danger keep their fills
+       with dark text. src/foundation.css mirrors these as fallbacks. */
+    --wa-color-brand-fill-loud: light-dark(#0075db, #64d2ff);
     --wa-color-brand-fill-quiet: color-mix(
       in srgb,
       var(--wa-color-brand-fill-loud) 8%,
@@ -111,7 +117,7 @@
     );
     --wa-color-success-on-quiet: light-dark(#007f2e, #63e685);
     --wa-color-success-on-normal: light-dark(#006d28, #8cea9f);
-    --wa-color-success-on-loud: #fff;
+    --wa-color-success-on-loud: #1d1d1f;
 
     --wa-color-warning-fill-loud: #ffcc00;
     --wa-color-warning-fill-quiet: color-mix(
@@ -143,7 +149,7 @@
     --wa-color-warning-on-normal: light-dark(#5f3f00, #ffe27a);
     --wa-color-warning-on-loud: #1d1d1f;
 
-    --wa-color-danger-fill-loud: #ff383c;
+    --wa-color-danger-fill-loud: light-dark(#eb0005, #ff383c);
     --wa-color-danger-fill-quiet: color-mix(
       in srgb,
       var(--wa-color-danger-fill-loud) 7%,
@@ -171,7 +177,7 @@
     );
     --wa-color-danger-on-quiet: light-dark(#c20b20, #ff696c);
     --wa-color-danger-on-normal: light-dark(#8e0717, #ff8a8c);
-    --wa-color-danger-on-loud: #fff;
+    --wa-color-danger-on-loud: light-dark(#fff, #111113);
 
     /* Geometry stays aligned with the compact Kerf primitives. */
     --wa-border-radius-pill: 999px;
@@ -258,18 +264,26 @@
     ) !important;
   }
 
-  /* The fixed brand/success/danger loud fills need a dark foreground in both
-     color schemes at badge text size. Neutral and warning already select an
-     AA-safe on-loud token, so preserve their variant-specific treatment. */
-  wa-badge[appearance="accent"]:is(
-      :not([variant]),
-      [variant="brand"],
-      [variant="success"],
-      [variant="danger"]
-    ) {
+  /* Every variant's on-loud token clears AA on its loud fill in both color
+     schemes, so accent badges use it by default (a fixed dark foreground here
+     would fail on the deeper light brand and danger fills). Brand, success,
+     and danger keep a reviewed-override hook. */
+  wa-badge[appearance="accent"]:is(:not([variant]), [variant="brand"]) {
     --wa-color-on-loud: var(
       --kui-wa-badge-accent-foreground,
-      #1d1d1f
+      var(--wa-color-brand-on-loud)
+    ) !important;
+  }
+  wa-badge[appearance="accent"][variant="success"] {
+    --wa-color-on-loud: var(
+      --kui-wa-badge-accent-foreground,
+      var(--wa-color-success-on-loud)
+    ) !important;
+  }
+  wa-badge[appearance="accent"][variant="danger"] {
+    --wa-color-on-loud: var(
+      --kui-wa-badge-accent-foreground,
+      var(--wa-color-danger-on-loud)
     ) !important;
   }
 

@@ -143,8 +143,10 @@ short status or count, not a content item. A badge with `appearance="filled"` or
 `appearance="filled-outlined"` uses its variant's quiet fill with normal text by
 default so every shipped semantic variant meets WCAG AA for that small text;
 filled-outlined keeps its normal variant border. Accent badges keep their loud
-fills, with brand, success, and danger using a dark foreground that clears AA in
-both themes (neutral and warning retain their already-safe variant foregrounds).
+fills and their variant's `on-loud` foreground, which the theme sets to clear AA
+on that fill in both themes: white on the light brand (`#0075db`) and danger
+(`#eb0005`) fills, dark text on the success and warning fills and on the pale
+dark-mode brand and danger fills.
 Override
 `--kui-wa-badge-filled-background` and `--kui-wa-badge-filled-foreground` on a
 badge or containing scope when a product needs a different contrast-safe pair,
@@ -298,6 +300,11 @@ smallest subtree that needs a different identity:
   --wa-color-success-fill-loud: #10a86b;
 }
 ```
+
+The shipped theme pairs every `--wa-color-{variant}-fill-loud` with an
+`--wa-color-{variant}-on-loud` that clears WCAG AA (4.5:1) in both color
+schemes. When you override a loud fill, override its `on-loud` alongside it if
+the pair no longer clears 4.5:1 (for example, white text on a bright fill).
 
 Use `.wa-light`, `.wa-dark`, and `.wa-invert` for explicit appearance scopes.
 Component-specific custom properties and documented `::part()` selectors from

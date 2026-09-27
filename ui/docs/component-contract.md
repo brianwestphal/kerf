@@ -538,7 +538,11 @@ Kerf owns the light `brand`, `success`, and `warning` `on-quiet` values in that
 theme layer: each keeps its hue but is dark enough to clear WCAG AA (4.5:1) on
 the lowered page background (`--kui-color-surface-lowered`, `#f2f2f7`), not
 only on the white surface, so toned text reads on every background a page
-paints.
+paints. It likewise owns every tone's loud pair: each `on-loud` text color
+clears AA on its `fill-loud` in both schemes. Light brand and danger keep white
+text on a slightly deeper fill of the same hue (`#0075db`, `#eb0005`); success
+keeps its bright green with dark text, as warning does; the dark-mode brand and
+danger fills keep their color with dark text.
 
 `Select` owns its custom-element reconciliation seam. It gives each slotted
 option icon a stable key and leaves the upgraded Web Awesome-owned slot subtree

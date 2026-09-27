@@ -127,6 +127,71 @@ function measureToneContrast(page: Page) {
   });
 }
 
+/** Every tone with a loud fill, including Kerf-only pop. */
+const LOUD_TONES = [
+  'neutral',
+  'brand',
+  'pop',
+  'success',
+  'warning',
+  'danger',
+] as const;
+
+/**
+ * Contrast of each tone's `on-loud` text over its `fill-loud`, as the page
+ * resolves the tokens: the pair Web Awesome's accent buttons, badges, and
+ * checked controls paint. White once sat at ~2.2:1 on the success fill and
+ * ~3.5:1 on the light brand and danger fills.
+ */
+function measureLoudPairs(page: Page) {
+  return page.evaluate((tones) => {
+    const context = document
+      .createElement('canvas')
+      .getContext('2d', { willReadFrequently: true })!;
+    context.canvas.width = 1;
+    context.canvas.height = 1;
+    const paint = (color: string) => {
+      context.clearRect(0, 0, 1, 1);
+      context.fillStyle = color;
+      context.fillRect(0, 0, 1, 1);
+      return [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+    };
+    const luminance = (rgb: number[]) => {
+      const [r = 0, g = 0, b = 0] = rgb.map((channel) => {
+        const value = channel / 255;
+        return value <= 0.04045
+          ? value / 12.92
+          : ((value + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const probe = document.createElement('span');
+    document.body.append(probe);
+    const resolveColor = (token: string) => {
+      probe.style.color = `var(${token})`;
+      return paint(window.getComputedStyle(probe).color);
+    };
+    const results: Record<string, number> = {};
+    for (const tone of tones) {
+      const [light, dark] = [
+        luminance(resolveColor(`--kui-color-${tone}-on-loud`)),
+        luminance(resolveColor(`--kui-color-${tone}-fill-loud`)),
+      ].sort((x, y) => y - x);
+      results[`${tone}-on-loud over ${tone}-fill-loud`] =
+        (light! + 0.05) / (dark! + 0.05);
+    }
+    probe.remove();
+    return results;
+  }, LOUD_TONES);
+}
+
+async function expectLoudPairsAA(page: Page, where: string) {
+  const pairs = await measureLoudPairs(page);
+  expect(Object.keys(pairs)).toHaveLength(LOUD_TONES.length);
+  for (const [pair, value] of Object.entries(pairs))
+    expect(value, `${pair} (${where})`).toBeGreaterThanOrEqual(TEXT_AA);
+}
+
 test('every tone keeps AA text contrast on its fills in light and dark', async ({
   page,
 }) => {
@@ -142,6 +207,7 @@ test('every tone keeps AA text contrast on its fills in light and dark', async (
       await page.locator('[data-action="toggle-theme"]').click();
       await expect(page.locator('html')).toHaveClass(/demo-dark/);
     }
+    await expectLoudPairsAA(page, `${scheme}, Web Awesome theme`);
     const measured = await measureToneContrast(page);
     expect(Object.keys(measured).sort()).toEqual([...TONES].sort());
     for (const tone of TONES) {
@@ -363,6 +429,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
     // ring resolve identically from the foundation's own fallback.
     expect(await resolveColorTokens(page)).toEqual(themed);
 
+    await expectLoudPairsAA(page, `${colorScheme}, no Web Awesome`);
     const contrast = await measureTonedText(page);
     // Toned text is held to AA over the lowered page background as well as
     // the surface, in both schemes. The light brand/success/warning on-quiet

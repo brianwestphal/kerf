@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui` text on loud tone fills clears WCAG AA in both color schemes,
+  with or without the optional `@kerfjs/ui/webawesome.css` theme. White
+  `on-loud` text reached about 2.2:1 on the success fill, 3.5:1 on the light
+  brand fill (`#0088ff`), and 3.6:1 on the danger fill (`#ff383c`) in both
+  schemes. Kerf's theme layer and the foundation fallbacks now pair each
+  fill with a foreground chosen to keep the tone's look: success keeps its
+  bright green with dark text (`#1d1d1f`, 7.6:1), as warning already did; light
+  brand and danger keep white text on a slightly deeper fill of the same hue
+  (`#0075db`, 4.6:1; `#eb0005`, 4.6:1); dark danger keeps its fill with dark
+  text (`#111113`, 5.3:1), as dark brand already did. Web Awesome accent
+  buttons, badges, and checked controls pick this up, and accent `wa-badge`s now
+  use their variant's `on-loud` foreground by default instead of a fixed dark
+  color (`--kui-wa-badge-accent-foreground` still overrides it). The browser
+  contrast test asserts every tone's `on-loud` over `fill-loud` pair, including
+  pop and neutral, in both schemes with and without the theme.
 - `@kerfjs/ui` brand, success, and warning text clears WCAG AA on the lowered
   page background in light mode, with or without the optional
   `@kerfjs/ui/webawesome.css` theme. Their light `on-quiet` values (`#1e6ef4`,
