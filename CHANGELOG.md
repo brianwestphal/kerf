@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui` elevation shadows follow the color scheme, with or without the
+  optional `@kerfjs/ui/webawesome.css` theme. Kerf's theme layer set
+  `--wa-shadow-s` / `-m` / `-l` to fixed light-mode shadows (14%, 11%, and 9%
+  black), which all but vanished against the dark page, and the
+  `--kui-shadow-s` / `--kui-shadow-l` foundation fallbacks copied those fixed
+  values. The theme now pairs each light alpha with a stronger dark one (50%,
+  40%, 32%) through `light-dark()`, and the foundation fallbacks mirror them, so
+  selected segments and app tabs, compact overlay panels, and Web Awesome
+  surfaces that read `--wa-shadow-*` keep their elevation in dark mode. Light mode is unchanged. The browser parity test
+  now compares every `--kui-shadow-*` token with and without the theme in both
+  schemes.
 - `@kerfjs/ui` text on loud tone fills clears WCAG AA in both color schemes,
   with or without the optional `@kerfjs/ui/webawesome.css` theme. White
   `on-loud` text reached about 2.2:1 on the success fill, 3.5:1 on the light

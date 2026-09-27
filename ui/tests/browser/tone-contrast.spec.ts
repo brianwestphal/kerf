@@ -328,25 +328,49 @@ const FOUNDATION_COLOR_TOKENS = [
 ];
 
 /**
- * Every foundation color token as the page resolves it, keyed by its custom
- * property, plus the focus ring's resolved outline.
+ * Every elevation token foundation.css declares (`--kui-shadow-*`), read the
+ * same way. Web Awesome's theme builds its shadows from offset/blur/spread
+ * scales and a scheme-aware `--wa-color-shadow`; the fallbacks once held
+ * fixed light-mode shadows, so an unthemed dark page lost its elevation.
+ */
+const FOUNDATION_SHADOW_TOKENS = [
+  ...new Set(
+    [
+      ...readFileSync(
+        resolve(import.meta.dirname, '../../src/foundation.css'),
+        'utf8',
+      ).matchAll(/^\s*(--kui-shadow-[a-z-]+):/gm),
+    ].map((match) => match[1]!),
+  ),
+];
+
+/**
+ * Every foundation color and elevation token as the page resolves it, keyed by
+ * its custom property, plus the focus ring's resolved outline.
  */
 function resolveColorTokens(page: Page) {
-  return page.evaluate((tokens) => {
-    const probe = document.createElement('span');
-    document.body.append(probe);
-    const out: Record<string, string> = {};
-    for (const name of tokens) {
-      probe.style.color = `var(${name})`;
-      out[name] = window.getComputedStyle(probe).color;
-    }
-    probe.style.outline = 'var(--kui-focus-ring)';
-    const ring = window.getComputedStyle(probe);
-    out['--kui-focus-ring'] =
-      `${ring.outlineStyle} ${ring.outlineWidth} ${ring.outlineColor}`;
-    probe.remove();
-    return out;
-  }, FOUNDATION_COLOR_TOKENS);
+  return page.evaluate(
+    ([colors, shadows]) => {
+      const probe = document.createElement('span');
+      document.body.append(probe);
+      const out: Record<string, string> = {};
+      for (const name of colors) {
+        probe.style.color = `var(${name})`;
+        out[name] = window.getComputedStyle(probe).color;
+      }
+      for (const name of shadows) {
+        probe.style.boxShadow = `var(${name})`;
+        out[name] = window.getComputedStyle(probe).boxShadow;
+      }
+      probe.style.outline = 'var(--kui-focus-ring)';
+      const ring = window.getComputedStyle(probe);
+      out['--kui-focus-ring'] =
+        `${ring.outlineStyle} ${ring.outlineWidth} ${ring.outlineColor}`;
+      probe.remove();
+      return out;
+    },
+    [FOUNDATION_COLOR_TOKENS, FOUNDATION_SHADOW_TOKENS] as const,
+  );
 }
 
 /** Toned text contrast over the surface and the page (surface-lowered). */
@@ -422,11 +446,19 @@ for (const colorScheme of ['light', 'dark'] as const) {
         ...WA_TONES.map((tone) => `--kui-color-${tone}-on-loud`),
       ]),
     );
+    expect(FOUNDATION_SHADOW_TOKENS).toEqual(
+      expect.arrayContaining(['--kui-shadow-s', '--kui-shadow-l']),
+    );
     await mountToneText(page, true, colorScheme);
     const themed = await resolveColorTokens(page);
     await mountToneText(page, false, colorScheme);
-    // Parity: every foundation color token (not only the tones) and the focus
-    // ring resolve identically from the foundation's own fallback.
+    // Parity: every foundation color token (not only the tones), every
+    // elevation token, and the focus ring resolve identically from the
+    // foundation's own fallback.
+    for (const shadow of FOUNDATION_SHADOW_TOKENS)
+      expect(themed[shadow], `${shadow} resolves (${colorScheme})`).not.toBe(
+        'none',
+      );
     expect(await resolveColorTokens(page)).toEqual(themed);
 
     await expectLoudPairsAA(page, `${colorScheme}, no Web Awesome`);

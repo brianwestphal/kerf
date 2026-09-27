@@ -439,10 +439,15 @@
     --wa-focus-ring,
     3px solid var(--wa-color-focus, light-dark(#007aff, #64d2ff))
   );
-  --kui-shadow-s: var(--wa-shadow-s, 0 1px 3px rgb(0 0 0 / 0.14));
+  /* Elevation mirrors webawesome.css's scheme-aware shadows: dark raises the
+     alpha so a raised surface still separates from a near-black page. */
+  --kui-shadow-s: var(
+    --wa-shadow-s,
+    0 1px 3px light-dark(rgb(0 0 0 / 0.14), rgb(0 0 0 / 0.5))
+  );
   --kui-shadow-l: var(
     --wa-shadow-l,
-    0 remify(12px) remify(32px) rgb(0 0 0 / 0.09)
+    0 remify(12px) remify(32px) light-dark(rgb(0 0 0 / 0.09), rgb(0 0 0 / 0.32))
   );
 }
 

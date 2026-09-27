@@ -529,11 +529,16 @@ Kerf JSX declaration boundary for every catalog-supported `wa-*` tag.
 Consumers register only the individual Web Awesome modules they render and can
 override `--wa-*` values after the theme import. The shared `--wa-*` values feed
 both Web Awesome controls and Kerf's `--kui-*` foundation aliases, preventing a
-second application palette. Without the theme, every foundation color token and
-the focus-ring color fall back to the same value the theme assigns, including
-its `light-dark()` pair, so surfaces (including the dark `surface-raised`),
-links (`text-link` is the brand on-quiet text color, not the brand fill), tone
-text, and fills keep their light and dark appearance and contrast either way.
+second application palette. Without the theme, every foundation color token,
+every elevation token (`--kui-shadow-*`), and the focus-ring color fall back to
+the same value the theme assigns, including its `light-dark()` pair, so
+surfaces (including the dark `surface-raised`), links (`text-link` is the brand
+on-quiet text color, not the brand fill), tone text, fills, and raised-surface
+shadows keep their light and dark appearance and contrast either way. The
+theme's elevation shadows are scheme-aware: light keeps the soft Hot Sheet 2
+alphas, and dark raises them (`--wa-shadow-s` 14% to 50% black, `-m` 11% to
+40%, `-l` 9% to 32%) so a raised surface still separates from a near-black
+page.
 Kerf owns the light `brand`, `success`, and `warning` `on-quiet` values in that
 theme layer: each keeps its hue but is dark enough to clear WCAG AA (4.5:1) on
 the lowered page background (`--kui-color-surface-lowered`, `#f2f2f7`), not
