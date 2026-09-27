@@ -20,6 +20,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   bindings, first-render row-contract validation, orphan pruning) into its own
   internal module, so `mount.ts` holds only the render orchestration. No
   behavior or public API change.
+- `@kerfjs/ui` placeholders no longer look disabled. A component's
+  `placeholder` keeps its controls `disabled` (inert and out of the keyboard
+  order), but `skeleton.css` now neutralizes generic disabled chrome under
+  `[data-placeholder="true"]`: full opacity and the default cursor instead of
+  Web Awesome's native `button:disabled` dimming to 50% with a `not-allowed`
+  cursor. A component's own opacity (a control hidden until interaction) still
+  applies.
 - `toElement('<image href="…" />')` now returns an SVG `<image>`. The HTML
   parser rewrites an orphan `<image>` to an HTML `<img>` before kerf sees the
   tag, so it previously came back as an XHTML `img` that no `<svg>` would

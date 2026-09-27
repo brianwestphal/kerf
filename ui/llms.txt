@@ -262,7 +262,8 @@ the folder modules, and CSS only imports their owner stylesheets.
   still loading, set `placeholder` on the component (`Select`, `ListHeader`,
   `ListItem`, `ValueTableRow`, `SegmentedControl`, `StateBanner`,
   `AppTab`, `ToolbarText`, `ListActionRow`): it renders its real chrome with value
-  slots as subtle **unanimated** skeleton blocks and interactivity disabled, so a
+  slots as subtle **unanimated** skeleton blocks and interactivity disabled. Only
+  unknown values change: a placeholder is never dimmed or styled as disabled, so a
   parent composes a faithful loading view (e.g. an inspector) without hand-rebuilding
   markup. Use the standalone `Skeleton` for a custom slot. Prefer it over `wa-skeleton`
   (the pure-Kerf primitives avoid Web Awesome), and never animate it — use

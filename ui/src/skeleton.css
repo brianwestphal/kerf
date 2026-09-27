@@ -27,6 +27,27 @@
   height: 0.8em;
 }
 
+/* Placeholder mode. A component's `placeholder` keeps its controls `disabled` so
+   they stay inert and out of the keyboard order, but a placeholder is loading,
+   not unavailable: it must look exactly like the live component except for its
+   skeleton values. Neutralize generic disabled chrome, including Web Awesome's
+   layered native `button:disabled { opacity: 0.5; cursor: not-allowed }`.
+   Opacity carries zero specificity so a component's own opacity rules (a
+   hover-revealed control that is invisible until interaction) still win;
+   components exclude placeholders from their own disabled tone. The cursor is
+   the non-interactive default, never `not-allowed`. */
+:where(
+  [data-placeholder="true"]:disabled,
+  [data-placeholder="true"] :disabled
+) {
+  opacity: 1;
+}
+
+[data-placeholder="true"]:disabled,
+[data-placeholder="true"] :disabled {
+  cursor: default;
+}
+
 @media (forced-colors: active) {
   .kui-skeleton {
     background: GrayText;

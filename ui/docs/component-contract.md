@@ -452,7 +452,8 @@ A value-bearing component's `placeholder` prop is a first-class loading mode: th
 component renders its own real chrome (labels, icon and action affordances,
 container geometry) while replacing each **value** slot with a subtle, deliberately
 unanimated `Skeleton` block and disabling its own interactive controls
-(`aria-busy`, dropped `data-action`, disabled buttons). Sizes and shapes stay
+(`aria-busy`, dropped `data-action`, disabled buttons). Only unknown values become
+skeletons; nothing else may change. Sizes, shapes, typography, color, and opacity stay
 identical to the populated component, so a parent composes a faithful loading view —
 an inspector, a detail pane — from placeholder children without hand-rebuilding
 markup. The application still owns the loading lifecycle (when to pass `placeholder`)
@@ -462,6 +463,17 @@ as `display: block` where it stands in for a box, such as an icon, so it takes n
 line of its own and centers in its slot. It is a
 placeholder, not progress: use `LoadingSpinner` for known busy activity, and never
 animate the skeleton.
+
+A placeholder is loading, not unavailable, so it keeps the `disabled` attribute (its
+controls stay inert and out of the keyboard order) but never shows disabled chrome.
+`skeleton.css`, which every placeholder-capable component loads, neutralizes generic
+disabled styling under `[data-placeholder="true"]` — including Web Awesome's native
+`button:disabled { opacity: 0.5; cursor: not-allowed }` when `webawesome.css` is
+loaded — to full opacity and the non-interactive `default` cursor. That opacity reset
+carries zero specificity, so a component's own opacity (a control hidden until
+interaction) still wins, and each component excludes placeholders from its own
+disabled tone and hover feedback. The cursor is the one intentional difference from the
+live state: a placeholder is not clickable, so it never advertises a pointer.
 
 Package source styles express root-scaled geometry with `remify(<px>)`; the
 build converts it against the 16px authoring baseline and exposes only ordinary

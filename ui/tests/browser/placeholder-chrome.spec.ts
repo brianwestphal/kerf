@@ -113,3 +113,43 @@ test('placeholder components keep the live chrome; only values are skeletons', a
   await expect(inspector).toHaveAttribute('data-inspector-loading', 'false');
   expect(await chrome(inspector)).toEqual(loading);
 });
+
+test('a placeholder neutralizes generic disabled chrome, including Web Awesome’s native button:disabled', async ({
+  page,
+}) => {
+  await page.goto('/?component=skeleton');
+  await expect(page.locator('[data-demo="skeleton"]')).toBeVisible();
+  const styles = await page.evaluate(() => {
+    const host = document.createElement('div');
+    host.innerHTML = `
+      <button type="button" disabled data-probe="plain">Plain</button>
+      <button type="button" disabled data-placeholder="true" data-probe="root">Root</button>
+      <div data-placeholder="true">
+        <button type="button" disabled data-probe="descendant">Descendant</button>
+        <button type="button" disabled data-probe="hidden" style="opacity: 0">Hidden</button>
+      </div>`;
+    document.body.append(host);
+    const read = (probe: string) => {
+      const computed = window.getComputedStyle(
+        host.querySelector(`[data-probe="${probe}"]`)!,
+      );
+      return { opacity: computed.opacity, cursor: computed.cursor };
+    };
+    const result = {
+      plain: read('plain'),
+      root: read('root'),
+      descendant: read('descendant'),
+      hidden: read('hidden'),
+    };
+    host.remove();
+    return result;
+  });
+  // Outside a placeholder, Web Awesome's native disabled dimming still applies.
+  expect(styles.plain.opacity).toBe('0.5');
+  // A placeholder is loading, not unavailable: full opacity, inert cursor.
+  expect(styles.root).toEqual({ opacity: '1', cursor: 'default' });
+  expect(styles.descendant).toEqual({ opacity: '1', cursor: 'default' });
+  // The neutralizer never overrides a component's own opacity (for example a
+  // control hidden until interaction).
+  expect(styles.hidden.opacity).toBe('0');
+});
