@@ -228,6 +228,37 @@ carrying `collapsiblePanelToggleIcon(side, false)`. The work area's toggle
 stays the always-visible way to show the panel. The catalog's resizable
 example does this for both rails.
 
+The drawer works the same way. The catalog's responsive overlay drawer
+example is the whole pattern for a bottom drawer:
+
+```tsx
+const outputCollapsed = signal(false); // open inline by default
+
+<Workbench
+  id="editor"
+  label="Editor"
+  main={<Editor />} // its toolbar toggles `outputCollapsed`
+  bottomDrawer={{
+    label: "Output",
+    content: <OutputPane />, // a Pane whose header holds its close control
+    collapsed: outputCollapsed.value,
+    size: 180,
+    responsiveOverlayAt: "narrow",
+  }}
+/>;
+
+wireWorkbench(root, {
+  id: "editor",
+  panels: { bottomDrawer: { collapsed: outputCollapsed } },
+});
+```
+
+Above 704px of Workbench width the drawer takes its own track below the
+editor. At 704px or less it overlays the bottom of the full-height editor,
+starts hidden, and closes from its own header, on Escape, or on a press
+outside it; widening the Workbench again brings it back inline in the state
+it had before.
+
 Escape and outside-press dismissal apply to static `presentation: "overlay"`
 panels too; entering and leaving the collapsed state around a breakpoint is
 only for `responsiveOverlayAt`, because a static presentation is the app's

@@ -109,14 +109,17 @@ import {
 import {
   resetWorkbenchDemo,
   RESIZABLE_WORKBENCH_ID,
+  RESPONSIVE_DRAWER_WORKBENCH_ID,
   toggleWorkbenchConsole,
   toggleWorkbenchInspector,
   toggleWorkbenchNavigator,
+  toggleWorkbenchOutput,
   workbenchConsoleSize,
   workbenchInspectorCollapsed,
   workbenchInspectorSize,
   workbenchNavigatorCollapsed,
   workbenchNavigatorSize,
+  workbenchOutputCollapsed,
 } from './demos/workbench.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
 import type { RecipeController, RecipePresentation } from './recipes/types.js';
@@ -866,6 +869,11 @@ const stopActions = delegateActions(app, 'click', {
       ? 'Console hidden'
       : 'Console shown';
   },
+  'toggle-workbench-output': () => {
+    actionLog.value = toggleWorkbenchOutput()
+      ? 'Output hidden'
+      : 'Output shown';
+  },
   'toggle-workbench-inspector': () => {
     actionLog.value = toggleWorkbenchInspector()
       ? 'Inspector hidden'
@@ -997,11 +1005,12 @@ const routeWires: Partial<Record<string, RouteWire>> = {
   // The resizable example has real persistence (its sizes survive a reload),
   // so it wires on the app root right away: a remembered size is in place
   // before the example first paints.
+  // The responsive drawer example's wiring keeps its overlay transient.
   workbench: {
     reset: resetWorkbenchDemo,
     target: 'app',
-    wire: (root) =>
-      wireWorkbench(root, {
+    wire: (root) => {
+      const stopResizable = wireWorkbench(root, {
         id: RESIZABLE_WORKBENCH_ID,
         panels: {
           leftRail: {
@@ -1027,7 +1036,16 @@ const routeWires: Partial<Record<string, RouteWire>> = {
           }[panel];
           actionLog.value = `${name} resized to ${size}px`;
         },
-      }),
+      });
+      const stopResponsiveDrawer = wireWorkbench(root, {
+        id: RESPONSIVE_DRAWER_WORKBENCH_ID,
+        panels: { bottomDrawer: { collapsed: workbenchOutputCollapsed } },
+      });
+      return () => {
+        stopResponsiveDrawer();
+        stopResizable();
+      };
+    },
   },
 };
 

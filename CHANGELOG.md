@@ -17,6 +17,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   containing block; an app that positions the container itself keeps its own
   `position`. As in `Workbench`, the corner owns the inset, so a
   `FloatingToolbar` hosting the control no longer doubles it.
+- The `@kerfjs/ui` UX catalog's Workbench page gains a responsive overlay
+  drawer example: an output drawer with `responsiveOverlayAt: "narrow"` that
+  takes its own track beside a wide editor and becomes a transient overlay
+  over the editor's bottom once the Workbench is 704px or narrower, starting
+  hidden there and closing from its own header, on Escape, or on a press
+  outside it. The Workbench guide shows the pattern.
 - A `@kerfjs/ui` `Workbench` now stacks overlay rails above an overlay bottom
   drawer. With the drawer and a rail both presented as overlays, their order
   followed the markup, so the drawer covered the left rail while the right

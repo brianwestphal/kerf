@@ -36,6 +36,15 @@ export const workbenchNavigatorCollapsed = signal(false);
 export const workbenchInspectorCollapsed = signal(true);
 const consoleCollapsed = signal(true);
 
+/** The responsive drawer example's id, which `wireWorkbench` targets. */
+export const RESPONSIVE_DRAWER_WORKBENCH_ID =
+  'catalog-workbench-responsive-drawer';
+/**
+ * The responsive drawer's app-owned collapsed flag. Open inline by default;
+ * `wireWorkbench` collapses it while the drawer presents as an overlay.
+ */
+export const workbenchOutputCollapsed = signal(false);
+
 /**
  * Start each visit with the navigator shown and the inspector hidden; the
  * remembered sizes are the wiring's to restore.
@@ -44,6 +53,7 @@ export function resetWorkbenchDemo(): void {
   workbenchNavigatorCollapsed.value = false;
   workbenchInspectorCollapsed.value = true;
   consoleCollapsed.value = true;
+  workbenchOutputCollapsed.value = false;
 }
 
 export function toggleWorkbenchNavigator(): boolean {
@@ -54,6 +64,11 @@ export function toggleWorkbenchNavigator(): boolean {
 export function toggleWorkbenchInspector(): boolean {
   workbenchInspectorCollapsed.value = !workbenchInspectorCollapsed.value;
   return workbenchInspectorCollapsed.value;
+}
+
+export function toggleWorkbenchOutput(): boolean {
+  workbenchOutputCollapsed.value = !workbenchOutputCollapsed.value;
+  return workbenchOutputCollapsed.value;
 }
 
 export function toggleWorkbenchConsole(): boolean {
@@ -127,6 +142,67 @@ function collapsedEditor() {
         'The app owns every collapsed flag',
         'Hide the console from this toolbar; restore it from the corner control.',
       )}
+    </Pane>
+  );
+}
+
+/**
+ * The responsive drawer example's editor: its toolbar toggle is the
+ * always-visible way to show or hide the output drawer.
+ */
+function responsiveDrawerEditor() {
+  return (
+    <Pane
+      header={
+        <Toolbar
+          label="Editor"
+          leading={<ToolbarText text="Editor" size="xlarge" />}
+          trailing={
+            <ToolbarControlGroup label="Output" appearance="borderless" single>
+              {panelToggle(
+                'bottom',
+                'output',
+                workbenchOutputCollapsed.value,
+                'toggle-workbench-output',
+              )}
+            </ToolbarControlGroup>
+          }
+        />
+      }
+    >
+      {region(
+        'Narrow the workbench',
+        'At 704 px or narrower the output drawer overlays the bottom of the editor instead of taking its own track.',
+      )}
+    </Pane>
+  );
+}
+
+/**
+ * The output drawer: a Pane whose header carries its own close control, so an
+ * overlay drawer never depends on a control it may cover.
+ */
+function outputPane() {
+  return (
+    <Pane
+      header={
+        <Toolbar
+          label="Output"
+          leading={<ToolbarText text="Output" />}
+          trailing={
+            <ToolbarControlGroup label="Output" appearance="borderless" single>
+              {panelToggle(
+                'bottom',
+                'output',
+                false,
+                'toggle-workbench-output',
+              )}
+            </ToolbarControlGroup>
+          }
+        />
+      }
+    >
+      {region('Build output', 'Inline above 704 px; an overlay below it')}
     </Pane>
   );
 }
@@ -283,6 +359,31 @@ export function WorkbenchDemo() {
             content: region('Console', '120–320 px tall'),
             size: workbenchConsoleSize.value,
             resizable: { min: 120, max: 320 },
+          }}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Responsive overlay drawer"
+        note="With responsiveOverlayAt, the drawer takes its own track beside a wide editor and overlays the bottom of the editor once the workbench is 704 px or narrower. There wireWorkbench starts it hidden and closes it from its own header, on Escape, or on a click outside; the editor toolbar shows it again."
+        align="none"
+        viewport={{
+          layout: 'grid',
+          width: 'full',
+          height: 'tall',
+          frame: 'solid',
+          surface: 'lowered',
+        }}
+      >
+        <Workbench
+          id={RESPONSIVE_DRAWER_WORKBENCH_ID}
+          label="Responsive drawer workbench"
+          main={responsiveDrawerEditor()}
+          bottomDrawer={{
+            label: 'Output',
+            content: outputPane(),
+            collapsed: workbenchOutputCollapsed.value,
+            size: 180,
+            responsiveOverlayAt: 'narrow',
           }}
         />
       </CatalogExample>

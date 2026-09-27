@@ -809,3 +809,77 @@ test.describe('resizable Workbench panels', () => {
     ).toBeVisible();
   });
 });
+
+test('the responsive drawer example is inline when wide and a transient overlay when narrow', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=workbench');
+  const workbench = page.locator('#catalog-workbench-responsive-drawer');
+  const drawer = workbench.locator('[data-workbench-drawer]');
+  const main = workbench.locator('.kui-workbench__main');
+  const editorToggle = main.getByRole('button', { name: /output$/ });
+  await workbench.scrollIntoViewIfNeeded();
+
+  // Wide: the drawer opens inline in its own 180 px track below the editor.
+  await expect(drawer).toHaveAttribute('data-responsive-overlay-at', 'narrow');
+  await expect(drawer).toHaveAttribute('data-collapsed', 'false');
+  await expect(drawer).toHaveCSS('position', 'relative');
+  await expect(drawer).toHaveCSS('height', '180px');
+  const wide = (await workbench.boundingBox())!;
+  expect(Math.round(wide.height - (await main.boundingBox())!.height)).toBe(
+    180,
+  );
+  await expect(editorToggle).toHaveAccessibleName('Hide output');
+  if (testInfo.project.name === 'chromium')
+    await workbench.screenshot({
+      path: 'test-results/workbench-responsive-drawer-wide.png',
+    });
+
+  // Narrow: an overlay over the bottom of the full-height editor, hidden on
+  // arrival because wireWorkbench collapses it as the breakpoint applies.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await workbench.scrollIntoViewIfNeeded();
+  await expect(drawer).toHaveCSS('position', 'absolute');
+  await expect(drawer).toHaveAttribute('data-collapsed', 'true');
+  await expect(drawer).toHaveCSS('pointer-events', 'none');
+  const narrow = (await workbench.boundingBox())!;
+  await expect
+    .poll(async () => Math.round((await main.boundingBox())!.height))
+    .toBe(Math.round(narrow.height));
+  await expect(workbench.getByText('Narrow the workbench')).toBeVisible();
+
+  // The editor toolbar opens it over the editor; its own header closes it,
+  // and focus returns to the toggle that opened it.
+  await editorToggle.focus();
+  await page.keyboard.press('Enter');
+  await expect(drawer).toHaveAttribute('data-collapsed', 'false');
+  await expect(drawer).toHaveCSS('height', '180px');
+  const box = (await drawer.boundingBox())!;
+  expect(
+    Math.abs(box.y + box.height - (narrow.y + narrow.height)),
+  ).toBeLessThanOrEqual(1);
+  await expect(drawer.getByText('Build output')).toBeInViewport();
+  if (testInfo.project.name === 'chromium')
+    await workbench.screenshot({
+      path: 'test-results/workbench-responsive-drawer-narrow-open.png',
+    });
+  await drawer.getByRole('button', { name: 'Hide output' }).click();
+  await expect(drawer).toHaveAttribute('data-collapsed', 'true');
+  await expect(editorToggle).toBeFocused();
+
+  // Escape and an outside press close it too.
+  await page.keyboard.press('Enter');
+  await expect(drawer).toHaveAttribute('data-collapsed', 'false');
+  await page.keyboard.press('Escape');
+  await expect(drawer).toHaveAttribute('data-collapsed', 'true');
+  await editorToggle.click();
+  await expect(drawer).toHaveAttribute('data-collapsed', 'false');
+  await workbench.getByText('Narrow the workbench').click();
+  await expect(drawer).toHaveAttribute('data-collapsed', 'true');
+
+  // Wide again: back inline and open, as it was before the breakpoint.
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(drawer).toHaveCSS('position', 'relative');
+  await expect(drawer).toHaveAttribute('data-collapsed', 'false');
+});

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 289400,
-  "measuredLargestJavaScriptGzip": 140445,
-  "measuredTotalJavaScriptGzip": 289322,
+  "totalJavaScriptGzip": 289800,
+  "measuredLargestJavaScriptGzip": 140809,
+  "measuredTotalJavaScriptGzip": 289707,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -627,6 +627,22 @@
         "measuredTotalJavaScriptGzip": 289322,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 289400
+      }
+    },
+    {
+      "at": "2026-09-27T12:15:32.100Z",
+      "reason": "Workbench catalog adds a responsive overlay drawer example with its own wiring",
+      "old": {
+        "measuredLargestJavaScriptGzip": 140445,
+        "measuredTotalJavaScriptGzip": 289322,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 289400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 140809,
+        "measuredTotalJavaScriptGzip": 289707,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 289800
       }
     }
   ]

@@ -332,6 +332,14 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
     and restore controls stay at `--kui-workbench-restore-z` (42), above every
     overlay. The order is static CSS, not most-recently-opened, so it needs no
     wiring;
+  - the UX catalog's Workbench route demonstrates a responsive overlay drawer
+    (KF-T3XMZW: `responsiveOverlayAt` on the drawer was only exercised by an
+    injected test scenario): a Workbench with just a work area and an
+    `Output` drawer (`size: 180`, `responsiveOverlayAt: "narrow"`, open inline
+    by default) whose `collapsed` signal is passed to `wireWorkbench`, so it
+    is inline above 704px and a transient overlay at or below it; the editor
+    toolbar toggles it and the drawer's `Pane` header carries its own close
+    control;
   - the wire matches only its own panels by Workbench `id`, so it never
     double-drives a `ResizableRegion` or another Workbench under the same root;
   - the work area keeps a minimum width beside resizable rails (KF-D79A29:
