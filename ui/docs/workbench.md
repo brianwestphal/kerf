@@ -78,10 +78,20 @@ an optional `label`. Common shell behavior is configured rather than restyled:
   area, and the work area keeps the safe-area inset of the edge the overlay
   covers;
 - `restoreControl` places an application-owned restore affordance in a
-  safe-area-aware viewport corner (`restorePosition` chooses the corner).
-  Compose it from the package controls — a `single` `ToolbarControlGroup`
-  around one icon button carrying `collapsiblePanelToggleIcon(side, true)` —
-  rather than a bare button.
+  corner of the Workbench itself while the panel is collapsed
+  (`restorePosition` chooses the corner), inset by
+  `--kui-workbench-restore-inset` (16px) plus the unsafe area of each edge the
+  corner reaches. A rail's control sits in the Workbench's corner; the
+  drawer's sits in the corner of the work-area column it restores into, so it
+  never lands on an expanded rail. Because it is anchored to the Workbench
+  rather than the viewport, an embedded Workbench never floats it over page
+  chrome outside it, and it scrolls with the Workbench. Compose it from the
+  package controls — a `single` `ToolbarControlGroup` around one icon button
+  carrying `collapsiblePanelToggleIcon(side, true)` — rather than a bare
+  button. To give it `FloatingToolbar`'s toolbar role and floating look, wrap
+  that group in a `FloatingToolbar` whose `position` matches the corner: the
+  corner owns the inset (it sets `--kui-floating-toolbar-inset` to 0), so the
+  toolbar floats from the corner instead of doubling it.
 
 - `resizable: true | { min, max }` opts the panel in to drag and keyboard
   resizing, driven by `wireWorkbench` (off by default).

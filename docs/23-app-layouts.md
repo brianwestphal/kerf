@@ -240,7 +240,19 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
   `collapseMotion` (`none` | `slide` | `fade-slide`), `contentOverflow`
   (`clip` | `auto` | `visible`), `presentation` (`inline` | `overlay` |
   `hidden`) — plus an optional `restoreControl` shown in a safe-area-aware
-  corner (`restorePosition`) while the panel is collapsed.
+  corner (`restorePosition`) while the panel is collapsed. The corner is the
+  Workbench's own (KF-TXP944: it was `position: fixed` to the viewport, so an
+  embedded Workbench floated it over the UX catalog's footer). It is
+  absolutely positioned against the Workbench (a rail's) or the center column
+  (the drawer's, so it never covers an expanded rail), inset by
+  `--kui-workbench-restore-inset` plus that container's safe-area edge
+  insets; the Workbench is `isolation: isolate`, so its overlay and restore
+  z-indexes stack within it. A `FloatingToolbar` may host the control: the
+  corner sets `--kui-floating-toolbar-inset: 0px`, and `FloatingToolbar` now
+  resolves its inset from that inheritable token (a private
+  `--_kui-floating-toolbar-inset` instead of redeclaring the public token on
+  itself), so the toolbar floats from the corner's point instead of doubling
+  the inset; its `position` should match `restorePosition`.
 - **Resizing is opt-in and configurable per panel (KF-2FG7VB: drag-resizable
   Workbench rails).** `resizable: true | { min, max }` (defaults: rails
   180–480px, drawer 120–480px) gives the panel a separator on its inner edge

@@ -340,7 +340,9 @@ interface FloatingToolbarProps {
  * restore button) that sits over the content but NOT over dialogs or overlays
  * (it is not in the top layer). It is inset from the container edges by
  * `--kui-floating-toolbar-inset` (default `--kui-space-m`, i.e. 8px more than a
- * top toolbar's own inset); override that token to move it. The app owns the
+ * top toolbar's own inset); override that token, on the toolbar or an
+ * ancestor, to move it. Inside a `Workbench` restore corner the corner owns the
+ * inset, so the toolbar floats from the corner's own position. The app owns the
  * controls and their behavior — wire them with `delegate()` as usual.
  */
 declare function FloatingToolbar({ children, label, position, className, slot, }: FloatingToolbarProps): kerfjs.SafeHtml;

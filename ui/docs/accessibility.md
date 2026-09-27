@@ -162,7 +162,9 @@ forced to a dark color scheme, but it is **not** in the top layer, so it never
 covers dialogs, popovers, or other overlays. Its children are the app's controls
 (normally `ToolbarControlGroup`s), which keep their own names, focus, and
 keyboard behavior; the application owns their actions, the toolbar's visibility,
-and — via `position` and `--kui-floating-toolbar-inset` — where it sits.
+and — via `position` and `--kui-floating-toolbar-inset`, set on the toolbar
+or an ancestor — where it sits. Inside a `Workbench` `restoreControl` the
+restore corner owns the inset, so the toolbar floats from that corner.
 
 ## Tabs
 

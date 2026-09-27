@@ -1,8 +1,10 @@
+import '@kerfjs/ui/floating-toolbar.css';
 import '@kerfjs/ui/lucide-icon.css';
 import '@kerfjs/ui/workbench.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { collapsiblePanelToggleIcon } from '@kerfjs/ui/collapsible-panel';
+import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { Toolbar } from '@kerfjs/ui/toolbar';
@@ -80,14 +82,17 @@ function panelToggle(
 }
 
 /**
- * The collapsed console's restore affordance: a floating control group in the
- * corner the Workbench reserves while the console is collapsed.
+ * The collapsed console's restore affordance: a FloatingToolbar in the corner
+ * of the work area the console restores into. The corner owns the inset, so
+ * the toolbar floats from it at the corner's own position.
  */
 function consoleRestore() {
   return (
-    <ToolbarControlGroup label="Console" single>
-      {panelToggle('bottom', 'console', true, 'toggle-workbench-console')}
-    </ToolbarControlGroup>
+    <FloatingToolbar label="Console" position="bottom-end">
+      <ToolbarControlGroup label="Console" single>
+        {panelToggle('bottom', 'console', true, 'toggle-workbench-console')}
+      </ToolbarControlGroup>
+    </FloatingToolbar>
   );
 }
 

@@ -38,8 +38,10 @@ test('catalogs Workbench public geometry and controlled collapse', async ({
     configuredDrawer.locator('.kui-workbench__panel-content'),
   ).toHaveCSS('opacity', '0');
   const restore = collapsed.locator('.kui-workbench__restore');
-  await expect(restore).toBeVisible();
-  await expect(restore).toHaveCSS('position', 'fixed');
+  await expect(
+    restore.locator('[data-component="floating-toolbar"]'),
+  ).toBeVisible();
+  await expect(restore).toHaveCSS('position', 'absolute');
   await expect(restore).toHaveCSS('bottom', '16px');
   await expect
     .poll(() =>
@@ -614,9 +616,40 @@ test.describe('resizable Workbench panels', () => {
     const drawer = workbench.locator('[data-workbench-drawer]');
     await workbench.scrollIntoViewIfNeeded();
     const restore = workbench.locator('.kui-workbench__restore');
+    const group = restore.locator('[data-component="toolbar-control-group"]');
+    await expect(group).toBeVisible();
+
+    // The control floats in the bottom-end corner of the work area it
+    // restores into, beside the expanded inspector: anchored to the
+    // Workbench, not the viewport, and inset once by the restore corner even
+    // though a FloatingToolbar (which has its own inset) hosts it.
+    const column = (await workbench
+      .locator('.kui-workbench__center')
+      .boundingBox())!;
+    const corner = async () => {
+      const box = (await group.boundingBox())!;
+      return {
+        end: Math.round(column.x + column.width - (box.x + box.width)),
+        bottom: Math.round(column.y + column.height - (box.y + box.height)),
+      };
+    };
+    expect(await corner()).toEqual({ end: 16, bottom: 16 });
     await expect(
-      restore.locator('[data-component="toolbar-control-group"]'),
-    ).toBeVisible();
+      restore.locator('[data-component="floating-toolbar"]'),
+    ).toHaveAttribute('role', 'toolbar');
+    // It scrolls with the Workbench instead of staying on the viewport.
+    const before = (await group.boundingBox())!.y;
+    await workbench.hover();
+    await page.mouse.wheel(0, -120);
+    await expect
+      .poll(async () => (await group.boundingBox())!.y)
+      .toBeGreaterThan(before);
+    const moved = (await workbench
+      .locator('.kui-workbench__center')
+      .boundingBox())!;
+    const box = (await group.boundingBox())!;
+    expect(Math.round(moved.y + moved.height - (box.y + box.height))).toBe(16);
+
     await restore.getByRole('button', { name: 'Show console' }).click();
     await expect(drawer).toHaveAttribute('data-collapsed', 'false');
     await expect(drawer).toHaveCSS('height', '120px');

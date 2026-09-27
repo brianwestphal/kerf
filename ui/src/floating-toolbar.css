@@ -1,7 +1,12 @@
 .kui-floating-toolbar {
   /* Inset from the container edges: a top toolbar sits 8px in, so this floats an
-     extra 8px past that (--kui-space-m = 16px). Override the token to reposition. */
-  --kui-floating-toolbar-inset: var(--kui-space-m, remify(16px));
+     extra 8px past that (--kui-space-m = 16px). Override the token to reposition,
+     on the toolbar or on an ancestor composition boundary: a Workbench restore
+     corner sets it to 0 because the corner already owns the inset. */
+  --_kui-floating-toolbar-inset: var(
+    --kui-floating-toolbar-inset,
+    var(--kui-space-m, remify(16px))
+  );
 
   /* Floats above the main content of its nearest positioned ancestor. z-index
      stays low so it never covers dialogs/overlays (it is not top-layer). Forced
@@ -15,19 +20,19 @@
 }
 
 .kui-floating-toolbar[data-position^="bottom"] {
-  inset-block-end: var(--kui-floating-toolbar-inset);
+  inset-block-end: var(--_kui-floating-toolbar-inset);
 }
 
 .kui-floating-toolbar[data-position^="top"] {
-  inset-block-start: var(--kui-floating-toolbar-inset);
+  inset-block-start: var(--_kui-floating-toolbar-inset);
 }
 
 .kui-floating-toolbar[data-position$="-end"] {
-  inset-inline-end: var(--kui-floating-toolbar-inset);
+  inset-inline-end: var(--_kui-floating-toolbar-inset);
 }
 
 .kui-floating-toolbar[data-position$="-start"] {
-  inset-inline-start: var(--kui-floating-toolbar-inset);
+  inset-inline-start: var(--_kui-floating-toolbar-inset);
 }
 
 /* The centered edges span from the middle rather than an inline edge. */

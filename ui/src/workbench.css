@@ -1,5 +1,8 @@
 .kui-workbench {
   position: relative;
+  /* The rail and drawer overlays and the restore controls stack within the
+     Workbench, never against the page around it. */
+  isolation: isolate;
   display: flex;
   min-width: 0;
   min-height: 0;
@@ -662,26 +665,55 @@
   }
 }
 
+/* A collapsed panel's restore control floats in a corner of the Workbench
+   itself, never of the viewport, so an embedded Workbench cannot float it over
+   page chrome outside it. It is inset from the corner plus the unsafe area of
+   each edge that corner reaches. The drawer's control sits in the work-area
+   column it restores (the center is its containing block), inset from the
+   edges that column still reaches, so it never lands on an expanded rail. */
 .kui-workbench__restore {
-  position: fixed;
+  --_kui-workbench-restore-inset: var(
+    --kui-workbench-restore-inset,
+    remify(16px)
+  );
+  /* The corner owns the inset, so a FloatingToolbar composed here floats
+     from this point instead of adding its own inset on top. */
+  --kui-floating-toolbar-inset: 0px;
+  position: absolute;
   z-index: var(--kui-workbench-restore-z, 42);
   inset-block-end: calc(
-    var(--kui-workbench-restore-inset, remify(16px)) +
-      var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+    var(--_kui-workbench-restore-inset) + var(--_kui-workbench-safe-block-end)
   );
 }
 
 .kui-workbench__restore[data-position="bottom-start"] {
   inset-inline-start: calc(
-    var(--kui-workbench-restore-inset, remify(16px)) +
-      var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+    var(--_kui-workbench-restore-inset) +
+      var(--_kui-workbench-safe-inline-start)
   );
 }
 
 .kui-workbench__restore[data-position="bottom-end"] {
   inset-inline-end: calc(
-    var(--kui-workbench-restore-inset, remify(16px)) +
-      var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+    var(--_kui-workbench-restore-inset) + var(--_kui-workbench-safe-inline-end)
+  );
+}
+
+.kui-workbench__center > .kui-workbench__restore {
+  inset-block-end: calc(
+    var(--_kui-workbench-restore-inset) + var(--kui-edge-inset-block-end)
+  );
+}
+
+.kui-workbench__center > .kui-workbench__restore[data-position="bottom-start"] {
+  inset-inline-start: calc(
+    var(--_kui-workbench-restore-inset) + var(--kui-edge-inset-inline-start)
+  );
+}
+
+.kui-workbench__center > .kui-workbench__restore[data-position="bottom-end"] {
+  inset-inline-end: calc(
+    var(--_kui-workbench-restore-inset) + var(--kui-edge-inset-inline-end)
   );
 }
 

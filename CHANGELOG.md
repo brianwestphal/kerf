@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **A `@kerfjs/ui` `Workbench` restore control stays inside its Workbench.**
+  `restoreControl` was `position: fixed` to the viewport, so an embedded
+  Workbench (the UX catalog's, for one) floated it over the page footer. It is
+  now anchored to a corner of the Workbench itself — the drawer's in the
+  corner of the work-area column, so it never covers an expanded rail — inset
+  by `--kui-workbench-restore-inset` plus the unsafe area of the edges that
+  corner reaches, and it scrolls with the Workbench. The Workbench now
+  isolates its own stacking, so its overlays and restore controls never stack
+  against the page around it. A `FloatingToolbar` can host the control
+  without doubling the inset: the corner owns it, and `FloatingToolbar` now
+  honors `--kui-floating-toolbar-inset` set on an ancestor as well as on
+  itself. The catalog's collapsed console restores from such a toolbar.
 - **`@kerfjs/ui` `wireWorkbench` makes overlay panels transient.** A rail
   whose `responsiveOverlayAt` breakpoint applied stayed expanded over the
   editor until the user found its toggle. Pass a panel's app-owned

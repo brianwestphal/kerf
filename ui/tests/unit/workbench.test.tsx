@@ -562,6 +562,86 @@ describe('Workbench', () => {
     ).toEqual({ width: '100%', background: 'var(--kui-color-surface)' });
   });
 
+  it('anchors restore controls to the Workbench, inset once even around a FloatingToolbar', async () => {
+    const parse = async (name: string) => {
+      const file = resolve(import.meta.dirname, `../../src/${name}`);
+      return postcss.parse(await readFile(file, 'utf8'), { from: file });
+    };
+    const declsIn = (
+      css: postcss.Root,
+      selector: string,
+    ): Record<string, string> => {
+      const rule = css.nodes.find(
+        (node) =>
+          node.type === 'rule' &&
+          node.selector.replace(/\s+/g, ' ') === selector,
+      );
+      if (!rule || rule.type !== 'rule') throw new Error(`Missing ${selector}`);
+      return Object.fromEntries(
+        rule.nodes
+          .filter((node) => node.type === 'decl')
+          .map((node) => [node.prop, node.value.replace(/\s+/g, ' ')]),
+      );
+    };
+    const workbench = await parse('workbench.css');
+    // The Workbench, not the viewport, is the corner's containing block, and
+    // its overlays and restore controls stack within it.
+    expect(declsIn(workbench, '.kui-workbench')).toMatchObject({
+      position: 'relative',
+      isolation: 'isolate',
+    });
+    expect(declsIn(workbench, '.kui-workbench__center')).toMatchObject({
+      position: 'relative',
+    });
+    expect(declsIn(workbench, '.kui-workbench__restore')).toMatchObject({
+      position: 'absolute',
+      '--kui-floating-toolbar-inset': '0px',
+      'inset-block-end':
+        'calc( var(--_kui-workbench-restore-inset) + var(--_kui-workbench-safe-block-end) )',
+    });
+    expect(
+      declsIn(
+        workbench,
+        '.kui-workbench__restore[data-position="bottom-start"]',
+      )['inset-inline-start'],
+    ).toContain('var(--_kui-workbench-safe-inline-start)');
+    expect(
+      declsIn(workbench, '.kui-workbench__restore[data-position="bottom-end"]')[
+        'inset-inline-end'
+      ],
+    ).toContain('var(--_kui-workbench-safe-inline-end)');
+    // The drawer's control, in the center, uses the edges the center reaches.
+    expect(
+      declsIn(workbench, '.kui-workbench__center > .kui-workbench__restore')[
+        'inset-block-end'
+      ],
+    ).toContain('var(--kui-edge-inset-block-end)');
+    expect(
+      declsIn(
+        workbench,
+        '.kui-workbench__center > .kui-workbench__restore[data-position="bottom-end"]',
+      )['inset-inline-end'],
+    ).toContain('var(--kui-edge-inset-inline-end)');
+    expect(
+      declsIn(
+        workbench,
+        '.kui-workbench__center > .kui-workbench__restore[data-position="bottom-start"]',
+      )['inset-inline-start'],
+    ).toContain('var(--kui-edge-inset-inline-start)');
+
+    // A FloatingToolbar resolves its inset from the inheritable token, so the
+    // corner's 0 reaches it instead of being shadowed by its own default.
+    const floating = await parse('floating-toolbar.css');
+    const own = declsIn(floating, '.kui-floating-toolbar');
+    expect(own).not.toHaveProperty('--kui-floating-toolbar-inset');
+    expect(own['--_kui-floating-toolbar-inset']).toBe(
+      'var( --kui-floating-toolbar-inset, var(--kui-space-m, remify(16px)) )',
+    );
+    expect(
+      declsIn(floating, '.kui-floating-toolbar[data-position$="-end"]'),
+    ).toEqual({ 'inset-inline-end': 'var(--_kui-floating-toolbar-inset)' });
+  });
+
   it('gives a static overlay drawer an explicit height instead of collapsing to its border', async () => {
     const file = resolve(import.meta.dirname, '../../src/workbench.css');
     const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
