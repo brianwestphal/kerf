@@ -1,6 +1,7 @@
 /**
  * Dev-mode warning for a stale `index` argument in an `each()` row render
- * (KERF_DEV_WARN_STALE_INDEX=1).
+ * (`enableWarnings({ staleIndex: true })`, or `KERF_DEV_WARN_STALE_INDEX=1` as the `devFlag()`
+ * environment fallback).
  *
  * `each()` memoizes a row's HTML by object identity, not position, so a reorder
  * or a non-tail insert/remove/move serves a surviving row's cached HTML — which

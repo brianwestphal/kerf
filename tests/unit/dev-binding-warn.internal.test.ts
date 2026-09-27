@@ -1,6 +1,7 @@
 /**
  * Dev-mode warning for silently-stale fine-grained bindings on the fast path
- * (KERF_DEV_WARN_STALE_BINDING=1).
+ * (`enableWarnings({ staleBinding: true })`, or `KERF_DEV_WARN_STALE_BINDING=1` as the `devFlag()`
+ * environment fallback).
  *
  * `maybeWarnStaleBinding` is called by `mount()` on a fast-path (byte-equal
  * static-surrounds) render. It compares this render's registered holes against

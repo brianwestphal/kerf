@@ -1,8 +1,10 @@
 /**
  * KF-174: opt-in dev-mode warning when a node carrying an imperative
  * `addEventListener` listener is removed/rebuilt by the morph. The
- * `KERF_DEV_WARN_REBUILT_LISTENERS=1` gate is read on each `mount()` call,
- * so flipping the env var per-test is sufficient.
+ * `rebuiltListeners` switch is read through `devFlag()` — an
+ * `enableWarnings()` override first, then `KERF_DEV_WARN_REBUILT_LISTENERS`
+ * as the environment fallback — once per `mount()` call, at creation. These
+ * tests set the env var in `beforeEach`, before any mount is created.
  *
  * The MutationObserver fires its callback asynchronously (microtask after
  * the mutation), so tests await `Promise.resolve()` (or use vi.waitFor)

@@ -1,5 +1,6 @@
 /**
- * The opt-in parser-repair warning (`KERF_DEV_WARN_PARSER_REPAIR=1`).
+ * The opt-in parser-repair warning (`enableWarnings({ parserRepair: true })`,
+ * or `KERF_DEV_WARN_PARSER_REPAIR=1` as the `devFlag()` environment fallback).
  *
  * `<p>` may contain only phrasing content, so the HTML parser closes it before
  * a block-level child. kerf renders JSX to a string and lets the parser build

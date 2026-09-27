@@ -1,6 +1,7 @@
 /**
  * Dev-mode warning for each() inside data-morph-skip subtrees
- * (KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1).
+ * (`enableWarnings({ eachInMorphSkip: true })`, or `KERF_DEV_WARN_EACH_IN_MORPH_SKIP=1` as the `devFlag()`
+ * environment fallback).
  *
  * `maybeWarnEachInMorphSkip` is called by `mount()`'s `bindListsFromMarkers`
  * when a new list binding is established. Tests verify the opt-out / opt-in /

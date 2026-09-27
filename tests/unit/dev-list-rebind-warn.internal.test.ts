@@ -1,6 +1,7 @@
 /**
  * Dev-mode warning for each() containers rebuilt by the morph
- * (KERF_DEV_WARN_LIST_REBIND=1).
+ * (`enableWarnings({ listRebind: true })`, or `KERF_DEV_WARN_LIST_REBIND=1` as the `devFlag()`
+ * environment fallback).
  *
  * `maybeWarnListRebind` is called by `mount()`'s `bindListsFromMarkers` from
  * the self-heal branch — an existing list binding whose marker left the mount

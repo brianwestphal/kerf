@@ -1,9 +1,10 @@
 /**
  * KF-212 — opt-in dev-mode warning when `defineStore.set()` is called with
  * keys missing from the current state (the partial-set anti-pattern that
- * shipped in the TodoMVC example on 2026-05-18). The
- * `KERF_DEV_WARN_NARROW_SET=1` gate is read on each `set()` call, so
- * flipping the env var per-test is sufficient.
+ * shipped in the TodoMVC example on 2026-05-18). The `narrowSet` switch is
+ * read through `devFlag()` — an `enableWarnings()` override first, then
+ * `KERF_DEV_WARN_NARROW_SET` as the environment fallback — on each `set()`
+ * call, so flipping the env var per-test is sufficient.
  *
  * The warning is per-store one-shot: each store warns at most once. Tests
  * that need to re-exercise the first-warning path on the same store call

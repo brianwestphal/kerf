@@ -1,5 +1,6 @@
 /**
- * KERF_DEV_WARN_VALUE_ONLY_RERENDER=1 — the opt-in value-only-re-render
+ * `valueOnlyRerender` (`enableWarnings()` key; `KERF_DEV_WARN_VALUE_ONLY_RERENDER=1`
+ * is its `devFlag()` environment fallback) — the opt-in value-only-re-render
  * warning (phase 2 of the bound-first consolidation). Covers the gate matrix
  * (off by default, production-off with the dev hooks uninstalled), the end-to-end
  * mount wiring for text/attr/boolean-attr value changes, the structural

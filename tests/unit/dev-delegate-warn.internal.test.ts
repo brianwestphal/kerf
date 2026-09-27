@@ -1,13 +1,17 @@
 /**
  * KF-238: opt-in dev-mode warning when `delegate()` or `delegateCapture()`
- * runs inside an `effect()` body. The wrapper in `src/reactive.ts` only wraps
- * `effect()` when `KERF_DEV_WARN_DELEGATE_IN_EFFECT=1` is read at call time,
- * so flipping the env var per-test is sufficient — but the wrap decision is
- * evaluated when the user calls `effect()`, not when the module is imported.
+ * runs inside an `effect()` body. The `wrapEffect` hook only wraps an
+ * `effect()` whose `delegateInEffect` switch is on when that effect is
+ * CREATED. The switch is read through `devFlag()` — an `enableWarnings()`
+ * override first, then `KERF_DEV_WARN_DELEGATE_IN_EFFECT` as the environment
+ * fallback — so these tests flip the env var per-test and create their effects
+ * afterwards. The wrap decision is made when the user calls `effect()`, not
+ * when the module is imported.
  *
  * The warning is gated three ways:
  *   1. the `kerfjs/dev` hooks are installed;
- *   2. KERF_DEV_WARN_DELEGATE_IN_EFFECT === '1';
+ *   2. `devFlag('KERF_DEV_WARN_DELEGATE_IN_EFFECT') === '1'` (the
+ *      `enableWarnings({ delegateInEffect })` override, else the env var);
  *   3. depth > 0 (`enterEffect()` ran but no matching `exitEffect()` yet).
  *
  * If any gate fails, the warn is silent.
