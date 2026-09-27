@@ -72,6 +72,27 @@ test('orphan SVG fragment via toElement() gets correct namespace', async ({
   expect(result.d).toBe('M 0 0 L 10 10');
 });
 
+test('orphan camelCase SVG fragments via toElement() keep the SVG namespace and camelCase name', async ({
+  page,
+}) => {
+  const result = await page.evaluate(() => {
+    const { toElement } = (window as any).kerf;
+    return [
+      'clipPath',
+      'linearGradient',
+      'radialGradient',
+      'foreignObject',
+    ].map((tag) => {
+      const el = toElement(`<${tag} id="x"></${tag}>`);
+      return { tag, ns: el.namespaceURI, localName: el.localName };
+    });
+  });
+  for (const { tag, ns, localName } of result) {
+    expect(ns).toBe('http://www.w3.org/2000/svg');
+    expect(localName).toBe(tag);
+  }
+});
+
 test('<svg> with <foreignObject> containing HTML — children are HTML namespace', async ({
   page,
 }) => {

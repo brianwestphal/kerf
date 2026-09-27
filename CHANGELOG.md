@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `toElement()` now puts orphan camelCase SVG fragments in the SVG namespace.
+  `toElement('<linearGradient>…</linearGradient>')`, and likewise `clipPath`,
+  `radialGradient`, and `foreignObject`, previously returned an XHTML
+  `LINEARGRADIENT` element that no `<svg>` would render, because the lookup
+  compared the HTML parser's lowercased tag against camelCase names. The
+  fragment is now wrapped in `<svg>` and XML-parsed like `<path>` or `<g>`,
+  and the returned element keeps its camelCase `localName`.
 - `create-kerf-component` accepts an explicit `boundaries.rootClass: null` as
   an author decision, as its schema always allowed. A wrapper whose root
   element belongs to another catalog (a `rendersAs` wrapper) no longer has to

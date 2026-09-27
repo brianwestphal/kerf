@@ -26,31 +26,40 @@ import type { SafeHtml } from './jsx-runtime.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
-const SVG_FRAGMENT_TAGS = new Set([
-  'g',
-  'path',
-  'circle',
-  'rect',
-  'line',
-  'polygon',
-  'polyline',
-  'ellipse',
-  'text',
-  'tspan',
-  'defs',
-  'use',
-  'symbol',
-  'clipPath',
-  'mask',
-  'pattern',
-  'filter',
-  'marker',
-  'linearGradient',
-  'radialGradient',
-  'stop',
-  'image',
-  'foreignObject',
-]);
+// Written in the SVG spec's own casing for readability, but stored lowercased:
+// the lookup key is the HTML parser's `tagName.toLowerCase()`, and the HTML
+// parser has already folded `<linearGradient>` to `lineargradient` by then. A
+// camelCase entry here would never match (the orphan `clipPath` /
+// `linearGradient` / `radialGradient` / `foreignObject` fragments used to fall
+// through to the XHTML namespace). The XML re-parse restores the camelCase
+// localName on the returned element.
+const SVG_FRAGMENT_TAGS: ReadonlySet<string> = new Set(
+  [
+    'g',
+    'path',
+    'circle',
+    'rect',
+    'line',
+    'polygon',
+    'polyline',
+    'ellipse',
+    'text',
+    'tspan',
+    'defs',
+    'use',
+    'symbol',
+    'clipPath',
+    'mask',
+    'pattern',
+    'filter',
+    'marker',
+    'linearGradient',
+    'radialGradient',
+    'stop',
+    'image',
+    'foreignObject',
+  ].map((tag) => tag.toLowerCase()),
+);
 
 const EXCERPT_MAX_LEN = 100;
 

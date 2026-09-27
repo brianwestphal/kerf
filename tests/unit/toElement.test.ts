@@ -134,6 +134,32 @@ describe('toElement() — SVG', () => {
     );
   });
 
+  // The HTML parser lowercases tag names (`<linearGradient>` → `lineargradient`),
+  // so the orphan-fragment lookup must be case-insensitive. The XML re-parse
+  // then restores the camelCase localName the SVG spec requires.
+  it.each(['clipPath', 'linearGradient', 'radialGradient', 'foreignObject'])(
+    'parses an orphan camelCase <%s> fragment into the SVG namespace',
+    (tag) => {
+      const el = toElement(`<${tag} id="x"></${tag}>`) as Element;
+      expect(el).toBeInstanceOf(Element);
+      expect(el.namespaceURI).toBe('http://www.w3.org/2000/svg');
+      expect(el.localName).toBe(tag);
+      expect(el.getAttribute('id')).toBe('x');
+    },
+  );
+
+  it('parses an orphan <linearGradient> with its <stop> children in the SVG namespace', () => {
+    const el = toElement(
+      '<linearGradient id="g"><stop offset="0" /><stop offset="1" /></linearGradient>',
+    ) as Element;
+    expect(el.namespaceURI).toBe('http://www.w3.org/2000/svg');
+    expect(el.localName).toBe('linearGradient');
+    expect(el.children).toHaveLength(2);
+    expect(el.firstElementChild!.namespaceURI).toBe(
+      'http://www.w3.org/2000/svg',
+    );
+  });
+
   it('does NOT route plain HTML through the SVG path', () => {
     const el = toElement('<button>click</button>');
     expect(el).toBeInstanceOf(Element);
