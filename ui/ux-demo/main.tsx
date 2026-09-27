@@ -642,7 +642,7 @@ const stopActions = delegateActions(app, 'click', {
     ];
     tabBarActive.value = id;
     actionLog.value = `Opening ${id}`;
-    setTimeout(() => {
+    window.setTimeout(() => {
       if (!tabBarTabs.value.some((tab) => tab.id === id && tab.pending)) return;
       tabBarTabs.value = tabBarTabs.value.map((tab) =>
         tab.id === id ? { ...tab, pending: false } : tab,

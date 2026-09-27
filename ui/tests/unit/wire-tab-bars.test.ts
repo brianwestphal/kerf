@@ -637,7 +637,8 @@ describe('TabBar wiring', () => {
       root.querySelectorAll<HTMLElement>('[role="tab"]').forEach((tab) => {
         tab.setAttribute('aria-selected', String(tab.dataset.tabId === id));
       });
-    const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+    const settle = () =>
+      new Promise((resolve) => globalThis.setTimeout(resolve, 0));
 
     it('scrolls only the strip to a tab the application selects', async () => {
       const root = bar();

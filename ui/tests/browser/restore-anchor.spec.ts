@@ -352,7 +352,7 @@ for (const width of [1280, 390]) {
       const probe = document.createElement('div');
       probe.style.background = 'var(--kui-color-surface)';
       document.body.append(probe);
-      const color = getComputedStyle(probe).backgroundColor;
+      const color = window.getComputedStyle(probe).backgroundColor;
       probe.remove();
       return color;
     });
@@ -367,7 +367,7 @@ for (const width of [1280, 390]) {
       const host = element.parentElement!.getBoundingClientRect();
       const box = element.getBoundingClientRect();
       return {
-        maxWidth: getComputedStyle(element).maxWidth,
+        maxWidth: window.getComputedStyle(element).maxWidth,
         gap: Math.abs(host.width - box.width),
       };
     });
@@ -514,7 +514,7 @@ test('overlay maximums cap only the resizable axis of regions and Workbench pane
       for (const [name, value] of Object.entries(attributes))
         element.setAttribute(name, value);
       document.body.append(element);
-      const { maxWidth, maxHeight } = getComputedStyle(element);
+      const { maxWidth, maxHeight } = window.getComputedStyle(element);
       element.remove();
       return { maxWidth, maxHeight };
     };
