@@ -120,11 +120,7 @@ device in tests.
   rail `responsiveOverlayAt: "narrow"` and let the Workbench's own width decide
   when it overlays, with no device check; pass each rail's `collapsed` signal
   to `wireWorkbench` so the overlay starts collapsed, takes focus and keeps Tab
-  inside it while open, and closes on Escape or an outside press. Resizable
-  rails leave the editor its `mainMinSize` (320px by default) and shrink in
-  proportion when the window narrows.
-  to `wireWorkbench` so the overlay starts collapsed and closes on Escape or an
-  outside press. Inline
+  inside it while open, and closes on Escape or an outside press. Inline
   rails, fixed or resizable, leave the editor its `mainMinSize` (320px by
   default) and shrink in proportion when the window narrows; the bottom drawer
   leaves it `mainMinHeight` (120px by default) and shrinks when the window gets
