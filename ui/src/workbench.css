@@ -444,15 +444,16 @@
 .kui-workbench__drawer[data-presentation="overlay"] {
   position: absolute;
   z-index: var(--kui-workbench-overlay-z, 41);
-  max-width: var(--kui-workbench-overlay-max-width, 85vw);
-  max-height: var(--kui-workbench-overlay-max-height, 85vh);
   box-shadow: var(--kui-shadow-l);
 }
 
 /* An out-of-flow rail sizes to its content plus its border, so it takes its
-   extent explicitly, as its in-flow flex basis does, border included. */
+   extent explicitly, as its in-flow flex basis does, border included. Each
+   overlay maximum caps only the panel's own axis: a rail spans the
+   Workbench's full height and a drawer its full width. */
 .kui-workbench__rail[data-presentation="overlay"] {
   width: var(--_kui-workbench-rail-extent);
+  max-width: var(--kui-workbench-overlay-max-width, 85vw);
   inset-block: 0;
 }
 
@@ -470,6 +471,7 @@
 .kui-workbench__drawer[data-presentation="overlay"] {
   z-index: calc(var(--kui-workbench-overlay-z, 41) - 1);
   height: var(--_kui-workbench-drawer-extent);
+  max-height: var(--kui-workbench-overlay-max-height, 85vh);
   inset-inline: 0;
   inset-block-end: 0;
 }
@@ -524,7 +526,6 @@
     z-index: var(--kui-workbench-overlay-z, 41);
     width: var(--_kui-workbench-rail-extent);
     max-width: var(--kui-workbench-overlay-max-width, 85vw);
-    max-height: var(--kui-workbench-overlay-max-height, 85vh);
     inset-block: 0;
     box-shadow: var(--kui-shadow-l);
   }
@@ -609,7 +610,6 @@
     z-index: var(--kui-workbench-overlay-z, 41);
     width: var(--_kui-workbench-rail-extent);
     max-width: var(--kui-workbench-overlay-max-width, 85vw);
-    max-height: var(--kui-workbench-overlay-max-height, 85vh);
     inset-block: 0;
     box-shadow: var(--kui-shadow-l);
   }

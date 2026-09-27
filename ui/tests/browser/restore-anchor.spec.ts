@@ -361,6 +361,18 @@ for (const width of [1280, 390]) {
     await consoleRegion.screenshot({
       path: testInfo.outputPath(`region-overlay-${width}.png`),
     });
+    // A drawer overlay spans its host's full width: only its own (block) axis
+    // is capped by the overlay maximum.
+    const spans = await consoleRegion.evaluate((element) => {
+      const host = element.parentElement!.getBoundingClientRect();
+      const box = element.getBoundingClientRect();
+      return {
+        maxWidth: getComputedStyle(element).maxWidth,
+        gap: Math.abs(host.width - box.width),
+      };
+    });
+    expect(spans.maxWidth).toBe('none');
+    expect(spans.gap).toBeLessThanOrEqual(1);
 
     // A collapsed overlay drops its pointer events, so the control beneath it
     // is reachable again once the overlay closes.
@@ -485,4 +497,50 @@ test('a Workbench restore control returns to the corner when the drawer collapse
       [box.x + box.width / 2, box.y + box.height / 2],
     ),
   ).toBe(true);
+});
+
+// KF-D5KB8D: the 85vw / 85vh overlay maximums applied to both axes, so a
+// drawer overlay stopped short of its host's width and a side overlay short of
+// its height. Each now caps only the panel's resizable axis.
+test('overlay maximums cap only the resizable axis of regions and Workbench panels', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await mountFixture(page, 'region-overlay');
+  const caps = await page.evaluate(() => {
+    const probe = (className: string, attributes: Record<string, string>) => {
+      const element = document.createElement('div');
+      element.className = className;
+      for (const [name, value] of Object.entries(attributes))
+        element.setAttribute(name, value);
+      document.body.append(element);
+      const { maxWidth, maxHeight } = getComputedStyle(element);
+      element.remove();
+      return { maxWidth, maxHeight };
+    };
+    return {
+      regionSide: probe('kui-resizable-region', {
+        'data-presentation': 'overlay',
+        'data-axis': 'horizontal',
+      }),
+      regionDrawer: probe('kui-resizable-region', {
+        'data-presentation': 'overlay',
+        'data-axis': 'vertical',
+      }),
+      workbenchRail: probe('kui-workbench__rail', {
+        'data-presentation': 'overlay',
+      }),
+      workbenchDrawer: probe('kui-workbench__drawer', {
+        'data-presentation': 'overlay',
+      }),
+    };
+  });
+  const side = { maxWidth: `${1280 * 0.85}px`, maxHeight: 'none' };
+  const drawer = { maxWidth: 'none', maxHeight: `${800 * 0.85}px` };
+  expect(caps).toEqual({
+    regionSide: side,
+    regionDrawer: drawer,
+    workbenchRail: side,
+    workbenchDrawer: drawer,
+  });
 });

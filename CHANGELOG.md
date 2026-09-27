@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` overlay panels span their host on the fixed axis.** The
+  85vw / 85vh overlay maximums (`--kui-resizable-region-overlay-max-*`,
+  `--kui-workbench-overlay-max-*`) applied to both axes, so an overlay bottom
+  drawer stopped about 15% short of its host's width and an overlay side rail
+  in a full-height layout stopped short of the bottom. Each maximum now caps
+  only the panel's resizable axis: side overlays cap their width, drawers
+  their height.
+
 - **An overlay `@kerfjs/ui` `ResizableRegion` paints the surface.** With
   `presentation="overlay"` the region floated over the work area with a
   shadow but no background, so the content beneath — and a collapsed rail's
