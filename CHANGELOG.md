@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **A collapsed `@kerfjs/ui` `Workbench` rail's restore control no longer
+  covers an expanded bottom drawer.** A `leftRail` / `rightRail`
+  `restoreControl` floats in the Workbench's bottom corner, which the bottom
+  drawer's column reaches once the rail collapses, so with the drawer expanded
+  the control sat on the drawer's content. An expanded inline drawer now
+  publishes its top edge as a CSS anchor scoped to its Workbench, and the
+  rail's control floats the restore inset above it, returning to the corner
+  when the drawer collapses. An overlay drawer (static or `responsiveOverlayAt`)
+  still covers the control as every open overlay does, a nested Workbench's
+  drawer moves only its own rails' controls, and engines without anchor
+  positioning keep the corner.
+
 - **A collapsed `@kerfjs/ui` `Workbench` panel's content leaves the Tab order.**
   A collapsed rail or bottom drawer kept its content in the DOM, only slid out
   and clipped, so Tab still reached its controls; focusing one (at a narrow

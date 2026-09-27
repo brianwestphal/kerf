@@ -260,7 +260,23 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
   (the drawer's, so it never covers an expanded rail), inset by
   `--kui-workbench-restore-inset` plus that container's safe-area edge
   insets; the Workbench is `isolation: isolate`, so its overlay and restore
-  z-indexes stack within it. A `FloatingToolbar` may host the control: the
+  z-indexes stack within it. A collapsed rail's control floats above an
+  expanded inline bottom drawer instead of over it (KF-GBETFJ: the drawer's
+  column reaches the Workbench's bottom corners once the rail collapses, so
+  the control sat on the drawer's content). It reuses the standalone
+  `CollapsiblePanel` anchor: the Workbench sets `anchor-scope:
+--kui-restore-drawer`, an expanded `data-presentation="inline"` drawer
+  publishes `anchor-name: --kui-restore-drawer` (at `:where()` specificity,
+  so each responsive-overlay container query's `anchor-name: none` wins
+  while the drawer presents as an overlay), and a rail's control — a direct
+  child of the Workbench — takes `inset-block-end: calc(inset +
+anchor(--kui-restore-drawer top, <safe-area fallback>))` with
+  `position-visibility: always`. The corner returns when the drawer
+  collapses; an engine without anchor positioning keeps the corner; an open
+  overlay drawer covers the control like any overlay; and a drawer inside a
+  nested Workbench in the work area is scoped to that Workbench, so it moves
+  only its own rails' controls. The drawer's own control never anchors. A
+  `FloatingToolbar` may host the control: the
   corner sets `--kui-floating-toolbar-inset: 0px`, and `FloatingToolbar` now
   resolves its inset from that inheritable token (a private
   `--_kui-floating-toolbar-inset` instead of redeclaring the public token on

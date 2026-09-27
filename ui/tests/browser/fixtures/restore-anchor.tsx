@@ -6,6 +6,7 @@ import '@kerfjs/ui/pane.css';
 import '@kerfjs/ui/toolbar-control-group.css';
 import '@kerfjs/ui/collapsible-panel.css';
 import '@kerfjs/ui/resizable-region.css';
+import '@kerfjs/ui/workbench.css';
 
 import {
   CollapsiblePanel,
@@ -16,6 +17,7 @@ import { Pane } from '@kerfjs/ui/pane';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
+import { Workbench } from '@kerfjs/ui/workbench';
 import { mount, signal } from 'kerfjs';
 
 /**
@@ -31,9 +33,18 @@ import { mount, signal } from 'kerfjs';
  * focus trap) beside another panel's collapsed restore control, and the
  * `region-overlay` scenario opens an overlay ResizableRegion drawer over a
  * collapsed rail's restore corner: an open overlay covers both.
+ * The `workbench` scenario holds the Workbench equivalents: collapsed rails
+ * with restore controls beside an expanded inline bottom drawer, a drawer that
+ * becomes an overlay at narrow widths, and a drawer inside a nested Workbench
+ * in the work area (which must not move the outer rail's control).
  */
 type Scenario =
-  'embedded' | 'viewport' | 'drawer' | 'overlay' | 'region-overlay';
+  | 'embedded'
+  | 'viewport'
+  | 'drawer'
+  | 'overlay'
+  | 'region-overlay'
+  | 'workbench';
 
 const scenario = signal<Scenario>('embedded');
 /** Whether the drawer scenario's drawers are collapsed. */
@@ -260,11 +271,80 @@ const drawers = () => (
   </main>
 );
 
+const railRestore = (side: 'left' | 'right', name: string) => (
+  <CollapsiblePanelToggle
+    side={side}
+    collapsed
+    action={`toggle-restore-${name}`}
+    label={`Show ${name}`}
+  />
+);
+
+const workbench = (
+  id: string,
+  drawerPanel?: { responsive?: boolean },
+  main = content('Work area'),
+) => (
+  <Workbench
+    id={id}
+    label={id}
+    mainMinSize={0}
+    leftRail={{
+      label: 'Navigator',
+      content: content('Navigator'),
+      collapsed: true,
+      restoreControl: railRestore('left', 'navigator'),
+    }}
+    main={main}
+    rightRail={
+      drawerPanel
+        ? {
+            label: 'Inspector',
+            content: content('Inspector'),
+            collapsed: true,
+            restoreControl: railRestore('right', 'inspector'),
+          }
+        : undefined
+    }
+    bottomDrawer={
+      drawerPanel
+        ? {
+            label: 'Console',
+            content: content('Console'),
+            size: 96,
+            collapsed: drawersCollapsed.value,
+            responsiveOverlayAt: drawerPanel.responsive ? 'narrow' : undefined,
+          }
+        : undefined
+    }
+  />
+);
+
+const workbenches = () => (
+  <main style="display:grid;gap:24px;padding:24px">
+    <div data-restore-host="workbench" style={hostStyle('')}>
+      {workbench('restore-wb', {})}
+    </div>
+    <div data-restore-host="workbench-responsive" style={hostStyle('')}>
+      {workbench('restore-wb-responsive', { responsive: true })}
+    </div>
+    <div data-restore-host="workbench-nested" style={hostStyle('')}>
+      {workbench(
+        'restore-wb-outer',
+        undefined,
+        workbench('restore-wb-inner', {}),
+      )}
+    </div>
+  </main>
+);
+
 const view = () =>
   scenario.value === 'overlay' ? (
     compactOverlay()
   ) : scenario.value === 'region-overlay' ? (
     regionOverlay()
+  ) : scenario.value === 'workbench' ? (
+    workbenches()
   ) : scenario.value === 'drawer' ? (
     drawers()
   ) : scenario.value === 'embedded' ? (

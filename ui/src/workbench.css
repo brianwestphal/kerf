@@ -570,6 +570,7 @@
 
   .kui-workbench__drawer[data-responsive-overlay-at="narrow"] {
     position: absolute;
+    anchor-name: none;
     z-index: calc(var(--kui-workbench-overlay-z, 41) - 1);
     height: var(--_kui-workbench-drawer-extent);
     max-height: var(--kui-workbench-overlay-max-height, 85vh);
@@ -654,6 +655,7 @@
 
   .kui-workbench__drawer[data-responsive-overlay-at="compact"] {
     position: absolute;
+    anchor-name: none;
     z-index: calc(var(--kui-workbench-overlay-z, 41) - 1);
     height: var(--_kui-workbench-drawer-extent);
     max-height: var(--kui-workbench-overlay-max-height, 85vh);
@@ -724,6 +726,33 @@
 .kui-workbench__restore[data-position="bottom-end"] {
   inset-inline-end: calc(
     var(--_kui-workbench-restore-inset) + var(--_kui-workbench-safe-inline-end)
+  );
+}
+
+/* An expanded inline bottom drawer owns the bottom of the work-area column,
+   which reaches the Workbench's bottom corners once a rail collapses, so a
+   collapsed rail's control floats the restore inset above the drawer's top
+   edge instead of over it — the standalone CollapsiblePanel rule, scoped to
+   this Workbench so a nested Workbench or an enclosing layout never sees its
+   drawer. The drawer publishes that edge only while it is expanded and in
+   flow: an overlay drawer, static or responsive (see the container queries
+   above), covers the control as every open overlay does. Without anchor
+   positioning the control keeps the Workbench corner. */
+.kui-workbench {
+  anchor-scope: --kui-restore-drawer;
+}
+
+.kui-workbench__drawer:where(
+  [data-presentation="inline"]:not([data-collapsed="true"])
+) {
+  anchor-name: --kui-restore-drawer;
+}
+
+.kui-workbench > .kui-workbench__restore {
+  position-visibility: always;
+  inset-block-end: calc(
+    var(--_kui-workbench-restore-inset) +
+      anchor(--kui-restore-drawer top, var(--_kui-workbench-safe-block-end))
   );
 }
 

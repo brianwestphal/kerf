@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 290700,
-  "measuredLargestJavaScriptGzip": 143233,
-  "measuredTotalJavaScriptGzip": 290675,
+  "totalJavaScriptGzip": 290800,
+  "measuredLargestJavaScriptGzip": 143248,
+  "measuredTotalJavaScriptGzip": 290703,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -691,6 +691,22 @@
         "measuredTotalJavaScriptGzip": 290675,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 290700
+      }
+    },
+    {
+      "at": "2026-09-27T14:17:51.875Z",
+      "reason": "KF-GBETFJ adds the Workbench drawer restore-anchor rules and KF-0WARYA renders inert on collapsed Workbench panel content; the catalog ships that component source, so the total grows by a few bytes",
+      "old": {
+        "measuredLargestJavaScriptGzip": 143233,
+        "measuredTotalJavaScriptGzip": 290675,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 290700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 143248,
+        "measuredTotalJavaScriptGzip": 290703,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 290800
       }
     }
   ]

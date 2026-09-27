@@ -657,6 +657,73 @@ describe('Workbench', () => {
     ).toEqual({ width: '100%', background: 'var(--kui-color-surface)' });
   });
 
+  it("floats a collapsed rail's restore control above an expanded inline drawer, scoped to the Workbench", async () => {
+    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const rules: Array<{ selector: string; decls: Record<string, string> }> =
+      [];
+    css.walkRules((rule) => {
+      rules.push({
+        selector: rule.selector.replace(/\s+/g, ' '),
+        decls: Object.fromEntries(
+          rule.nodes
+            .filter((node) => node.type === 'decl')
+            .map((node) => [node.prop, node.value.replace(/\s+/g, ' ')]),
+        ),
+      });
+    });
+    const withProp = (prop: string) =>
+      rules.filter((rule) => prop in rule.decls);
+
+    // The Workbench scopes the name, so neither a nested Workbench's drawer
+    // nor an enclosing layout's anchor reaches across it.
+    expect(withProp('anchor-scope')).toEqual([
+      {
+        selector: '.kui-workbench',
+        decls: { 'anchor-scope': '--kui-restore-drawer' },
+      },
+    ]);
+    // Only an expanded inline drawer publishes its top edge, at zero-ish
+    // specificity so a responsive overlay drawer's container rule wins.
+    expect(
+      Object.fromEntries(
+        withProp('anchor-name').map((rule) => [
+          rule.selector,
+          rule.decls['anchor-name'],
+        ]),
+      ),
+    ).toEqual({
+      '.kui-workbench__drawer:where( [data-presentation="inline"]:not([data-collapsed="true"]) )':
+        '--kui-restore-drawer',
+      '.kui-workbench__drawer[data-responsive-overlay-at="narrow"]': 'none',
+      '.kui-workbench__drawer[data-responsive-overlay-at="compact"]': 'none',
+    });
+    expect(
+      rules.find((rule) => rule.decls['anchor-name'] === '--kui-restore-drawer')
+        ?.decls,
+    ).toEqual({ 'anchor-name': '--kui-restore-drawer' });
+    // A rail's control (a Workbench child) lifts above that edge and falls
+    // back to the Workbench corner; the drawer's own control never anchors.
+    expect(
+      rules.find(
+        (rule) => rule.selector === '.kui-workbench > .kui-workbench__restore',
+      )?.decls,
+    ).toEqual({
+      'position-visibility': 'always',
+      'inset-block-end':
+        'calc( var(--_kui-workbench-restore-inset) + anchor(--kui-restore-drawer top, var(--_kui-workbench-safe-block-end)) )',
+    });
+    expect(
+      rules
+        .filter((rule) =>
+          rule.selector.startsWith(
+            '.kui-workbench__center > .kui-workbench__restore',
+          ),
+        )
+        .some((rule) => rule.decls['inset-block-end']?.includes('anchor(')),
+    ).toBe(false);
+  });
+
   it('anchors restore controls to the Workbench, inset once even around a FloatingToolbar', async () => {
     const parse = async (name: string) => {
       const file = resolve(import.meta.dirname, `../../src/${name}`);

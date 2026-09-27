@@ -21,7 +21,13 @@ const fixtureBundle = build({
 
 async function mountFixture(
   page: Page,
-  scenario: 'embedded' | 'viewport' | 'drawer' | 'overlay' | 'region-overlay',
+  scenario:
+    | 'embedded'
+    | 'viewport'
+    | 'drawer'
+    | 'overlay'
+    | 'region-overlay'
+    | 'workbench',
 ): Promise<void> {
   const result = await fixtureBundle;
   const javascript = result.outputFiles.find((file) =>
@@ -364,4 +370,101 @@ test("restore controls follow an app's overlay z-index, still beneath the backdr
   await expect
     .poll(() => hitAtCenter(overlayControl(page, 'overlay')))
     .toBe('backdrop');
+});
+
+// KF-GBETFJ: a collapsed Workbench rail's restore control floated over an
+// expanded bottom drawer, because the drawer's column reaches the Workbench's
+// bottom corners once the rail collapses. An expanded inline drawer now
+// publishes its top edge as an anchor scoped to its own Workbench.
+const workbenchRestore = (page: Page, id: string, side: 'left' | 'right') =>
+  page
+    .locator(`#${id} > .kui-workbench__restore[data-panel="${side}"]`)
+    .getByRole('button');
+const workbenchDrawer = (page: Page, id: string) =>
+  page.locator(`#${id} > .kui-workbench__center > [data-workbench-drawer]`);
+
+for (const width of [1280, 390]) {
+  test(`a collapsed Workbench rail's restore control lifts above its expanded inline drawer (${width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await mountFixture(page, 'workbench');
+
+    const host = page.locator('#restore-wb');
+    const drawer = workbenchDrawer(page, 'restore-wb');
+    await expect(drawer).toBeVisible();
+    for (const side of ['left', 'right'] as const) {
+      const control = workbenchRestore(page, 'restore-wb', side);
+      await expect(control).toBeVisible();
+      expect(await clearance(control, drawer)).toBe(16);
+    }
+    expect(
+      await insets(host, workbenchRestore(page, 'restore-wb', 'left')),
+    ).toMatchObject({ start: 16 });
+    expect(
+      await insets(host, workbenchRestore(page, 'restore-wb', 'right')),
+    ).toMatchObject({ end: 16 });
+
+    // A drawer inside a nested Workbench in the work area belongs to that
+    // Workbench: it lifts the inner rail's control, never the outer one's.
+    expect(
+      await insets(
+        page.locator('#restore-wb-outer'),
+        workbenchRestore(page, 'restore-wb-outer', 'left'),
+      ),
+    ).toMatchObject({ start: 16, bottom: 16 });
+    expect(
+      await clearance(
+        workbenchRestore(page, 'restore-wb-inner', 'left'),
+        workbenchDrawer(page, 'restore-wb-inner'),
+      ),
+    ).toBe(16);
+  });
+}
+
+test('a Workbench restore control returns to the corner when the drawer collapses or becomes an overlay', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await mountFixture(page, 'workbench');
+  const host = page.locator('#restore-wb');
+  const drawer = workbenchDrawer(page, 'restore-wb');
+  const left = workbenchRestore(page, 'restore-wb', 'left');
+  const right = workbenchRestore(page, 'restore-wb', 'right');
+
+  await collapseDrawers(page, true);
+  await expect.poll(async () => (await insets(host, left)).bottom).toBe(16);
+  expect(await insets(host, right)).toMatchObject({ end: 16, bottom: 16 });
+
+  await collapseDrawers(page, false);
+  await expect.poll(async () => clearance(left, drawer)).toBe(16);
+  expect(await clearance(right, drawer)).toBe(16);
+
+  // Wide, the responsive drawer is inline and lifts the controls too.
+  const responsive = page.locator('#restore-wb-responsive');
+  const responsiveLeft = workbenchRestore(
+    page,
+    'restore-wb-responsive',
+    'left',
+  );
+  const responsiveDrawer = workbenchDrawer(page, 'restore-wb-responsive');
+  expect(await clearance(responsiveLeft, responsiveDrawer)).toBe(16);
+
+  // Narrow, the open drawer is an overlay: it publishes no anchor, so the
+  // controls keep the Workbench corner beneath it, and the overlay covers
+  // them as every open overlay covers the restore controls.
+  await page.setViewportSize({ width: 390, height: 900 });
+  await expect(responsiveDrawer).toHaveCSS('position', 'absolute');
+  await expect
+    .poll(async () => (await insets(responsive, responsiveLeft)).bottom)
+    .toBe(16);
+  const box = (await responsiveLeft.boundingBox())!;
+  expect(
+    await page.evaluate(
+      ([x, y]) =>
+        document.elementFromPoint(x!, y!)?.closest('[data-workbench-drawer]') !=
+        null,
+      [box.x + box.width / 2, box.y + box.height / 2],
+    ),
+  ).toBe(true);
 });

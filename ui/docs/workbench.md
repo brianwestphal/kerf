@@ -101,7 +101,14 @@ an optional `label`. Common shell behavior is configured rather than restyled:
   `--kui-workbench-restore-inset` (16px) plus the unsafe area of each edge the
   corner reaches. A rail's control sits in the Workbench's corner; the
   drawer's sits in the corner of the work-area column it restores into, so it
-  never lands on an expanded rail. Because it is anchored to the Workbench
+  never lands on an expanded rail. A collapsed rail's control floats the
+  same inset above the top edge of an expanded inline bottom drawer, which
+  spans the column reaching that corner once the rail collapses, so it never
+  covers the drawer's content; it returns to the corner when the drawer
+  collapses (the drawer publishes its edge as a CSS anchor scoped to its own
+  Workbench; without anchor positioning the control keeps the corner). An
+  overlay drawer publishes no edge: an open one covers the control, as every
+  open overlay does. Because it is anchored to the Workbench
   rather than the viewport, an embedded Workbench never floats it over page
   chrome outside it, and it scrolls with the Workbench. Compose it from the
   package controls — a `single` `ToolbarControlGroup` around one icon button
