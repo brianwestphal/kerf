@@ -49,6 +49,7 @@ const RULES: Record<string, CaseRule> = {
   'list-header-toggle': { block: true },
   // A trailing slot is a value, and its width moves the flexible label.
   'list-item-trailing': { block: true },
+  'list-item-busy-trailing': { block: true },
   'app-tab': { block: true, ignoreStyles: ['.kui-app-tab__close'] },
   'app-tab-segmented': { block: true, ignoreStyles: ['.kui-app-tab__close'] },
   'state-banner': { block: true },
@@ -243,6 +244,25 @@ for (const width of [1280, 390]) {
       }
     }
     expect(differences).toEqual([]);
+
+    // Component-owned chrome drawn from known props stays live even inside a
+    // value slot the diff excludes: a busy spinner is not a value.
+    const spinners = await page.evaluate(() =>
+      Object.fromEntries(
+        ['live', 'placeholder'].map((state) => [
+          state,
+          [
+            ...document.querySelectorAll<HTMLElement>(
+              `[data-state="${state}"] > [data-case]`,
+            ),
+          ].map(
+            (wrapper) =>
+              `${wrapper.dataset.case!}:${String(wrapper.querySelectorAll('.kui-loading-spinner').length)}`,
+          ),
+        ]),
+      ),
+    );
+    expect(spinners.placeholder).toEqual(spinners.live);
 
     // An author-disabled control is dimmed in both renders: the diff above
     // proves the renders match, this proves neither lost the disabled tone.

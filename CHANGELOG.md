@@ -20,6 +20,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   bindings, first-render row-contract validation, orphan pruning) into its own
   internal module, so `mount.ts` holds only the render orchestration. No
   behavior or public API change.
+- A `@kerfjs/ui` `ListItem` placeholder keeps its `busy` spinner. The whole
+  trailing slot used to collapse into one skeleton, dropping the spinner the
+  component draws from a known prop and shifting the label's width. Now only
+  the values in that slot become skeletons: `status` text in its status line
+  and author-supplied `trailing` content (always a value, since the component
+  cannot tell a chevron from a count) each get their own.
 - `@kerfjs/ui` placeholders keep the live disabled tone of a control the
   author disabled. A disabled `ListItem` or `ListActionRow`, a
   `trailingActionDisabled` button, a disabled `SegmentedControl` choice, or a

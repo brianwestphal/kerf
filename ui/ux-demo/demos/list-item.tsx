@@ -76,6 +76,16 @@ export function ListItemDemo() {
       </CatalogExample>
       <CatalogExample align="none">
         <ListItem
+          action="log-projects"
+          itemId="busy-placeholder"
+          label="Refreshing results"
+          status="Updating"
+          busy
+          placeholder
+        />
+      </CatalogExample>
+      <CatalogExample align="none">
+        <ListItem
           action="disabled"
           itemId="disabled-placeholder"
           label="Unavailable item"

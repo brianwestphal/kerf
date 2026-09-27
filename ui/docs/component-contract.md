@@ -485,6 +485,11 @@ their disabled tone on it, so only the `placeholder`-only `disabled` attribute i
 neutralized. The marker is reserved: the extension-attribute channels
 (`rootAttributes`, `trailingActionAttributes`, `triggerAttributes`) cannot set it. A
 disabled placeholder still shows the `default` cursor, never `not-allowed`.
+Chrome a component draws itself from a known prop stays live, even inside a slot that
+also holds values. `ListItem`'s trailing slot has three inputs: the `busy` spinner is
+component-owned chrome and stays live, while `status` text and author-supplied
+`trailing` content are values and each become a skeleton (the component cannot tell an
+author's chevron from a count, so all `trailing` content is treated as a value).
 `SegmentedControl` is the one placeholder without a skeleton: its choices are known
 chrome and only the selection is unknown, so it renders every choice's live label or
 icon at its live geometry, selects none, and neutralizes its own disabled chrome.

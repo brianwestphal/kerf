@@ -41,10 +41,11 @@ export interface ListItemProps {
   /** App-owned supporting text rendered in the component's stable label stack. */
   description?: string | SafeHtml;
   icon?: SafeHtml;
+  /** Dormant author content at the row's end; a placeholder renders it as a skeleton. */
   trailing?: KerfUiContent;
-  /** Dormant status metadata rendered before trailing content. */
+  /** Dormant status metadata rendered before trailing content; a placeholder renders it as a skeleton. */
   status?: string | SafeHtml;
-  /** Show a progress indicator and expose the row as busy without replacing its content. */
+  /** Show a progress indicator and expose the row as busy without replacing its content; a placeholder keeps the indicator. */
   busy?: boolean;
   density?: 'standard' | 'compact';
   divider?: 'none' | 'before' | 'after' | 'both';
@@ -59,7 +60,7 @@ export interface ListItemProps {
   state?: string;
   disabled?: boolean;
   tabIndex?: number;
-  /** Render the row as an unanimated loading skeleton, disabling its action. */
+  /** Render the row as an unanimated loading skeleton, disabling its action: label, description, icon, status, and trailing content become skeletons; the `busy` indicator stays live. */
   placeholder?: boolean;
   rootAttributes?: ListItemRootAttributes;
   /** Native named-slot assignment when composed inside a web component. */
@@ -141,15 +142,16 @@ export function ListItem({
       </span>
       {(busy || status || trailing) && (
         <span class="kui-list-item__trailing">
-          {placeholder ? (
-            <Skeleton width={em(2.5)} />
-          ) : (
-            <>
-              {busy && <LoadingSpinner />}
-              {status && <span class="kui-list-item__status">{status}</span>}
-              {trailing}
-            </>
+          {/* The busy spinner is component-owned chrome drawn from a known
+              prop, so a placeholder keeps it live. Status text and
+              author-supplied trailing content are values: skeletons. */}
+          {busy && <LoadingSpinner />}
+          {status && (
+            <span class="kui-list-item__status">
+              {placeholder ? <Skeleton width={em(3.5)} /> : status}
+            </span>
           )}
+          {trailing && (placeholder ? <Skeleton width={em(1.5)} /> : trailing)}
         </span>
       )}
     </button>

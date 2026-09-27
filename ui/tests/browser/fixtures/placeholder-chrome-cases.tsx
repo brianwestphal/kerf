@@ -109,6 +109,27 @@ export const cases: Record<string, Case> = {
       placeholder={placeholder}
     />
   ),
+  // The busy spinner is component-owned chrome from a known prop, so it
+  // stays live in a placeholder; only status and trailing values skeleton.
+  'list-item-busy': (placeholder) => (
+    <ListItem
+      action="open"
+      label="Syncing folder"
+      icon={inbox()}
+      busy
+      placeholder={placeholder}
+    />
+  ),
+  'list-item-busy-trailing': (placeholder) => (
+    <ListItem
+      action="open"
+      label="Drafts"
+      busy
+      status="Synced"
+      trailing={<span>12</span>}
+      placeholder={placeholder}
+    />
+  ),
   // An author-disabled control is unavailable once loaded, so its
   // placeholder keeps the live disabled tone.
   'list-item-disabled': (placeholder) => (

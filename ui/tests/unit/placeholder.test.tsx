@@ -126,6 +126,41 @@ describe('component placeholder mode', () => {
     expect(html).toContain('kui-skeleton');
   });
 
+  it('ListItem keeps its busy spinner live and skeletons status and trailing values', () => {
+    const trailingSlot = (html: string) =>
+      html.slice(html.indexOf('class="kui-list-item__trailing"'));
+    const busyOnly = asHtml(
+      ListItem({
+        label: 'Sync',
+        action: 'open',
+        busy: true,
+        placeholder: true,
+      }),
+    );
+    expect(trailingSlot(busyOnly)).toContain('kui-loading-spinner');
+    expect(trailingSlot(busyOnly)).not.toContain('kui-skeleton');
+
+    const full = trailingSlot(
+      asHtml(
+        ListItem({
+          label: 'Drafts',
+          action: 'open',
+          busy: true,
+          status: 'Synced',
+          trailing: <span>12</span>,
+          placeholder: true,
+        }),
+      ),
+    );
+    expect(full).toContain('kui-loading-spinner');
+    expect(full).toMatch(
+      /class="kui-list-item__status"><span[^>]*class="kui-skeleton"/,
+    );
+    expect(full.match(/class="kui-skeleton"/g)).toHaveLength(2);
+    expect(full).not.toContain('Synced');
+    expect(full).not.toContain('>12<');
+  });
+
   it('ListItem keeps a description line as a second skeleton, only when set', () => {
     const withDescription = asHtml(
       ListItem({
