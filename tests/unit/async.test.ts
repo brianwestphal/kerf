@@ -375,4 +375,139 @@ describe('resource()', () => {
       r.clearCache(); // no-op, does not throw
     });
   });
+
+  describe('cacheKey interleavings (KF-W9H29J: keyed runs crossing each other)', () => {
+    it("run('a') → run('b') → A resolves late: dropped from state AND cache; then B rejects", async () => {
+      const r = resource<string, string>({ cacheKey: (id) => id });
+      const dA = deferred<string>();
+      const dB = deferred<string>();
+      const pA = r.run('a', () => dA.promise);
+      const pB = r.run('b', () => dB.promise);
+      const revRunning = r.value.revision;
+
+      dA.resolve('DATA-A'); // stale: 'b' is the latest run
+      await expect(pA).resolves.toBe('DATA-A'); // the caller still gets its data
+      expect(r.cached('a')).toBeUndefined(); // a stale response never writes the cache
+      expect(r.cachedKeys()).toEqual([]);
+      expect(r.value).toMatchObject({
+        status: 'running',
+        input: 'b',
+        data: undefined,
+      });
+      expect(r.value.revision).toBe(revRunning);
+
+      const boom = new Error('b failed');
+      dB.reject(boom);
+      await expect(pB).resolves.toBeUndefined();
+      expect(r.value).toEqual({
+        status: 'failed',
+        data: undefined, // B's (empty) slice — never A's late data
+        error: boom,
+        progress: undefined,
+        input: 'b',
+        revision: revRunning, // failure keeps data, so revision holds
+      });
+      expect(r.cachedKeys()).toEqual([]);
+    });
+
+    it("loaded 'a' → re-run 'a' and reject: stale-while-error keeps A's cached data; cache untouched", async () => {
+      const r = resource<string, string>({ cacheKey: (id) => id });
+      await r.run('a', () => Promise.resolve('DATA-A'));
+      const rev = r.value.revision;
+
+      const d = deferred<string>();
+      const p = r.run('a', () => d.promise);
+      expect(r.value).toMatchObject({ status: 'running', data: 'DATA-A' });
+      d.reject(new Error('offline'));
+      await p;
+      expect(r.value).toMatchObject({
+        status: 'failed',
+        data: 'DATA-A',
+        input: 'a',
+        revision: rev,
+      });
+      expect(r.cached('a')).toBe('DATA-A');
+      expect(r.cachedKeys()).toEqual(['a']);
+    });
+
+    it("'a' in flight → clearCache('a') → A resolves: the landing run repopulates its key", async () => {
+      const r = resource<string, string>({ cacheKey: (id) => id });
+      await r.run('a', () => Promise.resolve('A1'));
+      const d = deferred<string>();
+      const p = r.run('a', () => d.promise);
+      r.clearCache('a'); // evicts what is cached NOW; the in-flight run still owns 'a'
+      expect(r.cached('a')).toBeUndefined();
+      expect(r.value.data).toBe('A1'); // value untouched
+      d.resolve('A2');
+      await p;
+      expect(r.cached('a')).toBe('A2');
+      expect(r.value.data).toBe('A2');
+    });
+
+    it("'a' in flight → clearCache() → A resolves: the landing run repopulates only its key", async () => {
+      const r = resource<string, string>({ cacheKey: (id) => id });
+      await r.run('b', () => Promise.resolve('B1'));
+      const d = deferred<string>();
+      const p = r.run('a', () => d.promise);
+      r.clearCache();
+      d.resolve('A1');
+      await p;
+      expect(r.cachedKeys()).toEqual(['a']); // 'b' stays evicted
+      expect(r.cached('a')).toBe('A1');
+    });
+
+    it('reset() mid-flight on a keyed run → the late resolve writes neither cache nor state', async () => {
+      const r = resource<string, string>({ cacheKey: (id) => id });
+      const d = deferred<string>();
+      const p = r.run('a', () => d.promise);
+      r.reset();
+      const idle = r.value;
+      d.resolve('LATE');
+      await expect(p).resolves.toBe('LATE');
+      expect(r.cachedKeys()).toEqual([]);
+      expect(r.value).toBe(idle); // not even a new state object
+      expect(r.value.status).toBe('idle');
+    });
+
+    it('reset() mid-flight on a keyed run → a late rejection writes no failed state', async () => {
+      const r = resource<string, string>({ cacheKey: (id) => id });
+      const d = deferred<string>();
+      const p = r.run('a', () => d.promise);
+      r.reset();
+      d.reject(new Error('late'));
+      await expect(p).resolves.toBeUndefined();
+      expect(r.value.status).toBe('idle');
+      expect(r.value.error).toBeUndefined();
+    });
+
+    it('revision is monotonic across a → b → a switches; a cached repaint equal to the last data does not bump', async () => {
+      const r = resource<{ v: string }, string>({
+        cacheKey: (id) => id,
+        equals: (x, y) => x.v === y.v,
+      });
+      const seen: number[] = [];
+      const record = () => seen.push(r.value.revision);
+
+      const pA = r.run('a', () => Promise.resolve({ v: 'A' }));
+      record(); // running, no data
+      await pA;
+      record(); // A
+      const pB = r.run('b', () => Promise.resolve({ v: 'B' }));
+      record(); // running 'b' → data undefined (a change)
+      await pB;
+      record(); // B
+      const pA2 = r.run('a', () => Promise.resolve({ v: 'A' }));
+      record(); // cached A repaints (a change from B)
+      await pA2;
+      record(); // revalidated A equals the cached A → no bump
+      const pA3 = r.run('a', () => Promise.resolve({ v: 'A' }));
+      record(); // cached repaint equal to the last data → no bump
+      await pA3;
+      record();
+
+      expect(seen).toEqual([0, 1, 2, 3, 4, 4, 4, 4]);
+      for (let i = 1; i < seen.length; i++)
+        expect(seen[i]).toBeGreaterThanOrEqual(seen[i - 1]);
+    });
+  });
 });
