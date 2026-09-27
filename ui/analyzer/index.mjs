@@ -41,6 +41,10 @@ export const UI_ANALYSIS_RULES = Object.freeze({
   'KUI-L015': { severity: 'error', title: 'Non-standalone CSS expression' },
   'KUI-L016': { severity: 'error', title: 'Forbidden declaration-list escape' },
   'KUI-L017': { severity: 'review', title: 'Exceptional spacing shorthand' },
+  'KUI-L018': {
+    severity: 'review',
+    title: 'Loud fill override without its on-loud pair',
+  },
 });
 
 const adoptionRules = new Set([
@@ -333,6 +337,84 @@ function spacingValues(value) {
   return results;
 }
 
+// The shipped Web Awesome theme pairs every loud fill with an on-loud
+// foreground that clears WCAG AA; an override that moves one without the other
+// silently drops that guarantee (see docs/webawesome-theme.md).
+const loudToken =
+  /^--wa-color-(neutral|brand|success|warning|danger|pop)-(fill-loud|on-loud)$/;
+
+function normalizeSelector(selector) {
+  return selector
+    .replace(/\s+/g, ' ')
+    .replace(/\s*([>+~])\s*/g, '$1')
+    .trim();
+}
+
+function resolvedSelectors(node) {
+  const chain = [];
+  let current = node;
+  while (current && current.type !== 'root') {
+    chain.unshift(current);
+    current = current.parent;
+  }
+  let selectors = [''];
+  const atRules = [];
+  for (const item of chain) {
+    if (item.type === 'atrule')
+      atRules.push(`@${item.name} ${item.params.replace(/\s+/g, ' ').trim()}`);
+    if (item.type !== 'rule') continue;
+    const own = postcss.list.comma(item.selector).map(normalizeSelector);
+    selectors = selectors.flatMap((parent) =>
+      own.map((child) => {
+        if (child.includes('&'))
+          return child.replaceAll('&', parent || ':root');
+        return parent ? `${parent} ${child}` : child;
+      }),
+    );
+  }
+  const scope = atRules.join(' ');
+  return selectors.map((selector) => ({
+    key: `${scope}|${selector}`,
+    selector: scope ? `${scope} ${selector}`.trim() : selector,
+  }));
+}
+
+function inspectLoudPairs(file, root, diagnostics) {
+  const fills = [];
+  const onLoud = new Set();
+  root.walkDecls((decl) => {
+    const match = loudToken.exec(decl.prop.trim());
+    if (!match) return;
+    const scopes = resolvedSelectors(decl.parent);
+    if (match[2] === 'on-loud')
+      for (const { key } of scopes) onLoud.add(`${key}|${match[1]}`);
+    else fills.push({ decl, tone: match[1], scopes });
+  });
+  for (const { decl, tone, scopes } of fills) {
+    const missing = scopes.filter(({ key }) => !onLoud.has(`${key}|${tone}`));
+    if (!missing.length) continue;
+    const pair = `--wa-color-${tone}-on-loud`;
+    diagnostics.push(
+      diagnostic(
+        'KUI-L018',
+        location(file, decl),
+        `${decl.prop} is overridden without ${pair} in the same scope (${missing
+          .map(({ selector }) => selector || '(top level)')
+          .join(
+            ', ',
+          )}); set ${pair} alongside it so the loud fill keeps an AA-clearing foreground.`,
+        {
+          property: decl.prop,
+          value: decl.value,
+          tone,
+          pairProperty: pair,
+          selectors: missing.map(({ selector }) => selector),
+        },
+      ),
+    );
+  }
+}
+
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -358,6 +440,7 @@ async function inspectCss(
     );
     return;
   }
+  inspectLoudPairs(file, root, diagnostics);
   root.walkRules((rule) => {
     const classes = [
       ...rule.selector.matchAll(/\.([_a-zA-Z]+[_a-zA-Z0-9-]*)/g),

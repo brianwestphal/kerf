@@ -292,19 +292,26 @@ smallest subtree that needs a different identity:
 ```css
 :root {
   --wa-color-brand-fill-loud: #7540a8;
+  --wa-color-brand-on-loud: #ffffff;
   --wa-color-focus: #7540a8;
   --wa-form-control-border-radius: 0.5rem;
 }
 
 .billing-workspace {
   --wa-color-success-fill-loud: #10a86b;
+  --wa-color-success-on-loud: #1d1d1f;
 }
 ```
 
 The shipped theme pairs every `--wa-color-{variant}-fill-loud` with an
 `--wa-color-{variant}-on-loud` that clears WCAG AA (4.5:1) in both color
-schemes. When you override a loud fill, override its `on-loud` alongside it if
-the pair no longer clears 4.5:1 (for example, white text on a bright fill).
+schemes. When you override a loud fill, set its `on-loud` alongside it, in the
+same selector and at-rule scope, to a foreground that clears 4.5:1 on the new
+fill (white text on a bright fill usually does not: `#10a86b` above reaches
+only 3.1:1 with white, 5.5:1 with `#1d1d1f`). `kerf-ui-analyze` and
+`kerf-ui-doctor` report a loud fill override without its matching `on-loud` as
+review finding [`KUI-L018`](./ui-analyzer.md#loud-fill--on-loud-pairing-kui-l018);
+it checks the pairing, not the contrast, so choosing the value is still yours.
 
 Use `.wa-light`, `.wa-dark`, and `.wa-invert` for explicit appearance scopes.
 Component-specific custom properties and documented `::part()` selectors from

@@ -19,7 +19,10 @@ documented dynamic-data widening. Do not extend those diagnostics to child
 markup, live DOM relationships, disposer invocation, or other conditions that
 TypeScript cannot prove from one call.
 Read `../docs/webawesome-theme.md` when using Web Awesome components or changing
-shared theme tokens.
+shared theme tokens. When overriding a loud fill
+(`--wa-color-{tone}-fill-loud`), set the matching `--wa-color-{tone}-on-loud`
+in the same selector and at-rule scope with a foreground that clears 4.5:1;
+the analyzer reports an unpaired override as review finding `KUI-L018`.
 
 Before choosing or aligning components, look for a consumer-owned catalog that
 conforms to `./component-catalog-extension.schema.json`. Treat its entries as a

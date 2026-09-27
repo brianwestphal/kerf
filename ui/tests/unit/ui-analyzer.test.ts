@@ -563,3 +563,147 @@ export const App = () => <StateBanner title="Ready" />;`,
     expect(report.profile.files).toContain('packages/a/.kerf-ui-profile.json');
   });
 });
+
+describe('KUI-L018 loud fill / on-loud pairing', () => {
+  const tones = ['neutral', 'brand', 'success', 'warning', 'danger', 'pop'];
+
+  async function analyzeCss(css: string) {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-loud-'));
+    await mkdir(join(root, 'src'));
+    await writeFile(join(root, 'src/theme.css'), css);
+    const report = await analyzeUiProject({ root, paths: ['src/theme.css'] });
+    return report.diagnostics
+      .filter(({ ruleId }) => ruleId === 'KUI-L018')
+      .map((item) => ({
+        ...item,
+        evidence: item.evidence as {
+          tone: string;
+          pairProperty: string;
+          selectors: string[];
+        },
+      }));
+  }
+
+  it.each(tones)('accepts a paired %s override in one rule', async (tone) => {
+    expect(
+      await analyzeCss(
+        `:root { --wa-color-${tone}-fill-loud: #123456; --wa-color-${tone}-on-loud: #fff; }`,
+      ),
+    ).toEqual([]);
+  });
+
+  it.each(tones)(
+    'flags a %s fill override without its on-loud',
+    async (tone) => {
+      const findings = await analyzeCss(
+        `.app {\n  --wa-color-${tone}-fill-loud: #123456;\n}`,
+      );
+      expect(findings).toEqual([
+        expect.objectContaining({
+          ruleId: 'KUI-L018',
+          severity: 'review',
+          location: expect.objectContaining({ line: 2 }),
+          evidence: expect.objectContaining({
+            tone,
+            pairProperty: `--wa-color-${tone}-on-loud`,
+            selectors: ['.app'],
+          }),
+        }),
+      ]);
+    },
+  );
+
+  it("does not let a different tone's on-loud satisfy the pair", async () => {
+    const findings = await analyzeCss(
+      `:root { --wa-color-brand-fill-loud: #7540a8; --wa-color-success-on-loud: #fff; }`,
+    );
+    expect(findings).toHaveLength(1);
+    expect(findings[0].evidence).toMatchObject({ tone: 'brand' });
+  });
+
+  it('pairs across separate rules with the same selector and at-rule scope', async () => {
+    expect(
+      await analyzeCss(`
+:root { --wa-color-brand-fill-loud: #7540a8; }
+.billing { --wa-color-danger-fill-loud: #b00020; }
+:root { --wa-color-brand-on-loud: #fff; }
+.billing { --wa-color-danger-on-loud: #fff; }
+@media (prefers-color-scheme: dark) {
+  :root { --wa-color-brand-fill-loud: #c9a3f0; }
+  :root { --wa-color-brand-on-loud: #1a1a1a; }
+}
+`),
+    ).toEqual([]);
+    const other = await analyzeCss(`
+:root { --wa-color-brand-on-loud: #fff; }
+@media (prefers-color-scheme: dark) {
+  :root { --wa-color-brand-fill-loud: #c9a3f0; }
+}
+.other { --wa-color-brand-on-loud: #fff; }
+.billing { --wa-color-brand-fill-loud: #7540a8; }
+`);
+    expect(other.map(({ evidence }) => evidence.selectors)).toEqual([
+      ['@media (prefers-color-scheme: dark) :root'],
+      ['.billing'],
+    ]);
+  });
+
+  it('checks each selector of a selector list independently', async () => {
+    expect(
+      await analyzeCss(`
+:root, .theme-a { --wa-color-pop-fill-loud: #0af; }
+.theme-a,
+:root { --wa-color-pop-on-loud: #000; }
+`),
+    ).toEqual([]);
+    const findings = await analyzeCss(`
+:root, .theme-a, .theme-b { --wa-color-pop-fill-loud: #0af; }
+:root { --wa-color-pop-on-loud: #000; }
+`);
+    expect(findings).toHaveLength(1);
+    expect(findings[0].evidence.selectors).toEqual(['.theme-a', '.theme-b']);
+  });
+
+  it('resolves nested rules and nested at-rules to their full scope', async () => {
+    expect(
+      await analyzeCss(`
+.shell {
+  .panel { --wa-color-warning-fill-loud: #f5a524; }
+  &.dense { --wa-color-warning-fill-loud: #d08700; --wa-color-warning-on-loud: #000; }
+  @media (prefers-color-scheme: dark) { --wa-color-danger-fill-loud: #ff6b6b; }
+}
+.shell .panel { --wa-color-warning-on-loud: #000; }
+@media (prefers-color-scheme: dark) { .shell { --wa-color-danger-on-loud: #000; } }
+`),
+    ).toEqual([]);
+    const findings = await analyzeCss(`
+.shell {
+  --wa-color-neutral-on-loud: #fff;
+  .panel { --wa-color-neutral-fill-loud: #333; }
+}
+`);
+    expect(findings).toHaveLength(1);
+    expect(findings[0].evidence.selectors).toEqual(['.shell .panel']);
+  });
+
+  it('ignores comments, whitespace, and unrelated tokens', async () => {
+    expect(
+      await analyzeCss(`
+/* brand identity */
+:root   /* scope */ ,
+  .a  >  .b {
+  /* --wa-color-brand-fill-loud: #000; */
+  --wa-color-brand-fill-loud :   #7540a8 ;
+  --wa-color-brand-fill-quiet: #eee;
+  --wa-color-brand-on-quiet: #333;
+}
+.a > .b ,:root{--wa-color-brand-on-loud:#fff}
+`),
+    ).toEqual([]);
+    expect(
+      await analyzeCss(
+        ':root { --wa-color-brand-fill-quiet: #eee; --wa-color-brand-fill-normal: #ccc; }',
+      ),
+    ).toEqual([]);
+  });
+});

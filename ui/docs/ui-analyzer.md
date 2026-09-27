@@ -74,6 +74,7 @@ policy, or analysis inputs to the containing application.
 | `KUI-L015` | error  | An expression-only helper is passed without a composer.           |
 | `KUI-L016` | error  | A removed declaration-list escape hatch is used.                  |
 | `KUI-L017` | review | A valid but exceptional off-scale shorthand needs justification.  |
+| `KUI-L018` | review | A loud fill override lacks its `on-loud` pair in the same scope.  |
 
 Errors are provable contract violations and make the command exit 1. Review
 findings are deliberately heuristic and do not fail by default; pass
@@ -101,6 +102,43 @@ helpers, expression-only helpers, raw escape policy, and examples. The analyzer
 uses that same metadata for direct component calls and JSX, including nested
 paths such as `choices[].color`; consumer catalogs receive identical checks.
 Dynamic values remain a type-system responsibility rather than being guessed.
+
+## Loud fill / on-loud pairing (`KUI-L018`)
+
+The shipped Web Awesome theme pairs every `--wa-color-{tone}-fill-loud` with a
+`--wa-color-{tone}-on-loud` foreground that clears WCAG AA (4.5:1), for the
+`neutral`, `brand`, `success`, `warning`, `danger`, and `pop` tones. A
+stylesheet that overrides a loud fill without also setting that tone's
+`on-loud` keeps the theme's foreground on an unknown fill, so the guarantee no
+longer holds. `KUI-L018` reports the fill declaration and names each scope that
+lacks the pair.
+
+The pair must share a scope: the same individual selector (after resolving CSS
+nesting and splitting selector lists) inside the same chain of at-rules, in the
+same stylesheet. It may be declared in the same rule or in a separate rule with
+that selector, in either order. Another tone's `on-loud`, an `on-loud` in a
+different selector (including an ancestor), or one under a different
+`@media`/`@supports`/`@layer` scope does not count, because the analyzer cannot
+prove it applies wherever the fill does.
+
+```css
+/* KUI-L018: brand fill moves, its foreground does not. */
+.billing {
+  --wa-color-brand-fill-loud: #7540a8;
+}
+
+/* Paired: both in the same scope. */
+.billing {
+  --wa-color-brand-fill-loud: #7540a8;
+  --wa-color-brand-on-loud: #ffffff;
+}
+```
+
+It is a review finding rather than an error because the analyzer checks the
+pairing, not the resulting contrast: a fill that still clears 4.5:1 against the
+theme's foreground is valid. Set the `on-loud` explicitly anyway, which also
+documents the pair; use `--fail-on-review` to gate it in CI. See
+[the Web Awesome theme customization notes](./webawesome-theme.md#customization).
 
 The JSON report schema is exported as
 `@kerfjs/ui/analyzer/report.schema.json`.

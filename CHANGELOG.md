@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui`'s static analyzer (`kerf-ui-analyze`, and the analyzer stage of
+  `kerf-ui-doctor`) reports a new review finding, `KUI-L018`, when a
+  stylesheet overrides a loud tone fill (`--wa-color-{tone}-fill-loud` for
+  neutral, brand, success, warning, danger, or pop) without setting the
+  matching `--wa-color-{tone}-on-loud` in the same scope. The theme pairs each
+  loud fill with a foreground that clears WCAG AA, and an unpaired override
+  keeps that foreground on a fill it was never checked against. The pair must
+  share a selector (after resolving nesting and splitting selector lists) and
+  at-rule scope in the same stylesheet, in one rule or separate ones; another
+  tone's `on-loud` does not count. It is a review finding because it checks
+  the pairing, not the contrast; pass `--fail-on-review` to gate it. The
+  `webawesome-theme.md` customization example now sets both halves of each
+  pair.
 - `@kerfjs/ui` elevation shadows follow the color scheme, with or without the
   optional `@kerfjs/ui/webawesome.css` theme. Kerf's theme layer set
   `--wa-shadow-s` / `-m` / `-l` to fixed light-mode shadows (14%, 11%, and 9%
