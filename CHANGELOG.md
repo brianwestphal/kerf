@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **A collapsed `@kerfjs/ui` `Workbench` panel or `ResizableRegion` leaves
+  the accessibility tree.** Only its content was `inert`, so the labeled
+  `aside` / `section` stayed behind as an empty complementary or region
+  landmark that a screen-reader user could still land on. The collapsed
+  region itself now renders `inert` and `aria-hidden="true"`, like a
+  collapsed `CollapsiblePanel`; its separator was already hidden, and each
+  `restoreControl` renders outside it and stays reachable.
+
 - **An expanded `@kerfjs/ui` `CollapsiblePanel` holds its size in a flex
   layout.** The panel shrank like any flex item beside a work area with wide
   content, while its content kept the panel's fixed size for the slide-out, so

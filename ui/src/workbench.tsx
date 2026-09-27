@@ -219,6 +219,19 @@ function PanelHandle({
   );
 }
 
+/**
+ * A collapsed panel leaves the accessibility tree as a whole, like a collapsed
+ * `CollapsiblePanel`: its content and separator are already inert or hidden,
+ * so the labeled landmark would otherwise stay behind, empty, for a screen
+ * reader to land on. Its restore control renders outside it and stays
+ * reachable.
+ */
+function hiddenFromAccessibility(panel: WorkbenchPanel) {
+  return panel.collapsed || panel.presentation === 'hidden'
+    ? ('true' as const)
+    : undefined;
+}
+
 function Rail({
   id,
   side,
@@ -243,7 +256,8 @@ function Rail({
       data-responsive-overlay-at={panel.responsiveOverlayAt}
       {...resizeAttributes(resize)}
       aria-label={panel.label || undefined}
-      aria-hidden={panel.presentation === 'hidden' ? 'true' : undefined}
+      aria-hidden={hiddenFromAccessibility(panel)}
+      inert={Boolean(panel.collapsed)}
       style={panelStyle(panel, resize, '--kui-workbench-rail-width')}
     >
       <div
@@ -278,7 +292,8 @@ function Drawer({ id, panel }: { id: string; panel: WorkbenchPanel }) {
       data-responsive-overlay-at={panel.responsiveOverlayAt}
       {...resizeAttributes(resize)}
       aria-label={panel.label || undefined}
-      aria-hidden={panel.presentation === 'hidden' ? 'true' : undefined}
+      aria-hidden={hiddenFromAccessibility(panel)}
+      inert={Boolean(panel.collapsed)}
       style={panelStyle(panel, resize, '--kui-workbench-drawer-height')}
     >
       <div
@@ -328,10 +343,10 @@ function restore(
  * a composited transform — the instant-width / sliding-content technique, so the
  * work area relayouts once, not per frame. Bottom-drawer content stays anchored
  * to the shell's stable bottom edge throughout that transition. The app owns
- * each `collapsed` flag; the collapse is pure CSS. A collapsed panel's content
- * renders `inert`, so neither Tab nor assistive technology reaches controls that
- * have slid out of view (its restore control lives outside it and stays
- * reachable). A panel may opt in to drag and keyboard resizing with
+ * each `collapsed` flag; the collapse is pure CSS. A collapsed panel renders
+ * `inert` and `aria-hidden`, so neither Tab nor assistive technology reaches
+ * controls that have slid out of view or an empty landmark (its restore control
+ * lives outside it and stays reachable). A panel may opt in to drag and keyboard resizing with
  * `resizable`, which `wireWorkbench` drives. See `docs/23-app-layouts.md` §3.3.
  */
 export function Workbench({

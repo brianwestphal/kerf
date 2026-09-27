@@ -299,9 +299,11 @@ is still sliding out, and focusing one can never scroll clipped content back int
 view (`aria-hidden` alone left them focusable inside a hidden subtree). Its
 content slides via transform (disabled under reduced motion); `inert` does not
 affect rendering, so the slide still plays. A `restoreControl` renders outside
-the panel and stays reachable. A collapsed `ResizableRegion` makes its content
-wrapper `inert` the same way, while its separator leaves the Tab order and its
-`restoreControl` stays outside the region.
+the panel and stays reachable. A collapsed `ResizableRegion` renders `inert` and
+`aria-hidden` on the region itself the same way (its content wrapper is `inert`
+too, and its separator is already hidden and not displayed), so no empty
+labeled region landmark stays behind; its `restoreControl` stays outside the
+region.
 `CollapsiblePanelToggle` is a named button carrying `aria-expanded` and the
 standard per-side collapse/expand glyph (`PanelLeft*` / `PanelRight*` /
 `PanelBottom*`); place a collapse toggle inside the panel and an expand toggle in
@@ -321,10 +323,11 @@ state per panel.
 ## Workbench
 
 Each `Workbench` rail and drawer is a labeled region (`aside` for a rail, `section`
-for the drawer). While a panel is collapsed its content wrapper is `inert`, rendered
-from the app's `collapsed` flag, so its controls leave the Tab order and the
-accessibility tree even while the content is still sliding out, and focusing one can
-never scroll clipped content back into view. The panel's `restoreControl` renders
+for the drawer). While a panel is collapsed the region itself renders `inert` and
+`aria-hidden="true"`, and so does not linger as an empty landmark, and its content
+wrapper is `inert`, all rendered from the app's `collapsed` flag, so its controls
+leave the Tab order and the accessibility tree even while the content is still
+sliding out, and focusing one can never scroll clipped content back into view. The panel's `restoreControl` renders
 outside that content and stays reachable; a resizable panel's separator also leaves
 the Tab order while collapsed or not inline. `wireWorkbench`, given a panel's
 `collapsed` signal, returns focus stranded in a closing panel to the control that

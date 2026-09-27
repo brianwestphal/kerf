@@ -3,8 +3,8 @@ import { resolve } from 'node:path';
 import { expect, type Locator, type Page, test } from '@playwright/test';
 import { build } from 'esbuild';
 
-// A collapsed CollapsiblePanel is itself inert, and a collapsed
-// ResizableRegion's content is inert, so Tab never reaches controls that slid
+// A collapsed CollapsiblePanel or ResizableRegion is itself inert and
+// aria-hidden (no empty landmark stays behind), so Tab never reaches controls that slid
 // out of view (focusing one scrolled the clipped panel and exposed a control
 // inside an aria-hidden subtree). The slide-out still animates, wireSidebar's
 // focus hand-off still lands on a reachable control, and restore controls stay
@@ -143,7 +143,7 @@ for (const width of [1280, 390]) {
       await expect(showNav(page)).toBeFocused();
     });
 
-    test('a collapsed ResizableRegion content is inert while its restore control stays reachable', async ({
+    test('a collapsed ResizableRegion is inert and hidden while its restore control stays reachable', async ({
       page,
       browserName,
     }) => {
@@ -155,6 +155,13 @@ for (const width of [1280, 390]) {
       ).toBe(true);
       await expect(output(page)).toHaveAttribute('data-collapsed', 'true');
       await expect(outputContent(page)).toHaveAttribute('inert', '');
+      // The labeled region itself leaves the accessibility tree, so no empty
+      // region landmark stays behind.
+      await expect(output(page)).toHaveAttribute('aria-hidden', 'true');
+      await expect(output(page)).toHaveAttribute('inert', '');
+      await expect(
+        page.getByRole('region', { name: 'Output', exact: true }),
+      ).toHaveCount(0);
       const show = button(page, 'Show output');
       await expect(show).toBeFocused();
       await expectTabSkipsCollapsed(page, show, browserName);
@@ -163,6 +170,9 @@ for (const width of [1280, 390]) {
       await show.press('Enter');
       await expect(output(page)).toHaveAttribute('data-collapsed', 'false');
       await expect(outputContent(page)).not.toHaveAttribute('inert');
+      await expect(
+        page.getByRole('region', { name: 'Output', exact: true }),
+      ).toHaveCount(1);
       await expect(button(page, 'Hide output')).toBeFocused();
     });
   });

@@ -809,8 +809,9 @@ above its Workbench's expanded inline drawer, keeps the corner beneath an
 overlay drawer, and ignores a nested Workbench's drawer
 (`ui/tests/browser/restore-anchor.spec.ts` with
 `ui/tests/browser/fixtures/restore-anchor.tsx`). A collapsed `CollapsiblePanel`
-renders `inert` beside its `aria-hidden` and a collapsed `ResizableRegion` its
-content wrapper, so Tab and Shift+Tab never enter either at 1280 and 390px, the
+renders `inert` beside its `aria-hidden`, and a collapsed `ResizableRegion` (like
+a collapsed Workbench rail/drawer) renders both on the region as well as `inert`
+on its content wrapper, so no empty labeled landmark stays behind and Tab and Shift+Tab never enter either at 1280 and 390px, the
 slide-out still animates, and `wireSidebar` still hands focus to the toggle on
 collapse (including a wide → compact crossing) and into the panel on open
 (`ui/tests/unit/collapsible-panel.test.tsx`, `ui/tests/unit/components.test.tsx`,

@@ -1148,10 +1148,10 @@ interface WorkbenchProps {
  * a composited transform — the instant-width / sliding-content technique, so the
  * work area relayouts once, not per frame. Bottom-drawer content stays anchored
  * to the shell's stable bottom edge throughout that transition. The app owns
- * each `collapsed` flag; the collapse is pure CSS. A collapsed panel's content
- * renders `inert`, so neither Tab nor assistive technology reaches controls that
- * have slid out of view (its restore control lives outside it and stays
- * reachable). A panel may opt in to drag and keyboard resizing with
+ * each `collapsed` flag; the collapse is pure CSS. A collapsed panel renders
+ * `inert` and `aria-hidden`, so neither Tab nor assistive technology reaches
+ * controls that have slid out of view or an empty landmark (its restore control
+ * lives outside it and stays reachable). A panel may opt in to drag and keyboard resizing with
  * `resizable`, which `wireWorkbench` drives. See `docs/23-app-layouts.md` §3.3.
  */
 declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainMinSize, mainMinHeight, className, slot, }: WorkbenchProps): SafeHtml;
@@ -1505,9 +1505,9 @@ interface ResizableRegionProps {
     max: number;
     axis?: ResizableRegionAxis;
     edge?: ResizableRegionEdge;
-    /** Snap the track to zero. The content renders `inert` while collapsed, so
-     * neither Tab nor assistive technology reaches it; the handle leaves the Tab
-     * order and `restoreControl` renders outside the region. */
+    /** Snap the track to zero. The region renders `inert` and `aria-hidden`
+     * while collapsed, so neither Tab nor assistive technology reaches it or
+     * lands on an empty landmark; `restoreControl` renders outside the region. */
     collapsed?: boolean;
     transitioning?: boolean;
     /** Whether the separator line is painted. The resize hit target remains available. */

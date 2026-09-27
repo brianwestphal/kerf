@@ -1909,25 +1909,24 @@ describe('production UI primitives', () => {
       'class="kui-resizable-region__restore" data-region-restore="drawer" data-position="bottom-end"',
     );
     expect(vertical).toContain('tabindex="-1"');
-    // A collapsed region's content is inert, so Tab and assistive technology
-    // never reach content that has slid out of view; the restore control and
-    // the (already untabbable) handle sit outside it.
+    // A collapsed region leaves the accessibility tree whole: the labeled
+    // region is inert and aria-hidden (no empty landmark stays behind), its
+    // content stays inert as before, and the restore control sits outside.
     const collapsedHost = document.createElement('div');
     collapsedHost.innerHTML = vertical;
+    const collapsedRegion = collapsedHost.querySelector<HTMLElement>(
+      '[data-component="resizable-region"]',
+    )!;
     const collapsedContent = collapsedHost.querySelector<HTMLElement>(
       '.kui-resizable-region__content',
     )!;
+    expect(collapsedRegion.hasAttribute('inert')).toBe(true);
+    expect(collapsedRegion.getAttribute('aria-hidden')).toBe('true');
     expect(collapsedContent.hasAttribute('inert')).toBe(true);
-    expect(collapsedHost.querySelectorAll('[inert]')).toHaveLength(1);
     expect(
       collapsedHost
         .querySelector('[data-region-restore="drawer"]')!
-        .closest('[inert]'),
-    ).toBe(null);
-    expect(
-      collapsedHost
-        .querySelector('.kui-resizable-region__handle')!
-        .closest('[inert]'),
+        .closest('[inert], [aria-hidden="true"]'),
     ).toBe(null);
     expect(host.querySelector('[inert]')).toBe(null);
     const hidden = asHtml(

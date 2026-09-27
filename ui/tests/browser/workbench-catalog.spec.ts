@@ -787,7 +787,11 @@ test.describe('resizable Workbench panels', () => {
     await page.keyboard.press('Enter');
     await expect(right).toHaveAttribute('data-collapsed', 'false');
     await left.evaluate((element) => {
+      // Stand in for an expanded render: a collapsed rail is also inert and
+      // hidden, and an inert box is not hit-testable.
       element.dataset.collapsed = 'false';
+      element.removeAttribute('inert');
+      element.removeAttribute('aria-hidden');
     });
     await drawer.evaluate((element) => {
       element.dataset.responsiveOverlayAt = 'narrow';
@@ -1020,6 +1024,14 @@ test.describe('resizable Workbench panels', () => {
     expect(animating).toBe(true);
     await expect(left).toHaveAttribute('data-collapsed', 'true');
     await expect(content(left)).toHaveAttribute('inert', '');
+    // The labeled rail leaves the accessibility tree whole, so no empty
+    // complementary landmark stays behind for a screen reader to land on.
+    const leftLabel = (await left.getAttribute('aria-label'))!;
+    await expect(left).toHaveAttribute('aria-hidden', 'true');
+    await expect(left).toHaveAttribute('inert', '');
+    await expect(
+      workbench.getByRole('complementary', { name: leftLabel, exact: true }),
+    ).toHaveCount(0);
     const navigatorToggle = toolbar.getByRole('button', {
       name: 'Show navigator',
     });
@@ -1027,6 +1039,9 @@ test.describe('resizable Workbench panels', () => {
     await navigatorToggle.press('Enter');
     await expect(left).toHaveAttribute('data-collapsed', 'false');
     await expect(content(left)).not.toHaveAttribute('inert');
+    await expect(
+      workbench.getByRole('complementary', { name: leftLabel, exact: true }),
+    ).toHaveCount(1);
 
     // Narrow, both rails are collapsed overlays: Tab and Shift+Tab from the
     // editor toolbar never reach either, and nothing hidden scrolls into view.

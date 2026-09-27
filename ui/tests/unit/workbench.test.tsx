@@ -54,7 +54,7 @@ describe('Workbench', () => {
     expect(html).toContain('<section id="wb-bottom-drawer"');
   });
 
-  it('makes a collapsed panel content inert and leaves its restore control reachable', () => {
+  it('hides a collapsed panel, content and landmark, and leaves its restore control reachable', () => {
     const render = (collapsed: boolean) => {
       const root = document.createElement('div');
       root.innerHTML = String(
@@ -97,12 +97,27 @@ describe('Workbench', () => {
     ];
     expect(restores).toHaveLength(2);
     for (const restore of restores)
-      expect(restore.closest('[inert]')).toBe(null);
+      expect(restore.closest('[inert], [aria-hidden="true"]')).toBe(null);
+    // The labeled rail/drawer itself leaves the accessibility tree too, so no
+    // empty complementary/region landmark stays behind.
+    const regions = [
+      ...collapsed.querySelectorAll<HTMLElement>(
+        '[data-workbench-rail], [data-workbench-drawer]',
+      ),
+    ];
+    expect(regions).toHaveLength(3);
+    for (const region of regions) {
+      expect(region.hasAttribute('inert')).toBe(true);
+      expect(region.getAttribute('aria-hidden')).toBe('true');
+    }
 
     const expanded = render(false);
     for (const content of contents(expanded))
       expect(content.hasAttribute('inert')).toBe(false);
     expect(expanded.querySelector('[inert]')).toBe(null);
+    expect(expanded.querySelector('[aria-hidden="true"][aria-label]')).toBe(
+      null,
+    );
   });
 
   it('defaults collapsed to false and omits an unset size style', () => {

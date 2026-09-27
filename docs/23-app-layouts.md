@@ -244,6 +244,13 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
   so the slide-out still animates, and the `restoreControl` sits outside the
   content (and the resize handle already leaves the tab order), so both stay
   as reachable as before. Expanding removes the attribute in the same render.
+  The labeled rail/drawer itself also renders `inert` and `aria-hidden="true"`
+  while collapsed (KF-JJ2MQR: with only the content inert, the collapsed
+  `aside`/`section` stayed in the accessibility tree as an empty labeled
+  landmark a screen-reader user could still land on). Its separator is
+  already hidden and `display: none` while collapsed, so nothing reachable
+  moves into the hidden subtree, and the three collapsible families now hide
+  a collapsed panel the same way.
   With `wireWorkbench` given the panel's `collapsed` signal, focus inside a
   closing panel is handed back as described below; an app that closes a
   panel without it owns that focus move.
@@ -578,9 +585,13 @@ A collapsed panel is inert (KF-HVJ4RM: a collapsed `CollapsiblePanel` or
 the §3.3 Workbench rule. `CollapsiblePanel` renders `inert` beside its existing
 `aria-hidden="true"` on the collapsed `aside` itself — the panel holds nothing
 but its content, and `aria-hidden` keeps the emptied landmark hidden even from
-tooling that does not prune inert subtrees — while `ResizableRegion` renders
-`inert` on its `.kui-resizable-region__content` wrapper, because its separator
-lives inside the region. Both come straight from `collapsed`, so no wire is
+tooling that does not prune inert subtrees. `ResizableRegion` first rendered
+`inert` only on its `.kui-resizable-region__content` wrapper, because its
+separator lives inside the region; since KF-JJ2MQR (the collapsed region stayed
+behind as an empty labeled landmark) the region itself also renders `inert` and
+`aria-hidden="true"`, like a collapsed Workbench panel — its separator is
+already hidden and not displayed while collapsed. All come straight from
+`collapsed`, so no wire is
 needed, the slide-out still animates, and each `restoreControl` renders outside
 the inert subtree. `wireSidebar`'s focus hand-off is unchanged: a panel
 collapsing from inside hands focus to its toggle outside it, a wide → compact

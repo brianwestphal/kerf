@@ -20,9 +20,9 @@ export interface ResizableRegionProps {
   max: number;
   axis?: ResizableRegionAxis;
   edge?: ResizableRegionEdge;
-  /** Snap the track to zero. The content renders `inert` while collapsed, so
-   * neither Tab nor assistive technology reaches it; the handle leaves the Tab
-   * order and `restoreControl` renders outside the region. */
+  /** Snap the track to zero. The region renders `inert` and `aria-hidden`
+   * while collapsed, so neither Tab nor assistive technology reaches it or
+   * lands on an empty landmark; `restoreControl` renders outside the region. */
   collapsed?: boolean;
   transitioning?: boolean;
   /** Whether the separator line is painted. The resize hit target remains available. */
@@ -94,7 +94,13 @@ export function ResizableRegion({
         data-responsive-fill-at={responsiveFillAt}
         style={`--kui-resizable-region-size:${resolved}px;--kui-resizable-region-expanded-size:${expandedSize}px`}
         aria-label={label}
-        aria-hidden={presentation === 'hidden' ? 'true' : undefined}
+        // Collapsed, the labeled region leaves the accessibility tree whole
+        // (its content is inert and its separator already hidden), so no
+        // empty landmark stays behind; the restore control is a sibling.
+        aria-hidden={
+          collapsed || presentation === 'hidden' ? 'true' : undefined
+        }
+        inert={collapsed}
       >
         <div class="kui-resizable-region__content" inert={collapsed}>
           {children}

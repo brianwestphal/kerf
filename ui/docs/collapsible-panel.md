@@ -61,10 +61,11 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   press, or the panel's own close control reveals the control again, and a
   collapsed overlay leaves it clickable. `ResizableRegion`'s `restoreControl`
   follows the same rules, two below `--kui-resizable-region-overlay-z` (39).
-  A collapsed `ResizableRegion` likewise renders its content wrapper
-  (`.kui-resizable-region__content`) `inert`; the region's label, its
-  separator (which already leaves the Tab order while collapsed), and the
-  restore control stay outside it.
+  A collapsed `ResizableRegion` likewise renders `inert` and `aria-hidden` on
+  the region itself (and `inert` on its `.kui-resizable-region__content`
+  wrapper), so its label leaves the accessibility tree with its content; its
+  separator is already hidden while collapsed, and the restore control stays
+  outside the region.
   Overlay presentation also clamps fixed-size animated content to the configured
   responsive overlay maximum, so a remembered desktop size cannot escape a narrow
   viewport.
