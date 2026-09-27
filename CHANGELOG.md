@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- The bundled AI assistant configs (`ai/skill.md`, `ai/cursorrules`) now
+  explain the `data-kerf-overlay-host` opt-in next to the one-`mount()`-per-root
+  rule: a modal `<dialog>` of your own that anchors kerf popovers or tooltips
+  needs `<div data-kerf-overlay-host data-morph-skip></div>`, the one allowed
+  nested-mount boundary. The `kerfjs/ai-assistant-configs` lint rule reports
+  installed copies as stale until they are refreshed.
 - The opt-in `rebuiltListeners` dev warning no longer reports a popover or
   tooltip closing inside a modal dialog's host slot. Removals inside a
   `[data-kerf-overlay-host][data-morph-skip]` slot belong to the surface's own
