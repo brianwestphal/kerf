@@ -67,7 +67,7 @@ Tabs collapse four URLs into one. The hub's primary delivery vector is search �
 
 KF-132 shipped the skeleton — the `/migrating/` index page with comparison matrix, the four original per-framework page stubs, the sidebar nav entry, and the hero CTA. KF-156 / KF-157 / KF-158 / KF-159 filled in the React / Alpine / Lit / vanjs pages. KF-189 expanded the set to cover Vue / Svelte / Solid / Preact / htmx / Angular / jQuery / Redux / Astro.
 
-Each per-framework page writes one source framework's five sections (bundle, primitives, code, gotchas, perf) against the existing TodoMVC reference. The shape varies for frameworks where TodoMVC isn't the right reference — htmx, Redux, and Astro lean on conceptual mapping rather than a literal side-by-side; the Solid page is direct about kerf's perf ceiling vs Solid's.
+Each per-framework page writes one source framework's five sections (bundle, primitives, code, gotchas, perf) against the existing TodoMVC reference. The shape varies for frameworks where TodoMVC isn't the right reference — htmx, Redux, Astro, and Angular lean on conceptual mapping rather than a literal side-by-side (the Angular page has no bundle-delta or side-by-side code section; it compares the two tools plainly, when each wins, mental-model translations, gotchas, and perf); the Solid page is direct about kerf's perf ceiling vs Solid's.
 
 ## 10.8 Maintenance
 

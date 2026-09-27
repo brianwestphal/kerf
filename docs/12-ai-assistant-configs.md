@@ -267,10 +267,17 @@ For each triggered file, the rule classifies into one of three states:
   its version is older than the manifest's, and its canonical-section hash
   matches the manifest history for that version. Report recommending `--fix`;
   auto-fix follows the versioned-section semantics below.
-- **Up-to-date.** Version matches the manifest. Silent.
+- **Up-to-date.** Silent. Either the version matches the manifest **and** the
+  canonical section (everything up to the marker) hashes to the manifest's
+  current `sha256`, or the consumer's version is **newer** than the bundled
+  one (the consumer is ahead of the installed `kerfjs`, so there is nothing to
+  offer).
 
 A fourth implicit state, **forked**, gets a different report — see
-§12.4.4.
+§12.4.4. A file that has the marker but no `kerf-skill-version` line, or whose
+version matches but whose canonical section was edited, is forked rather than
+up to date (`classifyFile()` in
+`eslint-plugin/lib/rules/ai-assistant-configs.js`).
 
 ### 12.4.3 Auto-fix behaviour — versioned-section preservation
 
@@ -299,7 +306,7 @@ cross-file write — unusual enough to be worth surfacing.
 
 ### 12.4.4 Edge cases — when auto-fix refuses
 
-The contract is "above the marker is kerf's; below is yours." Three
+The contract is "above the marker is kerf's; below is yours." Five
 shapes break that contract and the rule refuses to auto-fix, reporting
 a "forked" state instead:
 
@@ -308,11 +315,13 @@ a "forked" state instead:
   or the file is a hand-written variant. Don't guess at the boundary;
   warn and recommend either restoring the marker or disabling the
   rule.
+- **No `kerf-skill-version` line.** The marker is present but the version
+  line is not, so the rule cannot tell which canonical hash to compare against.
 - **Content above the marker has been edited** — its sha256 does not match the
   manifest's canonical hash for the consumer's own version (the current
   `sha256`, or that version's `history` entry). The consumer has chosen to
-  customise inside kerf's zone; treat it as a deliberate fork even when the
-  version is stale.
+  customise inside kerf's zone; treat it as a deliberate fork whether the
+  version is current or stale.
 - **Historical hash unavailable.** An older version absent from `history`
   cannot be proven canonical. Treat it conservatively as a fork instead of
   risking an overwrite.
@@ -320,7 +329,7 @@ a "forked" state instead:
   has exactly one. Multiple markers mean the file shape is
   unrecognised.
 
-In all three cases the report names the specific shape mismatch and
+In every case the report names the specific shape mismatch and
 points at one of two resolutions: restore the file to the canonical
 shape (move customisations below a freshly-inserted marker, delete
 extras) or add `'kerfjs/ai-assistant-configs': 'off'` to the eslint
@@ -389,8 +398,9 @@ classify well-formed files as forked.
 The bundled `ai/` directory is data, not code — it ships as static
 files, not as part of the JS bundle, and `import 'kerfjs'` never
 loads it. A consumer who installs `kerfjs` but never uses the
-eslint plugin pays exactly the ~24 KB of bundled markdown on disk
-and nothing at runtime.
+eslint plugin pays exactly the bundled `ai/` files on disk — about
+73 KB today (`ai/skill.md` ~41 KB, `ai/cursorrules` ~28 KB,
+`ai/manifest.json` ~5 KB) — and nothing at runtime.
 
 ### 12.5.5 No postinstall scripts
 

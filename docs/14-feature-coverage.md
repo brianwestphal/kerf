@@ -409,8 +409,12 @@ purpose (KF-289 investigation outcome):
    because "every documented behavior" has no clean machine-readable boundary —
    prose describes behaviors at wildly varying granularity. It is split:
    - **Public _value_ exports → automated.** Every user-facing export from
-     `kerfjs` / `kerfjs/array-signal` / `kerfjs/html` must be named by at least one index row
-     (the same script enforces this). Adding a public export therefore forces a
+     the main barrel and every public runtime subpath (`array-signal`, `html`,
+     `actions`, `overlay`, `scope`, `async`, `list`, `timing`, `remount`,
+     `attach`, `router`) must be named by at least one index row (the same
+     script enforces this, from its `EXPORT_SOURCES` list). The `dev` and
+     `testing` subpaths, the JSX runtime entry points, and the Node-only
+     `kerfjs/setup` are outside it. Adding a public export therefore forces a
      behavior row. This is the tractable, high-value slice — a new API can't ship
      un-indexed.
    - **Prose-level behaviors → the periodic audit exercise, deliberately not a
