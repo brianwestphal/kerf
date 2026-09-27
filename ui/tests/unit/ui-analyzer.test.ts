@@ -1,6 +1,6 @@
-import { mkdir, mkdtemp, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
@@ -9,6 +9,12 @@ import {
   formatUiAnalysisSarif,
   formatUiAnalysisText,
 } from '../../analyzer/index.mjs';
+import {
+  contrastRatio,
+  DEFAULT_ON_LOUD,
+  literalSchemeColors,
+  loudPairContrast,
+} from '../../analyzer/loud-pairs.mjs';
 
 async function fixture({ suppressSpacing = false } = {}) {
   const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-'));
@@ -634,34 +640,49 @@ describe('KUI-L018 loud fill / on-loud pairing', () => {
 }
 `),
     ).toEqual([]);
-    const other = await analyzeCss(`
-:root { --wa-color-brand-on-loud: #fff; }
+  });
+
+  it('reaches a fill from an unconditional scope, never from a narrower at-rule', async () => {
+    // An unconditional on-loud applies inside @media, so the pair is measured.
+    expect(
+      await analyzeCss(`
+.billing { --wa-color-warning-on-loud: #000; }
 @media (prefers-color-scheme: dark) {
-  :root { --wa-color-brand-fill-loud: #c9a3f0; }
+  .billing { --wa-color-warning-fill-loud: #f5a524; }
 }
-.other { --wa-color-brand-on-loud: #fff; }
-.billing { --wa-color-brand-fill-loud: #7540a8; }
+`),
+    ).toEqual([]);
+    // An on-loud under @media cannot be proven to apply to an unconditional fill.
+    // (pop has no literal theme default, so an unpaired fill stays a finding.)
+    const findings = await analyzeCss(`
+@media (prefers-color-scheme: dark) {
+  .billing { --wa-color-pop-on-loud: #000; }
+}
+.billing { --wa-color-pop-fill-loud: #0af; }
+@supports (color: red) {
+  .billing { --wa-color-pop-fill-loud: #0af; }
+}
 `);
-    expect(other.map(({ evidence }) => evidence.selectors)).toEqual([
-      ['@media (prefers-color-scheme: dark) :root'],
+    expect(findings.map(({ evidence }) => evidence.selectors)).toEqual([
       ['.billing'],
+      ['@supports (color: red) .billing'],
     ]);
   });
 
   it('checks each selector of a selector list independently', async () => {
     expect(
       await analyzeCss(`
-:root, .theme-a { --wa-color-pop-fill-loud: #0af; }
+.theme-b, .theme-a { --wa-color-pop-fill-loud: #0af; }
 .theme-a,
-:root { --wa-color-pop-on-loud: #000; }
+.theme-b { --wa-color-pop-on-loud: #000; }
 `),
     ).toEqual([]);
     const findings = await analyzeCss(`
-:root, .theme-a, .theme-b { --wa-color-pop-fill-loud: #0af; }
-:root { --wa-color-pop-on-loud: #000; }
+.theme-a, .theme-b, .theme-c { --wa-color-pop-fill-loud: #0af; }
+.theme-a { --wa-color-pop-on-loud: #000; }
 `);
     expect(findings).toHaveLength(1);
-    expect(findings[0].evidence.selectors).toEqual(['.theme-a', '.theme-b']);
+    expect(findings[0].evidence.selectors).toEqual(['.theme-b', '.theme-c']);
   });
 
   it('resolves nested rules and nested at-rules to their full scope', async () => {
@@ -676,14 +697,60 @@ describe('KUI-L018 loud fill / on-loud pairing', () => {
 @media (prefers-color-scheme: dark) { .shell { --wa-color-danger-on-loud: #000; } }
 `),
     ).toEqual([]);
+    // A sibling scope is not an ancestor.
     const findings = await analyzeCss(`
 .shell {
-  --wa-color-neutral-on-loud: #fff;
+  .toolbar { --wa-color-neutral-on-loud: #fff; }
   .panel { --wa-color-neutral-fill-loud: #333; }
 }
 `);
     expect(findings).toHaveLength(1);
     expect(findings[0].evidence.selectors).toEqual(['.shell .panel']);
+  });
+
+  it('accepts an on-loud set in an ancestor theme scope', async () => {
+    expect(
+      await analyzeCss(`
+:root { --wa-color-neutral-on-loud: #fff; }
+.app .panel { --wa-color-neutral-fill-loud: #333; }
+.shell {
+  --wa-color-pop-on-loud: #000;
+  .panel { --wa-color-pop-fill-loud: #0af; }
+}
+.frame > .tile { --wa-color-danger-fill-loud: #b00020; }
+.frame { --wa-color-danger-on-loud: #fff; }
+`),
+    ).toEqual([]);
+    // A selector that merely shares a prefix is not an ancestor.
+    const findings = await analyzeCss(`
+.shell { --wa-color-pop-on-loud: #000; }
+.shell-alt .panel { --wa-color-pop-fill-loud: #0af; }
+.shell.dense { --wa-color-pop-fill-loud: #0af; }
+`);
+    expect(findings.map(({ evidence }) => evidence.selectors)).toEqual([
+      ['.shell-alt .panel'],
+      ['.shell.dense'],
+    ]);
+  });
+
+  it('measures the nearest governing on-loud: same scope before an ancestor', async () => {
+    // The same-scope #000 governs, not the failing ancestor #fff.
+    expect(
+      await analyzeCss(`
+:root { --wa-color-pop-on-loud: #fff; }
+.panel { --wa-color-pop-fill-loud: #0af; --wa-color-pop-on-loud: #000; }
+`),
+    ).toEqual([]);
+    const findings = await analyzeCss(`
+:root { --wa-color-pop-on-loud: #000; }
+.panel { --wa-color-pop-on-loud: #fff; }
+.panel .cell { --wa-color-pop-fill-loud: #0af; }
+`);
+    expect(findings).toEqual([
+      expect.objectContaining({
+        evidence: expect.objectContaining({ pairValue: '#fff' }),
+      }),
+    ]);
   });
 
   it('ignores comments, whitespace, and unrelated tokens', async () => {
@@ -705,5 +772,221 @@ describe('KUI-L018 loud fill / on-loud pairing', () => {
         ':root { --wa-color-brand-fill-quiet: #eee; --wa-color-brand-fill-normal: #ccc; }',
       ),
     ).toEqual([]);
+  });
+});
+
+describe('KUI-L018 literal contrast', () => {
+  async function analyze(files: Record<string, string>, paths?: string[]) {
+    const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-contrast-'));
+    for (const [path, source] of Object.entries(files)) {
+      await mkdir(dirname(join(root, path)), { recursive: true });
+      await writeFile(join(root, path), source);
+    }
+    const report = await analyzeUiProject({ root, paths });
+    return report.diagnostics
+      .filter(({ ruleId }) => ruleId === 'KUI-L018')
+      .map((item) => ({
+        file: item.location.file,
+        line: item.location.line,
+        message: item.message,
+        evidence: item.evidence as Record<string, unknown>,
+      }));
+  }
+
+  it('flags a literal pair that is present but below 4.5:1', async () => {
+    const findings = await analyze({
+      'src/theme.css':
+        '.billing {\n  --wa-color-brand-fill-loud: #7fb3ff;\n  --wa-color-brand-on-loud: #fff;\n}\n',
+    });
+    expect(findings).toEqual([
+      expect.objectContaining({
+        line: 2,
+        evidence: expect.objectContaining({
+          tone: 'brand',
+          pairValue: '#fff',
+          pairLocation: expect.objectContaining({ line: 3 }),
+          contrast: 2.14,
+          scheme: 'light',
+          selectors: ['.billing'],
+        }),
+      }),
+    ]);
+    expect(findings[0].message).toContain('2.14:1');
+  });
+
+  it('measures each color scheme of light-dark() pairs', async () => {
+    expect(
+      await analyze({
+        'src/theme.css':
+          ':root { --wa-color-danger-fill-loud: light-dark(#b00020, #ff8a8a); --wa-color-danger-on-loud: light-dark(#fff, #1a1a1a); }',
+      }),
+    ).toEqual([]);
+    const findings = await analyze({
+      'src/theme.css':
+        ':root { --wa-color-danger-fill-loud: light-dark(#b00020, #ff8a8a); --wa-color-danger-on-loud: #fff; }',
+    });
+    expect(findings).toEqual([
+      expect.objectContaining({
+        evidence: expect.objectContaining({ scheme: 'dark' }),
+      }),
+    ]);
+  });
+
+  it('parses the literal color syntaxes it measures', async () => {
+    for (const [fill, onLoud] of [
+      ['#35c', 'white'],
+      ['#3355ccff', 'rgb(255 255 255)'],
+      ['rgb(51, 85, 204)', 'rgba(100%, 100%, 100%, 1)'],
+      ['hsl(226deg 60% 50%)', 'hsla(0, 0%, 100%, 100%)'],
+      ['#3355CC !important', '#FFF'],
+    ])
+      expect(
+        await analyze({
+          'src/theme.css': `.a { --wa-color-brand-fill-loud: ${fill}; --wa-color-brand-on-loud: ${onLoud}; }`,
+        }),
+        `${fill} on ${onLoud}`,
+      ).toEqual([]);
+    const failing = await analyze({
+      'src/theme.css':
+        '.a { --wa-color-brand-fill-loud: hsl(210 100% 75%); --wa-color-brand-on-loud: rgb(255 255 255 / 100%); }',
+    });
+    expect(failing).toHaveLength(1);
+  });
+
+  it('does not measure a pair it cannot prove, nor flag a present one', async () => {
+    for (const [fill, onLoud] of [
+      ['var(--brand)', '#fff'],
+      ['#7fb3ff', 'var(--text)'],
+      ['color-mix(in srgb, #7fb3ff 50%, white)', '#fff'],
+      ['#7fb3ff80', '#fff'],
+      ['rgb(127 179 255 / 0.5)', '#fff'],
+      ['light-dark(#7fb3ff)', '#fff'],
+      ['light-dark(#7fb3ff, var(--x))', '#fff'],
+      ['currentColor', '#fff'],
+      ['rgb(1 2)', '#fff'],
+    ])
+      expect(
+        await analyze({
+          'src/theme.css': `.a { --wa-color-brand-fill-loud: ${fill}; --wa-color-brand-on-loud: ${onLoud}; }`,
+        }),
+        `${fill} on ${onLoud}`,
+      ).toEqual([]);
+  });
+
+  it("passes an unpaired fill that clears 4.5:1 against the theme's default on-loud", async () => {
+    // success and warning default to #1d1d1f in both schemes.
+    expect(
+      await analyze({
+        'src/theme.css':
+          '.a { --wa-color-success-fill-loud: #30d158; --wa-color-warning-fill-loud: light-dark(#ffd60a, #ffcc00); }',
+      }),
+    ).toEqual([]);
+    // brand and danger default to light-dark(#fff, #111113).
+    expect(
+      await analyze({
+        'src/theme.css':
+          '.a { --wa-color-brand-fill-loud: light-dark(#0060c0, #64d2ff); --wa-color-danger-fill-loud: light-dark(#c00010, #ff8080); }',
+      }),
+    ).toEqual([]);
+  });
+
+  it('keeps flagging an unpaired fill that fails, or that has no literal default', async () => {
+    const findings = await analyze({
+      'src/theme.css': [
+        '.a { --wa-color-success-fill-loud: #0a5c2a; }',
+        '.b { --wa-color-brand-fill-loud: #0060c0; }',
+        '.c { --wa-color-neutral-fill-loud: #111; }',
+        '.d { --wa-color-pop-fill-loud: #fff; }',
+        '.e { --wa-color-warning-fill-loud: var(--app-yellow); }',
+      ].join('\n'),
+    });
+    expect(
+      findings.map(({ evidence }) => [
+        evidence.tone,
+        evidence.contrast,
+        evidence.scheme,
+      ]),
+    ).toEqual([
+      ['success', 2.06, 'light'],
+      ['brand', 3.08, 'dark'],
+      ['neutral', undefined, undefined],
+      ['pop', undefined, undefined],
+      ['warning', undefined, undefined],
+    ]);
+    expect(findings[0].message).toContain(
+      "measures 2.06:1 against the theme's default --wa-color-success-on-loud",
+    );
+  });
+
+  it('keeps the default on-loud table equal to the shipped Web Awesome theme', async () => {
+    const theme = await readFile(
+      resolve(import.meta.dirname, '../../src/webawesome.css'),
+      'utf8',
+    );
+    const shipped = Object.fromEntries(
+      [...theme.matchAll(/--wa-color-(\w+)-on-loud:\s*([^;]+);/g)]
+        .filter(([, , value]) => !value.includes('var('))
+        .map(([, tone, value]) => [tone, value.trim()]),
+    );
+    expect(shipped).toEqual(DEFAULT_ON_LOUD);
+    expect(literalSchemeColors('light-dark(#fff, #111113)')).toEqual({
+      light: [255, 255, 255],
+      dark: [17, 17, 19],
+    });
+    expect(contrastRatio([255, 255, 255], [0, 0, 0])).toBeCloseTo(21);
+    expect(loudPairContrast('#fff', 'var(--x)')).toBeUndefined();
+  });
+
+  it('accepts an on-loud from another stylesheet the same entry imports', async () => {
+    const files = {
+      'src/main.ts':
+        "import './theme.css';\nimport './billing.css';\nexport {};\n",
+      'src/theme.css': ':root { --wa-color-brand-on-loud: #fff; }\n',
+      'src/billing.css': '.billing { --wa-color-brand-fill-loud: #7540a8; }\n',
+    };
+    expect(await analyze(files)).toEqual([]);
+    // The measured pair still has to clear AA.
+    expect(
+      await analyze({
+        ...files,
+        'src/billing.css':
+          '.billing { --wa-color-brand-fill-loud: #7fb3ff; }\n',
+      }),
+    ).toEqual([
+      expect.objectContaining({
+        file: 'src/billing.css',
+        evidence: expect.objectContaining({
+          pairLocation: expect.objectContaining({
+            file: expect.stringContaining('theme.css'),
+          }),
+        }),
+      }),
+    ]);
+  });
+
+  it('accepts an on-loud from a stylesheet reached through @import', async () => {
+    expect(
+      await analyze({
+        'src/app.css': "@import './tokens.css';\n@import './billing.css';\n",
+        'src/tokens.css': ':root { --wa-color-danger-on-loud: #fff; }\n',
+        'src/billing.css':
+          '.billing { --wa-color-danger-fill-loud: #b00020; }\n',
+      }),
+    ).toEqual([]);
+  });
+
+  it('does not borrow an on-loud from a stylesheet no entry loads with it', async () => {
+    const findings = await analyze({
+      'src/admin.ts': "import './admin-theme.css';\nexport {};\n",
+      'src/main.ts': "import './billing.css';\nexport {};\n",
+      'src/admin-theme.css': ':root { --wa-color-brand-on-loud: #fff; }\n',
+      'src/billing.css': '.billing { --wa-color-brand-fill-loud: #7540a8; }\n',
+      'src/orphan.css': '.orphan { --wa-color-pop-fill-loud: #0af; }\n',
+      'src/unparseable.css': '.broken { --wa-color-pop-on-loud: #000;\n',
+    });
+    expect(findings.map(({ file }) => file)).toEqual([
+      'src/billing.css',
+      'src/orphan.css',
+    ]);
   });
 });

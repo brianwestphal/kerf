@@ -73,6 +73,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   holds there. Resizing still commits no less than `min`, and the configured
   range returns once there is room. A `ResizableRegion` a parent clamps below
   its `min` reports the same way.
+- **`KUI-L018` (`kerf-ui-analyze` / `kerf-ui-doctor`) now measures contrast and
+  follows the cascade.** When a `--wa-color-{tone}-fill-loud` override and its
+  `on-loud` are both literal colors (including `light-dark()`), a pair below
+  4.5:1 in either color scheme is reported with its ratio, and an unpaired
+  literal fill that still clears 4.5:1 against the theme's default `on-loud`
+  is no longer reported. An `on-loud` set in an ancestor scope (`:root`, or the
+  leading selector of a descendant chain) or in another stylesheet the same
+  entry loads now counts as the pair.
 - **`kerf-component-catalog` lets a private application declare components
   without a fake `exports` map.** In a private package
   (`"private": true`), a component's `publicExports` items may omit `subpath`; the generator

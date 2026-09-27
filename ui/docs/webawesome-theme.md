@@ -309,9 +309,11 @@ schemes. When you override a loud fill, set its `on-loud` alongside it, in the
 same selector and at-rule scope, to a foreground that clears 4.5:1 on the new
 fill (white text on a bright fill usually does not: `#10a86b` above reaches
 only 3.1:1 with white, 5.5:1 with `#1d1d1f`). `kerf-ui-analyze` and
-`kerf-ui-doctor` report a loud fill override without its matching `on-loud` as
-review finding [`KUI-L018`](./ui-analyzer.md#loud-fill--on-loud-pairing-kui-l018);
-it checks the pairing, not the contrast, so choosing the value is still yours.
+`kerf-ui-doctor` report a loud fill override without a governing `on-loud`, or
+a literal pair that measures below 4.5:1, as review finding
+[`KUI-L018`](./ui-analyzer.md#loud-fill--on-loud-pairing-kui-l018); it cannot
+measure a `var()` or `color-mix()` value, so choosing a readable one is still
+yours.
 
 Use `.wa-light`, `.wa-dark`, and `.wa-invert` for explicit appearance scopes.
 Component-specific custom properties and documented `::part()` selectors from

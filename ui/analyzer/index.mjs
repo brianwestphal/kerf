@@ -14,6 +14,7 @@ import ts from 'typescript';
 
 import { loadApplicationUiProfile } from '../ai/application-ui-profile.mjs';
 import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
+import { collectLoudDeclarations, inspectLoudPairs } from './loud-pairs.mjs';
 
 export const UI_ANALYSIS_SCHEMA_VERSION = 1;
 
@@ -337,84 +338,6 @@ function spacingValues(value) {
   return results;
 }
 
-// The shipped Web Awesome theme pairs every loud fill with an on-loud
-// foreground that clears WCAG AA; an override that moves one without the other
-// silently drops that guarantee (see docs/webawesome-theme.md).
-const loudToken =
-  /^--wa-color-(neutral|brand|success|warning|danger|pop)-(fill-loud|on-loud)$/;
-
-function normalizeSelector(selector) {
-  return selector
-    .replace(/\s+/g, ' ')
-    .replace(/\s*([>+~])\s*/g, '$1')
-    .trim();
-}
-
-function resolvedSelectors(node) {
-  const chain = [];
-  let current = node;
-  while (current && current.type !== 'root') {
-    chain.unshift(current);
-    current = current.parent;
-  }
-  let selectors = [''];
-  const atRules = [];
-  for (const item of chain) {
-    if (item.type === 'atrule')
-      atRules.push(`@${item.name} ${item.params.replace(/\s+/g, ' ').trim()}`);
-    if (item.type !== 'rule') continue;
-    const own = postcss.list.comma(item.selector).map(normalizeSelector);
-    selectors = selectors.flatMap((parent) =>
-      own.map((child) => {
-        if (child.includes('&'))
-          return child.replaceAll('&', parent || ':root');
-        return parent ? `${parent} ${child}` : child;
-      }),
-    );
-  }
-  const scope = atRules.join(' ');
-  return selectors.map((selector) => ({
-    key: `${scope}|${selector}`,
-    selector: scope ? `${scope} ${selector}`.trim() : selector,
-  }));
-}
-
-function inspectLoudPairs(file, root, diagnostics) {
-  const fills = [];
-  const onLoud = new Set();
-  root.walkDecls((decl) => {
-    const match = loudToken.exec(decl.prop.trim());
-    if (!match) return;
-    const scopes = resolvedSelectors(decl.parent);
-    if (match[2] === 'on-loud')
-      for (const { key } of scopes) onLoud.add(`${key}|${match[1]}`);
-    else fills.push({ decl, tone: match[1], scopes });
-  });
-  for (const { decl, tone, scopes } of fills) {
-    const missing = scopes.filter(({ key }) => !onLoud.has(`${key}|${tone}`));
-    if (!missing.length) continue;
-    const pair = `--wa-color-${tone}-on-loud`;
-    diagnostics.push(
-      diagnostic(
-        'KUI-L018',
-        location(file, decl),
-        `${decl.prop} is overridden without ${pair} in the same scope (${missing
-          .map(({ selector }) => selector || '(top level)')
-          .join(
-            ', ',
-          )}); set ${pair} alongside it so the loud fill keeps an AA-clearing foreground.`,
-        {
-          property: decl.prop,
-          value: decl.value,
-          tone,
-          pairProperty: pair,
-          selectors: missing.map(({ selector }) => selector),
-        },
-      ),
-    );
-  }
-}
-
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -426,6 +349,7 @@ async function inspectCss(
   diagnostics,
   cssFacts,
   adoption = false,
+  siblingOnLoud = [],
 ) {
   let root;
   try {
@@ -440,7 +364,15 @@ async function inspectCss(
     );
     return;
   }
-  inspectLoudPairs(file, root, diagnostics);
+  inspectLoudPairs(
+    file,
+    root,
+    (decl, message, evidence) =>
+      diagnostics.push(
+        diagnostic('KUI-L018', location(file, decl), message, evidence),
+      ),
+    siblingOnLoud,
+  );
   root.walkRules((rule) => {
     const classes = [
       ...rule.selector.matchAll(/\.([_a-zA-Z]+[_a-zA-Z0-9-]*)/g),
@@ -1045,6 +977,38 @@ export async function analyzeUiProject({
   const styleConsumers = new Map(
     [...styleFacts.keys()].map((file) => [file, new Set()]),
   );
+  // KUI-L018 accepts an on-loud from another stylesheet the same entry loads:
+  // every stylesheet reachable from one file (a source module's CSS imports,
+  // or a stylesheet with its @imports) is loaded together.
+  const onLoudByStyle = new Map();
+  for (const style of styleFacts.keys()) {
+    let parsed;
+    try {
+      parsed = postcss.parse(contents.get(style), { from: style });
+    } catch {
+      continue;
+    }
+    onLoudByStyle.set(
+      style,
+      collectLoudDeclarations(style, parsed).filter(
+        ({ kind }) => kind === 'on-loud',
+      ),
+    );
+  }
+  const coLoadedStyles = new Map(
+    [...styleFacts.keys()].map((style) => [style, new Set()]),
+  );
+  for (const file of files) {
+    const loaded = new Set(reachableStyleFiles(file, imports, styleFacts));
+    if (styleFacts.has(file)) loaded.add(file);
+    for (const style of loaded)
+      for (const sibling of loaded)
+        if (sibling !== style) coLoadedStyles.get(style).add(sibling);
+  }
+  const siblingOnLoud = (style) =>
+    [...coLoadedStyles.get(style)]
+      .sort()
+      .flatMap((sibling) => onLoudByStyle.get(sibling) ?? []);
   for (const file of files.filter((item) =>
     sourceExtensions.has(extname(item)),
   )) {
@@ -1074,6 +1038,7 @@ export async function analyzeUiProject({
         fileDiagnostics,
         new Map(),
         adoption,
+        siblingOnLoud(file),
       );
       recordDiagnostics(fileDiagnostics, context);
     }

@@ -22,7 +22,9 @@ Read `../docs/webawesome-theme.md` when using Web Awesome components or changing
 shared theme tokens. When overriding a loud fill
 (`--wa-color-{tone}-fill-loud`), set the matching `--wa-color-{tone}-on-loud`
 in the same selector and at-rule scope with a foreground that clears 4.5:1;
-the analyzer reports an unpaired override as review finding `KUI-L018`.
+the analyzer reports an override with no governing `on-loud` (same or ancestor
+scope, in any stylesheet the entry loads), or a literal pair below 4.5:1, as
+review finding `KUI-L018`.
 
 Before choosing or aligning components, look for a consumer-owned catalog that
 conforms to `./component-catalog-extension.schema.json`. Treat its entries as a

@@ -26,8 +26,9 @@ one repair loop without tool-specific translations.
 
 The analyzer stage also reads consumer stylesheets for theme overrides:
 `KUI-L018` is a review finding for a `--wa-color-{tone}-fill-loud` override
-that lacks the matching `--wa-color-{tone}-on-loud` in the same selector and
-at-rule scope (see [the analyzer rule](./ui-analyzer.md#loud-fill--on-loud-pairing-kui-l018)).
+that lacks a governing `--wa-color-{tone}-on-loud` (in the same or an ancestor
+scope, in any stylesheet the same entry loads), or whose literal pair measures
+below 4.5:1 (see [the analyzer rule](./ui-analyzer.md#loud-fill--on-loud-pairing-kui-l018)).
 
 The browser evaluator is different: it runs the application and is disabled by default. It only runs when configuration supplies `browser.url` or the command receives `--browser-url`. Start and authorize the target application separately.
 
