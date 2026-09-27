@@ -4385,7 +4385,7 @@ test('catalog routes every production component family and supports its stateful
   );
   await expect(
     page.locator('[data-demo="tabs"] [data-catalog-example]'),
-  ).toHaveCount(4);
+  ).toHaveCount(5);
   if (browserName === 'chromium')
     await page
       .locator('[data-demo="tabs"]')
@@ -6868,8 +6868,8 @@ test('separates focused AppTab and TabBar specimens from the application-tabs co
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=tabs');
   const appTabs = page.locator('[data-demo="tabs"]');
-  await expect(appTabs.locator('[data-catalog-example]')).toHaveCount(4);
-  await expect(appTabs.locator('[data-component="app-tab"]')).toHaveCount(5);
+  await expect(appTabs.locator('[data-catalog-example]')).toHaveCount(5);
+  await expect(appTabs.locator('[data-component="app-tab"]')).toHaveCount(8);
   if (browserName === 'chromium')
     await appTabs.screenshot({ path: 'test-results/app-tab-focused-wide.png' });
 
