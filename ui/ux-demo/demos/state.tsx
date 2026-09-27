@@ -3,7 +3,13 @@ import { signal } from 'kerfjs';
 
 export const regionSize = signal(276);
 export const tabBarActive = signal('components');
-export const tabBarTabs = signal([
+/** An application tab; `pending` while its content is still loading. */
+export interface DemoTab {
+  id: string;
+  name: string;
+  pending?: boolean;
+}
+export const tabBarTabs = signal<DemoTab[]>([
   { id: 'components', name: 'Components' },
   { id: 'design-guidance', name: 'Design guidance' },
   { id: 'accessibility', name: 'Accessibility contracts' },

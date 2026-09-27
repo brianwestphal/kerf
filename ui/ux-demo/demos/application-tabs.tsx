@@ -2,7 +2,10 @@ import '@awesome.me/webawesome/dist/components/card/card.js';
 
 import { AppTab } from '@kerfjs/ui/app-tab';
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { em } from '@kerfjs/ui/css-values';
+import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Skeleton } from '@kerfjs/ui/skeleton';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -12,6 +15,7 @@ import { tabBarActive, tabBarTabs } from './state.js';
 
 export function ApplicationTabsDemo() {
   const activeName = tabBarActive.value;
+  const activeTab = tabBarTabs.value.find((tab) => tab.id === activeName);
   return (
     <CatalogExampleStack
       label="Application tab composition"
@@ -59,6 +63,8 @@ export function ApplicationTabsDemo() {
                 id={tab.id}
                 name={tab.name}
                 selected={tabBarActive.value === tab.id}
+                pending={tab.pending}
+                trailing={tab.pending ? <LoadingSpinner /> : undefined}
                 draggable
                 selectAction="select-reorder-tab"
                 closeAction="close-reorder-tab"
@@ -66,8 +72,20 @@ export function ApplicationTabsDemo() {
               />
             ))}
           </TabBar>
-          <Text variant="h3" role="tabpanel" aria-label={activeName}>
-            {activeName}
+          {/* A still-opening tab is selectable; its panel keeps the live
+              heading chrome with a placeholder value until loading completes,
+              so the swap does not shift the card. */}
+          <Text
+            variant="h3"
+            role="tabpanel"
+            aria-label={activeTab?.name ?? activeName}
+            aria-busy={activeTab?.pending ? 'true' : undefined}
+          >
+            {activeTab?.pending ? (
+              <Skeleton width={em(6)} label={`Loading ${activeTab.name}`} />
+            ) : (
+              activeName
+            )}
           </Text>
           <Text slot="footer" tone="quiet" size="compact">
             Order:{' '}

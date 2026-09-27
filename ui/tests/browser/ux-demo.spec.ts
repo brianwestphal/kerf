@@ -7403,6 +7403,10 @@ test('reorders and horizontally scrolls controlled TabBars', async ({
   await expect
     .poll(() => strip.evaluate((node) => node.scrollLeft))
     .toBeGreaterThan(0);
+  // A new tab opens pending; close stays disabled until it loads.
+  await expect(bar.locator('[data-demo-tab-id="new-8"]')).not.toHaveAttribute(
+    'data-pending',
+  );
   await added.press('Backspace');
   await expect(bar.getByRole('tab')).toHaveCount(7);
   const source = bar.locator('.kui-app-tab[data-tab-id="components"]');
@@ -7431,6 +7435,52 @@ test('reorders and horizontally scrolls controlled TabBars', async ({
     });
 });
 
+test('opens an added tab pending with a placeholder panel, selectable until it loads', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=application-tabs');
+  const demo = page.locator('[data-demo="application-tabs"]');
+  const bar = demo.locator('[data-tab-bar-id="catalog-tabs"]');
+  await bar.getByRole('button', { name: 'Add tab' }).click();
+  const root = bar.locator('[data-demo-tab-id="new-8"]');
+  const added = root.getByRole('tab', { name: 'New tab 8', exact: true });
+
+  // Pending: selected, busy, undimmed, with a spinner; the panel shows a
+  // placeholder instead of content.
+  await expect(root).toHaveAttribute('data-pending', 'true');
+  await expect(root).toHaveAttribute('aria-busy', 'true');
+  await expect(added).toHaveAttribute('aria-selected', 'true');
+  await expect(added).toBeEnabled();
+  await expect(added).toHaveCSS('opacity', '1');
+  await expect(root.locator('.kui-loading-spinner')).toBeVisible();
+  const panel = demo.getByRole('tabpanel');
+  await expect(panel).toHaveAttribute('aria-busy', 'true');
+  await expect(panel.locator('.kui-skeleton')).toBeVisible();
+  if (testInfo.project.name === 'chromium')
+    await demo.screenshot({
+      path: testInfo.outputPath('application-tabs-pending.png'),
+    });
+
+  // Another tab can be selected while it opens, and the pending tab selected
+  // back by pointer: it is not disabled.
+  await bar.getByRole('tab', { name: 'Components' }).click();
+  await expect(panel).toContainText('components');
+  await expect(panel).not.toHaveAttribute('aria-busy');
+  await added.click();
+  await expect(added).toHaveAttribute('aria-selected', 'true');
+
+  // Loaded: the live tab and panel replace the placeholders in place.
+  await expect(root).not.toHaveAttribute('data-pending');
+  await expect(root).not.toHaveAttribute('aria-busy');
+  await expect(root.locator('.kui-loading-spinner')).toHaveCount(0);
+  await expect(panel).not.toHaveAttribute('aria-busy');
+  await expect(panel).toContainText('new-8');
+  if (testInfo.project.name === 'chromium')
+    await demo.screenshot({
+      path: testInfo.outputPath('application-tabs-loaded.png'),
+    });
+});
+
 test('keeps added tab IDs unique after another tab closes', async ({
   page,
 }) => {
@@ -7453,6 +7503,9 @@ test('keeps added tab IDs unique after another tab closes', async ({
   const secondAdded = bar.locator('[data-demo-tab-id="new-9"]');
   await expect(firstAdded).toHaveCount(1);
   await expect(secondAdded).toHaveCount(1);
+  // Added tabs open pending; reordering and closing wait for them to load.
+  for (const tab of [firstAdded, secondAdded])
+    await expect(tab).not.toHaveAttribute('data-pending');
   await expect(secondAdded.getByRole('tab')).toHaveAttribute(
     'aria-selected',
     'true',

@@ -162,6 +162,8 @@ const webAwesomeExpanded = signal(
 const sidebarCollapsed = signal(false);
 const recipeNotesVisible = signal(false);
 let nextDemoTabNumber = tabBarTabs.value.length + 1;
+/** How long a newly added application tab stays pending in the demo. */
+const DEMO_TAB_LOAD_MS = 1200;
 const actionLog = signal('Catalog ready');
 const systemDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
 const effectiveTheme = signal<DemoTheme>(
@@ -632,12 +634,21 @@ const stopActions = delegateActions(app, 'click', {
   'add-demo-tab': () => {
     const tabNumber = nextDemoTabNumber++;
     const id = `new-${tabNumber}`;
+    // A new tab opens pending: selectable, with placeholder panel content,
+    // until its simulated load completes.
     tabBarTabs.value = [
       ...tabBarTabs.value,
-      { id, name: `New tab ${tabNumber}` },
+      { id, name: `New tab ${tabNumber}`, pending: true },
     ];
     tabBarActive.value = id;
-    actionLog.value = `Added ${id}`;
+    actionLog.value = `Opening ${id}`;
+    setTimeout(() => {
+      if (!tabBarTabs.value.some((tab) => tab.id === id && tab.pending)) return;
+      tabBarTabs.value = tabBarTabs.value.map((tab) =>
+        tab.id === id ? { ...tab, pending: false } : tab,
+      );
+      actionLog.value = `Loaded ${id}`;
+    }, DEMO_TAB_LOAD_MS);
   },
   'select-segment-demo': (_event, element) => {
     const value = element.getAttribute('data-segment-value');

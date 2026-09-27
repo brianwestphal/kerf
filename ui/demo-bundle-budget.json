@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 290900,
-  "measuredLargestJavaScriptGzip": 143352,
-  "measuredTotalJavaScriptGzip": 290811,
+  "totalJavaScriptGzip": 291100,
+  "measuredLargestJavaScriptGzip": 143577,
+  "measuredTotalJavaScriptGzip": 291047,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -723,6 +723,22 @@
         "measuredTotalJavaScriptGzip": 290811,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 290900
+      }
+    },
+    {
+      "at": "2026-09-27T23:44:23.399Z",
+      "reason": "Application tabs demo opens added tabs pending with a spinner and a Skeleton panel placeholder (KF-VRTTKB)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 143352,
+        "measuredTotalJavaScriptGzip": 290811,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 290900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 143577,
+        "measuredTotalJavaScriptGzip": 291047,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 291100
       }
     }
   ]
