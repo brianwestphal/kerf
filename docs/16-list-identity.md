@@ -92,10 +92,20 @@ The source guard also had one hole of its own: two `each()` calls over the
 **same** `arraySignal` share a source, so a shift between those two passed the
 guard undetected.
 
-A key removes all of it — the list no longer depends on call order at all, and
-two lists over one signal are trivially distinguishable. What remains is that
-lists _without_ a key still behave as described above, which is why the
-diagnostic (§16.4 C) is part of the design rather than a nicety.
+A key removes the conditional-list shape and the same-source hole — a keyed
+list no longer depends on call order at all, and two lists over one signal are
+trivially distinguishable. It does **not** apply to the nested-in-row shape:
+keying an `each()` inside a row render throws (`claimKey()` in `src/each.ts`),
+because a nested `each()` is never reconciled — the row is flattened to HTML, so
+the inner list's marker and binding never exist and it renders as static
+markup. The fix for that shape is plain `.map()` inside the row (it re-renders
+with its row). An unkeyed nested `each()` still bumps the shared counter only on
+cache-miss renders; what protects the _sibling_ lists is that `mount()` resets
+all call-order-keyed state and re-renders whenever the number of unkeyed
+`each()` calls changes, so a sibling whose id moved takes the snapshot path and
+morphs its unchanged rows in place. What remains is that lists _without_ a key
+still behave as described above, which is why the diagnostic (§16.4 C) is part
+of the design rather than a nicety.
 
 ## 16.3 Constraints (verified, not assumed)
 
@@ -202,7 +212,11 @@ Two properties fell out of the implementation that are worth stating:
 
 - A keyed list keeps row node identity and focus across a sibling list being
   added or removed, in **both** directions.
-- A nested `each()`'s id is stable across cache-hit renders.
+- A nested `each()` inside a row does not disturb its siblings: its id still
+  drifts with cache hits (it counts only on cache-miss renders, and keying it
+  throws because a nested list is never reconciled), but `mount()`'s
+  call-count reset re-renders so an unrelated sibling list keeps its row node
+  identity. Pinned by `tests/unit/list-identity-shift.test.tsx`.
 - Two `each()` calls over one `arraySignal` remain independent and correct.
 - The granular fast path still applies for unshifted lists — proven by row
   identity surviving `push`/`update`/`remove`, not just by output equality.
