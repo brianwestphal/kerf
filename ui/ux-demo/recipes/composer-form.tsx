@@ -5,6 +5,7 @@ import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/input/input.js';
 import '@awesome.me/webawesome/dist/components/textarea/textarea.js';
 
+import { Spacer } from '@kerfjs/ui';
 import { List } from '@kerfjs/ui/list';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Row } from '@kerfjs/ui/row';
@@ -122,6 +123,7 @@ export const createRecipe: RecipeFactory = (announce) => {
           />
         </List>
         <Row gap="xs" wrap controlInsets="rl">
+          <Spacer flex />
           <wa-button
             appearance="outlined"
             data-action="recipe-action"

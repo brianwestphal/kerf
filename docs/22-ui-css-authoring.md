@@ -58,12 +58,14 @@ import {
   pct,
   plus,
   rem,
+  remify,
   space,
   uiColor,
 } from "@kerfjs/ui/css-values";
 
 space("xs"); // var(--kui-space-xs)
 rem(0.25); // 0.25rem
+remify(18); // 1.125rem: the runtime twin of source-CSS remify(18px)
 calc(plus(rem(0.25), pct(10))); // calc(0.25rem + 10%)
 flex(2, 1, rem(20)); // 2 1 20rem
 uiColor("success-on-quiet"); // var(--kui-color-success-on-quiet), a CssForegroundColor

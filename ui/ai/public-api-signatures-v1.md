@@ -76,6 +76,8 @@ type UiSpaceName = 'none' | '2xs' | 'xs' | 's' | 'm' | 'l' | 'xl';
 declare function px(value: number): CssLength;
 /** Create a complete root-font-relative length. */
 declare function rem(value: number): CssLength;
+/** Converts a pixel value into rem units by dividing by 16. */
+declare function remify(value: number): CssLength;
 /** Create a complete current-font-relative length. */
 declare function em(value: number): CssLength;
 /** Create a complete percentage length. */
@@ -115,7 +117,7 @@ declare function colorVar(name: `--${string}`, fallback?: CssColor): CssColor;
  */
 declare function foregroundColorVar(name: `--${string}`, fallback?: CssForegroundColor): CssForegroundColor;
 
-export { type CssColor, type CssFlex, type CssFlexBasis, type CssFlexKeyword, type CssForegroundColor, type CssLength, type CssLengthExpression, type CssSize, type CssSizeKeyword, type CssValue, type UiColor, type UiColorName, type UiForegroundColorName, type UiSpaceName, calc, colorVar, em, flex, foregroundColorVar, lengthVar, pct, plus, px, rem, space, uiColor };
+export { type CssColor, type CssFlex, type CssFlexBasis, type CssFlexKeyword, type CssForegroundColor, type CssLength, type CssLengthExpression, type CssSize, type CssSizeKeyword, type CssValue, type UiColor, type UiColorName, type UiForegroundColorName, type UiSpaceName, calc, colorVar, em, flex, foregroundColorVar, lengthVar, pct, plus, px, rem, remify, space, uiColor };
 ```
 
 ## `@kerfjs/ui/disclosure-arrow`

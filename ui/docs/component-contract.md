@@ -313,8 +313,10 @@ spacing shorthand such as `gap="2xs"`, or pass a `CssLength` created by the
 CSS-free `@kerfjs/ui/css-values` helpers: `space('m')`, `rem(0.25)`,
 `lengthVar('--app-gap')`, or `calc(plus(rem(0.25), pct(10)))`. `plus` returns a
 non-standalone `CssLengthExpression`; only `calc` turns it into a complete
-length. Raw CSS strings and source-only `remify(4px)` are not valid runtime
-props. The `CssLength` name intentionally includes percentages for UI dimension
+length. `remify(18)` is the runtime twin of source CSS's `remify(18px)`: it
+takes a pixel count and returns a `CssLength` in rem (`1.125rem`) against the
+same fixed 16px baseline. Raw CSS strings, and the source-only `remify(4px)`
+string form, are not valid runtime props. The `CssLength` name intentionally includes percentages for UI dimension
 props. Its opaque string brand improves authoring correctness; it is not a CSS
 sanitizer or security boundary.
 `Row.flex` and `List.flex` likewise accept their boolean default, finite keywords, or `CssFlex`

@@ -216,6 +216,11 @@ export function rem(value: number): CssLength {
   return dimension(value, 'rem', 'rem');
 }
 
+/** Converts a pixel value into rem units by dividing by 16. */
+export function remify(value: number): CssLength {
+  return rem(value / 16);
+}
+
 /** Create a complete current-font-relative length. */
 export function em(value: number): CssLength {
   return dimension(value, 'em', 'em');

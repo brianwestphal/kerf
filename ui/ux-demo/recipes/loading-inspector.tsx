@@ -1,9 +1,9 @@
 import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/select/register';
 
+import { Row } from '@kerfjs/ui';
 import { em } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
-import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
@@ -90,15 +90,15 @@ export const createRecipe: RecipeFactory = (announce) => {
                 </ToolbarControlGroup>
               }
             />
-            <ListInsetText sides="rl">
-              <Text variant="span" tone="quiet" id="recipe-inspector-summary">
+            <Row controlInsets="trbl">
+              <Text tone="quiet" id="recipe-inspector-summary">
                 {p ? (
                   <Skeleton width={em(18)} />
                 ) : (
                   'Restore keyboard focus after a dialog closes'
                 )}
               </Text>
-            </ListInsetText>
+            </Row>
           </>
         }
       >

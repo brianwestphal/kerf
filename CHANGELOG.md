@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui/css-values` adds `remify(px)`, the runtime twin of source
+  CSS's `remify(<px>)`. It turns a pixel count into a rem `CssLength` against
+  the fixed 16px baseline, so `remify(18)` is `1.125rem`. `ListItem`'s
+  placeholder icon now uses it at 18px, and `Skeleton` no longer forces a
+  24px minimum width, so small placeholders keep the size they ask for.
 - `@kerfjs/ui/catalog`'s application-sized (`height: "app"`) example frame
   no longer loses taps in Safari/WebKit. The frame became the containing block
   for screen-fixed chrome through `contain: layout`. Combined with its clip,

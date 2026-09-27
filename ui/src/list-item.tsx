@@ -1,6 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
-import { em } from './css-values.js';
+import { em, remify } from './css-values.js';
 import { filterDataAttributes } from './extension-attributes.js';
 import { LoadingSpinner } from './loading-spinner.js';
 import type { KerfUiContent } from './semantic-content.js';
@@ -119,7 +119,11 @@ export function ListItem({
     >
       {icon && (
         <span class="kui-list-item__icon">
-          {placeholder ? <Skeleton width={em(1)} height={em(1)} /> : icon}
+          {placeholder ? (
+            <Skeleton width={remify(18)} height={remify(18)} />
+          ) : (
+            icon
+          )}
         </span>
       )}
       <span class="kui-list-item__label">
