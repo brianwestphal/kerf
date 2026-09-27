@@ -820,7 +820,9 @@ composition); `wireResizableRegions` passes the `ResizableRegion` selector and
 `ui/src/wire-workbench.ts` (`wireWorkbench`, the `@kerfjs/ui/wire-workbench`
 subpath) passes selectors for its own opt-in `resizable` `Workbench` panels plus
 a work-area limit that stops a rail where the center would drop below the
-Workbench's `mainMinSize` (`data-main-min-size`, default 320px), committing to
+Workbench's `mainMinSize` (`data-main-min-size`, default 320px) and the drawer
+where the work area would drop below its `mainMinHeight`
+(`data-main-min-height`, default 120px), committing to
 app-owned size signals with optional `storageKey` persistence and `deviceClass`
 compact suspension. For panels given a `collapsed` signal it also calls the
 internal `ui/src/workbench-overlays.ts` (`wireWorkbenchOverlays`,
@@ -837,7 +839,7 @@ whose `aria-controls` names it (each panel renders `id="<workbench id>-left-rail
 etc.)
 (`ui/tests/unit/workbench-overlays.test.ts`).
 `ui/src/workbench-resize.ts` holds the shared panel
-region-id convention, default limits, and default work-area minimum, and `ui/src/resize-grip.tsx` the
+region-id convention, default limits, and default work-area minimums, and `ui/src/resize-grip.tsx` the
 separator grip both handles render (`ui/tests/unit/wire-workbench.test.ts`,
 `ui/tests/unit/workbench.test.tsx`, `ui/tests/browser/workbench-catalog.spec.ts`).
 `Catalog.stageRootAttributes`, `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` use the

@@ -127,7 +127,8 @@ const consoleSize = signal(200);
   id="studio"
   label="Studio"
   main={<Editor />}
-  mainMinSize={320} // the default: the editor never drops below 320px
+  mainMinSize={320} // the default: the editor never drops below 320px wide
+  mainMinHeight={120} // the default: the drawer leaves it 120px of height
   leftRail={{
     content: <Navigator />,
     label: "Navigator",
@@ -167,14 +168,20 @@ const stop = wireWorkbench(root, {
   and limits.
 - **Limits:** every size — dragged, typed, restored from storage, or passed
   by the app — is clamped to `min`/`max` when rendered.
-- **Work-area minimum:** beside a resizable rail the work area keeps at least
-  `mainMinSize` px (a `Workbench` prop, default 320; `0` turns it off). A
-  dragged or keyed rail stops growing where the work area would drop below it,
-  so two wide rails cannot crowd out the editor; `aria-valuemax` reports that
-  reachable maximum. When the Workbench itself narrows, resizable rails shrink
-  in proportion to their sizes (their content follows the shown width) while
-  the work area holds its minimum; a squeezed rail can still be made smaller,
-  never larger, and never below its own `min`. The drawer is unaffected.
+- **Work-area minimum:** beside its inline rails, fixed or resizable, the work
+  area keeps at least `mainMinSize` px of width (a `Workbench` prop, default
+  320; `0` turns it off), and above an inline bottom drawer at least
+  `mainMinHeight` px of height (default 120; `0` turns it off). A dragged or
+  keyed rail stops growing where the work area would drop below its width,
+  and the drawer where it would drop below its height, so wide rails or a tall
+  drawer cannot crowd out the editor; `aria-valuemax` reports that reachable
+  maximum. When the Workbench itself narrows, the rails shrink in proportion
+  to their sizes, and when it gets shorter the drawer shrinks (their content
+  follows the shown size) while the work area holds its minimum; a squeezed
+  panel can still be made smaller, never larger, and never below its own
+  `min`. Two fixed 280px rails in a 720px Workbench show 200px each rather
+  than leaving the editor 160px. Each minimum applies only to a Workbench with a
+  panel on its axis, and never exceeds the Workbench itself.
 - **Squeezed below `min`:** when the Workbench is too narrow for a rail's
   `min` beside the work-area minimum, the rail shows less than its `min` (a
   172px Navigator whose `min` is 180). Its separator then reports that shown

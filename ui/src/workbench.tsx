@@ -13,6 +13,7 @@ import {
 import { ResizeGrip } from './resize-grip.js';
 import type { KerfUiContent } from './semantic-content.js';
 import {
+  WORKBENCH_MAIN_MIN_HEIGHT,
   WORKBENCH_MAIN_MIN_SIZE,
   WORKBENCH_RESIZE_DEFAULTS,
   type WorkbenchPanelKey,
@@ -88,12 +89,21 @@ export interface WorkbenchProps {
   rightRail?: WorkbenchPanel;
   bottomDrawer?: WorkbenchPanel;
   /**
-   * Minimum width, in px, the work area keeps while a rail is `resizable`
-   * (default 320; `0` turns it off). Resizing a rail stops where the work area
-   * would drop below it, and resizable rails shrink proportionally when the
-   * Workbench gets narrower. Workbenches without a resizable rail ignore it.
+   * Minimum width, in px, the work area keeps beside the inline rails, fixed
+   * or `resizable` (default 320; `0` turns it off). Resizing a rail stops
+   * where the work area would drop below it, and inline rails shrink
+   * proportionally when the Workbench gets narrower. Workbenches without a
+   * rail ignore it.
    */
   mainMinSize?: number;
+  /**
+   * Minimum height, in px, the work area keeps above an inline bottom drawer,
+   * fixed or `resizable` (default 120; `0` turns it off) — the drawer's
+   * counterpart of `mainMinSize`. Resizing the drawer stops where the work
+   * area would drop below it, and the drawer shrinks when the Workbench gets
+   * shorter. Workbenches without a drawer ignore it.
+   */
+  mainMinHeight?: number;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -320,26 +330,33 @@ export function Workbench({
   rightRail,
   bottomDrawer,
   mainMinSize = WORKBENCH_MAIN_MIN_SIZE,
+  mainMinHeight = WORKBENCH_MAIN_MIN_HEIGHT,
   className = '',
   slot,
 }: WorkbenchProps) {
-  // The work-area minimum only applies beside a resizable rail; a fixed rail
-  // keeps its size, so the shell renders exactly as before without one.
-  const mainMin =
-    leftRail?.resizable || rightRail?.resizable
-      ? Math.max(0, Math.round(mainMinSize))
-      : undefined;
+  // Each work-area minimum applies only on an axis a panel shares with it:
+  // the width beside a rail, the height above the drawer.
+  const px = (value: number) => Math.max(0, Math.round(value));
+  const mainMin = leftRail || rightRail ? px(mainMinSize) : undefined;
+  const mainMinBlock = bottomDrawer ? px(mainMinHeight) : undefined;
+  const style = [
+    mainMin === undefined ? '' : `--_kui-workbench-main-min-width:${mainMin}px`,
+    mainMinBlock === undefined
+      ? ''
+      : `--_kui-workbench-main-min-height:${mainMinBlock}px`,
+  ]
+    .filter(Boolean)
+    .join(';');
   return (
     <section
       class={`kui-workbench ${className}`.trim()}
       id={id}
       data-component="workbench"
       data-main-min-size={mainMin === undefined ? undefined : String(mainMin)}
-      style={
-        mainMin === undefined
-          ? undefined
-          : `--_kui-workbench-main-min-width:${mainMin}px`
+      data-main-min-height={
+        mainMinBlock === undefined ? undefined : String(mainMinBlock)
       }
+      style={style || undefined}
       aria-label={label}
       slot={slot}
     >

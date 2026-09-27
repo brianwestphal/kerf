@@ -14,10 +14,23 @@ test('catalogs Workbench public geometry and controlled collapse', async ({
   await expect(demo).toBeVisible();
   await expect(full.locator('[data-workbench-rail]')).toHaveCount(2);
   await expect(full.locator('[data-workbench-drawer]')).toHaveCount(1);
-  await expect(full.locator('[data-workbench-rail="left"]')).toHaveCSS(
-    'width',
-    '280px',
+  // The fixed 280 px rails give way to the work area's 320 px minimum when
+  // the example is narrower than both rails beside it: they shrink in
+  // proportion and their content follows the shown width.
+  const width = async (selector: string) =>
+    (await full.locator(selector).first().boundingBox())!.width;
+  const fullWidth = (await full.boundingBox())!.width;
+  expect(fullWidth).toBeLessThan(280 * 2 + 320);
+  await expect.poll(() => width('.kui-workbench__center')).toBeCloseTo(320, 0);
+  const railWidth = await width('[data-workbench-rail="left"]');
+  expect(railWidth).toBeCloseTo((fullWidth - 320) / 2, 0);
+  expect(await width('[data-workbench-rail="right"]')).toBeCloseTo(
+    railWidth,
+    0,
   );
+  expect(
+    await width('[data-workbench-rail="left"] > .kui-workbench__panel-content'),
+  ).toBeCloseTo(railWidth - 1, 0);
   await expect(collapsed.locator('[data-workbench-rail="left"]')).toHaveCSS(
     'width',
     '0px',
@@ -432,6 +445,50 @@ test.describe('resizable Workbench panels', () => {
       .toBe(Math.floor(room));
     // Room to show the minimum again restores the configured range.
     await expect.poll(range).toEqual(['160', '160', '160']);
+  });
+
+  test('the drawer stops growing at the work-area minimum height and gives way to it', async ({
+    page,
+  }) => {
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const main = workbench.locator('.kui-workbench__main');
+    const drawer = workbench.locator('[data-workbench-drawer]');
+    const height = async (locator: typeof main) =>
+      (await locator.boundingBox())!.height;
+    await workbench.scrollIntoViewIfNeeded();
+    const column = await height(workbench.locator('.kui-workbench__center'));
+
+    // End asks for the 320 px maximum; the console stops where the editor
+    // keeps its 120 px default minimum height.
+    const room = Math.floor(column - 120);
+    expect(room).toBeLessThan(320);
+    const handle = workbench.getByRole('separator', { name: 'Resize Console' });
+    await handle.focus();
+    await page.keyboard.press('End');
+    await expect(handle).toHaveAttribute('aria-valuenow', String(room));
+    await expect(handle).toHaveAttribute('aria-valuemax', String(room));
+    expect(Math.abs((await height(main)) - 120)).toBeLessThanOrEqual(1);
+
+    // A shorter workbench shrinks the console, never the editor, and the
+    // console's content follows its shown height.
+    await workbench.evaluate((element) => {
+      element.style.height = '300px';
+    });
+    await expect.poll(async () => Math.round(await height(main))).toBe(120);
+    const shown = await height(drawer);
+    expect(shown).toBeLessThan(room);
+    const content = drawer.locator('.kui-workbench__panel-content');
+    expect(Math.abs((await height(content)) - (shown - 1))).toBeLessThanOrEqual(
+      1,
+    );
+    await expect(
+      drawer.getByText('Console', { exact: true }).first(),
+    ).toBeInViewport();
+
+    await workbench.evaluate((element) => {
+      element.style.removeProperty('height');
+    });
+    await expect.poll(async () => Math.round(await height(drawer))).toBe(room);
   });
 
   test('rails present as overlays below the narrow Workbench breakpoint', async ({

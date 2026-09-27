@@ -314,7 +314,7 @@ describe('Workbench', () => {
     }
   });
 
-  it('keeps a minimum work-area width only beside a resizable rail', () => {
+  it('keeps a work-area minimum width beside any rail and height above the drawer', () => {
     const root = (props: Partial<Parameters<typeof Workbench>[0]>) => {
       const host = document.createElement('div');
       host.innerHTML = String(
@@ -343,20 +343,48 @@ describe('Workbench', () => {
       }).dataset.mainMinSize,
     ).toBe('0');
 
-    // Fixed rails and a resizable drawer keep the shell exactly as before.
-    for (const fixed of [
+    // A fixed rail keeps the work area its minimum width too.
+    const fixed = root({
+      leftRail: { content: panel('nav'), size: 300 },
+      mainMinSize: 500,
+    });
+    expect(fixed.dataset.mainMinSize).toBe('500');
+    expect(fixed.hasAttribute('data-main-min-height')).toBe(false);
+    expect(fixed.getAttribute('style')).toBe(
+      '--_kui-workbench-main-min-width:500px',
+    );
+
+    // The drawer, fixed or resizable, keeps it a minimum height.
+    const drawer = root({ bottomDrawer: { content: panel('console') } });
+    expect(drawer.hasAttribute('data-main-min-size')).toBe(false);
+    expect(drawer.dataset.mainMinHeight).toBe('120');
+    expect(drawer.getAttribute('style')).toBe(
+      '--_kui-workbench-main-min-height:120px',
+    );
+    const both = root({
+      leftRail: { content: panel('nav') },
+      bottomDrawer: { content: panel('console'), resizable: true },
+      mainMinHeight: 200.6,
+    });
+    expect(both.dataset.mainMinHeight).toBe('201');
+    expect(both.getAttribute('style')).toBe(
+      '--_kui-workbench-main-min-width:320px;--_kui-workbench-main-min-height:201px',
+    );
+    expect(
       root({
-        leftRail: { content: panel('nav'), size: 300 },
-        mainMinSize: 500,
-      }),
-      root({ bottomDrawer: { content: panel('console'), resizable: true } }),
-    ]) {
-      expect(fixed.hasAttribute('data-main-min-size')).toBe(false);
-      expect(fixed.hasAttribute('style')).toBe(false);
-    }
+        bottomDrawer: { content: panel('console') },
+        mainMinHeight: -1,
+      }).dataset.mainMinHeight,
+    ).toBe('0');
+
+    // Without a panel on an axis, that axis keeps the shell as before.
+    const bare = root({ mainMinSize: 500, mainMinHeight: 500 });
+    expect(bare.hasAttribute('data-main-min-size')).toBe(false);
+    expect(bare.hasAttribute('data-main-min-height')).toBe(false);
+    expect(bare.hasAttribute('style')).toBe(false);
   });
 
-  it('lets resizable inline rails shrink in proportion around the work-area minimum', async () => {
+  it('lets inline rails and the drawer give way around the work-area minimum', async () => {
     const file = resolve(import.meta.dirname, '../../src/workbench.css');
     const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
     const rule = (selector: string) => {
@@ -378,14 +406,26 @@ describe('Workbench', () => {
     ).toEqual({
       'min-width': 'min(var(--_kui-workbench-main-min-width), 100%)',
     });
+    expect(
+      rule(
+        '.kui-workbench[data-main-min-height] > .kui-workbench__center > .kui-workbench__main',
+      ),
+    ).toEqual({
+      'min-height': 'min(var(--_kui-workbench-main-min-height), 100%)',
+    });
     const expanded =
-      '.kui-workbench__rail[data-resizable="true"][data-presentation="inline"]:not( [data-collapsed="true"] )';
+      '.kui-workbench__rail[data-presentation="inline"]:not([data-collapsed="true"]), .kui-workbench__drawer[data-presentation="inline"]:not( [data-collapsed="true"] )';
     expect(rule(expanded)).toEqual({ 'flex-shrink': '1' });
     expect(
       rule(
-        '.kui-workbench__rail[data-resizable="true"]:where( [data-presentation="inline"]:not([data-collapsed="true"]) ) > .kui-workbench__panel-content',
+        '.kui-workbench__rail:where( [data-presentation="inline"]:not([data-collapsed="true"]) ) > .kui-workbench__panel-content',
       ),
     ).toEqual({ width: '100%' });
+    expect(
+      rule(
+        '.kui-workbench__drawer:where( [data-presentation="inline"]:not([data-collapsed="true"]) ) > .kui-workbench__panel-content',
+      ),
+    ).toEqual({ height: '100%' });
   });
 
   it('renders a responsive overlay breakpoint on rails and the drawer', () => {

@@ -29,7 +29,10 @@ function memoryStorage(initial: Record<string, string> = {}) {
 }
 
 /** A mounted, app-controlled resizable Workbench. */
-function studio({ mainMinSize }: { mainMinSize?: number } = {}) {
+function studio({
+  mainMinSize,
+  mainMinHeight,
+}: { mainMinSize?: number; mainMinHeight?: number } = {}) {
   const root = document.createElement('div');
   document.body.append(root);
   roots.push(root);
@@ -44,6 +47,7 @@ function studio({ mainMinSize }: { mainMinSize?: number } = {}) {
       label: 'Studio',
       main: raw('<div>editor</div>'),
       mainMinSize,
+      mainMinHeight,
       leftRail: {
         content: raw('<div>nav</div>'),
         label: 'Navigator',
@@ -382,14 +386,20 @@ describe('wireWorkbench', () => {
      * px wide, an expanded rail shows its size (a fixed rail its rail-width
      * token) plus nothing for safe areas, and an overlay rail is out of flow.
      * `leftShown` caps the width the left rail shows, as a container that
-     * squeezes it does.
+     * squeezes it does. The Workbench and its work-area column are `height` px
+     * tall, and an expanded drawer shows its size.
      */
     function layout(
       width: number,
       {
         contentBoxBorder = 0,
         leftShown = Number.POSITIVE_INFINITY,
-      }: { contentBoxBorder?: number; leftShown?: number } = {},
+        height = 900,
+      }: {
+        contentBoxBorder?: number;
+        leftShown?: number;
+        height?: number;
+      } = {},
     ) {
       vi.restoreAllMocks();
       const size = (element: HTMLElement) =>
@@ -397,12 +407,15 @@ describe('wireWorkbench', () => {
           ? 0
           : Number.parseFloat(
               element.style.getPropertyValue('--kui-resizable-region-size') ||
-                element.style.getPropertyValue('--kui-workbench-rail-width'),
+                element.style.getPropertyValue('--kui-workbench-rail-width') ||
+                element.style.getPropertyValue('--kui-workbench-drawer-height'),
             );
       vi.spyOn(
         HTMLElement.prototype,
         'getBoundingClientRect',
       ).mockImplementation(function (this: HTMLElement) {
+        if (this.matches('.kui-workbench__drawer'))
+          return new DOMRect(0, 0, 0, size(this));
         const w = this.matches('[data-component="workbench"]')
           ? width
           : this.matches('.kui-workbench__rail--left')
@@ -410,17 +423,24 @@ describe('wireWorkbench', () => {
             : this.matches('.kui-workbench__rail')
               ? size(this)
               : 0;
-        return new DOMRect(0, 0, w, 100);
+        const tall = this.matches(
+          '[data-component="workbench"], .kui-workbench__center',
+        );
+        return new DOMRect(0, 0, w, tall ? height : 100);
       });
       const real = globalThis.getComputedStyle;
       vi.spyOn(globalThis, 'getComputedStyle').mockImplementation(
         (element: Element) => {
           const style = real(element);
-          if (
-            !(element instanceof HTMLElement) ||
-            !element.matches('.kui-workbench__rail')
-          )
-            return style;
+          if (!(element instanceof HTMLElement)) return style;
+          if (element.matches('.kui-workbench__drawer'))
+            return {
+              boxSizing: contentBoxBorder ? 'content-box' : 'border-box',
+              flexBasis: `${size(element)}px`,
+              borderBlockStartWidth: `${contentBoxBorder}px`,
+              borderBlockEndWidth: '',
+            } as CSSStyleDeclaration;
+          if (!element.matches('.kui-workbench__rail')) return style;
           return {
             boxSizing: contentBoxBorder ? 'content-box' : 'border-box',
             flexBasis: `${size(element)}px`,
@@ -469,6 +489,72 @@ describe('wireWorkbench', () => {
       // The vertical drawer never gives way to the work area's width.
       key(app.drawer(), 'End');
       expect(app.drawerSize.value).toBe(480);
+    });
+
+    it('stops the drawer where the work area would drop below its minimum height', () => {
+      layout(840, { height: 500 });
+      const app = studio();
+      disposers.push(
+        wireWorkbench(app.root, {
+          id: 'studio',
+          panels: { bottomDrawer: { size: app.drawerSize } },
+          storage: memoryStorage(),
+        }),
+      );
+      // 500 − 120 (the default work-area height) leaves 380.
+      key(app.drawer(), 'End');
+      expect(app.drawerSize.value).toBe(380);
+      expect(app.drawer().getAttribute('aria-valuemax')).toBe('380');
+      key(app.drawer(), 'ArrowUp');
+      expect(app.drawerSize.value).toBe(380);
+      key(app.drawer(), 'ArrowDown', true);
+      expect(app.drawerSize.value).toBe(316);
+
+      // A column too short for the drawer's minimum keeps the minimum.
+      layout(840, { height: 200 });
+      key(app.drawer(), 'End');
+      expect(app.drawerSize.value).toBe(120);
+    });
+
+    it('honors a custom minimum height, 0 to turn it off, and a content-box drawer border', () => {
+      layout(840, { height: 500 });
+      const custom = studio({ mainMinHeight: 300 });
+      disposers.push(
+        wireWorkbench(custom.root, {
+          id: 'studio',
+          panels: { bottomDrawer: { size: custom.drawerSize } },
+          storage: memoryStorage(),
+        }),
+      );
+      key(custom.drawer(), 'End');
+      expect(custom.drawerSize.value).toBe(200);
+      disposers.splice(0).forEach((dispose) => dispose());
+      custom.root.remove();
+
+      const off = studio({ mainMinHeight: 0 });
+      disposers.push(
+        wireWorkbench(off.root, {
+          id: 'studio',
+          panels: { bottomDrawer: { size: off.drawerSize } },
+          storage: memoryStorage(),
+        }),
+      );
+      key(off.drawer(), 'End');
+      expect(off.drawerSize.value).toBe(480);
+      disposers.splice(0).forEach((dispose) => dispose());
+      off.root.remove();
+
+      layout(840, { height: 500, contentBoxBorder: 1 });
+      const bordered = studio();
+      disposers.push(
+        wireWorkbench(bordered.root, {
+          id: 'studio',
+          panels: { bottomDrawer: { size: bordered.drawerSize } },
+          storage: memoryStorage(),
+        }),
+      );
+      key(bordered.drawer(), 'End');
+      expect(bordered.drawerSize.value).toBe(379);
     });
 
     it('holds a squeezed rail at its shown size and never below its minimum', () => {

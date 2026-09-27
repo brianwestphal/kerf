@@ -126,47 +126,60 @@ const quoted = (value: string) =>
 const px = (value: string) => Number.parseFloat(value) || 0;
 
 /**
- * The largest size a resizable rail may take while the work area keeps its
- * minimum width (the Workbench's `mainMinSize`, rendered as
- * `data-main-min-size`): the Workbench width, less that minimum, the other
- * in-flow rails as shown, and the rail's own safe-area extent and border. A
- * rail that the container has already squeezed is held at the width it shows,
- * so it can shrink but not grow. Without layout (no box yet) or a minimum,
- * the rail's own maximum stands; the drawer is vertical and unaffected.
+ * The largest size a resizable panel may take while the work area keeps its
+ * minimum: for a rail, its minimum width (the Workbench's `mainMinSize`,
+ * rendered as `data-main-min-size`) — the Workbench width, less that minimum,
+ * the other in-flow rails as shown, and the rail's own safe-area extent and
+ * border; for the bottom drawer, its minimum height (`mainMinHeight`, rendered
+ * as `data-main-min-height`) — the work-area column's height, less that
+ * minimum and the drawer's own safe-area extent and border. A panel the
+ * container has already squeezed is held at the size it shows, so it can
+ * shrink but not grow. Without layout (no box yet) or a minimum, the panel's
+ * own maximum stands.
  */
 const mainRoomLimit: ResizeLimit = (region, { max }) => {
-  const workbench = region.parentElement;
-  const mainMin = Number(workbench?.dataset.mainMinSize);
-  if (region.dataset.axis !== 'horizontal' || !workbench || !(mainMin > 0))
-    return max;
-  const width = workbench.getBoundingClientRect().width;
-  if (width <= 0) return max;
+  const horizontal = region.dataset.axis === 'horizontal';
+  // A rail's parent is the Workbench; the drawer's is the work-area column.
+  const container = region.parentElement;
+  const workbench = horizontal ? container : container?.parentElement;
+  const mainMin = Number(
+    horizontal
+      ? workbench?.dataset.mainMinSize
+      : workbench?.dataset.mainMinHeight,
+  );
+  if (!container || !(mainMin > 0)) return max;
+  const box = container.getBoundingClientRect();
+  const room = horizontal ? box.width : box.height;
+  if (room <= 0) return max;
   let others = 0;
-  for (const rail of workbench.children) {
-    if (
-      rail === region ||
-      !rail.matches('.kui-workbench__rail') ||
-      globalThis.getComputedStyle(rail).position === 'absolute'
-    )
-      continue;
-    others += rail.getBoundingClientRect().width;
-  }
+  if (horizontal)
+    for (const rail of container.children) {
+      if (
+        rail === region ||
+        !rail.matches('.kui-workbench__rail') ||
+        globalThis.getComputedStyle(rail).position === 'absolute'
+      )
+        continue;
+      others += rail.getBoundingClientRect().width;
+    }
   const style = globalThis.getComputedStyle(region);
   const size = px(region.style.getPropertyValue('--kui-resizable-region-size'));
   const border =
     style.boxSizing === 'border-box'
       ? 0
-      : px(style.borderInlineStartWidth) + px(style.borderInlineEndWidth);
-  // The track is the size plus the rail's safe-area extent (its flex basis).
+      : horizontal
+        ? px(style.borderInlineStartWidth) + px(style.borderInlineEndWidth)
+        : px(style.borderBlockStartWidth) + px(style.borderBlockEndWidth);
+  // The track is the size plus the panel's safe-area extent (its flex basis).
   const extent = px(style.flexBasis) - size + border;
-  return Math.floor(width - Math.min(mainMin, width) - others - extent);
+  return Math.floor(room - Math.min(mainMin, room) - others - extent);
 };
 
 /**
  * Wire a `Workbench`'s panels. For `resizable` panels given a `size` signal:
  * pointer drags and arrow / Shift+arrow / Home / End on each panel's
  * separator, clamped to the panel's limits and to the room that leaves the
- * work area its minimum width, committed to the app-owned size signals.
+ * work area its minimum width and height, committed to the app-owned size signals.
  * Optional persistence loads and saves each size; optional `deviceClass`
  * suspends resizing on compact classes. Collapse stays the app's `collapsed`
  * flag and never changes a size. For panels given a `collapsed` signal,

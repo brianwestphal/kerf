@@ -25,8 +25,15 @@ export const WORKBENCH_RESIZE_DEFAULTS: Record<
 };
 
 /**
- * Default minimum width (px) a Workbench keeps for its work area while a rail
- * is resizable: rails stop growing there and shrink proportionally when the
- * container narrows.
+ * Default minimum width (px) a Workbench keeps for its work area beside its
+ * inline rails, fixed or resizable: resizable rails stop growing there, and
+ * every inline rail shrinks proportionally when the container narrows.
  */
 export const WORKBENCH_MAIN_MIN_SIZE = 320;
+
+/**
+ * Default minimum height (px) a Workbench keeps for its work area above an
+ * inline bottom drawer: a resizable drawer stops growing there, and the drawer
+ * shrinks when the Workbench gets shorter.
+ */
+export const WORKBENCH_MAIN_MIN_HEIGHT = 120;

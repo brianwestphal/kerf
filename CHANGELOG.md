@@ -53,6 +53,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   opener. Panels opening inline never move focus. Focus returned on close
   also skips an opener inside another panel that has closed since.
   `dismissOverlays: false` leaves all of this to the app.
+- **`@kerfjs/ui` `Workbench` keeps its work-area minimum beside fixed rails
+  and above the bottom drawer.** `mainMinSize` used to apply only beside a
+  resizable rail, so two fixed 280px rails on a ~730px Workbench left the
+  editor 174px; now every inline rail, fixed or resizable, shrinks in
+  proportion (its content following the shown width) to keep the work area
+  `mainMinSize` px wide. A new `mainMinHeight` prop (default 120, `0` turns it
+  off) is the drawer's counterpart: an inline drawer, fixed or resizable,
+  shrinks when the Workbench gets shorter, and `wireWorkbench` stops a
+  resizable drawer where the work area would drop below that height (reported
+  in `aria-valuemax`) instead of only at the drawer's own `max`.
 - **A `@kerfjs/ui` Workbench rail squeezed below its minimum now reports the
   width it shows.** When the Workbench was too narrow for a rail's `min`
   beside the work-area minimum, the rail showed about 172px while its

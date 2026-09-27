@@ -123,6 +123,12 @@ device in tests.
   inside it while open, and closes on Escape or an outside press. Resizable
   rails leave the editor its `mainMinSize` (320px by default) and shrink in
   proportion when the window narrows.
+  to `wireWorkbench` so the overlay starts collapsed and closes on Escape or an
+  outside press. Inline
+  rails, fixed or resizable, leave the editor its `mainMinSize` (320px by
+  default) and shrink in proportion when the window narrows; the bottom drawer
+  leaves it `mainMinHeight` (120px by default) and shrinks when the window gets
+  shorter.
 - **Social app (tabbed):** `TabScaffold` with Home / Search / Profile tabs, each
   `content` a `NavStack`. On a tablet/desktop, render the same sections as a
   `Workbench` left rail instead of a bottom bar.

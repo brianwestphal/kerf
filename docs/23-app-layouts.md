@@ -399,17 +399,37 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
     double-drives a `ResizableRegion` or another Workbench under the same root;
   - the work area keeps a minimum width beside resizable rails (KF-D79A29:
     two ~480px rails on a ~1024px Workbench left almost no main area).
-    `Workbench`'s `mainMinSize` (default 320px, `0` turns it off, ignored when
-    no rail is resizable) is rendered as `data-main-min-size` plus a private
+    `Workbench`'s `mainMinSize` (default 320px, `0` turns it off, ignored
+    without a rail) is rendered as `data-main-min-size` plus a private
     width variable. The center's `min-width` is that minimum (never wider than
-    the Workbench); resizable inline rails become `flex-shrink: 1` with content
+    the Workbench); inline rails become `flex-shrink: 1` with content
     that follows their shown width, so a narrowing container squeezes them in
     proportion to their sizes instead of the work area. `wireWorkbench` stops
     drag and keyboard resizing of a rail where the work area would drop below
     the minimum — the Workbench width less the minimum, the other in-flow
     rails as shown, and the rail's own safe-area extent — and never below the
     rail's own `min`; a rail the container has already squeezed can shrink but
-    not grow. The vertical drawer is unaffected.
+    not grow.
+  - both minimums cover every inline panel, fixed or resizable (KF-GCDT74:
+    `mainMinSize` used to apply only beside a resizable rail, and nothing kept
+    the work area's height above the drawer). Fixed inline rails give way like
+    resizable ones, and `Workbench`'s `mainMinHeight` (default 120px, `0`
+    turns it off, ignored without a drawer) is the drawer's counterpart of
+    `mainMinSize`: rendered as `data-main-min-height` plus a private height
+    variable, it is the work area's `min-height` (never taller than the
+    column); an inline, expanded drawer becomes `flex-shrink: 1` with content
+    that follows its shown height, and `wireWorkbench` stops the drawer's drag
+    and keyboard resizing where the work area would drop below it — the
+    column height less the minimum and the drawer's own safe-area extent.
+    Decision: the "drawer minimum height" is the work area's minimum height
+    beside the drawer rather than a floor on the drawer, mirroring the width
+    axis, where rails give way without a floor of their own (a panel squeezed
+    below its `min` reports the size it shows, as below). The 120px default
+    keeps the editor toolbar and a line of content, equals the drawer's own
+    default `min`, and leaves every catalog Workbench's height as it was;
+    `mainMinSize` now applies to Workbenches whose rails are all fixed, so the
+    catalog's full workspace gives its fixed 280px rails about 207px each and
+    the editor 320px instead of 174px.
   - a rail the container squeezes below its own `min` (KF-4MBYRQ: a 180px-min
     Navigator showing ~172px reported `aria-valuenow="180"`) reports the width
     it shows: `aria-valuenow` is that width and `aria-valuemin` /
@@ -448,6 +468,8 @@ Shipped shape:
 // once: wireWorkbench(root, { id: "ide", panels: { leftRail: { size: navSize, storageKey: "ide.nav", collapsed: leftCollapsed } }, deviceClass: device });
 // a panel given `collapsed` is a transient overlay: collapsed on entering its breakpoint, takes focus and keeps Tab inside while open, closed by Escape / an outside press
 // the editor keeps 320px by default; mainMinSize={400} asks for more, 0 turns it off
+// a panel given `collapsed` is a transient overlay: collapsed on entering its breakpoint, closed by Escape / an outside press
+// the editor keeps 320px of width and 120px of height by default; mainMinSize={400} / mainMinHeight={200} ask for more, 0 turns either off
 ```
 
 **Implementation:** ticket **Workbench (multi-panel) layout**.

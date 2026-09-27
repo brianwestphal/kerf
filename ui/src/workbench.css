@@ -277,27 +277,43 @@
   --kui-workbench-drawer-height: var(--kui-resizable-region-size);
 }
 
-/* The work area keeps a minimum width beside resizable rails (the Workbench's
-   `mainMinSize`, never wider than the Workbench itself). Resizable inline
-   rails give way instead: when the container narrows they shrink in
-   proportion to their sizes, and their content follows the shown width. The
-   wiring stops a resize where the work area would drop below the minimum. */
+/* The work area keeps a minimum width beside the rails (the Workbench's
+   `mainMinSize`) and a minimum height above the drawer (`mainMinHeight`),
+   never larger than the Workbench itself. Inline panels, fixed or resizable,
+   give way instead: when the container narrows the rails shrink in proportion
+   to their sizes, when it gets shorter the drawer shrinks, and their content
+   follows the shown size. The wiring stops a resize where the work area would
+   drop below the minimum. */
 .kui-workbench[data-main-min-size] > .kui-workbench__center {
   min-width: min(var(--_kui-workbench-main-min-width), 100%);
 }
 
-.kui-workbench__rail[data-resizable="true"][data-presentation="inline"]:not(
+.kui-workbench[data-main-min-height]
+  > .kui-workbench__center
+  > .kui-workbench__main {
+  min-height: min(var(--_kui-workbench-main-min-height), 100%);
+}
+
+.kui-workbench__rail[data-presentation="inline"]:not([data-collapsed="true"]),
+.kui-workbench__drawer[data-presentation="inline"]:not(
     [data-collapsed="true"]
   ) {
   flex-shrink: 1;
 }
 
-/* Low specificity, so a responsive overlay (below) restores the fixed width. */
-.kui-workbench__rail[data-resizable="true"]:where(
+/* Low specificity, so a responsive overlay (below) restores the fixed size. */
+.kui-workbench__rail:where(
     [data-presentation="inline"]:not([data-collapsed="true"])
   )
   > .kui-workbench__panel-content {
   width: 100%;
+}
+
+.kui-workbench__drawer:where(
+    [data-presentation="inline"]:not([data-collapsed="true"])
+  )
+  > .kui-workbench__panel-content {
+  height: 100%;
 }
 
 /* The panel clips its sliding content, so a scrolling panel scrolls its

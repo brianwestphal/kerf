@@ -1120,12 +1120,21 @@ interface WorkbenchProps {
     rightRail?: WorkbenchPanel;
     bottomDrawer?: WorkbenchPanel;
     /**
-     * Minimum width, in px, the work area keeps while a rail is `resizable`
-     * (default 320; `0` turns it off). Resizing a rail stops where the work area
-     * would drop below it, and resizable rails shrink proportionally when the
-     * Workbench gets narrower. Workbenches without a resizable rail ignore it.
+     * Minimum width, in px, the work area keeps beside the inline rails, fixed
+     * or `resizable` (default 320; `0` turns it off). Resizing a rail stops
+     * where the work area would drop below it, and inline rails shrink
+     * proportionally when the Workbench gets narrower. Workbenches without a
+     * rail ignore it.
      */
     mainMinSize?: number;
+    /**
+     * Minimum height, in px, the work area keeps above an inline bottom drawer,
+     * fixed or `resizable` (default 120; `0` turns it off) — the drawer's
+     * counterpart of `mainMinSize`. Resizing the drawer stops where the work
+     * area would drop below it, and the drawer shrinks when the Workbench gets
+     * shorter. Workbenches without a drawer ignore it.
+     */
+    mainMinHeight?: number;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -1141,7 +1150,7 @@ interface WorkbenchProps {
  * and keyboard resizing with `resizable`, which `wireWorkbench` drives. See
  * `docs/23-app-layouts.md` §3.3.
  */
-declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainMinSize, className, slot, }: WorkbenchProps): SafeHtml;
+declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainMinSize, mainMinHeight, className, slot, }: WorkbenchProps): SafeHtml;
 
 export { Workbench, type WorkbenchPanel, type WorkbenchPanelResizable, type WorkbenchProps, type WorkbenchResponsiveOverlayAt };
 ```
@@ -1246,7 +1255,7 @@ interface WireWorkbenchOptions {
  * Wire a `Workbench`'s panels. For `resizable` panels given a `size` signal:
  * pointer drags and arrow / Shift+arrow / Home / End on each panel's
  * separator, clamped to the panel's limits and to the room that leaves the
- * work area its minimum width, committed to the app-owned size signals.
+ * work area its minimum width and height, committed to the app-owned size signals.
  * Optional persistence loads and saves each size; optional `deviceClass`
  * suspends resizing on compact classes. Collapse stays the app's `collapsed`
  * flag and never changes a size. For panels given a `collapsed` signal,
