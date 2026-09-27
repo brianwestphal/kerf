@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-// The build script is JavaScript because it runs directly under Node.
-// @ts-expect-error no declaration file is needed for this build-only module
-import { buildLibraryPage } from '../../scripts/build-design-templates.mjs';
+import {
+  buildLibraryPage,
+  resolveTemplateStyles,
+  // The build script is JavaScript because it runs directly under Node.
+  // @ts-expect-error no declaration file is needed for this build-only module
+} from '../../scripts/build-design-templates.mjs';
 
 describe('design template library composition', () => {
   it('builds an HTML sheet that references individual variant SVGs', () => {
@@ -30,5 +33,32 @@ describe('design template library composition', () => {
     expect(page.html).toContain('Default &amp; ready');
     expect(page.html).toContain('Compact &lt;mode&gt;');
     expect(page.html).not.toContain('<svg');
+  });
+});
+
+describe('design template stylesheet resolution', () => {
+  it('pulls in every stylesheet a component browser entry imports, dependencies first', async () => {
+    const entries: Record<string, string> = {
+      'lucide-icon':
+        "import '../styles/foundation.css';\nimport '../styles/lucide-icon.css';\nexport * from '../lucide-icon.js';\n",
+      'state-banner':
+        "import '../styles/foundation.css';\nimport '../styles/badge.css';\nimport '../styles/skeleton.css';\nimport '../styles/state-banner.css';\nexport * from '../state-banner.js';\n",
+    };
+    const styles = await resolveTemplateStyles(
+      ['foundation', 'layout', 'lucide-icon', 'state-banner'],
+      (style: string) =>
+        style in entries
+          ? Promise.resolve(entries[style])
+          : Promise.reject(new Error('no browser entry')),
+    );
+
+    expect(styles).toEqual([
+      'foundation',
+      'layout',
+      'lucide-icon',
+      'badge',
+      'skeleton',
+      'state-banner',
+    ]);
   });
 });

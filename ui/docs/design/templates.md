@@ -70,6 +70,14 @@ not have to interpret nested `<svg>` elements.
 `domotion` must be reachable: it resolves `DOMOTION_BIN`, then a local
 `node_modules/.bin/domotion`, then a sibling `../domotion` checkout.
 
+Each manifest entry's `css` list names the stylesheets a template starts from; the
+build expands every component in it through that component's generated browser
+entry (`dist/browser/<name>.js`), which imports every stylesheet the component's
+runtime reaches. A nested component's styles — the `Badge` inside `StateBanner` or
+`ListHeader`, the `Skeleton` inside a placeholder — are therefore loaded exactly as a
+consumer's browser import loads them, instead of depending on a hand-maintained
+list. Run `npm run build` before the template build so those entries exist.
+
 **Keep the templates current as components change.** The variants live in the
 `COMPONENTS` manifest in `scripts/build-design-templates.mjs` — when a component
 gains or changes a presentation combination (e.g. a new `Toolbar` slot), add
@@ -108,7 +116,9 @@ starting point and:
    sample data (pass icon/action slots as `SafeHtml`, e.g. `LucideIcon({ … })` or
    `raw('<button …>')` — never plain strings, which kerf escapes).
 2. List the component's CSS (its `@kerfjs/ui` subpaths plus `foundation.css` for
-   tokens and `layout.css`), and any of your own component CSS.
+   tokens and `layout.css`), and any of your own component CSS. Include the CSS of
+   every `@kerfjs/ui` component it renders inside itself (a `Badge`, a `Skeleton`),
+   or expand the list the way `resolveTemplateStyles()` does.
 3. Enumerate the presentation combinations in the per-component manifest.
 4. Capture each variant with `domotion capture <page.html> --selector <css>
 --text-mode system-font --flatten-nested-svg -o <variant>.svg`, once per theme with

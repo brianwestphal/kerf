@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- The `@kerfjs/ui` SVG design templates render badges as filled pills: the
+  `StateBanner` badge and the `ListHeader` and `List` count pills used to show
+  as plain text, because the template build loaded only a hand-written list of
+  stylesheets that omitted `badge.css`. The build now loads each component's
+  full stylesheet set from its generated browser entry, the same set a
+  consumer's browser import loads, so a nested component's CSS can no longer be
+  missed. The `ListHeader` and `List` templates also pick up the label inset
+  from `text.css`, so a header label now lines up with the list items below it,
+  as it does in the live component.
 - A `@kerfjs/ui` `StateBanner` placeholder's badge sits at the live badge's
   height on every platform. With a skeleton instead of text, the badge took a
   baseline from the skeleton's bottom edge and sat about a pixel higher, by an
