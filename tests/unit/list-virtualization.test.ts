@@ -133,6 +133,41 @@ describe('bindList() — virtualization', () => {
     dispose();
     expect(parent.children.length).toBe(0); // sizer + rows removed
   });
+
+  it('scrolled deep → the source shrinks below scrollTop: padding never exceeds the content (KF-FJ40AE)', () => {
+    const parent = host();
+    withHeight(parent, 100);
+    const items = signal<Item[]>(
+      Array.from({ length: 1000 }, (_, i) => ({ id: i, label: `r${i}` })),
+    );
+    const dispose = bindList(parent, items, {
+      key: (i) => i.id,
+      render: (i) => i.label,
+      virtualize: { rowHeight: 20, overscan: 3 },
+    });
+    parent.scrollTop = 10_000;
+    parent.dispatchEvent(new Event('scroll'));
+    expect(flushAnimationFrame()).toBe(1);
+    const sizer = parent.firstElementChild as HTMLElement;
+    expect(sizer.firstElementChild?.textContent).toBe('r497');
+
+    // Shrink to 10 rows (200px) while scrollTop is still 10000 (before the
+    // browser clamps it). The window is empty and every row is above it —
+    // padTop is the whole content height, not start * rowHeight (9940px).
+    items.value = items.value.slice(0, 10);
+    expect(sizer.children.length).toBe(0);
+    expect(sizer.style.paddingTop).toBe('200px');
+    expect(sizer.style.paddingBottom).toBe('0px');
+
+    // The browser then clamps scrollTop into range; the window repaints.
+    parent.scrollTop = 100;
+    parent.dispatchEvent(new Event('scroll'));
+    expect(flushAnimationFrame()).toBe(1);
+    expect(sizer.firstElementChild?.textContent).toBe('r2');
+    expect(sizer.style.paddingTop).toBe('40px');
+    expect(sizer.style.paddingBottom).toBe('0px');
+    dispose();
+  });
 });
 
 describe('bindList() — variable-height virtualization (declared heights, KF-501)', () => {

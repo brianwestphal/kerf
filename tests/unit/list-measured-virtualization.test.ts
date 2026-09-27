@@ -284,6 +284,115 @@ describe('bindList() — measured-height virtualization ({ estimate } + setHeigh
     list();
   });
 
+  describe('pending anchor delta across a pre-frame transition (KF-FJ40AE: stale scrollTop correction)', () => {
+    // Every case scrolls to 500 (rows 0..9 above the fold), remeasures row 2
+    // (fully above: bottom 150 ≤ 500) taller by 30, then changes state BEFORE
+    // the animation frame that would apply the +30 correction runs.
+    const setup = () => {
+      const parent = host();
+      withHeight(parent, 100);
+      const items = signal<Item[]>(hundred());
+      const list = bindList(parent, items, {
+        key: (i) => i.id,
+        render: (i) => i.label,
+        virtualize: { rowHeight: { estimate: 50 }, overscan: 0 },
+      });
+      parent.scrollTop = 500;
+      parent.dispatchEvent(new Event('scroll'));
+      expect(flushAnimationFrame()).toBe(1);
+      list.setHeight(2, 80);
+      return { parent, items, list };
+    };
+
+    it('setHeight(above) → remove that key → flush: no stale correction', () => {
+      const { parent, items, list } = setup();
+      items.value = items.value.filter((i) => i.id !== 2);
+      flushAnimationFrame();
+      expect(parent.scrollTop).toBe(500);
+      list();
+    });
+
+    it('setHeight(above) → move the key below the viewport → flush: no correction', () => {
+      const { parent, items, list } = setup();
+      const next = items.value.slice();
+      const [moved] = next.splice(2, 1);
+      next.splice(50, 0, moved);
+      items.value = next;
+      flushAnimationFrame();
+      expect(parent.scrollTop).toBe(500);
+      list();
+    });
+
+    it('setHeight(above) → reorder that keeps the key above → flush: correction still applies', () => {
+      const { parent, items, list } = setup();
+      const next = items.value.slice();
+      const [moved] = next.splice(2, 1);
+      next.splice(0, 0, moved);
+      items.value = next;
+      flushAnimationFrame();
+      expect(parent.scrollTop).toBe(530);
+      list();
+    });
+
+    it('setHeight(above) → user scrolls further down → flush: correction applies on top of the new position', () => {
+      const { parent, list } = setup();
+      parent.scrollTop = 800;
+      parent.dispatchEvent(new Event('scroll'));
+      expect(flushAnimationFrame()).toBe(1);
+      expect(parent.scrollTop).toBe(830);
+      list();
+    });
+
+    it('setHeight(above) → user scrolls up past the row → flush: no correction', () => {
+      const { parent, list } = setup();
+      parent.scrollTop = 0;
+      parent.dispatchEvent(new Event('scroll'));
+      expect(flushAnimationFrame()).toBe(1);
+      expect(parent.scrollTop).toBe(0);
+      list();
+    });
+
+    it('setHeight(above) → dispose() → flush: nothing is written', () => {
+      const { parent, list } = setup();
+      list();
+      flushAnimationFrame();
+      expect(parent.scrollTop).toBe(500);
+    });
+
+    it('two setHeight calls on one key within one frame net out', () => {
+      const { parent, list } = setup();
+      list.setHeight(2, 50); // back to the estimate → net delta 0
+      expect(flushAnimationFrame()).toBe(1);
+      expect(parent.scrollTop).toBe(500);
+      list.setHeight(2, 80);
+      list.setHeight(2, 95); // 50 → 80 → 95 in one frame → net +45
+      expect(flushAnimationFrame()).toBe(1);
+      expect(parent.scrollTop).toBe(545);
+      list();
+    });
+
+    it('scrolled deep → the source shrinks below scrollTop: padding is the whole content', () => {
+      const { parent, items, list } = setup();
+      flushAnimationFrame(); // apply the +30 → 530
+      items.value = items.value.slice(0, 5); // 50+50+80+50+50 = 280 < 530
+      const sizer = parent.firstElementChild as HTMLElement;
+      expect(sizer.children.length).toBe(0);
+      expect(sizer.style.paddingTop).toBe('280px');
+      expect(sizer.style.paddingBottom).toBe('0px');
+      list();
+    });
+
+    it('a removed key that returns before the frame is a fresh row (no stale correction)', () => {
+      const { parent, items, list } = setup();
+      const all = items.value;
+      items.value = all.filter((i) => i.id !== 2);
+      items.value = all;
+      flushAnimationFrame();
+      expect(parent.scrollTop).toBe(500);
+      list();
+    });
+  });
+
   it('transition combination: measured mode + minRows (render-all below, window above)', () => {
     const parent = host();
     withHeight(parent, 100);

@@ -75,7 +75,13 @@ export function createListVirtualizationController<T>(
   let items: readonly T[] = [];
   let offsets: number[] = [0];
   let heightsDirty = true;
-  let pendingAnchorDelta = 0;
+  // Measured-mode anchor correction is resolved at frame time, not at
+  // setHeight() time: each key remembers the height it had before its first
+  // report this frame, and the frame applies the net change only for keys
+  // still in the source AND still above the viewport top. A delta summed at
+  // report time went stale when the source removed or reordered the key, or
+  // the user scrolled, before the frame ran (KF-FJ40AE).
+  const pendingAnchorBaselines = new Map<ListKey, number>();
   let rafPending = false;
   let disposed = false;
 
@@ -119,6 +125,9 @@ export function createListVirtualizationController<T>(
     if (measuring) {
       for (const rowKey of measured.keys()) {
         if (!indexByKey.has(rowKey)) measured.delete(rowKey);
+      }
+      for (const rowKey of pendingAnchorBaselines.keys()) {
+        if (!indexByKey.has(rowKey)) pendingAnchorBaselines.delete(rowKey);
       }
     }
   };
@@ -182,9 +191,11 @@ export function createListVirtualizationController<T>(
       padBottom = 0;
     } else if (fixedHeight !== null) {
       const viewportBottom = parent.scrollTop + parent.clientHeight;
-      start = Math.max(
-        0,
-        Math.floor(parent.scrollTop / fixedHeight) - overscan,
+      // Clamp to `total`: a source that shrinks while scrolled deep (before the
+      // browser clamps scrollTop) must not pad past the content (KF-FJ40AE).
+      start = Math.min(
+        total,
+        Math.max(0, Math.floor(parent.scrollTop / fixedHeight) - overscan),
       );
       end = Math.min(total, Math.ceil(viewportBottom / fixedHeight) + overscan);
       padTop = start * fixedHeight;
@@ -213,16 +224,29 @@ export function createListVirtualizationController<T>(
     renderCurrent();
   };
 
+  const applyAnchorCorrection = (): void => {
+    if (heightsDirty) {
+      rebuildOffsets();
+      heightsDirty = false;
+    }
+    let delta = 0;
+    for (const [rowKey, baseline] of pendingAnchorBaselines) {
+      // rebuildOffsets() just pruned every key that left the source.
+      const index = indexByKey.get(rowKey) as number;
+      if (offsets[index] + baseline <= parent.scrollTop)
+        delta += offsets[index + 1] - offsets[index] - baseline;
+    }
+    pendingAnchorBaselines.clear();
+    if (delta !== 0) parent.scrollTop += delta;
+  };
+
   const scheduleRender = (): void => {
     if (rafPending) return;
     rafPending = true;
     globalThis.requestAnimationFrame(() => {
       rafPending = false;
       if (disposed) return;
-      if (pendingAnchorDelta !== 0) {
-        parent.scrollTop += pendingAnchorDelta;
-        pendingAnchorDelta = 0;
-      }
+      if (pendingAnchorBaselines.size > 0) applyAnchorCorrection();
       renderCurrent();
     });
   };
@@ -246,8 +270,8 @@ export function createListVirtualizationController<T>(
     const oldHeight = measured.get(rowKey) ?? estimateAt(index);
     if (height === oldHeight) return;
     measured.set(rowKey, height);
-    if (offsets[index + 1] <= parent.scrollTop)
-      pendingAnchorDelta += height - oldHeight;
+    if (!pendingAnchorBaselines.has(rowKey))
+      pendingAnchorBaselines.set(rowKey, oldHeight);
     heightsDirty = true;
     scheduleRender();
   };

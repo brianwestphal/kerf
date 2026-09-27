@@ -82,6 +82,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `KERF_DEV_WARN_REBUILT_LISTENERS`) now dedups once per `mount()`, as
   documented. Previously the first warning silenced every other mount for
   the life of the process, so a second mount with the same bug stayed quiet.
+- `bindList` measured-height virtualization no longer applies a stale
+  scroll-anchor correction. A `setHeight()` report for a row above the viewport
+  is now resolved when the animation frame runs: if the source removed the key,
+  moved it below the fold, or the user scrolled the row into view first,
+  `scrollTop` is left alone, and several reports for one key in a frame net
+  out. Fixed-height windows also clamp to the source length, so a list that
+  shrinks while scrolled deep no longer pads far past its content.
 - `create-kerf-component` accepts an explicit `boundaries.rootClass: null` as
   an author decision, as its schema always allowed. A wrapper whose root
   element belongs to another catalog (a `rendersAs` wrapper) no longer has to

@@ -105,6 +105,17 @@ the current scroll position, kerf adjusts `parent.scrollTop` by the delta in the
 same frame. The app owning _measurement_ does not mean the app owns _anchoring_ —
 that stays in the algorithm, which is exactly why it must be unit-testable.
 
+The correction is resolved **when the frame runs**, not when the report arrives
+(KF-FJ40AE: a delta summed at report time went stale). Each key remembers the
+height it had before its first report in the frame; the frame applies the net
+change only for keys that are **still in the source** and whose row **still lies
+entirely above** the current `scrollTop`. So a key removed or reordered below the
+fold before the frame, or a user scroll that brings the row into view, applies no
+correction; several reports for one key in a frame net out; and `dispose()`
+before the frame writes nothing. Independently, every window mode clamps its
+window to the source length, so a source that shrinks while scrolled deep (before
+the browser clamps `scrollTop`) pads by at most the whole content height.
+
 ## 17.5 The optional measurement helper
 
 For consumers who don't want to hand-wire measurement, kerf ships a thin,
