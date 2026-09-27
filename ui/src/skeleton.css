@@ -7,8 +7,13 @@
   height: 1em;
   border-radius: var(--kui-skeleton-radius);
   /* Deliberately unanimated: a flat, subtle fill that reads as "not yet loaded"
-     without drawing the eye or implying progress. */
-  background: color-mix(in srgb, var(--kui-color-text) 12%, transparent);
+     without drawing the eye or implying progress. A host with its own solid
+     fill (a solid Badge) supplies `--_kui-skeleton-fill` derived from its
+     foreground, since a text-color tint vanishes on a saturated fill. */
+  background: var(
+    --_kui-skeleton-fill,
+    color-mix(in srgb, var(--kui-color-text) 12%, transparent)
+  );
   vertical-align: middle;
 }
 

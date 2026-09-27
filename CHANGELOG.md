@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- A `@kerfjs/ui` placeholder skeleton inside a solid `Badge`, such as the
+  badge of a `StateBanner` placeholder, is now clearly visible. The generic
+  skeleton tint, 12% of the text color, almost disappeared on the badge's
+  saturated fill in every tone. A solid badge now tints its skeleton from its
+  own foreground color, which contrasts with the fill in every tone in light
+  and dark mode. Quiet and outline badges keep the generic tint, which already
+  reads on their pale fills. Geometry is unchanged.
 - The `@kerfjs/ui` SVG design templates render badges as filled pills: the
   `StateBanner` badge and the `ListHeader` and `List` count pills used to show
   as plain text, because the template build loaded only a hand-written list of

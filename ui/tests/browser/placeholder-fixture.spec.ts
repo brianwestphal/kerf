@@ -526,3 +526,72 @@ for (const width of [1280, 390]) {
     }
   });
 }
+
+for (const colorScheme of ['light', 'dark'] as const) {
+  test(`a skeleton inside a solid badge contrasts with the badge fill in every tone (${colorScheme})`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme });
+    await mountFixture(page);
+    // The generic skeleton tint (12% of the text color) all but vanishes on
+    // a saturated solid fill, so a StateBanner placeholder's badge looked
+    // empty. Composite each skeleton over its badge fill and measure the
+    // WCAG contrast between the two.
+    const contrasts = await page.evaluate(() => {
+      const tones = ['neutral', 'brand', 'pop', 'success', 'warning', 'danger'];
+      const host = document.createElement('div');
+      host.innerHTML = tones
+        .map(
+          (tone) =>
+            `<span class="kui-badge" data-appearance="solid" data-size="compact" data-tone="${tone}"><span class="kui-skeleton"></span></span>`,
+        )
+        .join('');
+      document.body.append(host);
+      const canvas = document.createElement('canvas');
+      canvas.width = 1;
+      canvas.height = 1;
+      const context = canvas.getContext('2d', { willReadFrequently: true })!;
+      const paint = (...colors: string[]) => {
+        context.clearRect(0, 0, 1, 1);
+        for (const color of colors) {
+          context.fillStyle = color;
+          context.fillRect(0, 0, 1, 1);
+        }
+        return [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+      };
+      const luminance = (rgb: number[]) => {
+        const [r, g, b] = rgb.map((channel) => {
+          const value = channel / 255;
+          return value <= 0.04045
+            ? value / 12.92
+            : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      };
+      const contrast = (a: number[], b: number[]) => {
+        const [light, dark] = [luminance(a), luminance(b)].sort(
+          (x, y) => y - x,
+        );
+        return (light + 0.05) / (dark + 0.05);
+      };
+      return Object.fromEntries(
+        [...host.querySelectorAll('.kui-badge')].map((badge) => {
+          const fill = window.getComputedStyle(badge).backgroundColor;
+          const skeleton = window.getComputedStyle(
+            badge.querySelector('.kui-skeleton')!,
+          ).backgroundColor;
+          return [
+            (badge as HTMLElement).dataset.tone,
+            Math.round(contrast(paint(fill), paint(fill, skeleton)) * 100) /
+              100,
+          ];
+        }),
+      );
+    });
+    for (const [tone, ratio] of Object.entries(contrasts)) {
+      expect(ratio, `${tone} skeleton vs solid fill`).toBeGreaterThanOrEqual(
+        1.4,
+      );
+    }
+  });
+}
