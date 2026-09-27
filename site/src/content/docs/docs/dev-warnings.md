@@ -86,6 +86,10 @@ removals; any removed Element (or descendant of a removed subtree) carrying
 the marker fires the one-shot warning. The fix message points at
 `delegate()` and `data-morph-skip` as the canonical fixes.
 
+**Dedup scope.** Once per `mount()`. The one-shot flag lives on each mount's
+observer, so a second mount with the same antipattern still warns once after
+the first has.
+
 **Why opt-in.** The monkey-patch is realm-wide — every imperative listener
 gets marked, including third-party widget code paths the consumer is using
 correctly. False-positive surface includes custom elements that attach
@@ -197,7 +201,7 @@ would have missed same-count-different-keys cases.
 
 **Mechanism.** With the env var set, kerf's `effect()` factory wraps the user body in `enterEffect()` / `exitEffect()` calls that increment and decrement a module-level depth counter. Both `delegate()` and `delegateCapture()` call `warnIfInsideEffect()` at the top of their bodies; the function checks the env-var gate, then the depth counter; if depth > 0 it fires a one-shot `console.warn` naming the caller (`delegate` vs `delegateCapture`) and pointing at "register once at module / setup scope and gate behavior on the signal inside the handler" as the fix. The wrap also uses `try` / `finally` so a body that throws still decrements the counter — a thrown effect doesn't leave the depth permanently incremented.
 
-**Dedup scope.** One warning per process. Structurally identical to the rebuilt-listeners warning — the signal is "your code has this antipattern"; firing once is enough to direct attention. A consumer who fixes the first instance and has another won't be told twice in the same process, but they'll see it on the next run.
+**Dedup scope.** One warning per process. Unlike the rebuilt-listeners warning (one per `mount()`), `delegate()` is not tied to any mount, so there is no smaller owner to scope it to, and the signal is "your code has this antipattern"; firing once is enough to direct attention. A consumer who fixes the first instance and has another won't be told twice in the same process, but they'll see it on the next run.
 
 **Why opt-in.** No realistic kerf code legitimately calls `delegate()` inside an `effect()` body — but the wrap of `effect()` itself adds a microscopic call-frame overhead, so the bare `coreEffect` re-export stays the default path when the warning switch is off. A production bundle that omits `kerfjs/dev` cannot reach the wrapper at all; `NODE_ENV` is not consulted.
 

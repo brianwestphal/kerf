@@ -68,6 +68,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   as well as `<details>` / `<dialog>`, and a content-only row change inside an
   `each()` list keeps its DOM node (and focus) unless the row's top-level tag
   changes or the same render also inserts, removes, or moves rows.
+- The `kerfjs/dev` rebuilt-listeners warning (`rebuiltListeners` /
+  `KERF_DEV_WARN_REBUILT_LISTENERS`) now dedups once per `mount()`, as
+  documented. Previously the first warning silenced every other mount for
+  the life of the process, so a second mount with the same bug stayed quiet.
 - `create-kerf-component` accepts an explicit `boundaries.rootClass: null` as
   an author decision, as its schema always allowed. A wrapper whose root
   element belongs to another catalog (a `rendersAs` wrapper) no longer has to

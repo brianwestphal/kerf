@@ -20,7 +20,6 @@ import {
 } from 'vitest';
 
 import { devHooks } from '../../src/dev-hooks.js';
-import { _resetWarnedForTests } from '../../src/dev-listener-warn.js';
 import { maybeWarnMissingRowKey } from '../../src/dev-row-key-warn.js';
 import { each } from '../../src/each.js';
 import { jsx } from '../../src/jsx-runtime.js';
@@ -40,7 +39,6 @@ let warnSpy: MockInstance<typeof console.warn>;
 
 beforeEach(() => {
   env.KERF_DEV_WARN_REBUILT_LISTENERS = '1';
-  _resetWarnedForTests();
   root = document.createElement('div');
   document.body.appendChild(root);
   warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -83,7 +81,7 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
     expect(warnSpy.mock.calls[0][0]).toMatch(/delegate\(rootEl/);
   });
 
-  it('warns at most once per process (one-shot)', async () => {
+  it('warns at most once per mount (one-shot)', async () => {
     const items = signal([{ id: 1 }]);
     mount(root, () => renderList(items.value) as never);
     const li1 = root.querySelector('li') as HTMLElement;
@@ -95,6 +93,52 @@ describe('dev-listener-warn (KF-174, opt-in)', () => {
     items.value = [{ id: 1 }];
     await flushMutationObserver();
     expect(warnSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('dedups per mount, not per process: a second mount still warns once', async () => {
+    // docs/11 §11.3.2 — the owner of the rebuilt-listeners one-shot is the
+    // mount. A module-global flag would silence every later buggy mount.
+    const rootB = document.createElement('div');
+    document.body.appendChild(rootB);
+    const a = signal([{ id: 1 }]);
+    const b = signal([{ id: 1 }]);
+    mount(root, () => renderList(a.value) as never);
+    mount(rootB, () => renderList(b.value) as never);
+
+    (root.querySelector('li') as HTMLElement).addEventListener(
+      'click',
+      () => {},
+    );
+    a.value = [{ id: 1 }];
+    await flushMutationObserver();
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+
+    // Mount A repeats the antipattern — still deduped for A.
+    (root.querySelector('li') as HTMLElement).addEventListener(
+      'click',
+      () => {},
+    );
+    a.value = [{ id: 1 }];
+    await flushMutationObserver();
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+
+    // Mount B has its own owner, so its first rebuild warns.
+    (rootB.querySelector('li') as HTMLElement).addEventListener(
+      'click',
+      () => {},
+    );
+    b.value = [{ id: 1 }];
+    await flushMutationObserver();
+    expect(warnSpy).toHaveBeenCalledTimes(2);
+
+    // ...and only once.
+    (rootB.querySelector('li') as HTMLElement).addEventListener(
+      'click',
+      () => {},
+    );
+    b.value = [{ id: 1 }];
+    await flushMutationObserver();
+    expect(warnSpy).toHaveBeenCalledTimes(2);
   });
 
   it('does NOT warn when the env var is unset (default off)', async () => {

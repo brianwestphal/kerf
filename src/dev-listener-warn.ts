@@ -10,9 +10,11 @@
  *
  *   2. A `MutationObserver` on the mount root, scoped to `{ childList: true,
  *      subtree: true }`. When a removed Element (or any descendant of a
- *      removed subtree) carries the marker, the observer emits a one-shot
+ *      removed subtree) carries the marker, the observer emits a
  *      `console.warn` pointing at `delegate()` and `data-morph-skip` as the
- *      canonical fixes.
+ *      canonical fixes. The one-shot flag lives in the observer's closure,
+ *      so the warning dedups once per `mount()` (docs/11 §11.3.2) — a second
+ *      buggy mount still warns after the first one has.
  *
  * Why opt-in: the heuristic catches every imperative `addEventListener` whose
  * receiver is later removed from the live tree, including some legitimate
@@ -38,7 +40,6 @@ import { devFlag } from './dev-warn-config.js';
 const LISTENER_MARKER = Symbol.for('kerfjs.devListener');
 
 let patched = false;
-let warned = false;
 
 function isOptedIn(): boolean {
   return devFlag('KERF_DEV_WARN_REBUILT_LISTENERS') === '1';
@@ -106,9 +107,6 @@ function hasMarkedListener(el: Element): boolean {
 }
 
 function emitWarning(): void {
-  /* c8 ignore next — paired with the observer's own one-shot check; doubly-guards against re-entry under engines that batch mutations across microtasks */
-  if (warned) return;
-  warned = true;
   console.warn(
     'kerf: a node inside a mount()-managed tree was removed/rebuilt while carrying an imperative addEventListener listener. ' +
       "The listener is gone with the old node. Use `delegate(rootEl, 'click', '[data-action=\"...\"]', handler)` " +
@@ -123,6 +121,8 @@ export function installListenerRebuildWarn(
 ): MutationObserver | null {
   if (!isOptedIn()) return null;
   patchAddEventListenerOnce();
+  // Per-mount one-shot: each mount root owns its own dedup flag.
+  let warned = false;
   const observer = new MutationObserver((mutations) => {
     if (warned) return;
     for (const m of mutations) {
@@ -131,6 +131,7 @@ export function installListenerRebuildWarn(
         /* c8 ignore next — text/comment-node removals from morph; never carry the addEventListener marker but we filter to keep the Element-only contract explicit */
         if (!(removed instanceof Element)) continue;
         if (hasMarkedListener(removed)) {
+          warned = true;
           emitWarning();
           return;
         }
@@ -139,13 +140,4 @@ export function installListenerRebuildWarn(
   });
   observer.observe(rootEl, { childList: true, subtree: true });
   return observer;
-}
-
-/**
- * Test helper — resets the one-shot `warned` flag so a subsequent test in the
- * same module can re-exercise the first-warning path. Not exported from the
- * public barrel; the unit-test file imports it directly via the relative path.
- */
-export function _resetWarnedForTests(): void {
-  warned = false;
 }
