@@ -90,8 +90,12 @@ export function delegateActions<E extends Element = Element>(
     `[${attrName}]`,
     (event, el) => {
       // `el` matched `[${attrName}]`, so the attribute is always present.
-      const handler = table[el.getAttribute(attrName) as string];
-      if (handler !== undefined) handler(event, el);
+      const value = el.getAttribute(attrName) as string;
+      // Own entries only: the table is an ordinary object, so a bare
+      // `table[value]` would resolve Object.prototype names (`__proto__`,
+      // `constructor`, `toString`, `hasOwnProperty`, …) and dispatch or throw
+      // on markup that names no action in the table.
+      if (Object.hasOwn(table, value)) table[value](event, el);
     },
     options,
   );

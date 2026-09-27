@@ -74,6 +74,65 @@ describe('delegateActions()', () => {
     expect(known).not.toHaveBeenCalled();
   });
 
+  // The table is an ordinary object, so a plain `table[value]` lookup would
+  // resolve names inherited from Object.prototype: `__proto__` and
+  // `hasOwnProperty` would throw inside the listener, and `toString` would
+  // silently run the inherited method. Only the table's own entries dispatch.
+  it.each(['__proto__', 'constructor', 'toString', 'hasOwnProperty'])(
+    'ignores the inherited Object.prototype name %s while real actions still fire',
+    (name) => {
+      const root = mount(
+        `<button data-action="${name}">x</button><button data-action="real">y</button>`,
+      );
+      const errors: unknown[] = [];
+      const onError = (e: ErrorEvent): void => {
+        errors.push(e.error ?? e.message);
+        e.preventDefault();
+      };
+      window.addEventListener('error', onError);
+      // `__proto__` is an accessor, not a method, so there is nothing to spy on;
+      // the error listener above catches its TypeError instead.
+      const protoSpy =
+        name === '__proto__'
+          ? null
+          : vi.spyOn(Object.prototype, name as 'toString');
+      const real = vi.fn();
+      try {
+        delegateActions(root, 'click', { real });
+        (root.querySelector(`[data-action="${name}"]`) as HTMLElement).click();
+        if (protoSpy !== null) expect(protoSpy).not.toHaveBeenCalled();
+      } finally {
+        protoSpy?.mockRestore();
+        window.removeEventListener('error', onError);
+      }
+      expect(errors).toEqual([]);
+      expect(real).not.toHaveBeenCalled();
+
+      (root.querySelector('[data-action="real"]') as HTMLElement).click();
+      expect(real).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it('ignores a handler inherited through the table prototype', () => {
+    const root = mount('<button data-action="inherited">x</button>');
+    const inherited = vi.fn();
+    const table = Object.create({ inherited }) as Record<
+      string,
+      (e: Event, el: Element) => void
+    >;
+    delegateActions(root, 'click', table);
+    (root.querySelector('[data-action="inherited"]') as HTMLElement).click();
+    expect(inherited).not.toHaveBeenCalled();
+  });
+
+  it('dispatches an own entry that shadows an Object.prototype name', () => {
+    const root = mount('<button data-action="toString">x</button>');
+    const toString = vi.fn();
+    delegateActions(root, 'click', { toString });
+    (root.querySelector('[data-action="toString"]') as HTMLElement).click();
+    expect(toString).toHaveBeenCalledTimes(1);
+  });
+
   it('keys off action() .value so the markup and the dispatcher cannot drift', () => {
     const A = { pick: action('pick-me') };
     const root = mount(`<button ${A.pick.name}="${A.pick.value}">p</button>`);

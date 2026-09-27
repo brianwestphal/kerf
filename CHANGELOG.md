@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `delegateActions()` (`kerfjs/actions`) dispatches only the table's own
+  entries. It used to look the action up with a plain property read, so a
+  `data-action` naming an inherited `Object.prototype` member resolved:
+  `"__proto__"` or `"hasOwnProperty"` threw a `TypeError` from the listener,
+  and `"toString"` or `"constructor"` silently ran the inherited function.
+  Those values are now ignored like any other action absent from the table.
+  An own entry with such a name (`{ toString: … }`) still dispatches.
 - `toElement()` now puts orphan camelCase SVG fragments in the SVG namespace.
   `toElement('<linearGradient>…</linearGradient>')`, and likewise `clipPath`,
   `radialGradient`, and `foreignObject`, previously returned an XHTML
