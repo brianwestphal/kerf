@@ -14,7 +14,8 @@
 
 `bindList`'s virtualization ([`docs/8-api-reference.md`](8-api-reference.md)
 §8.11) renders only the rows in (and near) the viewport, using a single fixed
-`rowHeight`. The windowing math in `src/list.ts` is purely uniform-height:
+`rowHeight`. The windowing math (now in `src/list-virtualization-controller.ts`)
+was purely uniform-height:
 
 ```ts
 const start = Math.max(0, Math.floor(parent.scrollTop / rowHeight) - overscan);
@@ -150,7 +151,10 @@ API decisions (settled at implementation):
 - **Helper packaging — in the `kerfjs/list` subpath.** `observeRowHeights` ships
   from `kerfjs/list`, not a separate subpath: it's a few lines, tree-shakes away
   when unused, and the `ResizeObserver` reference only lands in a bundle that
-  imports it. The core never references `ResizeObserver`. The handle↔helper
+  imports it. The core uses `ResizeObserver` only optionally and only on the
+  scroll parent: in window mode, where it exists, the virtualization controller
+  (`src/list-virtualization-controller.ts`) observes `parent` to re-window on
+  resize (§17.9). Only `observeRowHeights` observes rows. The handle↔helper
   coordination lives in a module-level `WeakMap` (GC-tied) so the public handle
   type stays `(() => void) & { setHeight }`.
 - **`estimate` re-runs.** `estimate` is evaluated per row each time the prefix sum
@@ -250,8 +254,9 @@ before, so a laid-out (non-zero-height) scroll parent at mount is required there
 
 **Status: shipped.** Virtualization buys a bounded DOM node count by a real
 tradeoff the app must weigh: **off-window rows are not in the DOM at all.**
-`src/list.ts` removes them during its "remove rows that are gone from the window"
-pass and re-creates them only when the window scrolls over them, so at any moment
+Each window pass (`src/list-virtualization-controller.ts`) hands only the windowed
+slice to the row controller, whose sync (`src/list-row-controller.ts`) removes the
+rows that are gone from the window and re-creates them only when the window scrolls over them, so at any moment
 only the visible window (plus `overscan`) exists as elements. That has three
 user-visible consequences, none of which a virtualized list can paper over:
 

@@ -81,8 +81,8 @@ only add a guard that is always false.
 | ---------------------------- | ------------------------------- | ---------------------------------- |
 | `list-reconcile-snapshot.ts` | `applyMoves` reverse pass       | mixed (reused move / fresh insert) |
 | `list-reconcile-granular.ts` | `move` patch                    | connected move                     |
-| `list.ts`                    | `bindList` reverse pass         | mixed                              |
-| `list.ts`                    | `bindList` `move` patch         | connected move                     |
+| `list-row-controller.ts`     | `bindList` reverse pass         | mixed                              |
+| `list-row-controller.ts`     | `bindList` `move` patch         | connected move                     |
 | `morph.ts`                   | keyed match relocation          | connected move                     |
 | `morph.ts`                   | positional-lookahead relocation | connected move                     |
 | `morph.ts`                   | list-marker run relocation      | connected move                     |

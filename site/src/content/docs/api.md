@@ -858,7 +858,7 @@ Options ([`BindListOptions<T>`](#list-types)): `key` (stable, unique per-row key
 
 ### `observeRowHeights(handle): () => void`
 
-The batteries-included measurement path for a `{ estimate }` virtualized list: installs **one** `ResizeObserver` over the current visible rows and forwards each row's `offsetHeight` to `handle.setHeight`, re-observing as the window shifts. Returns a disposer. It is deliberately **separate** from `bindList` (which never depends on `ResizeObserver`) — measure however you like and call `handle.setHeight` yourself instead. A no-op for a non-virtualized handle or where `ResizeObserver` is unavailable (SSR).
+The batteries-included measurement path for a `{ estimate }` virtualized list: installs **one** `ResizeObserver` over the current visible rows and forwards each row's `offsetHeight` to `handle.setHeight`, re-observing as the window shifts. Returns a disposer. It is deliberately **separate** from `bindList` (which never observes rows — its only `ResizeObserver` use is the optional parent-resize observer described above) — measure however you like and call `handle.setHeight` yourself instead. A no-op for a non-virtualized handle or where `ResizeObserver` is unavailable (SSR).
 
 ```ts
 const list = bindList(scrollEl, source, {

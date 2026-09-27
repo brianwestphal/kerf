@@ -412,8 +412,9 @@ const VIRTUAL_INTERNALS = new WeakMap<object, VirtualInternals>();
  * as the window shifts. Returns a disposer.
  *
  * This is the batteries-included measurement path; it is deliberately separate
- * from `bindList` (which never depends on `ResizeObserver`) — you can measure
- * however you like and call `handle.setHeight` yourself instead. A no-op for a
+ * from `bindList` (which never observes rows; its only `ResizeObserver` use is
+ * an optional observer on the scroll parent that re-windows on resize) — you
+ * can measure however you like and call `handle.setHeight` yourself instead. A no-op for a
  * non-virtualized handle or where `ResizeObserver` is unavailable (SSR).
  *
  *   const list = bindList(scrollEl, source, { key, render, virtualize: { rowHeight: { estimate: 64 } } });
