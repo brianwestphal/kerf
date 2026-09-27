@@ -510,10 +510,11 @@ describe('wireWorkbench', () => {
       key(app.drawer(), 'ArrowDown', true);
       expect(app.drawerSize.value).toBe(316);
 
-      // A column too short for the drawer's minimum keeps the minimum.
+      // A column too short for the drawer's minimum pins its separator, which
+      // then commits nothing: the remembered size is not rewritten to 120.
       layout(840, { height: 200 });
       key(app.drawer(), 'End');
-      expect(app.drawerSize.value).toBe(120);
+      expect(app.drawerSize.value).toBe(316);
     });
 
     it('honors a custom minimum height, 0 to turn it off, and a content-box drawer border', () => {
@@ -557,7 +558,7 @@ describe('wireWorkbench', () => {
       expect(bordered.drawerSize.value).toBe(379);
     });
 
-    it('holds a squeezed rail at its shown size and never below its minimum', () => {
+    it('commits nothing from a separator whose reachable range is pinned at its minimum', () => {
       layout(700);
       const app = studio();
       disposers.push(
@@ -567,11 +568,15 @@ describe('wireWorkbench', () => {
           storage: memoryStorage(),
         }),
       );
-      // 700 − 320 − 240 leaves 140, below the 200 px minimum.
+      // 700 − 320 − 240 leaves 140, below the 200 px minimum, so the range
+      // collapses to 200 and no key can move the rail: the remembered 260
+      // survives for when there is room again.
+      for (const name of ['ArrowRight', 'ArrowLeft', 'End', 'Home'])
+        key(app.left(), name);
+      expect(app.leftSize.value).toBe(260);
+      layout(1200);
       key(app.left(), 'ArrowRight');
-      expect(app.leftSize.value).toBe(200);
-      key(app.left(), 'End');
-      expect(app.leftSize.value).toBe(200);
+      expect(app.leftSize.value).toBe(276);
     });
 
     it('reports the width a rail squeezed below its minimum shows, pinned there', () => {
@@ -597,13 +602,14 @@ describe('wireWorkbench', () => {
       expect(range()).toEqual(['172', '172', '172']);
       expect(app.leftSize.value).toBe(260);
 
-      // A key press still commits no less than the configured minimum, and
-      // the re-render that writes the rendered limits back is re-reported.
+      // The pinned separator commits nothing: a key press never rewrites the
+      // remembered 260 with the minimum.
       key(left, 'ArrowLeft');
-      expect(app.leftSize.value).toBe(200);
+      expect(app.leftSize.value).toBe(260);
       expect(range()).toEqual(['172', '172', '172']);
       key(left, 'Home');
-      expect(app.leftSize.value).toBe(200);
+      key(left, 'End');
+      expect(app.leftSize.value).toBe(260);
 
       // Room to show the minimum again restores the configured range.
       layout(700);

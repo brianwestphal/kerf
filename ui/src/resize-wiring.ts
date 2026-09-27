@@ -169,6 +169,16 @@ function reported(state: RegionState) {
 }
 
 /**
+ * Whether the separator cannot move its region: the container squeezes the
+ * track below its minimum, or the visible range has collapsed to a single
+ * size. A pinned separator commits nothing, so a key press or drag never
+ * overwrites the app's remembered size (and its storage) with the limit.
+ */
+function pinned(state: RegionState) {
+  return state.squeezed !== undefined || state.max <= state.min;
+}
+
+/**
  * Apply a live size to an expanded region before the app commits it. The
  * collapse-motion content keeps a fixed width from the expanded size so its
  * slide reads as a slide, not a squeeze; it has to follow the live size too, or
@@ -448,6 +458,7 @@ export function wireResizeHandles(
         next = resizeRegionFromPointer(state.size, increment, state.edge);
       if (next === undefined) return;
       keyboardEvent.preventDefault();
+      if (pinned(state)) return;
       const size = clampRegionSize(next, state.min, state.max);
       applySize(state, size);
       commit(state, { id: state.id, size, source: 'keyboard' });
@@ -465,6 +476,7 @@ export function wireResizeHandles(
       if (!state) return;
       pointerEvent.preventDefault();
       announce(state);
+      if (pinned(state)) return;
       state.handle.setPointerCapture?.(pointerEvent.pointerId);
       const startCoordinate =
         state.axis === 'horizontal'

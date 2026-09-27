@@ -530,14 +530,39 @@ describe('wireResizableRegions', () => {
         source: 'keyboard',
       });
       expect(handle.getAttribute('aria-valuemax')).toBe('300');
+      // A track clamped below its minimum pins the separator, which then
+      // commits nothing rather than rewriting the app's size to the minimum.
       clampLayout(hostOf(root), 60);
+      onCommit.mockClear();
       key(handle, { key: 'End' });
-      expect(onCommit).toHaveBeenLastCalledWith({
-        id: 'panel',
-        size: 100,
-        source: 'keyboard',
-      });
+      key(handle, { key: 'Home' });
+      expect(onCommit).not.toHaveBeenCalled();
+      // A drag on the pinned separator neither starts, previews, nor commits.
+      const onPreview = vi.fn();
       stop();
+      const restart = wireResizableRegions(root, { onCommit, onPreview });
+      handle.dispatchEvent(
+        new PointerEvent('pointerdown', {
+          button: 0,
+          pointerId: 4,
+          clientX: 20,
+          bubbles: true,
+        }),
+      );
+      expect(hostOf(root).dataset.resizing).toBeUndefined();
+      handle.dispatchEvent(
+        new PointerEvent('pointermove', {
+          pointerId: 4,
+          clientX: 80,
+          bubbles: true,
+        }),
+      );
+      handle.dispatchEvent(
+        new PointerEvent('pointerup', { pointerId: 4, bubbles: true }),
+      );
+      expect(onPreview).not.toHaveBeenCalled();
+      expect(onCommit).not.toHaveBeenCalled();
+      restart();
     });
 
     it('insets the handle while the separator sits at the edge the parent clamps it to', async () => {
@@ -696,20 +721,20 @@ describe('wireResizableRegions', () => {
         await settle();
         expect(range()).toEqual(['80', '80', '80']);
 
-        // Resizing still commits no less than the rendered minimum; the
-        // reported value stays at the size the track shows.
+        // The pinned separator commits nothing and leaves the track's live
+        // size alone; the reported value stays at the size the track shows.
         key(handle, { key: 'ArrowLeft' });
-        expect(onCommit).toHaveBeenLastCalledWith({
-          id: 'panel',
-          size: 100,
-          source: 'keyboard',
-        });
+        expect(onCommit).not.toHaveBeenCalled();
+        expect(host.style.getPropertyValue('--kui-resizable-region-size')).toBe(
+          '300px',
+        );
         expect(range()).toEqual(['80', '80', '80']);
 
-        // Room to show it again reports the rendered minimum.
+        // Room to show it again restores the rendered range at the size the
+        // key press left untouched.
         clampLayout(host, 1000);
         observer().notify(host);
-        expect(range()).toEqual(['100', '100', '300']);
+        expect(range()).toEqual(['100', '300', '300']);
         stop();
       });
 

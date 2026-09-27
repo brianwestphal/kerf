@@ -207,8 +207,10 @@ const stop = wireWorkbench(root, {
   position, and the range must contain it, so a screen reader hears the width
   on screen rather than a configured limit the layout cannot honor — and a
   range that does not move, because the separator cannot move a rail the
-  container holds. Resizing still commits no less than `min`, and the
-  configured range returns once there is room.
+  container holds. A pinned separator commits nothing: arrow keys, Home/End,
+  and drags leave the rail's remembered size (and its storage) alone, so a
+  rail remembered at 280px returns at 280px, with the configured range, once
+  there is room.
 - **Collapse:** `collapsed` never changes a size. A collapsed panel keeps its
   size (its content slides out at that width), its separator leaves the tab
   order, and expanding it returns it at the size it had.

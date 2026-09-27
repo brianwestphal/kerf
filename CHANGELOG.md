@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **A pinned `@kerfjs/ui` resize separator no longer overwrites the
+  remembered size.** When a container squeezes a `Workbench` rail, drawer, or
+  `ResizableRegion` below its `min` (or its reachable range collapses to one
+  size), the separator cannot move it, yet an arrow/Home/End key or a drag
+  still committed the configured `min` to the app's size signal and storage:
+  a rail remembered at 280px silently became 180px and came back at 180px
+  when the window widened. A pinned separator now commits nothing, so the
+  track returns at its remembered size once there is room.
+
 - **A `pending` `@kerfjs/ui` `AppTab` is selectable and no longer dimmed.**
   A known tab that is still opening now keeps its select button enabled and
   in the roving tab order, so a user can switch to it and the application can
