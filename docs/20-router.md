@@ -152,6 +152,14 @@ Everything else falls through to the browser untouched. Opt a single link out wi
 `data-router-ignore` (or `rel="external"`); opt the whole app out with
 `interceptLinks: false` and call `navigate()` from your own handlers.
 
+**Already-handled clicks re-sync.** A click that arrives `defaultPrevented` is
+never navigated, but the router re-reads the location (a no-op when nothing
+moved). That keeps a second router on the same document in step: the first
+router's interceptor navigates with `pushState` — which fires no `popstate` —
+and the second follows the URL instead of diverging (KF-XW1RE9). A
+programmatic `navigate()` on one router is still invisible to another until
+the next `popstate` / click, so prefer one router per document.
+
 ## 20.6 Composing the excluded features
 
 The scope boundary (§20.2) is not a dead end — each excluded feature is a short

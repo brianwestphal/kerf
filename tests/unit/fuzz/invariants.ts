@@ -90,6 +90,7 @@ function cloneState(from: World, to: World): void {
   from.conds.forEach((c, i) => {
     to.conds[i].value = c.value;
   });
+  to.selected.value = from.selected.value;
   from.sources.forEach((src, i) => {
     const items = src.value.map((it) => ({ ...it }));
     const target = to.sources[i] as {

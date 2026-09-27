@@ -303,9 +303,16 @@ export function createRouter(options: RouterOptions): RouterHandle {
   if (interceptLinks && typeof document !== 'undefined') {
     const onClick = (event: Event, anchor: HTMLAnchorElement): void => {
       const mouseEvent = event as MouseEvent;
+      // Already handled — by the app, or by ANOTHER router on this document
+      // that navigated with pushState (which fires no popstate). Re-read the
+      // location so this router follows instead of diverging; when nothing
+      // navigated, sync() is a no-op (KF-XW1RE9: two routers on one document).
+      if (mouseEvent.defaultPrevented) {
+        sync();
+        return;
+      }
       // Let the browser handle anything that isn't a plain left-click navigation.
       if (
-        mouseEvent.defaultPrevented ||
         mouseEvent.button !== 0 ||
         mouseEvent.metaKey ||
         mouseEvent.ctrlKey ||

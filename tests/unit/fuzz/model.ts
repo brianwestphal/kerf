@@ -45,6 +45,14 @@ export interface ListSpec {
   rowTag: 'li' | 'g';
   /** Index into the signal pool for a row-scope fine-grained hole, or null. */
   rowSig: number | null;
+  /**
+   * Rows render a `data-sel` flag from the world's `selected` signal, read
+   * plainly (not bound), with an `each()` `cacheKey` of "is this row selected"
+   * — the krausest select-row shape, where external state (not item identity)
+   * decides what a memoized row must render. Optional so older pasted specs
+   * still type-check.
+   */
+  select?: boolean;
 }
 
 export type NodeSpec =
@@ -75,6 +83,8 @@ export interface World {
   sigs: Signal<string>[];
   conds: Signal<boolean>[];
   sources: (ArraySignal<Item> | Signal<Item[]>)[];
+  /** The selected row id for `select` lists ('' = none). */
+  selected: Signal<string>;
 }
 
 // No `<p>`: the HTML parser auto-closes it before a block child, so a generated
@@ -210,6 +220,7 @@ export function generateSpec(rng: Rng): TreeSpec {
       key: rng.bool(0.5) ? `L${i}` : null,
       rowTag: 'li',
       rowSig: rng.bool(0.35) ? rng.int(spec.sigCount) : null,
+      select: rng.bool(0.35),
     });
   }
 
@@ -241,6 +252,7 @@ export function makeWorld(spec: TreeSpec): World {
         ? arraySignal(makeItems(s.ids))
         : signal(makeItems(s.ids)),
     ),
+    selected: signal(''),
   };
 }
 
@@ -256,9 +268,15 @@ function renderList(world: World, listIndex: number): SafeHtml {
   const src = world.sources[list.source];
   const rowSig = list.rowSig === null ? null : world.sigs[list.rowSig];
   const items = src instanceof ArraySignal ? src : src.value;
+  const select = list.select === true;
+  // `yes`/`no`, not `1`/`0`: the snapshot's id normalizer erases all-digit
+  // attribute values, which would hide a stale selection flag entirely.
   const render = (item: Item): SafeHtml =>
     jsx(list.rowTag, {
       'data-list': String(listIndex),
+      ...(select
+        ? { 'data-sel': world.selected.value === item.id ? 'yes' : 'no' }
+        : {}),
       // Row keys are namespaced by list: `data-key` is documented to be unique
       // among siblings, and two lists over one source rendering into one parent
       // would otherwise collide by construction rather than by defect.
@@ -274,9 +292,12 @@ function renderList(world: World, listIndex: number): SafeHtml {
               }),
             ],
     });
-  return list.key === null
+  const cacheKey = select
+    ? (item: Item): boolean => world.selected.value === item.id
+    : undefined;
+  return list.key === null && cacheKey === undefined
     ? each(items, render)
-    : each(items, render, { key: list.key });
+    : each(items, render, { key: list.key ?? undefined, cacheKey });
 }
 
 function renderNode(node: NodeSpec, world: World): Rendered {

@@ -82,6 +82,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `KERF_DEV_WARN_REBUILT_LISTENERS`) now dedups once per `mount()`, as
   documented. Previously the first warning silenced every other mount for
   the life of the process, so a second mount with the same bug stayed quiet.
+- `kerfjs/router`: a second router on the same document no longer diverges
+  from the URL after a link click. The first router's interceptor navigates
+  with `pushState`, which fires no `popstate`, so the second router ignored
+  the already-handled click and kept the old route. An already-handled click
+  now re-syncs the route from the URL; when nothing navigated, it is a no-op.
 - `kerfjs/scope`: a disposed `Scope` handle no longer leaks registrations.
   Previously `add` / `mount` / `effect` / `delegate` on a handle after its
   `dispose()` (or from a disposer while `dispose()` ran) pushed into a list

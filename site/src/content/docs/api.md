@@ -1035,7 +1035,7 @@ In history mode, `base` is stripped only on an exact match or at a following `/`
 
 **Route patterns** (tried in order, first match wins): static (`/about`), `:param` (`/users/:id` → `params.id`), a trailing `*rest` wildcard (`/files/*rest` → `params.rest`, the remaining segments joined by `/`; a bare `*` segment matches without capturing), and `*` as the catch-all fallback (list it last).
 
-**Link interception** intercepts only plain in-app navigations — left-click, no modifier keys, not already `defaultPrevented`, no `download`, no `target` other than `_self` (a `target="_self"` link is still intercepted), not `rel="external"` / `data-router-ignore`, same-origin (under `base` in history mode; an in-app `#/…` link in hash mode). Everything else falls through to the browser.
+**Link interception** intercepts only plain in-app navigations — left-click, no modifier keys, not already `defaultPrevented` (an already-handled click only re-syncs the route from the URL, so a second router on the page follows the first), no `download`, no `target` other than `_self` (a `target="_self"` link is still intercepted), not `rel="external"` / `data-router-ignore`, same-origin (under `base` in history mode; an in-app `#/…` link in hash mode). Everything else falls through to the browser.
 
 ### Router types
 

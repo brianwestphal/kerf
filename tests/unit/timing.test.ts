@@ -56,6 +56,22 @@ describe('debounce()', () => {
     vi.advanceTimersByTime(100); // the timer was cleared by flush — no double-invoke
     expect(calls).toEqual([7]);
   });
+
+  it('transition: flush() → a new call re-arms a full window (KF-XW1RE9)', () => {
+    const calls: number[] = [];
+    const d = debounce((x: number) => calls.push(x), 100);
+    d(1);
+    vi.advanceTimersByTime(60);
+    d.flush();
+    expect(calls).toEqual([1]);
+    d(2); // idle again → re-arms from now
+    vi.advanceTimersByTime(99);
+    expect(calls).toEqual([1]);
+    vi.advanceTimersByTime(1);
+    expect(calls).toEqual([1, 2]);
+    d.flush(); // nothing pending after the timer fired
+    expect(calls).toEqual([1, 2]);
+  });
 });
 
 describe('throttle()', () => {
@@ -167,6 +183,43 @@ describe('throttle()', () => {
     t.flush();
     expect(calls).toEqual([1, 2]);
   });
+
+  it('transition: flush() leaves the cooldown running — a call inside the remaining window trails, then starts a new cooldown (KF-XW1RE9)', () => {
+    const calls: number[] = [];
+    const t = throttle((x: number) => calls.push(x), 100);
+    t(1); // leading at t=0, cooldown until t=100
+    vi.advanceTimersByTime(10);
+    t(2); // trailing pending
+    vi.advanceTimersByTime(10);
+    t.flush(); // runs 2 now (t=20) — the window is NOT reset
+    expect(calls).toEqual([1, 2]);
+    vi.advanceTimersByTime(10);
+    t(3); // t=30, still inside the original window → becomes the trailing call
+    expect(calls).toEqual([1, 2]);
+    vi.advanceTimersByTime(69);
+    expect(calls).toEqual([1, 2]); // t=99
+    vi.advanceTimersByTime(1);
+    expect(calls).toEqual([1, 2, 3]); // t=100: the timer fires the trailing call…
+    t(4); // …and started a new cooldown, so this trails too
+    expect(calls).toEqual([1, 2, 3]);
+    vi.advanceTimersByTime(100);
+    expect(calls).toEqual([1, 2, 3, 4]); // t=200
+    vi.advanceTimersByTime(100); // t=300: the last window closes with nothing pending
+    t(5); // idle → leading again
+    expect(calls).toEqual([1, 2, 3, 4, 5]);
+  });
+
+  it('transition: flush() at the window end with nothing trailing lets the timer close cleanly', () => {
+    const calls: number[] = [];
+    const t = throttle((x: number) => calls.push(x), 100);
+    t(1);
+    t(2);
+    t.flush();
+    vi.advanceTimersByTime(100); // timer fires with no trailing args → window closes
+    expect(calls).toEqual([1, 2]);
+    t(3); // leads immediately
+    expect(calls).toEqual([1, 2, 3]);
+  });
 });
 
 describe('debouncedSignal()', () => {
@@ -191,6 +244,23 @@ describe('debouncedSignal()', () => {
     expect(d.value).toBe(0); // window kept resetting
     vi.advanceTimersByTime(50);
     expect(d.value).toBe(2);
+  });
+
+  it('transition: A → B → A within the window settles to A with no downstream effect run (KF-XW1RE9)', () => {
+    const s = signal('A');
+    const d = debouncedSignal(s, 100);
+    const seen: string[] = [];
+    const stop = effect(() => {
+      seen.push(d.value);
+    });
+    expect(seen).toEqual(['A']);
+    s.value = 'B';
+    vi.advanceTimersByTime(50);
+    s.value = 'A';
+    vi.advanceTimersByTime(100);
+    expect(d.value).toBe('A');
+    expect(seen).toEqual(['A']); // the settled value equals the old one → no run
+    stop();
   });
 
   it('composes with effect() — a downstream effect fires only after the debounced value settles', () => {

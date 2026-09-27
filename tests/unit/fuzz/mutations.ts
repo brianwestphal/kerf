@@ -20,6 +20,15 @@ export type Mutation =
   | { k: 'remove'; s: number; at: number }
   | { k: 'move'; s: number; from: number; to: number }
   | { k: 'update'; s: number; at: number; t: string }
+  // Same-reference update: an arraySignal `update()` that mutates the item and
+  // hands back the SAME object (per-item version stamps must still invalidate
+  // the memoized row in every list over that source). A plain source has no
+  // such contract — `each()` memoizes by identity — so there it degrades to an
+  // ordinary copy-on-write update.
+  | { k: 'mutate'; s: number; at: number; t: string }
+  // External selection change: flips which row every `select` list flags, and
+  // so which rows' `cacheKey` changes (the select-after-delete bug class).
+  | { k: 'select'; id: string }
   | { k: 'replace'; s: number; ids: string[] }
   | { k: 'batch'; ms: Mutation[] };
 
@@ -45,7 +54,19 @@ function genOne(rng: Rng, world: World, allowBatch: boolean): Mutation {
       ms: Array.from({ length: n }, () => genOne(rng, world, false)),
     };
   }
-  if (roll < 0.3) return { k: 'cond', i: rng.int(world.conds.length) };
+  if (roll < 0.26) return { k: 'cond', i: rng.int(world.conds.length) };
+  if (roll < 0.32) {
+    // Mostly a live id (so a row really flips), sometimes a stale/none id.
+    const s = rng.int(world.sources.length);
+    const items = itemsOf(world, s);
+    const id =
+      items.length > 0 && rng.bool(0.85)
+        ? items[rng.int(items.length)].id
+        : rng.bool(0.5)
+          ? ''
+          : `gone${rng.int(100)}`;
+    return { k: 'select', id };
+  }
   if (roll < 0.42) {
     const i = rng.int(world.sigs.length);
     return { k: 'sig', i, v: `v${rng.int(1000)}` };
@@ -69,8 +90,10 @@ function genOne(rng: Rng, world: World, allowBatch: boolean): Mutation {
       id: `s${s}n${rng.int(10000)}`,
     };
   if (op < 0.55) return { k: 'remove', s, at: rng.int(len) };
-  if (op < 0.78)
+  if (op < 0.68)
     return { k: 'update', s, at: rng.int(len), t: `T${rng.int(1000)}` };
+  if (op < 0.8)
+    return { k: 'mutate', s, at: rng.int(len), t: `M${rng.int(1000)}` };
   return { k: 'move', s, from: rng.int(len), to: rng.int(len) };
 }
 
@@ -108,6 +131,9 @@ export function applyMutation(m: Mutation, world: World): void {
     case 'sig':
       world.sigs[m.i % world.sigs.length].value = m.v;
       return;
+    case 'select':
+      world.selected.value = m.id;
+      return;
     default:
       break;
   }
@@ -139,6 +165,12 @@ export function applyMutation(m: Mutation, world: World): void {
       case 'update':
         src.update(m.at % len, (it) => ({ ...it, t: m.t }));
         return;
+      case 'mutate':
+        src.update(m.at % len, (it) => {
+          it.t = m.t;
+          return it;
+        });
+        return;
     }
   }
 
@@ -156,6 +188,7 @@ export function applyMutation(m: Mutation, world: World): void {
       break;
     }
     case 'update':
+    case 'mutate':
       next[m.at % len] = { ...next[m.at % len], t: m.t };
       break;
   }

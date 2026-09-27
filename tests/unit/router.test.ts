@@ -404,3 +404,146 @@ describe('createRouter() — dispose', () => {
     expect(router.route.value.path).toBe('/users/1'); // no longer syncing
   });
 });
+
+describe('createRouter() — transitions (KF-XW1RE9)', () => {
+  const leftClick = () =>
+    new MouseEvent('click', { bubbles: true, cancelable: true, button: 0 });
+  function link(href: string): HTMLAnchorElement {
+    const a = document.createElement('a');
+    a.setAttribute('href', href);
+    a.textContent = 'go';
+    document.body.appendChild(a);
+    return a;
+  }
+
+  it('matched → unmatched (outlet empty) → matched renders fresh DOM each way', () => {
+    goto('/');
+    router = createRouter({
+      routes: [
+        {
+          path: '/',
+          component: () => jsx('div', { class: 'home', children: 'Home' }),
+        },
+        {
+          path: '/users/:id',
+          component: (p: Record<string, string>) =>
+            jsx('div', { class: 'user', children: `User ${p.id}` }),
+        },
+      ],
+    });
+    const app = document.createElement('div');
+    document.body.appendChild(app);
+    const r = router;
+    mount(app, () => jsx('main', { children: r.outlet() }));
+    const homeWrapper = app.querySelector('[data-router-outlet]');
+    expect(homeWrapper?.textContent).toBe('Home');
+
+    r.navigate('/missing'); // no catch-all → outlet renders nothing
+    expect(app.querySelector('[data-router-outlet]')).toBeNull();
+    expect(app.querySelector('main')?.textContent).toBe('');
+
+    r.navigate('/users/3');
+    const userWrapper = app.querySelector('[data-router-outlet]');
+    expect(userWrapper?.textContent).toBe('User 3');
+    expect(userWrapper?.getAttribute('data-key')).toBe('/users/:id');
+
+    r.navigate('/nope');
+    expect(app.querySelector('[data-router-outlet]')).toBeNull();
+    r.navigate('/');
+    const homeAgain = app.querySelector('[data-router-outlet]');
+    expect(homeAgain?.textContent).toBe('Home');
+    expect(homeAgain).not.toBe(homeWrapper); // a fresh page, not the old node
+  });
+
+  it('navigate → back (popstate) → the outlet swaps back to the prior route with fresh DOM', () => {
+    goto('/');
+    router = createRouter({ routes });
+    const app = document.createElement('div');
+    document.body.appendChild(app);
+    const r = router;
+    mount(app, () => jsx('div', { children: r.outlet() }));
+    const homeWrapper = app.querySelector('[data-router-outlet]');
+
+    r.navigate('/users/1');
+    const userWrapper = app.querySelector('[data-router-outlet]');
+    expect(userWrapper?.getAttribute('data-key')).toBe('/users/:id');
+
+    // What the browser does on back(): restore the URL, then fire popstate.
+    history.replaceState(null, '', '/');
+    globalThis.dispatchEvent(new Event('popstate'));
+    const back = app.querySelector('[data-router-outlet]');
+    expect(back?.getAttribute('data-key')).toBe('/');
+    expect(app.querySelector('.home')?.textContent).toBe('Home');
+    expect(app.querySelector('.user')).toBeNull();
+    expect(back).not.toBe(homeWrapper); // fresh DOM for the restored page
+    expect(back).not.toBe(userWrapper);
+
+    // Forward again: fresh user page.
+    history.replaceState(null, '', '/users/1');
+    globalThis.dispatchEvent(new Event('popstate'));
+    const forward = app.querySelector('[data-router-outlet]');
+    expect(forward?.getAttribute('data-key')).toBe('/users/:id');
+    expect(forward).not.toBe(userWrapper);
+  });
+
+  it('after dispose(), clicking an intercepted link is no longer prevented', () => {
+    goto('/');
+    router = createRouter({ routes });
+    const a = link('/users/5');
+    const before = leftClick();
+    a.dispatchEvent(before);
+    expect(before.defaultPrevented).toBe(true);
+
+    router.navigate('/');
+    router.dispose();
+    const after = leftClick();
+    a.dispatchEvent(after);
+    expect(after.defaultPrevented).toBe(false); // the browser would navigate
+    expect(router.route.value.path).toBe('/'); // the disposed router did not move
+  });
+
+  it('two routers on one document: a link click moves both; disposing one leaves the other intercepting', () => {
+    goto('/');
+    const first = createRouter({ routes });
+    const second = createRouter({ routes });
+    try {
+      const a = link('/users/9');
+      const click = leftClick();
+      a.dispatchEvent(click);
+      expect(click.defaultPrevented).toBe(true);
+      // The first router intercepted and navigated; the second saw an
+      // already-handled click and re-synced from the URL instead of diverging.
+      expect(first.route.value.path).toBe('/users/9');
+      expect(second.route.value.path).toBe('/users/9');
+      expect(second.route.value.params).toEqual({ id: '9' });
+
+      // popstate reaches both.
+      history.replaceState(null, '', '/');
+      globalThis.dispatchEvent(new Event('popstate'));
+      expect(first.route.value.path).toBe('/');
+      expect(second.route.value.path).toBe('/');
+
+      first.dispose();
+      const b = link('/users/10');
+      const click2 = leftClick();
+      b.dispatchEvent(click2);
+      expect(click2.defaultPrevented).toBe(true); // the surviving router intercepts
+      expect(second.route.value.path).toBe('/users/10');
+      expect(first.route.value.path).toBe('/'); // disposed: no longer tracks
+    } finally {
+      first.dispose();
+      second.dispose();
+    }
+  });
+
+  it('a click an app handler already prevented does not navigate (the re-sync is a no-op)', () => {
+    goto('/');
+    router = createRouter({ routes });
+    const a = link('/users/5');
+    const click = leftClick();
+    click.preventDefault();
+    a.dispatchEvent(click);
+    expect(router.route.value.path).toBe('/');
+    expect(location.pathname).toBe('/');
+  });
+});
