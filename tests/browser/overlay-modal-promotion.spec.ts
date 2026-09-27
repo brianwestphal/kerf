@@ -7,7 +7,7 @@
  * tooltip is actually visible above the dialog and that a lifted modal is
  * actually clickable. The unit half is `tests/unit/overlay-modal-promotion.internal.test.ts`.
  */
-import { expect, test } from '@playwright/test';
+import { expect, type Page, test } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/tests/browser/fixtures/index.html');
@@ -101,3 +101,71 @@ test('a non-native confirm() opened from inside a native modal <dialog> becomes 
     ),
   ).toBe(true);
 });
+
+/**
+ * Is `selector` painted above everything a modal dialog opened afterward
+ * paints? An opaque white backdrop hides anything beneath the dialog, so the
+ * surface's own red box changes the pixels only if it is on top. Hit-testing
+ * can't answer this: it skips elements the modal inerts.
+ */
+async function paintedAboveModal(
+  page: Page,
+  selector: string,
+): Promise<boolean> {
+  const clip = await page.evaluate((sel) => {
+    const style = document.createElement('style');
+    style.textContent =
+      'dialog.late-dialog::backdrop{background:#fff}' +
+      `${sel}{background:#f00;color:#f00;border:0}`;
+    document.head.appendChild(style);
+    const r = document.querySelector(sel)!.getBoundingClientRect();
+    return { x: r.left, y: r.top, width: r.width, height: r.height };
+  }, selector);
+  const shown = await page.screenshot({ clip });
+  await page.evaluate(
+    (sel) =>
+      ((document.querySelector(sel) as HTMLElement).style.visibility =
+        'hidden'),
+    selector,
+  );
+  const hidden = await page.screenshot({ clip });
+  return !shown.equals(hidden);
+}
+
+for (const native of [false, true]) {
+  test(`a ${native ? 'native' : 'plain'} tooltip already showing is re-hosted above a modal <dialog> kerf opens later`, async ({
+    page,
+  }) => {
+    await page.evaluate((native) => {
+      const anchor = document.createElement('button');
+      anchor.id = 'page-anchor';
+      anchor.textContent = 'page control';
+      Object.assign(anchor.style, {
+        position: 'absolute',
+        left: '40px',
+        top: '120px',
+      });
+      document.body.appendChild(anchor);
+      const { tooltip } = (window as any).kerfOverlay;
+      tooltip(anchor, 'Still here', { delay: 0, hideDelay: 10_000, native });
+    }, native);
+    await page.locator('#page-anchor').hover();
+    await expect(page.locator('.kerf-tooltip')).toHaveText('Still here');
+
+    await page.evaluate(() => {
+      const { overlay } = (window as any).kerfOverlay;
+      const { raw } = (window as any).jsxRuntime;
+      overlay(raw('<p>late dialog</p>'), {
+        className: 'late-dialog',
+        native: true,
+        initialFocus: false,
+      });
+    });
+    expect(
+      await page
+        .locator('.kerf-tooltip')
+        .evaluate((el) => el.matches(':popover-open')),
+    ).toBe(true);
+    expect(await paintedAboveModal(page, '.kerf-tooltip')).toBe(true);
+  });
+}

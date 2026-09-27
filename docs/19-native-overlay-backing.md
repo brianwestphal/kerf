@@ -132,8 +132,19 @@ const menu = popover(triggerEl, <Menu />, { native: true });
   a popover outside the modal dialog inert even in the top layer (verified in
   Chromium, Firefox, and WebKit). Tooltips have no controls, so the lift fully
   repairs them; an interactive menu belongs inside the dialog's own markup.
-  The decision is made when the surface opens: a dialog opened later does not
-  re-host a surface that is already showing.
+- **Surfaces already showing are re-hosted when kerf opens a modal
+  `<dialog>` (KF-FJ9VD8).** The lift above is decided when a surface opens, so
+  kerf also repairs the reverse order: whenever it calls `showModal()` itself
+  (a `native: true` modal, or a lifted one), every open non-modal kerf surface
+  — tooltips and popovers — moves into the top layer through the Popover API,
+  or, if it is already a `[popover]`, is hidden and re-shown so it stacks above
+  the new dialog (the top layer orders by most recent show). Open modal
+  surfaces are left alone: they belong beneath the new modal. The same two
+  `kerfjs/dev` warnings apply (`hidden` without the Popover API, `inert` for a
+  re-hosted surface with focusable controls). **Limitation:** a modal
+  `<dialog>` the app opens itself, outside kerf, is not observed, so surfaces
+  already showing then stay beneath it; open the dialog through `overlay()`
+  (or close the surface first).
 - **Unchanged everywhere:** the promise API (`{ el, close, result }`), the `render`
   slots, `validate`, Enter-to-submit, `initialFocus`, `outsideIgnore`, and
   focus-restore. kerf's manual focus-restore stays in place — redundant with

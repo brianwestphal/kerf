@@ -149,6 +149,8 @@ interface OverlaySurface {
   modal: boolean;
   /** Where focus returns on close; re-pointed when the surface holding it closes first. */
   restoreTo: Element | null;
+  /** Non-modal only: move (or re-show) into the top layer above a newly opened modal `<dialog>`. */
+  liftAbove?: () => void;
 }
 
 interface OverlayArbitration {
@@ -299,6 +301,31 @@ export function overlay(
   let disposeMount: (() => void) | undefined;
   let nativeOpened = false;
 
+  // KF-FJ9VD8: a modal `<dialog>` kerf opens later would leave this non-modal
+  // surface inert beneath it, so the opener calls this to move it into the top
+  // layer — or, if it is already a `[popover]`, re-show it so it stacks above
+  // the new dialog (the top layer orders by most recent show).
+  if (!trap)
+    surface.liftAbove = () => {
+      if (!supportsPopover()) {
+        devHooks.overlayBlockedByModal?.('hidden');
+        return;
+      }
+      const el = wrapper as HTMLElement & {
+        showPopover(): void;
+        hidePopover(): void;
+      };
+      if (nativeOpened) el.hidePopover();
+      else {
+        wrapper.setAttribute('popover', 'manual');
+        wrapper.style.inset = 'auto';
+      }
+      el.showPopover();
+      nativeOpened = true;
+      if (wrapper.querySelector(FOCUSABLE) !== null)
+        devHooks.overlayBlockedByModal?.('inert');
+    };
+
   // Also the construction rollback (see the transaction below): every step
   // tolerates a phase that never ran — no mount yet, no stack entry, never
   // appended, never shown.
@@ -369,6 +396,10 @@ export function overlay(
     if (useDialog) {
       (wrapper as HTMLDialogElement).showModal();
       nativeOpened = true;
+      // Every non-modal kerf surface already open is now blocked beneath this
+      // dialog: lift (or re-show) it above.
+      for (const other of arbitration.stack)
+        if (other !== surface && other.el.isConnected) other.liftAbove?.();
     } else if (usePopover) {
       (wrapper as HTMLElement & { showPopover(): void }).showPopover();
       nativeOpened = true;

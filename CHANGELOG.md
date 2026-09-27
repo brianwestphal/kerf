@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **A tooltip or popover already showing stays visible when a modal opens.**
+  Lifting a surface above an open modal `<dialog>` was decided only when the
+  surface opened, so a tooltip or popover already on screen when a modal
+  dialog opened was left inert beneath it. Whenever `kerfjs/overlay` opens a
+  modal `<dialog>` (a `native: true` modal, or one it lifted), it now moves
+  every open tooltip and popover into the top layer above the new dialog. One
+  that is already a `[popover]` is re-shown so it stacks on top. The existing
+  `kerfjs/dev` warnings still report an engine without the Popover API, and a
+  surface with controls the modal keeps inert. A modal `<dialog>` the app
+  opens itself, outside kerf, is not observed.
 - Moved `mount()`'s list-binding lifecycle (turning list markers into
   bindings, first-render row-contract validation, orphan pruning) into its own
   internal module, so `mount.ts` holds only the render orchestration. No
