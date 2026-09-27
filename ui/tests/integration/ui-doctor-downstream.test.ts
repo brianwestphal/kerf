@@ -311,3 +311,199 @@ test(
   },
   DOCTOR_TEST_TIMEOUT,
 );
+
+test(
+  'the doctor accepts an app wrapper that declares the cataloged root it renders',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-renders-as-'));
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        JSON.stringify({
+          name: 'karwan-app',
+          private: true,
+          type: 'module',
+          exports: {
+            './demand-segments-control': './dist/demand-segments-control.js',
+          },
+          kerfComponentCatalog: {
+            source: 'kerf.components.json',
+            output: 'component-catalog-v2.json',
+          },
+        }),
+      );
+      await writeFile(
+        resolve(root, 'tsconfig.json'),
+        JSON.stringify({
+          compilerOptions: {
+            jsx: 'react-jsx',
+            jsxImportSource: 'kerfjs',
+            strict: true,
+            noEmit: true,
+            module: 'esnext',
+            moduleResolution: 'bundler',
+            target: 'es2022',
+            skipLibCheck: true,
+          },
+          include: ['src'],
+        }),
+      );
+      // The app owns the wrapper's visibility; it renders a ToolbarControlGroup
+      // or nothing.
+      await writeFile(
+        resolve(root, 'src/demand-segments-control.tsx'),
+        [
+          "import { SegmentedControl } from '@kerfjs/ui/segmented-control';",
+          "import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';",
+          '',
+          'export function DemandSegmentsControl({ visible }: { visible: boolean }) {',
+          '  if (!visible) return <></>;',
+          '  return (',
+          '    <ToolbarControlGroup label="Demand segments" className="demand-segments">',
+          '      <SegmentedControl',
+          '        id="demand"',
+          '        label="Demand"',
+          '        value="all"',
+          "        choices={[{ value: 'all', label: 'All' }, { value: 'open', label: 'Open' }]}",
+          '      />',
+          '    </ToolbarControlGroup>',
+          '  );',
+          '}',
+          '',
+        ].join('\n'),
+      );
+      await writeFile(
+        resolve(root, 'src/view.tsx'),
+        [
+          "import { Toolbar } from '@kerfjs/ui/toolbar';",
+          "import { ToolbarText } from '@kerfjs/ui/toolbar-text';",
+          '',
+          "import { DemandSegmentsControl } from './demand-segments-control.js';",
+          '',
+          'export const view = () => (',
+          '  <Toolbar',
+          '    label="Demand"',
+          '    leading={<ToolbarText text="Demand" size="xlarge" />}',
+          '    trailing={<DemandSegmentsControl visible />}',
+          '  />',
+          ');',
+          '',
+        ].join('\n'),
+      );
+      const component = (rendersAs?: string[]) => ({
+        id: 'demand-segments-control',
+        name: 'DemandSegmentsControl',
+        kind: 'component',
+        purpose:
+          'Toolbar control group that switches demand segments; renders nothing while hidden.',
+        source: 'src/demand-segments-control.tsx',
+        publicExports: [
+          {
+            name: 'DemandSegmentsControl',
+            subpath: './demand-segments-control',
+          },
+        ],
+        sourceLinks: ['src/demand-segments-control.tsx'],
+        composition: {
+          ...(rendersAs ? { rendersAs } : {}),
+          parents: { mode: 'any', entries: [] },
+          contexts: ['toolbar-controls'],
+          zones: [],
+          children: { mode: 'none', concepts: [], requiredConcepts: [] },
+          state: [],
+          wiring: { required: false, helpers: [], obligations: [] },
+          responsive: { owner: 'not-applicable', behaviors: [] },
+          layout: {
+            roles: ['controls'],
+            geometry: { margin: 'none', border: 'none', padding: 'none' },
+          },
+        },
+        boundaries: {
+          rootClass: 'demand-segments',
+          publicClasses: ['demand-segments'],
+          publicTokens: [],
+        },
+        accessibility: {
+          obligations: ['The segmented control keeps its label.'],
+        },
+        diagnostics: [],
+        provenance: {
+          selection: 'src/demand-segments-control.tsx',
+          composition: 'src/demand-segments-control.tsx',
+        },
+      });
+      const writeManifest = (rendersAs?: string[]) =>
+        writeFile(
+          resolve(root, 'kerf.components.json'),
+          JSON.stringify({
+            schemaVersion: 1,
+            v1Catalog: 'not-applicable',
+            components: [component(rendersAs)],
+          }),
+        );
+      const generate = () =>
+        execFileAsync(
+          process.execPath,
+          [
+            resolve(repositoryRoot, 'create-kerf-component/catalog.js'),
+            '--write',
+          ],
+          { cwd: root },
+        );
+      await writeFile(
+        resolve(root, '.kerf-ui-profile.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          scope: 'workspace',
+          catalogs: [
+            {
+              package: 'karwan-app',
+              composition: {
+                path: './component-catalog-v2.json',
+                schemaVersion: 2,
+              },
+            },
+          ],
+        }),
+      );
+      for (const name of ['typescript', 'eslint', 'kerfjs'])
+        await link(root, name, resolve(uiRoot, 'node_modules', name));
+      for (const name of [
+        '@typescript-eslint/eslint-plugin',
+        '@typescript-eslint/parser',
+      ])
+        await link(root, name, resolve(uiRoot, 'node_modules', name));
+      await link(
+        root,
+        'eslint-plugin-kerfjs',
+        resolve(repositoryRoot, 'eslint-plugin'),
+      );
+      await link(
+        root,
+        'create-kerf-component',
+        resolve(repositoryRoot, 'create-kerf-component'),
+      );
+      await link(root, '@kerfjs/ui', uiRoot);
+      const ids = (report: { diagnostics: Array<{ id: string }> }) =>
+        report.diagnostics.map((item) => item.id);
+
+      // Declared: the wrapper counts as the ToolbarControlGroup it renders.
+      await writeManifest(['@kerfjs/ui:toolbar-control-group']);
+      await generate();
+      const declared = await doctor(root);
+      expect(ids(declared.report)).toEqual([]);
+      expect(declared.status).toBe(0);
+
+      // Undeclared: the same wrapper is an unknown child of trailing.
+      await writeManifest();
+      await generate();
+      const undeclared = await doctor(root);
+      expect(ids(undeclared.report)).toEqual(['KUI-L202']);
+      expect(undeclared.status).toBe(1);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT * 2,
+);

@@ -54,6 +54,11 @@ A ready-to-publish component package that encodes the rules from the kerf docs
   not render, remove, or treat those attributes as their own state. The field
   is optional; names must be unique per component, and the checker rejects a
   helper that is not listed in `wiring.helpers`.
+  A wrapper that renders a cataloged component declares it under
+  `composition.rendersAs` (for example
+  `["@kerfjs/ui:toolbar-control-group"]`), so the `ui-composition` lint treats
+  it as that root. Every key must resolve to an entry generated in the same run
+  or to an installed package's catalog.
 
 ## Layout produced
 

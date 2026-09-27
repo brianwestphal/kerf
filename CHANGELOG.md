@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Wrapper components can declare the cataloged root they render.** A
+  `kerf.components.json` component may set `composition.rendersAs`, for
+  example `["@kerfjs/ui:toolbar-control-group"]`: a list of the roots it
+  renders, any one of them, or nothing. `kerf-component-catalog` copies it
+  into the generated v2 entry and fails unless every key resolves to a
+  cataloged entry. `eslint-plugin-kerfjs`'s `ui-composition` rule, and so
+  `kerf-ui-doctor`, now loads the application and third-party catalogs a
+  `.kerf-ui-profile.json` declares. It resolves their components by package
+  subpath or source file and checks a wrapper as each declared root: a zone
+  must accept every root, each root's parent contract applies where the
+  wrapper is placed, and a wrapper counts as zero or one child. Undeclared
+  wrappers keep reporting `KUI-L202`.
 - `@kerfjs/ui`'s `AppTab` adds `pending` for a known tab that is still
   opening. It keeps the name visible in the quiet text color and uses it as
   the tab's accessible name, so a trailing spinner's label is not folded in.

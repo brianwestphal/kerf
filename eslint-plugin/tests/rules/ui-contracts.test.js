@@ -1,3 +1,7 @@
+import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
 import { createRuleTester } from '../helpers/rule-tester.js';
 import { profile, uiSettings } from '../helpers/ui-contract-fixture.js';
 
@@ -188,6 +192,149 @@ tester.run('ui-composition', composition, {
       settings,
       errors: [{ messageId: 'parent' }],
     },
+  ],
+});
+
+// An application workspace whose profile declares its own component catalog
+// and a third-party one, so wrapper components resolve like they would in a
+// real app: relative imports by source file, bare imports by package subpath.
+const appRoot = mkdtempSync(join(tmpdir(), 'kerf-renders-as-'));
+const wrapper = (id, name, rendersAs, extra = {}) => ({
+  key: `karwan-app:${id}`,
+  package: 'karwan-app',
+  id,
+  name,
+  source: `src/${id}.tsx`,
+  publicExports: [{ name, subpath: '.' }],
+  ...(rendersAs ? { rendersAs } : {}),
+  parents: { mode: 'any', entries: [] },
+  wiring: { required: false, helpers: [] },
+  boundaries: { publicClasses: [], publicTokens: [] },
+  ...extra,
+});
+const writeJson = (path, value) =>
+  writeFileSync(join(appRoot, path), JSON.stringify(value));
+mkdirSync(join(appRoot, 'src'), { recursive: true });
+mkdirSync(join(appRoot, 'vendor/acme'), { recursive: true });
+writeJson('package.json', { name: 'karwan-app' });
+writeJson('vendor/acme/package.json', { name: '@acme/bits' });
+writeJson('component-catalog-v2.json', {
+  schemaVersion: 2,
+  package: 'karwan-app',
+  entries: [
+    wrapper('demand-segments-control', 'DemandSegmentsControl', [
+      '@kerfjs/ui:toolbar-control-group',
+    ]),
+    wrapper('view-segmented-control', 'ViewSegmentedControl', [
+      '@kerfjs/ui:toolbar-control-group',
+      '@kerfjs/ui:toolbar-text',
+    ]),
+    wrapper('title-text', 'TitleText', ['@kerfjs/ui:toolbar-text']),
+    wrapper('app-toolbar', 'AppToolbar', ['@kerfjs/ui:toolbar']),
+    wrapper('status-chip', 'StatusChip', ['@kerfjs/ui:segmented-control']),
+    wrapper('plain-widget', 'PlainWidget'),
+  ],
+});
+writeJson('vendor/acme/catalog.json', {
+  schemaVersion: 2,
+  package: '@acme/bits',
+  entries: [
+    {
+      ...wrapper('group-wrap', 'GroupWrap', [
+        '@kerfjs/ui:toolbar-control-group',
+      ]),
+      key: '@acme/bits:group-wrap',
+      package: '@acme/bits',
+      publicExports: [{ name: 'GroupWrap', subpath: './group-wrap' }],
+    },
+  ],
+});
+writeJson('.kerf-ui-profile.json', {
+  schemaVersion: 1,
+  scope: 'workspace',
+  catalogs: [
+    {
+      package: 'karwan-app',
+      composition: { path: './component-catalog-v2.json', schemaVersion: 2 },
+    },
+    {
+      package: '@acme/bits',
+      composition: { path: './vendor/acme/catalog.json', schemaVersion: 2 },
+    },
+  ],
+});
+const appSettings = uiSettings({
+  profile: undefined,
+  workspaceRoot: appRoot,
+  // The package-defaults layer an installed @kerfjs/ui would supply.
+  profileDefaultsPath: join(
+    import.meta.dirname,
+    '../../../ui/ai/application-ui-profile.defaults.json',
+  ),
+});
+const appFile = join(appRoot, 'src/view.tsx');
+const appCase = (code, extra = {}) => ({
+  code: `import { Toolbar, ToolbarControlGroup, SegmentedControl } from '@kerfjs/ui'; ${code}`,
+  filename: appFile,
+  settings: appSettings,
+  ...extra,
+});
+
+tester.run('ui-composition rendersAs wrappers', composition, {
+  valid: [
+    // A wrapper that renders a ToolbarControlGroup (or nothing) fits trailing.
+    appCase(
+      "import { DemandSegmentsControl } from './demand-segments-control.js'; <Toolbar trailing={<DemandSegmentsControl />} />;",
+    ),
+    // Each root of a multi-root wrapper is accepted by leading.
+    appCase(
+      "import { ViewSegmentedControl } from './view-segmented-control'; <Toolbar leading={<ViewSegmentedControl />} />;",
+    ),
+    // A third-party wrapper resolves by its package subpath.
+    appCase(
+      "import { GroupWrap } from '@acme/bits/group-wrap'; <Toolbar trailing={<><GroupWrap /><GroupWrap /></>} />;",
+    ),
+    // Wrappers may render nothing, so two in a max-1 zone are not a certain overflow.
+    appCase(
+      "import { TitleText } from './title-text.js'; <Toolbar center={<><TitleText /><TitleText /></>} />;",
+    ),
+    // A wrapper used as a parent counts as its root: a ToolbarControlGroup
+    // needs a Toolbar parent, and AppToolbar renders one.
+    appCase(
+      "import { AppToolbar } from './app-toolbar.js'; <AppToolbar><ToolbarControlGroup /></AppToolbar>;",
+    ),
+  ],
+  invalid: [
+    // The wrapper's root is not a toolbar zone child.
+    appCase(
+      "import { StatusChip } from './status-chip.js'; <Toolbar trailing={<StatusChip />} />;",
+      { errors: [{ messageId: 'zone' }] },
+    ),
+    // center accepts ToolbarText only; one root (the group) does not fit.
+    appCase(
+      "import { ViewSegmentedControl } from './view-segmented-control.js'; <Toolbar center={<ViewSegmentedControl />} />;",
+      { errors: [{ messageId: 'zone' }] },
+    ),
+    // An undeclared app component keeps today's KUI-L202 behavior.
+    appCase(
+      "import { PlainWidget } from './plain-widget.js'; <Toolbar trailing={<PlainWidget />} />;",
+      { errors: [{ messageId: 'zone' }] },
+    ),
+    // An import that does not name the cataloged source file stays unresolved.
+    appCase(
+      "import { DemandSegmentsControl } from '../elsewhere/demand-segments-control.js'; <Toolbar trailing={<DemandSegmentsControl />} />;",
+      { errors: [{ messageId: 'zone' }] },
+    ),
+    // A wrapper parent that renders a group is not the Toolbar the child needs.
+    appCase(
+      "import { DemandSegmentsControl } from './demand-segments-control.js'; <DemandSegmentsControl><ToolbarControlGroup /></DemandSegmentsControl>;",
+      { errors: [{ messageId: 'parent' }] },
+    ),
+    // The rendered ToolbarControlGroup still needs a Toolbar parent.
+    appCase(
+      "import { DemandSegmentsControl } from './demand-segments-control.js'; <div><DemandSegmentsControl /></div>;",
+      { errors: [{ messageId: 'parent' }] },
+    ),
   ],
 });
 

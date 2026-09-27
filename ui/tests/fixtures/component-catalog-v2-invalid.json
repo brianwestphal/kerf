@@ -125,5 +125,23 @@
     "path": "entries.34.wiring.stateAttributes.0.helper",
     "value": "wireSomethingElse",
     "message": "which is not in wiring.helpers"
+  },
+  {
+    "name": "rendersAs not a list",
+    "path": "entries.0.rendersAs",
+    "value": "@kerfjs/ui:toolbar",
+    "message": "rendersAs must be a non-empty unique string list"
+  },
+  {
+    "name": "unqualified rendersAs root",
+    "path": "entries.0.rendersAs",
+    "value": ["toolbar-control-group"],
+    "message": "must be a package:id key"
+  },
+  {
+    "name": "rendersAs naming the entry itself",
+    "path": "entries.0.rendersAs",
+    "value": ["@kerfjs/ui:badge"],
+    "message": "rendersAs cannot name the entry itself"
   }
 ]

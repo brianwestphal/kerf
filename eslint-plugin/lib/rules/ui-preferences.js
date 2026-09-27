@@ -35,7 +35,7 @@ export default {
             messageId: 'config',
             data: { error: contract.error },
           });
-        else registry = importRegistry(node, contract);
+        else registry = importRegistry(node, contract, filename);
       },
       JSXOpeningElement(node) {
         if (!registry || isExcepted(contract, CODE, filename)) return;

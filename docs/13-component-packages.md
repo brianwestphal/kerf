@@ -318,3 +318,49 @@ entries before the generic Kerf catalog, and preserve package identity on every
 parent, child, and zone reference. Never merge by bare `id`. The generated
 `purpose`, `publicExports`, and `sourceLinks` fields answer selection and source
 questions; the v2 composition fields answer whether and how two entries fit.
+
+### Wrapper components: `rendersAs`
+
+Applications often wrap a cataloged component in their own component so they
+own its visibility and configuration. Declare the cataloged root the wrapper
+renders under `composition.rendersAs`, so UI composition checks treat it as
+that root instead of an unknown element:
+
+```tsx
+// src/demand-segments-control.tsx
+export function DemandSegmentsControl({ visible }: { visible: boolean }) {
+  if (!visible) return <></>;
+  return (
+    <ToolbarControlGroup label="Demand segments">
+      <SegmentedControl /* … */ />
+    </ToolbarControlGroup>
+  );
+}
+```
+
+```json
+{
+  "id": "demand-segments-control",
+  "name": "DemandSegmentsControl",
+  "source": "src/demand-segments-control.tsx",
+  "composition": {
+    "rendersAs": ["@kerfjs/ui:toolbar-control-group"]
+  }
+}
+```
+
+`rendersAs` is a list because a wrapper may render one of several roots (a
+view switcher that renders a `ToolbarControlGroup` or a `ToolbarText`), and an
+empty render is always allowed. `kerf-component-catalog` copies it into the
+generated entry and fails unless every key resolves: to an entry generated in
+the same run, or to an installed package's shipped catalog (its
+`package.json#kerfComponentCatalog.output`, or `@kerfjs/ui`'s
+`ai/component-catalog-v2.json`).
+
+`eslint-plugin-kerfjs`'s `ui-composition` rule, and so `kerf-ui-doctor`, reads
+the catalogs your `.kerf-ui-profile.json` declares under `catalogs` and resolves
+a wrapper by its package subpath (a bare import) or by its `source` file (an
+app's relative import). A zone accepts the wrapper only if it accepts **every**
+declared root; each root's parent contract applies wherever the wrapper is
+placed; and a wrapper used as a parent counts as its roots. A wrapper without
+`rendersAs` keeps the unknown-element behavior (`KUI-L202`).

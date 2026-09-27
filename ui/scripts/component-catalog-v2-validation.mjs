@@ -51,6 +51,15 @@ export function validateCatalogV2(catalog, options = {}) {
     }
     if ('sourceLinks' in entry && !isStringList(entry.sourceLinks))
       fail(`${at} sourceLinks must be a unique string list`);
+    if ('rendersAs' in entry) {
+      if (!isStringList(entry.rendersAs) || !entry.rendersAs.length)
+        fail(`${at} rendersAs must be a non-empty unique string list`);
+      for (const root of Array.isArray(entry.rendersAs) ? entry.rendersAs : [])
+        if (typeof root !== 'string' || !/^[^:]+:[^:]+$/.test(root))
+          fail(`${at} rendersAs root ${root} must be a package:id key`);
+        else if (root === entry.key)
+          fail(`${at} rendersAs cannot name the entry itself`);
+    }
     if (!['any', 'root', 'listed'].includes(entry?.parents?.mode))
       fail(`${at} has invalid parents.mode`);
     if (!isStringList(entry?.parents?.entries))

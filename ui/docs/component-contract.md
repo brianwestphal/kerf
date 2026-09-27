@@ -26,7 +26,10 @@ delivery contract. Every v1 entry projects once, in order, under the stable
 qualified key `package:id`. Each v2 entry explicitly covers parents/contexts,
 named zones and cardinality, optional explicit JSX prop bindings, child concepts, state ownership, required wiring,
 responsive ownership, layout and geometry, accessibility obligations, public
-CSS boundaries, diagnostics, and provenance.
+CSS boundaries, diagnostics, and provenance. A wrapper entry may add
+`rendersAs`: the cataloged roots it renders (any one of them, or nothing), so
+composition checks treat its elements as each root rather than as an unknown
+child.
 
 An entry's optional `cssValueProps` makes CSS-adjacent prop grammar equally
 machine-evaluable. Each path records the property grammar, finite shorthands,

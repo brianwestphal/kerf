@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
 import {
   cpSync,
+  mkdirSync,
   mkdtempSync,
   readFileSync,
   rmSync,
@@ -331,6 +332,103 @@ test('rejects malformed wiring-owned state attributes at exact paths', () => {
     assertCatalogDiagnostic(
       target,
       'composition.wiring.stateAttributes.data-pressed.helper: wireSomethingElse is not listed in composition.wiring.helpers',
+    );
+  });
+});
+
+function withRendersAs(target, rendersAs) {
+  const value = metadata(target);
+  if (rendersAs === undefined) delete value.components[0].composition.rendersAs;
+  else value.components[0].composition.rendersAs = rendersAs;
+  writeMetadata(target, value);
+}
+
+function installCatalog(target, name, keys, manifest = {}) {
+  const root = join(target, 'node_modules', ...name.split('/'));
+  mkdirSync(join(root, 'ai'), { recursive: true });
+  writeFileSync(
+    join(root, 'package.json'),
+    JSON.stringify({ name, ...manifest }),
+  );
+  const catalogPath = manifest.kerfComponentCatalog
+    ? join(root, manifest.kerfComponentCatalog.output)
+    : join(root, 'ai', 'component-catalog-v2.json');
+  writeFileSync(
+    catalogPath,
+    JSON.stringify({
+      package: name,
+      entries: keys.map((id) => ({ key: `${name}:${id}`, id })),
+    }),
+  );
+}
+
+test('passes a resolvable rendersAs declaration through to the v2 catalog', () => {
+  withScaffold(({ target }) => {
+    installCatalog(target, '@kerfjs/ui', [
+      'toolbar-control-group',
+      'toolbar-text',
+    ]);
+    installCatalog(target, '@acme/widgets', ['picker'], {
+      kerfComponentCatalog: {
+        source: './kerf.components.json',
+        output: './widgets-catalog.json',
+      },
+    });
+    withRendersAs(target, [
+      '@kerfjs/ui:toolbar-control-group',
+      '@kerfjs/ui:toolbar-text',
+      '@acme/widgets:picker',
+    ]);
+    const [result] = generateCatalogs(target);
+    assert.deepEqual(result.catalog.entries[0].rendersAs, [
+      '@kerfjs/ui:toolbar-control-group',
+      '@kerfjs/ui:toolbar-text',
+      '@acme/widgets:picker',
+    ]);
+    assert.deepEqual(validateCatalogV2(result.catalog), []);
+
+    // Undeclared, the entry carries no rendersAs at all.
+    withRendersAs(target, undefined);
+    assert.equal(
+      'rendersAs' in generateCatalogs(target)[0].catalog.entries[0],
+      false,
+    );
+  });
+});
+
+test('rejects a rendersAs root that does not resolve to a cataloged entry', () => {
+  withScaffold(({ target }) => {
+    const at = 'components.counter.composition.rendersAs';
+    installCatalog(target, '@kerfjs/ui', ['toolbar-control-group']);
+
+    withRendersAs(target, ['@kerfjs/ui:toolbar-group']);
+    assertCatalogDiagnostic(
+      target,
+      `${at}: @kerfjs/ui:toolbar-group is not an entry in @kerfjs/ui's catalog`,
+    );
+
+    withRendersAs(target, ['@nowhere/pkg:thing']);
+    assertCatalogDiagnostic(
+      target,
+      `${at}: cannot resolve a component catalog for package @nowhere/pkg; install it or generate its catalog`,
+    );
+
+    withRendersAs(target, ['my-widgets:counter']);
+    assertCatalogDiagnostic(
+      target,
+      `${at}: my-widgets:counter names the component itself`,
+    );
+
+    withRendersAs(target, ['toolbar-control-group']);
+    assertCatalogDiagnostic(
+      target,
+      '.components[0].composition.rendersAs[0]: must match ^[^:]+:[^:]+$',
+    );
+
+    withRendersAs(target, []);
+    assertCatalogDiagnostic(
+      target,
+      '.components[0].composition.rendersAs: expected at least 1 item(s)',
     );
   });
 });

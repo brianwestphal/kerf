@@ -621,6 +621,9 @@ function toEntry(packageName, component) {
     publicExports: component.publicExports,
     sourceLinks: component.sourceLinks,
     source: component.source,
+    ...(component.composition.rendersAs
+      ? { rendersAs: component.composition.rendersAs }
+      : {}),
     parents: component.composition.parents,
     contexts: component.composition.contexts,
     zones: component.composition.zones,
@@ -634,6 +637,75 @@ function toEntry(packageName, component) {
     diagnostics: component.diagnostics,
     provenance: component.provenance,
   };
+}
+
+// The catalog keys a package's `rendersAs` may name: entries generated in this
+// run, or those of an installed dependency's shipped catalog (its
+// package.json#kerfComponentCatalog.output, or @kerfjs/ui's ai/ catalog).
+function dependencyCatalogKeys(packageRoot, packageName, cache) {
+  const cacheKey = `${packageRoot}\0${packageName}`;
+  if (cache.has(cacheKey)) return cache.get(cacheKey);
+  let keys;
+  for (let dir = packageRoot; ; dir = dirname(dir)) {
+    const manifestPath = join(dir, 'node_modules', packageName, 'package.json');
+    if (existsSync(manifestPath)) {
+      const dependencyRoot = dirname(manifestPath);
+      let catalogPath;
+      try {
+        const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
+        if (manifest[CONFIG_KEY]?.output)
+          catalogPath = resolve(dependencyRoot, manifest[CONFIG_KEY].output);
+      } catch {
+        // An unreadable manifest leaves the package unresolved below.
+      }
+      catalogPath ??= join(dependencyRoot, 'ai', 'component-catalog-v2.json');
+      try {
+        const catalog = JSON.parse(readFileSync(catalogPath, 'utf8'));
+        keys = new Set(
+          (catalog.entries ?? []).map(
+            (entry) => entry.key ?? `${catalog.package}:${entry.id}`,
+          ),
+        );
+      } catch {
+        // No readable catalog: the package stays unresolved.
+      }
+      break;
+    }
+    if (dirname(dir) === dir) break;
+  }
+  cache.set(cacheKey, keys);
+  return keys;
+}
+
+function validateRendersAs(results, diagnostics) {
+  const generated = new Map(
+    results.map(({ catalog }) => [
+      catalog.package,
+      new Set(catalog.entries.map((entry) => entry.key)),
+    ]),
+  );
+  const cache = new Map();
+  for (const { packageRoot, metadataPath, catalog } of results)
+    for (const entry of catalog.entries)
+      for (const root of entry.rendersAs ?? []) {
+        const at = `${metadataPath}: components.${entry.id}.composition.rendersAs`;
+        const rootPackage = root.slice(0, root.lastIndexOf(':'));
+        if (root === entry.key) {
+          diagnostics.push(`${at}: ${root} names the component itself`);
+          continue;
+        }
+        const keys =
+          generated.get(rootPackage) ??
+          dependencyCatalogKeys(packageRoot, rootPackage, cache);
+        if (!keys)
+          diagnostics.push(
+            `${at}: cannot resolve a component catalog for package ${rootPackage}; install it or generate its catalog`,
+          );
+        else if (!keys.has(root))
+          diagnostics.push(
+            `${at}: ${root} is not an entry in ${rootPackage}'s catalog`,
+          );
+      }
 }
 
 export function generateCatalogs(root = process.cwd()) {
@@ -707,10 +779,12 @@ export function generateCatalogs(root = process.cwd()) {
     );
     results.push({
       packageRoot,
+      metadataPath,
       outputPath: resolve(packageRoot, config.output),
       catalog,
     });
   }
+  validateRendersAs(results, diagnostics);
   if (diagnostics.length) throw new CatalogError(diagnostics.sort());
   return results;
 }

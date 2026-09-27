@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from 'node:fs';
-import { dirname, relative, resolve } from 'node:path';
+import { dirname, extname, relative, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import process from 'node:process';
 
@@ -24,6 +24,57 @@ export function isComponentExport(name) {
 }
 
 const readJson = (path) => JSON.parse(readFileSync(path, 'utf8'));
+
+// The directory whose package.json names `packageName`, searched upward from a
+// catalog file; a catalog's `source` paths are relative to that package root.
+function packageRootOf(start, packageName) {
+  for (let directory = dirname(start); ; directory = dirname(directory)) {
+    const manifest = resolve(directory, 'package.json');
+    if (existsSync(manifest)) {
+      try {
+        if (readJson(manifest).name === packageName) return directory;
+      } catch {
+        // An unreadable manifest is not the owner; keep searching.
+      }
+    }
+    if (dirname(directory) === directory) return dirname(start);
+  }
+}
+
+const exportName = (item) => (typeof item === 'string' ? item : item?.name);
+
+// Application and third-party composition catalogs a profile declares, beyond
+// the @kerfjs/ui catalog the rules load directly. Their entries join the
+// contract, and their components resolve by package subpath (a bare import)
+// or by source file (an app's relative import).
+function profileCatalogs(loadedProfile, basePackage) {
+  const catalogs = [];
+  for (const catalog of loadedProfile.profile?.catalogs ?? []) {
+    if (catalog.package === basePackage) continue;
+    const owner = loadedProfile.provenance?.[`$catalogs.${catalog.package}`];
+    if (!owner || !catalog.composition?.path || owner.startsWith('<')) continue;
+    const path = resolve(dirname(owner), catalog.composition.path);
+    const artifact = readJson(path);
+    catalogs.push({ artifact, root: packageRootOf(path, catalog.package) });
+  }
+  return catalogs;
+}
+
+// The files a relative import specifier may name, in the order TypeScript's
+// ESM resolution tries them (a `.js` specifier also names its `.ts`/`.tsx`).
+const SCRIPT_EXTENSIONS = ['.tsx', '.ts', '.jsx', '.js', '.mts', '.mjs'];
+export function relativeImportCandidates(fromFile, specifier) {
+  const base = resolve(dirname(fromFile), specifier);
+  const extension = extname(base);
+  const stem = SCRIPT_EXTENSIONS.includes(extension)
+    ? base.slice(0, -extension.length)
+    : base;
+  return [
+    base,
+    ...SCRIPT_EXTENSIONS.map((candidate) => `${stem}${candidate}`),
+    ...SCRIPT_EXTENSIONS.map((candidate) => resolve(base, `index${candidate}`)),
+  ];
+}
 
 function packageAsset(cwd, name) {
   try {
@@ -134,6 +185,31 @@ export function loadUiContract(context) {
     }
     const profile = loadedProfile.profile;
     const entries = new Map(catalog.entries.map((entry) => [entry.key, entry]));
+    // Declared application/third-party components: `packageExports` maps
+    // `<package or package/subpath>\0<Export>` and `sourceExports` maps
+    // `<absolute source file>\0<Export>` to the entry key.
+    const packageExports = new Map();
+    const sourceExports = new Map();
+    for (const { artifact, root } of profileCatalogs(
+      loadedProfile,
+      selection.package,
+    ))
+      for (const entry of artifact.entries ?? []) {
+        const key = entry.key ?? `${artifact.package}:${entry.id}`;
+        entries.set(key, entry);
+        for (const item of entry.publicExports ?? []) {
+          const name = exportName(item);
+          if (!name || !isComponentExport(name)) continue;
+          const subpath = typeof item === 'string' ? '.' : item.subpath;
+          const specifier =
+            subpath && subpath !== '.'
+              ? `${entry.package ?? artifact.package}/${subpath.replace(/^\.\//, '')}`
+              : (entry.package ?? artifact.package);
+          packageExports.set(`${specifier}\0${name}`, key);
+          if (entry.source)
+            sourceExports.set(`${resolve(root, entry.source)}\0${name}`, key);
+        }
+      }
     const imports = new Map();
     const exports = new Map();
     const helperSources = new Map();
@@ -160,6 +236,8 @@ export function loadUiContract(context) {
       package: selection.package,
       imports,
       exports,
+      packageExports,
+      sourceExports,
       helperSources,
       profile,
       cwd,
@@ -180,7 +258,7 @@ export function loadUiContract(context) {
   }
 }
 
-export function importRegistry(program, contract) {
+export function importRegistry(program, contract, filename) {
   const locals = new Map();
   const namespaces = new Map();
   const helpers = new Map();
@@ -204,12 +282,25 @@ export function importRegistry(program, contract) {
         : (directKey ??
           (source === contract.package
             ? contract.exports?.get(imported)
-            : undefined));
+            : declaredComponentKey(contract, source, imported, filename)));
       if (key) locals.set(specifier.local.name, key);
       helpers.set(specifier.local.name, { imported, source });
     }
   }
   return { locals, namespaces, helpers, sources };
+}
+
+// An application or third-party component declared in a profile catalog.
+function declaredComponentKey(contract, source, imported, filename) {
+  const byPackage = contract.packageExports?.get(`${source}\0${imported}`);
+  if (byPackage) return byPackage;
+  if (!filename || !source.startsWith('.') || !contract.sourceExports?.size)
+    return undefined;
+  for (const candidate of relativeImportCandidates(filename, source)) {
+    const key = contract.sourceExports.get(`${candidate}\0${imported}`);
+    if (key) return key;
+  }
+  return undefined;
 }
 
 export function jsxKey(name, registry, contract) {

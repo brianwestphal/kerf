@@ -49,6 +49,9 @@ export interface CatalogCompositionEntryV2 {
   publicExports?: Array<{ name: string; subpath: string }>;
   sourceLinks?: string[];
   source: string;
+  /** For a wrapper component: the cataloged roots it renders (any one of
+   *  them, or nothing). Composition checks treat its elements as each root. */
+  rendersAs?: CatalogQualifiedKey[];
   parents: { mode: 'any' | 'root' | 'listed'; entries: CatalogQualifiedKey[] };
   contexts: string[];
   zones: Array<{

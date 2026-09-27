@@ -35,6 +35,14 @@ function zoneShape(node, registry, contract) {
   if (!node || node.type === 'JSXEmptyExpression') return emptyShape();
   if (node.type === 'JSXElement') {
     const key = jsxKey(node.openingElement.name, registry, contract);
+    const roots = contract.entries.get(key)?.rendersAs;
+    // A declared wrapper renders one of its roots, or nothing.
+    if (roots?.length)
+      return {
+        min: 0,
+        max: 1,
+        items: [{ key, roots, label: `${key} (renders ${roots.join(' | ')})` }],
+      };
     return {
       min: 1,
       max: 1,
@@ -94,6 +102,11 @@ function directParentKey(node, registry, contract) {
     : undefined;
 }
 
+// The cataloged roots an element stands for: a declared wrapper's `rendersAs`,
+// otherwise the element's own entry.
+const rootsOf = (key, contract) =>
+  contract.entries.get(key)?.rendersAs ?? [key];
+
 function boundZone(openingElement, zone, registry, contract) {
   const prop = zone.jsx?.prop;
   if (!prop) return undefined;
@@ -146,24 +159,42 @@ export default {
             messageId: 'config',
             data: { error: contract.error },
           });
-        else registry = importRegistry(node, contract);
+        else registry = importRegistry(node, contract, filename);
       },
       JSXOpeningElement(node) {
         if (!registry) return;
         const key = jsxKey(node.name, registry, contract);
         const entry = contract.entries.get(key);
         if (!entry) return;
-        if (
-          entry.parents.mode === 'listed' &&
-          !isExcepted(contract, PARENT_CODE, filename)
-        ) {
+        // A wrapper answers to its own parent contract and to each root's.
+        const placed = [
+          { entry, child: key },
+          ...(entry.rendersAs ?? []).flatMap((root) => {
+            const rootEntry = contract.entries.get(root);
+            return rootEntry
+              ? [{ entry: rootEntry, child: `${key} (renders ${root})` }]
+              : [];
+          }),
+        ].filter(
+          ({ entry: placedEntry }) => placedEntry.parents?.mode === 'listed',
+        );
+        if (placed.length && !isExcepted(contract, PARENT_CODE, filename)) {
           const parent = directParentKey(node, registry, contract);
-          if (parent && !entry.parents.entries.includes(parent.key))
-            context.report({
-              node: node.name,
-              messageId: 'parent',
-              data: { child: key, parents: entry.parents.entries.join(', ') },
-            });
+          if (parent)
+            for (const { entry: placedEntry, child } of placed)
+              if (
+                !rootsOf(parent.key, contract).every((root) =>
+                  placedEntry.parents.entries.includes(root),
+                )
+              )
+                context.report({
+                  node: node.name,
+                  messageId: 'parent',
+                  data: {
+                    child,
+                    parents: placedEntry.parents.entries.join(', '),
+                  },
+                });
         }
         for (const zone of entry.zones ?? []) {
           const bound = boundZone(node, zone, registry, contract);
@@ -180,7 +211,11 @@ export default {
           );
           if (allowed.size && !isExcepted(contract, ZONE_CODE, filename))
             for (const child of shape.items)
-              if (!child.key || !allowed.has(child.key))
+              if (
+                child.roots
+                  ? !child.roots.every((root) => allowed.has(root))
+                  : !child.key || !allowed.has(child.key)
+              )
                 context.report({
                   node: reportNode,
                   messageId: 'zone',

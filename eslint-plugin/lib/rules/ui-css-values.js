@@ -206,7 +206,7 @@ export default {
             messageId: 'config',
             data: { error: loaded.error },
           });
-        else registry = importRegistry(node, loaded);
+        else registry = importRegistry(node, loaded, filename);
       },
       JSXOpeningElement(node) {
         if (!registry) return;
