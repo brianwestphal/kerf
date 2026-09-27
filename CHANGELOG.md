@@ -41,6 +41,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   overlay first leaves focus in the overlay that holds it. An overlay opened
   from inside it then restores focus to the closed overlay's opener, not a
   detached node.
+- `kerfjs` now exports the `EachOptions<T>` type (`{ cacheKey?, key? }`), the
+  options-object form of `each()`'s third argument, so a helper that builds or
+  forwards those options can import the shape instead of restating it:
+  `import { type EachOptions } from "kerfjs"`. Type-only; no runtime or bundle
+  change.
 - Documentation: the companion-utility reference now matches the code. The
   router's `match()` / `activeClass()` compare a literal path prefix, so
   `match('/users/:id')` is never true. Link interception still applies to

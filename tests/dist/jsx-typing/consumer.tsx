@@ -10,12 +10,22 @@
  * Runtime never executes — `tsc --noEmit` is the only check.
  */
 
-import { computed, delegate, delegateCapture, each, Fragment, isSafeHtml, type JSXChildren, mount, raw, signal, type SafeHtml } from 'kerfjs';
+import { computed, delegate, delegateCapture, each, type EachOptions, Fragment, isSafeHtml, type JSXChildren, mount, raw, signal, type SafeHtml } from 'kerfjs';
 import { arraySignal } from 'kerfjs/array-signal';
 import type { JSXChildren as RuntimeJSXChildren } from 'kerfjs/jsx-runtime';
 
 const count = signal(0);
 const rows = arraySignal<{ id: number; label: string }>([]);
+
+// The options-object form of each() is a type-only export of the main barrel,
+// so a helper can build or forward it without restating the shape.
+const rowOptions: EachOptions<{ id: number; label: string }> = {
+  key: 'rows',
+  cacheKey: (r, index) => r.id + index,
+};
+// @ts-expect-error -- an EachOptions key must be a string
+const badRowOptions: EachOptions<{ id: number }> = { key: 1 };
+void badRowOptions;
 
 function ContentSlot({ children }: { children?: JSXChildren }): SafeHtml {
   return <section>{children}</section>;
@@ -63,7 +73,7 @@ const safeRef: SafeHtml = (
         <option value="a">A</option>
       </select>
       <ul>
-        {each(rows, (r) => <li data-key={r.id}>{r.label}</li>)}
+        {each(rows, (r) => <li data-key={r.id}>{r.label}</li>, rowOptions)}
       </ul>
       <details open>
         <summary>more</summary>

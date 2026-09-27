@@ -10,7 +10,7 @@
 // Apps that don't use granular collection signals shed ~1 KB from the main barrel as a result.
 export { attr, type AttrSpec } from './attr.js';
 export { delegate, delegateCapture, type DelegateOptions } from './delegate.js';
-export { each } from './each.js';
+export { each, type EachOptions } from './each.js';
 export {
   Fragment,
   isSafeHtml,

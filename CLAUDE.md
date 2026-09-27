@@ -105,6 +105,7 @@ import {
   type MountResult,
   morph,
   each,
+  type EachOptions,
   attr,
   type AttrSpec,
   delegate,

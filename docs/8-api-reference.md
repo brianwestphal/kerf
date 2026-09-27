@@ -291,6 +291,24 @@ A keyed list does not occupy a call-order slot, so keying just the _conditional_
 
 A key must be a non-empty string of letters, digits, or `_ . : / -` and may not contain `--` — kerf writes it into the list's marker comment in the DOM, so anything that could terminate a comment is rejected with an error rather than corrupting the mount.
 
+### `EachOptions<T>` (type)
+
+```ts
+interface EachOptions<T> {
+  cacheKey?: (item: T, index: number) => unknown;
+  key?: string;
+}
+```
+
+The options-object form of `each()`'s third argument, exported from `kerfjs` as a type-only export so a helper can accept or build the options without restating the shape:
+
+```ts
+import { each, type EachOptions } from "kerfjs";
+
+const resultOptions: EachOptions<Result> = { key: "results", cacheKey: (r) => r.id === selectedId.value };
+each(results.value, renderResult, resultOptions);
+```
+
 **`each()` does not nest.** A row's HTML is flattened to a string, so an `each()` called inside a row render never binds — it would render as inert static markup. Render an inner collection with plain `.map()` (it re-renders with its row), or restructure to a flat list. A _keyed_ nested `each()` throws and says so.
 
 If a descendant of a moved row holds focus, the reconciler snapshots the active element + its selection range before the move pass and re-applies them afterwards — so focus and caret position survive both the state-preserving `moveBefore()` path and the `insertBefore()` fallback used by engines without it. See `docs/4-render.md` §4.4.
