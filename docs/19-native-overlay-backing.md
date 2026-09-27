@@ -116,9 +116,24 @@ const menu = popover(triggerEl, <Menu />, { native: true });
   a dialog that consumes an Escape `preventDefault`s the keydown so the UA's
   close request never reaches the dialog — one Escape closes one surface. A
   `tooltip()` handles no input, so it never takes Escape or the trap from a
-  modal it is shown inside. (A plain-`<div>` surface opened while a native
-  modal is open lives in the inert document beneath the top layer; open it
-  with `native: true` too so it is visible and interactive.)
+  modal it is shown inside.
+- **Surfaces opened over a modal `<dialog>` are lifted automatically
+  (KF-0V9RTE).** A browser inerts everything outside an open modal dialog and
+  paints a plain element beneath its top layer, so a `<div>` surface opened in
+  that state was invisible and unusable. Whenever a modal `<dialog>` is open —
+  one kerf opened, or an app-owned one reported by `:modal` — a surface opened
+  without `native` takes the native path anyway: a non-modal one becomes a
+  `[popover]`, a modal one a `showModal()` `<dialog>` of its own (the topmost
+  modal, so fully interactive). The UA-style caveat in §19.5 then applies to it
+  as if `native: true` had been passed. Two cases stay broken and are reported
+  by the always-on `kerfjs/dev` warning (`docs/11-dev-warnings.md` §11.2.17):
+  an engine without the needed API (the surface stays a hidden `<div>`), and a
+  lifted non-modal surface with focusable controls, because every engine keeps
+  a popover outside the modal dialog inert even in the top layer (verified in
+  Chromium, Firefox, and WebKit). Tooltips have no controls, so the lift fully
+  repairs them; an interactive menu belongs inside the dialog's own markup.
+  The decision is made when the surface opens: a dialog opened later does not
+  re-host a surface that is already showing.
 - **Unchanged everywhere:** the promise API (`{ el, close, result }`), the `render`
   slots, `validate`, Enter-to-submit, `initialFocus`, `outsideIgnore`, and
   focus-restore. kerf's manual focus-restore stays in place — redundant with

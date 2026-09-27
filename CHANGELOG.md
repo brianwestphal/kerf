@@ -30,6 +30,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   compared the HTML parser's lowercased tag against camelCase names. The
   fragment is now wrapped in `<svg>` and XML-parsed like `<path>` or `<g>`,
   and the returned element keeps its camelCase `localName`.
+- **Overlays opened over a modal `<dialog>` are visible and usable.** A browser
+  makes everything outside an open modal dialog inert and paints a plain
+  element beneath it, so a `tooltip()`, `popover()`, or `confirm()` opened
+  from inside a `native: true` dialog without `native` itself was invisible and
+  could not be used. While a modal `<dialog>` is open, `kerfjs/overlay` now
+  hosts such a surface in the top layer anyway: a tooltip or popover becomes a
+  `[popover]`, and a nested modal becomes its own `<dialog>`. The browser's
+  default `[popover]` / `<dialog>` styles then apply, as they do with `native:
+true`. Browsers keep a popover outside the modal dialog inert even in the top
+  layer, so a lifted popover with buttons is visible but not clickable. A new
+  always-on `kerfjs/dev` warning reports that case, and an engine without the
+  needed API.
 - **A tooltip shown inside a modal no longer disables the modal.** `kerfjs/overlay`
   used to treat the most recently opened overlay as the only one that could
   react to input, so a `tooltip()` (which handles no input) inside an open

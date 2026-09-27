@@ -19,6 +19,7 @@
  * Structural only — kerf ships no CSS. The wrapper gets your `className`; style
  * the backdrop / centering / animation yourself.
  */
+import { devHooks } from './dev-hooks.js';
 import { jsx, type SafeHtml } from './jsx-runtime.js';
 import { mount, type MountResult } from './mount.js';
 import {
@@ -158,12 +159,32 @@ type ArbitratedDocument = Document & {
   [OVERLAY_ARBITRATION]?: OverlayArbitration;
 };
 
-function overlayArbitration(wrapper: HTMLElement): OverlayArbitration {
-  const document = wrapper.ownerDocument as ArbitratedDocument;
-  return (document[OVERLAY_ARBITRATION] ??= {
+function overlayArbitration(doc: Document): OverlayArbitration {
+  return ((doc as ArbitratedDocument)[OVERLAY_ARBITRATION] ??= {
     stack: [],
     handled: new WeakSet(),
   });
+}
+
+// Is a modal `<dialog>` open (KF-0V9RTE: a plain surface opened in that state
+// is inert and painted beneath the dialog's top layer)? kerf's own native
+// dialogs are known from the stack; an app-owned one is found through
+// `:modal`, which an older engine may not parse (then only kerf's count).
+function modalDialogOpen(doc: Document, arbitration: OverlayArbitration) {
+  if (
+    arbitration.stack.some(
+      ({ el, modal }) =>
+        modal && el.isConnected && (el as HTMLDialogElement).open === true,
+    )
+  )
+    return true;
+  try {
+    for (const dialog of doc.querySelectorAll('dialog[open]'))
+      if (dialog.matches(':modal')) return true;
+  } catch {
+    // `:modal` unsupported — kerf-opened dialogs above are all we can see.
+  }
+  return false;
 }
 
 // `self` is on the stack and handles `kind` (its callers are exactly the
@@ -236,9 +257,14 @@ export function overlay(
   // Native top-layer backing (KF-526), feature-detected: a modal overlay
   // (`trap`) → `<dialog>.showModal()`; a non-modal one → `[popover]`. Each falls
   // back to the plain `<div>` where the API is missing, so behavior is unchanged
-  // on unsupporting engines.
-  const useDialog = native && trap && supportsDialog();
-  const usePopover = native && !trap && supportsPopover();
+  // on unsupporting engines. A surface opened while a modal `<dialog>` is open
+  // is lifted the same way even without `native` (KF-0V9RTE), because a plain
+  // `<div>` would be inert and painted beneath the dialog.
+  const arbitration = overlayArbitration(document);
+  const liftOverModal = !native && modalDialogOpen(document, arbitration);
+  const topLayer = native || liftOverModal;
+  const useDialog = topLayer && trap && supportsDialog();
+  const usePopover = topLayer && !trap && supportsPopover();
 
   const wrapper: HTMLElement = useDialog
     ? document.createElement('dialog')
@@ -251,7 +277,6 @@ export function overlay(
     wrapper.setAttribute('role', role);
     wrapper.setAttribute('aria-modal', 'true');
   }
-  const arbitration = overlayArbitration(wrapper);
   const surface: OverlaySurface = {
     el: wrapper,
     triggers,
@@ -357,6 +382,14 @@ export function overlay(
   } catch (error) {
     close();
     throw error;
+  }
+
+  // What the lift cannot repair: no top-layer API at all, or a lifted
+  // non-modal surface whose controls the modal still inerts.
+  if (liftOverModal) {
+    if (!useDialog && !usePopover) devHooks.overlayBlockedByModal?.('hidden');
+    else if (usePopover && wrapper.querySelector(FOCUSABLE) !== null)
+      devHooks.overlayBlockedByModal?.('inert');
   }
 
   return { el: wrapper, close, result };

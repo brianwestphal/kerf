@@ -495,6 +495,17 @@ Unlike everything else in this family, this one does not describe a pattern the 
 
 **Cost.** O(rows) per render when enabled, zero when not. Like the rest of the family the checks live in the dev chunk, so a production build that never imports `kerfjs/dev` cannot reach them at all.
 
+### Overlay opened over a modal `<dialog>` (always-on once installed)
+
+**Trigger:** an `overlay()` / `popover()` / `tooltip()` / dialog-helper surface opened without `native: true` while a modal `<dialog>` is open, in one of the two cases kerf cannot repair. **What it catches:** a surface the user cannot see or cannot use, with no error anywhere.
+
+A browser makes everything outside an open modal dialog inert and paints a plain element beneath the dialog's top layer. kerf therefore lifts such a surface into the top layer itself (the Popover API for a non-modal surface, `showModal()` for a modal one), so a tooltip or a nested `confirm()` just works. The warning covers what is left:
+
+- **Hidden** — the engine lacks the API the lift needs, so the surface stays a plain `<div>` beneath the dialog.
+- **Inert** — a non-modal surface was lifted and is visible, but it contains focusable controls, and browsers keep a popover outside the modal dialog inert even in the top layer. A tooltip has no controls, so it never triggers this.
+
+The fix is to render interactive content inside the dialog's own markup (for example a `<details>` menu), or to open the dialog without `native: true`. Each case warns once per page. There is no switch: the broken state is invisible from the code, and the warning is unreachable unless `kerfjs/dev` is imported.
+
 ## Design rules for the family
 
 Every dev-warning in this family follows the same shape.

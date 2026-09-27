@@ -134,7 +134,12 @@ const BUDGETS = [
     // form() reject naming a field input removed after open (not resolve null).
     // KF-MB46CW / KF-H3ZFK0: synchronous-validator enforcement (promise
     // results reject, stray rejection silenced) and prompt()'s input re-query.
-    budgetKb: 17.1,
+    // KF-CW7GJ8 (+0.20 KB): per-input-kind stack arbitration so a tooltip no
+    // longer disables a modal's Escape / trap, handled-event dedup, native
+    // dialogs in the stack, and focus-restore hand-off across a stack.
+    // KF-0V9RTE (+0.12 KB): surfaces opened over a modal <dialog> are lifted
+    // into the top layer (modal-dialog detection + dev-hook call site).
+    budgetKb: 17.5,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

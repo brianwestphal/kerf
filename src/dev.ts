@@ -78,6 +78,7 @@ import {
 import { maybeWarnListIdShift } from './dev-list-key-warn.js';
 import { maybeWarnListRebind } from './dev-list-rebind-warn.js';
 import { installListenerRebuildWarn } from './dev-listener-warn.js';
+import { maybeWarnOverlayBlockedByModal } from './dev-overlay-warn.js';
 import { maybeWarnParserRepair } from './dev-parser-repair-warn.js';
 import { maybeWarnValueOnlyRerender } from './dev-rerender-warn.js';
 import { maybeWarnMissingRowKey } from './dev-row-key-warn.js';
@@ -184,6 +185,9 @@ export const DEV_HOOKS: DevHooks = {
   staleIndexEnabled: isOptedInStaleIndex,
   staleIndex: maybeWarnStaleIndex,
   duplicateCacheKeys: maybeWarnDuplicateCacheKeys,
+
+  // --- overlay ----------------------------------------------------------
+  overlayBlockedByModal: maybeWarnOverlayBlockedByModal,
 
   // --- urlScreen --------------------------------------------------------
   urlScreenThrow: (message: string) => {

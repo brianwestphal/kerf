@@ -495,6 +495,39 @@ Unlike everything else in this family, this one does not describe a pattern the 
 
 **Pairs with the reconciler fuzz harness** (`tests/unit/reconciler-fuzz.test.ts`): the harness generates the sequences, these checks notice a sequence went wrong. Neither is redundant — the harness alone only sees final-output mismatches, and the checks alone only fire on shapes someone thought to write.
 
+### 11.2.17 Overlay opened over a modal `<dialog>` (always-on once installed)
+
+**Module:** [`src/dev-overlay-warn.ts`](../src/dev-overlay-warn.ts), called
+from [`src/overlay-core.ts`](../src/overlay-core.ts) through the
+`overlayBlockedByModal` hook slot. **Trigger:** an `overlay()` / `popover()` /
+`tooltip()` / dialog-helper surface opened without `native: true` while a modal
+`<dialog>` is open, in one of the two cases kerf cannot repair. **What it
+catches:** a surface the user cannot see or cannot use, with no error anywhere.
+
+**Mechanism.** A browser inerts everything outside an open modal dialog and
+paints a plain element beneath its top layer. KF-0V9RTE made `overlay()` lift
+such a surface into the top layer itself — the Popover API for a non-modal
+surface, `showModal()` for a modal one (`docs/19-native-overlay-backing.md`
+§19.4) — so a tooltip and a nested `confirm()` just work. The warning covers
+what is left:
+
+- **`hidden`** — the engine lacks the API the lift needs, so the surface is a
+  plain `<div>` beneath the dialog.
+- **`inert`** — a non-modal surface was lifted and is visible, but it contains
+  focusable controls, and every engine (verified in Chromium, Firefox, and
+  WebKit) keeps a popover outside the modal dialog inert even in the top
+  layer. A tooltip has no controls, so it never triggers this.
+
+The message points at rendering interactive content inside the dialog's own
+markup, or opening the dialog without `native: true`.
+
+**Dedup scope.** Once per reason per page.
+
+**Why always-on rather than switch-gated.** The broken state is invisible from
+the code and has no legitimate use, so like the missing-row-key warning it is
+installed directly in its hook slot with no `KERF_DEV_WARN_*` switch, and is
+unreachable when `kerfjs/dev` is not imported.
+
 ## 11.3 Design rules for the family
 
 Every dev-warning in this family follows the same shape. New warnings
@@ -747,7 +780,10 @@ list-identity and missing-row-key warnings live in `src/dev-list-key-warn.ts` an
 `src/dev-row-key-warn.ts`, are installed through `src/dev.ts`, and are exercised
 by `tests/unit/dev-list-key-warn.internal.test.tsx`,
 `tests/unit/list-identity-warning.test.tsx`, and
-`tests/unit/dev-listener-warn.internal.test.ts`. The unconditional double-mount
+`tests/unit/dev-listener-warn.internal.test.ts`. The always-on
+overlay-over-modal warning lives in `src/dev-overlay-warn.ts` (wired from
+`src/overlay-core.ts`) and is exercised by
+`tests/unit/overlay-modal-promotion.internal.test.ts`. The unconditional double-mount
 guard lives in `src/mount.ts`; the dangerous-URL screen lives in
 `src/utils/url-screen.ts`. `KERF_DEV_INVARIANTS` (`src/dev-invariants.ts`) and
 `KERF_DEV_WARN_PARSER_REPAIR` (`src/dev-parser-repair-warn.ts`) report framework

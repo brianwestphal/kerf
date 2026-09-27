@@ -266,9 +266,16 @@ describe('overlay stacking — native <dialog> mixed with fallback surfaces', ()
 
   // A fallback surface can't mount INSIDE the dialog (kerf allows one mount per
   // tree), so it stacks as a body sibling; keyboard arbitration is the same.
-  it('native dialog B, then fallback modal A over it: Escape closes only A and suppresses the dialog cancel', () => {
+  // A MODAL opened over a native dialog is itself lifted into a <dialog> (see
+  // overlay-modal-promotion.internal.test.ts); a non-modal surface stays on the keydown
+  // path here because happy-dom has no Popover API.
+  it('native dialog B, then a non-modal surface A over it: Escape closes only A and suppresses the dialog cancel', () => {
     const b = overlay(buttons('b1'), { native: true, initialFocus: '#b1' });
-    const a = overlay(buttons('a1'), { initialFocus: '#a1' });
+    const a = overlay(buttons('a1'), {
+      trap: false,
+      dismiss: ['escape'],
+      initialFocus: '#a1',
+    });
 
     const down = key(document, 'Escape');
     expect(a.el.isConnected).toBe(false);

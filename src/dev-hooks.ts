@@ -143,6 +143,10 @@ export interface DevHooks {
     segItems: readonly { cacheKey: unknown }[],
   ) => void;
 
+  // --- overlay-core.ts ---------------------------------------------------
+  /** A surface opened over a modal `<dialog>` could not be made fully usable. */
+  overlayBlockedByModal?: (reason: 'hidden' | 'inert') => void;
+
   // --- utils/url-screen.ts -----------------------------------------------
   /**
    * When installed, a screened URL throws instead of warning-and-dropping.
