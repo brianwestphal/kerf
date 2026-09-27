@@ -82,6 +82,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `KERF_DEV_WARN_REBUILT_LISTENERS`) now dedups once per `mount()`, as
   documented. Previously the first warning silenced every other mount for
   the life of the process, so a second mount with the same bug stayed quiet.
+- `kerfjs/scope`: a disposed `Scope` handle no longer leaks registrations.
+  Previously `add` / `mount` / `effect` / `delegate` on a handle after its
+  `dispose()` (or from a disposer while `dispose()` ran) pushed into a list
+  nothing would ever run, leaving the effect subscribed or the listener
+  attached. Such a registration now tears down at once: `add(fn)` calls `fn`
+  immediately, and the wrappers create and immediately dispose.
 - `bindList` measured-height virtualization no longer applies a stale
   scroll-anchor correction. A `setHeight()` report for a row above the viewport
   is now resolved when the animation frame runs: if the source removed the key,

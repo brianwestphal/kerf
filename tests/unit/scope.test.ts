@@ -197,3 +197,113 @@ describe('observeRemovals()', () => {
     expect(calls).toEqual([]); // observer disconnected — not disposed
   });
 });
+
+describe('a disposed scope handle (KF-DFGD1R: registrations after dispose tear down at once)', () => {
+  it('dispose → old handle .effect() → the effect runs once, then never again', () => {
+    const el = document.createElement('div');
+    const s = disposeScope(el);
+    s.dispose();
+    const sig = signal(0);
+    const runs: number[] = [];
+    const stop = s.effect(() => {
+      runs.push(sig.value);
+    });
+    expect(runs).toEqual([0]); // effect() runs synchronously on creation
+    sig.value = 1;
+    expect(runs).toEqual([0]); // torn down at once — no leaked subscription
+    expect(() => stop()).not.toThrow(); // the returned disposer is still safe to call
+  });
+
+  it('dispose → old handle .add(fn) → fn runs immediately (best-effort)', () => {
+    const el = document.createElement('div');
+    const s = disposeScope(el);
+    s.dispose();
+    const fn = vi.fn();
+    expect(s.add(fn)).toBe(fn);
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(() =>
+      s.add(() => {
+        throw new Error('boom');
+      }),
+    ).not.toThrow();
+    s.dispose(); // still idempotent — fn does not run a second time
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
+  it('dispose → old handle .mount() / .delegate() → neither updates nor listens', () => {
+    const el = document.createElement('div');
+    el.innerHTML = '<button class="b">b</button>';
+    document.body.appendChild(el);
+    const host = document.createElement('div');
+    document.body.appendChild(host);
+    const s = disposeScope(el);
+    s.dispose();
+
+    const label = signal('x');
+    s.mount(host, () => label.value);
+    expect(host.textContent).toBe('x'); // first render happened
+    label.value = 'y';
+    expect(host.textContent).toBe('x'); // but the mount is already disposed
+
+    const fn = vi.fn();
+    s.delegate(el, 'click', '.b', fn);
+    (el.querySelector('.b') as HTMLElement).click();
+    expect(fn).not.toHaveBeenCalled();
+  });
+
+  it('a disposer that registers a new effect during dispose() does not leak it', () => {
+    const el = document.createElement('div');
+    const s = disposeScope(el);
+    const sig = signal(0);
+    const runs: number[] = [];
+    s.add(() => {
+      s.effect(() => {
+        runs.push(sig.value);
+      });
+    });
+    s.dispose();
+    expect(runs).toEqual([0]);
+    sig.value = 1;
+    expect(runs).toEqual([0]);
+  });
+
+  it('the disposed handle stays dead after disposeScope(el) hands out a fresh scope', () => {
+    const el = document.createElement('div');
+    const old = disposeScope(el);
+    old.dispose();
+    const fresh = disposeScope(el);
+    const calls: string[] = [];
+    old.add(() => calls.push('old'));
+    fresh.add(() => calls.push('fresh'));
+    expect(calls).toEqual(['old']); // the old handle disposed immediately
+    fresh.dispose();
+    expect(calls).toEqual(['old', 'fresh']);
+  });
+
+  it('disposeSubtree → reinsert → observeRemovals disposes the fresh scope on a later removal', async () => {
+    const root = document.createElement('main');
+    document.body.appendChild(root);
+    const card = document.createElement('div');
+    root.appendChild(card);
+    const calls: string[] = [];
+    const first = disposeScope(card);
+    first.add(() => calls.push('first'));
+
+    disposeSubtree(card);
+    card.remove();
+    expect(calls).toEqual(['first']);
+
+    const stop = observeRemovals(root);
+    root.appendChild(card); // reinserted
+    const second = disposeScope(card);
+    expect(second).not.toBe(first);
+    second.add(() => calls.push('second'));
+    first.add(() => calls.push('first-late')); // old handle: runs at once
+    expect(calls).toEqual(['first', 'first-late']);
+
+    card.remove();
+    await new Promise((resolve) => setTimeout(resolve, 0)); // MutationObserver is async
+    expect(calls).toEqual(['first', 'first-late', 'second']);
+    stop();
+  });
+});

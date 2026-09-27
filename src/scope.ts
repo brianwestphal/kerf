@@ -44,7 +44,14 @@ export interface Scope {
     handler: (event: Event, target: T) => void,
     options?: DelegateOptions,
   ): () => void;
-  /** Run every registered disposer (best-effort — a throwing one won't strand the rest) and reset. Idempotent. */
+  /**
+   * Run every registered disposer (best-effort — a throwing one won't strand the
+   * rest). Idempotent. The handle is then dead: a later `add` / `mount` /
+   * `effect` / `delegate` on it (including one made by a disposer while this
+   * runs) tears down at once — `add(fn)` calls `fn` immediately — so nothing
+   * leaks into a scope that will never run again. `disposeScope(el)` hands out
+   * a fresh scope.
+   */
   dispose(): void;
 }
 
@@ -57,46 +64,46 @@ interface ScopeState {
 // "no module-level mutable state" rule (like bindings.ts:insertedTextNodes).
 const scopes = new WeakMap<Element, ScopeState>();
 
+/** Run a disposer; a throwing one must not strand the rest. */
+function runBestEffort(dispose: () => void): void {
+  try {
+    dispose();
+  } catch {
+    /* best-effort */
+  }
+}
+
 /**
  * Get (or create) the teardown {@link Scope} for `el`. Repeated calls for the
  * same element return the same scope, so disparate code paths can register into
- * one place. After `dispose()`, a later `disposeScope(el)` starts fresh.
+ * one place. After `dispose()`, a later `disposeScope(el)` starts fresh, and
+ * registrations on the old (disposed) handle tear down immediately.
  */
 export function disposeScope(el: Element): Scope {
   const existing = scopes.get(el);
   if (existing !== undefined) return existing.scope;
 
   const disposers: Array<() => void> = [];
+  // Once disposed (including DURING dispose(), from a disposer), the handle is
+  // dead: a registration tears down at once instead of landing in an orphaned
+  // array nothing will ever run — a leak (KF-DFGD1R).
+  let disposed = false;
+  const register = (dispose: () => void): (() => void) => {
+    if (disposed) runBestEffort(dispose);
+    else disposers.push(dispose);
+    return dispose;
+  };
   const scope: Scope = {
-    add(dispose) {
-      disposers.push(dispose);
-      return dispose;
-    },
-    mount(target, render) {
-      const dispose = mount(target, render);
-      disposers.push(dispose);
-      return dispose;
-    },
-    effect(fn) {
-      const dispose = effect(fn);
-      disposers.push(dispose);
-      return dispose;
-    },
-    delegate(root, type, selector, handler, options) {
-      const dispose = delegate(root, type, selector, handler, options);
-      disposers.push(dispose);
-      return dispose;
-    },
+    add: register,
+    mount: (target, render) => register(mount(target, render)),
+    effect: (fn) => register(effect(fn)),
+    delegate: (root, type, selector, handler, options) =>
+      register(delegate(root, type, selector, handler, options)),
     dispose() {
+      if (disposed) return;
+      disposed = true;
       scopes.delete(el);
-      // splice() empties the array AND makes a second dispose() a no-op.
-      for (const d of disposers.splice(0)) {
-        try {
-          d();
-        } catch {
-          /* best-effort: a throwing disposer must not strand the rest */
-        }
-      }
+      for (const d of disposers.splice(0)) runBestEffort(d);
     },
   };
   scopes.set(el, { scope, disposers });

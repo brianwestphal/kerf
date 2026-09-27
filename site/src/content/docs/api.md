@@ -766,7 +766,7 @@ s.add(() => observer.disconnect()); // any () => void disposer
 s.dispose(); // runs them all, best-effort, idempotent
 ```
 
-Returns the per-element [`Scope`](#scope-type). Calling `disposeScope(el)` again for the same element returns the **same** scope (so disparate code paths register into one place); after `dispose()`, a later call starts fresh. `Scope` has `add(dispose)` (register any disposer, returns it), the convenience wrappers `mount(el, render)` / `effect(fn)` / `delegate(root, type, selector, handler, options?)` (which call the kerf primitive **and** register its disposer), and `dispose()` (runs every registered disposer best-effort — a throwing one won't strand the rest — then resets; idempotent).
+Returns the per-element [`Scope`](#scope-type). Calling `disposeScope(el)` again for the same element returns the **same** scope (so disparate code paths register into one place); after `dispose()`, a later call starts fresh. `Scope` has `add(dispose)` (register any disposer, returns it), the convenience wrappers `mount(el, render)` / `effect(fn)` / `delegate(root, type, selector, handler, options?)` (which call the kerf primitive **and** register its disposer), and `dispose()` (runs every registered disposer best-effort — a throwing one won't strand the rest — then resets; idempotent). The disposed handle is then dead: a later `add` / `mount` / `effect` / `delegate` on it — including one made by a disposer while `dispose()` runs — tears down at once (`add(fn)` calls `fn` immediately; the wrappers create and immediately dispose), so nothing leaks into a scope that will never run again.
 
 ### `disposeSubtree(root): void`
 
