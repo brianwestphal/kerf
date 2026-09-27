@@ -147,6 +147,20 @@ test('requires an explicit public geometry root', () => {
   });
 });
 
+test('accepts an explicit null root class as a decision, but not an absent one', () => {
+  withScaffold(({ target }) => {
+    const value = metadata(target);
+    value.components[0].boundaries.rootClass = null;
+    writeMetadata(target, value);
+    const [result] = generateCatalogs(target);
+    assert.equal(result.catalog.entries[0].boundaries.rootClass, null);
+
+    delete value.components[0].boundaries.rootClass;
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(target, '.boundaries.rootClass: is required');
+  });
+});
+
 test('reports deleted component sources', () => {
   withScaffold(({ target }) => {
     unlinkSync(join(target, 'src/counter.tsx'));

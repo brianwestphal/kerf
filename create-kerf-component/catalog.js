@@ -186,8 +186,21 @@ function valueAt(value, path) {
   return path.split('.').reduce((current, part) => current?.[part], value);
 }
 
+// Paths where an explicit `null` is itself the author's decision: a component
+// whose root element belongs to another catalog (a `rendersAs` wrapper) or that
+// exposes no public root class.
+const NULLABLE_DECISIONS = new Set(['boundaries.rootClass']);
+
 function requireDecision(component, path, at, diagnostics) {
   const value = valueAt(component, path);
+  const explicitNull =
+    value === null &&
+    NULLABLE_DECISIONS.has(path) &&
+    Object.hasOwn(
+      valueAt(component, path.slice(0, path.lastIndexOf('.'))) ?? {},
+      path.slice(path.lastIndexOf('.') + 1),
+    );
+  if (explicitNull) return;
   if (value === undefined || value === null || value === '') {
     diagnostics.push(
       `${at}.${path}: author decision required; the generator does not infer semantics or geometry from rendered appearance`,

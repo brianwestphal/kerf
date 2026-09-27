@@ -349,6 +349,10 @@ export function DemandSegmentsControl({ visible }: { visible: boolean }) {
 }
 ```
 
+A wrapper's root element belongs to the catalog it renders, so it usually owns
+no public root class: set `boundaries.rootClass` to `null`, which the generator
+accepts as an explicit decision (only an absent `rootClass` is undecided).
+
 `rendersAs` is a list because a wrapper may render one of several roots (a
 view switcher that renders a `ToolbarControlGroup` or a `ToolbarText`), and an
 empty render is always allowed. `kerf-component-catalog` copies it into the

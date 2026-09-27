@@ -360,7 +360,7 @@ test(
           'export function DemandSegmentsControl({ visible }: { visible: boolean }) {',
           '  if (!visible) return <></>;',
           '  return (',
-          '    <ToolbarControlGroup label="Demand segments" className="demand-segments">',
+          '    <ToolbarControlGroup label="Demand segments">',
           '      <SegmentedControl',
           '        id="demand"',
           '        label="Demand"',
@@ -419,11 +419,8 @@ test(
             geometry: { margin: 'none', border: 'none', padding: 'none' },
           },
         },
-        boundaries: {
-          rootClass: 'demand-segments',
-          publicClasses: ['demand-segments'],
-          publicTokens: [],
-        },
+        // The root element is @kerfjs/ui's; the wrapper owns no root class.
+        boundaries: { rootClass: null, publicClasses: [], publicTokens: [] },
         accessibility: {
           obligations: ['The segmented control keeps its label.'],
         },

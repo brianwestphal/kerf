@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `create-kerf-component` accepts an explicit `boundaries.rootClass: null` as
+  an author decision, as its schema always allowed. A wrapper whose root
+  element belongs to another catalog (a `rendersAs` wrapper) no longer has to
+  invent a class to satisfy the generator. An absent `rootClass` still fails
+  as undecided.
 - `@kerfjs/ui`'s `Select` placeholder now matches the live control. The label
   uses the field-label style (uppercase, extra-small, quiet, inset to line up
   with the value), and the chevron is the same glyph at the same size.
