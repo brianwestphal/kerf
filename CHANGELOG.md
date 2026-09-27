@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` `wireWorkbench` keeps overlay panels exclusive.** At a narrow
+  width two overlay rails could both be open and, together wider than the
+  Workbench, the right rail covered the left rail's own close control. Opening
+  a panel while it presents as an overlay now closes every other open overlay
+  panel, the bottom drawer included, like `wireSidebar`'s compact overlays;
+  panels presenting inline are never closed by it. New option
+  `exclusiveOverlays` (default `true`); pass `false` to let overlays stay open
+  together.
 - **A `@kerfjs/ui` `CollapsiblePanel` or `ResizableRegion` restore control
   stays inside its container.** `restoreControl` was `position: fixed` to the
   viewport, so a panel or region embedded in a page floated it over unrelated

@@ -322,6 +322,19 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
     catalog rail now carries its own close control in its `Pane` header, and
     closing from there must not strand focus in the hidden rail). Internal
     module `ui/src/workbench-overlays.ts`;
+  - exclusive overlays (KF-5S6ZW7: at 390px the catalog's navigator (240px)
+    and inspector (160px) overlays were wider than the Workbench together, so
+    the right rail covered the navigator's own header close control).
+    `exclusiveOverlays` (default `true`, mirroring `wireSidebar`'s
+    `exclusiveCompact`) makes a wired panel that opens while it presents as an
+    overlay (static or responsive, by the same check as dismissal) close every
+    other open overlay panel of that Workbench — rails and the bottom drawer
+    alike, since a rail also covers the drawer's header — whatever opened it:
+    the app's toggle, a keyboard activation (which has no outside press), or a
+    programmatic write. Panels presenting inline are never closed by it, so a
+    wide Workbench keeps both rails open. It is part of the overlay wiring, so
+    it applies only with `dismissOverlays`; `false` restores simultaneous
+    overlays, which then stack in the fixed order below;
   - overlay stacking order (KF-3FM7G6: with the drawer and a rail both
     overlays, their order followed document order, so the drawer covered the
     left rail while the right rail covered the drawer): both rails stack above

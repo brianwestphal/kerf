@@ -47,6 +47,9 @@ const FOCUSABLE =
  * - Focus stranded in a panel that closes — however it closed, including
  *   through the app's own control inside it — returns to the control that
  *   had it when the panel opened, else to the panel's restore control.
+ * - With `exclusive`, a panel that opens while it presents as an overlay
+ *   closes every other open overlay panel, so overlays never cover each
+ *   other's controls. Inline panels are never closed by it.
  *
  * Returns a disposer.
  */
@@ -54,6 +57,7 @@ export function wireWorkbenchOverlays(
   root: HTMLElement,
   findWorkbench: () => HTMLElement | null,
   panels: readonly WorkbenchOverlayPanel[],
+  exclusive = false,
 ): () => void {
   const ownerDocument = root.ownerDocument;
   const disposers: Array<() => void> = [];
@@ -205,14 +209,20 @@ export function wireWorkbenchOverlays(
           return;
         }
         openOrder.push(panel);
+        const element = panelElement(panel);
         const active = ownerDocument.activeElement;
         if (
           active instanceof HTMLElement &&
           active !== ownerDocument.body &&
-          !panelElement(panel)?.contains(active)
+          !element?.contains(active)
         )
           openers.set(panel, active);
         else openers.delete(panel);
+        // Opening an overlay closes the others, whose collapse effects then
+        // return any focus left in them.
+        if (exclusive && element && overlaid(element))
+          for (const [other] of openOverlays())
+            if (other !== panel) other.collapsed.value = true;
       }),
     );
   }

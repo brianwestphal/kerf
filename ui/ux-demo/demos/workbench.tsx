@@ -314,7 +314,7 @@ export function WorkbenchDemo() {
       </CatalogExample>
       <CatalogExample
         label="Resizable panels"
-        note="Resizing is opt-in per panel, and wireWorkbench drives the separators. Resizable rails leave the work area its 320 px minimum: they stop growing there and shrink in proportion when the workbench narrows. Below 704 px of workbench width the rails present as overlays, which start hidden, do not resize, and close from their own header, on Escape, or on a click outside."
+        note="Resizing is opt-in per panel, and wireWorkbench drives the separators. Resizable rails leave the work area its 320 px minimum: they stop growing there and shrink in proportion when the workbench narrows. Below 704 px of workbench width the rails present as overlays, which start hidden, open one at a time, do not resize, and close from their own header, on Escape, or on a click outside."
         align="none"
         viewport={{
           layout: 'grid',

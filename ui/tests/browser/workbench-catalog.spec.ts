@@ -629,19 +629,20 @@ test.describe('resizable Workbench panels', () => {
     await workbench.scrollIntoViewIfNeeded();
     await expect(left).toHaveAttribute('data-collapsed', 'true');
 
-    // Open both rails from the editor toolbar by keyboard (a keyboard click
-    // is no outside press, so the first stays open), then present the
-    // console as an overlay too. Opening a rail re-renders, so the drawer's
-    // attribute goes on last.
-    for (const name of ['Show navigator', 'Show inspector']) {
-      await workbench
-        .locator('.kui-workbench__main')
-        .getByRole('button', { name })
-        .focus();
-      await page.keyboard.press('Enter');
-    }
-    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    // Overlays are exclusive, so the wiring keeps one rail open at a time.
+    // Stacking still decides what shows when an app opts out of that
+    // (exclusiveOverlays: false): open the inspector from the editor toolbar,
+    // then show the navigator beside it directly, and present the console as
+    // an overlay too.
+    await workbench
+      .locator('.kui-workbench__main')
+      .getByRole('button', { name: 'Show inspector' })
+      .focus();
+    await page.keyboard.press('Enter');
     await expect(right).toHaveAttribute('data-collapsed', 'false');
+    await left.evaluate((element) => {
+      element.dataset.collapsed = 'false';
+    });
     await drawer.evaluate((element) => {
       element.dataset.responsiveOverlayAt = 'narrow';
     });
@@ -682,29 +683,71 @@ test.describe('resizable Workbench panels', () => {
     expect(await owner(rightBox.x + 4, box.y + box.height / 3)).toBe(
       'rail-right',
     );
-    // The order does not depend on which opened last: reopen the navigator.
-    // (The right rail covers the navigator's own close control, so by key.)
-    await left.getByRole('button', { name: 'Hide navigator' }).focus();
-    await page.keyboard.press('Enter');
-    await expect(left).toHaveAttribute('data-collapsed', 'true');
-    await workbench
-      .locator('.kui-workbench__main')
-      .getByRole('button', { name: 'Show navigator' })
-      .focus();
-    await page.keyboard.press('Enter');
-    await expect(left).toHaveAttribute('data-collapsed', 'false');
-    await drawer.evaluate((element) => {
-      element.dataset.responsiveOverlayAt = 'narrow';
-    });
-    await expect(drawer).toHaveCSS('position', 'absolute');
-    expect(await owner(leftBox.x + 12, bottom)).toBe('rail-left');
-    expect(await owner(rightBox.x + 4, box.y + box.height / 3)).toBe(
-      'rail-right',
-    );
     if (testInfo.project.name === 'chromium')
       await workbench.screenshot({
         path: 'test-results/workbench-overlay-stacking.png',
       });
+  });
+
+  test('opening one overlay rail closes the other, so neither hides its controls', async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const left = workbench.locator('[data-workbench-rail="left"]');
+    const right = workbench.locator('[data-workbench-rail="right"]');
+    const toolbar = workbench.locator('.kui-workbench__main');
+    await workbench.scrollIntoViewIfNeeded();
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+
+    // By keyboard, which is no outside press: only exclusivity closes the
+    // navigator when the inspector opens.
+    const showNavigator = toolbar.getByRole('button', {
+      name: 'Show navigator',
+    });
+    await showNavigator.focus();
+    await page.keyboard.press('Enter');
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    await toolbar.getByRole('button', { name: 'Show inspector' }).focus();
+    await page.keyboard.press('Enter');
+    await expect(right).toHaveAttribute('data-collapsed', 'false');
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+    const close = right.getByRole('button', { name: 'Hide inspector' });
+    await expect(close).toBeInViewport();
+    if (testInfo.project.name === 'chromium')
+      await workbench.screenshot({
+        path: 'test-results/workbench-overlay-exclusive.png',
+      });
+
+    // And back: the navigator's own close control is never covered.
+    await showNavigator.focus();
+    await page.keyboard.press('Enter');
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    await expect(right).toHaveAttribute('data-collapsed', 'true');
+    const hideNavigator = left.getByRole('button', { name: 'Hide navigator' });
+    // Once the rails' slides settle, the control is the navigator's own.
+    await expect
+      .poll(async () => {
+        const box = (await hideNavigator.boundingBox())!;
+        return page.evaluate(
+          ([x, y]) =>
+            document
+              .elementFromPoint(x!, y!)
+              ?.closest('[data-workbench-rail="left"]') !== null,
+          [box.x + box.width / 2, box.y + box.height / 2],
+        );
+      })
+      .toBe(true);
+    await hideNavigator.click();
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+    await expect(showNavigator).toBeFocused();
+
+    // Wide, the rails are inline and stay open together.
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await expect(left).toHaveCSS('position', 'relative');
+    await toolbar.getByRole('button', { name: 'Show inspector' }).click();
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    await expect(right).toHaveAttribute('data-collapsed', 'false');
   });
 
   test("an overlay rail closes from its own header's control and returns focus", async ({

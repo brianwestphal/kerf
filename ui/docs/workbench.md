@@ -265,6 +265,14 @@ only for `responsiveOverlayAt`, because a static presentation is the app's
 choice. Inline panels are never touched. Pass `dismissOverlays: false` to
 leave every `collapsed` write to the app.
 
+Overlays are exclusive by default, like `wireSidebar`'s compact overlays:
+opening a panel while it presents as an overlay closes every other open
+overlay panel, the bottom drawer included. At a narrow width two rails are
+wider than the Workbench, so without this the right rail would cover the
+navigator's own close control. Panels presenting inline are never closed by
+it, so a wide Workbench keeps both rails open. Pass `exclusiveOverlays: false`
+to let overlays stay open together; they then stack in the fixed order above.
+
 Where the browser supports `overflow-clip-margin`, the 20px hit target
 straddles the panel's separator line like a `ResizableRegion` handle;
 elsewhere it sits just inside the panel's inner edge, because the panel clips

@@ -1217,6 +1217,14 @@ interface WireWorkbenchOptions {
      * app.
      */
     dismissOverlays?: boolean;
+    /**
+     * Keep overlays exclusive (default `true`), like `wireSidebar`'s
+     * `exclusiveCompact`: when a panel opens while it presents as an overlay,
+     * every other open overlay panel — rails and the bottom drawer alike —
+     * closes, so one overlay never covers another's controls. Panels presenting
+     * inline are never closed by it. Applies only with `dismissOverlays`.
+     */
+    exclusiveOverlays?: boolean;
 }
 /**
  * Wire a `Workbench`'s panels. For `resizable` panels given a `size` signal:
@@ -1227,10 +1235,10 @@ interface WireWorkbenchOptions {
  * suspends resizing on compact classes. Collapse stays the app's `collapsed`
  * flag and never changes a size. For panels given a `collapsed` signal,
  * overlays are transient (`dismissOverlays`): a responsive overlay starts
- * collapsed, and an open overlay closes on Escape or an outside press.
- * Returns a disposer. See `docs/23-app-layouts.md` §3.3.
+ * collapsed, an open overlay closes on Escape or an outside press, and
+ * opening one overlay closes the others (`exclusiveOverlays`). Returns a disposer. See `docs/23-app-layouts.md` §3.3.
  */
-declare function wireWorkbench(root: HTMLElement, { id, panels, deviceClass, storage, step, largeStep, onResize, dismissOverlays, }: WireWorkbenchOptions): () => void;
+declare function wireWorkbench(root: HTMLElement, { id, panels, deviceClass, storage, step, largeStep, onResize, dismissOverlays, exclusiveOverlays, }: WireWorkbenchOptions): () => void;
 
 export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanelKey, type WorkbenchResize, type WorkbenchStorage, wireWorkbench };
 ```

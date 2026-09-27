@@ -165,7 +165,9 @@ function studio({
       [...root.querySelectorAll<HTMLButtonElement>('button')].find(
         (button) => button.textContent === text,
       )!,
-    wire: (options: { dismissOverlays?: boolean } = {}) => {
+    wire: (
+      options: { dismissOverlays?: boolean; exclusiveOverlays?: boolean } = {},
+    ) => {
       const dispose = wireWorkbench(root, {
         id: 'studio',
         panels: {
@@ -352,7 +354,8 @@ describe('wireWorkbench transient overlays', () => {
   it('closes the focused, else the most recent, overlay on Escape and returns focus', () => {
     const app = studio({ rightPresentation: 'overlay' });
     narrow = true;
-    app.wire();
+    // Non-exclusive, so two overlays can be open at once.
+    app.wire({ exclusiveOverlays: false });
 
     // Open the navigator from its toggle: the toggle becomes its opener.
     const showNav = app.button('Show nav');
@@ -385,6 +388,64 @@ describe('wireWorkbench transient overlays', () => {
 
     // Nothing open: Escape passes through untouched.
     expect(escape().defaultPrevented).toBe(false);
+  });
+
+  it('keeps overlays exclusive: opening one closes the other open overlays', () => {
+    const app = studio({ rightPresentation: 'overlay' });
+    narrow = true;
+    app.wire();
+
+    // A keyboard open has no press, so only exclusivity closes the other.
+    const showNav = app.button('Show nav');
+    showNav.focus();
+    showNav.click();
+    expect(app.left.value).toBe(false);
+    app.button('Show inspector').focus();
+    app.button('Show inspector').click();
+    expect(app.right.value).toBe(false);
+    expect(app.left.value).toBe(true);
+    // The drawer too: opening it closes the inspector, and back again.
+    app.drawer.value = false;
+    expect(app.right.value).toBe(true);
+    app.right.value = false;
+    expect(app.drawer.value).toBe(true);
+    expect(app.left.value).toBe(true);
+
+    // Focus left in the overlay that closed returns to its opener.
+    const opener = app.button('Show nav');
+    opener.focus();
+    app.left.value = false;
+    expect(app.right.value).toBe(true);
+    app.button('nav item').focus();
+    app.right.value = false;
+    expect(app.left.value).toBe(true);
+    expect(document.activeElement).toBe(opener);
+
+    // Inline panels are never closed by it: wide, the navigator and drawer
+    // are inline and stay open while the static overlay inspector opens.
+    app.right.value = true;
+    resize(false);
+    app.left.value = false;
+    app.drawer.value = false;
+    app.right.value = false;
+    expect(app.left.value).toBe(false);
+    expect(app.drawer.value).toBe(false);
+    // And an inline panel opening leaves the open overlay alone.
+    app.left.value = true;
+    app.left.value = false;
+    expect(app.right.value).toBe(false);
+  });
+
+  it('with exclusiveOverlays false lets overlays stay open together', () => {
+    const app = studio({ rightPresentation: 'overlay' });
+    narrow = true;
+    app.wire({ exclusiveOverlays: false });
+    app.left.value = false;
+    app.right.value = false;
+    app.drawer.value = false;
+    expect(app.left.value).toBe(false);
+    expect(app.right.value).toBe(false);
+    expect(app.drawer.value).toBe(false);
   });
 
   it('leaves Escape to whoever already handled it, and to inline panels', () => {
