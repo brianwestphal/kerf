@@ -17,7 +17,7 @@
  *    fails, scan later live siblings for a same-tag unkeyed element and move
  *    it up (the same move the keyed branch performs), so the list container —
  *    and any stateful element — survives a preceding sibling's removal.
- *  - `mount.ts` `bindListsFromMarkers` self-heal: if a binding's marker is no
+ *  - `mount-list-bindings.ts` `bindListsFromMarkers` self-heal: if a binding's marker is no
  *    longer inside the mount root (the container was genuinely rebuilt, e.g.
  *    an ancestor's tag changed so replaceChild swapped the subtree), drop the
  *    stale binding and re-bind against the live marker so the next reconcile

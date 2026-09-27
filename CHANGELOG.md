@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- Moved `mount()`'s list-binding lifecycle (turning list markers into
+  bindings, first-render row-contract validation, orphan pruning) into its own
+  internal module, so `mount.ts` holds only the render orchestration. No
+  behavior or public API change.
 - `toElement('<image href="…" />')` now returns an SVG `<image>`. The HTML
   parser rewrites an orphan `<image>` to an HTML `<img>` before kerf sees the
   tag, so it previously came back as an XHTML `img` that no `<svg>` would

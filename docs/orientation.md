@@ -13,7 +13,7 @@ kerf is **signals + DOM-string rendering + a morph diff**. There is no virtual D
 ## Where to look first
 
 - **Public API**: `src/index.ts` + `docs/8-api-reference.md`.
-- **Render wiring / scheduling**: `src/mount.ts` — owns the effect and the dispatch to morph + list reconciler + binding wiring.
+- **Render wiring / scheduling**: `src/mount.ts` — owns the effect and the dispatch to morph + list reconciler + binding wiring; `src/mount-list-bindings.ts` binds `each()` markers to live rows.
 - **Static-element diff bugs** (attributes, text, focus preservation, `data-morph-*`): `src/morph.ts`.
 - **Keyed-list bugs** (rows not moving, focus loss, duplicate keys): `src/list-reconcile.ts` and its siblings — `-snapshot` (default LIS path), `-granular` (the `arraySignal` patch path), `-inplace` / `-fast-paths` (fast paths), `-focus`.
 - **Fine-grained bindings**: `src/bindings.ts` — marker-in-string wiring, global + per-row scopes.
