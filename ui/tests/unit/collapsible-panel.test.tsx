@@ -59,6 +59,51 @@ describe('CollapsiblePanel', () => {
     expect(drawer).toContain('--kui-collapsible-panel-height: 240px');
   });
 
+  it('anchors the restore control to the panel container, inset once even around a FloatingToolbar', async () => {
+    const file = resolve(
+      import.meta.dirname,
+      '../../src/collapsible-panel.css',
+    );
+    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const declarations = (selector: string): Record<string, string> => {
+      const rule = root.nodes.find(
+        (node) => node.type === 'rule' && node.selector === selector,
+      );
+      if (!rule || rule.type !== 'rule')
+        throw new Error(`Missing ${selector} rule`);
+      return Object.fromEntries(
+        rule.nodes
+          .filter((node) => node.type === 'decl')
+          .map((node) => [node.prop, node.value.replace(/\s+/g, ' ')]),
+      );
+    };
+
+    // The container, not the viewport, is the corner's containing block while
+    // a restore control is shown; zero specificity lets an app's own
+    // positioning of that container win.
+    expect(
+      declarations(':where(:has(> .kui-collapsible-panel__restore))'),
+    ).toEqual({ position: 'relative', isolation: 'isolate' });
+    const corner = declarations('.kui-collapsible-panel__restore');
+    expect(corner).toMatchObject({
+      position: 'absolute',
+      '--kui-floating-toolbar-inset': '0px',
+    });
+    expect(corner['inset-block-end']).toContain(
+      'var(--_kui-collapsible-panel-restore-inset) + var( --kui-edge-inset-block-end,',
+    );
+    expect(
+      declarations(
+        '.kui-collapsible-panel__restore[data-position="bottom-start"]',
+      )['inset-inline-start'],
+    ).toContain('--kui-edge-inset-inline-start');
+    expect(
+      declarations(
+        '.kui-collapsible-panel__restore[data-position="bottom-end"]',
+      )['inset-inline-end'],
+    ).toContain('--kui-edge-inset-inline-end');
+  });
+
   it('bottom-anchors drawer content so the slide has one stable motion origin', async () => {
     const file = resolve(
       import.meta.dirname,

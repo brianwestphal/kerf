@@ -111,7 +111,7 @@ export interface CollapsiblePanelProps {
   collapseMotion?: ResizableRegionCollapseMotion;
   contentOverflow?: ResizableRegionContentOverflow;
   presentation?: ResizableRegionPresentation;
-  /** Control shown in a safe-area-aware viewport corner while collapsed. */
+  /** Control shown while collapsed, in a safe-area-aware corner of the panel's container (not the viewport). */
   restoreControl?: SafeHtml;
   restorePosition?: ResizableRegionRestorePosition;
   className?: string;

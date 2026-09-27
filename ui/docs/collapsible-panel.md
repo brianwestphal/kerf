@@ -25,7 +25,15 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   overrides the CSS default width/height.
   Reusable shell policies are typed props: `separator`, `collapseMotion`,
   `contentOverflow`, and `presentation`. A collapsed panel may also receive a
-  `restoreControl`, which Kerf places at the safe-area-aware `restorePosition`.
+  `restoreControl`, which Kerf places at the safe-area-aware `restorePosition`
+  corner of the panel's own container (the element holding the panel), never
+  of the viewport, so an embedded panel's control stays inside it and scrolls
+  with it. While the control shows, that container becomes its containing block
+  and isolates its stacking (an app's own `position` on the container still
+  wins). The corner is inset by `--kui-collapsible-panel-restore-inset` plus the
+  container's edge insets, and it owns that inset, so a `FloatingToolbar` hosting
+  the control floats from the corner without adding its own. `ResizableRegion`'s
+  `restoreControl` follows the same rule.
   Overlay presentation also clamps fixed-size animated content to the configured
   responsive overlay maximum, so a remembered desktop size cannot escape a narrow
   viewport.

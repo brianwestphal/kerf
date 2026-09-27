@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **A `@kerfjs/ui` `CollapsiblePanel` or `ResizableRegion` restore control
+  stays inside its container.** `restoreControl` was `position: fixed` to the
+  viewport, so a panel or region embedded in a page floated it over unrelated
+  page content. It now floats in the `restorePosition` corner of the element
+  that holds the panel (or region), scrolls with it, and is inset by the
+  component's restore inset plus the unsafe area of the edges that container
+  reaches, so a full-viewport shell still places it clear of them. While the
+  control is shown, that container isolates its stacking and becomes its
+  containing block; an app that positions the container itself keeps its own
+  `position`. As in `Workbench`, the corner owns the inset, so a
+  `FloatingToolbar` hosting the control no longer doubles it.
 - **A `@kerfjs/ui` `Workbench` restore control stays inside its Workbench.**
   `restoreControl` was `position: fixed` to the viewport, so an embedded
   Workbench (the UX catalog's, for one) floated it over the page footer. It is

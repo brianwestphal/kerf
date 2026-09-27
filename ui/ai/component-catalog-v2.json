@@ -1052,8 +1052,8 @@
           "--kui-collapsible-panel-height",
           "--kui-collapsible-panel-popup-z",
           "--kui-collapsible-panel-overlay-z",
-          "--kui-collapsible-panel-restore-z",
           "--kui-collapsible-panel-restore-inset",
+          "--kui-collapsible-panel-restore-z",
           "--kui-collapsible-panel-backdrop-z"
         ]
       },

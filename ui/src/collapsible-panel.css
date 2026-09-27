@@ -265,26 +265,54 @@
   display: none;
 }
 
+/* A collapsed panel's restore control floats in a corner of the panel's own
+   container, never of the viewport, so a panel embedded in a page cannot float
+   it over page content outside that container. The container becomes the
+   corner's containing block and isolates its stacking only while a restore
+   control is shown, at zero specificity so an app's own positioning of that
+   container wins. The corner is inset from the container's edges plus the
+   unsafe area of each edge it reaches. */
+:where(:has(> .kui-collapsible-panel__restore)) {
+  position: relative;
+  isolation: isolate;
+}
+
 .kui-collapsible-panel__restore {
-  position: fixed;
+  --_kui-collapsible-panel-restore-inset: var(
+    --kui-collapsible-panel-restore-inset,
+    remify(16px)
+  );
+  /* The corner owns the inset, so a FloatingToolbar composed here floats
+     from this point instead of adding its own inset on top. */
+  --kui-floating-toolbar-inset: 0px;
+  position: absolute;
   z-index: var(--kui-collapsible-panel-restore-z, 42);
   inset-block-end: calc(
-    var(--kui-collapsible-panel-restore-inset, remify(16px)) +
-      var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+    var(--_kui-collapsible-panel-restore-inset) +
+      var(
+        --kui-edge-inset-block-end,
+        var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+      )
   );
 }
 
 .kui-collapsible-panel__restore[data-position="bottom-start"] {
   inset-inline-start: calc(
-    var(--kui-collapsible-panel-restore-inset, remify(16px)) +
-      var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+    var(--_kui-collapsible-panel-restore-inset) +
+      var(
+        --kui-edge-inset-inline-start,
+        var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+      )
   );
 }
 
 .kui-collapsible-panel__restore[data-position="bottom-end"] {
   inset-inline-end: calc(
-    var(--kui-collapsible-panel-restore-inset, remify(16px)) +
-      var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+    var(--_kui-collapsible-panel-restore-inset) +
+      var(
+        --kui-edge-inset-inline-end,
+        var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+      )
   );
 }
 

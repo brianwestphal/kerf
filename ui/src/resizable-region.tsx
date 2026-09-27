@@ -32,7 +32,7 @@ export interface ResizableRegionProps {
   presentation?: ResizableRegionPresentation;
   /** Always-available control rendered while collapsed, outside the clipped region. */
   restoreControl?: SafeHtml;
-  /** Safe-area-aware viewport corner for `restoreControl`. */
+  /** Safe-area-aware corner of the region's container (not the viewport) for `restoreControl`. */
   restorePosition?: ResizableRegionRestorePosition;
   /** Fill the available inline track and hide the separator below a container breakpoint. */
   responsiveFillAt?: ResizableRegionResponsiveFillAt;

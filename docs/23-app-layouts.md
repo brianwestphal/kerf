@@ -420,6 +420,24 @@ signal from the device class for a flash-free compact first render. The app owns
 content; drag-resize composes `ResizableRegion`. Subpath-only with a companion
 CSS import. See [`ui/docs/collapsible-panel.md`](../../ui/docs/collapsible-panel.md).
 
+A collapsed `CollapsiblePanel`'s or `ResizableRegion`'s optional
+`restoreControl` floats in a corner (`restorePosition`) of the component's own
+container — the element that holds the panel and its sibling restore control —
+never of the viewport (KF-EC756H: it was `position: fixed`, so a panel embedded
+in a page floated the control over unrelated page content, the defect §3.3's
+Workbench corner already fixed). While the control is shown, a zero-specificity
+`:where(:has(> …__restore))` rule makes that container `position: relative`
+and `isolation: isolate`, so the corner is its containing block and its
+z-index stacks within it; an app that positions the container itself (fixed,
+absolute, sticky) keeps its own value, which is equally a containing block.
+The corner is inset by `--kui-collapsible-panel-restore-inset` /
+`--kui-resizable-region-restore-inset` plus the container's
+`--kui-edge-inset-*` edges (falling back to the device safe area), so a
+full-viewport shell still places it clear of the unsafe areas. Like the
+Workbench corner, it sets `--kui-floating-toolbar-inset: 0px`, so a
+`FloatingToolbar` hosting the control floats from the corner instead of
+doubling the inset.
+
 **Implementation:** shipped (KF-T17Q1X). UX-demo recipe (the "Collapsible sidebar"
 recipe: a left rail + bottom drawer with toggles, compact overlay, and persistence)
 and three-engine Playwright coverage of collapse/expand, focus move/restore, the

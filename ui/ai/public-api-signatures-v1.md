@@ -341,9 +341,10 @@ interface FloatingToolbarProps {
  * (it is not in the top layer). It is inset from the container edges by
  * `--kui-floating-toolbar-inset` (default `--kui-space-m`, i.e. 8px more than a
  * top toolbar's own inset); override that token, on the toolbar or an
- * ancestor, to move it. Inside a `Workbench` restore corner the corner owns the
- * inset, so the toolbar floats from the corner's own position. The app owns the
- * controls and their behavior — wire them with `delegate()` as usual.
+ * ancestor, to move it. Inside a `Workbench`, `CollapsiblePanel`, or
+ * `ResizableRegion` restore corner the corner owns the inset, so the toolbar
+ * floats from the corner's own position. The app owns the controls and their
+ * behavior — wire them with `delegate()` as usual.
  */
 declare function FloatingToolbar({ children, label, position, className, slot, }: FloatingToolbarProps): kerfjs.SafeHtml;
 
@@ -1295,7 +1296,7 @@ interface CollapsiblePanelProps {
     collapseMotion?: ResizableRegionCollapseMotion;
     contentOverflow?: ResizableRegionContentOverflow;
     presentation?: ResizableRegionPresentation;
-    /** Control shown in a safe-area-aware viewport corner while collapsed. */
+    /** Control shown while collapsed, in a safe-area-aware corner of the panel's container (not the viewport). */
     restoreControl?: SafeHtml;
     restorePosition?: ResizableRegionRestorePosition;
     className?: string;
@@ -1473,7 +1474,7 @@ interface ResizableRegionProps {
     presentation?: ResizableRegionPresentation;
     /** Always-available control rendered while collapsed, outside the clipped region. */
     restoreControl?: SafeHtml;
-    /** Safe-area-aware viewport corner for `restoreControl`. */
+    /** Safe-area-aware corner of the region's container (not the viewport) for `restoreControl`. */
     restorePosition?: ResizableRegionRestorePosition;
     /** Fill the available inline track and hide the separator below a container breakpoint. */
     responsiveFillAt?: ResizableRegionResponsiveFillAt;

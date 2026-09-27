@@ -1944,4 +1944,35 @@ describe('production UI primitives', () => {
       /max-width: remify\(448px\)[\s\S]*data-responsive-fill-at="compact"[\s\S]*flex: 1 1 auto/,
     );
   });
+
+  it('anchors the restore control to the region container, inset once even around a FloatingToolbar', () => {
+    const css = readFileSync(
+      resolve(import.meta.dirname, '../../src/resizable-region.css'),
+      'utf8',
+    ).replace(/\s+/g, ' ');
+    const rule = (selector: string) => {
+      const start = css.indexOf(`${selector} {`);
+      if (start < 0) throw new Error(`Missing ${selector}`);
+      return css.slice(start, css.indexOf('}', start));
+    };
+    // The restore control's container, not the viewport, is its containing
+    // block while it is shown, at zero specificity so an app's own
+    // positioning of that container wins.
+    const host = rule(':where(:has(> .kui-resizable-region__restore))');
+    expect(host).toContain('position: relative;');
+    expect(host).toContain('isolation: isolate;');
+    const corner = rule('.kui-resizable-region__restore');
+    expect(corner).toContain('position: absolute;');
+    expect(corner).not.toContain('position: fixed');
+    expect(corner).toContain('--kui-floating-toolbar-inset: 0px;');
+    expect(corner).toContain(
+      'var(--_kui-resizable-region-restore-inset) + var( --kui-edge-inset-block-end,',
+    );
+    expect(
+      rule('.kui-resizable-region__restore[data-position="bottom-start"]'),
+    ).toContain('--kui-edge-inset-inline-start');
+    expect(
+      rule('.kui-resizable-region__restore[data-position="bottom-end"]'),
+    ).toContain('--kui-edge-inset-inline-end');
+  });
 });
