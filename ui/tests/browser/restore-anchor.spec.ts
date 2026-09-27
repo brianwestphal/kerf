@@ -3,6 +3,8 @@ import { resolve } from 'node:path';
 import { expect, type Locator, type Page, test } from '@playwright/test';
 import { build } from 'esbuild';
 
+import { waitForScrollSettled } from './scroll-settle.js';
+
 // KF-EC756H: a collapsed CollapsiblePanel's or ResizableRegion's
 // restoreControl floats in a corner of the component's own container, not of
 // the viewport. It used to be position: fixed, so a component embedded in a
@@ -82,6 +84,8 @@ test('an embedded collapsed panel floats its restore control in its own containe
   await expect
     .poll(async () => (await button.boundingBox())!.y)
     .toBeLessThan(before);
+  // Measure once the scroll has finished; WebKitGTK animates wheel scrolls.
+  await waitForScrollSettled(button);
   expect(await insets(host, button)).toMatchObject({ start: 16, bottom: 16 });
 });
 

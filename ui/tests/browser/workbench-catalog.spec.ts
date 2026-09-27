@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+import { waitForScrollSettled } from './scroll-settle.js';
+
 test('catalogs Workbench public geometry and controlled collapse', async ({
   page,
 }, testInfo) => {
@@ -864,6 +866,8 @@ test.describe('resizable Workbench panels', () => {
     await expect
       .poll(async () => (await group.boundingBox())!.y)
       .toBeGreaterThan(before);
+    // Measure once the scroll has finished; WebKitGTK animates wheel scrolls.
+    await waitForScrollSettled(group);
     const moved = (await workbench
       .locator('.kui-workbench__center')
       .boundingBox())!;
