@@ -139,7 +139,10 @@ const BUDGETS = [
     // dialogs in the stack, and focus-restore hand-off across a stack.
     // KF-0V9RTE (+0.12 KB): surfaces opened over a modal <dialog> are lifted
     // into the top layer (modal-dialog detection + dev-hook call site).
-    budgetKb: 17.5,
+    // KF-BAVCEV (+0.38 KB): popover/tooltip close when their anchor leaves the
+    // document, reusing attach()'s removal lifecycle (MutationObserver +
+    // shadow-root / first-connection handling) rather than a second copy.
+    budgetKb: 17.9,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `

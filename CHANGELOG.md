@@ -30,6 +30,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   compared the HTML parser's lowercased tag against camelCase names. The
   fragment is now wrapped in `<svg>` and XML-parsed like `<path>` or `<g>`,
   and the returned element keeps its camelCase `localName`.
+- **A tooltip or popover no longer outlives its anchor.** When the anchor left
+  the document, most commonly because the modal containing it closed, the
+  `tooltip()` or `popover()` stayed on screen: a removed element fires no
+  `pointerleave` or `blur`. Both now watch their anchor with the same removal
+  tracking as `kerfjs/attach`. The tooltip hides, and the popover closes
+  without calling `onDismiss`, as soon as the anchor leaves the document.
+  Moving the anchor within the document keeps them open. A tooltip show still
+  pending when its anchor is removed never appears.
 - **Overlays opened over a modal `<dialog>` are visible and usable.** A browser
   makes everything outside an open modal dialog inert and paints a plain
   element beneath it, so a `tooltip()`, `popover()`, or `confirm()` opened

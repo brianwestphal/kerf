@@ -150,6 +150,8 @@ Concurrent overlays in one document (fallback and native) share a document-owned
 
 A surface opened without `native` while a modal `<dialog>` is open (kerf's own, or an app-owned one reported by `:modal`) takes the native path anyway — a non-modal surface becomes a `[popover]`, a modal one its own `<dialog>` — because a plain `<div>` would be inert and painted beneath the dialog. A lifted popover with focusable controls stays inert (every engine inerts a popover outside the modal dialog), and an engine without the API leaves the surface hidden; the always-on `kerfjs/dev` warning (`docs/11` §11.2.17) reports both.
 
+A `popover()` or `tooltip()` never outlives its anchor: when the anchor leaves the document (e.g. with the modal that holds it) the popover closes without `onDismiss` and the tooltip hides; a move within the document keeps them open.
+
 The `kerfjs/overlay` public entry is composition-only. Overlay lifecycle and types live in an internal core, while `confirm`, `prompt`, `form`, and `choice` each have a focused implementation module that imports the core directly; this preserves the public surface without the former barrel/helper module cycle.
 
 The `kerfjs/async` resource helper normalizes both synchronous fetcher throws and asynchronous promise rejections into its stale-guarded `failed` state; `run()` always returns a promise that resolves rather than rejecting.

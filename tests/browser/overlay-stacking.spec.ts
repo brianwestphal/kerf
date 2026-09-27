@@ -159,3 +159,35 @@ test('focus restoration across a stack: in-order and out-of-order closes land on
   expect(await activeId(page)).toBe('x');
   expect(await activeConnected(page)).toBe(true);
 });
+
+for (const native of [false, true]) {
+  test(`closing a ${native ? 'native' : 'fallback'} modal removes the tooltip and popover anchored inside it`, async ({
+    page,
+  }) => {
+    await page.evaluate((native) => {
+      const { overlay, popover, tooltip } = (window as any).kerfOverlay;
+      const { raw } = (window as any).jsxRuntime;
+      overlay(
+        raw('<button id="hint">hint</button><button id="menu">menu</button>'),
+        { className: 'anchor-modal', native, initialFocus: '#menu' },
+      );
+      tooltip(document.getElementById('hint'), 'Hint', {
+        delay: 0,
+        hideDelay: 10_000, // only the anchor leaving may hide it in time
+      });
+      popover(document.getElementById('menu'), raw('<p>items</p>'), {
+        className: 'anchor-menu',
+        dismiss: false,
+      });
+    }, native);
+
+    await page.locator('#hint').hover();
+    await expect(page.locator('.kerf-tooltip')).toHaveCount(1);
+    await expect(page.locator('.anchor-menu')).toHaveCount(1);
+
+    await page.keyboard.press('Escape'); // the modal is the only Escape owner
+    await expect(page.locator('.anchor-modal')).toHaveCount(0);
+    await expect(page.locator('.kerf-tooltip')).toHaveCount(0);
+    await expect(page.locator('.anchor-menu')).toHaveCount(0);
+  });
+}

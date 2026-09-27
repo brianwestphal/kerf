@@ -70,7 +70,7 @@ describe('a non-native surface opened over a native modal <dialog>', () => {
     stubPopoverApi();
     vi.useFakeTimers();
     openNativeModal();
-    tooltip(anchor(), 'tip', { delay: 0 });
+    const dispose = tooltip(anchor(), 'tip', { delay: 0 });
     anchor().dispatchEvent(new Event('pointerenter'));
     vi.advanceTimersByTime(0);
 
@@ -79,6 +79,7 @@ describe('a non-native surface opened over a native modal <dialog>', () => {
     expect(tip.dataset.shown).toBe('true');
     expect(tip.style.inset).toBe('auto');
     expect(warn).not.toHaveBeenCalled(); // nothing interactive to lose
+    dispose(); // while the Popover API stub is still installed
   });
 
   it('a popover with controls is lifted, and dev warns that its controls stay inert', () => {

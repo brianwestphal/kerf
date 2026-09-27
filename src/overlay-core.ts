@@ -19,6 +19,7 @@
  * Structural only — kerf ships no CSS. The wrapper gets your `className`; style
  * the backdrop / centering / animation yourself.
  */
+import { attach } from './attach.js';
 import { devHooks } from './dev-hooks.js';
 import { jsx, type SafeHtml } from './jsx-runtime.js';
 import { mount, type MountResult } from './mount.js';
@@ -657,6 +658,11 @@ export function popover(
   }
   void handle.result.then(stopReposition);
 
+  // KF-BAVCEV: never outlive the anchor. When it leaves the document (e.g. the
+  // modal holding it closes) close the popover as cleanup — not a user
+  // dismissal, so no `onDismiss`. A move within the document keeps it open.
+  void handle.result.then(attach(anchor, () => handle.close));
+
   return handle;
 }
 
@@ -715,7 +721,9 @@ export function tooltip(
     show?: ReturnType<typeof setTimeout>;
     hide?: ReturnType<typeof setTimeout>;
   } = {};
-  let current: { handle: OverlayHandle; stop: () => void } | undefined;
+  let current:
+    | { handle: OverlayHandle; stop: () => void; unwatch: () => void }
+    | undefined;
   let presence = 0;
 
   // Runs from the `delay` timer, so there is no caller to throw to. A failed
@@ -726,6 +734,8 @@ export function tooltip(
   // (a window `error` event in browsers), the same way kerf's other deferred
   // callbacks (debounce / throttle timers, attach teardown) surface errors.
   function show(): void {
+    // The anchor left the document while the show was pending (KF-BAVCEV).
+    if (!anchor.isConnected) return;
     const handle = overlay(body, {
       container,
       className,
@@ -743,14 +753,25 @@ export function tooltip(
       handle.close();
       throw error;
     }
-    current = { handle, stop };
+    // KF-BAVCEV: an anchor removed from the document (e.g. with the modal that
+    // held it) fires no pointerleave / blur, so hide when it leaves and forget
+    // its presence; a move within the document keeps the tooltip shown.
+    const unwatch = attach(anchor, () => () => {
+      presence = 0;
+      if (timers.hide !== undefined) clearTimeout(timers.hide);
+      hide();
+    });
+    current = { handle, stop, unwatch };
   }
 
   function hide(): void {
-    if (current === undefined) return;
-    current.stop();
-    current.handle.close();
+    const shown = current;
+    if (shown === undefined) return;
+    // Cleared first: `unwatch()` runs the anchor teardown, which re-enters here.
     current = undefined;
+    shown.unwatch();
+    shown.stop();
+    shown.handle.close();
   }
 
   const onEnter = (event: Event): void => {
