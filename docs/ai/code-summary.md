@@ -824,8 +824,9 @@ internal `ui/src/workbench-overlays.ts` (`wireWorkbenchOverlays`,
 `responsiveOverlayAt` breakpoint begins to apply (a `ResizeObserver` on the
 Workbench plus a `MutationObserver` for late renders and presentation changes)
 and gets its inline state back when it ends, and an open overlay closes on
-Escape or an outside press with focus returned to its opener or restore
-control (`ui/tests/unit/workbench-overlays.test.ts`).
+Escape or an outside press; focus stranded in any wired panel that closes,
+however it closed, returns to its opener or restore control
+(`ui/tests/unit/workbench-overlays.test.ts`).
 `ui/src/workbench-resize.ts` holds the shared panel
 region-id convention, default limits, and default work-area minimum, and `ui/src/resize-grip.tsx` the
 separator grip both handles render (`ui/tests/unit/wire-workbench.test.ts`,

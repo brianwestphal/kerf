@@ -300,7 +300,11 @@ test.describe('resizable Workbench panels', () => {
     await page.keyboard.press('Shift+ArrowRight');
     await expect(rail).toHaveCSS('width', '304px');
 
-    await workbench.getByRole('button', { name: 'Hide navigator' }).click();
+    // The editor toolbar's toggle; the rail's own header has one too.
+    await workbench
+      .locator('.kui-workbench__main')
+      .getByRole('button', { name: 'Hide navigator' })
+      .click();
     await expect(rail).toHaveAttribute('data-collapsed', 'true');
     await expect(rail).toHaveCSS('width', '0px');
     await expect(handle).toBeHidden();
@@ -596,17 +600,72 @@ test.describe('resizable Workbench panels', () => {
     // The app's own toggle still closes an open overlay exactly once.
     await showNavigator.click();
     await expect(left).toHaveAttribute('data-collapsed', 'false');
-    await workbench.getByRole('button', { name: 'Hide navigator' }).click();
+    await workbench
+      .locator('.kui-workbench__main')
+      .getByRole('button', { name: 'Hide navigator' })
+      .click();
     await expect(left).toHaveAttribute('data-collapsed', 'true');
 
-    // The inspector overlay covers its own toggle; Escape still closes it.
-    await workbench.getByRole('button', { name: 'Show inspector' }).click();
+    // The inspector overlay covers its editor toolbar toggle; Escape still
+    // closes it.
+    const showInspector = workbench.getByRole('button', {
+      name: 'Show inspector',
+    });
+    await showInspector.click();
     await expect(right).toHaveAttribute('data-collapsed', 'false');
     await page.keyboard.press('Escape');
     await expect(right).toHaveAttribute('data-collapsed', 'true');
-    await expect(
-      workbench.getByRole('button', { name: 'Show inspector' }),
-    ).toBeFocused();
+    await expect(showInspector).toBeFocused();
+  });
+
+  test("an overlay rail closes from its own header's control and returns focus", async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const right = workbench.locator('[data-workbench-rail="right"]');
+    const editorToggle = workbench
+      .locator('.kui-workbench__main')
+      .getByRole('button', { name: /inspector$/ });
+    await workbench.scrollIntoViewIfNeeded();
+    await editorToggle.focus();
+    await page.keyboard.press('Enter');
+    await expect(right).toHaveAttribute('data-collapsed', 'false');
+    await expect(right).toHaveCSS('position', 'absolute');
+
+    // The open overlay covers the editor toolbar's toggle: a press there
+    // lands in the inspector, not on the toggle.
+    const box = (await editorToggle.boundingBox())!;
+    expect(
+      await page.evaluate(
+        ([x, y]) =>
+          document
+            .elementFromPoint(x!, y!)
+            ?.closest('[data-workbench-rail="right"]') !== null,
+        [box.x + box.width / 2, box.y + box.height / 2],
+      ),
+    ).toBe(true);
+
+    // Its own header carries a reachable Hide control instead.
+    const close = right.getByRole('button', { name: 'Hide inspector' });
+    await expect(close).toBeInViewport();
+    if (testInfo.project.name === 'chromium')
+      await workbench.screenshot({
+        path: 'test-results/workbench-overlay-rail-close.png',
+      });
+    await close.click();
+    await expect(right).toHaveAttribute('data-collapsed', 'true');
+    // Focus leaves the hidden rail for the toggle that opened it.
+    await expect(editorToggle).toBeFocused();
+    await expect(editorToggle).toHaveAccessibleName('Show inspector');
+
+    // By keyboard too: focus the rail's close control and activate it.
+    await page.keyboard.press('Enter');
+    await expect(right).toHaveAttribute('data-collapsed', 'false');
+    await close.focus();
+    await page.keyboard.press('Enter');
+    await expect(right).toHaveAttribute('data-collapsed', 'true');
+    await expect(editorToggle).toBeFocused();
   });
 
   test('the collapsed console restores from its corner control', async ({

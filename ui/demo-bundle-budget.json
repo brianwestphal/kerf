@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 289300,
-  "measuredLargestJavaScriptGzip": 140372,
-  "measuredTotalJavaScriptGzip": 289255,
+  "totalJavaScriptGzip": 289400,
+  "measuredLargestJavaScriptGzip": 140445,
+  "measuredTotalJavaScriptGzip": 289322,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -611,6 +611,22 @@
         "measuredTotalJavaScriptGzip": 289255,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 289300
+      }
+    },
+    {
+      "at": "2026-09-27T12:01:32.762Z",
+      "reason": "Workbench catalog rails carry their own header close control, so an overlay rail that covers its toolbar toggle can still be closed",
+      "old": {
+        "measuredLargestJavaScriptGzip": 140372,
+        "measuredTotalJavaScriptGzip": 289255,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 289300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 140445,
+        "measuredTotalJavaScriptGzip": 289322,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 289400
       }
     }
   ]

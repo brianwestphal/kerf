@@ -81,8 +81,9 @@ export interface WireWorkbenchOptions {
    * state back when the breakpoint stops applying (and on disposal); an open
    * overlay panel, responsive or `presentation: "overlay"`, closes on Escape
    * or a press that starts and ends outside it. Focus stranded in a closing
-   * panel returns to the control that had it when the panel opened, else to
-   * the panel's restore control. `false` leaves every `collapsed` write to the
+   * panel — however it closed, the app's own control inside it included —
+   * returns to the control that had it when the panel opened, else to the
+   * panel's restore control. `false` leaves every `collapsed` write to the
    * app.
    */
   dismissOverlays?: boolean;

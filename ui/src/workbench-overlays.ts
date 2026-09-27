@@ -44,8 +44,9 @@ const FOCUSABLE =
  * - Escape closes the open overlay panel that holds focus, else the most
  *   recently opened one; a press that starts and ends outside an open overlay
  *   panel closes it. Static `presentation: "overlay"` panels are included.
- * - Focus stranded in a panel that closes returns to the control that had it
- *   when the panel opened, else to the panel's restore control.
+ * - Focus stranded in a panel that closes — however it closed, including
+ *   through the app's own control inside it — returns to the control that
+ *   had it when the panel opened, else to the panel's restore control.
  *
  * Returns a disposer.
  */
@@ -104,16 +105,6 @@ export function wireWorkbenchOverlays(
     });
   };
 
-  /** Close a panel the user dismissed, returning focus stranded inside it. */
-  const dismiss = (
-    panel: WorkbenchOverlayPanel,
-    element: HTMLElement,
-  ): void => {
-    const stranded = element.contains(ownerDocument.activeElement);
-    panel.collapsed.value = true;
-    if (stranded) rescueFocus(panel);
-  };
-
   /**
    * A presentation-driven write: no collapse motion, because nothing the user
    * did moved the panel. The app's render has normally applied the new state
@@ -136,7 +127,10 @@ export function wireWorkbenchOverlays(
     content.style.transition = 'none';
     void globalThis.getComputedStyle(content).transform;
     content.removeAttribute('style');
-    if (stranded) rescueFocus(panel);
+    // The collapse effect has normally returned the focus already; on
+    // disposal, after the effects are gone, this is what returns it.
+    if (stranded && element.contains(ownerDocument.activeElement))
+      rescueFocus(panel);
   };
 
   // The inline collapsed state of each panel whose responsive overlay
@@ -202,7 +196,14 @@ export function wireWorkbenchOverlays(
         previous = collapsed;
         const index = openOrder.indexOf(panel);
         if (index >= 0) openOrder.splice(index, 1);
-        if (collapsed) return;
+        if (collapsed) {
+          // Whatever closed the panel — Escape, an outside press, a
+          // breakpoint, or the app's own control inside it — focus left in
+          // it would be stranded in a hidden panel.
+          if (panelElement(panel)?.contains(ownerDocument.activeElement))
+            rescueFocus(panel);
+          return;
+        }
         openOrder.push(panel);
         const active = ownerDocument.activeElement;
         if (
@@ -234,7 +235,8 @@ export function wireWorkbenchOverlays(
       open.find(([, element]) => element.contains(active)) ??
       open[open.length - 1]!;
     event.preventDefault();
-    dismiss(...target);
+    // The collapse effect returns focus stranded inside it.
+    target[0].collapsed.value = true;
   };
 
   // An outside press closes an open overlay when it both starts and ends
@@ -253,7 +255,7 @@ export function wireWorkbenchOverlays(
     const path = event.composedPath();
     for (const [panel, element] of openOverlays())
       if (candidates.includes(panel) && !path.includes(element))
-        dismiss(panel, element);
+        panel.collapsed.value = true;
   };
   ownerDocument.addEventListener('keydown', onKeydown);
   ownerDocument.addEventListener('pointerdown', onPointerdown, true);

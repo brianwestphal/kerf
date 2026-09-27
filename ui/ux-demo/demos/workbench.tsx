@@ -131,6 +131,39 @@ function collapsedEditor() {
   );
 }
 
+/**
+ * A resizable example rail: a Pane whose own header carries the control that
+ * hides it. The editor toolbar's toggles stay the always-visible way to show a
+ * rail, but an overlay rail covers part of the editor — at a narrow width the
+ * inspector covers its own toolbar toggle — so each rail can always be closed
+ * from inside itself.
+ */
+function railPane(
+  side: 'left' | 'right',
+  name: string,
+  content: { title: string; detail: string },
+  action: string,
+) {
+  const title = name[0]!.toUpperCase() + name.slice(1);
+  return (
+    <Pane
+      header={
+        <Toolbar
+          label={title}
+          leading={<ToolbarText text={title} />}
+          trailing={
+            <ToolbarControlGroup label={title} appearance="borderless" single>
+              {panelToggle(side, name, false, action)}
+            </ToolbarControlGroup>
+          }
+        />
+      }
+    >
+      {region(content.title, content.detail)}
+    </Pane>
+  );
+}
+
 function resizableEditor() {
   return (
     <Pane
@@ -205,7 +238,7 @@ export function WorkbenchDemo() {
       </CatalogExample>
       <CatalogExample
         label="Resizable panels"
-        note="Resizing is opt-in per panel, and wireWorkbench drives the separators. Resizable rails leave the work area its 320 px minimum: they stop growing there and shrink in proportion when the workbench narrows. Below 704 px of workbench width the rails present as overlays, which start hidden, do not resize, and close on Escape or a click outside."
+        note="Resizing is opt-in per panel, and wireWorkbench drives the separators. Resizable rails leave the work area its 320 px minimum: they stop growing there and shrink in proportion when the workbench narrows. Below 704 px of workbench width the rails present as overlays, which start hidden, do not resize, and close from their own header, on Escape, or on a click outside."
         align="none"
         viewport={{
           layout: 'grid',
@@ -220,7 +253,12 @@ export function WorkbenchDemo() {
           label="Resizable workbench"
           leftRail={{
             label: 'Navigator',
-            content: region('Navigator', '180–400 px wide'),
+            content: railPane(
+              'left',
+              'navigator',
+              { title: 'Files and symbols', detail: '180–400 px wide' },
+              'toggle-workbench-navigator',
+            ),
             collapsed: workbenchNavigatorCollapsed.value,
             size: workbenchNavigatorSize.value,
             resizable: { min: 180, max: 400 },
@@ -229,7 +267,12 @@ export function WorkbenchDemo() {
           main={resizableEditor()}
           rightRail={{
             label: 'Inspector',
-            content: region('Inspector', '160–360 px wide'),
+            content: railPane(
+              'right',
+              'inspector',
+              { title: 'Selection', detail: '160–360 px wide' },
+              'toggle-workbench-inspector',
+            ),
             collapsed: workbenchInspectorCollapsed.value,
             size: workbenchInspectorSize.value,
             resizable: { min: 160, max: 360 },

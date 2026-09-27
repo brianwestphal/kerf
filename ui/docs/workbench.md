@@ -206,9 +206,22 @@ presents as one, mirroring `wireSidebar`'s compact overlay:
   overlay panel closes it. The app's own toggle still works: its click closes
   the panel before the wiring looks, and the press that opens a panel never
   closes it.
-- **Focus:** when a panel closes with focus inside it, focus returns to the
+- **Focus:** when a panel closes with focus inside it — whatever closed it,
+  including the app's own control inside the panel — focus returns to the
   control that had it when the panel opened (typically its toggle), else to
   the first focusable control in the panel's `restoreControl`.
+
+An open overlay can cover the control that opened it: a narrow Workbench's
+right-rail overlay spans the full height at the end edge, over the trailing
+end of the work area's toolbar, where its toggle usually sits. Escape and an
+outside press still close it, but neither is a visible, pointer-reachable
+control. So give every panel that may present as an overlay its own close
+control, as a `CollapsiblePanel` puts its collapse toggle in its own header:
+render the panel content as a `Pane` whose header `Toolbar` holds the title
+and a `single`, borderless `ToolbarControlGroup` around one icon button
+carrying `collapsiblePanelToggleIcon(side, false)`. The work area's toggle
+stays the always-visible way to show the panel. The catalog's resizable
+example does this for both rails.
 
 Escape and outside-press dismissal apply to static `presentation: "overlay"`
 panels too; entering and leaving the collapsed state around a breakpoint is

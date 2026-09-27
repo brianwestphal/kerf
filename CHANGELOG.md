@@ -17,6 +17,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   containing block; an app that positions the container itself keeps its own
   `position`. As in `Workbench`, the corner owns the inset, so a
   `FloatingToolbar` hosting the control no longer doubles it.
+- **A `@kerfjs/ui` `Workbench` overlay rail can always be closed from inside
+  itself.** At a narrow width, the UX catalog's inspector overlay covered the
+  editor toolbar's "Hide inspector" toggle, leaving only Escape or an outside
+  press to close it. The catalog's resizable rails now carry their own close
+  control in their `Pane` header, and the Workbench guide recommends the same
+  for any panel that may present as an overlay. `wireWorkbench` now returns
+  focus stranded in a panel however the panel closed — including through the
+  app's own control inside it, and for inline panels — to the control that
+  opened it, else to its restore control; before, only an Escape, an outside
+  press, or a breakpoint collapse returned it.
 - **A `@kerfjs/ui` `Workbench` restore control stays inside its Workbench.**
   `restoreControl` was `position: fixed` to the viewport, so an embedded
   Workbench (the UX catalog's, for one) floated it over the page footer. It is

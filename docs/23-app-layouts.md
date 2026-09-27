@@ -314,7 +314,13 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
     an app toggle closes first. Focus stranded in a closing panel returns to
     the control focused when it opened, else to the panel's restore control
     (looked up again after the current batch), else it is blurred. Static
-    overlays get the dismissal but not the breakpoint collapse. Internal
+    overlays get the dismissal but not the breakpoint collapse. The focus
+    return runs for any close of a wired panel — including the app's own
+    close control inside it, and inline panels — because it is driven by the
+    `collapsed` signal rather than by the dismissal (KF-TRX0PW: at 390px the
+    catalog's inspector overlay covered its own editor-toolbar toggle; each
+    catalog rail now carries its own close control in its `Pane` header, and
+    closing from there must not strand focus in the hidden rail). Internal
     module `ui/src/workbench-overlays.ts`;
   - the wire matches only its own panels by Workbench `id`, so it never
     double-drives a `ResizableRegion` or another Workbench under the same root;

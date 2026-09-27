@@ -102,8 +102,11 @@ function studio({
   const rightMode = signal(rightPresentation);
   const toggle = (name: string, collapsed: boolean) =>
     `<button type="button" data-toggle="${name}">${collapsed ? 'Show' : 'Hide'} ${name}</button>`;
+  // Each panel carries its own close control, as a panel header would.
   const panelContent = (name: string) =>
-    raw(`<div><button type="button">${name} item</button></div>`);
+    raw(
+      `<div><button type="button" data-toggle="${name}">Close ${name}</button><button type="button">${name} item</button></div>`,
+    );
   const stopMount = mount(root, () =>
     shown.value
       ? Workbench({
@@ -295,6 +298,55 @@ describe('wireWorkbench transient overlays', () => {
     return Promise.resolve().then(() => {
       expect(app.leftRail().contains(document.activeElement)).toBe(false);
     });
+  });
+
+  it("returns focus when the app's own control inside a panel closes it", () => {
+    const app = studio();
+    narrow = true;
+    app.wire();
+
+    // An overlay opened from the toolbar and closed from its own header.
+    const showNav = app.button('Show nav');
+    showNav.focus();
+    showNav.click();
+    expect(app.left.value).toBe(false);
+    app.button('Close nav').focus();
+    app.button('Close nav').click();
+    expect(app.left.value).toBe(true);
+    expect(document.activeElement).toBe(showNav);
+
+    // The same holds inline: a collapsed track must not keep the focus.
+    resize(false);
+    app.left.value = true;
+    showNav.focus();
+    showNav.click();
+    expect(app.left.value).toBe(false);
+    app.button('Close nav').focus();
+    app.button('Close nav').click();
+    expect(app.left.value).toBe(true);
+    expect(document.activeElement).toBe(showNav);
+
+    // A close with focus elsewhere leaves the focus alone.
+    app.left.value = false;
+    app.button('Plain').focus();
+    app.left.value = true;
+    expect(document.activeElement?.textContent).toBe('Plain');
+  });
+
+  it('returns focus stranded in an open overlay when disposal collapses it', () => {
+    const app = studio();
+    app.left.value = true;
+    narrow = true;
+    const dispose = app.wire();
+    // The inline state was collapsed; the user opens the overlay from its
+    // toggle and moves into it.
+    const showNav = app.button('Show nav');
+    showNav.focus();
+    showNav.click();
+    app.button('nav item').focus();
+    dispose();
+    expect(app.left.value).toBe(true);
+    expect(document.activeElement).toBe(showNav);
   });
 
   it('closes the focused, else the most recent, overlay on Escape and returns focus', () => {

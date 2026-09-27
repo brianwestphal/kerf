@@ -921,7 +921,8 @@
           "Give the Workbench and each meaningful rail or drawer an accessible label.",
           "Keep collapse controls outside the disappearing region and move focus when a controlled rerender replaces a collapse control with its restore control.",
           "A resizable panel's separator is a focusable role=\"separator\" with its size in aria-valuenow and limits in aria-valuemin/aria-valuemax; arrow keys resize by 16px, Shift+arrow by 64px, and Home/End jump to the limits. It leaves the tab order while its panel is collapsed or not inline.",
-          "Given a panel's collapsed signal, wireWorkbench closes an open overlay panel on Escape or an outside press and returns focus stranded inside it to the control that opened it, else to its restore control."
+          "Given a panel's collapsed signal, wireWorkbench closes an open overlay panel on Escape or an outside press and, however the panel closed, returns focus stranded inside it to the control that opened it, else to its restore control.",
+          "An overlay panel can cover the toolbar toggle that opened it (a narrow right rail covers an editor toolbar's trailing toggle), so give every panel that may overlay its own close control in its header: a Pane header Toolbar with a single ToolbarControlGroup around the collapsiblePanelToggleIcon(side, false) button."
         ]
       },
       "cssValueProps": [],
