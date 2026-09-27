@@ -183,6 +183,11 @@ function isWithinBase(path: string, base: string): boolean {
  * immediately (so `route.value` is correct before first paint), installs a
  * `popstate` listener (+ `hashchange` in hash mode) and, unless disabled, a
  * single delegated link interceptor. See {@link RouterOptions} / {@link RouterHandle}.
+ *
+ * One router per document is the supported shape: a second router follows
+ * link clicks and `popstate`, but not another router's programmatic
+ * `navigate()` (pushState fires no popstate; there is no cross-router
+ * broadcasting).
  */
 export function createRouter(options: RouterOptions): RouterHandle {
   const {

@@ -536,6 +536,31 @@ describe('createRouter() — transitions (KF-XW1RE9)', () => {
     }
   });
 
+  it('two routers: a programmatic navigate() on one is invisible to the other until the next popstate / click (documented limitation)', () => {
+    // KF-ND072Q (one router per document is the supported shape): a second
+    // router follows link clicks and history traversal, but NOT another
+    // router's programmatic navigate() — pushState fires no popstate and the
+    // router deliberately does no cross-router broadcasting. This pins the
+    // documented limitation so a behavior change is deliberate.
+    goto('/');
+    const first = createRouter({ routes });
+    const second = createRouter({ routes });
+    try {
+      first.navigate('/users/3');
+      expect(first.route.value.path).toBe('/users/3');
+      expect(location.pathname).toBe('/users/3');
+      expect(second.route.value.path).toBe('/'); // stale: no broadcast
+
+      // The next history traversal (popstate) brings it back in step.
+      globalThis.dispatchEvent(new Event('popstate'));
+      expect(second.route.value.path).toBe('/users/3');
+      expect(second.route.value.params).toEqual({ id: '3' });
+    } finally {
+      first.dispose();
+      second.dispose();
+    }
+  });
+
   it('a click an app handler already prevented does not navigate (the re-sync is a no-op)', () => {
     goto('/');
     router = createRouter({ routes });

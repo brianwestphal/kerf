@@ -1035,6 +1035,8 @@ In history mode, `base` is stripped only on an exact match or at a following `/`
 
 **Link interception** intercepts only plain in-app navigations — left-click, no modifier keys, not already `defaultPrevented` (an already-handled click only re-syncs the route from the URL, so a second router on the page follows the first), no `download`, no `target` other than `_self` (a `target="_self"` link is still intercepted), not `rel="external"` / `data-router-ignore`, same-origin (under `base` in history mode; an in-app `#/…` link in hash mode). Everything else falls through to the browser.
 
+**One router per document** is the supported shape. A second router follows link clicks and history traversal (`popstate`), but **not** another router's programmatic `navigate()` — `pushState` / `replaceState` fire no `popstate`, and routers do no cross-router broadcasting — so it stays on the old route until the next `popstate` or link click. To route two views, share one `createRouter` handle.
+
 ### Router types
 
 Named and wildcard parameters fail closed to no-match when URL decoding encounters a malformed percent escape; router creation and navigation do not throw `URIError`, and matching continues to the next route.

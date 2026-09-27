@@ -91,6 +91,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   with `pushState`, which fires no `popstate`, so the second router ignored
   the already-handled click and kept the old route. An already-handled click
   now re-syncs the route from the URL; when nothing navigated, it is a no-op.
+  One router per document remains the supported shape: a second router does
+  not follow another router's programmatic `navigate()` (no `popstate` fires
+  and routers do not broadcast to each other) until the next `popstate` or
+  link click. This is now documented and pinned by a test.
 - `kerfjs/scope`: a disposed `Scope` handle no longer leaks registrations.
   Previously `add` / `mount` / `effect` / `delegate` on a handle after its
   `dispose()` (or from a disposer while `dispose()` ran) pushed into a list

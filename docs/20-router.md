@@ -156,9 +156,17 @@ Everything else falls through to the browser untouched. Opt a single link out wi
 never navigated, but the router re-reads the location (a no-op when nothing
 moved). That keeps a second router on the same document in step: the first
 router's interceptor navigates with `pushState` — which fires no `popstate` —
-and the second follows the URL instead of diverging (KF-XW1RE9). A
-programmatic `navigate()` on one router is still invisible to another until
-the next `popstate` / click, so prefer one router per document.
+and the second follows the URL instead of diverging (KF-XW1RE9).
+
+**One router per document is the supported shape.** A second router follows
+link clicks (above) and history traversal (`popstate` — Back / Forward / a
+`back()` / `forward()` call), but **not** another router's programmatic
+`navigate()`: that is a `pushState` / `replaceState`, which fires no
+`popstate`, and the router deliberately does no cross-router broadcasting
+(postcard scope, §20.2). The second router stays on the old route until the
+next `popstate` or link click (KF-ND072Q, pinned by a unit test so a change in
+this behavior is deliberate). If two views must route, drive both from one
+`createRouter` handle.
 
 ## 20.6 Composing the excluded features
 
