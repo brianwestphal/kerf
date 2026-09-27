@@ -65,7 +65,11 @@ export interface WorkbenchPanel {
    * height; the bottom drawer overlays the bottom of the work-area column.
    */
   responsiveOverlayAt?: WorkbenchResponsiveOverlayAt;
-  /** Control shown in a safe-area-aware viewport corner while collapsed. */
+  /**
+   * Control shown while collapsed, in a safe-area-aware corner of the
+   * Workbench (not the viewport); the bottom drawer's sits in the work-area
+   * column.
+   */
   restoreControl?: SafeHtml;
   restorePosition?: ResizableRegionRestorePosition;
 }
