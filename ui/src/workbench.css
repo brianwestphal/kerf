@@ -259,7 +259,7 @@
   z-index: var(--kui-workbench-overlay-z, 41);
   max-width: var(--kui-workbench-overlay-max-width, 85vw);
   max-height: var(--kui-workbench-overlay-max-height, 85vh);
-  box-shadow: var(--kui-shadow-l, 0 8px 32px rgb(0 0 0 / 24%));
+  box-shadow: var(--kui-shadow-l);
 }
 
 .kui-workbench__rail[data-presentation="overlay"] {

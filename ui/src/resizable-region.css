@@ -152,7 +152,7 @@
   z-index: var(--kui-resizable-region-overlay-z, 41);
   max-width: var(--kui-resizable-region-overlay-max-width, 85vw);
   max-height: var(--kui-resizable-region-overlay-max-height, 85vh);
-  box-shadow: var(--kui-shadow-l, 0 8px 32px rgb(0 0 0 / 24%));
+  box-shadow: var(--kui-shadow-l);
 }
 .kui-resizable-region[data-presentation="overlay"][data-axis="horizontal"] {
   inset-block: 0;

@@ -42,6 +42,9 @@
       var(--wa-color-neutral-fill-normal) 25%,
       transparent
     );
+    /* Kept although kerf overrides --wa-shadow-s/-m/-l below: Web Awesome's
+       theme stylesheets build their shadows from this token, so an app that
+       layers one of them keeps kerf's scheme-aware shadow color. */
     --wa-color-shadow: light-dark(rgb(0 0 0 / 0.14), rgb(0 0 0 / 0.5));
     --wa-color-focus: light-dark(#007aff, #64d2ff);
     /* Kerf-owned loud fills and on-loud text: every on-loud/fill-loud pair

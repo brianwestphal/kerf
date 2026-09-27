@@ -232,7 +232,7 @@
 .kui-collapsible-panel[data-presentation="overlay"] {
   position: fixed;
   z-index: var(--kui-collapsible-panel-overlay-z, 40);
-  box-shadow: var(--kui-shadow-l, 0 8px 32px rgb(0 0 0 / 24%));
+  box-shadow: var(--kui-shadow-l);
 }
 
 [data-collapsible-overlay="true"] .kui-collapsible-panel--left,
