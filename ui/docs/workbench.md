@@ -94,6 +94,7 @@ const consoleSize = signal(200);
   id="studio"
   label="Studio"
   main={<Editor />}
+  mainMinSize={320} // the default: the editor never drops below 320px
   leftRail={{
     content: <Navigator />,
     label: "Navigator",
@@ -130,6 +131,14 @@ const stop = wireWorkbench(root, {
   and limits.
 - **Limits:** every size — dragged, typed, restored from storage, or passed
   by the app — is clamped to `min`/`max` when rendered.
+- **Work-area minimum:** beside a resizable rail the work area keeps at least
+  `mainMinSize` px (a `Workbench` prop, default 320; `0` turns it off). A
+  dragged or keyed rail stops growing where the work area would drop below it,
+  so two wide rails cannot crowd out the editor; `aria-valuemax` reports that
+  reachable maximum. When the Workbench itself narrows, resizable rails shrink
+  in proportion to their sizes (their content follows the shown width) while
+  the work area holds its minimum; a squeezed rail can still be made smaller,
+  never larger, and never below its own `min`. The drawer is unaffected.
 - **Collapse:** `collapsed` never changes a size. A collapsed panel keeps its
   size (its content slides out at that width), its separator leaves the tab
   order, and expanding it returns it at the size it had.

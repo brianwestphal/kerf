@@ -168,7 +168,7 @@ test.describe('resizable Workbench panels', () => {
     ).toHaveCount(0);
     await expect(
       page.locator('#catalog-workbench-resizable [data-kui-resize-handle]'),
-    ).toHaveCount(2);
+    ).toHaveCount(3);
   });
 
   test('keyboard resizing steps, accelerates, and clamps to the limits', async ({
@@ -309,6 +309,72 @@ test.describe('resizable Workbench panels', () => {
     await expect(
       page.locator('#catalog-workbench-resizable [data-workbench-drawer]'),
     ).toHaveCSS('height', '176px');
+  });
+
+  test('rails stop growing at the work-area minimum and shrink in proportion', async ({
+    page,
+  }) => {
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const left = workbench.locator('[data-workbench-rail="left"]');
+    const right = workbench.locator('[data-workbench-rail="right"]');
+    const center = workbench.locator('.kui-workbench__center');
+    const width = async (locator: typeof left) =>
+      (await locator.boundingBox())!.width;
+    await workbench.scrollIntoViewIfNeeded();
+    await workbench.getByRole('button', { name: 'Show inspector' }).click();
+    await expect(right).toHaveAttribute('data-collapsed', 'false');
+    await expect(right).toHaveCSS('width', '160px');
+
+    // End asks for the 400 px maximum; the navigator stops where the editor
+    // keeps its 320 px default minimum beside the 160 px inspector.
+    const room = (await width(workbench)) - 320 - 160;
+    expect(room).toBeLessThan(400);
+    const handle = workbench.getByRole('separator', {
+      name: 'Resize Navigator',
+    });
+    await handle.focus();
+    await page.keyboard.press('End');
+    await expect(handle).toHaveAttribute(
+      'aria-valuenow',
+      String(Math.floor(room)),
+    );
+    expect(Math.abs((await width(center)) - 320)).toBeLessThanOrEqual(1);
+    await expect(handle).toHaveAttribute(
+      'aria-valuemax',
+      String(Math.floor(room)),
+    );
+
+    // A drag past the minimum stops there too.
+    const box = (await handle.boundingBox())!;
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(box.x + 300, box.y + box.height / 2, { steps: 5 });
+    await page.mouse.up();
+    expect(
+      Math.abs((await width(left)) - Math.floor(room)),
+    ).toBeLessThanOrEqual(1);
+    expect(Math.abs((await width(center)) - 320)).toBeLessThanOrEqual(1);
+
+    // A narrower workbench squeezes the rails in proportion, never the editor.
+    const ratio = (await width(left)) / (await width(right));
+    await workbench.evaluate((element) => {
+      element.style.width = '720px';
+    });
+    await expect.poll(async () => Math.round(await width(center))).toBe(320);
+    expect((await width(left)) / (await width(right))).toBeCloseTo(ratio, 1);
+    expect((await width(left)) + (await width(right))).toBeCloseTo(400, 0);
+    // The navigator's content follows its shown width instead of clipping.
+    const content = left.locator('.kui-workbench__panel-content');
+    expect(
+      Math.abs((await width(content)) - (await width(left))),
+    ).toBeLessThanOrEqual(1);
+
+    await workbench.evaluate((element) => {
+      element.style.removeProperty('width');
+    });
+    await expect
+      .poll(async () => Math.round(await width(left)))
+      .toBe(Math.floor(room));
   });
 
   test('compact viewports present no resizable shell', async ({ page }) => {

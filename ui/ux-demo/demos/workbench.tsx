@@ -1,6 +1,9 @@
+import '@kerfjs/ui/lucide-icon.css';
 import '@kerfjs/ui/workbench.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { collapsiblePanelToggleIcon } from '@kerfjs/ui/collapsible-panel';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
@@ -20,12 +23,18 @@ const region = (title: string, detail: string) => (
 export const RESIZABLE_WORKBENCH_ID = 'catalog-workbench-resizable';
 /** App-owned sizes for the resizable example; `wireWorkbench` commits to them. */
 export const workbenchNavigatorSize = signal(240);
+export const workbenchInspectorSize = signal(160);
 export const workbenchConsoleSize = signal(160);
 const navigatorCollapsed = signal(false);
+const inspectorCollapsed = signal(true);
 
-/** Start each visit expanded; the remembered sizes are the wiring's to restore. */
+/**
+ * Start each visit with the navigator shown and the inspector hidden; the
+ * remembered sizes are the wiring's to restore.
+ */
 export function resetWorkbenchDemo(): void {
   navigatorCollapsed.value = false;
+  inspectorCollapsed.value = true;
 }
 
 export function toggleWorkbenchNavigator(): boolean {
@@ -33,8 +42,32 @@ export function toggleWorkbenchNavigator(): boolean {
   return navigatorCollapsed.value;
 }
 
+export function toggleWorkbenchInspector(): boolean {
+  inspectorCollapsed.value = !inspectorCollapsed.value;
+  return inspectorCollapsed.value;
+}
+
+/** A main-toolbar toggle carrying the standard per-side panel glyph. */
+function panelToggle(
+  side: 'left' | 'right',
+  name: string,
+  collapsed: boolean,
+  action: string,
+) {
+  const glyph = collapsiblePanelToggleIcon(side, collapsed);
+  return (
+    <button
+      type="button"
+      data-action={action}
+      aria-expanded={String(!collapsed)}
+      aria-label={`${collapsed ? 'Show' : 'Hide'} ${name}`}
+    >
+      <LucideIcon icon={glyph.icon} name={glyph.name} />
+    </button>
+  );
+}
+
 function resizableEditor() {
-  const collapsed = navigatorCollapsed.value;
   return (
     <Pane
       header={
@@ -42,22 +75,27 @@ function resizableEditor() {
           label="Editor"
           leading={<ToolbarText text="Editor" size="xlarge" />}
           trailing={
-            <ToolbarControlGroup appearance="borderless" single>
-              <button
-                type="button"
-                data-action="toggle-workbench-navigator"
-                aria-pressed={String(!collapsed)}
-              >
-                {collapsed ? 'Show navigator' : 'Hide navigator'}
-              </button>
+            <ToolbarControlGroup label="Panels" appearance="borderless">
+              {panelToggle(
+                'left',
+                'navigator',
+                navigatorCollapsed.value,
+                'toggle-workbench-navigator',
+              )}
+              {panelToggle(
+                'right',
+                'inspector',
+                inspectorCollapsed.value,
+                'toggle-workbench-inspector',
+              )}
             </ToolbarControlGroup>
           }
         />
       }
     >
       {region(
-        'Resize the navigator and console',
-        'Drag a separator, or focus it and use the arrow keys, Home, or End. A hidden navigator returns at its last width.',
+        'Resize the panels',
+        'Drag a separator, or focus it and use the arrow keys, Home, or End. The editor keeps at least 320 px, so a rail stops growing there; a hidden panel returns at its last size.',
       )}
     </Pane>
   );
@@ -103,7 +141,7 @@ export function WorkbenchDemo() {
       </CatalogExample>
       <CatalogExample
         label="Resizable panels"
-        note="Resizing is opt-in per panel. The navigator and console opt in, and wireWorkbench drives their separators; panels without resizable keep a fixed size."
+        note="Resizing is opt-in per panel, and wireWorkbench drives the separators. Resizable rails leave the work area its 320 px minimum: they stop growing there and shrink in proportion when the workbench narrows."
         align="none"
         compactFallback="Resizable rails are a desktop affordance. Compact layouts present rails as overlay drawers, which do not resize."
         viewport={{
@@ -126,6 +164,13 @@ export function WorkbenchDemo() {
             resizable: { min: 180, max: 400 },
           }}
           main={resizableEditor()}
+          rightRail={{
+            label: 'Inspector',
+            content: region('Inspector', '160–360 px wide'),
+            collapsed: inspectorCollapsed.value,
+            size: workbenchInspectorSize.value,
+            resizable: { min: 160, max: 360 },
+          }}
           bottomDrawer={{
             label: 'Console',
             content: region('Console', '120–320 px tall'),

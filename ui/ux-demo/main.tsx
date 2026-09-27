@@ -109,8 +109,10 @@ import {
 import {
   resetWorkbenchDemo,
   RESIZABLE_WORKBENCH_ID,
+  toggleWorkbenchInspector,
   toggleWorkbenchNavigator,
   workbenchConsoleSize,
+  workbenchInspectorSize,
   workbenchNavigatorSize,
 } from './demos/workbench.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
@@ -856,6 +858,11 @@ const stopActions = delegateActions(app, 'click', {
       ? 'Navigator hidden'
       : 'Navigator shown';
   },
+  'toggle-workbench-inspector': () => {
+    actionLog.value = toggleWorkbenchInspector()
+      ? 'Inspector hidden'
+      : 'Inspector shown';
+  },
   'select-roomy-split-view-message': (_event, element) => {
     const messageId = (element as HTMLElement).dataset.itemId ?? '';
     selectRoomySplitViewMessage(messageId);
@@ -996,13 +1003,22 @@ const stopWorkbenchEffect = effect(() => {
         size: workbenchNavigatorSize,
         storageKey: 'kerf-ui-demo.workbench.navigator',
       },
+      rightRail: {
+        size: workbenchInspectorSize,
+        storageKey: 'kerf-ui-demo.workbench.inspector',
+      },
       bottomDrawer: {
         size: workbenchConsoleSize,
         storageKey: 'kerf-ui-demo.workbench.console',
       },
     },
     onResize: ({ panel, size }) => {
-      actionLog.value = `${panel === 'leftRail' ? 'Navigator' : 'Console'} resized to ${size}px`;
+      const name = {
+        leftRail: 'Navigator',
+        rightRail: 'Inspector',
+        bottomDrawer: 'Console',
+      }[panel];
+      actionLog.value = `${name} resized to ${size}px`;
     },
   });
 });

@@ -894,7 +894,7 @@
             "name": "data-handle-inset",
             "on": "kui-workbench__rail",
             "helper": "wireWorkbench",
-            "meaning": "Written by the shared resize wiring only when a parent clamps a panel's track below its size. Workbench panel tracks never shrink, so it carries no Workbench styling."
+            "meaning": "Written by the shared resize wiring when the work-area minimum or a parent clamp holds a rail's maximum near its size. It carries no Workbench styling; the Workbench handle stays at the rail's inner edge."
           },
           {
             "name": "data-resizing",

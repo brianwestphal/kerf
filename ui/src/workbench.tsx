@@ -13,6 +13,7 @@ import {
 import { ResizeGrip } from './resize-grip.js';
 import type { KerfUiContent } from './semantic-content.js';
 import {
+  WORKBENCH_MAIN_MIN_SIZE,
   WORKBENCH_RESIZE_DEFAULTS,
   type WorkbenchPanelKey,
   workbenchRegionId,
@@ -63,6 +64,13 @@ export interface WorkbenchProps {
   leftRail?: WorkbenchPanel;
   rightRail?: WorkbenchPanel;
   bottomDrawer?: WorkbenchPanel;
+  /**
+   * Minimum width, in px, the work area keeps while a rail is `resizable`
+   * (default 320; `0` turns it off). Resizing a rail stops where the work area
+   * would drop below it, and resizable rails shrink proportionally when the
+   * Workbench gets narrower. Workbenches without a resizable rail ignore it.
+   */
+  mainMinSize?: number;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -284,14 +292,27 @@ export function Workbench({
   leftRail,
   rightRail,
   bottomDrawer,
+  mainMinSize = WORKBENCH_MAIN_MIN_SIZE,
   className = '',
   slot,
 }: WorkbenchProps) {
+  // The work-area minimum only applies beside a resizable rail; a fixed rail
+  // keeps its size, so the shell renders exactly as before without one.
+  const mainMin =
+    leftRail?.resizable || rightRail?.resizable
+      ? Math.max(0, Math.round(mainMinSize))
+      : undefined;
   return (
     <section
       class={`kui-workbench ${className}`.trim()}
       id={id}
       data-component="workbench"
+      data-main-min-size={mainMin === undefined ? undefined : String(mainMin)}
+      style={
+        mainMin === undefined
+          ? undefined
+          : `--_kui-workbench-main-min-width:${mainMin}px`
+      }
       aria-label={label}
       slot={slot}
     >

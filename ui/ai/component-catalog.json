@@ -891,6 +891,7 @@
         "all panels",
         "independently collapsed panels",
         "opt-in drag and keyboard resizable panels with min/max limits",
+        "resizable rails that leave the work area a minimum width and shrink in proportion when the Workbench narrows",
         "hidden separator",
         "slide, fade-slide, or instant content",
         "clipped, scrolling, or popup-visible content",
@@ -927,7 +928,7 @@
             {
               "name": "data-handle-inset",
               "on": "kui-workbench__rail",
-              "meaning": "Written by the shared resize wiring only when a parent clamps a panel's track below its size. Workbench panel tracks never shrink, so it carries no Workbench styling."
+              "meaning": "Written by the shared resize wiring when the work-area minimum or a parent clamp holds a rail's maximum near its size. It carries no Workbench styling; the Workbench handle stays at the rail's inner edge."
             },
             {
               "name": "data-resizing",

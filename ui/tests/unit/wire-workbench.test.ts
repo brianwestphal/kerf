@@ -29,7 +29,7 @@ function memoryStorage(initial: Record<string, string> = {}) {
 }
 
 /** A mounted, app-controlled resizable Workbench. */
-function studio() {
+function studio({ mainMinSize }: { mainMinSize?: number } = {}) {
   const root = document.createElement('div');
   document.body.append(root);
   roots.push(root);
@@ -37,11 +37,13 @@ function studio() {
   const drawerSize = signal(180);
   const leftCollapsed = signal(false);
   const presentation = signal<'inline' | 'overlay'>('inline');
+  const rightPresentation = signal<'inline' | 'overlay'>('inline');
   const stopMount = mount(root, () =>
     Workbench({
       id: 'studio',
       label: 'Studio',
       main: raw('<div>editor</div>'),
+      mainMinSize,
       leftRail: {
         content: raw('<div>nav</div>'),
         label: 'Navigator',
@@ -50,7 +52,11 @@ function studio() {
         presentation: presentation.value,
         resizable: { min: 200, max: 400 },
       },
-      rightRail: { content: raw('<div>inspector</div>'), size: 240 },
+      rightRail: {
+        content: raw('<div>inspector</div>'),
+        size: 240,
+        presentation: rightPresentation.value,
+      },
       bottomDrawer: {
         content: raw('<div>console</div>'),
         label: 'Console',
@@ -68,6 +74,7 @@ function studio() {
     drawerSize,
     leftCollapsed,
     presentation,
+    rightPresentation,
     left: () => handle('[data-workbench-rail="left"]'),
     drawer: () => handle('[data-workbench-drawer]'),
   };
@@ -367,5 +374,163 @@ describe('wireWorkbench', () => {
         Object.defineProperty(globalThis, 'localStorage', descriptor);
       else delete (globalThis as { localStorage?: Storage }).localStorage;
     }
+  });
+
+  describe('work-area minimum', () => {
+    /**
+     * A layout model for happy-dom, which has none: the Workbench is `width`
+     * px wide, an expanded rail shows its size (a fixed rail its rail-width
+     * token) plus nothing for safe areas, and an overlay rail is out of flow.
+     */
+    function layout(width: number, { contentBoxBorder = 0 } = {}) {
+      vi.restoreAllMocks();
+      const size = (element: HTMLElement) =>
+        element.dataset.collapsed === 'true'
+          ? 0
+          : Number.parseFloat(
+              element.style.getPropertyValue('--kui-resizable-region-size') ||
+                element.style.getPropertyValue('--kui-workbench-rail-width'),
+            );
+      vi.spyOn(
+        HTMLElement.prototype,
+        'getBoundingClientRect',
+      ).mockImplementation(function (this: HTMLElement) {
+        const w = this.matches('[data-component="workbench"]')
+          ? width
+          : this.matches('.kui-workbench__rail')
+            ? size(this)
+            : 0;
+        return new DOMRect(0, 0, w, 100);
+      });
+      const real = globalThis.getComputedStyle;
+      vi.spyOn(globalThis, 'getComputedStyle').mockImplementation(
+        (element: Element) => {
+          const style = real(element);
+          if (
+            !(element instanceof HTMLElement) ||
+            !element.matches('.kui-workbench__rail')
+          )
+            return style;
+          return {
+            boxSizing: contentBoxBorder ? 'content-box' : 'border-box',
+            flexBasis: `${size(element)}px`,
+            position:
+              element.dataset.presentation === 'overlay'
+                ? 'absolute'
+                : 'static',
+            borderInlineStartWidth: '0px',
+            borderInlineEndWidth: element.matches('.kui-workbench__rail--left')
+              ? `${contentBoxBorder}px`
+              : '',
+          } as CSSStyleDeclaration;
+        },
+      );
+    }
+
+    afterEach(() => vi.restoreAllMocks());
+
+    it('stops a rail where the work area would drop below its minimum', () => {
+      layout(840);
+      const app = studio();
+      disposers.push(
+        wireWorkbench(app.root, {
+          id: 'studio',
+          panels: {
+            leftRail: { size: app.leftSize },
+            bottomDrawer: { size: app.drawerSize },
+          },
+          storage: memoryStorage(),
+        }),
+      );
+      // 840 − 320 (work area) − 240 (the fixed right rail) leaves 280.
+      key(app.left(), 'End');
+      expect(app.leftSize.value).toBe(280);
+      expect(app.left().getAttribute('aria-valuemax')).toBe('280');
+      key(app.left(), 'ArrowRight');
+      expect(app.leftSize.value).toBe(280);
+      key(app.left(), 'ArrowLeft', true);
+      expect(app.leftSize.value).toBe(216);
+
+      // A rail out of flow leaves its room to the others.
+      app.rightPresentation.value = 'overlay';
+      key(app.left(), 'End');
+      expect(app.leftSize.value).toBe(400);
+
+      // The vertical drawer never gives way to the work area's width.
+      key(app.drawer(), 'End');
+      expect(app.drawerSize.value).toBe(480);
+    });
+
+    it('holds a squeezed rail at its shown size and never below its minimum', () => {
+      layout(700);
+      const app = studio();
+      disposers.push(
+        wireWorkbench(app.root, {
+          id: 'studio',
+          panels: { leftRail: { size: app.leftSize } },
+          storage: memoryStorage(),
+        }),
+      );
+      // 700 − 320 − 240 leaves 140, below the 200 px minimum.
+      key(app.left(), 'ArrowRight');
+      expect(app.leftSize.value).toBe(200);
+      key(app.left(), 'End');
+      expect(app.leftSize.value).toBe(200);
+    });
+
+    it('honors a custom minimum, 0 to turn it off, and a Workbench without layout', () => {
+      layout(840);
+      const custom = studio({ mainMinSize: 360 });
+      disposers.push(
+        wireWorkbench(custom.root, {
+          id: 'studio',
+          panels: { leftRail: { size: custom.leftSize } },
+          storage: memoryStorage(),
+        }),
+      );
+      key(custom.left(), 'End');
+      expect(custom.leftSize.value).toBe(240);
+      disposers.splice(0).forEach((dispose) => dispose());
+      custom.root.remove();
+
+      const off = studio({ mainMinSize: 0 });
+      disposers.push(
+        wireWorkbench(off.root, {
+          id: 'studio',
+          panels: { leftRail: { size: off.leftSize } },
+          storage: memoryStorage(),
+        }),
+      );
+      key(off.left(), 'End');
+      expect(off.leftSize.value).toBe(400);
+      disposers.splice(0).forEach((dispose) => dispose());
+      off.root.remove();
+
+      layout(0);
+      const unlaid = studio();
+      disposers.push(
+        wireWorkbench(unlaid.root, {
+          id: 'studio',
+          panels: { leftRail: { size: unlaid.leftSize } },
+          storage: memoryStorage(),
+        }),
+      );
+      key(unlaid.left(), 'End');
+      expect(unlaid.leftSize.value).toBe(400);
+    });
+
+    it('counts a content-box rail border as part of its track', () => {
+      layout(840, { contentBoxBorder: 1 });
+      const app = studio();
+      disposers.push(
+        wireWorkbench(app.root, {
+          id: 'studio',
+          panels: { leftRail: { size: app.leftSize } },
+          storage: memoryStorage(),
+        }),
+      );
+      key(app.left(), 'End');
+      expect(app.leftSize.value).toBe(279);
+    });
   });
 });

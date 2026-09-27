@@ -33,6 +33,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `tabindex="0"` when it opens and again before each Tab keypress, the same
   way its focus trap already did. Authored tabindexes, disabled controls, and
   surfaces outside a slot are left alone.
+- `@kerfjs/ui` `Workbench` keeps a minimum work area beside resizable rails.
+  Two rails dragged near their 480px maximum on a ~1024px Workbench used to
+  leave the editor a sliver; now the work area keeps at least `mainMinSize`
+  px (a new `Workbench` prop, default 320, `0` turns it off). `wireWorkbench`
+  stops drag and keyboard resizing where the work area would drop below it
+  (and reports that reachable maximum in `aria-valuemax`), and when the
+  Workbench narrows, resizable rails shrink in proportion to their sizes, with
+  their content following the shown width, instead of squeezing the work
+  area. Workbenches without a resizable rail render exactly as before. The UX
+  catalog's resizable example adds a resizable inspector to show it.
 - `@kerfjs/ui`'s static analyzer (`kerf-ui-analyze`, and the analyzer stage of
   `kerf-ui-doctor`) reports a new review finding, `KUI-L018`, when a
   stylesheet overrides a loud tone fill (`--wa-color-{tone}-fill-loud` for

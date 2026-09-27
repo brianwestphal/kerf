@@ -309,4 +309,76 @@ describe('Workbench', () => {
       expect(handle.getAttribute('aria-hidden')).toBe('true');
     }
   });
+
+  it('keeps a minimum work-area width only beside a resizable rail', () => {
+    const root = (props: Partial<Parameters<typeof Workbench>[0]>) => {
+      const host = document.createElement('div');
+      host.innerHTML = String(
+        Workbench({ id: 'wb', label: 'Studio', main, ...props }),
+      );
+      return host.querySelector<HTMLElement>('[data-component="workbench"]')!;
+    };
+
+    const byDefault = root({
+      leftRail: { content: panel('nav'), resizable: true },
+    });
+    expect(byDefault.dataset.mainMinSize).toBe('320');
+    expect(
+      byDefault.style.getPropertyValue('--_kui-workbench-main-min-width'),
+    ).toBe('320px');
+
+    const custom = root({
+      rightRail: { content: panel('inspector'), resizable: { max: 400 } },
+      mainMinSize: 400.4,
+    });
+    expect(custom.dataset.mainMinSize).toBe('400');
+    expect(
+      root({
+        leftRail: { content: panel('nav'), resizable: true },
+        mainMinSize: -5,
+      }).dataset.mainMinSize,
+    ).toBe('0');
+
+    // Fixed rails and a resizable drawer keep the shell exactly as before.
+    for (const fixed of [
+      root({
+        leftRail: { content: panel('nav'), size: 300 },
+        mainMinSize: 500,
+      }),
+      root({ bottomDrawer: { content: panel('console'), resizable: true } }),
+    ]) {
+      expect(fixed.hasAttribute('data-main-min-size')).toBe(false);
+      expect(fixed.hasAttribute('style')).toBe(false);
+    }
+  });
+
+  it('lets resizable inline rails shrink in proportion around the work-area minimum', async () => {
+    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const rule = (selector: string) => {
+      const found = css.nodes.find(
+        (node) =>
+          node.type === 'rule' &&
+          node.selector.replace(/\s+/g, ' ') === selector,
+      );
+      if (!found || found.type !== 'rule')
+        throw new Error(`Missing ${selector} rule`);
+      return Object.fromEntries(
+        found.nodes
+          .filter((node) => node.type === 'decl')
+          .map((node) => [node.prop, node.value]),
+      );
+    };
+    expect(
+      rule('.kui-workbench[data-main-min-size] > .kui-workbench__center'),
+    ).toEqual({
+      'min-width': 'min(var(--_kui-workbench-main-min-width), 100%)',
+    });
+    const expanded =
+      '.kui-workbench__rail[data-resizable="true"][data-presentation="inline"]:not( [data-collapsed="true"] )';
+    expect(rule(expanded)).toEqual({ 'flex-shrink': '1' });
+    expect(rule(`${expanded} > .kui-workbench__panel-content`)).toEqual({
+      width: '100%',
+    });
+  });
 });

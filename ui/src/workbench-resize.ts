@@ -23,3 +23,10 @@ export const WORKBENCH_RESIZE_DEFAULTS: Record<
   rightRail: { size: 280, min: 180, max: 480 },
   bottomDrawer: { size: 220, min: 120, max: 480 },
 };
+
+/**
+ * Default minimum width (px) a Workbench keeps for its work area while a rail
+ * is resizable: rails stop growing there and shrink proportionally when the
+ * container narrows.
+ */
+export const WORKBENCH_MAIN_MIN_SIZE = 320;

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 287500,
-  "measuredLargestJavaScriptGzip": 138564,
-  "measuredTotalJavaScriptGzip": 287438,
+  "totalJavaScriptGzip": 288000,
+  "measuredLargestJavaScriptGzip": 139079,
+  "measuredTotalJavaScriptGzip": 287950,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -563,6 +563,22 @@
         "measuredTotalJavaScriptGzip": 287438,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 287500
+      }
+    },
+    {
+      "at": "2026-09-27T10:50:45.302Z",
+      "reason": "Workbench keeps a minimum work area beside resizable rails (main-room resize limit), and the catalog's resizable example adds a resizable inspector with standard panel-toggle icons",
+      "old": {
+        "measuredLargestJavaScriptGzip": 138564,
+        "measuredTotalJavaScriptGzip": 287438,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 287500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 139079,
+        "measuredTotalJavaScriptGzip": 287950,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 288000
       }
     }
   ]

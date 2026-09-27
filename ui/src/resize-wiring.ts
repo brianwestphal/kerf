@@ -35,6 +35,16 @@ interface RegionState {
   size: number;
 }
 
+/**
+ * A composition-specific bound on a region's size, applied after the parent
+ * clamp: given the region and its limits, the largest size it may take. A
+ * `Workbench` rail uses it to leave the work area its minimum width.
+ */
+export type ResizeLimit = (
+  region: HTMLElement,
+  limits: { min: number; max: number },
+) => number;
+
 const HANDLE_SELECTOR = '[data-kui-resize-handle]';
 const INSET_ATTRIBUTE = 'data-handle-inset';
 /** Attributes a re-render can write back over the reported state. */
@@ -133,7 +143,8 @@ function applySize(state: RegionState, size: number) {
  * its track from `--kui-resizable-region-size`, and owns its separator handle
  * as a direct child. `ResizableRegion` renders that contract, and so does a
  * resizable `Workbench` panel; each public wire passes the selector for the
- * regions it owns, so two wires never drive the same handle.
+ * regions it owns, so two wires never drive the same handle. An optional
+ * `limit` tightens each region's maximum for its composition.
  */
 export function wireResizeHandles(
   root: HTMLElement,
@@ -144,6 +155,7 @@ export function wireResizeHandles(
     onCommit,
   }: WireResizableRegionsOptions,
   regionSelector: string,
+  limit?: ResizeLimit,
 ) {
   const REGION_SELECTOR = regionSelector;
   let stopPointer: (() => void) | undefined;
@@ -186,7 +198,11 @@ export function wireResizeHandles(
       !Number.isFinite(size)
     )
       return undefined;
-    const max = visibleMax(region, axis, min, declaredMax);
+    const visible = visibleMax(region, axis, min, declaredMax);
+    // A composition bound never takes a region below its own minimum.
+    const max = limit
+      ? Math.max(min, Math.min(visible, limit(region, { min, max: visible })))
+      : visible;
     return {
       region,
       handle,

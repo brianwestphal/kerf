@@ -267,6 +267,28 @@
   --kui-workbench-drawer-height: var(--kui-resizable-region-size);
 }
 
+/* The work area keeps a minimum width beside resizable rails (the Workbench's
+   `mainMinSize`, never wider than the Workbench itself). Resizable inline
+   rails give way instead: when the container narrows they shrink in
+   proportion to their sizes, and their content follows the shown width. The
+   wiring stops a resize where the work area would drop below the minimum. */
+.kui-workbench[data-main-min-size] > .kui-workbench__center {
+  min-width: min(var(--_kui-workbench-main-min-width), 100%);
+}
+
+.kui-workbench__rail[data-resizable="true"][data-presentation="inline"]:not(
+    [data-collapsed="true"]
+  ) {
+  flex-shrink: 1;
+}
+
+.kui-workbench__rail[data-resizable="true"][data-presentation="inline"]:not(
+    [data-collapsed="true"]
+  )
+  > .kui-workbench__panel-content {
+  width: 100%;
+}
+
 /* The panel clips its sliding content, so a scrolling panel scrolls its
    content box instead of itself: the separator handle is a child of the panel
    and must not scroll away with the content. */

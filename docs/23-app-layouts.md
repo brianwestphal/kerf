@@ -262,7 +262,20 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
     is hidden and inert, and with `deviceClass` the wire suspends resizing while
     `compact` is true;
   - the wire matches only its own panels by Workbench `id`, so it never
-    double-drives a `ResizableRegion` or another Workbench under the same root.
+    double-drives a `ResizableRegion` or another Workbench under the same root;
+  - the work area keeps a minimum width beside resizable rails (KF-D79A29:
+    two ~480px rails on a ~1024px Workbench left almost no main area).
+    `Workbench`'s `mainMinSize` (default 320px, `0` turns it off, ignored when
+    no rail is resizable) is rendered as `data-main-min-size` plus a private
+    width variable. The center's `min-width` is that minimum (never wider than
+    the Workbench); resizable inline rails become `flex-shrink: 1` with content
+    that follows their shown width, so a narrowing container squeezes them in
+    proportion to their sizes instead of the work area. `wireWorkbench` stops
+    drag and keyboard resizing of a rail where the work area would drop below
+    the minimum — the Workbench width less the minimum, the other in-flow
+    rails as shown, and the rail's own safe-area extent — and never below the
+    rail's own `min`; a rail the container has already squeezed can shrink but
+    not grow. The vertical drawer is unaffected.
 - Appropriate for **desktop-size devices**. On smaller classes the guidance is to
   present the rails' contents through a different layout (a `NavStack` or overlay
   drawers), not to shrink the three-panel shell.
@@ -288,6 +301,7 @@ Shipped shape:
   leftRail={{ content: <Nav />, label: "Navigator", size: navSize.value, resizable: { min: 200, max: 420 } }}
 />
 // once: wireWorkbench(root, { id: "ide", panels: { leftRail: { size: navSize, storageKey: "ide.nav" } }, deviceClass: device });
+// the editor keeps 320px by default; mainMinSize={400} asks for more, 0 turns it off
 ```
 
 **Implementation:** ticket **Workbench (multi-panel) layout**.

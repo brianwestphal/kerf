@@ -1,7 +1,7 @@
 import { effect, type ReadonlySignal, type Signal } from 'kerfjs';
 
 import type { DeviceClass } from './device-class.js';
-import { wireResizeHandles } from './resize-wiring.js';
+import { type ResizeLimit, wireResizeHandles } from './resize-wiring.js';
 import {
   type WorkbenchPanelKey,
   workbenchRegionId,
@@ -79,11 +79,50 @@ function storedSize(text: string | null) {
 const quoted = (value: string) =>
   `"${value.replaceAll('\\', '\\\\').replaceAll('"', '\\"')}"`;
 
+const px = (value: string) => Number.parseFloat(value) || 0;
+
+/**
+ * The largest size a resizable rail may take while the work area keeps its
+ * minimum width (the Workbench's `mainMinSize`, rendered as
+ * `data-main-min-size`): the Workbench width, less that minimum, the other
+ * in-flow rails as shown, and the rail's own safe-area extent and border. A
+ * rail that the container has already squeezed is held at the width it shows,
+ * so it can shrink but not grow. Without layout (no box yet) or a minimum,
+ * the rail's own maximum stands; the drawer is vertical and unaffected.
+ */
+const mainRoomLimit: ResizeLimit = (region, { max }) => {
+  const workbench = region.parentElement;
+  const mainMin = Number(workbench?.dataset.mainMinSize);
+  if (region.dataset.axis !== 'horizontal' || !workbench || !(mainMin > 0))
+    return max;
+  const width = workbench.getBoundingClientRect().width;
+  if (width <= 0) return max;
+  let others = 0;
+  for (const rail of workbench.children) {
+    if (
+      rail === region ||
+      !rail.matches('.kui-workbench__rail') ||
+      globalThis.getComputedStyle(rail).position === 'absolute'
+    )
+      continue;
+    others += rail.getBoundingClientRect().width;
+  }
+  const style = globalThis.getComputedStyle(region);
+  const size = px(region.style.getPropertyValue('--kui-resizable-region-size'));
+  const border =
+    style.boxSizing === 'border-box'
+      ? 0
+      : px(style.borderInlineStartWidth) + px(style.borderInlineEndWidth);
+  // The track is the size plus the rail's safe-area extent (its flex basis).
+  const extent = px(style.flexBasis) - size + border;
+  return Math.floor(width - Math.min(mainMin, width) - others - extent);
+};
+
 /**
  * Wire the opt-in drag and keyboard resizing of a `Workbench`'s `resizable`
  * panels: pointer drags and arrow / Shift+arrow / Home / End on each panel's
- * separator, clamped to the panel's limits, committed to the app-owned size
- * signals. Optional persistence loads and saves each size; optional
+ * separator, clamped to the panel's limits and to the room that leaves the
+ * work area its minimum width, committed to the app-owned size signals. Optional persistence loads and saves each size; optional
  * `deviceClass` suspends resizing on compact classes. Collapse stays the app's
  * `collapsed` flag and never changes a size. Returns a disposer. See
  * `docs/23-app-layouts.md` §3.3.
@@ -146,6 +185,7 @@ export function wireWorkbench(
         },
       },
       selector,
+      mainRoomLimit,
     );
 
   let stopResize: (() => void) | undefined;
