@@ -147,8 +147,9 @@ export const createRecipe: RecipeFactory = (announce) => {
 
   // Each panel's own header holds its collapse toggle; its expand toggle shows
   // only while it is collapsed, so exactly one control owns each action. The
-  // rail's sits in the main header; the drawer's floats at the bottom edge the
-  // drawer opens from. wireSidebar hands focus between them.
+  // rail's sits in the main header; the drawer's is the drawer's own
+  // `restoreControl`, which the panel floats in its container's bottom-end
+  // corner. wireSidebar hands focus between them.
   const main = () => (
     <Pane
       element="main"
@@ -194,6 +195,11 @@ export const createRecipe: RecipeFactory = (announce) => {
       size={168}
       collapsed={drawerCollapsed.value}
       label="Activity"
+      restoreControl={
+        <FloatingToolbar label="Activity drawer">
+          <ToolbarControlGroup single>{drawerToggle()}</ToolbarControlGroup>
+        </FloatingToolbar>
+      }
     >
       <Pane
         header={
@@ -246,11 +252,6 @@ export const createRecipe: RecipeFactory = (announce) => {
         </Grid>
         {drawer()}
       </List>
-      {drawerCollapsed.value ? (
-        <FloatingToolbar label="Activity drawer">
-          <ToolbarControlGroup single>{drawerToggle()}</ToolbarControlGroup>
-        </FloatingToolbar>
-      ) : null}
     </Row>
   );
 
