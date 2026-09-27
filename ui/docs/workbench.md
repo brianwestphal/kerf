@@ -23,7 +23,9 @@ it can also be embedded. See [Document baseline](document-baseline.md).
 `Workbench` is declarative and the collapse is **pure CSS** — no wire. The app
 owns each panel's `collapsed` flag (usually a signal) and toggles it; the panel
 animates itself. Panels are fixed-size by default; a panel can opt in to drag
-and keyboard resizing (see [Resizable panels](#resizable-panels)).
+and keyboard resizing (see [Resizable panels](#resizable-panels)), and
+`wireWorkbench` can make overlay panels transient (see
+[Transient overlays](#transient-overlays)).
 
 ```tsx
 const navCollapsed = signal(false);
@@ -128,7 +130,11 @@ const consoleSize = signal(200);
 const stop = wireWorkbench(root, {
   id: "studio",
   panels: {
-    leftRail: { size: navSize, storageKey: "studio.nav-width" },
+    leftRail: {
+      size: navSize,
+      storageKey: "studio.nav-width",
+      collapsed: navCollapsed, // closes the overlay on Escape / outside press
+    },
     bottomDrawer: { size: consoleSize, storageKey: "studio.console-height" },
   },
 });
@@ -167,6 +173,38 @@ const stop = wireWorkbench(root, {
   Workbench `id`, so it never double-drives a `ResizableRegion` (or another
   Workbench) under the same root. `onResize({ panel, size, source })` reports
   each committed resize.
+
+## Transient overlays
+
+An overlay panel covers the work area, so it should open only when the user
+asks for it and close as easily as it opened. Give `wireWorkbench` a panel's
+app-owned `collapsed` signal (`size` is optional, so a panel need not be
+resizable) and it treats the panel as a transient overlay whenever it
+presents as one, mirroring `wireSidebar`'s compact overlay:
+
+- **Collapsed on entering the breakpoint:** when a panel's
+  `responsiveOverlayAt` breakpoint begins to apply — at wire-up, when the
+  Workbench first renders, or when it narrows across the breakpoint — the
+  wiring remembers the panel's inline `collapsed` state and collapses it, so
+  nothing covers the work area until the user opens it. When the breakpoint
+  stops applying (and on disposal) the remembered inline state comes back.
+  These presentation changes skip the collapse motion.
+- **Escape** closes the open overlay panel that holds focus, else the most
+  recently opened one. An Escape another handler already handled
+  (`defaultPrevented`) is left alone.
+- **Outside press:** a pointer press that starts and ends outside an open
+  overlay panel closes it. The app's own toggle still works: its click closes
+  the panel before the wiring looks, and the press that opens a panel never
+  closes it.
+- **Focus:** when a panel closes with focus inside it, focus returns to the
+  control that had it when the panel opened (typically its toggle), else to
+  the first focusable control in the panel's `restoreControl`.
+
+Escape and outside-press dismissal apply to static `presentation: "overlay"`
+panels too; entering and leaving the collapsed state around a breakpoint is
+only for `responsiveOverlayAt`, because a static presentation is the app's
+choice. Inline panels are never touched. Pass `dismissOverlays: false` to
+leave every `collapsed` write to the app.
 
 Where the browser supports `overflow-clip-margin`, the 20px hit target
 straddles the panel's separator line like a `ResizableRegion` handle;

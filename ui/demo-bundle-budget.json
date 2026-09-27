@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 288200,
-  "measuredLargestJavaScriptGzip": 139202,
-  "measuredTotalJavaScriptGzip": 288103,
+  "totalJavaScriptGzip": 289300,
+  "measuredLargestJavaScriptGzip": 140372,
+  "measuredTotalJavaScriptGzip": 289255,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -595,6 +595,22 @@
         "measuredTotalJavaScriptGzip": 288103,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 288200
+      }
+    },
+    {
+      "at": "2026-09-27T11:36:10.777Z",
+      "reason": "wireWorkbench makes overlay panels transient (collapse on entering a responsiveOverlayAt breakpoint, Escape and outside-click dismissal, focus return), wired in the catalog's resizable Workbench example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 139202,
+        "measuredTotalJavaScriptGzip": 288103,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 288200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 140372,
+        "measuredTotalJavaScriptGzip": 289255,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 289300
       }
     }
   ]

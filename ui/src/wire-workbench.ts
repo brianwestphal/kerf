@@ -3,6 +3,10 @@ import { effect, type ReadonlySignal, type Signal } from 'kerfjs';
 import type { DeviceClass } from './device-class.js';
 import { type ResizeLimit, wireResizeHandles } from './resize-wiring.js';
 import {
+  wireWorkbenchOverlays,
+  type WorkbenchOverlayPanel,
+} from './workbench-overlays.js';
+import {
   type WorkbenchPanelKey,
   workbenchRegionId,
 } from './workbench-resize.js';
@@ -15,19 +19,29 @@ export interface WorkbenchStorage {
   setItem(key: string, value: string): void;
 }
 
-/** One resizable Workbench panel's app-owned state. */
+/** One Workbench panel's app-owned state. */
 export interface WireWorkbenchPanel {
   /**
-   * The app-owned size signal the panel renders as its `size`. `wireWorkbench`
-   * writes each committed resize here; collapsing never touches it, so an
-   * expanded panel returns at the size it had.
+   * The app-owned size signal a `resizable` panel renders as its `size`.
+   * `wireWorkbench` writes each committed resize here; collapsing never
+   * touches it, so an expanded panel returns at the size it had. Omit it for
+   * a panel that is not resizable.
    */
-  size: Signal<number>;
+  size?: Signal<number>;
   /**
-   * When set, the size is loaded from and saved to `storage` under this key,
-   * so the panel remembers the user's size.
+   * When set with `size`, the size is loaded from and saved to `storage`
+   * under this key, so the panel remembers the user's size.
    */
   storageKey?: string;
+  /**
+   * The app-owned signal the panel renders as its `collapsed`. With it (and
+   * `dismissOverlays`, on by default) `wireWorkbench` treats the panel as a
+   * transient overlay while it presents as one: it collapses when its
+   * `responsiveOverlayAt` breakpoint begins to apply and gets its inline state
+   * back when the breakpoint stops applying, and an open overlay closes on
+   * Escape or a press outside it.
+   */
+  collapsed?: Signal<boolean>;
 }
 
 /** A resize the user made, after `wireWorkbench` wrote it to the size signal. */
@@ -41,8 +55,9 @@ export interface WireWorkbenchOptions {
   /** The `id` the `Workbench` was rendered with. */
   id: string;
   /**
-   * The resizable panels, keyed like the `Workbench` props. Render each with
-   * `resizable` and `size={panel.size.value}`.
+   * The wired panels, keyed like the `Workbench` props. Render a panel given
+   * a `size` with `resizable` and `size={panel.size.value}`, and one given a
+   * `collapsed` signal with `collapsed={panel.collapsed.value}`.
    */
   panels: Partial<Record<WorkbenchPanelKey, WireWorkbenchPanel>>;
   /**
@@ -58,6 +73,19 @@ export interface WireWorkbenchOptions {
   largeStep?: number;
   /** Called after each committed resize. */
   onResize?: (change: WorkbenchResize) => void;
+  /**
+   * Treat the panels given a `collapsed` signal as transient overlays while
+   * they present as overlays (default `true`), like `wireSidebar`'s compact
+   * overlay: a panel whose `responsiveOverlayAt` breakpoint begins to apply
+   * starts collapsed, with no collapse motion, and gets its inline collapsed
+   * state back when the breakpoint stops applying (and on disposal); an open
+   * overlay panel, responsive or `presentation: "overlay"`, closes on Escape
+   * or a press that starts and ends outside it. Focus stranded in a closing
+   * panel returns to the control that had it when the panel opened, else to
+   * the panel's restore control. `false` leaves every `collapsed` write to the
+   * app.
+   */
+  dismissOverlays?: boolean;
 }
 
 function defaultStorage(): WorkbenchStorage | undefined {
@@ -119,13 +147,16 @@ const mainRoomLimit: ResizeLimit = (region, { max }) => {
 };
 
 /**
- * Wire the opt-in drag and keyboard resizing of a `Workbench`'s `resizable`
- * panels: pointer drags and arrow / Shift+arrow / Home / End on each panel's
+ * Wire a `Workbench`'s panels. For `resizable` panels given a `size` signal:
+ * pointer drags and arrow / Shift+arrow / Home / End on each panel's
  * separator, clamped to the panel's limits and to the room that leaves the
- * work area its minimum width, committed to the app-owned size signals. Optional persistence loads and saves each size; optional
- * `deviceClass` suspends resizing on compact classes. Collapse stays the app's
- * `collapsed` flag and never changes a size. Returns a disposer. See
- * `docs/23-app-layouts.md` §3.3.
+ * work area its minimum width, committed to the app-owned size signals.
+ * Optional persistence loads and saves each size; optional `deviceClass`
+ * suspends resizing on compact classes. Collapse stays the app's `collapsed`
+ * flag and never changes a size. For panels given a `collapsed` signal,
+ * overlays are transient (`dismissOverlays`): a responsive overlay starts
+ * collapsed, and an open overlay closes on Escape or an outside press.
+ * Returns a disposer. See `docs/23-app-layouts.md` §3.3.
  */
 export function wireWorkbench(
   root: HTMLElement,
@@ -137,28 +168,35 @@ export function wireWorkbench(
     step,
     largeStep,
     onResize,
+    dismissOverlays = true,
   }: WireWorkbenchOptions,
 ): () => void {
-  const entries = (Object.keys(panels) as WorkbenchPanelKey[]).flatMap(
-    (key) => {
-      const panel = panels[key];
-      return panel
-        ? [{ key, panel, regionId: workbenchRegionId(id, key) }]
-        : [];
-    },
-  );
+  const keys = Object.keys(panels) as WorkbenchPanelKey[];
+  const entries = keys.flatMap((key) => {
+    const size = panels[key]?.size;
+    return size
+      ? [
+          {
+            key,
+            size,
+            storageKey: panels[key]!.storageKey,
+            regionId: workbenchRegionId(id, key),
+          },
+        ]
+      : [];
+  });
   const byRegion = new Map(entries.map((entry) => [entry.regionId, entry]));
   const disposers: Array<() => void> = [];
 
   // Seed from storage before any effect runs, so the first render after
   // wire-up already has the remembered size; then mirror every size change.
-  for (const { panel } of entries) {
-    if (!panel.storageKey || !storage) continue;
-    const seed = storedSize(storage.getItem(panel.storageKey));
-    if (seed !== undefined) panel.size.value = seed;
+  for (const { size, storageKey } of entries) {
+    if (!storageKey || !storage) continue;
+    const seed = storedSize(storage.getItem(storageKey));
+    if (seed !== undefined) size.value = seed;
     disposers.push(
       effect(() => {
-        storage.setItem(panel.storageKey!, String(panel.size.value));
+        storage.setItem(storageKey, String(size.value));
       }),
     );
   }
@@ -180,7 +218,7 @@ export function wireWorkbench(
         onCommit: ({ id: regionId, size, source }) => {
           // The selector only matches configured panels.
           const entry = byRegion.get(regionId)!;
-          entry.panel.size.value = size;
+          entry.size.value = size;
           onResize?.({ panel: entry.key, size, source });
         },
       },
@@ -201,6 +239,24 @@ export function wireWorkbench(
     } else {
       stopResize = start();
     }
+  }
+
+  const overlayPanels = keys.flatMap((key): WorkbenchOverlayPanel[] => {
+    const collapsed = panels[key]?.collapsed;
+    return collapsed ? [{ key, collapsed }] : [];
+  });
+  if (dismissOverlays && overlayPanels.length > 0) {
+    const selector = `[data-component="workbench"][id=${quoted(id)}]`;
+    disposers.push(
+      wireWorkbenchOverlays(
+        root,
+        () =>
+          root.matches(selector)
+            ? root
+            : root.querySelector<HTMLElement>(selector),
+        overlayPanels,
+      ),
+    );
   }
 
   return () => {

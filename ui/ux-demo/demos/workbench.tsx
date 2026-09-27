@@ -25,8 +25,13 @@ export const RESIZABLE_WORKBENCH_ID = 'catalog-workbench-resizable';
 export const workbenchNavigatorSize = signal(240);
 export const workbenchInspectorSize = signal(160);
 export const workbenchConsoleSize = signal(160);
-const navigatorCollapsed = signal(false);
-const inspectorCollapsed = signal(true);
+/**
+ * App-owned collapsed flags for the resizable example's rails. `wireWorkbench`
+ * collapses a rail when it becomes a responsive overlay and closes an open
+ * overlay on Escape or an outside press.
+ */
+export const workbenchNavigatorCollapsed = signal(false);
+export const workbenchInspectorCollapsed = signal(true);
 const consoleCollapsed = signal(true);
 
 /**
@@ -34,19 +39,19 @@ const consoleCollapsed = signal(true);
  * remembered sizes are the wiring's to restore.
  */
 export function resetWorkbenchDemo(): void {
-  navigatorCollapsed.value = false;
-  inspectorCollapsed.value = true;
+  workbenchNavigatorCollapsed.value = false;
+  workbenchInspectorCollapsed.value = true;
   consoleCollapsed.value = true;
 }
 
 export function toggleWorkbenchNavigator(): boolean {
-  navigatorCollapsed.value = !navigatorCollapsed.value;
-  return navigatorCollapsed.value;
+  workbenchNavigatorCollapsed.value = !workbenchNavigatorCollapsed.value;
+  return workbenchNavigatorCollapsed.value;
 }
 
 export function toggleWorkbenchInspector(): boolean {
-  inspectorCollapsed.value = !inspectorCollapsed.value;
-  return inspectorCollapsed.value;
+  workbenchInspectorCollapsed.value = !workbenchInspectorCollapsed.value;
+  return workbenchInspectorCollapsed.value;
 }
 
 export function toggleWorkbenchConsole(): boolean {
@@ -133,13 +138,13 @@ function resizableEditor() {
               {panelToggle(
                 'left',
                 'navigator',
-                navigatorCollapsed.value,
+                workbenchNavigatorCollapsed.value,
                 'toggle-workbench-navigator',
               )}
               {panelToggle(
                 'right',
                 'inspector',
-                inspectorCollapsed.value,
+                workbenchInspectorCollapsed.value,
                 'toggle-workbench-inspector',
               )}
             </ToolbarControlGroup>
@@ -195,7 +200,7 @@ export function WorkbenchDemo() {
       </CatalogExample>
       <CatalogExample
         label="Resizable panels"
-        note="Resizing is opt-in per panel, and wireWorkbench drives the separators. Resizable rails leave the work area its 320 px minimum: they stop growing there and shrink in proportion when the workbench narrows. Below 704 px of workbench width the rails present as overlays, which do not resize."
+        note="Resizing is opt-in per panel, and wireWorkbench drives the separators. Resizable rails leave the work area its 320 px minimum: they stop growing there and shrink in proportion when the workbench narrows. Below 704 px of workbench width the rails present as overlays, which start hidden, do not resize, and close on Escape or a click outside."
         align="none"
         viewport={{
           layout: 'grid',
@@ -211,7 +216,7 @@ export function WorkbenchDemo() {
           leftRail={{
             label: 'Navigator',
             content: region('Navigator', '180–400 px wide'),
-            collapsed: navigatorCollapsed.value,
+            collapsed: workbenchNavigatorCollapsed.value,
             size: workbenchNavigatorSize.value,
             resizable: { min: 180, max: 400 },
             responsiveOverlayAt: 'narrow',
@@ -220,7 +225,7 @@ export function WorkbenchDemo() {
           rightRail={{
             label: 'Inspector',
             content: region('Inspector', '160–360 px wide'),
-            collapsed: inspectorCollapsed.value,
+            collapsed: workbenchInspectorCollapsed.value,
             size: workbenchInspectorSize.value,
             resizable: { min: 160, max: 360 },
             responsiveOverlayAt: 'narrow',

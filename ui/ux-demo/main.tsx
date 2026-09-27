@@ -113,7 +113,9 @@ import {
   toggleWorkbenchInspector,
   toggleWorkbenchNavigator,
   workbenchConsoleSize,
+  workbenchInspectorCollapsed,
   workbenchInspectorSize,
+  workbenchNavigatorCollapsed,
   workbenchNavigatorSize,
 } from './demos/workbench.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
@@ -1005,10 +1007,12 @@ const routeWires: Partial<Record<string, RouteWire>> = {
           leftRail: {
             size: workbenchNavigatorSize,
             storageKey: 'kerf-ui-demo.workbench.navigator',
+            collapsed: workbenchNavigatorCollapsed,
           },
           rightRail: {
             size: workbenchInspectorSize,
             storageKey: 'kerf-ui-demo.workbench.inspector',
+            collapsed: workbenchInspectorCollapsed,
           },
           bottomDrawer: {
             size: workbenchConsoleSize,

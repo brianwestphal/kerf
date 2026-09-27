@@ -284,6 +284,26 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
     panel inside that border. A collapsed overlay (static or
     responsive) drops its surface and shadow — the sliding content carries the
     surface — so an invisible box no longer covers the work area;
+  - transient overlays (KF-KVSXS3: a responsive overlay rail used to stay
+    expanded over the editor after the breakpoint applied): a panel may pass
+    its app-owned `collapsed` signal to `wireWorkbench` (`size` became
+    optional). With `dismissOverlays` (default `true`, mirroring
+    `wireSidebar`'s compact overlay, which is on once `deviceClass` is given)
+    the wiring collapses a panel when its `responsiveOverlayAt` breakpoint
+    begins to apply — detected by the panel computing `position: absolute`
+    while `data-presentation` stays `inline`, re-checked by a
+    `ResizeObserver` on the Workbench plus a `MutationObserver` for a
+    Workbench that renders later or a changed presentation — remembering and
+    later restoring its inline state (also on disposal), with the content's
+    transition suspended across one style flush so no slide plays. Escape
+    (unless already `defaultPrevented`) closes the focused, else most
+    recently opened, open overlay panel; a press that starts (`pointerdown`,
+    capture) and ends (`click`) outside it closes it, decided at the click so
+    an app toggle closes first. Focus stranded in a closing panel returns to
+    the control focused when it opened, else to the panel's restore control
+    (looked up again after the current batch), else it is blurred. Static
+    overlays get the dismissal but not the breakpoint collapse. Internal
+    module `ui/src/workbench-overlays.ts`;
   - the wire matches only its own panels by Workbench `id`, so it never
     double-drives a `ResizableRegion` or another Workbench under the same root;
   - the work area keeps a minimum width beside resizable rails (KF-D79A29:
@@ -323,7 +343,8 @@ Shipped shape:
   main={<Editor />}
   leftRail={{ content: <Nav />, label: "Navigator", size: navSize.value, resizable: { min: 200, max: 420 }, responsiveOverlayAt: "narrow" }}
 />
-// once: wireWorkbench(root, { id: "ide", panels: { leftRail: { size: navSize, storageKey: "ide.nav" } }, deviceClass: device });
+// once: wireWorkbench(root, { id: "ide", panels: { leftRail: { size: navSize, storageKey: "ide.nav", collapsed: leftCollapsed } }, deviceClass: device });
+// a panel given `collapsed` is a transient overlay: collapsed on entering its breakpoint, closed by Escape / an outside press
 // the editor keeps 320px by default; mainMinSize={400} asks for more, 0 turns it off
 ```
 

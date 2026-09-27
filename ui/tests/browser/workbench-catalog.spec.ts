@@ -423,14 +423,19 @@ test.describe('resizable Workbench panels', () => {
 
     // A workbench 704 px or narrower presents the rail as an overlay: out of
     // flow over the full-width work area, with no separator to resize. A
-    // 1024 px viewport leaves the catalog example narrower than that.
+    // 1024 px viewport leaves the catalog example narrower than that. The
+    // overlay is transient: wireWorkbench collapses it on entering the
+    // breakpoint, so it covers nothing until the user opens it.
     await page.setViewportSize({ width: 1024, height: 900 });
     await workbench.scrollIntoViewIfNeeded();
     const narrow = (await workbench.boundingBox())!.width;
     expect(narrow).toBeLessThanOrEqual(704);
     await expect(left).toHaveCSS('position', 'absolute');
-    await expect(left).toHaveCSS('width', '240px');
-    await expect(left).not.toHaveCSS('box-shadow', 'none');
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+    // A collapsed overlay drops its surface so nothing covers the editor.
+    await expect(left).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect(left).toHaveCSS('box-shadow', 'none');
+    await expect(left).toHaveCSS('pointer-events', 'none');
     await expect(handle).toBeHidden();
     await expect
       .poll(async () => Math.round((await center.boundingBox())!.width))
@@ -438,18 +443,16 @@ test.describe('resizable Workbench panels', () => {
     // The rendered presentation stays inline; only the container decides.
     await expect(left).toHaveAttribute('data-presentation', 'inline');
 
-    // Collapsing the overlay drops its surface so nothing covers the editor.
-    await workbench.getByRole('button', { name: 'Hide navigator' }).click();
-    await expect(left).toHaveAttribute('data-collapsed', 'true');
-    await expect(left).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-    await expect(left).toHaveCSS('box-shadow', 'none');
-    await expect(left).toHaveCSS('pointer-events', 'none');
     await workbench.getByRole('button', { name: 'Show navigator' }).click();
     await expect(left).toHaveAttribute('data-collapsed', 'false');
+    await expect(left).toHaveCSS('width', '240px');
+    await expect(left).not.toHaveCSS('box-shadow', 'none');
 
-    // Wide again: inline and resizable, at the size it had.
+    // Wide again: inline, expanded as it was before the breakpoint applied,
+    // and resizable at the size it had.
     await page.setViewportSize({ width: 1440, height: 900 });
     await expect(left).toHaveCSS('position', 'relative');
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
     await expect(handle).toBeVisible();
     await handle.focus();
     await page.keyboard.press('ArrowRight');
@@ -490,12 +493,17 @@ test.describe('resizable Workbench panels', () => {
     await expect(drawer).toHaveCSS('position', 'relative');
 
     // A responsive overlay drawer switches below the Workbench breakpoint.
+    // Narrow first: the wiring collapses the rails there, and that re-render
+    // would drop an attribute set before it.
+    await page.setViewportSize({ width: 390, height: 844 });
+    await workbench.scrollIntoViewIfNeeded();
+    await expect(
+      workbench.locator('[data-workbench-rail="left"]'),
+    ).toHaveAttribute('data-collapsed', 'true');
+    await expect(drawer).toHaveCSS('position', 'relative');
     await drawer.evaluate((element) => {
       element.dataset.responsiveOverlayAt = 'narrow';
     });
-    await expect(drawer).toHaveCSS('position', 'relative');
-    await page.setViewportSize({ width: 390, height: 844 });
-    await workbench.scrollIntoViewIfNeeded();
     await expect(drawer).toHaveCSS('position', 'absolute');
     await expect(drawer).toHaveCSS('height', '160px');
     await expect(drawer.locator('[data-kui-resize-handle]')).toBeHidden();
@@ -533,7 +541,8 @@ test.describe('resizable Workbench panels', () => {
           .width,
       ),
     ).toBe(Math.round(width));
-    await workbench.getByRole('button', { name: 'Hide navigator' }).click();
+    // The overlay starts collapsed, so the editor is readable on arrival.
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
     await expect(workbench.getByText('Resize the panels')).toBeVisible();
     await expect
       .poll(() =>
@@ -546,6 +555,56 @@ test.describe('resizable Workbench panels', () => {
       await workbench.screenshot({
         path: 'test-results/workbench-overlay-rails-compact.png',
       });
+  });
+
+  test('an open overlay rail closes on Escape or an outside click and returns focus', async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const left = workbench.locator('[data-workbench-rail="left"]');
+    const right = workbench.locator('[data-workbench-rail="right"]');
+    await workbench.scrollIntoViewIfNeeded();
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+
+    // Escape closes the open overlay and focus returns to the control that
+    // opened it, including from inside the overlay.
+    const showNavigator = workbench.getByRole('button', {
+      name: 'Show navigator',
+    });
+    await showNavigator.focus();
+    await page.keyboard.press('Enter');
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    await expect(left).toBeInViewport();
+    await page.keyboard.press('Escape');
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+    await expect(showNavigator).toBeFocused();
+
+    // An outside click closes it; a click inside keeps it open.
+    await showNavigator.click();
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    await left.getByText('Navigator').click();
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    const editor = workbench.getByText('Resize the panels');
+    const box = (await workbench.boundingBox())!;
+    await page.mouse.click(box.x + box.width - 16, box.y + box.height - 16);
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+    await expect(editor).toBeVisible();
+
+    // The app's own toggle still closes an open overlay exactly once.
+    await showNavigator.click();
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    await workbench.getByRole('button', { name: 'Hide navigator' }).click();
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+
+    // The inspector overlay covers its own toggle; Escape still closes it.
+    await workbench.getByRole('button', { name: 'Show inspector' }).click();
+    await expect(right).toHaveAttribute('data-collapsed', 'false');
+    await page.keyboard.press('Escape');
+    await expect(right).toHaveAttribute('data-collapsed', 'true');
+    await expect(
+      workbench.getByRole('button', { name: 'Show inspector' }),
+    ).toBeFocused();
   });
 
   test('the collapsed console restores from its corner control', async ({

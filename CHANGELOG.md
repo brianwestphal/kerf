@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` `wireWorkbench` makes overlay panels transient.** A rail
+  whose `responsiveOverlayAt` breakpoint applied stayed expanded over the
+  editor until the user found its toggle. Pass a panel's app-owned
+  `collapsed` signal (`panels: { leftRail: { collapsed } }`; `size` is now
+  optional, so a panel need not be resizable) and, like `wireSidebar`'s
+  compact overlay, the wiring collapses it when the breakpoint begins to
+  apply (without the collapse motion) and gives back its inline state when
+  the breakpoint stops applying or the wiring is disposed. An open overlay
+  panel, responsive or `presentation: "overlay"`, closes on Escape or on a
+  press that starts and ends outside it, and focus stranded inside returns to
+  the control that opened it, else to its restore control. It is on by
+  default for panels given `collapsed`; `dismissOverlays: false` turns it
+  off. The UX catalog's resizable example wires its rails this way.
 - A `@kerfjs/ui` `Workbench` rail with `presentation: "overlay"` now renders
   exactly its size. Out of flow, it sized to its content plus its 1px
   separator border, so a 280px rail measured 281px; it now takes its size

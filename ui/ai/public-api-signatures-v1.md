@@ -1148,19 +1148,29 @@ interface WorkbenchStorage {
     getItem(key: string): string | null;
     setItem(key: string, value: string): void;
 }
-/** One resizable Workbench panel's app-owned state. */
+/** One Workbench panel's app-owned state. */
 interface WireWorkbenchPanel {
     /**
-     * The app-owned size signal the panel renders as its `size`. `wireWorkbench`
-     * writes each committed resize here; collapsing never touches it, so an
-     * expanded panel returns at the size it had.
+     * The app-owned size signal a `resizable` panel renders as its `size`.
+     * `wireWorkbench` writes each committed resize here; collapsing never
+     * touches it, so an expanded panel returns at the size it had. Omit it for
+     * a panel that is not resizable.
      */
-    size: Signal<number>;
+    size?: Signal<number>;
     /**
-     * When set, the size is loaded from and saved to `storage` under this key,
-     * so the panel remembers the user's size.
+     * When set with `size`, the size is loaded from and saved to `storage`
+     * under this key, so the panel remembers the user's size.
      */
     storageKey?: string;
+    /**
+     * The app-owned signal the panel renders as its `collapsed`. With it (and
+     * `dismissOverlays`, on by default) `wireWorkbench` treats the panel as a
+     * transient overlay while it presents as one: it collapses when its
+     * `responsiveOverlayAt` breakpoint begins to apply and gets its inline state
+     * back when the breakpoint stops applying, and an open overlay closes on
+     * Escape or a press outside it.
+     */
+    collapsed?: Signal<boolean>;
 }
 /** A resize the user made, after `wireWorkbench` wrote it to the size signal. */
 interface WorkbenchResize {
@@ -1172,8 +1182,9 @@ interface WireWorkbenchOptions {
     /** The `id` the `Workbench` was rendered with. */
     id: string;
     /**
-     * The resizable panels, keyed like the `Workbench` props. Render each with
-     * `resizable` and `size={panel.size.value}`.
+     * The wired panels, keyed like the `Workbench` props. Render a panel given
+     * a `size` with `resizable` and `size={panel.size.value}`, and one given a
+     * `collapsed` signal with `collapsed={panel.collapsed.value}`.
      */
     panels: Partial<Record<WorkbenchPanelKey, WireWorkbenchPanel>>;
     /**
@@ -1189,17 +1200,33 @@ interface WireWorkbenchOptions {
     largeStep?: number;
     /** Called after each committed resize. */
     onResize?: (change: WorkbenchResize) => void;
+    /**
+     * Treat the panels given a `collapsed` signal as transient overlays while
+     * they present as overlays (default `true`), like `wireSidebar`'s compact
+     * overlay: a panel whose `responsiveOverlayAt` breakpoint begins to apply
+     * starts collapsed, with no collapse motion, and gets its inline collapsed
+     * state back when the breakpoint stops applying (and on disposal); an open
+     * overlay panel, responsive or `presentation: "overlay"`, closes on Escape
+     * or a press that starts and ends outside it. Focus stranded in a closing
+     * panel returns to the control that had it when the panel opened, else to
+     * the panel's restore control. `false` leaves every `collapsed` write to the
+     * app.
+     */
+    dismissOverlays?: boolean;
 }
 /**
- * Wire the opt-in drag and keyboard resizing of a `Workbench`'s `resizable`
- * panels: pointer drags and arrow / Shift+arrow / Home / End on each panel's
+ * Wire a `Workbench`'s panels. For `resizable` panels given a `size` signal:
+ * pointer drags and arrow / Shift+arrow / Home / End on each panel's
  * separator, clamped to the panel's limits and to the room that leaves the
- * work area its minimum width, committed to the app-owned size signals. Optional persistence loads and saves each size; optional
- * `deviceClass` suspends resizing on compact classes. Collapse stays the app's
- * `collapsed` flag and never changes a size. Returns a disposer. See
- * `docs/23-app-layouts.md` §3.3.
+ * work area its minimum width, committed to the app-owned size signals.
+ * Optional persistence loads and saves each size; optional `deviceClass`
+ * suspends resizing on compact classes. Collapse stays the app's `collapsed`
+ * flag and never changes a size. For panels given a `collapsed` signal,
+ * overlays are transient (`dismissOverlays`): a responsive overlay starts
+ * collapsed, and an open overlay closes on Escape or an outside press.
+ * Returns a disposer. See `docs/23-app-layouts.md` §3.3.
  */
-declare function wireWorkbench(root: HTMLElement, { id, panels, deviceClass, storage, step, largeStep, onResize, }: WireWorkbenchOptions): () => void;
+declare function wireWorkbench(root: HTMLElement, { id, panels, deviceClass, storage, step, largeStep, onResize, dismissOverlays, }: WireWorkbenchOptions): () => void;
 
 export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanelKey, type WorkbenchResize, type WorkbenchStorage, wireWorkbench };
 ```

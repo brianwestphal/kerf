@@ -893,7 +893,8 @@
         "independently collapsed panels",
         "opt-in drag and keyboard resizable panels with min/max limits",
         "resizable rails that leave the work area a minimum width and shrink in proportion when the Workbench narrows",
-        "rails that present as overlays below a narrow or compact Workbench container breakpoint",
+        "rails or a drawer that present as overlays below a narrow or compact Workbench container breakpoint",
+        "transient overlay panels wired with wireWorkbench: collapsed on entering the breakpoint, closed by Escape or an outside press",
         "hidden separator",
         "slide, fade-slide, or instant content",
         "clipped, scrolling, or popup-visible content",
@@ -904,7 +905,8 @@
       "accessibility": [
         "Give the Workbench and each meaningful rail or drawer an accessible label.",
         "Keep collapse controls outside the disappearing region and move focus when a controlled rerender replaces a collapse control with its restore control.",
-        "A resizable panel's separator is a focusable role=\"separator\" with its size in aria-valuenow and limits in aria-valuemin/aria-valuemax; arrow keys resize by 16px, Shift+arrow by 64px, and Home/End jump to the limits. It leaves the tab order while its panel is collapsed or not inline."
+        "A resizable panel's separator is a focusable role=\"separator\" with its size in aria-valuenow and limits in aria-valuemin/aria-valuemax; arrow keys resize by 16px, Shift+arrow by 64px, and Home/End jump to the limits. It leaves the tab order while its panel is collapsed or not inline.",
+        "Given a panel's collapsed signal, wireWorkbench closes an open overlay panel on Escape or an outside press and returns focus stranded inside it to the control that opened it, else to its restore control."
       ],
       "geometry": {
         "margin": "none",

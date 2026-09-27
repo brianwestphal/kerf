@@ -814,7 +814,15 @@ subpath) passes selectors for its own opt-in `resizable` `Workbench` panels plus
 a work-area limit that stops a rail where the center would drop below the
 Workbench's `mainMinSize` (`data-main-min-size`, default 320px), committing to
 app-owned size signals with optional `storageKey` persistence and `deviceClass`
-compact suspension. `ui/src/workbench-resize.ts` holds the shared panel
+compact suspension. For panels given a `collapsed` signal it also calls the
+internal `ui/src/workbench-overlays.ts` (`wireWorkbenchOverlays`,
+`dismissOverlays` on by default): a panel collapses when its
+`responsiveOverlayAt` breakpoint begins to apply (a `ResizeObserver` on the
+Workbench plus a `MutationObserver` for late renders and presentation changes)
+and gets its inline state back when it ends, and an open overlay closes on
+Escape or an outside press with focus returned to its opener or restore
+control (`ui/tests/unit/workbench-overlays.test.ts`).
+`ui/src/workbench-resize.ts` holds the shared panel
 region-id convention, default limits, and default work-area minimum, and `ui/src/resize-grip.tsx` the
 separator grip both handles render (`ui/tests/unit/wire-workbench.test.ts`,
 `ui/tests/unit/workbench.test.tsx`, `ui/tests/browser/workbench-catalog.spec.ts`).
