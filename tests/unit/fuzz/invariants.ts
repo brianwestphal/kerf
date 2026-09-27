@@ -31,25 +31,18 @@ const TEXT_NODE = 3;
 const COMMENT_NODE = 8;
 
 /**
- * Binding and list-marker ids are allocation order, not meaning — erase them,
- * and ONLY them. The marker set is `src/bindings.ts`'s `data-kfb` /
- * `data-kfbrow` attributes (comma-joined `a0,a1…` ids) and `kfb:` / `kfbr:`
- * comments (`t0…` ids), plus `src/segment.ts`'s call-order `kf-list:<n>`
- * comment. A keyed list's `kf-list:k:<key>` carries the app's key, so it is
- * kept. Every other attribute value and comment is compared verbatim: an
- * earlier normalizer erased ANY all-digit attribute value, which hid a stale
- * `data-sel="1"` / `"0"` flag entirely.
+ * Only the call-order list marker (`src/segment.ts`'s `kf-list:<n>`) is
+ * erased: its number is the list's position among `each()` calls, which a
+ * from-scratch render may legitimately assign differently. A keyed list's
+ * `kf-list:k:<key>` carries the app's key, so it is kept. Binding ids
+ * (`data-kfb` / `data-kfbrow` `a0,a1…`, `kfb:` / `kfbr:` `t0…`) restart per
+ * render and are deterministic, so they are compared verbatim — a divergence
+ * there is real signal. Every other attribute value and comment is compared
+ * verbatim too: an earlier normalizer erased ANY all-digit attribute value,
+ * which hid a stale `data-sel="1"` / `"0"` flag entirely.
  */
-const ID_ATTRS = new Set(['data-kfb', 'data-kfbrow']);
-
-function normalizeAttr(name: string, value: string): string {
-  return ID_ATTRS.has(name) ? '#' : value;
-}
-
 function normalizeComment(text: string): string {
-  return text
-    .replace(/^(kfb|kfbr):\w+$/, '$1:#')
-    .replace(/^kf-list:\d+$/, 'kf-list:#');
+  return text.replace(/^kf-list:\d+$/, 'kf-list:#');
 }
 
 /**
@@ -65,7 +58,7 @@ export function snapshot(root: Element): string {
     if (node.nodeType === ELEMENT_NODE) {
       const el = node as Element;
       const attrs = Array.from(el.attributes)
-        .map((a) => `${a.name}="${normalizeAttr(a.name, a.value)}"`)
+        .map((a) => `${a.name}="${a.value}"`)
         .sort()
         .join(' ');
       const ns = el.namespaceURI === SVG_NS ? '@svg' : '';
