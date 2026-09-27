@@ -84,6 +84,8 @@ interface StudioOptions {
   at?: WorkbenchResponsiveOverlayAt;
   rightPresentation?: 'inline' | 'overlay';
   render?: boolean;
+  /** Render the app's toggles with `aria-controls` naming their panels. */
+  controls?: boolean;
 }
 
 /** A mounted Workbench whose panels' collapsed flags are app-owned signals. */
@@ -91,6 +93,7 @@ function studio({
   at = 'narrow',
   rightPresentation = 'inline',
   render = true,
+  controls = false,
 }: StudioOptions = {}) {
   const root = document.createElement('div');
   document.body.append(root);
@@ -101,11 +104,16 @@ function studio({
   const shown = signal(render);
   const rightMode = signal(rightPresentation);
   const toggle = (name: string, collapsed: boolean) =>
-    `<button type="button" data-toggle="${name}">${collapsed ? 'Show' : 'Hide'} ${name}</button>`;
+    `<button type="button" data-toggle="${name}"${controls && name === 'nav' ? ' aria-controls="studio-left-rail"' : ''}>${collapsed ? 'Show' : 'Hide'} ${name}</button>`;
+  // A console toggle that names an element inside the drawer (and an id
+  // that matches nothing), plus a disabled one that must be skipped.
+  const consoleToggles = controls
+    ? '<button type="button" disabled aria-controls="console-body">Off</button><button type="button" aria-controls="elsewhere console-body">Console</button>'
+    : '';
   // Each panel carries its own close control, as a panel header would.
   const panelContent = (name: string) =>
     raw(
-      `<div><button type="button" data-toggle="${name}">Close ${name}</button><button type="button">${name} item</button></div>`,
+      `<div id="${name}-body"><button type="button" data-toggle="${name}">Close ${name}</button><button type="button">${name} item</button></div>`,
     );
   const stopMount = mount(root, () =>
     shown.value
@@ -113,7 +121,7 @@ function studio({
           id: 'studio',
           label: 'Studio',
           main: raw(
-            `<div>${toggle('nav', left.value)}${toggle('inspector', right.value)}<button type="button" data-plain>Plain</button></div>`,
+            `<div>${toggle('nav', left.value)}${toggle('inspector', right.value)}${consoleToggles}<button type="button" data-plain>Plain</button></div>`,
           ),
           leftRail: {
             content: panelContent('nav'),
@@ -300,6 +308,32 @@ describe('wireWorkbench transient overlays', () => {
     return Promise.resolve().then(() => {
       expect(app.leftRail().contains(document.activeElement)).toBe(false);
     });
+  });
+
+  it('returns focus to an aria-controls toggle for a panel open at wire-up', () => {
+    const app = studio({ controls: true });
+    app.wire();
+    // Both panels were open at wire-up, so neither has a recorded opener.
+    app.button('Close nav').focus();
+    app.button('Close nav').click();
+    expect(app.left.value).toBe(true);
+    // The toggle whose aria-controls names the rail takes the focus.
+    expect(document.activeElement?.getAttribute('aria-controls')).toBe(
+      'studio-left-rail',
+    );
+
+    // A token naming an element inside the panel counts too, and a disabled
+    // control is skipped.
+    app.button('console item').focus();
+    app.drawer.value = true;
+    expect(document.activeElement?.textContent).toBe('Console');
+
+    // A recorded opener still wins over the aria-controls toggle.
+    app.button('Plain').focus();
+    app.left.value = false;
+    app.button('nav item').focus();
+    app.left.value = true;
+    expect(document.activeElement?.textContent).toBe('Plain');
   });
 
   it("returns focus when the app's own control inside a panel closes it", () => {

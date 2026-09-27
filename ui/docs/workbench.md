@@ -214,7 +214,23 @@ presents as one, mirroring `wireSidebar`'s compact overlay:
 - **Focus:** when a panel closes with focus inside it — whatever closed it,
   including the app's own control inside the panel — focus returns to the
   control that had it when the panel opened (typically its toggle), else to
-  the first focusable control in the panel's `restoreControl`.
+  the first focusable control in the panel's `restoreControl`, else to a
+  focusable control outside the panel whose `aria-controls` names the panel
+  (or an element inside it). The last is what a panel already open at
+  wire-up relies on, since nothing opened it: give the app's toggle
+  `aria-controls` naming the panel. Each panel's `id` derives from the
+  Workbench's — `<id>-left-rail`, `<id>-right-rail`, `<id>-bottom-drawer`:
+
+  ```tsx
+  <button
+    data-action="toggle-navigator"
+    aria-controls="editor-left-rail"
+    aria-expanded={String(!navCollapsed.value)}
+    aria-label={navCollapsed.value ? "Show navigator" : "Hide navigator"}
+  >
+    <LucideIcon {...collapsiblePanelToggleIcon("left", navCollapsed.value)} />
+  </button>
+  ```
 
 An open overlay can cover the control that opened it: a narrow Workbench's
 right-rail overlay spans the full height at the end edge, over the trailing

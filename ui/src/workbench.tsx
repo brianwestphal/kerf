@@ -71,6 +71,11 @@ export interface WorkbenchPanel {
 }
 
 export interface WorkbenchProps {
+  /**
+   * The Workbench's `id`. Each panel's `id` derives from it —
+   * `<id>-left-rail`, `<id>-right-rail`, `<id>-bottom-drawer` — so a toggle
+   * can name the panel it shows and hides with `aria-controls`.
+   */
   id: string;
   label: string;
   /** The central work area. */
@@ -213,6 +218,7 @@ function Rail({
   const resize = resolveResize(id, key, panel);
   return (
     <aside
+      id={workbenchRegionId(id, key)}
       class={`kui-workbench__rail kui-workbench__rail--${side}`}
       data-workbench-rail={side}
       data-collapsed={String(panel.collapsed ?? false)}
@@ -242,6 +248,7 @@ function Drawer({ id, panel }: { id: string; panel: WorkbenchPanel }) {
   const resize = resolveResize(id, 'bottomDrawer', panel);
   return (
     <section
+      id={workbenchRegionId(id, 'bottomDrawer')}
       class="kui-workbench__drawer"
       data-workbench-drawer
       data-collapsed={String(panel.collapsed ?? false)}

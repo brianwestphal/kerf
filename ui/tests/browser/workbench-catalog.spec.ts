@@ -800,6 +800,35 @@ test.describe('resizable Workbench panels', () => {
     await expect(editorToggle).toBeFocused();
   });
 
+  test('a rail open at wire-up returns focus to its aria-controls toggle when it closes from inside', async ({
+    page,
+  }) => {
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const left = workbench.locator('[data-workbench-rail="left"]');
+    await workbench.scrollIntoViewIfNeeded();
+    // The navigator starts open, so the wiring recorded no opener for it.
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    await expect(left).toHaveAttribute(
+      'id',
+      'catalog-workbench-resizable-left-rail',
+    );
+    const toggle = workbench
+      .locator('.kui-workbench__main')
+      .getByRole('button', { name: /navigator$/ });
+    await expect(toggle).toHaveAttribute(
+      'aria-controls',
+      'catalog-workbench-resizable-left-rail',
+    );
+
+    await left.getByRole('button', { name: 'Hide navigator' }).focus();
+    await page.keyboard.press('Enter');
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+    // Focus lands on the editor toolbar toggle that names the rail, not on
+    // the document body.
+    await expect(toggle).toBeFocused();
+    await expect(toggle).toHaveAccessibleName('Show navigator');
+  });
+
   test('the collapsed console restores from its corner control', async ({
     page,
   }) => {

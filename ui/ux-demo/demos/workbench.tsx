@@ -76,6 +76,18 @@ export function toggleWorkbenchConsole(): boolean {
   return consoleCollapsed.value;
 }
 
+/**
+ * The panel each toggle action shows and hides, by the id the Workbench
+ * derives for it. `aria-controls` names it, which also tells `wireWorkbench`
+ * where focus goes when a panel open at wire-up closes from inside.
+ */
+const CONTROLLED_PANELS: Record<string, string> = {
+  'toggle-workbench-navigator': `${RESIZABLE_WORKBENCH_ID}-left-rail`,
+  'toggle-workbench-inspector': `${RESIZABLE_WORKBENCH_ID}-right-rail`,
+  'toggle-workbench-output': `${RESPONSIVE_DRAWER_WORKBENCH_ID}-bottom-drawer`,
+  'toggle-workbench-console': 'catalog-workbench-collapsed-bottom-drawer',
+};
+
 /** A toggle carrying the standard per-side panel glyph. */
 function panelToggle(
   side: 'left' | 'right' | 'bottom',
@@ -88,6 +100,7 @@ function panelToggle(
     <button
       type="button"
       data-action={action}
+      aria-controls={CONTROLLED_PANELS[action]}
       aria-expanded={String(!collapsed)}
       aria-label={`${collapsed ? 'Show' : 'Hide'} ${name}`}
     >

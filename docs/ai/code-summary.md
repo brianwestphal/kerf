@@ -826,7 +826,9 @@ Workbench plus a `MutationObserver` for late renders and presentation changes)
 and gets its inline state back when it ends, an open overlay closes on
 Escape or an outside press, and opening an overlay closes the other open
 overlays (`exclusiveOverlays`, default on); focus stranded in any wired panel that closes,
-however it closed, returns to its opener or restore control
+however it closed, returns to its opener, its restore control, or a control
+whose `aria-controls` names it (each panel renders `id="<workbench id>-left-rail"`
+etc.)
 (`ui/tests/unit/workbench-overlays.test.ts`).
 `ui/src/workbench-resize.ts` holds the shared panel
 region-id convention, default limits, and default work-area minimum, and `ui/src/resize-grip.tsx` the

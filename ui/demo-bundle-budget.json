@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 289800,
-  "measuredLargestJavaScriptGzip": 140809,
-  "measuredTotalJavaScriptGzip": 289707,
+  "totalJavaScriptGzip": 290000,
+  "measuredLargestJavaScriptGzip": 141084,
+  "measuredTotalJavaScriptGzip": 289972,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -643,6 +643,22 @@
         "measuredTotalJavaScriptGzip": 289707,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 289800
+      }
+    },
+    {
+      "at": "2026-09-27T12:32:27.918Z",
+      "reason": "wireWorkbench exclusive overlays and aria-controls focus fallback; the Workbench demo toggles name their panels",
+      "old": {
+        "measuredLargestJavaScriptGzip": 140809,
+        "measuredTotalJavaScriptGzip": 289707,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 289800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 141084,
+        "measuredTotalJavaScriptGzip": 289972,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 290000
       }
     }
   ]

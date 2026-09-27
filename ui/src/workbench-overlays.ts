@@ -46,7 +46,10 @@ const FOCUSABLE =
  *   panel closes it. Static `presentation: "overlay"` panels are included.
  * - Focus stranded in a panel that closes — however it closed, including
  *   through the app's own control inside it — returns to the control that
- *   had it when the panel opened, else to the panel's restore control.
+ *   had it when the panel opened, else to the panel's restore control, else
+ *   to a control outside it whose `aria-controls` names the panel (or an
+ *   element inside it). The last covers a panel that was already open at
+ *   wire-up, which has no recorded opener.
  * - With `exclusive`, a panel that opens while it presents as an overlay
  *   closes every other open overlay panel, so overlays never cover each
  *   other's controls. Inline panels are never closed by it.
@@ -85,10 +88,33 @@ export function wireWorkbenchOverlays(
     const opener = openers.get(panel);
     if (opener?.isConnected && !element?.contains(opener)) return opener;
     const side = RESTORE_PANELS[panel.key];
-    const restore = findWorkbench()?.querySelector<HTMLElement>(
-      `.kui-workbench__restore[data-panel="${side}"]`,
+    const restore = findWorkbench()
+      ?.querySelector<HTMLElement>(
+        `.kui-workbench__restore[data-panel="${side}"]`,
+      )
+      ?.querySelector<HTMLElement>(FOCUSABLE);
+    return restore ?? (element ? controller(element) : undefined);
+  };
+  /**
+   * A control outside the panel that names it, or an element inside it, in
+   * its `aria-controls`: the app's toggle for a panel with no opener.
+   */
+  const controller = (element: HTMLElement): HTMLElement | undefined => {
+    const ids = new Set(
+      [element, ...element.querySelectorAll('[id]')].map((node) => node.id),
     );
-    return restore?.querySelector<HTMLElement>(FOCUSABLE) ?? undefined;
+    ids.delete('');
+    return [
+      ...ownerDocument.querySelectorAll<HTMLElement>('[aria-controls]'),
+    ].find(
+      (control) =>
+        !element.contains(control) &&
+        control.matches(FOCUSABLE) &&
+        control
+          .getAttribute('aria-controls')!
+          .split(/\s+/)
+          .some((id) => ids.has(id)),
+    );
   };
   const rescueFocus = (panel: WorkbenchOverlayPanel): void => {
     const element = panelElement(panel);

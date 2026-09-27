@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **A `@kerfjs/ui` `Workbench` panel open when `wireWorkbench` wired up no
+  longer drops focus to the page when it closes from inside.** Such a panel
+  had no recorded opener, so without a restore control closing it from its
+  own header left focus on `<body>`. Focus now falls back to a control
+  outside the panel whose `aria-controls` names it (or an element inside it).
+  Each panel renders a stable `id` for that — `<id>-left-rail`,
+  `<id>-right-rail`, and `<id>-bottom-drawer` — so a toggle can name the
+  panel it controls.
 - **`@kerfjs/ui` `wireWorkbench` keeps overlay panels exclusive.** At a narrow
   width two overlay rails could both be open and, together wider than the
   Workbench, the right rail covered the left rail's own close control. Opening

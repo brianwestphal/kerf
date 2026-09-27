@@ -48,6 +48,10 @@ describe('Workbench', () => {
     expect(html).toContain('aria-label="Navigator"');
     expect(html).toContain('aria-label="Inspector"');
     expect(html).toContain('aria-label="Console"');
+    // Each panel's id derives from the Workbench's, for aria-controls.
+    expect(html).toContain('<aside id="wb-left-rail"');
+    expect(html).toContain('<aside id="wb-right-rail"');
+    expect(html).toContain('<section id="wb-bottom-drawer"');
   });
 
   it('defaults collapsed to false and omits an unset size style', () => {

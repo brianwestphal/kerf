@@ -321,7 +321,14 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
     catalog's inspector overlay covered its own editor-toolbar toggle; each
     catalog rail now carries its own close control in its `Pane` header, and
     closing from there must not strand focus in the hidden rail). Internal
-    module `ui/src/workbench-overlays.ts`;
+    module `ui/src/workbench-overlays.ts`. A panel already open at wire-up
+    has no recorded opener (KF-WR9B71: closing it from its own header
+    dropped focus to `<body>`), so after the opener and the restore control
+    the focus fallback is a focusable control outside the panel whose
+    `aria-controls` tokens name the panel or an element inside it. To make
+    that nameable, every Workbench panel renders an `id` equal to its region
+    id (`<workbench id>-left-rail` / `-right-rail` / `-bottom-drawer`, the
+    same string as a resizable panel's `data-region-id`);
   - exclusive overlays (KF-5S6ZW7: at 390px the catalog's navigator (240px)
     and inspector (160px) overlays were wider than the Workbench together, so
     the right rail covered the navigator's own header close control).

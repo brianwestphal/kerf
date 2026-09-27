@@ -1103,6 +1103,11 @@ interface WorkbenchPanel {
     restorePosition?: ResizableRegionRestorePosition;
 }
 interface WorkbenchProps {
+    /**
+     * The Workbench's `id`. Each panel's `id` derives from it —
+     * `<id>-left-rail`, `<id>-right-rail`, `<id>-bottom-drawer` — so a toggle
+     * can name the panel it shows and hides with `aria-controls`.
+     */
     id: string;
     label: string;
     /** The central work area. */
@@ -1213,8 +1218,10 @@ interface WireWorkbenchOptions {
      * or a press that starts and ends outside it. Focus stranded in a closing
      * panel — however it closed, the app's own control inside it included —
      * returns to the control that had it when the panel opened, else to the
-     * panel's restore control. `false` leaves every `collapsed` write to the
-     * app.
+     * panel's restore control, else to a control outside the panel whose
+     * `aria-controls` names it (each panel's `id` is its region id, e.g.
+     * `studio-left-rail`) — the fallback for a panel already open at wire-up.
+     * `false` leaves every `collapsed` write to the app.
      */
     dismissOverlays?: boolean;
     /**
