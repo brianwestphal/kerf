@@ -618,6 +618,95 @@ test.describe('resizable Workbench panels', () => {
     await expect(showInspector).toBeFocused();
   });
 
+  test('overlay rails stack above an overlay drawer, the right rail above the left', async ({
+    page,
+  }, testInfo) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const left = workbench.locator('[data-workbench-rail="left"]');
+    const right = workbench.locator('[data-workbench-rail="right"]');
+    const drawer = workbench.locator('[data-workbench-drawer]');
+    await workbench.scrollIntoViewIfNeeded();
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+
+    // Open both rails from the editor toolbar by keyboard (a keyboard click
+    // is no outside press, so the first stays open), then present the
+    // console as an overlay too. Opening a rail re-renders, so the drawer's
+    // attribute goes on last.
+    for (const name of ['Show navigator', 'Show inspector']) {
+      await workbench
+        .locator('.kui-workbench__main')
+        .getByRole('button', { name })
+        .focus();
+      await page.keyboard.press('Enter');
+    }
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    await expect(right).toHaveAttribute('data-collapsed', 'false');
+    await drawer.evaluate((element) => {
+      element.dataset.responsiveOverlayAt = 'narrow';
+    });
+    for (const panel of [left, right, drawer])
+      await expect(panel).toHaveCSS('position', 'absolute');
+
+    const owner = (x: number, y: number) =>
+      page.evaluate(
+        ([px, py]) => {
+          const hit = document.elementFromPoint(px!, py!);
+          const panel = hit?.closest(
+            '[data-workbench-rail], [data-workbench-drawer]',
+          );
+          if (!panel) return null;
+          return panel.hasAttribute('data-workbench-drawer')
+            ? 'drawer'
+            : `rail-${panel.getAttribute('data-workbench-rail')}`;
+        },
+        [x, y],
+      );
+    const box = (await workbench.boundingBox())!;
+    const drawerBox = (await drawer.boundingBox())!;
+    const leftBox = (await left.boundingBox())!;
+    const rightBox = (await right.boundingBox())!;
+    const bottom = drawerBox.y + drawerBox.height - 12;
+    // Each rail covers the drawer where they meet in a bottom corner.
+    expect(await owner(leftBox.x + 12, bottom)).toBe('rail-left');
+    expect(await owner(rightBox.x + rightBox.width - 12, bottom)).toBe(
+      'rail-right',
+    );
+    // The drawer still shows between them where no rail reaches, if any.
+    if (rightBox.x > leftBox.x + leftBox.width)
+      expect(
+        await owner((leftBox.x + leftBox.width + rightBox.x) / 2, bottom),
+      ).toBe('drawer');
+    // Where the rails overlap each other, the right rail is on top.
+    expect(leftBox.x + leftBox.width).toBeGreaterThan(rightBox.x);
+    expect(await owner(rightBox.x + 4, box.y + box.height / 3)).toBe(
+      'rail-right',
+    );
+    // The order does not depend on which opened last: reopen the navigator.
+    // (The right rail covers the navigator's own close control, so by key.)
+    await left.getByRole('button', { name: 'Hide navigator' }).focus();
+    await page.keyboard.press('Enter');
+    await expect(left).toHaveAttribute('data-collapsed', 'true');
+    await workbench
+      .locator('.kui-workbench__main')
+      .getByRole('button', { name: 'Show navigator' })
+      .focus();
+    await page.keyboard.press('Enter');
+    await expect(left).toHaveAttribute('data-collapsed', 'false');
+    await drawer.evaluate((element) => {
+      element.dataset.responsiveOverlayAt = 'narrow';
+    });
+    await expect(drawer).toHaveCSS('position', 'absolute');
+    expect(await owner(leftBox.x + 12, bottom)).toBe('rail-left');
+    expect(await owner(rightBox.x + 4, box.y + box.height / 3)).toBe(
+      'rail-right',
+    );
+    if (testInfo.project.name === 'chromium')
+      await workbench.screenshot({
+        path: 'test-results/workbench-overlay-stacking.png',
+      });
+  });
+
   test("an overlay rail closes from its own header's control and returns focus", async ({
     page,
   }, testInfo) => {

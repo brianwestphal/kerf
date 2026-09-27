@@ -17,6 +17,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   containing block; an app that positions the container itself keeps its own
   `position`. As in `Workbench`, the corner owns the inset, so a
   `FloatingToolbar` hosting the control no longer doubles it.
+- A `@kerfjs/ui` `Workbench` now stacks overlay rails above an overlay bottom
+  drawer. With the drawer and a rail both presented as overlays, their order
+  followed the markup, so the drawer covered the left rail while the right
+  rail covered the drawer. Both rails now stack above the drawer, mirroring
+  the inline layout where rails span the full height beside the drawer's
+  column, and the right rail stacks above the left; restore controls stay
+  above every overlay. The drawer's overlay z-index is now one less than
+  `--kui-workbench-overlay-z`.
 - **A `@kerfjs/ui` `Workbench` overlay rail can always be closed from inside
   itself.** At a narrow width, the UX catalog's inspector overlay covered the
   editor toolbar's "Hide inspector" toggle, leaving only Escape or an outside

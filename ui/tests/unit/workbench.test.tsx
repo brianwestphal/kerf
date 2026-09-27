@@ -661,6 +661,7 @@ describe('Workbench', () => {
     expect(
       decls('.kui-workbench__drawer[data-presentation="overlay"]'),
     ).toEqual({
+      'z-index': 'calc(var(--kui-workbench-overlay-z, 41) - 1)',
       height: 'var(--_kui-workbench-drawer-extent)',
       'inset-inline': '0',
       'inset-block-end': '0',
@@ -673,6 +674,51 @@ describe('Workbench', () => {
       height: '100%',
       background: 'var(--kui-color-surface)',
     });
+  });
+
+  it('stacks overlay rails above an overlay drawer, and restore controls above both', async () => {
+    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const normalize = (selector: string) => selector.replace(/\s+/g, ' ');
+    /** The z-index of every rule for `selector`, static or in a query. */
+    const zIndexes = (selector: string) => {
+      const found: string[] = [];
+      css.walkRules((rule) => {
+        if (
+          !normalize(rule.selector)
+            .split(', ')
+            .some((part) => part.trim() === selector)
+        )
+          return;
+        rule.walkDecls('z-index', (decl) => {
+          found.push(decl.value);
+        });
+      });
+      return found;
+    };
+    const RAIL_Z = 'var(--kui-workbench-overlay-z, 41)';
+    const DRAWER_Z = 'calc(var(--kui-workbench-overlay-z, 41) - 1)';
+    // A static overlay: the shared rule gives the rail the overlay z-index,
+    // and the drawer's own rule, later in the file, lowers it by one.
+    expect(
+      zIndexes('.kui-workbench__rail[data-presentation="overlay"]'),
+    ).toEqual([RAIL_Z]);
+    expect(
+      zIndexes('.kui-workbench__drawer[data-presentation="overlay"]'),
+    ).toEqual([RAIL_Z, DRAWER_Z]);
+    // A responsive overlay at each breakpoint: the same order.
+    for (const at of ['narrow', 'compact']) {
+      expect(
+        zIndexes(`.kui-workbench__rail[data-responsive-overlay-at="${at}"]`),
+      ).toEqual([RAIL_Z]);
+      expect(
+        zIndexes(`.kui-workbench__drawer[data-responsive-overlay-at="${at}"]`),
+      ).toEqual([DRAWER_Z]);
+    }
+    // Restore controls stay above every overlay.
+    expect(zIndexes('.kui-workbench__restore')).toEqual([
+      'var(--kui-workbench-restore-z, 42)',
+    ]);
   });
 
   it('drops a collapsed static overlay rail surface so it covers nothing', async () => {

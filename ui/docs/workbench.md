@@ -76,7 +76,12 @@ an optional `label`. Common shell behavior is configured rather than restyled:
   decides, so the app needs no `deviceClass` check for presentation; a
   collapsed overlay drops its surface and shadow so nothing covers the work
   area, and the work area keeps the safe-area inset of the edge the overlay
-  covers;
+  covers. When overlays meet, the order is fixed rather than by which opened
+  last: both rails stack above the drawer, as inline rails span the
+  Workbench's full height beside the drawer's column, and the right rail
+  stacks above the left. Rails take `--kui-workbench-overlay-z` (41), the
+  drawer one less, and restore controls `--kui-workbench-restore-z` (42),
+  above every overlay;
 - `restoreControl` places an application-owned restore affordance in a
   corner of the Workbench itself while the panel is collapsed
   (`restorePosition` chooses the corner), inset by

@@ -322,6 +322,16 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
     catalog rail now carries its own close control in its `Pane` header, and
     closing from there must not strand focus in the hidden rail). Internal
     module `ui/src/workbench-overlays.ts`;
+  - overlay stacking order (KF-3FM7G6: with the drawer and a rail both
+    overlays, their order followed document order, so the drawer covered the
+    left rail while the right rail covered the drawer): both rails stack above
+    the drawer, as inline rails span the Workbench's full height beside the
+    drawer's column, and the right rail above the left (document order at an
+    equal z-index). Rails keep `--kui-workbench-overlay-z` (default 41), the
+    drawer takes that value minus one (static and responsive overlays alike),
+    and restore controls stay at `--kui-workbench-restore-z` (42), above every
+    overlay. The order is static CSS, not most-recently-opened, so it needs no
+    wiring;
   - the wire matches only its own panels by Workbench `id`, so it never
     double-drives a `ResizableRegion` or another Workbench under the same root;
   - the work area keeps a minimum width beside resizable rails (KF-D79A29:

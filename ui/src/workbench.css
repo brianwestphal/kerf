@@ -420,6 +420,10 @@
   opacity: 1;
 }
 
+/* Overlay stacking order: both rails stack above the bottom drawer, one below
+   the overlay z-index, as inline rails span the Workbench's full height beside
+   the drawer's column; the right rail stacks above the left (document order);
+   restore controls stack above every overlay. */
 .kui-workbench__rail[data-presentation="overlay"],
 .kui-workbench__drawer[data-presentation="overlay"] {
   position: absolute;
@@ -448,6 +452,7 @@
    an out-of-flow drawer has no content height of its own: it takes its extent
    explicitly, as the in-flow track does through its flex basis. */
 .kui-workbench__drawer[data-presentation="overlay"] {
+  z-index: calc(var(--kui-workbench-overlay-z, 41) - 1);
   height: var(--_kui-workbench-drawer-extent);
   inset-inline: 0;
   inset-block-end: 0;
@@ -549,7 +554,7 @@
 
   .kui-workbench__drawer[data-responsive-overlay-at="narrow"] {
     position: absolute;
-    z-index: var(--kui-workbench-overlay-z, 41);
+    z-index: calc(var(--kui-workbench-overlay-z, 41) - 1);
     height: var(--_kui-workbench-drawer-extent);
     max-height: var(--kui-workbench-overlay-max-height, 85vh);
     inset-inline: 0;
@@ -633,7 +638,7 @@
 
   .kui-workbench__drawer[data-responsive-overlay-at="compact"] {
     position: absolute;
-    z-index: var(--kui-workbench-overlay-z, 41);
+    z-index: calc(var(--kui-workbench-overlay-z, 41) - 1);
     height: var(--_kui-workbench-drawer-extent);
     max-height: var(--kui-workbench-overlay-max-height, 85vh);
     inset-inline: 0;
