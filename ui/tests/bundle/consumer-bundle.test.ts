@@ -553,6 +553,11 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./wire-tab-scaffold']).toMatchObject({
       import: './dist/wire-tab-scaffold.js',
     });
+    expect(pkg.exports['./wire-workbench']).toMatchObject({
+      types: './dist/wire-workbench.d.ts',
+      import: './dist/wire-workbench.js',
+    });
+    expect(pkg.exports['./wire-workbench']).not.toHaveProperty('browser');
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
     expect(pkg.exports['./list.css']).toBe('./dist/styles/list.css');
     expect(pkg.exports['./row']).toMatchObject({

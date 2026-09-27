@@ -150,3 +150,172 @@ test('bottom drawer opens and closes monotonically from one bottom anchor', asyn
     Math.abs(samples.closing.frames.at(-1)!.distanceFromBottom),
   ).toBeLessThan(1.5);
 });
+
+test.describe('resizable Workbench panels', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto('/?component=workbench');
+  });
+
+  test('resizing is off by default: fixed panels render no separator handle', async ({
+    page,
+  }) => {
+    await expect(
+      page.locator('#catalog-workbench-full [data-kui-resize-handle]'),
+    ).toHaveCount(0);
+    await expect(
+      page.locator('#catalog-workbench-full [data-resizable]'),
+    ).toHaveCount(0);
+    await expect(
+      page.locator('#catalog-workbench-resizable [data-kui-resize-handle]'),
+    ).toHaveCount(2);
+  });
+
+  test('keyboard resizing steps, accelerates, and clamps to the limits', async ({
+    page,
+  }) => {
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const rail = workbench.locator('[data-workbench-rail="left"]');
+    const handle = workbench.getByRole('separator', {
+      name: 'Resize Navigator',
+    });
+    await expect(rail).toHaveCSS('width', '240px');
+    await handle.focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(rail).toHaveCSS('width', '256px');
+    await expect(handle).toHaveAttribute('aria-valuenow', '256');
+    await page.keyboard.press('Shift+ArrowLeft');
+    await expect(rail).toHaveCSS('width', '192px');
+    await page.keyboard.press('Shift+ArrowLeft');
+    await expect(rail).toHaveCSS('width', '180px');
+    await page.keyboard.press('End');
+    await expect(rail).toHaveCSS('width', '400px');
+    await page.keyboard.press('ArrowRight');
+    await expect(handle).toHaveAttribute('aria-valuenow', '400');
+
+    const drawer = workbench.locator('[data-workbench-drawer]');
+    const drawerHandle = workbench.getByRole('separator', {
+      name: 'Resize Console',
+    });
+    await expect(drawer).toHaveCSS('height', '160px');
+    await drawerHandle.focus();
+    await page.keyboard.press('ArrowUp');
+    await expect(drawer).toHaveCSS('height', '176px');
+    await page.keyboard.press('Home');
+    await expect(drawer).toHaveCSS('height', '120px');
+  });
+
+  test('pointer drags resize live, straddle the separator, and clamp', async ({
+    page,
+  }) => {
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const rail = workbench.locator('[data-workbench-rail="left"]');
+    const handle = rail.locator('[data-kui-resize-handle]');
+    await workbench.scrollIntoViewIfNeeded();
+    const railBox = (await rail.boundingBox())!;
+    const box = (await handle.boundingBox())!;
+    // The 20px hit target is centered on the rail's inner edge, reaching past
+    // the clipped rail into the work area where the engine can extend the
+    // clip; elsewhere it sits wholly inside the rail's edge.
+    const straddles = await page.evaluate(() =>
+      CSS.supports('overflow-clip-margin', '10px'),
+    );
+    expect(box.width).toBe(20);
+    expect(
+      Math.abs(
+        box.x + box.width / 2 - (railBox.x + 240 - (straddles ? 0 : 10)),
+      ),
+    ).toBeLessThanOrEqual(1);
+    const y = box.y + box.height / 2;
+    const x = box.x + box.width / 2;
+    await page.mouse.move(x, y);
+    await page.mouse.down();
+    await page.mouse.move(x + 50, y, { steps: 5 });
+    await expect(rail).toHaveAttribute('data-resizing', 'true');
+    await expect(rail).toHaveCSS('width', '290px');
+    await page.mouse.up();
+    await expect(rail).not.toHaveAttribute('data-resizing', 'true');
+    await expect(rail).toHaveCSS('width', '290px');
+    await expect(handle).toHaveAttribute('aria-valuenow', '290');
+
+    await page.mouse.move(x + 50, y);
+    await page.mouse.down();
+    await page.mouse.move(x + 600, y, { steps: 5 });
+    await page.mouse.up();
+    await expect(rail).toHaveCSS('width', '400px');
+
+    const drawer = workbench.locator('[data-workbench-drawer]');
+    const drawerBox = (await drawer
+      .locator('[data-kui-resize-handle]')
+      .boundingBox())!;
+    const dx = drawerBox.x + drawerBox.width / 2;
+    const dy = drawerBox.y + drawerBox.height / 2;
+    await page.mouse.move(dx, dy);
+    await page.mouse.down();
+    await page.mouse.move(dx, dy - 40, { steps: 4 });
+    await page.mouse.up();
+    await expect(drawer).toHaveCSS('height', '200px');
+  });
+
+  test('collapsing keeps the size and expanding restores it', async ({
+    page,
+  }) => {
+    const workbench = page.locator('#catalog-workbench-resizable');
+    const rail = workbench.locator('[data-workbench-rail="left"]');
+    const handle = rail.locator('[data-kui-resize-handle]');
+    await handle.focus();
+    await page.keyboard.press('Shift+ArrowRight');
+    await expect(rail).toHaveCSS('width', '304px');
+
+    await workbench.getByRole('button', { name: 'Hide navigator' }).click();
+    await expect(rail).toHaveAttribute('data-collapsed', 'true');
+    await expect(rail).toHaveCSS('width', '0px');
+    await expect(handle).toBeHidden();
+    await expect(handle).toHaveAttribute('tabindex', '-1');
+    // A collapsed panel ignores resize keys.
+    await handle.evaluate((element) =>
+      element.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'End', bubbles: true }),
+      ),
+    );
+
+    await workbench.getByRole('button', { name: 'Show navigator' }).click();
+    await expect(rail).toHaveAttribute('data-collapsed', 'false');
+    await expect(rail).toHaveCSS('width', '304px');
+    await expect(handle).toHaveAttribute('tabindex', '0');
+  });
+
+  test('persists committed sizes across a reload', async ({ page }) => {
+    const workbench = page.locator('#catalog-workbench-resizable');
+    await workbench
+      .getByRole('separator', { name: 'Resize Navigator' })
+      .focus();
+    await page.keyboard.press('Shift+ArrowRight');
+    await workbench.getByRole('separator', { name: 'Resize Console' }).focus();
+    await page.keyboard.press('ArrowUp');
+    await expect
+      .poll(() =>
+        page.evaluate(() => [
+          window.localStorage.getItem('kerf-ui-demo.workbench.navigator'),
+          window.localStorage.getItem('kerf-ui-demo.workbench.console'),
+        ]),
+      )
+      .toEqual(['304', '176']);
+
+    await page.reload();
+    await expect(
+      page.locator('#catalog-workbench-resizable [data-workbench-rail="left"]'),
+    ).toHaveCSS('width', '304px');
+    await expect(
+      page.locator('#catalog-workbench-resizable [data-workbench-drawer]'),
+    ).toHaveCSS('height', '176px');
+  });
+
+  test('compact viewports present no resizable shell', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.locator('#catalog-workbench-resizable')).toBeHidden();
+    await expect(
+      page.getByText('Resizable rails are a desktop affordance.'),
+    ).toBeVisible();
+  });
+});

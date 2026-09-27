@@ -851,20 +851,23 @@
       "category": "Structure",
       "kind": "component",
       "source": "kerf",
-      "description": "A desktop-class multi-panel workspace with independently collapsible left and right rails and a bottom drawer around one central work area.",
+      "description": "A desktop-class multi-panel workspace with independently collapsible, optionally drag-resizable left and right rails and a bottom drawer around one central work area.",
       "uses": [],
       "purpose": "Arrange a complex tool or editor as a stable central work area with optional peripheral rails and a bottom drawer.",
       "publicExports": [
         "Workbench",
         "WorkbenchPanel",
+        "WorkbenchPanelResizable",
         "WorkbenchProps"
       ],
       "useWhen": [
-        "A desktop-class tool needs a central work area plus independently collapsible navigator, inspector, or console regions."
+        "A desktop-class tool needs a central work area plus independently collapsible navigator, inspector, or console regions.",
+        "A desktop-class tool should let people size its peripheral panels by dragging or with the keyboard; opt each panel in with resizable and wire it with wireWorkbench."
       ],
       "avoidWhen": [
         "Do not shrink the full multi-panel shell onto compact devices; present peripheral content through NavStack or overlay drawers instead.",
-        "Do not use Workbench for one standalone collapsible rail or drawer; use CollapsiblePanel."
+        "Do not use Workbench for one standalone collapsible rail or drawer; use CollapsiblePanel.",
+        "Do not offer resizing where rails present as compact overlay drawers or are replaced; pass deviceClass so wireWorkbench suspends resizing on compact classes."
       ],
       "alternatives": [
         {
@@ -887,6 +890,7 @@
         "bottom drawer",
         "all panels",
         "independently collapsed panels",
+        "opt-in drag and keyboard resizable panels with min/max limits",
         "hidden separator",
         "slide, fade-slide, or instant content",
         "clipped, scrolling, or popup-visible content",
@@ -896,7 +900,8 @@
       ],
       "accessibility": [
         "Give the Workbench and each meaningful rail or drawer an accessible label.",
-        "Keep collapse controls outside the disappearing region and move focus when a controlled rerender replaces a collapse control with its restore control."
+        "Keep collapse controls outside the disappearing region and move focus when a controlled rerender replaces a collapse control with its restore control.",
+        "A resizable panel's separator is a focusable role=\"separator\" with its size in aria-valuenow and limits in aria-valuemin/aria-valuemax; arrow keys resize by 16px, Shift+arrow by 64px, and Home/End jump to the limits. It leaves the tab order while its panel is collapsed or not inline."
       ],
       "geometry": {
         "margin": "none",
@@ -913,7 +918,25 @@
           "manual-css"
         ]
       },
-      "wiring": [],
+      "wiring": [
+        {
+          "export": "wireWorkbench",
+          "import": "@kerfjs/ui/wire-workbench",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-handle-inset",
+              "on": "kui-workbench__rail",
+              "meaning": "Written by the shared resize wiring only when a parent clamps a panel's track below its size. Workbench panel tracks never shrink, so it carries no Workbench styling."
+            },
+            {
+              "name": "data-resizing",
+              "on": "kui-workbench__rail",
+              "meaning": "Present on a resizable rail or the drawer while a pointer drag resizes it."
+            }
+          ]
+        }
+      ],
       "publicClasses": [
         "kui-workbench",
         "kui-workbench__rail",
@@ -923,6 +946,8 @@
         "kui-workbench__center",
         "kui-workbench__main",
         "kui-workbench__panel-content",
+        "kui-workbench__handle",
+        "kui-workbench__handle-icon",
         "kui-workbench__restore"
       ],
       "publicTokens": [
@@ -3492,7 +3517,10 @@
           "canonicalShorthands": [],
           "exceptionalShorthands": [],
           "rawPolicy": "forbid",
-          "examples": ["color: uiColor(\"success-on-quiet\")", "color: foregroundColorVar(\"--app-choice-color\")"]
+          "examples": [
+            "color: uiColor(\"success-on-quiet\")",
+            "color: foregroundColorVar(\"--app-choice-color\")"
+          ]
         }
       ],
       "useWhen": [

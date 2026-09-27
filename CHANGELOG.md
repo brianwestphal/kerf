@@ -43,6 +43,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   may live inside a mounted tree: the enclosing mount's morph, nesting guard,
   and binding and `each()` marker scans all stop there. The `kerfjs/dev`
   `inert` warning now fires only when no slot was used.
+- `@kerfjs/ui` `Workbench` rails and the bottom drawer can be drag-resized,
+  as an opt-in per panel. `WorkbenchPanel` gains `resizable: true | { min, max }`
+  (off by default, so existing Workbenches render unchanged); a resizable panel
+  gets a separator on its inner edge with the same focusable
+  `role="separator"` contract, grip, and 20px hit target as a
+  `ResizableRegion` handle. The new `@kerfjs/ui/wire-workbench` subpath's
+  `wireWorkbench(root, { id, panels, deviceClass?, storage?, onResize? })`
+  drives it: live pointer drags, arrow / Shift+arrow / Home / End keys,
+  clamping to the limits, and commits to the app-owned size signals, with
+  optional `storageKey` persistence. Collapsing keeps a panel's size, so it
+  expands back to the size it had, and resizing is suspended on compact device
+  classes and for overlay or hidden panels. The UX catalog's Workbench page
+  adds a resizable example. `wireResizableRegions` now drives only handles that
+  are direct children of a `ResizableRegion`, so it never double-drives a
+  Workbench separator under the same root.
 - `@kerfjs/ui` elevation shadows follow the color scheme, with or without the
   optional `@kerfjs/ui/webawesome.css` theme. Kerf's theme layer set
   `--wa-shadow-s` / `-m` / `-l` to fixed light-mode shadows (14%, 11%, and 9%

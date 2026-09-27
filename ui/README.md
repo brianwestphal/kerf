@@ -203,6 +203,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `TabScaffold`                                                       | `@kerfjs/ui/tab-scaffold`               | `@kerfjs/ui/tab-scaffold.css`          |
 | `wireTabScaffold`                                                   | `@kerfjs/ui/wire-tab-scaffold`          | —                                      |
 | `Workbench`                                                         | `@kerfjs/ui/workbench`                  | `@kerfjs/ui/workbench.css`             |
+| `wireWorkbench`                                                     | `@kerfjs/ui/wire-workbench`             | —                                      |
 | `CollapsiblePanel`, `CollapsiblePanelToggle`                        | `@kerfjs/ui/collapsible-panel`          | `@kerfjs/ui/collapsible-panel.css`     |
 | `wireSidebar`                                                       | `@kerfjs/ui/wire-sidebar`               | —                                      |
 | Content and navigation composition                                  | —                                       | `@kerfjs/ui/layout.css`                |

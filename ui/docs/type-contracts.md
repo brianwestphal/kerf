@@ -69,7 +69,8 @@ ordinary source/type gates:
   `FloatingToolbar`, `Pane`, `ResizableRegion`, `SegmentedControl`, `StateBanner`,
   `SunkenPanel`, `ToolbarText`, `CollapsiblePanel`, `Catalog`, and the wire helpers;
 - required controlled-state callbacks on `wireResizableRegions`, `wireTabBars`,
-  and `wireTabScaffold`;
+  and `wireTabScaffold`, and the required app-owned size signals on
+  `wireWorkbench`;
 - mutually exclusive count/badge metadata on `ListHeader`; and
 - protected application metadata boundaries on `AppTab`, `ListItem`,
   `ListActionRow`, `ListHeader`, `Pane`, `CatalogExample`, and

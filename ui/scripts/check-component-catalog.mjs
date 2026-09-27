@@ -230,6 +230,17 @@ for (const entry of artifact.entries) {
       fail(`${entry.id}: ${item.export} source ${file} is missing`);
       continue;
     }
+    // A wire may delegate to a shared internal implementation module (the
+    // resize wiring behind wireResizableRegions and wireWorkbench); what that
+    // module writes is what the wire writes.
+    for (const [, module] of source.matchAll(
+      /^import\s+\{[^}]*\}\s+from\s+'\.\/([a-z0-9-]+)\.js';/gm,
+    ))
+      if (!module.startsWith('wire-'))
+        source += await readFile(
+          resolve(root, `src/${module}.ts`),
+          'utf8',
+        ).catch(() => '');
     const written = writtenDataAttributes(source);
     const declared = new Set(
       (item.stateAttributes ?? []).map(({ name }) => name),

@@ -1,7 +1,12 @@
 import '@kerfjs/ui/workbench.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { Pane } from '@kerfjs/ui/pane';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { Workbench } from '@kerfjs/ui/workbench';
+import { signal } from 'kerfjs';
 
 import { DemoContentItem } from './demo-content-item.js';
 
@@ -10,6 +15,53 @@ const region = (title: string, detail: string) => (
     <DemoContentItem title={title} detail={detail} />
   </div>
 );
+
+/** The resizable example's id, which `wireWorkbench` targets. */
+export const RESIZABLE_WORKBENCH_ID = 'catalog-workbench-resizable';
+/** App-owned sizes for the resizable example; `wireWorkbench` commits to them. */
+export const workbenchNavigatorSize = signal(240);
+export const workbenchConsoleSize = signal(160);
+const navigatorCollapsed = signal(false);
+
+/** Start each visit expanded; the remembered sizes are the wiring's to restore. */
+export function resetWorkbenchDemo(): void {
+  navigatorCollapsed.value = false;
+}
+
+export function toggleWorkbenchNavigator(): boolean {
+  navigatorCollapsed.value = !navigatorCollapsed.value;
+  return navigatorCollapsed.value;
+}
+
+function resizableEditor() {
+  const collapsed = navigatorCollapsed.value;
+  return (
+    <Pane
+      header={
+        <Toolbar
+          label="Editor"
+          leading={<ToolbarText text="Editor" size="xlarge" />}
+          trailing={
+            <ToolbarControlGroup appearance="borderless" single>
+              <button
+                type="button"
+                data-action="toggle-workbench-navigator"
+                aria-pressed={String(!collapsed)}
+              >
+                {collapsed ? 'Show navigator' : 'Hide navigator'}
+              </button>
+            </ToolbarControlGroup>
+          }
+        />
+      }
+    >
+      {region(
+        'Resize the navigator and console',
+        'Drag a separator, or focus it and use the arrow keys, Home, or End. A hidden navigator returns at its last width.',
+      )}
+    </Pane>
+  );
+}
 
 export function WorkbenchDemo() {
   return (
@@ -46,6 +98,39 @@ export function WorkbenchDemo() {
           bottomDrawer={{
             label: 'Console',
             content: region('Console', 'Build output and diagnostics'),
+          }}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Resizable panels"
+        note="Resizing is opt-in per panel. The navigator and console opt in, and wireWorkbench drives their separators; panels without resizable keep a fixed size."
+        align="none"
+        compactFallback="Resizable rails are a desktop affordance. Compact layouts present rails as overlay drawers, which do not resize."
+        viewport={{
+          layout: 'grid',
+          width: 'full',
+          height: 'tall',
+          frame: 'solid',
+          surface: 'lowered',
+          responsive: 'roomy-only',
+        }}
+      >
+        <Workbench
+          id={RESIZABLE_WORKBENCH_ID}
+          label="Resizable workbench"
+          leftRail={{
+            label: 'Navigator',
+            content: region('Navigator', '180–400 px wide'),
+            collapsed: navigatorCollapsed.value,
+            size: workbenchNavigatorSize.value,
+            resizable: { min: 180, max: 400 },
+          }}
+          main={resizableEditor()}
+          bottomDrawer={{
+            label: 'Console',
+            content: region('Console', '120–320 px tall'),
+            size: workbenchConsoleSize.value,
+            resizable: { min: 120, max: 320 },
           }}
         />
       </CatalogExample>

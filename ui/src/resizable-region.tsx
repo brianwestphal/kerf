@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { ResizeGrip } from './resize-grip.js';
 import type { KerfUiContent } from './semantic-content.js';
 
 export type ResizableRegionAxis = 'horizontal' | 'vertical';
@@ -47,31 +48,6 @@ export const resizeRegionFromPointer = (
   delta: number,
   edge: ResizableRegionEdge,
 ) => startSize + delta * (edge === 'start' ? -1 : 1);
-
-function ResizeGrip({ axis }: { axis: ResizableRegionAxis }) {
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-    >
-      {axis === 'horizontal' ? (
-        <>
-          <path d="M9 6v12"></path>
-          <path d="M15 6v12"></path>
-        </>
-      ) : (
-        <>
-          <path d="M6 9h12"></path>
-          <path d="M6 15h12"></path>
-        </>
-      )}
-    </svg>
-  );
-}
 
 export function ResizableRegion({
   id,

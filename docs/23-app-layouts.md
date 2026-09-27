@@ -231,17 +231,38 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
   width animation. The bottom drawer uses the vertical analogue while anchoring
   its fixed-height content to the shell's stable bottom edge, so the layout
   origin cannot move underneath the transform transition.
-- **The collapse is pure CSS — there is no `wireWorkbench`.** The app owns each
-  panel's `collapsed` flag and re-renders; the component reflects it as
-  `data-collapsed` and the stylesheet animates the change.
-- **Panels are plain, fixed-size regions, not `ResizableRegion`s.** A panel's
-  `size` sets the rail width or drawer height in px (overriding the CSS
-  default); there is no drag-to-resize. Panels reuse `ResizableRegion`'s
+- **The collapse is pure CSS.** The app owns each panel's `collapsed` flag and
+  re-renders; the component reflects it as `data-collapsed` and the stylesheet
+  animates the change. No wire is involved.
+- **Panels are fixed-size by default.** A panel's `size` sets the rail width or
+  drawer height in px (overriding the CSS default). Panels reuse `ResizableRegion`'s
   presentation vocabulary as options — `separator` (`auto` | `hidden`),
   `collapseMotion` (`none` | `slide` | `fade-slide`), `contentOverflow`
   (`clip` | `auto` | `visible`), `presentation` (`inline` | `overlay` |
   `hidden`) — plus an optional `restoreControl` shown in a safe-area-aware
   corner (`restorePosition`) while the panel is collapsed.
+- **Resizing is opt-in and configurable per panel (KF-2FG7VB: drag-resizable
+  Workbench rails).** `resizable: true | { min, max }` (defaults: rails
+  180–480px, drawer 120–480px) gives the panel a separator on its inner edge
+  with the `ResizableRegion` handle contract (`role="separator"`,
+  `aria-valuenow/min/max`, a 20px hit target, the dormant grip). The app owns
+  the size as a signal and renders `size={signal.value}`; `wireWorkbench`
+  (`@kerfjs/ui/wire-workbench`) drives the separator through the same internal
+  resize wiring as `wireResizableRegions` — live pointer drag with
+  `data-resizing`, arrow/Shift+arrow/Home/End keys, clamping to the limits —
+  and commits each resize to the signal. Rules:
+  - off by default: a panel without `resizable` renders no handle and no resize
+    attributes, byte-identical to before;
+  - collapse keeps the size: the size stays on the collapsed panel (its content
+    slides out at that width), the handle leaves the tab order, and expanding
+    restores the last size;
+  - optional persistence (`storageKey` + `storage`, default `localStorage`)
+    loads the size at wire-up and saves every change, like `wireSidebar`;
+  - no resizing where rails become drawers: an overlay or hidden panel's handle
+    is hidden and inert, and with `deviceClass` the wire suspends resizing while
+    `compact` is true;
+  - the wire matches only its own panels by Workbench `id`, so it never
+    double-drives a `ResizableRegion` or another Workbench under the same root.
 - Appropriate for **desktop-size devices**. On smaller classes the guidance is to
   present the rails' contents through a different layout (a `NavStack` or overlay
   drawers), not to shrink the three-panel shell.
@@ -258,6 +279,15 @@ Shipped shape:
   bottomDrawer={{ content: <Console />, label: "Console", collapsed: consoleCollapsed.value }}
 />
 // toggle: leftCollapsed.value = !leftCollapsed.value (the app owns every flag)
+
+// opt-in resizing: resizable + an app-owned size signal, driven by wireWorkbench
+<Workbench
+  id="ide"
+  label="Editor workspace"
+  main={<Editor />}
+  leftRail={{ content: <Nav />, label: "Navigator", size: navSize.value, resizable: { min: 200, max: 420 } }}
+/>
+// once: wireWorkbench(root, { id: "ide", panels: { leftRail: { size: navSize, storageKey: "ide.nav" } }, deviceClass: device });
 ```
 
 **Implementation:** ticket **Workbench (multi-panel) layout**.
@@ -403,7 +433,7 @@ tablet — "one pane at a time"):
 | --------------------- | ---------------------------------- | ------------------------------- | ------------------------------------------ | --------------------------------------- |
 | `NavStack`            | stack                              | stack                           | stack                                      | stack (or one column of a larger shell) |
 | `SplitView`           | → NavStack                         | → NavStack (full-screen detail) | two panes (detail may not be full-screen)  | two panes, resizable                    |
-| `Workbench`           | not recommended → NavStack/overlay | rails as overlay drawers        | left rail inline; right/bottom as overlays | full three-panel                        |
+| `Workbench`           | not recommended → NavStack/overlay | rails as overlay drawers        | left rail inline; right/bottom as overlays | full three-panel, opt-in resizable      |
 | `TabScaffold`         | bottom tabs + per-tab stacks       | bottom tabs                     | promote tabs to rail                       | promote tabs to sidebar/`Workbench`     |
 | Dialog w/ `SplitView` | full-screen modal                  | full-screen modal               | large partial-cover modal                  | inline two-pane dialog                  |
 

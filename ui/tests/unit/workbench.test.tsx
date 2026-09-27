@@ -191,4 +191,122 @@ describe('Workbench', () => {
     );
     expect(hiddenRails.match(/aria-hidden="true"/g)).toHaveLength(2);
   });
+
+  it('keeps resizing off by default: no handle and no resize contract', () => {
+    const html = String(
+      Workbench({
+        id: 'wb',
+        label: 'Studio',
+        main,
+        leftRail: { content: panel('nav'), size: 300 },
+        bottomDrawer: { content: panel('console'), resizable: false },
+      }),
+    );
+    expect(html).not.toContain('data-kui-resize-handle');
+    expect(html).not.toContain('data-resizable');
+    expect(html).not.toContain('--kui-resizable-region-size');
+    expect(html).toContain('--kui-workbench-rail-width: 300px');
+  });
+
+  it('renders the separator contract for each resizable panel with default limits', () => {
+    const root = document.createElement('div');
+    root.innerHTML = String(
+      Workbench({
+        id: 'wb',
+        label: 'Studio',
+        main,
+        leftRail: {
+          content: panel('nav'),
+          label: 'Navigator',
+          resizable: true,
+        },
+        rightRail: { content: panel('inspector'), resizable: true, size: 999 },
+        bottomDrawer: {
+          content: panel('console'),
+          resizable: { min: 100, max: 50 },
+          size: 10,
+        },
+      }),
+    );
+    const left = root.querySelector<HTMLElement>(
+      '[data-workbench-rail="left"]',
+    )!;
+    const right = root.querySelector<HTMLElement>(
+      '[data-workbench-rail="right"]',
+    )!;
+    const drawer = root.querySelector<HTMLElement>('[data-workbench-drawer]')!;
+    expect(left.dataset).toMatchObject({
+      resizable: 'true',
+      regionId: 'wb-left-rail',
+      axis: 'horizontal',
+      edge: 'end',
+    });
+    expect(right.dataset).toMatchObject({
+      regionId: 'wb-right-rail',
+      axis: 'horizontal',
+      edge: 'start',
+    });
+    expect(drawer.dataset).toMatchObject({
+      regionId: 'wb-bottom-drawer',
+      axis: 'vertical',
+      edge: 'start',
+    });
+    expect(left.style.getPropertyValue('--kui-resizable-region-size')).toBe(
+      '280px',
+    );
+    // Sizes clamp to the limits; a max below min collapses to min.
+    expect(right.style.getPropertyValue('--kui-resizable-region-size')).toBe(
+      '480px',
+    );
+    expect(drawer.style.getPropertyValue('--kui-resizable-region-size')).toBe(
+      '100px',
+    );
+    const handle = (element: HTMLElement) =>
+      element.querySelector<HTMLElement>(':scope > [data-kui-resize-handle]')!;
+    expect(handle(left).getAttribute('role')).toBe('separator');
+    expect(handle(left).getAttribute('aria-label')).toBe('Resize Navigator');
+    expect(handle(left).getAttribute('aria-orientation')).toBe('vertical');
+    expect(handle(left).getAttribute('aria-valuemin')).toBe('180');
+    expect(handle(left).getAttribute('aria-valuemax')).toBe('480');
+    expect(handle(left).getAttribute('aria-valuenow')).toBe('280');
+    expect(handle(left).getAttribute('tabindex')).toBe('0');
+    expect(handle(right).getAttribute('aria-label')).toBe('Resize right rail');
+    expect(handle(drawer).getAttribute('aria-label')).toBe(
+      'Resize bottom drawer',
+    );
+    expect(handle(drawer).getAttribute('aria-orientation')).toBe('horizontal');
+    expect(handle(drawer).getAttribute('aria-valuemax')).toBe('100');
+  });
+
+  it('keeps the resize size while collapsed and takes the handle out of the tab order', () => {
+    const root = document.createElement('div');
+    root.innerHTML = String(
+      Workbench({
+        id: 'wb',
+        label: 'Studio',
+        main,
+        leftRail: {
+          content: panel('nav'),
+          resizable: true,
+          size: 320,
+          collapsed: true,
+        },
+        rightRail: {
+          content: panel('inspector'),
+          resizable: true,
+          presentation: 'overlay',
+        },
+      }),
+    );
+    const left = root.querySelector<HTMLElement>(
+      '[data-workbench-rail="left"]',
+    )!;
+    expect(left.style.getPropertyValue('--kui-resizable-region-size')).toBe(
+      '320px',
+    );
+    for (const handle of root.querySelectorAll('[data-kui-resize-handle]')) {
+      expect(handle.getAttribute('tabindex')).toBe('-1');
+      expect(handle.getAttribute('aria-hidden')).toBe('true');
+    }
+  });
 });

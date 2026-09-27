@@ -804,7 +804,17 @@ restore the rendered props), both disconnected by the disposer; it also sets
 `data-handle-inset` on a region whose separator sits at the clamped edge, which
 the CSS uses to move the handle and its focus ring inside the region
 (`ui/tests/browser/resizable-region-clamp.spec.ts`,
-`ui/tests/unit/wire-resizable-regions.test.ts`).
+`ui/tests/unit/wire-resizable-regions.test.ts`). That wiring lives in the
+internal `ui/src/resize-wiring.ts` (`wireResizeHandles(root, options,
+regionSelector)`, which only drives a handle that is a direct child of its
+region); `wireResizableRegions` passes the `ResizableRegion` selector and
+`ui/src/wire-workbench.ts` (`wireWorkbench`, the `@kerfjs/ui/wire-workbench`
+subpath) passes selectors for its own opt-in `resizable` `Workbench` panels,
+committing to app-owned size signals with optional `storageKey` persistence and
+`deviceClass` compact suspension. `ui/src/workbench-resize.ts` holds the shared
+panel region-id convention and default limits, and `ui/src/resize-grip.tsx` the
+separator grip both handles render (`ui/tests/unit/wire-workbench.test.ts`,
+`ui/tests/unit/workbench.test.tsx`, `ui/tests/browser/workbench-catalog.spec.ts`).
 `Catalog.stageRootAttributes`, `CatalogExample.rootAttributes`, and `CatalogExampleStack.rootAttributes` use the
 same runtime filter for catalog-authoring `data-*` metadata while protecting
 their structure and alignment markers. `CatalogExample.viewport` supplies

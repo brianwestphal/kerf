@@ -230,6 +230,10 @@
       "types": "./dist/wire-tab-scaffold.d.ts",
       "import": "./dist/wire-tab-scaffold.js"
     },
+    "./wire-workbench": {
+      "types": "./dist/wire-workbench.d.ts",
+      "import": "./dist/wire-workbench.js"
+    },
     "./loading-spinner": {
       "types": "./dist/loading-spinner.d.ts",
       "browser": "./dist/browser/loading-spinner.js",

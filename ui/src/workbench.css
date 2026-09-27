@@ -253,6 +253,140 @@
   transform: translateY(100%);
 }
 
+/* Opt-in resizable panels. The size lives in the resize wiring's track
+   property, which the wiring updates live during a drag, so the rail width or
+   drawer height follows it; collapsing leaves it alone, so the panel expands
+   back to the size it had. These rules precede the presentation rules below,
+   which must keep winning for overlay and hidden panels. */
+.kui-workbench__rail[data-resizable="true"] {
+  --kui-workbench-rail-width: var(--kui-resizable-region-size);
+  position: relative;
+}
+
+.kui-workbench__drawer[data-resizable="true"] {
+  --kui-workbench-drawer-height: var(--kui-resizable-region-size);
+}
+
+/* The panel clips its sliding content, so a scrolling panel scrolls its
+   content box instead of itself: the separator handle is a child of the panel
+   and must not scroll away with the content. */
+.kui-workbench__rail[data-resizable="true"][data-content-overflow="auto"],
+.kui-workbench__drawer[data-resizable="true"][data-content-overflow="auto"] {
+  overflow: hidden;
+}
+
+.kui-workbench__rail[data-resizable="true"][data-content-overflow="auto"]
+  > .kui-workbench__panel-content,
+.kui-workbench__drawer[data-resizable="true"][data-content-overflow="auto"]
+  > .kui-workbench__panel-content {
+  overflow: auto;
+}
+
+/* The separator handle: the 20px hit target and dormant grip a
+   ResizableRegion handle has. The panel's own border stays the visible
+   separator line. By default the target sits wholly inside the panel, at its
+   inner edge, because the panel clips its sliding content. */
+.kui-workbench__handle {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  color: var(--kui-color-neutral-on-quiet);
+  place-items: center;
+  touch-action: none;
+}
+
+.kui-workbench__rail > .kui-workbench__handle {
+  inset-block: 0;
+  width: 20px;
+  cursor: col-resize;
+}
+
+.kui-workbench__rail--left > .kui-workbench__handle {
+  inset-inline-end: 0;
+}
+
+.kui-workbench__rail--right > .kui-workbench__handle {
+  inset-inline-start: 0;
+}
+
+.kui-workbench__drawer > .kui-workbench__handle {
+  inset-inline: 0;
+  inset-block-start: 0;
+  height: 20px;
+  cursor: row-resize;
+}
+
+.kui-workbench__rail[data-collapsed="true"] > .kui-workbench__handle,
+.kui-workbench__drawer[data-collapsed="true"] > .kui-workbench__handle,
+.kui-workbench__rail:not([data-presentation="inline"]) > .kui-workbench__handle,
+.kui-workbench__drawer:not([data-presentation="inline"])
+  > .kui-workbench__handle {
+  display: none;
+}
+
+/* Where the engine can extend a clip past the panel's edge, an expanded
+   panel lets exactly the handle's outer half through, so the hit target
+   straddles the separator like a ResizableRegion handle does. Collapsing drops
+   the margin again before the content slides out. */
+@supports (overflow-clip-margin: 10px) {
+  .kui-workbench__rail[data-resizable="true"]:not(
+      [data-collapsed="true"],
+      [data-content-overflow="visible"]
+    ),
+  .kui-workbench__drawer[data-resizable="true"]:not(
+      [data-collapsed="true"],
+      [data-content-overflow="visible"]
+    ) {
+    overflow: clip;
+    overflow-clip-margin: 10px;
+  }
+
+  .kui-workbench__rail--left[data-resizable="true"] > .kui-workbench__handle {
+    inset-inline-end: -10px;
+  }
+
+  .kui-workbench__rail--right[data-resizable="true"] > .kui-workbench__handle {
+    inset-inline-start: -10px;
+  }
+
+  .kui-workbench__drawer[data-resizable="true"] > .kui-workbench__handle {
+    inset-block-start: -10px;
+  }
+}
+
+.kui-workbench__handle:hover,
+.kui-workbench__handle:focus-visible {
+  color: var(--kui-color-text-link);
+}
+
+/* The ring stays wholly inside the handle's box, as a ResizableRegion
+   handle's does. */
+.kui-workbench__handle:focus-visible {
+  border-radius: var(--kui-radius-s);
+  outline: var(--kui-focus-ring);
+  outline-offset: -3px;
+}
+
+.kui-workbench__handle-icon {
+  position: relative;
+  display: grid;
+  width: remify(14.4px);
+  height: remify(14.4px);
+  opacity: 0;
+  pointer-events: none;
+  place-items: center;
+}
+
+.kui-workbench__handle-icon > svg {
+  width: 100%;
+  height: 100%;
+}
+
+.kui-workbench__handle:hover .kui-workbench__handle-icon,
+.kui-workbench__handle:focus-visible .kui-workbench__handle-icon {
+  opacity: 1;
+}
+
 .kui-workbench__rail[data-presentation="overlay"],
 .kui-workbench__drawer[data-presentation="overlay"] {
   position: absolute;

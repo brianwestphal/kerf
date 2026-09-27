@@ -32,6 +32,7 @@ const curatedEntries = [
   ['@kerfjs/ui/split-view', 'dist/split-view.d.ts'],
   ['@kerfjs/ui/pane', 'dist/pane.d.ts'],
   ['@kerfjs/ui/workbench', 'dist/workbench.d.ts'],
+  ['@kerfjs/ui/wire-workbench', 'dist/wire-workbench.d.ts'],
   ['@kerfjs/ui/collapsible-panel', 'dist/collapsible-panel.d.ts'],
   ['@kerfjs/ui/wire-sidebar', 'dist/wire-sidebar.d.ts'],
   ['@kerfjs/ui/tab-scaffold', 'dist/tab-scaffold.d.ts'],

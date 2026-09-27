@@ -28,6 +28,7 @@ import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTabScaffold } from '@kerfjs/ui/wire-tab-scaffold';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
+import { wireWorkbench } from '@kerfjs/ui/wire-workbench';
 import {
   batch,
   delegate,
@@ -105,6 +106,13 @@ import {
   resetTabScaffoldDemo,
   selectTabScaffoldDemo,
 } from './demos/tab-scaffold.js';
+import {
+  resetWorkbenchDemo,
+  RESIZABLE_WORKBENCH_ID,
+  toggleWorkbenchNavigator,
+  workbenchConsoleSize,
+  workbenchNavigatorSize,
+} from './demos/workbench.js';
 import { isRecipeId, type RecipeId, recipeLoaders } from './recipes/loaders.js';
 import type { RecipeController, RecipePresentation } from './recipes/types.js';
 
@@ -843,6 +851,11 @@ const stopActions = delegateActions(app, 'click', {
     selectSplitViewMessage(messageId);
     actionLog.value = `Opened ${messageId}`;
   },
+  'toggle-workbench-navigator': () => {
+    actionLog.value = toggleWorkbenchNavigator()
+      ? 'Navigator hidden'
+      : 'Navigator shown';
+  },
   'select-roomy-split-view-message': (_event, element) => {
     const messageId = (element as HTMLElement).dataset.itemId ?? '';
     selectRoomySplitViewMessage(messageId);
@@ -963,6 +976,34 @@ const stopFocusedLayoutEffect = effect(() => {
         onSelect: selectTabScaffoldDemo,
       });
     }
+  });
+});
+// The resizable Workbench example uses the public wiring consumers do, with
+// real persistence: its sizes survive a reload. It is wired on the app root as
+// soon as the route is active, so a remembered size is in place before the
+// example first paints.
+let stopWorkbench: (() => void) | null = null;
+const stopWorkbenchEffect = effect(() => {
+  const active = selectedDemo.value === 'workbench';
+  stopWorkbench?.();
+  stopWorkbench = null;
+  if (!active) return;
+  resetWorkbenchDemo();
+  stopWorkbench = wireWorkbench(app, {
+    id: RESIZABLE_WORKBENCH_ID,
+    panels: {
+      leftRail: {
+        size: workbenchNavigatorSize,
+        storageKey: 'kerf-ui-demo.workbench.navigator',
+      },
+      bottomDrawer: {
+        size: workbenchConsoleSize,
+        storageKey: 'kerf-ui-demo.workbench.console',
+      },
+    },
+    onResize: ({ panel, size }) => {
+      actionLog.value = `${panel === 'leftRail' ? 'Navigator' : 'Console'} resized to ${size}px`;
+    },
   });
 });
 // Wire the active recipe's own imperative helpers (e.g. `wireSidebar` for the
@@ -1261,6 +1302,8 @@ window.addEventListener(
     stopRecipeNavEffect();
     stopFocusedLayout?.();
     stopFocusedLayoutEffect();
+    stopWorkbench?.();
+    stopWorkbenchEffect();
     stopRecipeWire?.();
     stopRecipeWireEffect();
     stopRecipeChanges();

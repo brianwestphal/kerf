@@ -22,7 +22,8 @@ it can also be embedded. See [Document baseline](document-baseline.md).
 
 `Workbench` is declarative and the collapse is **pure CSS** — no wire. The app
 owns each panel's `collapsed` flag (usually a signal) and toggles it; the panel
-animates itself.
+animates itself. Panels are fixed-size by default; a panel can opt in to drag
+and keyboard resizing (see [Resizable panels](#resizable-panels)).
 
 ```tsx
 const navCollapsed = signal(false);
@@ -66,9 +67,87 @@ an optional `label`. Common shell behavior is configured rather than restyled:
 - `restoreControl` places an application-owned restore affordance in a
   safe-area-aware viewport corner (`restorePosition` chooses the corner).
 
+- `resizable: true | { min, max }` opts the panel in to drag and keyboard
+  resizing, driven by `wireWorkbench` (off by default).
+
 The same policy props are available on `ResizableRegion` and
 `CollapsiblePanel`, so a resizable application shell does not need to reach
 into `.kui-resizable-region__content`.
+
+## Resizable panels
+
+Resizing is **opt-in per panel**. Give a panel `resizable` — `true` for the
+default limits (rails 180–480px, drawer 120–480px) or `{ min, max }` — and
+render its `size` from an app-owned signal. The panel then owns a separator on
+its inner edge (the left rail's end, the right rail's start, the drawer's top)
+with the same focusable `role="separator"` contract as a `ResizableRegion`
+handle. `wireWorkbench` drives it:
+
+```tsx
+import { wireWorkbench } from "@kerfjs/ui/wire-workbench";
+
+const device = deviceClass();
+const navSize = signal(280);
+const consoleSize = signal(200);
+
+<Workbench
+  id="studio"
+  label="Studio"
+  main={<Editor />}
+  leftRail={{
+    content: <Navigator />,
+    label: "Navigator",
+    collapsed: navCollapsed.value,
+    size: navSize.value,
+    resizable: { min: 200, max: 420 },
+    presentation: device.value.compact ? "overlay" : "inline",
+  }}
+  bottomDrawer={{
+    content: <Console />,
+    label: "Console",
+    size: consoleSize.value,
+    resizable: true,
+  }}
+/>;
+
+// once, after mount:
+const stop = wireWorkbench(root, {
+  id: "studio",
+  panels: {
+    leftRail: { size: navSize, storageKey: "studio.nav-width" },
+    bottomDrawer: { size: consoleSize, storageKey: "studio.console-height" },
+  },
+  deviceClass: device,
+});
+```
+
+- **Pointer:** dragging the separator resizes the panel live (the wire marks
+  it `data-resizing` and suppresses content motion) and commits the final
+  size to the signal on release.
+- **Keyboard:** focus the separator; arrow keys resize by `step` (16px),
+  Shift+arrow by `largeStep` (64px), Home/End jump to `min`/`max`. The
+  separator's `aria-valuenow`/`aria-valuemin`/`aria-valuemax` report the size
+  and limits.
+- **Limits:** every size — dragged, typed, restored from storage, or passed
+  by the app — is clamped to `min`/`max` when rendered.
+- **Collapse:** `collapsed` never changes a size. A collapsed panel keeps its
+  size (its content slides out at that width), its separator leaves the tab
+  order, and expanding it returns it at the size it had.
+- **Persistence:** with a `storageKey`, the size is loaded from `storage`
+  (default `localStorage`) at wire-up and saved on every change, like
+  `wireSidebar`'s collapsed state.
+- **Compact classes:** pass `deviceClass` and resizing is suspended while
+  `compact` is true — where rails present as overlay drawers or are replaced.
+  An overlay or hidden panel is never resizable, and its separator is hidden.
+- `wireWorkbench` drives only the panels it is given, matched by the
+  Workbench `id`, so it never double-drives a `ResizableRegion` (or another
+  Workbench) under the same root. `onResize({ panel, size, source })` reports
+  each committed resize.
+
+Where the browser supports `overflow-clip-margin`, the 20px hit target
+straddles the panel's separator line like a `ResizableRegion` handle;
+elsewhere it sits just inside the panel's inner edge, because the panel clips
+its sliding content.
 
 ## Resizable application-shell migration
 
@@ -113,8 +192,9 @@ set `--kui-workbench-rail-width` and `--kui-workbench-drawer-height` on a
 Workbench instance. The supported composition classes are `.kui-workbench`,
 `.kui-workbench__rail`, `.kui-workbench__rail--left`,
 `.kui-workbench__rail--right`, `.kui-workbench__center`,
-`.kui-workbench__main`, `.kui-workbench__drawer`, and
-`.kui-workbench__panel-content`, and `.kui-workbench__restore`; these exact hooks are cataloged for tools that
+`.kui-workbench__main`, `.kui-workbench__drawer`,
+`.kui-workbench__panel-content`, `.kui-workbench__handle`,
+`.kui-workbench__handle-icon`, and `.kui-workbench__restore`; these exact hooks are cataloged for tools that
 must classify public application selectors. Prefer the component props and two
 size tokens before selecting internal anatomy, and do not target its data
 attributes or descendant tags as styling contracts.

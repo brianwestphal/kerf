@@ -123,7 +123,12 @@ describe('UX catalog metadata', () => {
       'utf8',
     );
     expect(workbench).toMatchObject({
-      publicExports: ['Workbench', 'WorkbenchPanel', 'WorkbenchProps'],
+      publicExports: [
+        'Workbench',
+        'WorkbenchPanel',
+        'WorkbenchPanelResizable',
+        'WorkbenchProps',
+      ],
       delivery: {
         moduleImport: '@kerfjs/ui/workbench',
         manualCssImport: '@kerfjs/ui/workbench.css',
@@ -168,7 +173,12 @@ describe('UX catalog metadata', () => {
       },
       {
         id: 'workbench',
-        exports: ['Workbench', 'WorkbenchPanel', 'WorkbenchProps'],
+        exports: [
+          'Workbench',
+          'WorkbenchPanel',
+          'WorkbenchPanelResizable',
+          'WorkbenchProps',
+        ],
       },
       {
         id: 'collapsible-panel',

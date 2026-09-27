@@ -39,6 +39,7 @@ const entries = [
   'wire-sidebar',
   'tab-scaffold',
   'wire-tab-scaffold',
+  'wire-workbench',
   'loading-spinner',
   'skeleton',
   'sunken-panel',

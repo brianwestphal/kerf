@@ -887,9 +887,22 @@
       ],
       "wiring": {
         "required": false,
-        "helpers": [],
+        "helpers": ["wireWorkbench"],
         "obligations": [],
-        "stateAttributes": []
+        "stateAttributes": [
+          {
+            "name": "data-handle-inset",
+            "on": "kui-workbench__rail",
+            "helper": "wireWorkbench",
+            "meaning": "Written by the shared resize wiring only when a parent clamps a panel's track below its size. Workbench panel tracks never shrink, so it carries no Workbench styling."
+          },
+          {
+            "name": "data-resizing",
+            "on": "kui-workbench__rail",
+            "helper": "wireWorkbench",
+            "meaning": "Present on a resizable rail or the drawer while a pointer drag resizes it."
+          }
+        ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
@@ -906,7 +919,8 @@
       "accessibility": {
         "obligations": [
           "Give the Workbench and each meaningful rail or drawer an accessible label.",
-          "Keep collapse controls outside the disappearing region and move focus when a controlled rerender replaces a collapse control with its restore control."
+          "Keep collapse controls outside the disappearing region and move focus when a controlled rerender replaces a collapse control with its restore control.",
+          "A resizable panel's separator is a focusable role=\"separator\" with its size in aria-valuenow and limits in aria-valuemin/aria-valuemax; arrow keys resize by 16px, Shift+arrow by 64px, and Home/End jump to the limits. It leaves the tab order while its panel is collapsed or not inline."
         ]
       },
       "cssValueProps": [],
@@ -921,6 +935,8 @@
           "kui-workbench__center",
           "kui-workbench__main",
           "kui-workbench__panel-content",
+          "kui-workbench__handle",
+          "kui-workbench__handle-icon",
           "kui-workbench__restore"
         ],
         "publicTokens": [

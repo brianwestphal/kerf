@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 285800,
-  "measuredLargestJavaScriptGzip": 136827,
-  "measuredTotalJavaScriptGzip": 285725,
+  "totalJavaScriptGzip": 287400,
+  "measuredLargestJavaScriptGzip": 138474,
+  "measuredTotalJavaScriptGzip": 287350,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -531,6 +531,22 @@
         "measuredTotalJavaScriptGzip": 285725,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 285800
+      }
+    },
+    {
+      "at": "2026-09-27T10:16:07.566Z",
+      "reason": "KF-2FG7VB adds opt-in resizable Workbench panels (the wireWorkbench subpath and Workbench separator markup) and the catalog's interactive resizable Workbench example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 136827,
+        "measuredTotalJavaScriptGzip": 285725,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 138474,
+        "measuredTotalJavaScriptGzip": 287350,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 287400
       }
     }
   ]

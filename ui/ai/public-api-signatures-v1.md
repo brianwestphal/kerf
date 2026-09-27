@@ -1051,13 +1051,31 @@ import { SafeHtml } from 'kerfjs';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
+/** Drag-resize limits for a resizable Workbench panel, in px. */
+interface WorkbenchPanelResizable {
+    /** Smallest size (default 180 for a rail, 120 for the drawer). */
+    min?: number;
+    /** Largest size (default 480). */
+    max?: number;
+}
 /** A collapsible Workbench panel — a side rail or the bottom drawer. */
 interface WorkbenchPanel {
     content: KerfUiContent;
     /** Whether the panel is currently collapsed (the app owns this). */
     collapsed?: boolean;
-    /** Rail width, or drawer height, in px. Overrides the CSS default. */
+    /**
+     * Rail width, or drawer height, in px. Overrides the CSS default. For a
+     * resizable panel it is the current size (default 280 for a rail, 220 for
+     * the drawer), clamped to the limits; the app owns it and `wireWorkbench`
+     * reports each resize.
+     */
     size?: number;
+    /**
+     * Opt in to drag and keyboard resizing on the panel's inner separator:
+     * `true` for the default limits, or `{ min, max }`. Off by default. Pair it
+     * with `wireWorkbench` from `@kerfjs/ui/wire-workbench`.
+     */
+    resizable?: boolean | WorkbenchPanelResizable;
     /** Accessible name for the panel region. */
     label?: string;
     separator?: ResizableRegionSeparator;
@@ -1087,12 +1105,83 @@ interface WorkbenchProps {
  * a composited transform — the instant-width / sliding-content technique, so the
  * work area relayouts once, not per frame. Bottom-drawer content stays anchored
  * to the shell's stable bottom edge throughout that transition. The app owns
- * each `collapsed` flag; the collapse is pure CSS (no wire). See
+ * each `collapsed` flag; the collapse is pure CSS. A panel may opt in to drag
+ * and keyboard resizing with `resizable`, which `wireWorkbench` drives. See
  * `docs/23-app-layouts.md` §3.3.
  */
 declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, className, slot, }: WorkbenchProps): SafeHtml;
 
-export { Workbench, type WorkbenchPanel, type WorkbenchProps };
+export { Workbench, type WorkbenchPanel, type WorkbenchPanelResizable, type WorkbenchProps };
+```
+
+## `@kerfjs/ui/wire-workbench`
+
+```ts
+import { Signal, ReadonlySignal } from 'kerfjs';
+import { DeviceClass } from './device-class.js';
+
+/** A Workbench panel slot, named after its `WorkbenchProps` prop. */
+type WorkbenchPanelKey = 'leftRail' | 'rightRail' | 'bottomDrawer';
+
+/** Minimal `localStorage`-shaped store, so the persistence hook is testable. */
+interface WorkbenchStorage {
+    getItem(key: string): string | null;
+    setItem(key: string, value: string): void;
+}
+/** One resizable Workbench panel's app-owned state. */
+interface WireWorkbenchPanel {
+    /**
+     * The app-owned size signal the panel renders as its `size`. `wireWorkbench`
+     * writes each committed resize here; collapsing never touches it, so an
+     * expanded panel returns at the size it had.
+     */
+    size: Signal<number>;
+    /**
+     * When set, the size is loaded from and saved to `storage` under this key,
+     * so the panel remembers the user's size.
+     */
+    storageKey?: string;
+}
+/** A resize the user made, after `wireWorkbench` wrote it to the size signal. */
+interface WorkbenchResize {
+    panel: WorkbenchPanelKey;
+    size: number;
+    source: 'keyboard' | 'pointer';
+}
+interface WireWorkbenchOptions {
+    /** The `id` the `Workbench` was rendered with. */
+    id: string;
+    /**
+     * The resizable panels, keyed like the `Workbench` props. Render each with
+     * `resizable` and `size={panel.size.value}`.
+     */
+    panels: Partial<Record<WorkbenchPanelKey, WireWorkbenchPanel>>;
+    /**
+     * When provided, resizing is suspended while `deviceClass.compact` is true —
+     * the classes where rails become overlay drawers or are replaced.
+     */
+    deviceClass?: ReadonlySignal<DeviceClass>;
+    /** Persistence store (default `globalThis.localStorage`, if present). */
+    storage?: WorkbenchStorage;
+    /** Keyboard step in px (default 16). */
+    step?: number;
+    /** Shift+arrow step in px (default 64). */
+    largeStep?: number;
+    /** Called after each committed resize. */
+    onResize?: (change: WorkbenchResize) => void;
+}
+/**
+ * Wire the opt-in drag and keyboard resizing of a `Workbench`'s `resizable`
+ * panels: pointer drags and arrow / Shift+arrow / Home / End on each panel's
+ * separator, clamped to the panel's limits, committed to the app-owned size
+ * signals. Optional persistence loads and saves each size; optional
+ * `deviceClass` suspends resizing on compact classes. Collapse stays the app's
+ * `collapsed` flag and never changes a size. Returns a disposer. See
+ * `docs/23-app-layouts.md` §3.3.
+ */
+declare function wireWorkbench(root: HTMLElement, { id, panels, deviceClass, storage, step, largeStep, onResize, }: WireWorkbenchOptions): () => void;
+
+export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanelKey, type WorkbenchResize, type WorkbenchStorage, wireWorkbench };
 ```
 
 ## `@kerfjs/ui/collapsible-panel`
@@ -1364,8 +1453,9 @@ interface WireResizableRegionsOptions {
     onPreview?: (change: ResizeCommit) => void;
     onCommit: (change: ResizeCommit) => void;
 }
+
 /** Wire pointer and separator-keyboard behavior for every ResizableRegion below root. */
-declare function wireResizableRegions(root: HTMLElement, { step, largeStep, onPreview, onCommit, }: WireResizableRegionsOptions): () => void;
+declare function wireResizableRegions(root: HTMLElement, options: WireResizableRegionsOptions): () => void;
 
 export { type ResizeCommit, type WireResizableRegionsOptions, wireResizableRegions };
 ```
