@@ -68,6 +68,7 @@ export function ListItemDemo() {
           action="log-projects"
           itemId="placeholder"
           label="Loading item"
+          description="Loading description"
           icon={<LucideIcon icon={Folder} name="folder" />}
           trailing={<span>0</span>}
           placeholder

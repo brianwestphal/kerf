@@ -45,7 +45,9 @@
   border-end-end-radius: 0;
 }
 
-.kui-list-action-row:has(.kui-list-action-row__primary:hover) {
+.kui-list-action-row:not([data-placeholder="true"]):has(
+    .kui-list-action-row__primary:hover
+  ) {
   --kui-list-action-row-border: var(--kui-list-action-row-hover-border);
   --kui-list-action-row-background: var(--kui-list-action-row-hover-background);
 }
@@ -92,8 +94,13 @@
   outline: none;
 }
 
-.kui-list-action-row__primary:disabled,
-.kui-list-action-row__trailing-action:disabled {
+/* A placeholder is disabled to stay inert, but it is loading, not unavailable:
+   it keeps the live row's tone (see the placeholder rule in skeleton.css). */
+.kui-list-action-row:not([data-placeholder="true"])
+  :is(
+    .kui-list-action-row__primary:disabled,
+    .kui-list-action-row__trailing-action:disabled
+  ) {
   cursor: not-allowed;
   opacity: 0.58;
 }

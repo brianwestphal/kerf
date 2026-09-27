@@ -101,6 +101,7 @@ export function ListActionRowDemo() {
       <CatalogExample align="none">
         <ListActionRow
           label="Loading file"
+          description="Loading description"
           icon={<LucideIcon icon={Folder} name="folder" />}
           action="select-list-action-row"
           itemId="placeholder"

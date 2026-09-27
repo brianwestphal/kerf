@@ -130,8 +130,10 @@ export function ListItem({
         <span class="kui-list-item__primary-label">
           {placeholder ? <Skeleton width={em(9)} /> : label}
         </span>
-        {!placeholder && description && (
-          <span class="kui-list-item__description">{description}</span>
+        {description && (
+          <span class="kui-list-item__description">
+            {placeholder ? <Skeleton width={em(11)} /> : description}
+          </span>
         )}
       </span>
       {(busy || status || trailing) && (

@@ -1,6 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
-import { em } from './css-values.js';
+import { em, remify } from './css-values.js';
 import {
   filterControlAttributes,
   filterDataAttributes,
@@ -165,20 +165,32 @@ export function ListActionRow({
       >
         {icon && (
           <span class="kui-list-action-row__icon">
-            {placeholder ? <Skeleton width={em(1)} height={em(1)} /> : icon}
+            {placeholder ? (
+              <Skeleton block width={remify(18)} height={remify(18)} />
+            ) : (
+              icon
+            )}
           </span>
         )}
         <span class="kui-list-action-row__label">
           <span class="kui-list-action-row__primary-label">
             {placeholder ? <Skeleton width={em(9)} /> : label}
           </span>
-          {!placeholder && description && (
-            <span class="kui-list-action-row__description">{description}</span>
+          {description && (
+            <span class="kui-list-action-row__description">
+              {placeholder ? <Skeleton width={em(11)} /> : description}
+            </span>
           )}
-          {!placeholder && (busy || status) && (
+          {(busy || status) && (
             <span class="kui-list-action-row__status">
-              {busy && <LoadingSpinner />}
-              {status}
+              {placeholder ? (
+                <Skeleton width={em(6)} />
+              ) : (
+                <>
+                  {busy && <LoadingSpinner />}
+                  {status}
+                </>
+              )}
             </span>
           )}
         </span>

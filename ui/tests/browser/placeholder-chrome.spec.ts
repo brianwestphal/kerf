@@ -25,12 +25,14 @@ const CHROME: readonly ChromeSpec[] = [
     root: '.kui-value-table__row',
     parts: ['dt', '.kui-value-table__label', '.kui-value-table__icon'],
   },
+  {
+    root: '.kui-list-item',
+    parts: ['.kui-list-item__icon', '.kui-list-item__label'],
+  },
 ];
 
 // Components whose placeholder currently drifts from the live chrome and are
 // therefore not yet in CHROME. Move each into CHROME with its fix:
-// - ListItem / ListActionRow: `:disabled` dims the row (opacity 0.58 + quiet
-//   color) and dropping `description` changes the row height.
 // - SegmentedControl: `:disabled` opacity 0.45; icon choices become 4em text
 //   skeletons, widening every segment.
 // - ListHeader: the action button (0.48) and toggle title (Web Awesome native
@@ -57,7 +59,9 @@ const STYLE_PROPS = [
   'padding-bottom',
   'padding-left',
   'min-height',
-  'cursor',
+  // `cursor` is deliberately not compared: a placeholder is inert, so it shows
+  // the default cursor where the live control shows a pointer. The test below
+  // asserts it never shows `not-allowed` instead.
 ] as const;
 
 async function chrome(inspector: Locator) {
@@ -107,7 +111,22 @@ test('placeholder components keep the live chrome; only values are skeletons', a
   await page.evaluate(() => document.fonts.ready);
 
   const loading = await chrome(inspector);
-  expect(loading.map((instances) => instances.length)).toEqual([1, 4]);
+  expect(loading.map((instances) => instances.length)).toEqual([1, 4, 2]);
+  // A placeholder is loading, not unavailable: nothing advertises `not-allowed`.
+  const roots = CHROME.map((spec) => spec.root).join(', ');
+  expect(
+    await inspector.evaluate(
+      (scope, selector) =>
+        [...scope.querySelectorAll(selector)]
+          .flatMap((root) => [root, ...root.querySelectorAll('*')])
+          .filter(
+            (element) =>
+              window.getComputedStyle(element).cursor === 'not-allowed',
+          )
+          .map((element) => element.className),
+      roots,
+    ),
+  ).toEqual([]);
 
   await inspector.getByRole('button', { name: 'Show loaded' }).click();
   await expect(inspector).toHaveAttribute('data-inspector-loading', 'false');

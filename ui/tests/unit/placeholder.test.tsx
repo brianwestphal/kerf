@@ -126,6 +126,65 @@ describe('component placeholder mode', () => {
     expect(html).toContain('kui-skeleton');
   });
 
+  it('ListItem keeps a description line as a second skeleton, only when set', () => {
+    const withDescription = asHtml(
+      ListItem({
+        label: 'Inbox',
+        description: 'Unread mail',
+        action: 'open',
+        placeholder: true,
+      }),
+    );
+    expect(withDescription).toContain('data-has-description="true"');
+    expect(withDescription).toMatch(
+      /class="kui-list-item__description"><span[^>]*class="kui-skeleton"/,
+    );
+    expect(withDescription).not.toContain('Unread mail');
+    const without = asHtml(
+      ListItem({ label: 'Inbox', action: 'open', placeholder: true }),
+    );
+    expect(without).not.toContain('kui-list-item__description');
+  });
+
+  it('ListActionRow keeps description and status lines as skeletons with a block icon', () => {
+    const html = asHtml(
+      ListActionRow({
+        label: 'Task',
+        description: 'Due tomorrow',
+        status: 'Synced',
+        icon,
+        action: 'open',
+        trailingAction: 'more',
+        trailingActionLabel: 'More',
+        trailingActionIcon: icon,
+        placeholder: true,
+      }),
+    );
+    expect(html).toMatch(
+      /class="kui-list-action-row__description"><span[^>]*class="kui-skeleton"/,
+    );
+    expect(html).toMatch(
+      /class="kui-list-action-row__status"><span[^>]*class="kui-skeleton"/,
+    );
+    expect(html).toMatch(
+      /class="kui-list-action-row__icon"><span[^>]*class="kui-skeleton"[^>]*data-block="true"/,
+    );
+    expect(html).not.toContain('Due tomorrow');
+    expect(html).not.toContain('Synced');
+    const bare = asHtml(
+      ListActionRow({
+        label: 'Task',
+        action: 'open',
+        trailingAction: 'more',
+        trailingActionLabel: 'More',
+        trailingActionIcon: icon,
+        placeholder: true,
+      }),
+    );
+    expect(bare).not.toContain('kui-list-action-row__description');
+    expect(bare).not.toContain('kui-list-action-row__status');
+  });
+
   it('ListActionRow disables both buttons and drops their actions', () => {
     const html = asHtml(
       ListActionRow({

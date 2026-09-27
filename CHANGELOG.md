@@ -20,6 +20,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   bindings, first-render row-contract validation, orphan pruning) into its own
   internal module, so `mount.ts` holds only the render orchestration. No
   behavior or public API change.
+- `@kerfjs/ui`'s `ListItem` and `ListActionRow` placeholders now match the
+  live row. They are no longer dimmed (the rows' own `:disabled` tone and
+  hover highlight skip placeholders), and a row with a `description` (or a
+  `ListActionRow` `status`) keeps that line as a second, smaller skeleton, so
+  the row keeps its live height instead of collapsing to one line. The
+  `ListActionRow` icon placeholder is an 18px block centered in its icon slot,
+  like `ListItem`'s.
 - `@kerfjs/ui` placeholders no longer look disabled. A component's
   `placeholder` keeps its controls `disabled` (inert and out of the keyboard
   order), but `skeleton.css` now neutralizes generic disabled chrome under
