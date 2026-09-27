@@ -225,12 +225,14 @@
   max-width: 100%;
 }
 .kui-select__placeholder-hint {
+  /* The live wa-select hint part: small body text at Web Awesome's form-control
+     hint metrics (1.6 line height, 7px below the box), inset like the value. */
   display: block;
-  margin-block-start: remify(4px);
+  margin-block-start: remify(7px);
   padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
   color: var(--kui-color-text-quiet);
-  font-size: var(--kui-font-xs);
-  line-height: 1.4;
+  font-size: var(--kui-font-s);
+  line-height: 1.6;
 }
 .kui-select__placeholder-chevron {
   /* The live control's expand-icon box and scale, with the same glyph. */

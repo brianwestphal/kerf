@@ -56,9 +56,9 @@ const CHROME: readonly ChromeSpec[] = [
   },
 ];
 
-// Components whose placeholder currently drifts from the live chrome and are
-// therefore not yet in CHROME. Move each into CHROME with its fix:
-// - Select: the hint row is 12px / 4px gap instead of the live 14px / 7px.
+// Select's placeholder is a separate static box (not the live wa-select), so its
+// label, box, chevron, and hint are compared part-by-part in placeholder.spec.ts.
+// ListHeader and AppTab are not in the recipe; their own tests below cover them.
 
 const STYLE_PROPS = [
   'opacity',

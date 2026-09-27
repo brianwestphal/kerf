@@ -124,6 +124,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             name="recipe-inspector-status"
             value="review"
             label="Status"
+            hint="Where this ticket sits in the review workflow."
             placeholder={p}
             choices={[
               { value: 'review', label: 'In review' },

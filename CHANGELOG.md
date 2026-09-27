@@ -20,6 +20,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   bindings, first-render row-contract validation, orphan pruning) into its own
   internal module, so `mount.ts` holds only the render orchestration. No
   behavior or public API change.
+- `@kerfjs/ui`'s `Select` placeholder hint now matches the live hint: 14px
+  text at a 1.6 line height, 7px below the box. It was 12px / 1.4 with a 4px
+  gap, so a placeholder with a `hint` was 8.6px shorter than the loaded
+  control and the content below it jumped when loading finished.
 - `@kerfjs/ui`'s `StateBanner` placeholder adds a detail skeleton only when
   `detail` is set, matching the live banner. Previously every placeholder
   showed a detail line, so a banner without one changed shape when loading

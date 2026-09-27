@@ -168,6 +168,9 @@ test('a placeholder Select keeps the live control’s chrome; only the value is 
       const chevron = placeholder
         ? root.querySelector('.kui-select__placeholder-chevron')
         : part('expand-icon');
+      const hint = placeholder
+        ? root.querySelector('.kui-select__placeholder-hint')
+        : part('hint');
       const origin = root.getBoundingClientRect();
       const rect = (element: Element) => {
         const bounds = element.getBoundingClientRect();
@@ -182,6 +185,7 @@ test('a placeholder Select keeps the live control’s chrome; only the value is 
       text.selectNodeContents(label!);
       const labelStyle = window.getComputedStyle(label!);
       const boxStyle = window.getComputedStyle(box!);
+      const hintStyle = window.getComputedStyle(hint!);
       return {
         labelText: Math.round(text.getBoundingClientRect().left - origin.left),
         label: [
@@ -197,6 +201,15 @@ test('a placeholder Select keeps the live control’s chrome; only the value is 
         border: boxStyle.borderTopColor,
         chevron: rect(chevron!),
         chevronColor: window.getComputedStyle(chevron!).color,
+        hint: rect(hint!),
+        hintStyle: [
+          'font-size',
+          'line-height',
+          'margin-top',
+          'padding-left',
+          'color',
+        ].map((property) => hintStyle.getPropertyValue(property)),
+        height: Math.round(origin.height * 2) / 2,
       };
     });
   const loading = await chrome();
