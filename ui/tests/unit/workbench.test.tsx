@@ -646,8 +646,11 @@ describe('Workbench', () => {
     expect(decls('.kui-workbench__drawer')).toMatchObject({
       'box-sizing': 'border-box',
     });
+    // The overlay maximum caps only the rail's own (inline) axis, so it still
+    // spans the Workbench's full height.
     expect(decls('.kui-workbench__rail[data-presentation="overlay"]')).toEqual({
       width: 'var(--_kui-workbench-rail-extent)',
+      'max-width': 'var(--kui-workbench-overlay-max-width, 85vw)',
       'inset-block': '0',
     });
     expect(
@@ -825,6 +828,8 @@ describe('Workbench', () => {
     ).toEqual({
       'z-index': 'calc(var(--kui-workbench-overlay-z, 41) - 1)',
       height: 'var(--_kui-workbench-drawer-extent)',
+      // Only the drawer's own (block) axis is capped; it spans the full width.
+      'max-height': 'var(--kui-workbench-overlay-max-height, 85vh)',
       'inset-inline': '0',
       'inset-block-end': '0',
     });
