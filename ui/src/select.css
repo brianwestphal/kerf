@@ -189,11 +189,17 @@
   width: 100%;
 }
 .kui-select__placeholder-label {
+  /* The live field's top label (see webawesome.css): a ListHeader-style label,
+     inset by the field's border + inline padding so it lines up with the value. */
   display: block;
-  margin-block-end: remify(4px);
-  color: var(--kui-color-text);
-  font-size: var(--kui-font-s);
-  line-height: 1.4;
+  margin-block-end: remify(6px);
+  padding-inline: calc(1px + var(--kui-layout-item-padding, remify(8px)));
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-xs);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 .kui-select__placeholder-box {
   display: flex;
@@ -227,15 +233,18 @@
   line-height: 1.4;
 }
 .kui-select__placeholder-chevron {
-  display: inline-flex;
-  width: remify(16px);
+  /* The live control's expand-icon box and scale, with the same glyph. */
+  display: grid;
+  width: remify(20px);
   height: remify(16px);
   flex: none;
-  color: var(--kui-color-text-quiet);
-  transform: scale(var(--kui-disclosure-icon-scale, 0.85));
+  place-items: center;
+  color: var(--kui-color-neutral-on-quiet);
+  transform: scale(var(--kui-disclosure-icon-scale, 0.5));
 }
 .kui-select__placeholder-chevron svg {
   display: block;
-  width: 100%;
+  width: auto;
   height: 100%;
+  fill: currentColor;
 }

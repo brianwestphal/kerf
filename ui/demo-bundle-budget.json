@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 285500,
-  "measuredLargestJavaScriptGzip": 136531,
-  "measuredTotalJavaScriptGzip": 285405,
+  "totalJavaScriptGzip": 285600,
+  "measuredLargestJavaScriptGzip": 136670,
+  "measuredTotalJavaScriptGzip": 285535,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -483,6 +483,22 @@
         "measuredTotalJavaScriptGzip": 285405,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 285500
+      }
+    },
+    {
+      "at": "2026-09-27T03:49:33.129Z",
+      "reason": "KF-0034HX: Select placeholder draws the live control's chevron glyph so its box matches",
+      "old": {
+        "measuredLargestJavaScriptGzip": 136531,
+        "measuredTotalJavaScriptGzip": 285405,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 136670,
+        "measuredTotalJavaScriptGzip": 285535,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 285600
       }
     }
   ]

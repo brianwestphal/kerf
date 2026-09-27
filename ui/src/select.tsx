@@ -1,5 +1,4 @@
 import type { SafeHtml } from 'kerfjs';
-import { ChevronDown } from 'lucide';
 
 import { type CssForegroundColor, em } from './css-values.js';
 import { LucideIcon, type LucideNode } from './lucide-icon.js';
@@ -64,6 +63,19 @@ interface SelectBaseProps<Value extends string = string> {
 export type SelectProps<Value extends string = string> =
   SelectBaseProps<Value> & SelectAccessibleName;
 
+// The closed wa-select's disclosure glyph: Web Awesome's system `chevron-down`,
+// Font Awesome Free 7.0.0 by @fontawesome (https://fontawesome.com), licensed
+// CC BY 4.0 (https://fontawesome.com/license/free). The placeholder draws the
+// same path so the loading box matches the live control without registering
+// Web Awesome.
+function SelectChevron() {
+  return (
+    <svg viewBox="0 0 448 512" aria-hidden="true">
+      <path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"></path>
+    </svg>
+  );
+}
+
 export function Select<Value extends string>({
   name,
   value,
@@ -110,7 +122,7 @@ export function Select<Value extends string>({
         >
           <Skeleton width={em(10)} />
           <span class="kui-select__placeholder-chevron" aria-hidden="true">
-            <LucideIcon icon={ChevronDown} name="chevron-down" />
+            <SelectChevron />
           </span>
         </span>
         {hint && <span class="kui-select__placeholder-hint">{hint}</span>}

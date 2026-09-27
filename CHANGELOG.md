@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui`'s `Select` placeholder now matches the live control. The label
+  uses the field-label style (uppercase, extra-small, quiet, inset to line up
+  with the value), and the chevron is the same glyph at the same size.
+  Previously the placeholder drew a larger, regular-weight label at a
+  different inset and a different, smaller chevron. Only the value is a
+  skeleton; the chrome no longer changes when loading finishes.
 - **Wrapper components can declare the cataloged root they render.** A
   `kerf.components.json` component may set `composition.rendersAs`, for
   example `["@kerfjs/ui:toolbar-control-group"]`: a list of the roots it
