@@ -44,6 +44,49 @@ describe('CollapsiblePanel', () => {
     );
     expect(collapsed).toContain('data-collapsed="true"');
     expect(collapsed).toContain('aria-hidden="true"');
+    expect(collapsed).toContain(' inert');
+  });
+
+  it('makes a collapsed panel inert and leaves its restore control reachable', () => {
+    const render = (collapsed: boolean) => {
+      const root = document.createElement('div');
+      root.innerHTML = html(
+        CollapsiblePanel({
+          id: 'console',
+          side: 'bottom',
+          label: 'Console',
+          collapsed,
+          restoreControl: raw('<button type="button">Show console</button>'),
+          children: raw('<button type="button">Hide console</button>'),
+        }),
+      );
+      return root;
+    };
+
+    // Collapsed: the panel itself is inert, so its content leaves the Tab
+    // order. `aria-hidden` alone left that content focusable inside a hidden
+    // subtree; it stays alongside `inert` so the emptied landmark is hidden
+    // even from tooling that does not prune inert subtrees.
+    const collapsed = render(true);
+    const panel = collapsed.querySelector<HTMLElement>(
+      '[data-collapsible-panel="console"]',
+    )!;
+    expect(panel.hasAttribute('inert')).toBe(true);
+    expect(panel.getAttribute('aria-hidden')).toBe('true');
+    const hide = [...collapsed.querySelectorAll('button')].find(
+      (button) => button.textContent === 'Hide console',
+    )!;
+    expect(hide.closest('[inert]')).toBe(panel);
+    const restore = collapsed.querySelector<HTMLElement>(
+      '[data-panel-restore="console"]',
+    )!;
+    expect(restore.textContent).toBe('Show console');
+    expect(restore.closest('[inert]')).toBe(null);
+
+    // Expanded: nothing is inert.
+    const open = render(false);
+    expect(open.querySelector('[inert]')).toBe(null);
+    expect(open.querySelector('[data-panel-restore]')).toBe(null);
   });
 
   it('uses the height custom property for a bottom drawer', () => {

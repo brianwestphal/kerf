@@ -569,6 +569,21 @@ signal from the device class for a flash-free compact first render. The app owns
 content; drag-resize composes `ResizableRegion`. Subpath-only with a companion
 CSS import. See [`ui/docs/collapsible-panel.md`](../../ui/docs/collapsible-panel.md).
 
+A collapsed panel is inert (KF-HVJ4RM: a collapsed `CollapsiblePanel` or
+`ResizableRegion` kept its controls in the Tab order, and the panel's
+`aria-hidden` put those focusable controls inside a hidden subtree), matching
+the §3.3 Workbench rule. `CollapsiblePanel` renders `inert` beside its existing
+`aria-hidden="true"` on the collapsed `aside` itself — the panel holds nothing
+but its content, and `aria-hidden` keeps the emptied landmark hidden even from
+tooling that does not prune inert subtrees — while `ResizableRegion` renders
+`inert` on its `.kui-resizable-region__content` wrapper, because its separator
+lives inside the region. Both come straight from `collapsed`, so no wire is
+needed, the slide-out still animates, and each `restoreControl` renders outside
+the inert subtree. `wireSidebar`'s focus hand-off is unchanged: a panel
+collapsing from inside hands focus to its toggle outside it, a wide → compact
+crossing rescues focus stranded inside, and opening moves focus to the panel's
+first control after the render that removes `inert`.
+
 A collapsed `CollapsiblePanel`'s or `ResizableRegion`'s optional
 `restoreControl` floats in a corner (`restorePosition`) of the component's own
 container — the element that holds the panel and its sibling restore control —

@@ -1345,7 +1345,11 @@ interface CollapsiblePanelProps {
  * slides out via `transform` (one reflow, composited — the same technique
  * `Workbench` and the catalog sidebar use). Bottom-drawer content stays anchored
  * to the panel's fixed bottom edge, so the track cannot move its layout origin
- * underneath the transform transition. The app owns the `collapsed` signal;
+ * underneath the transform transition. A collapsed panel renders `inert` (with
+ * `aria-hidden`), so neither Tab, pointer, nor assistive technology reaches
+ * content that has slid out of view; its `restoreControl` renders outside the
+ * panel and stays reachable.
+ * The app owns the `collapsed` signal;
  * pair it with `wireSidebar` for the toggle, focus, compact-overlay, keyboard,
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
  * affordance. See `ui/docs/collapsible-panel.md` and `docs/23-app-layouts.md`.
@@ -1499,6 +1503,9 @@ interface ResizableRegionProps {
     max: number;
     axis?: ResizableRegionAxis;
     edge?: ResizableRegionEdge;
+    /** Snap the track to zero. The content renders `inert` while collapsed, so
+     * neither Tab nor assistive technology reaches it; the handle leaves the Tab
+     * order and `restoreControl` renders outside the region. */
     collapsed?: boolean;
     transitioning?: boolean;
     /** Whether the separator line is painted. The resize hit target remains available. */

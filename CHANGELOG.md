@@ -15,6 +15,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   the panel while focus is there now counts as focus inside, so the close
   returns it; focus the user has moved to another element since is left
   alone.
+- **A collapsed `@kerfjs/ui` `CollapsiblePanel` or `ResizableRegion` leaves
+  the Tab order.** Both kept collapsed content in the DOM, only slid out and
+  clipped, so Tab still reached its controls; focusing one scrolled the clipped
+  panel, and a `CollapsiblePanel`'s `aria-hidden` put those focusable controls
+  inside a hidden subtree. A collapsed `CollapsiblePanel` now renders `inert`
+  beside its `aria-hidden`, and a collapsed `ResizableRegion` renders its
+  content wrapper `inert`, with no wiring needed. The slide-out still animates,
+  each `restoreControl` stays outside the inert subtree and reachable, and
+  `wireSidebar` still hands focus to the panel's toggle when it collapses from
+  inside.
 
 - **A collapsed `@kerfjs/ui` `Workbench` rail's restore control no longer
   covers an expanded bottom drawer.** A `leftRail` / `rightRail`

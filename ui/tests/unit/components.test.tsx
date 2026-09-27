@@ -1909,6 +1909,27 @@ describe('production UI primitives', () => {
       'class="kui-resizable-region__restore" data-region-restore="drawer" data-position="bottom-end"',
     );
     expect(vertical).toContain('tabindex="-1"');
+    // A collapsed region's content is inert, so Tab and assistive technology
+    // never reach content that has slid out of view; the restore control and
+    // the (already untabbable) handle sit outside it.
+    const collapsedHost = document.createElement('div');
+    collapsedHost.innerHTML = vertical;
+    const collapsedContent = collapsedHost.querySelector<HTMLElement>(
+      '.kui-resizable-region__content',
+    )!;
+    expect(collapsedContent.hasAttribute('inert')).toBe(true);
+    expect(collapsedHost.querySelectorAll('[inert]')).toHaveLength(1);
+    expect(
+      collapsedHost
+        .querySelector('[data-region-restore="drawer"]')!
+        .closest('[inert]'),
+    ).toBe(null);
+    expect(
+      collapsedHost
+        .querySelector('.kui-resizable-region__handle')!
+        .closest('[inert]'),
+    ).toBe(null);
+    expect(host.querySelector('[inert]')).toBe(null);
     const hidden = asHtml(
       ResizableRegion({
         id: 'replacement',

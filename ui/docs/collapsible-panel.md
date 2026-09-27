@@ -23,6 +23,16 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   through the transform alone instead of transitioning from a changing layout
   origin and snapping at the end. The app owns the `collapsed` signal; `size`
   overrides the CSS default width/height.
+  A collapsed panel renders `inert` together with `aria-hidden="true"`, straight
+  from `collapsed`, so neither Tab, a pointer, nor assistive technology reaches
+  content that has slid out of view, and focusing a control can never scroll
+  the clipped content back into view. `inert` does not affect rendering, so the
+  slide-out still animates; expanding removes both attributes in the same
+  render. `aria-hidden` alone had left the panel's controls focusable inside a
+  hidden subtree; it stays beside `inert` so the emptied landmark is hidden
+  even from tooling that does not prune inert subtrees. Do not add your own
+  `inert`, `aria-hidden`, or `tabindex` to hide the content. The
+  `restoreControl` renders outside the panel and stays reachable.
   Reusable shell policies are typed props: `separator`, `collapseMotion`,
   `contentOverflow`, and `presentation`. A collapsed panel may also receive a
   `restoreControl`, which Kerf places at the safe-area-aware `restorePosition`
@@ -51,6 +61,10 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   press, or the panel's own close control reveals the control again, and a
   collapsed overlay leaves it clickable. `ResizableRegion`'s `restoreControl`
   follows the same rules, two below `--kui-resizable-region-overlay-z` (39).
+  A collapsed `ResizableRegion` likewise renders its content wrapper
+  (`.kui-resizable-region__content`) `inert`; the region's label, its
+  separator (which already leaves the Tab order while collapsed), and the
+  restore control stay outside it.
   Overlay presentation also clamps fixed-size animated content to the configured
   responsive overlay maximum, so a remembered desktop size cannot escape a narrow
   viewport.

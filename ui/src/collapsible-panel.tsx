@@ -124,7 +124,11 @@ export interface CollapsiblePanelProps {
  * slides out via `transform` (one reflow, composited — the same technique
  * `Workbench` and the catalog sidebar use). Bottom-drawer content stays anchored
  * to the panel's fixed bottom edge, so the track cannot move its layout origin
- * underneath the transform transition. The app owns the `collapsed` signal;
+ * underneath the transform transition. A collapsed panel renders `inert` (with
+ * `aria-hidden`), so neither Tab, pointer, nor assistive technology reaches
+ * content that has slid out of view; its `restoreControl` renders outside the
+ * panel and stays reachable.
+ * The app owns the `collapsed` signal;
  * pair it with `wireSidebar` for the toggle, focus, compact-overlay, keyboard,
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
  * affordance. See `ui/docs/collapsible-panel.md` and `docs/23-app-layouts.md`.
@@ -164,6 +168,7 @@ export function CollapsiblePanel({
         aria-hidden={
           collapsed || presentation === 'hidden' ? 'true' : undefined
         }
+        inert={collapsed}
         style={size ? `${sizeVar}: ${size}px` : undefined}
       >
         <div class="kui-collapsible-panel__content">{children}</div>

@@ -808,7 +808,14 @@ the drawer collapses, and stacks beneath an open `wireSidebar` compact overlay
 above its Workbench's expanded inline drawer, keeps the corner beneath an
 overlay drawer, and ignores a nested Workbench's drawer
 (`ui/tests/browser/restore-anchor.spec.ts` with
-`ui/tests/browser/fixtures/restore-anchor.tsx`). Expanded slide-motion content follows the region's
+`ui/tests/browser/fixtures/restore-anchor.tsx`). A collapsed `CollapsiblePanel`
+renders `inert` beside its `aria-hidden` and a collapsed `ResizableRegion` its
+content wrapper, so Tab and Shift+Tab never enter either at 1280 and 390px, the
+slide-out still animates, and `wireSidebar` still hands focus to the toggle on
+collapse (including a wide → compact crossing) and into the panel on open
+(`ui/tests/unit/collapsible-panel.test.tsx`, `ui/tests/unit/components.test.tsx`,
+`ui/tests/browser/collapsed-inert.spec.ts` with
+`ui/tests/browser/fixtures/collapsed-inert.tsx`). Expanded slide-motion content follows the region's
 actual track, so a clamped region never shows content past its separator, and
 `wireResizableRegions` bounds pointer/keyboard resizing to that visible track
 (probing it at the declared max), announcing the shown size in
