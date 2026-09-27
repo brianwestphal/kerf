@@ -276,7 +276,12 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
     its configured height, and the work area keeps its bottom safe-area inset
     beneath it. Every overlay drawer, static or responsive, now takes that
     explicit height, with its content clamped to the overlay maximum. A
-    collapsed overlay (static or
+    static overlay rail likewise takes its extent width explicitly
+    (KF-06JXTE: an out-of-flow rail sized to its content plus its 1px border,
+    281px for a 280px rail), and rails and the drawer are `border-box`, so a
+    panel's size is its whole track, separator border included, in or out of
+    flow and whatever box model the app defaults to; overlay content fills the
+    panel inside that border. A collapsed overlay (static or
     responsive) drops its surface and shadow — the sliding content carries the
     surface — so an invisible box no longer covers the work area;
   - the wire matches only its own panels by Workbench `id`, so it never

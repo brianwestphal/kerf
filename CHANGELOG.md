@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- A `@kerfjs/ui` `Workbench` rail with `presentation: "overlay"` now renders
+  exactly its size. Out of flow, it sized to its content plus its 1px
+  separator border, so a 280px rail measured 281px; it now takes its size
+  explicitly, as the responsive overlays do. Rails and the drawer are also
+  `border-box` now, so a panel's `size` is its whole track, border included,
+  even in an app without a global `box-sizing` reset, and overlay content
+  fills the panel inside its separator instead of painting over it.
 - **A `@kerfjs/ui` `Workbench` bottom drawer with `presentation: "overlay"`
   is visible again.** Its content is positioned against the drawer's bottom
   edge, so the out-of-flow overlay box had no height of its own and collapsed

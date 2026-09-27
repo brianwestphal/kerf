@@ -63,9 +63,10 @@ an optional `label`. Common shell behavior is configured rather than restyled:
   expose an open popup without a descendant override;
 - `presentation: "inline" | "overlay" | "hidden"` supports compact overlays
   or a responsive replacement. An overlay rail spans the Workbench height at
-  its side and an overlay drawer spans the work-area column at the bottom, each at its
-  configured size; the drawer's fixed-size animated content is clamped to the
-  viewport-relative maximum height;
+  its side and an overlay drawer spans the work-area column at the bottom,
+  each exactly at its configured size (its separator border included, as in
+  flow) up to the viewport-relative overlay maximum; the content fills the
+  panel inside its border, so it is clamped with it;
 - `responsiveOverlayAt: "narrow" | "compact"` presents a rail or the bottom
   drawer as an overlay below a Workbench container breakpoint — 704px or less
   for `narrow`, 448px or less for `compact`, the breakpoints of

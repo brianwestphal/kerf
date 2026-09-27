@@ -39,6 +39,9 @@
     var(--kui-workbench-rail-width, remify(280px)) +
       var(--_kui-workbench-rail-safe-inset)
   );
+  /* The size is the whole track, separator border included, in or out of
+     flow and whatever box model the app defaults to. */
+  box-sizing: border-box;
   flex: 0 0 var(--_kui-workbench-rail-extent);
   min-width: 0;
   overflow: hidden;
@@ -188,6 +191,7 @@
     var(--kui-workbench-drawer-height, remify(220px)) +
       var(--_kui-workbench-safe-block-end)
   );
+  box-sizing: border-box;
   position: relative;
   flex: 0 0 var(--_kui-workbench-drawer-extent);
   min-height: 0;
@@ -422,7 +426,10 @@
   box-shadow: var(--kui-shadow-l);
 }
 
+/* An out-of-flow rail sizes to its content plus its border, so it takes its
+   extent explicitly, as its in-flow flex basis does, border included. */
 .kui-workbench__rail[data-presentation="overlay"] {
+  width: var(--_kui-workbench-rail-extent);
   inset-block: 0;
 }
 
@@ -452,8 +459,11 @@
   pointer-events: none;
 }
 
+/* Overlay content fills the rail inside its separator border, so it is
+   clamped with the rail and carries the surface through the slide-out. */
 .kui-workbench__rail[data-presentation="overlay"]
   > .kui-workbench__panel-content {
+  width: 100%;
   background: var(--kui-color-surface);
 }
 
@@ -511,7 +521,7 @@
 
   .kui-workbench__rail[data-responsive-overlay-at="narrow"]
     > .kui-workbench__panel-content {
-    width: var(--_kui-workbench-rail-extent);
+    width: 100%;
     background: var(--kui-color-surface);
   }
 
@@ -595,7 +605,7 @@
 
   .kui-workbench__rail[data-responsive-overlay-at="compact"]
     > .kui-workbench__panel-content {
-    width: var(--_kui-workbench-rail-extent);
+    width: 100%;
     background: var(--kui-color-surface);
   }
 

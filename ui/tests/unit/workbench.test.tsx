@@ -481,7 +481,7 @@ describe('Workbench', () => {
         display: 'none',
       });
       expect(decls(`${rail} > .kui-workbench__panel-content`)).toEqual({
-        width: 'var(--_kui-workbench-rail-extent)',
+        width: '100%',
         background: 'var(--kui-color-surface)',
       });
       // A collapsed overlay keeps its box for the slide-out but paints nothing.
@@ -523,6 +523,43 @@ describe('Workbench', () => {
         '--kui-edge-inset-block-end': 'var(--_kui-workbench-safe-block-end)',
       });
     }
+  });
+
+  it('sizes a static overlay rail to exactly its extent, border included', async () => {
+    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const decls = (selector: string) => {
+      const rule = css.nodes.find(
+        (node) =>
+          node.type === 'rule' &&
+          node.selector.replace(/\s+/g, ' ') === selector,
+      );
+      if (!rule || rule.type !== 'rule') throw new Error(`Missing ${selector}`);
+      return Object.fromEntries(
+        rule.nodes
+          .filter((node) => node.type === 'decl')
+          .map((node) => [node.prop, node.value.replace(/\s+/g, ' ')]),
+      );
+    };
+    // The track is the size, separator border included, whatever box model
+    // the app defaults to: an out-of-flow rail used to render its content
+    // width plus its 1px border (281px for a 280px rail).
+    expect(decls('.kui-workbench__rail')).toMatchObject({
+      'box-sizing': 'border-box',
+      flex: '0 0 var(--_kui-workbench-rail-extent)',
+    });
+    expect(decls('.kui-workbench__drawer')).toMatchObject({
+      'box-sizing': 'border-box',
+    });
+    expect(decls('.kui-workbench__rail[data-presentation="overlay"]')).toEqual({
+      width: 'var(--_kui-workbench-rail-extent)',
+      'inset-block': '0',
+    });
+    expect(
+      decls(
+        '.kui-workbench__rail[data-presentation="overlay"] > .kui-workbench__panel-content',
+      ),
+    ).toEqual({ width: '100%', background: 'var(--kui-color-surface)' });
   });
 
   it('gives a static overlay drawer an explicit height instead of collapsing to its border', async () => {

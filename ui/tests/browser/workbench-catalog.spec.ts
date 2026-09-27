@@ -151,6 +151,37 @@ test('bottom drawer opens and closes monotonically from one bottom anchor', asyn
   ).toBeLessThan(1.5);
 });
 
+test('a static overlay rail renders exactly its size, border included', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=workbench');
+  // An out-of-flow rail used to size to its content plus its 1px border.
+  const full = page.locator('#catalog-workbench-full');
+  const rail = full.locator('[data-workbench-rail="left"]');
+  await full.scrollIntoViewIfNeeded();
+  await rail.evaluate((element) => {
+    element.dataset.presentation = 'overlay';
+  });
+  await expect(rail).toHaveCSS('position', 'absolute');
+  expect((await rail.boundingBox())!.width).toBe(280);
+  await expect(rail).toHaveCSS('border-right-width', '1px');
+  // The content fills the rail inside its separator border.
+  const content = rail.locator('.kui-workbench__panel-content');
+  expect((await content.boundingBox())!.width).toBe(279);
+
+  // A resizable rail's overlay takes its current size the same way.
+  const resizable = page.locator(
+    '#catalog-workbench-resizable [data-workbench-rail="left"]',
+  );
+  await resizable.evaluate((element) => {
+    element.removeAttribute('data-responsive-overlay-at');
+    element.dataset.presentation = 'overlay';
+  });
+  await expect(resizable).toHaveCSS('position', 'absolute');
+  expect((await resizable.boundingBox())!.width).toBe(240);
+});
+
 test.describe('resizable Workbench panels', () => {
   test.beforeEach(async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
