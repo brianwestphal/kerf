@@ -146,12 +146,17 @@
 
 /* Responsive replacement policies. Overlay regions stay on their logical edge
    and stop participating in the parent's flex tracks; hidden regions are fully
-   replaced by application-owned compact UI. */
+   replaced by application-owned compact UI. An overlay floats over the work
+   area, so it paints the surface like an overlay CollapsiblePanel: without it
+   the content beneath (and the restore control stacked below it) shows
+   through the shadowed box. An inline region stays transparent and shows its
+   host's background. */
 .kui-resizable-region[data-presentation="overlay"] {
   position: absolute;
   z-index: var(--kui-resizable-region-overlay-z, 41);
   max-width: var(--kui-resizable-region-overlay-max-width, 85vw);
   max-height: var(--kui-resizable-region-overlay-max-height, 85vh);
+  background: var(--kui-color-surface);
   box-shadow: var(--kui-shadow-l);
 }
 .kui-resizable-region[data-presentation="overlay"][data-axis="horizontal"] {

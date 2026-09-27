@@ -186,6 +186,8 @@ an upstream component or recipe request.
 - A `ResizableRegion` overlay automatically clamps both its track and fixed-size
   animated content to the responsive overlay maximum. Set the policy and maximum
   on the component instead of adding application descendant width/height fixes.
+  It paints `--kui-color-surface` itself (an inline region stays transparent),
+  so do not add a background to make an overlay opaque.
 - Configure application panels through the shared `separator`, `collapseMotion`,
   `contentOverflow`, `presentation`, `restoreControl`, and `restorePosition`
   props on `ResizableRegion`, `Workbench` panels, and `CollapsiblePanel`. These

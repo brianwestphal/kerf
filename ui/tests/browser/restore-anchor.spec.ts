@@ -334,7 +334,7 @@ for (const width of [1280, 390]) {
 
   test(`an open overlay ResizableRegion covers a collapsed rail's restore control (${width}px)`, async ({
     page,
-  }) => {
+  }, testInfo) => {
     await page.setViewportSize({ width, height: 800 });
     await mountFixture(page, 'region-overlay');
     const control = overlayControl(page, 'region-overlay');
@@ -343,6 +343,24 @@ for (const width of [1280, 390]) {
       page.locator('[data-region-restore="overlay-rail"]'),
     ).toHaveCSS('z-index', '39');
     await expect.poll(() => hitAtCenter(control)).toBe('region');
+    // The open overlay paints the surface, so neither the control nor the
+    // work area beneath shows through its shadowed box.
+    const consoleRegion = page.locator(
+      '[data-component="resizable-region"][data-region-id="overlay-console"]',
+    );
+    const surface = await page.evaluate(() => {
+      const probe = document.createElement('div');
+      probe.style.background = 'var(--kui-color-surface)';
+      document.body.append(probe);
+      const color = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return color;
+    });
+    expect(surface).not.toBe('rgba(0, 0, 0, 0)');
+    await expect(consoleRegion).toHaveCSS('background-color', surface);
+    await consoleRegion.screenshot({
+      path: testInfo.outputPath(`region-overlay-${width}.png`),
+    });
 
     // A collapsed overlay drops its pointer events, so the control beneath it
     // is reachable again once the overlay closes.

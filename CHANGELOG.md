@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **An overlay `@kerfjs/ui` `ResizableRegion` paints the surface.** With
+  `presentation="overlay"` the region floated over the work area with a
+  shadow but no background, so the content beneath — and a collapsed rail's
+  restore control stacked under it — showed through. It now paints
+  `--kui-color-surface`, like an overlay `CollapsiblePanel`; an inline region
+  stays transparent over its host.
+
 - **A pinned `@kerfjs/ui` resize separator no longer overwrites the
   remembered size.** When a container squeezes a `Workbench` rail, drawer, or
   `ResizableRegion` below its `min` (or its reachable range collapses to one
