@@ -269,13 +269,11 @@ function renderList(world: World, listIndex: number): SafeHtml {
   const rowSig = list.rowSig === null ? null : world.sigs[list.rowSig];
   const items = src instanceof ArraySignal ? src : src.value;
   const select = list.select === true;
-  // `yes`/`no`, not `1`/`0`: the snapshot's id normalizer erases all-digit
-  // attribute values, which would hide a stale selection flag entirely.
   const render = (item: Item): SafeHtml =>
     jsx(list.rowTag, {
       'data-list': String(listIndex),
       ...(select
-        ? { 'data-sel': world.selected.value === item.id ? 'yes' : 'no' }
+        ? { 'data-sel': world.selected.value === item.id ? '1' : '0' }
         : {}),
       // Row keys are namespaced by list: `data-key` is documented to be unique
       // among siblings, and two lists over one source rendering into one parent
