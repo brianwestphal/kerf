@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- A `@kerfjs/ui` `StateBanner` with a long, wrapping title keeps its badge
+  one item gap after the title's last word, and its detail uses the full copy
+  width. The wide flex layout shrank the title and detail together, which left
+  a large gap before the badge and truncated the detail early. The title,
+  badge, and detail now flow as inline text: the detail stays beside the title
+  while it fits whole, and otherwise moves to its own line, truncating only at
+  the full width. A wrapped title's lines stay evenly spaced.
 - A `@kerfjs/ui` `ListHeader` disclosure toggle disabled with `actionDisabled`
   is dimmed by the component itself, at the same tone as a disabled action
   button, and shows the `not-allowed` cursor. It used to rely on Web Awesome's

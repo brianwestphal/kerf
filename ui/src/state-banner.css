@@ -134,21 +134,40 @@
   width: remify(16px);
   height: remify(16px);
 }
+/* The copy is inline flow, not flex: a wrapping title lays out as text, so the
+   badge follows the title's last word instead of the right edge of a
+   flex-shrunk title box, and the detail stays beside them only while it fits
+   whole. Otherwise it moves to its own line and truncates at the full copy
+   width. Flex shrank the title and detail together, which left a gap before
+   the badge and cut the detail early. Each item's trailing margin is the item
+   gap, so no margin lands at the start of a wrapped line. */
 .kui-state-banner__copy {
-  display: flex;
   min-width: 0;
-  align-items: baseline;
-  gap: var(--kui-layout-item-gap, remify(8px));
-}
-.kui-state-banner__copy strong {
+  /* The title's size, so a wrapped title's lines keep the title's own line
+     height instead of the larger inherited strut. */
   font-size: var(--kui-font-xs);
 }
+.kui-state-banner__copy strong {
+  margin-inline-end: var(--kui-layout-item-gap, remify(8px));
+  font-size: var(--kui-font-xs);
+}
+/* The badge is taller than the title's line. Negative block margins keep it
+   out of the line-height calculation, so a wrapped title's lines stay evenly
+   spaced whichever line the badge lands on. */
+.kui-state-banner__badge {
+  margin-block: -0.5em;
+  margin-inline-end: var(--kui-layout-item-gap, remify(8px));
+  vertical-align: baseline;
+}
 .kui-state-banner__detail {
-  overflow: hidden;
+  display: inline-block;
+  max-width: 100%;
+  overflow: clip;
   color: var(--_kui-state-banner-detail);
   font-size: var(--kui-font-2xs);
   opacity: 0.78;
   text-overflow: ellipsis;
+  vertical-align: baseline;
   white-space: nowrap;
 }
 .kui-state-banner__action {
@@ -176,17 +195,8 @@
 @media (max-width: remify(576px)) {
   /* The detail drops below the title. The title row keeps the wide layout's
      relationship: a content-sized badge one item gap after the title, on the
-     title's baseline. Grid items stretch by default, which widened the badge
-     across the free column and grew it with a wrapped title. */
-  .kui-state-banner__copy {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: baseline;
-    justify-items: start;
-    gap: remify(0.8px) var(--kui-layout-item-gap, remify(8px));
-  }
+     title's baseline. */
   .kui-state-banner__detail {
-    grid-column: 1 / -1;
-    justify-self: stretch;
+    display: block;
   }
 }

@@ -132,7 +132,7 @@ async function mountFixture(page: Page, { webAwesome = true } = {}) {
   const css = result.outputFiles.find((file) => file.path.endsWith('.css'));
   if (!javascript || !css) throw new Error('Placeholder fixture emitted no JS');
   await page.setContent(
-    '<!doctype html><html lang="en"><body><main class="kui-app-root" style="display:block;max-width:560px" data-placeholder-cases></main></body></html>',
+    '<!doctype html><html lang="en"><body><div class="kui-app-root" style="display:block;max-width:560px;height:auto" data-layout-cases></div><main class="kui-app-root" style="display:block;max-width:560px" data-placeholder-cases></main></body></html>',
   );
   // The fixture resolves package CSS from source, so apply the pixel-first
   // remify() authoring transform the package build performs.
@@ -418,3 +418,69 @@ test('author-disabled controls keep their own disabled tone without Web Awesome'
     ).toEqual({ opacity: '0.48', background: 'rgba(0, 0, 0, 0)' });
   }
 });
+
+for (const width of [1280, 390]) {
+  test(`a long StateBanner title keeps its badge after its last word and the detail at full width (${String(width)}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await mountFixture(page);
+    const layout = await page
+      .locator('[data-layout-case="state-banner-long-title"]')
+      .evaluate((wrapper) => {
+        const copy = wrapper
+          .querySelector('.kui-state-banner__copy')!
+          .getBoundingClientRect();
+        // The title text's own extent, not its box: a flex-shrunk title box
+        // once ran past the text's line ends, leaving a gap before the badge.
+        const range = document.createRange();
+        range.selectNodeContents(
+          wrapper.querySelector('.kui-state-banner__copy > strong')!,
+        );
+        const lines = [...range.getClientRects()];
+        const titleLineTops = new Set(
+          lines.map((line) => Math.round(line.top)),
+        );
+        const lastLine = lines[lines.length - 1];
+        const badge = wrapper
+          .querySelector('[data-component="badge"]')!
+          .getBoundingClientRect();
+        const detailElement = wrapper.querySelector<HTMLElement>(
+          '.kui-state-banner__detail',
+        )!;
+        const detail = detailElement.getBoundingClientRect();
+        return {
+          titleLineCount: titleLineTops.size,
+          badgeGap: Math.round(badge.left - lastLine.right),
+          badgeCenter: badge.top + badge.height / 2,
+          lastLineTop: lastLine.top,
+          lastLineBottom: lastLine.bottom,
+          badgeWidth: Math.round(badge.width),
+          detailTop: detail.top,
+          detailLeftOffset: Math.round(detail.left - copy.left),
+          detailWidth: Math.round(detail.width),
+          copyWidth: Math.round(copy.width),
+          detailTruncated:
+            detailElement.scrollWidth > detailElement.clientWidth,
+        };
+      });
+    // The badge follows the title's last word by one item gap, on that line,
+    // sized to its content.
+    expect(layout.badgeGap).toBe(8);
+    expect(layout.badgeCenter).toBeGreaterThan(layout.lastLineTop);
+    expect(layout.badgeCenter).toBeLessThan(layout.lastLineBottom);
+    expect(layout.badgeWidth).toBeLessThanOrEqual(24);
+    // The title wraps only when it cannot fit the copy column on its own.
+    expect(layout.titleLineCount).toBe(width === 1280 ? 1 : 2);
+    // Too long to sit beside the title, the detail takes its own line from
+    // the copy's start instead of truncating in the space the title left: it
+    // shows whole when it fits the copy width, and otherwise truncates at
+    // that full width.
+    expect(layout.detailTop).toBeGreaterThanOrEqual(layout.lastLineBottom - 1);
+    expect(layout.detailLeftOffset).toBe(0);
+    expect(layout.detailTruncated).toBe(width !== 1280);
+    if (layout.detailTruncated) {
+      expect(layout.detailWidth).toBe(layout.copyWidth);
+    }
+  });
+}

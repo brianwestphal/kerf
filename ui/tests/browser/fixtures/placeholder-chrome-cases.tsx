@@ -383,3 +383,30 @@ function render(placeholder: boolean) {
 
 const host = document.querySelector('[data-placeholder-cases]')!;
 host.innerHTML = `${String(render(false))}${String(render(true))}`;
+
+/**
+ * Live-only layout specimens, rendered into a separate host when the page has
+ * one, so they stay out of the live/placeholder diff above.
+ */
+export const layoutCases: Record<string, () => SafeHtml> = {
+  // A title long enough to wrap beside its badge and detail in a 560px host.
+  'state-banner-long-title': () => (
+    <StateBanner
+      tone="danger"
+      title="Deployment blocked by failing required checks"
+      badge="3"
+      detail="Resolve the failing checks on the release branch, then retry the deployment."
+      icon={file()}
+      action={<button type="button">Retry</button>}
+    />
+  ),
+};
+
+const layoutHost = document.querySelector('[data-layout-cases]');
+if (layoutHost) {
+  layoutHost.innerHTML = Object.entries(layoutCases)
+    .map(([name, render]) =>
+      String(<div data-layout-case={name}>{render()}</div>),
+    )
+    .join('');
+}

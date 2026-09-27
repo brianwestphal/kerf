@@ -278,7 +278,11 @@ the logical end while the visible glyph defaults to 18px through
 `StateBanner` exposes instance-level `--kui-state-banner-background`,
 `--kui-state-banner-border`, `--kui-state-banner-foreground`,
 `--kui-state-banner-detail` and action background variables. Its optional
-badge composes `Badge` beside the title and follows the banner tone by default. Its five built-in
+badge composes `Badge` beside the title and follows the banner tone by default. The
+title, badge, and detail flow as inline text: a wrapping title keeps the badge one item
+gap after its last word, and a detail that does not fit whole beside them moves to its
+own line and truncates at the full copy width (below 576px it always takes its own
+line). Its five built-in
 tones can be rethemed globally with
 `--kui-state-banner-{tone}-{background|border|foreground}`. Toolbar control,
 segmented-control, app-tab, and tab-bar colors likewise use their public
