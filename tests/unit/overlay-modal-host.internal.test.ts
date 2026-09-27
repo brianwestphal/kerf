@@ -251,6 +251,70 @@ describe("a slot-hosted surface's controls are Tab-reachable", () => {
   });
 });
 
+describe('a slot-hosted surface whose anchor left the dialog', () => {
+  // KF-WZ9KQM: the anchor-lifetime watch cannot see this case — the anchor is
+  // still connected (it moved out of the dialog), but the surface went with
+  // the dialog. The surface watches its own wrapper, so it closes and leaves
+  // the open-order stack instead of lingering there.
+  const flush = () => new Promise<void>((resolve) => setTimeout(resolve, 0));
+
+  it('a popover closes (no onDismiss) and leaves the stack when the dialog is removed', async () => {
+    const dialog = openAppDialog(
+      '<button id="anchor">a</button><div data-kerf-overlay-host data-morph-skip></div>',
+    );
+    const onDismiss = vi.fn();
+    const pop = popover(byId('anchor'), raw('<p>menu</p>'), { onDismiss });
+    expect(pop.el.parentElement).toBe(dialog.querySelector(HOST));
+    let closed = false;
+    void pop.result.then(() => (closed = true));
+    const removed = vi.spyOn(document, 'removeEventListener');
+
+    document.body.appendChild(byId('anchor')); // the anchor stays connected
+    dialog.remove();
+    await flush();
+    await flush();
+    expect(closed).toBe(true);
+    expect(onDismiss).not.toHaveBeenCalled(); // cleanup, not a user dismissal
+    // The stack emptied, so the app-owned-dialog toggle watch was dropped.
+    expect(removed).toHaveBeenCalledWith('toggle', expect.any(Function), true);
+    removed.mockRestore();
+  });
+
+  it('a shown tooltip is forgotten, so the next hover shows it again', async () => {
+    const dialog = openKerfDialog();
+    const anchor = byId('anchor');
+    cleanups.unshift(tooltip(anchor, 'tip', { delay: 0, hideDelay: 0 }));
+    anchor.dispatchEvent(new Event('pointerenter'));
+    await flush();
+    const first = document.querySelector('.kerf-tooltip') as HTMLElement;
+    expect(first.parentElement!.parentElement).toBe(dialog.el);
+
+    document.body.appendChild(anchor); // anchor out, then the dialog closes
+    dialog.close();
+    await flush();
+    await flush();
+    expect(document.querySelector('.kerf-tooltip')).toBeNull();
+
+    anchor.dispatchEvent(new Event('pointerleave'));
+    anchor.dispatchEvent(new Event('pointerenter'));
+    await flush();
+    const again = document.querySelector('.kerf-tooltip') as HTMLElement;
+    expect(again).not.toBeNull();
+    expect(again.parentElement).toBe(document.body); // no dialog any more
+  });
+
+  it('a slot-hosted surface closed first ignores the later removal', async () => {
+    const dialog = openAppDialog(
+      '<button id="anchor">a</button><div data-kerf-overlay-host data-morph-skip></div>',
+    );
+    const pop = popover(byId('anchor'), raw('<p>menu</p>'));
+    pop.close();
+    dialog.remove();
+    await flush();
+    await expect(pop.result).resolves.toBeUndefined();
+  });
+});
+
 describe('an app-owned modal <dialog>', () => {
   it('opts in by marking an element: the popover renders there and never warns', () => {
     const dialog = openAppDialog(

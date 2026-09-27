@@ -482,7 +482,14 @@ export function overlay(
     }
 
     installDismissal();
-    if (container.closest(OVERLAY_HOST_SELECTOR) !== null) makeTabReachable();
+    if (container.closest(OVERLAY_HOST_SELECTOR) !== null) {
+      makeTabReachable();
+      // KF-WZ9KQM: a slot-hosted surface leaves with its dialog even when its
+      // anchor (moved out of the dialog) stays connected, so the anchor watch
+      // never fires. Watch the wrapper itself: close as cleanup (no
+      // `onDismiss`) and leave the open-order stack.
+      removers.push(attach(wrapper, () => close));
+    }
     applyInitialFocus();
   } catch (error) {
     close();
@@ -886,6 +893,11 @@ export function tooltip(
       hide();
     });
     current = { handle, stop, unwatch };
+    // A surface that closed itself (its host slot left the document with the
+    // dialog) must not stay `current`, or the next hover would never show.
+    void handle.result.then(() => {
+      if (current?.handle === handle) hide();
+    });
   }
 
   function hide(): void {

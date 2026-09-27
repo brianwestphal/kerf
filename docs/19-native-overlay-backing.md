@@ -181,6 +181,14 @@ data-morph-skip></div>` anywhere inside the dialog (both attributes are
     `data-kfb` / `kfb:` / `kf-list:` markers, which reuse the same per-mount
     counters, can never be taken for the outer mount's own. This boundary is
     what costs the shared core ~0.08 KB min+gzip.
+  - **A slot-hosted surface leaves with its slot (KF-WZ9KQM).** A popover or
+    tooltip normally closes when its anchor leaves the document, but an
+    anchor moved out of the dialog before the dialog is removed stays
+    connected while the surface goes with the dialog. So a surface in a slot
+    also watches its own wrapper (`attach()`): when the wrapper leaves the
+    document it closes as cleanup — no `onDismiss`, `result` resolves
+    `undefined` — and leaves the open-order stack. A tooltip forgets that
+    surface, so the next hover or focus shows it again.
   - An explicit `container` always wins. A `container` inside an open modal
     `<dialog>` is also never lifted, since the surface is already part of the
     modal subtree (for a kerf-mounted dialog that container must be a slot, or

@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **A popover or tooltip in a modal `<dialog>` no longer lingers after the
+  dialog is removed when its anchor was moved out first.** A surface rendered
+  into a dialog's host slot left with the dialog, but because its anchor was
+  still in the document, kerf kept it registered as open, and a tooltip on
+  that anchor never showed again. A slot-hosted surface now closes itself
+  (without calling `onDismiss`) when it leaves the document, and the tooltip
+  shows again on the next hover or focus.
 - **A popover inside a modal `<dialog>` is reachable by Tab in Safari on
   macOS.** A popover or tooltip rendered into a dialog's host slot follows the
   dialog's own Tab order, and WebKit on macOS skips buttons and links there
