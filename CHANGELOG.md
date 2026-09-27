@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- The `@kerfjs/ui` UX catalog's `StateBanner` route adds a placeholder with a
+  badge for every tone, next to the existing badge-less placeholder, so visual
+  review and captures show the solid badge's loading skeleton on each tone's
+  fill. A browser test checks that each tone's badged placeholder is present.
 - `@kerfjs/ui` toned text stays readable in dark mode without the optional
   `@kerfjs/ui/webawesome.css` theme. The foundation's fallbacks for the
   success, warning, and danger `on-quiet` and `on-normal` tokens were single

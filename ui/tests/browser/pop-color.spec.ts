@@ -68,7 +68,7 @@ test('pop stays attractive and readable across themes, contrast, and typed surfa
 
   await page.goto('/?component=state-banner');
   const banner = page.locator(
-    '[data-component="state-banner"][data-tone="pop"]',
+    '[data-component="state-banner"][data-tone="pop"]:not([data-placeholder])',
   );
   await expect(banner).toBeVisible();
   await expect.poll(() => contrastRatio(banner)).toBeGreaterThanOrEqual(4.5);

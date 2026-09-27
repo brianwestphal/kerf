@@ -14,6 +14,12 @@ export function StateBannerDemo() {
     { tone: 'warning', title: 'Connection interrupted' },
     { tone: 'danger', title: 'Authentication required' },
   ] as const;
+  const iconFor = (tone: (typeof specimens)[number]['tone']) =>
+    tone === 'danger' ? (
+      <LucideIcon icon={CircleHelp} name="circle-help" />
+    ) : (
+      <LucideIcon icon={Check} name="check" />
+    );
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'state-banner' }}>
       <>
@@ -25,13 +31,7 @@ export function StateBannerDemo() {
               title={title}
               badge={String(index + 1)}
               detail="Semantic defaults remain overridable."
-              icon={
-                tone === 'danger' ? (
-                  <LucideIcon icon={CircleHelp} name="circle-help" />
-                ) : (
-                  <LucideIcon icon={Check} name="check" />
-                )
-              }
+              icon={iconFor(tone)}
               action={
                 <wa-button size="small" data-action={`log-${tone}`}>
                   Act
@@ -68,6 +68,25 @@ export function StateBannerDemo() {
           placeholder
         />
       </CatalogExample>
+      {/* Every tone's placeholder with a badge, so visual QA and captures see
+          the solid badge's skeleton tint on each tone's fill. */}
+      <>
+        {specimens.map(({ tone, title }, index) => (
+          <CatalogExample
+            label={`Placeholder with badge · ${tone}`}
+            align="none"
+          >
+            <StateBanner
+              tone={tone}
+              title={title}
+              badge={String(index + 1)}
+              detail="Semantic defaults remain overridable."
+              icon={iconFor(tone)}
+              placeholder
+            />
+          </CatalogExample>
+        ))}
+      </>
     </CatalogExampleStack>
   );
 }

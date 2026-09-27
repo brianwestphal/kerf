@@ -65,6 +65,29 @@ test('every placeholder-supporting component demos its placeholder case', async 
   }
 });
 
+test('the StateBanner demo shows a badged placeholder in every tone', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/?component=state-banner');
+  // Visual QA and captures need the solid badge's skeleton on each tone fill.
+  const tones = await page
+    .locator(
+      '[data-demo="state-banner"] [data-component="state-banner"][data-placeholder="true"]:has(.kui-badge .kui-skeleton)',
+    )
+    .evaluateAll((banners) =>
+      banners.map((banner) => (banner as HTMLElement).dataset.tone),
+    );
+  expect(tones).toEqual([
+    'neutral',
+    'info',
+    'pop',
+    'success',
+    'warning',
+    'danger',
+  ]);
+});
+
 test('the Loading inspector recipe composes placeholder chrome and swaps to loaded', async ({
   page,
   browserName,
