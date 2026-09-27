@@ -50,5 +50,6 @@ pure, DOM-free bucketing core.
 ## Server rendering
 
 Without a DOM, `deviceClass()` resolves to an SSR default (1024×768, landscape,
-one segment) and hydrates to the real class on the client. Override the assumed
+one segment). That signal is a fixed snapshot — there is no hydration step; a
+`deviceClass()` called in the browser reads the real viewport. Override the assumed
 viewport with `deviceClass({ ssr: { width, height } })`.

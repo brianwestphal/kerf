@@ -51,8 +51,10 @@ awareness of **multiple viewport segments** (foldables / dual-screen):
 - Segments: the count reported by `@media (horizontal-viewport-segments: N)` and
   `(vertical-viewport-segments: N)`; `1` on ordinary devices.
 
-Proposed default breakpoints (min-width, `rem` at the ui 16px baseline; tunable
-via CSS custom properties so an app can shift them without forking the logic):
+Default breakpoints (minimum width in px; the JS signal takes an override map
+per reader, and the same defaults are mirrored as the `--kui-bp-*` CSS custom
+properties so CSS media queries read the same numbers — the custom properties
+are a mirror, not an input to the JS logic):
 
 | Bucket       | Min width       | Typical device               |
 | ------------ | --------------- | ---------------------------- |
@@ -62,44 +64,63 @@ via CSS custom properties so an app can shift them without forking the logic):
 | `desktop`    | 64rem (1024px)  | laptops / desktops           |
 | `xl-desktop` | 90rem (1440px)  | large / wide desktops        |
 
-Orientation is `matchMedia('(orientation: portrait)')`. Segments come from the
-Viewport Segments media features, feature-detected (absent on most engines →
-treated as a single segment).
+Orientation is derived from the viewport's own dimensions — `portrait` when
+`innerHeight > innerWidth`, otherwise `landscape` — not from a
+`(orientation: …)` media query. Segments come from the Viewport Segments media
+features, feature-detected by probing `matchMedia` for 4, 3, then 2 segments
+(absent on most engines → treated as a single segment).
 
-### 2.2 Proposed API — `@kerfjs/ui/device-class`
+### 2.2 Shipped API — `@kerfjs/ui/device-class`
 
 Reactive, signals-based (kerf has no hooks; a device class is a
-`ReadonlySignal`, not a `useX`):
+`ReadonlySignal`, not a `useX`). `ui/docs/device-class.md` is the consumer
+reference.
 
 ```ts
-import { deviceClass, type DeviceClass } from "@kerfjs/ui/device-class";
+import {
+  classifyViewport,
+  DEFAULT_BREAKPOINTS,
+  deviceClass,
+  type DeviceClass,
+} from "@kerfjs/ui/device-class";
 
-const device = deviceClass(); // ReadonlySignal<DeviceClass>
+function deviceClass(options?: {
+  breakpoints?: Partial<DeviceBreakpoints>; // override any default threshold
+  ssr?: Partial<Viewport>; // viewport assumed without a DOM
+}): ReadonlySignal<DeviceClass>;
 
 interface DeviceClass {
   size: "xs-mobile" | "mobile" | "tablet" | "desktop" | "xl-desktop";
   orientation: "portrait" | "landscape";
   segments: number; // horizontal viewport segments, ≥ 1
   verticalSegments: number; // ≥ 1
-  // Convenience predicates for the common queries:
-  atLeast(size): boolean; // e.g. device.value.atLeast('tablet')
   handset: boolean; // size ∈ {xs-mobile, mobile}
   compact: boolean; // handset || (tablet && portrait) — "one pane at a time"
+  atLeast(size): boolean; // e.g. device.value.atLeast('tablet')
 }
+
+function classifyViewport(
+  width: number,
+  orientation: DeviceOrientation,
+  segments?: number, // default 1
+  verticalSegments?: number, // default 1
+  breakpoints?: DeviceBreakpoints, // default DEFAULT_BREAKPOINTS
+): DeviceClass;
 ```
 
-- One shared set of `matchMedia` listeners backs every reader (created lazily,
-  reference-counted, torn down when the last reader disposes) so N components do
-  not install N listener sets.
-- `deviceClass({ breakpoints })` accepts an override map; the defaults are also
-  exposed as CSS custom properties (`--kui-bp-tablet`, …) so CSS media queries
-  and the JS logic read the same numbers.
-- A pure `classifyViewport(width, orientation, segments)` helper is directly
-  unit-testable without a DOM, mirroring how `list-render-state.ts` reifies the
-  reconciler's state machine.
-- SSR: `deviceClass()` on the server resolves to a caller-supplied default class
-  (default `desktop`/`landscape`/`1`) and hydrates to the real class on first
-  client read.
+- **One shared viewport source.** The first `deviceClass()` call in a browser
+  installs a single `resize` + `orientationchange` listener pair on `window`
+  and a shared viewport signal; every later reader derives a `computed` from it.
+  The listeners are **not** reference-counted or torn down — there is only one
+  viewport, so they stay installed for the life of the page.
+- **Per-reader breakpoints.** `deviceClass({ breakpoints })` merges the override
+  onto `DEFAULT_BREAKPOINTS` for that reader only.
+- **Pure core.** `classifyViewport(...)` is DOM-free and directly unit-tested,
+  mirroring how `list-render-state.ts` reifies the reconciler's state machine.
+- **SSR.** Without a DOM, `deviceClass()` returns a `computed` over a fixed
+  snapshot: `options.ssr` merged onto a 1024×768, one-segment default
+  (`desktop` / `landscape`). There is no hydration step — that signal never
+  changes; a `deviceClass()` called in the browser reads the real viewport.
 
 **Implementation:** ticket **device-class foundation** (see §8). Everything else
 depends on it.
@@ -150,32 +171,44 @@ const views = signal<NavStackView[]>([{ key: 'home', content: <HomeView/> }]);
 ### 3.2 List-detail (split view) — `SplitView` (`@kerfjs/ui/split-view`)
 
 Two panes — a list and a detail — side by side, with an **optionally resizable
-separator** (with min/max limits). `SplitView` is
-the public name (Apple's term), `ListDetail` documented as a synonym.
+separator** (with min/max limits). `SplitView` (Apple's term) is the only
+public name.
 
-Responsive presentation (device-class driven):
+Responsive presentation (device-class driven, but **the app passes the class
+in** — `SplitView` does not read `deviceClass()` itself):
 
 - **desktop / xl-desktop / landscape tablet / multi-segment devices:** both panes
-  visible, separator resizable within limits.
-- **portrait tablet:** the detail is usually a full-screen (or near-full-screen)
-  push over the list — i.e. the `SplitView` collapses to a `NavStack` (list →
-  detail). This composition is explicit: on a compact class, `SplitView`
-  delegates to an internal `NavStack`.
-- **handset:** always collapsed to the `NavStack` form.
+  visible; with `resizable`, the list pane is a `ResizableRegion` whose
+  separator resizes within limits.
+- **compact (handset or portrait tablet):** the split collapses to a `NavStack`
+  — the list is the root view and, while `detailActive` is true, the detail is
+  pushed over it.
 - **as a dialog:** on desktop it is an inline two-pane dialog; on portrait tablet
   it presents as a full-screen modal; on landscape tablet it covers a large
-  fraction of the base app without necessarily going full screen.
+  fraction of the base app without necessarily going full screen (§4).
 
-Proposed shape:
+Shipped shape — a declarative component; interactivity composes existing wires
+(`wireResizableRegions` for the separator, `wireNavStack` for the compact back):
 
-```ts
-splitView({
-  list: () => <List/>,
-  detail: (selection) => <Detail sel={selection}/>,
-  resizable: { min: 220, max: 480 },   // omit → fixed separator
-  collapseAt: 'compact',               // device-class predicate; default 'compact'
-});
+```tsx
+const device = deviceClass();
+// render:
+<SplitView
+  id="mail"
+  label="Mail"
+  list={<MessageList />}
+  detail={<MessageDetail id={selected.value} />}
+  compact={device.value.compact} // collapse to a NavStack on compact classes
+  detailActive={selected.value != null} // compact: detail pushed over the list
+  listTitle="Inbox"
+  detailTitle="Message"
+  resizable={{ size: 320, min: 220, max: 480 }} // omit → fixed split
+/>;
+// once: wireResizableRegions(root, …); wireNavStack(root, { onBack: () => (selected.value = null) });
 ```
+
+`SplitViewProps` also takes `backLabel` (default `"Back"`), `className`, and
+`slot`.
 
 **Implementation:** ticket **SplitView (list-detail) layout**. Depends on
 NavStack (it reuses it on compact classes).
@@ -186,37 +219,45 @@ The "Xcode-like" layout: a **left rail**, a **right rail**, and a **bottom
 drawer**, each independently **collapsible**, around a central work area. Any of
 the three may be absent (a left-rail-only variant is common).
 
-**Name.** Proposed **`Workbench`** — it reads as a tool/IDE workspace, does not
-collide with the existing `TabBar`/`AppTab`/`ResizableRegion` vocabulary, and
-avoids the PWA-loaded "app shell" term. Alternatives considered: `AppShell`
-(overloaded with PWA shells), `PanelGroup` (too generic), `IdeLayout`
-(product-specific), `Studio`. **Open decision — the maintainer may veto the
-name; §7.**
+**Name.** Shipped as **`Workbench`** (§7) — it reads as a tool/IDE workspace,
+does not collide with the existing `TabBar`/`AppTab`/`ResizableRegion`
+vocabulary, and avoids the PWA-loaded "app shell" term.
 
 - Rails collapse with the **instant-width / sliding-content** animation proven in
-  `~/Documents/hotsheet2`'s `app-shell.css` and now in the kerf UX demo catalog
-  sidebar (KF-7QKJRK): the panel's grid column snaps instantly (one reflow) while
-  its fixed-width content slides via a composited `transform`, clipped by the
-  shell's overflow — never a per-frame width animation. `Workbench`
-  **generalizes the KF-7QKJRK demo CSS** into a reusable component; the demo
-  sidebar can later adopt it. The bottom drawer uses the vertical analogue while
-  anchoring its fixed-height content to the shell's stable bottom edge, so the
-  layout origin cannot move underneath the transform transition.
-- Rails/drawer are `ResizableRegion`s with the collapse animation layered on.
+  hotsheet2's `app-shell.css` and in the kerf UX demo catalog sidebar (KF-7QKJRK,
+  the instant-width / sliding-content sidebar collapse): the panel's grid track
+  snaps instantly (one reflow) while its fixed-width content slides via a
+  composited `transform`, clipped by the shell's overflow — never a per-frame
+  width animation. The bottom drawer uses the vertical analogue while anchoring
+  its fixed-height content to the shell's stable bottom edge, so the layout
+  origin cannot move underneath the transform transition.
+- **The collapse is pure CSS — there is no `wireWorkbench`.** The app owns each
+  panel's `collapsed` flag and re-renders; the component reflects it as
+  `data-collapsed` and the stylesheet animates the change.
+- **Panels are plain, fixed-size regions, not `ResizableRegion`s.** A panel's
+  `size` sets the rail width or drawer height in px (overriding the CSS
+  default); there is no drag-to-resize. Panels reuse `ResizableRegion`'s
+  presentation vocabulary as options — `separator` (`auto` | `hidden`),
+  `collapseMotion` (`none` | `slide` | `fade-slide`), `contentOverflow`
+  (`clip` | `auto` | `visible`), `presentation` (`inline` | `overlay` |
+  `hidden`) — plus an optional `restoreControl` shown in a safe-area-aware
+  corner (`restorePosition`) while the panel is collapsed.
 - Appropriate for **desktop-size devices**. On smaller classes the guidance is to
   present the rails' contents through a different layout (a `NavStack` or overlay
   drawers), not to shrink the three-panel shell.
 
-Proposed shape:
+Shipped shape:
 
-```ts
-workbench({
-  leftRail:  { content: () => <Nav/>,       collapsible: true,  resizable: { min: 200, max: 360 } },
-  rightRail: { content: () => <Inspector/>, collapsible: true },
-  bottomDrawer: { content: () => <Console/>, collapsible: true },
-  main: () => <Editor/>,
-});
-// handle.left.collapsed / .toggle(); same for right, bottom
+```tsx
+<Workbench
+  id="ide"
+  label="Editor workspace"
+  main={<Editor />}
+  leftRail={{ content: <Nav />, label: "Navigator", collapsed: leftCollapsed.value, size: 260 }}
+  rightRail={{ content: <Inspector />, label: "Inspector", collapsed: rightCollapsed.value }}
+  bottomDrawer={{ content: <Console />, label: "Console", collapsed: consoleCollapsed.value }}
+/>
+// toggle: leftCollapsed.value = !leftCollapsed.value (the app owns every flag)
 ```
 
 **Implementation:** ticket **Workbench (multi-panel) layout**.
@@ -224,25 +265,33 @@ workbench({
 ### 3.4 Bottom tab scaffold — `TabScaffold` (`@kerfjs/ui/tab-scaffold`)
 
 A mobile-first, iOS-like **bottom tab bar** switching between major app sections,
-where **each tab owns its own `NavStack`** (switching tabs preserves each tab's
-stack). Distinct from the existing document-oriented, reorderable `TabBar`; the
-name `TabScaffold` (with a `BottomTabBar` sub-part) keeps them separate. **Open
-decision — name; §7.**
+where each tab's content — typically its own `NavStack` — stays mounted, so
+switching tabs preserves each tab's stack and scroll. Distinct from the existing
+document-oriented, reorderable `TabBar`. The bottom bar is rendered by
+`TabScaffold` itself (a `role="tablist"` `<nav>`); there is no separate exported
+sub-part component.
 
 - Bottom tab bar respects safe-area insets and reduced motion.
 - On larger classes the guidance is to promote the tab set to a `Workbench` left
   rail or a persistent sidebar rather than keep a bottom bar.
 
-Proposed shape:
+Shipped shape — controlled; the app owns `active`, and
+`wireTabScaffold(root, { onSelect })` (`@kerfjs/ui/wire-tab-scaffold`) delegates
+tab clicks to `onSelect(tabId)` and returns a disposer:
 
-```ts
-tabScaffold({
-  tabs: [
-    { id: 'home', label: 'Home', icon: Home, stack: () => <HomeRoot/> },
-    { id: 'search', label: 'Search', icon: Search, stack: () => <SearchRoot/> },
-  ],
-  active: activeSignal, // controlled; app owns selection
-});
+```tsx
+const active = signal<"home" | "search">("home");
+// render:
+<TabScaffold
+  id="app-tabs"
+  label="Sections"
+  active={active.value}
+  tabs={[
+    { id: "home", label: "Home", icon: homeIcon, content: <HomeStack /> },
+    { id: "search", label: "Search", icon: searchIcon, content: <SearchStack /> },
+  ]}
+/>;
+// once: const dispose = wireTabScaffold(root, { onSelect: (id) => (active.value = id as "home" | "search") });
 ```
 
 **Implementation:** ticket **TabScaffold (bottom tabs) layout**. Depends on
