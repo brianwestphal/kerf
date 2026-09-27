@@ -187,8 +187,11 @@
   flex: none;
 }
 
-.kui-list-header__action:hover,
-.kui-list-header__toggle:hover {
+/* A placeholder is disabled to stay inert, but it is loading, not unavailable:
+   it keeps the live tone and gives no hover feedback (see the placeholder rule
+   in skeleton.css). */
+.kui-list-header:not([data-placeholder="true"]) .kui-list-header__action:hover,
+.kui-list-header:not([data-placeholder="true"]) .kui-list-header__toggle:hover {
   border-color: var(--kui-color-neutral-border-normal);
   background: var(--kui-list-header-hover-background);
 }
@@ -199,7 +202,8 @@
   outline-offset: 1px;
 }
 
-.kui-list-header__action:disabled {
+.kui-list-header:not([data-placeholder="true"])
+  .kui-list-header__action:disabled {
   cursor: not-allowed;
   opacity: 0.48;
 }

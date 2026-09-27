@@ -20,6 +20,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   bindings, first-render row-contract validation, orphan pruning) into its own
   internal module, so `mount.ts` holds only the render orchestration. No
   behavior or public API change.
+- `@kerfjs/ui`'s `ListHeader` placeholder no longer dims its action button
+  (48%) or, in `toggle` mode, the whole title and label (Web Awesome's native
+  50%), and its inert action and toggle give no hover feedback. A live
+  `actionDisabled` header still dims its action.
 - `@kerfjs/ui`'s `SegmentedControl` placeholder now keeps its choices. The
   choices are known; only the selection is unknown, so a placeholder renders
   every choice's live label or icon at its live size, selects none, and stays

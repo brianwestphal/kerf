@@ -47,8 +47,6 @@ const CHROME: readonly ChromeSpec[] = [
 
 // Components whose placeholder currently drifts from the live chrome and are
 // therefore not yet in CHROME. Move each into CHROME with its fix:
-// - ListHeader: the action button (0.48) and toggle title (Web Awesome native
-//   0.5) dim, taking the label with them in toggle mode.
 // - AppTab: Web Awesome native `button:disabled` dims the pill to 0.5.
 // - StateBanner: a placeholder always adds a detail skeleton, even without
 //   `detail`.
@@ -187,4 +185,45 @@ test('a placeholder neutralizes generic disabled chrome, including Web Awesomeâ€
   // The neutralizer never overrides a component's own opacity (for example a
   // control hidden until interaction).
   expect(styles.hidden.opacity).toBe('0');
+});
+
+test('a placeholder ListHeader keeps its action at the live tone', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/?component=list-header');
+  const demo = page.locator('[data-demo="list-header"]');
+  await expect(demo).toBeVisible();
+  const read = (selector: string) =>
+    demo
+      .locator(selector)
+      .first()
+      .evaluate((action) => {
+        const computed = window.getComputedStyle(action);
+        const box = action.getBoundingClientRect();
+        return {
+          opacity: computed.opacity,
+          color: computed.color,
+          size: [box.width, box.height],
+        };
+      });
+  const live = await read(
+    '.kui-list-header:not([data-placeholder]) .kui-list-header__action:not(:disabled)',
+  );
+  const placeholder = await read(
+    '.kui-list-header[data-placeholder="true"] .kui-list-header__action',
+  );
+  expect(placeholder).toEqual(live);
+  // Hovering a placeholder's inert action gives no feedback.
+  const action = demo
+    .locator(
+      '.kui-list-header[data-placeholder="true"] .kui-list-header__action',
+    )
+    .first();
+  await action.hover({ force: true });
+  expect(
+    await action.evaluate(
+      (element) => window.getComputedStyle(element).backgroundColor,
+    ),
+  ).toBe('rgba(0, 0, 0, 0)');
 });
