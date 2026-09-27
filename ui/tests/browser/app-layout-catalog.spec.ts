@@ -187,3 +187,56 @@ test('app-layout catalog routes remain usable at compact width', async ({
     ).toBe(true);
   }
 });
+
+// KF-DRMN5Q: the collapsible-panel catalog route demonstrates a drawer's
+// restoreControl, wired with wireSidebar so the corner control really restores
+// the drawer and the drawer's own toggle collapses it again.
+for (const width of [1100, 390]) {
+  test(`the collapsible-panel restore control restores and re-collapses its drawer (${width}px)`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/?component=collapsible-panel');
+    const example = page.locator('[data-catalog-panel-restore-example]');
+    const frame = example.locator('[data-catalog-example-viewport]');
+    const drawer = example.locator(
+      '[data-collapsible-panel="catalog-panel-restore"]',
+    );
+    const restore = example.locator(
+      '[data-panel-restore="catalog-panel-restore"]',
+    );
+    const show = restore.getByRole('button', { name: 'Show console' });
+
+    // Collapsed on arrival: the control floats in the frame's bottom-end
+    // corner, inset from the frame's padding box (inside its border).
+    await expect(drawer).toHaveAttribute('data-collapsed', 'true');
+    await show.scrollIntoViewIfNeeded();
+    await expect(show).toBeVisible();
+    const group = restore.locator('[data-component="toolbar-control-group"]');
+    const groupBox = (await group.boundingBox())!;
+    const inner = await frame.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return {
+        right: box.left + element.clientLeft + element.clientWidth,
+        bottom: box.top + element.clientTop + element.clientHeight,
+      };
+    });
+    expect(Math.round(inner.right - (groupBox.x + groupBox.width))).toBe(16);
+    expect(Math.round(inner.bottom - (groupBox.y + groupBox.height))).toBe(16);
+
+    // The corner control restores the drawer and hands focus into it.
+    await show.click();
+    await expect(drawer).toHaveAttribute('data-collapsed', 'false');
+    await expect(restore).toHaveCount(0);
+    const hide = drawer.getByRole('button', { name: 'Hide console' });
+    await expect(hide).toBeVisible();
+    await expect(hide).toBeFocused();
+
+    // The drawer's own toggle collapses it; the restore control returns and
+    // takes focus back.
+    await hide.click();
+    await expect(drawer).toHaveAttribute('data-collapsed', 'true');
+    await expect(show).toBeVisible();
+    await expect(show).toBeFocused();
+  });
+}

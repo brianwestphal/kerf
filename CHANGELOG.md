@@ -17,6 +17,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   containing block with a transient 1px probe and maps its viewport
   coordinates into it, compensating translation and scale. Rotated or skewed
   containing blocks are not compensated.
+- **The `@kerfjs/ui` UX catalog demonstrates a standalone restore control.**
+  The CollapsiblePanel route gains a "Restore control" example: a bottom
+  drawer that collapses to a `FloatingToolbar` `restoreControl` in its frame's
+  corner, wired with `wireSidebar` so the control restores the drawer and
+  focus moves between it and the drawer's own hide toggle.
+
 - **A `@kerfjs/ui` collapsed rail's restore control no longer covers an open
   bottom drawer beside it.** When a `CollapsiblePanel` or `ResizableRegion`
   with a `restoreControl` shared its container with an expanded bottom

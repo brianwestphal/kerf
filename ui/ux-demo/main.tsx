@@ -25,6 +25,7 @@ import {
 } from '@kerfjs/ui/wire-catalog';
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
 import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
+import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
 import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars';
 import { wireTabScaffold } from '@kerfjs/ui/wire-tab-scaffold';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
@@ -60,6 +61,12 @@ import {
   oppositeDemoTheme,
   preferredDemoTheme,
 } from './demo-theme.js';
+import {
+  resetCollapsiblePanelDemo,
+  RESTORE_DRAWER_ACTION,
+  RESTORE_DRAWER_ID,
+  restoreDrawerCollapsed,
+} from './demos/collapsible-panel.js';
 import {
   popNavStackDemo,
   pushNavStackDemo,
@@ -986,6 +993,22 @@ interface RouteWire {
 }
 
 const routeWires: Partial<Record<string, RouteWire>> = {
+  // The restore example's drawer: wireSidebar owns its toggle (the drawer's
+  // own hide control and its floating restore control) and the focus hand-off.
+  'collapsible-panel': {
+    reset: resetCollapsiblePanelDemo,
+    target: 'canvas',
+    wire: (canvas) =>
+      wireSidebar(canvas, {
+        panels: [
+          {
+            id: RESTORE_DRAWER_ID,
+            collapsed: restoreDrawerCollapsed,
+            toggleAction: RESTORE_DRAWER_ACTION,
+          },
+        ],
+      }),
+  },
   'nav-stack': {
     reset: resetNavStackDemo,
     target: 'canvas',

@@ -231,3 +231,12 @@ It is covered end-to-end across Chromium, Firefox, and WebKit by
 move/restore, the compact overlay + Escape/backdrop dismiss, the Tab trap, and
 the compact initial state across first load and wide/compact crossings),
 alongside the component/wire unit tests.
+
+The focused [CollapsiblePanel route](../ux-demo/?component=collapsible-panel)
+([TSX source](../ux-demo/demos/collapsible-panel.tsx)) also has a **Restore
+control** example: a bottom drawer that starts collapsed, with a
+`FloatingToolbar` `restoreControl` in its frame's bottom-end corner and its
+own hide toggle in the drawer header. Both toggles share one `data-action`,
+and the catalog wires them with `wireSidebar`, so the corner control really
+restores the drawer and focus moves between the two. It is covered by
+`tests/browser/app-layout-catalog.spec.ts` at wide and compact widths.
