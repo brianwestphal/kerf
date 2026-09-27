@@ -550,3 +550,31 @@ test('keeps the compact overlay intact when a nav selection re-renders the recip
   await page.keyboard.press('Escape');
   await expect(railPanel(page)).toHaveAttribute('data-collapsed', 'true');
 });
+
+// KF-WWH5W0: the expanded rail shrank below its 232px size beside a wide work
+// area while its content kept 232px, so the rail's border clipped the selected
+// Inbox row's trailing count. A CollapsiblePanel now holds its size in flex.
+test('the expanded rail holds its size so row accessories are not clipped', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 844 });
+  await page.goto(RECIPE);
+  const rail = railPanel(page);
+  await expect(rail).toHaveAttribute('data-collapsed', 'false');
+  const geometry = await rail.evaluate((panel) => {
+    const box = panel.getBoundingClientRect();
+    const content = panel
+      .querySelector('.kui-collapsible-panel__content')!
+      .getBoundingClientRect();
+    const inbox = panel
+      .querySelector('[data-component="list-item"][data-item-id="inbox"]')!
+      .getBoundingClientRect();
+    return {
+      width: box.width,
+      contentWidth: content.width,
+      clipped: inbox.right - box.right,
+    };
+  });
+  expect(geometry.width).toBeCloseTo(geometry.contentWidth, 0);
+  expect(geometry.clipped).toBeLessThanOrEqual(0);
+});

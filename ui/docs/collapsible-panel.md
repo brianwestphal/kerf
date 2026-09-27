@@ -220,6 +220,15 @@ const stop = wireSidebar(app, {
 });
 ```
 
+## Sizing in a flex layout
+
+An expanded panel holds its `size` in a flex row or column (`flex-shrink: 0`):
+its content keeps that fixed size so collapsing slides it out instead of
+squeezing it, and a shrunk track would only clip the content's trailing edge.
+Give the sibling work area `min-width: 0` / `min-height: 0` (a `Pane` or
+`List flex` already has it) so it is the region that gives way, and switch the
+panel to the compact overlay (`wireSidebar`) where the viewport cannot hold it.
+
 ## Safe areas
 
 A panel grows by the unsafe inset of the edge it docks to and pads its content

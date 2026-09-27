@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **An expanded `@kerfjs/ui` `CollapsiblePanel` holds its size in a flex
+  layout.** The panel shrank like any flex item beside a work area with wide
+  content, while its content kept the panel's fixed size for the slide-out, so
+  the panel's edge clipped the content — in the collapsible-sidebar recipe at
+  1280px, the rail showed 211 of its 232px and cut off the selected Inbox
+  row's count. The panel is now `flex-shrink: 0`; the sibling work area gives
+  way instead.
+
 - **`@kerfjs/ui` overlay panels span their host on the fixed axis.** The
   85vw / 85vh overlay maximums (`--kui-resizable-region-overlay-max-*`,
   `--kui-workbench-overlay-max-*`) applied to both axes, so an overlay bottom

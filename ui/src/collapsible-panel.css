@@ -25,6 +25,12 @@
     --kui-edge-inset-inline-end,
     var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
   );
+  /* The content keeps its fixed expanded size (collapsing slides it rather
+     than squeezing it), so a flex parent must never shrink the track below
+     that size: a shrunk track only clips the content's trailing edge (a
+     rail's row badges, a drawer's last row). The panel holds its size and
+     the sibling work area gives way. */
+  flex-shrink: 0;
   overflow: hidden;
   background: var(--kui-color-surface);
 }
