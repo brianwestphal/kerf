@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- `@kerfjs/ui`'s `Skeleton` takes `block` (default `false`). It lays the
+  placeholder out as `display: block` instead of `inline-block`, for a
+  skeleton that stands in for a box rather than text: no text line and no
+  baseline gap of its own. `ListItem`'s placeholder icon uses it.
 - `@kerfjs/ui/css-values` adds `remify(px)`, the runtime twin of source
   CSS's `remify(<px>)`. It turns a pixel count into a rem `CssLength` against
   the fixed 16px baseline, so `remify(18)` is `1.125rem`. `ListItem`'s

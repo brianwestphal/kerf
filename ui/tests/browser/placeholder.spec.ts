@@ -104,6 +104,29 @@ test('the Loading inspector recipe composes placeholder chrome and swaps to load
     .first();
   await expect(item).toBeDisabled();
   expect(await item.getAttribute('data-action')).toBeNull();
+  // The icon placeholder is an 18px block skeleton centered in its icon slot
+  // and on the label's line.
+  const iconGeometry = await item.evaluate((element) => {
+    const slot = element.querySelector('.kui-list-item__icon')!;
+    const skeleton = slot.querySelector<HTMLElement>('.kui-skeleton')!;
+    const label = element.querySelector('.kui-list-item__label')!;
+    const mid = (rect: DOMRect) => (rect.top + rect.bottom) / 2;
+    const s = skeleton.getBoundingClientRect();
+    return {
+      display: window.getComputedStyle(skeleton).display,
+      block: skeleton.dataset.block,
+      size: [Math.round(s.width), Math.round(s.height)],
+      offSlot: Math.abs(mid(s) - mid(slot.getBoundingClientRect())),
+      offLabel: Math.abs(mid(s) - mid(label.getBoundingClientRect())),
+    };
+  });
+  expect(iconGeometry).toMatchObject({
+    display: 'block',
+    block: 'true',
+    size: [18, 18],
+  });
+  expect(iconGeometry.offSlot).toBeLessThanOrEqual(0.5);
+  expect(iconGeometry.offLabel).toBeLessThanOrEqual(0.5);
 
   if (browserName === 'chromium')
     await inspector.screenshot({

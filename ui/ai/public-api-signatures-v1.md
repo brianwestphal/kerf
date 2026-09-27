@@ -1794,6 +1794,10 @@ interface SkeletonProps {
     radius?: CssLength;
     /** Render this many stacked lines (the last one shorter), for multi-line text. */
     lines?: number;
+    /** Lay the block out as `display: block` instead of the default
+     *  `inline-block`, so it takes no text line of its own: no baseline gap
+     *  below it, and it centers like an icon in a slot. Defaults to `false`. */
+    block?: boolean;
     /** Accessible label. Omit to keep the block decorative (`aria-hidden`). */
     label?: string;
     className?: string;
@@ -1806,7 +1810,7 @@ interface SkeletonProps {
  * `placeholder` prop. Decorative by default (`aria-hidden`); pass `label` to
  * announce it. Sizes to its slot unless `width`/`height` are given.
  */
-declare function Skeleton({ width, height, radius, lines, label, className, slot, }: SkeletonProps): kerfjs.SafeHtml;
+declare function Skeleton({ width, height, radius, lines, block, label, className, slot, }: SkeletonProps): kerfjs.SafeHtml;
 
 export { Skeleton, type SkeletonProps };
 ```

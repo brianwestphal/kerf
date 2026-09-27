@@ -12,6 +12,10 @@
   vertical-align: middle;
 }
 
+.kui-skeleton[data-block="true"] {
+  display: block;
+}
+
 .kui-skeleton-lines {
   display: flex;
   width: 100%;

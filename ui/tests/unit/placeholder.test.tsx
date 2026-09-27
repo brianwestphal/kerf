@@ -43,6 +43,11 @@ describe('Skeleton primitive', () => {
     expect(html).toContain('width:60%');
   });
 
+  it('lays out as a block only when asked', () => {
+    expect(String(Skeleton({}))).not.toContain('data-block');
+    expect(String(Skeleton({ block: true }))).toContain('data-block="true"');
+  });
+
   it('announces itself when labeled', () => {
     const html = asHtml(Skeleton({ label: 'Loading value' }));
     expect(html).toContain('role="img"');
@@ -100,6 +105,10 @@ describe('component placeholder mode', () => {
     expect(
       html.match(/class="kui-skeleton"/g)?.length ?? 0,
     ).toBeGreaterThanOrEqual(2);
+    // The icon placeholder is a block, so it centers in the icon slot.
+    expect(html).toMatch(
+      /class="kui-list-item__icon"><span[^>]*class="kui-skeleton"[^>]*data-block="true"/,
+    );
   });
 
   it('ListItem skeletons a trailing slot when present', () => {

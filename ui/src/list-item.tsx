@@ -120,7 +120,7 @@ export function ListItem({
       {icon && (
         <span class="kui-list-item__icon">
           {placeholder ? (
-            <Skeleton width={remify(18)} height={remify(18)} />
+            <Skeleton block width={remify(18)} height={remify(18)} />
           ) : (
             icon
           )}

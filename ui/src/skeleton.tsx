@@ -9,6 +9,10 @@ export interface SkeletonProps {
   radius?: CssLength;
   /** Render this many stacked lines (the last one shorter), for multi-line text. */
   lines?: number;
+  /** Lay the block out as `display: block` instead of the default
+   *  `inline-block`, so it takes no text line of its own: no baseline gap
+   *  below it, and it centers like an icon in a slot. Defaults to `false`. */
+  block?: boolean;
   /** Accessible label. Omit to keep the block decorative (`aria-hidden`). */
   label?: string;
   className?: string;
@@ -40,6 +44,7 @@ export function Skeleton({
   height,
   radius,
   lines,
+  block = false,
   label,
   className = '',
   slot,
@@ -76,6 +81,7 @@ export function Skeleton({
     <span
       class={`kui-skeleton ${className}`.trim()}
       data-component="skeleton"
+      data-block={block ? 'true' : undefined}
       style={blockStyle(width, height, radius)}
       {...a11y}
       slot={slot}

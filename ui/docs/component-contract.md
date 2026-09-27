@@ -453,7 +453,10 @@ unanimated `Skeleton` block and disabling its own interactive controls
 identical to the populated component, so a parent composes a faithful loading view —
 an inspector, a detail pane — from placeholder children without hand-rebuilding
 markup. The application still owns the loading lifecycle (when to pass `placeholder`)
-and which slots are unknown; the standalone `Skeleton` covers custom slots. It is a
+and which slots are unknown; the standalone `Skeleton` covers custom slots. A
+`Skeleton` is `inline-block` so it sits in a text line; pass `block` to lay it out
+as `display: block` where it stands in for a box, such as an icon, so it takes no
+line of its own and centers in its slot. It is a
 placeholder, not progress: use `LoadingSpinner` for known busy activity, and never
 animate the skeleton.
 
