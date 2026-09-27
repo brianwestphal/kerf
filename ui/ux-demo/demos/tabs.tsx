@@ -71,7 +71,7 @@ export function TabsDemo() {
       </CatalogExample>
       <CatalogExample
         label="Pending"
-        note="A known tab that is still opening keeps its name, dormant, with a trailing spinner. It has the live tab's geometry, so it swaps in place."
+        note="A known tab that is still opening keeps its quiet name and a trailing spinner. It stays selectable so its panel can show placeholders, and has the live tab's geometry, so it swaps in place."
         align="none"
       >
         <TabBar id="app-tab-pending" label="Pending AppTab specimen">

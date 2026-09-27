@@ -754,11 +754,13 @@ interface AppTabProps {
     /** Render as an unanimated loading skeleton, disabling select/close and dragging. */
     placeholder?: boolean;
     /**
-     * Dormant but named: the tab is known and still opening. Keeps `name`
-     * visible in the quiet text color and as the tab's accessible name, shows
-     * `trailing` (for example a `LoadingSpinner`), and disables select, close,
-     * and dragging with `aria-busy`, like `placeholder`. Same pill geometry as
-     * the live tab, so swapping it in place does not shift the bar.
+     * Named and still opening: the tab is known but its content is loading.
+     * Keeps `name` visible in the quiet text color and as the tab's accessible
+     * name, shows `trailing` (for example a `LoadingSpinner`), and marks the
+     * tab `aria-busy`. Unlike `placeholder` it stays selectable — the
+     * application shows placeholder content in its panel until loading
+     * completes — while close and dragging stay disabled. Same pill geometry
+     * as the live tab, so swapping it in place does not shift the bar.
      * `placeholder` wins when both are set.
      */
     pending?: boolean;

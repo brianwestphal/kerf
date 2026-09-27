@@ -50,11 +50,13 @@ export interface AppTabProps {
   /** Render as an unanimated loading skeleton, disabling select/close and dragging. */
   placeholder?: boolean;
   /**
-   * Dormant but named: the tab is known and still opening. Keeps `name`
-   * visible in the quiet text color and as the tab's accessible name, shows
-   * `trailing` (for example a `LoadingSpinner`), and disables select, close,
-   * and dragging with `aria-busy`, like `placeholder`. Same pill geometry as
-   * the live tab, so swapping it in place does not shift the bar.
+   * Named and still opening: the tab is known but its content is loading.
+   * Keeps `name` visible in the quiet text color and as the tab's accessible
+   * name, shows `trailing` (for example a `LoadingSpinner`), and marks the
+   * tab `aria-busy`. Unlike `placeholder` it stays selectable — the
+   * application shows placeholder content in its panel until loading
+   * completes — while close and dragging stay disabled. Same pill geometry
+   * as the live tab, so swapping it in place does not shift the bar.
    * `placeholder` wins when both are set.
    */
   pending?: boolean;
@@ -99,12 +101,14 @@ export function AppTab({
   rootAttributes = {},
   slot,
 }: AppTabProps) {
-  // Both loading states leave the tab dormant; only `placeholder` hides the name.
+  // Both loading states disable close and dragging; a `placeholder` (unknown
+  // tab) is also unselectable and hides its name, while a `pending` (known,
+  // still opening) tab stays selectable so its panel can show placeholders.
   const dormant = placeholder || pending;
   const named = pending && !placeholder;
   const keyshortcuts = [
-    closable ? 'Delete Backspace' : '',
-    draggable ? 'Alt+Shift+ArrowLeft Alt+Shift+ArrowRight' : '',
+    closable && !dormant ? 'Delete Backspace' : '',
+    draggable && !dormant ? 'Alt+Shift+ArrowLeft Alt+Shift+ArrowRight' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -154,11 +158,11 @@ export function AppTab({
         role="tab"
         aria-selected={String(selected)}
         aria-label={presentation === 'icon-only' || named ? name : undefined}
-        aria-keyshortcuts={dormant ? undefined : keyshortcuts || undefined}
-        data-action={dormant ? undefined : selectAction}
+        aria-keyshortcuts={keyshortcuts || undefined}
+        data-action={placeholder ? undefined : selectAction}
         data-tab-id={id}
-        disabled={dormant || undefined}
-        tabindex={dormant ? '-1' : selected ? '0' : '-1'}
+        disabled={placeholder || undefined}
+        tabindex={!placeholder && selected ? '0' : '-1'}
       >
         {leading}
         <span

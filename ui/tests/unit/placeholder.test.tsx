@@ -330,7 +330,7 @@ describe('component placeholder mode', () => {
     expect(html).not.toContain('>Overview<');
   });
 
-  it('AppTab pending keeps its name but is dormant, busy, and named by it', () => {
+  it('AppTab pending keeps its name, stays selectable, and is busy and named by it', () => {
     const html = asHtml(
       AppTab({
         id: 'alpha',
@@ -347,7 +347,9 @@ describe('component placeholder mode', () => {
     expect(html).not.toContain('data-placeholder');
     expect(html).toContain('aria-busy="true"');
     expect(html).toContain('draggable="false"');
-    expect(html).not.toContain('data-action="pick"');
+    // Selectable, so the application can show its panel's placeholders while
+    // the tab opens; close and reordering stay dormant.
+    expect(html).toContain('data-action="pick"');
     expect(html).not.toContain('data-action="drop"');
     expect(html).not.toContain('aria-keyshortcuts');
     expect(html).not.toContain('kui-skeleton');
@@ -355,7 +357,9 @@ describe('component placeholder mode', () => {
     // folded into its accessible name.
     expect(html).toContain('>alpha</span>');
     expect(html).toMatch(/role="tab"[^>]*aria-label="alpha"/);
-    expect(html).toMatch(/role="tab"[^>]*disabled[^>]*tabindex="-1"/);
+    expect(html).toMatch(/role="tab"[^>]*tabindex="0"/);
+    expect(html).not.toMatch(/role="tab"[^>]*disabled/);
+    expect(html).toMatch(/kui-app-tab__close"[^>]*disabled/);
     expect(html).toContain('class="spinner"');
   });
 

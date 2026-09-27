@@ -62,7 +62,7 @@ test('renders typed tab presentations without consumer descendant CSS', async ({
   });
 });
 
-test('a pending AppTab keeps its name, stays dormant, and swaps in place', async ({
+test('a pending AppTab keeps its name, stays selectable and undimmed, and swaps in place', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1100, height: 850 });
@@ -76,7 +76,13 @@ test('a pending AppTab keeps its name, stays dormant, and swaps in place', async
 
   // The label is visible and names the tab, without the spinner's label.
   const tab = pending.getByRole('tab', { name: 'alpha', exact: true });
-  await expect(tab).toBeDisabled();
+  // Selectable while opening, so the application can show its panel's
+  // placeholders; never dimmed by Web Awesome's native button:disabled.
+  await expect(tab).toBeEnabled();
+  await expect(tab).toHaveCSS('opacity', '1');
+  await expect(pending).toHaveCSS('opacity', '1');
+  await expect(tab).toHaveAttribute('data-action', 'select-tab');
+  await expect(pending).toHaveAttribute('draggable', 'false');
   await expect(pending.locator('.kui-app-tab__name')).toHaveText('alpha');
   const colors = await pending.evaluate((element) => {
     const probe = document.createElement('span');

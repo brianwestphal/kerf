@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **A `pending` `@kerfjs/ui` `AppTab` is selectable and no longer dimmed.**
+  A known tab that is still opening now keeps its select button enabled and
+  in the roving tab order, so a user can switch to it and the application can
+  show placeholder content in its panel until loading completes. With
+  `webawesome.css` loaded, Web Awesome's native `button:disabled` no longer
+  dims the pending pill to 50%; it shows only its quiet name color and
+  trailing spinner, as documented. Close and dragging stay disabled while
+  pending, and it stays `aria-busy`. An unknown `placeholder` tab is
+  unchanged: disabled and out of the tab order.
+
 - **Closing a `@kerfjs/ui` `Workbench` panel from its own control by mouse
   returns focus in Safari.** Safari never focuses a clicked button, so
   pressing an open panel's Hide control blurred the focused control to the

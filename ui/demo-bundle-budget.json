@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 290800,
-  "measuredLargestJavaScriptGzip": 143248,
-  "measuredTotalJavaScriptGzip": 290703,
+  "totalJavaScriptGzip": 290900,
+  "measuredLargestJavaScriptGzip": 143352,
+  "measuredTotalJavaScriptGzip": 290811,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -707,6 +707,22 @@
         "measuredTotalJavaScriptGzip": 290703,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 290800
+      }
+    },
+    {
+      "at": "2026-09-27T23:15:00.599Z",
+      "reason": "Pending AppTab specimen note now explains the selectable contract (KF-X017Y6)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 143248,
+        "measuredTotalJavaScriptGzip": 290703,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 290800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 143352,
+        "measuredTotalJavaScriptGzip": 290811,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 290900
       }
     }
   ]
