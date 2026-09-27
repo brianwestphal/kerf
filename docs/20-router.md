@@ -152,6 +152,21 @@ Everything else falls through to the browser untouched. Opt a single link out wi
 `data-router-ignore` (or `rel="external"`); opt the whole app out with
 `interceptLinks: false` and call `navigate()` from your own handlers.
 
+**Handler order: a later handler cannot veto a navigation that already
+happened.** The interceptor is a bubbling `click` listener on `document.body`
+(via `delegate()`), and it navigates synchronously the moment it sees an
+eligible click. An app handler that runs **after** it — one registered on
+`document.body` after `createRouter`, or on `document` / `window` — can still
+call `preventDefault()`, but the router has already pushed the new history
+entry and updated `route` by then (KF-F9REWE). To keep the router off a link,
+use one of the opt-outs that act first:
+
+- `data-router-ignore` or `rel="external"` on the link,
+- or call `preventDefault()` in a handler that runs **before** the router's —
+  on the link itself or an element inside it, on an ancestor below `body`, or
+  on `body` registered before `createRouter` — since the interceptor skips an
+  already-`defaultPrevented` click (and only re-syncs the route from the URL).
+
 **Already-handled clicks re-sync.** A click that arrives `defaultPrevented` is
 never navigated, but the router re-reads the location (a no-op when nothing
 moved). That keeps a second router on the same document in step: the first

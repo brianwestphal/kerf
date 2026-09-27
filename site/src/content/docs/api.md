@@ -1037,6 +1037,8 @@ In history mode, `base` is stripped only on an exact match or at a following `/`
 
 **Link interception** intercepts only plain in-app navigations — left-click, no modifier keys, not already `defaultPrevented` (an already-handled click only re-syncs the route from the URL, so a second router on the page follows the first), no `download`, no `target` other than `_self` (a `target="_self"` link is still intercepted), not `rel="external"` / `data-router-ignore`, same-origin (under `base` in history mode; an in-app `#/…` link in hash mode). Everything else falls through to the browser.
 
+**Handler order matters.** The interceptor is a bubbling `click` listener on `document.body` and navigates the moment it sees an eligible click, so an app handler that runs after it — registered on `body` after `createRouter`, or on `document` / `window` — can call `preventDefault()` only after the router has already navigated. To keep the router off a link, mark it `data-router-ignore` or `rel="external"`, or call `preventDefault()` in a handler that runs first (on the link or an element inside it, an ancestor below `body`, or `body` before `createRouter`) — the interceptor skips a click that is already `defaultPrevented`.
+
 **One router per document** is the supported shape. A second router follows link clicks and history traversal (`popstate`), but **not** another router's programmatic `navigate()` — `pushState` / `replaceState` fire no `popstate`, and routers do no cross-router broadcasting — so it stays on the old route until the next `popstate` or link click. To route two views, share one `createRouter` handle.
 
 ### Router types
