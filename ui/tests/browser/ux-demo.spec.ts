@@ -7163,6 +7163,34 @@ test('ships semantic banner palettes with scoped overrides', async ({
         );
       }),
     );
+  // The badge sits one item gap after the title, sized to its content, at
+  // every width (a narrow grid once stretched it across the free column).
+  const badgeFit = () =>
+    banners.evaluateAll((nodes) =>
+      nodes
+        .filter((node) => node.querySelector('[data-component="badge"]'))
+        .map((node) => {
+          const title = node
+            .querySelector('.kui-state-banner__copy > strong')!
+            .getBoundingClientRect();
+          const badge = node
+            .querySelector('[data-component="badge"]')!
+            .getBoundingClientRect();
+          return {
+            gap: Math.round(badge.left - title.right),
+            width: Math.round(badge.width),
+          };
+        }),
+    );
+  const expectBadgesFit = async () => {
+    const fits = await badgeFit();
+    expect(fits).toHaveLength(6);
+    for (const fit of fits) {
+      expect(fit.gap).toBe(8);
+      expect(fit.width).toBeLessThanOrEqual(24);
+    }
+  };
+  await expectBadgesFit();
   const styles = await banners.evaluateAll((nodes) =>
     nodes.map((node) => {
       const style = window.getComputedStyle(node);
@@ -7322,6 +7350,7 @@ test('ships semantic banner palettes with scoped overrides', async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(banners.last()).toBeVisible();
   expect(await labelIconOffsets()).toEqual(Array(7).fill(0));
+  await expectBadgesFit();
   await expect
     .poll(() =>
       page.evaluate(

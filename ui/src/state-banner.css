@@ -174,12 +174,19 @@
   outline-offset: 2px;
 }
 @media (max-width: remify(576px)) {
+  /* The detail drops below the title. The title row keeps the wide layout's
+     relationship: a content-sized badge one item gap after the title, on the
+     title's baseline. Grid items stretch by default, which widened the badge
+     across the free column and grew it with a wrapped title. */
   .kui-state-banner__copy {
     display: grid;
     grid-template-columns: auto 1fr;
-    gap: remify(0.8px);
+    align-items: baseline;
+    justify-items: start;
+    gap: remify(0.8px) var(--kui-layout-item-gap, remify(8px));
   }
   .kui-state-banner__detail {
     grid-column: 1 / -1;
+    justify-self: stretch;
   }
 }

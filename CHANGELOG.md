@@ -20,6 +20,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   bindings, first-render row-contract validation, orphan pruning) into its own
   internal module, so `mount.ts` holds only the render orchestration. No
   behavior or public API change.
+- A narrow (576px and below) `@kerfjs/ui` `StateBanner` keeps its badge
+  sized to its content, one item gap after the title and on the title's
+  baseline, as in the wide layout. The narrow grid stretched the badge across
+  the free column into a wide pill that sat less than 1px from the title.
 - Hovering a `@kerfjs/ui` `ListActionRow` placeholder with
   `trailingActionVisibility="interaction"` no longer reveals its disabled
   trailing button. A placeholder is inert, so it keeps the live row's resting
