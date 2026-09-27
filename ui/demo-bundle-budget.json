@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 290200,
-  "measuredLargestJavaScriptGzip": 141251,
-  "measuredTotalJavaScriptGzip": 290145,
+  "totalJavaScriptGzip": 290700,
+  "measuredLargestJavaScriptGzip": 143233,
+  "measuredTotalJavaScriptGzip": 290675,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -675,6 +675,22 @@
         "measuredTotalJavaScriptGzip": 290145,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 290200
+      }
+    },
+    {
+      "at": "2026-09-27T13:55:36.542Z",
+      "reason": "Combined reviewed growth from three parallel lanes merged together: wireWorkbench overlay focus trap (KF-Q7AN1Z, +0.17 kB), Workbench fixed-rail/drawer work-area minimums (KF-GCDT74), and the document-baseline catalog demo (KF-FRKMVG, +0.25 kB); each lane re-baselined against its own base, so the merged total needs one combined baseline",
+      "old": {
+        "measuredLargestJavaScriptGzip": 141251,
+        "measuredTotalJavaScriptGzip": 290145,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 290200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 143233,
+        "measuredTotalJavaScriptGzip": 290675,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 290700
       }
     }
   ]
