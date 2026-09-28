@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui`'s `Workbench` rails overlay the work area on small screens by
+  default.** A rail's `responsiveOverlayAt` now defaults to `"narrow"` (704px
+  of Workbench width; the new `"never"` keeps it inline), so a sidebar covers
+  the work area and any open drawer instead of squeezing it, one at a time
+  with `wireWorkbench`. On a compact (448px) Workbench an open overlay rail
+  fills the width less a 44px dismiss strip
+  (`--kui-workbench-overlay-dismiss-margin`) on the side away from its edge;
+  the new per-rail `compactOverlay: "full"` fills it. The bottom drawer's
+  behavior is unchanged. `WorkbenchPanelToolbar` and the other panel-toolbar
+  types are now exported from `@kerfjs/ui/workbench`.
+
 - **`@kerfjs/ui`'s `Workbench` composes panel toolbars and moves a closed
   panel's controls into the work area.** A panel takes an optional `toolbar`
   (`title`, `panelOnly`, `constant`, and a standard `toggle: { action, name }`

@@ -505,6 +505,14 @@ for (const entry of entries.filter(({ delivery }) => delivery.moduleImport)) {
         statement.name
       )
         return [statement.name.text];
+      // Named re-exports (`export { X } from` / `export type { X } from`)
+      // are the module's public surface too.
+      if (
+        ts.isExportDeclaration(statement) &&
+        statement.exportClause &&
+        ts.isNamedExports(statement.exportClause)
+      )
+        return statement.exportClause.elements.map(({ name }) => name.text);
       return [];
     }),
   );

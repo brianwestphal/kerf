@@ -82,10 +82,20 @@ an optional `label`. Common shell behavior is configured rather than restyled:
   each exactly at its configured size (its separator border included, as in
   flow) up to the viewport-relative overlay maximum; the content fills the
   panel inside its border, so it is clamped with it;
-- `responsiveOverlayAt: "narrow" | "compact"` presents a rail or the bottom
-  drawer as an overlay below a Workbench container breakpoint — 704px or less
-  for `narrow`, 448px or less for `compact`, the breakpoints of
-  `ResizableRegion`'s `responsiveFillAt` — and inline above it. The CSS
+- `responsiveOverlayAt: "narrow" | "compact" | "never"` presents a rail or the
+  bottom drawer as an overlay below a Workbench container breakpoint — 704px
+  or less for `narrow`, 448px or less for `compact`, the breakpoints of
+  `ResizableRegion`'s `responsiveFillAt` — and inline above it. **Rails
+  default to `narrow`**, so on a small screen a sidebar covers the work area
+  (and an open drawer) instead of squeezing it; pass `never` to keep a rail
+  inline. The drawer stays inline unless it opts in. On a compact (448px or
+  less) Workbench an overlay rail fills the Workbench less a dismiss strip on
+  the side away from its edge — `--kui-workbench-overlay-dismiss-margin`,
+  44px, one touch target — so a press beside it closes it;
+  `compactOverlay: "full"` (per rail) fills the Workbench instead, which
+  usually wants app-level handling of its own. Pass each rail's `collapsed`
+  signal to `wireWorkbench` so only one overlay is open at a time and a press
+  outside closes it. The CSS
   decides, so the app needs no `deviceClass` check for presentation; a
   collapsed overlay drops its surface and shadow so nothing covers the work
   area, and the work area keeps the safe-area inset of the edge the overlay

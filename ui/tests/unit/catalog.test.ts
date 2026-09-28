@@ -125,8 +125,13 @@ describe('UX catalog metadata', () => {
     expect(workbench).toMatchObject({
       publicExports: [
         'Workbench',
+        'WorkbenchCompactOverlay',
+        'WorkbenchMainBottomToolbar',
+        'WorkbenchMainToolbar',
         'WorkbenchPanel',
         'WorkbenchPanelResizable',
+        'WorkbenchPanelToggle',
+        'WorkbenchPanelToolbar',
         'WorkbenchProps',
         'WorkbenchResponsiveOverlayAt',
       ],
@@ -176,8 +181,13 @@ describe('UX catalog metadata', () => {
         id: 'workbench',
         exports: [
           'Workbench',
+          'WorkbenchCompactOverlay',
+          'WorkbenchMainBottomToolbar',
+          'WorkbenchMainToolbar',
           'WorkbenchPanel',
           'WorkbenchPanelResizable',
+          'WorkbenchPanelToggle',
+          'WorkbenchPanelToolbar',
           'WorkbenchProps',
           'WorkbenchResponsiveOverlayAt',
         ],

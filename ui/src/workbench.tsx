@@ -28,12 +28,27 @@ import {
   type WorkbenchPanelToolbar,
 } from './workbench-toolbars.js';
 
+export type {
+  WorkbenchMainBottomToolbar,
+  WorkbenchMainToolbar,
+  WorkbenchPanelToggle,
+  WorkbenchPanelToolbar,
+} from './workbench-toolbars.js';
+
 /**
  * The Workbench container breakpoint below which a panel presents as an
  * overlay: `narrow` (704px or less) or `compact` (448px or less) — the same
- * breakpoints as `ResizableRegion`'s `responsiveFillAt`.
+ * breakpoints as `ResizableRegion`'s `responsiveFillAt` — or `never` to keep
+ * it inline at every width.
  */
-export type WorkbenchResponsiveOverlayAt = 'compact' | 'narrow';
+export type WorkbenchResponsiveOverlayAt = 'compact' | 'narrow' | 'never';
+
+/**
+ * How wide a rail's overlay is in a compact (448px or less) Workbench: `inset`
+ * fills the Workbench less a dismiss margin on the side away from the rail's
+ * edge, so a press beside it closes it; `full` fills the Workbench.
+ */
+export type WorkbenchCompactOverlay = 'inset' | 'full';
 
 /** Drag-resize limits for a resizable Workbench panel, in px. */
 export interface WorkbenchPanelResizable {
@@ -79,9 +94,17 @@ export interface WorkbenchPanel {
    * Present the panel as an overlay, without a separator, below a Workbench
    * container breakpoint, and inline above it — the CSS decides, so the app
    * needs no device-class check. A rail overlays from its side at full
-   * height; the bottom drawer overlays the bottom of the work-area column.
+   * height, over the work area and an open drawer; the bottom drawer
+   * overlays the bottom of the work-area column. Rails default to `narrow`
+   * (pass `never` to keep one inline); the drawer defaults to inline.
    */
   responsiveOverlayAt?: WorkbenchResponsiveOverlayAt;
+  /**
+   * A rail's overlay width in a compact Workbench (default `inset`: the
+   * Workbench less `--kui-workbench-overlay-dismiss-margin`, 44px). Ignored
+   * by the drawer.
+   */
+  compactOverlay?: WorkbenchCompactOverlay;
   /**
    * Control shown while collapsed, in a safe-area-aware corner of the
    * Workbench (not the viewport); the bottom drawer's sits in the work-area
@@ -260,6 +283,10 @@ function hiddenFromAccessibility(panel: WorkbenchPanel) {
     : undefined;
 }
 
+/** A breakpoint's attribute value; `never` (or none) renders no attribute. */
+const responsiveAt = (at: WorkbenchResponsiveOverlayAt | undefined) =>
+  at === 'never' ? undefined : at;
+
 function Rail({
   id,
   side,
@@ -281,7 +308,10 @@ function Rail({
       data-collapse-motion={panel.collapseMotion ?? 'slide'}
       data-content-overflow={panel.contentOverflow ?? 'clip'}
       data-presentation={panel.presentation ?? 'inline'}
-      data-responsive-overlay-at={panel.responsiveOverlayAt}
+      data-responsive-overlay-at={responsiveAt(
+        panel.responsiveOverlayAt ?? 'narrow',
+      )}
+      data-compact-overlay={panel.compactOverlay ?? 'inset'}
       {...resizeAttributes(resize)}
       aria-label={panel.label || undefined}
       aria-hidden={hiddenFromAccessibility(panel)}
@@ -317,7 +347,7 @@ function Drawer({ id, panel }: { id: string; panel: WorkbenchPanel }) {
       data-collapse-motion={panel.collapseMotion ?? 'slide'}
       data-content-overflow={panel.contentOverflow ?? 'clip'}
       data-presentation={panel.presentation ?? 'inline'}
-      data-responsive-overlay-at={panel.responsiveOverlayAt}
+      data-responsive-overlay-at={responsiveAt(panel.responsiveOverlayAt)}
       {...resizeAttributes(resize)}
       aria-label={panel.label || undefined}
       aria-hidden={hiddenFromAccessibility(panel)}

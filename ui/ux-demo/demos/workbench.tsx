@@ -143,7 +143,7 @@ export function WorkbenchDemo() {
       </CatalogExample>
       <CatalogExample
         label="Resizable panels"
-        note="Resizing is opt-in per panel, and wireWorkbench drives the separators. The panels leave the work area its minimum, 320 px wide and 120 px tall: resizing stops there, and the rails shrink in proportion when the workbench narrows. Below 704 px of workbench width the rails present as overlays, which start hidden, open one at a time, do not resize, and close from their own toolbar, on Escape, or on a click outside. A closed rail's toggle moves to the editor toolbar, on the rail's side."
+        note="Resizing is opt-in per panel, and wireWorkbench drives the separators. The panels leave the work area its minimum, 320 px wide and 120 px tall: resizing stops there, and the rails shrink in proportion when the workbench narrows. Below 704 px of workbench width the rails present as overlays by default, which start hidden, open one at a time over the editor and console, do not resize, and close from their own toolbar, on Escape, or on a click outside. A closed rail's toggle moves to the editor toolbar, on the rail's side. At phone widths an open rail fills the workbench less a 44 px strip that closes it."
         align="none"
         viewport={{
           layout: 'grid',
@@ -175,7 +175,6 @@ export function WorkbenchDemo() {
             collapsed: workbenchNavigatorCollapsed.value,
             size: workbenchNavigatorSize.value,
             resizable: { min: 180, max: 400 },
-            responsiveOverlayAt: 'narrow',
           }}
           rightRail={{
             label: 'Inspector',
@@ -191,7 +190,6 @@ export function WorkbenchDemo() {
             collapsed: workbenchInspectorCollapsed.value,
             size: workbenchInspectorSize.value,
             resizable: { min: 160, max: 360 },
-            responsiveOverlayAt: 'narrow',
           }}
           bottomDrawer={{
             label: 'Console',

@@ -1007,7 +1007,8 @@
           "--kui-workbench-overlay-max-width",
           "--kui-workbench-overlay-max-height",
           "--kui-workbench-restore-inset",
-          "--kui-workbench-restore-z"
+          "--kui-workbench-restore-z",
+          "--kui-workbench-overlay-dismiss-margin"
         ]
       },
       "diagnostics": [],

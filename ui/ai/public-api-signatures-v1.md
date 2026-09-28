@@ -1114,9 +1114,16 @@ interface WorkbenchMainBottomToolbar {
 /**
  * The Workbench container breakpoint below which a panel presents as an
  * overlay: `narrow` (704px or less) or `compact` (448px or less) — the same
- * breakpoints as `ResizableRegion`'s `responsiveFillAt`.
+ * breakpoints as `ResizableRegion`'s `responsiveFillAt` — or `never` to keep
+ * it inline at every width.
  */
-type WorkbenchResponsiveOverlayAt = 'compact' | 'narrow';
+type WorkbenchResponsiveOverlayAt = 'compact' | 'narrow' | 'never';
+/**
+ * How wide a rail's overlay is in a compact (448px or less) Workbench: `inset`
+ * fills the Workbench less a dismiss margin on the side away from the rail's
+ * edge, so a press beside it closes it; `full` fills the Workbench.
+ */
+type WorkbenchCompactOverlay = 'inset' | 'full';
 /** Drag-resize limits for a resizable Workbench panel, in px. */
 interface WorkbenchPanelResizable {
     /** Smallest size (default 180 for a rail, 120 for the drawer). */
@@ -1160,9 +1167,17 @@ interface WorkbenchPanel {
      * Present the panel as an overlay, without a separator, below a Workbench
      * container breakpoint, and inline above it — the CSS decides, so the app
      * needs no device-class check. A rail overlays from its side at full
-     * height; the bottom drawer overlays the bottom of the work-area column.
+     * height, over the work area and an open drawer; the bottom drawer
+     * overlays the bottom of the work-area column. Rails default to `narrow`
+     * (pass `never` to keep one inline); the drawer defaults to inline.
      */
     responsiveOverlayAt?: WorkbenchResponsiveOverlayAt;
+    /**
+     * A rail's overlay width in a compact Workbench (default `inset`: the
+     * Workbench less `--kui-workbench-overlay-dismiss-margin`, 44px). Ignored
+     * by the drawer.
+     */
+    compactOverlay?: WorkbenchCompactOverlay;
     /**
      * Control shown while collapsed, in a safe-area-aware corner of the
      * Workbench (not the viewport); the bottom drawer's sits in the work-area
@@ -1231,7 +1246,7 @@ interface WorkbenchProps {
  */
 declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainBottomToolbar, mainMinSize, mainMinHeight, className, slot, }: WorkbenchProps): SafeHtml;
 
-export { Workbench, type WorkbenchPanel, type WorkbenchPanelResizable, type WorkbenchProps, type WorkbenchResponsiveOverlayAt };
+export { Workbench, type WorkbenchCompactOverlay, type WorkbenchMainBottomToolbar, type WorkbenchMainToolbar, type WorkbenchPanel, type WorkbenchPanelResizable, type WorkbenchPanelToggle, type WorkbenchPanelToolbar, type WorkbenchProps, type WorkbenchResponsiveOverlayAt };
 ```
 
 ## `@kerfjs/ui/wire-workbench`

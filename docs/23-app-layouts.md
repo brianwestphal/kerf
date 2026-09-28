@@ -234,6 +234,14 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
 - **The collapse is pure CSS.** The app owns each panel's `collapsed` flag and
   re-renders; the component reflects it as `data-collapsed` and the stylesheet
   animates the change. No wire is involved.
+- **Rails overlay on small screens by default (KF-H60XYP).** A rail's
+  `responsiveOverlayAt` defaults to `narrow` (704px of Workbench width;
+  `never` opts out), so below it a sidebar covers the work area and any open
+  drawer instead of sitting beside it; with `wireWorkbench` only one overlay
+  is open at a time. The drawer keeps its opt-in. On a compact (448px)
+  Workbench an overlay rail fills the Workbench less a 44px dismiss strip
+  (`--kui-workbench-overlay-dismiss-margin`) on the side away from its edge;
+  `compactOverlay: "full"` makes a rail fill it (per rail).
 - **Panel toolbars follow the panel (KF-6GVPW7: toggles were hand-placed, so
   the catalog showed each rail toggle twice while the rails were open and
   put toggles where the guidance does not).** A panel may take a `toolbar`

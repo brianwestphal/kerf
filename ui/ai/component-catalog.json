@@ -917,8 +917,13 @@
       "purpose": "Arrange a complex tool or editor as a stable central work area with optional peripheral rails and a bottom drawer.",
       "publicExports": [
         "Workbench",
+        "WorkbenchCompactOverlay",
+        "WorkbenchMainBottomToolbar",
+        "WorkbenchMainToolbar",
         "WorkbenchPanel",
         "WorkbenchPanelResizable",
+        "WorkbenchPanelToggle",
+        "WorkbenchPanelToolbar",
         "WorkbenchProps",
         "WorkbenchResponsiveOverlayAt"
       ],
@@ -1025,7 +1030,8 @@
         "--kui-workbench-overlay-max-width",
         "--kui-workbench-overlay-max-height",
         "--kui-workbench-restore-inset",
-        "--kui-workbench-restore-z"
+        "--kui-workbench-restore-z",
+        "--kui-workbench-overlay-dismiss-margin"
       ],
       "links": {
         "catalogRoute": "?component=workbench",

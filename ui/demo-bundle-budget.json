@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 292500,
-  "measuredLargestJavaScriptGzip": 144650,
-  "measuredTotalJavaScriptGzip": 292498,
+  "totalJavaScriptGzip": 292600,
+  "measuredLargestJavaScriptGzip": 144723,
+  "measuredTotalJavaScriptGzip": 292565,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -787,6 +787,22 @@
         "measuredTotalJavaScriptGzip": 292498,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 292500
+      }
+    },
+    {
+      "at": "2026-09-28T04:22:43.730Z",
+      "reason": "KF-H60XYP Workbench compact overlay defaults and per-rail compactOverlay",
+      "old": {
+        "measuredLargestJavaScriptGzip": 144650,
+        "measuredTotalJavaScriptGzip": 292498,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 292500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 144723,
+        "measuredTotalJavaScriptGzip": 292565,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 292600
       }
     }
   ]

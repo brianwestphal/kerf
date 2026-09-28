@@ -793,3 +793,20 @@
     transition: none;
   }
 }
+
+/* On a compact (phone-sized) Workbench an overlay rail fills the Workbench
+   less a dismiss margin on the side away from its edge, so a press beside it
+   closes it (the wiring's outside press); `compactOverlay: "full"` fills the
+   Workbench. The rail's resize and configured size stop applying there. */
+@container kui-workbench (max-width: remify(448px)) {
+  .kui-workbench__rail[data-responsive-overlay-at] {
+    width: calc(
+      100% - var(--kui-workbench-overlay-dismiss-margin, remify(44px))
+    );
+    max-width: none;
+  }
+
+  .kui-workbench__rail[data-responsive-overlay-at][data-compact-overlay="full"] {
+    width: 100%;
+  }
+}

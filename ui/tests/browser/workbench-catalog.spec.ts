@@ -1261,3 +1261,58 @@ test('the responsive drawer example is inline when wide and a transient overlay 
   await expect(drawer).toHaveCSS('position', 'relative');
   await expect(drawer).toHaveAttribute('data-collapsed', 'false');
 });
+
+test('at phone widths an overlay rail fills the Workbench less a dismiss strip, one rail at a time', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?component=workbench');
+  const workbench = page.locator('#catalog-workbench-resizable');
+  const left = workbench.locator('[data-workbench-rail="left"]');
+  const right = workbench.locator('[data-workbench-rail="right"]');
+  const main = workbench.locator('.kui-workbench__main');
+  await workbench.scrollIntoViewIfNeeded();
+  const box = (await workbench.boundingBox())!;
+  // Border-box geometry of the Workbench's content area.
+  const inner = await workbench.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    const style = window.getComputedStyle(element);
+    const start = parseFloat(style.borderLeftWidth);
+    const end = parseFloat(style.borderRightWidth);
+    return { left: rect.left + start, right: rect.right - end };
+  });
+
+  await main.getByRole('button', { name: 'Show navigator' }).click();
+  await expect(left).toHaveAttribute('data-collapsed', 'false');
+  await expect(left).toHaveCSS('position', 'absolute');
+  await expect
+    .poll(async () => {
+      const rail = (await left.boundingBox())!;
+      return Math.round(inner.right - (rail.x + rail.width));
+    })
+    .toBe(44);
+  if (testInfo.project.name === 'chromium')
+    await workbench.screenshot({
+      path: 'test-results/workbench-phone-overlay-inset.png',
+    });
+  // A press in the strip beside it closes it.
+  await page.mouse.click(inner.right - 22, box.y + box.height / 2);
+  await expect(left).toHaveAttribute('data-collapsed', 'true');
+
+  // The right rail leaves its strip on the other side, and opening it keeps
+  // the navigator closed: one rail at a time.
+  await main.getByRole('button', { name: 'Show inspector' }).click();
+  await expect(right).toHaveAttribute('data-collapsed', 'false');
+  await expect(left).toHaveAttribute('data-collapsed', 'true');
+  await expect
+    .poll(async () => Math.round((await right.boundingBox())!.x - inner.left))
+    .toBe(44);
+
+  // `compactOverlay: "full"` fills the Workbench.
+  await right.evaluate((element) => {
+    element.dataset.compactOverlay = 'full';
+  });
+  await expect
+    .poll(async () => Math.round((await right.boundingBox())!.width))
+    .toBe(Math.round(inner.right - inner.left));
+});

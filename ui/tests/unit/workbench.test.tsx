@@ -528,17 +528,35 @@ describe('Workbench', () => {
         .querySelector('[data-workbench-rail="left"]')!
         .getAttribute('data-presentation'),
     ).toBe('inline');
+    // Rails overlay below `narrow` by default and fill a compact Workbench
+    // less the dismiss margin; `never` keeps a rail inline, `full` fills.
+    // The drawer stays inline unless it opts in.
+    const defaults = document.createElement('div');
+    defaults.innerHTML = String(
+      Workbench({
+        id: 'wb',
+        label: 'Studio',
+        main,
+        leftRail: { content: panel('nav') },
+        rightRail: {
+          content: panel('inspector'),
+          responsiveOverlayAt: 'never',
+          compactOverlay: 'full',
+        },
+        bottomDrawer: { content: panel('console') },
+      }),
+    );
+    const left = defaults.querySelector('[data-workbench-rail="left"]')!;
+    const right = defaults.querySelector('[data-workbench-rail="right"]')!;
+    expect(left.getAttribute('data-responsive-overlay-at')).toBe('narrow');
+    expect(left.getAttribute('data-compact-overlay')).toBe('inset');
+    expect(right.hasAttribute('data-responsive-overlay-at')).toBe(false);
+    expect(right.getAttribute('data-compact-overlay')).toBe('full');
     expect(
-      String(
-        Workbench({
-          id: 'wb',
-          label: 'Studio',
-          main,
-          leftRail: { content: panel('nav') },
-          bottomDrawer: { content: panel('console') },
-        }),
-      ),
-    ).not.toContain('data-responsive-overlay-at');
+      defaults
+        .querySelector('[data-workbench-drawer]')!
+        .hasAttribute('data-responsive-overlay-at'),
+    ).toBe(false);
   });
 
   it('presents opted-in rails as overlays below their Workbench container breakpoint', async () => {
