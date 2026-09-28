@@ -1038,7 +1038,7 @@ test('aligns the layout demo action buttons with the card border above them', as
   await page.goto('/?component=layout');
   const demo = page.locator('[data-demo="layout"]');
   const surface = demo.locator('wa-card[appearance="outlined"]');
-  const primary = demo.locator('wa-button-group wa-button').first();
+  const primary = demo.getByRole('button', { name: 'Primary action' });
   await expect(surface).toBeVisible();
   const [surfaceLeft, buttonLeft] = await Promise.all([
     surface.evaluate((el) => el.getBoundingClientRect().left),
