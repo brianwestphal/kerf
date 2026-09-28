@@ -57,6 +57,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   technology stopped announcing the break between option runs. The Select now
   renders both attributes itself.
 
+- **`@kerfjs/ui` `Select` and `PopupMenu` re-renders no longer force Web
+  Awesome updates.** Web Awesome reflects its default `size`, `appearance`,
+  `placement`, and `orientation` onto `wa-select`, `wa-dropdown`, and
+  `wa-divider`; the templates omitted them, so every re-render of the enclosing
+  mount stripped them and each host ran a full Lit update to put them back. The
+  templates now render those defaults (`wa-select size="m"
+appearance="outlined" placement="bottom"`, `wa-dropdown size="m"`, divider
+  `orientation="horizontal"`), so an unchanged re-render leaves the hosts
+  alone. No visual change. The `@kerfjs/ui/webawesome` JSX declarations type
+  these attributes.
+
 - **`@kerfjs/ui` Workbench and CollapsiblePanel panes and chrome lists are
   configurable.** The `Pane`s these layouts compose around app content now
   take the new `PaneConfig` type (`contentElement`, `contentLabel`,

@@ -213,9 +213,14 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
     <>
       {/* Web Awesome sets the divider's role and aria-orientation on its
           host once, so a template that omits them would lose them to the
-          next kerf re-render's morph for good. Render them explicitly. */}
+          next kerf re-render's morph for good. Render them explicitly, with
+          the orientation it reflects (see the wa-select note below). */}
       {choice.separatorBefore && index > 0 && (
-        <wa-divider role="separator" aria-orientation="horizontal"></wa-divider>
+        <wa-divider
+          orientation="horizontal"
+          role="separator"
+          aria-orientation="horizontal"
+        ></wa-divider>
       )}
       <wa-option
         value={choice.value}
@@ -238,8 +243,14 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
   // aria-label. Keep ariaLabel-only names available without visible chrome.
   // A multiple Select's value is its selected options (the value attribute
   // holds only one string), kept in sync by @kerfjs/ui/select/register.
+  // size/appearance/placement are Web Awesome's defaults, which it reflects
+  // onto the host; rendering them keeps a re-render's morph from stripping
+  // them and forcing a Lit update to put them back.
   return (
     <wa-select
+      size="m"
+      appearance="outlined"
+      placement="bottom"
       class={`kui-select${renderSelected ? ' kui-select--custom-selected' : ''}${fitMenu ? ' kui-select--fit-menu' : ''}${!label ? ' kui-select--label-hidden' : ''} ${className}`.trim()}
       data-component="select"
       data-presentation={presentation}

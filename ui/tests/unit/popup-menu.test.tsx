@@ -32,6 +32,9 @@ describe('PopupMenu', () => {
     expect(menu.className).toBe('kui-popup-menu');
     expect(menu.dataset.component).toBe('popup-menu');
     expect(menu.getAttribute('placement')).toBe('bottom-start');
+    // Web Awesome's reflected default size is rendered, so a re-render's
+    // morph never strips it and forces a Lit update to restore it.
+    expect(menu.getAttribute('size')).toBe('m');
     // Web Awesome owns the trigger and item DOM once upgraded.
     expect(menu.hasAttribute('data-morph-skip-children')).toBe(true);
     const trigger = menu.querySelector(':scope > wa-button[slot="trigger"]')!;

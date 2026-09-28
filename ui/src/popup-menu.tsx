@@ -148,8 +148,11 @@ export function PopupMenu({
     String(disabled),
     ...items.map(entryKey),
   ])}`;
+  // size="m" is Web Awesome's reflected default; rendering it keeps a
+  // re-render's morph from stripping it and forcing a Lit update.
   return (
     <wa-dropdown
+      size="m"
       {...rootAttributes}
       class="kui-popup-menu"
       data-component="popup-menu"

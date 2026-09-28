@@ -1676,10 +1676,15 @@ describe('production UI primitives', () => {
     expect(divided).toMatch(
       /<wa-divider[^>]*><\/wa-divider><wa-option value="b">/,
     );
-    // The separator semantics Web Awesome would set once on the host are
-    // rendered, so a kerf re-render cannot strip them.
+    // The separator semantics Web Awesome would set once on the host, and the
+    // orientation it reflects, are rendered, so a kerf re-render cannot strip
+    // them.
     expect(divided).toContain(
-      '<wa-divider role="separator" aria-orientation="horizontal"></wa-divider>',
+      '<wa-divider orientation="horizontal" role="separator" aria-orientation="horizontal"></wa-divider>',
+    );
+    // Web Awesome's reflected defaults are rendered for the same reason.
+    expect(divided).toMatch(
+      /^<wa-select size="m" appearance="outlined" placement="bottom" /,
     );
     expect(grouped).toContain('<strong>Balanced</strong>');
     expect(grouped).toContain(

@@ -28,6 +28,9 @@ declare module 'kerfjs/jsx-runtime' {
         placeholder?: string;
         hint?: string;
         disabled?: boolean;
+        size?: 'xs' | 's' | 'm' | 'l' | 'xl';
+        appearance?: 'filled' | 'outlined' | 'filled-outlined';
+        placement?: 'top' | 'bottom';
       };
       'wa-option': KerfCustomElement & { value?: string };
       'wa-button-group': KerfCustomElement;
@@ -41,7 +44,9 @@ declare module 'kerfjs/jsx-runtime' {
       'wa-comparison': KerfCustomElement;
       'wa-copy-button': KerfCustomElement;
       'wa-details': KerfCustomElement;
-      'wa-divider': KerfCustomElement;
+      'wa-divider': KerfCustomElement & {
+        orientation?: 'horizontal' | 'vertical';
+      };
       'wa-dialog': KerfCustomElement;
       'wa-drawer': KerfCustomElement;
       'wa-button': KerfCustomElement & {
@@ -50,7 +55,10 @@ declare module 'kerfjs/jsx-runtime' {
         'with-caret'?: boolean;
         'aria-label'?: string;
       };
-      'wa-dropdown': KerfCustomElement & { placement?: string };
+      'wa-dropdown': KerfCustomElement & {
+        placement?: string;
+        size?: 'xs' | 's' | 'm' | 'l' | 'xl';
+      };
       'wa-dropdown-item': KerfCustomElement;
       'wa-format-bytes': KerfCustomElement;
       'wa-format-date': KerfCustomElement;

@@ -177,7 +177,13 @@ rewrites them, in single and `multiple` Selects alike
 `wa-divider` is different: Web Awesome sets its `role="separator"` and
 `aria-orientation` once and never re-derives them, so the Select template
 renders both explicitly and the morph keeps them by construction
-(`ui/tests/browser/wa-host-attributes.spec.ts`).
+(`ui/tests/browser/wa-host-attributes.spec.ts`). For the same reason the
+templates render the defaults Web Awesome reflects onto its hosts
+(`wa-select` `size="m" appearance="outlined" placement="bottom"`, `wa-dropdown`
+`size="m"`, `wa-divider` `orientation="horizontal"`): omitted, each re-render
+stripped them and forced a Lit update per host to restore them. The same spec
+asserts an unchanged re-render produces no attribute records and no Lit update
+on any Web Awesome host.
 
 ## 21.3 Initial component set
 
