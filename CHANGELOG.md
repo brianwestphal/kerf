@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` `Select` options keep their accessibility semantics across
+  re-renders.** Re-rendering a Select (for example after its `change` handler
+  updates the controlling signal) removed the `role="option"` and
+  `aria-selected` Web Awesome sets on each option, so screen readers lost every
+  option's role and selected state. `@kerfjs/ui/select/register` now restores
+  `role`, `aria-selected`, and `aria-disabled` from each option's live state,
+  in single and `multiple` Selects.
+
 - **`@kerfjs/ui` hides a work area's floating controls under an open side
   overlay.** While a side overlay is open — a Workbench rail (static
   `presentation: "overlay"`, or a responsive overlay whose breakpoint applies),

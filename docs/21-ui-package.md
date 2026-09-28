@@ -166,7 +166,14 @@ the shadow `combobox`, not the `wa-select` wrapper; both Web Awesome's hint
 attribute and explicit hint slot resolve there without an application patch.
 Unit name-projection coverage lives in `ui/tests/unit/components.test.tsx`; the
 three-engine accessible-name/description, keyboard, rerender, and geometry regression is
-`ui/tests/browser/select-accessibility.spec.ts`.
+`ui/tests/browser/select-accessibility.spec.ts`. Each `wa-option` owns its
+`role="option"`, `aria-selected`, and `aria-disabled`, which the template does not
+render; the registration entry restores them from the option's live
+`selected`/`disabled` state whenever an application rerender's morph removes or
+rewrites them, in single and `multiple` Selects alike
+(`ui/src/install-select-option-semantics.ts`; unit
+`ui/tests/unit/select-option-semantics.test.ts`, browser
+`ui/tests/browser/select-option-semantics.spec.ts`).
 
 ## 21.3 Initial component set
 

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 294300,
-  "measuredLargestJavaScriptGzip": 145907,
-  "measuredTotalJavaScriptGzip": 294297,
+  "totalJavaScriptGzip": 294500,
+  "measuredLargestJavaScriptGzip": 146108,
+  "measuredTotalJavaScriptGzip": 294488,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -867,6 +867,22 @@
         "measuredTotalJavaScriptGzip": 294297,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 294300
+      }
+    },
+    {
+      "at": "2026-09-28T09:11:42.876Z",
+      "reason": "Select registration restores wa-option role and aria-selected after kerf re-renders",
+      "old": {
+        "measuredLargestJavaScriptGzip": 145907,
+        "measuredTotalJavaScriptGzip": 294297,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 294300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 146108,
+        "measuredTotalJavaScriptGzip": 294488,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 294500
       }
     }
   ]

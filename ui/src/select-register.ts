@@ -8,9 +8,11 @@ import WaSelect from '@awesome.me/webawesome/dist/components/select/select.js';
 
 import { installSelectLifecycle } from './install-select-lifecycle.js';
 import { installSelectMultiple } from './install-select-multiple.js';
+import { installSelectOptionSemantics } from './install-select-option-semantics.js';
 
 installSelectLifecycle(WaSelect.prototype);
 installSelectMultiple(WaSelect.prototype, WaOption.prototype);
+installSelectOptionSemantics(WaSelect.prototype);
 
 /**
  * Marker export for tests and tooling; importing this module performs registration.
