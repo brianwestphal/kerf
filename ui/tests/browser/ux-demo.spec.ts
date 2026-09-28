@@ -1702,9 +1702,19 @@ test('scrolls the complete catalog sidebar and detail at wide and narrow sizes',
   const detailScroll = page.locator(
     '#kui-catalog > .kui-workbench__center > [data-workbench-main] > .kui-pane > .kui-pane__content',
   );
+  // This short work area is below the entry pane's pinned-chrome threshold,
+  // so the pinned toolbar, description, and footer give way and the entry
+  // pane itself scrolls as one column.
+  const shortDetailScroll = page.locator(
+    '#kui-catalog > .kui-workbench__center > [data-workbench-main] > .kui-pane',
+  );
+  await expect(shortDetailScroll).toHaveAttribute(
+    'data-chrome-placement',
+    'auto',
+  );
   for (const [name, scrollOwner] of [
     ['sidebar', sidebarScroll],
-    ['detail', detailScroll],
+    ['detail', shortDetailScroll],
   ] as const) {
     const range = await scrollOwner.evaluate(
       (element) => element.scrollHeight - element.clientHeight,
@@ -1779,12 +1789,14 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
       '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__content',
     )!;
     return {
-      // The description's margin box, as it takes its place in the column.
+      // The description's margin box, when it takes its place in the
+      // scrolling column. It is pinned under the entry toolbar while the
+      // entry pane is tall enough, and then adds nothing to the scroller.
       descriptionHeight: (() => {
         const description = document.querySelector<HTMLElement>(
           '[data-catalog-description]',
         );
-        if (!description) return 0;
+        if (!description || !scrollOwner.contains(description)) return 0;
         const style = window.getComputedStyle(description);
         return (
           description.offsetHeight +
@@ -1802,8 +1814,8 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
   expect(
     Math.abs(wideGeometry.stageHeight - wideGeometry.stageContentHeight),
   ).toBeLessThanOrEqual(1);
-  // The scroller holds the entry description above the stage, then the
-  // stage itself: nothing overflows past the stage. Both heights round a
+  // The scroller holds the stage (and the entry description only when it is
+  // not pinned): nothing overflows past the stage. Both heights round a
   // fractional layout height independently (Firefox on Linux measured 1791
   // vs 1792), so allow the same 1px as the stage check.
   expect(

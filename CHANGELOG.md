@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` pinned chrome can give way in a short pane.** `Pane` takes
+  `chromePlacement="auto"`: its header and footer stay pinned while the pane is
+  at least 480px (30rem) tall, and below that the whole pane scrolls as one
+  column so tall chrome never squeezes the content to nothing.
+  `WorkbenchChromePlacement` gains `"auto"` for `mainHeaderPlacement` /
+  `mainFooterPlacement`, and `Catalog` now defaults `headerPlacement` /
+  `footerPlacement` to `"auto"`. Its entry description is pinned under the
+  toolbar, which at 200% text size on a short window had left the preview 0px
+  tall.
+
 - **`@kerfjs/ui` `TabScaffold` tabs can show a badge.** Give a
   `TabScaffoldTab` a `badge` (a count or short string) to show the iOS tab-bar
   badge — a compact, solid danger `Badge` at the top-trailing corner of the

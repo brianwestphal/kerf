@@ -609,6 +609,9 @@ describe('wireCatalog', () => {
       }),
     );
     expect(pinned).toContain('class="kui-pane__footer');
+    // Pinned by default, but the entry pane lets its chrome scroll with the
+    // preview when it is short, so large text never squeezes the preview out.
+    expect(pinned).toContain('data-chrome-placement="auto"');
     const scrolling = String(
       Catalog({
         brand: { title: 'X' },

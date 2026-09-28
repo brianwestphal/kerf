@@ -16,6 +16,7 @@ export type PaneContentElement = 'div' | 'main' | 'nav' | 'section';
 
 const paneProtectedAttributes = new Set([
   'data-component',
+  'data-chrome-placement',
   'data-separator-block-start',
   'data-separator-block-end',
   'data-separator-inline-start',
@@ -44,8 +45,12 @@ type PaneRootAttributes = Readonly<
     'data-safe-area-block-end'?: never;
     'data-safe-area-inline-start'?: never;
     'data-safe-area-inline-end'?: never;
+    'data-chrome-placement'?: never;
   }
 >;
+
+/** How a Pane's header and footer relate to its scrolling content. */
+export type PaneChromePlacement = 'fixed' | 'auto';
 
 export interface PaneProps {
   /** Optional fixed chrome above the scrolling content, arranged vertically. */
@@ -54,6 +59,14 @@ export interface PaneProps {
   children?: KerfUiContent;
   /** Optional fixed chrome below the scrolling content. */
   footer?: KerfUiContent;
+  /**
+   * Whether the header and footer stay pinned around the scrolling content.
+   * `fixed` (default) always pins them. `auto` pins them while the pane is
+   * tall enough, and below 480px of height (30rem, so it scales with the text
+   * size) lets the whole pane scroll as one column, so tall chrome can never
+   * squeeze the content to nothing.
+   */
+  chromePlacement?: PaneChromePlacement;
   /** Root semantics. Defaults to `div`. */
   element?: PaneElement;
   /** Scrolling content semantics. Defaults to `div`. */
@@ -121,6 +134,7 @@ export function Pane({
   header,
   children,
   footer,
+  chromePlacement = 'fixed',
   element = 'div',
   contentElement = 'div',
   separators = [],
@@ -167,6 +181,7 @@ export function Pane({
     class: `kui-pane ${className}`.trim(),
     id,
     'data-component': 'pane',
+    'data-chrome-placement': chromePlacement === 'auto' ? 'auto' : undefined,
     'data-separator-block-start': String(separators.includes('block-start')),
     'data-separator-block-end': String(separators.includes('block-end')),
     'data-separator-inline-start': String(separators.includes('inline-start')),

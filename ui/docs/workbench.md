@@ -206,7 +206,10 @@ The work area's `Pane` can carry more fixed chrome: `mainHeader` renders under
 line or a resource toolbar), each divided from the scrolling `main`.
 `mainHeaderPlacement` and `mainFooterPlacement` (`"fixed"` by default, or
 `"scroll"`) let that header or footer chrome scroll away with `main` instead —
-useful where large text would leave pinned chrome little room.
+useful where large text would leave pinned chrome little room. `"auto"` keeps
+it pinned while the work area is tall enough and lets it scroll with `main`
+when the work area is short (the Pane's `chromePlacement="auto"`; it applies to
+the pinned header and footer together).
 
 Every toolbar the Workbench composes — `mainToolbar`, `mainBottomToolbar`, and
 each panel's `toolbar` — takes the `Toolbar`'s configuration (`ToolbarConfig`):

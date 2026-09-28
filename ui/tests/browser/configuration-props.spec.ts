@@ -125,7 +125,8 @@ for (const { name, width, height } of [
         return { width: bounds.width, height: bounds.height };
       });
       expect(glyph.width).toBeGreaterThan(0);
-      expect(glyph.width).toBe(glyph.height);
+      // Square, allowing Firefox's sub-pixel rounding (13.59999 vs 13.60001).
+      expect(Math.abs(glyph.width - glyph.height)).toBeLessThan(0.01);
       await page
         .locator('[data-token-search-id="disabled-search"]')
         .screenshot({

@@ -1223,7 +1223,10 @@ type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-safe-area-block-end'?: never;
     'data-safe-area-inline-start'?: never;
     'data-safe-area-inline-end'?: never;
+    'data-chrome-placement'?: never;
 }>;
+/** How a Pane's header and footer relate to its scrolling content. */
+type PaneChromePlacement = 'fixed' | 'auto';
 interface PaneProps {
     /** Optional fixed chrome above the scrolling content, arranged vertically. */
     header?: KerfUiContent;
@@ -1231,6 +1234,14 @@ interface PaneProps {
     children?: KerfUiContent;
     /** Optional fixed chrome below the scrolling content. */
     footer?: KerfUiContent;
+    /**
+     * Whether the header and footer stay pinned around the scrolling content.
+     * `fixed` (default) always pins them. `auto` pins them while the pane is
+     * tall enough, and below 480px of height (30rem, so it scales with the text
+     * size) lets the whole pane scroll as one column, so tall chrome can never
+     * squeeze the content to nothing.
+     */
+    chromePlacement?: PaneChromePlacement;
     /** Root semantics. Defaults to `div`. */
     element?: PaneElement;
     /** Scrolling content semantics. Defaults to `div`. */
@@ -1272,9 +1283,9 @@ type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separator
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, chromePlacement, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
-export { Pane, type PaneConfig, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
+export { Pane, type PaneChromePlacement, type PaneConfig, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
 ```
 
 ## `@kerfjs/ui/workbench`
@@ -1333,10 +1344,13 @@ interface WorkbenchMainBottomToolbar extends ToolbarConfig {
     trailing?: KerfUiContent;
 }
 /**
- * Whether the work area's header or footer chrome stays pinned (`fixed`) or
- * scrolls away with the content (`scroll`).
+ * Whether the work area's header or footer chrome stays pinned (`fixed`),
+ * scrolls away with the content (`scroll`), or stays pinned while the work
+ * area is tall enough and scrolls with the content when it is short (`auto`,
+ * the Pane's `chromePlacement="auto"`; it applies to the pinned header and
+ * footer together).
  */
-type WorkbenchChromePlacement = 'fixed' | 'scroll';
+type WorkbenchChromePlacement = 'fixed' | 'scroll' | 'auto';
 
 /**
  * The Workbench container breakpoint below which a panel presents as an
@@ -1454,9 +1468,10 @@ interface WorkbenchProps {
      */
     mainBottomToolbar?: WorkbenchMainBottomToolbar;
     /**
-     * Whether `mainToolbar` and `mainHeader` stay pinned (`fixed`, default) or
+     * Whether `mainToolbar` and `mainHeader` stay pinned (`fixed`, default),
      * scroll away with `main` (`scroll`) — useful where large text would leave
-     * pinned chrome little room.
+     * pinned chrome little room — or stay pinned while the work area is tall
+     * enough and scroll with `main` when it is short (`auto`).
      */
     mainHeaderPlacement?: WorkbenchChromePlacement;
     /** The same for `mainFooter` and `mainBottomToolbar` (default `fixed`). */
@@ -2041,8 +2056,8 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { a as CatalogProps } from './types-BSVhV_j3.js';
-export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection, g as CatalogStageRootAttributes } from './types-BSVhV_j3.js';
+import { a as CatalogProps } from './types-DXAGogOS.js';
+export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection, g as CatalogStageRootAttributes } from './types-DXAGogOS.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './toolbar.js';
 import './pane.js';
@@ -2134,7 +2149,7 @@ export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleP
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-BSVhV_j3.js';
+import { C as CatalogResource } from './types-DXAGogOS.js';
 import './semantic-content-BbzjvSu9.js';
 import 'kerfjs';
 import './toolbar.js';

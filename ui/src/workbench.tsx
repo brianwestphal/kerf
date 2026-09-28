@@ -159,9 +159,10 @@ export interface WorkbenchProps {
    */
   mainBottomToolbar?: WorkbenchMainBottomToolbar;
   /**
-   * Whether `mainToolbar` and `mainHeader` stay pinned (`fixed`, default) or
+   * Whether `mainToolbar` and `mainHeader` stay pinned (`fixed`, default),
    * scroll away with `main` (`scroll`) — useful where large text would leave
-   * pinned chrome little room.
+   * pinned chrome little room — or stay pinned while the work area is tall
+   * enough and scroll with `main` when it is short (`auto`).
    */
   mainHeaderPlacement?: WorkbenchChromePlacement;
   /** The same for `mainFooter` and `mainBottomToolbar` (default `fixed`). */

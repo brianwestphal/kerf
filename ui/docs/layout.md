@@ -29,6 +29,13 @@ top toolbar followed by secondary toolbar or status rows. A main area or dialog
 often omits the footer; a navigation pane commonly uses all three. Fixed chrome
 stays outside `.kui-pane__content`, which is the pane's only scroll owner.
 
+Tall fixed chrome can leave a short pane no room for its content (a small
+window, or text at 200%). `chromePlacement="auto"` keeps the header and footer
+pinned while the pane is at least 480px (30rem, so it scales with the text
+size) tall, and below that lets the whole pane scroll as one column, header,
+content, and footer together, so the content keeps its natural height. The
+default `fixed` always pins them.
+
 Pass any combination of logical sides to `separators`: `block-start`,
 `block-end`, `inline-start`, and `inline-end`. Every line is off by default and
 each enabled side uses `--kui-pane-separator-width` (1px) and

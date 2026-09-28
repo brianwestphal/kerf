@@ -146,3 +146,34 @@
   flex-direction: column;
   grid-area: footer;
 }
+
+/* `chromePlacement="auto"`: the header and footer stay pinned while the pane
+   is tall enough; below 480px of height (30rem, so it scales with the text
+   size) the whole pane scrolls as one column instead, so tall chrome can never
+   squeeze the content to nothing. The pane is its own size container and lays
+   its slots out as a column: while tall, the content fills the space between
+   the chrome and scrolls itself, and the pane never scrolls; while short, the
+   content takes its natural height and the pane scrolls. */
+.kui-pane[data-chrome-placement="auto"] {
+  container: kui-pane / size;
+  display: flex;
+  overflow-y: auto;
+  flex-direction: column;
+  overscroll-behavior: contain;
+}
+
+.kui-pane[data-chrome-placement="auto"]
+  > :is(.kui-pane__header, .kui-pane__footer) {
+  flex: none;
+}
+
+.kui-pane[data-chrome-placement="auto"] > .kui-pane__content {
+  flex: 1 1 0;
+}
+
+@container kui-pane (max-height: remify(480px)) {
+  .kui-pane[data-chrome-placement="auto"] > .kui-pane__content {
+    flex: none;
+    overflow: visible;
+  }
+}

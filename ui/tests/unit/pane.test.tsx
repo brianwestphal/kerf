@@ -85,6 +85,35 @@ describe('Pane', () => {
     expect(forged.match(/data-safe-area-block-start=/g)).toHaveLength(1);
   });
 
+  it('pins its chrome by default and opts into yielding it when short', () => {
+    expect(String(Pane({ children: <span>Body</span> }))).not.toContain(
+      'data-chrome-placement',
+    );
+    expect(
+      String(Pane({ children: <span>Body</span>, chromePlacement: 'fixed' })),
+    ).not.toContain('data-chrome-placement');
+    expect(
+      String(
+        Pane({
+          header: <span>Head</span>,
+          children: <span>Body</span>,
+          chromePlacement: 'auto',
+        }),
+      ),
+    ).toContain('data-chrome-placement="auto"');
+    // The placement is structural: consumer metadata cannot claim it.
+    expect(
+      String(
+        Pane({
+          children: <span>Body</span>,
+          rootAttributes: {
+            'data-chrome-placement': 'auto',
+          } as unknown as Record<`data-${string}`, string>,
+        }),
+      ),
+    ).not.toContain('data-chrome-placement');
+  });
+
   it('protects structural data attributes while forwarding safe metadata', () => {
     const html = String(
       Pane({

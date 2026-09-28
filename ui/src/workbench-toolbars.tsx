@@ -157,10 +157,13 @@ function chromeList(
 }
 
 /**
- * Whether the work area's header or footer chrome stays pinned (`fixed`) or
- * scrolls away with the content (`scroll`).
+ * Whether the work area's header or footer chrome stays pinned (`fixed`),
+ * scrolls away with the content (`scroll`), or stays pinned while the work
+ * area is tall enough and scrolls with the content when it is short (`auto`,
+ * the Pane's `chromePlacement="auto"`; it applies to the pinned header and
+ * footer together).
  */
-export type WorkbenchChromePlacement = 'fixed' | 'scroll';
+export type WorkbenchChromePlacement = 'fixed' | 'scroll' | 'auto';
 
 /**
  * The work area: the app's `main` in a `Pane` (configured by `mainPane`)
@@ -274,6 +277,11 @@ export function mainBody({
     <Pane
       header={scrollHeader ? undefined : header}
       footer={scrollFooter ? undefined : footer}
+      chromePlacement={
+        mainHeaderPlacement === 'auto' || mainFooterPlacement === 'auto'
+          ? 'auto'
+          : 'fixed'
+      }
       contentElement={mainPane?.contentElement}
       contentLabel={mainPane?.contentLabel}
       separators={mainPane?.separators}

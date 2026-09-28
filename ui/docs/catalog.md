@@ -396,9 +396,11 @@ revealCatalogEntry(app, initial, { block: "center" });
   Pass the same signal as `wireCatalog`'s `collapsed` option so the sidebar is
   wired as a Workbench rail (transient on small screens, focus handed to the
   relocated toggle).
-- **`headerPlacement` / `footerPlacement`** choose whether the entry toolbar and the
-  status + resource footer stay pinned (`fixed`, default) or scroll with the preview
-  (`scroll`) — useful where large text would leave pinned chrome little room.
+- **`headerPlacement` / `footerPlacement`** choose whether the entry toolbar and
+  description, and the status + resource footer, stay pinned (`fixed`), scroll with
+  the preview (`scroll`), or stay pinned while the entry pane is tall enough and
+  scroll with the preview when it is short (`auto`, the default) — so a short
+  window or large text never squeezes the preview out.
 - **`sidebar`** configures the sidebar rail — it forwards to the Workbench's left
   rail: `size` (default 288px), `resizable` (`true` or `{ min, max }`),
   `separator`, `collapseMotion`, `presentation`, `responsiveOverlayAt` (default

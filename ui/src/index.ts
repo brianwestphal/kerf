@@ -81,6 +81,7 @@ export {
 } from './lucide-icon.js';
 export {
   Pane,
+  type PaneChromePlacement,
   type PaneConfig,
   type PaneContentElement,
   type PaneElement,

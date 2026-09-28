@@ -363,6 +363,24 @@ describe('Workbench panel toolbars', () => {
     );
     expect(order).toEqual(['data-header', 'data-main', 'data-footer']);
 
+    // `auto` keeps the chrome pinned in the markup and hands the choice to
+    // the Pane, which lets it scroll with the content only when short; the
+    // other placements leave the Pane at its default.
+    expect(pinned.getAttribute('data-chrome-placement')).toBeNull();
+    const auto = pane(render({ ...base, mainHeaderPlacement: 'auto' }));
+    expect(auto.getAttribute('data-chrome-placement')).toBe('auto');
+    expect(
+      auto.querySelector(':scope > .kui-pane__header [data-header]'),
+    ).not.toBeNull();
+    expect(
+      auto.querySelector(':scope > .kui-pane__footer [data-footer]'),
+    ).not.toBeNull();
+    expect(
+      pane(render({ ...base, mainFooterPlacement: 'auto' })).getAttribute(
+        'data-chrome-placement',
+      ),
+    ).toBe('auto');
+
     // Only the footer scrolling keeps the header pinned.
     const footerOnly = pane(render({ ...base, mainFooterPlacement: 'scroll' }));
     expect(

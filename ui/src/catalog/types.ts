@@ -101,15 +101,16 @@ export interface CatalogProps {
   toggleThemeAction?: string;
   toggleSecondaryAction?: string;
   /**
-   * Whether the entry toolbar stays pinned above the preview (`fixed`,
-   * default) or scrolls away with it (`scroll`).
+   * Whether the entry toolbar and description stay pinned above the preview
+   * (`fixed`), scroll away with it (`scroll`), or stay pinned while the entry
+   * pane is tall enough and scroll with the preview when it is short (`auto`,
+   * default), so a short window or large text never squeezes the preview out.
    */
-  headerPlacement?: 'fixed' | 'scroll';
+  headerPlacement?: 'fixed' | 'scroll' | 'auto';
   /**
-   * Whether the status and resource footer stays pinned below the preview
-   * (`fixed`, default) or scrolls with it (`scroll`).
+   * The same for the status and resource footer (default `auto`).
    */
-  footerPlacement?: 'fixed' | 'scroll';
+  footerPlacement?: 'fixed' | 'scroll' | 'auto';
   /**
    * The sidebar's size, resizing, and overlay configuration, forwarded to the
    * Workbench left rail (default: 288px, not resizable, an overlay below the
