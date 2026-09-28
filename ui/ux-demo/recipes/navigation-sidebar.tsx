@@ -1,5 +1,6 @@
 import '@kerfjs/ui/layout.css';
 
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
@@ -120,7 +121,7 @@ export const createRecipe: RecipeFactory = (announce) => {
               disabled
               title="Available to administrators"
             />
-            <div class="kui-content-item">
+            <ContentItem>
               <List gap="2xs">
                 <Text variant="span">
                   <strong>Quarterly goal</strong>
@@ -129,7 +130,7 @@ export const createRecipe: RecipeFactory = (announce) => {
                   Ship accessible navigation patterns to every workspace.
                 </Text>
               </List>
-            </div>
+            </ContentItem>
           </>
         )}
       </section>

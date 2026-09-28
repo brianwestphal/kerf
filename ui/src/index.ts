@@ -13,6 +13,12 @@ export {
   type BadgeTone,
 } from './badge.js';
 export {
+  ContentItem,
+  type ContentItemFrame,
+  type ContentItemProps,
+  type ContentItemShape,
+} from './content-item.js';
+export {
   calc,
   colorVar,
   type CssColor,

@@ -2,6 +2,7 @@ import '@kerfjs/ui/layout.css';
 import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/toolbar-text.css';
 
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
@@ -81,7 +82,7 @@ export const createRecipe: RecipeFactory = (announce) => {
     title: item.label,
     content: (
       <List controlInsets="t">
-        <div class="kui-content-item">
+        <ContentItem>
           <Row gap="xs">
             <LucideIcon icon={FileText} name="file-text" />
             <List gap="2xs">
@@ -93,7 +94,7 @@ export const createRecipe: RecipeFactory = (announce) => {
               </Text>
             </List>
           </Row>
-        </div>
+        </ContentItem>
       </List>
     ),
   });

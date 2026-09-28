@@ -2,8 +2,8 @@
 
 Import `Pane` from `@kerfjs/ui/pane`. Browser-aware bundlers receive its CSS
 automatically; other consumers can import `@kerfjs/ui/pane.css`. Import
-`@kerfjs/ui/layout.css` as well when using the related content-item and control
-layout classes. The vocabulary deliberately describes structure rather than
+`@kerfjs/ui/layout.css` as well when using the `.kui-content` stack and control
+layout classes; place `ContentItem` children from `@kerfjs/ui/content-item`. The vocabulary deliberately describes structure rather than
 location: the same pane can be placed anywhere.
 
 ## Anatomy
@@ -45,19 +45,8 @@ same logical sides as `separators`; all four by default, `[]` to opt out). See
 
 `.kui-content` is a vertical stack with a 24px gap between major children.
 Sections may contain adjacent `ListItem` rows without adding another major gap.
-Ordinary surface-like children use `.kui-content-item` and own their complete
-geometry:
-
-- 8px inline margin from the pane edge
-- 1px border, transparent by default
-- 8px internal padding and 8px internal gap
-- `calc(1px + remify(11px))`, or 12px, rounded corners
-
-Use `.kui-content-item--pill` for the 22px pill radius expressed as
-`calc(1px + remify(21px))`. Add `.kui-content-item--framed` when a content item
-marks a real distinction and must read as visibly bounded: it paints the
-standard neutral border in the 1px the item always reserves, so its geometry
-does not change. Do not frame an item only to make it "look contained".
+Ordinary surface-like children are `ContentItem`s and own their complete
+geometry (see [Content items](#content-items)).
 
 Nested selection and hover highlights stay concentric and match their owning
 control's shape. Their inner radius is the outer radius minus the full inset,
@@ -73,21 +62,61 @@ inline gutter instead of nesting them inside another padded content item. A
 conditional `StateBanner` remains visibly distinct because it communicates
 semantic status.
 
+## Content items
+
+Render an ordinary surface-like `.kui-content` child with `ContentItem` from
+`@kerfjs/ui/content-item` (browser-aware bundlers receive its CSS automatically;
+`@kerfjs/ui/layout.css` and `@kerfjs/ui/content-item.css` both deliver it). It
+owns its complete geometry:
+
+- 8px inline margin from the pane edge
+- 1px border, transparent by default
+- 8px internal padding
+- `calc(1px + remify(11px))`, or 12px, rounded corners
+
+```tsx
+import { ContentItem } from "@kerfjs/ui/content-item";
+
+<Pane label="Inspector">
+  <ContentItem>{details}</ContentItem>
+  <ContentItem frame="framed">{pendingChanges}</ContentItem>
+  <ContentItem shape="pill">{summary}</ContentItem>
+</Pane>;
+```
+
+`frame="framed"` paints the standard neutral border in the 1px the item always
+reserves, so framed and unframed items share the same geometry. Frame an item
+only when it marks a real distinction and must read as visibly bounded; do not
+frame it to make it "look contained". `shape="pill"` selects the 22px pill
+radius expressed as `calc(1px + remify(21px))`. There is deliberately no filled
+variant: a lowered, filled surface is `SunkenPanel`, and bare text that only
+needs to align with neighboring items is `ListInsetText`. Safe `data-*`
+metadata goes in `rootAttributes`. Pass `ariaLabel` only for a distinct named
+region (`role="region"`), and `focusTarget` to make the item a programmatic
+focus target (`tabindex="-1"`), for example a NavStack view's `data-nav-focus`
+target.
+
+The rendered classes — `.kui-content-item`, `.kui-content-item--framed`, and
+`.kui-content-item--pill` — stay public for the rare element that must carry the
+geometry itself (for example a `<ul>` list or a `Text` paragraph in an
+application-owned adapter). Prefer `ContentItem` everywhere else so the framing
+choice is typed.
+
 ## Public roles and tokens
 
-| Need                                     | Class                       | Token / default                                                    |
-| ---------------------------------------- | --------------------------- | ------------------------------------------------------------------ |
-| Unpadded header/content/footer structure | `Pane`, `.kui-pane`         | —                                                                  |
-| Scrolling pane content                   | `.kui-pane__content`        | —                                                                  |
-| Optional logical-edge separators         | `Pane.separators`           | `--kui-pane-separator-width: 1px`                                  |
-| Safe-area sides a pane may pad           | `Pane.safeAreaEdges`        | `--kui-safe-area-*: env(safe-area-inset-*)`, routed by each layout |
-| Major vertical rhythm                    | `.kui-content`              | `--kui-layout-content-gap: 24px`                                   |
-| Self-contained child geometry            | `.kui-content-item`         | 8px margin + 1px border + 8px padding                              |
-| Pill child                               | `.kui-content-item--pill`   | `--kui-layout-pill-radius: 22px`                                   |
-| Visibly framed child                     | `.kui-content-item--framed` | neutral 1px border, same geometry                                  |
-| Related controls                         | `.kui-control-cluster`      | `--kui-layout-control-gap: 8px`                                    |
-| Inline metadata                          | `.kui-inline-metadata`      | `--kui-layout-metadata-gap: 4px`                                   |
-| Explicit scroll owner outside a pane     | `.kui-scroll-owner`         | `overflow: auto`                                                   |
+| Need                                     | Class                        | Token / default                                                    |
+| ---------------------------------------- | ---------------------------- | ------------------------------------------------------------------ |
+| Unpadded header/content/footer structure | `Pane`, `.kui-pane`          | —                                                                  |
+| Scrolling pane content                   | `.kui-pane__content`         | —                                                                  |
+| Optional logical-edge separators         | `Pane.separators`            | `--kui-pane-separator-width: 1px`                                  |
+| Safe-area sides a pane may pad           | `Pane.safeAreaEdges`         | `--kui-safe-area-*: env(safe-area-inset-*)`, routed by each layout |
+| Major vertical rhythm                    | `.kui-content`               | `--kui-layout-content-gap: 24px`                                   |
+| Self-contained child geometry            | `ContentItem`                | 8px margin + 1px border + 8px padding                              |
+| Pill child                               | `ContentItem shape="pill"`   | `--kui-layout-pill-radius: 22px`                                   |
+| Visibly framed child                     | `ContentItem frame="framed"` | neutral 1px border, same geometry                                  |
+| Related controls                         | `.kui-control-cluster`       | `--kui-layout-control-gap: 8px`                                    |
+| Inline metadata                          | `.kui-inline-metadata`       | `--kui-layout-metadata-gap: 4px`                                   |
+| Explicit scroll owner outside a pane     | `.kui-scroll-owner`          | `overflow: auto`                                                   |
 
 The component layer applies the same contract to `Toolbar`, `ListHeader`,
 `ListItem`, `Toolbar`, `StateBanner`, `ValueTable`,

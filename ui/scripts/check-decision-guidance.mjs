@@ -131,9 +131,18 @@ for (const className of [
   if (!paneEntry?.publicClasses.includes(className))
     fail(`pane catalog entry is missing public class ${className}`);
 }
-for (const className of ['kui-content', 'kui-content-item']) {
-  if (!layoutEntry?.publicClasses.includes(className))
-    fail(`layout catalog entry is missing public class ${className}`);
+if (!layoutEntry?.publicClasses.includes('kui-content'))
+  fail('layout catalog entry is missing public class kui-content');
+const contentItemEntry = componentCatalog.entries.find(
+  (entry) => entry.id === 'content-item',
+);
+for (const className of [
+  'kui-content-item',
+  'kui-content-item--pill',
+  'kui-content-item--framed',
+]) {
+  if (!contentItemEntry?.publicClasses.includes(className))
+    fail(`content-item catalog entry is missing public class ${className}`);
 }
 for (const token of [
   '--kui-layout-content-gap',

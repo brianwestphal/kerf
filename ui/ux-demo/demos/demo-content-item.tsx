@@ -1,3 +1,4 @@
+import { ContentItem, type ContentItemProps } from '@kerfjs/ui/content-item';
 import { List } from '@kerfjs/ui/list';
 import { Text } from '@kerfjs/ui/text';
 import type { SafeHtml } from 'kerfjs';
@@ -7,7 +8,9 @@ interface DemoContentItemProps {
   detail: string;
   leading?: SafeHtml;
   eyebrow?: string;
-  rootAttributes?: Record<string, string>;
+  ariaLabel?: string;
+  focusTarget?: boolean;
+  rootAttributes?: ContentItemProps['rootAttributes'];
 }
 
 export function DemoContentItem({
@@ -15,10 +18,16 @@ export function DemoContentItem({
   detail,
   leading,
   eyebrow,
+  ariaLabel,
+  focusTarget,
   rootAttributes,
 }: DemoContentItemProps) {
   return (
-    <div class="kui-content-item" {...rootAttributes}>
+    <ContentItem
+      ariaLabel={ariaLabel}
+      focusTarget={focusTarget}
+      rootAttributes={rootAttributes}
+    >
       {leading}
       <List gap="2xs">
         {eyebrow ? (
@@ -33,6 +42,6 @@ export function DemoContentItem({
           {detail}
         </Text>
       </List>
-    </div>
+    </ContentItem>
   );
 }

@@ -1,6 +1,7 @@
 import '@kerfjs/ui/lucide-icon.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Toolbar } from '@kerfjs/ui/toolbar';
@@ -65,9 +66,9 @@ export function FloatingToolbarDemo() {
             </ToolbarControlGroup>
           }
         />
-        <div class="kui-content-item">
+        <ContentItem>
           Scrolling content sits behind the floating toolbar.
-        </div>
+        </ContentItem>
         {open ? (
           <FloatingToolbar label="Terminal drawer">
             <ToolbarControlGroup label="Terminal drawer" single>

@@ -57,7 +57,7 @@ Use the package composition so the geometry has one owner:
       <ListItem action="open" label="Inbox" icon={inboxIcon} />
       <ListItem action="open" label="Drafts" />
     </section>
-    <div class="kui-content-item">Panel contents</div>
+    <ContentItem>Panel contents</ContentItem>
 </Pane>
 ```
 

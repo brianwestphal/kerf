@@ -128,7 +128,6 @@ const packageClassRoots = new Map([
     'layout.css',
     [
       'kui-content',
-      'kui-content-item',
       'kui-control-cluster',
       'kui-inline-metadata',
       'kui-scroll-owner',

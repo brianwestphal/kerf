@@ -23,6 +23,7 @@ const entries = [
   'list-header',
   'list-inset-control',
   'list-inset-text',
+  'content-item',
   'resizable-region',
   'wire-resizable-regions',
   'device-class',

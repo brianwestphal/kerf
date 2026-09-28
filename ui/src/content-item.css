@@ -1,0 +1,30 @@
+/* One self-contained content-item: 8px inline margin, a real 1px border
+   (transparent unless framed), 8px padding, and a rounded or pill radius.
+   Rendered by ContentItem; the classes stay public for other elements. */
+
+.kui-content-item {
+  min-width: 0;
+  margin-inline: var(--kui-layout-inline-margin, remify(8px));
+  padding: var(--kui-layout-item-padding, remify(8px));
+  box-sizing: border-box;
+  border: var(--kui-layout-item-border-width, 1px) solid
+    var(--kui-content-item-border, transparent);
+  border-radius: var(
+    --kui-content-item-radius,
+    var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
+  );
+  background: var(--kui-content-item-background, transparent);
+}
+
+.kui-content-item--pill {
+  --kui-content-item-radius: var(
+    --kui-layout-pill-radius,
+    calc(1px + remify(21px))
+  );
+}
+
+/* A visible frame for a content item that marks a real distinction: the
+   standard neutral border, same geometry (the border is always reserved). */
+.kui-content-item--framed {
+  --kui-content-item-border: var(--kui-color-neutral-border-normal);
+}

@@ -57,8 +57,8 @@ component variables.
 [Open the recipe](../ux-demo/?component=recipe-navigation-sidebar) · [TSX source](../ux-demo/recipes/navigation-sidebar.tsx)
 
 One unpadded `.kui-pane` owns toolbar/content/footer structure. Its
-`.kui-content` uses 24px major gaps; `ListHeader`, `ListItem`, and other
-`.kui-content-item` children own their 8px margin, 1px border, and 8px padding.
+`.kui-content` uses 24px major gaps; `ListHeader`, `ListItem`, and
+`ContentItem` children own their 8px margin, 1px border, and 8px padding.
 Rows and footer toolbar groups remain 44px tall. The app owns routes,
 permissions, labels, selection, valid section counts and their localized
 `countLabel` phrases, non-count badge content, disclosure state, and revealed
@@ -205,7 +205,8 @@ Chromium, Firefox, and WebKit by `tests/browser/collapsible-sidebar-recipe.spec.
   `@kerfjs/ui/webawesome.css`.
 - Compose, don't style. A recipe ships no stylesheet, sets no inline style, and
   names no class outside the published layout vocabulary (`.kui-content`,
-  `.kui-content-item`, …) and themed Web Awesome classes; it configures
+  `.kui-control-cluster`, …) and themed Web Awesome classes — a content item is
+  a `ContentItem`, not a hand-written `.kui-content-item`; it configures
   components through props, `rootAttributes`, and tokens. When a recipe needs a
   capability no component offers, record it as a component gap rather than
   papering over it with CSS. `npm run check:recipes` enforces these rules on

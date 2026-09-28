@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 297100,
-  "measuredLargestJavaScriptGzip": 148624,
-  "measuredTotalJavaScriptGzip": 297010,
+  "totalJavaScriptGzip": 297500,
+  "measuredLargestJavaScriptGzip": 149055,
+  "measuredTotalJavaScriptGzip": 297406,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -995,6 +995,22 @@
         "measuredTotalJavaScriptGzip": 297010,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 297100
+      }
+    },
+    {
+      "at": "2026-09-28T11:31:07.878Z",
+      "reason": "ContentItem component and its catalog route; demos and recipes use it",
+      "old": {
+        "measuredLargestJavaScriptGzip": 148624,
+        "measuredTotalJavaScriptGzip": 297010,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 297100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 149055,
+        "measuredTotalJavaScriptGzip": 297406,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 297500
       }
     }
   ]

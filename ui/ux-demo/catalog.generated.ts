@@ -67,7 +67,9 @@ export const generatedKerfCatalog = [
     "kind": "composition",
     "source": "kerf",
     "description": "Provide one reusable pane, toolbar, content stack, and content-item geometry across sidebars, main areas, and dialogs.",
-    "uses": [],
+    "uses": [
+      "content-item"
+    ],
     "demoSource": "ui/ux-demo/demos/layout.tsx",
     "documentation": "ui/docs/component-selection.md"
   },
@@ -410,6 +412,18 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "content-item",
+    "name": "ContentItem",
+    "category": "Structure",
+    "kind": "component",
+    "source": "kerf",
+    "description": "Render one self-contained .kui-content child that owns its 8px inline margin, real 1px border, 8px padding, and radius, with framing and shape chosen by typed props instead of hand-written modifier classes.",
+    "uses": [],
+    "demoSource": "ui/ux-demo/demos/content-item.tsx",
+    "componentSource": "ui/src/content-item.tsx",
+    "documentation": "ui/docs/layout.md"
+  },
+  {
     "id": "application-tabs",
     "name": "Application tabs",
     "category": "Navigation",
@@ -644,7 +658,8 @@ export const generatedKerfCatalog = [
       "toolbar",
       "toolbar-control-group",
       "lucide-icon",
-      "layout"
+      "layout",
+      "content-item"
     ],
     "demoSource": "ui/ux-demo/recipes/navigation-sidebar.tsx",
     "documentation": "ui/docs/recipes.md#navigation-sidebar"
@@ -775,7 +790,8 @@ export const generatedKerfCatalog = [
       "row",
       "text",
       "lucide-icon",
-      "layout"
+      "layout",
+      "content-item"
     ],
     "demoSource": "ui/ux-demo/recipes/navigation-stack.tsx",
     "documentation": "ui/docs/recipes.md#navigation-stack"
@@ -827,7 +843,8 @@ export const generatedKerfCatalog = [
       "toolbar-text",
       "value-table",
       "lucide-icon",
-      "layout"
+      "layout",
+      "content-item"
     ],
     "demoSource": "ui/ux-demo/recipes/collapsible-sidebar.tsx",
     "documentation": "ui/docs/recipes.md#collapsible-sidebar"

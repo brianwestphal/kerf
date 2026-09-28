@@ -7,6 +7,7 @@ import {
   CollapsiblePanelRelocated,
   type CollapsiblePanelToolbar,
 } from '@kerfjs/ui/collapsible-panel';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { deviceClass } from '@kerfjs/ui/device-class';
 import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { Grid } from '@kerfjs/ui/grid';
@@ -152,7 +153,7 @@ export const createRecipe: RecipeFactory = (announce) => {
         />
       }
     >
-      <div class="kui-content-item">
+      <ContentItem>
         <List gap="2xs">
           <Text variant="span">
             <strong>Narrow the window to a compact width</strong>
@@ -162,7 +163,7 @@ export const createRecipe: RecipeFactory = (announce) => {
             a backdrop, Escape, and a trapped Tab ring, all managed by the wire.
           </Text>
         </List>
-      </div>
+      </ContentItem>
     </Pane>
   );
 

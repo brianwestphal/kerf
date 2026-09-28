@@ -1,4 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
 import { Pane } from '@kerfjs/ui/pane';
 import { Toolbar } from '@kerfjs/ui/toolbar';
@@ -44,10 +45,8 @@ export function PaneDemo() {
             />
           }
         >
-          <div class="kui-content-item">First content group</div>
-          <div class="kui-content-item kui-content-item--framed">
-            Framed content group
-          </div>
+          <ContentItem>First content group</ContentItem>
+          <ContentItem frame="framed">Framed content group</ContentItem>
         </Pane>
       </CatalogExample>
     </CatalogExampleStack>

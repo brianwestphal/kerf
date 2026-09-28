@@ -197,6 +197,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `ListHeader`                                                        | `@kerfjs/ui/list-header`                | `@kerfjs/ui/list-header.css`           |
 | `ListInsetControl`                                                  | `@kerfjs/ui/list-inset-control`         | `@kerfjs/ui/list-inset-control.css`    |
 | `ListInsetText`                                                     | `@kerfjs/ui/list-inset-text`            | `@kerfjs/ui/list-inset-text.css`       |
+| `ContentItem`                                                       | `@kerfjs/ui/content-item`               | `@kerfjs/ui/content-item.css`          |
 | `Pane`                                                              | `@kerfjs/ui/pane`                       | `@kerfjs/ui/pane.css`                  |
 | `NavStack`                                                          | `@kerfjs/ui/nav-stack`                  | `@kerfjs/ui/nav-stack.css`             |
 | `wireNavStack`                                                      | `@kerfjs/ui/wire-nav-stack`             | —                                      |
@@ -474,14 +475,15 @@ Add `.kui-content` to make its major children a vertical stack with 24px gaps.
       <ListItem action="open" label="Inbox" icon={inboxIcon} />
       <ListItem action="open" label="Drafts" />
     </section>
-    <div class="kui-content-item">Workspace details</div>
+    <ContentItem>Workspace details</ContentItem>
   </nav>
 </aside>
 ```
 
-Ordinary children use `.kui-content-item`: 8px inline margin, a real 1px border
-(transparent by default), 8px padding, and 12px rounded corners. The pill
-modifier uses a 22px radius. A component can expose a transparent border or
+Ordinary children use `ContentItem` (`@kerfjs/ui/content-item`): 8px inline
+margin, a real 1px border (transparent by default), 8px padding, and 12px
+rounded corners. `shape="pill"` uses a 22px radius, and `frame="framed"` paints
+the neutral border only when the item marks a real distinction. A component can expose a transparent border or
 background without changing layout. `ListHeader` follows the same rule while
 keeping its dormant title and count-or-badge cluster separate from its optional
 44px action.

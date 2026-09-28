@@ -122,7 +122,7 @@ describe('props that replace raw token overrides', () => {
 
   it('frames a content item with the neutral border without changing geometry', () => {
     const css = readFileSync(
-      resolve(import.meta.dirname, '../../src/layout.css'),
+      resolve(import.meta.dirname, '../../src/content-item.css'),
       'utf8',
     );
     expect(css).toMatch(

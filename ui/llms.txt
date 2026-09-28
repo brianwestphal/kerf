@@ -103,12 +103,15 @@ the folder modules, and CSS only imports their owner stylesheets.
   `width`, `height`, `border`, `background`, a wrapper card, or a decoration,
   check whether the component, pane, or content-item already owns it. Prefer a
   component prop — `FloatingToolbar inset`, `DisclosureArrow size`, `ListHeader
-headingLevel`, `TokenSearchField clearIcon`, `.kui-content-item--framed` for a
+headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   visibly bounded content item — over overriding its `--kui-*` token. CSS for genuinely new structure
   belongs to the application-owned component that renders it and must not select
   nested Kerf or Web Awesome components.
 - **Never double-inset.** A `.kui-pane` has no padding; its `.kui-content` children
-  own the geometry (8px inline margin + 1px border + 8px padding). Do not add a
+  own the geometry (8px inline margin + 1px border + 8px padding). Render an
+  ordinary surface-like child as `ContentItem` (`@kerfjs/ui/content-item`) with
+  typed `frame` (`none`/`framed`) and `shape` (`rounded`/`pill`) props instead
+  of hand-writing `<div class="kui-content-item">`. Do not add a
   container padding on top of a content-item's own margin — pick one owner. Use
   `.kui-content` for 24px major vertical rhythm.
 - **Opt into document globals explicitly.** Import `@kerfjs/ui/document.css`

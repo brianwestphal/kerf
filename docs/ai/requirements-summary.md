@@ -325,6 +325,13 @@ Dialog bodies default to `List` composition with no competing body inset; bare
 dialog prose uses `ListInsetText` so it aligns with bordered siblings through
 the same child-owned gutter.
 
+`ContentItem` (`@kerfjs/ui/content-item`) is the typed owner of the
+content-item geometry: `frame="framed"` paints the neutral border in the
+always-reserved 1px and `shape="pill"` selects the 22px radius, so demos,
+recipes, and apps no longer hand-write `.kui-content-item` modifier classes.
+There is deliberately no filled variant; a lowered filled surface is
+`SunkenPanel`.
+
 The root `@kerfjs/ui` declaration barrel re-exports the named AppTab, TabBar,
 ToolbarControlGroup, and Select presentation axes; source and packed-tarball
 consumer compilation guard that convenience surface against subpath drift.

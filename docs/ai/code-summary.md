@@ -890,6 +890,11 @@ same runtime filter for catalog-authoring `data-*` metadata while protecting
 their structure and alignment markers. `CatalogExample.viewport` supplies
 catalog-owned finite specimen constraints so focused demos do not need local
 CSS, inline styles, or styling-only classes.
+`ui/src/content-item.tsx` (`@kerfjs/ui/content-item`) renders one
+self-contained `.kui-content` child: 8px inline margin, a reserved 1px border,
+8px padding, with typed `frame` (`none`/`framed`) and `shape` (`rounded`/`pill`)
+props mapped onto the public `.kui-content-item--framed`/`--pill` modifiers.
+Its CSS lives in `ui/src/content-item.css`, which `layout.css` imports.
 `ui/src/spacer.tsx` is the decorative layout-gap primitive: `width` and `height`
 accept finite `UiSpaceName` shorthands or branded `CssLength` values, fixed gaps
 do not shrink, and `flex` consumes remaining space along a flex main axis.

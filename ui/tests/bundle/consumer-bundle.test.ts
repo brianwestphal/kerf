@@ -593,6 +593,14 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./sunken-panel.css']).toBe(
       './dist/styles/sunken-panel.css',
     );
+    expect(pkg.exports['./content-item']).toMatchObject({
+      types: './dist/content-item.d.ts',
+      browser: './dist/browser/content-item.js',
+      import: './dist/content-item.js',
+    });
+    expect(pkg.exports['./content-item.css']).toBe(
+      './dist/styles/content-item.css',
+    );
     expect(pkg.files).not.toContain('src/*.css');
   });
 

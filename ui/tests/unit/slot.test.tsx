@@ -11,6 +11,7 @@ import { CollapsiblePanelToggle } from '../../src/collapsible-panel.js';
 import {
   AppTab,
   Badge,
+  ContentItem,
   DialogSurface,
   DisclosureArrow,
   EmptyState,
@@ -149,6 +150,10 @@ const cases: SlotCase[] = [
   {
     name: 'ListInsetText',
     render: (slot) => ListInsetText({ children: 'Copy', slot }),
+  },
+  {
+    name: 'ContentItem',
+    render: (slot) => ContentItem({ children: 'Copy', slot }),
   },
   {
     name: 'ListItem',

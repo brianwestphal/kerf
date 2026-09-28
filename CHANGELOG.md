@@ -47,6 +47,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   overlay children. Restore-corner placement and covered-control hiding are
   unchanged; a new CSS unit test rejects the costly `:has()` shapes.
 
+- **`@kerfjs/ui` adds `ContentItem`.** Import it from
+  `@kerfjs/ui/content-item` to render one self-contained pane child with the
+  shared 8px margin, 1px border, and 8px padding. Framing and shape are typed
+  props instead of hand-written modifier classes:
+  - `frame="framed"` paints the neutral border in the 1px the item always
+    reserves, so its geometry does not change (replacing
+    `class="kui-content-item kui-content-item--framed"`);
+  - `shape="pill"` selects the 22px radius.
+  - `ariaLabel` names a distinct region, and `focusTarget` makes the item a
+    programmatic focus target (`tabindex="-1"`), such as a NavStack view's
+    `data-nav-focus` target.
+
+  The `.kui-content-item` classes stay public for elements that must carry the
+  geometry themselves; their CSS now lives in `content-item.css`, which
+  `layout.css` still imports. There is no filled variant — use `SunkenPanel`
+  for a lowered surface. The catalog, demos, and recipes use the component.
+
 - **`@kerfjs/ui` toolbar groups drop their focus ring while a popup is open.**
   A `ToolbarControlGroup` that owns the ring (`focusRing="outline"` or
   `"halo"`) no longer paints it while a Select listbox or `PopupMenu` inside it

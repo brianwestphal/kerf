@@ -31,6 +31,11 @@ import {
   CollapsiblePanelToggle,
 } from '@kerfjs/ui/collapsible-panel';
 import {
+  ContentItem,
+  type ContentItemFrame,
+  type ContentItemShape,
+} from '@kerfjs/ui/content-item';
+import {
   calc,
   colorVar,
   type CssColor,
@@ -389,6 +394,7 @@ UI.ListActionRow({
 UI.ListHeader({ label: 'Header', slot: 'named' });
 UI.ListInsetControl({ children: slottedContent, slot: 'named' });
 UI.ListInsetText({ children: 'Copy', slot: 'named' });
+UI.ContentItem({ children: slottedContent, slot: 'named' });
 UI.ListItem({ label: 'Item', action: 'open', slot: 'named' });
 UI.LoadingSpinner({ slot: 'named' });
 UI.LucideIcon({ icon: [], name: 'empty', slot: 'named' });
@@ -696,6 +702,22 @@ ToolbarControlGroup({
   selectedTone: 'pop',
 });
 SunkenPanel({ shape: sunkenPanelShape });
+const contentItemFrame: ContentItemFrame = 'framed';
+const contentItemShape: ContentItemShape = 'pill';
+ContentItem({
+  children: 'Copy',
+  frame: contentItemFrame,
+  shape: contentItemShape,
+  ariaLabel: 'Details',
+  focusTarget: true,
+  rootAttributes: { 'data-item': 'details' },
+});
+// @ts-expect-error KUI-T010 ContentItem frames are none or framed; a fill is SunkenPanel.
+ContentItem({ frame: 'filled' });
+// @ts-expect-error KUI-T010 ContentItem shapes are rounded or pill.
+ContentItem({ shape: 'square' });
+// @ts-expect-error ContentItem protects its component marker.
+ContentItem({ rootAttributes: { 'data-component': 'spoof' } });
 List({
   children: icon,
   gap: true,

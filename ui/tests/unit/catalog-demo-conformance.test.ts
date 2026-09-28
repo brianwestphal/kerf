@@ -309,8 +309,9 @@ describe('Recipe conformance analysis', () => {
     );
     const vocabulary = recipeClassVocabulary(catalog);
     expect(vocabulary).toContain('kui-content');
-    expect(vocabulary).toContain('kui-content-item');
     expect(vocabulary).toContain('kui-control-cluster');
+    // A content item is the typed ContentItem component, not recipe markup.
+    expect(vocabulary).not.toContain('kui-content-item');
     expect(vocabulary).toContain('hide-actions');
     expect(vocabulary).not.toContain('kui-pane__content');
     expect(vocabulary).not.toContain('kui-list-item');

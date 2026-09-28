@@ -434,7 +434,9 @@
       "kind": "composition",
       "source": "kerf",
       "description": "Unpadded panes, 24px content stacks, and self-contained 8/1/8 content items for application layout boundaries.",
-      "uses": [],
+      "uses": [
+        "content-item"
+      ],
       "purpose": "Provide one reusable pane, toolbar, content stack, and content-item geometry across sidebars, main areas, and dialogs.",
       "publicExports": [],
       "useWhen": [
@@ -455,8 +457,6 @@
       "variants": [
         "toolbar + content",
         "toolbar + content + footer",
-        "rounded content item",
-        "pill content item",
         "hidden inline-start pane restored from main-toolbar leading",
         "hidden inline-end pane restored from main-toolbar trailing"
       ],
@@ -478,9 +478,6 @@
       "wiring": [],
       "publicClasses": [
         "kui-content",
-        "kui-content-item",
-        "kui-content-item--pill",
-        "kui-content-item--framed",
         "kui-control-cluster",
         "kui-inline-metadata",
         "kui-scroll-owner"
@@ -2982,6 +2979,97 @@
         "catalogRoute": "?component=list-inset-text",
         "documentation": "docs/component-selection.md",
         "recipe": "docs/component-selection.md#problem-to-component-matrix"
+      }
+    },
+    {
+      "id": "content-item",
+      "name": "ContentItem",
+      "category": "Structure",
+      "kind": "component",
+      "source": "kerf",
+      "description": "One self-contained content child with the shared 8px margin + 1px border + 8px padding geometry, a typed frame, and a rounded or pill shape.",
+      "uses": [],
+      "purpose": "Render one self-contained .kui-content child that owns its 8px inline margin, real 1px border, 8px padding, and radius, with framing and shape chosen by typed props instead of hand-written modifier classes.",
+      "publicExports": [
+        "ContentItem"
+      ],
+      "useWhen": [
+        "An ordinary surface-like child of a Pane or .kui-content stack needs the shared content-item geometry so its content edge lands at the standard 17px inset.",
+        "A content item marks a real distinction and must read as visibly bounded: pass frame=\"framed\" (the border is always reserved, so geometry does not change).",
+        "A content item should follow a pill control's 22px radius: pass shape=\"pill\"."
+      ],
+      "avoidWhen": [
+        "Do not wrap a component that already owns content-item geometry (ListItem, ListHeader, StateBanner, Toolbar, ValueTable) or pad around a ContentItem; either double-insets.",
+        "Do not frame an item only to make it look contained; hierarchy comes from alignment, spacing, and type first.",
+        "Do not use it as a filled or lowered card; use SunkenPanel for a lowered surface.",
+        "Do not use it for bare text alone; use ListInsetText, which adds the same inset without claiming a surface."
+      ],
+      "alternatives": [
+        {
+          "id": "list-inset-text",
+          "relationship": "nearest",
+          "when": "Use ListInsetText when bare text only needs to align with neighboring content items."
+        },
+        {
+          "id": "sunken-panel",
+          "relationship": "nearest",
+          "when": "Use SunkenPanel for a lowered, filled surface around a vertical stack."
+        },
+        {
+          "id": "layout",
+          "relationship": "composes-with",
+          "when": "Place ContentItem children in a Pane or .kui-content stack, which owns the 24px major rhythm."
+        }
+      ],
+      "appOwns": [
+        "the item content",
+        "whether the item marks a real distinction that warrants a visible frame",
+        "corner shape",
+        "region semantics and accessible name",
+        "whether the item is a programmatic focus target"
+      ],
+      "variants": [
+        "unframed rounded item",
+        "framed rounded item",
+        "pill item",
+        "framed pill item",
+        "named focus-target region"
+      ],
+      "accessibility": [
+        "An ordinary item adds no role or name; pass ariaLabel only when the item is a distinct named region (it then renders role=\"region\").",
+        "focusTarget makes the item a programmatic focus target (tabindex=\"-1\", never a tab stop), such as a NavStack view's data-nav-focus target.",
+        "The frame is decorative and never the only signal of state."
+      ],
+      "geometry": {
+        "margin": "self",
+        "border": "self",
+        "padding": "self",
+        "notes": [
+          "The 1px border is always reserved and transparent unless frame=\"framed\", so framed and unframed items share the same geometry."
+        ]
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/content-item",
+        "manualCssImport": "@kerfjs/ui/content-item.css",
+        "sideEffects": [
+          "browser-condition-css"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-content-item",
+        "kui-content-item--pill",
+        "kui-content-item--framed"
+      ],
+      "publicTokens": [
+        "--kui-content-item-border",
+        "--kui-content-item-radius",
+        "--kui-content-item-background"
+      ],
+      "links": {
+        "catalogRoute": "?component=content-item",
+        "documentation": "docs/layout.md",
+        "recipe": "docs/layout.md#content-items"
       }
     },
     {
@@ -7152,7 +7240,8 @@
         "toolbar",
         "toolbar-control-group",
         "lucide-icon",
-        "layout"
+        "layout",
+        "content-item"
       ],
       "useWhen": [
         "A workspace sidebar needs the shared toolbar/content/footer pane model, 24px major section rhythm, and 44px row and utility-action targets."
@@ -7425,7 +7514,8 @@
         "row",
         "text",
         "lucide-icon",
-        "layout"
+        "layout",
+        "content-item"
       ],
       "useWhen": [
         "A flow drills from a list into detail and back on one pane, at any device size or inside a dialog."
@@ -7523,7 +7613,8 @@
         "toolbar-text",
         "value-table",
         "lucide-icon",
-        "layout"
+        "layout",
+        "content-item"
       ],
       "useWhen": [
         "A rail or drawer must collapse and expand outside a full Workbench shell, keeping the app's collapsed signals, sizes, and content while the wire owns toggle, focus, the compact overlay, and persistence."

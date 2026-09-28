@@ -3,6 +3,7 @@ import type { RecipeId } from '../recipes/loaders.js';
 import { ApplicationTabsDemo } from './application-tabs.js';
 import { BadgeDemo } from './badge.js';
 import { CollapsiblePanelDemo } from './collapsible-panel.js';
+import { ContentItemDemo } from './content-item.js';
 import { DisclosureArrowDemo } from './disclosure-arrow.js';
 import { DocumentBaselineDemo } from './document-baseline.js';
 import { EmptyStateDemo } from './empty-state.js';
@@ -67,6 +68,7 @@ export const demos = {
   'list-item': ListItemDemo,
   'list-inset-control': ListInsetControlDemo,
   'list-inset-text': ListInsetTextDemo,
+  'content-item': ContentItemDemo,
   'application-tabs': ApplicationTabsDemo,
   tabs: TabsDemo,
   'tab-bar': TabBarDemo,

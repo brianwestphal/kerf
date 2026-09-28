@@ -345,9 +345,10 @@ and do not type-check there. Never exchange these property grammars. List rows e
 `className`, public tokens, and semantic props instead of unrestricted `style`
 declarations.
 `.kui-content` gives major children 24px vertical separation.
-`.kui-content-item` gives one child 8px inline margin, a real 1px border,
-8px padding, and 12px corners; border and background may be transparent without
-changing geometry. `.kui-content-item--pill` selects the 22px radius.
+`ContentItem` (`@kerfjs/ui/content-item`, rendering `.kui-content-item`) gives
+one child 8px inline margin, a real 1px border, 8px padding, and 12px corners;
+the border stays transparent unless `frame="framed"`, so framing never changes
+geometry. `shape="pill"` selects the 22px radius.
 
 `ToolbarControlGroup` is the unit of toolbar organization, even for dormant
 text. Each group reserves `calc(2px + remify(42px))`, or 44px, with 8px between

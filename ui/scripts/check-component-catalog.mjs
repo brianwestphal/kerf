@@ -738,12 +738,23 @@ for (const entry of entries.filter(
   if (target !== `./dist/styles/${file}`)
     fail(`${entry.id} has stale generated CSS export ${String(target)}`);
   const css = await readFile(resolve(root, 'src', file), 'utf8');
+  // An aggregate stylesheet (layout.css imports pane.css and content-item.css)
+  // still delivers the shared tokens its imports consume, so presence checks
+  // follow local `@import`s; the exact-match check below stays per file.
+  const deliveredCss = [
+    css,
+    ...(await Promise.all(
+      [...css.matchAll(/@import\s+["']\.\/([a-z0-9-]+\.css)["']/g)].map(
+        (match) => readFile(resolve(root, 'src', match[1]), 'utf8'),
+      ),
+    )),
+  ].join('\n');
   for (const className of entry.publicClasses ?? []) {
     if (!css.includes(`.${className}`))
       fail(`${entry.id} names missing public class ${className}`);
   }
   for (const token of entry.publicTokens ?? []) {
-    if (!css.includes(token))
+    if (!deliveredCss.includes(token))
       fail(`${entry.id} names missing public token ${token}`);
   }
   if (entry.delivery.moduleImport) {

@@ -54,6 +54,7 @@ npm install @kerfjs/ui
 
 ```ts
 import { AppTab } from "@kerfjs/ui/app-tab";
+import { ContentItem } from "@kerfjs/ui/content-item";
 import { calc, pct, plus, rem, space } from "@kerfjs/ui/css-values";
 import { ListActionRow } from "@kerfjs/ui/list-action-row";
 import { Row } from "@kerfjs/ui/row";
@@ -206,6 +207,11 @@ and examples are in [`ui/docs/layout.md`](../../ui/docs/layout.md).
 Compose a dialog body as a `List` by default. Give a list-owned dialog
 `bodyInset="none"`, and wrap bare prose in `ListInsetText`; list rows and inset
 text then own one shared gutter instead of stacking dialog and child padding.
+
+Render an ordinary surface-like pane child as `ContentItem` rather than a
+hand-written `<div class="kui-content-item">`: pass `frame="framed"` only when
+the item marks a real distinction and `shape="pill"` for the 22px radius. It
+owns its whole 8/1/8 geometry, so never pad around it.
 
 The package keeps app policy outside components: wire emitted `data-action`
 hooks at the mount root, retain every disposer, and let the app own menu/tab

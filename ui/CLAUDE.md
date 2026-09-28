@@ -102,7 +102,7 @@ It is **not** for spacing (use the scale / content-item), sizing a component (us
 its props/tokens), giving something a heading (use the standard Toolbar +
 ToolbarText composition), laying out a
 toolbar (use Toolbar zones + groups), or making a region look contained (use a
-`.kui-content-item`, or nothing). If a diff is mostly `padding`/`margin`/`width`/
+`ContentItem`, or nothing). If a diff is mostly `padding`/`margin`/`width`/
 `height`/`border` on kerf elements, treat it as a smell and re-derive from the
 primitives.
 

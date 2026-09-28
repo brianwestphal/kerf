@@ -434,9 +434,6 @@
         "rootClass": "kui-content",
         "publicClasses": [
           "kui-content",
-          "kui-content-item",
-          "kui-content-item--pill",
-          "kui-content-item--framed",
           "kui-control-cluster",
           "kui-inline-metadata",
           "kui-scroll-owner"
@@ -2453,6 +2450,81 @@
         "rootClass": "kui-list-inset-text",
         "publicClasses": ["kui-list-inset-text"],
         "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
+      "key": "@kerfjs/ui:content-item",
+      "package": "@kerfjs/ui",
+      "id": "content-item",
+      "name": "ContentItem",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        { "id": "the item content", "owner": "application", "required": false },
+        {
+          "id": "whether the item marks a real distinction that warrants a visible frame",
+          "owner": "application",
+          "required": false
+        },
+        { "id": "corner shape", "owner": "application", "required": false },
+        {
+          "id": "region semantics and accessible name",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "whether the item is a programmatic focus target",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["structure"],
+        "geometry": {
+          "margin": "self",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "The 1px border is always reserved and transparent unless frame=\"framed\", so framed and unframed items share the same geometry."
+          ]
+        }
+      },
+      "accessibility": {
+        "obligations": [
+          "An ordinary item adds no role or name; pass ariaLabel only when the item is a distinct named region (it then renders role=\"region\").",
+          "focusTarget makes the item a programmatic focus target (tabindex=\"-1\", never a tab stop), such as a NavStack view's data-nav-focus target.",
+          "The frame is decorative and never the only signal of state."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-content-item",
+        "publicClasses": [
+          "kui-content-item",
+          "kui-content-item--pill",
+          "kui-content-item--framed"
+        ],
+        "publicTokens": [
+          "--kui-content-item-border",
+          "--kui-content-item-radius",
+          "--kui-content-item-background"
+        ]
       },
       "diagnostics": [],
       "provenance": {
