@@ -7,6 +7,7 @@ import {
 } from './extension-attributes.js';
 import { LoadingSpinner } from './loading-spinner.js';
 import { Skeleton } from './skeleton.js';
+import { withWordBreaks } from './word-breaks.js';
 
 const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-component',
@@ -177,7 +178,13 @@ export function ListActionRow({
         )}
         <span class="kui-list-action-row__label">
           <span class="kui-list-action-row__primary-label">
-            {placeholder ? <Skeleton width={em(9)} /> : label}
+            {placeholder ? (
+              <Skeleton width={em(9)} />
+            ) : multiline ? (
+              withWordBreaks(label)
+            ) : (
+              label
+            )}
           </span>
           {description && (
             <span class="kui-list-action-row__description">

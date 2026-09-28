@@ -118,6 +118,65 @@ for (const viewport of VIEWPORTS) {
     );
   });
 
+  test(`multiline Catalog sidebar entry breaks a long camelCase name at word boundaries at ${viewport.width}px`, async ({
+    page,
+  }) => {
+    await openRoute(page, 'list-item', viewport);
+    if (viewport.width < 600) {
+      await page.getByRole('button', { name: 'Show Kerf catalog' }).click();
+    }
+    const row = page
+      .locator(
+        '[data-catalog-section] .kui-list-item[data-multiline="true"]:has(.kui-list-item__status)',
+      )
+      .first();
+    await row.scrollIntoViewIfNeeded();
+    await expect(row).toBeVisible();
+    // The markup a multiline ListItem renders for a camelCase name: break
+    // opportunities at each word boundary. Every line must end on one of
+    // those words, never mid-word, while overflow-wrap stays the fallback.
+    const words = [
+      'Quick',
+      'Ticket',
+      'Composer',
+      'Board',
+      'Column',
+      'Header',
+      'Toolbar',
+    ];
+    const lines = await row.evaluate((element, parts) => {
+      const primary = element.querySelector<HTMLElement>(
+        '.kui-list-item__primary-label',
+      )!;
+      primary.innerHTML = parts.join('<wbr>');
+      const status = element.querySelector<HTMLElement>(
+        '.kui-list-item__status',
+      );
+      if (status) status.textContent = 'stable · beta';
+      const text = primary.textContent!;
+      const node = document.createTreeWalker(primary, NodeFilter.SHOW_TEXT);
+      // Walk the characters and group them by their line box.
+      const byLine = new Map<number, string>();
+      for (let current = node.nextNode(); current; current = node.nextNode()) {
+        const value = current.textContent ?? '';
+        for (let index = 0; index < value.length; index += 1) {
+          const range = document.createRange();
+          range.setStart(current, index);
+          range.setEnd(current, index + 1);
+          const top = Math.round(range.getBoundingClientRect().top);
+          byLine.set(top, (byLine.get(top) ?? '') + value[index]);
+        }
+      }
+      return { text, lines: [...byLine.values()] };
+    }, words);
+    expect(lines.text).toBe(words.join(''));
+    expect(lines.lines.length).toBeGreaterThan(1);
+    for (const line of lines.lines) {
+      // Each line is a run of whole words.
+      expect(line).toMatch(new RegExp(`^(${words.join('|')})+$`));
+    }
+  });
+
   test(`multiline Catalog sidebar entry wraps a long single-word name before its status at ${viewport.width}px`, async ({
     page,
   }) => {

@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` multiline list rows break long camelCase names at word
+  boundaries.** A string label in a `multiline` `ListItem` or `ListActionRow`
+  (such as a Catalog sidebar entry) gets `<wbr>` break opportunities at its
+  camelCase and acronym boundaries, so `QuickTicketComposer` wraps as
+  `QuickTicket` / `Composer` instead of `QuickTicketComp` / `oser`. Breaking
+  mid-word remains the fallback for a single word that is still too wide.
+- **`wbr` is a typed JSX intrinsic element.** The runtime already rendered it
+  as a void element; `JSX.IntrinsicElements` now declares it.
+
 - **`@kerfjs/ui` `Badge` has a text-free dot, and `TabScaffold` tabs can show
   it.** `Badge` takes `size="dot"`: an 8px solid circle in the badge's tone,
   with no children, appearance, or shape. Because a dot has no text, its props

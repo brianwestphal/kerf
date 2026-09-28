@@ -262,7 +262,11 @@ primary label should wrap rather than truncate. A single-line row ends its
 primary label and description with an ellipsis before the trailing status
 slot, even when the label is one long word; a `multiline` row wraps instead,
 breaking a word wider than the label column (a long component or file name)
-rather than letting it run under the trailing slot. `ListActionRow` labels
+rather than letting it run under the trailing slot. A string label in a
+`multiline` row gets line-break opportunities at its camelCase and acronym
+boundaries, so `QuickTicketComposer` wraps as `QuickTicket` / `Composer`
+rather than mid-word; breaking anywhere is only the last resort for a single
+word that is still too wide. The text and accessible name are unchanged. `ListActionRow` labels
 follow the same single-line and `multiline` rules before the trailing action.
 
 `DisclosureArrow` uses an 18px root-scaled visual by default. Pass its typed

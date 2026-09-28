@@ -976,6 +976,7 @@ export interface KerfBuiltinIntrinsicElements {
   p: KerfBaseAttrs;
   hr: KerfBaseAttrs;
   br: KerfBaseAttrs;
+  wbr: KerfBaseAttrs;
   pre: KerfBaseAttrs;
   blockquote: HTMLBlockquoteAttrs;
   q: HTMLQAttrs;

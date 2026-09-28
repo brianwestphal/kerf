@@ -5,6 +5,7 @@ import { filterDataAttributes } from './extension-attributes.js';
 import { LoadingSpinner } from './loading-spinner.js';
 import type { KerfUiContent } from './semantic-content.js';
 import { Skeleton } from './skeleton.js';
+import { withWordBreaks } from './word-breaks.js';
 
 const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-component',
@@ -132,7 +133,13 @@ export function ListItem({
       )}
       <span class="kui-list-item__label">
         <span class="kui-list-item__primary-label">
-          {placeholder ? <Skeleton width={em(9)} /> : label}
+          {placeholder ? (
+            <Skeleton width={em(9)} />
+          ) : multiline ? (
+            withWordBreaks(label)
+          ) : (
+            label
+          )}
         </span>
         {description && (
           <span class="kui-list-item__description">
