@@ -179,15 +179,24 @@
   > *::before {
   content: "\200b";
 }
+/* The clip lives on an inner span, not on the detail itself. WebKit still
+   applies the CSS 2.1 rule that an inline-block whose overflow is not
+   `visible` takes its baseline from its bottom margin edge, so a clipped
+   inline-block detail rose off the title's baseline there and pushed the
+   title and badge down. An inline flex container's baseline is its first
+   item's text baseline in every engine, whatever that item's overflow. */
 .kui-state-banner__detail {
-  display: inline-block;
+  display: inline-flex;
   max-width: 100%;
-  overflow: clip;
   color: var(--_kui-state-banner-detail);
   font-size: var(--kui-font-2xs);
-  text-overflow: ellipsis;
   vertical-align: baseline;
   white-space: nowrap;
+}
+.kui-state-banner__detail > span {
+  min-width: 0;
+  overflow: clip;
+  text-overflow: ellipsis;
 }
 .kui-state-banner__action {
   justify-self: end;
@@ -216,6 +225,6 @@
      relationship: a content-sized badge one item gap after the title, on the
      title's baseline. */
   .kui-state-banner__detail {
-    display: block;
+    display: flex;
   }
 }

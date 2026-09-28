@@ -1597,7 +1597,7 @@ describe('production UI primitives', () => {
       'data-component="badge" data-tone="danger" data-appearance="solid" data-shape="pill" data-size="compact">3</span>',
     );
     expect(banner).toContain(
-      'class="kui-state-banner__detail">Reconnect</span>',
+      'class="kui-state-banner__detail"><span>Reconnect</span></span>',
     );
     expect(asHtml(StateBanner({ title: 'Ready' }))).toContain(
       'data-tone="info" role="status" aria-live="polite"',

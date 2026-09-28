@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui`'s `StateBanner` keeps its title, badge, and detail on one
+  baseline in Safari.** The truncating detail was a clipped `inline-block`,
+  which WebKit baselines at its bottom edge: the detail rose about 2px above
+  the title and pushed the title and badge down, so the banner's contents
+  looked vertically misaligned. The detail is now an inline flex wrapper
+  around a clipped inner `<span>`, which takes its text baseline in every
+  engine; truncation and the narrow-width detail line are unchanged.
+
 - **`@kerfjs/ui`'s `wireTabBars` reveals a tab the application selects.** A
   tab added and selected by the app in an overflowing `TabBar` stayed
   off-screen, because the wiring revealed a selection only at wire-up, on

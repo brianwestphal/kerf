@@ -64,7 +64,7 @@ export function StateBanner({
         )}
         {detail && (
           <span class="kui-state-banner__detail">
-            {placeholder ? <Skeleton width={em(16)} /> : detail}
+            <span>{placeholder ? <Skeleton width={em(16)} /> : detail}</span>
           </span>
         )}
       </div>

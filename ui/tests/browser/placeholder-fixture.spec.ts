@@ -490,6 +490,8 @@ for (const width of [1280, 390]) {
         const detailElement = wrapper.querySelector<HTMLElement>(
           '.kui-state-banner__detail',
         )!;
+        const detailText =
+          detailElement.querySelector<HTMLElement>(':scope > span')!;
         const detail = detailElement.getBoundingClientRect();
         return {
           titleLineCount: titleLineTops.size,
@@ -502,8 +504,7 @@ for (const width of [1280, 390]) {
           detailLeftOffset: Math.round(detail.left - copy.left),
           detailWidth: Math.round(detail.width),
           copyWidth: Math.round(copy.width),
-          detailTruncated:
-            detailElement.scrollWidth > detailElement.clientWidth,
+          detailTruncated: detailText.scrollWidth > detailText.clientWidth,
         };
       });
     // The badge follows the title's last word by one item gap, on that line,
