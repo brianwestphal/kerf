@@ -371,7 +371,11 @@ included). A private, bundled application
 alone — no `subpath`, so no placeholder `exports` map pointing at `dist/` files
 that its bundle never emits — and the generator verifies each name against the
 component's `source` file instead. A publishable package still needs every
-subpath in `exports`. A zone accepts the wrapper only if it accepts **every**
+subpath in `exports`. `package.json#private: true` is the only opt-in
+(decided in KF-KDFYME: a profile's `scope` and a separate manifest flag were
+considered and rejected, since `private` already states that the package is
+never imported by name): an application that is published, or whose manifest
+omits `private`, declares real subpaths or sets `"private": true`. A zone accepts the wrapper only if it accepts **every**
 declared root; each root's parent contract applies wherever the wrapper is
 placed; and a wrapper used as a parent counts as its roots. A wrapper without
 `rendersAs` keeps the unknown-element behavior (`KUI-L202`).

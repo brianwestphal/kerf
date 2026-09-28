@@ -66,6 +66,10 @@ A ready-to-publish component package that encodes the rules from the kerf docs
   (`{ "name": "DemandSegmentsControl" }`); the checker then verifies the name
   against the component's `source` file, which is how the UI lint resolves the
   wrapper. A subpath it does declare is still checked against `exports`.
+  `private: true` is the only opt-in: a `.kerf-ui-profile.json` `scope` does
+  not change this. An application that is published to npm (an app shell), or
+  whose manifest omits `private`, either declares a real `subpath` for each
+  item or sets `"private": true`.
 
 ## Layout produced
 
