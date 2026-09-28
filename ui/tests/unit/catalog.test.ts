@@ -497,6 +497,7 @@ describe('UX catalog metadata', () => {
       'TokenSearchField',
       'ResizableRegion',
       'Select',
+      'PopupMenu',
       'StateBanner',
       'EmptyState',
       'LoadingSpinner',

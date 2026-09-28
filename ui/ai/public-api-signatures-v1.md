@@ -351,6 +351,82 @@ declare function FloatingToolbar({ children, label, position, className, slot, }
 export { FloatingToolbar, type FloatingToolbarPosition, type FloatingToolbarProps };
 ```
 
+## `@kerfjs/ui/popup-menu`
+
+```ts
+import { SafeHtml } from 'kerfjs';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+
+type PopupMenuPlacement = 'bottom-start' | 'bottom' | 'bottom-end' | 'top-start' | 'top' | 'top-end';
+type PopupMenuDataAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-action'?: never;
+    'data-component'?: never;
+    'data-key'?: never;
+    'data-morph-skip-children'?: never;
+}>;
+/** One command in the menu. */
+interface PopupMenuItem {
+    kind?: 'item';
+    label: string;
+    /** Delegated `data-action` the app handles when the item is chosen. */
+    action?: string;
+    /** Native `wa-dropdown-item` value, reported by its `wa-select` event. */
+    value?: string;
+    /** Leading icon, typically a `LucideIcon`; it is placed in the item's icon slot. */
+    icon?: SafeHtml;
+    disabled?: boolean;
+    /** Application `data-*` metadata such as a record id. */
+    attributes?: PopupMenuDataAttributes;
+}
+/** A labeled group heading; items that follow it belong to the group. */
+interface PopupMenuHeading {
+    kind: 'heading';
+    label: string;
+}
+/** A separator between groups of items. */
+interface PopupMenuDivider {
+    kind: 'divider';
+}
+type PopupMenuEntry = PopupMenuItem | PopupMenuHeading | PopupMenuDivider;
+type PopupMenuTriggerName = {
+    /** Visible trigger text, which is also its accessible name. */
+    text: string;
+    label?: never;
+} | {
+    text?: never;
+    /**
+     * Accessible name of an icon-only trigger, rendered as visually hidden
+     * slotted text (a Web Awesome button takes its name from its content).
+     */
+    label: string;
+};
+type PopupMenuProps = PopupMenuTriggerName & {
+    /** Trigger icon, typically a `LucideIcon`, before any visible text. */
+    icon?: KerfUiContent;
+    items: readonly PopupMenuEntry[];
+    /** Where the menu opens relative to its trigger. Defaults to `bottom-start`. */
+    placement?: PopupMenuPlacement;
+    /** Show the disclosure caret after the trigger content. Defaults to true. */
+    caret?: boolean;
+    disabled?: boolean;
+    /** Application `data-*` metadata on the menu root. */
+    rootAttributes?: PopupMenuDataAttributes;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+};
+/**
+ * An action menu: a trigger button that opens a list of commands. Renders the
+ * `wa-dropdown` root directly, so a `single` `ToolbarControlGroup` (with
+ * `nestedDropdown`) or a `PopupSurface` sizes and insets it as usual. Items
+ * dispatch through delegated `data-action`s; the app owns the commands and any
+ * open-state reaction. Import `@kerfjs/ui/popup-menu/register` once to register
+ * the Web Awesome elements.
+ */
+declare function PopupMenu({ text, label, icon, items, placement, caret, disabled, rootAttributes, slot, }: PopupMenuProps): SafeHtml;
+
+export { PopupMenu, type PopupMenuDivider, type PopupMenuEntry, type PopupMenuHeading, type PopupMenuItem, type PopupMenuPlacement, type PopupMenuProps };
+```
+
 ## `@kerfjs/ui/list-header`
 
 ```ts

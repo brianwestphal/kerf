@@ -184,6 +184,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `ToolbarControlGroup`, `ToolbarActionLink`                          | `@kerfjs/ui/toolbar-control-group`      | `@kerfjs/ui/toolbar-control-group.css` |
 | `DialogSurface`, `PopupSurface`                                     | `@kerfjs/ui/surface-scaffold`           | `@kerfjs/ui/surface-scaffold.css`      |
 | `FloatingToolbar`                                                   | `@kerfjs/ui/floating-toolbar`           | `@kerfjs/ui/floating-toolbar.css`      |
+| `PopupMenu` (register with `@kerfjs/ui/popup-menu/register`)        | `@kerfjs/ui/popup-menu`                 | `@kerfjs/ui/popup-menu.css`            |
 | `ToolbarText`                                                       | `@kerfjs/ui/toolbar-text`               | `@kerfjs/ui/toolbar-text.css`          |
 | `Text`                                                              | `@kerfjs/ui/text`                       | `@kerfjs/ui/text.css`                  |
 | `List`                                                              | `@kerfjs/ui/list`                       | `@kerfjs/ui/list.css`                  |
@@ -246,7 +247,7 @@ onto another trailing-aligned row under every `responsive` policy, and a
 same way. Wrapping keeps every command visible at its full 44px target without
 moving focus or DOM identity. When a product wants fewer visible commands at
 narrow widths, it chooses them: render a lower-priority command inside an
-app-owned "More" popup menu (a `single` group around a `wa-dropdown`).
+app-owned "More" `PopupMenu` (in a `single` group with `nestedDropdown`).
 
 `DisclosureArrow` defaults to an 18px root-scaled decorative visual. Override
 `--kui-disclosure-arrow-size` at the narrowest useful scope when a consumer
@@ -645,7 +646,7 @@ import "@kerfjs/ui/webawesome.css";
 import "@kerfjs/ui/select/register";
 ```
 
-That boundary keeps Web Awesome and its custom-element side effects out of bundles that use unrelated components. Automated consumer-bundle tests enforce it.
+That boundary keeps Web Awesome and its custom-element side effects out of bundles that use unrelated components. Automated consumer-bundle tests enforce it. `PopupMenu` follows the same rule: import `@kerfjs/ui/popup-menu/register` once to register the dropdown, item, button, and divider elements it renders.
 Use `label` for a visible label or `ariaLabel` for a visually hidden name. A
 nonempty visible label takes precedence when both are supplied. Kerf names the
 actual shadow combobox without adding visible label spacing; this also works

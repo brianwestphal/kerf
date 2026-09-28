@@ -359,9 +359,8 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
   // The highlight lives on the wa-button's shadow `base` part. An icon-only
   // button must not render it as a vertical oval: its width must be >= its
   // height (a circle at the 40px default), while a caret button grows wider.
-  const basePart = (sel: string) =>
-    page
-      .locator(sel)
+  const basePart = (sel: string | Locator) =>
+    (typeof sel === 'string' ? page.locator(sel) : sel)
       .first()
       .evaluate((host) => {
         const base = (
@@ -377,7 +376,11 @@ test('keeps an icon-only control-group wa-button highlight at least square (min-
   expect(favorite!.w).toBeGreaterThanOrEqual(favorite!.h); // square or wider, never a vertical oval
   expect(favorite!.w).toBe(favorite!.h); // icon-only settles to a circle
 
-  const sort = await basePart('wa-button[aria-label="Sort tickets"]');
+  const sort = await basePart(
+    page
+      .locator('wa-button[slot="trigger"]')
+      .filter({ hasText: 'Sort tickets' }),
+  );
   expect(sort!.w).toBeGreaterThan(sort!.h); // caret content grows past the square floor
 
   if (browserName === 'chromium') {
@@ -6259,7 +6262,10 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
   expect(originalFirstItem).not.toBeNull();
   expect(originalLastItem).not.toBeNull();
   await expect(dropdownItems.first()).toBeHidden();
-  await demo.locator('wa-button[aria-label="Sort tickets"]').click();
+  await demo
+    .locator('wa-button[slot="trigger"]')
+    .filter({ hasText: 'Sort tickets' })
+    .click();
   await expect(dropdownItems.first()).toBeVisible();
   await dropdownItems.filter({ hasText: 'Priority' }).click();
   await expect(page.locator('.catalog-log')).toHaveText('Sorted by priority');
@@ -6396,7 +6402,9 @@ test('intrinsically sizes popup, compact mixed, and catalog dropdown content acr
     }
   };
 
-  const popupTrigger = demo.locator('wa-button[aria-label="Sort tickets"]');
+  const popupTrigger = demo
+    .locator('wa-button[slot="trigger"]')
+    .filter({ hasText: 'Sort tickets' });
   const relatedTrigger = page
     .locator('[data-catalog-related]')
     .locator('wa-button[slot="trigger"]');

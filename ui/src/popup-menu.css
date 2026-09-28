@@ -1,0 +1,12 @@
+/* An icon-only trigger's accessible name: Web Awesome names its button from the
+   slotted content, so the label is present but visually hidden. */
+.kui-popup-menu__label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}

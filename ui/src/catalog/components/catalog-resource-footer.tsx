@@ -1,7 +1,7 @@
-import type { SafeHtml } from 'kerfjs';
 import { ExternalLink, Waypoints } from 'lucide';
 
 import { LucideIcon } from '../../lucide-icon.js';
+import { PopupMenu, type PopupMenuEntry } from '../../popup-menu.js';
 import { Row } from '../../row.js';
 import type { KerfUiContent } from '../../semantic-content.js';
 import { Toolbar } from '../../toolbar.js';
@@ -13,7 +13,6 @@ import type { CatalogRelated, CatalogResource } from '../types.js';
 
 interface CatalogResourceFooterProps {
   name: string;
-  active: string;
   resources: readonly CatalogResource[];
   related: readonly CatalogRelated[];
   status?: KerfUiContent;
@@ -23,32 +22,29 @@ interface CatalogResourceFooterProps {
 function relatedMenuItems(
   related: readonly CatalogRelated[],
   selectAction: string,
-): SafeHtml[] {
+): PopupMenuEntry[] {
   const groups: string[] = [];
   for (const entry of related)
     if (!groups.includes(entry.group)) groups.push(entry.group);
 
-  const nodes: SafeHtml[] = [];
+  const items: PopupMenuEntry[] = [];
   groups.forEach((group, index) => {
-    if (index > 0) nodes.push(<wa-divider></wa-divider>);
-    // Web Awesome styles a slotted heading as a menu group label.
-    nodes.push(<h3>{group}</h3>);
-    for (const entry of related) {
+    if (index > 0) items.push({ kind: 'divider' });
+    items.push({ kind: 'heading', label: group });
+    for (const entry of related)
       if (entry.group === group)
-        nodes.push(
-          <wa-dropdown-item data-action={selectAction} data-item-id={entry.id}>
-            {entry.name}
-          </wa-dropdown-item>,
-        );
-    }
+        items.push({
+          label: entry.name,
+          action: selectAction,
+          attributes: { 'data-item-id': entry.id },
+        });
   });
-  return nodes;
+  return items;
 }
 
 /** Status, resources, and related-entry navigation for the active specimen. */
 export function CatalogResourceFooter({
   name,
-  active,
   resources,
   related,
   status,
@@ -103,18 +99,13 @@ export function CatalogResourceFooter({
               size="compact"
               label="Related entries"
             >
-              <wa-dropdown
+              <PopupMenu
+                text="Components"
+                icon={<LucideIcon icon={Waypoints} name="waypoints" />}
                 placement="top-end"
-                data-key={`kui-catalog-related-${active}`}
-                data-catalog-related
-                data-morph-skip-children
-              >
-                <wa-button slot="trigger" appearance="plain" with-caret>
-                  <LucideIcon icon={Waypoints} name="waypoints" />
-                  <span>Components</span>
-                </wa-button>
-                {relatedMenuItems(related, selectAction)}
-              </wa-dropdown>
+                items={relatedMenuItems(related, selectAction)}
+                rootAttributes={{ 'data-catalog-related': '' }}
+              />
             </ToolbarControlGroup>
           ) : null
         }

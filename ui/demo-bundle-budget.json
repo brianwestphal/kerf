@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 293100,
-  "measuredLargestJavaScriptGzip": 145185,
-  "measuredTotalJavaScriptGzip": 293032,
+  "totalJavaScriptGzip": 293800,
+  "measuredLargestJavaScriptGzip": 145293,
+  "measuredTotalJavaScriptGzip": 293701,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -819,6 +819,38 @@
         "measuredTotalJavaScriptGzip": 293032,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 293100
+      }
+    },
+    {
+      "at": "2026-09-28T06:26:00.323Z",
+      "reason": "KF-TKVKP2 adds the PopupMenu catalog page",
+      "old": {
+        "measuredLargestJavaScriptGzip": 145185,
+        "measuredTotalJavaScriptGzip": 293032,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 293100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 144993,
+        "measuredTotalJavaScriptGzip": 293368,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 293400
+      }
+    },
+    {
+      "at": "2026-09-28T06:39:58.606Z",
+      "reason": "KF-TKVKP2 adds the PopupMenu catalog page, hidden-label CSS, and keyboard routing",
+      "old": {
+        "measuredLargestJavaScriptGzip": 144993,
+        "measuredTotalJavaScriptGzip": 293368,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 293400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 145293,
+        "measuredTotalJavaScriptGzip": 293701,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 293800
       }
     }
   ]

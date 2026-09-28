@@ -81,6 +81,15 @@ export {
   type PaneSeparatorSide,
 } from './pane.js';
 export {
+  PopupMenu,
+  type PopupMenuDivider,
+  type PopupMenuEntry,
+  type PopupMenuHeading,
+  type PopupMenuItem,
+  type PopupMenuPlacement,
+  type PopupMenuProps,
+} from './popup-menu.js';
+export {
   clampRegionSize,
   ResizableRegion,
   type ResizableRegionAxis,

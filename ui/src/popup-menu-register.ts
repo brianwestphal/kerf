@@ -1,0 +1,17 @@
+import '@awesome.me/webawesome/dist/components/button/button.js';
+import '@awesome.me/webawesome/dist/components/divider/divider.js';
+import '@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js';
+
+import WaDropdown from '@awesome.me/webawesome/dist/components/dropdown/dropdown.js';
+
+import { installPopupMenuKeyboard } from './install-popup-menu-keyboard.js';
+
+installPopupMenuKeyboard(WaDropdown.prototype);
+
+/**
+ * Marker export for tests and tooling; importing this module registers the
+ * Web Awesome elements a `PopupMenu` renders (`wa-dropdown`,
+ * `wa-dropdown-item`, `wa-button`, and `wa-divider`) and routes a keyboard
+ * choice through the item's click so delegated `data-action`s run.
+ */
+export const popupMenuElementsRegistered = true;

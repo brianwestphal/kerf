@@ -45,9 +45,9 @@ expanded? }`. When `collapsible`, the label is a disclosure toggle controlling
   sidebar content), and `status` (a footer status line).
 
 Per-entry `resources` render as "open in new tab" links in the footer, and
-`related` renders a "Related entries" popup menu — a `single` `ToolbarControlGroup`
-around a `wa-dropdown` (grouped by each entry's `group`), so register its elements
-with `@kerfjs/ui/select/register` when you use it.
+`related` renders a "Related entries" `PopupMenu` in a `single`
+`ToolbarControlGroup` (grouped by each entry's `group`), so register its elements
+with `@kerfjs/ui/popup-menu/register` when you use it.
 
 ## Catalog demo authoring contract
 

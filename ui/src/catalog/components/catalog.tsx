@@ -140,7 +140,6 @@ export function Catalog({
         mainFooter={
           <CatalogResourceFooter
             name={name}
-            active={active}
             resources={selected?.resources ?? []}
             related={selected?.related ?? []}
             status={status}

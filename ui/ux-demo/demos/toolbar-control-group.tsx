@@ -1,5 +1,6 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { SegmentedControl } from '@kerfjs/ui/segmented-control';
 import { Select } from '@kerfjs/ui/select';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
@@ -113,22 +114,14 @@ export function ToolbarControlGroupDemo() {
           nestedDropdown
           menuInset="compact"
         >
-          <wa-dropdown placement="bottom-start" data-morph-skip-children>
-            <wa-button
-              slot="trigger"
-              appearance="plain"
-              with-caret
-              aria-label="Sort tickets"
-            >
-              <LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />
-            </wa-button>
-            <wa-dropdown-item data-action="sort-recent">
-              Recently updated
-            </wa-dropdown-item>
-            <wa-dropdown-item data-action="sort-priority">
-              Priority
-            </wa-dropdown-item>
-          </wa-dropdown>
+          <PopupMenu
+            label="Sort tickets"
+            icon={<LucideIcon icon={ArrowDownAZ} name="arrow-down-a-z" />}
+            items={[
+              { label: 'Recently updated', action: 'sort-recent' },
+              { label: 'Priority', action: 'sort-priority' },
+            ]}
+          />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Action link" align="inline-control">
@@ -181,17 +174,11 @@ export function ToolbarControlGroupDemo() {
             selectedPresentation="icon-only"
             choices={sortChoices}
           />
-          <wa-dropdown placement="bottom-start" data-morph-skip-children>
-            <wa-button
-              slot="trigger"
-              appearance="plain"
-              with-caret
-              aria-label="More actions"
-            >
-              <LucideIcon icon={MoreHorizontal} name="ellipsis" />
-            </wa-button>
-            <wa-dropdown-item data-action="log-more">Archive</wa-dropdown-item>
-          </wa-dropdown>
+          <PopupMenu
+            label="More actions"
+            icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+            items={[{ label: 'Archive', action: 'log-more' }]}
+          />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Single button" align="inline-control">
@@ -282,12 +269,7 @@ export function ToolbarControlGroupDemo() {
           <button type="button" aria-pressed="true">
             <LucideIcon icon={Star} name="star" /> Favorite
           </button>
-          <wa-dropdown placement="bottom-start" data-morph-skip-children>
-            <wa-button slot="trigger" appearance="plain" with-caret>
-              More
-            </wa-button>
-            <wa-dropdown-item>Archive</wa-dropdown-item>
-          </wa-dropdown>
+          <PopupMenu text="More" items={[{ label: 'Archive' }]} />
         </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample label="Avatar profile" align="inline-control">

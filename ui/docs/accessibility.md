@@ -35,7 +35,7 @@ Use `presentation="toolbar-borderless"` inside a `ToolbarControlGroup`, with
 parent paints the composed focus ring. `selectedPresentation="icon-only"` hides
 only the visible selected label—the required `label` or `ariaLabel` still names
 the combobox. An icon-only trigger keeps its disclosure caret: the selected icon
-and caret form one pill with the same geometry as a popup-menu `wa-dropdown`
+and caret form one pill with the same geometry as a `PopupMenu`
 trigger (8px inline padding on both sides, 12px from the icon to the caret, a
 40px default or 32px compact control height), so the caret still signals a
 choice list. Inside a group the trigger is inset evenly on every side (2px in a
@@ -80,6 +80,17 @@ without the canonical `data-component="select"` marker are unchanged.
 repeated and out-of-order completions, cancellation, instance isolation, and
 removal. `tests/browser/select-lifecycle.spec.ts` repeats animation/resize/reopen
 sequences at wide and narrow widths in Chromium, Firefox, and WebKit.
+
+## PopupMenu
+
+`PopupMenu` renders a Web Awesome dropdown, so the menu roles, arrow-key and
+typeahead navigation, Escape, and focus return to the trigger come from
+`wa-dropdown`. Kerf's part is the trigger's name. A Web Awesome button takes its
+name from its content and ignores an `aria-label` on the host, so an icon-only
+trigger requires `label`, which renders as visually hidden text inside the
+button; a trigger with visible `text` is named by that text. Group headings render as the dropdown's native menu labels, and
+dividers are presentational. A disabled item stays in the menu but cannot be
+chosen; disable the whole trigger only when every command is unavailable.
 
 ## ListActionRow
 

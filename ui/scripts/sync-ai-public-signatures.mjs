@@ -17,6 +17,7 @@ const curatedEntries = [
   ['@kerfjs/ui/toolbar-text', 'dist/toolbar-text.d.ts'],
   ['@kerfjs/ui/toolbar-control-group', 'dist/toolbar-control-group.d.ts'],
   ['@kerfjs/ui/floating-toolbar', 'dist/floating-toolbar.d.ts'],
+  ['@kerfjs/ui/popup-menu', 'dist/popup-menu.d.ts'],
   ['@kerfjs/ui/list-header', 'dist/list-header.d.ts'],
   ['@kerfjs/ui/list', 'dist/list.d.ts'],
   ['@kerfjs/ui/list-action-row', 'dist/list-action-row.d.ts'],

@@ -1,6 +1,7 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
 import { ListInsetText } from '@kerfjs/ui/list-inset-text';
+import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { DialogSurface, PopupSurface } from '@kerfjs/ui/surface-scaffold';
 
 export function SurfaceScaffoldDemo() {
@@ -38,13 +39,10 @@ export function SurfaceScaffoldDemo() {
       </CatalogExample>
       <CatalogExample label="Zero-inset list popup" align="inline-control">
         <PopupSurface inset="list-zero">
-          <wa-dropdown>
-            <wa-button slot="trigger" with-caret>
-              Choose view
-            </wa-button>
-            <wa-dropdown-item>Inbox</wa-dropdown-item>
-            <wa-dropdown-item>Archive</wa-dropdown-item>
-          </wa-dropdown>
+          <PopupMenu
+            text="Choose view"
+            items={[{ label: 'Inbox' }, { label: 'Archive' }]}
+          />
         </PopupSurface>
       </CatalogExample>
     </CatalogExampleStack>

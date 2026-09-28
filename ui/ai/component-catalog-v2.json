@@ -3057,6 +3057,62 @@
       }
     },
     {
+      "key": "@kerfjs/ui:popup-menu",
+      "package": "@kerfjs/ui",
+      "id": "popup-menu",
+      "name": "PopupMenu",
+      "kind": "component",
+      "source": "kerf",
+      "parents": { "mode": "any", "entries": [] },
+      "contexts": ["application-ui"],
+      "zones": [],
+      "children": { "mode": "any", "concepts": [], "requiredConcepts": [] },
+      "state": [
+        {
+          "id": "commands and their delegated actions",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "which items are enabled",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "reactions to the menu opening or closing",
+          "owner": "application",
+          "required": false
+        }
+      ],
+      "wiring": {
+        "required": false,
+        "helpers": [],
+        "obligations": [],
+        "stateAttributes": []
+      },
+      "responsive": { "owner": "not-applicable", "behaviors": [] },
+      "layout": {
+        "roles": ["controls"],
+        "geometry": { "margin": "none", "border": "child", "padding": "child" }
+      },
+      "accessibility": {
+        "obligations": [
+          "An icon-only trigger requires label, rendered as visually hidden slotted text because a Web Awesome button takes its accessible name from its content; a trigger with visible text is named by that text. Web Awesome provides menu roles, arrow-key navigation, typeahead, and Escape."
+        ]
+      },
+      "cssValueProps": [],
+      "boundaries": {
+        "rootClass": "kui-popup-menu",
+        "publicClasses": ["kui-popup-menu", "kui-popup-menu__label"],
+        "publicTokens": []
+      },
+      "diagnostics": [],
+      "provenance": {
+        "selection": "ai/component-catalog.json",
+        "composition": "generated-permissive-default"
+      }
+    },
+    {
       "key": "@kerfjs/ui:feedback",
       "package": "@kerfjs/ui",
       "id": "feedback",

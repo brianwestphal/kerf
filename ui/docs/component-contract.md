@@ -356,8 +356,8 @@ stay inside the available toolbar width. Set `visibility="compact-only"` for a
 group that replaces wider toolbar controls below the Toolbar's compact container
 breakpoint; do not hide the group with an application class. Reach for
 `wa-button` only when you need
-a Web Awesome feature, chiefly the `slot="trigger"` button of a `wa-dropdown`
-popup menu. For a compact mixed-content group, set `nestedDropdown`; a
+a Web Awesome feature; a popup menu is a `PopupMenu`, which renders its own
+trigger. For a compact mixed-content group, set `nestedDropdown`; a
 text-and-caret trigger grows to its intrinsic width while an icon-only trigger
 can remain square. A compact icon `<button>` is a 32px circle, so a selected
 compact segment never becomes an oval. An icon-only `Select` joins a group as

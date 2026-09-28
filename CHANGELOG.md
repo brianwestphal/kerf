@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **New `@kerfjs/ui` `PopupMenu` (`@kerfjs/ui/popup-menu`).** It renders a
+  trigger and typed commands, headings, and dividers over the Web Awesome
+  dropdown. Put it in a `single` `ToolbarControlGroup` with `nestedDropdown`, or
+  wrap it in a `PopupSurface`. Register it once with
+  `@kerfjs/ui/popup-menu/register`. It replaces hand-written `wa-dropdown`
+  markup, which the catalog discourages: the guidance, the toolbar demos, and
+  the Catalog's "Components" menu now use it. It also fixes two defects that
+  hand-written menus had:
+  - Icon-only triggers were unnamed, because a Web Awesome button ignores an
+    `aria-label` on its host. PopupMenu renders `label` as visually hidden text
+    inside the button.
+  - A keyboard choice (Enter or Space) never reached click-delegated
+    `data-action` handlers. PopupMenu's registration routes it through the
+    item's click.
+- The UX catalog's application-layout demo no longer uses the discouraged
+  `wa-button-group`.
+
 - **`@kerfjs/ui`'s `TokenSearchField` takes a `revision` prop for programmatic
   text replacement.** The editor's text is DOM-owned, so a new `query` with the
   same tokens was silently ignored, for example when reseeding a persistent

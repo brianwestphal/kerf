@@ -18,7 +18,11 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['src/index.ts', 'src/select-register.ts'],
+      exclude: [
+        'src/index.ts',
+        'src/select-register.ts',
+        'src/popup-menu-register.ts',
+      ],
       thresholds: {
         lines: 100,
         functions: 100,

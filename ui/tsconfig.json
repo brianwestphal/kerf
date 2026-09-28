@@ -24,6 +24,7 @@
       "kerfjs/jsx-runtime": ["../src/jsx-runtime.ts"],
       "@kerfjs/ui": ["./src/index.ts"],
       "@kerfjs/ui/select/register": ["./src/select-register.ts"],
+      "@kerfjs/ui/popup-menu/register": ["./src/popup-menu-register.ts"],
       "@kerfjs/ui/*": ["./src/*"]
     },
     "types": ["node", "vitest/globals"],

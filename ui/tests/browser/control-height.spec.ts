@@ -43,7 +43,9 @@ test('small buttons and toolbar-group buttons keep their own control heights', a
   expect(await visualHeight(small)).toBeLessThan(40);
 
   await page.goto('/?component=toolbar-control-group');
-  const trigger = page.locator('wa-button[aria-label="Sort tickets"]');
+  const trigger = page
+    .locator('wa-button[slot="trigger"]')
+    .filter({ hasText: 'Sort tickets' });
   await expect(trigger).toBeVisible();
   expect(await visualHeight(trigger)).toBeCloseTo(40, 0);
   const compact = page

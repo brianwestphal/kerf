@@ -3691,6 +3691,85 @@
       }
     },
     {
+      "id": "popup-menu",
+      "name": "PopupMenu",
+      "category": "Controls",
+      "kind": "component",
+      "source": "kerf",
+      "description": "A trigger button that opens a typed list of commands, built on the Web Awesome dropdown.",
+      "uses": [
+        "wa-dropdown",
+        "wa-dropdown-item",
+        "wa-button",
+        "wa-divider"
+      ],
+      "purpose": "A trigger button that opens a typed list of commands, built on the Web Awesome dropdown.",
+      "publicExports": [
+        "PopupMenu"
+      ],
+      "useWhen": [
+        "Offer a short list of commands behind one trigger, such as a toolbar sort or More menu.",
+        "Group related commands under headings and dividers in one popup."
+      ],
+      "avoidWhen": [
+        "Do not use it to choose a persistent value (use Select) or for navigation rows (use ListItem).",
+        "Do not hand-write wa-dropdown / wa-dropdown-item markup for an action menu; use PopupMenu."
+      ],
+      "alternatives": [
+        {
+          "id": "select",
+          "relationship": "nearest"
+        },
+        {
+          "id": "wa-dropdown",
+          "relationship": "prefer-over"
+        }
+      ],
+      "appOwns": [
+        "commands and their delegated actions",
+        "which items are enabled",
+        "reactions to the menu opening or closing"
+      ],
+      "variants": [
+        "icon trigger",
+        "text trigger",
+        "icon and text trigger",
+        "headings and dividers",
+        "item icons",
+        "disabled items",
+        "placement"
+      ],
+      "accessibility": [
+        "An icon-only trigger requires label, rendered as visually hidden slotted text because a Web Awesome button takes its accessible name from its content; a trigger with visible text is named by that text. Web Awesome provides menu roles, arrow-key navigation, typeahead, and Escape."
+      ],
+      "geometry": {
+        "margin": "none",
+        "border": "child",
+        "padding": "child"
+      },
+      "delivery": {
+        "browserImport": "@kerfjs/ui/popup-menu",
+        "manualCssImport": "@kerfjs/ui/popup-menu.css",
+        "registrationImport": "@kerfjs/ui/popup-menu/register",
+        "themeCssImport": "@kerfjs/ui/webawesome.css",
+        "sideEffects": [
+          "browser-condition-css",
+          "custom-element-registration"
+        ]
+      },
+      "wiring": [],
+      "publicClasses": [
+        "kui-popup-menu",
+        "kui-popup-menu__label"
+      ],
+      "publicTokens": [],
+      "links": {
+        "catalogRoute": "?component=popup-menu",
+        "documentation": "docs/component-selection.md",
+        "recipe": "docs/component-selection.md#web-awesome-overlap-policy"
+      }
+    },
+    {
       "id": "feedback",
       "name": "Feedback",
       "category": "Feedback",
@@ -4343,6 +4422,10 @@
       "recommendation": "conditional",
       "alternatives": [
         {
+          "id": "popup-menu",
+          "relationship": "prefer-kerf"
+        },
+        {
           "id": "select",
           "relationship": "prefer-kerf"
         }
@@ -4385,6 +4468,10 @@
       ],
       "recommendation": "conditional",
       "alternatives": [
+        {
+          "id": "popup-menu",
+          "relationship": "prefer-kerf"
+        },
         {
           "id": "select",
           "relationship": "prefer-kerf"

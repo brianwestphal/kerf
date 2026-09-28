@@ -465,6 +465,7 @@ describe('consumer bundle boundaries', () => {
       '**/*.css',
       './dist/browser/*.js',
       './dist/select-register.js',
+      './dist/popup-menu-register.js',
     ]);
     expect(pkg.exports['.']).toMatchObject({ import: './dist/index.js' });
     expect(pkg.exports['./toolbar']).toMatchObject({

@@ -513,6 +513,23 @@ export const generatedKerfCatalog = [
     "documentation": "ui/docs/component-selection.md"
   },
   {
+    "id": "popup-menu",
+    "name": "PopupMenu",
+    "category": "Controls",
+    "kind": "component",
+    "source": "kerf",
+    "description": "A trigger button that opens a typed list of commands, built on the Web Awesome dropdown.",
+    "uses": [
+      "wa-dropdown",
+      "wa-dropdown-item",
+      "wa-button",
+      "wa-divider"
+    ],
+    "demoSource": "ui/ux-demo/demos/popup-menu.tsx",
+    "componentSource": "ui/src/popup-menu.tsx",
+    "documentation": "ui/docs/component-selection.md"
+  },
+  {
     "id": "feedback",
     "name": "Feedback",
     "category": "Feedback",

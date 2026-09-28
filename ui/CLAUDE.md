@@ -80,7 +80,7 @@ you are unsure whether a customization matters.**
   size.
 - **Toolbars hold only `ToolbarText` and `ToolbarControlGroup`.** Never a bare
   button, input, link, or loose markup in a zone. A title is `ToolbarText`, not an
-  `<h2>`. (Popup menu = a `single` ToolbarControlGroup around a `wa-dropdown`.)
+  `<h2>`. (Popup menu = a `PopupMenu` in a `single` ToolbarControlGroup with `nestedDropdown`.)
 - **Every element earns its place.** Delete chrome, labels, and readouts that do
   not help a person decide or act (a live "device class: xl-desktop" readout aids
   nothing — cut it). Prefer directness over decoration.

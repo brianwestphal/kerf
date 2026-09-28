@@ -37,7 +37,8 @@
   "sideEffects": [
     "**/*.css",
     "./dist/browser/*.js",
-    "./dist/select-register.js"
+    "./dist/select-register.js",
+    "./dist/popup-menu-register.js"
   ],
   "exports": {
     ".": {
@@ -268,6 +269,15 @@
       "types": "./dist/wire-token-search-fields.d.ts",
       "import": "./dist/wire-token-search-fields.js"
     },
+    "./popup-menu": {
+      "types": "./dist/popup-menu.d.ts",
+      "browser": "./dist/browser/popup-menu.js",
+      "import": "./dist/popup-menu.js"
+    },
+    "./popup-menu/register": {
+      "types": "./dist/popup-menu-register.d.ts",
+      "import": "./dist/popup-menu-register.js"
+    },
     "./select/register": {
       "types": "./dist/select-register.d.ts",
       "import": "./dist/select-register.js"
@@ -330,6 +340,7 @@
     "./tab-scaffold.css": "./dist/styles/tab-scaffold.css",
     "./loading-spinner.css": "./dist/styles/loading-spinner.css",
     "./select.css": "./dist/styles/select.css",
+    "./popup-menu.css": "./dist/styles/popup-menu.css",
     "./skeleton.css": "./dist/styles/skeleton.css",
     "./sunken-panel.css": "./dist/styles/sunken-panel.css",
     "./segmented-control.css": "./dist/styles/segmented-control.css",

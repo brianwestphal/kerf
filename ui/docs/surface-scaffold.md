@@ -18,7 +18,7 @@ padding and aligns with bordered siblings. Reserve `compact` or `comfortable`
 body insets for exceptional content that does not already have list/content-item
 geometry.
 
-Wrap one `wa-dropdown` with `PopupSurface`. `inset="list-zero"` removes menu
+Wrap one `PopupMenu` (or another single `wa-dropdown`) with `PopupSurface`. `inset="list-zero"` removes menu
 padding for a child that already owns row insets, `compact` uses 4px, and
 `standard` uses the shared 8px surface inset. Keep the dropdown trigger named and
 preserve `data-morph-skip-children` when its upgraded light-DOM items must retain

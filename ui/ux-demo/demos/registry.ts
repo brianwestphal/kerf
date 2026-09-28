@@ -22,6 +22,7 @@ import { LoadingSpinnerDemo } from './loading-spinner.js';
 import { LucideIconDemo } from './lucide-icon.js';
 import { NavStackDemo } from './nav-stack.js';
 import { PaneDemo } from './pane.js';
+import { PopupMenuDemo } from './popup-menu.js';
 import { ResizeDemo } from './resize.js';
 import { RowDemo } from './row.js';
 import { SegmentedControlDemo } from './segmented-control.js';
@@ -81,6 +82,7 @@ export const demos = {
   select: SelectDemo,
   feedback: FeedbackDemo,
   'state-banner': StateBannerDemo,
+  'popup-menu': PopupMenuDemo,
   'surface-scaffold': SurfaceScaffoldDemo,
   'sunken-panel': SunkenPanelDemo,
   'empty-state': EmptyStateDemo,
