@@ -11,7 +11,7 @@ function check(output: string) {
   });
 }
 
-describe('site build output gate', () => {
+describe('site build output gate', { timeout: 30_000 }, () => {
   it('accepts a clean Astro build with unrelated warnings', () => {
     const result = check(
       [

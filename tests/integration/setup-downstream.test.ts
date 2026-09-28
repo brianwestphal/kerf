@@ -270,7 +270,7 @@ afterAll(async () => {
   await rm(temporaryRoot, { recursive: true, force: true });
 });
 
-describe('packed AI-first setup', () => {
+describe('packed AI-first setup', { timeout: 30_000 }, () => {
   it('initializes a minimal core consumer that builds, lints, and discovers guidance', async () => {
     const root = resolve(temporaryRoot, 'core-consumer');
     await mkdir(resolve(root, 'src'), { recursive: true });

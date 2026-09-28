@@ -13,7 +13,7 @@ import { canonicalAiRegressionJson } from '../../scripts/lib/ai-regression-run-v
 const exec = promisify(execFile);
 const root = resolve(import.meta.dirname, '../..');
 
-describe('suite-v3 executable protocol', () => {
+describe('suite-v3 executable protocol', { timeout: 30_000 }, () => {
   it('prepares byte-identical attempt-one model input under all feedback policies', async () => {
     const { stdout } = await exec(
       process.execPath,

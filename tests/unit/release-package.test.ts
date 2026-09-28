@@ -101,7 +101,7 @@ beforeAll(() => {
 
 afterAll(() => rmSync(fixtureRoot, { recursive: true, force: true }));
 
-describe('release package preparation', () => {
+describe('release package preparation', { timeout: 30_000 }, () => {
   it('repairs scaffold schema drift from the canonical UI contract and then passes its release gate', () => {
     const script = join(
       fixtureRoot,

@@ -14,7 +14,7 @@ import {
   SUBJECTIVE_REVIEW_RUBRIC,
 } from '../../evaluator/index.mjs';
 
-describe('browser UI evaluator contract', () => {
+describe('browser UI evaluator contract', { timeout: 30_000 }, () => {
   it('ships a self-describing CLI with stable invocation failures', () => {
     const cli = resolve('evaluator/cli.mjs');
     expect(

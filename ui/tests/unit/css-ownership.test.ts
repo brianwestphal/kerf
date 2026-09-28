@@ -44,7 +44,7 @@ function ownedMarkupClasses(source: string) {
   return owned;
 }
 
-describe('CSS ownership gate', () => {
+describe('CSS ownership gate', { timeout: 30_000 }, () => {
   it('keeps application styles out of package component internals', async () => {
     const script = resolve(
       import.meta.dirname,

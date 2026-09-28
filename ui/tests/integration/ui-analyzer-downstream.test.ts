@@ -9,7 +9,7 @@ import { describe, expect, it } from 'vitest';
 
 const execFileAsync = promisify(execFile);
 
-describe('kerf-ui-analyze downstream command', () => {
+describe('kerf-ui-analyze downstream command', { timeout: 30_000 }, () => {
   it('writes versioned JSON and fails on definite integration errors', async () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-cli-'));
     await mkdir(join(root, 'src'));

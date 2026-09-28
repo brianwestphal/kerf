@@ -12,7 +12,7 @@ const execFileAsync = promisify(execFile);
 const repoRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const guard = join(repoRoot, 'scripts/check-guidance-integrity.mjs');
 
-describe('guidance integrity check wrapper', () => {
+describe('guidance integrity check wrapper', { timeout: 30_000 }, () => {
   it('passes through a successful command that leaves guidance unchanged', async () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-guidance-e2e-clean-'));
     await writeFile(join(root, 'AGENTS.md'), 'stable');

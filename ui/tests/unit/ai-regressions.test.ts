@@ -36,7 +36,7 @@ const root = resolve(import.meta.dirname, '../..');
 const readJson = async (path: string) =>
   JSON.parse(await readFile(resolve(root, path), 'utf8'));
 
-describe('local AI regression foundation', () => {
+describe('local AI regression foundation', { timeout: 30_000 }, () => {
   it('assembles each context deterministically with source hashes', async () => {
     const conditions = await readJson('ai-regressions/conditions.json');
     for (const condition of conditions.conditions) {

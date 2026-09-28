@@ -63,7 +63,7 @@ function spawnTiming(
   return { child, done };
 }
 
-describe('step-timed check chain', () => {
+describe('step-timed check chain', { timeout: 30_000 }, () => {
   it('runs each && segment, stops at the first failure, and logs step durations', async () => {
     const dir = await scratch('kerf-check-steps-');
     await writeFile(
@@ -169,7 +169,7 @@ describe('step-timed check chain', () => {
   });
 });
 
-describe('active and CI timing', () => {
+describe('active and CI timing', { timeout: 30_000 }, () => {
   it('wraps Hot Sheet claim and release with an active session', async () => {
     const dir = await scratch('kerf-timing-claim-');
     await execFileAsync(

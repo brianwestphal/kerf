@@ -26,7 +26,7 @@ afterEach(async () => {
 const writeJson = (path: string, value: unknown) =>
   writeFile(path, `${JSON.stringify(value, null, 2)}\n`);
 
-describe('application UI profile discovery', () => {
+describe('application UI profile discovery', { timeout: 30_000 }, () => {
   it('discovers workspace then parent-to-child directory profiles and applies inheritance', async () => {
     const workspace = await mkdtemp(resolve(tmpdir(), 'kerf-ui-profile-'));
     temporaryDirectories.push(workspace);

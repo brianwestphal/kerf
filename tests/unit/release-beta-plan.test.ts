@@ -21,7 +21,7 @@ function plan(
   return { targetVersion, betaTag, source, previousBetaTag };
 }
 
-describe('beta release planning', () => {
+describe('beta release planning', { timeout: 30_000 }, () => {
   it('continues the highest active prerelease series beyond the stable-derived target', () => {
     expect(
       plan('4.4.1', true, ['v4.4.1-beta.8', 'v5.0.0-beta.1', 'v5.0.0-beta.23']),

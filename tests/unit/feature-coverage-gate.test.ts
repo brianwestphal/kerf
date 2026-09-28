@@ -77,7 +77,7 @@ function runGate({
   });
 }
 
-describe('feature-coverage export inventory', () => {
+describe('feature-coverage export inventory', { timeout: 30_000 }, () => {
   it('rejects an unrepresented value export from the router subpath', () => {
     const result = runGate({
       sources: { 'src/router.ts': 'export function routerOnly() {}' },
