@@ -121,3 +121,42 @@ test('a pending AppTab keeps its name, stays selectable and undimmed, and swaps 
   expect(liveBox.height).toBe(pendingBox.height);
   expect(Math.abs(liveBox.width - pendingBox.width)).toBeLessThanOrEqual(0.5);
 });
+
+test('tab strips scroll only horizontally and grow to fit taller tabs', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1100, height: 850 });
+  await page.goto('/?component=tab-bar');
+  const strips = page.locator('[data-demo="tab-bar"] .kui-tab-bar__tabs');
+  await expect(strips.first()).toBeVisible();
+  const measure = () =>
+    strips.evaluateAll((elements) =>
+      elements.map((element) => {
+        const style = window.getComputedStyle(element);
+        return {
+          overflowX: style.overflowX,
+          overflowY: style.overflowY,
+          height: element.getBoundingClientRect().height,
+          verticalExcess: element.scrollHeight - element.clientHeight,
+        };
+      }),
+    );
+  const before = await measure();
+  for (const strip of before) {
+    expect(strip.overflowX).toBe('auto');
+    expect(strip.overflowY).toBe('hidden');
+    expect(strip.verticalExcess).toBeLessThanOrEqual(0);
+  }
+  // The default strip keeps its toolbar-group height.
+  expect(before.map((strip) => strip.height)).toContain(44);
+
+  // Consumer padding makes the strip taller rather than a vertical scroller.
+  await strips.evaluateAll((elements) => {
+    for (const element of elements) element.style.paddingBlock = '6px';
+  });
+  const padded = await measure();
+  padded.forEach((strip, index) => {
+    expect(strip.height).toBeGreaterThan(before[index]!.height);
+    expect(strip.verticalExcess).toBeLessThanOrEqual(0);
+  });
+});

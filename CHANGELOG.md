@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui`'s `TabBar` strip no longer scrolls vertically.** The strip set
+  only `overflow-x: auto`, so any vertical excess (consumer padding, focus-ring
+  insets, taller tabs under larger text) let it scroll up and down on touch. It
+  now scrolls only horizontally, and it takes a `min-height` so it grows to fit
+  taller tabs instead of clipping them.
+
 - **The `@kerfjs/ui` desktop app-shell recipe is a `Workbench`.** The old
   pane switcher that showed one pane at a time below desktop sizes is gone. The
   navigation and inspector are now resizable Workbench rails with their own

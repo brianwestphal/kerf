@@ -18,9 +18,11 @@
 .kui-tab-bar__tabs {
   display: flex;
   min-width: 0;
-  height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+  min-height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   padding: 1px;
-  overflow-x: auto;
+  /* Scroll along the strip only: overflow-x alone computes overflow-y to auto,
+     so any vertical excess would let the strip scroll vertically on touch. */
+  overflow: auto hidden;
   box-sizing: border-box;
   border: 1px solid var(--kui-tab-bar-border);
   border-radius: var(--kui-layout-pill-radius, calc(1px + remify(21px)));
@@ -67,7 +69,7 @@
   padding: 0;
 }
 .kui-tab-bar[data-presentation="inspector"] .kui-tab-bar__tabs {
-  height: remify(34px);
+  min-height: remify(34px);
   border-radius: var(--kui-radius-s);
 }
 .kui-tab-bar[data-allocation="fill"] [data-component="app-tab"] {
