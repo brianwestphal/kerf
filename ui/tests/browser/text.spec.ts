@@ -40,8 +40,10 @@ test('Text renders semantic variants with standard padded geometry', async ({
       padding: '8px',
     });
 
+  // The specimens and the span nested in the last one, not the example's
+  // own catalog label chrome.
   const roles = page.locator(
-    '[data-demo-section="presentation-roles"] .kui-text',
+    ':is([data-demo-section="presentation-roles"] > .kui-text, [data-demo-section="presentation-roles"] > .kui-text .kui-text)',
   );
   await expect(roles).toHaveCount(7);
   await expect(roles.nth(0)).toHaveAttribute('data-tone', 'quiet');
