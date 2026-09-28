@@ -146,20 +146,22 @@ export function Catalog({
             selectAction={selectAction}
           />
         }
+        mainHeader={
+          selected?.description ? (
+            <ListInsetText
+              sides="trbl"
+              rootAttributes={{ 'data-catalog-description': '' }}
+            >
+              <Text variant="span">{selected.description}</Text>
+            </ListInsetText>
+          ) : null
+        }
         mainHeaderPlacement={headerPlacement}
         mainFooterPlacement={footerPlacement}
         main={
           // The description is supporting copy, so it scrolls with the
           // preview rather than pinning under the toolbar.
           <List flex>
-            {selected?.description ? (
-              <ListInsetText
-                sides="trbl"
-                rootAttributes={{ 'data-catalog-description': '' }}
-              >
-                <Text variant="span">{selected.description}</Text>
-              </ListInsetText>
-            ) : null}
             <CatalogStage
               name={name}
               content={content}
