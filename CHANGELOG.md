@@ -50,6 +50,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `role`, `aria-selected`, and `aria-disabled` from each option's live state,
   in single and `multiple` Selects.
 
+- **`@kerfjs/ui` `Select` dividers keep their separator role across
+  re-renders.** The `wa-divider` a `separatorBefore` choice adds lost the
+  `role="separator"` and `aria-orientation` Web Awesome sets on it the first
+  time the enclosing mount re-rendered, and never got them back, so assistive
+  technology stopped announcing the break between option runs. The Select now
+  renders both attributes itself.
+
 - **`@kerfjs/ui` Workbench and CollapsiblePanel panes and chrome lists are
   configurable.** The `Pane`s these layouts compose around app content now
   take the new `PaneConfig` type (`contentElement`, `contentLabel`,

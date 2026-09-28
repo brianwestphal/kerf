@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 297000,
-  "measuredLargestJavaScriptGzip": 148604,
-  "measuredTotalJavaScriptGzip": 296965,
+  "totalJavaScriptGzip": 297100,
+  "measuredLargestJavaScriptGzip": 148624,
+  "measuredTotalJavaScriptGzip": 297010,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -979,6 +979,22 @@
         "measuredTotalJavaScriptGzip": 296965,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 297000
+      }
+    },
+    {
+      "at": "2026-09-28T11:29:07.290Z",
+      "reason": "Select divider renders its separator role",
+      "old": {
+        "measuredLargestJavaScriptGzip": 148604,
+        "measuredTotalJavaScriptGzip": 296965,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 297000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 148624,
+        "measuredTotalJavaScriptGzip": 297010,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 297100
       }
     }
   ]

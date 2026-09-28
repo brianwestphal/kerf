@@ -1657,7 +1657,7 @@ describe('production UI primitives', () => {
     expect(grouped).toContain('role="group" aria-label="Recommended"');
     // "Manual" opens the separated "Other" group, whose border is already the
     // separator, so its separatorBefore must not add a second divider.
-    expect(grouped).not.toContain('<wa-divider></wa-divider>');
+    expect(grouped).not.toContain('<wa-divider');
     const divided = asHtml(
       Select({
         name: 'divided',
@@ -1672,8 +1672,15 @@ describe('production UI primitives', () => {
     );
     // Only the within-group divider renders: before "B", not before the
     // menu's first choice.
-    expect(divided.match(/<wa-divider>/g)).toHaveLength(1);
-    expect(divided).toMatch(/<wa-divider><\/wa-divider><wa-option value="b">/);
+    expect(divided.match(/<wa-divider[ >]/g)).toHaveLength(1);
+    expect(divided).toMatch(
+      /<wa-divider[^>]*><\/wa-divider><wa-option value="b">/,
+    );
+    // The separator semantics Web Awesome would set once on the host are
+    // rendered, so a kerf re-render cannot strip them.
+    expect(divided).toContain(
+      '<wa-divider role="separator" aria-orientation="horizontal"></wa-divider>',
+    );
     expect(grouped).toContain('<strong>Balanced</strong>');
     expect(grouped).toContain(
       'data-key="mode:balanced:custom-selected" slot="start" class="kui-select__custom-selected"',

@@ -211,7 +211,12 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
   );
   const option = (choice: SelectChoice<Value>, index: number) => (
     <>
-      {choice.separatorBefore && index > 0 && <wa-divider></wa-divider>}
+      {/* Web Awesome sets the divider's role and aria-orientation on its
+          host once, so a template that omits them would lose them to the
+          next kerf re-render's morph for good. Render them explicitly. */}
+      {choice.separatorBefore && index > 0 && (
+        <wa-divider role="separator" aria-orientation="horizontal"></wa-divider>
+      )}
       <wa-option
         value={choice.value}
         selected={multiple && values.includes(choice.value)}

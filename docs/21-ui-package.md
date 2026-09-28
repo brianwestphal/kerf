@@ -173,7 +173,11 @@ render; the registration entry restores them from the option's live
 rewrites them, in single and `multiple` Selects alike
 (`ui/src/install-select-option-semantics.ts`; unit
 `ui/tests/unit/select-option-semantics.test.ts`, browser
-`ui/tests/browser/select-option-semantics.spec.ts`).
+`ui/tests/browser/select-option-semantics.spec.ts`). A `separatorBefore`
+`wa-divider` is different: Web Awesome sets its `role="separator"` and
+`aria-orientation` once and never re-derives them, so the Select template
+renders both explicitly and the morph keeps them by construction
+(`ui/tests/browser/wa-host-attributes.spec.ts`).
 
 ## 21.3 Initial component set
 
