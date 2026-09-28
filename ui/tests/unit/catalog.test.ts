@@ -168,7 +168,12 @@ describe('UX catalog metadata', () => {
     const appLayouts = [
       {
         id: 'nav-stack',
-        exports: ['NavStackView', 'NavStackProps', 'NavStack'],
+        exports: [
+          'NavStackView',
+          'NavStackToolbarConfig',
+          'NavStackProps',
+          'NavStack',
+        ],
       },
       {
         id: 'split-view',

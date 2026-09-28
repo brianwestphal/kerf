@@ -26,6 +26,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   without restyling. Omitted or `undefined` fields keep today's defaults, and
   the default markup is unchanged.
 
+- **`@kerfjs/ui` `NavStack` renders its top chrome as a real `Toolbar`.** The
+  back control is a borderless `ToolbarControlGroup` and the title a
+  `ToolbarText` in the leading zone, and the stack now forwards:
+  - `toolbarConfig` — the `Toolbar` configuration (`dividerSides`,
+    `centerAlign`, `responsive`, `responsiveAt`, `safeAreaEdges`) plus `label`,
+    `titleSize` (default `large`), and `headingLevel`;
+  - per-view `leading` and `center` groups beside the existing trailing
+    `toolbar`;
+  - `backIcon` and visible `backText` for the back control.
+
+  The defaults keep today's bar: no divider, one 44px band, and the top and
+  side safe-area edges claimed. The hand-rolled `kui-nav-stack__lead` and
+  `kui-nav-stack__actions` wrappers are gone (their content now sits in the
+  toolbar's zones), and `kui-nav-stack__back` / `kui-nav-stack__back-icon`
+  are no longer styled by the stack.
+
 - **`@kerfjs/ui` hides a work area's floating controls under an open side
   overlay.** While a side overlay is open — a Workbench rail (static
   `presentation: "overlay"`, or a responsive overlay whose breakpoint applies),

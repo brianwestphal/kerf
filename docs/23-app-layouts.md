@@ -142,6 +142,16 @@ slides** (the pattern already used on several `~/Documents/hotsheet2` dialogs).
 
 - Top toolbar is standard; it can be **hidden** in rare cases, and show/hide is
   itself animated. Bottom toolbar is optional.
+- The top toolbar is a real `Toolbar`: the back control (a borderless
+  `ToolbarControlGroup`) and the title (`ToolbarText`) lead, followed by the
+  active view's `leading` groups; the view's `center` and trailing `toolbar`
+  fill the other zones. `toolbarConfig` forwards the `ToolbarConfig`
+  (`dividerSides`, `centerAlign`, `responsive`, `responsiveAt`,
+  `safeAreaEdges`) plus `label`, `titleSize`, and `headingLevel`; `backIcon`
+  and visible `backText` configure the back control. Defaults keep the original
+  bar: no divider, one 44px band, top and side safe-area edges claimed, a
+  `large` title, and an icon-only chevron labeled `backLabel` (KF-435SC2:
+  NavStack rebuilt on the real Toolbar with forwardable configuration).
 - A **single-pane layout is a `NavStack` with one entry** — no separate
   primitive; the doc and guidance say so explicitly.
 - Applicable at every device size and inside dialogs of every size.

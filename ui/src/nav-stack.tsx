@@ -1,5 +1,14 @@
+import { ChevronLeft } from 'lucide';
+
+import { LucideIcon } from './lucide-icon.js';
 import type { KerfUiContent } from './semantic-content.js';
-import { ToolbarText } from './toolbar-text.js';
+import { Toolbar, type ToolbarConfig } from './toolbar.js';
+import { ToolbarControlGroup } from './toolbar-control-group.js';
+import {
+  type HeadingLevel,
+  ToolbarText,
+  type ToolbarTextSize,
+} from './toolbar-text.js';
 
 /**
  * One entry in a {@link NavStack}. The app owns the stack as an array (usually a
@@ -11,10 +20,28 @@ export interface NavStackView {
   content: KerfUiContent;
   /** Title shown in the top toolbar for this view. */
   title?: string;
+  /** Leading groups for this view's top toolbar, after the back control and before the title. */
+  leading?: KerfUiContent;
+  /** Center content for this view's top toolbar (placed per `toolbarConfig.centerAlign`). */
+  center?: KerfUiContent;
   /** Trailing actions for this view's top toolbar. */
   toolbar?: KerfUiContent;
   /** Bottom toolbar for this view. Cross-fades with the top chrome on navigation. */
   bottomToolbar?: KerfUiContent;
+}
+
+/**
+ * The top toolbar's configuration. Its `ToolbarConfig` forwards to the real
+ * `Toolbar` the stack renders; by default that toolbar draws no divider and
+ * claims the top and side safe-area edges the stack still touches.
+ */
+export interface NavStackToolbarConfig extends ToolbarConfig {
+  /** Accessible name of the top toolbar (default: none). */
+  label?: string;
+  /** Size of the view title's `ToolbarText` (default `large`). */
+  titleSize?: ToolbarTextSize;
+  /** Expose the view title as a heading at this level (default: a plain span). */
+  headingLevel?: HeadingLevel;
 }
 
 export interface NavStackProps {
@@ -23,8 +50,18 @@ export interface NavStackProps {
   label: string;
   /** The stack, root first; the last entry is the active top view. */
   views: NavStackView[];
-  /** Accessible label for the back control (default "Back"). */
+  /** Accessible label for the icon-only back control (default "Back"). */
   backLabel?: string;
+  /** The back control's icon (default a chevron-left `LucideIcon`). */
+  backIcon?: KerfUiContent;
+  /**
+   * Visible text beside the back icon, such as the previous view's title
+   * (default: icon only). When set, the text names the control and
+   * `backLabel` is not used.
+   */
+  backText?: string;
+  /** The top toolbar's configuration, forwarded to its `Toolbar`. */
+  toolbarConfig?: NavStackToolbarConfig;
   /** Hide the top toolbar entirely (rare — a fully custom-chrome view). */
   hideToolbar?: boolean;
   /** Optional persistent bottom toolbar used when the active view does not provide one. */
@@ -34,17 +71,28 @@ export interface NavStackProps {
   slot?: string;
 }
 
+const DEFAULT_SAFE_AREA_EDGES = [
+  'block-start',
+  'inline-start',
+  'inline-end',
+] as const;
+
 /**
  * A navigation stack (iOS-style push/pop). Renders every entry stacked, the last
  * one active; `@kerfjs/ui/wire-nav-stack`'s `wireNavStack` slides the content and
- * cross-fades the chrome across a change. A single-pane layout is a `NavStack`
- * with one entry. See `docs/23-app-layouts.md` §3.1.
+ * cross-fades the chrome across a change. Its top chrome is a real `Toolbar`: the
+ * back control and title lead, the active view's `leading` / `center` / `toolbar`
+ * content fills the zones, and `toolbarConfig` configures it. A single-pane
+ * layout is a `NavStack` with one entry. See `docs/23-app-layouts.md` §3.1.
  */
 export function NavStack({
   id,
   label,
   views,
   backLabel = 'Back',
+  backIcon,
+  backText,
+  toolbarConfig = {},
   hideToolbar = false,
   bottomToolbar,
   className = '',
@@ -64,41 +112,56 @@ export function NavStack({
       slot={slot}
     >
       {!hideToolbar && (
-        <header class="kui-nav-stack__chrome" data-nav-stack-chrome>
-          <div class="kui-nav-stack__lead">
-            {canPop && (
-              <button
-                type="button"
-                class="kui-nav-stack__back"
-                data-nav-back
-                aria-label={backLabel}
-              >
-                <svg
-                  class="kui-nav-stack__back-icon"
-                  viewBox="0 0 24 24"
-                  width="18"
-                  height="18"
-                  aria-hidden="true"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                >
-                  <path d="m15 18-6-6 6-6" />
-                </svg>
-              </button>
-            )}
-            <ToolbarText
-              text={top?.title ?? ''}
-              size="large"
-              className="kui-nav-stack__title"
-            />
-          </div>
-          {top?.toolbar && (
-            <div class="kui-nav-stack__actions">{top.toolbar}</div>
-          )}
-        </header>
+        <div class="kui-nav-stack__chrome" data-nav-stack-chrome>
+          <Toolbar
+            className="kui-nav-stack__toolbar"
+            label={toolbarConfig.label}
+            dividerSides={toolbarConfig.dividerSides ?? ''}
+            centerAlign={toolbarConfig.centerAlign}
+            responsive={toolbarConfig.responsive}
+            responsiveAt={toolbarConfig.responsiveAt}
+            safeAreaEdges={
+              toolbarConfig.safeAreaEdges ?? DEFAULT_SAFE_AREA_EDGES
+            }
+            leading={
+              <>
+                {canPop && (
+                  <ToolbarControlGroup
+                    appearance="borderless"
+                    shape="rounded"
+                    content={backText ? 'mixed' : 'icon'}
+                    single
+                  >
+                    <button
+                      type="button"
+                      class="kui-nav-stack__back"
+                      data-nav-back
+                      aria-label={backText ? undefined : backLabel}
+                    >
+                      {backIcon ?? (
+                        <LucideIcon
+                          icon={ChevronLeft}
+                          name="chevron-left"
+                          className="kui-nav-stack__back-icon"
+                        />
+                      )}
+                      {backText ? <span>{backText}</span> : null}
+                    </button>
+                  </ToolbarControlGroup>
+                )}
+                {top?.leading}
+                <ToolbarText
+                  text={top?.title ?? ''}
+                  size={toolbarConfig.titleSize ?? 'large'}
+                  headingLevel={toolbarConfig.headingLevel}
+                  className="kui-nav-stack__title"
+                />
+              </>
+            }
+            center={top?.center}
+            trailing={top?.toolbar}
+          />
+        </div>
       )}
       <div class="kui-nav-stack__viewport" data-nav-stack-viewport>
         {views.map((view, index) => (

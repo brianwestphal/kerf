@@ -58,66 +58,33 @@
   opacity: 0;
 }
 
+/* The chrome hosts the stack's real top Toolbar. It hands that toolbar the
+   edges the stack still touches through the edge context (never the bottom,
+   which the viewport owns); the toolbar pads for the sides it claims with
+   `safeAreaEdges` while its box paints through them. */
 .kui-nav-stack__chrome {
-  display: flex;
-  min-width: 0;
-  min-height: calc(2px + remify(42px) + var(--_kui-nav-stack-safe-block-start));
-  padding-block-start: var(--_kui-nav-stack-safe-block-start);
-  padding-inline: calc(
-      var(--kui-space-xs) + var(--_kui-nav-stack-safe-inline-start)
-    )
-    calc(var(--kui-space-xs) + var(--_kui-nav-stack-safe-inline-end));
-  align-items: center;
-  gap: var(--kui-space-xs);
+  --kui-edge-inset-block-start: var(--_kui-nav-stack-safe-block-start);
+  --kui-edge-inset-inline-start: var(--_kui-nav-stack-safe-inline-start);
+  --kui-edge-inset-inline-end: var(--_kui-nav-stack-safe-inline-end);
   background: var(--kui-color-surface);
 }
 
-.kui-nav-stack__lead {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  align-items: center;
-  gap: var(--kui-space-2xs);
+/* A navigation bar is one control band tall: the toolbar keeps its inline
+   padding and any claimed block inset, but drops the block gap so the bar is
+   the band height (44px) plus the unsafe inset it clears. */
+.kui-nav-stack__chrome > .kui-nav-stack__toolbar {
+  min-height: calc(
+    var(--_kui-toolbar-band) + var(--_kui-toolbar-safe-block-start) +
+      var(--_kui-toolbar-safe-block-end)
+  );
+  padding-block: var(--_kui-toolbar-safe-block-start)
+    var(--_kui-toolbar-safe-block-end);
 }
 
-.kui-nav-stack__back {
-  display: grid;
-  width: remify(40px);
-  height: remify(40px);
-  padding: 0;
-  border: 1px solid transparent;
-  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
-  color: inherit;
-  background: transparent;
-  cursor: pointer;
-  place-items: center;
-}
-
-.kui-nav-stack__back:hover {
-  border-color: var(--kui-color-neutral-border-normal);
-  background: var(--kui-color-neutral-fill-normal);
-}
-
-.kui-nav-stack__back:focus-visible {
-  outline: var(--kui-focus-ring);
-  outline-offset: 1px;
-}
-
-.kui-nav-stack__back-icon {
-  display: block;
-}
-
-/* The title is ToolbarText (which owns its font, height, and ellipsis); it just
-   needs to flex to fill the lead zone beside the back control. */
+/* The title fills the leading zone beside the back control and truncates. */
 .kui-nav-stack__title {
   flex: 1 1 auto;
   min-width: 0;
-}
-
-.kui-nav-stack__actions {
-  display: flex;
-  align-items: center;
-  gap: var(--kui-space-2xs);
 }
 
 .kui-nav-stack__viewport {

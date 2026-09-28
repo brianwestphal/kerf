@@ -87,8 +87,113 @@ describe('NavStack markup', () => {
     );
     expect(html).toContain('aria-label="Go back"');
     expect(html).toContain('kui-nav-stack tall');
-    expect(html).toContain('kui-nav-stack__actions');
+    expect(html).toContain(
+      '<div class="kui-toolbar__trailing"><button>Edit</button></div>',
+    );
     expect(html).toContain('data-nav-stack-bottom');
+  });
+
+  it('renders its chrome as a real Toolbar with today’s defaults', () => {
+    const root = mountStack([view('home', 'Home'), view('detail', 'Detail')]);
+    const chrome = root.querySelector('[data-nav-stack-chrome]')!;
+    const toolbar = chrome.querySelector<HTMLElement>(
+      ':scope > [data-component="toolbar"]',
+    )!;
+    expect(toolbar.classList.contains('kui-nav-stack__toolbar')).toBe(true);
+    expect(toolbar.hasAttribute('divider-sides')).toBe(false);
+    expect(toolbar.hasAttribute('aria-label')).toBe(false);
+    expect(toolbar.dataset.centerAlign).toBe('center');
+    expect(toolbar.dataset.responsive).toBe('none');
+    expect(toolbar.dataset.hasCenter).toBe('false');
+    expect(toolbar.dataset.safeAreaBlockStart).toBe('true');
+    expect(toolbar.dataset.safeAreaInlineStart).toBe('true');
+    expect(toolbar.dataset.safeAreaInlineEnd).toBe('true');
+    expect(toolbar.dataset.safeAreaBlockEnd).toBeUndefined();
+
+    // The back control is the first group of the leading zone, then the title.
+    const leading = toolbar.querySelector('.kui-toolbar__leading')!;
+    const [group, title] = Array.from(leading.children) as HTMLElement[];
+    expect(group.dataset.component).toBe('toolbar-control-group');
+    expect(group.dataset.appearance).toBe('borderless');
+    expect(group.dataset.single).toBe('true');
+    const back = group.querySelector<HTMLButtonElement>('[data-nav-back]')!;
+    expect(back.getAttribute('aria-label')).toBe('Back');
+    expect(back.querySelector('[data-lucide="chevron-left"]')).not.toBeNull();
+    expect(title.dataset.component).toBe('toolbar-text');
+    expect(title.dataset.size).toBe('large');
+    expect(title.hasAttribute('role')).toBe(false);
+  });
+
+  it('forwards the toolbar configuration, title size, and heading level', () => {
+    const root = mountStack([view('home', 'Home')], {
+      toolbarConfig: {
+        label: 'Home toolbar',
+        dividerSides: 'b',
+        centerAlign: 'stretch',
+        responsive: 'stack',
+        responsiveAt: 'compact',
+        safeAreaEdges: ['block-start'],
+        titleSize: 'xlarge',
+        headingLevel: 1,
+      },
+    });
+    const toolbar = root.querySelector<HTMLElement>(
+      '[data-nav-stack-chrome] > [data-component="toolbar"]',
+    )!;
+    expect(toolbar.getAttribute('aria-label')).toBe('Home toolbar');
+    expect(toolbar.getAttribute('divider-sides')).toBe('b');
+    expect(toolbar.dataset.centerAlign).toBe('stretch');
+    expect(toolbar.dataset.responsive).toBe('stack');
+    expect(toolbar.dataset.responsiveAt).toBe('compact');
+    expect(toolbar.dataset.safeAreaBlockStart).toBe('true');
+    expect(toolbar.dataset.safeAreaInlineStart).toBeUndefined();
+    const title = toolbar.querySelector<HTMLElement>('.kui-nav-stack__title')!;
+    expect(title.dataset.size).toBe('xlarge');
+    expect(title.getAttribute('role')).toBe('heading');
+    expect(title.getAttribute('aria-level')).toBe('1');
+  });
+
+  it('places per-view leading and center content in the toolbar zones', () => {
+    const root = mountStack([
+      view('home', 'Home'),
+      {
+        ...view('detail', 'Detail', raw('<button>Edit</button>')),
+        leading: raw('<div class="lead-group">Lead</div>'),
+        center: raw('<div class="center-group">Center</div>'),
+      },
+    ]);
+    const toolbar = root.querySelector<HTMLElement>(
+      '[data-nav-stack-chrome] > [data-component="toolbar"]',
+    )!;
+    expect(toolbar.dataset.hasCenter).toBe('true');
+    const leading = Array.from(
+      toolbar.querySelector('.kui-toolbar__leading')!.children,
+    ).map((child) => child.className);
+    expect(leading).toEqual([
+      'kui-toolbar-control-group',
+      'lead-group',
+      'kui-toolbar-text kui-nav-stack__title',
+    ]);
+    expect(
+      toolbar.querySelector('.kui-toolbar__center .center-group'),
+    ).not.toBeNull();
+  });
+
+  it('accepts a custom back icon and visible back text', () => {
+    const root = mountStack([view('home', 'Home'), view('detail', 'Detail')], {
+      backLabel: 'Unused',
+      backIcon: raw('<svg class="custom-back"></svg>'),
+      backText: 'Home',
+    });
+    const back = root.querySelector<HTMLButtonElement>('[data-nav-back]')!;
+    expect(back.hasAttribute('aria-label')).toBe(false);
+    expect(back.textContent).toBe('Home');
+    expect(back.querySelector('.custom-back')).not.toBeNull();
+    expect(back.querySelector('[data-lucide]')).toBeNull();
+    expect(
+      back.closest<HTMLElement>('[data-component="toolbar-control-group"]')!
+        .dataset.content,
+    ).toBe('mixed');
   });
 
   it('prefers the active view bottom toolbar over the persistent fallback', () => {

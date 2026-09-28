@@ -91,6 +91,8 @@ export const generatedKerfCatalog = [
     "source": "kerf",
     "description": "Present a single linear or drill-down flow while preserving each prior view's state, scroll position, and place in the stack.",
     "uses": [
+      "toolbar",
+      "toolbar-control-group",
       "toolbar-text"
     ],
     "demoSource": "ui/ux-demo/demos/nav-stack.tsx",

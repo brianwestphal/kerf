@@ -235,7 +235,10 @@ focus into the new top view and restores the revealed view's last focused
 descendant on pop; add `data-nav-focus` to a preferred initial heading or
 control when DOM order is not sufficient. Use the component-level
 `bottomToolbar` only as a persistent fallback for views without their own bottom
-chrome.
+chrome. The top chrome is a real `Toolbar`: give a view `leading` / `center` /
+`toolbar` (trailing) groups, and configure the bar with `toolbarConfig`
+(`ToolbarConfig` plus `label`, `titleSize`, `headingLevel`) and
+`backIcon` / `backText` rather than CSS.
 `@kerfjs/ui` Select projects a nonempty `label`, or otherwise `ariaLabel`, to
 Web Awesome’s internal combobox name. The ariaLabel-only label is visually
 hidden without adding geometry, also with custom selected content. See

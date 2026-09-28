@@ -947,6 +947,10 @@ export { TabActivation, type TabDropPosition, type TabReorder, type TabReorderSo
 ```ts
 import * as kerfjs from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { ToolbarConfig } from './toolbar.js';
+import { ToolbarTextSize, HeadingLevel } from './toolbar-text.js';
+import './pane.js';
+import './sides-BPSWde0A.js';
 
 /**
  * One entry in a {@link NavStack}. The app owns the stack as an array (usually a
@@ -958,10 +962,27 @@ interface NavStackView {
     content: KerfUiContent;
     /** Title shown in the top toolbar for this view. */
     title?: string;
+    /** Leading groups for this view's top toolbar, after the back control and before the title. */
+    leading?: KerfUiContent;
+    /** Center content for this view's top toolbar (placed per `toolbarConfig.centerAlign`). */
+    center?: KerfUiContent;
     /** Trailing actions for this view's top toolbar. */
     toolbar?: KerfUiContent;
     /** Bottom toolbar for this view. Cross-fades with the top chrome on navigation. */
     bottomToolbar?: KerfUiContent;
+}
+/**
+ * The top toolbar's configuration. Its `ToolbarConfig` forwards to the real
+ * `Toolbar` the stack renders; by default that toolbar draws no divider and
+ * claims the top and side safe-area edges the stack still touches.
+ */
+interface NavStackToolbarConfig extends ToolbarConfig {
+    /** Accessible name of the top toolbar (default: none). */
+    label?: string;
+    /** Size of the view title's `ToolbarText` (default `large`). */
+    titleSize?: ToolbarTextSize;
+    /** Expose the view title as a heading at this level (default: a plain span). */
+    headingLevel?: HeadingLevel;
 }
 interface NavStackProps {
     id: string;
@@ -969,8 +990,18 @@ interface NavStackProps {
     label: string;
     /** The stack, root first; the last entry is the active top view. */
     views: NavStackView[];
-    /** Accessible label for the back control (default "Back"). */
+    /** Accessible label for the icon-only back control (default "Back"). */
     backLabel?: string;
+    /** The back control's icon (default a chevron-left `LucideIcon`). */
+    backIcon?: KerfUiContent;
+    /**
+     * Visible text beside the back icon, such as the previous view's title
+     * (default: icon only). When set, the text names the control and
+     * `backLabel` is not used.
+     */
+    backText?: string;
+    /** The top toolbar's configuration, forwarded to its `Toolbar`. */
+    toolbarConfig?: NavStackToolbarConfig;
     /** Hide the top toolbar entirely (rare — a fully custom-chrome view). */
     hideToolbar?: boolean;
     /** Optional persistent bottom toolbar used when the active view does not provide one. */
@@ -982,12 +1013,14 @@ interface NavStackProps {
 /**
  * A navigation stack (iOS-style push/pop). Renders every entry stacked, the last
  * one active; `@kerfjs/ui/wire-nav-stack`'s `wireNavStack` slides the content and
- * cross-fades the chrome across a change. A single-pane layout is a `NavStack`
- * with one entry. See `docs/23-app-layouts.md` §3.1.
+ * cross-fades the chrome across a change. Its top chrome is a real `Toolbar`: the
+ * back control and title lead, the active view's `leading` / `center` / `toolbar`
+ * content fills the zones, and `toolbarConfig` configures it. A single-pane
+ * layout is a `NavStack` with one entry. See `docs/23-app-layouts.md` §3.1.
  */
-declare function NavStack({ id, label, views, backLabel, hideToolbar, bottomToolbar, className, slot, }: NavStackProps): kerfjs.SafeHtml;
+declare function NavStack({ id, label, views, backLabel, backIcon, backText, toolbarConfig, hideToolbar, bottomToolbar, className, slot, }: NavStackProps): kerfjs.SafeHtml;
 
-export { NavStack, type NavStackProps, type NavStackView };
+export { NavStack, type NavStackProps, type NavStackToolbarConfig, type NavStackView };
 ```
 
 ## `@kerfjs/ui/wire-nav-stack`

@@ -49,10 +49,49 @@ views.value = [
 `NavStack` renders every entry stacked, the last one active and the rest kept
 mounted (so their DOM state survives) but hidden. Each entry carries a
 `key` (stable identity), `content`, an optional `title`, optional per-view
-`toolbar` actions, and an optional per-view `bottomToolbar`. The component-level
+`leading`, `center`, and trailing `toolbar` groups for the top toolbar, and an
+optional per-view `bottomToolbar`. The component-level
 `bottomToolbar` remains a persistent fallback for views that do not provide one.
 The back control appears automatically once the stack has more than one entry;
 `wireNavStack`'s `onBack` is where the app pops its own signal.
+
+## The top toolbar
+
+The top chrome is a real `Toolbar`, so it follows the same zone,
+group, and responsive rules as every other toolbar. Its leading zone holds the
+back control (a borderless `ToolbarControlGroup`, shown once the stack has
+depth), then the active view's `leading` groups, then the view's `title` as a
+`ToolbarText`. The view's `center` fills the center zone and its `toolbar`
+fills the trailing zone. Give each zone `ToolbarControlGroup`s or `ToolbarText`,
+as in any toolbar.
+
+Configure the toolbar with `toolbarConfig` instead of styling it:
+
+```tsx
+<NavStack
+  id="mail"
+  label="Mail"
+  views={views.value}
+  backText={previousTitle}
+  toolbarConfig={{
+    headingLevel: 1,
+    titleSize: "xlarge",
+    dividerSides: "b",
+    responsive: "wrap",
+  }}
+/>
+```
+
+- `toolbarConfig` forwards the `Toolbar` configuration (`dividerSides`,
+  `centerAlign`, `responsive`, `responsiveAt`, `safeAreaEdges`) and adds
+  `label` (the toolbar's accessible name), `titleSize` (the title's
+  `ToolbarText` size, default `large`), and `headingLevel` (expose the title as
+  a heading; default a plain span). The defaults keep the stack's own chrome:
+  no divider, one 44px control band, and the top and side safe-area edges
+  claimed.
+- `backIcon` replaces the default chevron-left icon. `backText` adds visible
+  text beside it (for example, the previous view's title); visible text names
+  the control, so `backLabel` applies only to the icon-only control.
 
 Focus follows the controlled stack automatically. On push, `wireNavStack`
 remembers the focused descendant of the departing view and moves focus into the

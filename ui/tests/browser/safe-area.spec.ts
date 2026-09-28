@@ -295,7 +295,16 @@ test('NavStack chrome, views, and bottom toolbar split the edges without double 
     left: 0,
     right: 1180,
   });
-  expect(await padding(page, chrome)).toEqual([
+  // The chrome hosts a real Toolbar, which claims the edges the stack touches:
+  // its box paints through them while its zones clear them.
+  const chromeToolbar = `${chrome} > [data-component="toolbar"]`;
+  expect(await padding(page, chrome)).toEqual([0, 0, 0, 0]);
+  expect(await box(page, chromeToolbar)).toMatchObject({
+    top: 0,
+    left: 0,
+    right: 1180,
+  });
+  expect(await padding(page, chromeToolbar)).toEqual([
     INSETS.top,
     8 + INSETS.right,
     0,
