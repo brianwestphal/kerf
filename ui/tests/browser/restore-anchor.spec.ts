@@ -86,6 +86,10 @@ test('an embedded collapsed panel floats its restore control in its own containe
 
   // It scrolls with its container rather than staying on the viewport.
   const before = (await button.boundingBox())!.y;
+  // Point at the page (its padding, outside every inner scroller) before the
+  // wheel: macOS WebKit drops a wheel sent while Playwright's pointer is
+  // still at its initial (0, 0), so the page never scrolled there.
+  await page.locator('main').hover({ position: { x: 12, y: 12 } });
   await page.mouse.wheel(0, 200);
   await expect
     .poll(async () => (await button.boundingBox())!.y)
