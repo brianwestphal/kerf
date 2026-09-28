@@ -107,7 +107,9 @@ The rendered classes — `.kui-content-item`, `.kui-content-item--framed`, and
 `.kui-content-item--pill` — stay public for the rare element that must carry the
 geometry itself (for example a `<ul>` list or a `Text` paragraph in an
 application-owned adapter). Prefer `ContentItem` everywhere else so the framing
-choice is typed.
+choice is typed. `npm run check:guidance` rejects a plain
+`<div class="kui-content-item">` in the package's examples, browser fixtures,
+and UX catalog, since that div is exactly what `ContentItem` renders.
 
 ## Public roles and tokens
 

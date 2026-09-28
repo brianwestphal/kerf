@@ -5,6 +5,7 @@ import '@kerfjs/ui/row.css';
 import '@kerfjs/ui/list.css';
 import '@kerfjs/ui/resizable-region.css';
 
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { List } from '@kerfjs/ui/list';
 import { Pane } from '@kerfjs/ui/pane';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
@@ -19,9 +20,7 @@ import { mount } from 'kerfjs';
 const items = (prefix: string) => (
   <div class="kui-content">
     {Array.from({ length: 40 }, (_, index) => (
-      <div class="kui-content-item">
-        {prefix} {index + 1}
-      </div>
+      <ContentItem>{`${prefix} ${String(index + 1)}`}</ContentItem>
     ))}
   </div>
 );

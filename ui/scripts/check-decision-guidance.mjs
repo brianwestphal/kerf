@@ -1,4 +1,4 @@
-import { access, readFile } from 'node:fs/promises';
+import { access, readdir, readFile } from 'node:fs/promises';
 import { dirname, extname, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -211,11 +211,52 @@ for (const required of [
   if (!missingConcept.includes(required))
     fail(`command-palette adapter example is missing ${required}`);
 }
+// Every ordinary content child carries the shared item geometry: the plain
+// wrapper renders through ContentItem, and the non-div carriers (the `Text`,
+// the `<ul>`, and the control-cluster `<footer>`) keep the public class.
+if (
+  !missingConcept.includes(
+    "import { ContentItem } from '@kerfjs/ui/content-item'",
+  ) ||
+  !/<ContentItem\b/.test(missingConcept)
+)
+  fail(
+    'command-palette adapter example must render its plain content child with ContentItem',
+  );
 const contentItems = missingConcept.match(/\bkui-content-item\b/g) ?? [];
-if (contentItems.length < 4)
+if (contentItems.length < 3)
   fail(
     'command-palette adapter example must give each ordinary content child shared item geometry',
   );
+
+// A hand-written `<div class="kui-content-item">` re-implements ContentItem.
+// The public class stays legitimate on non-div carriers (a `<ul>`, a `Text`,
+// a control-cluster `<footer>`), so only a plain div carrying it is rejected.
+const handWrittenContentItem =
+  /<div\b[^>]*\bclass=(?:"[^"]*|'[^']*|\{`[^`]*)\bkui-content-item\b/;
+async function tsxFilesUnder(directory) {
+  const found = [];
+  for (const entry of await readdir(resolve(root, directory), {
+    withFileTypes: true,
+    recursive: true,
+  })) {
+    if (entry.isFile() && entry.name.endsWith('.tsx'))
+      found.push(resolve(entry.parentPath, entry.name));
+  }
+  return found;
+}
+for (const directory of [
+  'docs/examples',
+  'tests/browser/fixtures',
+  'ux-demo',
+]) {
+  for (const file of await tsxFilesUnder(directory)) {
+    if (handWrittenContentItem.test(await readFile(file, 'utf8')))
+      fail(
+        `${relative(root, file)} hand-writes a kui-content-item div; render it with ContentItem from @kerfjs/ui/content-item`,
+      );
+  }
+}
 if (/from ['"]@kerfjs\/ui\/command-palette/.test(missingConcept))
   fail('command-palette adapter must not invent a package export');
 

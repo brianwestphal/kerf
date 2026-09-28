@@ -12,6 +12,7 @@ import {
   CollapsiblePanel,
   CollapsiblePanelToggle,
 } from '@kerfjs/ui/collapsible-panel';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { Pane } from '@kerfjs/ui/pane';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
@@ -66,7 +67,7 @@ const main = () => (
   <div style="position:relative;display:flex;flex:1 1 0;min-width:0;min-height:0">
     <Pane>
       <div class="kui-content">
-        <div class="kui-content-item">Work area</div>
+        <ContentItem>Work area</ContentItem>
       </div>
     </Pane>
     {toolbar('main')}
@@ -78,7 +79,7 @@ const overlayContent = (title: string) => (
   <div style="position:relative;display:flex;height:100%;min-width:0">
     <Pane>
       <div class="kui-content">
-        <div class="kui-content-item">{title}</div>
+        <ContentItem>{title}</ContentItem>
       </div>
     </Pane>
     {toolbar('overlay')}

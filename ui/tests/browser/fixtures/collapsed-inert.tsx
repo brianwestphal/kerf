@@ -8,6 +8,7 @@ import {
   CollapsiblePanel,
   CollapsiblePanelToggle,
 } from '@kerfjs/ui/collapsible-panel';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { deviceClass } from '@kerfjs/ui/device-class';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
 import { wireSidebar } from '@kerfjs/ui/wire-sidebar';
@@ -45,20 +46,20 @@ const view = () => (
         collapsed={navCollapsed.value}
       >
         <div class="kui-content">
-          <div class="kui-content-item">
+          <ContentItem>
             {navToggle()}
             <button type="button">Inbox</button>
             <button type="button">Projects</button>
-          </div>
+          </ContentItem>
         </div>
       </CollapsiblePanel>
       <main style="flex:1;min-width:0">
         <div class="kui-content">
-          <div class="kui-content-item">
+          <ContentItem>
             <button type="button">Before</button>
             {navCollapsed.value ? navToggle() : null}
             <button type="button">After</button>
-          </div>
+          </ContentItem>
         </div>
       </main>
     </div>
@@ -79,12 +80,12 @@ const view = () => (
         }
       >
         <div class="kui-content">
-          <div class="kui-content-item">
+          <ContentItem>
             <button type="button" data-action="toggle-output">
               Hide output
             </button>
             <button type="button">Clear output</button>
-          </div>
+          </ContentItem>
         </div>
       </ResizableRegion>
     </div>

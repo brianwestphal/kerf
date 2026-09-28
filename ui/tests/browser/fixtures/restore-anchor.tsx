@@ -12,6 +12,7 @@ import {
   CollapsiblePanel,
   CollapsiblePanelToggle,
 } from '@kerfjs/ui/collapsible-panel';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { Pane } from '@kerfjs/ui/pane';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
@@ -53,7 +54,7 @@ const drawersCollapsed = signal(false);
 const content = (title: string) => (
   <Pane>
     <div class="kui-content">
-      <div class="kui-content-item">{title}</div>
+      <ContentItem>{title}</ContentItem>
     </div>
   </Pane>
 );

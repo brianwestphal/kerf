@@ -13,6 +13,7 @@ import '@kerfjs/ui/resizable-region.css';
 import '@kerfjs/ui/list.css';
 import '@kerfjs/ui/list-item.css';
 
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { List } from '@kerfjs/ui/list';
 import { ListItem } from '@kerfjs/ui/list-item';
@@ -50,9 +51,9 @@ const threads = (
 
 const message = (
   <div class="kui-content">
-    <div class="kui-content-item" data-split-config-detail>
+    <ContentItem rootAttributes={{ 'data-split-config-detail': '' }}>
       The interaction pass is ready for review.
-    </div>
+    </ContentItem>
   </div>
 );
 

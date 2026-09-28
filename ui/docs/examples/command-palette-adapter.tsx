@@ -1,5 +1,6 @@
 import '@kerfjs/ui/layout.css';
 
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { Text } from '@kerfjs/ui/text';
 import { delegate, mount, signal } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
@@ -39,7 +40,7 @@ export function mountCommandPaletteAdapter(
         class="app-command-palette kui-content"
         aria-label="Command palette"
       >
-        <div class="kui-content-item">
+        <ContentItem>
           <label for="app-command-query">Search commands</label>
           <input
             id="app-command-query"
@@ -48,7 +49,7 @@ export function mountCommandPaletteAdapter(
             autocomplete="off"
             data-command-query
           />
-        </div>
+        </ContentItem>
         <Text class="kui-content-item" aria-live="polite">
           {matches.length} matching commands
         </Text>

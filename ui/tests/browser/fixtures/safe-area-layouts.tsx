@@ -14,6 +14,7 @@ import '@kerfjs/ui/collapsible-panel.css';
 import '@kerfjs/ui/list.css';
 
 import { CollapsiblePanel } from '@kerfjs/ui/collapsible-panel';
+import { ContentItem } from '@kerfjs/ui/content-item';
 import { List } from '@kerfjs/ui/list';
 import { NavStack } from '@kerfjs/ui/nav-stack';
 import { Pane, type PaneSeparatorSide } from '@kerfjs/ui/pane';
@@ -49,13 +50,12 @@ const drawerCollapsed = signal(false);
 const items = (prefix: string, count = 30) => (
   <div class="kui-content" data-safe-content={prefix}>
     {Array.from({ length: count }, (_, index) => (
-      <div
-        class="kui-content-item"
-        data-safe-item={`${prefix}-${String(index + 1)}`}
-        style="--kui-content-item-border: var(--kui-color-neutral-border-normal)"
+      <ContentItem
+        frame="framed"
+        rootAttributes={{ 'data-safe-item': `${prefix}-${String(index + 1)}` }}
       >
-        {prefix} item {index + 1}
-      </div>
+        {`${prefix} item ${String(index + 1)}`}
+      </ContentItem>
     ))}
   </div>
 );
