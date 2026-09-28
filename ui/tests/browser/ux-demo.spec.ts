@@ -125,7 +125,7 @@ test('omits the removed command-palette recipe and safely falls back from its st
     await page.setViewportSize({ width, height });
     await page.goto('/?component=recipe-compact-toolbar');
     const recipes = page
-      .locator('.kui-catalog__group')
+      .locator('[data-catalog-section]')
       .filter({ has: page.getByText('Recipes', { exact: true }) });
     const rows = recipes.locator('[data-component="list-item"]');
     await expect(rows).toHaveCount(10);
@@ -301,17 +301,17 @@ test('slides the catalog sidebar out and back via a composited transform, not a 
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/');
 
+  // The catalog sidebar is a Workbench rail: its track snaps in one reflow
+  // while its fixed-width content slides on a composited transform.
   const shell = page.locator('.kui-catalog');
-  const sidebar = page.locator('.kui-catalog__sidebar');
-  const collapse = page.locator(
-    '[data-action="toggle-catalog-sidebar"][aria-label="Collapse Kerf catalog"]',
+  const sidebar = page.locator('#kui-catalog-left-rail');
+  const content = sidebar.locator('> .kui-workbench__panel-content');
+  const detail = page.locator(
+    '#kui-catalog > .kui-workbench__center > [data-workbench-main]',
   );
 
-  // Expanded: no offset, and the slide rides on a transform transition (so the
-  // width can snap instantly while the panel animates — the composited path).
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'false');
-  await expect(sidebar).toHaveCSS('transform', 'none');
-  await expect(sidebar).toHaveCSS('transition-property', /transform/);
+  await expect(content).toHaveCSS('transition-property', /transform/);
   const expandedWidth = await sidebar.evaluate(
     (element) => element.getBoundingClientRect().width,
   );
@@ -321,49 +321,32 @@ test('slides the catalog sidebar out and back via a composited transform, not a 
       path: 'test-results/catalog-sidebar-expanded.png',
     });
 
-  await collapse.click();
+  await sidebar.getByRole('button', { name: 'Hide Kerf catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'true');
-
-  // Settles at translateX(-100%): the fixed-width panel is shifted fully offscreen
-  // by its own width (a negative e-component), then hidden from the tab order.
+  await expect(sidebar).toHaveAttribute('data-collapsed', 'true');
+  await expect(sidebar).toHaveAttribute('inert', '');
+  // The track is zero at once; the detail takes the full width.
   await expect
     .poll(() =>
-      sidebar.evaluate(
-        (element) =>
-          new DOMMatrixReadOnly(window.getComputedStyle(element).transform).e,
-      ),
+      sidebar.evaluate((element) => element.getBoundingClientRect().width),
     )
-    .toBeLessThanOrEqual(-(expandedWidth - 1));
-  await expect(sidebar).toHaveCSS('visibility', 'hidden');
-  // The detail pane keeps its position; the width change is one instant reflow.
+    .toBeLessThanOrEqual(1);
   await expect
-    .poll(() =>
-      shell.evaluate((element) =>
-        window.getComputedStyle(element).gridTemplateColumns.startsWith('0px'),
-      ),
-    )
-    .toBe(true);
+    .poll(async () => (await detail.boundingBox())?.x ?? -1)
+    .toBeLessThanOrEqual(1);
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/catalog-sidebar-collapsed.png',
     });
 
-  // Expanding restores it: visible again and back to the identity transform.
-  await page
-    .locator(
-      '[data-action="toggle-catalog-sidebar"][aria-label="Expand Kerf catalog"]',
-    )
-    .click();
+  // The restore is the relocated toggle in the entry toolbar.
+  await detail.getByRole('button', { name: 'Show Kerf catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'false');
-  await expect(sidebar).toHaveCSS('visibility', 'visible');
   await expect
     .poll(() =>
-      sidebar.evaluate(
-        (element) =>
-          new DOMMatrixReadOnly(window.getComputedStyle(element).transform).e,
-      ),
+      sidebar.evaluate((element) => element.getBoundingClientRect().width),
     )
-    .toBe(0);
+    .toBeCloseTo(expandedWidth, 0);
 });
 
 test('keeps an icon-only control-group wa-button highlight at least square (min-width == height)', async ({
@@ -768,7 +751,12 @@ test('insets a self-bordered control and bare text so their edges line up in a c
   expect(Math.abs(controlBox - childBox)).toBeLessThanOrEqual(0.5);
 
   await page.goto('/?component=list-inset-text');
-  const text = page.locator('[data-component="list-inset-text"]').first();
+  // The first specimen, not an example note (itself a ListInsetText).
+  const text = page
+    .locator(
+      '[data-demo] [data-component="list-inset-text"]:not([data-catalog-example-note])',
+    )
+    .first();
   await expect(text).toBeVisible();
   // Bare text carries the content-item geometry: 8px inline margin, 1px border, 8px padding.
   await expect(text).toHaveCSS('border-top-width', '1px');
@@ -1192,12 +1180,12 @@ test('links catalog details to their first-party source and existing guidance', 
         document.documentElement.clientWidth,
       resourceOverflowX: window.getComputedStyle(
         document.querySelector<HTMLElement>(
-          '.kui-catalog__footer .kui-toolbar-control-group[data-overflow="scroll"]',
+          '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__footer .kui-toolbar-control-group[data-overflow="scroll"]',
         )!,
       ).overflowX,
       footerSections: [
         ...document.querySelectorAll<HTMLElement>(
-          '.kui-catalog__footer .kui-toolbar__leading, .kui-catalog__footer .kui-toolbar__trailing',
+          '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__footer .kui-toolbar__leading, #kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__footer .kui-toolbar__trailing',
         ),
       ].map((section) => ({
         top: section.getBoundingClientRect().top,
@@ -1208,7 +1196,7 @@ test('links catalog details to their first-party source and existing guidance', 
       })),
       links: [
         ...document.querySelectorAll<HTMLElement>(
-          '.kui-catalog__footer [data-component="toolbar-action-link"]',
+          '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__footer [data-component="toolbar-action-link"]',
         ),
       ].map((link) => {
         const linkRect = link.getBoundingClientRect();
@@ -1658,11 +1646,11 @@ test('applies shared pane and content-item geometry across responsive and 200% z
           'border-top-left-radius',
         ),
         scrollOwners: document.querySelectorAll(
-          '.kui-catalog__sidebar .kui-pane__content',
+          '#kui-catalog-left-rail .kui-pane__content',
         ).length,
         sidebarOverflow: window.getComputedStyle(
           document.querySelector<HTMLElement>(
-            '.kui-catalog__sidebar .kui-pane__content',
+            '#kui-catalog-left-rail .kui-pane__content',
           )!,
         ).overflowY,
         horizontalOverflow:
@@ -1682,7 +1670,9 @@ test('applies shared pane and content-item geometry across responsive and 200% z
     });
     expect(geometry.horizontalOverflow).toBeLessThanOrEqual(1);
     await expect(
-      page.locator('.kui-catalog__items [data-component="list-item"]').first(),
+      page
+        .locator('[data-catalog-section] [data-component="list-item"]')
+        .first(),
     ).toHaveAttribute('data-multiline', 'true');
 
     if (browserName === 'chromium')
@@ -1704,10 +1694,10 @@ test('scrolls the complete catalog sidebar and detail at wide and narrow sizes',
   await page.goto('/?component=wa-zoomable-frame');
 
   const sidebarScroll = page.locator(
-    '.kui-catalog__sidebar .kui-pane__content',
+    '#kui-catalog-left-rail .kui-pane__content',
   );
   const detailScroll = page.locator(
-    '.kui-catalog__detail > .kui-pane > .kui-pane__content',
+    '#kui-catalog > .kui-workbench__center > [data-workbench-main] > .kui-pane > .kui-pane__content',
   );
   for (const [name, scrollOwner] of [
     ['sidebar', sidebarScroll],
@@ -1734,26 +1724,36 @@ test('scrolls the complete catalog sidebar and detail at wide and narrow sizes',
       path: 'test-results/catalog-scroll-bottom-wide.png',
     });
 
+  // Narrow, the detail pane stays the one scroll owner (the sidebar is a
+  // closed overlay); the document itself never scrolls.
   await page.setViewportSize({ width: 390, height: 600 });
-  await page.goto('/?component=wa-zoomable-frame');
-  const documentRange = await page.evaluate(
-    () => document.documentElement.scrollHeight - window.innerHeight,
-  );
-  expect(documentRange).toBeGreaterThan(0);
-  await page.evaluate(() =>
-    window.scrollTo(0, document.documentElement.scrollHeight),
+  await page.goto('/?component=row');
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollHeight - window.innerHeight,
+    ),
+  ).toBeLessThanOrEqual(1);
+  expect(
+    await detailScroll.evaluate(
+      (element) => element.scrollHeight - element.clientHeight,
+    ),
+  ).toBeGreaterThan(0);
+  await detailScroll.evaluate((element) =>
+    element.scrollTo(0, element.scrollHeight),
   );
   await expect
     .poll(() =>
-      page.evaluate(
-        () =>
-          window.scrollY +
-          window.innerHeight -
-          document.documentElement.scrollHeight,
+      detailScroll.evaluate(
+        (element) =>
+          element.scrollTop + element.clientHeight - element.scrollHeight,
       ),
     )
     .toBeGreaterThanOrEqual(-1);
-  await expect(page.locator('.kui-catalog__footer')).toBeInViewport();
+  await expect(
+    page.locator(
+      '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__footer',
+    ),
+  ).toBeInViewport();
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/catalog-scroll-bottom-narrow.png',
@@ -1767,13 +1767,28 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
   await page.setViewportSize({ width: 1440, height: 600 });
   await page.goto('/?component=row');
 
-  const detailScroll = page.locator('.kui-catalog__detail-preview');
+  const detailScroll = page.locator(
+    '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__content',
+  );
   const wideGeometry = await page.evaluate(() => {
     const stage = document.querySelector<HTMLElement>('.kui-catalog__stage')!;
     const scrollOwner = document.querySelector<HTMLElement>(
-      '.kui-catalog__detail-preview',
+      '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__content',
     )!;
     return {
+      // The description's margin box, as it takes its place in the column.
+      descriptionHeight: (() => {
+        const description = document.querySelector<HTMLElement>(
+          '[data-catalog-description]',
+        );
+        if (!description) return 0;
+        const style = window.getComputedStyle(description);
+        return (
+          description.offsetHeight +
+          Number.parseFloat(style.marginTop) +
+          Number.parseFloat(style.marginBottom)
+        );
+      })(),
       stageHeight: stage.offsetHeight,
       stageContentHeight: stage.scrollHeight,
       viewportHeight: scrollOwner.clientHeight,
@@ -1784,10 +1799,16 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
   expect(
     Math.abs(wideGeometry.stageHeight - wideGeometry.stageContentHeight),
   ).toBeLessThanOrEqual(1);
-  // Both heights round a fractional layout height independently (Firefox on
-  // Linux measured 1791 vs 1792), so allow the same 1px as the stage check.
+  // The scroller holds the entry description above the stage, then the
+  // stage itself: nothing overflows past the stage. Both heights round a
+  // fractional layout height independently (Firefox on Linux measured 1791
+  // vs 1792), so allow the same 1px as the stage check.
   expect(
-    Math.abs(wideGeometry.scrollHeight - wideGeometry.stageContentHeight),
+    Math.abs(
+      wideGeometry.scrollHeight -
+        wideGeometry.stageContentHeight -
+        wideGeometry.descriptionHeight,
+    ),
   ).toBeLessThanOrEqual(1);
   await detailScroll.evaluate((element) =>
     element.scrollTo(0, element.scrollHeight),
@@ -1806,7 +1827,9 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
       .querySelector<HTMLElement>('.kui-catalog__stage')!
       .getBoundingClientRect();
     const scrollOwner = document
-      .querySelector<HTMLElement>('.kui-catalog__detail-preview')!
+      .querySelector<HTMLElement>(
+        '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__content',
+      )!
       .getBoundingClientRect();
     return {
       stageBottom: stage.bottom,
@@ -1836,9 +1859,11 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
       path: 'test-results/catalog-checkerboard-below-fold-wide.png',
     });
 
-  await expect(detailScroll).toHaveCSS('background-repeat', 'repeat');
-  await expect(detailScroll).toHaveCSS('background-size', '24px 24px');
-  const backgroundImage = await detailScroll.evaluate(
+  // The checkerboard rides on the stage, which grows with the content.
+  const stage = page.locator('.kui-catalog__stage');
+  await expect(stage).toHaveCSS('background-repeat', 'repeat');
+  await expect(stage).toHaveCSS('background-size', '24px 24px');
+  const backgroundImage = await stage.evaluate(
     (element) => window.getComputedStyle(element).backgroundImage,
   );
   expect(backgroundImage).toContain('data:image/svg+xml');
@@ -1846,11 +1871,14 @@ test('tiles the catalog checkerboard through below-fold preview content', async 
 
   await page.setViewportSize({ width: 390, height: 600 });
   await page.goto('/?component=row');
-  await page
-    .locator('.kui-catalog__stage')
-    .evaluate((element) => element.scrollIntoView({ block: 'end' }));
+  // Narrow, the preview scroller (not the document) carries the tiled stage.
+  await detailScroll.evaluate((element) =>
+    element.scrollTo(0, element.scrollHeight),
+  );
   await expect(page.locator('.kui-catalog__stage')).toBeInViewport();
-  expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  expect(
+    await detailScroll.evaluate((element) => element.scrollTop),
+  ).toBeGreaterThan(0);
 
   const narrowStage = await page.locator('.kui-catalog__stage').boundingBox();
   if (!narrowStage) throw new Error('Missing narrow catalog stage bounds');
@@ -1917,7 +1945,8 @@ test('reveals controlled Catalog selections only in the desktop sidebar without 
     .toContain('toolbar');
   await expect(theme).toBeFocused();
 
-  await page.setViewportSize({ width: 800, height: 600 });
+  // Below the Workbench's 704px breakpoint the sidebar is a closed overlay.
+  await page.setViewportSize({ width: 640, height: 600 });
   await page.goto('/?component=wa-zoomable-frame');
   await page.evaluate(
     () =>
@@ -1997,10 +2026,14 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in recipe note
   await page.goto('/?component=recipe-app-shell');
 
   const shell = page.locator('.kui-catalog');
-  const sidebar = page.locator('.kui-catalog__sidebar');
-  const pageHeader = page.locator('.kui-catalog__header');
+  const sidebar = page.locator('#kui-catalog-left-rail');
+  const pageHeader = page.locator(
+    '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__header',
+  );
   const stage = page.locator('.kui-catalog__stage');
-  const footer = page.locator('.kui-catalog__footer');
+  const footer = page.locator(
+    '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__footer',
+  );
   // Recipe notes are catalog-owned example notes, not recipe markup.
   const note = stage.locator('[data-catalog-example-note]');
 
@@ -2036,26 +2069,42 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in recipe note
   );
 
   const shellGeometry = await page.evaluate(() => {
-    const style = (selector: string) =>
-      window.getComputedStyle(document.querySelector<HTMLElement>(selector)!);
-    const previewStyle = style('.kui-catalog__detail-preview');
+    const pane =
+      '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"]';
+    const element = (selector: string) =>
+      document.querySelector<HTMLElement>(selector)!;
+    // The header and footer sit on the work area's opaque surface, not on the
+    // stage's checkerboard.
+    const surface = (start: HTMLElement) => {
+      for (
+        let node: HTMLElement | null = start;
+        node;
+        node = node.parentElement
+      ) {
+        const color = window.getComputedStyle(node).backgroundColor;
+        if (color !== 'rgba(0, 0, 0, 0)') return color;
+      }
+      return 'rgba(0, 0, 0, 0)';
+    };
+    const header = element(`${pane} > .kui-pane__header`);
+    const footer = element(`${pane} > .kui-pane__footer`);
     return {
-      headerBackground: style('.kui-catalog__header').backgroundColor,
-      headerBorder: Number.parseFloat(
-        style('.kui-catalog__header').borderBottomWidth,
-      ),
-      previewBackgroundImage: previewStyle.backgroundImage,
-      footerBackground: style('.kui-catalog__footer').backgroundColor,
-      footerBorder: Number.parseFloat(
-        style('.kui-catalog__footer').borderTopWidth,
-      ),
+      headerBackground: surface(header),
+      headerDivider:
+        header.lastElementChild?.getAttribute('divider-sides') ?? '',
+      previewBackgroundImage: window.getComputedStyle(
+        element('.kui-catalog__stage'),
+      ).backgroundImage,
+      footerBackground: surface(footer),
+      footerDivider:
+        footer.firstElementChild?.getAttribute('divider-sides') ?? '',
     };
   });
   expect(shellGeometry.headerBackground).not.toBe('rgba(0, 0, 0, 0)');
-  expect(shellGeometry.headerBorder).toBe(1);
+  expect(shellGeometry.headerDivider).toContain('b');
   expect(shellGeometry.previewBackgroundImage).toContain('data:image/svg+xml');
   expect(shellGeometry.footerBackground).not.toBe('rgba(0, 0, 0, 0)');
-  expect(shellGeometry.footerBorder).toBe(1);
+  expect(shellGeometry.footerDivider).toContain('t');
 
   await page.getByRole('button', { name: 'Show recipe notes' }).click();
   await expect(page.locator('[data-demo-stage-inner]')).toHaveAttribute(
@@ -2072,16 +2121,22 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in recipe note
   expect(noteBox.y + noteBox.height).toBeLessThanOrEqual(specimenBox.y + 1);
   await expect(page.locator('.catalog-log')).toHaveText('Recipe notes shown');
 
-  await page.getByRole('button', { name: 'Collapse Kerf catalog' }).click();
+  await page.getByRole('button', { name: 'Hide Kerf catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'true');
   await expect(sidebar).toBeHidden();
   await expect(
-    pageHeader.getByRole('button', { name: 'Expand Kerf catalog' }),
+    pageHeader.getByRole('button', { name: 'Show Kerf catalog' }),
   ).toBeVisible();
   await expect
     .poll(
       async () =>
-        (await page.locator('.kui-catalog__detail').boundingBox())?.x ?? -1,
+        (
+          await page
+            .locator(
+              '#kui-catalog > .kui-workbench__center > [data-workbench-main]',
+            )
+            .boundingBox()
+        )?.x ?? -1,
     )
     .toBeLessThanOrEqual(1);
   if (browserName === 'chromium')
@@ -2089,7 +2144,7 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in recipe note
       path: 'test-results/catalog-application-shell-collapsed-wide.png',
       fullPage: true,
     });
-  await page.getByRole('button', { name: 'Expand Kerf catalog' }).click();
+  await page.getByRole('button', { name: 'Show Kerf catalog' }).click();
   await expect(shell).toHaveAttribute('data-sidebar-collapsed', 'false');
   await expect(sidebar).toBeVisible();
   await expect(
@@ -4182,7 +4237,7 @@ test('labels composition entries without repeating the kind in their names', asy
     page.locator('[data-item-id="feedback"] .kui-list-item__label'),
   ).toHaveText('Feedback');
 
-  const sidebar = page.locator('.kui-catalog__sidebar');
+  const sidebar = page.locator('#kui-catalog-left-rail');
   if (browserName === 'chromium') {
     await sidebar.screenshot({
       path: 'test-results/composition-tags-wide.png',
@@ -4224,7 +4279,7 @@ test('labels discouraged Web Awesome entries in the catalog sidebar', async ({
     page.locator('[data-item-id="wa-popup"] .kui-list-item__status'),
   ).toHaveCount(0);
 
-  const sidebar = page.locator('.kui-catalog__sidebar');
+  const sidebar = page.locator('#kui-catalog-left-rail');
   await page
     .locator('[data-item-id="wa-button-group"]')
     .scrollIntoViewIfNeeded();
@@ -4259,10 +4314,10 @@ test('catalog routes every production component family and supports its stateful
   test.setTimeout(90_000);
   await page.goto('/');
   await expect(
-    page.locator('.kui-catalog__sidebar [data-component="list-header"]'),
+    page.locator('#kui-catalog-left-rail [data-component="list-header"]'),
   ).toHaveCount(catalogSections.length + 1);
   await expect(
-    page.locator('.kui-catalog__sidebar [data-component="list-item"]'),
+    page.locator('#kui-catalog-left-rail [data-component="list-item"]'),
   ).toHaveCount(kerfCatalog.length);
   const ecosystemToggle = page.getByRole('button', {
     name: 'Web Awesome',
@@ -4272,9 +4327,13 @@ test('catalog routes every production component family and supports its stateful
   await ecosystemToggle.click();
   await expect(ecosystemToggle).toHaveAttribute('aria-expanded', 'true');
   await expect(
-    page.locator('.kui-catalog__sidebar [data-component="list-item"]'),
+    page.locator('#kui-catalog-left-rail [data-component="list-item"]'),
   ).toHaveCount(catalog.length);
-  await expect(page.locator('[data-catalog-secondary] h3')).toHaveText([
+  await expect(
+    page.locator(
+      '[data-catalog-secondary] [data-catalog-section] > [data-component="list-header"]',
+    ),
+  ).toHaveText([
     'Actions',
     'Forms',
     'Layout',
@@ -4299,11 +4358,11 @@ test('catalog routes every production component family and supports its stateful
     }
   }
 
-  await page.locator('.kui-catalog__sidebar [data-item-id="list"]').click();
+  await page.locator('#kui-catalog-left-rail [data-item-id="list"]').click();
   await expect(page).toHaveURL(/component=list/);
   await expect(page.locator('[data-demo="list"]')).toBeVisible();
   await expect(
-    page.locator('.kui-catalog__sidebar [data-item-id="list"]'),
+    page.locator('#kui-catalog-left-rail [data-item-id="list"]'),
   ).toHaveAttribute('aria-current', 'page');
   const menuRelationships = page.locator('[data-catalog-related]');
   await expect(menuRelationships.locator('..')).toHaveAttribute(
@@ -4315,7 +4374,7 @@ test('catalog routes every production component family and supports its stateful
   await expect(relatedTrigger).toContainText('Components');
   await relatedTrigger.click();
   await expect(
-    menuRelationships.locator('.kui-catalog__related-heading', {
+    menuRelationships.locator('h3', {
       hasText: 'Uses',
     }),
   ).toBeVisible();
@@ -4326,7 +4385,7 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('[data-demo="list-item"]')).toBeVisible();
   await menuRelationships.locator('wa-button[slot="trigger"]').click();
   await expect(
-    menuRelationships.locator('.kui-catalog__related-heading', {
+    menuRelationships.locator('h3', {
       hasText: 'Used by',
     }),
   ).toBeVisible();
@@ -4350,7 +4409,7 @@ test('catalog routes every production component family and supports its stateful
   await page.locator('[data-action="toggle-motion"]').click();
   await expect(page.locator('html')).toHaveClass(/demo-reduced-motion/);
 
-  await page.locator('.kui-catalog__sidebar [data-item-id="tabs"]').click();
+  await page.locator('#kui-catalog-left-rail [data-item-id="tabs"]').click();
   await expect(
     page.locator('[data-demo="tabs"] [data-component="tab-bar"]').first(),
   ).toHaveAttribute('data-tab-bar-id', 'app-tab-selected');
@@ -4394,7 +4453,9 @@ test('catalog routes every production component family and supports its stateful
       .locator('[data-demo="tabs"]')
       .screenshot({ path: 'test-results/app-tab-shared-tab-bar.png' });
 
-  await page.locator('.kui-catalog__sidebar [data-item-id="feedback"]').click();
+  await page
+    .locator('#kui-catalog-left-rail [data-item-id="feedback"]')
+    .click();
   const feedbackBanner = page.locator('[data-component="state-banner"]');
   for (const tone of ['pop', 'success', 'warning', 'danger']) {
     await page.locator('[data-action="cycle-tone"]').click();
@@ -6550,7 +6611,7 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
       const committedElement =
         document.querySelector<HTMLElement>('[data-region-size]')!;
       const statusElement = committedElement.closest<HTMLElement>(
-        '.kui-catalog__status',
+        '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__footer [data-component="row"]',
       )!;
       const handleElement = element.querySelector<HTMLElement>(
         '[data-kui-resize-handle]',
@@ -6577,7 +6638,9 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
       return {
         committedFitsFooter: contains(statusRect, committedRect),
         committedInFooter:
-          committedElement.closest('.kui-catalog__status') === statusElement,
+          committedElement.closest(
+            '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"] > .kui-pane__footer [data-component="row"]',
+          ) === statusElement,
         documentOverflow:
           document.documentElement.scrollWidth -
           document.documentElement.clientWidth,
@@ -6789,7 +6852,12 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
   await page.locator('html').evaluate((element) => {
     element.style.fontSize = '200%';
   });
-  await handle.hover();
+  // At 200% the handle is taller than the catalog's preview scroller, whose
+  // fixed footer covers its center: bring its top into view and hover there.
+  await handle.evaluate((element) =>
+    element.scrollIntoView({ block: 'start' }),
+  );
+  await handle.hover({ position: { x: 10, y: 24 } });
   const zoomed = await responsiveGeometry();
   expect(zoomed).toMatchObject({
     committedFitsFooter: true,
@@ -6994,7 +7062,7 @@ test('communicates preferred Kerf patterns on ecosystem alternatives', async ({
     await page.goto(`/?component=${route}`);
     await expect(
       page
-        .locator('.kui-catalog__header')
+        .locator('[data-catalog-description]')
         .getByText(description, { exact: true }),
     ).toBeVisible();
   }

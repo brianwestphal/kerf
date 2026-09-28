@@ -23,12 +23,14 @@ import {
   floatingRestore,
   mainBody,
   panelBody,
+  type WorkbenchChromePlacement,
   type WorkbenchMainBottomToolbar,
   type WorkbenchMainToolbar,
   type WorkbenchPanelToolbar,
 } from './workbench-toolbars.js';
 
 export type {
+  WorkbenchChromePlacement,
   WorkbenchMainBottomToolbar,
   WorkbenchMainToolbar,
   WorkbenchPanelToggle,
@@ -132,10 +134,28 @@ export interface WorkbenchProps {
    */
   mainToolbar?: WorkbenchMainToolbar;
   /**
+   * Fixed content under `mainToolbar` — supporting copy such as a
+   * description — divided from the scrolling `main` below it.
+   */
+  mainHeader?: KerfUiContent;
+  /**
+   * Fixed content over `mainBottomToolbar` — a status line or a resource
+   * toolbar — divided from the scrolling `main` above it.
+   */
+  mainFooter?: KerfUiContent;
+  /**
    * The work area's bottom toolbar. A collapsed drawer's `constant` groups and
    * toggle trail it; without it they float in the work area's corner.
    */
   mainBottomToolbar?: WorkbenchMainBottomToolbar;
+  /**
+   * Whether `mainToolbar` and `mainHeader` stay pinned (`fixed`, default) or
+   * scroll away with `main` (`scroll`) — useful where large text would leave
+   * pinned chrome little room.
+   */
+  mainHeaderPlacement?: WorkbenchChromePlacement;
+  /** The same for `mainFooter` and `mainBottomToolbar` (default `fixed`). */
+  mainFooterPlacement?: WorkbenchChromePlacement;
   leftRail?: WorkbenchPanel;
   rightRail?: WorkbenchPanel;
   bottomDrawer?: WorkbenchPanel;
@@ -413,7 +433,11 @@ export function Workbench({
   rightRail,
   bottomDrawer,
   mainToolbar,
+  mainHeader,
+  mainFooter,
   mainBottomToolbar,
+  mainHeaderPlacement,
+  mainFooterPlacement,
   mainMinSize = WORKBENCH_MAIN_MIN_SIZE,
   mainMinHeight = WORKBENCH_MAIN_MIN_HEIGHT,
   className = '',
@@ -458,7 +482,11 @@ export function Workbench({
             workbenchId: id,
             main,
             mainToolbar,
+            mainHeader,
+            mainFooter,
             mainBottomToolbar,
+            mainHeaderPlacement,
+            mainFooterPlacement,
             leftRail,
             rightRail,
             bottomDrawer,

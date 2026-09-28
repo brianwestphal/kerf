@@ -1,22 +1,12 @@
+/* The catalog fills its container, which must have a definite height (the
+   `document.css` baseline's `.kui-app-root`, as for any Workbench). */
 .kui-catalog {
-  --kui-catalog-sidebar-width: remify(288px);
-  --kui-catalog-content-measure: remify(1120px);
-
-  display: grid;
-  height: 100vh;
-  grid-template-columns: var(--kui-catalog-sidebar-width) minmax(0, 1fr);
-  overflow: hidden;
+  height: 100%;
 }
 
-.kui-catalog[data-sidebar-collapsed="true"] {
-  grid-template-columns: 0 minmax(0, 1fr);
-}
-
-@media (max-width: remify(832px)) {
-  .kui-catalog,
-  .kui-catalog[data-sidebar-collapsed="true"] {
-    height: auto;
-    min-height: 100vh;
-    grid-template-columns: 1fr;
-  }
+/* The brand mark, sized to sit inside a toolbar group. */
+.kui-catalog__mark {
+  display: block;
+  width: remify(34px);
+  height: remify(34px);
 }

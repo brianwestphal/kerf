@@ -53,6 +53,11 @@ export type CatalogStageRootAttributes = Readonly<
 >;
 
 export interface CatalogProps {
+  /**
+   * The catalog's `id` (default `kui-catalog`). Its Workbench derives the
+   * sidebar's id from it (`<id>-left-rail`), which `wireCatalog` wires.
+   */
+  id?: string;
   brand: CatalogBrand;
   sections: readonly CatalogSection[];
   active: string;
@@ -70,6 +75,16 @@ export interface CatalogProps {
   toggleSidebarAction?: string;
   toggleThemeAction?: string;
   toggleSecondaryAction?: string;
+  /**
+   * Whether the entry toolbar stays pinned above the preview (`fixed`,
+   * default) or scrolls away with it (`scroll`).
+   */
+  headerPlacement?: 'fixed' | 'scroll';
+  /**
+   * Whether the status and resource footer stays pinned below the preview
+   * (`fixed`, default) or scrolls with it (`scroll`).
+   */
+  footerPlacement?: 'fixed' | 'scroll';
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;

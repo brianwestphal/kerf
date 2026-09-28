@@ -280,12 +280,9 @@ if (!(await exists(catalogComponents))) {
   const claimedRoots = new Map();
 
   for (const source of componentSources) {
-    const stylesheet = source.slice(0, -extname(source).length) + '.css';
-    if (!(await exists(stylesheet))) {
-      errors.push(
-        `${relative(source)} is a catalog visual component without same-basename stylesheet ${relative(stylesheet)}`,
-      );
-    }
+    // A catalog component composed purely from kerf ui components needs no
+    // stylesheet of its own (dogfooding); any stylesheet it does have must
+    // pair with it by basename and stay within its rendered classes (below).
     const expectedComponent = basename(source, '.tsx')
       .split('-')
       .map((part) => part[0].toUpperCase() + part.slice(1))

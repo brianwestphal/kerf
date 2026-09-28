@@ -313,4 +313,85 @@ describe('Workbench panel toolbars', () => {
       'navigator-constant',
     ]);
   });
+
+  it('pins header and footer chrome by default and lets each scroll with the content', () => {
+    const base = {
+      id: 'wb',
+      label: 'Studio',
+      main: raw('<p data-main>main</p>'),
+      mainToolbar: { label: 'Editor', title: title('Editor') },
+      mainHeader: raw('<p data-header>about</p>'),
+      mainFooter: raw('<p data-footer>status</p>'),
+      mainBottomToolbar: { label: 'Status', trailing: group('status') },
+    };
+    const pane = (host: Element) =>
+      host.querySelector('[data-workbench-main] > [data-component="pane"]')!;
+    const pinned = pane(render(base));
+    expect(
+      pinned.querySelector(':scope > .kui-pane__header [data-header]'),
+    ).not.toBeNull();
+    expect(
+      pinned.querySelector(':scope > .kui-pane__footer [data-footer]'),
+    ).not.toBeNull();
+    // The header chrome's single divider sits under mainHeader, the footer's
+    // over mainFooter.
+    expect(
+      pinned
+        .querySelector(
+          ':scope > .kui-pane__header > [data-component="toolbar"]',
+        )!
+        .getAttribute('divider-sides'),
+    ).toBeNull();
+
+    const scrolling = pane(
+      render({
+        ...base,
+        mainHeaderPlacement: 'scroll',
+        mainFooterPlacement: 'scroll',
+      }),
+    );
+    expect(scrolling.querySelector(':scope > .kui-pane__header')).toBeNull();
+    expect(scrolling.querySelector(':scope > .kui-pane__footer')).toBeNull();
+    const column = scrolling.querySelector(
+      ':scope > .kui-pane__content > [data-component="list"]',
+    )!;
+    const order = [
+      ...column.querySelectorAll('[data-header], [data-main], [data-footer]'),
+    ].map(
+      (node) =>
+        [...node.attributes].find((a) => a.name.startsWith('data-'))!.name,
+    );
+    expect(order).toEqual(['data-header', 'data-main', 'data-footer']);
+
+    // Only the footer scrolling keeps the header pinned.
+    const footerOnly = pane(render({ ...base, mainFooterPlacement: 'scroll' }));
+    expect(
+      footerOnly.querySelector(':scope > .kui-pane__header [data-header]'),
+    ).not.toBeNull();
+    expect(
+      footerOnly.querySelector(':scope > .kui-pane__content [data-footer]'),
+    ).not.toBeNull();
+
+    // A header or footer on its own still composes the Pane.
+    expect(
+      pane(
+        render({
+          id: 'wb',
+          label: 'S',
+          main: raw('<p>m</p>'),
+          mainFooter: raw('<p data-only>f</p>'),
+        }),
+      ).querySelector(':scope > .kui-pane__footer [data-only]'),
+    ).not.toBeNull();
+    expect(
+      pane(
+        render({
+          id: 'wb',
+          label: 'S',
+          main: raw('<p>m</p>'),
+          mainHeader: raw('<p data-only>h</p>'),
+        }),
+      ).querySelector(':scope > .kui-pane__header [data-only]'),
+    ).not.toBeNull();
+  });
 });

@@ -193,6 +193,15 @@ toggle, so it never depends on a control it covers. An app's own
 />
 ```
 
+The work area's `Pane` can carry more fixed chrome: `mainHeader` renders under
+`mainToolbar` (supporting copy) and `mainFooter` over `mainBottomToolbar` (a status
+line or a resource toolbar), each divided from the scrolling `main`.
+`mainHeaderPlacement` and `mainFooterPlacement` (`"fixed"` by default, or
+`"scroll"`) let that header or footer chrome scroll away with `main` instead —
+useful where large text would leave pinned chrome little room. `mainToolbar` also
+takes the `Toolbar`'s `responsive` / `responsiveAt` policy; `responsive: "wrap"`
+keeps a long title whole and wraps its actions below it.
+
 Size a rail so its title and groups fit at its narrowest (a resizable rail's
 `min`); a toolbar that cannot hold them drops the title rather than
 truncating it. `constant` content renders in both places while the panel is

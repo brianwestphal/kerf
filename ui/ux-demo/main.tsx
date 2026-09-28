@@ -15,7 +15,7 @@ import {
 import { catalogResources } from '@kerfjs/ui/catalog-resources';
 import { LoadingSpinner } from '@kerfjs/ui/loading-spinner';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { Row } from '@kerfjs/ui/row';
+import { Text } from '@kerfjs/ui/text';
 import { readTokenSearchField } from '@kerfjs/ui/token-search-field';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import {
@@ -440,16 +440,20 @@ mount(app, () => {
       }
       status={
         <>
-          <output class="catalog-log" aria-live="polite">
-            {actionLog.value}
-          </output>
+          <Text variant="span" size="compact" tone="quiet">
+            <output class="catalog-log" aria-live="polite">
+              {actionLog.value}
+            </output>
+          </Text>
           {selected.id === 'resize' ? (
-            <Row vAlign="baseline" gap="2xs">
-              <span>Committed width</span>
+            <Text variant="span" size="compact" tone="quiet">
+              Committed width{' '}
               <strong data-region-size>{regionSize.value}px</strong>
-            </Row>
+            </Text>
           ) : null}
-          <span>{statusLabel}</span>
+          <Text variant="span" size="compact" tone="quiet">
+            {statusLabel}
+          </Text>
         </>
       }
       geometryOverlay={selected.kind === 'component'}
@@ -938,13 +942,6 @@ const stopCatalog = wireCatalog(app, {
     actionLog.value = sidebarCollapsed.value
       ? 'Component catalog collapsed'
       : 'Component catalog expanded';
-    window.requestAnimationFrame(() =>
-      document
-        .querySelector<HTMLButtonElement>(
-          `[aria-label="${sidebarCollapsed.value ? 'Expand' : 'Collapse'} Kerf catalog"]`,
-        )
-        ?.focus(),
-    );
   },
   onToggleTheme: () => {
     explicitTheme = oppositeDemoTheme(effectiveTheme.value);
@@ -963,6 +960,7 @@ const stopCatalog = wireCatalog(app, {
   toggleThemeAction: 'toggle-theme',
   toggleSecondaryAction: 'toggle-webawesome-catalog',
   revealSelection: true,
+  collapsed: sidebarCollapsed,
 });
 const stopGeometryOverlay = wireCatalogGeometryOverlay(app);
 const stopResize = wireResizableRegions(app, {

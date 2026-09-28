@@ -102,8 +102,8 @@ export function wireWorkbenchOverlays(
   // close still counts as leaving focus stranded in it.
   let pressedFocus: WorkbenchOverlayPanel | undefined;
   /**
-   * The focused `aria-controls` control a click just activated, kept for a
-   * couple of frames: the toggle a panel opens from, even once the app's
+   * The `aria-controls` control a click just activated, kept for a couple of
+   * frames: the toggle a panel opens or closes from, even once the app's
    * render has removed it.
    */
   let activated: HTMLElement | undefined;
@@ -267,9 +267,21 @@ export function wireWorkbenchOverlays(
     childList: true,
     subtree: true,
   });
+  // The breakpoints are in rem, so a root font-size change (a text-size
+  // setting applied after load) moves a panel across them without resizing
+  // the Workbench. A 1rem probe outside the app's tree reports that change.
+  const remProbe = ownerDocument.createElement('div');
+  remProbe.setAttribute('aria-hidden', 'true');
+  remProbe.style.cssText =
+    'position:absolute;width:1rem;height:0;overflow:hidden;visibility:hidden;pointer-events:none';
+  if (resizeObserver) {
+    ownerDocument.body.append(remProbe);
+    resizeObserver.observe(remProbe);
+  }
   disposers.push(() => {
     mutationObserver.disconnect();
     resizeObserver?.disconnect();
+    remProbe.remove();
   });
   track();
   sync();
@@ -290,8 +302,12 @@ export function wireWorkbenchOverlays(
           // it would be stranded in a hidden panel. So would focus that a
           // press inside it dropped to the body (see `pressedFocus`).
           const active = ownerDocument.activeElement;
+          const element = panelElement(panel);
           if (
-            panelElement(panel)?.contains(active) ||
+            element?.contains(active) ||
+            // The panel's own control closed it (focused or not), so hand
+            // focus to the control that reopens it.
+            (activated !== undefined && element?.contains(activated)) ||
             (pressedFocus === panel &&
               (active === null || active === ownerDocument.body))
           )
@@ -431,7 +447,9 @@ export function wireWorkbenchOverlays(
       target instanceof Element
         ? target.closest<HTMLElement>('[aria-controls]')
         : null;
-    if (!control || control !== ownerDocument.activeElement) return;
+    // Recorded whether or not it took focus: Safari and macOS WebKit never
+    // focus a clicked button.
+    if (!control) return;
     activated = control;
     // The collapse effect may run after the click's dispatch (the app can
     // batch its write), so keep the control for a couple of frames.

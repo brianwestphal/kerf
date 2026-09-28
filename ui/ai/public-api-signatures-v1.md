@@ -656,6 +656,10 @@ import * as kerfjs from 'kerfjs';
 import { S as Sides } from './divider-sides-BzB6rphT.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
+type ListInsetTextRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-sides'?: never;
+}>;
 interface ListInsetTextProps {
     /** Text (or inline content) that carries no margin, border, or padding of its own. */
     children: KerfUiContent | string;
@@ -669,6 +673,8 @@ interface ListInsetTextProps {
      */
     horizontalOnly?: boolean;
     className?: string;
+    /** Safe `data-*` metadata; component-owned structural attributes stay protected. */
+    rootAttributes?: ListInsetTextRootAttributes;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
@@ -680,7 +686,7 @@ interface ListInsetTextProps {
  * Pass `horizontalOnly` to keep the horizontal inset but drop the vertical box
  * space for tight text layout.
  */
-declare function ListInsetText({ children, sides, horizontalOnly, className, slot, }: ListInsetTextProps): kerfjs.SafeHtml;
+declare function ListInsetText({ children, sides, horizontalOnly, className, rootAttributes, slot, }: ListInsetTextProps): kerfjs.SafeHtml;
 
 export { ListInsetText, type ListInsetTextProps, Sides };
 ```
@@ -1055,6 +1061,9 @@ export { Pane, type PaneContentElement, type PaneElement, type PaneProps, type P
 import { SafeHtml } from 'kerfjs';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { ToolbarProps } from './toolbar.js';
+import './divider-sides-BzB6rphT.js';
+import './pane.js';
 
 /**
  * The standard collapse toggle a Workbench renders for a panel. The app
@@ -1103,6 +1112,9 @@ interface WorkbenchMainToolbar {
     center?: KerfUiContent;
     /** Groups at the trailing edge, before a collapsed right rail's groups. */
     trailing?: KerfUiContent;
+    /** The toolbar's narrow-width policy (see `Toolbar.responsive`). */
+    responsive?: ToolbarProps['responsive'];
+    responsiveAt?: ToolbarProps['responsiveAt'];
 }
 /** The work area's bottom toolbar; a collapsed drawer adds its groups to it. */
 interface WorkbenchMainBottomToolbar {
@@ -1110,6 +1122,16 @@ interface WorkbenchMainBottomToolbar {
     leading?: KerfUiContent;
     trailing?: KerfUiContent;
 }
+/**
+ * The work area: the app's `main` under `mainToolbar` (and above
+ * `mainBottomToolbar`), with each collapsed panel's groups added to the
+ * toolbar on its side. Without either toolbar, `main` renders as given.
+ */
+/**
+ * Whether the work area's header or footer chrome stays pinned (`fixed`) or
+ * scrolls away with the content (`scroll`).
+ */
+type WorkbenchChromePlacement = 'fixed' | 'scroll';
 
 /**
  * The Workbench container breakpoint below which a panel presents as an
@@ -1204,10 +1226,28 @@ interface WorkbenchProps {
      */
     mainToolbar?: WorkbenchMainToolbar;
     /**
+     * Fixed content under `mainToolbar` — supporting copy such as a
+     * description — divided from the scrolling `main` below it.
+     */
+    mainHeader?: KerfUiContent;
+    /**
+     * Fixed content over `mainBottomToolbar` — a status line or a resource
+     * toolbar — divided from the scrolling `main` above it.
+     */
+    mainFooter?: KerfUiContent;
+    /**
      * The work area's bottom toolbar. A collapsed drawer's `constant` groups and
      * toggle trail it; without it they float in the work area's corner.
      */
     mainBottomToolbar?: WorkbenchMainBottomToolbar;
+    /**
+     * Whether `mainToolbar` and `mainHeader` stay pinned (`fixed`, default) or
+     * scroll away with `main` (`scroll`) — useful where large text would leave
+     * pinned chrome little room.
+     */
+    mainHeaderPlacement?: WorkbenchChromePlacement;
+    /** The same for `mainFooter` and `mainBottomToolbar` (default `fixed`). */
+    mainFooterPlacement?: WorkbenchChromePlacement;
     leftRail?: WorkbenchPanel;
     rightRail?: WorkbenchPanel;
     bottomDrawer?: WorkbenchPanel;
@@ -1244,9 +1284,9 @@ interface WorkbenchProps {
  * lives outside it and stays reachable). A panel may opt in to drag and keyboard resizing with
  * `resizable`, which `wireWorkbench` drives. See `docs/23-app-layouts.md` §3.3.
  */
-declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainBottomToolbar, mainMinSize, mainMinHeight, className, slot, }: WorkbenchProps): SafeHtml;
+declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainHeader, mainFooter, mainBottomToolbar, mainHeaderPlacement, mainFooterPlacement, mainMinSize, mainMinHeight, className, slot, }: WorkbenchProps): SafeHtml;
 
-export { Workbench, type WorkbenchCompactOverlay, type WorkbenchMainBottomToolbar, type WorkbenchMainToolbar, type WorkbenchPanel, type WorkbenchPanelResizable, type WorkbenchPanelToggle, type WorkbenchPanelToolbar, type WorkbenchProps, type WorkbenchResponsiveOverlayAt };
+export { Workbench, type WorkbenchChromePlacement, type WorkbenchCompactOverlay, type WorkbenchMainBottomToolbar, type WorkbenchMainToolbar, type WorkbenchPanel, type WorkbenchPanelResizable, type WorkbenchPanelToggle, type WorkbenchPanelToolbar, type WorkbenchProps, type WorkbenchResponsiveOverlayAt };
 ```
 
 ## `@kerfjs/ui/wire-workbench`
@@ -1718,12 +1758,18 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { a as CatalogProps } from './types-CEsieBZi.js';
-export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection, g as CatalogStageRootAttributes } from './types-CEsieBZi.js';
+import { a as CatalogProps } from './types-D6vzj-VT.js';
+export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection, g as CatalogStageRootAttributes } from './types-D6vzj-VT.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
-/** Controlled, stateless component-catalog shell. */
-declare function Catalog({ brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, className, slot, }: CatalogProps): kerfjs.SafeHtml;
+/**
+ * Controlled, stateless component-catalog shell: a `Workbench` whose left rail
+ * is the catalog navigation and whose work area is the active entry — its
+ * toolbar, description, preview stage, and resource footer. The sidebar's
+ * standard toggle moves into the entry toolbar while it is collapsed, and on
+ * a small screen the sidebar overlays the stage like any Workbench rail.
+ */
+declare function Catalog({ id, brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, headerPlacement, footerPlacement, className, slot, }: CatalogProps): kerfjs.SafeHtml;
 
 /** How a specimen aligns its visible edge with its `ListHeader` label. */
 type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
@@ -1794,7 +1840,7 @@ export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleP
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-CEsieBZi.js';
+import { C as CatalogResource } from './types-D6vzj-VT.js';
 import './semantic-content-BbzjvSu9.js';
 import 'kerfjs';
 
@@ -1834,6 +1880,8 @@ export { type CatalogGuidanceKind, type CatalogResourceKind, type CatalogResourc
 ## `@kerfjs/ui/wire-catalog`
 
 ```ts
+import { Signal } from 'kerfjs';
+
 interface WireCatalogOptions {
     /** Invoked with the entry id when a sidebar item or a related-entry option is chosen. */
     onSelect: (id: string) => void;
@@ -1854,6 +1902,16 @@ interface WireCatalogOptions {
     toggleSidebarAction?: string;
     toggleThemeAction?: string;
     toggleSecondaryAction?: string;
+    /**
+     * The sidebar's app-owned collapsed flag. With it, the catalog's Workbench
+     * sidebar is wired like any Workbench rail: it becomes a transient overlay
+     * on a small screen (collapsed as the breakpoint applies, closed on Escape
+     * or a press outside, focus handed back), and choosing an entry from the
+     * open overlay closes it.
+     */
+    collapsed?: Signal<boolean>;
+    /** The Catalog's `id`, when it is not the default `kui-catalog`. */
+    id?: string;
 }
 interface CatalogRevealOptions {
     /** Scroll alignment within the sidebar. Default `'nearest'`. */
@@ -1888,7 +1946,7 @@ declare function wireCatalogGeometryOverlay(root: HTMLElement): () => void;
  * them in the callbacks; optionally mirror the active id into the URL via `urlParam`.
  * Returns a disposer.
  */
-declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleSecondary, urlParam, revealSelection, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, }: WireCatalogOptions): () => void;
+declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleSecondary, urlParam, revealSelection, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, collapsed, id: catalogId, }: WireCatalogOptions): () => void;
 
 export { type CatalogRevealOptions, type WireCatalogOptions, revealCatalogEntry, wireCatalog, wireCatalogGeometryOverlay };
 ```

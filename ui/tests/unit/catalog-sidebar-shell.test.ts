@@ -53,73 +53,19 @@ describe('UX catalog sidebar shell', () => {
     );
   });
 
-  it('fully collapses the pane so its restore action can live in the detail toolbar', async () => {
-    // The shell is the shipped @kerfjs/ui/catalog component, so its collapse rule
-    // lives in Catalog's owned stylesheet (the demo dogfoods it rather than
-    // re-declaring it through application CSS).
-    const file = resolve(
-      import.meta.dirname,
-      '../../src/catalog/components/catalog.css',
-    );
-    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
-    const collapsedShell = root.nodes.find(
-      (node) =>
-        node.type === 'rule' &&
-        node.selector === '.kui-catalog[data-sidebar-collapsed="true"]',
-    );
-
-    if (!collapsedShell || collapsedShell.type !== 'rule')
-      throw new Error('Missing collapsed catalog shell rule');
-    const columns = collapsedShell.nodes.find(
-      (node) => node.type === 'decl' && node.prop === 'grid-template-columns',
-    );
-    expect(columns?.type === 'decl' ? columns.value : undefined).toBe(
-      '0 minmax(0, 1fr)',
-    );
-  });
-
-  it('moves the owned sidebar separator from inline-end to block-end when narrow', async () => {
-    const file = resolve(
-      import.meta.dirname,
-      '../../src/catalog/components/catalog-sidebar.css',
-    );
-    const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
-    const base = root.nodes.find(
-      (node) =>
-        node.type === 'rule' && node.selector === '.kui-catalog__sidebar',
-    );
-    if (!base || base.type !== 'rule')
-      throw new Error('Missing catalog sidebar root rule');
-    expect(
-      base.nodes.find(
-        (node) =>
-          node.type === 'decl' && node.prop === 'border-inline-end-width',
-      ),
-    ).toMatchObject({ value: 'var(--kui-pane-separator-width, 1px)' });
-
-    const narrow = root.nodes.find(
-      (node) =>
-        node.type === 'atrule' &&
-        node.name === 'media' &&
-        node.params === '(max-width: remify(832px))',
-    );
-    if (!narrow || narrow.type !== 'atrule')
-      throw new Error('Missing narrow catalog sidebar rules');
-    const sidebar = narrow.nodes?.find(
-      (node) =>
-        node.type === 'rule' && node.selector === '.kui-catalog__sidebar',
-    );
-    if (!sidebar || sidebar.type !== 'rule')
-      throw new Error('Missing narrow catalog sidebar rule');
-    expect(
-      Object.fromEntries(
-        sidebar.nodes
-          .filter((node) => node.type === 'decl')
-          .map((node) => [node.prop, node.value]),
-      ),
-    ).toMatchObject({
-      'border-block-end-width': 'var(--kui-pane-separator-width, 1px)',
-      'border-inline-end-width': '0',
-    });
+  it('leaves the shell layout to Workbench: no Catalog grid, viewport breakpoint, or phone-only navigation layout', async () => {
+    const dir = resolve(import.meta.dirname, '../../src/catalog/components');
+    for (const name of ['catalog.css', 'catalog-stage.css']) {
+      const file = resolve(dir, name);
+      const root = postcss.parse(await readFile(file, 'utf8'), { from: file });
+      root.walkAtRules('media', (rule) => {
+        throw new Error(`${name} has a viewport media query: ${rule.params}`);
+      });
+      root.walkDecls((decl) => {
+        expect(decl.prop, `${name} ${decl.parent}`).not.toMatch(
+          /^grid-template-columns$/,
+        );
+      });
+    }
   });
 });

@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui`'s `Catalog` is built on `Workbench` and dogfoods the package's
+  components.** The sidebar is a Workbench left rail with the standard toggle
+  (labels "Show/Hide {brand} catalog"), which moves into the entry toolbar while
+  collapsed; on a small screen the sidebar overlays the stage instead of the
+  former stacked two-column navigation, which is gone. The sidebar, sections,
+  footer, and example notes are `List` / `ListHeader` / `ListInsetText` / `Text`
+  compositions, and most catalog CSS (and every viewport media query in the
+  shell) is removed. New: `Catalog`'s `id`, `headerPlacement`, and
+  `footerPlacement`; `wireCatalog`'s `collapsed` and `id` options (the sidebar is
+  wired like a Workbench rail and an open overlay closes on a selection);
+  `Workbench`'s `mainHeader`, `mainFooter`, `mainHeaderPlacement`,
+  `mainFooterPlacement`, and `mainToolbar.responsive` / `responsiveAt`;
+  `ListInsetText`'s `rootAttributes`. `wireWorkbench` now also re-checks panel
+  breakpoints when the root font size changes, and hands focus to a panel's
+  relocated toggle when an unfocused click on its own toggle closes it (WebKit).
+
 - **`@kerfjs/ui`'s `Workbench` rails overlay the work area on small screens by
   default.** A rail's `responsiveOverlayAt` now defaults to `"narrow"` (704px
   of Workbench width; the new `"never"` keeps it inline), so a sidebar covers

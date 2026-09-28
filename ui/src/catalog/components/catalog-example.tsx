@@ -2,7 +2,9 @@ import type { SafeHtml } from 'kerfjs';
 
 import { filterDataAttributes } from '../../extension-attributes.js';
 import { ListHeader } from '../../list-header.js';
+import { ListInsetText } from '../../list-inset-text.js';
 import type { KerfUiContent } from '../../semantic-content.js';
+import { Text } from '../../text.js';
 
 /** How a specimen aligns its visible edge with its `ListHeader` label. */
 export type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
@@ -118,12 +120,20 @@ export function CatalogExample({
         />
       ) : null}
       {note !== undefined ? (
-        <p class="kui-catalog-example__note" data-catalog-example-note>
-          {note}
-        </p>
+        <ListInsetText
+          sides="rl"
+          className="kui-catalog-example__note"
+          rootAttributes={{ 'data-catalog-example-note': '' }}
+        >
+          <Text variant="span" size="compact" tone="quiet">
+            {note}
+          </Text>
+        </ListInsetText>
       ) : null}
       {compactFallback !== undefined ? (
-        <p class="kui-catalog-example__compact-fallback">{compactFallback}</p>
+        <Text tone="quiet" className="kui-catalog-example__compact-fallback">
+          {compactFallback}
+        </Text>
       ) : null}
       {specimen}
     </section>

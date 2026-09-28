@@ -1,10 +1,5 @@
 /* Public compatibility entrypoint. Each catalog component owns its styles. */
 @import "./catalog/components/catalog.css";
-@import "./catalog/components/catalog-sidebar.css";
-@import "./catalog/components/catalog-section-list.css";
-@import "./catalog/components/catalog-secondary-sections.css";
-@import "./catalog/components/catalog-detail.css";
 @import "./catalog/components/catalog-stage.css";
-@import "./catalog/components/catalog-resource-footer.css";
 @import "./catalog/components/catalog-example.css";
 @import "./catalog/components/catalog-example-stack.css";

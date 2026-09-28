@@ -2,6 +2,7 @@ import type { SafeHtml } from 'kerfjs';
 import { ExternalLink, Waypoints } from 'lucide';
 
 import { LucideIcon } from '../../lucide-icon.js';
+import { Row } from '../../row.js';
 import type { KerfUiContent } from '../../semantic-content.js';
 import { Toolbar } from '../../toolbar.js';
 import {
@@ -30,7 +31,8 @@ function relatedMenuItems(
   const nodes: SafeHtml[] = [];
   groups.forEach((group, index) => {
     if (index > 0) nodes.push(<wa-divider></wa-divider>);
-    nodes.push(<small class="kui-catalog__related-heading">{group}</small>);
+    // Web Awesome styles a slotted heading as a menu group label.
+    nodes.push(<h3>{group}</h3>);
     for (const entry of related) {
       if (entry.group === group)
         nodes.push(
@@ -53,8 +55,18 @@ export function CatalogResourceFooter({
   selectAction,
 }: CatalogResourceFooterProps) {
   return (
-    <div class="kui-catalog__footer">
-      {status ? <div class="kui-catalog__status">{status}</div> : null}
+    <>
+      {status ? (
+        <Row
+          hAlign="space-between"
+          vAlign="baseline"
+          gap="xs"
+          wrap
+          textInsets="trl"
+        >
+          {status}
+        </Row>
+      ) : null}
       <Toolbar
         label={`${name} resources`}
         dividerSides=""
@@ -107,6 +119,6 @@ export function CatalogResourceFooter({
           ) : null
         }
       />
-    </div>
+    </>
   );
 }

@@ -166,17 +166,17 @@ for (const phrase of [
 // ListItem multiline prop (primary + secondary groups) rather than CSS overrides.
 const catalogSource = (
   await Promise.all(
-    [
-      'src/catalog/components/catalog-section-list.tsx',
-      'src/catalog/components/catalog-secondary-sections.tsx',
-    ].map((file) => readFile(resolve(root, file), 'utf8')),
+    // Primary and secondary sections share one row component.
+    ['src/catalog/components/catalog-section-entries.tsx'].map((file) =>
+      readFile(resolve(root, file), 'utf8'),
+    ),
   )
 ).join('\n');
 const catalogRows =
   catalogSource.match(
     /<ListItem\s+action=\{selectAction\}[^>]+multiline\s*\/>/g,
   ) ?? [];
-if (catalogRows.length !== 2)
+if (catalogRows.length !== 1)
   fail(
     'catalog navigation must use the ListItem multiline prop instead of descendant CSS overrides',
   );

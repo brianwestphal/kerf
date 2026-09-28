@@ -1,7 +1,7 @@
 import { List } from '../../list.js';
 import { ListHeader } from '../../list-header.js';
-import { ListItem } from '../../list-item.js';
 import type { CatalogSecondaryGroup } from '../types.js';
+import { CatalogSectionEntries } from './catalog-section-entries.js';
 
 interface CatalogSecondarySectionsProps {
   group: CatalogSecondaryGroup;
@@ -17,42 +17,30 @@ export function CatalogSecondarySections({
   selectAction,
   toggleAction,
 }: CatalogSecondarySectionsProps) {
+  const open = !group.collapsible || Boolean(group.expanded);
   return (
-    <section class="kui-catalog__group--secondary">
+    <List dividerSides="t" controlInsets="t">
       {group.collapsible ? (
         <ListHeader
           label={group.label}
           toggle
-          expanded={Boolean(group.expanded)}
+          expanded={open}
           action={toggleAction}
         />
       ) : (
         <ListHeader label={group.label} />
       )}
-      {!group.collapsible || group.expanded ? (
-        <div class="kui-catalog__secondary" data-catalog-secondary>
+      {open ? (
+        <List gap="m" rootAttributes={{ 'data-catalog-secondary': '' }}>
           {group.sections.map((section) => (
-            <section class="kui-catalog__secondary-group">
-              <h3 class="kui-catalog__secondary-heading">{section.category}</h3>
-              <div class="kui-catalog__secondary-items">
-                <List gap="2xs">
-                  {section.entries.map((entry) => (
-                    <ListItem
-                      action={selectAction}
-                      itemId={entry.id}
-                      label={entry.name}
-                      status={entry.tags?.join(' · ')}
-                      selected={active === entry.id}
-                      title={entry.description}
-                      multiline
-                    />
-                  ))}
-                </List>
-              </div>
-            </section>
+            <CatalogSectionEntries
+              section={section}
+              active={active}
+              selectAction={selectAction}
+            />
           ))}
-        </div>
+        </List>
       ) : null}
-    </section>
+    </List>
   );
 }

@@ -6,6 +6,15 @@ footer that the kerf UI catalog itself uses. Point it at your own components and
 you get the same shell without rebuilding it. Like the app layouts, it is a
 subpath-only, tree-shakeable module that adds nothing to the main barrel.
 
+The shell is a [`Workbench`](workbench.md) built entirely from `@kerfjs/ui`
+components: the sidebar is its left rail and the active entry its work area. So
+the sidebar behaves like any Workbench rail — its standard toggle moves into the
+entry toolbar while it is collapsed, and on a small screen (a Workbench narrower
+than 704px) it overlays the stage, one tap from the entry toolbar, filling the
+width less a 44px strip that closes it, instead of squeezing the stage. Pass the
+app's `collapsed` signal to `wireCatalog` so that overlay closes on Escape, on a
+press outside, and when an entry is chosen from it.
+
 ```bash
 npm install @kerfjs/ui # kerfjs is a peer; @kerfjs/ui/select/register is needed only if entries use `related`
 ```
@@ -249,8 +258,8 @@ Set `revealSelection: true` on `wireCatalog` for a long desktop sidebar. After
 `onSelect` updates controlled state, the helper waits one animation frame, finds
 the exact matching `data-item-id`, and scrolls it into view without changing
 focus. A newer selection or disposal cancels the pending reveal. The default
-media guard is the Catalog desktop layout (`min-width: 52.01rem`), so compact
-layouts keep their existing scroll position.
+media guard follows the Workbench's inline sidebar (`min-width: 44.01rem`), so a
+closed phone overlay is never scrolled behind the user's back.
 
 Pass an options object instead of `true` to customize `block`, `inline`,
 `behavior`, or `media`; `media: false` deliberately enables the behavior at all
@@ -384,6 +393,12 @@ revealCatalogEntry(app, initial, { block: "center" });
 - **`active`** is domain state (which entry is shown) — the app's signal, updated in
   `onSelect`, read to compute `content`.
 - **`collapsed`** is transient UI — the app's signal, flipped in `onToggleSidebar`.
+  Pass the same signal as `wireCatalog`'s `collapsed` option so the sidebar is
+  wired as a Workbench rail (transient on small screens, focus handed to the
+  relocated toggle).
+- **`headerPlacement` / `footerPlacement`** choose whether the entry toolbar and the
+  status + resource footer stay pinned (`fixed`, default) or scroll with the preview
+  (`scroll`) — useful where large text would leave pinned chrome little room.
 - **`theme`** is a global preference — the app's signal; `wireCatalog` only reports
   the toggle, the app applies the theme (the shell reads `theme` to show the toggle's
   opposite-state label). Omit `theme` to hide the toggle entirely.
@@ -397,7 +412,10 @@ matching options on `wireCatalog`) if they collide with your own action table.
 
 ## CSS
 
-`Catalog` composes public primitives (`Toolbar`, `ListHeader`, `ListItem`, `Select`,
-…). Import `@kerfjs/ui/styles.css` for the whole layer, or `@kerfjs/ui/catalog.css`
-plus each composed primitive's CSS. The shell is theme-aware and responsive: it
-stacks the sidebar above the detail below ~832px and hides it when collapsed.
+`Catalog` composes public components (`Workbench`, `Pane`, `Toolbar`, `List`,
+`ListHeader`, `ListItem`, `ListInsetText`, `Text`, …) and owns only the preview stage
+(the checkerboard and centered canvas), the geometry overlay, the example viewport
+options, and the brand mark's size. Import `@kerfjs/ui/styles.css` for the whole
+layer, or `@kerfjs/ui/catalog.css` plus `@kerfjs/ui/workbench.css` and each composed
+primitive's CSS. Like any Workbench it needs a definite containing height — the
+`@kerfjs/ui/document.css` baseline's `.kui-app-root`.

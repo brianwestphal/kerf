@@ -1,5 +1,18 @@
 import type { Sides } from './divider-sides.js';
+import { filterDataAttributes } from './extension-attributes.js';
 import type { KerfUiContent } from './semantic-content.js';
+
+const listInsetTextProtectedAttributes = new Set([
+  'data-component',
+  'data-sides',
+]);
+
+type ListInsetTextRootAttributes = Readonly<
+  Record<`data-${string}`, string | undefined> & {
+    'data-component'?: never;
+    'data-sides'?: never;
+  }
+>;
 
 export interface ListInsetTextProps {
   /** Text (or inline content) that carries no margin, border, or padding of its own. */
@@ -14,6 +27,8 @@ export interface ListInsetTextProps {
    */
   horizontalOnly?: boolean;
   className?: string;
+  /** Safe `data-*` metadata; component-owned structural attributes stay protected. */
+  rootAttributes?: ListInsetTextRootAttributes;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
 }
@@ -31,13 +46,19 @@ export function ListInsetText({
   sides,
   horizontalOnly = false,
   className = '',
+  rootAttributes = {},
   slot,
 }: ListInsetTextProps) {
+  const safeRootAttributes = filterDataAttributes(
+    rootAttributes,
+    listInsetTextProtectedAttributes,
+  );
   const resolvedSides = sides ?? (horizontalOnly ? 'rl' : 'trbl');
   const cls =
     `kui-list-inset-text${horizontalOnly ? ' kui-list-inset-text--horizontal' : ''} ${className}`.trim();
   return (
     <div
+      {...safeRootAttributes}
       class={cls}
       data-component="list-inset-text"
       data-sides={resolvedSides}

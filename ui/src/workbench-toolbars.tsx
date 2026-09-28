@@ -1,9 +1,10 @@
 import { collapsiblePanelToggleIcon } from './collapsible-panel.js';
 import { FloatingToolbar } from './floating-toolbar.js';
+import { List } from './list.js';
 import { LucideIcon } from './lucide-icon.js';
 import { Pane } from './pane.js';
 import type { KerfUiContent } from './semantic-content.js';
-import { Toolbar } from './toolbar.js';
+import { Toolbar, type ToolbarProps } from './toolbar.js';
 import { ToolbarControlGroup } from './toolbar-control-group.js';
 import {
   type WorkbenchPanelKey,
@@ -59,6 +60,9 @@ export interface WorkbenchMainToolbar {
   center?: KerfUiContent;
   /** Groups at the trailing edge, before a collapsed right rail's groups. */
   trailing?: KerfUiContent;
+  /** The toolbar's narrow-width policy (see `Toolbar.responsive`). */
+  responsive?: ToolbarProps['responsive'];
+  responsiveAt?: ToolbarProps['responsiveAt'];
 }
 
 /** The work area's bottom toolbar; a collapsed drawer adds its groups to it. */
@@ -178,11 +182,21 @@ export function panelBody(
  * `mainBottomToolbar`), with each collapsed panel's groups added to the
  * toolbar on its side. Without either toolbar, `main` renders as given.
  */
+/**
+ * Whether the work area's header or footer chrome stays pinned (`fixed`) or
+ * scrolls away with the content (`scroll`).
+ */
+export type WorkbenchChromePlacement = 'fixed' | 'scroll';
+
 export function mainBody({
   workbenchId,
   main,
   mainToolbar,
+  mainHeader,
+  mainFooter,
   mainBottomToolbar,
+  mainHeaderPlacement = 'fixed',
+  mainFooterPlacement = 'fixed',
   leftRail,
   rightRail,
   bottomDrawer,
@@ -190,24 +204,33 @@ export function mainBody({
   workbenchId: string;
   main: KerfUiContent;
   mainToolbar?: WorkbenchMainToolbar;
+  mainHeader?: KerfUiContent;
+  mainFooter?: KerfUiContent;
   mainBottomToolbar?: WorkbenchMainBottomToolbar;
+  mainHeaderPlacement?: WorkbenchChromePlacement;
+  mainFooterPlacement?: WorkbenchChromePlacement;
   leftRail?: WorkbenchToolbarPanel;
   rightRail?: WorkbenchToolbarPanel;
   bottomDrawer?: WorkbenchToolbarPanel;
 }) {
-  if (!mainToolbar && !mainBottomToolbar) return main;
+  if (!mainToolbar && !mainBottomToolbar && !mainHeader && !mainFooter)
+    return main;
   const left = relocatedGroups(workbenchId, 'leftRail', leftRail);
   const right = relocatedGroups(workbenchId, 'rightRail', rightRail);
   const drawer = mainBottomToolbar
     ? relocatedGroups(workbenchId, 'bottomDrawer', bottomDrawer)
     : [];
-  return (
-    <Pane
-      header={
-        mainToolbar ? (
+  // One divider under the header chrome and one over the footer chrome,
+  // wherever that chrome ends.
+  const header =
+    !mainToolbar && !mainHeader ? undefined : (
+      <>
+        {mainToolbar ? (
           <Toolbar
             label={mainToolbar.label}
-            dividerSides="b"
+            dividerSides={mainHeader ? '' : 'b'}
+            responsive={mainToolbar.responsive}
+            responsiveAt={mainToolbar.responsiveAt}
             leading={
               <>
                 {left}
@@ -223,13 +246,20 @@ export function mainBody({
               </>
             }
           />
-        ) : undefined
-      }
-      footer={
-        mainBottomToolbar ? (
+        ) : null}
+        {mainHeader ? <List dividerSides="b">{mainHeader}</List> : null}
+      </>
+    );
+  const footer =
+    !mainFooter && !mainBottomToolbar ? undefined : (
+      <>
+        {mainFooter ? (
+          <List dividerSides={mainBottomToolbar ? '' : 't'}>{mainFooter}</List>
+        ) : null}
+        {mainBottomToolbar ? (
           <Toolbar
             label={mainBottomToolbar.label}
-            dividerSides="t"
+            dividerSides={mainFooter ? '' : 't'}
             leading={mainBottomToolbar.leading}
             trailing={
               <>
@@ -238,10 +268,27 @@ export function mainBody({
               </>
             }
           />
-        ) : undefined
-      }
+        ) : null}
+      </>
+    );
+  const scrollHeader = mainHeaderPlacement === 'scroll';
+  const scrollFooter = mainFooterPlacement === 'scroll';
+  return (
+    <Pane
+      header={scrollHeader ? undefined : header}
+      footer={scrollFooter ? undefined : footer}
     >
-      {main}
+      {scrollHeader || scrollFooter ? (
+        // Chrome that scrolls joins the content in one gapless column that
+        // fills the scroller, so it scrolls away with the content.
+        <List flex>
+          {scrollHeader ? header : null}
+          {main}
+          {scrollFooter ? footer : null}
+        </List>
+      ) : (
+        main
+      )}
     </Pane>
   );
 }

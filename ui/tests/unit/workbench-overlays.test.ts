@@ -987,6 +987,18 @@ describe('wireWorkbench toolbar toggle focus', () => {
     expect(app.collapsed.value).toBe(true);
   });
 
+  it('hands focus to the relocated toggle when an unfocused click on the panel toggle closes it (WebKit never focuses a clicked button)', async () => {
+    const app = toolbarStudio();
+    app.collapsed.value = false;
+    await flush();
+    (document.activeElement as HTMLElement | null)?.blur();
+    // A click with no focus on the button, as Safari and macOS WebKit send it.
+    app.railToggle().dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(app.collapsed.value).toBe(true);
+    await flush();
+    expect(document.activeElement).toBe(app.toggle());
+  });
+
   it('gives up the hand-off when the Workbench is gone before the render lands', async () => {
     const app = toolbarStudio();
     const toggle = app.toggle()!;

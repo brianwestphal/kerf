@@ -55,7 +55,7 @@ describe('CSS ownership gate', () => {
     expect(stdout).toContain('[check-css-ownership] OK');
   });
 
-  it('keeps catalog entrypoints thin and visual component styles one-to-one', async () => {
+  it('keeps catalog entrypoints thin and every catalog stylesheet paired with its component', async () => {
     const entrypoint = await readFile(
       resolve(uiRoot, 'src/catalog.tsx'),
       'utf8',
@@ -97,7 +97,9 @@ describe('CSS ownership gate', () => {
       .filter((entry) => entry.isFile() && entry.name.endsWith('.css'))
       .map((entry) => basename(entry.name, '.css'));
     expect(componentNames.length).toBeGreaterThan(0);
-    expect(stylesheetNames.sort()).toEqual(componentNames.sort());
+    // Every stylesheet pairs with a component; a component composed purely
+    // from kerf ui components (the dogfooding default) has none.
+    for (const name of stylesheetNames) expect(componentNames).toContain(name);
     for (const componentName of componentNames) {
       const expectedComponent = componentName
         .split('-')

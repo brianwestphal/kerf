@@ -8,19 +8,6 @@
   gap: remify(8px);
 }
 
-.kui-catalog-example__note {
-  margin: 0;
-  padding-block: var(--kui-layout-item-padding, remify(8px));
-  padding-inline: calc(
-    var(--kui-layout-inline-margin, remify(8px)) +
-      var(--kui-layout-item-padding, remify(8px))
-  );
-  box-sizing: border-box;
-  border: 1px solid transparent;
-  color: var(--kui-color-text-quiet);
-  font-size: var(--kui-font-xs);
-}
-
 .kui-catalog-example__viewport {
   position: relative;
   max-width: 100%;
@@ -139,9 +126,6 @@
 
 .kui-catalog-example__compact-fallback {
   display: none;
-  margin: 0;
-  color: var(--kui-color-text-quiet);
-  font-size: var(--kui-font-s);
 }
 
 @media ((max-width: remify(832px))) {

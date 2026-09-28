@@ -56,10 +56,14 @@ test('Pane owns vertical slots, scrolling, and independent separators', async ({
   expect(geometry.order[1]).toBeLessThan(geometry.order[2]);
 
   await expect(
-    page.locator('.kui-catalog__sidebar > [data-component="pane"]'),
+    page.locator(
+      '#kui-catalog-left-rail > .kui-workbench__panel-content > [data-component="pane"]',
+    ),
   ).toHaveAttribute('data-component', 'pane');
   await expect(
-    page.locator('.kui-catalog__detail > [data-component="pane"]'),
+    page.locator(
+      '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"]',
+    ),
   ).toHaveAttribute('data-component', 'pane');
 
   if (browserName === 'chromium')
@@ -75,26 +79,22 @@ test('Pane and the migrated catalog remain coherent at a narrow viewport', async
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=pane');
 
-  const sidebar = page.locator('.kui-catalog__sidebar');
+  const sidebar = page.locator('#kui-catalog-left-rail');
   const pane = page.locator('[data-demo="pane"] [data-component="pane"]');
   await expect(
     pane.locator('.kui-pane__header [data-component="list-inset-text"]'),
   ).toHaveText('Optional secondary header row');
-  const sidebarStyle = await sidebar.evaluate((element) => {
-    const style = window.getComputedStyle(element);
-    return {
-      inlineEnd: style.borderRightWidth,
-      blockEnd: style.borderBottomWidth,
-      overflow:
+  // Narrow, the catalog sidebar is a closed Workbench overlay, so the page
+  // never overflows sideways and the stage keeps the full width.
+  await expect(sidebar).toHaveAttribute('data-collapsed', 'true');
+  await expect(sidebar).toHaveCSS('position', 'absolute');
+  expect(
+    await page.evaluate(
+      () =>
         document.documentElement.scrollWidth -
         document.documentElement.clientWidth,
-    };
-  });
-  expect(sidebarStyle).toMatchObject({
-    inlineEnd: '0px',
-    blockEnd: '1px',
-  });
-  expect(sidebarStyle.overflow).toBeLessThanOrEqual(1);
+    ),
+  ).toBeLessThanOrEqual(1);
 
   if (browserName === 'chromium')
     await pane.screenshot({

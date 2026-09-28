@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { raw } from 'kerfjs';
+import { raw, signal } from 'kerfjs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import {
@@ -67,13 +67,17 @@ describe('Catalog', () => {
     // Shell + brand
     expect(html).toContain('data-component="catalog"');
     expect(html).toContain('data-sidebar-collapsed="false"');
-    expect(html).toContain(
-      'class="kui-catalog__navigation" aria-label="Acme UI components"',
-    );
+    // The shell is a Workbench whose left rail holds the navigation.
+    expect(html).toContain('data-component="workbench"');
+    expect(html).toContain('id="kui-catalog-left-rail"');
+    expect(html).toContain('<nav aria-label="Acme UI components">');
     expect(html).toContain(
       'data-component="toolbar-text" data-size="large" role="heading" aria-level="1"><span class="kui-toolbar-text__text">Acme UI</span>',
     );
-    expect(html).toContain('class="kui-catalog__subtitle">Design system');
+    expect(html).toContain(
+      'data-component="text" data-tone="quiet" data-size="compact"',
+    );
+    expect(html).toContain('Design system</span>');
     expect(html).toContain('src="/logo.svg"');
     // Category groups + items (ListHeader per section, ListItem per entry)
     expect(html).toContain('data-component="list-header"');
@@ -107,8 +111,9 @@ describe('Catalog', () => {
       'data-responsive="stack" data-responsive-at="narrow"',
     );
     expect(html).toContain('<span>Components</span>');
-    expect(html).toContain('kui-catalog__related-heading">Used by');
-    expect(html).toContain('kui-catalog__related-heading">Uses');
+    // Web Awesome styles slotted headings as menu group labels.
+    expect(html).toContain('<h3>Used by</h3>');
+    expect(html).toContain('<h3>Uses</h3>');
     expect(html).toContain('<wa-divider></wa-divider>');
     expect(html).toContain(
       'data-action="catalog-select" data-item-id="banner"',
@@ -128,7 +133,7 @@ describe('Catalog', () => {
       }),
     );
     expect(html).not.toContain('catalog-toggle-theme');
-    expect(html).not.toContain('kui-catalog__subtitle');
+    expect(html).not.toContain('data-tone="quiet" data-size="compact"');
     expect(html).not.toContain('kui-catalog__mark');
     expect(html).not.toContain('kui-catalog__resource"');
     expect(html).not.toContain('data-catalog-related');
@@ -163,7 +168,9 @@ describe('Catalog', () => {
       }),
     );
     expect(collapsed).toContain('data-sidebar-collapsed="true"');
-    expect(collapsed).toContain('Expand X catalog');
+    // The Workbench moves the sidebar's standard toggle into the entry toolbar.
+    expect(collapsed).toContain('aria-label="Show X catalog"');
+    expect(collapsed).toContain('data-action="catalog-toggle-sidebar"');
     const open = asHtml(
       Catalog({
         brand: { title: 'X' },
@@ -172,8 +179,8 @@ describe('Catalog', () => {
         content: raw('<b/>'),
       }),
     );
-    expect(open).not.toContain('Expand X catalog');
-    expect(open).toContain('Collapse X catalog');
+    expect(open).not.toContain('Show X catalog');
+    expect(open).toContain('aria-label="Hide X catalog"');
   });
 
   it('renders an empty title when the active id is not in any section', () => {
@@ -206,7 +213,10 @@ describe('Catalog', () => {
     );
     expect(html).toContain('data-action="custom"');
     expect(html).toContain('class="ecosystem">Ecosystem');
-    expect(html).toContain('kui-catalog__status"><output>Ready');
+    // The status slot sits in a text-inset Row above the resource toolbar.
+    expect(html).toMatch(
+      /data-component="row"[^>]*data-text-insets="trl"[^>]*><output>Ready/,
+    );
   });
 
   it('renders controlled geometry-overlay hooks without changing the preview', () => {
@@ -243,9 +253,10 @@ describe('Catalog', () => {
         secondarySections,
       }),
     );
-    expect(open).toContain('kui-catalog__group--secondary');
+    // A top-divided List; each nested section opens with a ListHeader.
+    expect(open).toMatch(/data-component="list"[^>]*divider-sides="t"/);
     expect(open).toContain('data-catalog-secondary');
-    expect(open).toContain('<h3 class="kui-catalog__secondary-heading">Forms');
+    expect(open).toMatch(/data-component="list-header"[\s\S]*Forms/);
     expect(open).toContain(
       'data-action="catalog-select" data-item-id="wa-input"',
     );
@@ -308,8 +319,9 @@ describe('CatalogExample', () => {
     expect(html).toContain('data-component="list-header"');
     expect(html).toContain('data-catalog-example-label');
     expect(html).toContain('data-width="content"');
-    expect(html).toContain(
-      'class="kui-catalog-example__note" data-catalog-example-note>A note.',
+    // The note is ListInsetText + quiet compact Text.
+    expect(html).toMatch(
+      /data-catalog-example-note[^>]*class="kui-list-inset-text kui-catalog-example__note"[\s\S]*data-tone="quiet" data-size="compact"[^>]*>A note\./,
     );
     expect(html).toContain('<svg data-icon />');
     expect(html).not.toContain('kui-catalog-example__specimen');
@@ -355,8 +367,8 @@ describe('CatalogExample', () => {
     expect(html).toContain('data-shadow="true"');
     expect(html).not.toContain('data-fill-children');
     expect(html).toContain('style="--kui-pane-width:18rem"');
-    expect(html).toContain(
-      'class="kui-catalog-example__compact-fallback">Open this specimen on a wider viewport.',
+    expect(html).toMatch(
+      /class="kui-text\s+kui-catalog-example__compact-fallback"[^>]*>Open this specimen on a wider viewport\./,
     );
   });
 
@@ -534,6 +546,90 @@ describe('wireCatalog', () => {
       cancel,
     };
   }
+
+  it('wires the sidebar like a Workbench rail and closes its open overlay on a selection', () => {
+    const collapsed = signal(false);
+    const root = mountShell(
+      String(
+        Catalog({
+          brand: { title: 'X' },
+          sections,
+          active: 'button',
+          content: raw('<b/>'),
+          collapsed: collapsed.value,
+        }),
+      ),
+    );
+    const rail = root.querySelector<HTMLElement>('#kui-catalog-left-rail')!;
+    const real = window.getComputedStyle.bind(window);
+    let overlaid = false;
+    vi.spyOn(window, 'getComputedStyle').mockImplementation((element) => {
+      const style = real(element);
+      if (element !== rail) return style;
+      return new Proxy(style, {
+        get: (target, property) =>
+          property === 'position'
+            ? overlaid
+              ? 'absolute'
+              : 'relative'
+            : Reflect.get(target, property),
+      });
+    });
+    const selected: string[] = [];
+    const dispose = wireCatalog(root, {
+      onSelect: (id) => selected.push(id),
+      collapsed,
+    });
+    const select = () =>
+      root.querySelector<HTMLElement>('[data-item-id="select"]')!.click();
+    // Inline, choosing an entry leaves the sidebar open.
+    select();
+    expect(selected).toEqual(['select']);
+    expect(collapsed.value).toBe(false);
+    // As an open overlay, choosing an entry closes it.
+    overlaid = true;
+    select();
+    expect(collapsed.value).toBe(true);
+    // Already closed, nothing more to do.
+    select();
+    expect(collapsed.value).toBe(true);
+    dispose();
+  });
+
+  it('passes the header and footer placement through to its Workbench', () => {
+    const pinned = String(
+      Catalog({
+        brand: { title: 'X' },
+        sections,
+        active: 'select',
+        content: raw('<b/>'),
+        status: raw('<output>Ready</output>'),
+      }),
+    );
+    expect(pinned).toContain('class="kui-pane__footer');
+    const scrolling = String(
+      Catalog({
+        brand: { title: 'X' },
+        sections,
+        active: 'select',
+        content: raw('<b/>'),
+        status: raw('<output>Ready</output>'),
+        headerPlacement: 'scroll',
+        footerPlacement: 'scroll',
+      }),
+    );
+    // The entry pane's header and footer chrome join its scrolling content.
+    const host = document.createElement('div');
+    host.innerHTML = scrolling;
+    const pane = host.querySelector(
+      '#kui-catalog > .kui-workbench__center > [data-workbench-main] > [data-component="pane"]',
+    )!;
+    expect(pane.querySelector(':scope > .kui-pane__header')).toBeNull();
+    expect(pane.querySelector(':scope > .kui-pane__footer')).toBeNull();
+    expect(
+      pane.querySelector(':scope > .kui-pane__content output'),
+    ).not.toBeNull();
+  });
 
   it('reveals an exact sidebar id after render without moving focus', () => {
     vi.spyOn(window, 'matchMedia').mockReturnValue({

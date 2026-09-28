@@ -1,4 +1,6 @@
-import { delegate } from 'kerfjs';
+import { delegate, type Signal } from 'kerfjs';
+
+import { wireWorkbench } from './wire-workbench.js';
 
 export interface WireCatalogOptions {
   /** Invoked with the entry id when a sidebar item or a related-entry option is chosen. */
@@ -20,6 +22,16 @@ export interface WireCatalogOptions {
   toggleSidebarAction?: string;
   toggleThemeAction?: string;
   toggleSecondaryAction?: string;
+  /**
+   * The sidebar's app-owned collapsed flag. With it, the catalog's Workbench
+   * sidebar is wired like any Workbench rail: it becomes a transient overlay
+   * on a small screen (collapsed as the breakpoint applies, closed on Escape
+   * or a press outside, focus handed back), and choosing an entry from the
+   * open overlay closes it.
+   */
+  collapsed?: Signal<boolean>;
+  /** The Catalog's `id`, when it is not the default `kui-catalog`. */
+  id?: string;
 }
 
 export interface CatalogRevealOptions {
@@ -36,7 +48,8 @@ export interface CatalogRevealOptions {
   media?: string | false;
 }
 
-const catalogDesktopMedia = '(min-width: 52.01rem)';
+// The Workbench keeps the sidebar inline above its `narrow` breakpoint (704px).
+const catalogDesktopMedia = '(min-width: 44.01rem)';
 
 /**
  * Reveal one Catalog sidebar entry after the controlled render settles without
@@ -319,6 +332,8 @@ export function wireCatalog(
     toggleSidebarAction = 'catalog-toggle-sidebar',
     toggleThemeAction = 'catalog-toggle-theme',
     toggleSecondaryAction = 'catalog-toggle-secondary',
+    collapsed,
+    id: catalogId = 'kui-catalog',
   }: WireCatalogOptions,
 ): () => void {
   let cancelReveal: (() => void) | undefined;
@@ -330,6 +345,16 @@ export function wireCatalog(
       url.searchParams.set(urlParam, id);
       view.history.replaceState(null, '', url);
     }
+    // An open overlay sidebar gives way to the entry just chosen from it.
+    const rail = root.ownerDocument.getElementById(`${catalogId}-left-rail`);
+    if (
+      collapsed &&
+      !collapsed.peek() &&
+      rail &&
+      root.ownerDocument.defaultView?.getComputedStyle(rail).position ===
+        'absolute'
+    )
+      collapsed.value = true;
     if (revealSelection) {
       cancelReveal?.();
       cancelReveal = revealCatalogEntry(
@@ -374,6 +399,13 @@ export function wireCatalog(
       ),
     );
   }
+  if (collapsed)
+    disposers.push(
+      wireWorkbench(root, {
+        id: catalogId,
+        panels: { leftRail: { collapsed } },
+      }),
+    );
   return () => {
     cancelReveal?.();
     for (const dispose of disposers.splice(0)) dispose();

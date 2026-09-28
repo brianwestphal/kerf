@@ -917,6 +917,7 @@
       "purpose": "Arrange a complex tool or editor as a stable central work area with optional peripheral rails and a bottom drawer.",
       "publicExports": [
         "Workbench",
+        "WorkbenchChromePlacement",
         "WorkbenchCompactOverlay",
         "WorkbenchMainBottomToolbar",
         "WorkbenchMainToolbar",
