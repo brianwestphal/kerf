@@ -213,6 +213,14 @@ const stop = wireWorkbench(root, {
   and drags leave the rail's remembered size (and its storage) alone, so a
   rail remembered at 280px returns at 280px, with the configured range, once
   there is room.
+- **Small Workbenches:** inline panels have no shrink floor of their own, by
+  design; the work area's minimums win, so in a very small Workbench a rail or
+  the drawer can become a sliver. Do not add your own `min-width` /
+  `min-height` to hold a panel open. Give the panel
+  `responsiveOverlayAt: "narrow"` (704px of Workbench width or less) or
+  `"compact"` (448px or less) instead: below that breakpoint it presents as a
+  full-size overlay over the work area rather than squeezing beside it (see
+  the catalog's resizable and responsive-drawer Workbench examples).
 - **Collapse:** `collapsed` never changes a size. A collapsed panel keeps its
   size (its content slides out at that width), its separator leaves the tab
   order, and expanding it returns it at the size it had.

@@ -473,7 +473,13 @@ anchor(--kui-restore-drawer top, <safe-area fallback>))` with
     default `min`, and leaves every catalog Workbench's height as it was;
     `mainMinSize` now applies to Workbenches whose rails are all fixed, so the
     catalog's full workspace gives its fixed 280px rails about 207px each and
-    the editor 320px instead of 174px.
+    the editor 320px instead of 174px. Decision (KF-S9F2H6: should squeezed
+    inline panels get a floor?): no per-panel shrink floor — neither
+    `resizable.min` as a floor nor a new `WorkbenchPanel.minSize`. A floor
+    would make the work-area minimums soft and needs a rule for what gives
+    way when the floors and minimums cannot both fit; the existing answer for
+    a Workbench too small for its panels is `responsiveOverlayAt`, which
+    presents the panel as a full-size overlay below its breakpoint.
   - a rail the container squeezes below its own `min` (KF-4MBYRQ: a 180px-min
     Navigator showing ~172px reported `aria-valuenow="180"`) reports the width
     it shows: `aria-valuenow` is that width and `aria-valuemin` /
