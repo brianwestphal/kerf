@@ -245,8 +245,13 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
 - **Panel toolbars follow the panel (KF-6GVPW7: toggles were hand-placed, so
   the catalog showed each rail toggle twice while the rails were open and
   put toggles where the guidance does not).** A panel may take a `toolbar`
-  (`title`, `panelOnly`, `constant`, `toggle: { action, name }`) and the work
-  area a `mainToolbar` / `mainBottomToolbar`; the Workbench composes each as a
+  (`title`, `panelOnly`, `center`, `constant`, `toggle: { action, name,
+showLabel?, hideLabel? }`) and the work area a `mainToolbar` /
+  `mainBottomToolbar`, each also taking the `Toolbar`'s configuration
+  (`ToolbarConfig`: `dividerSides`, `centerAlign`, `responsive`,
+  `responsiveAt`, `safeAreaEdges`, forwarded with today's dividers as the
+  defaults — KF-A29R9B: the dividers were hard-coded, leaving CSS as the only
+  way to drop one); the Workbench composes each as a
   `Toolbar` over a `Pane` (`ui/src/workbench-toolbars.tsx`). Open, a panel's
   toolbar holds its title and panel-only groups, then its constant groups and
   the standard toggle last. Closed, its panel-only groups stay behind (inert)

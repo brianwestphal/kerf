@@ -105,4 +105,32 @@ describe('CollapsiblePanel toolbar', () => {
       'panel-right-open',
     );
   });
+
+  it('forwards toolbar configuration and toggle labels to its Toolbar', () => {
+    const host = html(
+      CollapsiblePanel({
+        id: 'nav',
+        side: 'left',
+        toolbar: {
+          ...toolbar,
+          dividerSides: '',
+          responsive: 'wrap',
+          center: group('center'),
+          toggle: { ...toolbar.toggle!, hideLabel: 'Close navigator' },
+        },
+        children: raw('<p data-content>files</p>'),
+      }),
+    );
+    const bar = host.querySelector('.kui-pane__header .kui-toolbar')!;
+    expect(bar.getAttribute('divider-sides')).toBeNull();
+    expect(bar.getAttribute('data-responsive')).toBe('wrap');
+    expect(
+      bar.querySelector('.kui-toolbar__center [data-group="center"]'),
+    ).not.toBeNull();
+    expect(
+      bar
+        .querySelector('[data-collapsible-target="nav"]')!
+        .getAttribute('aria-label'),
+    ).toBe('Close navigator');
+  });
 });

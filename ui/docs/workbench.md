@@ -154,10 +154,12 @@ and close. A panel's `toolbar` has four parts:
 - `constant` — groups that stay available either way. They trail the panel's
   toolbar while it is open and move to the work area's toolbar while it is
   closed.
-- `toggle: { action, name }` — the standard collapse toggle, which the
-  Workbench renders: the per-side panel glyph, `aria-controls` naming the
-  panel, `aria-expanded`, a "Show …"/"Hide …" label, and the `data-action`
+- `toggle: { action, name, showLabel?, hideLabel? }` — the standard collapse
+  toggle, which the Workbench renders: the per-side panel glyph,
+  `aria-controls` naming the panel, `aria-expanded`, a "Show …"/"Hide …"
+  label (or your localized `showLabel` / `hideLabel`), and the `data-action`
   the app handles. It is always the last group.
+- `center` — optional panel-only center content.
 
 While a panel is closed, its `constant` groups and then its toggle go to:
 
@@ -198,9 +200,18 @@ The work area's `Pane` can carry more fixed chrome: `mainHeader` renders under
 line or a resource toolbar), each divided from the scrolling `main`.
 `mainHeaderPlacement` and `mainFooterPlacement` (`"fixed"` by default, or
 `"scroll"`) let that header or footer chrome scroll away with `main` instead —
-useful where large text would leave pinned chrome little room. `mainToolbar` also
-takes the `Toolbar`'s `responsive` / `responsiveAt` policy; `responsive: "wrap"`
-keeps a long title whole and wraps its actions below it.
+useful where large text would leave pinned chrome little room.
+
+Every toolbar the Workbench composes — `mainToolbar`, `mainBottomToolbar`, and
+each panel's `toolbar` — takes the `Toolbar`'s configuration (`ToolbarConfig`):
+`dividerSides`, `centerAlign`, `responsive`, `responsiveAt`, and
+`safeAreaEdges`. Configure the toolbar through these props rather than styling
+it. By default a panel toolbar keeps its bottom divider, and the work area draws
+one divider under its header chrome and one over its footer chrome, wherever
+that chrome ends; set `dividerSides: ""` to drop a toolbar's divider, for
+example. `responsive: "wrap"` keeps a long title whole and wraps its actions
+below it. `mainBottomToolbar` also takes a `center`. A panel's
+`restorePosition` also places its floating restore controls.
 
 Size a rail so its title and groups fit at its narrowest (a resizable rail's
 `min`); a toolbar that cannot hold them drops the title rather than

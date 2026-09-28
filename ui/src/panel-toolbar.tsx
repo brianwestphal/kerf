@@ -10,7 +10,7 @@ import {
 
 import { LucideIcon } from './lucide-icon.js';
 import type { KerfUiContent } from './semantic-content.js';
-import { Toolbar } from './toolbar.js';
+import { Toolbar, type ToolbarConfig } from './toolbar.js';
 import { ToolbarControlGroup } from './toolbar-control-group.js';
 
 /** Which edge a collapsible panel docks to. */
@@ -49,6 +49,10 @@ export interface PanelToggle {
   action: string;
   /** The panel's short name, for the accessible "Show …" / "Hide …" label. */
   name: string;
+  /** Accessible label while the panel is collapsed. Defaults to `Show {name}`. */
+  showLabel?: string;
+  /** Accessible label while the panel is open. Defaults to `Hide {name}`. */
+  hideLabel?: string;
 }
 
 /**
@@ -66,12 +70,18 @@ export interface PanelToggle {
  *
  * `constant` content renders in both places while the panel is collapsed (the
  * panel's copy is inert), so give it no `id`s.
+ *
+ * The toolbar's configuration (`dividerSides`, `centerAlign`, `responsive`,
+ * `responsiveAt`, `safeAreaEdges`) forwards to its `Toolbar`; it keeps a
+ * bottom divider unless `dividerSides` says otherwise.
  */
-export interface PanelToolbar {
+export interface PanelToolbar extends ToolbarConfig {
   /** Accessible name of the panel's toolbar. */
   label: string;
   title?: KerfUiContent;
   panelOnly?: KerfUiContent;
+  /** Panel-only center content, available only while the panel is open. */
+  center?: KerfUiContent;
   constant?: KerfUiContent;
   toggle?: PanelToggle;
 }
@@ -94,7 +104,11 @@ export function panelToggleGroup(
         {...attributes}
         data-action={toggle.action}
         aria-expanded={String(!collapsed)}
-        aria-label={`${collapsed ? 'Show' : 'Hide'} ${toggle.name}`}
+        aria-label={
+          collapsed
+            ? (toggle.showLabel ?? `Show ${toggle.name}`)
+            : (toggle.hideLabel ?? `Hide ${toggle.name}`)
+        }
       >
         <LucideIcon icon={glyph.icon} name={glyph.name} />
       </button>
@@ -115,7 +129,12 @@ export function composedPanelToolbar(
   return (
     <Toolbar
       label={toolbar.label}
-      dividerSides="b"
+      dividerSides={toolbar.dividerSides ?? 'b'}
+      centerAlign={toolbar.centerAlign}
+      responsive={toolbar.responsive}
+      responsiveAt={toolbar.responsiveAt}
+      safeAreaEdges={toolbar.safeAreaEdges}
+      center={toolbar.center}
       leading={
         <>
           {toolbar.title}

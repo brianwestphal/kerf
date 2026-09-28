@@ -118,8 +118,14 @@ Give a panel a `toolbar` (the same roles as a
 [Workbench panel toolbar](workbench.md#panel-toolbars)) and it composes its own
 top toolbar over a `Pane`, with an optional `footer` below its content:
 
-- `title` and `panelOnly` groups lead it and are available only while it is open;
-- `constant` groups and the standard `toggle: { action, name }` trail it.
+- `title` and `panelOnly` groups lead it and are available only while it is open,
+  as is optional `center` content;
+- `constant` groups and the standard `toggle: { action, name, showLabel?,
+hideLabel? }` trail it.
+
+The toolbar also takes the `Toolbar`'s configuration (`dividerSides`,
+`centerAlign`, `responsive`, `responsiveAt`, `safeAreaEdges`); it keeps its
+bottom divider unless `dividerSides` says otherwise.
 
 A standalone panel does not own the rest of the screen, so the app places a
 `CollapsiblePanelRelocated` in its own work-area toolbar: it renders the panel's

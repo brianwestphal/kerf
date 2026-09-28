@@ -394,4 +394,118 @@ describe('Workbench panel toolbars', () => {
       ).querySelector(':scope > .kui-pane__header [data-only]'),
     ).not.toBeNull();
   });
+
+  it('forwards toolbar configuration to every toolbar it composes, keeping the divider defaults', () => {
+    const config = {
+      dividerSides: '' as const,
+      centerAlign: 'stretch' as const,
+      responsive: 'stack' as const,
+      responsiveAt: 'compact' as const,
+      safeAreaEdges: ['block-start'] as const,
+    };
+    const configured = rail('Files', false);
+    configured.toolbar = {
+      ...configured.toolbar!,
+      ...config,
+      center: group('files-center'),
+      toggle: {
+        action: 'toggle-files',
+        name: 'Files',
+        showLabel: 'Afficher les fichiers',
+        hideLabel: 'Masquer les fichiers',
+      },
+    };
+    const host = render({
+      id: 'studio',
+      label: 'Studio',
+      main: raw('<p data-main>main</p>'),
+      mainToolbar: { label: 'Editor', title: title('Editor'), ...config },
+      mainBottomToolbar: {
+        label: 'Status',
+        center: group('status-center'),
+        ...config,
+      },
+      leftRail: configured,
+    });
+    const toolbars = [
+      mainToolbar(host)!,
+      host.querySelector(
+        '[data-workbench-main] > [data-component="pane"] > .kui-pane__footer .kui-toolbar',
+      )!,
+      panelToolbar(host, '#studio-left-rail')!,
+    ];
+    for (const toolbar of toolbars) {
+      expect(toolbar.getAttribute('divider-sides')).toBeNull();
+      expect(toolbar.getAttribute('data-center-align')).toBe('stretch');
+      expect(toolbar.getAttribute('data-responsive')).toBe('stack');
+      expect(toolbar.getAttribute('data-responsive-at')).toBe('compact');
+      expect(toolbar.getAttribute('data-safe-area-block-start')).toBe('true');
+    }
+    expect(
+      toolbars[1]!.querySelector('.kui-toolbar__center [data-group]'),
+    ).not.toBeNull();
+    expect(
+      toolbars[2]!.querySelector(
+        '.kui-toolbar__center [data-group="files-center"]',
+      ),
+    ).not.toBeNull();
+    expect(
+      toolbars[2]!
+        .querySelector('[data-workbench-toggle]')!
+        .getAttribute('aria-label'),
+    ).toBe('Masquer les fichiers');
+
+    // Collapsed, the relocated toggle takes the show label.
+    const collapsed = render({
+      id: 'studio',
+      label: 'Studio',
+      main: raw('<p data-main>main</p>'),
+      mainToolbar: { label: 'Editor' },
+      leftRail: { ...configured, collapsed: true },
+    });
+    expect(
+      mainToolbar(collapsed)!
+        .querySelector('[data-workbench-toggle]')!
+        .getAttribute('aria-label'),
+    ).toBe('Afficher les fichiers');
+
+    // Without configuration the toolbars keep today's dividers.
+    const defaults = render({
+      id: 'studio',
+      label: 'Studio',
+      main: raw('<p data-main>main</p>'),
+      mainToolbar: { label: 'Editor' },
+      mainBottomToolbar: { label: 'Status' },
+      leftRail: rail('Files', false),
+    });
+    expect(mainToolbar(defaults)!.getAttribute('divider-sides')).toBe('b');
+    expect(
+      defaults
+        .querySelector(
+          '[data-workbench-main] > [data-component="pane"] > .kui-pane__footer .kui-toolbar',
+        )!
+        .getAttribute('divider-sides'),
+    ).toBe('t');
+    expect(
+      panelToolbar(defaults, '#studio-left-rail')!.getAttribute(
+        'divider-sides',
+      ),
+    ).toBe('b');
+  });
+
+  it('floats a collapsed panel restore in its restorePosition corner', () => {
+    const host = render({
+      id: 'studio',
+      label: 'Studio',
+      main: raw('<p data-main>main</p>'),
+      leftRail: rail('Files', true, { restorePosition: 'bottom-end' }),
+    });
+    expect(
+      host
+        .querySelector(
+          '.kui-workbench__restore [data-component="floating-toolbar"]',
+        )!
+        .getAttribute('data-position'),
+    ).toBe('bottom-end');
+  });
 });

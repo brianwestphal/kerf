@@ -1,4 +1,7 @@
-import { FloatingToolbar } from './floating-toolbar.js';
+import {
+  FloatingToolbar,
+  type FloatingToolbarPosition,
+} from './floating-toolbar.js';
 import { List } from './list.js';
 import { Pane } from './pane.js';
 import {
@@ -10,7 +13,7 @@ import {
   relocatedPanelGroups,
 } from './panel-toolbar.js';
 import type { KerfUiContent } from './semantic-content.js';
-import { Toolbar, type ToolbarProps } from './toolbar.js';
+import { Toolbar, type ToolbarConfig } from './toolbar.js';
 import {
   type WorkbenchPanelKey,
   workbenchRegionId,
@@ -29,8 +32,13 @@ export type WorkbenchPanelToggle = PanelToggle;
  */
 export type WorkbenchPanelToolbar = PanelToolbar;
 
-/** The work area's top toolbar; collapsed rails add their groups to it. */
-export interface WorkbenchMainToolbar {
+/**
+ * The work area's top toolbar; collapsed rails add their groups to it. Its
+ * configuration forwards to its `Toolbar`. By default it draws the divider
+ * under the work area's header chrome: its own bottom edge, or none when a
+ * `mainHeader` follows (which then carries the divider).
+ */
+export interface WorkbenchMainToolbar extends ToolbarConfig {
   label: string;
   /** The work area's title, usually an extra-large `ToolbarText`. */
   title?: KerfUiContent;
@@ -39,15 +47,18 @@ export interface WorkbenchMainToolbar {
   center?: KerfUiContent;
   /** Groups at the trailing edge, before a collapsed right rail's groups. */
   trailing?: KerfUiContent;
-  /** The toolbar's narrow-width policy (see `Toolbar.responsive`). */
-  responsive?: ToolbarProps['responsive'];
-  responsiveAt?: ToolbarProps['responsiveAt'];
 }
 
-/** The work area's bottom toolbar; a collapsed drawer adds its groups to it. */
-export interface WorkbenchMainBottomToolbar {
+/**
+ * The work area's bottom toolbar; a collapsed drawer adds its groups to it.
+ * Its configuration forwards to its `Toolbar`. By default it draws the divider
+ * over the work area's footer chrome: its own top edge, or none when a
+ * `mainFooter` precedes it.
+ */
+export interface WorkbenchMainBottomToolbar extends ToolbarConfig {
   label: string;
   leading?: KerfUiContent;
+  center?: KerfUiContent;
   trailing?: KerfUiContent;
 }
 
@@ -63,6 +74,8 @@ export interface WorkbenchToolbarPanel {
   footer?: KerfUiContent;
   content: KerfUiContent;
   collapsed?: boolean;
+  /** The corner a collapsed panel's restore controls float in. */
+  restorePosition?: FloatingToolbarPosition;
 }
 
 /** A Workbench toggle's wiring hooks: its side, morph key, and panel. */
@@ -172,9 +185,11 @@ export function mainBody({
         {mainToolbar ? (
           <Toolbar
             label={mainToolbar.label}
-            dividerSides={mainHeader ? '' : 'b'}
+            dividerSides={mainToolbar.dividerSides ?? (mainHeader ? '' : 'b')}
+            centerAlign={mainToolbar.centerAlign}
             responsive={mainToolbar.responsive}
             responsiveAt={mainToolbar.responsiveAt}
+            safeAreaEdges={mainToolbar.safeAreaEdges}
             leading={
               <>
                 {left}
@@ -203,8 +218,15 @@ export function mainBody({
         {mainBottomToolbar ? (
           <Toolbar
             label={mainBottomToolbar.label}
-            dividerSides={mainFooter ? '' : 't'}
+            dividerSides={
+              mainBottomToolbar.dividerSides ?? (mainFooter ? '' : 't')
+            }
+            centerAlign={mainBottomToolbar.centerAlign}
+            responsive={mainBottomToolbar.responsive}
+            responsiveAt={mainBottomToolbar.responsiveAt}
+            safeAreaEdges={mainBottomToolbar.safeAreaEdges}
             leading={mainBottomToolbar.leading}
+            center={mainBottomToolbar.center}
             trailing={
               <>
                 {mainBottomToolbar.trailing}
@@ -254,7 +276,10 @@ export function floatingRestore(
   return (
     <FloatingToolbar
       label={panel!.toolbar!.label}
-      position={key === 'leftRail' ? 'bottom-start' : 'bottom-end'}
+      position={
+        panel!.restorePosition ??
+        (key === 'leftRail' ? 'bottom-start' : 'bottom-end')
+      }
     >
       {groups}
     </FloatingToolbar>

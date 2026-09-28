@@ -40,6 +40,20 @@ export interface ToolbarProps {
   slot?: string;
 }
 
+/**
+ * A toolbar's configuration, apart from its content: the props a composite
+ * that renders a `Toolbar` for the app (a Workbench or CollapsiblePanel
+ * toolbar) forwards, so the app configures that toolbar instead of styling it.
+ */
+export type ToolbarConfig = Pick<
+  ToolbarProps,
+  | 'dividerSides'
+  | 'centerAlign'
+  | 'responsive'
+  | 'responsiveAt'
+  | 'safeAreaEdges'
+>;
+
 const claim = (
   edges: readonly PaneSeparatorSide[] | undefined,
   side: PaneSeparatorSide,

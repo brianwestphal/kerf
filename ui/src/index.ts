@@ -176,7 +176,7 @@ export {
   type TokenSearchFieldValue,
   type TokenSearchToken,
 } from './token-search-field.js';
-export { Toolbar, type ToolbarProps } from './toolbar.js';
+export { Toolbar, type ToolbarConfig, type ToolbarProps } from './toolbar.js';
 export {
   ToolbarActionLink,
   type ToolbarActionLinkProps,

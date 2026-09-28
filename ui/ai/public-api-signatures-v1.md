@@ -180,9 +180,15 @@ interface ToolbarProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
+/**
+ * A toolbar's configuration, apart from its content: the props a composite
+ * that renders a `Toolbar` for the app (a Workbench or CollapsiblePanel
+ * toolbar) forwards, so the app configures that toolbar instead of styling it.
+ */
+type ToolbarConfig = Pick<ToolbarProps, 'dividerSides' | 'centerAlign' | 'responsive' | 'responsiveAt' | 'safeAreaEdges'>;
 declare function Toolbar({ leading, center, trailing, label, dividerSides, centerAlign, responsive, responsiveAt, safeAreaEdges, className, slot, }: ToolbarProps): kerfjs.SafeHtml;
 
-export { Sides, Toolbar, type ToolbarProps };
+export { Sides, Toolbar, type ToolbarConfig, type ToolbarProps };
 ```
 
 ## `@kerfjs/ui/toolbar-text`
@@ -1124,8 +1130,8 @@ export { Pane, type PaneContentElement, type PaneElement, type PaneProps, type P
 import { SafeHtml } from 'kerfjs';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { a as PanelToolbar, b as PanelToggle } from './panel-toolbar-BFQxFITu.js';
-import { ToolbarProps } from './toolbar.js';
+import { a as PanelToolbar, b as PanelToggle } from './panel-toolbar-C8sF-YZC.js';
+import { ToolbarConfig } from './toolbar.js';
 import './lucide-icon.js';
 import 'lucide';
 import './pane.js';
@@ -1142,8 +1148,13 @@ type WorkbenchPanelToggle = PanelToggle;
  * `FloatingToolbar` in the work area's bottom-end corner.
  */
 type WorkbenchPanelToolbar = PanelToolbar;
-/** The work area's top toolbar; collapsed rails add their groups to it. */
-interface WorkbenchMainToolbar {
+/**
+ * The work area's top toolbar; collapsed rails add their groups to it. Its
+ * configuration forwards to its `Toolbar`. By default it draws the divider
+ * under the work area's header chrome: its own bottom edge, or none when a
+ * `mainHeader` follows (which then carries the divider).
+ */
+interface WorkbenchMainToolbar extends ToolbarConfig {
     label: string;
     /** The work area's title, usually an extra-large `ToolbarText`. */
     title?: KerfUiContent;
@@ -1152,14 +1163,17 @@ interface WorkbenchMainToolbar {
     center?: KerfUiContent;
     /** Groups at the trailing edge, before a collapsed right rail's groups. */
     trailing?: KerfUiContent;
-    /** The toolbar's narrow-width policy (see `Toolbar.responsive`). */
-    responsive?: ToolbarProps['responsive'];
-    responsiveAt?: ToolbarProps['responsiveAt'];
 }
-/** The work area's bottom toolbar; a collapsed drawer adds its groups to it. */
-interface WorkbenchMainBottomToolbar {
+/**
+ * The work area's bottom toolbar; a collapsed drawer adds its groups to it.
+ * Its configuration forwards to its `Toolbar`. By default it draws the divider
+ * over the work area's footer chrome: its own top edge, or none when a
+ * `mainFooter` precedes it.
+ */
+interface WorkbenchMainBottomToolbar extends ToolbarConfig {
     label: string;
     leading?: KerfUiContent;
+    center?: KerfUiContent;
     trailing?: KerfUiContent;
 }
 /**
@@ -1447,12 +1461,15 @@ export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanel
 
 ```ts
 import { SafeHtml } from 'kerfjs';
-import { P as PanelSide, a as PanelToolbar, b as PanelToggle } from './panel-toolbar-BFQxFITu.js';
-export { c as collapsiblePanelToggleIcon } from './panel-toolbar-BFQxFITu.js';
+import { P as PanelSide, a as PanelToolbar, b as PanelToggle } from './panel-toolbar-C8sF-YZC.js';
+export { c as collapsiblePanelToggleIcon } from './panel-toolbar-C8sF-YZC.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './lucide-icon.js';
 import 'lucide';
+import './toolbar.js';
+import './pane.js';
+import './sides-BPSWde0A.js';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
 type CollapsiblePanelSide = PanelSide;

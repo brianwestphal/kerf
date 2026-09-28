@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` composed toolbars are configurable.** `WorkbenchMainToolbar`,
+  `WorkbenchMainBottomToolbar`, and the panel `toolbar` of a Workbench panel or
+  `CollapsiblePanel` now take the `Toolbar`'s configuration: the new
+  `ToolbarConfig` type, covering `dividerSides`, `centerAlign`, `responsive`,
+  `responsiveAt`, and `safeAreaEdges`. Previously their dividers were
+  hard-coded, so for example dropping the line between a toolbar and its
+  content took CSS. Today's dividers remain the defaults. Also:
+  - `mainBottomToolbar` and panel toolbars take a `center`;
+  - panel toggles take localized `showLabel` / `hideLabel`;
+  - a Workbench panel's floating restore controls follow its
+    `restorePosition`.
+
 - **Breaking (`@kerfjs/ui`): removed the pre-release compatibility surface.**
   - The `DividerSides` type is gone; use `Sides`, from the renamed `sides`
     module.
