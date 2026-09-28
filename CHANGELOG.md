@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui`'s `ToolbarControlGroup` centers a direct icon tile.** A
+  non-interactive icon placed directly in a group — a heading's identity
+  glyph — now takes an icon button's 40px slot and 16px visual, so it centers
+  in the group. It previously sat at the group's start edge, which pushed
+  apps to wrap it in a focusable `<button>` that did nothing.
+
 - **`@kerfjs/ui`'s `Toolbar` keeps its controls in a top control band.** A
   toolbar now reserves one 44px band at its top: each zone item no taller than
   the band is centered in it by its own size, and a taller item — a wrapped

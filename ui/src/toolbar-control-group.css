@@ -254,6 +254,19 @@
   white-space: nowrap;
 }
 
+/* An icon tile: a non-interactive icon placed directly in a group (a panel
+   heading's identity glyph) takes the same 40px slot and 16px visual as an
+   icon button, so it centers in the group and lines up with button icons,
+   without a hover surface or a focusable control that does nothing. */
+.kui-toolbar-control-group > svg {
+  display: block;
+  width: remify(16px);
+  height: remify(16px);
+  padding: remify(12px);
+  box-sizing: content-box;
+  flex: 0 0 auto;
+}
+
 .kui-toolbar-control-group > button svg,
 .kui-toolbar-control-group wa-button > svg,
 .kui-toolbar-control-group > .kui-toolbar-action-link svg {
