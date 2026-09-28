@@ -655,7 +655,7 @@ export const generatedKerfCatalog = [
     "category": "Recipes",
     "kind": "recipe",
     "source": "kerf",
-    "description": "Production modal whose labeled Web Awesome header frames a SplitView record list and ValueTable detail, becoming a full-screen drill-down on compact devices.",
+    "description": "Production modal laid out as a workbench: a full-height SplitView list sidebar with its own toolbar beside a full-height detail column that carries the primary title, close control, and record actions; a full-screen drill-down on compact devices.",
     "uses": [
       "surface-scaffold",
       "split-view",

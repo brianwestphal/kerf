@@ -263,7 +263,7 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
   }
 });
 
-test('keeps project dialog content on intentional wide and narrow gutters', async ({
+test('lays the project dialog out as a workbench on roomy devices and a drill-down sheet on handsets', async ({
   page,
 }) => {
   for (const viewport of [
@@ -284,28 +284,111 @@ test('keeps project dialog content on intentional wide and narrow gutters', asyn
       ),
     ).toBeLessThanOrEqual(1);
 
+    const compact =
+      (await dialog
+        .locator('[data-component="split-view"]')
+        .getAttribute('data-split-mode')) === 'compact';
+
+    if (viewport.width === 1440) {
+      expect(compact).toBe(false);
+      const roomy = await dialog.evaluate((root) => {
+        const panel = root
+          .shadowRoot!.querySelector<HTMLElement>('[part~="dialog"]')!
+          .getBoundingClientRect();
+        const header = root.shadowRoot!.querySelector('[part~="header"]');
+        const bounds = (selector: string) =>
+          root.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
+        const textStart = (selector: string) => {
+          const range = document.createRange();
+          range.selectNodeContents(root.querySelector(selector)!);
+          return range.getBoundingClientRect().left;
+        };
+        const list = bounds('[data-split-list]');
+        const detail = bounds('[data-split-detail]');
+        const listToolbar = bounds('[data-split-list] .kui-toolbar');
+        const detailToolbar = bounds('[data-split-detail] .kui-toolbar');
+        const actions = [
+          ...root.querySelectorAll<HTMLElement>(
+            '[data-split-detail] wa-button',
+          ),
+        ].map((button) => button.getBoundingClientRect());
+        return {
+          headerShown:
+            header !== null &&
+            window.getComputedStyle(header).display !== 'none',
+          listTop: list.top - panel.top,
+          listBottom: panel.bottom - list.bottom,
+          detailTop: detail.top - panel.top,
+          detailBottom: panel.bottom - detail.bottom,
+          toolbarTopDelta: Math.abs(listToolbar.top - detailToolbar.top),
+          listTitleInset:
+            textStart('[data-split-list] .kui-toolbar-text__text') - list.left,
+          detailTitleInset:
+            textStart('[data-split-detail] .kui-toolbar-text__text') -
+            detail.left,
+          rowInset: bounds('[data-item-id="alpha"]').left - list.left,
+          tableStartInset:
+            bounds('[data-split-detail] .kui-value-table').left - detail.left,
+          tableEndInset:
+            detail.right - bounds('[data-split-detail] .kui-value-table').right,
+          actionEndInset: panel.right - actions.at(-1)!.right,
+          actionBottomInset: panel.bottom - actions.at(-1)!.bottom,
+          actionTopDelta: Math.abs(actions[0]!.top - actions[1]!.top),
+          actionsOrdered: actions[0]!.right <= actions[1]!.left,
+        };
+      });
+      // A workbench: no header spans both columns; the sidebar and the main
+      // column each run the full dialog height under their own toolbar.
+      expect(roomy.headerShown).toBe(false);
+      for (const edge of [
+        roomy.listTop,
+        roomy.listBottom,
+        roomy.detailTop,
+        roomy.detailBottom,
+      ])
+        expect(edge).toBeCloseTo(0, 0);
+      expect(roomy.toolbarTopDelta).toBeLessThanOrEqual(1);
+      expect(roomy.listTitleInset).toBeCloseTo(16, 0);
+      expect(roomy.detailTitleInset).toBeCloseTo(16, 0);
+      expect(roomy.rowInset).toBeCloseTo(8, 0);
+      expect(roomy.tableStartInset).toBeCloseTo(8, 0);
+      expect(roomy.tableEndInset).toBeCloseTo(8, 0);
+      // The record actions trail the main column on its 8px control inset.
+      expect(roomy.actionEndInset).toBeCloseTo(8, 0);
+      expect(roomy.actionBottomInset).toBeCloseTo(8, 0);
+      expect(roomy.actionTopDelta).toBeLessThanOrEqual(1);
+      expect(roomy.actionsOrdered).toBe(true);
+      // The primary title and close control live on the main column.
+      await expect(
+        dialog.locator('[data-split-detail] .kui-toolbar-text', {
+          hasText: 'Northstar migration',
+        }),
+      ).toBeVisible();
+      await dialog
+        .locator('[data-split-detail]')
+        .getByRole('button', { name: 'Close' })
+        .click();
+      await expect(dialog).toHaveJSProperty('open', false);
+      continue;
+    }
+
     const geometry = await dialog.evaluate((root) => {
-      const measureText = (element: Element) => {
-        const range = document.createRange();
-        range.selectNodeContents(element);
-        return range.getBoundingClientRect().left;
-      };
+      const range = document.createRange();
       const panel = root
         .shadowRoot!.querySelector<HTMLElement>('[part~="dialog"]')!
         .getBoundingClientRect();
       const title = root.shadowRoot!.querySelector('[part~="title"]')!;
-      const bounds = (selector: string) =>
-        root.querySelector<HTMLElement>(selector)!.getBoundingClientRect();
-      const split = bounds('[data-component="split-view"]');
-      const firstRow = bounds('[data-item-id="alpha"]');
+      range.selectNodeContents(title);
+      const split = root
+        .querySelector<HTMLElement>('[data-component="split-view"]')!
+        .getBoundingClientRect();
+      const firstRow = root
+        .querySelector<HTMLElement>('[data-item-id="alpha"]')!
+        .getBoundingClientRect();
       const footer = [
         ...root.querySelectorAll<HTMLElement>('[slot="footer"]'),
       ].map((button) => button.getBoundingClientRect());
-      const common = {
-        compact:
-          root
-            .querySelector('[data-component="split-view"]')!
-            .getAttribute('data-split-mode') === 'compact',
+      return {
         footerEndInset: panel.right - footer.at(-1)!.right,
         footerTopDelta: Math.abs(footer[0]!.top - footer[1]!.top),
         footerOrdered: footer[0]!.right <= footer[1]!.left,
@@ -313,65 +396,30 @@ test('keeps project dialog content on intentional wide and narrow gutters', asyn
         rowInset: firstRow.left - split.left,
         splitEndInset: panel.right - split.right,
         splitStartInset: split.left - panel.left,
-        titleTextStart: measureText(title) - panel.left,
-      };
-      if (common.compact) return { ...common, roomy: undefined };
-      const list = bounds('[data-split-list]');
-      const detail = bounds('[data-split-detail]');
-      const table = bounds('[data-split-detail] .kui-value-table');
-      const headers = [
-        ...root.querySelectorAll<HTMLElement>('.kui-list-header__label'),
-      ];
-      return {
-        ...common,
-        roomy: {
-          detailHeaderInset: measureText(headers[1]!) - detail.left,
-          headerTopDelta: Math.abs(
-            headers[0]!.getBoundingClientRect().top -
-              headers[1]!.getBoundingClientRect().top,
-          ),
-          listHeaderInset: measureText(headers[0]!) - list.left,
-          listHeaderTextStart: measureText(headers[0]!) - panel.left,
-          tableEndInset: detail.right - table.right,
-          tableStartInset: table.left - detail.left,
-        },
+        titleShown: range.getBoundingClientRect().width > 0,
       };
     });
 
-    // The split view sits flush in the dialog body; the dialog owns no second
-    // inset around list-owned geometry.
+    // Handsets get a full-screen sheet with its own labeled header; the split
+    // view sits flush in its body and drills list → detail.
+    expect(compact).toBe(true);
+    expect(geometry.titleShown).toBe(true);
     expect(geometry.splitStartInset).toBeCloseTo(0, 0);
     expect(geometry.splitEndInset).toBeCloseTo(0, 0);
     expect(geometry.rowInset).toBeCloseTo(8, 0);
-    // Footer actions: one comfortable 16px gutter, trailing primary action.
     expect(geometry.footerEndInset).toBeCloseTo(16, 0);
     expect(geometry.footerTopDelta).toBeLessThanOrEqual(1);
     expect(geometry.footerOrdered).toBe(true);
-    if (viewport.width === 1440) {
-      expect(geometry.compact).toBe(false);
-      const roomy = geometry.roomy!;
-      // Both panes open with a section header on one shared line, text on the
-      // standard 17px content inset, and the dialog title on that same edge.
-      expect(roomy.headerTopDelta).toBeLessThanOrEqual(1);
-      expect(roomy.listHeaderInset).toBeCloseTo(17, 0);
-      expect(roomy.detailHeaderInset).toBeCloseTo(17, 0);
-      expect(geometry.titleTextStart).toBeCloseTo(roomy.listHeaderTextStart, 0);
-      expect(roomy.tableStartInset).toBeCloseTo(8, 0);
-      expect(roomy.tableEndInset).toBeCloseTo(8, 0);
-    } else {
-      // Handsets get a full-screen sheet whose split view drills list → detail.
-      expect(geometry.compact).toBe(true);
-      expect(geometry.panelWidth).toBeCloseTo(viewport.width, 0);
-      const stack = dialog.locator('[data-component="nav-stack"]');
-      await expect(stack).toHaveAttribute('data-depth', '1');
-      await dialog.locator('[data-item-id="beta"]').click();
-      await expect(stack).toHaveAttribute('data-depth', '2');
-      await expect(
-        dialog.locator('.kui-value-table', { hasText: 'Sam Rivera' }),
-      ).toBeVisible();
-      await dialog.getByRole('button', { name: 'Back to projects' }).click();
-      await expect(stack).toHaveAttribute('data-depth', '1');
-    }
+    expect(geometry.panelWidth).toBeCloseTo(viewport.width, 0);
+    const stack = dialog.locator('[data-component="nav-stack"]');
+    await expect(stack).toHaveAttribute('data-depth', '1');
+    await dialog.locator('[data-item-id="beta"]').click();
+    await expect(stack).toHaveAttribute('data-depth', '2');
+    await expect(
+      dialog.locator('.kui-value-table', { hasText: 'Sam Rivera' }),
+    ).toBeVisible();
+    await dialog.getByRole('button', { name: 'Back to projects' }).click();
+    await expect(stack).toHaveAttribute('data-depth', '1');
 
     await page.keyboard.press('Escape');
     await expect(dialog).toHaveJSProperty('open', false);

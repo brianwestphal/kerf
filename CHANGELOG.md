@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui`'s list-detail dialog guidance is Workbench-shaped.** On roomy
+  devices the list is a full-height sidebar and the detail a full-height main
+  column, each a `Pane` with its own top `Toolbar`; the main column carries
+  the primary title, the close control (`data-dialog="close"` in a
+  `without-header` Web Awesome dialog), and the record actions, instead of a
+  dialog header spanning both columns. The recipe, `docs/recipes.md`, and the
+  shipped AI skill say so; compact devices keep the full-screen drill-down
+  sheet.
+
 - **`@kerfjs/ui`'s `ToolbarControlGroup` centers a direct icon tile.** A
   non-interactive icon placed directly in a group — a heading's identity
   glyph — now takes an icon button's 40px slot and 16px visual, so it centers

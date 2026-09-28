@@ -75,19 +75,23 @@ controls relocate without changing focus order.
 
 [Open the recipe](../ux-demo/?component=recipe-list-detail-dialog) · [TSX source](../ux-demo/recipes/list-detail-dialog.tsx)
 
-The production Web Awesome dialog owns modal focus, Escape, its labeled header,
-and its close control; the thin recipe adapter restores the invoking control
-after the hide event. `DialogSurface` chooses the large modal with no body
-inset, because `SplitView` and its rows own list geometry, and a comfortable
-footer inset for the record actions. On roomy devices `SplitView` shows the
-project list beside its detail; each pane opens with a `ListHeader` on one
-shared line, and the dialog title, both headers, and the list text share the
-17px text edge while the `ValueTable` keeps the 8px outer margin. On compact
-devices the dialog becomes a full-screen sheet and `SplitView` becomes a
+A list-detail dialog is laid out like a `Workbench` with a left sidebar: on
+roomy devices the list is a full-height sidebar and the detail is a full-height
+main column, each a `Pane` with its own top `Toolbar`. The sidebar's toolbar
+carries its quiet default-size title (and it may add a bottom toolbar for
+sidebar-only actions); the main column's toolbar carries the dialog's primary
+extra-large title and the close control, and its footer carries the record
+actions. The Web Awesome dialog therefore renders `without-header` there —
+its label still names the modal — and the close button uses
+`data-dialog="close"`. Web Awesome keeps modal focus and Escape, and the thin
+recipe adapter restores the invoking control after the hide event.
+`DialogSurface` chooses the large modal with no body inset, because the panes
+own their geometry. On compact devices the dialog becomes a full-screen sheet
+with its own labeled header and footer actions, and `SplitView` becomes a
 `NavStack` drill-down whose back control the application pops. The
 application owns open state, selection, the pushed detail, dismissal policy,
-and record actions. Do not rebuild the dialog or reach into private shadow
-parts.
+and record actions. Do not put the primary title in a header spanning both
+columns, rebuild the dialog, or reach into private shadow parts.
 
 ## Composer form
 
