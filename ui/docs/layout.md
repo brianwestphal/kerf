@@ -32,7 +32,7 @@ stays outside `.kui-pane__content`, which is the pane's only scroll owner.
 Pass any combination of logical sides to `separators`: `block-start`,
 `block-end`, `inline-start`, and `inline-end`. Every line is off by default and
 each enabled side uses `--kui-pane-separator-width` (1px) and
-`--kui-pane-separator-color` (`--kui-color-border`). Logical sides keep pane
+`--kui-pane-separator-color` (`--kui-color-neutral-border-normal`). Logical sides keep pane
 boundaries correct in both left-to-right and right-to-left layouts.
 
 A pane is safe-area aware. Its background and separators paint through a
@@ -307,8 +307,8 @@ selected sides; the control wrapper applies its 8px outer margin only on
 selected sides. Every direct child of `ListInsetControl` grows to fill the row
 (a `Select`, a `wa-input`, or a `wa-button` spans the full inset width), and
 several children share the row with an 8px gap; stack controls vertically with
-a `List` using `controlInsets` instead. `ListInsetText.horizontalOnly` remains a deprecated alias for
-`sides="rl"`; an explicit `sides` value takes precedence.
+a `List` using `controlInsets` instead. Pass `sides="rl"` for tight text that
+keeps the horizontal inset without adding vertical box space.
 
 `--kui-space-s` (12px) and `--kui-space-xl` (32px) exist but are **off the
 canonical rhythm** — reach for them only as a deliberate exception, never as a

@@ -54,7 +54,7 @@ import {
   type UiEvaluationContext,
 } from '@kerfjs/ui/evaluator';
 import { Grid } from '@kerfjs/ui/grid';
-import { type DividerSides, List, type Sides } from '@kerfjs/ui/list';
+import { List, type Sides } from '@kerfjs/ui/list';
 import { ListActionRow } from '@kerfjs/ui/list-action-row';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
@@ -165,11 +165,14 @@ const choiceColor: CssForegroundColor = foregroundColorVar(
   uiColor('success-on-quiet'),
 );
 const semanticChoiceColor: CssForegroundColor = uiColor('text-quiet');
-const aliasChoiceColor: CssForegroundColor = uiColor('warning-text');
+const onQuietChoiceColor: CssForegroundColor = uiColor('warning-on-quiet');
 // A foreground color is still a complete color; a fill stays a plain color.
 const foregroundIsColor: CssColor = choiceColor;
-const fillColor: CssColor = colorVar('--app-fill-color', uiColor('success'));
-void [semanticChoiceColor, aliasChoiceColor, foregroundIsColor, fillColor];
+const fillColor: CssColor = colorVar(
+  '--app-fill-color',
+  uiColor('success-fill-quiet'),
+);
+void [semanticChoiceColor, onQuietChoiceColor, foregroundIsColor, fillColor];
 List({ flex: listFlex });
 List({ flex: 'none' });
 Row({ flex: listFlex });
@@ -245,20 +248,8 @@ const lengthColorChoice: SelectChoice = {
   color: px(1),
 };
 void lengthColorChoice;
-const fillAliasChoice: SelectChoice = {
-  value: 'fill',
-  label: 'Fill',
-  // @ts-expect-error KUI-T013 the success fill alias is a pale background, not an icon foreground.
-  color: uiColor('success'),
-};
-void fillAliasChoice;
-const popAliasChoice: SelectChoice = {
-  value: 'pop',
-  label: 'Pop',
-  // @ts-expect-error KUI-T013 the pop fill alias is a pale background, not an icon foreground.
-  color: uiColor('pop'),
-};
-void popAliasChoice;
+// @ts-expect-error KUI-T013 the removed pre-release color aliases are not token names.
+uiColor('success');
 const fillTokenChoice: SelectChoice = {
   value: 'fill-token',
   label: 'Fill token',
@@ -273,8 +264,8 @@ const plainVarChoice: SelectChoice = {
   color: colorVar('--app-choice-color'),
 };
 void plainVarChoice;
-// @ts-expect-error KUI-T013 a foreground fallback cannot be a fill alias.
-foregroundColorVar('--app-choice-color', uiColor('warning'));
+// @ts-expect-error KUI-T013 a foreground fallback cannot be a fill token.
+foregroundColorVar('--app-choice-color', uiColor('warning-fill-quiet'));
 // @ts-expect-error KUI-T013 row declaration strings were removed; use className and public tokens.
 ListItem({ label: 'Item', style: 'color:red' });
 // @ts-expect-error KUI-T013 row declaration strings were removed; use className and public tokens.
@@ -598,7 +589,7 @@ const tone: ToolbarControlGroupTone = 'dark';
 const buttonAppearance: ToolbarControlGroupButtonAppearance = 'push';
 const shape: ToolbarControlGroupShape = 'rounded';
 const sunkenPanelShape: SunkenPanelShape = 'square';
-const dividerSides: DividerSides = 'tr';
+const dividerSides: Sides = 'tr';
 const insetSides: Sides = 'tbl';
 TabBar({ id: 'tabs', label: 'Tabs', activation, children: icon });
 StateBanner({ title: 'Featured', badge: '3', tone: stateBannerTone, urgency });

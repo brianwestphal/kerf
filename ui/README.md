@@ -168,8 +168,8 @@ The same property-specific boundary applies beyond spacing: use `flex()` (or a
 finite keyword) for `Row.flex`, `Grid.flex`, and `List.flex`; length builders and intrinsic-size keywords for
 `Skeleton.width`/`height`; length builders for `Skeleton.radius`; and
 a foreground color for `SelectChoice.color` — `uiColor()` with a foreground
-token such as `success-on-quiet`, or `foregroundColorVar()` (fill aliases such
-as `uiColor('success')` are rejected). These grammars are not
+token such as `success-on-quiet`, or `foregroundColorVar()` (fill tokens such
+as `uiColor('success-fill-quiet')` are rejected). These grammars are not
 interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 `style` declarations; use `className`, public tokens, and component props.
 

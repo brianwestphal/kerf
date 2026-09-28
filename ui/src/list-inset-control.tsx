@@ -1,5 +1,5 @@
-import type { Sides } from './divider-sides.js';
 import type { KerfUiContent } from './semantic-content.js';
+import type { Sides } from './sides.js';
 
 export interface ListInsetControlProps {
   /** Control(s) that own their own border and padding (e.g. an input, a `wa-*`). */
@@ -35,4 +35,4 @@ export function ListInsetControl({
   );
 }
 
-export type { Sides } from './divider-sides.js';
+export type { Sides } from './sides.js';

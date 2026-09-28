@@ -1,5 +1,5 @@
 .kui-list {
-  --kui-list-divider-color: var(--kui-color-border);
+  --kui-list-divider-color: var(--kui-color-neutral-border-normal);
   --kui-list-gap: var(--kui-layout-item-gap, remify(8px));
   /* Private per-instance values are reset on every List so a nested List that
      omits `gap` or `flex` never inherits its ancestor's; the component's inline

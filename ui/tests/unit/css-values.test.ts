@@ -61,10 +61,12 @@ describe('typed CSS values', () => {
     expect(flex(1)).toBe('1 1 auto');
     expect(flex(2, 0, rem(20))).toBe('2 0 20rem');
     expect(flex(-0, -0, 'min-content')).toBe('0 0 min-content');
-    expect(uiColor('success')).toBe('var(--kui-color-success)');
+    expect(uiColor('success-fill-quiet')).toBe(
+      'var(--kui-color-success-fill-quiet)',
+    );
     expect(colorVar('--app-choice-color')).toBe('var(--app-choice-color)');
-    expect(colorVar('--app-choice-color', uiColor('accent'))).toBe(
-      'var(--app-choice-color, var(--kui-color-accent))',
+    expect(colorVar('--app-choice-color', uiColor('brand-fill-normal'))).toBe(
+      'var(--app-choice-color, var(--kui-color-brand-fill-normal))',
     );
   });
 

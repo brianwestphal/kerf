@@ -61,7 +61,7 @@ export function HeadersDemo() {
               </ToolbarControlGroup>
             }
           />
-          <ListInsetText horizontalOnly>
+          <ListInsetText sides="rl">
             Production-backed primitives with explicit contracts.
           </ListInsetText>
           <ValueTable label="Package metadata">

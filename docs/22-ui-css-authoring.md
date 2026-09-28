@@ -69,7 +69,7 @@ remify(18); // 1.125rem: the runtime twin of source-CSS remify(18px)
 calc(plus(rem(0.25), pct(10))); // calc(0.25rem + 10%)
 flex(2, 1, rem(20)); // 2 1 20rem
 uiColor("success-on-quiet"); // var(--kui-color-success-on-quiet), a CssForegroundColor
-uiColor("success"); // var(--kui-color-success), a CssColor fill
+uiColor("success-fill-quiet"); // var(--kui-color-success-fill-quiet), a CssColor fill
 foregroundColorVar("--app-icon-color"); // var(--app-icon-color), a CssForegroundColor
 ```
 

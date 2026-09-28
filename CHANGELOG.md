@@ -6,6 +6,25 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Breaking (`@kerfjs/ui`): removed the pre-release compatibility surface.**
+  - The `DividerSides` type is gone; use `Sides`, from the renamed `sides`
+    module.
+  - `ListInsetText.horizontalOnly` and its `kui-list-inset-text--horizontal`
+    class are gone; pass `sides="rl"` instead.
+  - The legacy color tokens are gone, both as `--kui-color-*` properties and
+    as `uiColor()` names. Replace them with their canonical tokens:
+
+    | Removed                                       | Use instead             |
+    | --------------------------------------------- | ----------------------- |
+    | `border`                                      | `neutral-border-normal` |
+    | `border-quiet`                                | `neutral-border-quiet`  |
+    | `accent`                                      | `brand-fill-normal`     |
+    | `accent-text`                                 | `brand-on-quiet`        |
+    | `pop`                                         | `pop-fill-quiet`        |
+    | `pop-text`                                    | `pop-on-fill`           |
+    | `success`, `warning`, `danger`                | `*-fill-quiet`          |
+    | `success-text`, `warning-text`, `danger-text` | `*-on-quiet`            |
+
 - **New `@kerfjs/ui` `PopupMenu` (`@kerfjs/ui/popup-menu`).** It renders a
   trigger and typed commands, headings, and dividers over the Web Awesome
   dropdown. Put it in a `single` `ToolbarControlGroup` with `nestedDropdown`, or

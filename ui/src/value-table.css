@@ -1,6 +1,6 @@
 .kui-value-table {
   --kui-value-table-background: var(--kui-color-surface-lowered);
-  --kui-value-table-border: var(--kui-color-border);
+  --kui-value-table-border: var(--kui-color-neutral-border-normal);
   --_kui-value-table-icon-size: var(--kui-value-table-icon-size, remify(24px));
   display: grid;
   margin-block: 0;

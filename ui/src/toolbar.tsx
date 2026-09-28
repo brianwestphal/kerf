@@ -1,6 +1,6 @@
-import type { DividerSides } from './divider-sides.js';
 import type { PaneSeparatorSide } from './pane.js';
 import type { KerfUiContent } from './semantic-content.js';
+import type { Sides } from './sides.js';
 
 export interface ToolbarProps {
   leading?: KerfUiContent;
@@ -8,7 +8,7 @@ export interface ToolbarProps {
   trailing?: KerfUiContent;
   label?: string;
   /** Physical divider edges in canonical top/right/bottom/left order. Defaults to bottom. */
-  dividerSides?: DividerSides;
+  dividerSides?: Sides;
   /** Horizontal treatment of the center zone. Defaults to centered content. */
   centerAlign?: 'center' | 'stretch';
   /**
@@ -81,4 +81,4 @@ export function Toolbar({
   );
 }
 
-export type { DividerSides } from './divider-sides.js';
+export type { Sides } from './sides.js';

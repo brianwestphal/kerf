@@ -47,7 +47,7 @@
     var(--kui-collapsible-panel-width, remify(280px)) +
       var(--_kui-collapsible-panel-safe-inline-start)
   );
-  border-inline-end: 1px solid var(--kui-color-border);
+  border-inline-end: 1px solid var(--kui-color-neutral-border-normal);
 }
 
 .kui-collapsible-panel--right {
@@ -55,7 +55,7 @@
     var(--kui-collapsible-panel-width, remify(280px)) +
       var(--_kui-collapsible-panel-safe-inline-end)
   );
-  border-inline-start: 1px solid var(--kui-color-border);
+  border-inline-start: 1px solid var(--kui-color-neutral-border-normal);
 }
 
 .kui-collapsible-panel--bottom {
@@ -67,7 +67,7 @@
   width: 100%;
   height: var(--_kui-collapsible-panel-extent);
   min-height: 0;
-  border-block-start: 1px solid var(--kui-color-border);
+  border-block-start: 1px solid var(--kui-color-neutral-border-normal);
 }
 
 /* The panel's content sees the edges it touches; its interior edge is clear. */
@@ -396,7 +396,7 @@
 }
 
 .kui-collapsible-panel__toggle:hover {
-  border-color: var(--kui-color-border);
+  border-color: var(--kui-color-neutral-border-normal);
   background: var(--kui-color-neutral-fill-normal);
 }
 

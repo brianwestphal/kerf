@@ -306,18 +306,6 @@
           "--kui-color-danger-on-normal",
           "--kui-color-danger-on-loud",
           "--kui-color-danger-on-fill",
-          "--kui-color-border",
-          "--kui-color-border-quiet",
-          "--kui-color-accent",
-          "--kui-color-accent-text",
-          "--kui-color-pop",
-          "--kui-color-pop-text",
-          "--kui-color-success",
-          "--kui-color-success-text",
-          "--kui-color-warning",
-          "--kui-color-warning-text",
-          "--kui-color-danger",
-          "--kui-color-danger-text",
           "--kui-focus-ring",
           "--kui-shadow-s",
           "--kui-shadow-l"
@@ -1283,7 +1271,7 @@
           "kui-toolbar__trailing"
         ],
         "publicTokens": [
-          "--kui-color-border",
+          "--kui-color-neutral-border-normal",
           "--kui-font-sans",
           "--kui-toolbar-divider-color"
         ]
@@ -1598,7 +1586,7 @@
         "rootClass": "kui-text",
         "publicClasses": ["kui-text"],
         "publicTokens": [
-          "--kui-color-danger-text",
+          "--kui-color-danger-on-quiet",
           "--kui-color-text-quiet",
           "--kui-font-mono",
           "--kui-font-xs",
@@ -1697,7 +1685,7 @@
           "kui-value-table__label"
         ],
         "publicTokens": [
-          "--kui-color-border",
+          "--kui-color-neutral-border-normal",
           "--kui-color-surface-lowered",
           "--kui-color-text",
           "--kui-color-text-quiet",
@@ -2071,7 +2059,7 @@
         "rootClass": "kui-list",
         "publicClasses": ["kui-list"],
         "publicTokens": [
-          "--kui-color-border",
+          "--kui-color-neutral-border-normal",
           "--kui-layout-item-gap",
           "--kui-list-divider-color",
           "--kui-list-gap"
@@ -2413,10 +2401,7 @@
       "cssValueProps": [],
       "boundaries": {
         "rootClass": "kui-list-inset-text",
-        "publicClasses": [
-          "kui-list-inset-text",
-          "kui-list-inset-text--horizontal"
-        ],
+        "publicClasses": ["kui-list-inset-text"],
         "publicTokens": []
       },
       "diagnostics": [],
@@ -2849,9 +2834,9 @@
           "kui-token-search__trailing"
         ],
         "publicTokens": [
-          "--kui-color-accent",
-          "--kui-color-accent-text",
-          "--kui-color-border",
+          "--kui-color-brand-fill-normal",
+          "--kui-color-brand-on-quiet",
+          "--kui-color-neutral-border-normal",
           "--kui-color-text-link",
           "--kui-color-surface",
           "--kui-color-text",
@@ -2944,7 +2929,7 @@
           "kui-resizable-region__restore"
         ],
         "publicTokens": [
-          "--kui-color-border",
+          "--kui-color-neutral-border-normal",
           "--kui-color-neutral-on-quiet",
           "--kui-color-text-link",
           "--kui-focus-ring",

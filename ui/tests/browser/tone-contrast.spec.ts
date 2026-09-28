@@ -443,7 +443,7 @@ for (const colorScheme of ['light', 'dark'] as const) {
       expect.arrayContaining([
         '--kui-color-surface-raised',
         '--kui-color-text-link',
-        '--kui-color-border',
+        '--kui-color-neutral-border-normal',
         ...WA_TONES.map((tone) => `--kui-color-${tone}-on-loud`),
       ]),
     );

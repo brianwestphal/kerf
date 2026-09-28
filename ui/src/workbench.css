@@ -55,14 +55,14 @@
   --_kui-workbench-rail-safe-inset: var(--_kui-workbench-safe-inline-start);
   --kui-edge-inset-inline-start: var(--_kui-workbench-safe-inline-start);
   --kui-edge-inset-inline-end: 0px;
-  border-inline-end: 1px solid var(--kui-color-border);
+  border-inline-end: 1px solid var(--kui-color-neutral-border-normal);
 }
 
 .kui-workbench__rail--right {
   --_kui-workbench-rail-safe-inset: var(--_kui-workbench-safe-inline-end);
   --kui-edge-inset-inline-start: 0px;
   --kui-edge-inset-inline-end: var(--_kui-workbench-safe-inline-end);
-  border-inline-start: 1px solid var(--kui-color-border);
+  border-inline-start: 1px solid var(--kui-color-neutral-border-normal);
 }
 
 .kui-workbench__rail[data-collapsed="true"] {
@@ -213,7 +213,7 @@
   flex: 0 0 var(--_kui-workbench-drawer-extent);
   min-height: 0;
   overflow: hidden;
-  border-block-start: 1px solid var(--kui-color-border);
+  border-block-start: 1px solid var(--kui-color-neutral-border-normal);
   background: var(--kui-color-surface);
 }
 

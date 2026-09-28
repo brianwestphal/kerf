@@ -98,7 +98,7 @@
   );
   padding-inline: var(--_kui-tab-scaffold-safe-inline-start)
     var(--_kui-tab-scaffold-safe-inline-end);
-  border-block-start: 1px solid var(--kui-color-border);
+  border-block-start: 1px solid var(--kui-color-neutral-border-normal);
   background: var(--kui-color-surface);
 }
 
@@ -120,7 +120,7 @@
 }
 
 .kui-tab-scaffold__tab[aria-selected="true"] {
-  color: var(--kui-color-accent-text);
+  color: var(--kui-color-brand-on-quiet);
 }
 
 .kui-tab-scaffold__tab:focus-visible {

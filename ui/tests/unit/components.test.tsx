@@ -1097,32 +1097,12 @@ describe('production UI primitives', () => {
     expect(rich).toContain('<span>Rich</span>');
 
     const horizontal = asHtml(
-      ListInsetText({ children: 'Tight', horizontalOnly: true }),
+      ListInsetText({ children: 'Tight', sides: 'rl', className: 'note' }),
     );
     expect(horizontal).toContain(
-      'class="kui-list-inset-text kui-list-inset-text--horizontal" data-component="list-inset-text"',
+      'class="kui-list-inset-text note" data-component="list-inset-text"',
     );
     expect(horizontal).toContain('data-sides="rl"');
-
-    const explicitSides = asHtml(
-      ListInsetText({
-        children: 'Selected',
-        sides: 'tbl',
-        horizontalOnly: true,
-      }),
-    );
-    expect(explicitSides).toContain('data-sides="tbl"');
-
-    const horizontalExtra = asHtml(
-      ListInsetText({
-        children: 'Tight',
-        horizontalOnly: true,
-        className: 'note',
-      }),
-    );
-    expect(horizontalExtra).toContain(
-      'class="kui-list-inset-text kui-list-inset-text--horizontal note"',
-    );
   });
 
   it('filters widened menu extension objects before rendering them', () => {

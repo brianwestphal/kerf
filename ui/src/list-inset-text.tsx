@@ -1,6 +1,6 @@
-import type { Sides } from './divider-sides.js';
 import { filterDataAttributes } from './extension-attributes.js';
 import type { KerfUiContent } from './semantic-content.js';
+import type { Sides } from './sides.js';
 
 const listInsetTextProtectedAttributes = new Set([
   'data-component',
@@ -19,13 +19,6 @@ export interface ListInsetTextProps {
   children: KerfUiContent | string;
   /** Physical inset sides in canonical top/right/bottom/left order. Defaults to all sides. */
   sides?: Sides;
-  /**
-   * @deprecated Pass `sides="rl"` instead. Keep only the horizontal geometry (inline margin, left/right border, and
-   * left/right padding) and drop the vertical margin, border, and padding. Use it
-   * when the text edge must still align with bordered items but the line should not
-   * add its own vertical box space — tight text layout inside a content region.
-   */
-  horizontalOnly?: boolean;
   className?: string;
   /** Safe `data-*` metadata; component-owned structural attributes stay protected. */
   rootAttributes?: ListInsetTextRootAttributes;
@@ -38,13 +31,12 @@ export interface ListInsetTextProps {
  * transparent border, and 8px padding — so a plain string lines up with
  * bordered `.kui-content` items (its text edge lands at the same 17px inset).
  * Use it for text elements that have no margin, border, or padding of their own.
- * Pass `horizontalOnly` to keep the horizontal inset but drop the vertical box
+ * Pass `sides="rl"` to keep the horizontal inset but drop the vertical box
  * space for tight text layout.
  */
 export function ListInsetText({
   children,
-  sides,
-  horizontalOnly = false,
+  sides = 'trbl',
   className = '',
   rootAttributes = {},
   slot,
@@ -53,15 +45,13 @@ export function ListInsetText({
     rootAttributes,
     listInsetTextProtectedAttributes,
   );
-  const resolvedSides = sides ?? (horizontalOnly ? 'rl' : 'trbl');
-  const cls =
-    `kui-list-inset-text${horizontalOnly ? ' kui-list-inset-text--horizontal' : ''} ${className}`.trim();
+  const cls = `kui-list-inset-text ${className}`.trim();
   return (
     <div
       {...safeRootAttributes}
       class={cls}
       data-component="list-inset-text"
-      data-sides={resolvedSides}
+      data-sides={sides}
       slot={slot}
     >
       {children}
@@ -69,4 +59,4 @@ export function ListInsetText({
   );
 }
 
-export type { Sides } from './divider-sides.js';
+export type { Sides } from './sides.js';

@@ -39,18 +39,18 @@ export function ListInsetTextDemo() {
         label="Horizontal-only inset"
         note={
           <>
-            Pass <code>horizontalOnly</code> to keep the horizontal inset but
-            drop the vertical margin, border, and padding — tight lines that
-            still align with bordered items.
+            Pass <code>sides="rl"</code> to keep the horizontal inset but drop
+            the vertical margin, border, and padding — tight lines that still
+            align with bordered items.
           </>
         }
         align="none"
       >
         <DemoListInsetPane>
-          <ListInsetText horizontalOnly>
+          <ListInsetText sides="rl">
             First tight line — aligned, no vertical box space.
           </ListInsetText>
-          <ListInsetText horizontalOnly>
+          <ListInsetText sides="rl">
             Second tight line, packed against the first.
           </ListInsetText>
         </DemoListInsetPane>

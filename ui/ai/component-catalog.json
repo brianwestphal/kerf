@@ -331,18 +331,6 @@
         "--kui-color-danger-on-normal",
         "--kui-color-danger-on-loud",
         "--kui-color-danger-on-fill",
-        "--kui-color-border",
-        "--kui-color-border-quiet",
-        "--kui-color-accent",
-        "--kui-color-accent-text",
-        "--kui-color-pop",
-        "--kui-color-pop-text",
-        "--kui-color-success",
-        "--kui-color-success-text",
-        "--kui-color-warning",
-        "--kui-color-warning-text",
-        "--kui-color-danger",
-        "--kui-color-danger-text",
         "--kui-focus-ring",
         "--kui-shadow-s",
         "--kui-shadow-l"
@@ -1309,7 +1297,7 @@
         "kui-toolbar__trailing"
       ],
       "publicTokens": [
-        "--kui-color-border",
+        "--kui-color-neutral-border-normal",
         "--kui-font-sans",
         "--kui-toolbar-divider-color"
       ],
@@ -1713,7 +1701,7 @@
         "kui-text"
       ],
       "publicTokens": [
-        "--kui-color-danger-text",
+        "--kui-color-danger-on-quiet",
         "--kui-color-text-quiet",
         "--kui-font-mono",
         "--kui-font-xs",
@@ -1834,7 +1822,7 @@
         "kui-value-table__label"
       ],
       "publicTokens": [
-        "--kui-color-border",
+        "--kui-color-neutral-border-normal",
         "--kui-color-surface-lowered",
         "--kui-color-text",
         "--kui-color-text-quiet",
@@ -2468,7 +2456,7 @@
         "kui-list"
       ],
       "publicTokens": [
-        "--kui-color-border",
+        "--kui-color-neutral-border-normal",
         "--kui-layout-item-gap",
         "--kui-list-divider-color",
         "--kui-list-gap"
@@ -2900,8 +2888,7 @@
       ],
       "variants": [
         "all-side inset by default",
-        "top/right/bottom/left inset combinations",
-        "deprecated horizontalOnly compatibility alias for sides=\"rl\""
+        "top/right/bottom/left inset combinations"
       ],
       "accessibility": [
         "A layout wrapper only; it adds no role or name."
@@ -2920,8 +2907,7 @@
       },
       "wiring": [],
       "publicClasses": [
-        "kui-list-inset-text",
-        "kui-list-inset-text--horizontal"
+        "kui-list-inset-text"
       ],
       "publicTokens": [],
       "links": {
@@ -3412,9 +3398,9 @@
         "kui-token-search__trailing"
       ],
       "publicTokens": [
-        "--kui-color-accent",
-        "--kui-color-accent-text",
-        "--kui-color-border",
+        "--kui-color-brand-fill-normal",
+        "--kui-color-brand-on-quiet",
+        "--kui-color-neutral-border-normal",
         "--kui-color-text-link",
         "--kui-color-surface",
         "--kui-color-text",
@@ -3544,7 +3530,7 @@
         "kui-resizable-region__restore"
       ],
       "publicTokens": [
-        "--kui-color-border",
+        "--kui-color-neutral-border-normal",
         "--kui-color-neutral-on-quiet",
         "--kui-color-text-link",
         "--kui-focus-ring",

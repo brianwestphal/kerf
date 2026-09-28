@@ -129,7 +129,7 @@ the folder modules, and CSS only imports their owner stylesheets.
   `@kerfjs/ui/css-values` builders; raw CSS strings are rejected. Use `flex()`
   for List flex, typed lengths for Skeleton geometry, and
   foreground colors for choice icons: `uiColor()` with an `*-on-*`/text token
-  or `foregroundColorVar()`; fill aliases such as `uiColor('success')` do not
+  or `foregroundColorVar()`; fill tokens such as `uiColor('success-fill-quiet')` do not
   type-check. These brands are intentionally
   not interchangeable; rows use classes/tokens/props rather than raw `style`.
 - **Use `Grid` for a fixed positive count of equal-width columns.** It uses

@@ -767,8 +767,8 @@ test('insets a self-bordered control and bare text so their edges line up in a c
   await expect(text).toHaveCSS('margin-top', '8px');
   await expect(text).toHaveAttribute('data-sides', 'trbl');
 
-  // horizontalOnly keeps the horizontal inset but drops the vertical box space.
-  const tight = page.locator('.kui-list-inset-text--horizontal').first();
+  // sides="rl" keeps the horizontal inset but drops the vertical box space.
+  const tight = page.locator('.kui-list-inset-text[data-sides="rl"]').first();
   await expect(tight).toBeVisible();
   await expect(tight).toHaveCSS('padding-left', '8px');
   await expect(tight).toHaveCSS('border-left-width', '1px');

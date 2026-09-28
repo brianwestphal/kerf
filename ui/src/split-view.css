@@ -37,7 +37,7 @@
     var(--kui-split-view-list-width, remify(320px)) +
       var(--_kui-split-view-safe-inline-start)
   );
-  border-inline-end: 1px solid var(--kui-color-border);
+  border-inline-end: 1px solid var(--kui-color-neutral-border-normal);
 }
 
 .kui-split-view__list[data-resizable="true"] {

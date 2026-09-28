@@ -235,7 +235,7 @@ gridStyle.textContent = `
 document.head.append(gridStyle);
 
 const hostStyle = (extra: string) =>
-  `height:240px;overflow:hidden;outline:1px dashed var(--kui-color-border);${extra}`;
+  `height:240px;overflow:hidden;outline:1px dashed var(--kui-color-neutral-border-normal);${extra}`;
 
 const drawers = () => (
   <main style="display:grid;gap:24px;padding:24px">
@@ -352,14 +352,14 @@ const view = () =>
       {intro}
       <div
         data-restore-host="panel"
-        style="display:flex;height:240px;overflow:hidden;outline:1px dashed var(--kui-color-border)"
+        style="display:flex;height:240px;overflow:hidden;outline:1px dashed var(--kui-color-neutral-border-normal)"
       >
         {panel()}
         {fill('Panel host content')}
       </div>
       <div
         data-restore-host="region"
-        style="display:flex;flex-direction:column;height:240px;overflow:hidden;outline:1px dashed var(--kui-color-border)"
+        style="display:flex;flex-direction:column;height:240px;overflow:hidden;outline:1px dashed var(--kui-color-neutral-border-normal)"
       >
         {fill('Region host content')}
         {region()}

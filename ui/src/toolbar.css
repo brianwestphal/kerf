@@ -103,28 +103,28 @@
 .kui-toolbar[divider-sides*="t"] {
   --_kui-toolbar-divider-top: var(
     --kui-toolbar-divider-color,
-    var(--kui-color-border)
+    var(--kui-color-neutral-border-normal)
   );
 }
 
 .kui-toolbar[divider-sides*="r"] {
   --_kui-toolbar-divider-right: var(
     --kui-toolbar-divider-color,
-    var(--kui-color-border)
+    var(--kui-color-neutral-border-normal)
   );
 }
 
 .kui-toolbar[divider-sides*="b"] {
   --_kui-toolbar-divider-bottom: var(
     --kui-toolbar-divider-color,
-    var(--kui-color-border)
+    var(--kui-color-neutral-border-normal)
   );
 }
 
 .kui-toolbar[divider-sides*="l"] {
   --_kui-toolbar-divider-left: var(
     --kui-toolbar-divider-color,
-    var(--kui-color-border)
+    var(--kui-color-neutral-border-normal)
   );
 }
 

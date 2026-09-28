@@ -47,7 +47,7 @@
 
 .kui-catalog__geometry-border {
   border: 0 solid
-    color-mix(in srgb, var(--kui-color-accent-text) 72%, transparent);
+    color-mix(in srgb, var(--kui-color-brand-on-quiet) 72%, transparent);
 }
 
 .kui-catalog__geometry-margin {

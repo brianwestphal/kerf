@@ -44,8 +44,6 @@ describe('pop semantic color', () => {
       '--kui-color-pop-on-normal': 'var(--kui-color-pop-on-quiet)',
       '--kui-color-pop-on-loud': 'light-dark(#fff, #241126)',
       '--kui-color-pop-on-fill': 'var(--kui-color-pop-on-quiet)',
-      '--kui-color-pop': 'var(--kui-color-pop-fill-quiet)',
-      '--kui-color-pop-text': 'var(--kui-color-pop-on-fill)',
     });
 
     const contrast = root.nodes.find(

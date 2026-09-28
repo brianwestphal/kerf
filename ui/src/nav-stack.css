@@ -94,7 +94,7 @@
 }
 
 .kui-nav-stack__back:hover {
-  border-color: var(--kui-color-border);
+  border-color: var(--kui-color-neutral-border-normal);
   background: var(--kui-color-neutral-fill-normal);
 }
 
@@ -214,7 +214,7 @@
   padding-block-end: var(--_kui-nav-stack-safe-block-end);
   padding-inline: var(--_kui-nav-stack-safe-inline-start)
     var(--_kui-nav-stack-safe-inline-end);
-  border-block-start: 1px solid var(--kui-color-border);
+  border-block-start: 1px solid var(--kui-color-neutral-border-normal);
   background: var(--kui-color-surface);
 }
 

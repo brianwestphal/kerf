@@ -52,7 +52,7 @@ const items = (prefix: string, count = 30) => (
       <div
         class="kui-content-item"
         data-safe-item={`${prefix}-${String(index + 1)}`}
-        style="--kui-content-item-border: var(--kui-color-border)"
+        style="--kui-content-item-border: var(--kui-color-neutral-border-normal)"
       >
         {prefix} item {index + 1}
       </div>

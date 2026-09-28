@@ -1,5 +1,7 @@
 .kui-resizable-region {
-  --kui-resizable-region-separator-color: var(--kui-color-border);
+  --kui-resizable-region-separator-color: var(
+    --kui-color-neutral-border-normal
+  );
   --kui-resizable-region-handle-color: var(--kui-color-neutral-on-quiet);
   --kui-resizable-region-handle-active-color: var(--kui-color-text-link);
   /* Extra track a horizontal region adds when it reaches an unsafe screen edge,

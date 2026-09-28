@@ -47,9 +47,8 @@ export type CssColor = CssValue & {
  * a surface. Mint it with {@link uiColor} and a foreground token name
  * ({@link UiForegroundColorName}) or with {@link foregroundColorVar}. It is a
  * {@link CssColor}, but a plain `CssColor` is not a foreground color: fill,
- * border, and surface tokens (including the `success` / `warning` / `danger` /
- * `pop` fill aliases) are pale backgrounds that leave a foreground nearly
- * invisible.
+ * border, and surface tokens are pale backgrounds that leave a foreground
+ * nearly invisible.
  */
 export type CssForegroundColor = CssColor & {
   readonly [cssForegroundColorBrand]: 'CssForegroundColor';
@@ -69,10 +68,6 @@ export type CssSizeKeyword =
 export type CssSize = CssLength | CssSizeKeyword;
 
 const uiColorNames = [
-  'accent',
-  'accent-text',
-  'border',
-  'border-quiet',
   'brand-border-loud',
   'brand-border-normal',
   'brand-border-quiet',
@@ -83,7 +78,6 @@ const uiColorNames = [
   'brand-on-loud',
   'brand-on-normal',
   'brand-on-quiet',
-  'danger',
   'danger-border-loud',
   'danger-border-normal',
   'danger-border-quiet',
@@ -94,7 +88,6 @@ const uiColorNames = [
   'danger-on-loud',
   'danger-on-normal',
   'danger-on-quiet',
-  'danger-text',
   'neutral-border-loud',
   'neutral-border-normal',
   'neutral-border-quiet',
@@ -104,7 +97,6 @@ const uiColorNames = [
   'neutral-on-loud',
   'neutral-on-normal',
   'neutral-on-quiet',
-  'pop',
   'pop-border-loud',
   'pop-border-normal',
   'pop-border-quiet',
@@ -115,8 +107,6 @@ const uiColorNames = [
   'pop-on-loud',
   'pop-on-normal',
   'pop-on-quiet',
-  'pop-text',
-  'success',
   'success-border-loud',
   'success-border-normal',
   'success-border-quiet',
@@ -127,14 +117,12 @@ const uiColorNames = [
   'success-on-loud',
   'success-on-normal',
   'success-on-quiet',
-  'success-text',
   'surface',
   'surface-lowered',
   'surface-raised',
   'text',
   'text-link',
   'text-quiet',
-  'warning',
   'warning-border-loud',
   'warning-border-normal',
   'warning-border-quiet',
@@ -145,25 +133,15 @@ const uiColorNames = [
   'warning-on-loud',
   'warning-on-normal',
   'warning-on-quiet',
-  'warning-text',
 ] as const;
 
 /** Names of the public `--kui-color-*` semantic tokens. */
 export type UiColorName = (typeof uiColorNames)[number];
 
-/**
- * The semantic tokens that paint a foreground: the `*-on-*` roles, the text
- * roles, and their `*-text` compatibility aliases. The bare `success`,
- * `warning`, `danger`, `pop`, and `accent` aliases are quiet fills, not
- * foregrounds.
- */
+/** The semantic tokens that paint a foreground: the `*-on-*` and text roles. */
 export type UiForegroundColorName = Extract<
   UiColorName,
-  | `${string}-on-${string}`
-  | `${string}-text`
-  | 'text'
-  | 'text-quiet'
-  | 'text-link'
+  `${string}-on-${string}` | 'text' | 'text-quiet' | 'text-link'
 >;
 
 /** Kerf UI's complete spacing-token vocabulary. `s` and `xl` are exceptions. */

@@ -53,7 +53,6 @@ export {
 } from './floating-toolbar.js';
 export { Grid, type GridProps } from './grid.js';
 export {
-  type DividerSides,
   List,
   type ListProps,
   type ListVerticalAlignment,

@@ -18,7 +18,7 @@ html.demo-dark {
 }
 
 html.demo-contrast {
-  --kui-color-border: currentColor;
+  --kui-color-neutral-border-normal: currentColor;
   --kui-focus-ring: 3px solid currentColor;
   --wa-color-surface-border: currentColor;
   --wa-color-neutral-border-normal: currentColor;

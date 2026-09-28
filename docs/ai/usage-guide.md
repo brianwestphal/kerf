@@ -105,8 +105,8 @@ tracks and `ResizableRegion` for adjustable boundaries.
 
 Keep runtime CSS grammars property-specific: use `flex()` for Row/Grid/List flex,
 length builders for Skeleton dimensions, and a foreground color for choice
-icons (`uiColor('success-on-quiet')` or `foregroundColorVar()`; the bare
-`success`/`warning`/`danger`/`pop` fill aliases are rejected). Do not cast between their opaque brands or generate raw
+icons (`uiColor('success-on-quiet')` or `foregroundColorVar()`; `*-fill-*`
+tokens are rejected). Do not cast between their opaque brands or generate raw
 row `style` strings; use `className`, public tokens, and cataloged props.
 
 Menu adapters may pass product event/drop metadata through the typed

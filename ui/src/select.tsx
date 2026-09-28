@@ -13,7 +13,8 @@ export interface SelectChoice<Value extends string = string> {
    * Foreground color for the optional icon: a semantic foreground token such
    * as `uiColor('success-on-quiet')`, or an application-owned
    * `foregroundColorVar('--app-icon-color')`. Fill tokens such as
-   * `uiColor('success')` are pale background tints and do not type-check.
+   * `uiColor('success-fill-quiet')` are pale background tints and do not
+   * type-check.
    */
   color?: CssForegroundColor;
   group?: string;

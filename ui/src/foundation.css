@@ -419,22 +419,6 @@
      fill; #ffa0a2 matches the other tones' pale dark on-fill values. */
   --kui-color-danger-on-fill: light-dark(#c20b20, #ffa0a2);
 
-  /* Compatibility aliases retained for existing @kerfjs/ui consumers. */
-  --kui-color-border: var(
-    --wa-color-surface-border,
-    var(--kui-color-neutral-border-normal)
-  );
-  --kui-color-border-quiet: var(--kui-color-neutral-border-quiet);
-  --kui-color-accent: var(--kui-color-brand-fill-normal);
-  --kui-color-accent-text: var(--kui-color-brand-on-quiet);
-  --kui-color-pop: var(--kui-color-pop-fill-quiet);
-  --kui-color-pop-text: var(--kui-color-pop-on-fill);
-  --kui-color-success: var(--kui-color-success-fill-quiet);
-  --kui-color-success-text: var(--kui-color-success-on-quiet);
-  --kui-color-warning: var(--kui-color-warning-fill-quiet);
-  --kui-color-warning-text: var(--kui-color-warning-on-quiet);
-  --kui-color-danger: var(--kui-color-danger-fill-quiet);
-  --kui-color-danger-text: var(--kui-color-danger-on-quiet);
   --kui-focus-ring: var(
     --wa-focus-ring,
     3px solid var(--wa-color-focus, light-dark(#007aff, #64d2ff))
@@ -468,9 +452,7 @@
     --kui-color-pop-on-normal: currentColor;
     --kui-color-pop-on-loud: HighlightText;
     --kui-color-pop-on-fill: currentColor;
-    --kui-color-pop: Canvas;
-    --kui-color-pop-text: currentColor;
-    --kui-color-border: currentColor;
+    --kui-color-neutral-border-normal: currentColor;
     --kui-focus-ring: 3px solid currentColor;
   }
 }

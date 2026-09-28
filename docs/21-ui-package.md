@@ -68,8 +68,7 @@ Property grammars remain distinct: `flex()` returns `CssFlex` for `List.flex`;
 `Skeleton` sizes accept typed lengths plus finite intrinsic keywords;
 choice icons take a `CssForegroundColor` from `uiColor()` with a foreground
 token (`*-on-*`, a text role, or a `*-text` alias) or from
-`foregroundColorVar()`; the bare `success`/`warning`/`danger`/`pop`/`accent`
-fill aliases and plain `colorVar()` values are rejected. List rows use
+`foregroundColorVar()`; `*-fill-*` tokens and plain `colorVar()` values are rejected. List rows use
 classes, public tokens, and props rather than declaration-string `style` slots.
 
 Public visual components with one stable conceptual root accept an explicit

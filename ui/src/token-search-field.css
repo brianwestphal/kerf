@@ -1,8 +1,8 @@
 .kui-token-search {
   --kui-token-search-background: var(--kui-color-surface);
-  --kui-token-search-border: var(--kui-color-border);
-  --kui-token-search-token-background: var(--kui-color-accent);
-  --kui-token-search-token-foreground: var(--kui-color-accent-text);
+  --kui-token-search-border: var(--kui-color-neutral-border-normal);
+  --kui-token-search-token-background: var(--kui-color-brand-fill-normal);
+  --kui-token-search-token-foreground: var(--kui-color-brand-on-quiet);
   --kui-token-search-line-size: remify(34px);
 
   display: grid;
@@ -53,7 +53,7 @@
   padding-block: calc((var(--kui-token-search-line-size) - 1.35em) / 2) 0;
   box-sizing: border-box;
   outline: 0;
-  caret-color: var(--kui-color-accent-text);
+  caret-color: var(--kui-color-brand-on-quiet);
   font-size: var(--kui-font-s);
   line-height: 1.35;
   white-space: pre-wrap;

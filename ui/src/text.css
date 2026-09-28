@@ -10,7 +10,7 @@
 }
 
 .kui-text[data-tone="danger"] {
-  color: var(--kui-color-danger-text);
+  color: var(--kui-color-danger-on-quiet);
 }
 
 .kui-text[data-size="compact"] {

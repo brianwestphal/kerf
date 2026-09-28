@@ -48,9 +48,8 @@ type CssColor = CssValue & {
  * a surface. Mint it with {@link uiColor} and a foreground token name
  * ({@link UiForegroundColorName}) or with {@link foregroundColorVar}. It is a
  * {@link CssColor}, but a plain `CssColor` is not a foreground color: fill,
- * border, and surface tokens (including the `success` / `warning` / `danger` /
- * `pop` fill aliases) are pale backgrounds that leave a foreground nearly
- * invisible.
+ * border, and surface tokens are pale backgrounds that leave a foreground
+ * nearly invisible.
  */
 type CssForegroundColor = CssColor & {
     readonly [cssForegroundColorBrand]: 'CssForegroundColor';
@@ -60,16 +59,11 @@ type CssFlexBasis = CssLength | 'auto' | 'content' | 'min-content' | 'max-conten
 type CssSizeKeyword = 'auto' | 'min-content' | 'max-content' | 'fit-content';
 /** A complete width/height value accepted by dimension-valued UI props. */
 type CssSize = CssLength | CssSizeKeyword;
-declare const uiColorNames: readonly ["accent", "accent-text", "border", "border-quiet", "brand-border-loud", "brand-border-normal", "brand-border-quiet", "brand-fill-loud", "brand-fill-normal", "brand-fill-quiet", "brand-on-fill", "brand-on-loud", "brand-on-normal", "brand-on-quiet", "danger", "danger-border-loud", "danger-border-normal", "danger-border-quiet", "danger-fill-loud", "danger-fill-normal", "danger-fill-quiet", "danger-on-fill", "danger-on-loud", "danger-on-normal", "danger-on-quiet", "danger-text", "neutral-border-loud", "neutral-border-normal", "neutral-border-quiet", "neutral-fill-loud", "neutral-fill-normal", "neutral-fill-quiet", "neutral-on-loud", "neutral-on-normal", "neutral-on-quiet", "pop", "pop-border-loud", "pop-border-normal", "pop-border-quiet", "pop-fill-loud", "pop-fill-normal", "pop-fill-quiet", "pop-on-fill", "pop-on-loud", "pop-on-normal", "pop-on-quiet", "pop-text", "success", "success-border-loud", "success-border-normal", "success-border-quiet", "success-fill-loud", "success-fill-normal", "success-fill-quiet", "success-on-fill", "success-on-loud", "success-on-normal", "success-on-quiet", "success-text", "surface", "surface-lowered", "surface-raised", "text", "text-link", "text-quiet", "warning", "warning-border-loud", "warning-border-normal", "warning-border-quiet", "warning-fill-loud", "warning-fill-normal", "warning-fill-quiet", "warning-on-fill", "warning-on-loud", "warning-on-normal", "warning-on-quiet", "warning-text"];
+declare const uiColorNames: readonly ["brand-border-loud", "brand-border-normal", "brand-border-quiet", "brand-fill-loud", "brand-fill-normal", "brand-fill-quiet", "brand-on-fill", "brand-on-loud", "brand-on-normal", "brand-on-quiet", "danger-border-loud", "danger-border-normal", "danger-border-quiet", "danger-fill-loud", "danger-fill-normal", "danger-fill-quiet", "danger-on-fill", "danger-on-loud", "danger-on-normal", "danger-on-quiet", "neutral-border-loud", "neutral-border-normal", "neutral-border-quiet", "neutral-fill-loud", "neutral-fill-normal", "neutral-fill-quiet", "neutral-on-loud", "neutral-on-normal", "neutral-on-quiet", "pop-border-loud", "pop-border-normal", "pop-border-quiet", "pop-fill-loud", "pop-fill-normal", "pop-fill-quiet", "pop-on-fill", "pop-on-loud", "pop-on-normal", "pop-on-quiet", "success-border-loud", "success-border-normal", "success-border-quiet", "success-fill-loud", "success-fill-normal", "success-fill-quiet", "success-on-fill", "success-on-loud", "success-on-normal", "success-on-quiet", "surface", "surface-lowered", "surface-raised", "text", "text-link", "text-quiet", "warning-border-loud", "warning-border-normal", "warning-border-quiet", "warning-fill-loud", "warning-fill-normal", "warning-fill-quiet", "warning-on-fill", "warning-on-loud", "warning-on-normal", "warning-on-quiet"];
 /** Names of the public `--kui-color-*` semantic tokens. */
 type UiColorName = (typeof uiColorNames)[number];
-/**
- * The semantic tokens that paint a foreground: the `*-on-*` roles, the text
- * roles, and their `*-text` compatibility aliases. The bare `success`,
- * `warning`, `danger`, `pop`, and `accent` aliases are quiet fills, not
- * foregrounds.
- */
-type UiForegroundColorName = Extract<UiColorName, `${string}-on-${string}` | `${string}-text` | 'text' | 'text-quiet' | 'text-link'>;
+/** The semantic tokens that paint a foreground: the `*-on-*` and text roles. */
+type UiForegroundColorName = Extract<UiColorName, `${string}-on-${string}` | 'text' | 'text-quiet' | 'text-link'>;
 /** Kerf UI's complete spacing-token vocabulary. `s` and `xl` are exceptions. */
 type UiSpaceName = 'none' | '2xs' | 'xs' | 's' | 'm' | 'l' | 'xl';
 /** Create a complete pixel length. */
@@ -145,9 +139,9 @@ export { DisclosureArrow, type DisclosureArrowProps, type DisclosureDirection };
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { D as DividerSides } from './divider-sides-BzB6rphT.js';
 import { PaneSeparatorSide } from './pane.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { S as Sides } from './sides-BPSWde0A.js';
 
 interface ToolbarProps {
     leading?: KerfUiContent;
@@ -155,7 +149,7 @@ interface ToolbarProps {
     trailing?: KerfUiContent;
     label?: string;
     /** Physical divider edges in canonical top/right/bottom/left order. Defaults to bottom. */
-    dividerSides?: DividerSides;
+    dividerSides?: Sides;
     /** Horizontal treatment of the center zone. Defaults to centered content. */
     centerAlign?: 'center' | 'stretch';
     /**
@@ -188,7 +182,7 @@ interface ToolbarProps {
 }
 declare function Toolbar({ leading, center, trailing, label, dividerSides, centerAlign, responsive, responsiveAt, safeAreaEdges, className, slot, }: ToolbarProps): kerfjs.SafeHtml;
 
-export { DividerSides, Toolbar, type ToolbarProps };
+export { Sides, Toolbar, type ToolbarProps };
 ```
 
 ## `@kerfjs/ui/toolbar-text`
@@ -523,10 +517,10 @@ export { ListHeader, type ListHeaderProps };
 ```ts
 import * as kerfjs from 'kerfjs';
 import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
-import { D as DividerSides, S as Sides } from './divider-sides-BzB6rphT.js';
 import { H as HorizontalAlignment, L as ListVerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 export { V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { S as Sides } from './sides-BPSWde0A.js';
 
 type ListRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -558,7 +552,7 @@ interface ListProps {
     /** Own vertical scrolling and overscroll containment. */
     scrollable?: boolean;
     /** Physical divider edges in canonical top/right/bottom/left order. */
-    dividerSides?: DividerSides;
+    dividerSides?: Sides;
     /** Physical sides that receive the standard 17px text inset. */
     textInsets?: Sides;
     /** Physical sides that receive the standard 8px control inset. Text insets win on overlap. */
@@ -572,7 +566,7 @@ interface ListProps {
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
 declare function List({ children, gap, flex, fill, hAlign, vAlign, scrollable, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, CssLength, DividerSides, HorizontalAlignment, List, type ListProps, ListVerticalAlignment, Sides, UiSpaceName };
+export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListProps, ListVerticalAlignment, Sides, UiSpaceName };
 ```
 
 ## `@kerfjs/ui/list-action-row`
@@ -702,8 +696,8 @@ export { ListItem, type ListItemProps };
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { S as Sides } from './divider-sides-BzB6rphT.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { S as Sides } from './sides-BPSWde0A.js';
 
 interface ListInsetControlProps {
     /** Control(s) that own their own border and padding (e.g. an input, a `wa-*`). */
@@ -729,8 +723,8 @@ export { ListInsetControl, type ListInsetControlProps, Sides };
 
 ```ts
 import * as kerfjs from 'kerfjs';
-import { S as Sides } from './divider-sides-BzB6rphT.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { S as Sides } from './sides-BPSWde0A.js';
 
 type ListInsetTextRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -741,13 +735,6 @@ interface ListInsetTextProps {
     children: KerfUiContent | string;
     /** Physical inset sides in canonical top/right/bottom/left order. Defaults to all sides. */
     sides?: Sides;
-    /**
-     * @deprecated Pass `sides="rl"` instead. Keep only the horizontal geometry (inline margin, left/right border, and
-     * left/right padding) and drop the vertical margin, border, and padding. Use it
-     * when the text edge must still align with bordered items but the line should not
-     * add its own vertical box space — tight text layout inside a content region.
-     */
-    horizontalOnly?: boolean;
     className?: string;
     /** Safe `data-*` metadata; component-owned structural attributes stay protected. */
     rootAttributes?: ListInsetTextRootAttributes;
@@ -759,10 +746,10 @@ interface ListInsetTextProps {
  * transparent border, and 8px padding — so a plain string lines up with
  * bordered `.kui-content` items (its text edge lands at the same 17px inset).
  * Use it for text elements that have no margin, border, or padding of their own.
- * Pass `horizontalOnly` to keep the horizontal inset but drop the vertical box
+ * Pass `sides="rl"` to keep the horizontal inset but drop the vertical box
  * space for tight text layout.
  */
-declare function ListInsetText({ children, sides, horizontalOnly, className, rootAttributes, slot, }: ListInsetTextProps): kerfjs.SafeHtml;
+declare function ListInsetText({ children, sides, className, rootAttributes, slot, }: ListInsetTextProps): kerfjs.SafeHtml;
 
 export { ListInsetText, type ListInsetTextProps, Sides };
 ```
@@ -1141,8 +1128,8 @@ import { a as PanelToolbar, b as PanelToggle } from './panel-toolbar-BFQxFITu.js
 import { ToolbarProps } from './toolbar.js';
 import './lucide-icon.js';
 import 'lucide';
-import './divider-sides-BzB6rphT.js';
 import './pane.js';
+import './sides-BPSWde0A.js';
 
 /** The standard toggle a Workbench renders for a panel (see {@link PanelToggle}). */
 type WorkbenchPanelToggle = PanelToggle;
@@ -2086,7 +2073,8 @@ interface SelectChoice<Value extends string = string> {
      * Foreground color for the optional icon: a semantic foreground token such
      * as `uiColor('success-on-quiet')`, or an application-owned
      * `foregroundColorVar('--app-icon-color')`. Fill tokens such as
-     * `uiColor('success')` are pale background tints and do not type-check.
+     * `uiColor('success-fill-quiet')` are pale background tints and do not
+     * type-check.
      */
     color?: CssForegroundColor;
     group?: string;
@@ -2668,9 +2656,9 @@ export { Text, type TextBorder, type TextContent, type TextFont, type TextProps,
 ```ts
 import * as kerfjs from 'kerfjs';
 import { UiSpaceName, CssLength, CssFlexKeyword, CssFlex } from './css-values.js';
-import { S as Sides } from './divider-sides-BzB6rphT.js';
 import { H as HorizontalAlignment, V as VerticalAlignment } from './flex-alignment-4ms8ZbV8.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { S as Sides } from './sides-BPSWde0A.js';
 
 type RowRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;

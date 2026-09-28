@@ -16,6 +16,3 @@ export type Sides =
   | 'tbl'
   | 'rbl'
   | 'trbl';
-
-/** @deprecated Use the general `Sides` type. */
-export type DividerSides = Sides;

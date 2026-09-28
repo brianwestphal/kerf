@@ -5,7 +5,6 @@ import {
   space,
   type UiSpaceName,
 } from './css-values.js';
-import type { Sides } from './divider-sides.js';
 import { filterDataAttributes } from './extension-attributes.js';
 import {
   type HorizontalAlignment,
@@ -14,6 +13,7 @@ import {
   verticalAlignment,
 } from './flex-alignment.js';
 import type { KerfUiContent } from './semantic-content.js';
+import type { Sides } from './sides.js';
 
 const rowProtectedAttributes = new Set([
   'data-component',
@@ -134,8 +134,8 @@ export type {
   CssLength,
   UiSpaceName,
 } from './css-values.js';
-export type { Sides } from './divider-sides.js';
 export type {
   HorizontalAlignment,
   VerticalAlignment,
 } from './flex-alignment.js';
+export type { Sides } from './sides.js';

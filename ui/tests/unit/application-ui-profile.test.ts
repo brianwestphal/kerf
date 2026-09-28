@@ -35,7 +35,7 @@ describe('application UI profile policy', () => {
     const options = {
       source: layers[0].source,
       knownComponents: ['@kerfjs/ui:pane'],
-      knownTokens: ['--kui-color-border'],
+      knownTokens: ['--kui-color-neutral-border-normal'],
       knownRules: ['KUI-L101'],
     };
     expect(
