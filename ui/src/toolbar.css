@@ -6,7 +6,7 @@
   color: var(--kui-color-text);
   background: transparent;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  align-items: center;
+  align-items: start;
   gap: var(--kui-toolbar-gap, remify(8px));
   container: kui-toolbar / inline-size;
   font-family: var(--kui-font-sans);
@@ -128,13 +128,54 @@
   );
 }
 
+/* The control band. Every zone reserves one group-height row at the top of
+   the toolbar, and each item is centered in that band by its own size, not by
+   its siblings: a group or title shorter than the band takes half the
+   difference as a top margin, and anything taller (a wrapped title, a
+   multi-line search, a second trailing row) starts at the band's top and grows
+   down. A growing item therefore never moves the other items or its own top.
+   Centering the zones in the toolbar row instead dropped every control to the
+   middle of a two-line title. The band is resolved here, on the toolbar, so a
+   compact group's own smaller group size never redefines it. */
+.kui-toolbar {
+  --_kui-toolbar-band: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
+}
+
 .kui-toolbar__leading,
 .kui-toolbar__center,
 .kui-toolbar__trailing {
   display: flex;
   min-width: 0;
-  align-items: center;
+  min-height: var(--_kui-toolbar-band);
+  align-items: flex-start;
   gap: var(--kui-toolbar-gap, remify(8px));
+}
+
+:is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
+  > [data-component="toolbar-control-group"] {
+  margin-block-start: max(
+    0px,
+    calc(
+      (
+          var(--_kui-toolbar-band) -
+            var(--kui-toolbar-group-size, calc(2px + remify(42px)))
+        ) /
+        2
+    )
+  );
+}
+
+/* A title fills the band and centers its first line in it; further lines of a
+   wrapped title continue below the band. */
+:is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
+  > [data-component="toolbar-text"] {
+  height: auto;
+  min-height: var(--_kui-toolbar-band);
+}
+
+:is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
+  > [data-component="toolbar-text"][data-wrap="true"] {
+  padding-block: max(0px, calc((var(--_kui-toolbar-band) - 1.25em) / 2));
 }
 
 /* Pin each zone to its column so a display:none (empty) leading or center zone

@@ -210,6 +210,12 @@ slot without mixing authoring rules into the per-entry component catalog.
   controls in the trailing zone, and optional app-owned supporting copy below.
   The app links title/supporting-copy ids to a dialog or panel and sets
   `headingLevel` when a page or section title needs a heading landmark.
+- A `Toolbar` reserves one group-height (44px) control band at its top. Each
+  zone item no taller than the band is centered in it by its own size; a
+  taller item — a wrapped title, a multi-line search, a second trailing row —
+  starts at the band's top and grows down. A wrapped `ToolbarText` title
+  centers its first line in the band, so trailing controls stay beside that
+  line instead of dropping to the middle of the whole title.
 - `ResizableRegion` renders a focusable ARIA separator with orientation and live
   min/max/current values. Its wiring returns a disposer. `handleIcon` replaces
   dormant decoration only; it does not replace separator semantics or wiring.

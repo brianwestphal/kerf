@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui`'s `Toolbar` keeps its controls in a top control band.** A
+  toolbar now reserves one 44px band at its top: each zone item no taller than
+  the band is centered in it by its own size, and a taller item — a wrapped
+  `ToolbarText` title, a multi-line search, a second trailing row — starts at
+  the band's top and grows down without moving the others. A wrapped title
+  centers its first line in the band, so trailing controls stay beside that
+  line instead of dropping to the middle of the whole title.
+
 - **`@kerfjs/ui`'s segmented `TabBar` ends its strip concentric with the pill
   track.** The first tab's leading corners, and with `allocation="fill"` the
   last tab's trailing corners, now follow the track's curve instead of keeping
