@@ -157,30 +157,32 @@
     var(--kui-edge-inset-block-end);
 }
 
-.kui-workbench__main:not(
-    :has(
-      > :is(
-          [data-component="pane"],
-          [data-component="nav-stack"],
-          [data-component="split-view"],
-          [data-component="workbench"],
-          [data-component="tab-scaffold"]
-        ):only-child
-    )
-  )
-  > *,
-.kui-workbench__panel-content:not(
-    :has(
-      > :is(
-          [data-component="pane"],
-          [data-component="nav-stack"],
-          [data-component="split-view"],
-          [data-component="workbench"],
-          [data-component="tab-scaffold"]
-        ):only-child
-    )
-  )
-  > * {
+/* Every other child sees a cleared context. The exemption is tested on the
+   child itself, never as `region:not(:has(…)) > *`: a `:has()` before a
+   universal child makes each child of the region re-check the region's
+   `:has()` on every DOM change (~46ms per restyle for 1000 rows in Chromium).
+   SplitView, NavStack, TabScaffold, and CollapsiblePanel content use the same
+   shape. */
+.kui-workbench__main
+  > :not(
+    :is(
+      [data-component="pane"],
+      [data-component="nav-stack"],
+      [data-component="split-view"],
+      [data-component="workbench"],
+      [data-component="tab-scaffold"]
+    ):only-child
+  ),
+.kui-workbench__panel-content
+  > :not(
+    :is(
+      [data-component="pane"],
+      [data-component="nav-stack"],
+      [data-component="split-view"],
+      [data-component="workbench"],
+      [data-component="tab-scaffold"]
+    ):only-child
+  ) {
   --kui-edge-inset-block-start: 0px;
   --kui-edge-inset-block-end: 0px;
   --kui-edge-inset-inline-start: 0px;

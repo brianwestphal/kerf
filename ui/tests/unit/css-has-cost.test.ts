@@ -11,10 +11,16 @@ import { describe, expect, it } from 'vitest';
 // change, so a text edit in a long list costs a full restyle of the list
 // (measured ~85ms -> ~0.9ms per change once the shape was removed). The same
 // selector ending on a class, attribute, id, or type is invalidated only for
-// elements carrying that key and stays cheap. A keyed :has() container
-// (`.kui-workbench__main:not(:has(…)) > *`) narrows the candidates to that
-// class; its remaining cost is under investigation in KF-1M98TC (measure
-// keyed `:not(:has(…)) > *` layout-content rules under long lists).
+// elements carrying that key and stays cheap.
+//
+// KF-3D4T27 (the layout-content inset rules cost ~46ms per restyle when list
+// rows were the region's direct children): keying the :has() container does
+// not help. `.kui-workbench__main:not(:has(…)) > *` still makes each child of
+// the region re-check the region's :has() on every DOM change (~2ms with the
+// list one level down, ~46ms with 1000 rows directly inside). The regions now
+// test the exemption on the child (`region > :not(:is(…):only-child)`), so any
+// :has() compound, keyed or not, followed by an unkeyed rightmost compound is
+// rejected.
 //
 // KF-PM5EVE (CollapsiblePanel's sibling edge-inset rules restyled a long
 // list's rows on every insertion): an unkeyed subject reached across siblings
@@ -98,6 +104,21 @@ function forgivingArguments(compound: string): string[] {
   return found;
 }
 
+/**
+ * Whether a subject compound is keyed, counting a top-level `:is()` /
+ * `:where()` whose every alternative ends on a key (`:is(button, .a)`).
+ */
+function keyedSubject(compound: string): boolean {
+  return (
+    keyed(compound) ||
+    forgivingArguments(compound).some((argument) =>
+      splitTopLevel(argument, (char) => char === ',').every((alternative) =>
+        keyed(compounds(alternative).at(-1) ?? ''),
+      ),
+    )
+  );
+}
+
 /** A compound with its top-level `:is()` / `:where()` groups removed. */
 function withoutForgiving(compound: string): string {
   let result = compound;
@@ -132,13 +153,13 @@ function costlyShapes(complex: string): string[] {
   const parts = compounds(complex);
   const subject = parts.at(-1) ?? '';
   const problems: string[] = [];
-  if (!keyed(subject) && subjectCombinator(complex) === '~')
+  if (!keyedSubject(subject) && subjectCombinator(complex) === '~')
     problems.push('universal subject after a ~ sibling combinator');
   if (
-    !keyed(subject) &&
-    parts.slice(0, -1).some((part) => part.includes(':has(') && !keyed(part))
+    !keyedSubject(subject) &&
+    parts.slice(0, -1).some((part) => part.includes(':has('))
   )
-    problems.push('universal compound after a universal :has() container');
+    problems.push('universal compound after a :has() container');
   // The subject's own `:has()`, not one inside an `:is()` / `:where()`
   // argument (those are checked as their own complex selectors below).
   const own = withoutForgiving(subject);
@@ -199,7 +220,12 @@ describe('package CSS :has() cost', () => {
     );
     expect(costlyShapes(':where(:has(> .a))')).toEqual([]);
     expect(costlyShapes('.x:has(~ .a)')).toEqual([]);
-    expect(costlyShapes('.x:not(:has(> .a)) > *')).toEqual([]);
+    expect(costlyShapes('.x:not(:has(> .a)) > *')).not.toEqual([]);
+    expect(costlyShapes('.x:has(> .a) > :not(.b)')).not.toEqual([]);
+    expect(costlyShapes('.x > :not(:is(.a):only-child)')).toEqual([]);
+    expect(costlyShapes('.x:has(> .a) > .b')).toEqual([]);
+    expect(costlyShapes('.x:has(> .a) > :is(button, .b):hover')).toEqual([]);
+    expect(costlyShapes('.x:has(> .a) > :is(.b, *)')).not.toEqual([]);
     expect(costlyShapes('[data-x]:has(.a)')).toEqual([]);
   });
 

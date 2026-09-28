@@ -141,18 +141,16 @@
     var(--kui-edge-inset-block-end);
 }
 
-.kui-nav-stack__view:not(
-    :has(
-      > :is(
-          [data-component="pane"],
-          [data-component="nav-stack"],
-          [data-component="split-view"],
-          [data-component="workbench"],
-          [data-component="tab-scaffold"]
-        ):only-child
-    )
-  )
-  > * {
+.kui-nav-stack__view
+  > :not(
+    :is(
+      [data-component="pane"],
+      [data-component="nav-stack"],
+      [data-component="split-view"],
+      [data-component="workbench"],
+      [data-component="tab-scaffold"]
+    ):only-child
+  ) {
   --kui-edge-inset-block-start: 0px;
   --kui-edge-inset-block-end: 0px;
   --kui-edge-inset-inline-start: 0px;

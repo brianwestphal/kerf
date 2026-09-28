@@ -73,6 +73,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   it from a custom element — render an explicit value (`aria-pressed="false"`)
   instead.
 
+- **`@kerfjs/ui` layout regions no longer slow edits to long lists inside
+  them.** The rule that clears the safe-area context for the children of a
+  Workbench main area or panel, SplitView list or detail, NavStack view,
+  TabScaffold scene, or CollapsiblePanel content made each child re-check the
+  region in Chromium on every DOM change. A 1000-row list placed directly in
+  one of these regions took about 46ms per style recalculation (2ms with the
+  list one level down), and now takes about 0.2ms. Layout and insets are
+  unchanged.
+
 - **`@kerfjs/ui` `CollapsiblePanel` no longer slows insertions into long
   lists.** An expanded inline panel clears its screen edge for its siblings;
   the rules that did so selected the siblings themselves

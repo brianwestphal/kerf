@@ -866,7 +866,16 @@ insets structurally, with no per-app configuration. The consumer summary is the
 
 A layout region whose only child is a `Pane`, `NavStack`, `SplitView`,
 `Workbench`, or `TabScaffold` delegates to that child instead of padding, so the
-child can paint through and own scroll-through padding. A Pane header/footer
+child can paint through and own scroll-through padding. The region's padding
+rule tests that with `region:not(:has(> delegated:only-child))` on the region
+itself, but the reset for its children is written on the child,
+`region > :not(:is(delegated):only-child)`, which has the same specificity and
+the same matches. KF-3D4T27: the earlier `region:not(:has(…)) > *` made every
+child of a region re-check the region's `:has()` on each DOM change, about
+46ms per restyle in Chromium with 1000 rows directly inside a region and about
+2ms with the list one level down or any such region on the page. It now takes
+0.2ms. `ui/tests/unit/css-has-cost.test.ts` rejects any `:has()` compound,
+keyed or not, followed by an unkeyed rightmost compound. A Pane header/footer
 whose only child is a `Toolbar` hands the toolbar the inline edges; the toolbar
 adds them to its own inline padding so its dividers reach the edge. A toolbar
 outside that hand-off treats an unset context as zero, unless it claims its
