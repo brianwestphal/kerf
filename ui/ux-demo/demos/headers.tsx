@@ -44,7 +44,9 @@ export function HeadersDemo() {
             leading={
               <>
                 <ToolbarControlGroup appearance="borderless" single>
-                  <LucideIcon icon={Wrench} name="wrench" />
+                  <button>
+                    <LucideIcon icon={Wrench} name="wrench" />
+                  </button>
                 </ToolbarControlGroup>
                 <ToolbarText
                   text="Package details"
