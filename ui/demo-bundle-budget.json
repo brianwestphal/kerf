@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 297500,
-  "measuredLargestJavaScriptGzip": 149055,
-  "measuredTotalJavaScriptGzip": 297406,
+  "largestJavaScriptGzip": 151800,
+  "totalJavaScriptGzip": 298500,
+  "measuredLargestJavaScriptGzip": 151726,
+  "measuredTotalJavaScriptGzip": 298435,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1011,6 +1011,22 @@
         "measuredTotalJavaScriptGzip": 297406,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 297500
+      }
+    },
+    {
+      "at": "2026-09-28T11:32:24.062Z",
+      "reason": "Help tags on icon-only Select and PopupMenu triggers",
+      "old": {
+        "measuredLargestJavaScriptGzip": 149055,
+        "measuredTotalJavaScriptGzip": 297406,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 297500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 151726,
+        "measuredTotalJavaScriptGzip": 298435,
+        "largestJavaScriptGzip": 151800,
+        "totalJavaScriptGzip": 298500
       }
     }
   ]

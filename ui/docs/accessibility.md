@@ -107,6 +107,49 @@ repeated and out-of-order completions, cancellation, instance isolation, and
 removal. `tests/browser/select-lifecycle.spec.ts` repeats animation/resize/reopen
 sequences at wide and narrow widths in Chromium, Firefox, and WebKit.
 
+### Help tags on icon-only triggers
+
+An icon-only trigger has no visible title, so sighted pointer and keyboard users
+would otherwise see only its icon (and a filter's count). Following the Apple
+HIG convention for toolbar items, an icon-only `Select`
+(`selectedPresentation="icon-only"`, single or `multiple`) and an icon-only
+`PopupMenu` (named by `label` rather than visible `text`) show a help tag: a Web
+Awesome `wa-tooltip` in the theme's tooltip palette, below the trigger. It is on
+by default, takes no props, and is installed by the same
+`@kerfjs/ui/select/register` or `@kerfjs/ui/popup-menu/register` import that
+makes the control interactive, so pure `SafeHtml` rendering stays zero-JS.
+
+- **Text.** The tag says what the accessible name says: a filter's name and
+  chosen labels ("Filter by label: Bug, Docs", or "Filter by label" when none
+  are chosen), a single Select's name and current choice ("Rendering balance:
+  Balanced"), or a menu's `label` ("Sort tickets"). It updates with the
+  selection.
+- **Showing.** It appears after the pointer rests on the trigger for 500ms, at
+  once when a neighboring tag closed moments ago (so scanning along a toolbar
+  stays quick), and immediately on keyboard focus (`:focus-visible`). A
+  pointer press that focuses the trigger and touch input never show it.
+- **Hiding.** It hides when the pointer and keyboard focus have both left the
+  trigger, on a press, on Escape, and whenever the popup opens. It does not
+  come back when the popup closes and focus returns to the trigger; it returns
+  after the pointer moves onto something else or focus leaves and comes back.
+- **Assistive technology.** The tag is `aria-hidden` and never joins the
+  combobox's or button's `aria-labelledby` (kerf anchors it directly rather than
+  through `for`), so the accessible name is unchanged and announced once; the
+  accessibility tree is identical with the tag open or closed.
+- **Isolation.** The tag lives in the control's own shadow root, so the morph
+  never touches it and light-DOM `:has([open])` selectors do not see it. Its
+  `wa-show` / `wa-hide` lifecycle events stop at the tag, so a listener on the
+  control (or a delegated one above it) hears only the popup; a document
+  capture-phase listener still observes them. A long tag wraps at the tooltip's
+  maximum width and keeps 8px clear of the viewport edge.
+
+A labeled Select and a `PopupMenu` with visible `text` get no tag: their visible
+text already names them. Plain icon `<button>`s in a `ToolbarControlGroup` are
+application markup and keep whatever naming the application gives them.
+`tests/unit/help-tag.test.ts` walks the hover, focus, press, Escape, popup, and
+warm-window transitions; `tests/browser/select-help-tag.spec.ts` checks the real
+elements in Chromium.
+
 ## PopupMenu
 
 `PopupMenu` renders a Web Awesome dropdown, so the menu roles, arrow-key and
@@ -114,7 +157,9 @@ typeahead navigation, Escape, and focus return to the trigger come from
 `wa-dropdown`. Kerf's part is the trigger's name. A Web Awesome button takes its
 name from its content and ignores an `aria-label` on the host, so an icon-only
 trigger requires `label`, which renders as visually hidden text inside the
-button; a trigger with visible `text` is named by that text. Group headings
+button; a trigger with visible `text` is named by that text. An icon-only
+trigger also shows its `label` as an `aria-hidden` help tag on hover and
+keyboard focus (see [Help tags on icon-only triggers](#help-tags-on-icon-only-triggers)). Group headings
 render as the same uppercase group titles a grouped `Select` shows, and dividers
 are presentational. A keyboard-focused item is the menu's current row, painted
 with the Select's current-option fill rather than a second focus ring inside the

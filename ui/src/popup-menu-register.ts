@@ -1,12 +1,15 @@
 import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/divider/divider.js';
 import '@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js';
+import '@awesome.me/webawesome/dist/components/tooltip/tooltip.js';
 
 import WaDropdown from '@awesome.me/webawesome/dist/components/dropdown/dropdown.js';
 
+import { installHelpTags } from './install-help-tag.js';
 import { installPopupMenuKeyboard } from './install-popup-menu-keyboard.js';
 
 installPopupMenuKeyboard(WaDropdown.prototype);
+installHelpTags();
 
 /**
  * Marker export for tests and tooling; importing this module registers the

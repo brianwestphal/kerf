@@ -64,6 +64,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `layout.css` still imports. There is no filled variant — use `SunkenPanel`
   for a lowered surface. The catalog, demos, and recipes use the component.
 
+- **`@kerfjs/ui` icon-only Select and PopupMenu triggers show a help tag.**
+  An icon-only `Select` (single or `multiple` with `triggerIcon`) and an
+  icon-only `PopupMenu` now show a Web Awesome tooltip naming the control on
+  hover (after 500ms) and on keyboard focus: a filter reads "Filter by label:
+  Bug, Docs", a single Select its name and current choice, a menu its `label`.
+  It hides while the popup is open, on a press, and on Escape. The tag repeats
+  the accessible name, so it is `aria-hidden` and never joins
+  `aria-labelledby`; screen readers still hear the name once. It is installed
+  by the existing `select/register` and `popup-menu/register` imports, needs no
+  props, and never appears for labeled Selects or text menu triggers.
+
 - **`@kerfjs/ui` toolbar groups drop their focus ring while a popup is open.**
   A `ToolbarControlGroup` that owns the ring (`focusRing="outline"` or
   `"halo"`) no longer paints it while a Select listbox or `PopupMenu` inside it

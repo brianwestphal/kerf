@@ -103,7 +103,7 @@ export function SelectDemo() {
       </CatalogExample>
       <CatalogExample
         label="Toolbar filter"
-        note="A multiple icon-only trigger keeps a fixed icon and counts the chosen filters."
+        note="A multiple icon-only trigger keeps a fixed icon and counts the chosen filters; hover or keyboard focus shows a help tag with its name and chosen labels."
         align="inline-control"
       >
         <ToolbarControlGroup
@@ -180,7 +180,7 @@ export function SelectDemo() {
       </CatalogExample>
       <CatalogExample
         label="Toolbar icon"
-        note="An icon-only trigger keeps its caret; a single group grows to fit both."
+        note="An icon-only trigger keeps its caret; a single group grows to fit both. Hover or keyboard focus shows a help tag with its name and current choice."
         align="inline-control"
       >
         <ToolbarControlGroup

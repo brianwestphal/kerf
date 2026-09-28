@@ -3112,7 +3112,8 @@
           "Hint text is visible below the control through Web Awesome's native hint relationship; placeholderText remains the empty value inside the closed control.",
           "Import select/register once; its scoped lifecycle adapter keeps the latest open/close request authoritative across animation reversals, canceled transitions, and removal. Do not add consumer popup timing or position repairs.",
           "With multiple, the popup stays open while choices toggle (pointer, Enter, or Space) and closes on an outside press, Escape, or focus leaving; each chosen option shows a check, and the closed control summarizes the chosen labels in choice order.",
-          "A multiple icon-only trigger shows its fixed triggerIcon and, while any choice is chosen, an aria-hidden count Badge; the combobox's accessible name ends with the chosen labels in choice order, and its hidden value stays empty."
+          "A multiple icon-only trigger shows its fixed triggerIcon and, while any choice is chosen, an aria-hidden count Badge; the combobox's accessible name ends with the chosen labels in choice order, and its hidden value stays empty.",
+          "Once registered, an icon-only trigger (single or multiple) shows an aria-hidden Web Awesome help tag repeating its accessible name (a single Select adds its current choice) after a 500ms hover and at once on keyboard focus; it hides while the popup is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip."
         ]
       },
       "cssValueProps": [
@@ -3204,7 +3205,8 @@
       },
       "accessibility": {
         "obligations": [
-          "An icon-only trigger requires label, rendered as visually hidden slotted text because a Web Awesome button takes its accessible name from its content; a trigger with visible text is named by that text. Web Awesome provides menu roles, arrow-key navigation, typeahead, and Escape."
+          "An icon-only trigger requires label, rendered as visually hidden slotted text because a Web Awesome button takes its accessible name from its content; a trigger with visible text is named by that text. Web Awesome provides menu roles, arrow-key navigation, typeahead, and Escape.",
+          "Once registered, an icon-only trigger shows its label as an aria-hidden Web Awesome help tag after a 500ms hover and at once on keyboard focus; it hides while the menu is open, on a press, and on Escape, and never joins aria-labelledby. Do not add a title or another tooltip."
         ]
       },
       "cssValueProps": [],

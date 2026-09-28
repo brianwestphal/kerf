@@ -15,7 +15,7 @@ export function PopupMenuDemo() {
     >
       <CatalogExample
         label="Icon trigger in a toolbar group"
-        note="A single group with nestedDropdown sizes the trigger as a toolbar button; menuInset sets the menu's inset."
+        note="A single group with nestedDropdown sizes the trigger as a toolbar button; menuInset sets the menu's inset. Hover or keyboard focus shows the label as a help tag."
         align="inline-control"
       >
         <ToolbarControlGroup single nestedDropdown menuInset="compact">
