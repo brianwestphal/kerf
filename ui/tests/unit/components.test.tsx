@@ -2007,6 +2007,91 @@ describe('production UI primitives', () => {
     ).toContain('pointer-events: none;');
   });
 
+  it('hides floating controls under an open side overlay in every layout', () => {
+    const source = (file: string) =>
+      readFileSync(resolve(import.meta.dirname, `../../src/${file}`), 'utf8')
+        .replace(/\/\*[\s\S]*?\*\//g, '')
+        .replace(/\s+/g, ' ');
+    // The rules that raise the covered flag, by the selector text leading up
+    // to each `--_kui-floating-covered: hidden;` declaration.
+    const flags = (css: string) =>
+      [...css.matchAll(/([^{}]+)\{\s*--_kui-floating-covered: hidden;/g)].map(
+        (match) => match[1]!.trim(),
+      );
+    const READ = 'visibility: var(--_kui-floating-covered, inherit);';
+
+    // The floating toolbar and every restore corner read the flag, and fall
+    // back to plain inheritance when no layout raises it.
+    expect(source('floating-toolbar.css')).toContain(READ);
+    for (const [file, corner] of [
+      ['workbench.css', '.kui-workbench__restore {'],
+      ['collapsible-panel.css', '.kui-collapsible-panel__restore {'],
+      ['resizable-region.css', '.kui-resizable-region__restore {'],
+    ] as const) {
+      const css = source(file);
+      const start = css.indexOf(corner);
+      expect(start).toBeGreaterThanOrEqual(0);
+      expect(css.slice(start, css.indexOf('}', start))).toContain(READ);
+    }
+
+    // Workbench: an open static rail overlay, or an open inline rail whose
+    // responsive breakpoint applies (each inside its container query), flags
+    // the rail's siblings only: the work area and the restore corners.
+    const workbench = flags(source('workbench.css'));
+    expect(workbench).toHaveLength(3);
+    expect(workbench[0]).toContain(
+      '.kui-workbench__rail[data-presentation="overlay"]:not( [data-collapsed="true"] )',
+    );
+    expect(workbench[1]).toContain('[data-responsive-overlay-at="narrow"]');
+    expect(workbench[2]).toContain('[data-responsive-overlay-at="compact"]');
+    for (const selector of workbench)
+      expect(selector).toMatch(
+        /> :is\(\.kui-workbench__center, \.kui-workbench__restore\)$/,
+      );
+    const container = source('workbench.css');
+    for (const [query, at] of [
+      ['@container kui-workbench (max-width: remify(704px))', 'narrow'],
+      ['@container kui-workbench (max-width: remify(448px))', 'compact'],
+    ]) {
+      const flagged = container.indexOf(
+        `[data-responsive-overlay-at="${at}"][data-presentation="inline"]:not( [data-collapsed="true"] ) ) > :is(`,
+      );
+      expect(flagged).toBeGreaterThan(0);
+      // The nearest enclosing at-rule is that breakpoint's container query.
+      const atRule = container.lastIndexOf('@container', flagged);
+      expect(container.startsWith(query, atRule)).toBe(true);
+    }
+
+    // CollapsiblePanel: the wireSidebar compact host with an open side panel
+    // (its panels reset the flag), and a static overlay's siblings. Bottom
+    // panels are not side overlays.
+    const panel = source('collapsible-panel.css');
+    const panelFlags = flags(panel);
+    expect(panelFlags).toHaveLength(2);
+    expect(panelFlags[0]).toMatch(/^\[data-collapsible-overlay="true"\]:has\(/);
+    expect(panelFlags[1]).toContain(
+      '> :not(.kui-collapsible-panel[data-presentation="overlay"])',
+    );
+    for (const selector of panelFlags) {
+      expect(selector).toContain('.kui-collapsible-panel--left');
+      expect(selector).toContain('.kui-collapsible-panel--right');
+      expect(selector).not.toContain('--bottom');
+    }
+    expect(panel).toContain(
+      '[data-collapsible-overlay="true"] .kui-collapsible-panel { --_kui-floating-covered: initial; }',
+    );
+
+    // ResizableRegion: only a horizontal (side) overlay flags its siblings.
+    const region = flags(source('resizable-region.css'));
+    expect(region).toHaveLength(1);
+    expect(region[0]).toContain(
+      '.kui-resizable-region[data-presentation="overlay"][data-axis="horizontal"]:not( [data-collapsed="true"] )',
+    );
+    expect(region[0]).toContain(
+      '> :not(.kui-resizable-region[data-presentation="overlay"])',
+    );
+  });
+
   it('lifts the region restore corner above an expanded bottom drawer beside it, scoped to the container', () => {
     const css = readFileSync(
       resolve(import.meta.dirname, '../../src/resizable-region.css'),

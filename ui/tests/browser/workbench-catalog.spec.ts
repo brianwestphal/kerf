@@ -893,7 +893,11 @@ test.describe('resizable Workbench panels', () => {
   }, testInfo) => {
     const workbench = page.locator('#catalog-workbench-collapsed');
     const inspector = workbench.locator('[data-workbench-rail="right"]');
-    const restore = workbench.getByRole('button', { name: 'Show console' });
+    // Located by label: while the overlay is open the control is hidden, so
+    // a role query would not find it.
+    const restore = workbench.locator(
+      '.kui-workbench__restore button[aria-label="Show console"]',
+    );
     await workbench.scrollIntoViewIfNeeded();
     await expect(restore).toBeVisible();
 
@@ -916,8 +920,11 @@ test.describe('resizable Workbench panels', () => {
           ? 'inspector'
           : String(hit?.className);
       });
-    // The open overlay is the top layer: the control sits beneath it.
+    // The open overlay is the top layer: the control sits beneath it, and it
+    // is hidden outright, so it can never paint over the overlay or take
+    // focus behind it.
     expect(await topmost()).toBe('inspector');
+    await expect(restore).toBeHidden();
     if (testInfo.project.name === 'chromium')
       await workbench.screenshot({
         path: 'test-results/workbench-overlay-covers-restore.png',

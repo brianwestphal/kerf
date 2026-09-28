@@ -213,6 +213,24 @@
 .kui-resizable-region[data-presentation="hidden"] {
   display: none;
 }
+/* An open side overlay (a horizontal region) covers the work area beside it,
+   so that area's floating controls (a FloatingToolbar, a restore corner) are
+   hidden, not merely stacked beneath it: they never paint over the overlay
+   whatever stacking context an app puts them in, and hidden they leave the
+   tab order and the accessibility tree. They come back as the overlay
+   closes. The flag is set on the overlay's siblings only, never on an
+   overlay region, and read by FloatingToolbar and the layouts'
+   restore corners. */
+:where(
+    :has(
+      > .kui-resizable-region[data-presentation="overlay"][data-axis="horizontal"]:not(
+          [data-collapsed="true"]
+        )
+    )
+  )
+  > :not(.kui-resizable-region[data-presentation="overlay"]) {
+  --_kui-floating-covered: hidden;
+}
 
 @container (max-width: remify(704px)) {
   .kui-resizable-region[data-responsive-fill-at="narrow"] {
@@ -279,6 +297,8 @@
      from this point instead of adding its own inset on top. */
   --kui-floating-toolbar-inset: 0px;
   position: absolute;
+  /* Hidden while an open side overlay covers the content (see above). */
+  visibility: var(--_kui-floating-covered, inherit);
   z-index: var(
     --kui-resizable-region-restore-z,
     calc(var(--kui-resizable-region-overlay-z, 41) - 2)

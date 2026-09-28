@@ -57,7 +57,15 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
   the rest of the page, including under the compact overlay's backdrop. The
   control takes `--kui-collapsible-panel-restore-z`, which defaults to two less
   than `--kui-collapsible-panel-overlay-z` (38); the backdrop defaults to one
-  less (39), so moving the overlay z-index moves both. Escape, a backdrop
+  less (39), so moving the overlay z-index moves both. While a left or right
+  overlay is open (the `wireSidebar` compact overlay, or
+  `presentation="overlay"`), the content's floating controls — restore
+  corners and any `FloatingToolbar` — are also hidden outright (out of the
+  tab order and the accessibility tree), so they never paint over the overlay
+  whatever stacking context the app creates; they return as it closes. The
+  overlay's own floating controls stay, and a bottom overlay hides nothing. A
+  horizontal `presentation="overlay"` `ResizableRegion` does the same for its
+  siblings. Escape, a backdrop
   press, or the panel's own close control reveals the control again, and a
   collapsed overlay leaves it clickable. `ResizableRegion`'s `restoreControl`
   follows the same rules, two below `--kui-resizable-region-overlay-z` (39).

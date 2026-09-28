@@ -808,7 +808,16 @@ the drawer collapses, and stacks beneath an open `wireSidebar` compact overlay
 above its Workbench's expanded inline drawer, keeps the corner beneath an
 overlay drawer, and ignores a nested Workbench's drawer
 (`ui/tests/browser/restore-anchor.spec.ts` with
-`ui/tests/browser/fixtures/restore-anchor.tsx`). A collapsed `CollapsiblePanel`
+`ui/tests/browser/fixtures/restore-anchor.tsx`). While a side overlay is open
+(a Workbench rail overlay, static or responsive; a `wireSidebar` compact or
+static overlay `CollapsiblePanel`; a horizontal overlay `ResizableRegion`), the
+covered work area's `FloatingToolbar`s and restore corners are hidden through
+the private inherited `--_kui-floating-covered` flag the layout CSS sets on the
+overlay's siblings — unfocusable and out of the accessibility tree — and return
+as it closes, while the overlay's own floating controls stay and bottom
+overlays hide nothing (`ui/tests/browser/covered-floating-toolbar.spec.ts`
+with `ui/tests/browser/fixtures/covered-floating.tsx`, plus a CSS unit test in
+`ui/tests/unit/components.test.tsx`). A collapsed `CollapsiblePanel`
 renders `inert` beside its `aria-hidden`, and a collapsed `ResizableRegion` (like
 a collapsed Workbench rail/drawer) renders both on the region as well as `inert`
 on its content wrapper, so no empty labeled landmark stays behind and Tab and Shift+Tab never enter either at 1280 and 390px, the

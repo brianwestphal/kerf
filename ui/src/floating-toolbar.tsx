@@ -28,8 +28,12 @@ export interface FloatingToolbarProps {
  * top toolbar's own inset); override that token, on the toolbar or an
  * ancestor, to move it. Inside a `Workbench`, `CollapsiblePanel`, or
  * `ResizableRegion` restore corner the corner owns the inset, so the toolbar
- * floats from the corner's own position. The app owns the controls and their
- * behavior — wire them with `delegate()` as usual.
+ * floats from the corner's own position. While one of those layouts has a
+ * side overlay open over the toolbar's region (a Workbench rail overlay, a
+ * `wireSidebar` compact overlay, an overlay `CollapsiblePanel` or horizontal
+ * `ResizableRegion`), the toolbar is hidden — unfocusable and out of the
+ * accessibility tree — until the overlay closes. The app owns the controls
+ * and their behavior — wire them with `delegate()` as usual.
  */
 export function FloatingToolbar({
   children,

@@ -107,7 +107,13 @@ an optional `label`. Common shell behavior is configured rather than restyled:
   defaults to two less than the overlay z-index (39), so they sit beneath
   every overlay: an open overlay covers another panel's restore control as
   it covers the rest of the work area, and a collapsed overlay, which drops
-  its pointer events, leaves the control beneath it usable;
+  its pointer events, leaves the control beneath it usable. While a rail
+  overlay is open (static, or a responsive one whose breakpoint applies), the
+  work area's floating controls — restore corners and any `FloatingToolbar`
+  in `main` — are also hidden outright (out of the tab order and the
+  accessibility tree), so they can never paint over the rail whatever
+  stacking context the app gives the work area; they return as it closes.
+  The rail's own floating controls stay, and a drawer overlay hides nothing;
 - `restoreControl` places an application-owned restore affordance in a
   corner of the Workbench itself while the panel is collapsed. Prefer a
   `toolbar.toggle`, which the Workbench relocates for you; keep

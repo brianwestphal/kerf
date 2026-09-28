@@ -712,6 +712,40 @@ content, content-overflow popups (5), and app `FloatingToolbar`s (4).
 Covered by `ui/tests/browser/restore-anchor.spec.ts` (hit-tests at 1280 and
 390 in all three engines) and the CSS unit tests.
 
+**Covered floating controls are hidden (KF-DFHQ5Q).** Stacking order alone did
+not keep a work area's floating controls off an open side overlay: an app that
+put its work area in its own stacking context (a compact Hot Sheet inspector
+overlay) had the main column's floating drawer toggle painted on top of the
+open inspector. Requirement: while a side overlay covers the work area, that
+area's floating controls — an app `FloatingToolbar` and the layouts' restore
+corners — do not show, cannot take focus, and are out of the accessibility
+tree; they return as the overlay closes. The overlay's own floating controls
+stay, and a bottom drawer overlay (which does not cover the work area's other
+edges) hides nothing. The side overlays are:
+
+- a Workbench rail with `presentation: "overlay"`, or a rail whose
+  `responsiveOverlayAt` breakpoint (`narrow` 704px / `compact` 448px, the
+  Workbench's own container query) applies — the flag goes on the rail's
+  siblings `.kui-workbench__center` and `.kui-workbench__restore`;
+- a left/right `CollapsiblePanel` in the `wireSidebar` compact overlay (the
+  flag goes on the `data-collapsible-overlay` host and is reset on its
+  panels) or with `presentation="overlay"` (on the panel's siblings);
+- a horizontal `ResizableRegion` with `presentation="overlay"` (on its
+  siblings).
+
+CSS only: the layout sets a private inherited custom property,
+`--_kui-floating-covered: hidden`, and `.kui-floating-toolbar`,
+`.kui-workbench__restore`, `.kui-collapsible-panel__restore`, and
+`.kui-resizable-region__restore` read it as
+`visibility: var(--_kui-floating-covered, inherit)`. A property rather than a
+descendant selector because a Workbench's responsive state lives in a
+container query that must resolve against that Workbench, not a nested one —
+the flag is set on the Workbench's direct children, and inheritance carries
+it down. Covered by `ui/tests/browser/covered-floating-toolbar.spec.ts`
+(every layout above, open → close → other side → close, wide-inline and
+breakpoint crossings, bottom drawers hiding nothing) and the updated
+`restore-anchor.spec.ts` / `workbench-catalog.spec.ts` assertions.
+
 **Implementation:** shipped (KF-T17Q1X). UX-demo recipe (the "Collapsible sidebar"
 recipe: a left rail + bottom drawer with toggles, compact overlay, and persistence)
 and three-engine Playwright coverage of collapse/expand, focus move/restore, the

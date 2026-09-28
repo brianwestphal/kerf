@@ -227,6 +227,11 @@ the folder modules, and CSS only imports their owner stylesheets.
   scrolling `.kui-pane__content`, optional `.kui-pane__footer`). A visible pane owns
   its collapse control; a hidden pane's restore moves to the adjacent main
   toolbar's matching edge — no icon-only rail. Keep one scroll owner per region.
+  While a side overlay is open (a Workbench rail overlay, a `wireSidebar` compact
+  overlay, an overlay `CollapsiblePanel` or horizontal `ResizableRegion`), the
+  layout hides the covered work area's `FloatingToolbar`s and restore corners
+  itself (unfocusable, out of the accessibility tree) until it closes — do not
+  hide them from overlay state yourself.
 - **State and behavior live in the app.** Components take semantic `data-action`
   strings and controlled values; wire them once with `delegate()`/`delegateActions()`
   or the disposer-returning `wire…` helpers, and own domain copy, transport, and

@@ -186,7 +186,13 @@ keyboard behavior; the application owns their actions, the toolbar's visibility,
 and — via `position` and `--kui-floating-toolbar-inset`, set on the toolbar
 or an ancestor — where it sits. Inside a `Workbench`, `CollapsiblePanel`, or
 `ResizableRegion` `restoreControl` the restore corner owns the inset, so the
-toolbar floats from that corner.
+toolbar floats from that corner. While one of those layouts has a side overlay
+open over the toolbar's region (a Workbench rail overlay, a `wireSidebar`
+compact overlay, an overlay `CollapsiblePanel` or horizontal
+`ResizableRegion`), the toolbar is hidden (`visibility: hidden`), so it is
+unfocusable and out of the accessibility tree rather than a control stranded
+behind the overlay's focus trap; it returns when the overlay closes. The
+overlay's own floating toolbars stay.
 
 ## Tabs
 

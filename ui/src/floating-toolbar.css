@@ -13,6 +13,11 @@
      dark so the controls read as one distinct floating layer over any theme. */
   position: absolute;
   z-index: 4;
+  /* A layout whose open side overlay covers this toolbar's region (a
+     Workbench rail, a CollapsiblePanel, a ResizableRegion) flags that region,
+     and the toolbar hides — out of the tab order and the accessibility tree —
+     rather than risk painting over the overlay. */
+  visibility: var(--_kui-floating-covered, inherit);
   display: flex;
   color-scheme: dark;
   align-items: center;

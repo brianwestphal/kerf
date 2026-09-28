@@ -266,15 +266,17 @@ test('the lifted restore corner returns to the container corner when the drawer 
 // restore controls sit two below the overlay z-index). The control used to
 // stack at 42, above a wireSidebar compact overlay and its backdrop and above
 // an overlay ResizableRegion, where it floated over the overlay and stayed
-// clickable behind the overlay's focus trap.
+// clickable behind the overlay's focus trap. An open side overlay also hides
+// it outright (KF-DFHQ5Q: covered floating controls leave the accessibility
+// tree), so it is located by its label rather than by role.
 const overlayControl = (page: Page, scenario: 'overlay' | 'region-overlay') =>
   scenario === 'overlay'
-    ? page
-        .locator('[data-panel-restore="overlay-inspector"]')
-        .getByRole('button', { name: 'Show inspector' })
-    : page
-        .locator('[data-region-restore="overlay-rail"]')
-        .getByRole('button', { name: 'Show navigator' });
+    ? page.locator(
+        '[data-panel-restore="overlay-inspector"] button[aria-label="Show inspector"]',
+      )
+    : page.locator(
+        '[data-region-restore="overlay-rail"] button[aria-label="Show navigator"]',
+      );
 
 /** What the topmost element at the control's center belongs to. */
 const hitAtCenter = (control: Locator) =>
@@ -321,6 +323,7 @@ for (const width of [1280, 390]) {
     const backdrop = page.locator('.kui-collapsible-panel__backdrop');
     await expect(backdrop).toHaveCSS('z-index', '39');
     await expect.poll(() => hitAtCenter(control)).toBe('backdrop');
+    await expect(control).toBeHidden();
 
     // Escape closes the overlay, and the control shows and works again.
     await page.keyboard.press('Escape');

@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` hides a work area's floating controls under an open side
+  overlay.** While a side overlay is open — a Workbench rail (static
+  `presentation: "overlay"`, or a responsive overlay whose breakpoint applies),
+  a `wireSidebar` compact overlay or `presentation="overlay"`
+  `CollapsiblePanel`, or a horizontal `presentation="overlay"`
+  `ResizableRegion` — the covered work area's `FloatingToolbar`s and the
+  layouts' restore corners are now hidden (`visibility: hidden`, so they also
+  leave the tab order and the accessibility tree) instead of relying on
+  stacking order alone. A phone-width app could otherwise paint the main
+  column's floating drawer toggle over its open inspector. They come back as
+  the overlay closes; the overlay's own floating controls and a bottom
+  drawer's overlay are unaffected.
+
 - **`@kerfjs/ui` composed toolbars are configurable.** `WorkbenchMainToolbar`,
   `WorkbenchMainBottomToolbar`, and the panel `toolbar` of a Workbench panel or
   `CollapsiblePanel` now take the `Toolbar`'s configuration: the new

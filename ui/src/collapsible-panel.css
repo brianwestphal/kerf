@@ -316,6 +316,8 @@
      from this point instead of adding its own inset on top. */
   --kui-floating-toolbar-inset: 0px;
   position: absolute;
+  /* Hidden while an open side overlay covers the content (see below). */
+  visibility: var(--_kui-floating-covered, inherit);
   z-index: var(
     --kui-collapsible-panel-restore-z,
     calc(var(--kui-collapsible-panel-overlay-z, 40) - 2)
@@ -359,6 +361,40 @@
         var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
       )
   );
+}
+
+/* An open side overlay — the wireSidebar compact overlay or a static
+   `presentation="overlay"` panel — covers the content beside it, so that
+   content's floating controls (a FloatingToolbar, another panel's restore
+   corner) are hidden, not merely stacked beneath it: they never paint over
+   the overlay whatever stacking context an app puts them in, and hidden they
+   leave the tab order and the accessibility tree. They come back as the
+   overlay closes. The flag is read by FloatingToolbar and the
+   layouts' restore corners; the overlay panels themselves are exempt, so
+   their own floating controls stay. */
+[data-collapsible-overlay="true"]:has(
+  .kui-collapsible-panel:is(
+      .kui-collapsible-panel--left,
+      .kui-collapsible-panel--right
+    ):not([data-collapsed="true"])
+) {
+  --_kui-floating-covered: hidden;
+}
+
+[data-collapsible-overlay="true"] .kui-collapsible-panel {
+  --_kui-floating-covered: initial;
+}
+
+:where(
+    :has(
+      > .kui-collapsible-panel:is(
+          .kui-collapsible-panel--left,
+          .kui-collapsible-panel--right
+        )[data-presentation="overlay"]:not([data-collapsed="true"])
+    )
+  )
+  > :not(.kui-collapsible-panel[data-presentation="overlay"]) {
+  --_kui-floating-covered: hidden;
 }
 
 /* A button does not stretch between its insets the way a div does, so the
