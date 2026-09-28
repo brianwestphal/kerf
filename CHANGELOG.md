@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **The `@kerfjs/ui` desktop app-shell recipe is a `Workbench`.** The old
+  pane switcher that showed one pane at a time below desktop sizes is gone. The
+  navigation and inspector are now resizable Workbench rails with their own
+  toolbars, and their show toggles relocate into the work-area toolbar. On a
+  narrow container the rails overlay the task list one at a time. The
+  collapsible-sidebar recipe composes each panel's `toolbar` and uses
+  `CollapsiblePanelRelocated` for its restore controls.
+
 - **`@kerfjs/ui`'s `CollapsiblePanel` composes a panel toolbar and relocates its
   controls.** A panel takes the same `toolbar` roles as a `Workbench` panel
   (`title`, `panelOnly`, `constant`, and a standard `toggle`) plus a `footer`,

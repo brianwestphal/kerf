@@ -4396,7 +4396,7 @@ test('catalog routes every production component family and supports its stateful
     resizeRelationships.locator('wa-button[slot="trigger"]'),
   ).toHaveCount(1);
   await resizeRelationships.locator('wa-button[slot="trigger"]').click();
-  await expect(resizeRelationships).toContainText('Desktop application shell');
+  await expect(resizeRelationships).toContainText('SplitView');
   await page.keyboard.press('Escape');
 
   const themeButton = page.locator('[data-action="toggle-theme"]');

@@ -552,8 +552,9 @@ describe('UX catalog metadata', () => {
     ]);
     expect(catalogEntriesUsing('resize').map((entry) => entry.id)).toEqual([
       'split-view',
-      'recipe-app-shell',
     ]);
+    // The app-shell recipe resizes through Workbench rails.
+    expect(findCatalogEntry('recipe-app-shell')?.uses).toContain('workbench');
     expect(findCatalogEntry('wa-select')?.uses).toEqual([
       'wa-icon',
       'wa-popup',

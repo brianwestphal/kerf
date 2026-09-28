@@ -65,7 +65,7 @@ test('the app-shell recipe root fills the app frame and its body reaches the bot
     await expectRootFillsFrame(recipe, frame);
     const root = await box(recipe);
     // The content pane grows into the whole body below the app bar.
-    const content = await box(recipe.locator('#recipe-shell-content'));
+    const content = await box(recipe.locator('[data-workbench-main]'));
     expect(content.bottom).toBeCloseTo(root.bottom, 0);
     if (width === 1440) {
       // The resize separators run the full body height, not the content height.
@@ -97,15 +97,11 @@ test('the app-shell resizable panes fill their regions and scroll long content',
   const { recipe } = await openRecipe(page, 'recipe-app-shell', 1440);
   const root = await box(recipe);
   for (const [paneId, regionId] of [
-    ['recipe-shell-navigation', 'recipe-navigation'],
-    ['recipe-shell-inspector', 'recipe-inspector'],
+    ['navigation', 'recipe-shell-left-rail'],
+    ['inspector', 'recipe-shell-right-rail'],
   ] as const) {
-    const region = await box(
-      recipe.locator(
-        `[data-component="resizable-region"][data-region-id="${regionId}"]`,
-      ),
-    );
-    const pane = recipe.locator(`#${paneId}`);
+    const region = await box(recipe.locator(`#${regionId}`));
+    const pane = recipe.locator(`#${regionId} [data-component="pane"]`);
     const paneBox = await box(pane);
     expect(paneBox.top, `${paneId} top`).toBeCloseTo(region.top, 0);
     expect(paneBox.bottom, `${paneId} bottom`).toBeCloseTo(region.bottom, 0);

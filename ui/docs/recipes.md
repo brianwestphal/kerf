@@ -9,9 +9,9 @@ ship no stylesheet of their own and are not new monolithic components.
 Copy the recipe source together with the catalog-independent
 [`mount-recipe.ts`](../ux-demo/recipes/mount-recipe.ts) adapter. It mounts the
 controller at one stable application root, uses `delegateActions()` for recipe
-commands, forwards form and dialog lifecycle events, wires resize commits with
-the public `onCommit` callback, retains every disposer, and returns one
-idempotent disposer:
+commands, forwards form and dialog lifecycle events, runs the recipe's own
+`wire()` (for example `wireWorkbench` or `wireSidebar`), retains every
+disposer, and returns one idempotent disposer:
 
 ```ts
 import { createRecipe } from "./navigation-sidebar.js";
@@ -31,24 +31,26 @@ specific dispatch; either way, wire once at a stable root and retain disposal.
 [Open the recipe](../ux-demo/?component=recipe-app-shell) · [TSX source](../ux-demo/recipes/app-shell.tsx)
 
 A filling `List` (`fill`, with the recipe's `data-*` markers through
-`rootAttributes`) stacks the app-bar `Toolbar` above a `Row` that places
-controlled `ResizableRegion` navigation and inspector panes around a content
-`Pane` that a one-column `Grid` grows to fill. Each region's lone `Pane` fills
-the region's full height, so it reaches the bottom edge the separator does.
-Only those three real panes own a
-`.kui-pane__content` scroll owner; no frame `Pane` wraps the layout in a scroll
-owner that never scrolls. Each pane lists the screen edges it reaches in
-`safeAreaEdges` (the bottom plus its outer side, or both sides when it is the
-only pane shown), and the app-bar `Toolbar` claims the top edge and both sides
-with its own `safeAreaEdges`, so it clears the status area. Below desktop sizes the app reads `deviceClass()` and shows one
-pane at a time, switched by a pressed-state `ToolbarControlGroup`. The recipe
-owns the shell topology; the app owns routing, responsive pane visibility,
-sizes, persistence, and data.
-Keep each visible pane's collapse action in its own toolbar. Once hidden, put
-its restore action in the adjacent main toolbar on the same logical edge:
-leading for an inline-start sidebar and trailing for an inline-end inspector.
-Collapse the pane completely rather than preserving an empty icon rail.
-Adapt only public `--kui-layout-*` and component variables.
+`rootAttributes`) stacks the app-bar `Toolbar` above a `Workbench`
+(`@kerfjs/ui/workbench`): resizable navigation and inspector rails around the
+task list. Each rail composes its own panel toolbar — a default-size title and
+the standard hide toggle — and the work area's `mainToolbar` carries the xl
+view title. While a rail is hidden, `Workbench` relocates its show toggle into
+the work-area toolbar on the same logical edge (leading for the navigation
+rail, trailing for the inspector), and `wireWorkbench` hands focus between the
+two positions. Collapse a rail completely rather than preserving an empty icon
+rail. Only the three real panes own a `.kui-pane__content` scroll owner; no
+frame `Pane` wraps the layout in a scroll owner that never scrolls, and the
+app-bar `Toolbar` claims the top edge and both sides with its own
+`safeAreaEdges`.
+
+On a narrow container the rails overlay the task list one at a time instead of
+squeezing it, leaving a 44px strip on the far side that dismisses the overlay
+(`responsiveOverlayAt`, on by default; `compactOverlay: 'full'` covers the
+whole width). The app owns each rail's collapsed and size signals — which
+`wireWorkbench` keeps in sync with resizing and overlay dismissal — plus
+routing, persistence, and data. Adapt only public `--kui-layout-*` and
+component variables.
 
 ## Navigation sidebar
 
@@ -166,11 +168,12 @@ which values are still unknown.
 
 A mini app frame whose left navigation rail and bottom activity drawer are
 standalone `CollapsiblePanel`s (`@kerfjs/ui/collapsible-panel`) driven by
-`wireSidebar` (`@kerfjs/ui/wire-sidebar`). `CollapsiblePanelToggle` supplies the
-standard per-side glyph: a collapse toggle lives inside each panel, and the
-panel's expand toggle shows only while it is collapsed, so exactly one control
-owns each action and a collapsed panel is still reachable. The rail's expand
-toggle sits in the always-visible main header; the drawer's is a
+`wireSidebar` (`@kerfjs/ui/wire-sidebar`). Each panel takes a `toolbar` — a
+title plus the standard per-side toggle — so the hide control lives in the
+panel's own header, and `CollapsiblePanelRelocated` renders the matching show
+control only while the panel is collapsed, so exactly one control owns each
+action and a collapsed panel is still reachable. The rail's relocated toggle
+leads the always-visible main header; the drawer's sits in a
 `FloatingToolbar` passed as the drawer's own `restoreControl`, which the panel
 floats in its column's safe-area-aware bottom-end corner, next to where the
 drawer opens — do not hand-roll a conditional floating control beside the

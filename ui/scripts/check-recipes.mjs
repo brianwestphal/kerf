@@ -117,8 +117,7 @@ for (const surface of [skill, llms])
     fail('AI guidance must link docs/recipes.md');
 for (const required of [
   'delegateActions(',
-  'wireResizableRegions(',
-  'onCommit:',
+  'controller.wire?.(root)',
   'let disposed = false',
   'stopMount()',
 ]) {

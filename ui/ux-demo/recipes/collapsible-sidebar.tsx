@@ -4,7 +4,8 @@ import '@kerfjs/ui/floating-toolbar.css';
 
 import {
   CollapsiblePanel,
-  CollapsiblePanelToggle,
+  CollapsiblePanelRelocated,
+  type CollapsiblePanelToolbar,
 } from '@kerfjs/ui/collapsible-panel';
 import { deviceClass } from '@kerfjs/ui/device-class';
 import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
@@ -17,7 +18,6 @@ import { Pane } from '@kerfjs/ui/pane';
 import { Row } from '@kerfjs/ui/row';
 import { Text } from '@kerfjs/ui/text';
 import { Toolbar } from '@kerfjs/ui/toolbar';
-import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 import { type SidebarStorage, wireSidebar } from '@kerfjs/ui/wire-sidebar';
@@ -73,24 +73,20 @@ export const createRecipe: RecipeFactory = (announce) => {
   const drawerCollapsed = signal(true);
   const storage = memoryStorage();
 
-  const railToggle = () => (
-    <CollapsiblePanelToggle
-      side="left"
-      collapsed={railCollapsed.value}
-      action={RAIL_ACTION}
-      panelId="sidebar-rail"
-      label={railCollapsed.value ? 'Show navigation' : 'Hide navigation'}
-    />
-  );
-  const drawerToggle = () => (
-    <CollapsiblePanelToggle
-      side="bottom"
-      collapsed={drawerCollapsed.value}
-      action={DRAWER_ACTION}
-      panelId="sidebar-console"
-      label={drawerCollapsed.value ? 'Show activity' : 'Hide activity'}
-    />
-  );
+  // Each panel composes its own toolbar with the standard toggle last. While a
+  // panel is collapsed, CollapsiblePanelRelocated carries that toggle: the
+  // rail's leads the main toolbar, the drawer's floats in its container's
+  // bottom-end corner. wireSidebar hands focus between the two positions.
+  const railToolbar: CollapsiblePanelToolbar = {
+    label: 'Workspace navigation',
+    title: <ToolbarText text="Atlas" />,
+    toggle: { action: RAIL_ACTION, name: 'navigation' },
+  };
+  const drawerToolbar: CollapsiblePanelToolbar = {
+    label: 'Activity',
+    title: <ToolbarText text="Activity" size="small" />,
+    toggle: { action: DRAWER_ACTION, name: 'activity' },
+  };
 
   const rail = () => (
     <CollapsiblePanel
@@ -99,23 +95,9 @@ export const createRecipe: RecipeFactory = (announce) => {
       size={232}
       collapsed={railCollapsed.value}
       label="Workspace navigation"
+      toolbar={railToolbar}
     >
-      <Pane
-        contentElement="nav"
-        contentLabel="Workspace"
-        header={
-          <Toolbar
-            label="Workspace navigation"
-            dividerSides=""
-            leading={<ToolbarText text="Atlas" />}
-            trailing={
-              <ToolbarControlGroup appearance="borderless" single>
-                {railToggle()}
-              </ToolbarControlGroup>
-            }
-          />
-        }
-      >
+      <nav aria-label="Workspace">
         <section>
           <ListHeader label="Workspace" />
           <ListItem
@@ -141,15 +123,10 @@ export const createRecipe: RecipeFactory = (announce) => {
             selected={selected.value === 'shared'}
           />
         </section>
-      </Pane>
+      </nav>
     </CollapsiblePanel>
   );
 
-  // Each panel's own header holds its collapse toggle; its expand toggle shows
-  // only while it is collapsed, so exactly one control owns each action. The
-  // rail's sits in the main header; the drawer's is the drawer's own
-  // `restoreControl`, which the panel floats in its container's bottom-end
-  // corner. wireSidebar hands focus between them.
   const main = () => (
     <Pane
       element="main"
@@ -159,11 +136,12 @@ export const createRecipe: RecipeFactory = (announce) => {
           dividerSides=""
           leading={
             <>
-              {railCollapsed.value ? (
-                <ToolbarControlGroup appearance="borderless" single>
-                  {railToggle()}
-                </ToolbarControlGroup>
-              ) : null}
+              <CollapsiblePanelRelocated
+                panelId="sidebar-rail"
+                side="left"
+                collapsed={railCollapsed.value}
+                toolbar={railToolbar}
+              />
               <ToolbarText
                 text={labels[selected.value] ?? 'Inbox'}
                 size="xlarge"
@@ -195,39 +173,30 @@ export const createRecipe: RecipeFactory = (announce) => {
       size={168}
       collapsed={drawerCollapsed.value}
       label="Activity"
+      toolbar={drawerToolbar}
       restoreControl={
         <FloatingToolbar label="Activity drawer">
-          <ToolbarControlGroup single>{drawerToggle()}</ToolbarControlGroup>
+          <CollapsiblePanelRelocated
+            panelId="sidebar-console"
+            side="bottom"
+            collapsed={drawerCollapsed.value}
+            toolbar={drawerToolbar}
+          />
         </FloatingToolbar>
       }
     >
-      <Pane
-        header={
-          <Toolbar
-            label="Activity"
-            dividerSides=""
-            leading={<ToolbarText text="Activity" size="small" />}
-            trailing={
-              <ToolbarControlGroup appearance="borderless" single>
-                {drawerToggle()}
-              </ToolbarControlGroup>
-            }
-          />
-        }
-      >
-        <ValueTable label="Recent activity">
-          <ValueTableRow
-            label="Deploy finished"
-            value="2m ago"
-            icon={<LucideIcon icon={Bell} name="bell" />}
-          />
-          <ValueTableRow
-            label="Review requested"
-            value="9m ago"
-            icon={<LucideIcon icon={Bell} name="bell" />}
-          />
-        </ValueTable>
-      </Pane>
+      <ValueTable label="Recent activity">
+        <ValueTableRow
+          label="Deploy finished"
+          value="2m ago"
+          icon={<LucideIcon icon={Bell} name="bell" />}
+        />
+        <ValueTableRow
+          label="Review requested"
+          value="9m ago"
+          icon={<LucideIcon icon={Bell} name="bell" />}
+        />
+      </ValueTable>
     </CollapsiblePanel>
   );
 

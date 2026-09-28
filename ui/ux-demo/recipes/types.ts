@@ -6,7 +6,6 @@ export interface RecipeController {
   action(command: string, element: HTMLElement): void;
   change?(element: HTMLElement): void;
   afterHide?(element: HTMLElement): void;
-  resize?(id: string, size: number): void;
   /**
    * Install any imperative wiring the recipe owns on its mounted root (e.g.
    * `wireSidebar` for a collapsible rail/drawer), returning a disposer. The

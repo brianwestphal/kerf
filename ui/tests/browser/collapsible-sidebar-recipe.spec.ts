@@ -1,7 +1,7 @@
 import { expect, type Page, test } from '@playwright/test';
 
 // End-to-end coverage of the collapsible-sidebar recipe (CollapsiblePanel +
-// CollapsiblePanelToggle + wireSidebar) across Chromium, Firefox, and WebKit:
+// its composed toolbar + CollapsiblePanelRelocated + wireSidebar) across Chromium, Firefox, and WebKit:
 // collapse/expand, focus move-in and restore, the compact overlay with a
 // dismissable backdrop + Escape, the Tab focus trap, and the compact initial
 // state (the overlay only ever opens on a user action).
@@ -20,8 +20,9 @@ const revealToggle = (page: Page) =>
   );
 const railToggles = (page: Page) =>
   page.locator('[data-collapsible-target="sidebar-rail"]');
+// The rail's own toolbar carries its standard hide toggle.
 const railInnerToggle = (page: Page) =>
-  railPanel(page).locator('.kui-collapsible-panel__toggle');
+  railPanel(page).getByRole('button', { name: 'Hide navigation' });
 const backdrop = (page: Page) =>
   page.locator('.kui-collapsible-panel__backdrop');
 

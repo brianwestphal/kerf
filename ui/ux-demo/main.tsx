@@ -971,12 +971,10 @@ const stopCatalog = wireCatalog(app, {
 const stopGeometryOverlay = wireCatalogGeometryOverlay(app);
 const stopResize = wireResizableRegions(app, {
   onCommit: ({ id, size }) => {
-    if (id.startsWith('recipe-') && isRecipeId(selectedDemo.value))
-      recipeControllers.get(selectedDemo.value)?.resize?.(id, size);
-    else {
-      regionSize.value = size;
-      actionLog.value = `Panel resized to ${size}px`;
-    }
+    // Recipes own their resizable regions through their own wiring.
+    if (id.startsWith('recipe-')) return;
+    regionSize.value = size;
+    actionLog.value = `Panel resized to ${size}px`;
   },
 });
 const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {

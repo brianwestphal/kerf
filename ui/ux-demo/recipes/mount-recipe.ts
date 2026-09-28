@@ -1,5 +1,4 @@
 import { wireNavStack } from '@kerfjs/ui/wire-nav-stack';
-import { wireResizableRegions } from '@kerfjs/ui/wire-resizable-regions';
 import { delegate, mount } from 'kerfjs';
 import { delegateActions } from 'kerfjs/actions';
 
@@ -40,9 +39,6 @@ export function mountRecipe(
     'wa-dialog',
     (_event, element) => controller.afterHide?.(element as HTMLElement),
   );
-  const stopResize = wireResizableRegions(root, {
-    onCommit: ({ id, size }) => controller.resize?.(id, size),
-  });
   const stopNav = wireNavStack(root, {
     onBack: () => controller.action('nav-back', root),
   });
@@ -54,7 +50,6 @@ export function mountRecipe(
     disposed = true;
     stopWire?.();
     stopNav();
-    stopResize();
     stopDialogs();
     stopInputs();
     stopChanges();

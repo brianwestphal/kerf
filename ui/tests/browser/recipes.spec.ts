@@ -122,44 +122,41 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
       ),
     ).toBeLessThanOrEqual(1);
     if (id === 'recipe-app-shell') {
-      // One pane at a time on a handset: content first, the others on demand.
-      await expect(recipe.locator('#recipe-shell-content')).toBeVisible();
-      await expect(recipe.locator('#recipe-shell-navigation')).toBeHidden();
-      await expect(recipe.locator('#recipe-shell-inspector')).toBeHidden();
-      const navigation = recipe.getByRole('button', {
+      // On a handset the Workbench rails start hidden and overlay the task
+      // list one at a time, each opened by its relocated standard toggle.
+      const left = recipe.locator('#recipe-shell-left-rail');
+      const right = recipe.locator('#recipe-shell-right-rail');
+      const main = recipe.locator('[data-workbench-main]');
+      await expect(main).toBeVisible();
+      await expect(left).toHaveAttribute('data-collapsed', 'true');
+      await expect(right).toHaveAttribute('data-collapsed', 'true');
+      const showNavigation = main.getByRole('button', {
         name: 'Show navigation',
       });
-      const content = recipe.getByRole('button', { name: 'Show content' });
-      const inspector = recipe.getByRole('button', { name: 'Show inspector' });
-      await navigation.focus();
-      await navigation.press('Enter');
-      await expect(navigation).toBeFocused();
-      await expect(navigation).toHaveAttribute('aria-pressed', 'true');
-      await expect(recipe.locator('#recipe-shell-navigation')).toBeVisible();
-      await expect(recipe.locator('#recipe-shell-content')).toBeHidden();
-      await recipe
-        .getByRole('button', {
-          name: 'Projects with a deliberately wrapping title',
-        })
-        .click();
-      await content.focus();
-      await content.press('Enter');
-      await expect(content).toBeFocused();
+      await showNavigation.focus();
+      await showNavigation.press('Enter');
+      await expect(left).toHaveAttribute('data-collapsed', 'false');
+      await expect(left).toHaveCSS('position', 'absolute');
+      const hideNavigation = left.getByRole('button', {
+        name: 'Hide navigation',
+      });
+      await expect(hideNavigation).toBeFocused();
+      await hideNavigation.press('Enter');
+      await expect(left).toHaveAttribute('data-collapsed', 'true');
       await expect(
-        recipe.locator('[data-component="toolbar-text"]', {
-          hasText: 'Active projects',
-        }),
-      ).toBeVisible();
-      await inspector.focus();
-      await inspector.press('Enter');
-      await expect(inspector).toBeFocused();
-      await expect(inspector).toHaveAttribute('aria-pressed', 'true');
-      await expect(recipe.locator('#recipe-shell-inspector')).toBeVisible();
+        main.getByRole('button', { name: 'Show navigation' }),
+      ).toBeFocused();
+      await main.getByRole('button', { name: 'Show inspector' }).click();
+      await expect(right).toHaveAttribute('data-collapsed', 'false');
+      await expect(right).toHaveCSS('position', 'absolute');
+      await expect(left).toHaveAttribute('data-collapsed', 'true');
       await expect(
-        recipe.locator(
+        right.locator(
           '[data-component="value-table"][aria-label="Selected task"]',
         ),
       ).toBeVisible();
+      await right.getByRole('button', { name: 'Hide inspector' }).click();
+      await expect(right).toHaveAttribute('data-collapsed', 'true');
     }
     if (id === 'recipe-compact-toolbar')
       await expectToolbarZonesNotToOverlap(recipe);
@@ -187,16 +184,25 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
 
   await page.setViewportSize({ width: 900, height: 900 });
   const intermediateShell = await openRecipe(page, 'recipe-app-shell');
-  // A tablet-class viewport shows one pane at a time behind the pane switcher.
-  await expect(intermediateShell).toHaveAttribute(
-    'data-responsive-pane',
-    'content',
-  );
+  // Beside the catalog sidebar the recipe's container is below the narrow
+  // breakpoint: both rails start hidden, their show toggles in the work-area
+  // toolbar on the rail's own edge.
+  for (const rail of ['left', 'right'])
+    await expect(
+      intermediateShell.locator(`#recipe-shell-${rail}-rail`),
+    ).toHaveAttribute('data-collapsed', 'true');
+  const intermediateMain = intermediateShell.locator('[data-workbench-main]');
   await expect(
-    intermediateShell.getByRole('button', { name: 'Show inspector' }),
+    intermediateMain.locator('.kui-toolbar__leading').getByRole('button', {
+      name: 'Show navigation',
+    }),
   ).toBeVisible();
-  // Only the visible content pane; the filling List root owns no scrolling.
-  await expectOneScrollOwnerPerPane(intermediateShell, 1);
+  await expect(
+    intermediateMain.locator('.kui-toolbar__trailing').getByRole('button', {
+      name: 'Show inspector',
+    }),
+  ).toBeVisible();
+  await expectOneScrollOwnerPerPane(intermediateShell, 3);
   expect(
     await page.evaluate(
       () =>
@@ -251,10 +257,19 @@ test('keeps recipe geometry responsive at narrow, intermediate, and 200% zoom la
         name: 'Show navigation',
       });
       await expect(navigation).toBeVisible();
+      // 200% text shrinks the container below the narrow breakpoint, so
+      // the rails overlay one at a time.
       await navigation.click();
-      await expect(recipe.locator('#recipe-shell-navigation')).toBeVisible();
+      await expect(recipe.locator('#recipe-shell-left-rail')).toHaveAttribute(
+        'data-collapsed',
+        'false',
+      );
+      await recipe.getByRole('button', { name: 'Hide navigation' }).click();
       await recipe.getByRole('button', { name: 'Show inspector' }).click();
-      await expect(recipe.locator('#recipe-shell-inspector')).toBeVisible();
+      await expect(recipe.locator('#recipe-shell-right-rail')).toHaveAttribute(
+        'data-collapsed',
+        'false',
+      );
     }
     if (id === 'recipe-compact-toolbar')
       await expectToolbarZonesNotToOverlap(recipe);

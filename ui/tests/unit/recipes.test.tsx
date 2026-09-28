@@ -45,32 +45,39 @@ describe('production composition recipes', () => {
     );
   });
 
-  it('keeps one scroll owner for each application-shell pane and updates controlled resize state', () => {
+  it('composes the application shell as a Workbench with one scroll owner per pane', () => {
     const recipe = createAppShell(() => {});
     const template = document.createElement('template');
     template.innerHTML = html(recipe.render());
-    // The shell root is a filling List, not a frame Pane wrapping a scroll
-    // owner that never scrolls: only the three real panes own scrolling.
+    // The shell root is a filling List (app bar above a Workbench), not a
+    // frame Pane wrapping a scroll owner that never scrolls.
     const root = template.content.firstElementChild!;
     expect(root.getAttribute('data-component')).toBe('list');
     expect(root.getAttribute('data-fill')).toBe('true');
     expect(root.getAttribute('data-recipe')).toBe('recipe-app-shell');
+    const workbench = template.content.querySelector('#recipe-shell')!;
+    expect(workbench.getAttribute('data-component')).toBe('workbench');
+    // Both rails overlay the task list on a narrow container by default.
+    for (const rail of ['left-rail', 'right-rail'])
+      expect(
+        workbench
+          .querySelector(`#recipe-shell-${rail}`)!
+          .getAttribute('data-responsive-overlay-at'),
+      ).toBe('narrow');
     const panes = [
       ...template.content.querySelectorAll('[data-component="pane"]'),
     ];
-    expect(panes.map((pane) => pane.id)).toEqual([
-      'recipe-shell-navigation',
-      'recipe-shell-content',
-      'recipe-shell-inspector',
-    ]);
+    expect(panes).toHaveLength(3);
     for (const pane of panes)
       expect(pane.querySelectorAll(':scope > .kui-pane__content')).toHaveLength(
         1,
       );
-    recipe.resize?.('recipe-navigation', 288);
-    expect(html(recipe.render())).toContain(
-      '--kui-resizable-region-size:288px',
-    );
+    // Each rail composes its own toolbar with the standard hide toggle.
+    expect(
+      [...workbench.querySelectorAll('[data-workbench-toggle]')].map((button) =>
+        button.getAttribute('aria-label'),
+      ),
+    ).toEqual(['Hide navigation', 'Hide inspector']);
   });
 
   it('moves through every list workspace state deterministically', () => {
@@ -338,7 +345,7 @@ describe('production composition recipes', () => {
     root.remove();
   });
 
-  it('forwards the public resize onCommit shape through the copyable adapter', () => {
+  it('announces rail resizes committed through wireWorkbench', () => {
     const announcements: string[] = [];
     const root = document.createElement('div');
     document.body.append(root);
@@ -353,7 +360,7 @@ describe('production composition recipes', () => {
       new KeyboardEvent('keydown', { bubbles: true, key: 'ArrowRight' }),
     );
     expect(separator.getAttribute('aria-valuenow')).toBe('240');
-    expect(announcements).toContain('recipe-navigation resized to 240px');
+    expect(announcements).toContain('Navigation resized to 240px');
     stop();
     root.remove();
   });
