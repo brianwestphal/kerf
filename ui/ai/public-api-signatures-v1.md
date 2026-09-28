@@ -2219,6 +2219,7 @@ export { SegmentedControl, type SegmentedControlAppearance, type SegmentedContro
 import { SafeHtml } from 'kerfjs';
 import { CssForegroundColor } from './css-values.js';
 import { LucideNode } from './lucide-icon.js';
+import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import 'lucide';
 
 interface SelectChoice<Value extends string = string> {
@@ -2282,22 +2283,43 @@ interface SelectSingleValueProps<Value extends string = string> {
     renderSelected?: (choice: SelectChoice<Value>) => SafeHtml;
     /** Show only the selected choice icon while retaining the Select's accessible name. */
     selectedPresentation?: SelectSelectedPresentation;
+    triggerIcon?: never;
 }
 /**
  * Any number of chosen values. The popup stays open while the person toggles
  * choices and closes on an outside click, Escape, or focus leaving; the closed
  * control summarizes the chosen labels in choice order.
  */
-interface SelectMultipleValueProps<Value extends string = string> {
+interface SelectMultipleLabelProps<Value extends string = string> {
     multiple: true;
     value: readonly NoInfer<Value>[];
     renderSelected?: never;
     selectedPresentation?: 'label';
+    triggerIcon?: never;
 }
+/**
+ * A multiple Select drawn as an icon-only toolbar trigger, such as a
+ * "Filter by label" funnel. No single choice is selected, so the trigger shows
+ * a fixed `triggerIcon` naming the menu's purpose; while any choice is chosen
+ * a count badge sits beside it, and the combobox's accessible name ends with
+ * the chosen labels in choice order.
+ */
+interface SelectMultipleIconProps<Value extends string = string> {
+    multiple: true;
+    value: readonly NoInfer<Value>[];
+    renderSelected?: never;
+    selectedPresentation: 'icon-only';
+    /**
+     * The trigger's fixed icon, typically a `LucideIcon` naming the menu's
+     * purpose (a funnel for a filter), independent of the selection.
+     */
+    triggerIcon: KerfUiContent;
+}
+type SelectMultipleValueProps<Value extends string = string> = SelectMultipleLabelProps<Value> | SelectMultipleIconProps<Value>;
 type SelectProps<Value extends string = string> = SelectBaseProps<Value> & SelectAccessibleName & (SelectSingleValueProps<Value> | SelectMultipleValueProps<Value>);
 declare function Select<Value extends string>(props: SelectProps<Value>): SafeHtml;
 
-export { Select, type SelectChoice, type SelectFocusRingOwner, type SelectMultipleValueProps, type SelectPresentation, type SelectProps, type SelectSelectedPresentation, type SelectSingleValueProps, type SelectSize };
+export { Select, type SelectChoice, type SelectFocusRingOwner, type SelectMultipleIconProps, type SelectMultipleLabelProps, type SelectMultipleValueProps, type SelectPresentation, type SelectProps, type SelectSelectedPresentation, type SelectSingleValueProps, type SelectSize };
 ```
 
 ## `@kerfjs/ui/state-banner`

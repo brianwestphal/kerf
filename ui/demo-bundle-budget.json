@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 295200,
-  "measuredLargestJavaScriptGzip": 146765,
-  "measuredTotalJavaScriptGzip": 295151,
+  "totalJavaScriptGzip": 295600,
+  "measuredLargestJavaScriptGzip": 147155,
+  "measuredTotalJavaScriptGzip": 295538,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -915,6 +915,22 @@
         "measuredTotalJavaScriptGzip": 295151,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 295200
+      }
+    },
+    {
+      "at": "2026-09-28T09:35:11.596Z",
+      "reason": "Icon-only multiple Select trigger (fixed trigger icon, count badge, summarized accessible name) and its toolbar filter demos",
+      "old": {
+        "measuredLargestJavaScriptGzip": 146765,
+        "measuredTotalJavaScriptGzip": 295151,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 295200
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 147155,
+        "measuredTotalJavaScriptGzip": 295538,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 295600
       }
     }
   ]

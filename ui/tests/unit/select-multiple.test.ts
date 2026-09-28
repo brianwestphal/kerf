@@ -45,11 +45,15 @@ function build(
     multiple = true,
     hasUpdated = true,
     lang,
+    iconOnly = false,
+    nameSummary = iconOnly,
   }: {
     kerf?: boolean;
     multiple?: boolean;
     hasUpdated?: boolean;
     lang?: string;
+    iconOnly?: boolean;
+    nameSummary?: boolean;
   } = {},
 ) {
   const host = document.createElement('div') as unknown as FakeSelect;
@@ -57,6 +61,14 @@ function build(
   Object.setPrototypeOf(host, proto.select);
   if (kerf) host.dataset.component = 'select';
   if (lang) host.setAttribute('lang', lang);
+  if (iconOnly) host.dataset.selectedPresentation = 'icon-only';
+  if (nameSummary) {
+    const name = document.createElement('span');
+    name.slot = 'label';
+    name.innerHTML =
+      'Filter by label<span class="kui-select__name-summary"></span>';
+    host.append(name);
+  }
   Object.assign(host, {
     multiple,
     hasUpdated,
@@ -112,6 +124,42 @@ describe('Select multiple boundary', () => {
     host.selectedOptions = [];
     host.selectionChanged();
     expect(host.displayLabel).toBe('');
+  });
+
+  it('moves the summary into the accessible name of an icon-only trigger', () => {
+    const proto = prototypes();
+    installSelectMultiple(proto.select, proto.option);
+    const { host, options } = build(proto, { iconOnly: true });
+    const name = host.querySelector('[slot="label"]')!;
+    host.selectedOptions = [options[2]!, options[0]!];
+    host.selectionChanged();
+    expect(name.textContent).toBe('Filter by label: Bug, Design');
+    // The hidden value text would only repeat the name.
+    expect(host.displayLabel).toBe('');
+    host.selectedOptions = [];
+    host.selectionChanged();
+    expect(name.textContent).toBe('Filter by label');
+    expect(host.displayLabel).toBe('');
+  });
+
+  it('keeps the summary in the value when an icon-only trigger has no name summary slot', () => {
+    const proto = prototypes();
+    installSelectMultiple(proto.select, proto.option);
+    const { host, options } = build(proto, {
+      iconOnly: true,
+      nameSummary: false,
+    });
+    host.selectedOptions = [options[1]!];
+    host.selectionChanged();
+    expect(host.displayLabel).toBe('Docs');
+    // A label-presentation Select with the slot keeps its visible summary.
+    const labeled = build(proto, { nameSummary: true });
+    labeled.host.selectedOptions = [labeled.options[0]!];
+    labeled.host.selectionChanged();
+    expect(labeled.host.displayLabel).toBe('Bug');
+    expect(labeled.host.querySelector('[slot="label"]')!.textContent).toBe(
+      'Filter by label',
+    );
   });
 
   it('formats the summary for the nearest language', () => {

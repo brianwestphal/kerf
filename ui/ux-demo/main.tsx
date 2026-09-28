@@ -104,6 +104,7 @@ import {
   sizedDisclosureOpen,
   tabBarActive,
   tabBarTabs,
+  ticketLabelFilter,
   ticketLabels,
   tokenSearchQuery,
   tokenSearchTokens,
@@ -989,8 +990,13 @@ const stopResize = wireResizableRegions(app, {
 const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
   const value = (element as HTMLElement & { value?: string | string[] }).value;
   if (Array.isArray(value)) {
-    if (element.getAttribute('name') === 'ticket-labels')
-      ticketLabels.value = value;
+    const name = element.getAttribute('name');
+    if (name === 'ticket-labels') ticketLabels.value = value;
+    if (
+      name === 'ticket-label-filter' ||
+      name === 'toolbar-ticket-label-filter'
+    )
+      ticketLabelFilter.value = value;
     return;
   }
   if (value === 'quiet' || value === 'balanced' || value === 'explicit')

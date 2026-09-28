@@ -3,7 +3,9 @@
 // behavior. This boundary adapts the rest to Kerf's rendering model, only for
 // Kerf Selects (`data-component="select"`):
 // - the closed control summarizes the chosen labels instead of drawing a
-//   removable tag per choice or a "N options selected" count;
+//   removable tag per choice or a "N options selected" count; an icon-only
+//   trigger (whose value text is hidden) ends its accessible name with that
+//   summary instead;
 // - the rendered `selected` attributes are the controlled value, so a
 //   re-render that changes them updates the selection (Web Awesome otherwise
 //   reads them only until the first interaction).
@@ -77,12 +79,23 @@ export function installSelectMultiple(
     selectionChanged.call(this);
     if (!kerfMultiple(this)) return;
     const chosen = new Set(this.selectedOptions);
-    this.displayLabel = summarizeSelection(
+    const summary = summarizeSelection(
       this.getAllOptions()
         .filter((option) => chosen.has(option))
         .map((option) => option.label),
       listLocale(this),
     );
+    const nameSummary = this.querySelector(
+      ':scope > [slot="label"] > .kui-select__name-summary',
+    );
+    if (this.dataset.selectedPresentation === 'icon-only' && nameSummary) {
+      // An icon-only trigger carries the summary in its accessible name, so
+      // the (visually hidden) value stays empty rather than repeating it.
+      nameSummary.textContent = summary ? `: ${summary}` : '';
+      this.displayLabel = '';
+      return;
+    }
+    this.displayLabel = summary;
   };
 
   // The summary replaces Web Awesome's per-choice tags.

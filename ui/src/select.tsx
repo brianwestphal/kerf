@@ -1,7 +1,9 @@
 import type { SafeHtml } from 'kerfjs';
 
+import { Badge } from './badge.js';
 import { type CssForegroundColor, em } from './css-values.js';
 import { LucideIcon, type LucideNode } from './lucide-icon.js';
+import type { KerfUiContent } from './semantic-content.js';
 import { Skeleton } from './skeleton.js';
 
 export interface SelectChoice<Value extends string = string> {
@@ -64,6 +66,7 @@ export interface SelectSingleValueProps<Value extends string = string> {
   renderSelected?: (choice: SelectChoice<Value>) => SafeHtml;
   /** Show only the selected choice icon while retaining the Select's accessible name. */
   selectedPresentation?: SelectSelectedPresentation;
+  triggerIcon?: never;
 }
 
 /**
@@ -71,12 +74,35 @@ export interface SelectSingleValueProps<Value extends string = string> {
  * choices and closes on an outside click, Escape, or focus leaving; the closed
  * control summarizes the chosen labels in choice order.
  */
-export interface SelectMultipleValueProps<Value extends string = string> {
+export interface SelectMultipleLabelProps<Value extends string = string> {
   multiple: true;
   value: readonly NoInfer<Value>[];
   renderSelected?: never;
   selectedPresentation?: 'label';
+  triggerIcon?: never;
 }
+
+/**
+ * A multiple Select drawn as an icon-only toolbar trigger, such as a
+ * "Filter by label" funnel. No single choice is selected, so the trigger shows
+ * a fixed `triggerIcon` naming the menu's purpose; while any choice is chosen
+ * a count badge sits beside it, and the combobox's accessible name ends with
+ * the chosen labels in choice order.
+ */
+export interface SelectMultipleIconProps<Value extends string = string> {
+  multiple: true;
+  value: readonly NoInfer<Value>[];
+  renderSelected?: never;
+  selectedPresentation: 'icon-only';
+  /**
+   * The trigger's fixed icon, typically a `LucideIcon` naming the menu's
+   * purpose (a funnel for a filter), independent of the selection.
+   */
+  triggerIcon: KerfUiContent;
+}
+
+export type SelectMultipleValueProps<Value extends string = string> =
+  SelectMultipleLabelProps<Value> | SelectMultipleIconProps<Value>;
 
 export type SelectProps<Value extends string = string> =
   SelectBaseProps<Value> &
@@ -117,9 +143,13 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
   const multiple = props.multiple === true;
   const values: readonly Value[] = props.multiple ? props.value : [props.value];
   const renderSelected = props.multiple ? undefined : props.renderSelected;
-  const selectedPresentation = props.multiple
-    ? 'label'
-    : (props.selectedPresentation ?? 'label');
+  const selectedPresentation: SelectSelectedPresentation =
+    props.selectedPresentation ?? 'label';
+  // A multiple icon-only trigger shows a fixed icon naming the menu's
+  // purpose instead of a selected choice's icon.
+  const iconTrigger =
+    props.multiple && props.selectedPresentation === 'icon-only';
+  const triggerIcon = iconTrigger ? props.triggerIcon : undefined;
   if (placeholder) {
     return (
       <div
@@ -158,6 +188,9 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
   const selected = multiple
     ? undefined
     : choices.find((choice) => choice.value === values[0]);
+  const chosenCount = iconTrigger
+    ? choices.filter((choice) => values.includes(choice.value)).length
+    : 0;
   const icon = (choice: SelectChoice<Value>, selectedIcon = false) => (
     <span
       data-key={`${name}:${choice.value}:${selectedIcon ? 'selected' : 'option'}`}
@@ -223,6 +256,34 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
       }
       slot={slot}
     >
+      {iconTrigger && (
+        <>
+          {/* The accessible name ends with the chosen labels, which
+              @kerfjs/ui/select/register writes into the summary. */}
+          <span slot="label" data-key={`${name}:trigger-label`}>
+            {label || ariaLabel}
+            <span class="kui-select__name-summary" data-morph-skip></span>
+          </span>
+          <span
+            data-key={`${name}:trigger-icon`}
+            slot="start"
+            class="kui-select__icon kui-select__icon--selected kui-select__trigger-icon"
+          >
+            {triggerIcon}
+          </span>
+          {chosenCount > 0 && (
+            <Badge
+              slot="end"
+              className="kui-select__count"
+              tone="brand"
+              size="compact"
+              ariaHidden
+            >
+              {chosenCount}
+            </Badge>
+          )}
+        </>
+      )}
       {selected &&
         (renderSelected ? (
           <span

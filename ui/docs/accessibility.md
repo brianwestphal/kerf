@@ -39,6 +39,18 @@ in choice order as one short localized list (the `placeholderText` when none
 are chosen) instead of a removable tag per choice. `change` and `input` report
 the value array; in a form, every chosen value is submitted under `name`.
 
+A toolbar filter menu (a "Filter by label" funnel) is a multiple Select with
+`selectedPresentation="icon-only"` and a fixed `triggerIcon`; the types accept
+`triggerIcon` only there, and require it there, because no single chosen
+choice has an icon to show. The trigger keeps the icon-only pill geometry
+below: the fixed icon, then, while any choice is chosen, a compact brand
+`Badge` with the count 4px after it, then the caret. The badge is hidden from
+assistive technology; instead the combobox's accessible name ends with the
+chosen labels in choice order ("Filter by label: Bug, Docs", just "Filter by
+label" when none are chosen), and its hidden value text stays empty so screen
+readers do not announce the list twice. With a visible `label` the same summary
+reads in the label, standing in for the hidden value.
+
 Use `presentation="toolbar-borderless"` inside a `ToolbarControlGroup`, with
 `size="compact"` in a compact group; set `focusRingOwner="group"` when that
 parent paints the composed focus ring. `selectedPresentation="icon-only"` hides

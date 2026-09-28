@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` multiple `Select` can be an icon-only toolbar filter menu.**
+  Set `selectedPresentation: 'icon-only'` on a `multiple` Select together with
+  a fixed `triggerIcon` (for example a funnel `LucideIcon`); the types require
+  `triggerIcon` there and reject it everywhere else. The trigger keeps the
+  icon-only caret pill used in a `ToolbarControlGroup`, and:
+  - shows the fixed icon whatever is chosen;
+  - adds a compact count `Badge` while any choice is chosen;
+  - ends the combobox's accessible name with the chosen labels in choice order
+    ("Filter by label: Bug, Docs"), leaving the hidden value text empty so the
+    list is not announced twice.
+
+  The popup still stays open while choices toggle.
+
 - **`@kerfjs/ui` `Select` options keep their accessibility semantics across
   re-renders.** Re-rendering a Select (for example after its `change` handler
   updates the controlling signal) removed the `role="option"` and

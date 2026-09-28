@@ -237,7 +237,22 @@ Select({
   // @ts-expect-error A multiple Select summarizes its labels; it has no single selected choice to render.
   renderSelected: () => undefined,
 });
-// @ts-expect-error A multiple Select has no single selected icon to show.
+const filterIcon = UI.LucideIcon({ icon: [], name: 'funnel' });
+// A multiple icon-only trigger (a toolbar filter menu) shows a fixed icon.
+Select<'bug' | 'docs'>({
+  name: 'label-filter',
+  multiple: true,
+  value: ['bug'],
+  ariaLabel: 'Filter by label',
+  presentation: 'toolbar-borderless',
+  selectedPresentation: 'icon-only',
+  triggerIcon: filterIcon,
+  choices: [
+    { value: 'bug', label: 'Bug' },
+    { value: 'docs', label: 'Docs' },
+  ],
+});
+// @ts-expect-error A multiple icon-only trigger has no selected choice icon, so it needs a triggerIcon.
 Select({
   name: 'labels',
   multiple: true,
@@ -245,6 +260,24 @@ Select({
   label: 'Labels',
   choices: [],
   selectedPresentation: 'icon-only',
+});
+// @ts-expect-error A label-presentation multiple Select shows its summary, not a trigger icon.
+Select({
+  name: 'labels',
+  multiple: true,
+  value: [],
+  label: 'Labels',
+  choices: [],
+  triggerIcon: filterIcon,
+});
+// @ts-expect-error A single Select's icon-only trigger shows the selected choice's icon.
+Select({
+  name: 'state',
+  value: 'ready',
+  label: 'State',
+  choices: [],
+  selectedPresentation: 'icon-only',
+  triggerIcon: filterIcon,
 });
 const responsiveReveal: CatalogRevealOptions = {
   media: '(max-width: 40rem)',

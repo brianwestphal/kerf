@@ -1784,6 +1784,57 @@ describe('production UI primitives', () => {
     expect(singleSelect.querySelector('wa-option[selected]')).toBe(null);
   });
 
+  it('renders a multiple icon-only Select as a fixed trigger icon, a count badge, and a name that ends with the summary', () => {
+    const render = (value: readonly ('bug' | 'docs' | 'design')[]) => {
+      const host = document.createElement('div');
+      host.innerHTML = asHtml(
+        Select<'bug' | 'docs' | 'design'>({
+          name: 'label-filter',
+          multiple: true,
+          value,
+          ariaLabel: 'Filter by label',
+          presentation: 'toolbar-borderless',
+          selectedPresentation: 'icon-only',
+          triggerIcon: <LucideIcon icon={Circle} name="funnel" />,
+          choices: [
+            { value: 'bug', label: 'Bug', icon: Check },
+            { value: 'docs', label: 'Docs' },
+            { value: 'design', label: 'Design' },
+          ],
+        }),
+      );
+      return host.querySelector('wa-select')!;
+    };
+    const select = render(['design', 'bug']);
+    expect(select.getAttribute('data-selected-presentation')).toBe('icon-only');
+    expect(select.hasAttribute('multiple')).toBe(true);
+    // The trigger icon names the menu; no chosen option's icon leads.
+    const start = select.querySelectorAll(':scope > [slot="start"]');
+    expect(start).toHaveLength(1);
+    expect(start[0]!.classList.contains('kui-select__trigger-icon')).toBe(true);
+    expect(start[0]!.querySelector('svg')!.getAttribute('data-lucide')).toBe(
+      'funnel',
+    );
+    // The count is decorative; the accessible name carries the summary.
+    const count = select.querySelector(':scope > [slot="end"]')!;
+    expect(count.getAttribute('data-component')).toBe('badge');
+    expect(count.getAttribute('aria-hidden')).toBe('true');
+    expect(count.textContent).toBe('2');
+    const name = select.querySelector(':scope > [slot="label"]')!;
+    expect(name.textContent).toBe('Filter by label');
+    const summary = name.querySelector('.kui-select__name-summary')!;
+    expect(summary.hasAttribute('data-morph-skip')).toBe(true);
+    expect(select.classList.contains('kui-select--label-hidden')).toBe(true);
+
+    // Nothing chosen: no count badge.
+    expect(render([]).querySelector('[slot="end"]')).toBe(null);
+    // The count ignores values that match no choice.
+    expect(
+      render(['bug', 'missing' as 'bug']).querySelector('[slot="end"]')!
+        .textContent,
+    ).toBe('1');
+  });
+
   it('forwards Select names to the internal label contract without showing ariaLabel-only labels', () => {
     const render = (
       name: { label: string; ariaLabel?: string } | { ariaLabel: string },

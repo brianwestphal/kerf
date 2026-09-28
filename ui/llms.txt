@@ -174,7 +174,10 @@ headingLevel`, `TokenSearchField clearIcon`, `.kui-content-item--framed` for a
 - `Select` requires a visible `label` or an `ariaLabel` for a visually hidden
   accessible name. Set `multiple` with an array `value` for any number of
   choices: the popup stays open while choices toggle and closes on an outside
-  press or Escape, and the closed control summarizes the chosen labels. The package names the internal combobox, including custom
+  press or Escape, and the closed control summarizes the chosen labels. A
+  toolbar filter menu adds `selectedPresentation="icon-only"` and a fixed
+  `triggerIcon`: the trigger shows that icon plus a count badge while any
+  choice is chosen, and its accessible name ends with the chosen labels. The package names the internal combobox, including custom
   selected content; consumers do not need shadow-DOM naming workarounds.
   Import `select/register` once for the canonical animation lifecycle: stale
   close/show completions cannot override a later request. Consumers must not

@@ -2,18 +2,34 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { uiColor } from '@kerfjs/ui/css-values';
 import { List } from '@kerfjs/ui/list';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { Row } from '@kerfjs/ui/row';
 import { Select } from '@kerfjs/ui/select';
 import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
-import { Bell, SlidersHorizontal, Wrench } from 'lucide';
+import {
+  Bell,
+  Funnel,
+  MoreHorizontal,
+  Pin,
+  SlidersHorizontal,
+  Wrench,
+} from 'lucide';
 
-import { selectedChoice, ticketLabels } from './state.js';
+import { selectedChoice, ticketLabelFilter, ticketLabels } from './state.js';
 
 const toolbarChoices = [
   { value: 'quiet', label: 'Quiet', icon: Bell },
   { value: 'balanced', label: 'Balanced', icon: SlidersHorizontal },
   { value: 'explicit', label: 'Explicit', icon: Wrench },
+];
+
+const labelChoices = [
+  { value: 'bug', label: 'Bug' },
+  { value: 'feature', label: 'Feature' },
+  { value: 'docs', label: 'Docs' },
+  { value: 'design', label: 'Design' },
+  { value: 'performance', label: 'Performance' },
 ];
 
 export function SelectDemo() {
@@ -82,14 +98,57 @@ export function SelectDemo() {
           value={ticketLabels.value}
           label="Labels"
           placeholderText="No labels"
-          choices={[
-            { value: 'bug', label: 'Bug' },
-            { value: 'feature', label: 'Feature' },
-            { value: 'docs', label: 'Docs' },
-            { value: 'design', label: 'Design' },
-            { value: 'performance', label: 'Performance' },
-          ]}
+          choices={labelChoices}
         />
+      </CatalogExample>
+      <CatalogExample
+        label="Toolbar filter"
+        note="A multiple icon-only trigger keeps a fixed icon and counts the chosen filters."
+        align="inline-control"
+      >
+        <ToolbarControlGroup
+          label="Label filter"
+          content="icon"
+          focusRing="outline"
+          single
+        >
+          <Select<string>
+            name="ticket-label-filter"
+            multiple
+            value={ticketLabelFilter.value}
+            ariaLabel="Filter by label"
+            presentation="toolbar-borderless"
+            selectedPresentation="icon-only"
+            triggerIcon={<LucideIcon icon={Funnel} name="funnel" />}
+            focusRingOwner="group"
+            choices={labelChoices}
+          />
+        </ToolbarControlGroup>
+      </CatalogExample>
+      <CatalogExample
+        label="Toolbar filter beside actions"
+        align="inline-control"
+      >
+        <ToolbarControlGroup label="Ticket view">
+          <button type="button" aria-label="Pin view" data-action="log-pin">
+            <LucideIcon icon={Pin} name="pin" />
+          </button>
+          <Select<string>
+            name="toolbar-ticket-label-filter"
+            multiple
+            value={ticketLabelFilter.value}
+            ariaLabel="Filter by label"
+            presentation="toolbar-borderless"
+            selectedPresentation="icon-only"
+            triggerIcon={<LucideIcon icon={Funnel} name="funnel" />}
+            choices={labelChoices}
+          />
+          <PopupMenu
+            label="More actions"
+            icon={<LucideIcon icon={MoreHorizontal} name="ellipsis" />}
+            items={[{ label: 'Archive', action: 'log-more' }]}
+          />
+        </ToolbarControlGroup>
       </CatalogExample>
       <CatalogExample
         label="Accessible name without a visible label"
