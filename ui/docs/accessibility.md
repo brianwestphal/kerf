@@ -65,7 +65,9 @@ to the trigger's width, so a single group is wider than it is tall and its
 focus ring follows the pill while focused. While the listbox is open the
 trigger drops its ring, as a `PopupMenu` trigger does: the open popup and its
 current option show where focus is, and the ring returns when the listbox
-closes with focus still on the control.
+closes with focus still on the control. A group that owns the ring
+(`focusRing="outline"` or `"halo"`) drops it the same way while a Select
+listbox or `PopupMenu` inside the group is open.
 Beside other controls in one group, the icon-only trigger is one more segment:
 it keeps the group's gap and its siblings' block inset, height, item radius,
 and hover pill. In a group with per-control rings (`focusRing="control"`, the

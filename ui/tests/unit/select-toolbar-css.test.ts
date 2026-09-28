@@ -63,8 +63,8 @@ describe('Select toolbar composition CSS', () => {
     const rule = root.nodes.find(
       (node) =>
         node.type === 'rule' &&
-        node.selector ===
-          '.kui-toolbar-control-group[data-focus-ring="outline"]:focus-within',
+        node.selector.replace(/\s+/g, ' ') ===
+          '.kui-toolbar-control-group[data-focus-ring="outline"]:focus-within:not( :where(:has(wa-select[open], wa-dropdown[open])) )',
     );
     if (!rule || rule.type !== 'rule')
       throw new Error('Missing delegated Select focus rule');

@@ -23,10 +23,10 @@ test('compact toolbar Select uses group focus geometry and spaced option icons',
       width: bounds.width,
     };
   });
+  // The open listbox shows focus itself, so the group-owned ring is off.
   expect(focusGeometry).toMatchObject({
     height: 34,
-    outlineStyle: 'solid',
-    outlineWidth: 3,
+    outlineStyle: 'none',
   });
   expect(focusGeometry.width).toBe(68);
   expect(focusGeometry.borderRadius).toBeGreaterThanOrEqual(17);
@@ -241,9 +241,12 @@ test('icon-only toolbar Select is a caret pill matching the popup-menu dropdown 
     await page.keyboard.press('Enter');
     await expect(select).toHaveAttribute('open');
     await page.keyboard.press('ArrowDown');
-    expectPill(await selectGeometry(select), size, 'outline 3px +1px');
+    // The open listbox shows focus, so the group-owned ring is off.
+    expectPill(await selectGeometry(select), size, 'none');
     await page.keyboard.press('Escape');
     await expect(select).not.toHaveAttribute('open');
+    // It returns once the listbox closes with focus still on the trigger.
+    expectPill(await selectGeometry(select), size, 'outline 3px +1px');
   }
 
   // The rounded shape, both sizes, and the halo ring follow the group's typed
@@ -272,9 +275,10 @@ test('icon-only toolbar Select is a caret pill matching the popup-menu dropdown 
     await select.click();
     await expect(select).toHaveAttribute('open');
     await page.keyboard.press('ArrowDown');
-    expectPill(await selectGeometry(select), size, expected);
+    expectPill(await selectGeometry(select), size, 'none');
     await page.keyboard.press('Escape');
     await expect(select).not.toHaveAttribute('open');
+    expectPill(await selectGeometry(select), size, expected);
   }
 });
 

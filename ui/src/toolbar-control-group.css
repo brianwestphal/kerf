@@ -491,28 +491,41 @@
   outline-offset: 1px;
 }
 
-.kui-toolbar-control-group[data-focus-ring="outline"]:focus-within {
+.kui-toolbar-control-group[data-focus-ring="outline"]:focus-within:not(
+    :where(:has(wa-select[open], wa-dropdown[open]))
+  ) {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
 
-.kui-toolbar-control-group[data-focus-ring="halo"]:focus-within {
+.kui-toolbar-control-group[data-focus-ring="halo"]:focus-within:not(
+    :where(:has(wa-select[open], wa-dropdown[open]))
+  ) {
   border-color: var(--kui-color-text-link);
   box-shadow: 0 0 0 3px
     color-mix(in srgb, var(--kui-color-text-link) 22%, transparent);
 }
 
-/* Chromium and WebKit do not propagate :focus-within from a focused
-   light-DOM child (an open wa-select's active wa-option) through the host's
-   popup shadow tree, so the group ring vanished while its Select listbox was
-   open. A focused light-DOM descendant still owns the group ring. Kept as
-   separate rules so an engine without :has() keeps the :focus-within ring. */
-.kui-toolbar-control-group[data-focus-ring="outline"]:has(:focus) {
+/* A group-owned ring (outline or halo) is off while a Select listbox or a
+   PopupMenu inside the group is open: the open popup shows focus, as the
+   per-control Select and PopupMenu triggers already do, and the ring returns
+   when the popup closes with focus still in the group. The exclusion sits in
+   a forgiving :where(), so an engine without :has() keeps the ring.
+
+   Chromium and WebKit do not propagate :focus-within from a focused
+   light-DOM child through a host's popup shadow tree, so a focused light-DOM
+   descendant also owns the group ring. Kept as separate rules so an engine
+   without :has() keeps the :focus-within ring. */
+.kui-toolbar-control-group[data-focus-ring="outline"]:has(:focus):not(
+    :where(:has(wa-select[open], wa-dropdown[open]))
+  ) {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
 
-.kui-toolbar-control-group[data-focus-ring="halo"]:has(:focus) {
+.kui-toolbar-control-group[data-focus-ring="halo"]:has(:focus):not(
+    :where(:has(wa-select[open], wa-dropdown[open]))
+  ) {
   border-color: var(--kui-color-text-link);
   box-shadow: 0 0 0 3px
     color-mix(in srgb, var(--kui-color-text-link) 22%, transparent);

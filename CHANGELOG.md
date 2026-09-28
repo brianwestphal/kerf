@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` toolbar groups drop their focus ring while a popup is open.**
+  A `ToolbarControlGroup` that owns the ring (`focusRing="outline"` or
+  `"halo"`) no longer paints it while a Select listbox or `PopupMenu` inside it
+  is open; the open popup shows focus, and the ring returns when the popup
+  closes with focus still in the group. This matches the per-control Select
+  and PopupMenu triggers.
+
 - **`@kerfjs/ui` multiple `Select` can be an icon-only toolbar filter menu.**
   Set `selectedPresentation: 'icon-only'` on a `multiple` Select together with
   a fixed `triggerIcon` (for example a funnel `LucideIcon`); the types require
