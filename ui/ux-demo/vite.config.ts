@@ -122,5 +122,50 @@ export default defineConfig({
     outDir: '../dist-demo',
     emptyOutDir: true,
     chunkSizeWarningLimit: 800,
+    rollupOptions: { output: { manualChunks: startupVendorChunk() } },
   },
 });
+
+type ModuleGraph = {
+  getModuleIds(): IterableIterator<string>;
+  getModuleInfo(id: string): {
+    isEntry: boolean;
+    importedIds: readonly string[];
+  } | null;
+};
+
+/**
+ * Split the third-party code the catalog loads at startup (Web Awesome and its
+ * Lit/Floating UI runtime, pulled in eagerly by the select and popup-menu
+ * `register` subpaths) out of the entry chunk into a `vendor` chunk. Both still
+ * load eagerly with the page, so behavior and load order are unchanged; the
+ * split only keeps either chunk far from the demo's largest-chunk budget
+ * (`demo-bundle-budget.json`). Only modules statically reachable from the entry
+ * qualify: a dependency used solely by a lazily imported chunk (the Web
+ * Awesome component demos, the recipes) stays with that chunk instead of
+ * being hoisted into startup.
+ */
+function startupVendorChunk() {
+  let startup: Set<string> | undefined;
+  return (id: string, graph: ModuleGraph): string | undefined => {
+    if (!id.includes('/node_modules/')) return undefined;
+    startup ??= staticallyReachableFromEntries(graph);
+    return startup.has(id) ? 'vendor' : undefined;
+  };
+}
+
+function staticallyReachableFromEntries(graph: ModuleGraph): Set<string> {
+  const pending = [...graph.getModuleIds()].filter(
+    (id) => graph.getModuleInfo(id)?.isEntry,
+  );
+  const reached = new Set(pending);
+  while (pending.length > 0) {
+    const info = graph.getModuleInfo(pending.pop()!);
+    for (const imported of info?.importedIds ?? []) {
+      if (reached.has(imported)) continue;
+      reached.add(imported);
+      pending.push(imported);
+    }
+  }
+  return reached;
+}

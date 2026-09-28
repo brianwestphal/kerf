@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "largestJavaScriptGzip": 151800,
-  "totalJavaScriptGzip": 298500,
-  "measuredLargestJavaScriptGzip": 151726,
-  "measuredTotalJavaScriptGzip": 298435,
+  "largestJavaScriptGzip": 150000,
+  "totalJavaScriptGzip": 299000,
+  "measuredLargestJavaScriptGzip": 126039,
+  "measuredTotalJavaScriptGzip": 298982,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1027,6 +1027,22 @@
         "measuredTotalJavaScriptGzip": 298435,
         "largestJavaScriptGzip": 151800,
         "totalJavaScriptGzip": 298500
+      }
+    },
+    {
+      "at": "2026-09-28T12:01:39.477Z",
+      "reason": "KF-FFMW2T: split startup third-party code (Web Awesome, Lit, Floating UI) into an eager vendor chunk; largest chunk drops from index at 151.7 kB to the lazy Web Awesome demos at 126.0 kB, so the largest-chunk limit returns to 150000; the split costs ~0.5 kB total gzip",
+      "old": {
+        "measuredLargestJavaScriptGzip": 151726,
+        "measuredTotalJavaScriptGzip": 298435,
+        "largestJavaScriptGzip": 151800,
+        "totalJavaScriptGzip": 298500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126039,
+        "measuredTotalJavaScriptGzip": 298982,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 299000
       }
     }
   ]
