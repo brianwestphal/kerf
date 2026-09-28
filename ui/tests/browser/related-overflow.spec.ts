@@ -9,7 +9,9 @@ test('the related-entries menu does not overflow the viewport when open', async 
   await page.goto('/?component=lucide-icon'); // used by many → a long related list
   const relationships = page.locator('[data-catalog-related]');
   await relationships.locator('wa-button[slot="trigger"]').click();
-  await expect(relationships.locator('h3').first()).toBeVisible();
+  await expect(
+    relationships.locator('.kui-popup-menu__heading').first(),
+  ).toBeVisible();
   const { scrollWidth, clientWidth } = await page.evaluate(() => ({
     scrollWidth: document.documentElement.scrollWidth,
     clientWidth: document.documentElement.clientWidth,

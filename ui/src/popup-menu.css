@@ -10,3 +10,81 @@
   white-space: nowrap;
   clip-path: inset(50%);
 }
+
+/* A PopupMenu draws exactly the Select's popup: the same caret motion, surface
+   inset, row geometry, reserved check column, current-row fill, and group
+   titles, all read from the private popup-choice contract in foundation.css
+   (select.css reads the same values). */
+
+/* The trigger caret turns to face the open menu, like the Select's. */
+.kui-popup-menu > wa-button::part(caret) {
+  rotate: 0deg;
+  transition: var(--_kui-popup-caret-transition);
+}
+.kui-popup-menu[open] > wa-button::part(caret) {
+  rotate: var(--_kui-popup-caret-open-rotation);
+}
+
+/* The Select's popup fades in place; Web Awesome's dropdown also scales from
+   90%. Holding the scale leaves the shared fade. */
+.kui-popup-menu::part(menu) {
+  padding: var(--_kui-popup-inset);
+  gap: var(--_kui-popup-row-gap);
+  scale: none !important;
+}
+
+.kui-popup-menu > wa-dropdown-item {
+  /* Leading inset plus the Select's check column, so item icons and labels
+     start where a Select option's do. */
+  padding: var(--_kui-popup-row-padding-block)
+    var(--_kui-popup-row-padding-inline-end) var(--_kui-popup-row-padding-block)
+    calc(
+      var(--_kui-popup-row-padding-inline-start) +
+        var(--_kui-popup-row-check-width)
+    );
+}
+.kui-popup-menu > wa-dropdown-item::part(label) {
+  padding-block: var(--_kui-popup-row-label-padding-block);
+  line-height: var(--_kui-popup-row-label-line-height);
+}
+/* A keyboard-focused item is the menu's current row: the Select's brand fill,
+   with no second focus ring inside the open popup. */
+.kui-popup-menu > wa-dropdown-item:focus-visible {
+  outline: none;
+  color: var(--_kui-popup-row-current-color);
+  background-color: var(--_kui-popup-row-current-background);
+}
+.kui-popup-menu > wa-divider {
+  --spacing: 0.5em;
+}
+
+/* Center the icon on the label's line, like the Select's start slot. */
+.kui-popup-menu > wa-dropdown-item::part(icon) {
+  display: flex;
+  align-self: center;
+}
+.kui-popup-menu__icon {
+  display: inline-flex;
+  width: var(--_kui-popup-row-icon-size);
+  height: var(--_kui-popup-row-icon-size);
+  flex: none;
+  /* Web Awesome spaces a slotted item icon 0.75em from its label (an
+     !important shadow rule). Sizing that em makes the gap the Select's. */
+  font-size: calc(var(--_kui-popup-row-icon-gap) / 0.75);
+}
+.kui-popup-menu__icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* A group title matches the Select's group title. It is a styled element
+   rather than a slotted heading, whose Web Awesome metrics are !important. */
+.kui-popup-menu__heading {
+  padding: var(--_kui-popup-group-title-padding);
+  color: var(--kui-color-neutral-on-quiet);
+  font-size: var(--kui-font-2xs);
+  font-weight: var(--_kui-popup-group-title-font-weight);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

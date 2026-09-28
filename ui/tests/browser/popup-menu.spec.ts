@@ -39,7 +39,9 @@ test('PopupMenu opens from its toolbar trigger and dispatches the chosen command
   // Headings, dividers, item icons, and disabled items.
   const grouped = demo.locator('[data-component="popup-menu"]').nth(1);
   await grouped.getByRole('button', { name: 'Actions' }).click();
-  await expect(grouped.locator('h3', { hasText: 'Ticket' })).toBeVisible();
+  await expect(
+    grouped.locator('.kui-popup-menu__heading', { hasText: 'Ticket' }),
+  ).toBeVisible();
   await expect(grouped.locator('wa-divider')).toHaveCount(1);
   await expect(
     grouped.locator('wa-dropdown-item [slot="icon"] [data-lucide="copy"]'),

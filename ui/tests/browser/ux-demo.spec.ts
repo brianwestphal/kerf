@@ -4377,7 +4377,7 @@ test('catalog routes every production component family and supports its stateful
   await expect(relatedTrigger).toContainText('Components');
   await relatedTrigger.click();
   await expect(
-    menuRelationships.locator('h3', {
+    menuRelationships.locator('.kui-popup-menu__heading', {
       hasText: 'Uses',
     }),
   ).toBeVisible();
@@ -4388,7 +4388,7 @@ test('catalog routes every production component family and supports its stateful
   await expect(page.locator('[data-demo="list-item"]')).toBeVisible();
   await menuRelationships.locator('wa-button[slot="trigger"]').click();
   await expect(
-    menuRelationships.locator('h3', {
+    menuRelationships.locator('.kui-popup-menu__heading', {
       hasText: 'Used by',
     }),
   ).toBeVisible();

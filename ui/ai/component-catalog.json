@@ -3663,8 +3663,6 @@
         "kui-select__icon"
       ],
       "publicTokens": [
-        "--kui-color-brand-fill-normal",
-        "--kui-color-brand-on-fill",
         "--kui-color-neutral-border-quiet",
         "--kui-color-neutral-on-quiet",
         "--kui-disclosure-icon-scale",

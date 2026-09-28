@@ -111,9 +111,11 @@ describe('Catalog', () => {
       'data-responsive="stack" data-responsive-at="narrow"',
     );
     expect(html).toContain('<span>Components</span>');
-    // Web Awesome styles slotted headings as menu group labels.
-    expect(html).toContain('<h3>Used by</h3>');
-    expect(html).toContain('<h3>Uses</h3>');
+    // Group headings are the Select's group titles, not slotted h3s.
+    expect(html).toContain(
+      '<div class="kui-popup-menu__heading">Used by</div>',
+    );
+    expect(html).toContain('<div class="kui-popup-menu__heading">Uses</div>');
     expect(html).toContain('<wa-divider></wa-divider>');
     expect(html).toContain(
       'data-action="catalog-select" data-item-id="banner"',

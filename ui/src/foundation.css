@@ -79,6 +79,33 @@
   --kui-radius-circle: var(--wa-border-radius-circle, 50%);
   --kui-radius-pill: var(--wa-border-radius-pill, 999px);
   --kui-disclosure-icon-scale: 0.5;
+  /* Private popup-choice contract. A Select's listbox and a PopupMenu's menu
+     both read these, so a value list and a command menu draw one surface
+     inset, one row geometry (Web Awesome's option metrics plus Kerf's label
+     rhythm), one reserved check column, one current-row fill, one group-title
+     style, and one disclosure-caret motion. The em values resolve against the
+     row that reads them. */
+  --_kui-popup-inset: remify(4px);
+  --_kui-popup-row-gap: remify(2px);
+  --_kui-popup-row-padding-block: 0.5em;
+  --_kui-popup-row-padding-inline-start: 0.25em;
+  --_kui-popup-row-padding-inline-end: 1em;
+  --_kui-popup-row-check-width: calc(
+    2 * var(--wa-font-size-smaller, round(calc(1em / 1.125), 1px))
+  );
+  --_kui-popup-row-icon-size: remify(16px);
+  --_kui-popup-row-icon-gap: remify(8px);
+  --_kui-popup-row-label-padding-block: remify(5.6px);
+  --_kui-popup-row-label-line-height: 1.25;
+  --_kui-popup-row-current-background: var(--kui-color-brand-fill-normal);
+  /* Current row text sits on the brand fill; the darker on-fill accent clears
+     WCAG AA there (brand-on-quiet is 4.26:1 over that fill). */
+  --_kui-popup-row-current-color: var(--kui-color-brand-on-fill);
+  --_kui-popup-group-title-padding: remify(3.2px) remify(12px) remify(4.8px);
+  --_kui-popup-group-title-font-weight: 750;
+  --_kui-popup-caret-open-rotation: -180deg;
+  --_kui-popup-caret-transition: rotate var(--wa-transition-slow, 0.3s)
+    var(--wa-transition-easing, ease);
   /* macOS Tahoe light semantics used by Hot Sheet 2, with a compatible dark extension. */
   /* Every --kui-color-* token (and the focus-ring color) that reads a --wa-*
      token falls back to the value src/webawesome.css assigns to that token,

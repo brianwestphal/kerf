@@ -155,12 +155,17 @@ test('icon-only Select shares inset, gaps, radius, hover, and focus ring with si
         (element) => window.getComputedStyle(element).outlineStyle,
       ),
     ).toBe('none');
+    // While the listbox is open it shows focus itself, so the trigger ring is
+    // off (as a PopupMenu trigger's is) and returns when the listbox closes.
     await select.click();
     await expect(select).toHaveAttribute('open');
     await page.keyboard.press('ArrowDown');
-    await expect.poll(() => ringOf(select, 'combobox')).toBe(buttonRing);
+    await expect
+      .poll(() => ringOf(select, 'combobox'))
+      .toMatch(/rgba\(0, 0, 0, 0\)/);
     await page.keyboard.press('Escape');
     await expect(select).not.toHaveAttribute('open');
+    await expect.poll(() => ringOf(select, 'combobox')).toBe(buttonRing);
 
     // A Select told that the group owns its ring still paints one when the
     // group only paints per-control rings; nothing else would show focus.

@@ -19,6 +19,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   the overlay closes; the overlay's own floating controls and a bottom
   drawer's overlay are unaffected.
 
+- **`@kerfjs/ui` `PopupMenu` now looks exactly like `Select`.** Both read one
+  shared popup contract, so a command menu beside a value list in a toolbar
+  draws the same popup. `PopupMenu` changes:
+  - its caret turns to face the open menu;
+  - its menu fades in without scaling;
+  - it takes the Select listbox's 4px inset (also under the default
+    `menuInset="standard"`);
+  - its rows use the Select option's height, padding, and reserved check
+    column, and its icons use the same 16px size and 8px gap;
+  - a keyboard-focused item takes the Select's current-option fill instead of
+    a focus ring;
+  - headings render as the Select's uppercase group titles rather than slotted
+    `h3` elements.
+
+  An open `Select` also no longer paints its trigger focus ring. The open
+  listbox shows focus, and the ring returns when it closes.
+
 - **`@kerfjs/ui` composed toolbars are configurable.** `WorkbenchMainToolbar`,
   `WorkbenchMainBottomToolbar`, and the panel `toolbar` of a Workbench panel or
   `CollapsiblePanel` now take the `Toolbar`'s configuration: the new

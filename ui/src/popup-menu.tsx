@@ -98,8 +98,10 @@ function entryKey(entry: PopupMenuEntry): string {
 
 function renderEntry(entry: PopupMenuEntry) {
   if (entry.kind === 'divider') return <wa-divider></wa-divider>;
-  // Web Awesome styles a slotted heading as a menu group label.
-  if (entry.kind === 'heading') return <h3>{entry.label}</h3>;
+  // A group title styled like the Select's group title. It is not a slotted
+  // h1-h6, whose Web Awesome group-label metrics are !important.
+  if (entry.kind === 'heading')
+    return <div class="kui-popup-menu__heading">{entry.label}</div>;
   return (
     <wa-dropdown-item
       {...(entry.attributes ?? {})}
@@ -107,7 +109,11 @@ function renderEntry(entry: PopupMenuEntry) {
       value={entry.value}
       disabled={entry.disabled}
     >
-      {entry.icon ? <span slot="icon">{entry.icon}</span> : null}
+      {entry.icon ? (
+        <span slot="icon" class="kui-popup-menu__icon">
+          {entry.icon}
+        </span>
+      ) : null}
       {entry.label}
     </wa-dropdown-item>
   );

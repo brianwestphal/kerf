@@ -91,7 +91,7 @@ test('related Components selector fits its trigger and popup content', async ({
     expect(row.labelInsideBase).toBe(true);
 
     await trigger.click();
-    const firstHeading = related.locator('h3').first();
+    const firstHeading = related.locator('.kui-popup-menu__heading').first();
     await expect(firstHeading).toBeVisible();
     const popupSpacing = await related.evaluate((root) => {
       const menu = root.shadowRoot
@@ -108,7 +108,9 @@ test('related Components selector fits its trigger and popup content', async ({
         range.selectNodeContents(text);
         return range.getBoundingClientRect();
       };
-      const heading = textBounds(root.querySelector<HTMLElement>('h3'));
+      const heading = textBounds(
+        root.querySelector<HTMLElement>('.kui-popup-menu__heading'),
+      );
       const longest = [
         ...root.querySelectorAll<HTMLElement>('wa-dropdown-item'),
       ]
@@ -125,15 +127,13 @@ test('related Components selector fits its trigger and popup content', async ({
           }
         : null;
     });
-    // Group headings are Web Awesome's native menu labels (a slotted h3):
-    // they keep a real inset and sit on the item labels' text edge within
-    // Web Awesome's own few-pixel offset.
+    // Group headings are the Select's group titles: a real 12px inset inside
+    // the 4px popup inset, outdented over the check column that the item
+    // labels (like Select options) reserve.
     expect(popupSpacing?.headingLeft).toBeGreaterThanOrEqual(10);
-    expect(
-      Math.abs(
-        (popupSpacing?.headingLeft ?? 0) - (popupSpacing?.itemLeft ?? 0),
-      ),
-    ).toBeLessThanOrEqual(3);
+    expect(popupSpacing?.itemLeft ?? 0).toBeGreaterThan(
+      popupSpacing?.headingLeft ?? 0,
+    );
     expect(popupSpacing?.itemRight).toBeGreaterThanOrEqual(8);
     expect(popupSpacing?.menuLeft).toBeGreaterThanOrEqual(10);
     expect(popupSpacing?.menuRight).toBeLessThanOrEqual(viewport.width - 10);

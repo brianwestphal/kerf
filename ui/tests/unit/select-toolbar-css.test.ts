@@ -32,7 +32,7 @@ describe('Select toolbar composition CSS', () => {
       declarations(root, '.kui-select wa-option::part(start)').get(
         'margin-inline-end',
       ),
-    ).toBe('remify(8px)');
+    ).toBe('var(--_kui-popup-row-icon-gap)');
     expect(
       declarations(root, '.kui-select > .kui-select__icon[slot="start"]').get(
         'margin-inline-end',

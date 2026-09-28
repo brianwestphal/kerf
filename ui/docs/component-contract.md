@@ -363,7 +363,13 @@ can remain square. A compact icon `<button>` is a 32px circle, so a selected
 compact segment never becomes an oval. An icon-only `Select` joins a group as
 one more segment with its siblings' inset, radius, hover, and focus ring; only a
 lone Select grows the group to its icon-and-caret pill. Set `menuInset` to configure the dropdown menu surface
-without application `::part(menu)` CSS. Compact mixed controls retain the standard
+without application `::part(menu)` CSS; the default `standard` keeps each menu's
+own inset (8px for a raw `wa-dropdown`, the Select listbox's 4px for a
+`PopupMenu`), while `compact` and `list-zero` apply to every nested menu. A
+`PopupMenu` and a `Select` draw one popup: the same caret that turns to face the
+open popup, fade-in surface, surface inset, row height and padding, reserved
+check column, current-row fill, and group titles, all read from one private
+popup-choice contract in `foundation.css`. Compact mixed controls retain the standard
 item padding, omit an internal separator, and let the raised selected item paint
 over the outer border instead of shrinking to an inset highlight. The Web
 Awesome trigger's shadow base owns max-content sizing, so icons, localized text,

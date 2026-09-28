@@ -41,7 +41,10 @@ trigger (8px inline padding on both sides, 12px from the icon to the caret, a
 choice list. Inside a group the trigger is inset evenly on every side (2px in a
 default group, 1px in a compact one) with a concentric radius; the group grows
 to the trigger's width, so a single group is wider than it is tall and its
-focus ring follows the pill while focused and while its listbox is open.
+focus ring follows the pill while focused. While the listbox is open the
+trigger drops its ring, as a `PopupMenu` trigger does: the open popup and its
+current option show where focus is, and the ring returns when the listbox
+closes with focus still on the control.
 Beside other controls in one group, the icon-only trigger is one more segment:
 it keeps the group's gap and its siblings' block inset, height, item radius,
 and hover pill. In a group with per-control rings (`focusRing="control"`, the
@@ -88,8 +91,11 @@ typeahead navigation, Escape, and focus return to the trigger come from
 `wa-dropdown`. Kerf's part is the trigger's name. A Web Awesome button takes its
 name from its content and ignores an `aria-label` on the host, so an icon-only
 trigger requires `label`, which renders as visually hidden text inside the
-button; a trigger with visible `text` is named by that text. Group headings render as the dropdown's native menu labels, and
-dividers are presentational. A disabled item stays in the menu but cannot be
+button; a trigger with visible `text` is named by that text. Group headings
+render as the same uppercase group titles a grouped `Select` shows, and dividers
+are presentational. A keyboard-focused item is the menu's current row, painted
+with the Select's current-option fill rather than a second focus ring inside the
+open popup. A disabled item stays in the menu but cannot be
 chosen; disable the whole trigger only when every command is unavailable.
 
 ## ListActionRow

@@ -499,7 +499,9 @@
     padding-inline: var(--kui-wa-control-inset) !important;
   }
 
-  wa-dropdown-item {
+  /* A PopupMenu item owns the Select option geometry instead (popup-menu.css),
+     so a command menu and a value list draw identical rows. */
+  wa-dropdown-item:not([data-component="popup-menu"] > *) {
     padding-inline: var(--kui-wa-control-inset) !important;
   }
 

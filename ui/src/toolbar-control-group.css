@@ -317,7 +317,12 @@
   padding-inline: 0;
 }
 
-.kui-toolbar-control-group[data-menu-inset="standard"] wa-dropdown::part(menu) {
+/* `standard` keeps each menu's own standard inset: a raw wa-dropdown takes the
+   8px surface inset, while a PopupMenu keeps the Select listbox inset it
+   shares (popup-menu.css). The explicit compact and list-zero choices apply to
+   every nested menu. */
+.kui-toolbar-control-group[data-menu-inset="standard"]
+  wa-dropdown:not([data-component="popup-menu"])::part(menu) {
   padding: var(--kui-wa-surface-inset, remify(8px));
 }
 .kui-toolbar-control-group[data-menu-inset="compact"] wa-dropdown::part(menu) {
@@ -478,9 +483,10 @@
 
 /* With per-control rings, a composed Select paints its own ring even when it
    was told the group owns it: nothing else would show focus. It matches the
-   sibling controls' ring and offset. */
+   sibling controls' ring and offset. While its listbox is open the popup shows
+   focus instead, so the trigger ring stays off, as a PopupMenu trigger's does. */
 .kui-toolbar-control-group[data-focus-ring="control"]
-  > wa-select:focus-within::part(combobox) {
+  > wa-select:not([open]):focus-within::part(combobox) {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }

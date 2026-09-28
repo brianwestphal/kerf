@@ -102,7 +102,21 @@
 .kui-select::part(expand-icon) {
   transform: scale(var(--kui-disclosure-icon-scale, 0.5));
 }
+.kui-select::part(expand-icon) {
+  transition: var(--_kui-popup-caret-transition);
+}
+.kui-select[open]::part(expand-icon) {
+  rotate: var(--_kui-popup-caret-open-rotation);
+}
+/* The open listbox already shows where focus is (its current option), so the
+   trigger drops its focus ring while the popup is visible, as a PopupMenu
+   trigger does; the ring returns when the popup closes with focus still on
+   the control. */
+.kui-select[open]::part(combobox) {
+  outline-color: transparent;
+}
 .kui-select::part(listbox) {
+  padding: var(--_kui-popup-inset);
   width: max-content;
   min-width: 100%;
   max-width: min(remify(320px), calc(100vw - remify(20px)));
@@ -114,28 +128,29 @@
   align-items: center;
 }
 .kui-select wa-option {
-  --wa-form-control-activated-color: var(--kui-color-brand-fill-normal);
-  /* Current option text sits on the activated brand fill; use the darker on-fill
-     accent so it clears WCAG AA (brand-on-quiet is 4.26:1 over that fill). */
-  --current-text-color: var(--kui-color-brand-on-fill);
+  --wa-form-control-activated-color: var(--_kui-popup-row-current-background);
+  --current-text-color: var(--_kui-popup-row-current-color);
+  padding: var(--_kui-popup-row-padding-block)
+    var(--_kui-popup-row-padding-inline-end) var(--_kui-popup-row-padding-block)
+    var(--_kui-popup-row-padding-inline-start);
 }
 .kui-select wa-option::part(start) {
   align-self: center;
-  margin-inline-end: remify(8px);
+  margin-inline-end: var(--_kui-popup-row-icon-gap);
   margin-top: 0;
 }
 .kui-select wa-option::part(label) {
   min-width: 0;
-  padding-block: remify(5.6px);
-  line-height: 1.25;
+  padding-block: var(--_kui-popup-row-label-padding-block);
+  line-height: var(--_kui-popup-row-label-line-height);
   overflow-wrap: normal;
   word-break: normal;
   white-space: normal;
 }
 .kui-select__icon {
   display: inline-flex;
-  width: remify(16px);
-  height: remify(16px);
+  width: var(--_kui-popup-row-icon-size);
+  height: var(--_kui-popup-row-icon-size);
   flex: none;
 }
 .kui-select > .kui-select__icon[slot="start"] {
@@ -173,10 +188,10 @@
   border-block-start: 1px solid var(--kui-color-neutral-border-quiet);
 }
 .kui-select__group-title {
-  padding: remify(3.2px) remify(12px) remify(4.8px);
+  padding: var(--_kui-popup-group-title-padding);
   color: var(--kui-color-neutral-on-quiet);
   font-size: var(--kui-font-2xs);
-  font-weight: 750;
+  font-weight: var(--_kui-popup-group-title-font-weight);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }

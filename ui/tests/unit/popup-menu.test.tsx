@@ -92,14 +92,21 @@ describe('PopupMenu', () => {
     expect(trigger.hasAttribute('with-caret')).toBe(false);
     expect(trigger.hasAttribute('disabled')).toBe(true);
     expect([...menu.children].slice(1).map((child) => child.localName)).toEqual(
-      ['h3', 'wa-dropdown-item', 'wa-divider', 'wa-dropdown-item'],
+      ['div', 'wa-dropdown-item', 'wa-divider', 'wa-dropdown-item'],
     );
-    expect(menu.querySelector('h3')?.textContent).toBe('Structure');
+    // A styled group title (the Select's), not a slotted h1-h6 whose Web
+    // Awesome metrics are !important.
+    expect(menu.querySelector('.kui-popup-menu__heading')?.textContent).toBe(
+      'Structure',
+    );
+    expect(menu.querySelector('h1, h2, h3, h4, h5, h6')).toBe(null);
     const [copy, remove] = menu.querySelectorAll('wa-dropdown-item');
     expect(copy!.getAttribute('data-item-id')).toBe('copy');
-    expect(copy!.querySelector('[slot="icon"] [data-lucide="copy"]')).not.toBe(
-      null,
-    );
+    expect(
+      copy!.querySelector(
+        '[slot="icon"].kui-popup-menu__icon [data-lucide="copy"]',
+      ),
+    ).not.toBe(null);
     expect(remove!.hasAttribute('disabled')).toBe(true);
   });
 
