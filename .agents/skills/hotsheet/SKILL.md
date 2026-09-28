@@ -3,7 +3,7 @@ name: hotsheet
 description: Plan and work through the complete Hot Sheet Up Next queue using priority, overlap, dependencies, and safe parallelism. Works headless, with or without a server.
 ---
 
-<!-- hotsheet-skill-version: 49 -->
+<!-- hotsheet-skill-version: 51 -->
 
 Work the project's complete Hot Sheet Up Next queue. An invocation normally drains every
 actionable Up Next ticket; completing one ticket is not a stopping condition.
@@ -21,7 +21,7 @@ actionable Up Next ticket; completing one ticket is not a stopping condition.
    surfaces or depend on unresolved decisions. The primary agent owns integration,
    ticket status, verification, and publishing. A stopped, completed, interrupted, or
    otherwise idle delegated worker does not make its claimed ticket non-actionable: the
-   primary agent must inspect and resume that handoff until the ticket is published.
+   primary agent must inspect and resume that handoff until the ticket is completed and committed.
 3. **Work each ticket end to end under an exact claim lease.** Choose one stable,
    session-specific worker id. Immediately before active work, claim the assigned ticket
    with the atomic CLI form
@@ -29,8 +29,11 @@ actionable Up Next ticket; completing one ticket is not a stopping condition.
    which acquires the claim and changes Not Started to Started in one durable write.
    Do not issue separate claim and status commands. Renew
    before the lease expires and before lengthy work with `hotsheet_renew` or
-   `hotsheet-cli renew`; release with `hotsheet_release` or `hotsheet-cli release` when
-   work stops for completion, handoff, error, or feedback. If another worker holds the
+   `hotsheet-cli renew`. Release with `hotsheet_release` or `hotsheet-cli release` the
+   moment you stop working the ticket for any reason: completion, handoff, error, feedback,
+   switching to another ticket, deciding to defer it, or ending your turn. A claim left
+   behind falsely signals live work and blocks others until it expires; releasing never
+   changes status, so a part-done ticket stays `started` with a note on where you stopped. If another worker holds the
    live lease, do not work concurrently; replan around other tickets. Then implement and
    verify scope, run the completion checklist, and mark completed with a result and
    verification note. Delegated workers claim their own exact assigned ticket and use a
@@ -40,13 +43,17 @@ actionable Up Next ticket; completing one ticket is not a stopping condition.
    behavior, create its ticket. Do not ask permission, wait, promise to file it later, or
    leave it only in a comment/TODO/note. Reference every follow-up slug in the current
    ticket's completing note, then continue.
-5. **Publish immediately at ticket boundaries.** Run required gates, review the diff,
-   make one commit for that ticket, include its ticket slug in the commit message, push
-   it immediately, and confirm the remote accepted it before beginning, resuming, or
-   integrating any other ticket. Do not batch completed local commits for a later push.
-   Combine tickets only when their implementations overlap so strongly that separation
-   would be unsafe or misleading, or when they are duplicates; a combined commit message
-   must reference every ticket slug it addresses. Integrate parallel tickets separately.
+5. **Commit at ticket boundaries; push by this repository's rules.** Before closing a
+   ticket, run the required gates and review the diff. Give every ticket at least one
+   commit, ideally commits unique to that ticket, and include its ticket slug in each
+   commit message. Combine tickets in one commit only when their implementations overlap
+   so strongly that separation would be unsafe or misleading, or when they are
+   duplicates; a combined commit message must reference every ticket slug it addresses.
+   Integrate parallel tickets separately, and commit the finished ticket before
+   beginning, resuming, or integrating another. Pushing is up to this repository: follow
+   its own push, PR, and review conventions (for example per ticket, in coherent
+   batches, or through review) as its instructions state. This skill neither requires
+   nor forbids pushing on its own.
 6. **Re-read the queue after every completion.** Concurrent work and new findings can
    change the plan. Continue until no actionable Up Next ticket remains.
 
@@ -70,10 +77,6 @@ home directory, username, Desktop/Documents path, or absolute clone location whe
 repository-relative path, stable repository name/URL, or placeholder such as
 `<repo-root>/path` will work. Keep an exact local path only when the path itself is
 indispensable machine-local diagnostic evidence, and label it as local context.
-
-Keep local Playwright runs Chromium-first. Run Firefox and WebKit locally only for
-engine-specific diagnosis, browser-sensitive changes, or deliberate cross-browser
-validation; CI owns the routine full three-engine matrix.
 
 For user-visible UI work, liberally capture and attach a representative set of real-browser
 screenshots covering the changed components, screens, states, and meaningful wide/narrow
@@ -107,6 +110,10 @@ ticket blocker, leave the ticket started and add a `FEEDBACK NEEDED:` note namin
 specific decision or state required. FEEDBACK NEEDED is not deferred-work tracking:
 create follow-ups first for independently describable gaps, exhaust safe alternatives,
 and continue other independent Up Next work before stopping.
+
+Whenever you stop, for any of these reasons or any other, release every claim you hold
+first: run `hotsheet-cli ls --claimed` and release each ticket you are no longer actively
+working (use `--force` only for a delegated worker's claim you are taking back).
 
 Notes:
 - The CLI (`hotsheet-cli …`) and `hotsheet_*` MCP tools use the same engine and work

@@ -580,7 +580,7 @@ outstanding review and leave it open. Dependency presence alone is not visual
 validation.
 
 <!-- BEGIN hotsheet:claude -->
-<!-- hotsheet-instructions-version: 49 -->
+<!-- hotsheet-instructions-version: 50 -->
 
 ## Hot Sheet — ticket workflow
 
@@ -607,12 +607,22 @@ lookups, a single-line fix, or a git commit. When in doubt, create the ticket.
   --status started`, which only flips the status and does **not** claim or signal live work.
   (Self-serve the top of the queue with `hotsheet-cli claim-next --worker <your-id>`.)
 - `hotsheet-cli renew <slug> --worker <your-id>` during long work; `hotsheet-cli release <slug>
-  --worker <your-id>` when you stop for completion, handoff, or a blocker.
+  --worker <your-id>` whenever you stop working it (see below).
 - `hotsheet-cli edit <slug> --status completed --note "what you did"` when done.
 - Or the MCP tools: `hotsheet_claim_next` / `hotsheet_renew` / `hotsheet_release` for the lease,
   and `hotsheet_update` (it takes a `note`) / `hotsheet_close`.
 - Create work with `hotsheet-cli new --title "…" --category <bug|feature|task>` or
   `hotsheet_create`.
+
+**Release your claim the moment you stop working a ticket — every time, for any reason.** A
+live claim tells people and other agents that someone is actively on that ticket, and it blocks
+them until its lease expires. Release it (`hotsheet-cli release <slug> --worker <your-id>` or
+`hotsheet_release`) as soon as you stop: you completed it, hit a blocker or `FEEDBACK NEEDED`,
+are handing it off, are switching to a different ticket, decided to defer or not continue it,
+ran out of time or budget, or are about to end your turn or session. Releasing never changes
+the ticket's status; a ticket you set down part-way stays `started`, so add a note saying
+where you stopped. Before your final response, run `hotsheet-cli ls --claimed` and release
+every claim you hold but are no longer actively working.
 
 **Create every follow-up immediately, without asking.** As soon as you identify an
 unfinished step, open question, known gap, out-of-scope task, or designed-but-unbuilt
@@ -648,10 +658,6 @@ local path only as clearly labeled machine-local diagnostic evidence.
 
 ## Testing
 
-- **Keep local Playwright Chromium-first.** Run affected local browser tests in Chromium
-  by default. Add Firefox and WebKit only for engine-specific diagnosis, browser-sensitive
-  changes, or deliberate cross-browser validation. CI owns the routine full three-engine
-  matrix.
 - **Double coverage:** cover each feature with both unit tests (logic in isolation, external
   dependencies mocked) **and** end-to-end tests (real user flows through the running system,
   minimal mocking). Keep test fakes faithful to the real contract — same shapes, fields, and
