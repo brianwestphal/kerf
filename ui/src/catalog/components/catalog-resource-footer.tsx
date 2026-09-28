@@ -4,7 +4,7 @@ import { LucideIcon } from '../../lucide-icon.js';
 import { PopupMenu, type PopupMenuEntry } from '../../popup-menu.js';
 import { Row } from '../../row.js';
 import type { KerfUiContent } from '../../semantic-content.js';
-import { Toolbar } from '../../toolbar.js';
+import { Toolbar, type ToolbarConfig } from '../../toolbar.js';
 import {
   ToolbarActionLink,
   ToolbarControlGroup,
@@ -17,6 +17,7 @@ interface CatalogResourceFooterProps {
   related: readonly CatalogRelated[];
   status?: KerfUiContent;
   selectAction: string;
+  toolbar?: ToolbarConfig;
 }
 
 function relatedMenuItems(
@@ -49,6 +50,7 @@ export function CatalogResourceFooter({
   related,
   status,
   selectAction,
+  toolbar,
 }: CatalogResourceFooterProps) {
   return (
     <>
@@ -65,9 +67,11 @@ export function CatalogResourceFooter({
       ) : null}
       <Toolbar
         label={`${name} resources`}
-        dividerSides=""
-        responsive="stack"
-        responsiveAt="narrow"
+        dividerSides={toolbar?.dividerSides ?? ''}
+        centerAlign={toolbar?.centerAlign}
+        responsive={toolbar?.responsive ?? 'stack'}
+        responsiveAt={toolbar?.responsiveAt ?? 'narrow'}
+        safeAreaEdges={toolbar?.safeAreaEdges}
         leading={
           resources.length > 0 ? (
             <ToolbarControlGroup

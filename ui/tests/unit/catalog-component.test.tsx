@@ -633,6 +633,130 @@ describe('wireCatalog', () => {
     ).not.toBeNull();
   });
 
+  it('forwards sidebar and toolbar configuration to its Workbench', () => {
+    const host = document.createElement('div');
+    const render = (props: Partial<Parameters<typeof Catalog>[0]>) => {
+      host.innerHTML = String(
+        Catalog({
+          brand: { title: 'X' },
+          sections,
+          active: 'select',
+          content: raw('<b/>'),
+          ...props,
+        }),
+      );
+      return {
+        rail: host.querySelector<HTMLElement>('#kui-catalog-left-rail')!,
+        toolbar: (label: string) =>
+          host.querySelector<HTMLElement>(
+            `[data-component="toolbar"][aria-label="${label}"]`,
+          )!,
+      };
+    };
+
+    // Defaults: a fixed 288px rail with no separator handle, a wrapping entry
+    // toolbar, and a divider-free footer toolbar that stacks when narrow.
+    const defaults = render({});
+    expect(defaults.rail.getAttribute('style')).toContain('288px');
+    expect(defaults.rail.querySelector('[role="separator"]')).toBeNull();
+    expect(defaults.rail.dataset.responsiveOverlayAt).toBe('narrow');
+    expect(defaults.rail.dataset.compactOverlay).toBe('inset');
+    expect(
+      defaults.toolbar('X catalog header').getAttribute('divider-sides'),
+    ).toBe('b');
+    expect(defaults.toolbar('Select header').dataset.responsive).toBe('wrap');
+    const footer = defaults.toolbar('Select resources');
+    expect(footer.hasAttribute('divider-sides')).toBe(false);
+    expect(footer.dataset.responsive).toBe('stack');
+    expect(footer.dataset.responsiveAt).toBe('narrow');
+
+    const configured = render({
+      sidebar: {
+        size: 320,
+        resizable: { min: 200, max: 400 },
+        responsiveOverlayAt: 'compact',
+        compactOverlay: 'full',
+        collapseMotion: 'none',
+        toolbar: { dividerSides: '' },
+      },
+      mainToolbar: { responsive: 'stack', dividerSides: 't' },
+      footerToolbar: {
+        dividerSides: 't',
+        responsive: 'none',
+        responsiveAt: 'compact',
+        centerAlign: 'stretch',
+        safeAreaEdges: ['block-end'],
+      },
+    });
+    expect(configured.rail.getAttribute('style')).toContain('320px');
+    const handle = configured.rail.querySelector('[role="separator"]')!;
+    expect(handle.getAttribute('aria-valuemin')).toBe('200');
+    expect(handle.getAttribute('aria-valuemax')).toBe('400');
+    expect(handle.getAttribute('aria-valuenow')).toBe('320');
+    expect(configured.rail.dataset.responsiveOverlayAt).toBe('compact');
+    expect(configured.rail.dataset.compactOverlay).toBe('full');
+    expect(configured.rail.dataset.collapseMotion).toBe('none');
+    // The Catalog keeps its own labels whatever the configuration says.
+    const sidebarToolbar = configured.toolbar('X catalog header');
+    expect(sidebarToolbar.hasAttribute('divider-sides')).toBe(false);
+    const main = configured.toolbar('Select header');
+    expect(main.dataset.responsive).toBe('stack');
+    expect(main.getAttribute('divider-sides')).toBe('t');
+    const configuredFooter = configured.toolbar('Select resources');
+    expect(configuredFooter.getAttribute('divider-sides')).toBe('t');
+    expect(configuredFooter.dataset.responsive).toBe('none');
+    expect(configuredFooter.dataset.responsiveAt).toBe('compact');
+    expect(configuredFooter.dataset.centerAlign).toBe('stretch');
+    expect(configuredFooter.dataset.safeAreaBlockEnd).toBe('true');
+
+    // An explicitly undefined policy keeps the Catalog's default.
+    const undefinedPolicy = render({
+      mainToolbar: { responsive: undefined },
+      footerToolbar: { responsive: undefined },
+    });
+    expect(undefinedPolicy.toolbar('Select header').dataset.responsive).toBe(
+      'wrap',
+    );
+    expect(undefinedPolicy.toolbar('Select resources').dataset.responsive).toBe(
+      'stack',
+    );
+  });
+
+  it('writes sidebar resizes to the app-owned size signal', () => {
+    const size = signal(300);
+    const storage = new Map<string, string>();
+    const root = mountShell(
+      String(
+        Catalog({
+          brand: { title: 'X' },
+          sections,
+          active: 'button',
+          content: raw('<b/>'),
+          sidebar: { resizable: true, size: size.value },
+        }),
+      ),
+    );
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => storage.get(key) ?? null,
+      setItem: (key: string, value: string) => storage.set(key, value),
+      removeItem: (key: string) => storage.delete(key),
+    });
+    const dispose = wireCatalog(root, {
+      onSelect: () => {},
+      sidebarSize: size,
+      sidebarStorageKey: 'catalog-sidebar',
+    });
+    const handle = root.querySelector<HTMLElement>(
+      '#kui-catalog-left-rail [role="separator"]',
+    )!;
+    handle.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }),
+    );
+    expect(size.value).toBe(316);
+    expect(storage.get('catalog-sidebar')).toBe('316');
+    dispose();
+  });
+
   it('reveals an exact sidebar id after render without moving focus', () => {
     vi.spyOn(window, 'matchMedia').mockReturnValue({
       matches: true,

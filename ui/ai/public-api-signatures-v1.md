@@ -1982,9 +1982,20 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { a as CatalogProps } from './types-D6vzj-VT.js';
-export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection, g as CatalogStageRootAttributes } from './types-D6vzj-VT.js';
+import { a as CatalogProps } from './types-BSVhV_j3.js';
+export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection, g as CatalogStageRootAttributes } from './types-BSVhV_j3.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import './toolbar.js';
+import './pane.js';
+import './sides-BPSWde0A.js';
+import './workbench.js';
+import './list.js';
+import './css-values.js';
+import './flex-alignment-4ms8ZbV8.js';
+import './resizable-region.js';
+import './panel-toolbar-C8sF-YZC.js';
+import './lucide-icon.js';
+import 'lucide';
 
 /**
  * Controlled, stateless component-catalog shell: a `Workbench` whose left rail
@@ -1993,7 +2004,7 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
  * standard toggle moves into the entry toolbar while it is collapsed, and on
  * a small screen the sidebar overlays the stage like any Workbench rail.
  */
-declare function Catalog({ id, brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, headerPlacement, footerPlacement, className, slot, }: CatalogProps): kerfjs.SafeHtml;
+declare function Catalog({ id, brand, sections, active, content, collapsed, theme, headerActions, secondarySections, sidebarFooter, status, geometryOverlay, stageRootAttributes, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, headerPlacement, footerPlacement, sidebar, mainToolbar, footerToolbar, className, slot, }: CatalogProps): kerfjs.SafeHtml;
 
 /** How a specimen aligns its visible edge with its `ListHeader` label. */
 type CatalogExampleAlign = 'glyph' | 'inline-control' | 'none';
@@ -2064,9 +2075,20 @@ export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleP
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-D6vzj-VT.js';
+import { C as CatalogResource } from './types-BSVhV_j3.js';
 import './semantic-content-BbzjvSu9.js';
 import 'kerfjs';
+import './toolbar.js';
+import './pane.js';
+import './sides-BPSWde0A.js';
+import './workbench.js';
+import './list.js';
+import './css-values.js';
+import './flex-alignment-4ms8ZbV8.js';
+import './resizable-region.js';
+import './panel-toolbar-C8sF-YZC.js';
+import './lucide-icon.js';
+import 'lucide';
 
 /**
  * Standard resource labels for a Kerf catalog detail footer. Keep these labels
@@ -2134,6 +2156,17 @@ interface WireCatalogOptions {
      * open overlay closes it.
      */
     collapsed?: Signal<boolean>;
+    /**
+     * The app-owned sidebar width signal for a Catalog rendered with
+     * `sidebar={{ resizable: true, size: sidebarSize.value }}`. Each committed
+     * drag or keyboard resize is written to it.
+     */
+    sidebarSize?: Signal<number>;
+    /**
+     * With `sidebarSize`, load and save the width under this storage key so the
+     * catalog remembers the user's sidebar width.
+     */
+    sidebarStorageKey?: string;
     /** The Catalog's `id`, when it is not the default `kui-catalog`. */
     id?: string;
 }
@@ -2170,7 +2203,7 @@ declare function wireCatalogGeometryOverlay(root: HTMLElement): () => void;
  * them in the callbacks; optionally mirror the active id into the URL via `urlParam`.
  * Returns a disposer.
  */
-declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleSecondary, urlParam, revealSelection, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, collapsed, id: catalogId, }: WireCatalogOptions): () => void;
+declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleSecondary, urlParam, revealSelection, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, collapsed, sidebarSize, sidebarStorageKey, id: catalogId, }: WireCatalogOptions): () => void;
 
 export { type CatalogRevealOptions, type WireCatalogOptions, revealCatalogEntry, wireCatalog, wireCatalogGeometryOverlay };
 ```

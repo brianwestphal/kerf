@@ -30,6 +30,17 @@ export interface WireCatalogOptions {
    * open overlay closes it.
    */
   collapsed?: Signal<boolean>;
+  /**
+   * The app-owned sidebar width signal for a Catalog rendered with
+   * `sidebar={{ resizable: true, size: sidebarSize.value }}`. Each committed
+   * drag or keyboard resize is written to it.
+   */
+  sidebarSize?: Signal<number>;
+  /**
+   * With `sidebarSize`, load and save the width under this storage key so the
+   * catalog remembers the user's sidebar width.
+   */
+  sidebarStorageKey?: string;
   /** The Catalog's `id`, when it is not the default `kui-catalog`. */
   id?: string;
 }
@@ -333,6 +344,8 @@ export function wireCatalog(
     toggleThemeAction = 'catalog-toggle-theme',
     toggleSecondaryAction = 'catalog-toggle-secondary',
     collapsed,
+    sidebarSize,
+    sidebarStorageKey,
     id: catalogId = 'kui-catalog',
   }: WireCatalogOptions,
 ): () => void {
@@ -399,11 +412,17 @@ export function wireCatalog(
       ),
     );
   }
-  if (collapsed)
+  if (collapsed || sidebarSize)
     disposers.push(
       wireWorkbench(root, {
         id: catalogId,
-        panels: { leftRail: { collapsed } },
+        panels: {
+          leftRail: {
+            collapsed,
+            size: sidebarSize,
+            storageKey: sidebarStorageKey,
+          },
+        },
       }),
     );
   return () => {

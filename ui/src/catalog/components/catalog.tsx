@@ -49,6 +49,9 @@ export function Catalog({
   toggleSecondaryAction = 'catalog-toggle-secondary',
   headerPlacement = 'fixed',
   footerPlacement = 'fixed',
+  sidebar = {},
+  mainToolbar,
+  footerToolbar,
   className = '',
   slot,
 }: CatalogProps) {
@@ -76,9 +79,16 @@ export function Catalog({
         label={catalogName}
         leftRail={{
           label: catalogName,
-          size: 288,
+          size: sidebar.size ?? 288,
+          resizable: sidebar.resizable,
+          separator: sidebar.separator,
+          collapseMotion: sidebar.collapseMotion,
+          presentation: sidebar.presentation,
+          responsiveOverlayAt: sidebar.responsiveOverlayAt,
+          compactOverlay: sidebar.compactOverlay,
           collapsed,
           toolbar: {
+            ...sidebar.toolbar,
             label: `${catalogName} header`,
             title: (
               <>
@@ -105,9 +115,10 @@ export function Catalog({
           ),
         }}
         mainToolbar={{
+          ...mainToolbar,
           label: `${name} header`,
           // The entry title stays whole; actions wrap below it when narrow.
-          responsive: 'wrap',
+          responsive: mainToolbar?.responsive ?? 'wrap',
           title: <ToolbarText text={name} size="xlarge" headingLevel={2} />,
           trailing: (
             <>
@@ -144,6 +155,7 @@ export function Catalog({
             related={selected?.related ?? []}
             status={status}
             selectAction={selectAction}
+            toolbar={footerToolbar}
           />
         }
         mainHeader={
@@ -159,8 +171,6 @@ export function Catalog({
         mainHeaderPlacement={headerPlacement}
         mainFooterPlacement={footerPlacement}
         main={
-          // The description is supporting copy, so it scrolls with the
-          // preview rather than pinning under the toolbar.
           <List flex>
             <CatalogStage
               name={name}

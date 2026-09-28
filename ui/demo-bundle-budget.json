@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 295600,
-  "measuredLargestJavaScriptGzip": 147155,
-  "measuredTotalJavaScriptGzip": 295538,
+  "totalJavaScriptGzip": 295700,
+  "measuredLargestJavaScriptGzip": 147254,
+  "measuredTotalJavaScriptGzip": 295619,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -931,6 +931,22 @@
         "measuredTotalJavaScriptGzip": 295538,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 295600
+      }
+    },
+    {
+      "at": "2026-09-28T10:21:56.155Z",
+      "reason": "Catalog forwards its sidebar (size, resizing, overlay) and toolbar configuration; wireCatalog wires a resizable sidebar",
+      "old": {
+        "measuredLargestJavaScriptGzip": 147155,
+        "measuredTotalJavaScriptGzip": 295538,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 295600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 147254,
+        "measuredTotalJavaScriptGzip": 295619,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 295700
       }
     }
   ]

@@ -399,6 +399,18 @@ revealCatalogEntry(app, initial, { block: "center" });
 - **`headerPlacement` / `footerPlacement`** choose whether the entry toolbar and the
   status + resource footer stay pinned (`fixed`, default) or scroll with the preview
   (`scroll`) — useful where large text would leave pinned chrome little room.
+- **`sidebar`** configures the sidebar rail — it forwards to the Workbench's left
+  rail: `size` (default 288px), `resizable` (`true` or `{ min, max }`),
+  `separator`, `collapseMotion`, `presentation`, `responsiveOverlayAt` (default
+  `narrow`), `compactOverlay` (default `inset`), and `toolbar` (the sidebar
+  header's `ToolbarConfig`). A resizable sidebar's width is app state like
+  `collapsed`: render your size signal as `sidebar.size` and pass the same signal
+  as `wireCatalog`'s `sidebarSize` (plus `sidebarStorageKey` to remember it).
+- **`mainToolbar` / `footerToolbar`** take the entry toolbar's and the resource
+  footer toolbar's `ToolbarConfig` (`dividerSides`, `centerAlign`, `responsive`,
+  `responsiveAt`, `safeAreaEdges`). The defaults are a wrapping entry toolbar
+  and a divider-free footer toolbar that stacks at `narrow`; an omitted or
+  `undefined` field keeps them. Configure these instead of styling the shell.
 - **`theme`** is a global preference — the app's signal; `wireCatalog` only reports
   the toggle, the app applies the theme (the shell reads `theme` to show the toggle's
   opposite-state label). Omit `theme` to hide the toggle entirely.

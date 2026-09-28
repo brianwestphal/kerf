@@ -1,4 +1,6 @@
 import type { KerfUiContent } from '../semantic-content.js';
+import type { ToolbarConfig } from '../toolbar.js';
+import type { WorkbenchPanel } from '../workbench.js';
 
 /** A reference link shown in the detail footer for the active entry. */
 export interface CatalogResource {
@@ -52,6 +54,29 @@ export type CatalogStageRootAttributes = Readonly<
   }
 >;
 
+/**
+ * The Catalog sidebar's configuration, forwarded to its Workbench left rail.
+ * Everything is optional; omitted fields keep the Catalog's defaults.
+ */
+export interface CatalogSidebarConfig extends Pick<
+  WorkbenchPanel,
+  | 'resizable'
+  | 'separator'
+  | 'collapseMotion'
+  | 'presentation'
+  | 'responsiveOverlayAt'
+  | 'compactOverlay'
+> {
+  /**
+   * Sidebar width in px (default 288). With `resizable`, it is the current
+   * width: render the app's size signal here and hand the same signal to
+   * `wireCatalog`'s `sidebarSize`, which writes each committed resize to it.
+   */
+  size?: number;
+  /** The sidebar header toolbar's configuration (default: a bottom divider). */
+  toolbar?: ToolbarConfig;
+}
+
 export interface CatalogProps {
   /**
    * The catalog's `id` (default `kui-catalog`). Its Workbench derives the
@@ -85,6 +110,22 @@ export interface CatalogProps {
    * (`fixed`, default) or scrolls with it (`scroll`).
    */
   footerPlacement?: 'fixed' | 'scroll';
+  /**
+   * The sidebar's size, resizing, and overlay configuration, forwarded to the
+   * Workbench left rail (default: 288px, not resizable, an overlay below the
+   * Workbench's `narrow` breakpoint, `inset` in a compact Workbench).
+   */
+  sidebar?: CatalogSidebarConfig;
+  /**
+   * The entry toolbar's configuration (default `responsive: 'wrap'`: the entry
+   * title stays whole and the actions wrap below it when narrow).
+   */
+  mainToolbar?: ToolbarConfig;
+  /**
+   * The resource footer toolbar's configuration (default no divider,
+   * `responsive: 'stack'` at `responsiveAt: 'narrow'`).
+   */
+  footerToolbar?: ToolbarConfig;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;

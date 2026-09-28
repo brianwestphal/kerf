@@ -140,6 +140,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   An open `Select` also no longer paints its trigger focus ring. The open
   listbox shows focus, and the ring returns when it closes.
 
+- **`@kerfjs/ui` `Catalog` exposes its sidebar and toolbar configuration.** New
+  `sidebar` prop (size, `resizable`, `separator`, `collapseMotion`,
+  `presentation`, `responsiveOverlayAt`, `compactOverlay`, and the header
+  `toolbar`'s `ToolbarConfig`) forwarded to its Workbench rail, plus
+  `mainToolbar` / `footerToolbar` `ToolbarConfig` props. `wireCatalog` takes
+  `sidebarSize` / `sidebarStorageKey` to wire a resizable sidebar. Today's
+  288px fixed sidebar and toolbar policies remain the defaults.
+
 - **`@kerfjs/ui` composed toolbars are configurable.** `WorkbenchMainToolbar`,
   `WorkbenchMainBottomToolbar`, and the panel `toolbar` of a Workbench panel or
   `CollapsiblePanel` now take the `Toolbar`'s configuration: the new
