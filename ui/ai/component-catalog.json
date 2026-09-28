@@ -3344,6 +3344,7 @@
         "tokens",
         "query execution",
         "results",
+        "the revision that rebuilds the DOM-owned editor for a programmatic text replacement",
         "optional override of the collapsible expand/collapse/focus, which wireTokenSearchFields manages by default (adopt an app expanded signal, opt out per behavior, or drive it via the returned handle)"
       ],
       "variants": [

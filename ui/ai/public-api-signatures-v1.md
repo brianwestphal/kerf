@@ -2218,6 +2218,15 @@ interface TokenSearchFieldBaseProps {
     label: string;
     query?: string;
     tokens?: readonly TokenSearchToken[];
+    /**
+     * Editor identity for a programmatic text replacement. The editor's text is
+     * DOM-owned between token changes, so a new `query` with the same tokens
+     * does not re-render it (that would reset the caret on every keystroke).
+     * Change `revision` when the app replaces the text itself — reseeding a
+     * persistent dialog's field on reopen, applying a saved search — and the
+     * editor is rebuilt from `query` and `tokens`.
+     */
+    revision?: string | number;
     placeholder?: string;
     tokenPlaceholder?: string;
     disabled?: boolean;
@@ -2253,7 +2262,7 @@ interface TokenSearchFieldValue {
     query: string;
     tokens: TokenSearchToken[];
 }
-declare function TokenSearchField({ id, label, query, tokens, placeholder, tokenPlaceholder, disabled, autofocus, collapsible, expanded, expandAction, expandLabel, leading, trailing, presentation, editAction, removeAction, clearAction, clearLabel, className, editorAttributes, slot, }: TokenSearchFieldProps): kerfjs.SafeHtml;
+declare function TokenSearchField({ id, label, query, tokens, revision, placeholder, tokenPlaceholder, disabled, autofocus, collapsible, expanded, expandAction, expandLabel, leading, trailing, presentation, editAction, removeAction, clearAction, clearLabel, className, editorAttributes, slot, }: TokenSearchFieldProps): kerfjs.SafeHtml;
 /** Read editable text and ordered token offsets from a rendered TokenSearchField editor. */
 declare function readTokenSearchField(editor: HTMLElement, knownTokens?: readonly TokenSearchToken[]): TokenSearchFieldValue;
 /** Focus an editor and place its caret at a text offset, skipping atomic token chips. */

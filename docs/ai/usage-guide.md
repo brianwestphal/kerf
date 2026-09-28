@@ -153,7 +153,10 @@ Use `wireTokenSearchFields` for managed search focus, including controlled clear
 and Select All deletion. Persist both query and tokens from `readTokenSearchField`
 on input. The helper keeps the replacement editor open and restores clear/deletion
 focus before the next keystroke; do not add an application reopen callback or
-a delayed animation-frame caret reset.
+a delayed animation-frame caret reset. The editor's text is DOM-owned, so a new
+`query` with unchanged tokens does not replace it: change the field's
+`revision` when the app sets the text itself (reseeding a dialog on reopen,
+applying a saved search).
 
 Compose a panel, dialog, or page heading with a plain `Toolbar`: the leading zone
 holds an optional icon `ToolbarControlGroup` and a direct extra-large

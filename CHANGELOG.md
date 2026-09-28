@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui`'s `TokenSearchField` takes a `revision` prop for programmatic
+  text replacement.** The editor's text is DOM-owned, so a new `query` with the
+  same tokens was silently ignored, for example when reseeding a persistent
+  dialog's field on reopen. Changing `revision` rebuilds the editor from `query`
+  and `tokens`, so consumers no longer need to re-key a wrapper element.
+
 - **`@kerfjs/ui`'s `TabBar` strip no longer scrolls vertically.** The strip set
   only `overflow-x: auto`, so any vertical excess (consumer padding, focus-ring
   insets, taller tabs under larger text) let it scroll up and down on touch. It

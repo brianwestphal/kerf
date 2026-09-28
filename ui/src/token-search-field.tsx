@@ -26,6 +26,15 @@ interface TokenSearchFieldBaseProps {
   label: string;
   query?: string;
   tokens?: readonly TokenSearchToken[];
+  /**
+   * Editor identity for a programmatic text replacement. The editor's text is
+   * DOM-owned between token changes, so a new `query` with the same tokens
+   * does not re-render it (that would reset the caret on every keystroke).
+   * Change `revision` when the app replaces the text itself — reseeding a
+   * persistent dialog's field on reopen, applying a saved search — and the
+   * editor is rebuilt from `query` and `tokens`.
+   */
+  revision?: string | number;
   placeholder?: string;
   tokenPlaceholder?: string;
   disabled?: boolean;
@@ -104,6 +113,7 @@ export function TokenSearchField({
   label,
   query = '',
   tokens = [],
+  revision,
   placeholder = 'Search',
   tokenPlaceholder = 'Add search…',
   disabled = false,
@@ -124,7 +134,11 @@ export function TokenSearchField({
   slot,
 }: TokenSearchFieldProps) {
   const parts = orderedParts(query, tokens);
-  const key = `${id}:${tokens.map((token) => token.value).join('|')}`;
+  const tokenKey = tokens.map((token) => token.value).join('|');
+  const key =
+    revision === undefined
+      ? `${id}:${tokenKey}`
+      : `${id}@${String(revision)}:${tokenKey}`;
   const resolvedExpanded =
     !collapsible || expanded || query.length > 0 || tokens.length > 0;
   return (

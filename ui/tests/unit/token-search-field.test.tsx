@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
+import { mount, signal } from 'kerfjs';
 import { CircleHelp } from 'lucide';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -258,6 +259,41 @@ describe('TokenSearchField', () => {
     )!.dataset.tokenValue;
     editor.prepend(document.createComment('ignored'));
     expect(readTokenSearchField(editor).tokens).toEqual([]);
+  });
+
+  it('keeps DOM-owned text across query renders and rebuilds the editor on a new revision', () => {
+    const tokens = [{ value: 'tag:docs', label: 'tag:docs', offset: 0 }];
+    const query = signal('');
+    const revision = signal<number | undefined>(undefined);
+    const root = document.createElement('div');
+    document.body.append(root);
+    const stop = mount(root, () =>
+      TokenSearchField({
+        id: 'reseed',
+        label: 'Search',
+        query: query.value,
+        tokens,
+        revision: revision.value,
+      }),
+    );
+    const editor = () =>
+      root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const first = editor();
+    expect(first.dataset.key).toBe('reseed:tag:docs');
+    // A query render with unchanged tokens leaves the typed-into editor alone.
+    query.value = 'typed';
+    expect(editor()).toBe(first);
+    expect(readTokenSearchField(editor()).query).not.toContain('typed');
+    // A new revision replaces the text programmatically.
+    query.value = '() AND (saved)';
+    revision.value = 1;
+    expect(editor()).not.toBe(first);
+    expect(editor().dataset.key).toBe('reseed@1:tag:docs');
+    expect(readTokenSearchField(editor())).toMatchObject({
+      query: '() AND (saved)',
+      tokens: [{ value: 'tag:docs', offset: 0 }],
+    });
+    stop();
   });
 
   it('places the caret at a text offset or at the end while skipping chip text', () => {
