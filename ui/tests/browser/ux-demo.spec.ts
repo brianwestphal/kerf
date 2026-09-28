@@ -4546,8 +4546,16 @@ test('renders self-styled Badge variants without app CSS', async ({
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=badge');
   const demo = page.locator('[data-demo="badge"]');
-  const badges = demo.locator('[data-component="badge"]');
-
+  const allBadges = demo.locator('[data-component="badge"]');
+  // Four text badges plus the text-free dot, whose 8px geometry is covered by
+  // tab-scaffold-badge.spec.ts; the text-badge checks below skip it.
+  await expect(allBadges).toHaveCount(5);
+  await expect(
+    demo.locator('[data-component="badge"][data-size="dot"]'),
+  ).toHaveAttribute('aria-label', 'New activity');
+  const badges = demo.locator(
+    '[data-component="badge"]:not([data-size="dot"])',
+  );
   await expect(badges).toHaveCount(4);
   await expect(badges.nth(0)).toHaveAttribute('data-tone', 'success');
   await expect(badges.nth(1)).toHaveAttribute('aria-label', '12 unread items');
