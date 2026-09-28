@@ -307,13 +307,15 @@ test('NavStack chrome, views, and bottom toolbar split the edges without double 
     left: 0,
     right: 1180,
   });
+  // The standard Toolbar padding: 8px around its 44px control band, plus the
+  // top inset it clears.
   expect(await padding(page, chromeToolbar)).toEqual([
-    INSETS.top,
+    8 + INSETS.top,
     8 + INSETS.right,
-    0,
+    8,
     8 + INSETS.left,
   ]);
-  expect((await box(page, chrome)).height).toBe(44 + INSETS.top);
+  expect((await box(page, chrome)).height).toBe(60 + INSETS.top);
   expect(await padding(page, '.kui-nav-stack__view')).toEqual([
     0,
     INSETS.right,

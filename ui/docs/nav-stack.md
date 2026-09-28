@@ -87,7 +87,7 @@ Configure the toolbar with `toolbarConfig` instead of styling it:
   `label` (the toolbar's accessible name), `titleSize` (the title's
   `ToolbarText` size, default `large`), and `headingLevel` (expose the title as
   a heading; default a plain span). The defaults keep the stack's own chrome:
-  no divider, one 44px control band, and the top and side safe-area edges
+  no divider, the standard Toolbar height (a 44px control band with 8px above and below), and the top and side safe-area edges
   claimed.
 - `backIcon` replaces the default chevron-left icon. `backText` adds visible
   text beside it (for example, the previous view's title); visible text names

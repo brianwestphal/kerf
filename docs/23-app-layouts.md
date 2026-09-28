@@ -149,7 +149,7 @@ slides** (the pattern already used on several `~/Documents/hotsheet2` dialogs).
   (`dividerSides`, `centerAlign`, `responsive`, `responsiveAt`,
   `safeAreaEdges`) plus `label`, `titleSize`, and `headingLevel`; `backIcon`
   and visible `backText` configure the back control. Defaults keep the original
-  bar: no divider, one 44px band, top and side safe-area edges claimed, a
+  bar: no divider, the standard Toolbar height (a 44px band with 8px padding), top and side safe-area edges claimed, a
   `large` title, and an icon-only chevron labeled `backLabel` (KF-435SC2:
   NavStack rebuilt on the real Toolbar with forwardable configuration).
 - A **single-pane layout is a `NavStack` with one entry** — no separate

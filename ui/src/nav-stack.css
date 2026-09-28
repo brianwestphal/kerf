@@ -69,18 +69,6 @@
   background: var(--kui-color-surface);
 }
 
-/* A navigation bar is one control band tall: the toolbar keeps its inline
-   padding and any claimed block inset, but drops the block gap so the bar is
-   the band height (44px) plus the unsafe inset it clears. */
-.kui-nav-stack__chrome > .kui-nav-stack__toolbar {
-  min-height: calc(
-    var(--_kui-toolbar-band) + var(--_kui-toolbar-safe-block-start) +
-      var(--_kui-toolbar-safe-block-end)
-  );
-  padding-block: var(--_kui-toolbar-safe-block-start)
-    var(--_kui-toolbar-safe-block-end);
-}
-
 /* The title fills the leading zone beside the back control and truncates. */
 .kui-nav-stack__title {
   flex: 1 1 auto;

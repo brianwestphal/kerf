@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` `NavStack` bars use the standard `Toolbar` padding.** The
+  navigation bar dropped its toolbar's block padding to stay 44px tall, so its
+  title and controls touched the bar's edges. It now keeps the 8px above and
+  below that every other toolbar has (60px plus any top safe-area inset).
+
 - **`@kerfjs/ui` multiline list rows break long camelCase names at word
   boundaries.** A string label in a `multiline` `ListItem` or `ListActionRow`
   (such as a Catalog sidebar entry) gets `<wbr>` break opportunities at its

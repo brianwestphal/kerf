@@ -99,7 +99,8 @@ describe('NavStack markup', () => {
     const toolbar = chrome.querySelector<HTMLElement>(
       ':scope > [data-component="toolbar"]',
     )!;
-    expect(toolbar.classList.contains('kui-nav-stack__toolbar')).toBe(true);
+    // A plain Toolbar: NavStack configures it rather than restyling it.
+    expect(toolbar.className).toBe('kui-toolbar');
     expect(toolbar.hasAttribute('divider-sides')).toBe(false);
     expect(toolbar.hasAttribute('aria-label')).toBe(false);
     expect(toolbar.dataset.centerAlign).toBe('center');

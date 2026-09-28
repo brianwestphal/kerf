@@ -114,7 +114,6 @@ export function NavStack({
       {!hideToolbar && (
         <div class="kui-nav-stack__chrome" data-nav-stack-chrome>
           <Toolbar
-            className="kui-nav-stack__toolbar"
             label={toolbarConfig.label}
             dividerSides={toolbarConfig.dividerSides ?? ''}
             centerAlign={toolbarConfig.centerAlign}

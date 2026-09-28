@@ -110,7 +110,8 @@ test('forwards the compact NavStack toolbar configuration and per-view toolbars'
   await expect(stack.getByRole('button', { name: 'Archive' })).toBeVisible();
   await expect(stack.getByRole('button', { name: 'Compose' })).toHaveCount(0);
   const bar = (await toolbar.boundingBox())!;
-  expect(bar.height).toBe(44);
+  // The standard Toolbar height: a 44px control band with 8px above and below.
+  expect(bar.height).toBe(60);
   if (browserName === 'chromium')
     await page.screenshot({
       path: 'test-results/split-view-config-compact-detail-phone.png',
