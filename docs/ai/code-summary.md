@@ -234,6 +234,7 @@ kerf/
 │   │   ├── list-virtualization-options.test.ts ← minRows, content-visibility, container, resize, and disposal options
 │   │   ├── mount-rendering.test.ts ← mount rendering, signal tracking, stateful attributes, and raw content
 │   │   ├── custom-element-owned-aria.test.ts ← custom elements keep self-set `role` / `aria-*` across morph + keyed-list fast path; template set/change still applies; bindings can still remove; plain elements unchanged; adversarial ownership transition walk
+│   │   ├── custom-element-owned-aria.internal.test.ts ← helper-level `isUserAgentOwnedAttr()` cases (private helper, so excluded from the dist-full run)
 │   │   ├── mount-focus-preservation.test.ts ← focused controls, selection ranges, contenteditable, and equal-node paths
 │   │   ├── mount-lifecycle-and-skip.test.ts ← mount preconditions, disposal, and morph-skip lifecycle behavior
 │   │   ├── mount-initial-render-rollback.test.tsx ← a throwing first render rolls mount() back: original error rethrown, wired global/row bindings + dev listener observer released, pre-mount children restored, same-element retry and unrelated mounts work

@@ -4,7 +4,8 @@
  * template omits them, while setting / changing them from the template still
  * applies and a signal binding (explicit intent) can still remove them. Plain
  * elements keep the ordinary rule. The rule lives in
- * `src/utils/isUserAgentOwnedAttr.ts`.
+ * `src/utils/isUserAgentOwnedAttr.ts` (helper-level cases in
+ * `custom-element-owned-aria.internal.test.ts`).
  */
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
@@ -16,7 +17,6 @@ import { jsx } from '../../src/jsx-runtime.js';
 import { morph } from '../../src/morph.js';
 import { mount } from '../../src/mount.js';
 import { signal } from '../../src/reactive.js';
-import { isUserAgentOwnedAttr } from '../../src/utils/isUserAgentOwnedAttr.js';
 
 let root: HTMLElement;
 
@@ -37,23 +37,6 @@ function selfSetSemantics(el: Element): void {
   el.setAttribute('tabindex', '-1');
   el.setAttribute('data-state', 'x');
 }
-
-describe('isUserAgentOwnedAttr()', () => {
-  it('owns open, role, and aria-* on hyphenated tags only', () => {
-    expect(isUserAgentOwnedAttr('WA-OPTION', 'role')).toBe(true);
-    expect(isUserAgentOwnedAttr('WA-OPTION', 'aria-selected')).toBe(true);
-    expect(isUserAgentOwnedAttr('WA-OPTION', 'open')).toBe(true);
-    expect(isUserAgentOwnedAttr('WA-OPTION', 'tabindex')).toBe(false);
-    expect(isUserAgentOwnedAttr('WA-OPTION', 'class')).toBe(false);
-    expect(isUserAgentOwnedAttr('WA-OPTION', 'arialabel')).toBe(false);
-    expect(isUserAgentOwnedAttr('DIV', 'role')).toBe(false);
-    expect(isUserAgentOwnedAttr('DIV', 'aria-label')).toBe(false);
-    expect(isUserAgentOwnedAttr('DIV', 'open')).toBe(false);
-    expect(isUserAgentOwnedAttr('DETAILS', 'open')).toBe(true);
-    expect(isUserAgentOwnedAttr('DIALOG', 'open')).toBe(true);
-    expect(isUserAgentOwnedAttr('DETAILS', 'role')).toBe(false);
-  });
-});
 
 describe('morph(): custom-element-owned role / aria-*', () => {
   it('keeps a custom element’s self-set role and aria-* when the template omits them', () => {
