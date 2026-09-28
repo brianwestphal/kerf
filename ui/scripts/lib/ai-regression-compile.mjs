@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { readdir, readFile } from 'node:fs/promises';
-import { basename, posix, relative, resolve, sep } from 'node:path';
+import { basename, dirname, posix, relative, resolve, sep } from 'node:path';
 
 import ts from 'typescript';
 
@@ -145,12 +145,21 @@ export async function compileAiRegressionResponse(
   const host = ts.createCompilerHost(compilerOptions, true);
   const readDefault = host.readFile.bind(host);
   const existsDefault = host.fileExists.bind(host);
+  // TypeScript's own default libraries live wherever the `typescript` package
+  // really is, which is outside `root` when node_modules is a symlink (as in
+  // a worktree sharing the main checkout's install).
+  const libRoot = dirname(host.getDefaultLibFileName(compilerOptions));
+  const readable = (fileName) =>
+    isWithin(root, fileName) || isWithin(libRoot, fileName);
+  // Keep resolved packages at their in-root paths rather than following a
+  // symlinked node_modules out of `root`, where `readable` would reject them.
+  host.realpath = (path) => path;
   host.readFile = (fileName) =>
     virtualFiles.get(fileName) ??
-    (isWithin(root, fileName) ? readDefault(fileName) : undefined);
+    (readable(fileName) ? readDefault(fileName) : undefined);
   host.fileExists = (fileName) =>
     virtualFiles.has(fileName) ||
-    (isWithin(root, fileName) && existsDefault(fileName));
+    (readable(fileName) && existsDefault(fileName));
   host.getSourceFile = (fileName, languageVersion) => {
     const source = host.readFile(fileName);
     return source === undefined
