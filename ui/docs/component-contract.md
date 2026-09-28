@@ -258,7 +258,12 @@ rows align that 18px visual with the first inherited text line. The row clips
 descendant painting to its rounded root so labels, status, and dormant trailing
 content cannot escape its visible boundary. Rows with descriptions grow enough
 to keep their owned two-line label stack readable; use `multiline` when the
-primary label should wrap rather than truncate.
+primary label should wrap rather than truncate. A single-line row ends its
+primary label and description with an ellipsis before the trailing status
+slot, even when the label is one long word; a `multiline` row wraps instead,
+breaking a word wider than the label column (a long component or file name)
+rather than letting it run under the trailing slot. `ListActionRow` labels
+follow the same single-line and `multiline` rules before the trailing action.
 
 `DisclosureArrow` uses an 18px root-scaled visual by default. Pass its typed
 `size` prop when a consumer needs another size. Kerf `Select` uses a separate Web Awesome expand

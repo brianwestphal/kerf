@@ -140,7 +140,6 @@
     remify(44px) - (2 * var(--kui-layout-item-padding, remify(8px)))
   );
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
   align-items: center;
 }
@@ -149,6 +148,14 @@
 .kui-list-action-row__description,
 .kui-list-action-row__status {
   min-width: 0;
+}
+
+/* The label is a grid container, and `text-overflow` never reaches a grid
+   item's text, so each text line of the stack ellipsizes itself. */
+.kui-list-action-row__primary-label,
+.kui-list-action-row__description {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .kui-list-action-row__description,
@@ -179,6 +186,11 @@
   overflow: visible;
   overflow-wrap: anywhere;
   white-space: normal;
+}
+
+.kui-list-action-row[data-multiline="true"]
+  :is(.kui-list-action-row__primary-label, .kui-list-action-row__description) {
+  overflow: visible;
 }
 
 .kui-list-action-row[data-multiline="true"] .kui-list-action-row__icon {

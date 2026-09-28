@@ -14,6 +14,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   "Inbox, 3 unread"), with `badgeLabel` defaulting to the badge text. Tabs
   without a badge are unchanged.
 
+- **`@kerfjs/ui` `ListItem` and `ListActionRow` labels stay out of the
+  trailing slot.** A long single-word primary label (such as a Catalog sidebar
+  entry named `ConnectionStateBanner` in a narrow rail) no longer runs
+  underneath trailing status text. Single-line rows now end the primary label
+  and description with a real ellipsis (previously the text was cut mid-glyph
+  with no "…"), and `multiline` rows break a word wider than the label column
+  onto the next line.
+
 - **`@kerfjs/ui` toolbar groups drop their focus ring while a popup is open.**
   A `ToolbarControlGroup` that owns the ring (`focusRing="outline"` or
   `"halo"`) no longer paints it while a Select listbox or `PopupMenu` inside it

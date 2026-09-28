@@ -128,13 +128,17 @@
   display: grid;
   min-width: 0;
   overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+/* The label is a grid container, and `text-overflow` never reaches a grid
+   item's text, so each line of the stack clips and ellipsizes itself: a long
+   label ends in "…" before the trailing slot instead of being cut mid-glyph. */
 .kui-list-item__primary-label,
 .kui-list-item__description {
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .kui-list-item__description {
@@ -158,6 +162,15 @@
 .kui-list-item[data-multiline="true"] .kui-list-item__label {
   overflow: visible;
   white-space: normal;
+}
+
+/* A multiline row shows its whole label, so a single word wider than the
+   column (a long component or file name) breaks onto the next line rather
+   than running under the trailing slot. */
+.kui-list-item[data-multiline="true"]
+  :is(.kui-list-item__primary-label, .kui-list-item__description) {
+  overflow: visible;
+  overflow-wrap: anywhere;
 }
 
 .kui-list-item[data-multiline="true"] .kui-list-item__icon {
