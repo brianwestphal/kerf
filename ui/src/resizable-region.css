@@ -218,9 +218,21 @@
    hidden, not merely stacked beneath it: they never paint over the overlay
    whatever stacking context an app puts them in, and hidden they leave the
    tab order and the accessibility tree. They come back as the overlay
-   closes. The flag is set on the overlay's siblings only, never on an
-   overlay region, and read by FloatingToolbar and the layouts'
-   restore corners. */
+   closes. The flag is read by FloatingToolbar and the layouts' restore
+   corners. It is set on the overlay's container and cleared again on the
+   overlay regions in it, so it reaches the overlay's siblings only. It is
+   never set by a universal selector below the :has() container (`:has(…) >
+   :not(…)`): Chromium then restyles every child of every ancestor of a DOM
+   change, which made each change in a long list about 30× slower. */
+:where(
+  :has(
+    > .kui-resizable-region[data-presentation="overlay"][data-axis="horizontal"]:not(
+        [data-collapsed="true"]
+      )
+  )
+) {
+  --_kui-floating-covered: hidden;
+}
 :where(
     :has(
       > .kui-resizable-region[data-presentation="overlay"][data-axis="horizontal"]:not(
@@ -228,8 +240,8 @@
         )
     )
   )
-  > :not(.kui-resizable-region[data-presentation="overlay"]) {
-  --_kui-floating-covered: hidden;
+  > .kui-resizable-region[data-presentation="overlay"] {
+  --_kui-floating-covered: initial;
 }
 
 @container (max-width: remify(704px)) {
@@ -276,17 +288,23 @@
    beside the collapsed one — a direct child of that container or of one of
    its direct children (the app's work-area column) — owns the container's
    bottom, so the corner floats above the drawer's top edge instead of over
-   it. CollapsiblePanel drawers publish the same anchor. A drawer nested
-   deeper, inside the work area's own content, belongs to another layout and
-   is scoped out. Without anchor positioning the corner keeps the container's
-   bottom edge. */
-.kui-resizable-region[data-axis="vertical"][data-edge="start"][data-presentation="inline"]:not(
+   it. The region publishes that edge as an anchor only there, beside a
+   CollapsiblePanel or ResizableRegion restore control (matched by their
+   restore attributes); CollapsiblePanel drawers publish the same anchor. A
+   drawer nested deeper, inside the work area's own content, belongs to
+   another layout and publishes nothing. The selector ends on the region, not
+   on a universal `> * > * > *` scope below the container: a universal
+   selector after a :has() container restyles every child of every ancestor
+   of a DOM change in Chromium. Without anchor positioning the corner keeps
+   the container's bottom edge. */
+:where(
+    :has(> [data-panel-restore], > [data-region-restore]),
+    :has(> [data-panel-restore], > [data-region-restore]) > *
+  )
+  > .kui-resizable-region[data-axis="vertical"][data-edge="start"][data-presentation="inline"]:not(
     [data-collapsed="true"]
   ) {
   anchor-name: --kui-restore-drawer;
-}
-:where(:has(> .kui-resizable-region__restore)) > * > * > * {
-  anchor-scope: --kui-restore-drawer;
 }
 .kui-resizable-region__restore {
   --_kui-resizable-region-restore-inset: var(

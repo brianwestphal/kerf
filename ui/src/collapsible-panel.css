@@ -292,19 +292,24 @@
    that container or of one of its direct children (the app's work-area
    column) — owns the container's bottom, so the corner floats above the
    drawer's top edge instead of over it. The drawer publishes that edge as an
-   anchor; a drawer nested deeper, inside the work area's own content, belongs
-   to another layout and is scoped out. Without anchor positioning the corner
-   keeps the container's bottom edge. */
-.kui-collapsible-panel--bottom[data-presentation="inline"]:not(
+   anchor only there, beside a CollapsiblePanel or ResizableRegion restore
+   control (matched by their restore attributes); a drawer nested deeper,
+   inside the work area's own content, belongs to another layout and
+   publishes nothing. The selector ends on the drawer, not on a universal
+   `> * > * > *` scope below the container: a universal selector after a
+   :has() container restyles every child of every ancestor of a DOM change in
+   Chromium. Without anchor positioning the corner keeps the container's
+   bottom edge. */
+:where(
+    :has(> [data-panel-restore], > [data-region-restore]),
+    :has(> [data-panel-restore], > [data-region-restore]) > *
+  )
+  > .kui-collapsible-panel--bottom[data-presentation="inline"]:not(
     [data-collapsed="true"],
     [data-collapsible-overlay="true"] *,
     [data-collapsible-responsive="hidden"] *
   ) {
   anchor-name: --kui-restore-drawer;
-}
-
-:where(:has(> .kui-collapsible-panel__restore)) > * > * > * {
-  anchor-scope: --kui-restore-drawer;
 }
 
 .kui-collapsible-panel__restore {
@@ -385,6 +390,22 @@
   --_kui-floating-covered: initial;
 }
 
+/* A static overlay panel sets the flag on its container and clears it again
+   on the overlay panels in it, so it reaches the overlay's siblings only —
+   never through a universal selector below the :has() container
+   (`:has(…) > :not(…)`), which in Chromium restyles every child of every
+   ancestor of a DOM change. */
+:where(
+  :has(
+    > .kui-collapsible-panel:is(
+        .kui-collapsible-panel--left,
+        .kui-collapsible-panel--right
+      )[data-presentation="overlay"]:not([data-collapsed="true"])
+  )
+) {
+  --_kui-floating-covered: hidden;
+}
+
 :where(
     :has(
       > .kui-collapsible-panel:is(
@@ -393,8 +414,8 @@
         )[data-presentation="overlay"]:not([data-collapsed="true"])
     )
   )
-  > :not(.kui-collapsible-panel[data-presentation="overlay"]) {
-  --_kui-floating-covered: hidden;
+  > .kui-collapsible-panel[data-presentation="overlay"] {
+  --_kui-floating-covered: initial;
 }
 
 /* A button does not stretch between its insets the way a div does, so the

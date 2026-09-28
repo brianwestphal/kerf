@@ -2190,8 +2190,16 @@ describe('production UI primitives', () => {
     const panelFlags = flags(panel);
     expect(panelFlags).toHaveLength(2);
     expect(panelFlags[0]).toMatch(/^\[data-collapsible-overlay="true"\]:has\(/);
-    expect(panelFlags[1]).toContain(
-      '> :not(.kui-collapsible-panel[data-presentation="overlay"])',
+    // The static overlay flags its container and its overlay panels clear
+    // the flag again, never through a universal `:has(…) > :not(…)` child
+    // selector, which restyles every child of every ancestor of a DOM change
+    // in Chromium.
+    expect(panelFlags[1]).toMatch(
+      /^:where\( :has\( > \.kui-collapsible-panel:is\(/,
+    );
+    expect(panelFlags[1]).toMatch(/\) \)$/);
+    expect(panel).toMatch(
+      /\) \) > \.kui-collapsible-panel\[data-presentation="overlay"\] \{ --_kui-floating-covered: initial; \}/,
     );
     for (const selector of panelFlags) {
       expect(selector).toContain('.kui-collapsible-panel--left');
@@ -2208,8 +2216,10 @@ describe('production UI primitives', () => {
     expect(region[0]).toContain(
       '.kui-resizable-region[data-presentation="overlay"][data-axis="horizontal"]:not( [data-collapsed="true"] )',
     );
-    expect(region[0]).toContain(
-      '> :not(.kui-resizable-region[data-presentation="overlay"])',
+    expect(region[0]).toMatch(/^:where\( :has\( > \.kui-resizable-region/);
+    expect(region[0]).toMatch(/\) \)$/);
+    expect(source('resizable-region.css')).toMatch(
+      /\) \) > \.kui-resizable-region\[data-presentation="overlay"\] \{ --_kui-floating-covered: initial; \}/,
     );
   });
 
@@ -2226,15 +2236,13 @@ describe('production UI primitives', () => {
     expect(rule(':where(:has(> .kui-resizable-region__restore))')).toContain(
       'anchor-scope: --kui-restore-drawer;',
     );
-    // Only an expanded, inline bottom region publishes the drawer anchor.
+    // Only an expanded, inline bottom region publishes the drawer anchor,
+    // and only as a child or grandchild of a restore control's container.
     expect(
       rule(
-        '.kui-resizable-region[data-axis="vertical"][data-edge="start"][data-presentation="inline"]:not( [data-collapsed="true"] )',
+        ':where( :has(> [data-panel-restore], > [data-region-restore]), :has(> [data-panel-restore], > [data-region-restore]) > * ) > .kui-resizable-region[data-axis="vertical"][data-edge="start"][data-presentation="inline"]:not( [data-collapsed="true"] )',
       ),
     ).toContain('anchor-name: --kui-restore-drawer;');
-    expect(
-      rule(':where(:has(> .kui-resizable-region__restore)) > * > * > *'),
-    ).toContain('anchor-scope: --kui-restore-drawer;');
     const corner = rule('.kui-resizable-region__restore');
     // The container-edge declaration comes first, so an engine without
     // anchor positioning keeps it.

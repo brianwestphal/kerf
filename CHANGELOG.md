@@ -35,6 +35,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   it from a custom element — render an explicit value (`aria-pressed="false"`)
   instead.
 
+- **`@kerfjs/ui` restore corners and covered floating controls no longer slow
+  every style recalculation.** The `CollapsiblePanel` / `ResizableRegion`
+  restore-corner anchor scope (`:has(> restore) > * > * > *`) and the static
+  side-overlay covered flag (`:has(> open overlay) > :not(overlay)`) put a
+  universal selector after a `:has()` container, which in Chromium restyled
+  the children of every ancestor of each DOM change — about 85ms instead of
+  1ms per edit beside a 1000-row list. The drawer now publishes its anchor
+  only beside a restore control's container (or its work-area column), and
+  the covered flag is set on the overlay's container and cleared on its
+  overlay children. Restore-corner placement and covered-control hiding are
+  unchanged; a new CSS unit test rejects the costly `:has()` shapes.
+
 - **`@kerfjs/ui` toolbar groups drop their focus ring while a popup is open.**
   A `ToolbarControlGroup` that owns the ring (`focusRing="outline"` or
   `"halo"`) no longer paints it while a Select listbox or `PopupMenu` inside it

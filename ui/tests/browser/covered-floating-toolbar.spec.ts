@@ -226,6 +226,12 @@ test('an overlay ResizableRegion side panel hides the work area floating control
   await setPanel(page, 'right', false);
   await expectCovered(main);
   await expectCovered(navigator);
+  // The open overlay region is exempt: its own floating controls stay.
+  await expect(
+    page
+      .locator('[data-region-id="covered-inspector-region"]')
+      .locator('button[data-floating="overlay"]'),
+  ).toBeVisible();
   await setPanel(page, 'right', true);
   await expectShown(main);
   await expectShown(navigator);

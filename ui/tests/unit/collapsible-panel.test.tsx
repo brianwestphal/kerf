@@ -218,17 +218,19 @@ describe('CollapsiblePanel', () => {
       );
     };
 
-    // Only an expanded, inline bottom drawer publishes the anchor.
+    // Only an expanded, inline bottom drawer that is a child or grandchild
+    // of a restore control's container publishes the anchor; drawers deeper
+    // in the work area are another layout's and publish nothing.
     expect(
       rule(
-        '.kui-collapsible-panel--bottom[data-presentation="inline"]:not( [data-collapsed="true"], [data-collapsible-overlay="true"] *, [data-collapsible-responsive="hidden"] * )',
+        ':where( :has(> [data-panel-restore], > [data-region-restore]), :has(> [data-panel-restore], > [data-region-restore]) > * ) > .kui-collapsible-panel--bottom[data-presentation="inline"]:not( [data-collapsed="true"], [data-collapsible-overlay="true"] *, [data-collapsible-responsive="hidden"] * )',
       ),
     ).toEqual([['anchor-name', '--kui-restore-drawer']]);
-    // Drawers at depth three or more below the restore's container are
-    // another layout's, so they are scoped out of the corner's lookup.
-    expect(
-      rule(':where(:has(> .kui-collapsible-panel__restore)) > * > * > *'),
-    ).toEqual([['anchor-scope', '--kui-restore-drawer']]);
+    // No universal scope chain below the container: it restyles every child
+    // of every ancestor of a DOM change in Chromium.
+    root.walkRules((node) => {
+      expect(node.selector).not.toContain('> * > * > *');
+    });
     // The corner floats above the drawer's top edge, falling back to the
     // container's bottom edge when no drawer is in scope.
     const blockEnds = rule('.kui-collapsible-panel__restore').filter(

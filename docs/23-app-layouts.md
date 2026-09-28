@@ -712,11 +712,20 @@ The corner also routes around an expanded bottom drawer beside the collapsed
 component (KF-S5VYVM: a collapsed rail's control used to float over an open
 drawer sharing its container). An expanded inline bottom `CollapsiblePanel`,
 or an expanded inline bottom `ResizableRegion` (`axis="vertical"`,
-`edge="start"`), publishes a CSS anchor (`anchor-name: --kui-restore-drawer`).
+`edge="start"`), that is a direct child of a restore control's container or
+of one of its direct children (the app's work-area column) publishes a CSS
+anchor (`anchor-name: --kui-restore-drawer`); the drawer rule matches the
+container by the restore wrappers' `data-panel-restore` / `data-region-restore`
+attributes, so either component's drawer serves either component's corner.
 While a restore control is shown, its container scopes that name
-(`anchor-scope`) and so do the container's great-grandchildren, which leaves
-exactly the drawers that are direct children of the container or of one of its
-direct children (the app's work-area column) in scope. The corner's second
+(`anchor-scope`), so a corner never reaches a drawer outside its container.
+(KF-MEV7Q1: this used to publish the anchor on every expanded drawer and scope
+out deeper ones with `:where(:has(> restore)) > * > * > * { anchor-scope }`;
+that universal selector after a `:has()` container made Chromium restyle the
+children of every ancestor of each DOM change — ~85ms instead of ~1ms per text
+edit beside a 1000-row list, ~7× a real app's per-interaction style cost.
+`ui/tests/unit/css-has-cost.test.ts` now rejects the shape across `ui/src`.)
+The corner's second
 `inset-block-end` declaration is the restore inset plus
 `anchor(--kui-restore-drawer top, <container bottom edge inset>)`: with a drawer
 in scope it floats that inset above the drawer's top edge — and follows a
@@ -775,6 +784,16 @@ edges) hides nothing. The side overlays are:
   panels) or with `presentation="overlay"` (on the panel's siblings);
 - a horizontal `ResizableRegion` with `presentation="overlay"` (on its
   siblings).
+
+For the static `CollapsiblePanel` / `ResizableRegion` overlays, "on the
+siblings" is implemented as the flag on the overlay's container (a
+`:where(:has(> open overlay))` subject rule) reset to `initial` on that
+container's overlay children, never as `:has(…) > :not(overlay)`: a universal
+selector after a `:has()` container restyles the children of every ancestor of
+each DOM change in Chromium (KF-MEV7Q1). The one difference is an overlay
+nested inside a region another open overlay already covers: its own controls
+now show rather than inheriting the outer cover, the same as the `wireSidebar`
+host's existing reset.
 
 CSS only: the layout sets a private inherited custom property,
 `--_kui-floating-covered: hidden`, and `.kui-floating-toolbar`,
