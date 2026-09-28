@@ -1057,6 +1057,61 @@ import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegio
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 /**
+ * The standard collapse toggle a Workbench renders for a panel. The app
+ * handles the button's `data-action` and flips its own `collapsed` flag.
+ */
+interface WorkbenchPanelToggle {
+    /** The `data-action` the toggle button carries. */
+    action: string;
+    /** The panel's short name, for the accessible "Show …" / "Hide …" label. */
+    name: string;
+}
+/**
+ * A Workbench panel's top toolbar, composed by the Workbench so its groups can
+ * follow the panel's open state.
+ *
+ * - `title` (a `ToolbarText`) and `panelOnly` groups lead the toolbar and are
+ *   available only while the panel is open.
+ * - `constant` groups stay available either way: they trail the panel's
+ *   toolbar while it is open and move to the work area's toolbar while it is
+ *   collapsed.
+ * - `toggle` is always the last group: in the panel's toolbar while it is
+ *   open, and right after the `constant` groups in the work area's toolbar
+ *   while it is collapsed.
+ *
+ * A collapsed rail's groups go to the leading edge of `mainToolbar` (left rail)
+ * or its trailing edge (right rail); a collapsed drawer's go to the trailing
+ * edge of `mainBottomToolbar`, else to a `FloatingToolbar` in the work area's
+ * bottom-end corner. `constant` content renders in both places while the panel
+ * is collapsed (the panel's copy is inert), so give it no `id`s.
+ */
+interface WorkbenchPanelToolbar {
+    /** Accessible name of the panel's toolbar. */
+    label: string;
+    title?: KerfUiContent;
+    panelOnly?: KerfUiContent;
+    constant?: KerfUiContent;
+    toggle?: WorkbenchPanelToggle;
+}
+/** The work area's top toolbar; collapsed rails add their groups to it. */
+interface WorkbenchMainToolbar {
+    label: string;
+    /** The work area's title, usually an extra-large `ToolbarText`. */
+    title?: KerfUiContent;
+    /** Groups after the title. */
+    leading?: KerfUiContent;
+    center?: KerfUiContent;
+    /** Groups at the trailing edge, before a collapsed right rail's groups. */
+    trailing?: KerfUiContent;
+}
+/** The work area's bottom toolbar; a collapsed drawer adds its groups to it. */
+interface WorkbenchMainBottomToolbar {
+    label: string;
+    leading?: KerfUiContent;
+    trailing?: KerfUiContent;
+}
+
+/**
  * The Workbench container breakpoint below which a panel presents as an
  * overlay: `narrow` (704px or less) or `compact` (448px or less) — the same
  * breakpoints as `ResizableRegion`'s `responsiveFillAt`.
@@ -1072,6 +1127,14 @@ interface WorkbenchPanelResizable {
 /** A collapsible Workbench panel — a side rail or the bottom drawer. */
 interface WorkbenchPanel {
     content: KerfUiContent;
+    /**
+     * The panel's top toolbar, composed by the Workbench: its `constant` groups
+     * and standard `toggle` move to the work area's toolbar while the panel is
+     * collapsed. With it, `content` renders in a `Pane` below the toolbar.
+     */
+    toolbar?: WorkbenchPanelToolbar;
+    /** Optional bottom toolbar under a `toolbar` panel's content. */
+    footer?: KerfUiContent;
     /** Whether the panel is currently collapsed (the app owns this). */
     collapsed?: boolean;
     /**
@@ -1103,7 +1166,8 @@ interface WorkbenchPanel {
     /**
      * Control shown while collapsed, in a safe-area-aware corner of the
      * Workbench (not the viewport); the bottom drawer's sits in the work-area
-     * column.
+     * column. Prefer `toolbar.toggle`, which the Workbench relocates into the
+     * work area's toolbar (or this corner when that toolbar is absent).
      */
     restoreControl?: SafeHtml;
     restorePosition?: ResizableRegionRestorePosition;
@@ -1118,6 +1182,17 @@ interface WorkbenchProps {
     label: string;
     /** The central work area. */
     main: KerfUiContent;
+    /**
+     * The work area's top toolbar. A collapsed left rail's `constant` groups
+     * and toggle lead it; a collapsed right rail's trail it. With it, `main`
+     * renders in a `Pane` below the toolbar.
+     */
+    mainToolbar?: WorkbenchMainToolbar;
+    /**
+     * The work area's bottom toolbar. A collapsed drawer's `constant` groups and
+     * toggle trail it; without it they float in the work area's corner.
+     */
+    mainBottomToolbar?: WorkbenchMainBottomToolbar;
     leftRail?: WorkbenchPanel;
     rightRail?: WorkbenchPanel;
     bottomDrawer?: WorkbenchPanel;
@@ -1154,7 +1229,7 @@ interface WorkbenchProps {
  * lives outside it and stays reachable). A panel may opt in to drag and keyboard resizing with
  * `resizable`, which `wireWorkbench` drives. See `docs/23-app-layouts.md` §3.3.
  */
-declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainMinSize, mainMinHeight, className, slot, }: WorkbenchProps): SafeHtml;
+declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainBottomToolbar, mainMinSize, mainMinHeight, className, slot, }: WorkbenchProps): SafeHtml;
 
 export { Workbench, type WorkbenchPanel, type WorkbenchPanelResizable, type WorkbenchProps, type WorkbenchResponsiveOverlayAt };
 ```

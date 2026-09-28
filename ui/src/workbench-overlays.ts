@@ -101,6 +101,12 @@ export function wireWorkbenchOverlays(
   // control to the body before the click closes the panel; this is how the
   // close still counts as leaving focus stranded in it.
   let pressedFocus: WorkbenchOverlayPanel | undefined;
+  /**
+   * The focused `aria-controls` control a click just activated, kept for a
+   * couple of frames: the toggle a panel opens from, even once the app's
+   * render has removed it.
+   */
+  let activated: HTMLElement | undefined;
 
   const panelElement = (panel: WorkbenchOverlayPanel): HTMLElement | null =>
     findWorkbench()?.querySelector<HTMLElement>(PANEL_SELECTORS[panel.key]) ??
@@ -159,6 +165,15 @@ export function wireWorkbenchOverlays(
           .some((id) => ids.has(id)),
     );
   };
+  /** Whether a control's `aria-controls` (always present) names panel `id`. */
+  const namesPanel = (control: Element, id: string): boolean =>
+    control.getAttribute('aria-controls')!.split(/\s+/).includes(id);
+  /** The panel's own control for itself: its toggle inside it. */
+  const controlInside = (element: HTMLElement): HTMLElement | undefined =>
+    [...element.querySelectorAll<HTMLElement>('[aria-controls]')].find(
+      (control) =>
+        control.matches(FOCUSABLE) && namesPanel(control, element.id),
+    );
   const rescueFocus = (panel: WorkbenchOverlayPanel): void => {
     const element = panelElement(panel);
     const target = restoreTarget(panel, element);
@@ -293,6 +308,33 @@ export function wireWorkbenchOverlays(
         )
           openers.set(panel, active);
         else openers.delete(panel);
+        // A focused toggle the app's render removes as the panel opens — a
+        // Workbench toolbar toggle leaves the work-area toolbar for the
+        // panel's own — would drop focus to the body. Hand it to the panel's
+        // own control for it, so a keyboard user keeps their place. The
+        // render may land before this effect (the toggle is gone already, so
+        // the activated control stands in for the opener) or after it, in a
+        // microtask or a later frame.
+        const toggle =
+          openers.get(panel) ??
+          (activated && element && namesPanel(activated, element.id)
+            ? activated
+            : undefined);
+        if (toggle) {
+          const handOff = (frames: number): void => {
+            const focused = ownerDocument.activeElement;
+            if (panel.collapsed.peek()) return;
+            if (toggle.isConnected) {
+              if (toggle === focused && frames > 0)
+                globalThis.requestAnimationFrame(() => handOff(frames - 1));
+              return;
+            }
+            if (focused !== null && focused !== ownerDocument.body) return;
+            const current = panelElement(panel);
+            if (current) controlInside(current)?.focus({ preventScroll: true });
+          };
+          globalThis.queueMicrotask(() => handOff(5));
+        }
         if (!element || !overlaid(element)) return;
         // Opening an overlay closes the others. Their collapse effects run
         // after this one, by which time focus has moved into this panel, so
@@ -383,13 +425,31 @@ export function wireWorkbenchOverlays(
       if (candidates.includes(panel) && !path.includes(element))
         panel.collapsed.value = true;
   };
+  const onActivate = (event: MouseEvent): void => {
+    const target = event.target;
+    const control =
+      target instanceof Element
+        ? target.closest<HTMLElement>('[aria-controls]')
+        : null;
+    if (!control || control !== ownerDocument.activeElement) return;
+    activated = control;
+    // The collapse effect may run after the click's dispatch (the app can
+    // batch its write), so keep the control for a couple of frames.
+    globalThis.requestAnimationFrame(() =>
+      globalThis.requestAnimationFrame(() => {
+        if (activated === control) activated = undefined;
+      }),
+    );
+  };
   ownerDocument.addEventListener('keydown', onKeydown);
   ownerDocument.addEventListener('pointerdown', onPointerdown, true);
+  ownerDocument.addEventListener('click', onActivate, true);
   ownerDocument.addEventListener('click', onClick);
   ownerDocument.addEventListener('focusin', onFocusin, true);
   disposers.push(() => {
     ownerDocument.removeEventListener('keydown', onKeydown);
     ownerDocument.removeEventListener('pointerdown', onPointerdown, true);
+    ownerDocument.removeEventListener('click', onActivate, true);
     ownerDocument.removeEventListener('click', onClick);
     ownerDocument.removeEventListener('focusin', onFocusin, true);
   });

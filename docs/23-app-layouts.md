@@ -234,6 +234,28 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
 - **The collapse is pure CSS.** The app owns each panel's `collapsed` flag and
   re-renders; the component reflects it as `data-collapsed` and the stylesheet
   animates the change. No wire is involved.
+- **Panel toolbars follow the panel (KF-6GVPW7: toggles were hand-placed, so
+  the catalog showed each rail toggle twice while the rails were open and
+  put toggles where the guidance does not).** A panel may take a `toolbar`
+  (`title`, `panelOnly`, `constant`, `toggle: { action, name }`) and the work
+  area a `mainToolbar` / `mainBottomToolbar`; the Workbench composes each as a
+  `Toolbar` over a `Pane` (`ui/src/workbench-toolbars.tsx`). Open, a panel's
+  toolbar holds its title and panel-only groups, then its constant groups and
+  the standard toggle last. Closed, its panel-only groups stay behind (inert)
+  and its constant groups plus toggle move to the work area: a left rail's
+  lead `mainToolbar` before its title, a right rail's end it, and a drawer's
+  trail `mainBottomToolbar`, else float in a `FloatingToolbar` in the work
+  area's corner (a rail without a `mainToolbar` floats its groups the same
+  way). The move is decided at render time from `collapsed` — moving DOM
+  nodes at wire time would fight the morph — and each toggle carries a
+  stable `data-key` so the morph never reuses a focused toggle's button for
+  another control. `wireWorkbench` keeps focus with the toggle across the
+  move: closing from the panel's toggle focuses the relocated one, and
+  opening from the work area focuses the panel's own (a focused toggle the
+  render removes is remembered through a capture `click` listener for a
+  couple of frames, since the app's render may land before or after the
+  collapse effect). An app `restoreControl` still wins over the floating
+  fallback.
 - **A collapsed panel's content is inert (KF-0WARYA: a collapsed rail or
   drawer kept its controls in the Tab order, and focusing one scrolled the
   clipped panel so its hidden content slid back over the work area).** The

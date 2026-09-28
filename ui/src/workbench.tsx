@@ -19,6 +19,14 @@ import {
   type WorkbenchPanelKey,
   workbenchRegionId,
 } from './workbench-resize.js';
+import {
+  floatingRestore,
+  mainBody,
+  panelBody,
+  type WorkbenchMainBottomToolbar,
+  type WorkbenchMainToolbar,
+  type WorkbenchPanelToolbar,
+} from './workbench-toolbars.js';
 
 /**
  * The Workbench container breakpoint below which a panel presents as an
@@ -38,6 +46,14 @@ export interface WorkbenchPanelResizable {
 /** A collapsible Workbench panel — a side rail or the bottom drawer. */
 export interface WorkbenchPanel {
   content: KerfUiContent;
+  /**
+   * The panel's top toolbar, composed by the Workbench: its `constant` groups
+   * and standard `toggle` move to the work area's toolbar while the panel is
+   * collapsed. With it, `content` renders in a `Pane` below the toolbar.
+   */
+  toolbar?: WorkbenchPanelToolbar;
+  /** Optional bottom toolbar under a `toolbar` panel's content. */
+  footer?: KerfUiContent;
   /** Whether the panel is currently collapsed (the app owns this). */
   collapsed?: boolean;
   /**
@@ -69,7 +85,8 @@ export interface WorkbenchPanel {
   /**
    * Control shown while collapsed, in a safe-area-aware corner of the
    * Workbench (not the viewport); the bottom drawer's sits in the work-area
-   * column.
+   * column. Prefer `toolbar.toggle`, which the Workbench relocates into the
+   * work area's toolbar (or this corner when that toolbar is absent).
    */
   restoreControl?: SafeHtml;
   restorePosition?: ResizableRegionRestorePosition;
@@ -85,6 +102,17 @@ export interface WorkbenchProps {
   label: string;
   /** The central work area. */
   main: KerfUiContent;
+  /**
+   * The work area's top toolbar. A collapsed left rail's `constant` groups
+   * and toggle lead it; a collapsed right rail's trail it. With it, `main`
+   * renders in a `Pane` below the toolbar.
+   */
+  mainToolbar?: WorkbenchMainToolbar;
+  /**
+   * The work area's bottom toolbar. A collapsed drawer's `constant` groups and
+   * toggle trail it; without it they float in the work area's corner.
+   */
+  mainBottomToolbar?: WorkbenchMainBottomToolbar;
   leftRail?: WorkbenchPanel;
   rightRail?: WorkbenchPanel;
   bottomDrawer?: WorkbenchPanel;
@@ -264,7 +292,7 @@ function Rail({
         class="kui-workbench__panel-content"
         inert={Boolean(panel.collapsed)}
       >
-        {panel.content}
+        {panelBody(id, key, panel)}
       </div>
       {resize && (
         <PanelHandle
@@ -300,7 +328,7 @@ function Drawer({ id, panel }: { id: string; panel: WorkbenchPanel }) {
         class="kui-workbench__panel-content"
         inert={Boolean(panel.collapsed)}
       >
-        {panel.content}
+        {panelBody(id, 'bottomDrawer', panel)}
       </div>
       {resize && (
         <PanelHandle
@@ -318,12 +346,10 @@ function restore(
   panel: WorkbenchPanel | undefined,
   side: 'left' | 'right' | 'bottom',
   position: ResizableRegionRestorePosition,
+  generated: SafeHtml | undefined,
 ) {
-  if (
-    !panel?.collapsed ||
-    !panel.restoreControl ||
-    panel.presentation === 'hidden'
-  )
+  const control = panel?.restoreControl ?? generated;
+  if (!panel?.collapsed || !control || panel.presentation === 'hidden')
     return '';
   return (
     <div
@@ -331,7 +357,7 @@ function restore(
       data-panel={side}
       data-position={panel.restorePosition ?? position}
     >
-      {panel.restoreControl}
+      {control}
     </div>
   );
 }
@@ -356,6 +382,8 @@ export function Workbench({
   leftRail,
   rightRail,
   bottomDrawer,
+  mainToolbar,
+  mainBottomToolbar,
   mainMinSize = WORKBENCH_MAIN_MIN_SIZE,
   mainMinHeight = WORKBENCH_MAIN_MIN_HEIGHT,
   className = '',
@@ -388,16 +416,44 @@ export function Workbench({
       slot={slot}
     >
       {leftRail && <Rail id={id} side="left" panel={leftRail} />}
-      {restore(leftRail, 'left', 'bottom-start')}
+      {restore(
+        leftRail,
+        'left',
+        'bottom-start',
+        floatingRestore(id, 'leftRail', leftRail, Boolean(mainToolbar)),
+      )}
       <div class="kui-workbench__center">
         <div class="kui-workbench__main" data-workbench-main>
-          {main}
+          {mainBody({
+            workbenchId: id,
+            main,
+            mainToolbar,
+            mainBottomToolbar,
+            leftRail,
+            rightRail,
+            bottomDrawer,
+          })}
         </div>
         {bottomDrawer && <Drawer id={id} panel={bottomDrawer} />}
-        {restore(bottomDrawer, 'bottom', 'bottom-end')}
+        {restore(
+          bottomDrawer,
+          'bottom',
+          'bottom-end',
+          floatingRestore(
+            id,
+            'bottomDrawer',
+            bottomDrawer,
+            Boolean(mainBottomToolbar),
+          ),
+        )}
       </div>
       {rightRail && <Rail id={id} side="right" panel={rightRail} />}
-      {restore(rightRail, 'right', 'bottom-end')}
+      {restore(
+        rightRail,
+        'right',
+        'bottom-end',
+        floatingRestore(id, 'rightRail', rightRail, Boolean(mainToolbar)),
+      )}
     </section>
   );
 }

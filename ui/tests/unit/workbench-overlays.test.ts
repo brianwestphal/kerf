@@ -900,3 +900,187 @@ describe('wireWorkbench transient overlays', () => {
     expect(app.drawer.value).toBe(false);
   });
 });
+
+describe('wireWorkbench toolbar toggle focus', () => {
+  const frame = () =>
+    new Promise<void>((resolve) =>
+      globalThis.requestAnimationFrame(() => resolve()),
+    );
+
+  /** A Workbench whose navigator toggle moves between its toolbars. */
+  function toolbarStudio() {
+    const root = document.createElement('div');
+    document.body.append(root);
+    roots.push(root);
+    const collapsed = signal(true);
+    const stopMount = mount(root, () =>
+      Workbench({
+        id: 'tools',
+        label: 'Tools',
+        main: raw('<p>Editor</p>'),
+        mainToolbar: {
+          label: 'Editor',
+          leading: raw(
+            '<div data-component="toolbar-control-group"><button type="button" data-plain>Plain</button></div>',
+          ),
+        },
+        leftRail: {
+          label: 'Navigator',
+          content: raw('<p>Files</p>'),
+          collapsed: collapsed.value,
+          toolbar: {
+            label: 'Navigator',
+            toggle: { action: 'toggle-nav', name: 'navigator' },
+          },
+        },
+      }),
+    );
+    disposers.push(stopMount);
+    root.addEventListener('click', (event) => {
+      if ((event.target as Element).closest('[data-action="toggle-nav"]'))
+        collapsed.value = !collapsed.value;
+    });
+    disposers.push(
+      wireWorkbench(root, {
+        id: 'tools',
+        panels: { leftRail: { collapsed } },
+      }),
+    );
+    const toggle = () =>
+      root.querySelector<HTMLButtonElement>(
+        '[data-workbench-main] [data-workbench-toggle="left"]',
+      );
+    const railToggle = () =>
+      root.querySelector<HTMLButtonElement>(
+        '[data-workbench-rail="left"] [data-workbench-toggle="left"]',
+      )!;
+    return { root, collapsed, toggle, railToggle, stopMount };
+  }
+
+  it("follows a focused toggle the render removes into the opened panel's toolbar", async () => {
+    const app = toolbarStudio();
+    const toggle = app.toggle()!;
+    toggle.focus();
+    toggle.click();
+    expect(app.collapsed.value).toBe(false);
+    // The render already moved the toggle into the rail.
+    expect(app.toggle()).toBeNull();
+    await flush();
+    expect(document.activeElement).toBe(app.railToggle());
+    expect(app.railToggle().getAttribute('aria-label')).toBe('Hide navigator');
+    // Closing from the rail hands focus back to the relocated toggle.
+    app.railToggle().click();
+    await flush();
+    expect(document.activeElement).toBe(app.toggle());
+    // A second activation before the first is forgotten replaces it, and a
+    // click on no element is ignored.
+    const moved = app.toggle()!;
+    moved.focus();
+    moved.click();
+    app.railToggle().focus();
+    app.railToggle().click();
+    document.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    // The activated control is forgotten after a couple of frames.
+    await frame();
+    await frame();
+    await flush();
+    expect(app.collapsed.value).toBe(true);
+  });
+
+  it('gives up the hand-off when the Workbench is gone before the render lands', async () => {
+    const app = toolbarStudio();
+    const toggle = app.toggle()!;
+    toggle.focus();
+    toggle.click();
+    expect(app.collapsed.value).toBe(false);
+    // The app tears the Workbench down in the same turn.
+    app.stopMount();
+    app.root.replaceChildren();
+    await flush();
+    await frame();
+    expect(
+      document.activeElement === null ||
+        document.activeElement === document.body,
+    ).toBe(true);
+  });
+
+  it('waits for a render that removes the opener a frame later, and never steals moved focus', async () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    roots.push(root);
+    const collapsed = signal(true);
+    const stopMount = mount(root, () =>
+      Workbench({
+        id: 'late',
+        label: 'Late',
+        main: raw(
+          '<p><button type="button" id="late-toggle" aria-controls="late-left-rail">Show</button><button type="button" id="late-other">Other</button></p>',
+        ),
+        leftRail: {
+          label: 'Navigator',
+          content: raw(
+            '<p><button type="button" aria-controls="late-left-rail">Hide</button></p>',
+          ),
+          collapsed: collapsed.value,
+        },
+      }),
+    );
+    disposers.push(stopMount);
+    disposers.push(
+      wireWorkbench(root, { id: 'late', panels: { leftRail: { collapsed } } }),
+    );
+    const opener = root.querySelector<HTMLButtonElement>('#late-toggle')!;
+    const own = () =>
+      root.querySelector<HTMLButtonElement>(
+        '[data-workbench-rail="left"] [aria-controls="late-left-rail"]',
+      )!;
+
+    // The app removes its toggle a frame after the panel opens.
+    opener.focus();
+    collapsed.value = false;
+    await Promise.resolve();
+    expect(document.activeElement).toBe(opener);
+    globalThis.requestAnimationFrame(() => opener.remove());
+    await frame();
+    await frame();
+    await frame();
+    expect(document.activeElement).toBe(own());
+
+    // Focus the user has moved elsewhere stays put.
+    collapsed.value = true;
+    const other = root.querySelector<HTMLButtonElement>('#late-other')!;
+    const second = document.createElement('button');
+    document.body.append(second);
+    second.focus();
+    collapsed.value = false;
+    other.focus();
+    second.remove();
+    await frame();
+    await frame();
+    expect(document.activeElement).toBe(other);
+
+    // An opener that is never removed keeps focus once the frames run out.
+    // (Outside the mount root, which each render's morph would otherwise
+    // clear of an element its template lacks.)
+    collapsed.value = true;
+    const kept = document.createElement('button');
+    kept.setAttribute('aria-controls', 'late-left-rail');
+    document.body.append(kept);
+    disposers.push(() => kept.remove());
+    kept.focus();
+    collapsed.value = false;
+    for (let step = 0; step < 7; step += 1) await frame();
+    expect(document.activeElement).toBe(kept);
+
+    // A panel closed again before the render lands is left alone.
+    collapsed.value = true;
+    const quick = document.createElement('button');
+    document.body.append(quick);
+    disposers.push(() => quick.remove());
+    quick.focus();
+    collapsed.value = false;
+    collapsed.value = true;
+    await flush();
+    expect(document.activeElement).toBe(quick);
+  });
+});

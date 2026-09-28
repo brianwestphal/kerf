@@ -854,6 +854,11 @@ however it closed, returns to its opener, its restore control, or a control
 whose `aria-controls` names it (each panel renders `id="<workbench id>-left-rail"`
 etc.)
 (`ui/tests/unit/workbench-overlays.test.ts`).
+`ui/src/workbench-toolbars.tsx` composes a panel's `toolbar` (title,
+panel-only and constant groups, the standard keyed toggle) and the work area's
+`mainToolbar` / `mainBottomToolbar`, moving a closed panel's constant groups
+and toggle into the work area or a corner `FloatingToolbar`
+(`ui/tests/unit/workbench-toolbars.test.tsx`).
 `ui/src/workbench-resize.ts` holds the shared panel
 region-id convention, default limits, and default work-area minimums, and `ui/src/resize-grip.tsx` the
 separator grip both handles render (`ui/tests/unit/wire-workbench.test.ts`,

@@ -3,15 +3,12 @@ import '@kerfjs/ui/lucide-icon.css';
 import '@kerfjs/ui/workbench.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
-import { collapsiblePanelToggleIcon } from '@kerfjs/ui/collapsible-panel';
-import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
-import { Pane } from '@kerfjs/ui/pane';
-import { Toolbar } from '@kerfjs/ui/toolbar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { Workbench } from '@kerfjs/ui/workbench';
 import { signal } from 'kerfjs';
+import { FilePlus, Search } from 'lucide';
 
 import { DemoContentItem } from './demo-content-item.js';
 
@@ -34,7 +31,12 @@ export const workbenchConsoleSize = signal(160);
  */
 export const workbenchNavigatorCollapsed = signal(false);
 export const workbenchInspectorCollapsed = signal(true);
-const consoleCollapsed = signal(true);
+export const workbenchConsoleCollapsed = signal(true);
+
+/** The controlled example's id, which `wireWorkbench` targets. */
+export const COLLAPSED_WORKBENCH_ID = 'catalog-workbench-collapsed';
+/** The controlled example's navigator, collapsed so its groups relocate. */
+export const workbenchCollapsedNavigator = signal(true);
 
 /** The responsive drawer example's id, which `wireWorkbench` targets. */
 export const RESPONSIVE_DRAWER_WORKBENCH_ID =
@@ -52,8 +54,9 @@ export const workbenchOutputCollapsed = signal(false);
 export function resetWorkbenchDemo(): void {
   workbenchNavigatorCollapsed.value = false;
   workbenchInspectorCollapsed.value = true;
-  consoleCollapsed.value = true;
+  workbenchConsoleCollapsed.value = true;
   workbenchOutputCollapsed.value = false;
+  workbenchCollapsedNavigator.value = true;
 }
 
 export function toggleWorkbenchNavigator(): boolean {
@@ -71,221 +74,34 @@ export function toggleWorkbenchOutput(): boolean {
   return workbenchOutputCollapsed.value;
 }
 
+export function toggleWorkbenchCollapsedNavigator(): boolean {
+  workbenchCollapsedNavigator.value = !workbenchCollapsedNavigator.value;
+  return workbenchCollapsedNavigator.value;
+}
+
 export function toggleWorkbenchConsole(): boolean {
-  consoleCollapsed.value = !consoleCollapsed.value;
-  return consoleCollapsed.value;
+  workbenchConsoleCollapsed.value = !workbenchConsoleCollapsed.value;
+  return workbenchConsoleCollapsed.value;
 }
 
-/**
- * The panel each toggle action shows and hides, by the id the Workbench
- * derives for it. `aria-controls` names it, which also tells `wireWorkbench`
- * where focus goes when a panel open at wire-up closes from inside.
- */
-const CONTROLLED_PANELS: Record<string, string> = {
-  'toggle-workbench-navigator': `${RESIZABLE_WORKBENCH_ID}-left-rail`,
-  'toggle-workbench-inspector': `${RESIZABLE_WORKBENCH_ID}-right-rail`,
-  'toggle-workbench-output': `${RESPONSIVE_DRAWER_WORKBENCH_ID}-bottom-drawer`,
-  'toggle-workbench-console': 'catalog-workbench-collapsed-bottom-drawer',
-};
-
-/** A toggle carrying the standard per-side panel glyph. */
-function panelToggle(
-  side: 'left' | 'right' | 'bottom',
-  name: string,
-  collapsed: boolean,
-  action: string,
-) {
-  const glyph = collapsiblePanelToggleIcon(side, collapsed);
+/** A borderless single-button group with an icon action. */
+function iconGroup(label: string, icon: typeof Search, name: string) {
   return (
-    <button
-      type="button"
-      data-action={action}
-      aria-controls={CONTROLLED_PANELS[action]}
-      aria-expanded={String(!collapsed)}
-      aria-label={`${collapsed ? 'Show' : 'Hide'} ${name}`}
-    >
-      <LucideIcon icon={glyph.icon} name={glyph.name} />
-    </button>
+    <ToolbarControlGroup label={label} appearance="borderless" single>
+      <button
+        type="button"
+        aria-label={label}
+        data-action="workbench-demo-command"
+        data-demo-command={name}
+      >
+        <LucideIcon icon={icon} name={name} />
+      </button>
+    </ToolbarControlGroup>
   );
 }
 
-/**
- * The collapsed console's restore affordance: a FloatingToolbar in the corner
- * of the work area the console restores into. The corner owns the inset, so
- * the toolbar floats from it at the corner's own position.
- */
-function consoleRestore() {
-  return (
-    <FloatingToolbar label="Console" position="bottom-end">
-      <ToolbarControlGroup label="Console" single>
-        {panelToggle('bottom', 'console', true, 'toggle-workbench-console')}
-      </ToolbarControlGroup>
-    </FloatingToolbar>
-  );
-}
-
-/** The collapsed example's editor; it hides the console while it is shown. */
-function collapsedEditor() {
-  return (
-    <Pane
-      header={
-        <Toolbar
-          label="Editor"
-          leading={<ToolbarText text="Editor" size="xlarge" />}
-          trailing={
-            consoleCollapsed.value ? undefined : (
-              <ToolbarControlGroup
-                label="Console"
-                appearance="borderless"
-                single
-              >
-                {panelToggle(
-                  'bottom',
-                  'console',
-                  false,
-                  'toggle-workbench-console',
-                )}
-              </ToolbarControlGroup>
-            )
-          }
-        />
-      }
-    >
-      {region(
-        'The app owns every collapsed flag',
-        'Hide the console from this toolbar; restore it from the corner control.',
-      )}
-    </Pane>
-  );
-}
-
-/**
- * The responsive drawer example's editor: its toolbar toggle is the
- * always-visible way to show or hide the output drawer.
- */
-function responsiveDrawerEditor() {
-  return (
-    <Pane
-      header={
-        <Toolbar
-          label="Editor"
-          leading={<ToolbarText text="Editor" size="xlarge" />}
-          trailing={
-            <ToolbarControlGroup label="Output" appearance="borderless" single>
-              {panelToggle(
-                'bottom',
-                'output',
-                workbenchOutputCollapsed.value,
-                'toggle-workbench-output',
-              )}
-            </ToolbarControlGroup>
-          }
-        />
-      }
-    >
-      {region(
-        'Narrow the workbench',
-        'At 704 px or narrower the output drawer overlays the bottom of the editor instead of taking its own track.',
-      )}
-    </Pane>
-  );
-}
-
-/**
- * The output drawer: a Pane whose header carries its own close control, so an
- * overlay drawer never depends on a control it may cover.
- */
-function outputPane() {
-  return (
-    <Pane
-      header={
-        <Toolbar
-          label="Output"
-          leading={<ToolbarText text="Output" />}
-          trailing={
-            <ToolbarControlGroup label="Output" appearance="borderless" single>
-              {panelToggle(
-                'bottom',
-                'output',
-                false,
-                'toggle-workbench-output',
-              )}
-            </ToolbarControlGroup>
-          }
-        />
-      }
-    >
-      {region('Build output', 'Inline above 704 px; an overlay below it')}
-    </Pane>
-  );
-}
-
-/**
- * A resizable example rail: a Pane whose own header carries the control that
- * hides it. The editor toolbar's toggles stay the always-visible way to show a
- * rail, but an overlay rail covers part of the editor — at a narrow width the
- * inspector covers its own toolbar toggle — so each rail can always be closed
- * from inside itself.
- */
-function railPane(
-  side: 'left' | 'right',
-  name: string,
-  content: { title: string; detail: string },
-  action: string,
-) {
-  const title = name[0]!.toUpperCase() + name.slice(1);
-  return (
-    <Pane
-      header={
-        <Toolbar
-          label={title}
-          leading={<ToolbarText text={title} />}
-          trailing={
-            <ToolbarControlGroup label={title} appearance="borderless" single>
-              {panelToggle(side, name, false, action)}
-            </ToolbarControlGroup>
-          }
-        />
-      }
-    >
-      {region(content.title, content.detail)}
-    </Pane>
-  );
-}
-
-function resizableEditor() {
-  return (
-    <Pane
-      header={
-        <Toolbar
-          label="Editor"
-          leading={<ToolbarText text="Editor" size="xlarge" />}
-          trailing={
-            <ToolbarControlGroup label="Panels" appearance="borderless">
-              {panelToggle(
-                'left',
-                'navigator',
-                workbenchNavigatorCollapsed.value,
-                'toggle-workbench-navigator',
-              )}
-              {panelToggle(
-                'right',
-                'inspector',
-                workbenchInspectorCollapsed.value,
-                'toggle-workbench-inspector',
-              )}
-            </ToolbarControlGroup>
-          }
-        />
-      }
-    >
-      {region(
-        'Resize the panels',
-        'Drag a separator, or focus it and use the arrow keys, Home, or End. The editor keeps at least 320 px, so a rail stops growing there; a hidden panel returns at its last size.',
-      )}
-    </Pane>
-  );
-}
+const title = (text: string) => <ToolbarText text={text} />;
+const mainTitle = (text: string) => <ToolbarText text={text} size="xlarge" />;
 
 export function WorkbenchDemo() {
   return (
@@ -327,7 +143,7 @@ export function WorkbenchDemo() {
       </CatalogExample>
       <CatalogExample
         label="Resizable panels"
-        note="Resizing is opt-in per panel, and wireWorkbench drives the separators. The panels leave the work area its minimum, 320 px wide and 120 px tall: resizing stops there, and the rails shrink in proportion when the workbench narrows. Below 704 px of workbench width the rails present as overlays, which start hidden, open one at a time, do not resize, and close from their own header, on Escape, or on a click outside."
+        note="Resizing is opt-in per panel, and wireWorkbench drives the separators. The panels leave the work area its minimum, 320 px wide and 120 px tall: resizing stops there, and the rails shrink in proportion when the workbench narrows. Below 704 px of workbench width the rails present as overlays, which start hidden, open one at a time, do not resize, and close from their own toolbar, on Escape, or on a click outside. A closed rail's toggle moves to the editor toolbar, on the rail's side."
         align="none"
         viewport={{
           layout: 'grid',
@@ -340,28 +156,38 @@ export function WorkbenchDemo() {
         <Workbench
           id={RESIZABLE_WORKBENCH_ID}
           label="Resizable workbench"
+          mainToolbar={{ label: 'Editor', title: mainTitle('Editor') }}
+          main={region(
+            'Resize the panels',
+            'Drag a separator, or focus it and use the arrow keys, Home, or End. The editor keeps at least 320 px, so a rail stops growing there; a hidden panel returns at its last size.',
+          )}
           leftRail={{
             label: 'Navigator',
-            content: railPane(
-              'left',
-              'navigator',
-              { title: 'Files and symbols', detail: '180–400 px wide' },
-              'toggle-workbench-navigator',
-            ),
+            toolbar: {
+              label: 'Navigator',
+              title: title('Navigator'),
+              toggle: {
+                action: 'toggle-workbench-navigator',
+                name: 'navigator',
+              },
+            },
+            content: region('Files and symbols', '180–400 px wide'),
             collapsed: workbenchNavigatorCollapsed.value,
             size: workbenchNavigatorSize.value,
             resizable: { min: 180, max: 400 },
             responsiveOverlayAt: 'narrow',
           }}
-          main={resizableEditor()}
           rightRail={{
             label: 'Inspector',
-            content: railPane(
-              'right',
-              'inspector',
-              { title: 'Selection', detail: '160–360 px wide' },
-              'toggle-workbench-inspector',
-            ),
+            toolbar: {
+              label: 'Inspector',
+              title: title('Inspector'),
+              toggle: {
+                action: 'toggle-workbench-inspector',
+                name: 'inspector',
+              },
+            },
+            content: region('Selection', '160–360 px wide'),
             collapsed: workbenchInspectorCollapsed.value,
             size: workbenchInspectorSize.value,
             resizable: { min: 160, max: 360 },
@@ -377,7 +203,7 @@ export function WorkbenchDemo() {
       </CatalogExample>
       <CatalogExample
         label="Responsive overlay drawer"
-        note="With responsiveOverlayAt, the drawer takes its own track beside a wide editor and overlays the bottom of the editor once the workbench is 704 px or narrower. There wireWorkbench starts it hidden and closes it from its own header, on Escape, or on a click outside; the editor toolbar shows it again."
+        note="With responsiveOverlayAt, the drawer takes its own track beside a wide editor and overlays the bottom of the editor once the workbench is 704 px or narrower. There wireWorkbench starts it hidden and closes it from its own toolbar, on Escape, or on a click outside; while it is closed, its toggle trails the editor's bottom toolbar."
         align="none"
         viewport={{
           layout: 'grid',
@@ -390,10 +216,26 @@ export function WorkbenchDemo() {
         <Workbench
           id={RESPONSIVE_DRAWER_WORKBENCH_ID}
           label="Responsive drawer workbench"
-          main={responsiveDrawerEditor()}
+          mainToolbar={{ label: 'Editor', title: mainTitle('Editor') }}
+          mainBottomToolbar={{
+            label: 'Editor status',
+            leading: <ToolbarText text="Ready" size="small" />,
+          }}
+          main={region(
+            'Narrow the workbench',
+            'At 704 px or narrower the output drawer overlays the bottom of the editor instead of taking its own track.',
+          )}
           bottomDrawer={{
             label: 'Output',
-            content: outputPane(),
+            toolbar: {
+              label: 'Output',
+              title: title('Output'),
+              toggle: { action: 'toggle-workbench-output', name: 'output' },
+            },
+            content: region(
+              'Build output',
+              'Inline above 704 px; an overlay below it',
+            ),
             collapsed: workbenchOutputCollapsed.value,
             size: 180,
             responsiveOverlayAt: 'narrow',
@@ -402,7 +244,7 @@ export function WorkbenchDemo() {
       </CatalogExample>
       <CatalogExample
         label="Controlled collapsed panels"
-        note="Collapsed tracks snap to zero while their fixed-size content slides out."
+        note="Collapsed tracks snap to zero while their fixed-size content slides out. A closed rail's constant groups and toggle lead the editor toolbar, and its panel-only groups wait in the closed panel. With no editor bottom toolbar, a closed drawer's toggle floats in the editor's corner."
         align="none"
         compactFallback="Collapsed tracks preserve desktop workspace state; they are not a compact-layout substitute."
         viewport={{
@@ -415,27 +257,44 @@ export function WorkbenchDemo() {
         }}
       >
         <Workbench
-          id="catalog-workbench-collapsed"
+          id={COLLAPSED_WORKBENCH_ID}
           label="Focused editor workbench"
+          mainToolbar={{ label: 'Editor', title: mainTitle('Editor') }}
+          main={region(
+            'The app owns every collapsed flag',
+            'A closed panel lends its always-available groups and its toggle to the editor toolbars.',
+          )}
           leftRail={{
             label: 'Navigator',
+            toolbar: {
+              label: 'Navigator',
+              panelOnly: iconGroup('New file', FilePlus, 'file-plus'),
+              constant: iconGroup('Search files', Search, 'search'),
+              toggle: {
+                action: 'toggle-workbench-collapsed-navigator',
+                name: 'navigator',
+              },
+            },
             content: region('Navigator', 'Still mounted'),
-            collapsed: true,
+            collapsed: workbenchCollapsedNavigator.value,
           }}
-          main={collapsedEditor()}
           rightRail={{
             label: 'Inspector',
             content: region('Inspector', 'Visible peripheral panel'),
           }}
           bottomDrawer={{
             label: 'Console',
+            toolbar: {
+              label: 'Console',
+              title: title('Console'),
+              toggle: { action: 'toggle-workbench-console', name: 'console' },
+            },
             content: region('Console', 'Still mounted'),
-            collapsed: consoleCollapsed.value,
+            collapsed: workbenchConsoleCollapsed.value,
             size: 120,
             separator: 'hidden',
             collapseMotion: 'fade-slide',
             contentOverflow: 'visible',
-            restoreControl: consoleRestore(),
           }}
         />
       </CatalogExample>

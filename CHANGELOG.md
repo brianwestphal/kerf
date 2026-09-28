@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui`'s `Workbench` composes panel toolbars and moves a closed
+  panel's controls into the work area.** A panel takes an optional `toolbar`
+  (`title`, `panelOnly`, `constant`, and a standard `toggle: { action, name }`
+  the Workbench renders) and `footer`; the Workbench takes `mainToolbar` and
+  `mainBottomToolbar`. While a panel is closed its constant groups and toggle
+  move to the work area — a left rail's lead the main toolbar, a right rail's
+  end it, a drawer's trail the bottom toolbar or float in a corner
+  `FloatingToolbar` — and its panel-only groups stay behind. `wireWorkbench`
+  keeps focus with the toggle as it moves. Panels without a `toolbar` render
+  exactly as before, and a region's only-child `Pane` or layout now fills it.
+
 - **`@kerfjs/ui`'s list-detail dialog guidance is Workbench-shaped.** On roomy
   devices the list is a full-height sidebar and the detail a full-height main
   column, each a `Pane` with its own top `Toolbar`; the main column carries

@@ -114,13 +114,17 @@ import {
   selectTabScaffoldDemo,
 } from './demos/tab-scaffold.js';
 import {
+  COLLAPSED_WORKBENCH_ID,
   resetWorkbenchDemo,
   RESIZABLE_WORKBENCH_ID,
   RESPONSIVE_DRAWER_WORKBENCH_ID,
+  toggleWorkbenchCollapsedNavigator,
   toggleWorkbenchConsole,
   toggleWorkbenchInspector,
   toggleWorkbenchNavigator,
   toggleWorkbenchOutput,
+  workbenchCollapsedNavigator,
+  workbenchConsoleCollapsed,
   workbenchConsoleSize,
   workbenchInspectorCollapsed,
   workbenchInspectorSize,
@@ -882,6 +886,14 @@ const stopActions = delegateActions(app, 'click', {
       ? 'Navigator hidden'
       : 'Navigator shown';
   },
+  'toggle-workbench-collapsed-navigator': () => {
+    actionLog.value = toggleWorkbenchCollapsedNavigator()
+      ? 'Navigator hidden'
+      : 'Navigator shown';
+  },
+  'workbench-demo-command': (_event, element) => {
+    actionLog.value = `${(element as HTMLElement).getAttribute('aria-label') ?? 'Command'} requested`;
+  },
   'toggle-workbench-console': () => {
     actionLog.value = toggleWorkbenchConsole()
       ? 'Console hidden'
@@ -1075,7 +1087,15 @@ const routeWires: Partial<Record<string, RouteWire>> = {
         id: RESPONSIVE_DRAWER_WORKBENCH_ID,
         panels: { bottomDrawer: { collapsed: workbenchOutputCollapsed } },
       });
+      const stopCollapsed = wireWorkbench(root, {
+        id: COLLAPSED_WORKBENCH_ID,
+        panels: {
+          leftRail: { collapsed: workbenchCollapsedNavigator },
+          bottomDrawer: { collapsed: workbenchConsoleCollapsed },
+        },
+      });
       return () => {
+        stopCollapsed();
         stopResponsiveDrawer();
         stopResizable();
       };

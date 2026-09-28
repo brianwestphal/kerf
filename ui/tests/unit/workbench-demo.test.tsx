@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  COLLAPSED_WORKBENCH_ID,
   resetWorkbenchDemo,
   RESPONSIVE_DRAWER_WORKBENCH_ID,
   toggleWorkbenchOutput,
@@ -34,16 +35,19 @@ describe('WorkbenchDemo', () => {
     expect(drawer.style.getPropertyValue('--kui-workbench-drawer-height')).toBe(
       '180px',
     );
-    // The drawer's own header closes it; the editor toolbar toggles it.
+    // Open: the drawer's own toolbar closes it, and the editor carries no
+    // second copy of the toggle.
     const own = drawer.querySelector<HTMLButtonElement>(
       '[data-action="toggle-workbench-output"]',
     )!;
     expect(own.getAttribute('aria-label')).toBe('Hide output');
-    const editor = workbench.querySelector<HTMLButtonElement>(
-      '.kui-workbench__main [data-action="toggle-workbench-output"]',
-    )!;
-    expect(editor.getAttribute('aria-label')).toBe('Hide output');
-    expect(editor.getAttribute('aria-expanded')).toBe('true');
+    expect(own.getAttribute('aria-expanded')).toBe('true');
+    expect(
+      workbench.querySelector(
+        '.kui-workbench__main [data-action="toggle-workbench-output"]',
+      ),
+    ).toBeNull();
+    expect(workbench.querySelector('.kui-workbench__restore')).toBeNull();
   });
 
   it('toggles the output drawer from the app-owned signal and resets it', () => {
@@ -55,11 +59,13 @@ describe('WorkbenchDemo', () => {
       workbench.querySelector<HTMLElement>('[data-workbench-drawer]')!.dataset
         .collapsed,
     ).toBe('true');
-    const editor = workbench.querySelector<HTMLButtonElement>(
-      '.kui-workbench__main [data-action="toggle-workbench-output"]',
+    // Collapsed: the toggle trails the editor's bottom toolbar.
+    const moved = workbench.querySelector<HTMLButtonElement>(
+      '.kui-workbench__main > [data-component="pane"] > .kui-pane__footer .kui-toolbar__trailing [data-action="toggle-workbench-output"]',
     )!;
-    expect(editor.getAttribute('aria-label')).toBe('Show output');
-    expect(editor.getAttribute('aria-expanded')).toBe('false');
+    expect(moved.getAttribute('aria-label')).toBe('Show output');
+    expect(moved.getAttribute('aria-expanded')).toBe('false');
+    expect(workbench.querySelector('.kui-workbench__restore')).toBeNull();
 
     expect(toggleWorkbenchOutput()).toBe(false);
     toggleWorkbenchOutput();
@@ -72,21 +78,68 @@ describe('WorkbenchDemo', () => {
     ).toBe('false');
   });
 
-  it("gives each resizable example rail its own header's close control", () => {
+  it('keeps each open rail toggle in the rail and moves a closed rail toggle to its edge of the editor toolbar', () => {
     resetWorkbenchDemo();
     const workbench = example('catalog-workbench-resizable');
-    for (const [side, action, label] of [
-      ['left', 'toggle-workbench-navigator', 'Hide navigator'],
-      ['right', 'toggle-workbench-inspector', 'Hide inspector'],
-    ]) {
-      const rail = workbench.querySelector<HTMLElement>(
-        `[data-workbench-rail="${side}"]`,
-      )!;
-      const close = rail.querySelector<HTMLButtonElement>(
-        `[data-action="${action}"]`,
-      )!;
-      expect(close.getAttribute('aria-label')).toBe(label);
-      expect(close.closest('[data-component="toolbar"]')).not.toBeNull();
-    }
+    const editor = workbench.querySelector<HTMLElement>(
+      '.kui-workbench__main .kui-toolbar',
+    )!;
+    // The navigator starts open: its toggle closes it from its own toolbar.
+    const navigator = workbench.querySelector<HTMLElement>(
+      '[data-workbench-rail="left"]',
+    )!;
+    expect(
+      navigator
+        .querySelector('[data-action="toggle-workbench-navigator"]')!
+        .getAttribute('aria-label'),
+    ).toBe('Hide navigator');
+    expect(
+      editor.querySelector('[data-action="toggle-workbench-navigator"]'),
+    ).toBeNull();
+    // The inspector starts closed: its toggle is the last editor control.
+    const trailing = [
+      ...editor.querySelectorAll<HTMLElement>(
+        '.kui-toolbar__trailing [data-workbench-toggle]',
+      ),
+    ];
+    expect(trailing.map((button) => button.getAttribute('aria-label'))).toEqual(
+      ['Show inspector'],
+    );
+    expect(
+      editor.querySelector('.kui-toolbar__leading [data-workbench-toggle]'),
+    ).toBeNull();
+  });
+
+  it("lends a closed navigator's search and toggle to the editor toolbar and floats a closed console's toggle in the editor's corner", () => {
+    resetWorkbenchDemo();
+    const workbench = example(COLLAPSED_WORKBENCH_ID);
+    const pane = workbench.querySelector<HTMLElement>(
+      '.kui-workbench__main > [data-component="pane"]',
+    )!;
+    const leading = pane.querySelector<HTMLElement>(
+      ':scope > .kui-pane__header .kui-toolbar__leading',
+    )!;
+    const labels = [
+      ...leading.querySelectorAll<HTMLElement>(
+        'button, [data-component="toolbar-text"]',
+      ),
+    ].map(
+      (node) => node.getAttribute('aria-label') ?? node.textContent!.trim(),
+    );
+    expect(labels).toEqual(['Search files', 'Show navigator', 'Editor']);
+    // The panel-only "New file" group stays in the closed navigator.
+    expect(pane.innerHTML).not.toContain('New file');
+    expect(pane.querySelector(':scope > .kui-pane__footer')).toBeNull();
+    const corner = workbench.querySelector<HTMLElement>(
+      '.kui-workbench__restore[data-panel="bottom"]',
+    )!;
+    expect(
+      corner
+        .querySelector('[data-action="toggle-workbench-console"]')!
+        .getAttribute('aria-label'),
+    ).toBe('Show console');
+    expect(
+      corner.querySelector('[data-component="floating-toolbar"]'),
+    ).not.toBeNull();
   });
 });

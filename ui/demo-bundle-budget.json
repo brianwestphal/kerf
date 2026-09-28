@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 291700,
-  "measuredLargestJavaScriptGzip": 143815,
-  "measuredTotalJavaScriptGzip": 291664,
+  "totalJavaScriptGzip": 292500,
+  "measuredLargestJavaScriptGzip": 144650,
+  "measuredTotalJavaScriptGzip": 292498,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -771,6 +771,22 @@
         "measuredTotalJavaScriptGzip": 291664,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 291700
+      }
+    },
+    {
+      "at": "2026-09-28T03:46:58.839Z",
+      "reason": "KF-6GVPW7 Workbench composes panel toolbars (Pane, Toolbar, ToolbarControlGroup, FloatingToolbar, panel toggle icons)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 143815,
+        "measuredTotalJavaScriptGzip": 291664,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 291700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 144650,
+        "measuredTotalJavaScriptGzip": 292498,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 292500
       }
     }
   ]

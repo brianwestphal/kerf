@@ -65,7 +65,8 @@ const navCollapsed = signal(false);
 />;
 ```
 
-Each `WorkbenchPanel` takes `content`, an optional `collapsed`, an optional
+Each `WorkbenchPanel` takes `content`, an optional `toolbar` and `footer` (see
+[Panel toolbars](#panel-toolbars)), an optional `collapsed`, an optional
 `size` (rail width or drawer height in px, overriding the CSS default —
 `--kui-workbench-rail-width` 280px, `--kui-workbench-drawer-height` 220px), and
 an optional `label`. Common shell behavior is configured rather than restyled:
@@ -98,8 +99,10 @@ an optional `label`. Common shell behavior is configured rather than restyled:
   it covers the rest of the work area, and a collapsed overlay, which drops
   its pointer events, leaves the control beneath it usable;
 - `restoreControl` places an application-owned restore affordance in a
-  corner of the Workbench itself while the panel is collapsed
-  (`restorePosition` chooses the corner), inset by
+  corner of the Workbench itself while the panel is collapsed. Prefer a
+  `toolbar.toggle`, which the Workbench relocates for you; keep
+  `restoreControl` for a custom affordance. `restorePosition` chooses the
+  corner, inset by
   `--kui-workbench-restore-inset` (16px) plus the unsafe area of each edge the
   corner reaches. A rail's control sits in the Workbench's corner; the
   drawer's sits in the corner of the work-area column it restores into, so it
@@ -126,6 +129,69 @@ an optional `label`. Common shell behavior is configured rather than restyled:
 The same policy props are available on `ResizableRegion` and
 `CollapsiblePanel`, so a resizable application shell does not need to reach
 into `.kui-resizable-region__content`.
+
+## Panel toolbars
+
+A panel's controls follow it open and closed when the Workbench composes the
+toolbars. Give a panel a `toolbar` and the work area a `mainToolbar` (and, for
+a drawer, optionally a `mainBottomToolbar`); the Workbench renders each as a
+standard `Toolbar` over a `Pane`, and moves groups between them as panels open
+and close. A panel's `toolbar` has four parts:
+
+- `title` — the panel's `ToolbarText` (the quiet default size in a rail).
+- `panelOnly` — groups that make sense only while the panel is open. They lead
+  its toolbar, after the title, and are unavailable while it is closed.
+- `constant` — groups that stay available either way. They trail the panel's
+  toolbar while it is open and move to the work area's toolbar while it is
+  closed.
+- `toggle: { action, name }` — the standard collapse toggle, which the
+  Workbench renders: the per-side panel glyph, `aria-controls` naming the
+  panel, `aria-expanded`, a "Show …"/"Hide …" label, and the `data-action`
+  the app handles. It is always the last group.
+
+While a panel is closed, its `constant` groups and then its toggle go to:
+
+| Panel         | Where they go                                                                                                   |
+| ------------- | --------------------------------------------------------------------------------------------------------------- |
+| Left rail     | The leading edge of `mainToolbar`, before its `title`                                                           |
+| Right rail    | The trailing edge of `mainToolbar`, after its `trailing` groups, so the toggle is the toolbar's last group      |
+| Bottom drawer | The trailing edge of `mainBottomToolbar`; without one, a `FloatingToolbar` in the work area's bottom-end corner |
+
+A rail with no `mainToolbar` floats its groups in its corner the same way, so
+a closed panel can always be reopened. An open overlay panel carries its own
+toggle, so it never depends on a control it covers. An app's own
+`restoreControl` still wins over the floating fallback.
+
+```tsx
+<Workbench
+  id="studio"
+  label="Studio"
+  mainToolbar={{ label: "Editor", title: <ToolbarText text="Editor" size="xlarge" /> }}
+  main={<Editor />}
+  leftRail={{
+    label: "Navigator",
+    toolbar: {
+      label: "Navigator",
+      title: <ToolbarText text="Navigator" />,
+      panelOnly: <NewFileGroup />,
+      constant: <SearchGroup />,
+      toggle: { action: "toggle-navigator", name: "navigator" },
+    },
+    content: <Files />,
+    collapsed: navCollapsed.value,
+  }}
+/>
+```
+
+Size a rail so its title and groups fit at its narrowest (a resizable rail's
+`min`); a toolbar that cannot hold them drops the title rather than
+truncating it. `constant` content renders in both places while the panel is
+closed (the panel's copy is inert), so give it no `id`s. With `wireWorkbench`
+given the panel's `collapsed` signal, focus follows the toggle: closing a
+panel from its own toggle focuses the relocated toggle in the work area, and
+opening it from there focuses the panel's own toggle. A panel's optional
+`footer` renders below its content, for a sidebar's bottom toolbar. Without a
+`toolbar` or `mainToolbar`, `content` and `main` render exactly as given.
 
 ## Resizable panels
 
