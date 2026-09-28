@@ -36,6 +36,24 @@ probably wrong:**
   direct `ToolbarText` title (xl, or the default size in a narrow rail — see
   "One heading composition") and grouped controls. Do not restyle the toolbar.
 
+## Always dogfood the components
+
+**Build every kerf UI surface from `@kerfjs/ui` components whenever one fits —
+including the package's own catalog and shell components (`Catalog`,
+`CatalogSidebar`, `CatalogExample`, …), the demos, and the recipes.** Use
+`Text` rather than a raw `<p>`/`<span>` for copy, `Workbench`/`Pane` for app
+shells, `Toolbar` + `ToolbarText` for headings, and `List`/`ListItem`/
+`ListHeader` for navigation and grouped content, instead of hand-rolled markup
+with its own CSS.
+
+When you touch such code, evaluate every CSS rule and every raw tag: is this
+customization genuinely important, or is it re-implementing (or quietly
+diverging from) something a component already does? Delete the unnecessary
+ones. If a component lacks a capability the surface really needs, improve the
+component rather than working around it. Never invent behavior nobody asked
+for (the catalog once grew an unrequested two-column phone layout). **Ask when
+you are unsure whether a customization matters.**
+
 ## Pre-flight checklist (the mistakes to not repeat)
 
 - **No double-inset.** A pane has **no** padding; its `.kui-content` children own
