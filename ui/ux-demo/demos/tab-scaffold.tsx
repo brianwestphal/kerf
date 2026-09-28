@@ -21,6 +21,8 @@ const tabs: readonly TabScaffoldTab<DemoTabId>[] = [
     id: 'projects',
     label: 'Projects',
     icon: <LucideIcon icon={FolderKanban} name="folder-kanban" />,
+    badge: 3,
+    badgeLabel: '3 updated',
     content: scene('Projects', 'Each destination stays mounted when inactive.'),
   },
   {
@@ -59,7 +61,7 @@ export function TabScaffoldDemo() {
     >
       <CatalogExample
         label="Persistent tab scenes"
-        note="The controlled active id changes the visible scene; every tab scene remains mounted so its own stack and scroll position survive."
+        note="The controlled active id changes the visible scene; every tab scene remains mounted so its own stack and scroll position survive. A tab badge sits at the icon's top-trailing corner, and its badgeLabel joins the tab's accessible name."
         viewport={{ layout: 'grid', width: 'compact', height: 'tall' }}
       >
         <TabScaffold

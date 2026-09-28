@@ -624,6 +624,29 @@ TabScaffold({
     { id: 'settings', label: 'Settings', content: icon },
   ],
 });
+// A tab badge is a count or short string with an optional localized phrase.
+TabScaffold({
+  id: 'app',
+  label: 'Sections',
+  active: 'inbox',
+  tabs: [
+    {
+      id: 'inbox',
+      label: 'Inbox',
+      content: icon,
+      badge: 3,
+      badgeLabel: '3 unread',
+    },
+    { id: 'updates', label: 'Updates', content: icon, badge: 'New' },
+  ],
+});
+TabScaffold({
+  id: 'app',
+  label: 'Sections',
+  active: 'inbox',
+  // @ts-expect-error a tab badge is text or a number, not markup.
+  tabs: [{ id: 'inbox', label: 'Inbox', content: icon, badge: true }],
+});
 TabScaffold({
   id: 'app',
   label: 'Sections',

@@ -129,8 +129,24 @@
 }
 
 .kui-tab-scaffold__tab-icon {
+  position: relative;
   display: grid;
   place-items: center;
+}
+
+/* The iOS tab-bar badge: over the icon's top-trailing corner, its leading
+   edge just past the icon's center line so a longer count grows outward. The
+   Badge keeps its own geometry; only this anchor is positioned. Without an
+   icon the badge stays in flow above the label. */
+.kui-tab-scaffold__tab-badge {
+  display: flex;
+  pointer-events: none;
+}
+
+.kui-tab-scaffold__tab-icon > .kui-tab-scaffold__tab-badge {
+  position: absolute;
+  inset-block-start: remify(-7px);
+  inset-inline-start: calc(50% + remify(3px));
 }
 
 .kui-tab-scaffold__tab-icon svg {

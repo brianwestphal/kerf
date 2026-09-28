@@ -851,7 +851,9 @@
       "kind": "component",
       "source": "kerf",
       "description": "A controlled compact-device bottom tab scaffold that keeps every tab scene mounted so its navigation and scroll state survive selection changes.",
-      "uses": [],
+      "uses": [
+        "badge"
+      ],
       "purpose": "Switch among two to five co-equal top-level destinations on compact devices while preserving each destination's independent content state.",
       "publicExports": [
         "TabScaffoldTab",
@@ -881,17 +883,20 @@
       "appOwns": [
         "controlled active tab id",
         "tab labels, icons, and content",
+        "tab badge counts and their localized badgeLabel phrases",
         "routing and persistence",
         "responsive replacement on larger device classes"
       ],
       "variants": [
         "text-only tabs",
         "icon and text tabs",
+        "badged tabs",
         "one NavStack per tab"
       ],
       "accessibility": [
         "Give the tablist an accessible label and keep exactly the active tab in the sequential focus order.",
-        "Wire selection through the controlled active id while leaving inactive scenes mounted and hidden."
+        "Wire selection through the controlled active id while leaving inactive scenes mounted and hidden.",
+        "A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes \"<label>, <badgeLabel>\" (it defaults to the badge text)."
       ],
       "geometry": {
         "margin": "none",
@@ -922,6 +927,7 @@
         "kui-tab-scaffold__bar",
         "kui-tab-scaffold__tab",
         "kui-tab-scaffold__tab-icon",
+        "kui-tab-scaffold__tab-badge",
         "kui-tab-scaffold__tab-label"
       ],
       "publicTokens": [],

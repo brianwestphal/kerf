@@ -1282,11 +1282,6 @@ interface WorkbenchMainBottomToolbar extends ToolbarConfig {
     trailing?: KerfUiContent;
 }
 /**
- * The work area: the app's `main` under `mainToolbar` (and above
- * `mainBottomToolbar`), with each collapsed panel's groups added to the
- * toolbar on its side. Without either toolbar, `main` renders as given.
- */
-/**
  * Whether the work area's header or footer chrome stays pinned (`fixed`) or
  * scrolls away with the content (`scroll`).
  */
@@ -1794,6 +1789,19 @@ interface TabScaffoldTab<Id extends string = string> {
     label: string;
     /** Decorative icon shown above the label in the bottom bar. */
     icon?: SafeHtml;
+    /**
+     * Optional count or short status shown as a solid danger `Badge` at the
+     * top-trailing corner of the tab icon (the iOS tab-bar badge). Omitted, `''`,
+     * or non-finite numbers render no badge. The visual badge is `aria-hidden`;
+     * its meaning reaches assistive technology through `badgeLabel`.
+     */
+    badge?: string | number;
+    /**
+     * Localized phrase folded into the tab's accessible name as
+     * `"<label>, <badgeLabel>"` (for example `"3 unread"` → `"Inbox, 3 unread"`).
+     * Defaults to the badge text itself. Ignored when no badge renders.
+     */
+    badgeLabel?: string;
     /** The tab's content — typically a `NavStack` so each tab keeps its own stack. */
     content: KerfUiContent;
 }

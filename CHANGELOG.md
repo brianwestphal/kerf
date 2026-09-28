@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` `TabScaffold` tabs can show a badge.** Give a
+  `TabScaffoldTab` a `badge` (a count or short string) to show the iOS tab-bar
+  badge — a compact, solid danger `Badge` at the top-trailing corner of the
+  tab's icon. The badge is hidden from assistive technology; the tab's
+  accessible name becomes `"<label>, <badgeLabel>"` (for example
+  "Inbox, 3 unread"), with `badgeLabel` defaulting to the badge text. Tabs
+  without a badge are unchanged.
+
 - **`@kerfjs/ui` toolbar groups drop their focus ring while a popup is open.**
   A `ToolbarControlGroup` that owns the ring (`focusRing="outline"` or
   `"halo"`) no longer paints it while a Select listbox or `PopupMenu` inside it

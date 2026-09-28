@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 295700,
-  "measuredLargestJavaScriptGzip": 147254,
-  "measuredTotalJavaScriptGzip": 295619,
+  "totalJavaScriptGzip": 295900,
+  "measuredLargestJavaScriptGzip": 147429,
+  "measuredTotalJavaScriptGzip": 295812,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -947,6 +947,22 @@
         "measuredTotalJavaScriptGzip": 295619,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 295700
+      }
+    },
+    {
+      "at": "2026-09-28T10:41:18.216Z",
+      "reason": "TabScaffold tab badges: TabScaffold now imports Badge and the demo shows a badged tab (KF-KN0S62)",
+      "old": {
+        "measuredLargestJavaScriptGzip": 147254,
+        "measuredTotalJavaScriptGzip": 295619,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 295700
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 147429,
+        "measuredTotalJavaScriptGzip": 295812,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 295900
       }
     }
   ]

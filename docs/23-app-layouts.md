@@ -609,6 +609,13 @@ sub-part component.
 - Bottom tab bar respects safe-area insets and reduced motion.
 - On larger classes the guidance is to promote the tab set to a `Workbench` left
   rail or a persistent sidebar rather than keep a bottom bar.
+- A tab may carry an optional `badge` (`string | number`) — rendered as a
+  compact, solid `danger` `Badge` at the top-trailing corner of its icon (the
+  iOS tab-bar badge; in flow above the label when the tab has no icon) — with
+  an optional localized `badgeLabel`. The visual badge is `aria-hidden`; the tab
+  folds the phrase into its accessible name as `"<label>, <badgeLabel>"`
+  (defaulting to the badge text). An omitted, empty, or non-finite badge
+  renders nothing and leaves the name unchanged.
 
 Shipped shape — controlled; the app owns `active`, and
 `wireTabScaffold(root, { onSelect })` (`@kerfjs/ui/wire-tab-scaffold`) delegates
@@ -624,6 +631,7 @@ const active = signal<"home" | "search">("home");
   tabs={[
     { id: "home", label: "Home", icon: homeIcon, content: <HomeStack /> },
     { id: "search", label: "Search", icon: searchIcon, content: <SearchStack /> },
+    { id: "inbox", label: "Inbox", icon: inboxIcon, badge: 3, badgeLabel: "3 unread", content: <InboxStack /> },
   ]}
 />;
 // once: const dispose = wireTabScaffold(root, { onSelect: (id) => (active.value = id as "home" | "search") });

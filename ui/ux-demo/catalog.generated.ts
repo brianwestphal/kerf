@@ -121,7 +121,9 @@ export const generatedKerfCatalog = [
     "kind": "component",
     "source": "kerf",
     "description": "Switch among two to five co-equal top-level destinations on compact devices while preserving each destination's independent content state.",
-    "uses": [],
+    "uses": [
+      "badge"
+    ],
     "demoSource": "ui/ux-demo/demos/tab-scaffold.tsx",
     "componentSource": "ui/src/tab-scaffold.tsx",
     "documentation": "ui/docs/tab-scaffold.md"

@@ -44,7 +44,8 @@ const dispose = wireTabScaffold(root, {
 });
 ```
 
-Each `TabScaffoldTab` has an `id`, `label`, optional `icon`, and `content`. The
+Each `TabScaffoldTab` has an `id`, `label`, optional `icon`, optional `badge`
+and `badgeLabel` (see [Tab badges](#tab-badges)), and `content`. The
 bottom bar paints through the home-indicator safe area and pads for it and for
 the side insets, while each scene pads for the top and side insets (a scene
 whose only child is a `NavStack` or `Pane` lets that child own them; see
@@ -52,3 +53,30 @@ whose only child is a `NavStack` or `Pane` lets that child own them; see
 truncate horizontally with an ellipsis when a destination name exceeds its
 share of the bar. On larger device classes, promote the tab set to a
 `Workbench` rail or a persistent sidebar instead of a bottom bar.
+
+## Tab badges
+
+Give a tab a `badge` (a count or short string such as `3`, `"99+"`, or
+`"New"`) to show the iOS tab-bar badge: a compact, solid `danger` `Badge` at the
+top-trailing corner of the tab's icon, growing outward as the text lengthens
+(without an icon it sits above the label). The badge is decorative
+(`aria-hidden`); its meaning reaches assistive technology through `badgeLabel`,
+which the tab folds into its accessible name as `"<label>, <badgeLabel>"`:
+
+```tsx
+{
+  id: "inbox",
+  label: "Inbox",
+  icon: <LucideIcon icon={Inbox} name="inbox" />,
+  badge: unread.value,
+  badgeLabel: `${unread.value} unread`,
+  content: <InboxStack />,
+}
+```
+
+`badgeLabel` defaults to the badge text itself, so supply a localized phrase
+whenever the bare text would be ambiguous. Omitting `badge` (or passing an
+empty string or a non-finite number) renders no badge and leaves the tab's name
+as its label; `0` renders, so pass `undefined` when a count should disappear.
+Keep the text short — clamp large counts (`"99+"`) in the app. The tone follows
+the platform convention and is fixed; do not restyle the badge.
