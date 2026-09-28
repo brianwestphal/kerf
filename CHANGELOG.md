@@ -26,6 +26,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   without restyling. Omitted or `undefined` fields keep today's defaults, and
   the default markup is unchanged.
 
+- **`@kerfjs/ui` `SplitView` forwards its `ResizableRegion` and compact
+  `NavStack` configuration.** `resizable` now also takes the list region's
+  `separator`, `handleIcon`, `contentOverflow`, and collapse options
+  (`collapsed`, `transitioning`, `collapseMotion`, `restoreControl`,
+  `restorePosition`), so an app can hide the list and float a restore control
+  without leaving `SplitView`. The new `compactStack` prop forwards the compact
+  stack's `toolbarConfig`, `backIcon`, `backText`, `hideToolbar`, and
+  persistent `bottomToolbar`, and gives the list and detail views their own
+  toolbar groups (`list` / `detail`: `leading`, `center`, `toolbar`,
+  `bottomToolbar`). Omitted options keep today's defaults.
+
 - **`@kerfjs/ui` `NavStack` renders its top chrome as a real `Toolbar`.** The
   back control is a borderless `ToolbarControlGroup` and the title a
   `ToolbarText` in the leading zone, and the stack now forwards:

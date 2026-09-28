@@ -1,11 +1,56 @@
-import { NavStack } from './nav-stack.js';
-import { ResizableRegion } from './resizable-region.js';
+import {
+  NavStack,
+  type NavStackProps,
+  type NavStackView,
+} from './nav-stack.js';
+import {
+  ResizableRegion,
+  type ResizableRegionProps,
+} from './resizable-region.js';
 import type { KerfUiContent } from './semantic-content.js';
 
-export interface SplitViewResizable {
+/**
+ * The roomy list pane's `ResizableRegion`: its committed `size` and `min` /
+ * `max` limits, plus the region configuration that forwards unchanged
+ * (`separator`, `handleIcon`, `contentOverflow`, and collapse:
+ * `collapsed`, `transitioning`, `collapseMotion`, `restoreControl`,
+ * `restorePosition`). Omitted options keep the region's defaults.
+ */
+export interface SplitViewResizable extends Pick<
+  ResizableRegionProps,
+  | 'separator'
+  | 'handleIcon'
+  | 'contentOverflow'
+  | 'collapsed'
+  | 'transitioning'
+  | 'collapseMotion'
+  | 'restoreControl'
+  | 'restorePosition'
+> {
   size: number;
   min: number;
   max: number;
+}
+
+/** One compact view's top- and bottom-toolbar content (see `NavStackView`). */
+export type SplitViewCompactViewToolbars = Pick<
+  NavStackView,
+  'leading' | 'center' | 'toolbar' | 'bottomToolbar'
+>;
+
+/**
+ * The compact `NavStack`'s configuration: its toolbar configuration, back
+ * control, and persistent bottom toolbar forward to the stack, and `list` /
+ * `detail` give each view its own toolbar groups.
+ */
+export interface SplitViewCompactStack extends Pick<
+  NavStackProps,
+  'toolbarConfig' | 'backIcon' | 'backText' | 'hideToolbar' | 'bottomToolbar'
+> {
+  /** Toolbar content for the list (root) view. */
+  list?: SplitViewCompactViewToolbars;
+  /** Toolbar content for the pushed detail view. */
+  detail?: SplitViewCompactViewToolbars;
 }
 
 export interface SplitViewProps {
@@ -29,6 +74,8 @@ export interface SplitViewProps {
   detailTitle?: string;
   /** Back label for the compact NavStack (default "Back"). */
   backLabel?: string;
+  /** Compact NavStack configuration and per-view toolbars. */
+  compactStack?: SplitViewCompactStack;
   /** A resizable separator on roomy classes (min/max px). Omit for a fixed split. */
   resizable?: SplitViewResizable;
   className?: string;
@@ -53,17 +100,29 @@ export function SplitView({
   listTitle = '',
   detailTitle = '',
   backLabel = 'Back',
+  compactStack = {},
   resizable,
   className = '',
   slot,
 }: SplitViewProps) {
   if (compact) {
-    const views = detailActive
+    const listView: NavStackView = {
+      ...compactStack.list,
+      key: 'list',
+      title: listTitle,
+      content: list,
+    };
+    const views: NavStackView[] = detailActive
       ? [
-          { key: 'list', title: listTitle, content: list },
-          { key: 'detail', title: detailTitle, content: detail },
+          listView,
+          {
+            ...compactStack.detail,
+            key: 'detail',
+            title: detailTitle,
+            content: detail,
+          },
         ]
-      : [{ key: 'list', title: listTitle, content: list }];
+      : [listView];
     return (
       <div
         class={`kui-split-view kui-split-view--compact ${className}`.trim()}
@@ -77,6 +136,11 @@ export function SplitView({
           label={label}
           views={views}
           backLabel={backLabel}
+          backIcon={compactStack.backIcon}
+          backText={compactStack.backText}
+          toolbarConfig={compactStack.toolbarConfig}
+          hideToolbar={compactStack.hideToolbar}
+          bottomToolbar={compactStack.bottomToolbar}
         />
       </div>
     );
@@ -88,6 +152,14 @@ export function SplitView({
       size={resizable.size}
       min={resizable.min}
       max={resizable.max}
+      separator={resizable.separator}
+      handleIcon={resizable.handleIcon}
+      contentOverflow={resizable.contentOverflow}
+      collapsed={resizable.collapsed}
+      transitioning={resizable.transitioning}
+      collapseMotion={resizable.collapseMotion}
+      restoreControl={resizable.restoreControl}
+      restorePosition={resizable.restorePosition}
     >
       <div
         class="kui-split-view__list kui-pane"

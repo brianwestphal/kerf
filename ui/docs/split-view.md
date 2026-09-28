@@ -53,6 +53,41 @@ const selected = signal<string | null>(null);
   app's selection). This is the portrait-tablet / handset presentation; as a
   dialog the compact form is a full-screen or large partial-cover modal.
 
+## Configuring the list region and the compact stack
+
+`resizable` forwards the list's `ResizableRegion` configuration alongside
+`size`, `min`, and `max`: `separator` (`"hidden"` keeps the resize hit target
+but paints no line), `handleIcon`, `contentOverflow`, and collapse —
+`collapsed`, `transitioning`, `collapseMotion`, `restoreControl`, and
+`restorePosition`. A collapsed list snaps to zero width, renders `inert` and
+`aria-hidden`, and the detail fills the split; the app owns the `collapsed`
+flag and renders the restore control (usually a `FloatingToolbar`). Omitted
+options keep the region's defaults.
+
+```tsx
+resizable={{
+  size: listWidth.value,
+  min: 220,
+  max: 480,
+  collapsed: listCollapsed.value,
+  restoreControl: <ShowThreadsToolbar />,
+}}
+```
+
+`compactStack` configures the compact `NavStack`: `toolbarConfig`, `backIcon`,
+`backText`, `hideToolbar`, and the persistent `bottomToolbar` forward to the
+stack, and `list` / `detail` give each view its own top-toolbar groups
+(`leading`, `center`, trailing `toolbar`) and `bottomToolbar`:
+
+```tsx
+compactStack={{
+  backText: "Threads",
+  toolbarConfig: { headingLevel: 1 },
+  list: { toolbar: <ComposeGroup /> },
+  detail: { toolbar: <ReplyGroup />, bottomToolbar: <MessageActions /> },
+}}
+```
+
 The catalog's **Interactive compact drill-down** example exercises this exact
 controlled flow: a list action sets the selected message, `detailActive` pushes
 its detail, and the wired Back action clears the selection to reveal the

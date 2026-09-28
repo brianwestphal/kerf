@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 295100,
-  "measuredLargestJavaScriptGzip": 146635,
-  "measuredTotalJavaScriptGzip": 295027,
+  "totalJavaScriptGzip": 295200,
+  "measuredLargestJavaScriptGzip": 146765,
+  "measuredTotalJavaScriptGzip": 295151,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -899,6 +899,22 @@
         "measuredTotalJavaScriptGzip": 295027,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 295100
+      }
+    },
+    {
+      "at": "2026-09-28T09:21:59.698Z",
+      "reason": "SplitView forwards ResizableRegion collapse/separator and compact NavStack toolbar configuration",
+      "old": {
+        "measuredLargestJavaScriptGzip": 146635,
+        "measuredTotalJavaScriptGzip": 295027,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 295100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 146765,
+        "measuredTotalJavaScriptGzip": 295151,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 295200
       }
     }
   ]

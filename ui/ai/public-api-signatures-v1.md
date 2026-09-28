@@ -1073,12 +1073,38 @@ export { type WireNavStackOptions, wireNavStack };
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { NavStackProps, NavStackView } from './nav-stack.js';
+import { ResizableRegionProps } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import './toolbar.js';
+import './pane.js';
+import './sides-BPSWde0A.js';
+import './toolbar-text.js';
 
-interface SplitViewResizable {
+/**
+ * The roomy list pane's `ResizableRegion`: its committed `size` and `min` /
+ * `max` limits, plus the region configuration that forwards unchanged
+ * (`separator`, `handleIcon`, `contentOverflow`, and collapse:
+ * `collapsed`, `transitioning`, `collapseMotion`, `restoreControl`,
+ * `restorePosition`). Omitted options keep the region's defaults.
+ */
+interface SplitViewResizable extends Pick<ResizableRegionProps, 'separator' | 'handleIcon' | 'contentOverflow' | 'collapsed' | 'transitioning' | 'collapseMotion' | 'restoreControl' | 'restorePosition'> {
     size: number;
     min: number;
     max: number;
+}
+/** One compact view's top- and bottom-toolbar content (see `NavStackView`). */
+type SplitViewCompactViewToolbars = Pick<NavStackView, 'leading' | 'center' | 'toolbar' | 'bottomToolbar'>;
+/**
+ * The compact `NavStack`'s configuration: its toolbar configuration, back
+ * control, and persistent bottom toolbar forward to the stack, and `list` /
+ * `detail` give each view its own toolbar groups.
+ */
+interface SplitViewCompactStack extends Pick<NavStackProps, 'toolbarConfig' | 'backIcon' | 'backText' | 'hideToolbar' | 'bottomToolbar'> {
+    /** Toolbar content for the list (root) view. */
+    list?: SplitViewCompactViewToolbars;
+    /** Toolbar content for the pushed detail view. */
+    detail?: SplitViewCompactViewToolbars;
 }
 interface SplitViewProps {
     id: string;
@@ -1101,6 +1127,8 @@ interface SplitViewProps {
     detailTitle?: string;
     /** Back label for the compact NavStack (default "Back"). */
     backLabel?: string;
+    /** Compact NavStack configuration and per-view toolbars. */
+    compactStack?: SplitViewCompactStack;
     /** A resizable separator on roomy classes (min/max px). Omit for a fixed split. */
     resizable?: SplitViewResizable;
     className?: string;
@@ -1114,9 +1142,9 @@ interface SplitViewProps {
  * resizable wiring with `wireResizableRegions` and the compact back with
  * `wireNavStack`.
  */
-declare function SplitView({ id, label, list, detail, compact, detailActive, listTitle, detailTitle, backLabel, resizable, className, slot, }: SplitViewProps): kerfjs.SafeHtml;
+declare function SplitView({ id, label, list, detail, compact, detailActive, listTitle, detailTitle, backLabel, compactStack, resizable, className, slot, }: SplitViewProps): kerfjs.SafeHtml;
 
-export { SplitView, type SplitViewProps, type SplitViewResizable };
+export { SplitView, type SplitViewCompactStack, type SplitViewCompactViewToolbars, type SplitViewProps, type SplitViewResizable };
 ```
 
 ## `@kerfjs/ui/pane`

@@ -220,6 +220,23 @@ const device = deviceClass();
 `SplitViewProps` also takes `backLabel` (default `"Back"`), `className`, and
 `slot`.
 
+Both inner components stay configurable through `SplitView` (KF-NX84V0:
+SplitView forwards ResizableRegion and NavStack configuration), with every
+option defaulting to the component's own default:
+
+- `resizable` (`SplitViewResizable`) forwards the list `ResizableRegion`'s
+  `separator`, `handleIcon`, `contentOverflow`, and collapse options
+  (`collapsed`, `transitioning`, `collapseMotion`, `restoreControl`,
+  `restorePosition`). A collapsed list snaps to zero, leaves the tab order and
+  accessibility tree, and the detail fills the split; the app owns the flag
+  and the restore control. `axis`, `edge`, `presentation`, and
+  `responsiveFillAt` are fixed by the split's geometry and not forwarded.
+- `compactStack` (`SplitViewCompactStack`) forwards the compact `NavStack`'s
+  `toolbarConfig`, `backIcon`, `backText`, `hideToolbar`, and persistent
+  `bottomToolbar`, and its `list` / `detail` entries
+  (`SplitViewCompactViewToolbars`) give each view `leading`, `center`,
+  trailing `toolbar`, and `bottomToolbar` content.
+
 **Implementation:** ticket **SplitView (list-detail) layout**. Depends on
 NavStack (it reuses it on compact classes).
 

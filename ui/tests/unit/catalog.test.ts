@@ -158,7 +158,13 @@ describe('UX catalog metadata', () => {
     expect(
       artifact.entries.find(({ id }) => id === 'split-view'),
     ).toMatchObject({
-      publicExports: ['SplitView', 'SplitViewProps', 'SplitViewResizable'],
+      publicExports: [
+        'SplitView',
+        'SplitViewProps',
+        'SplitViewResizable',
+        'SplitViewCompactStack',
+        'SplitViewCompactViewToolbars',
+      ],
       publicTokens: ['--kui-split-view-list-width'],
       delivery: {
         moduleImport: '@kerfjs/ui/split-view',
@@ -177,7 +183,13 @@ describe('UX catalog metadata', () => {
       },
       {
         id: 'split-view',
-        exports: ['SplitView', 'SplitViewProps', 'SplitViewResizable'],
+        exports: [
+          'SplitView',
+          'SplitViewProps',
+          'SplitViewResizable',
+          'SplitViewCompactStack',
+          'SplitViewCompactViewToolbars',
+        ],
       },
       {
         id: 'tab-scaffold',

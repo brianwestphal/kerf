@@ -745,6 +745,16 @@
           "owner": "application",
           "required": false
         },
+        {
+          "id": "optional list collapse state and its restore control",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "compact list and detail toolbar groups and toolbar configuration",
+          "owner": "application",
+          "required": false
+        },
         { "id": "back action", "owner": "application", "required": false }
       ],
       "wiring": {
