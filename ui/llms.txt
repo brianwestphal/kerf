@@ -102,7 +102,9 @@ the folder modules, and CSS only imports their owner stylesheets.
   without an application customization layer. Before adding `padding`, `margin`,
   `width`, `height`, `border`, `background`, a wrapper card, or a decoration,
   check whether the component, pane, or content-item already owns it. Prefer a
-  component prop or documented `--kui-*` token. CSS for genuinely new structure
+  component prop — `FloatingToolbar inset`, `DisclosureArrow size`, `ListHeader
+headingLevel`, `TokenSearchField clearIcon`, `.kui-content-item--framed` for a
+  visibly bounded content item — over overriding its `--kui-*` token. CSS for genuinely new structure
   belongs to the application-owned component that renders it and must not select
   nested Kerf or Web Awesome components.
 - **Never double-inset.** A `.kui-pane` has no padding; its `.kui-content` children

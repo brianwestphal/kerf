@@ -310,8 +310,8 @@ A panel grows by the unsafe inset of the edge it docks to and pads its content
 for every edge it touches except its interior edge. While expanded inline, it
 also clears that edge for its direct flex siblings, so a neighboring pane gains
 the inset when the panel collapses. When you wrap the panel in your own grid
-cell, set `--kui-edge-inset-*: 0px` on the sibling regions yourself (or pass
-`safeAreaEdges` to a sibling `Pane`). See [Choosing an app layout › Safe areas](app-layouts.md#safe-areas).
+cell, pass each sibling `Pane` a `safeAreaEdges` that omits the edge the panel
+covers. See [Choosing an app layout › Safe areas](app-layouts.md#safe-areas).
 
 ## When to use which
 

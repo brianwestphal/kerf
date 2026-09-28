@@ -831,9 +831,13 @@ a claim there never double-insets.
 **Opt-outs / app routing.** `Pane.safeAreaEdges` (typed
 `readonly PaneSeparatorSide[]`, default all four) limits the sides a pane may
 compensate; `[]` opts out. `Toolbar.safeAreaEdges` (same type, default none)
-lets an app bar or bottom bar at a screen edge claim those sides. An app-owned layout sets `--kui-edge-inset-*: 0px` on
-its regions. A `CollapsiblePanel` routes its direct flex siblings automatically;
-a panel wrapped in an app grid cell cannot, so the app routes those edges.
+lets an app bar or bottom bar at a screen edge claim those sides, and the layout
+toolbars forward it through their toolbar configuration. An app-owned layout
+passes each Pane and edge-claiming Toolbar the sides its region reaches; the
+`--kui-edge-inset-*` context is internal routing, not a consumer override. A
+`CollapsiblePanel` routes its direct flex siblings automatically; a panel
+wrapped in an app grid cell cannot, so the app passes the sibling panes'
+`safeAreaEdges`.
 
 **Verification.** `ui/tests/browser/safe-area.spec.ts` renders each layout full
 screen with simulated insets (via the `--kui-safe-area-*` overrides) and asserts

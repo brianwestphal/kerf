@@ -1,6 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 import { ChevronRight } from 'lucide';
 
+import type { CssLength } from './css-values.js';
 import { LucideIcon } from './lucide-icon.js';
 
 export type DisclosureDirection = 'up' | 'down' | 'left' | 'right';
@@ -11,6 +12,8 @@ export interface DisclosureArrowProps {
   closedDirection?: DisclosureDirection;
   /** Replacement icons should use right as their unrotated orientation. */
   icon?: SafeHtml;
+  /** Typed box size for the square visual. Default: `remify(18px)`. */
+  size?: CssLength;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -41,6 +44,7 @@ export function DisclosureArrow({
   openDirection = 'down',
   closedDirection = 'right',
   icon,
+  size,
   className = '',
   slot,
 }: DisclosureArrowProps) {
@@ -49,7 +53,7 @@ export function DisclosureArrow({
   return (
     <span
       class={`kui-disclosure-arrow ${className}`.trim()}
-      style={`--_kui-disclosure-arrow-rotation:${rotation}deg`}
+      style={`--_kui-disclosure-arrow-rotation:${rotation}deg${size ? `;--kui-disclosure-arrow-size:${size}` : ''}`}
       data-component="disclosure-arrow"
       data-open={String(open)}
       data-direction={direction}

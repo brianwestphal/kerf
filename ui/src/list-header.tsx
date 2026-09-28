@@ -9,6 +9,7 @@ import {
 } from './extension-attributes.js';
 import { Skeleton } from './skeleton.js';
 import { Text } from './text.js';
+import type { HeadingLevel } from './toolbar-text.js';
 
 const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-component',
@@ -74,6 +75,8 @@ type ListHeaderModeProps =
   | {
       /** Render the title as a controlled disclosure trigger. */
       toggle: true;
+      /** A toggle's label is its button text, not a heading. */
+      headingLevel?: never;
       action: string;
       expanded: boolean;
       actionIcon?: SafeHtml;
@@ -84,6 +87,11 @@ type ListHeaderModeProps =
   | {
       /** Render a separately named trailing action. */
       toggle?: false;
+      /**
+       * Native heading level (`h1`–`h6`) of the label. Default `2`. Match the
+       * document outline; the visual treatment does not change.
+       */
+      headingLevel?: HeadingLevel;
       action: string;
       actionLabel: string;
       actionIcon: SafeHtml;
@@ -94,6 +102,11 @@ type ListHeaderModeProps =
   | {
       /** Render a passive section heading. */
       toggle?: false;
+      /**
+       * Native heading level (`h1`–`h6`) of the label. Default `2`. Match the
+       * document outline; the visual treatment does not change.
+       */
+      headingLevel?: HeadingLevel;
       action?: never;
       actionLabel?: never;
       actionIcon?: never;
@@ -113,6 +126,7 @@ export type ListHeaderProps = ListHeaderBaseProps &
 
 export function ListHeader({
   label,
+  headingLevel = 2,
   count,
   countLabel,
   badge,
@@ -240,7 +254,7 @@ export function ListHeader({
     >
       <div class="kui-list-header__title">
         <Text
-          variant="h2"
+          variant={`h${headingLevel}`}
           class="kui-list-header__label"
           border="none"
           aria-label={accessibleLabel}

@@ -21,6 +21,7 @@ export const tabBarTabs = signal<DemoTab[]>([
 export const selectedChoice = signal('balanced');
 export const disclosureOpen = signal(false);
 export const customDisclosureOpen = signal(false);
+export const sizedDisclosureOpen = signal(false);
 export const menuToolsOpen = signal(true);
 export const tokenSearchQuery = signal('NOT  AND parser');
 export const tokenSearchTokens = signal<TokenSearchToken[]>([

@@ -929,8 +929,8 @@ from the owning outer radius, and nested toolbar SegmentedControl choices use
 the group's derived highlight radius so pill and rounded corners stay concentric.
 
 `DisclosureArrow` ships an 18px root-scaled default through compiled
-`remify(18px)` CSS and retains `--kui-disclosure-arrow-size` for scoped consumer
-overrides. Kerf `Select` keeps its independent Web Awesome expand-glyph scale
+`remify(18px)` CSS; its typed `size` prop sets the retained
+`--kui-disclosure-arrow-size` token. Kerf `Select` keeps its independent Web Awesome expand-glyph scale
 at `--kui-disclosure-icon-scale: .5`. Configurable directions animate over the
 shortest path; a 180-degree closed-to-open tie uses counterclockwise rotation.
 

@@ -24,9 +24,8 @@ export function FloatingToolbarDemo() {
             A transparent, forced-dark toolbar floats over its container's
             content — like a terminal-drawer restore — but never over dialogs
             (it is not top-layer). It is inset an extra 8px past a top toolbar;
-            override <code>--kui-floating-toolbar-inset</code> or set{' '}
-            <code>position</code> to move it. Toggle it on; it hides
-            automatically when you leave this demo.
+            pass a typed <code>inset</code> or set <code>position</code> to move
+            it. Toggle it on; it hides automatically when you leave this demo.
           </>
         }
         align="none"

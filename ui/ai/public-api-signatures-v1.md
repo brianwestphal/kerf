@@ -118,6 +118,7 @@ export { type CssColor, type CssFlex, type CssFlexBasis, type CssFlexKeyword, ty
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { CssLength } from './css-values.js';
 
 type DisclosureDirection = 'up' | 'down' | 'left' | 'right';
 interface DisclosureArrowProps {
@@ -126,11 +127,13 @@ interface DisclosureArrowProps {
     closedDirection?: DisclosureDirection;
     /** Replacement icons should use right as their unrotated orientation. */
     icon?: SafeHtml;
+    /** Typed box size for the square visual. Default: `remify(18px)`. */
+    size?: CssLength;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function DisclosureArrow({ open, openDirection, closedDirection, icon, className, slot, }: DisclosureArrowProps): SafeHtml;
+declare function DisclosureArrow({ open, openDirection, closedDirection, icon, size, className, slot, }: DisclosureArrowProps): SafeHtml;
 
 export { DisclosureArrow, type DisclosureArrowProps, type DisclosureDirection };
 ```
@@ -316,6 +319,7 @@ export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, ty
 
 ```ts
 import * as kerfjs from 'kerfjs';
+import { CssLength } from './css-values.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 /** Where a {@link FloatingToolbar} floats within its positioned container. */
@@ -330,6 +334,13 @@ interface FloatingToolbarProps {
      * Default: `'bottom-end'`.
      */
     position?: FloatingToolbarPosition;
+    /**
+     * Distance from the container edges named by `position`. Default:
+     * `space('m')` (16px, 8px past a top toolbar's own inset). Omit it inside a
+     * `Workbench`, `CollapsiblePanel`, or `ResizableRegion` restore corner: the
+     * corner owns the inset there and sets it to zero.
+     */
+    inset?: CssLength;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -339,9 +350,8 @@ interface FloatingToolbarProps {
  * ancestor — a transparent, forced-dark cluster of controls (e.g. a drawer
  * restore button) that sits over the content but NOT over dialogs or overlays
  * (it is not in the top layer). It is inset from the container edges by
- * `--kui-floating-toolbar-inset` (default `--kui-space-m`, i.e. 8px more than a
- * top toolbar's own inset); override that token, on the toolbar or an
- * ancestor, to move it. Inside a `Workbench`, `CollapsiblePanel`, or
+ * `inset` (default `--kui-space-m`, i.e. 8px more than a top toolbar's own
+ * inset); pass a typed length to move it. Inside a `Workbench`, `CollapsiblePanel`, or
  * `ResizableRegion` restore corner the corner owns the inset, so the toolbar
  * floats from the corner's own position. While one of those layouts has a
  * side overlay open over the toolbar's region (a Workbench rail overlay, a
@@ -350,7 +360,7 @@ interface FloatingToolbarProps {
  * accessibility tree — until the overlay closes. The app owns the controls
  * and their behavior — wire them with `delegate()` as usual.
  */
-declare function FloatingToolbar({ children, label, position, className, slot, }: FloatingToolbarProps): kerfjs.SafeHtml;
+declare function FloatingToolbar({ children, label, position, inset, className, slot, }: FloatingToolbarProps): kerfjs.SafeHtml;
 
 export { FloatingToolbar, type FloatingToolbarPosition, type FloatingToolbarProps };
 ```
@@ -435,6 +445,7 @@ export { PopupMenu, type PopupMenuDivider, type PopupMenuEntry, type PopupMenuHe
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { HeadingLevel } from './toolbar-text.js';
 
 type ListHeaderRootAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
     'data-component'?: never;
@@ -475,6 +486,8 @@ interface ListHeaderBaseProps {
 type ListHeaderModeProps = {
     /** Render the title as a controlled disclosure trigger. */
     toggle: true;
+    /** A toggle's label is its button text, not a heading. */
+    headingLevel?: never;
     action: string;
     expanded: boolean;
     actionIcon?: SafeHtml;
@@ -484,6 +497,11 @@ type ListHeaderModeProps = {
 } | {
     /** Render a separately named trailing action. */
     toggle?: false;
+    /**
+     * Native heading level (`h1`–`h6`) of the label. Default `2`. Match the
+     * document outline; the visual treatment does not change.
+     */
+    headingLevel?: HeadingLevel;
     action: string;
     actionLabel: string;
     actionIcon: SafeHtml;
@@ -493,6 +511,11 @@ type ListHeaderModeProps = {
 } | {
     /** Render a passive section heading. */
     toggle?: false;
+    /**
+     * Native heading level (`h1`–`h6`) of the label. Default `2`. Match the
+     * document outline; the visual treatment does not change.
+     */
+    headingLevel?: HeadingLevel;
     action?: never;
     actionLabel?: never;
     actionIcon?: never;
@@ -517,7 +540,7 @@ type ListHeaderIndicatorProps = {
     status?: SafeHtml;
 };
 type ListHeaderProps = ListHeaderBaseProps & ListHeaderIndicatorProps & ListHeaderModeProps;
-declare function ListHeader({ label, count, countLabel, badge, status, density, divider, inline, width, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, slot, }: ListHeaderProps): SafeHtml;
+declare function ListHeader({ label, headingLevel, count, countLabel, badge, status, density, divider, inline, width, indicatorTone, action, actionLabel, actionIcon, actionDisabled, disabledReason, expanded, toggle, placeholder, rootAttributes, triggerAttributes, slot, }: ListHeaderProps): SafeHtml;
 
 export { ListHeader, type ListHeaderProps };
 ```
@@ -2381,7 +2404,7 @@ export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape };
 ## `@kerfjs/ui/token-search-field`
 
 ```ts
-import * as kerfjs from 'kerfjs';
+import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 interface TokenSearchToken {
@@ -2424,6 +2447,8 @@ interface TokenSearchFieldBaseProps {
     removeAction?: string;
     clearAction?: string;
     clearLabel?: string;
+    /** Icon for the clear button. Default: the Lucide `x` glyph token chips also use. */
+    clearIcon?: SafeHtml;
     className?: string;
     editorAttributes?: TokenSearchEditorAttributes;
     /** Native named-slot assignment when composed inside a web component. */
@@ -2447,7 +2472,7 @@ interface TokenSearchFieldValue {
     query: string;
     tokens: TokenSearchToken[];
 }
-declare function TokenSearchField({ id, label, query, tokens, revision, placeholder, tokenPlaceholder, disabled, autofocus, collapsible, expanded, expandAction, expandLabel, leading, trailing, presentation, editAction, removeAction, clearAction, clearLabel, className, editorAttributes, slot, }: TokenSearchFieldProps): kerfjs.SafeHtml;
+declare function TokenSearchField({ id, label, query, tokens, revision, placeholder, tokenPlaceholder, disabled, autofocus, collapsible, expanded, expandAction, expandLabel, leading, trailing, presentation, editAction, removeAction, clearAction, clearLabel, clearIcon, className, editorAttributes, slot, }: TokenSearchFieldProps): SafeHtml;
 /** Read editable text and ordered token offsets from a rendered TokenSearchField editor. */
 declare function readTokenSearchField(editor: HTMLElement, knownTokens?: readonly TokenSearchToken[]): TokenSearchFieldValue;
 /** Focus an editor and place its caret at a text offset, skipping atomic token chips. */

@@ -31,6 +31,12 @@
   );
 }
 
+/* A visible frame for a content item that marks a real distinction: the
+   standard neutral border, same geometry (the border is always reserved). */
+.kui-content-item--framed {
+  --kui-content-item-border: var(--kui-color-neutral-border-normal);
+}
+
 .kui-control-cluster {
   display: flex;
   min-width: 0;

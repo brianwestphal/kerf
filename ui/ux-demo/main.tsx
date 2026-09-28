@@ -101,6 +101,7 @@ import {
   menuToolsOpen,
   regionSize,
   selectedChoice,
+  sizedDisclosureOpen,
   tabBarActive,
   tabBarTabs,
   ticketLabels,
@@ -494,6 +495,12 @@ const stopActions = delegateActions(app, 'click', {
     actionLog.value = customDisclosureOpen.value
       ? 'Custom disclosure opened'
       : 'Custom disclosure closed';
+  },
+  'toggle-sized-disclosure': () => {
+    sizedDisclosureOpen.value = !sizedDisclosureOpen.value;
+    actionLog.value = sizedDisclosureOpen.value
+      ? 'Sized disclosure opened'
+      : 'Sized disclosure closed';
   },
   'recipe-action': (_event, element) => {
     const id = selectedDemo.value;

@@ -42,6 +42,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   toolbar's zones), and `kui-nav-stack__back` / `kui-nav-stack__back-icon`
   are no longer styled by the stack.
 
+- **`@kerfjs/ui` configures with props instead of token overrides.** Five
+  settings apps previously reached through raw `--kui-*` overrides now have a
+  typed prop or modifier; each defaults to today's rendering, and the
+  underlying tokens keep working:
+  - `FloatingToolbar` `inset` (a `CssLength`, default `--kui-space-m`) moves
+    it from the container edges. Omit it inside a restore corner, which owns
+    the inset.
+  - `DisclosureArrow` `size` (a `CssLength`, default 18px root-scaled).
+  - `ListHeader` `headingLevel` (1–6, default 2) sets the label's native
+    heading element for passive and trailing-action headers; a toggle header
+    has no heading and rejects it at compile time.
+  - `TokenSearchField` `clearIcon` replaces the clear action's glyph.
+  - `.kui-content-item--framed` paints the standard neutral border on a
+    content item that marks a real distinction, with no geometry change.
+
+  The docs and AI guidance also stop recommending `--kui-edge-inset-*`
+  overrides: an app-owned arrangement passes `safeAreaEdges` to its panes and
+  edge-claiming toolbars (including the layout toolbar configurations, which
+  forward it).
+
 - **`@kerfjs/ui` hides a work area's floating controls under an open side
   overlay.** While a side overlay is open — a Workbench rail (static
   `presentation: "overlay"`, or a responsive overlay whose breakpoint applies),

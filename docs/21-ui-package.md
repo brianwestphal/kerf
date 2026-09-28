@@ -79,8 +79,8 @@ remain excluded because their optional restore controls make their output
 multi-root; the single-root `CollapsiblePanelToggle` is included.
 Media-query grammar remains separate and semantic pixel inputs remain numbers.
 
-`DisclosureArrow` has an 18px root-scaled default and exposes
-`--kui-disclosure-arrow-size` for a scoped consumer override. Kerf `Select`
+`DisclosureArrow` has an 18px root-scaled default and a typed `size` prop
+(a `CssLength`) that sets its `--kui-disclosure-arrow-size` token. Kerf `Select`
 uses a separate Web Awesome expand-glyph contract with
 `--kui-disclosure-icon-scale: .5`, so its half-scale treatment remains
 independent of the shared arrow's box size. Configured directions animate over

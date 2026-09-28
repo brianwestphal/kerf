@@ -176,8 +176,7 @@ their open state uses the independent `rotate` property.
 
 That scale applies to each Web Awesome component's intrinsic glyph and is
 independent of Kerf `DisclosureArrow`, whose default box is 18px relative to
-the root font size and whose consumer override is
-`--kui-disclosure-arrow-size`.
+the root font size and whose consumer override is its typed `size` prop.
 
 Tooltip and Popover use arrowless floating surfaces by default, matching Hot
 Sheet 2. The theme sets Web Awesome's public `--wa-tooltip-arrow-size` token to

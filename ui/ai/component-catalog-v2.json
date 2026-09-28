@@ -139,7 +139,19 @@
           "The arrow is decorative; expose expanded state through aria-expanded on its owning control and keep that control's accessible name stable."
         ]
       },
-      "cssValueProps": [],
+      "cssValueProps": [
+        {
+          "path": "size",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["size={remify(24)}"]
+        }
+      ],
       "boundaries": {
         "rootClass": "kui-disclosure-arrow",
         "publicClasses": ["kui-disclosure-arrow"],
@@ -424,6 +436,7 @@
           "kui-content",
           "kui-content-item",
           "kui-content-item--pill",
+          "kui-content-item--framed",
           "kui-control-cluster",
           "kui-inline-metadata",
           "kui-scroll-owner"
@@ -1470,7 +1483,19 @@
           "Give the toolbar an accessible name (label is required — it exposes role=\"toolbar\")."
         ]
       },
-      "cssValueProps": [],
+      "cssValueProps": [
+        {
+          "path": "inset",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["inset={space(\"xs\")}"]
+        }
+      ],
       "boundaries": {
         "rootClass": "kui-floating-toolbar",
         "publicClasses": ["kui-floating-toolbar"],

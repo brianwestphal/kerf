@@ -45,6 +45,7 @@ export function ListHeaderDemo() {
           indicatorTone="danger"
           density="compact"
           divider="before"
+          headingLevel={3}
         />
       </CatalogExample>
       <CatalogExample align="none">

@@ -1,3 +1,4 @@
+import type { SafeHtml } from 'kerfjs';
 import { Search, X } from 'lucide';
 
 import { LucideIcon } from './lucide-icon.js';
@@ -47,6 +48,8 @@ interface TokenSearchFieldBaseProps {
   removeAction?: string;
   clearAction?: string;
   clearLabel?: string;
+  /** Icon for the clear button. Default: the Lucide `x` glyph token chips also use. */
+  clearIcon?: SafeHtml;
   className?: string;
   editorAttributes?: TokenSearchEditorAttributes;
   /** Native named-slot assignment when composed inside a web component. */
@@ -129,6 +132,7 @@ export function TokenSearchField({
   removeAction = 'remove-search-token',
   clearAction = 'clear-token-search',
   clearLabel = 'Clear search',
+  clearIcon,
   className = '',
   editorAttributes = {},
   slot,
@@ -232,7 +236,7 @@ export function TokenSearchField({
               title={clearLabel}
               disabled={disabled}
             >
-              <CloseIcon />
+              {clearIcon ?? <CloseIcon />}
             </button>
           )}
           {trailing && (

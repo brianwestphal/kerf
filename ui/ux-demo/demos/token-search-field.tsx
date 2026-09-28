@@ -2,9 +2,11 @@ import '@awesome.me/webawesome/dist/components/button/button.js';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { List } from '@kerfjs/ui/list';
+import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Row } from '@kerfjs/ui/row';
 import { Text } from '@kerfjs/ui/text';
 import { TokenSearchField } from '@kerfjs/ui/token-search-field';
+import { CircleX } from 'lucide';
 
 import {
   ADOPTION_SUGGESTIONS,
@@ -72,7 +74,12 @@ export function TokenSearchFieldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Disabled"
-        note="Controlled read-only state preserves the complete expression."
+        note={
+          <>
+            Controlled read-only state preserves the complete expression. A{' '}
+            <code>clearIcon</code> replaces the clear glyph.
+          </>
+        }
         align="inline-control"
       >
         <TokenSearchField
@@ -86,6 +93,7 @@ export function TokenSearchFieldDemo() {
               offset: 7,
             },
           ]}
+          clearIcon={<LucideIcon icon={CircleX} name="circle-x" />}
           disabled
         />
       </CatalogExample>

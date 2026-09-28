@@ -136,8 +136,8 @@ an optional `label`. Common shell behavior is configured rather than restyled:
   carrying `collapsiblePanelToggleIcon(side, true)` — rather than a bare
   button. To give it `FloatingToolbar`'s toolbar role and floating look, wrap
   that group in a `FloatingToolbar` whose `position` matches the corner: the
-  corner owns the inset (it sets `--kui-floating-toolbar-inset` to 0), so the
-  toolbar floats from the corner instead of doubling it.
+  corner owns the inset (it zeroes the toolbar's default inset), so omit
+  `inset` there and the toolbar floats from the corner instead of doubling it.
 
 - `resizable: true | { min, max }` opts the panel in to drag and keyboard
   resizing, driven by `wireWorkbench` (off by default).

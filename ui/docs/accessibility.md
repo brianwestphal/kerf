@@ -16,7 +16,7 @@ These are normative contracts for package components and consuming applications.
 - `StateBanner` defaults to polite `role="status"`; use `urgency="alert"` only for an attention-requiring failure. Its optional `badge` is persistent inline status/count content beside the title and is announced as part of the banner; keep it terse and do not rely on color alone for its meaning.
 - `EmptyState` reports busy state through `aria-busy` and never relies on an illustration as its label.
 - `Select` follows the Web Awesome host's standard `input`/`change` events. Application tests verify the live `value`, focus, and events—not attributes alone. Its decorative option icons and value-dependent selected content remain present after controlled rerenders, so the visible choice does not silently lose its non-text cue.
-- `DisclosureArrow` is an 18px root-scaled decorative visual by default, not an interaction target. Its owning native control supplies a stable accessible name, pointer and keyboard interaction, and `aria-expanded`; multiple arrows keep independently controlled state. Consumers may override `--kui-disclosure-arrow-size` without changing that ownership. Configured directions animate over the shortest path; a 180-degree closed-to-open tie uses counterclockwise rotation.
+- `DisclosureArrow` is an 18px root-scaled decorative visual by default, not an interaction target. Its owning native control supplies a stable accessible name, pointer and keyboard interaction, and `aria-expanded`; multiple arrows keep independently controlled state. Consumers may resize it with the typed `size` prop without changing that ownership. Configured directions animate over the shortest path; a 180-degree closed-to-open tie uses counterclockwise rotation.
 - `List` is layout-only and adds no `list` role. Children own their native or ARIA semantics. Give a scrollable List a bounded block size, avoid nested scroll owners, and keep focused children visible while scrolling.
 
 ## Select
@@ -198,8 +198,7 @@ forced to a dark color scheme, but it is **not** in the top layer, so it never
 covers dialogs, popovers, or other overlays. Its children are the app's controls
 (normally `ToolbarControlGroup`s), which keep their own names, focus, and
 keyboard behavior; the application owns their actions, the toolbar's visibility,
-and — via `position` and `--kui-floating-toolbar-inset`, set on the toolbar
-or an ancestor — where it sits. Inside a `Workbench`, `CollapsiblePanel`, or
+and — via `position` and the typed `inset` prop — where it sits. Inside a `Workbench`, `CollapsiblePanel`, or
 `ResizableRegion` `restoreControl` the restore corner owns the inset, so the
 toolbar floats from that corner. While one of those layouts has a side overlay
 open over the toolbar's region (a Workbench rail overlay, a `wireSidebar`

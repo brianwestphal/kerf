@@ -79,13 +79,15 @@ nothing routes that edge, while the bar's surface and divider still reach the
 screen edge. A claimed toolbar inside a `Pane` header or footer adds nothing
 extra, because the pane already owns those edges.
 
-Pass `safeAreaEdges={[]}` for a pane that never sits at a screen edge. For a
-region you own, set `--kui-edge-inset-block-start`, `--kui-edge-inset-block-end`,
-`--kui-edge-inset-inline-start`, or `--kui-edge-inset-inline-end` to `0px` on the
-region for each edge it does not reach, and kerf descendants follow. A
-`CollapsiblePanel` does this for its direct flex siblings automatically. A
-panel wrapped in your own grid cell cannot see its siblings, so route those
-edges yourself.
+Pass `safeAreaEdges={[]}` for a pane that never sits at a screen edge. In an
+arrangement you own, give each `Pane` (and each edge-claiming `Toolbar`)
+`safeAreaEdges` listing only the sides its region reaches. The toolbar
+configurations layouts accept (a Workbench `mainToolbar` / `mainBottomToolbar`,
+and a Workbench panel's or `CollapsiblePanel`'s `toolbar`) forward
+`safeAreaEdges` to their `Toolbar` the same way.
+A `CollapsiblePanel` clears the edge it covers for its direct flex siblings
+automatically; a panel wrapped in your own grid cell cannot see its siblings,
+so pass the neighboring panes' `safeAreaEdges` yourself.
 
 The device insets come from `--kui-safe-area-block-start`, `-block-end`,
 `-inline-start`, and `-inline-end`, which default to `env(safe-area-inset-*)`.

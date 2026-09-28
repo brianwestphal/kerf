@@ -249,9 +249,9 @@ moving focus or DOM identity. When a product wants fewer visible commands at
 narrow widths, it chooses them: render a lower-priority command inside an
 app-owned "More" `PopupMenu` (in a `single` group with `nestedDropdown`).
 
-`DisclosureArrow` defaults to an 18px root-scaled decorative visual. Override
-`--kui-disclosure-arrow-size` at the narrowest useful scope when a consumer
-needs another size; the owning control still supplies interaction, naming, and
+`DisclosureArrow` defaults to an 18px root-scaled decorative visual. Pass a
+typed `size` (for example `size={remify(24)}` from `@kerfjs/ui/css-values`)
+when a consumer needs another size; the owning control still supplies interaction, naming, and
 expanded state. Kerf `Select` retains its independent Web Awesome expand-glyph
 scale of `.5` through `--kui-disclosure-icon-scale`. Author replacement
 `DisclosureArrow` icon content facing right before its configured direction

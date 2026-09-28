@@ -1,3 +1,4 @@
+import type { CssLength } from './css-values.js';
 import type { KerfUiContent } from './semantic-content.js';
 
 /** Where a {@link FloatingToolbar} floats within its positioned container. */
@@ -14,6 +15,13 @@ export interface FloatingToolbarProps {
    * Default: `'bottom-end'`.
    */
   position?: FloatingToolbarPosition;
+  /**
+   * Distance from the container edges named by `position`. Default:
+   * `space('m')` (16px, 8px past a top toolbar's own inset). Omit it inside a
+   * `Workbench`, `CollapsiblePanel`, or `ResizableRegion` restore corner: the
+   * corner owns the inset there and sets it to zero.
+   */
+  inset?: CssLength;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -24,9 +32,8 @@ export interface FloatingToolbarProps {
  * ancestor — a transparent, forced-dark cluster of controls (e.g. a drawer
  * restore button) that sits over the content but NOT over dialogs or overlays
  * (it is not in the top layer). It is inset from the container edges by
- * `--kui-floating-toolbar-inset` (default `--kui-space-m`, i.e. 8px more than a
- * top toolbar's own inset); override that token, on the toolbar or an
- * ancestor, to move it. Inside a `Workbench`, `CollapsiblePanel`, or
+ * `inset` (default `--kui-space-m`, i.e. 8px more than a top toolbar's own
+ * inset); pass a typed length to move it. Inside a `Workbench`, `CollapsiblePanel`, or
  * `ResizableRegion` restore corner the corner owns the inset, so the toolbar
  * floats from the corner's own position. While one of those layouts has a
  * side overlay open over the toolbar's region (a Workbench rail overlay, a
@@ -39,6 +46,7 @@ export function FloatingToolbar({
   children,
   label,
   position = 'bottom-end',
+  inset,
   className = '',
   slot,
 }: FloatingToolbarProps) {
@@ -49,6 +57,7 @@ export function FloatingToolbar({
       data-position={position}
       role="toolbar"
       aria-label={label}
+      style={inset ? `--kui-floating-toolbar-inset:${inset}` : undefined}
       slot={slot}
     >
       {children}

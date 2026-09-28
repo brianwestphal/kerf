@@ -260,9 +260,8 @@ content cannot escape its visible boundary. Rows with descriptions grow enough
 to keep their owned two-line label stack readable; use `multiline` when the
 primary label should wrap rather than truncate.
 
-`DisclosureArrow` uses an 18px root-scaled visual by default. Override
-`--kui-disclosure-arrow-size` on the component or its containing scope when a
-consumer needs another size. Kerf `Select` uses a separate Web Awesome expand
+`DisclosureArrow` uses an 18px root-scaled visual by default. Pass its typed
+`size` prop when a consumer needs another size. Kerf `Select` uses a separate Web Awesome expand
 glyph contract, `--kui-disclosure-icon-scale: .5`; changing one contract does
 not implicitly change the other. Direction changes take the shortest rotation
 path; a 180-degree closed-to-open tie uses counterclockwise rotation.

@@ -45,7 +45,9 @@ export function PaneDemo() {
           }
         >
           <div class="kui-content-item">First content group</div>
-          <div class="kui-content-item">Second content group</div>
+          <div class="kui-content-item kui-content-item--framed">
+            Framed content group
+          </div>
         </Pane>
       </CatalogExample>
     </CatalogExampleStack>

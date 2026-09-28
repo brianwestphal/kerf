@@ -133,6 +133,31 @@
       "publicExports": [
         "DisclosureArrow"
       ],
+      "cssValueProps": [
+        {
+          "path": "size",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "size={remify(24)}"
+          ]
+        }
+      ],
       "useWhen": [
         "Add a shortest-path rotating indicator to a control that owns open and closed state; author replacement icon content facing right before direction transforms are applied."
       ],
@@ -455,6 +480,7 @@
         "kui-content",
         "kui-content-item",
         "kui-content-item--pill",
+        "kui-content-item--framed",
         "kui-control-cluster",
         "kui-inline-metadata",
         "kui-scroll-owner"
@@ -1507,6 +1533,31 @@
       "purpose": "A transparent, forced-dark toolbar that floats over its container's content.",
       "publicExports": [
         "FloatingToolbar"
+      ],
+      "cssValueProps": [
+        {
+          "path": "inset",
+          "grammar": "length",
+          "helpers": [
+            "px",
+            "rem",
+            "em",
+            "pct",
+            "space",
+            "lengthVar",
+            "calc"
+          ],
+          "nonStandaloneHelpers": [
+            "plus"
+          ],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": [
+            "inset={space(\"xs\")}"
+          ]
+        }
       ],
       "useWhen": [
         "Float a small cluster of controls (e.g. a drawer restore) over scrolling content without covering dialogs."

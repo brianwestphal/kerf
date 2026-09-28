@@ -54,9 +54,10 @@ geometry:
 - `calc(1px + remify(11px))`, or 12px, rounded corners
 
 Use `.kui-content-item--pill` for the 22px pill radius expressed as
-`calc(1px + remify(21px))`. Consumers can make a content item visible without
-changing its geometry by setting `--kui-content-item-border` and
-`--kui-content-item-background`.
+`calc(1px + remify(21px))`. Add `.kui-content-item--framed` when a content item
+marks a real distinction and must read as visibly bounded: it paints the
+standard neutral border in the 1px the item always reserves, so its geometry
+does not change. Do not frame an item only to make it "look contained".
 
 Nested selection and hover highlights stay concentric and match their owning
 control's shape. Their inner radius is the outer radius minus the full inset,
@@ -74,18 +75,19 @@ semantic status.
 
 ## Public roles and tokens
 
-| Need                                     | Class                     | Token / default                                                             |
-| ---------------------------------------- | ------------------------- | --------------------------------------------------------------------------- |
-| Unpadded header/content/footer structure | `Pane`, `.kui-pane`       | —                                                                           |
-| Scrolling pane content                   | `.kui-pane__content`      | —                                                                           |
-| Optional logical-edge separators         | `Pane.separators`         | `--kui-pane-separator-width: 1px`                                           |
-| Safe-area sides a pane may pad           | `Pane.safeAreaEdges`      | `--kui-safe-area-*: env(safe-area-inset-*)`, routed as `--kui-edge-inset-*` |
-| Major vertical rhythm                    | `.kui-content`            | `--kui-layout-content-gap: 24px`                                            |
-| Self-contained child geometry            | `.kui-content-item`       | 8px margin + 1px border + 8px padding                                       |
-| Pill child                               | `.kui-content-item--pill` | `--kui-layout-pill-radius: 22px`                                            |
-| Related controls                         | `.kui-control-cluster`    | `--kui-layout-control-gap: 8px`                                             |
-| Inline metadata                          | `.kui-inline-metadata`    | `--kui-layout-metadata-gap: 4px`                                            |
-| Explicit scroll owner outside a pane     | `.kui-scroll-owner`       | `overflow: auto`                                                            |
+| Need                                     | Class                       | Token / default                                                    |
+| ---------------------------------------- | --------------------------- | ------------------------------------------------------------------ |
+| Unpadded header/content/footer structure | `Pane`, `.kui-pane`         | —                                                                  |
+| Scrolling pane content                   | `.kui-pane__content`        | —                                                                  |
+| Optional logical-edge separators         | `Pane.separators`           | `--kui-pane-separator-width: 1px`                                  |
+| Safe-area sides a pane may pad           | `Pane.safeAreaEdges`        | `--kui-safe-area-*: env(safe-area-inset-*)`, routed by each layout |
+| Major vertical rhythm                    | `.kui-content`              | `--kui-layout-content-gap: 24px`                                   |
+| Self-contained child geometry            | `.kui-content-item`         | 8px margin + 1px border + 8px padding                              |
+| Pill child                               | `.kui-content-item--pill`   | `--kui-layout-pill-radius: 22px`                                   |
+| Visibly framed child                     | `.kui-content-item--framed` | neutral 1px border, same geometry                                  |
+| Related controls                         | `.kui-control-cluster`      | `--kui-layout-control-gap: 8px`                                    |
+| Inline metadata                          | `.kui-inline-metadata`      | `--kui-layout-metadata-gap: 4px`                                   |
+| Explicit scroll owner outside a pane     | `.kui-scroll-owner`         | `overflow: auto`                                                   |
 
 The component layer applies the same contract to `Toolbar`, `ListHeader`,
 `ListItem`, `Toolbar`, `StateBanner`, `ValueTable`,
