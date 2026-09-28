@@ -93,6 +93,11 @@ Configure the toolbar with `toolbarConfig` instead of styling it:
   text beside it (for example, the previous view's title); visible text names
   the control, so `backLabel` applies only to the icon-only control.
 
+The catalog's **Configured toolbar** example shows these together: a level-2
+heading title over a bottom divider, leading and center groups on the root
+view, a trailing group on the pushed view, and `backText` set to the previous
+view's title.
+
 Focus follows the controlled stack automatically. On push, `wireNavStack`
 remembers the focused descendant of the departing view and moves focus into the
 new top view. On pop it restores that exact descendant when it still exists. A

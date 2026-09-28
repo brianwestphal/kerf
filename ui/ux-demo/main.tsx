@@ -72,7 +72,9 @@ import {
   restoreDrawerCollapsed,
 } from './demos/collapsible-panel.js';
 import {
+  popConfiguredNavStackDemo,
   popNavStackDemo,
+  pushConfiguredNavStackDemo,
   pushNavStackDemo,
   resetNavStackDemo,
 } from './demos/nav-stack.js';
@@ -80,8 +82,12 @@ import { demos } from './demos/registry.js';
 import {
   clearSplitViewSelection,
   resetSplitViewDemo,
+  RESIZABLE_SPLIT_VIEW_LIST_ID,
+  resizeSplitViewList,
   selectRoomySplitViewMessage,
   selectSplitViewMessage,
+  TOGGLE_SPLIT_VIEW_LIST_ACTION,
+  toggleSplitViewList,
 } from './demos/split-view.js';
 import {
   ADOPTION_SUGGESTIONS,
@@ -893,10 +899,26 @@ const stopActions = delegateActions(app, 'click', {
     pushNavStackDemo(projectId);
     actionLog.value = `Opened ${projectId}`;
   },
+  'open-configured-nav-stack-project': (_event, element) => {
+    const projectId = (element as HTMLElement).dataset.itemId ?? '';
+    pushConfiguredNavStackDemo(projectId);
+    actionLog.value = `Opened ${projectId}`;
+  },
   'open-split-view-message': (_event, element) => {
     const messageId = (element as HTMLElement).dataset.itemId ?? '';
     selectSplitViewMessage(messageId);
     actionLog.value = `Opened ${messageId}`;
+  },
+  [TOGGLE_SPLIT_VIEW_LIST_ACTION]: () => {
+    actionLog.value = toggleSplitViewList()
+      ? 'Threads hidden'
+      : 'Threads shown';
+  },
+  'nav-stack-demo-command': (_event, element) => {
+    actionLog.value = `${(element as HTMLElement).getAttribute('aria-label') ?? 'Command'} requested`;
+  },
+  'split-view-demo-command': (_event, element) => {
+    actionLog.value = `${(element as HTMLElement).getAttribute('aria-label') ?? 'Command'} requested`;
   },
   'toggle-workbench-navigator': () => {
     actionLog.value = toggleWorkbenchNavigator()
@@ -983,6 +1005,11 @@ const stopResize = wireResizableRegions(app, {
   onCommit: ({ id, size }) => {
     // Recipes own their resizable regions through their own wiring.
     if (id.startsWith('recipe-')) return;
+    if (id === RESIZABLE_SPLIT_VIEW_LIST_ID) {
+      resizeSplitViewList(size);
+      actionLog.value = `Threads resized to ${size}px`;
+      return;
+    }
     regionSize.value = size;
     actionLog.value = `Panel resized to ${size}px`;
   },
@@ -1062,7 +1089,18 @@ const routeWires: Partial<Record<string, RouteWire>> = {
   'nav-stack': {
     reset: resetNavStackDemo,
     target: 'canvas',
-    wire: (canvas) => wireNavStack(canvas, { onBack: popNavStackDemo }),
+    // wireNavStack wires one stack, so each example's stack is wired on its own.
+    wire: (canvas) => {
+      const stacks: [string, () => void][] = [
+        ['#catalog-nav-stack', popNavStackDemo],
+        ['#catalog-nav-stack-configured', popConfiguredNavStackDemo],
+      ];
+      const stops = stacks.map(([selector, onBack]) => {
+        const stack = canvas.querySelector(selector);
+        return stack ? wireNavStack(stack, { onBack }) : () => {};
+      });
+      return () => stops.forEach((stop) => stop());
+    },
   },
   'split-view': {
     reset: resetSplitViewDemo,

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 295900,
-  "measuredLargestJavaScriptGzip": 147429,
-  "measuredTotalJavaScriptGzip": 295812,
+  "totalJavaScriptGzip": 297000,
+  "measuredLargestJavaScriptGzip": 148604,
+  "measuredTotalJavaScriptGzip": 296965,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -963,6 +963,22 @@
         "measuredTotalJavaScriptGzip": 295812,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 295900
+      }
+    },
+    {
+      "at": "2026-09-28T10:59:27.023Z",
+      "reason": "UX catalog demos for the configured NavStack toolbar and the resizable/collapsible SplitView list",
+      "old": {
+        "measuredLargestJavaScriptGzip": 147429,
+        "measuredTotalJavaScriptGzip": 295812,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 295900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 148604,
+        "measuredTotalJavaScriptGzip": 296965,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 297000
       }
     }
   ]

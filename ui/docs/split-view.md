@@ -91,8 +91,17 @@ compactStack={{
 The catalog's **Interactive compact drill-down** example exercises this exact
 controlled flow: a list action sets the selected message, `detailActive` pushes
 its detail, and the wired Back action clears the selection to reveal the
-preserved list. Use the same structure in application demos so compact examples
-show the interaction rather than rendering a disconnected detail state.
+preserved list. It also forwards `compactStack`: a level-2 heading title over
+a bottom divider, a Compose group on the list view, and a Reply group plus a
+bottom toolbar on the detail. Use the same structure in application demos so
+compact examples show the interaction rather than rendering a disconnected
+detail state.
+
+The catalog's **Resizable, collapsible list** example forwards `resizable`: a
+hidden separator that still resizes the list (its committed width comes back
+through `wireResizableRegions`' `onCommit` into the app's size signal), a Hide
+control in the list's own toolbar, and a `FloatingToolbar` restore control in
+the split's bottom-start corner.
 
 Compose the interactive wiring from the existing helpers — `SplitView` adds no
 wire of its own.

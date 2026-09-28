@@ -7,7 +7,10 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
   await page.setViewportSize({ width: 1100, height: 820 });
   await page.goto('/?component=nav-stack');
   const navDemo = page.locator('[data-demo="nav-stack"]');
-  const stack = page.getByRole('region', { name: 'Project library' });
+  const stack = page.getByRole('region', {
+    name: 'Project library',
+    exact: true,
+  });
   await expect(stack).toHaveAttribute('data-depth', '1');
   await expect(stack.locator('[data-nav-back]')).toHaveCount(0);
   if (browserName === 'chromium')
@@ -85,7 +88,10 @@ test('focused app-layout catalog demos expose their real controlled behavior', a
   if (browserName === 'chromium') {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto('/?component=nav-stack');
-    const narrowStack = page.getByRole('region', { name: 'Project library' });
+    const narrowStack = page.getByRole('region', {
+      name: 'Project library',
+      exact: true,
+    });
     await narrowStack.getByText('Project Relay', { exact: true }).click();
     await expect(narrowStack).toHaveAttribute(
       'data-nav-chrome-transition',
@@ -240,3 +246,159 @@ for (const width of [1100, 390]) {
     await expect(show).toBeFocused();
   });
 }
+
+// The NavStack route's configured example dogfoods toolbarConfig (a level-2
+// heading title over a bottom divider), per-view leading/center/trailing groups,
+// and a visible backText naming the previous view.
+for (const width of [1100, 390]) {
+  test(`the configured nav-stack example forwards its toolbar configuration (${width}px)`, async ({
+    page,
+    browserName,
+  }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.goto('/?component=nav-stack');
+    const stack = page.getByRole('region', {
+      name: 'Configured project library',
+    });
+    const toolbar = stack.locator(
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) [data-component="toolbar"]',
+    );
+    await expect(toolbar).toHaveAttribute('divider-sides', 'b');
+    await expect(
+      toolbar.getByRole('heading', { level: 2, name: 'Library' }),
+    ).toBeVisible();
+    await expect(
+      toolbar
+        .locator('.kui-toolbar__leading')
+        .getByRole('button', { name: 'Show sidebar' }),
+    ).toBeVisible();
+    await expect(
+      toolbar
+        .locator('.kui-toolbar__center')
+        .getByRole('button', { name: 'List layout' }),
+    ).toHaveAttribute('aria-pressed', 'true');
+    // The center group sits clear of the leading identity.
+    const leadingBox = (await toolbar
+      .locator('.kui-toolbar__leading')
+      .boundingBox())!;
+    const centerBox = (await toolbar
+      .locator('.kui-toolbar__center [data-component="toolbar-control-group"]')
+      .boundingBox())!;
+    expect(centerBox.x).toBeGreaterThanOrEqual(leadingBox.x + leadingBox.width);
+    if (browserName === 'chromium')
+      await stack.screenshot({
+        path: `test-results/nav-stack-configured-root-${width}.png`,
+      });
+
+    await stack.getByText('Project Atlas', { exact: true }).click();
+    await expect(stack).toHaveAttribute('data-depth', '2');
+    await expect(stack).not.toHaveAttribute(
+      'data-nav-chrome-transition',
+      'true',
+    );
+    // Visible backText names the control; the pushed view owns a trailing group.
+    const back = toolbar.getByRole('button', { name: 'Library' });
+    await expect(back).toBeVisible();
+    await expect(back).not.toHaveAttribute('aria-label', /.*/);
+    await expect(
+      toolbar.getByRole('heading', { level: 2, name: 'Project Atlas' }),
+    ).toBeVisible();
+    await expect(
+      toolbar
+        .locator('.kui-toolbar__trailing')
+        .getByRole('button', { name: 'Share project' }),
+    ).toBeVisible();
+    await expect(toolbar.locator('.kui-toolbar__center')).toBeHidden();
+    if (browserName === 'chromium')
+      await stack.screenshot({
+        path: `test-results/nav-stack-configured-detail-${width}.png`,
+      });
+
+    await back.click();
+    await expect(stack).toHaveAttribute('data-depth', '1');
+    await expect(
+      toolbar.getByRole('heading', { level: 2, name: 'Library' }),
+    ).toBeVisible();
+  });
+}
+
+// The SplitView route's resizable example forwards the list region's
+// configuration: a hidden separator that still resizes, and a collapse whose
+// FloatingToolbar restore control brings the list back at its committed width.
+test('the resizable split-view example resizes, collapses, and restores its list', async ({
+  page,
+  browserName,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/?component=split-view');
+  const split = page.locator('#catalog-split-view-resizable');
+  const region = split.locator('[data-component="resizable-region"]');
+  const list = page.getByRole('region', { name: 'Threads' });
+  await expect(region).toHaveAttribute('data-separator', 'hidden');
+  await expect(region).toHaveAttribute('data-collapsed', 'false');
+  await expect(list).toBeVisible();
+
+  const separator = split.getByRole('separator', { name: 'Resize Threads' });
+  await separator.focus();
+  await page.keyboard.press('End');
+  await expect(separator).toHaveAttribute('aria-valuenow', '420');
+  expect(Math.round((await list.boundingBox())!.width)).toBe(420);
+  if (browserName === 'chromium')
+    await split.screenshot({
+      path: 'test-results/split-view-resizable-open-wide.png',
+    });
+
+  await split.getByRole('button', { name: 'Hide threads' }).click();
+  await expect(region).toHaveAttribute('data-collapsed', 'true');
+  await expect(region).toHaveAttribute('inert', '');
+  const restore = split.getByRole('button', { name: 'Show threads' });
+  await expect(restore).toBeVisible();
+  // The restore control docks in the split's bottom-start corner.
+  const splitBox = (await split.boundingBox())!;
+  const restoreBox = (await restore.boundingBox())!;
+  expect(restoreBox.x - splitBox.x).toBeLessThan(40);
+  expect(
+    splitBox.y + splitBox.height - (restoreBox.y + restoreBox.height),
+  ).toBeLessThan(40);
+  if (browserName === 'chromium')
+    await split.screenshot({
+      path: 'test-results/split-view-resizable-collapsed-wide.png',
+    });
+
+  await restore.click();
+  await expect(region).toHaveAttribute('data-collapsed', 'false');
+  await expect(restore).toHaveCount(0);
+  await expect(separator).toHaveAttribute('aria-valuenow', '420');
+});
+
+// The compact drill-down forwards compactStack: a level-2 heading title over a
+// bottom divider, and per-view trailing groups plus the detail's bottom toolbar.
+test('the compact split-view example forwards its compactStack configuration', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/?component=split-view');
+  const stack = page.getByRole('region', { name: 'Compact messages' });
+  const toolbar = stack.locator(
+    ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) [data-component="toolbar"]',
+  );
+  await expect(toolbar).toHaveAttribute('divider-sides', 'b');
+  await expect(
+    toolbar.getByRole('heading', { level: 2, name: 'Inbox' }),
+  ).toBeVisible();
+  await expect(toolbar.getByRole('button', { name: 'Compose' })).toBeVisible();
+
+  await stack.getByText('Design review', { exact: true }).click();
+  await expect(stack).toHaveAttribute('data-depth', '2');
+  await expect(stack).not.toHaveAttribute('data-nav-chrome-transition', 'true');
+  await expect(
+    toolbar.getByRole('heading', { level: 2, name: 'Design review' }),
+  ).toBeVisible();
+  await expect(toolbar.getByRole('button', { name: 'Reply' })).toBeVisible();
+  await expect(toolbar.getByRole('button', { name: 'Compose' })).toHaveCount(0);
+  const bottom = stack.locator(
+    ':scope > [data-nav-stack-bottom]:not([data-nav-chrome-copy])',
+  );
+  await expect(bottom).toContainText('Received today');
+  await expect(bottom.getByRole('button', { name: 'Archive' })).toBeVisible();
+});

@@ -5,15 +5,34 @@ import '@kerfjs/ui/list-item.css';
 import '@kerfjs/ui/lucide-icon.css';
 import '@kerfjs/ui/nav-stack.css';
 import '@kerfjs/ui/split-view.css';
+import '@kerfjs/ui/floating-toolbar.css';
+import '@kerfjs/ui/pane.css';
+import '@kerfjs/ui/resizable-region.css';
+import '@kerfjs/ui/toolbar.css';
+import '@kerfjs/ui/toolbar-control-group.css';
+import '@kerfjs/ui/toolbar-text.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { List } from '@kerfjs/ui/list';
 import { ListHeader } from '@kerfjs/ui/list-header';
 import { ListItem } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { Pane } from '@kerfjs/ui/pane';
 import { SplitView } from '@kerfjs/ui/split-view';
+import { Toolbar } from '@kerfjs/ui/toolbar';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { signal } from 'kerfjs';
-import { ChevronRight, MessageSquareText } from 'lucide';
+import {
+  Archive,
+  ChevronRight,
+  MessageSquareText,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Reply,
+  SquarePen,
+} from 'lucide';
 
 import { DemoContentItem } from './demo-content-item.js';
 
@@ -49,8 +68,17 @@ const MESSAGES: readonly Message[] = [
   },
 ];
 
+/** The resizable example's list region id, which `wireResizableRegions` reports. */
+export const RESIZABLE_SPLIT_VIEW_LIST_ID = 'catalog-split-view-resizable-list';
+/** The `data-action` both of the resizable example's list toggles carry. */
+export const TOGGLE_SPLIT_VIEW_LIST_ACTION = 'toggle-split-view-list';
+
+const LIST_SIZE = 280;
+
 const selectedMessageId = signal<string | null>(null);
 const roomyMessageId = signal(MESSAGES[0].id);
+const resizableListSize = signal(LIST_SIZE);
+const resizableListCollapsed = signal(false);
 
 function selectedMessage(): Message | undefined {
   return MESSAGES.find(({ id }) => id === selectedMessageId.value);
@@ -59,6 +87,19 @@ function selectedMessage(): Message | undefined {
 export function resetSplitViewDemo(): void {
   selectedMessageId.value = null;
   roomyMessageId.value = MESSAGES[0].id;
+  resizableListSize.value = LIST_SIZE;
+  resizableListCollapsed.value = false;
+}
+
+/** Record the resizable list's committed width so a re-render keeps it. */
+export function resizeSplitViewList(size: number): void {
+  resizableListSize.value = size;
+}
+
+/** Collapse or restore the resizable list; returns whether it is now collapsed. */
+export function toggleSplitViewList(): boolean {
+  resizableListCollapsed.value = !resizableListCollapsed.value;
+  return resizableListCollapsed.value;
 }
 
 export function selectSplitViewMessage(id: string): void {
@@ -74,15 +115,38 @@ export function clearSplitViewSelection(): void {
   selectedMessageId.value = null;
 }
 
-function messageList(action: string, selectedId: string | null = null) {
+function iconGroup(
+  label: string,
+  icon: typeof Archive,
+  name: string,
+  action = 'split-view-demo-command',
+) {
+  return (
+    <ToolbarControlGroup label={label} appearance="borderless" single>
+      <button type="button" aria-label={label} data-action={action}>
+        <LucideIcon icon={icon} name={name} />
+      </button>
+    </ToolbarControlGroup>
+  );
+}
+
+function messageList(
+  action: string,
+  selectedId: string | null = null,
+  header = true,
+) {
   return (
     <List>
       {[
-        <ListHeader
-          label="Inbox"
-          count={MESSAGES.length}
-          countLabel={`${MESSAGES.length} messages`}
-        />,
+        ...(header
+          ? [
+              <ListHeader
+                label="Inbox"
+                count={MESSAGES.length}
+                countLabel={`${MESSAGES.length} messages`}
+              />,
+            ]
+          : []),
         ...MESSAGES.map((message) => (
           <ListItem
             action={action}
@@ -144,8 +208,72 @@ export function SplitViewDemo() {
         />
       </CatalogExample>
       <CatalogExample
+        label="Resizable, collapsible list"
+        note="resizable forwards the list's ResizableRegion options: drag the hidden separator to resize, or hide the list and restore it from the FloatingToolbar that docks in the split's corner."
+        align="none"
+        viewport={{
+          layout: 'grid',
+          width: 'full',
+          height: 'medium',
+          frame: 'solid',
+          responsive: 'roomy-only',
+        }}
+      >
+        <SplitView
+          id="catalog-split-view-resizable"
+          label="Resizable messages"
+          listTitle="Threads"
+          detailTitle={roomySelection.subject}
+          list={
+            <Pane
+              header={
+                <Toolbar
+                  label="Threads"
+                  leading={<ToolbarText text="Threads" />}
+                  trailing={iconGroup(
+                    'Hide threads',
+                    PanelLeftClose,
+                    'panel-left-close',
+                    TOGGLE_SPLIT_VIEW_LIST_ACTION,
+                  )}
+                />
+              }
+            >
+              {messageList(
+                'select-roomy-split-view-message',
+                roomySelection.id,
+                false,
+              )}
+            </Pane>
+          }
+          detail={messageDetail(roomySelection)}
+          resizable={{
+            size: resizableListSize.value,
+            min: 220,
+            max: 420,
+            separator: 'hidden',
+            collapsed: resizableListCollapsed.value,
+            collapseMotion: 'fade-slide',
+            restorePosition: 'bottom-start',
+            restoreControl: (
+              <FloatingToolbar label="Threads" position="bottom-start">
+                <ToolbarControlGroup label="Threads" single>
+                  <button
+                    type="button"
+                    aria-label="Show threads"
+                    data-action={TOGGLE_SPLIT_VIEW_LIST_ACTION}
+                  >
+                    <LucideIcon icon={PanelLeftOpen} name="panel-left-open" />
+                  </button>
+                </ToolbarControlGroup>
+              </FloatingToolbar>
+            ),
+          }}
+        />
+      </CatalogExample>
+      <CatalogExample
         label="Interactive compact drill-down"
-        note="Choose a message to push its detail into the controlled navigation stack. Back clears the selection and restores the list."
+        note="Choose a message to push its detail into the controlled navigation stack. Back clears the selection and restores the list. compactStack gives each view its own toolbar groups and the detail its own bottom toolbar."
         align="none"
         viewport={{
           layout: 'grid',
@@ -162,6 +290,21 @@ export function SplitViewDemo() {
           listTitle="Inbox"
           detailTitle={compactSelection?.subject ?? ''}
           backLabel="Back to inbox"
+          compactStack={{
+            toolbarConfig: { headingLevel: 2, dividerSides: 'b' },
+            list: { toolbar: iconGroup('Compose', SquarePen, 'square-pen') },
+            detail: {
+              toolbar: iconGroup('Reply', Reply, 'reply'),
+              bottomToolbar: (
+                <Toolbar
+                  label="Message actions"
+                  dividerSides=""
+                  leading={<ToolbarText text="Received today" size="small" />}
+                  trailing={iconGroup('Archive', Archive, 'archive')}
+                />
+              ),
+            },
+          }}
           list={messageList('open-split-view-message')}
           detail={
             compactSelection ? messageDetail(compactSelection) : <div></div>
