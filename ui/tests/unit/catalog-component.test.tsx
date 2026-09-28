@@ -368,7 +368,7 @@ describe('CatalogExample', () => {
     expect(html).not.toContain('data-fill-children');
     expect(html).toContain('style="--kui-pane-width:18rem"');
     expect(html).toMatch(
-      /class="kui-text\s+kui-catalog-example__compact-fallback"[^>]*>Open this specimen on a wider viewport\./,
+      /class="kui-text kui-catalog-example__compact-fallback"[^>]*>Open this specimen on a wider viewport\./,
     );
   });
 

@@ -643,6 +643,10 @@ describe('production UI primitives', () => {
     ).toBe(
       '<h2 id="section-title" aria-label="Section title" data-scope="details" class="kui-text title emphasis" data-component="text" data-tone="default" data-size="default" data-font="default" data-border="transparent">Details</h2>',
     );
+    // A lone className joins with one space (no gap for the absent class).
+    expect(asHtml(Text({ className: 'fallback', children: 'Body' }))).toContain(
+      'class="kui-text fallback"',
+    );
     expect(asHtml(Text({ children: <span>Body</span> }))).toBe(
       '<p class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default" data-border="transparent"><span>Body</span></p>',
     );
