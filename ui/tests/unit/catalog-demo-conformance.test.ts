@@ -141,6 +141,11 @@ describe('Catalog demo conformance analysis', () => {
       'private-import',
       catalogDemoConformanceRules.publicImports,
     ],
+    [
+      'invalid-wrapped-stack',
+      'wrapped',
+      catalogDemoConformanceRules.wrappedStack,
+    ],
   ])('rejects %s with a stable diagnostic id', async (name, route, rule) => {
     const failures = await analyzeFixture(name, route, 'component');
     expect(failures.map((failure) => failure.rule)).toContain(rule);

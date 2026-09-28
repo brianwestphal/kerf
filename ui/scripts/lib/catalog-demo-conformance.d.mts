@@ -27,6 +27,7 @@ export const catalogDemoConformanceRules: Readonly<{
   rootAttributes: string;
   privateMarkup: string;
   emptyExample: string;
+  wrappedStack: string;
   compositionSkip: string;
   shellOverlay: string;
   shellMode: string;

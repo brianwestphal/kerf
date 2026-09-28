@@ -14,6 +14,7 @@ export const catalogDemoConformanceRules = Object.freeze({
   rootAttributes: 'catalog-demo/root-attributes',
   privateMarkup: 'catalog-demo/private-catalog-markup',
   emptyExample: 'catalog-demo/empty-example',
+  wrappedStack: 'catalog-demo/wrapped-example-stack',
   compositionSkip: 'catalog-demo/composition-overlay-skip',
   shellOverlay: 'catalog-demo/component-only-overlay',
   shellMode: 'catalog-demo/documented-demo-mode',
@@ -388,6 +389,26 @@ export function analyzeCatalogDemoSource({
           directMetadata[0],
         ),
       );
+  }
+  // A single-component demo shows its component directly on the catalog
+  // grid: no card or container around the example stack.
+  if (kind === 'component') {
+    for (const stack of helperElements.stacks) {
+      const parent = stack.parent;
+      if (!ts.isJsxElement(parent)) continue;
+      const parentName = jsxTagName(parent.openingElement, file);
+      if (catalogImports.has(parentName)) continue;
+      diagnostics.push(
+        diagnostic(
+          catalogDemoConformanceRules.wrappedStack,
+          route,
+          filePath,
+          `Component demos sit directly on the catalog grid; remove the <${parentName}> container around CatalogExampleStack.`,
+          file,
+          parent,
+        ),
+      );
+    }
   }
   if (kind === 'composition' && hasSkipMetadata)
     diagnostics.push(

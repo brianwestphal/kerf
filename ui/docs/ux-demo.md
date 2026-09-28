@@ -10,7 +10,11 @@ launch Chromium, Firefox, and WebKit. The build emits
 `source-freshness.json`; browser coverage compares it with an independent hash
 of the current `src/` and `ux-demo/` inputs, so a stale `dist-demo` cannot pass
 after a route or component edit. `npm run demo:serve` remains a preview-only
-command for an already-built catalog.
+command for an already-built catalog. The demo-conformance preflight also
+rejects a component route that wraps its `CatalogExampleStack` in a card or
+other container (`catalog-demo/wrapped-example-stack`): single-component demos
+sit directly on the catalog grid, and only composition and recipe routes frame
+their content.
 
 Ten lazy production-composition routes live under the `Recipes` category.
 Each `?component=recipe-*` route uses public package primitives, real wiring,

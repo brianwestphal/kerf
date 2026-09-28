@@ -1,0 +1,14 @@
+import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { StateBanner } from '@kerfjs/ui/state-banner';
+
+export function WrappedDemo() {
+  return (
+    <wa-card appearance="outlined">
+      <CatalogExampleStack rootAttributes={{ 'data-demo': 'wrapped' }}>
+        <CatalogExample label="Populated">
+          <StateBanner title="Ready" />
+        </CatalogExample>
+      </CatalogExampleStack>
+    </wa-card>
+  );
+}
