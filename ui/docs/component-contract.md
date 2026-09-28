@@ -416,6 +416,16 @@ padding + 24px icon + 8px gap) and 8px from the right edge for an icon-bearing
 row. Applications own the values, formatting, and whether an icon is decorative
 or meaningfully labeled.
 
+A row follows the settings-style key/value priority: the value keeps its
+content and the label gives way. The label and value are two content-sized
+columns that share the row's free space equally, each stopping once its content
+fits. A short value therefore stays whole on one line beside any label, and a
+long label takes the remaining width, wrapping at its spaces and ending a word
+wider than its column (a long component or file name) in an ellipsis before the
+value rather than running under it. A short label keeps its width beside a
+long value, which wraps; when both are long they split the row, so neither is
+starved.
+
 ## Imports and side effects
 
 Every component has an explicit JS and CSS subpath. In CSS-aware browser builds,

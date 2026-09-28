@@ -22,7 +22,14 @@
   padding-block: remify(8px);
   padding-inline: var(--_kui-value-table-inline-padding);
   box-sizing: border-box;
-  grid-template-columns: minmax(remify(96px), auto) minmax(0, 1fr);
+  /* Two content-sized tracks share the free space equally, and each stops
+     growing once its content fits. A short value keeps its whole width and a
+     long label takes the rest (ending a word that still does not fit in an
+     ellipsis); a short label keeps its width beside a long, wrapping value;
+     when both are long they split the row. A `1fr` value track would get
+     nothing until the label reached its full width, starving the value to 0px
+     beside a long single-word label. */
+  grid-template-columns: minmax(0, auto) minmax(0, auto);
   align-items: center;
   gap: var(--kui-layout-item-gap, remify(8px));
 }
@@ -42,7 +49,12 @@
 }
 .kui-value-table__row dt {
   display: flex;
+  /* The label hugs its content (up to its column) rather than stretching, so
+     its box does not change with the value's width — a placeholder row keeps
+     the live row's label geometry beside its skeleton value. */
+  max-width: 100%;
   min-width: 0;
+  justify-self: start;
   color: var(--kui-color-text-quiet);
   align-items: center;
   gap: var(--kui-layout-item-gap, remify(8px));
@@ -60,6 +72,11 @@
 }
 .kui-value-table__label {
   min-width: 0;
+  overflow: hidden;
+  /* A multi-word label wraps at spaces; a single word wider than the label
+     column (a long component or file name) ends in an ellipsis instead of
+     running under the value. */
+  text-overflow: ellipsis;
 }
 .kui-value-table__row dd {
   display: flex;

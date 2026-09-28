@@ -26,6 +26,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   fix holds under every `responsive` policy and both `centerAlign` values, and
   a toolbar that fits lays out exactly as before.
 
+- **`@kerfjs/ui` `ValueTableRow` keeps its value readable beside a long
+  label.** A long single-word label (such as `ConnectionStateBanner` in a
+  390px-wide table) no longer squeezes the value to 0px wide, where it wrapped
+  one character per line while the label ran underneath it. The label and value
+  now share the row as two content-sized columns: a short value stays whole on
+  one line, the label wraps at its spaces and ends an over-long word in an
+  ellipsis before the value, and when both are long they split the row.
+
 - **`@kerfjs/ui` pinned chrome can give way in a short pane.** `Pane` takes
   `chromePlacement="auto"`: its header and footer stay pinned while the pane is
   at least 480px (30rem) tall, and below that the whole pane scrolls as one
