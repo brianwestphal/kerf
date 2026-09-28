@@ -47,9 +47,7 @@ export function Text({
   className = '',
   ...attributes
 }: TextProps) {
-  const classes = ['kui-text', classValue, className]
-    .filter(Boolean)
-    .join(' ');
+  const classes = ['kui-text', classValue, className].filter(Boolean).join(' ');
   return (
     <Variant
       {...attributes}
