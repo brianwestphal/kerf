@@ -263,16 +263,10 @@ test.describe('resizable Workbench panels', () => {
     const railBox = (await rail.boundingBox())!;
     const box = (await handle.boundingBox())!;
     // The 20px hit target is centered on the rail's inner edge, reaching past
-    // the clipped rail into the work area where the engine can extend the
-    // clip; elsewhere it sits wholly inside the rail's edge.
-    const straddles = await page.evaluate(() =>
-      CSS.supports('overflow-clip-margin', '10px'),
-    );
+    // the clipped rail into the work area in every engine.
     expect(box.width).toBe(20);
     expect(
-      Math.abs(
-        box.x + box.width / 2 - (railBox.x + 240 - (straddles ? 0 : 10)),
-      ),
+      Math.abs(box.x + box.width / 2 - (railBox.x + 240)),
     ).toBeLessThanOrEqual(1);
     const y = box.y + box.height / 2;
     const x = box.x + box.width / 2;
@@ -304,6 +298,51 @@ test.describe('resizable Workbench panels', () => {
     await page.mouse.up();
     await expect(drawer).toHaveCSS('height', '200px');
   });
+
+  // The enlarged hit target must not move the drawn grip: in every engine the
+  // grip is centered on the separator line it resizes (WebKit, which cannot
+  // extend a clip with overflow-clip-margin, once drew it half the hit target
+  // inside the panel), and the hit target's outer half past the line still
+  // resizes.
+  for (const [name, axis] of [
+    ['Resize Navigator', 'horizontal'],
+    ['Resize Console', 'vertical'],
+  ] as const)
+    test(`the ${name} grip is drawn on its separator line`, async ({
+      page,
+    }) => {
+      const workbench = page.locator('#catalog-workbench-resizable');
+      const handle = workbench.getByRole('separator', { name });
+      await workbench.scrollIntoViewIfNeeded();
+      const box = (await handle.boundingBox())!;
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+      const icon = handle.locator('svg');
+      await expect(icon).toBeVisible();
+      const geometry = await handle.evaluate((element, horizontal) => {
+        const panel = element.parentElement!;
+        const panelBox = panel.getBoundingClientRect();
+        const style = globalThis.getComputedStyle(panel);
+        const glyph = element.querySelector('svg')!.getBoundingClientRect();
+        const line = horizontal
+          ? panelBox.right - Number.parseFloat(style.borderRightWidth) / 2
+          : panelBox.top + Number.parseFloat(style.borderTopWidth) / 2;
+        const center = horizontal
+          ? glyph.left + glyph.width / 2
+          : glyph.top + glyph.height / 2;
+        const across = horizontal
+          ? glyph.top + glyph.height / 2
+          : glyph.left + glyph.width / 2;
+        const outside = horizontal
+          ? document.elementFromPoint(line + 8, across)
+          : document.elementFromPoint(across, line - 8);
+        return {
+          offset: center - line,
+          outsideHitsHandle: element.contains(outside),
+        };
+      }, axis === 'horizontal');
+      expect(Math.abs(geometry.offset)).toBeLessThanOrEqual(1);
+      expect(geometry.outsideHitsHandle).toBe(true);
+    });
 
   test('collapsing keeps the size and expanding restores it', async ({
     page,

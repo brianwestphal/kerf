@@ -387,10 +387,64 @@
   display: none;
 }
 
-/* Where the engine can extend a clip past the panel's edge, an expanded
-   panel lets exactly the handle's outer half through, so the hit target
-   straddles the separator like a ResizableRegion handle does. Collapsing drops
-   the margin again before the content slides out. */
+/* An expanded panel lets exactly the handle's outer half through its clip, so
+   the hit target straddles the separator like a ResizableRegion handle does
+   and the grip is drawn centered on the separator line. Collapsing drops the
+   extension again before the content slides out. Engines that can extend a
+   clip past the panel's edge do it with `overflow-clip-margin`; the rest
+   (WebKit) clip with a `clip-path` that reaches past the panel's edges. That
+   also makes the panel a stacking context, so the panel stacks at the
+   handle's own level to keep the handle's outer half above the work area
+   beside it. The clip and the stacking level sit at low specificity, so a
+   responsive overlay presentation (below) replaces both. */
+@supports not (overflow-clip-margin: 10px) {
+  .kui-workbench__rail[data-resizable="true"][data-presentation="inline"]:not(
+      [data-collapsed="true"],
+      [data-content-overflow="visible"]
+    ),
+  .kui-workbench__drawer[data-resizable="true"][data-presentation="inline"]:not(
+      [data-collapsed="true"],
+      [data-content-overflow="visible"]
+    ) {
+    overflow: visible;
+  }
+
+  .kui-workbench__rail:where(
+    [data-resizable="true"][data-presentation="inline"]:not(
+        [data-collapsed="true"],
+        [data-content-overflow="visible"]
+      )
+  ) {
+    z-index: 3;
+    clip-path: inset(0 -10px);
+  }
+
+  .kui-workbench__drawer:where(
+    [data-resizable="true"][data-presentation="inline"]:not(
+        [data-collapsed="true"],
+        [data-content-overflow="visible"]
+      )
+  ) {
+    z-index: 3;
+    clip-path: inset(-10px 0 0);
+  }
+
+  .kui-workbench__rail--left[data-resizable="true"][data-presentation="inline"]
+    > .kui-workbench__handle {
+    inset-inline-end: -10px;
+  }
+
+  .kui-workbench__rail--right[data-resizable="true"][data-presentation="inline"]
+    > .kui-workbench__handle {
+    inset-inline-start: -10px;
+  }
+
+  .kui-workbench__drawer[data-resizable="true"][data-presentation="inline"]
+    > .kui-workbench__handle {
+    inset-block-start: -10px;
+  }
+}
+
 @supports (overflow-clip-margin: 10px) {
   .kui-workbench__rail[data-resizable="true"]:not(
       [data-collapsed="true"],
@@ -542,6 +596,7 @@
     max-width: var(--kui-workbench-overlay-max-width, 85vw);
     inset-block: 0;
     box-shadow: var(--kui-shadow-l);
+    clip-path: none;
   }
 
   .kui-workbench__rail--left[data-responsive-overlay-at="narrow"] {
@@ -592,6 +647,7 @@
     inset-inline: 0;
     inset-block-end: 0;
     box-shadow: var(--kui-shadow-l);
+    clip-path: none;
   }
 
   .kui-workbench__drawer[data-responsive-overlay-at="narrow"][data-collapsed="true"] {
@@ -626,6 +682,7 @@
     max-width: var(--kui-workbench-overlay-max-width, 85vw);
     inset-block: 0;
     box-shadow: var(--kui-shadow-l);
+    clip-path: none;
   }
 
   .kui-workbench__rail--left[data-responsive-overlay-at="compact"] {
@@ -676,6 +733,7 @@
     inset-inline: 0;
     inset-block-end: 0;
     box-shadow: var(--kui-shadow-l);
+    clip-path: none;
   }
 
   .kui-workbench__drawer[data-responsive-overlay-at="compact"][data-collapsed="true"] {

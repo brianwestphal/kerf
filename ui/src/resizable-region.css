@@ -381,7 +381,10 @@
    and the separator has less room past it than the handle's overhang, which
    puts it at the parent's edge. The handle then sits wholly inside the region
    and keeps its separator line on the region's edge, so a clipping ancestor
-   never cuts off half of the hit target or its focus ring. */
+   never cuts off half of the hit target or its focus ring. The grip stays
+   centered in the handle there: the separator is the clipping edge, so a grip
+   centered on it would be cut in half. Everywhere else the grip is drawn on
+   the separator line. */
 .kui-resizable-region[data-handle-inset][data-axis="horizontal"][data-edge="end"]
   > .kui-resizable-region__handle {
   right: 0;

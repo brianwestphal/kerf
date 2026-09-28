@@ -300,6 +300,29 @@ for (const width of [390, 1440])
       });
   });
 
+// KF-1B54GN: the enlarged hit target straddles the separator, and the drawn
+// grip sits on the separator line itself, not beside it.
+test('a straddling handle draws its grip on the separator line', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=resize');
+  const region = page.locator(
+    '[data-demo="resize"] [data-component="resizable-region"]',
+  );
+  const handle = region.locator('[data-kui-resize-handle]');
+  const box = (await handle.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  const offset = await handle.evaluate((element) => {
+    const line = element.parentElement!.getBoundingClientRect().right;
+    const glyph = element
+      .querySelector('.kui-resizable-region__handle-icon')!
+      .getBoundingClientRect();
+    return glyph.left + glyph.width / 2 - line;
+  });
+  expect(Math.abs(offset)).toBeLessThanOrEqual(1);
+});
+
 // KF-XZJ0Y8: the reported values stay in sync at rest. Narrowing the viewport
 // re-clamps them, and an unrelated re-render that writes the rendered props
 // back is re-clamped too, without the handle ever being focused.
