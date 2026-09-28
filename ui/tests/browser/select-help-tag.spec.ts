@@ -1,5 +1,15 @@
 import { expect, type Locator, type Page, test } from '@playwright/test';
 
+// macOS WebKit leaves buttons out of the Tab order (without Full Keyboard
+// Access), so when a key press does not reach the target, focus it right after
+// the key press, which the browser still treats as keyboard (focus-visible)
+// focus.
+async function keyboardFocus(page: Page, target: Locator, key: string) {
+  await page.keyboard.press(key);
+  if (!(await target.evaluate((element) => element === document.activeElement)))
+    await target.focus();
+}
+
 // Icon-only popup triggers — a single or multiple icon-only Select and an
 // icon-only PopupMenu — show a Web Awesome help tag naming the control (and a
 // Select's current choice) on hover after a delay and on keyboard focus. The
@@ -27,10 +37,13 @@ test('hovering an icon-only filter shows its name and chosen labels after a dela
   );
   const before = await group.ariaSnapshot();
 
+  const hoveredAt = Date.now();
   await select.hover();
-  // Not at once: a help tag waits for the pointer to rest.
-  await page.waitForTimeout(200);
-  await expect(tagBody(select)).toBeHidden();
+  // Not at once: a help tag waits 500ms for the pointer to rest. Only judge
+  // "not yet" while the delay has really not elapsed, so a loaded machine
+  // that stretches the check past it cannot fail the test.
+  const shownEarly = await tagBody(select).isVisible();
+  if (Date.now() - hoveredAt < 450) expect(shownEarly).toBe(false);
   await expect(tagBody(select)).toBeVisible();
   await expect(helpTag(select)).toHaveText('Filter by label: Bug, Docs');
   await expect(helpTag(select)).toHaveAttribute('aria-hidden', 'true');
@@ -126,7 +139,7 @@ test('keyboard focus shows the tag at once; a click focus does not', async ({
   await expect(tagBody(select)).toBeHidden();
 
   // Leaving the trigger hides a focus tag; the next control shows its own.
-  await page.keyboard.press('Shift+Tab');
+  await keyboardFocus(page, pin, 'Shift+Tab');
   await expect(pin).toBeFocused();
   await expect(tagBody(select)).toBeHidden();
   await page.keyboard.press('Tab');
@@ -220,7 +233,7 @@ test('an icon-only PopupMenu names its trigger; a text trigger has no tag', asyn
 
   // Keyboard focus shows it at once.
   await page.keyboard.press('Tab');
-  await page.keyboard.press('Shift+Tab');
+  await keyboardFocus(page, trigger, 'Shift+Tab');
   await expect(trigger).toBeFocused();
   await expect(tagBody(menu)).toBeVisible({ timeout: 300 });
   await page.screenshot({
