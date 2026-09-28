@@ -1,6 +1,6 @@
 # UX catalog contract
 
-Run `npm run dev` from `ui/`. The catalog is a development and review surface, not a second implementation. The development server allows repo-owned assets used by the catalog, and its production bundle uses relative asset URLs so the complete catalog remains intact below preview and proxy paths.
+Run `npm run dev` from `ui/`. The catalog is a development and review surface, not a second implementation. The development server reloads component source edits without a restart: component entries still load through their `dist/browser` wrappers, so each component's reachable CSS is exercised as consumers receive it, but the JavaScript those wrappers re-export (and every other `@kerfjs/ui` subpath) resolves to `src/`, and CSS resolves to `src/` as well. A component that gains a new CSS dependency needs a restart, because the wrapper listing its stylesheets is regenerated only by the build. Production demo builds, previews, and the browser tests use `dist/`. The development server allows repo-owned assets used by the catalog, and its production bundle uses relative asset URLs so the complete catalog remains intact below preview and proxy paths.
 
 Every Playwright entry point builds current source before the preview server
 starts. `npm run test:e2e -- tests/browser/row.spec.ts` and a direct focused
