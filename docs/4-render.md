@@ -386,6 +386,21 @@ effect(() => {
 
 Or design around the element's native semantics: render `<details>` once, listen for the `toggle` event, and push the open state into a signal — that way the user's interaction and your state stay in sync without the framework arbitrating.
 
+### Custom elements own their `role` and `aria-*`
+
+Web components conventionally own their host's accessibility semantics: Web Awesome's `wa-option` sets `role="option"`, `aria-selected`, and `aria-disabled` from its live state; `wa-divider` sets `role="separator"` and `aria-orientation`; Shoelace, FAST, and Spectrum do the same in `connectedCallback` / `updated`. A template almost never mentions these, so an ordinary remove pass would strip them on the next re-render and assistive technology would lose the element's role and state.
+
+So on **custom elements** (any hyphenated tag), `role` and every **`aria-*`** attribute are element-owned, exactly like `open`: the morph and the keyed-list attribute fast path never _remove_ them just because the template omits them. Everything else still applies:
+
+- A template can still **set** or **change** them (`<wa-divider role="separator">`, `aria-label={label}`); a changed value is written as usual.
+- A **signal binding** can still remove them. Bindings are explicit intent and do not consult this rule: `aria-expanded={expandedSig}` with the signal set to `null` / `false` removes the attribute; a later value sets it again.
+- **Plain elements are unchanged.** A `role` / `aria-*` on a `<div>` or `<li>` that the template omits is removed, as before.
+- `tabindex` is deliberately not included — it is too often template-driven.
+
+Trade-off (the same one as `<details open>`): a static template cannot remove a `role` / `aria-*` from a custom element by omitting it — `aria-pressed={on ? "true" : undefined}` leaves the last `"true"` in place when `on` flips false. Render an explicit value instead (`aria-pressed={on ? "true" : "false"}`), bind it to a signal, or remove it imperatively.
+
+The rule is the same helper, `src/utils/isUserAgentOwnedAttr.ts` (KF-KQWZ8M; surfaced by an audit of the Web Awesome elements `@kerfjs/ui` renders, where a re-render stripped `wa-option`'s and `wa-divider`'s roles). It replaced a Select-specific restore observer in `@kerfjs/ui`.
+
 ## 4.4.2 Imperative DOM mutations and the no-op-render fast path
 
 `mount()` re-runs your render function whenever a signal it read changes. On each re-run kerf compares the new "static surrounds" HTML (everything outside `each()` lists) against the previous render's. **If they're byte-for-byte identical, the diff is skipped entirely** — the cost-saving optimization that lets a list signal flip a class without paying for a parent walk.
@@ -453,7 +468,7 @@ morph(liveCard, raw(htmlFromServer));
 
 `morph()` reconciles only `liveRoot`'s **children**. The root element itself is never replaced and its own attributes are never touched — set them directly if they need to change. `template` therefore describes the content that goes inside the root: for an `Element` template, its child nodes are used and its own tag and attributes are ignored.
 
-`morph()` honors every short-circuit `mount()`'s internal pipeline uses: `data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focused-input value + selection preservation, focused-`[contenteditable]` subtree preservation, and the user-agent-owned `open` attribute on `<details>`, `<dialog>`, and custom elements (any hyphenated tag). Match keys (`id`, then `data-key`) work the same way as inside a mount.
+`morph()` honors every short-circuit `mount()`'s internal pipeline uses: `data-morph-skip`, `data-morph-skip-children`, `data-morph-preserve`, focused-input value + selection preservation, focused-`[contenteditable]` subtree preservation, and the user-agent-owned `open` attribute on `<details>`, `<dialog>`, and custom elements (any hyphenated tag), plus the element-owned `role` / `aria-*` on custom elements. Match keys (`id`, then `data-key`) work the same way as inside a mount.
 
 What `morph()` doesn't do: it isn't reactive (no signal subscription, no effect). It runs once per call. If you want re-renders, use `mount()`. If you want a one-shot reconciliation against a tree you already own, `morph()` is the primitive — five lines of glue away from what would otherwise force you back to `mount()`'s wipe-and-rebuild semantics or to a third-party morph library.
 

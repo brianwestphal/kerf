@@ -168,15 +168,14 @@ Unit name-projection coverage lives in `ui/tests/unit/components.test.tsx`; the
 three-engine accessible-name/description, keyboard, rerender, and geometry regression is
 `ui/tests/browser/select-accessibility.spec.ts`. Each `wa-option` owns its
 `role="option"`, `aria-selected`, and `aria-disabled`, which the template does not
-render; the registration entry restores them from the option's live
-`selected`/`disabled` state whenever an application rerender's morph removes or
-rewrites them, in single and `multiple` Selects alike
-(`ui/src/install-select-option-semantics.ts`; unit
-`ui/tests/unit/select-option-semantics.test.ts`, browser
+render; kerf's core morph treats `role` / `aria-*` on any custom element as
+element-owned (`src/utils/isUserAgentOwnedAttr.ts`, `docs/4-render.md` §4.4.1),
+so an application rerender leaves them to Web Awesome in single and `multiple`
+Selects alike, with no Select-specific restore (browser regression guard:
 `ui/tests/browser/select-option-semantics.spec.ts`). A `separatorBefore`
 `wa-divider` is different: Web Awesome sets its `role="separator"` and
 `aria-orientation` once and never re-derives them, so the Select template
-renders both explicitly and the morph keeps them by construction
+renders both explicitly, which also holds without the core rule
 (`ui/tests/browser/wa-host-attributes.spec.ts`). For the same reason the
 templates render the defaults Web Awesome reflects onto its hosts
 (`wa-select` `size="m" appearance="outlined" placement="bottom"`, `wa-dropdown`

@@ -575,12 +575,13 @@ function morphElement(
 }
 
 /**
- * Attributes the user agent toggles in response to user interaction.
+ * Attributes the user agent or the element itself owns.
  * `<details>` and `<dialog>` add/remove `open=""` themselves when the user
  * expands or closes the element, and custom elements (any hyphenated tag)
- * reflect their live open state to `open` — see `isUserAgentOwnedAttr`. If the developer's JSX never mentions
- * `open`, treating that attribute as user-agent-owned and leaving it alone
- * during the morph keeps the user-driven state intact across re-renders.
+ * reflect their live open state to `open` and set their own host `role` /
+ * `aria-*` — see `isUserAgentOwnedAttr`. If the developer's JSX never mentions
+ * one of these, treating it as element-owned and leaving it alone during the
+ * morph keeps the element-driven state intact across re-renders.
  *
  * Trade-off (KF-84): controlled-style `<details open={signal.value}>` where
  * the signal flips false won't auto-collapse the element, because the

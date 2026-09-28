@@ -12,17 +12,29 @@
  *    reflect their live open state to `open`, so stripping it on an unrelated
  *    re-render closed an open popup under the user.
  *
- * Trade-off (same as `<details>`): a controlled `open={false}` cannot close one
- * of these through the template; drive `open` imperatively instead.
+ * `role` and every `aria-*` qualify on custom elements (any hyphenated tag).
+ * Web components conventionally own their host's ARIA — Web Awesome's
+ * `wa-option` sets `role="option"` / `aria-selected` / `aria-disabled` from its
+ * live state, `wa-divider` sets `role="separator"` / `aria-orientation`, and
+ * Shoelace, FAST, and Spectrum do the same in `connectedCallback` / `updated`
+ * — so a template that never mentions them must not strip them. Plain
+ * elements keep the ordinary rule: a `role` / `aria-*` the template omits is
+ * removed. `tabindex` is deliberately NOT included (too often template-driven).
+ *
+ * Trade-off (same as `<details open>`): a template cannot REMOVE one of these
+ * from a custom element by omitting it — render an explicit value instead
+ * (`aria-expanded="false"`), bind it to a signal (a binding set to
+ * `null` / `false` removes it; bindings are explicit intent and do not consult
+ * this rule), or remove it imperatively.
  */
 export function isUserAgentOwnedAttr(
   tagNameUpper: string,
   name: string,
 ): boolean {
+  if (tagNameUpper.includes('-')) {
+    return name === 'open' || name === 'role' || name.startsWith('aria-');
+  }
   return (
-    name === 'open' &&
-    (tagNameUpper === 'DETAILS' ||
-      tagNameUpper === 'DIALOG' ||
-      tagNameUpper.includes('-'))
+    name === 'open' && (tagNameUpper === 'DETAILS' || tagNameUpper === 'DIALOG')
   );
 }

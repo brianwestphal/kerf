@@ -4,8 +4,12 @@ import { expect, type Locator, type Page, test } from '@playwright/test';
 // that tracks its live `selected` state. The Select's template does not
 // render those attributes, so a kerf re-render (the morph removes attributes
 // the template omits) used to strip them, and screen readers lost every
-// option's role and selected state. They must survive re-renders in single
-// and multiple mode, before and after the person interacts.
+// option's role and selected state. kerf's core morph now treats `role` and
+// `aria-*` on any custom element as element-owned (never removed because the
+// template omits them), so no Select-specific restore is needed. This spec is
+// the end-to-end regression guard for that core rule: the semantics must
+// survive re-renders in single and multiple mode, before and after the person
+// interacts.
 
 type OptionSemantics = {
   value: string | null;

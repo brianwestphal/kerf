@@ -22,6 +22,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   with no "…"), and `multiline` rows break a word wider than the label column
   onto the next line.
 
+- **Custom elements keep the `role` and `aria-*` they set on themselves across
+  re-renders.** Web components conventionally own their host's ARIA (Web
+  Awesome's `wa-option` sets `role="option"` / `aria-selected`, `wa-divider`
+  sets `role="separator"`; Shoelace and FAST do the same), but a template never
+  mentions them, so the morph and the keyed-list attribute fast path stripped
+  them on the next re-render. On any custom element (hyphenated tag), `role`
+  and `aria-*` are now element-owned like `open`: never removed just because
+  the template omits them. The template can still set or change them, a signal
+  binding set to `null` / `false` still removes them, and plain elements are
+  unchanged. Trade-off: omitting one from a static template no longer removes
+  it from a custom element — render an explicit value (`aria-pressed="false"`)
+  instead.
+
 - **`@kerfjs/ui` toolbar groups drop their focus ring while a popup is open.**
   A `ToolbarControlGroup` that owns the ring (`focusRing="outline"` or
   `"halo"`) no longer paints it while a Select listbox or `PopupMenu` inside it
@@ -46,9 +59,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   re-renders.** Re-rendering a Select (for example after its `change` handler
   updates the controlling signal) removed the `role="option"` and
   `aria-selected` Web Awesome sets on each option, so screen readers lost every
-  option's role and selected state. `@kerfjs/ui/select/register` now restores
-  `role`, `aria-selected`, and `aria-disabled` from each option's live state,
-  in single and `multiple` Selects.
+  option's role and selected state. They now survive in single and `multiple`
+  Selects through the core rule below (custom elements own their `role` /
+  `aria-*`), with no Select-specific restore.
 
 - **`@kerfjs/ui` `Select` dividers keep their separator role across
   re-renders.** The `wa-divider` a `separatorBefore` choice adds lost the
