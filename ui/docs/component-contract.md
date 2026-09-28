@@ -385,7 +385,12 @@ choose `responsive="stack"` with `responsiveAt="compact" | "narrow"`,
 `responsive="wrap"` for a heading whose title must stay whole, or
 `responsive="center-priority"` instead of selecting its zone classes from a
 parent stylesheet. No policy clips an action: the trailing zone, and a stacked
-center zone, wrap whole groups onto another row.
+center zone, wrap whole groups onto another row. The center zone never
+compresses below its content width, so when the leading identity, center, and
+trailing zones share a row that is too narrow, the leading title is what gives
+way: it truncates with an ellipsis (as a platform toolbar's title does) instead
+of the center group painting over it. When everything fits, the center group
+keeps its place, centered in the track between the leading and trailing zones.
 `ListHeader` similarly separates its dormant title and
 optional count or badge from its optional 44px action. Use the mutually
 exclusive `count`/`countLabel` pair for non-negative safe-integer section

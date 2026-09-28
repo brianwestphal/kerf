@@ -5,7 +5,11 @@
   box-sizing: border-box;
   color: var(--kui-color-text);
   background: transparent;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  /* The center track's minimum is `auto`, not 0, so it resolves to the center
+     zone's own min-width (its content width, below): when the zones do not all
+     fit, the auto leading track is what shrinks and its title truncates, and
+     the center group never overflows its track onto the leading identity. */
+  grid-template-columns: auto 1fr auto;
   align-items: start;
   gap: var(--kui-toolbar-gap, remify(8px));
   container: kui-toolbar / inline-size;
@@ -190,6 +194,11 @@
 }
 
 .kui-toolbar__center {
+  /* The center content never compresses below its own width (a group cannot
+     shrink or clip its controls). The track above takes this as its minimum, so
+     the leading identity gives way first, the way a platform toolbar truncates
+     its title before it overlaps the centered controls. */
+  min-width: min-content;
   justify-content: center;
   grid-column: 2;
 }

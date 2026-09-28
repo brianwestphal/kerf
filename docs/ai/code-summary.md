@@ -785,6 +785,14 @@ track, because a toolbar cannot container-query itself; an expanded
 `Toolbar.responsive="wrap"` moves the trailing zone below a whole heading title.
 `ui/tests/browser/toolbar-overflow.spec.ts` pins the compact-toolbar and
 loading-inspector recipes at 390px plus the focused Toolbar demo states.
+The center track's minimum is the center zone's own content width
+(`grid-template-columns: auto 1fr auto` with `min-width: min-content` on the
+zone), so a row that is too narrow truncates the leading title instead of the
+center group painting over it;
+`ui/tests/browser/toolbar-center-overflow.spec.ts` (fixture
+`ui/tests/browser/fixtures/toolbar-center-overflow.tsx`) pins this across every
+`responsive` policy, both `centerAlign` values, and the NavStack and Workbench
+toolbars at 320–480px, plus unchanged centering at 1100px.
 `List`, `Row`, and `Grid` take `fill` (the layout root of a definite-height
 parent takes its full height) and filtered `rootAttributes`, so the app-shell
 and collapsible-sidebar recipes use a filling List/Row root instead of a frame

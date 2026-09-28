@@ -17,6 +17,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   ("Settings, Update available"). `BadgeTextProps` and `BadgeDotProps` are
   exported from the root barrel.
 
+- **`@kerfjs/ui` `Toolbar` truncates the leading title instead of letting the
+  center zone cover it.** When a leading identity, a `center` group, and
+  trailing actions no longer fit one row, the center zone keeps its whole
+  content width and the leading title ends in an ellipsis. Previously the
+  center track could shrink below its group, which then painted over the
+  title — a pushed `NavStack` view with a center group did this at 390px. The
+  fix holds under every `responsive` policy and both `centerAlign` values, and
+  a toolbar that fits lays out exactly as before.
+
 - **`@kerfjs/ui` pinned chrome can give way in a short pane.** `Pane` takes
   `chromePlacement="auto"`: its header and footer stay pinned while the pane is
   at least 480px (30rem) tall, and below that the whole pane scrolls as one

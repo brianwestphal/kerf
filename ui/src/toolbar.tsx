@@ -14,7 +14,9 @@ export interface ToolbarProps {
   /**
    * Component-owned responsive layout; applications choose the policy rather
    * than restyling toolbar internals. Under every policy the trailing zone
-   * wraps its groups instead of clipping an action.
+   * wraps its groups instead of clipping an action, and the center zone keeps
+   * its whole content width: when the zones do not fit one row, the leading
+   * title truncates with an ellipsis rather than the center overlapping it.
    * - `none` keeps one row; the leading identity truncates first.
    * - `stack` stacks the zones at `responsiveAt`, wrapping stacked control
    *   groups onto further rows.
