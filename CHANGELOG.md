@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui`'s segmented `TabBar` ends its strip concentric with the pill
+  track.** The first tab's leading corners, and with `allocation="fill"` the
+  last tab's trailing corners, now follow the track's curve instead of keeping
+  the small segment radius, and compact tabs are inset from the track's ends
+  by the same distance as from its top and bottom. Corners between tabs are
+  unchanged.
+
 - **`@kerfjs/ui`'s `StateBanner` keeps its title, badge, and detail on one
   baseline in Safari.** The truncating detail was a clipped `inline-block`,
   which WebKit baselines at its bottom edge: the detail rose about 2px above

@@ -36,6 +36,32 @@
   --kui-tab-bar-background: var(--kui-color-neutral-fill-quiet);
   --kui-tab-bar-border: var(--kui-color-neutral-border-quiet);
 }
+/* A segmented strip's outer ends follow the pill track. The first tab's
+   leading corners, and a filled strip's last tab's trailing corners, are
+   pill-rounded, and a compact tab is inset from the track's ends by the same
+   distance as from its top and bottom, so each end is concentric with the
+   track. Only fill allocation carries the last tab to the track's trailing
+   end; an intrinsic strip's last tab stops short of it and keeps the segment
+   radius, as do the corners between tabs. */
+.kui-tab-bar[data-presentation="segmented"]
+  .kui-tab-bar__tabs:has(> [data-component="app-tab"][data-size="compact"]) {
+  padding-inline: calc(
+    (var(--kui-toolbar-group-size, calc(2px + remify(42px))) - remify(32px)) /
+      2 - 1px
+  );
+}
+.kui-tab-bar[data-presentation="segmented"]
+  .kui-tab-bar__tabs
+  > [data-component="app-tab"]:first-child {
+  border-start-start-radius: var(--kui-radius-pill);
+  border-end-start-radius: var(--kui-radius-pill);
+}
+.kui-tab-bar[data-presentation="segmented"][data-allocation="fill"]
+  .kui-tab-bar__tabs
+  > [data-component="app-tab"]:last-child {
+  border-start-end-radius: var(--kui-radius-pill);
+  border-end-end-radius: var(--kui-radius-pill);
+}
 .kui-tab-bar[data-presentation="inspector"] {
   min-height: remify(34px);
   padding: 0;
