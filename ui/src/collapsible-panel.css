@@ -130,34 +130,132 @@
 }
 
 /* An expanded inline panel is the region at its edge, so its direct siblings
-   no longer reach that edge. */
-.kui-collapsible-panel--left[data-presentation="inline"]:not(
-    [data-collapsed="true"],
-    [data-collapsible-overlay="true"] *,
-    [data-collapsible-responsive="hidden"] *
+   no longer reach that edge. The container flags the edge it has handed to a
+   panel in a non-inheriting property, and a style query zeroes that edge on
+   the container's children only; the panel that owns the edge (the first
+   left, the last right or bottom) inherits the container's value back.
+   Selecting the siblings themselves (`:has(~ panel)`, `panel ~ *`) makes
+   every element a sibling-rule candidate, so in Chromium each insertion into
+   a long list restyles the list's other rows. The flag is set by a keyed
+   `:has(> panel)` on the container and read by a parent style lookup, so a
+   list without a panel in it pays nothing. */
+@property --_kui-collapsible-panel-owns-inline-start {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_kui-collapsible-panel-owns-inline-end {
+  syntax: "*";
+  inherits: false;
+}
+
+@property --_kui-collapsible-panel-owns-block-end {
+  syntax: "*";
+  inherits: false;
+}
+
+:where(
+  :has(
+    > .kui-collapsible-panel--left[data-presentation="inline"]:not(
+        [data-collapsed="true"],
+        [data-collapsible-overlay="true"] *,
+        [data-collapsible-responsive="hidden"] *
+      )
   )
-  ~ * {
-  --kui-edge-inset-inline-start: 0px;
+) {
+  --_kui-collapsible-panel-owns-inline-start: true;
 }
 
-:has(
-  ~ .kui-collapsible-panel--right[data-presentation="inline"]:not(
-      [data-collapsed="true"],
-      [data-collapsible-overlay="true"] *,
-      [data-collapsible-responsive="hidden"] *
-    )
+:where(
+  :has(
+    > .kui-collapsible-panel--right[data-presentation="inline"]:not(
+        [data-collapsed="true"],
+        [data-collapsible-overlay="true"] *,
+        [data-collapsible-responsive="hidden"] *
+      )
+  )
 ) {
-  --kui-edge-inset-inline-end: 0px;
+  --_kui-collapsible-panel-owns-inline-end: true;
 }
 
-:has(
-  ~ .kui-collapsible-panel--bottom[data-presentation="inline"]:not(
+:where(
+  :has(
+    > .kui-collapsible-panel--bottom[data-presentation="inline"]:not(
+        [data-collapsed="true"],
+        [data-collapsible-overlay="true"] *,
+        [data-collapsible-responsive="hidden"] *
+      )
+  )
+) {
+  --_kui-collapsible-panel-owns-block-end: true;
+}
+
+@container style(--_kui-collapsible-panel-owns-inline-start: true) {
+  :where(*) {
+    --kui-edge-inset-inline-start: 0px;
+  }
+}
+
+@container style(--_kui-collapsible-panel-owns-inline-end: true) {
+  :where(*) {
+    --kui-edge-inset-inline-end: 0px;
+  }
+}
+
+@container style(--_kui-collapsible-panel-owns-block-end: true) {
+  :where(*) {
+    --kui-edge-inset-block-end: 0px;
+  }
+}
+
+:where(
+  .kui-collapsible-panel--left[data-presentation="inline"]:not(
       [data-collapsed="true"],
       [data-collapsible-overlay="true"] *,
-      [data-collapsible-responsive="hidden"] *
+      [data-collapsible-responsive="hidden"] *,
+      .kui-collapsible-panel--left[data-presentation="inline"]:not(
+          [data-collapsed="true"],
+          [data-collapsible-overlay="true"] *,
+          [data-collapsible-responsive="hidden"] *
+        )
+        ~ *
     )
 ) {
-  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: inherit;
+}
+
+:where(
+  .kui-collapsible-panel--right[data-presentation="inline"]:not(
+      [data-collapsed="true"],
+      [data-collapsible-overlay="true"] *,
+      [data-collapsible-responsive="hidden"] *,
+      :has(
+        ~ .kui-collapsible-panel--right[data-presentation="inline"]:not(
+            [data-collapsed="true"],
+            [data-collapsible-overlay="true"] *,
+            [data-collapsible-responsive="hidden"] *
+          )
+      )
+    )
+) {
+  --kui-edge-inset-inline-end: inherit;
+}
+
+:where(
+  .kui-collapsible-panel--bottom[data-presentation="inline"]:not(
+      [data-collapsed="true"],
+      [data-collapsible-overlay="true"] *,
+      [data-collapsible-responsive="hidden"] *,
+      :has(
+        ~ .kui-collapsible-panel--bottom[data-presentation="inline"]:not(
+            [data-collapsed="true"],
+            [data-collapsible-overlay="true"] *,
+            [data-collapsible-responsive="hidden"] *
+          )
+      )
+    )
+) {
+  --kui-edge-inset-block-end: inherit;
 }
 
 .kui-collapsible-panel[data-collapsed="true"] {

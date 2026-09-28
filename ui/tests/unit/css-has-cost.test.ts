@@ -15,6 +15,13 @@ import { describe, expect, it } from 'vitest';
 // (`.kui-workbench__main:not(:has(…)) > *`) narrows the candidates to that
 // class; its remaining cost is under investigation in KF-1M98TC (measure
 // keyed `:not(:has(…)) > *` layout-content rules under long lists).
+//
+// KF-PM5EVE (CollapsiblePanel's sibling edge-inset rules restyled a long
+// list's rows on every insertion): an unkeyed subject reached across siblings
+// (`:has(~ …)` subject, or `.panel ~ *`) makes every element a sibling-rule
+// candidate, so each insertion into a long list restyles the list's other
+// rows (measured ~14.6ms -> ~0.2ms per insertion in a 1000-row list once the
+// three CollapsiblePanel rules moved to a container flag + style query).
 
 const src = resolve(import.meta.dirname, '../../src');
 
@@ -91,28 +98,57 @@ function forgivingArguments(compound: string): string[] {
   return found;
 }
 
+/** A compound with its top-level `:is()` / `:where()` groups removed. */
+function withoutForgiving(compound: string): string {
+  let result = compound;
+  for (const argument of forgivingArguments(compound))
+    result = result.replace(argument, '');
+  return result;
+}
+
+/** The combinator before the subject compound, or `''` for a lone compound. */
+function subjectCombinator(complex: string): string {
+  const normalized = complex
+    .replace(/\s*([>+~])\s*/g, '$1')
+    .replace(/\s+/g, ' ')
+    .trim();
+  let depth = 0;
+  let last = '';
+  for (const char of normalized) {
+    if (char === '(' || char === '[') depth++;
+    else if (char === ')' || char === ']') depth--;
+    else if (depth === 0 && '>+~ '.includes(char)) last = char;
+  }
+  return last;
+}
+
 /**
  * The costly shapes in one complex selector: a `:has()` compound followed by
- * an unkeyed rightmost compound, or an unkeyed subject whose `:has()` looks
- * across siblings (`:has(~ …)` / `:has(+ …)`) or through all descendants.
+ * an unkeyed rightmost compound, an unkeyed subject whose `:has()` looks
+ * across siblings (`:has(~ …)` / `:has(+ …)`) or through all descendants, or
+ * an unkeyed subject after a general sibling combinator (`.a ~ *`).
  */
 function costlyShapes(complex: string): string[] {
   const parts = compounds(complex);
   const subject = parts.at(-1) ?? '';
   const problems: string[] = [];
+  if (!keyed(subject) && subjectCombinator(complex) === '~')
+    problems.push('universal subject after a ~ sibling combinator');
   if (
     !keyed(subject) &&
     parts.slice(0, -1).some((part) => part.includes(':has(') && !keyed(part))
   )
     problems.push('universal compound after a universal :has() container');
+  // The subject's own `:has()`, not one inside an `:is()` / `:where()`
+  // argument (those are checked as their own complex selectors below).
+  const own = withoutForgiving(subject);
   if (
-    !keyed(subject.replace(/:has\(.*$/, '')) &&
-    /:has\(\s*(?:[~+]|[^>\s~+])/.test(subject)
+    !keyed(own.replace(/:has\(.*$/, '')) &&
+    /:has\(\s*(?:[~+]|[^>\s~+])/.test(own)
   ) {
-    if (/:has\(\s*[~+]/.test(subject))
+    if (/:has\(\s*[~+]/.test(own))
       problems.push('universal :has() sibling subject');
-    else if (!/^:(?:is|where)\(/.test(subject))
-      problems.push('universal :has() descendant subject');
+    else problems.push('universal :has() descendant subject');
   }
   // An unkeyed subject such as `:is(…)` is only as keyed as its arguments.
   if (!keyed(subject))
@@ -140,12 +176,7 @@ async function violations() {
 
 // Known debt, each tracked by a follow-up ticket. An entry must keep matching
 // a live selector, so the list can only shrink.
-const KNOWN = [
-  // KF-PM5EVE (universal `:has(~ …)` edge-inset rules restyle every
-  // preceding sibling on each insertion into a long list).
-  'collapsible-panel.css: universal :has() sibling subject: :has( ~ .kui-collapsible-panel--right[data-presentation="inline"]:not( [data-collapsed="true"], [data-collapsible-overlay="true"] *, [data-collapsible-responsive="hidden"] * ) )',
-  'collapsible-panel.css: universal :has() sibling subject: :has( ~ .kui-collapsible-panel--bottom[data-presentation="inline"]:not( [data-collapsed="true"], [data-collapsible-overlay="true"] *, [data-collapsible-responsive="hidden"] * ) )',
-];
+const KNOWN: string[] = [];
 
 describe('package CSS :has() cost', () => {
   it('flags the costly shapes and passes their keyed forms', () => {
@@ -154,6 +185,14 @@ describe('package CSS :has() cost', () => {
     expect(costlyShapes(':is(:has(> .a) > *)')).not.toEqual([]);
     expect(costlyShapes(':has(~ .a)')).not.toEqual([]);
     expect(costlyShapes(':has(.a)')).not.toEqual([]);
+    expect(costlyShapes('.a ~ *')).not.toEqual([]);
+    expect(costlyShapes('.a[x]:not(.b) ~ :not(.c)')).not.toEqual([]);
+    expect(costlyShapes('.a ~ .b')).toEqual([]);
+    expect(costlyShapes('.a + *')).toEqual([]);
+    expect(costlyShapes('.a:not(.a ~ *)')).toEqual([]);
+    expect(costlyShapes(':where(.a:not(:has(~ .a)))')).toEqual([]);
+    expect(costlyShapes(':where(:has(~ .a))')).not.toEqual([]);
+    expect(costlyShapes(':where(.b):has(~ .a)')).not.toEqual([]);
     expect(costlyShapes(':where(:has(> .a)) > .b')).toEqual([]);
     expect(costlyShapes(':where(:has(> .a), :has(> .a) > *) > .b[x]')).toEqual(
       [],

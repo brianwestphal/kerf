@@ -40,12 +40,15 @@ type Scenario =
   | 'split-view'
   | 'split-view-resizable'
   | 'collapsible'
+  | 'collapsible-edges'
   | 'app-bars'
   | 'app-bar-in-header';
 
 const scenario = signal<Scenario>('pane');
 const leftCollapsed = signal(false);
 const drawerCollapsed = signal(false);
+const rightCollapsed = signal(false);
+const bottomCollapsed = signal(false);
 
 const items = (prefix: string, count = 30) => (
   <div class="kui-content" data-safe-content={prefix}>
@@ -239,6 +242,37 @@ function render() {
           </div>
         </div>
       );
+    case 'collapsible-edges':
+      // A right rail and a bottom drawer: each takes its edge from the
+      // siblings before it in its container (the work column and the Main
+      // pane), and hands it back when it collapses.
+      return (
+        <div style="display: flex; height: 100%; min-height: 0" data-safe-row>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column">
+            <div style="flex: 1; min-height: 0; display: grid" data-safe-main>
+              {pane('Main', false)}
+            </div>
+            <CollapsiblePanel
+              id="safe-drawer"
+              side="bottom"
+              size={160}
+              collapsed={bottomCollapsed.value}
+              label="Drawer"
+            >
+              {pane('Drawer', false)}
+            </CollapsiblePanel>
+          </div>
+          <CollapsiblePanel
+            id="safe-right"
+            side="right"
+            size={220}
+            collapsed={rightCollapsed.value}
+            label="Inspector"
+          >
+            {pane('Inspector', false)}
+          </CollapsiblePanel>
+        </div>
+      );
   }
 }
 
@@ -255,6 +289,12 @@ Object.assign(globalThis, {
     },
     collapseDrawer(value: boolean) {
       drawerCollapsed.value = value;
+    },
+    collapseRight(value: boolean) {
+      rightCollapsed.value = value;
+    },
+    collapseBottom(value: boolean) {
+      bottomCollapsed.value = value;
     },
   },
 });

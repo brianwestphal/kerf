@@ -26,6 +26,7 @@ type Scenario =
   | 'split-view'
   | 'split-view-resizable'
   | 'collapsible'
+  | 'collapsible-edges'
   | 'app-bars'
   | 'app-bar-in-header';
 
@@ -33,6 +34,8 @@ interface SafeAreaFixture {
   show(scenario: Scenario): void;
   collapseLeft(value: boolean): void;
   collapseDrawer(value: boolean): void;
+  collapseRight(value: boolean): void;
+  collapseBottom(value: boolean): void;
 }
 
 async function mountFixture(
@@ -441,6 +444,56 @@ test('a standalone CollapsiblePanel hands its edge to its sibling when it collap
     8 + INSETS.left,
   ]);
   expect(await box(page, rail)).toMatchObject({ width: 0 });
+});
+
+// KF-PM5EVE (the sibling edge routing moved from `:has(~ panel)` selectors to
+// a container flag read by a style query): an expanded right rail and bottom
+// drawer take their edges from the siblings before them, and collapsing each
+// hands its edge back.
+test('a right rail and a bottom drawer hand their edges to their siblings when they collapse', async ({
+  page,
+}) => {
+  await mountFixture(page, 'collapsible-edges');
+  const main = '[data-safe-pane="Main"] .kui-pane__content';
+  const inspector = '[data-safe-pane="Inspector"] .kui-pane__content';
+  const drawer = '[data-safe-pane="Drawer"] .kui-pane__content';
+  expect(
+    await box(page, '[data-collapsible-panel="safe-right"]'),
+  ).toMatchObject({ right: 1180, width: 220 + INSETS.right });
+  expect(await padding(page, main)).toEqual([INSETS.top, 0, 0, INSETS.left]);
+  expect(await padding(page, inspector)).toEqual([
+    INSETS.top,
+    INSETS.right,
+    INSETS.bottom,
+    0,
+  ]);
+  expect(await padding(page, drawer)).toEqual([
+    0,
+    0,
+    INSETS.bottom,
+    INSETS.left,
+  ]);
+
+  await call(page, 'collapseRight', true);
+  await expect
+    .poll(() => padding(page, main))
+    .toEqual([INSETS.top, INSETS.right, 0, INSETS.left]);
+  expect(await padding(page, drawer)).toEqual([
+    0,
+    INSETS.right,
+    INSETS.bottom,
+    INSETS.left,
+  ]);
+
+  await call(page, 'collapseBottom', true);
+  await expect
+    .poll(() => padding(page, main))
+    .toEqual([INSETS.top, INSETS.right, INSETS.bottom, INSETS.left]);
+
+  await call(page, 'collapseRight', false);
+  await expect
+    .poll(() => padding(page, main))
+    .toEqual([INSETS.top, 0, INSETS.bottom, INSETS.left]);
 });
 
 // KF-EEPPQE: a toolbar outside a Pane header only took the inline edges an

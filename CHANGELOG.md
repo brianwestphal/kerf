@@ -73,6 +73,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   it from a custom element — render an explicit value (`aria-pressed="false"`)
   instead.
 
+- **`@kerfjs/ui` `CollapsiblePanel` no longer slows insertions into long
+  lists.** An expanded inline panel clears its screen edge for its siblings;
+  the rules that did so selected the siblings themselves
+  (`:has(~ panel)` and `panel ~ *`), which in Chromium made each row inserted
+  into or removed from a long list restyle the list's other rows — about
+  14.6ms instead of 0.2ms per insertion beside a 1000-row list. The panel's
+  container now carries a flag that a CSS style query reads, so a list pays
+  nothing. The edge still clears for the panel's siblings and returns when it
+  collapses; the one difference is that a sibling placed before a left panel
+  or after a right or bottom panel now loses the edge too.
+
 - **`@kerfjs/ui` restore corners and covered floating controls no longer slow
   every style recalculation.** The `CollapsiblePanel` / `ResizableRegion`
   restore-corner anchor scope (`:has(> restore) > * > * > *`) and the static

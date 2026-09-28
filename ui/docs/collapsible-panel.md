@@ -308,8 +308,8 @@ panel to the compact overlay (`wireSidebar`) where the viewport cannot hold it.
 
 A panel grows by the unsafe inset of the edge it docks to and pads its content
 for every edge it touches except its interior edge. While expanded inline, it
-also clears that edge for its direct flex siblings, so a neighboring pane gains
-the inset when the panel collapses. When you wrap the panel in your own grid
+also clears that edge for every other direct child of its container, so a
+neighboring pane gains the inset when the panel collapses. When you wrap the panel in your own grid
 cell, pass each sibling `Pane` a `safeAreaEdges` that omits the edge the panel
 covers. See [Choosing an app layout › Safe areas](app-layouts.md#safe-areas).
 

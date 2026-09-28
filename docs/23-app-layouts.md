@@ -888,6 +888,24 @@ passes each Pane and edge-claiming Toolbar the sides its region reaches; the
 wrapped in an app grid cell cannot, so the app passes the sibling panes'
 `safeAreaEdges`.
 
+The routing (KF-PM5EVE: the previous sibling selectors made each insertion
+into a 1000-row list restyle the list's rows, ~14.6ms instead of ~0.2ms) is a
+container flag, not a sibling selector. A keyed `:where(:has(> expanded inline
+panel))` sets a non-inheriting registered property
+(`--_kui-collapsible-panel-owns-inline-start` / `-inline-end` / `-block-end`,
+`@property … { inherits: false }`) on the panel's container only; a
+`@container style(--_kui-collapsible-panel-owns-…: true) { :where(*) { … } }`
+rule zeroes that edge on the container's children, since an unnamed style
+query reads the parent's value; and the panel that owns the edge — the first
+expanded left panel, the last expanded right or bottom panel — takes
+`inherit` back. Every direct child of the container except that panel loses
+the edge, including a child before a left panel or after a right/bottom one
+(the old `panel ~ *` / `:has(~ panel)` rules skipped those two positions,
+which no layout uses). A panel in a compact overlay host or under
+`[data-collapsible-responsive="hidden"]` does not set the flag. Selecting the
+siblings directly (`:has(~ …)` or `.panel ~ *` with a universal subject) is
+rejected by `ui/tests/unit/css-has-cost.test.ts`.
+
 **Verification.** `ui/tests/browser/safe-area.spec.ts` renders each layout full
 screen with simulated insets (via the `--kui-safe-area-*` overrides) and asserts
 edge-to-edge surfaces and separators, touched-side padding, scroll-through
