@@ -3557,7 +3557,7 @@
       "category": "Controls",
       "kind": "component",
       "source": "kerf",
-      "description": "Controlled Web Awesome select with typed form, toolbar, navigation, compact, icon-only, truncating, hint, and grouped-choice presentations.",
+      "description": "Controlled Web Awesome select with typed single or multiple values and form, toolbar, navigation, compact, icon-only, truncating, hint, and grouped-choice presentations.",
       "uses": [
         "lucide-icon",
         "wa-select",
@@ -3629,13 +3629,15 @@
         "default or compact size",
         "label or icon-only selected presentation",
         "select- or group-owned focus ring",
-        "label maximum width and truncation"
+        "label maximum width and truncation",
+        "multiple selection"
       ],
       "accessibility": [
         "Verify the live value, standard events, focus, and rendered output.",
         "A nonempty label names the internal combobox; otherwise ariaLabel supplies a visually hidden label without adding control height, including custom selected content.",
         "Hint text is visible below the control through Web Awesome's native hint relationship; placeholderText remains the empty value inside the closed control.",
-        "Import select/register once; its scoped lifecycle adapter keeps the latest open/close request authoritative across animation reversals, canceled transitions, and removal. Do not add consumer popup timing or position repairs."
+        "Import select/register once; its scoped lifecycle adapter keeps the latest open/close request authoritative across animation reversals, canceled transitions, and removal. Do not add consumer popup timing or position repairs.",
+        "With multiple, the popup stays open while choices toggle (pointer, Enter, or Space) and closes on an outside press, Escape, or focus leaving; each chosen option shows a check, and the closed control summarizes the chosen labels in choice order."
       ],
       "geometry": {
         "margin": "none",

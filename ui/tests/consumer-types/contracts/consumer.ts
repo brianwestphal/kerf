@@ -208,6 +208,44 @@ Select({
   labelMaxWidth: 120,
   choices: [coloredChoice],
 });
+Select<'bug' | 'docs'>({
+  name: 'labels',
+  multiple: true,
+  value: ['bug'],
+  label: 'Labels',
+  choices: [
+    { value: 'bug', label: 'Bug' },
+    { value: 'docs', label: 'Docs' },
+  ],
+});
+// @ts-expect-error A multiple Select's value is an array of choice values.
+Select({
+  name: 'labels',
+  multiple: true,
+  value: 'bug',
+  label: 'Labels',
+  choices: [],
+});
+// @ts-expect-error A single Select's value is one choice value, not an array.
+Select({ name: 'state', value: ['ready'], label: 'State', choices: [] });
+Select({
+  name: 'labels',
+  multiple: true,
+  value: [],
+  label: 'Labels',
+  choices: [],
+  // @ts-expect-error A multiple Select summarizes its labels; it has no single selected choice to render.
+  renderSelected: () => undefined,
+});
+// @ts-expect-error A multiple Select has no single selected icon to show.
+Select({
+  name: 'labels',
+  multiple: true,
+  value: [],
+  label: 'Labels',
+  choices: [],
+  selectedPresentation: 'icon-only',
+});
 const responsiveReveal: CatalogRevealOptions = {
   media: '(max-width: 40rem)',
 };

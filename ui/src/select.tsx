@@ -36,7 +36,6 @@ export type SelectFocusRingOwner = 'select' | 'group';
 
 interface SelectBaseProps<Value extends string = string> {
   name: string;
-  value: NoInfer<Value>;
   choices: readonly SelectChoice<Value>[];
   className?: string;
   /** Empty-value hint text shown in the closed control (the native select placeholder). */
@@ -45,14 +44,11 @@ interface SelectBaseProps<Value extends string = string> {
   hint?: string;
   disabled?: boolean;
   fitMenu?: boolean;
-  renderSelected?: (choice: SelectChoice<Value>) => SafeHtml;
   /** Render as an unanimated loading skeleton: the label above a static, empty control box. */
   placeholder?: boolean;
   /** Form (default), borderless toolbar, or intrinsic navigation chrome. */
   presentation?: SelectPresentation;
   size?: SelectSize;
-  /** Show only the selected choice icon while retaining the Select's accessible name. */
-  selectedPresentation?: SelectSelectedPresentation;
   /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */
   focusRingOwner?: SelectFocusRingOwner;
   /** Maximum closed-control label width in CSS pixels before ellipsis. */
@@ -61,8 +57,31 @@ interface SelectBaseProps<Value extends string = string> {
   slot?: string;
 }
 
+/** One chosen value (the default). */
+export interface SelectSingleValueProps<Value extends string = string> {
+  multiple?: false;
+  value: NoInfer<Value>;
+  renderSelected?: (choice: SelectChoice<Value>) => SafeHtml;
+  /** Show only the selected choice icon while retaining the Select's accessible name. */
+  selectedPresentation?: SelectSelectedPresentation;
+}
+
+/**
+ * Any number of chosen values. The popup stays open while the person toggles
+ * choices and closes on an outside click, Escape, or focus leaving; the closed
+ * control summarizes the chosen labels in choice order.
+ */
+export interface SelectMultipleValueProps<Value extends string = string> {
+  multiple: true;
+  value: readonly NoInfer<Value>[];
+  renderSelected?: never;
+  selectedPresentation?: 'label';
+}
+
 export type SelectProps<Value extends string = string> =
-  SelectBaseProps<Value> & SelectAccessibleName;
+  SelectBaseProps<Value> &
+    SelectAccessibleName &
+    (SelectSingleValueProps<Value> | SelectMultipleValueProps<Value>);
 
 // The closed wa-select's disclosure glyph: Web Awesome's system `chevron-down`,
 // Font Awesome Free 7.0.0 by @fontawesome (https://fontawesome.com), licensed
@@ -77,26 +96,30 @@ function SelectChevron() {
   );
 }
 
-export function Select<Value extends string>({
-  name,
-  value,
-  label,
-  ariaLabel,
-  choices,
-  className = '',
-  placeholderText,
-  hint,
-  disabled = false,
-  fitMenu = false,
-  renderSelected,
-  placeholder = false,
-  presentation = 'form',
-  size = 'default',
-  selectedPresentation = 'label',
-  focusRingOwner = 'select',
-  labelMaxWidth,
-  slot,
-}: SelectProps<Value>) {
+export function Select<Value extends string>(props: SelectProps<Value>) {
+  const {
+    name,
+    label,
+    ariaLabel,
+    choices,
+    className = '',
+    placeholderText,
+    hint,
+    disabled = false,
+    fitMenu = false,
+    placeholder = false,
+    presentation = 'form',
+    size = 'default',
+    focusRingOwner = 'select',
+    labelMaxWidth,
+    slot,
+  } = props;
+  const multiple = props.multiple === true;
+  const values: readonly Value[] = props.multiple ? props.value : [props.value];
+  const renderSelected = props.multiple ? undefined : props.renderSelected;
+  const selectedPresentation = props.multiple
+    ? 'label'
+    : (props.selectedPresentation ?? 'label');
   if (placeholder) {
     return (
       <div
@@ -130,7 +153,11 @@ export function Select<Value extends string>({
       </div>
     );
   }
-  const selected = choices.find((choice) => choice.value === value);
+  // A multiple Select summarizes its choices in the display text instead of
+  // leading with one selected icon.
+  const selected = multiple
+    ? undefined
+    : choices.find((choice) => choice.value === values[0]);
   const icon = (choice: SelectChoice<Value>, selectedIcon = false) => (
     <span
       data-key={`${name}:${choice.value}:${selectedIcon ? 'selected' : 'option'}`}
@@ -152,7 +179,10 @@ export function Select<Value extends string>({
   const option = (choice: SelectChoice<Value>, index: number) => (
     <>
       {choice.separatorBefore && index > 0 && <wa-divider></wa-divider>}
-      <wa-option value={choice.value}>
+      <wa-option
+        value={choice.value}
+        selected={multiple && values.includes(choice.value)}
+      >
         {choice.icon ? icon(choice) : null}
         {choice.label}
       </wa-option>
@@ -168,6 +198,8 @@ export function Select<Value extends string>({
   const ungrouped = choices.filter((choice) => !choice.group);
   // Web Awesome names its shadow combobox from the label, not the host's
   // aria-label. Keep ariaLabel-only names available without visible chrome.
+  // A multiple Select's value is its selected options (the value attribute
+  // holds only one string), kept in sync by @kerfjs/ui/select/register.
   return (
     <wa-select
       class={`kui-select${renderSelected ? ' kui-select--custom-selected' : ''}${fitMenu ? ' kui-select--fit-menu' : ''}${!label ? ' kui-select--label-hidden' : ''} ${className}`.trim()}
@@ -179,7 +211,8 @@ export function Select<Value extends string>({
       name={name}
       label={label || ariaLabel}
       aria-label={ariaLabel}
-      value={value}
+      multiple={multiple}
+      value={multiple ? undefined : values[0]}
       placeholder={placeholderText}
       hint={hint}
       disabled={disabled}
@@ -193,7 +226,7 @@ export function Select<Value extends string>({
       {selected &&
         (renderSelected ? (
           <span
-            data-key={`${name}:${value}:custom-selected`}
+            data-key={`${name}:${values[0]}:custom-selected`}
             slot="start"
             class="kui-select__custom-selected"
           >

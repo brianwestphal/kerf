@@ -19,6 +19,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   the overlay closes; the overlay's own floating controls and a bottom
   drawer's overlay are unaffected.
 
+- **`@kerfjs/ui` `Select` supports multiple selection.** Set `multiple: true`
+  and pass the chosen values as an array `value`; the props are typed so an
+  array value requires `multiple`. Behavior:
+  - The popup stays open while the person toggles choices with the pointer,
+    Enter, or Space, and closes only on an outside press, Escape, or focus
+    leaving.
+  - Each chosen option shows a check.
+  - The closed control summarizes the chosen labels in choice order as a short
+    localized list, or shows `placeholderText` when none are chosen.
+  - `change` / `input` report the value array, and a form submits every chosen
+    value under `name`.
+  - Re-rendering with a different `value` updates the selection even after the
+    person has interacted.
+
+  `renderSelected` and `selectedPresentation="icon-only"` stay single-value
+  only.
+
 - **`@kerfjs/ui` `PopupMenu` now looks exactly like `Select`.** Both read one
   shared popup contract, so a command menu beside a value list in a toolbar
   draws the same popup. `PopupMenu` changes:

@@ -170,7 +170,9 @@ the folder modules, and CSS only imports their owner stylesheets.
   label uses the same uppercase xs/650 treatment and its label and hint share
   that 9px alignment.
 - `Select` requires a visible `label` or an `ariaLabel` for a visually hidden
-  accessible name. The package names the internal combobox, including custom
+  accessible name. Set `multiple` with an array `value` for any number of
+  choices: the popup stays open while choices toggle and closes on an outside
+  press or Escape, and the closed control summarizes the chosen labels. The package names the internal combobox, including custom
   selected content; consumers do not need shadow-DOM naming workarounds.
   Import `select/register` once for the canonical animation lifecycle: stale
   close/show completions cannot override a later request. Consumers must not

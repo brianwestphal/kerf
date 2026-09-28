@@ -103,6 +103,7 @@ import {
   selectedChoice,
   tabBarActive,
   tabBarTabs,
+  ticketLabels,
   tokenSearchQuery,
   tokenSearchTokens,
   toolbarAvatarChoice,
@@ -979,7 +980,12 @@ const stopResize = wireResizableRegions(app, {
   },
 });
 const stopSelect = delegate(app, 'change', 'wa-select', (_event, element) => {
-  const value = (element as HTMLElement & { value?: string }).value;
+  const value = (element as HTMLElement & { value?: string | string[] }).value;
+  if (Array.isArray(value)) {
+    if (element.getAttribute('name') === 'ticket-labels')
+      ticketLabels.value = value;
+    return;
+  }
   if (value === 'quiet' || value === 'balanced' || value === 'explicit')
     selectedChoice.value = value;
   if (value === 'recent' || value === 'priority' || value === 'title')

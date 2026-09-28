@@ -2119,7 +2119,6 @@ type SelectSelectedPresentation = 'label' | 'icon-only';
 type SelectFocusRingOwner = 'select' | 'group';
 interface SelectBaseProps<Value extends string = string> {
     name: string;
-    value: NoInfer<Value>;
     choices: readonly SelectChoice<Value>[];
     className?: string;
     /** Empty-value hint text shown in the closed control (the native select placeholder). */
@@ -2128,14 +2127,11 @@ interface SelectBaseProps<Value extends string = string> {
     hint?: string;
     disabled?: boolean;
     fitMenu?: boolean;
-    renderSelected?: (choice: SelectChoice<Value>) => SafeHtml;
     /** Render as an unanimated loading skeleton: the label above a static, empty control box. */
     placeholder?: boolean;
     /** Form (default), borderless toolbar, or intrinsic navigation chrome. */
     presentation?: SelectPresentation;
     size?: SelectSize;
-    /** Show only the selected choice icon while retaining the Select's accessible name. */
-    selectedPresentation?: SelectSelectedPresentation;
     /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */
     focusRingOwner?: SelectFocusRingOwner;
     /** Maximum closed-control label width in CSS pixels before ellipsis. */
@@ -2143,10 +2139,29 @@ interface SelectBaseProps<Value extends string = string> {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-type SelectProps<Value extends string = string> = SelectBaseProps<Value> & SelectAccessibleName;
-declare function Select<Value extends string>({ name, value, label, ariaLabel, choices, className, placeholderText, hint, disabled, fitMenu, renderSelected, placeholder, presentation, size, selectedPresentation, focusRingOwner, labelMaxWidth, slot, }: SelectProps<Value>): SafeHtml;
+/** One chosen value (the default). */
+interface SelectSingleValueProps<Value extends string = string> {
+    multiple?: false;
+    value: NoInfer<Value>;
+    renderSelected?: (choice: SelectChoice<Value>) => SafeHtml;
+    /** Show only the selected choice icon while retaining the Select's accessible name. */
+    selectedPresentation?: SelectSelectedPresentation;
+}
+/**
+ * Any number of chosen values. The popup stays open while the person toggles
+ * choices and closes on an outside click, Escape, or focus leaving; the closed
+ * control summarizes the chosen labels in choice order.
+ */
+interface SelectMultipleValueProps<Value extends string = string> {
+    multiple: true;
+    value: readonly NoInfer<Value>[];
+    renderSelected?: never;
+    selectedPresentation?: 'label';
+}
+type SelectProps<Value extends string = string> = SelectBaseProps<Value> & SelectAccessibleName & (SelectSingleValueProps<Value> | SelectMultipleValueProps<Value>);
+declare function Select<Value extends string>(props: SelectProps<Value>): SafeHtml;
 
-export { Select, type SelectChoice, type SelectFocusRingOwner, type SelectPresentation, type SelectProps, type SelectSelectedPresentation, type SelectSize };
+export { Select, type SelectChoice, type SelectFocusRingOwner, type SelectMultipleValueProps, type SelectPresentation, type SelectProps, type SelectSelectedPresentation, type SelectSingleValueProps, type SelectSize };
 ```
 
 ## `@kerfjs/ui/state-banner`

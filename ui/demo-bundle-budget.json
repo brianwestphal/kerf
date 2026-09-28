@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 293800,
-  "measuredLargestJavaScriptGzip": 145293,
-  "measuredTotalJavaScriptGzip": 293701,
+  "totalJavaScriptGzip": 294300,
+  "measuredLargestJavaScriptGzip": 145907,
+  "measuredTotalJavaScriptGzip": 294297,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -851,6 +851,22 @@
         "measuredTotalJavaScriptGzip": 293701,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 293800
+      }
+    },
+    {
+      "at": "2026-09-28T08:52:25.384Z",
+      "reason": "Select multiple selection support and its UX demo example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 145293,
+        "measuredTotalJavaScriptGzip": 293701,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 293800
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 145907,
+        "measuredTotalJavaScriptGzip": 294297,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 294300
       }
     }
   ]

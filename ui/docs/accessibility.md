@@ -30,6 +30,15 @@ adding height or spacing. This also applies to `renderSelected`: selected conten
 stays separate from the control's stable accessible name. Applications do not
 need shadow-DOM patches or extra label styling.
 
+Set `multiple` (with an array `value`) to let the person choose any number
+of choices. The popup stays open while they toggle choices with the pointer,
+Enter, or Space, and closes on an outside press, Escape, or focus leaving,
+returning focus to the combobox. The listbox is `aria-multiselectable`, each
+chosen option shows its check, and the closed control reads the chosen labels
+in choice order as one short localized list (the `placeholderText` when none
+are chosen) instead of a removable tag per choice. `change` and `input` report
+the value array; in a form, every chosen value is submitted under `name`.
+
 Use `presentation="toolbar-borderless"` inside a `ToolbarControlGroup`, with
 `size="compact"` in a compact group; set `focusRingOwner="group"` when that
 parent paints the composed focus ring. `selectedPresentation="icon-only"` hides

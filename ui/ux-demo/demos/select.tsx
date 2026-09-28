@@ -8,7 +8,7 @@ import { Text } from '@kerfjs/ui/text';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { Bell, SlidersHorizontal, Wrench } from 'lucide';
 
-import { selectedChoice } from './state.js';
+import { selectedChoice, ticketLabels } from './state.js';
 
 const toolbarChoices = [
   { value: 'quiet', label: 'Quiet', icon: Bell },
@@ -70,6 +70,26 @@ export function SelectDemo() {
             <strong data-select-value>{selectedChoice.value}</strong>
           </Text>
         </List>
+      </CatalogExample>
+      <CatalogExample
+        label="Multiple selection"
+        note="Choosing toggles a check and keeps the popup open; click away or press Escape to close."
+        align="inline-control"
+      >
+        <Select<string>
+          name="ticket-labels"
+          multiple
+          value={ticketLabels.value}
+          label="Labels"
+          placeholderText="No labels"
+          choices={[
+            { value: 'bug', label: 'Bug' },
+            { value: 'feature', label: 'Feature' },
+            { value: 'docs', label: 'Docs' },
+            { value: 'design', label: 'Design' },
+            { value: 'performance', label: 'Performance' },
+          ]}
+        />
       </CatalogExample>
       <CatalogExample
         label="Accessible name without a visible label"

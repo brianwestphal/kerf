@@ -2,13 +2,15 @@ import '@awesome.me/webawesome/dist/components/button/button.js';
 import '@awesome.me/webawesome/dist/components/divider/divider.js';
 import '@awesome.me/webawesome/dist/components/dropdown/dropdown.js';
 import '@awesome.me/webawesome/dist/components/dropdown-item/dropdown-item.js';
-import '@awesome.me/webawesome/dist/components/option/option.js';
 
+import WaOption from '@awesome.me/webawesome/dist/components/option/option.js';
 import WaSelect from '@awesome.me/webawesome/dist/components/select/select.js';
 
 import { installSelectLifecycle } from './install-select-lifecycle.js';
+import { installSelectMultiple } from './install-select-multiple.js';
 
 installSelectLifecycle(WaSelect.prototype);
+installSelectMultiple(WaSelect.prototype, WaOption.prototype);
 
 /**
  * Marker export for tests and tooling; importing this module performs registration.

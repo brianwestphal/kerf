@@ -1726,6 +1726,64 @@ describe('production UI primitives', () => {
     expect(onlyGrouped).toContain('class="kui-select__group" role="group"');
   });
 
+  it('renders a multiple Select as selected options without a single value or selected icon', () => {
+    const host = document.createElement('div');
+    host.innerHTML = asHtml(
+      Select<'bug' | 'docs' | 'design'>({
+        name: 'labels',
+        multiple: true,
+        value: ['design', 'bug'],
+        label: 'Labels',
+        placeholderText: 'No labels',
+        choices: [
+          { value: 'bug', label: 'Bug', icon: Circle },
+          { value: 'docs', label: 'Docs' },
+          { value: 'design', label: 'Design' },
+        ],
+      }),
+    );
+    const select = host.querySelector('wa-select')!;
+    expect(select.hasAttribute('multiple')).toBe(true);
+    // The value attribute holds one string; the options carry the value.
+    expect(select.hasAttribute('value')).toBe(false);
+    expect(select.getAttribute('name')).toBe('labels');
+    expect(select.getAttribute('placeholder')).toBe('No labels');
+    expect(
+      [...select.querySelectorAll('wa-option[selected]')].map((option) =>
+        option.getAttribute('value'),
+      ),
+    ).toEqual(['bug', 'design']);
+    // Only option icons; no leading selected-choice icon on the trigger.
+    expect(select.querySelector(':scope > [slot="start"]')).toBe(null);
+    expect(select.getAttribute('data-selected-presentation')).toBe('label');
+
+    const empty = document.createElement('div');
+    empty.innerHTML = asHtml(
+      Select({
+        name: 'labels',
+        multiple: true,
+        value: [],
+        ariaLabel: 'Labels',
+        choices: [{ value: 'bug', label: 'Bug' }],
+      }),
+    );
+    expect(empty.querySelector('wa-option[selected]')).toBe(null);
+
+    const single = document.createElement('div');
+    single.innerHTML = asHtml(
+      Select({
+        name: 'state',
+        value: 'bug',
+        ariaLabel: 'State',
+        choices: [{ value: 'bug', label: 'Bug' }],
+      }),
+    );
+    const singleSelect = single.querySelector('wa-select')!;
+    expect(singleSelect.hasAttribute('multiple')).toBe(false);
+    expect(singleSelect.getAttribute('value')).toBe('bug');
+    expect(singleSelect.querySelector('wa-option[selected]')).toBe(null);
+  });
+
   it('forwards Select names to the internal label contract without showing ariaLabel-only labels', () => {
     const render = (
       name: { label: string; ariaLabel?: string } | { ariaLabel: string },

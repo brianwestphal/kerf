@@ -23,6 +23,11 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+/* A multiple Select summarizes its choices in the display text (installed by
+   select/register) instead of drawing a removable tag per choice. */
+.kui-select[multiple]::part(tags) {
+  display: none;
+}
 .kui-select[data-size="compact"]::part(combobox) {
   min-height: remify(32px);
 }
