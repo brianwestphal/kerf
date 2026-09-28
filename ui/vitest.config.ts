@@ -22,6 +22,7 @@ export default defineConfig({
         'src/index.ts',
         'src/select-register.ts',
         'src/popup-menu-register.ts',
+        'src/help-tags-register.ts',
       ],
       thresholds: {
         lines: 100,

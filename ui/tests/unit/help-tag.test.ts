@@ -44,6 +44,10 @@ afterEach(() => {
   focusIn(document.body);
   if (vi.isFakeTimers()) vi.advanceTimersByTime(HELP_TAG_WARM_WINDOW + 1);
   vi.useRealTimers();
+  // The fake tooltip never finishes hiding on its own; finish it so each
+  // closed toolbar-button tag leaves the shared body layer.
+  for (const tag of document.querySelectorAll('.kui-help-tag-layer > *'))
+    tag.dispatchEvent(new Event('wa-after-hide'));
   document.body.replaceChildren();
 });
 
@@ -501,6 +505,199 @@ describe('icon-only trigger help tags', () => {
     expect(host.querySelector('wa-tooltip')).toBeNull();
     // A non-HTMLElement event target on the path is skipped.
     focusIn(document);
+  });
+});
+
+function toolbarControl({
+  label = 'Pin view' as string | null,
+  element = 'button',
+  href = '#pin' as string | null,
+  text = '',
+  title,
+  id,
+  inGroup = true,
+}: {
+  label?: string | null;
+  element?: 'button' | 'a';
+  href?: string | null;
+  text?: string;
+  title?: string;
+  id?: string;
+  inGroup?: boolean;
+} = {}) {
+  fakeTime();
+  const group = document.createElement('div');
+  if (inGroup) group.className = 'kui-toolbar-control-group';
+  const control = document.createElement(element);
+  if (element === 'a' && href !== null) control.setAttribute('href', href);
+  if (label !== null) control.setAttribute('aria-label', label);
+  if (title !== undefined) control.title = title;
+  if (id) control.id = id;
+  const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  control.append(icon);
+  if (text) control.append(text);
+  group.append(control);
+  document.body.append(group);
+  return { group, control, icon };
+}
+
+const layerOf = () =>
+  document.body.querySelector<HTMLElement>(':scope > .kui-help-tag-layer');
+const buttonTags = () =>
+  [...(layerOf()?.querySelectorAll('wa-tooltip.kui-help-tag') ?? [])].map(
+    (tag) => tag as FakeTooltip,
+  );
+
+describe('icon-only toolbar button help tags', () => {
+  it('show the aria-label after the hover delay in a body-level layer', () => {
+    const { control, icon } = toolbarControl();
+    pointerOver(icon);
+    vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY - 1);
+    expect(buttonTags()).toEqual([]);
+    vi.advanceTimersByTime(1);
+    const [tag] = buttonTags();
+    expect(tag!.open).toBe(true);
+    expect(tag!.textContent).toBe('Pin view');
+    expect(tag!.anchor).toBe(control);
+    expect(tag!.getAttribute('aria-hidden')).toBe('true');
+    expect(tag!.getAttribute('trigger')).toBe('manual');
+    expect(tag!.hasAttribute('for')).toBe(false);
+    expect(tag!.style.colorScheme).toBe(
+      window.getComputedStyle(control).colorScheme,
+    );
+    // The layer is aria-hidden, skipped by a morph, and out of the body's flow.
+    const layer = layerOf()!;
+    expect(layer.getAttribute('aria-hidden')).toBe('true');
+    expect(layer.hasAttribute('data-morph-skip')).toBe(true);
+    expect(layer.style.position).toBe('fixed');
+    // The button keeps its own name and gains no relationship to the tag.
+    expect(control.getAttribute('aria-label')).toBe('Pin view');
+    expect(control.hasAttribute('aria-labelledby')).toBe(false);
+    expect(control.hasAttribute('aria-describedby')).toBe(false);
+
+    pointerOver(document.body);
+    expect(tag!.open).toBe(false);
+    // Once hidden, the tag leaves the layer; the next hover builds a new one.
+    tag!.dispatchEvent(new Event('wa-after-hide'));
+    expect(tag!.isConnected).toBe(false);
+    vi.advanceTimersByTime(HELP_TAG_WARM_WINDOW + 1);
+    pointerOver(control);
+    vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
+    const [again] = buttonTags();
+    expect(again).not.toBe(tag);
+    expect(again!.open).toBe(true);
+  });
+
+  it('keeps a tag that reopens before its hide finishes', () => {
+    const { control } = toolbarControl();
+    focusIn(control);
+    const [tag] = buttonTags();
+    focusIn(document.body);
+    expect(tag!.open).toBe(false);
+    focusIn(control);
+    expect(tag!.open).toBe(true);
+    tag!.dispatchEvent(new Event('wa-after-hide'));
+    expect(tag!.isConnected).toBe(true);
+    expect(buttonTags()).toEqual([tag]);
+  });
+
+  it('shows at once on keyboard focus, never on a click focus', () => {
+    const { control } = toolbarControl();
+    keyboardFocus = false;
+    focusIn(control);
+    expect(buttonTags()).toEqual([]);
+    focusIn(document.body);
+    keyboardFocus = true;
+    focusIn(control);
+    expect(buttonTags()[0]!.open).toBe(true);
+  });
+
+  it('hides on a press and on Escape until the pointer or focus moves on', () => {
+    const { control } = toolbarControl();
+    pointerOver(control);
+    vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
+    const [tag] = buttonTags();
+    pointerDown(control);
+    expect(tag!.open).toBe(false);
+    // Keyboard focus from the press does not bring it back.
+    focusIn(control);
+    expect(tag!.open).toBe(false);
+    pointerOver(document.body);
+    focusOut(control, null);
+    focusIn(document.body);
+    vi.advanceTimersByTime(HELP_TAG_WARM_WINDOW + 1);
+
+    focusIn(control);
+    expect(tag!.open).toBe(true);
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(tag!.open).toBe(false);
+    pointerOver(control);
+    vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
+    expect(tag!.open).toBe(false);
+  });
+
+  it('moves along a toolbar at once while warm, across buttons and Selects', () => {
+    const pin = toolbarControl();
+    const share = toolbarControl({ label: 'Share' });
+    const filter = select({ multipleSummary: '' });
+    pointerOver(pin.control);
+    vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
+    pointerOver(share.control);
+    const tags = buttonTags();
+    expect(tags.map((tag) => [tag.textContent, tag.open])).toEqual([
+      ['Pin view', false],
+      ['Share', true],
+    ]);
+    pointerOver(filter.input);
+    expect(tagOf(filter.host)!.open).toBe(true);
+    expect(tags[1]!.open).toBe(false);
+    pointerOver(pin.control);
+    expect(tags[0]!.open).toBe(true);
+  });
+
+  it('names an icon-only link and re-attaches a layer a body morph dropped', () => {
+    const first = toolbarControl({ element: 'a', label: '  Open\n docs ' });
+    focusIn(first.control);
+    expect(buttonTags()[0]!.textContent).toBe('Open docs');
+    focusIn(document.body);
+    const layer = layerOf()!;
+    layer.remove();
+    const second = toolbarControl({ label: 'Share' });
+    focusIn(second.control);
+    expect(layerOf()).toBe(layer);
+    expect(buttonTags().at(-1)!.textContent).toBe('Share');
+  });
+
+  it('ignores controls with visible text, a title, their own tooltip, or no toolbar', () => {
+    const skipped = [
+      toolbarControl({ text: 'Pin' }),
+      toolbarControl({ title: 'Pin view' }),
+      toolbarControl({ label: null }),
+      toolbarControl({ label: '   ' }),
+      toolbarControl({ inGroup: false }),
+      toolbarControl({ element: 'a', href: null }),
+      toolbarControl({ id: 'pin:view' }),
+    ];
+    const own = document.createElement('wa-tooltip');
+    own.setAttribute('for', 'pin:view');
+    document.body.append(own);
+    for (const { control } of skipped) {
+      focusIn(control);
+      pointerOver(control);
+      vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
+    }
+    expect(buttonTags()).toEqual([]);
+    // An id with no tooltip `for` it still gets a tag.
+    const named = toolbarControl({ id: 'share' });
+    focusIn(named.control);
+    expect(buttonTags()).toHaveLength(1);
+  });
+
+  it('touch never shows a tag', () => {
+    const { control } = toolbarControl();
+    pointerOver(control, 'touch');
+    vi.advanceTimersByTime(HELP_TAG_SHOW_DELAY);
+    expect(buttonTags()).toEqual([]);
   });
 });
 

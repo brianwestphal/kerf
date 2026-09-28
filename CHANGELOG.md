@@ -94,6 +94,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `layout.css` still imports. There is no filled variant — use `SunkenPanel`
   for a lowered surface. The catalog, demos, and recipes use the component.
 
+- **`@kerfjs/ui` icon-only toolbar buttons show the same help tag.** An
+  icon-only `<button>` or link inside a `ToolbarControlGroup`, named by
+  `aria-label` with no visible text, now shows the help tag icon-only Selects
+  and PopupMenus show, with the same 500ms hover delay, keyboard-focus-only
+  display, press/Escape dismissal, and quick scanning along a toolbar. The tag
+  is `aria-hidden` and never renames the button. A button with a native
+  `title`, or with its own Web Awesome tooltip, keeps that and gets no second
+  tag. The `select/register` and `popup-menu/register` imports install it; a
+  toolbar with icon-only buttons but neither control imports the new
+  `@kerfjs/ui/help-tags/register` subpath, which registers only the tooltip.
+
 - **`@kerfjs/ui` icon-only Select and PopupMenu triggers show a help tag.**
   An icon-only `Select` (single or `multiple` with `triggerIcon`) and an
   icon-only `PopupMenu` now show a Web Awesome tooltip naming the control on

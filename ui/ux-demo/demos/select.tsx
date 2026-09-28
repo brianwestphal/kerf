@@ -127,6 +127,7 @@ export function SelectDemo() {
       </CatalogExample>
       <CatalogExample
         label="Toolbar filter beside actions"
+        note="The pin button, filter, and menu each show their name as a help tag on hover or keyboard focus."
         align="inline-control"
       >
         <ToolbarControlGroup label="Ticket view">

@@ -648,7 +648,7 @@ import "@kerfjs/ui/webawesome.css";
 import "@kerfjs/ui/select/register";
 ```
 
-That boundary keeps Web Awesome and its custom-element side effects out of bundles that use unrelated components. Automated consumer-bundle tests enforce it. `PopupMenu` follows the same rule: import `@kerfjs/ui/popup-menu/register` once to register the dropdown, item, button, and divider elements it renders.
+That boundary keeps Web Awesome and its custom-element side effects out of bundles that use unrelated components. Automated consumer-bundle tests enforce it. `PopupMenu` follows the same rule: import `@kerfjs/ui/popup-menu/register` once to register the dropdown, item, button, and divider elements it renders. Either registration also installs help tags: an icon-only Select, PopupMenu, or `aria-label`-named `<button>` in a `ToolbarControlGroup` shows its name in an `aria-hidden` tooltip on hover and keyboard focus. A toolbar with icon-only buttons but neither control imports `@kerfjs/ui/help-tags/register`, which registers only the tooltip.
 Use `label` for a visible label or `ariaLabel` for a visually hidden name. A
 nonempty visible label takes precedence when both are supplied. Kerf names the
 actual shadow combobox without adding visible label spacing; this also works

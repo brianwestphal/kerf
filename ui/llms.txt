@@ -185,6 +185,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `aria-hidden` Web Awesome help tag repeating that name (and a Select's
   choice) on hover and keyboard focus, hidden while the popup is open; the
   register import installs it, so do not add a `title` or tooltip of your own.
+  The same installer tags an icon-only `<button>` or link inside a
+  `ToolbarControlGroup` named by `aria-label` (no visible text or `title`);
+  import `@kerfjs/ui/help-tags/register` once when a toolbar has such buttons
+  but no registered Select or PopupMenu.
   The package names the internal combobox, including custom
   selected content; consumers do not need shadow-DOM naming workarounds.
   Import `select/register` once for the canonical animation lifecycle: stale

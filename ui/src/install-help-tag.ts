@@ -1,11 +1,12 @@
-// Hover and keyboard-focus help tags for icon-only popup triggers.
+// Hover and keyboard-focus help tags for icon-only controls.
 //
 // An icon-only `Select` (single `selectedPresentation="icon-only"` or the
-// multiple `triggerIcon` filter) and an icon-only `PopupMenu` (a `label`
-// instead of visible `text`) carry their purpose — and a Select its current
-// choice — only in the accessible name. Sighted pointer and keyboard users see
-// just the icon, so the registration boundary shows a Web Awesome
-// `wa-tooltip` naming the control (Apple HIG "help tag"):
+// multiple `triggerIcon` filter), an icon-only `PopupMenu` (a `label` instead
+// of visible `text`), and an icon-only `<button>` or link inside a
+// `ToolbarControlGroup` (named only by `aria-label`) carry their purpose — and
+// a Select its current choice — only in the accessible name. Sighted pointer
+// and keyboard users see just the icon, so the registration boundary shows a
+// Web Awesome `wa-tooltip` naming the control (Apple HIG "help tag"):
 //
 // - after a short hover delay, or immediately when a previous tag just closed
 //   (moving along a toolbar), and at once on keyboard (`:focus-visible`) focus;
@@ -16,10 +17,17 @@
 //   trigger with a programmatic anchor, not `for`, so Web Awesome does not
 //   add it) — assistive technology hears the name once.
 //
-// The tag lives in the control's open shadow root, so the morph never sees
-// it, `:has([open])` selectors on the light DOM ignore it, and it inherits the
-// control's theme. Its own lifecycle events stop at the tag so an application
-// listening for the control's `wa-show` / `wa-hide` never hears the tag's.
+// A Select's or PopupMenu's tag lives in the control's open shadow root, so
+// the morph never sees it, `:has([open])` selectors on the light DOM ignore
+// it, and it inherits the control's theme. A plain button cannot host a shadow
+// root, so its tag lives in one body-level layer (re-attached if a body morph
+// drops it, and removed again once hidden) and copies the button's
+// `color-scheme`; the tag's Popover-API popup renders in the top layer, so its
+// place in the document does not affect where or above what it shows. A
+// button that already has a native `title`, or a Web Awesome tooltip `for` it,
+// keeps that and gets no second tag. Each tag's own lifecycle events stop at
+// the tag so an application listening for the control's `wa-show` / `wa-hide`
+// never hears the tag's.
 
 /** Hover delay before a help tag appears. */
 export const HELP_TAG_SHOW_DELAY = 500;
@@ -65,10 +73,41 @@ function isFocusVisible(element: Element): boolean {
 
 const MENU_LABEL = ':scope > [slot="trigger"] .kui-popup-menu__label';
 
-/** The icon-only Kerf trigger host on an event path, if any. */
+/** A plain control (not a Web Awesome popup host) gets a body-layer tag. */
+const isPlainControl = (host: HelpTagHost): boolean =>
+  host.localName === 'button' || host.localName === 'a';
+
+/** An element's text with whitespace collapsed (an element's is never null). */
+const words = (node: Element): string =>
+  (node.textContent as string).replace(/\s+/g, ' ').trim();
+
+/** The trimmed `aria-label` of a plain control. */
+const ariaLabel = (control: Element): string =>
+  (control.getAttribute('aria-label') ?? '').replace(/\s+/g, ' ').trim();
+
+/**
+ * An icon-only toolbar button or link: inside a `ToolbarControlGroup`, named
+ * by `aria-label`, with no visible text, and without a native `title` or a Web
+ * Awesome tooltip of its own that a second tag would duplicate.
+ */
+function isToolbarIconControl(target: HTMLElement): boolean {
+  if (!target.matches('button, a[href]')) return false;
+  if (!ariaLabel(target) || target.hasAttribute('title') || words(target))
+    return false;
+  if (!target.closest('.kui-toolbar-control-group')) return false;
+  return !(
+    target.id &&
+    target.ownerDocument.querySelector(
+      `wa-tooltip[for="${CSS.escape(target.id)}"]`,
+    )
+  );
+}
+
+/** The icon-only Kerf control on an event path, if any. */
 function helpTagHost(path: readonly EventTarget[]): HelpTagHost | null {
   for (const target of path) {
     if (!(target instanceof HTMLElement)) continue;
+    if (isToolbarIconControl(target)) return target;
     const { component, selectedPresentation } = target.dataset;
     if (
       component === 'select' &&
@@ -84,17 +123,15 @@ function helpTagHost(path: readonly EventTarget[]): HelpTagHost | null {
 
 /** The visible trigger the tag describes and anchors to. */
 function anchorOf(host: HelpTagHost): Element | null {
+  if (isPlainControl(host)) return host;
   if (host.dataset.component === 'select')
     return host.shadowRoot?.querySelector('[part~="combobox"]') ?? null;
   return host.querySelector(':scope > [slot="trigger"]');
 }
 
-/** An element's text with whitespace collapsed (an element's is never null). */
-const words = (node: Element): string =>
-  (node.textContent as string).replace(/\s+/g, ' ').trim();
-
 /** The tag text: the same words as the trigger's accessible name. */
 function helpText(host: HelpTagHost): string {
+  if (isPlainControl(host)) return ariaLabel(host);
   // An icon-only PopupMenu's visually hidden label, or a multiple icon
   // trigger's label slot (it already ends with the chosen labels).
   const label =
@@ -125,9 +162,32 @@ export function installHelpTags(
   let dismissed: HelpTagHost | null = null;
   let timer: number | undefined;
   let warmUntil = 0;
+  let layer: HTMLElement | null = null;
+
+  // The body-level home of plain controls' tags. Its fixed, zero-size box
+  // keeps it out of a grid or flex body's flow; a body morph that drops it is
+  // repaired on the next show.
+  const layerRoot = (): HTMLElement => {
+    if (!layer) {
+      layer = doc.createElement('div');
+      layer.className = 'kui-help-tag-layer';
+      layer.setAttribute('aria-hidden', 'true');
+      layer.setAttribute('data-morph-skip', '');
+      Object.assign(layer.style, {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: '0',
+        height: '0',
+      });
+    }
+    if (!layer.isConnected) doc.body.append(layer);
+    return layer;
+  };
 
   const tagFor = (host: HelpTagHost): HelpTag | null => {
-    const root = host.shadowRoot;
+    const plain = isPlainControl(host);
+    const root = plain ? layerRoot() : host.shadowRoot;
     if (!root) return null;
     let tag = tags.get(host);
     if (!tag) {
@@ -139,6 +199,16 @@ export function installHelpTags(
       tag.style.pointerEvents = 'none';
       for (const type of LIFECYCLE_EVENTS)
         tag.addEventListener(type, (event) => event.stopPropagation());
+      if (plain) {
+        // A hidden button tag leaves the layer, so tags for buttons that a
+        // re-render replaced never accumulate there.
+        const created = tag;
+        created.addEventListener('wa-after-hide', () => {
+          if (created.open) return;
+          created.remove();
+          tags.delete(host);
+        });
+      }
       root.append(tag);
       tags.set(host, tag);
     }
@@ -162,6 +232,10 @@ export function installHelpTags(
     const tag = tagFor(host);
     if (!tag) return;
     if (shown) hide(shown.host);
+    // A body-layer tag takes its button's light or dark scheme, which a
+    // subtree theme (`.wa-dark`) may set below the document root.
+    if (anchor === host)
+      tag.style.colorScheme = window.getComputedStyle(host).colorScheme;
     tag.anchor = anchor;
     tag.textContent = text;
     tag.open = true;

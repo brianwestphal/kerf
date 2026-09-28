@@ -25,6 +25,7 @@
       "@kerfjs/ui": ["./src/index.ts"],
       "@kerfjs/ui/select/register": ["./src/select-register.ts"],
       "@kerfjs/ui/popup-menu/register": ["./src/popup-menu-register.ts"],
+      "@kerfjs/ui/help-tags/register": ["./src/help-tags-register.ts"],
       "@kerfjs/ui/*": ["./src/*"]
     },
     "types": ["node", "vitest/globals"],

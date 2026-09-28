@@ -38,7 +38,8 @@
     "**/*.css",
     "./dist/browser/*.js",
     "./dist/select-register.js",
-    "./dist/popup-menu-register.js"
+    "./dist/popup-menu-register.js",
+    "./dist/help-tags-register.js"
   ],
   "exports": {
     ".": {
@@ -286,6 +287,10 @@
     "./select/register": {
       "types": "./dist/select-register.d.ts",
       "import": "./dist/select-register.js"
+    },
+    "./help-tags/register": {
+      "types": "./dist/help-tags-register.d.ts",
+      "import": "./dist/help-tags-register.js"
     },
     "./webawesome": {
       "types": "./dist/webawesome.d.ts",

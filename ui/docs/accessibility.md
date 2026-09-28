@@ -109,46 +109,76 @@ sequences at wide and narrow widths in Chromium, Firefox, and WebKit.
 
 ### Help tags on icon-only triggers
 
-An icon-only trigger has no visible title, so sighted pointer and keyboard users
+An icon-only control has no visible title, so sighted pointer and keyboard users
 would otherwise see only its icon (and a filter's count). Following the Apple
-HIG convention for toolbar items, an icon-only `Select`
-(`selectedPresentation="icon-only"`, single or `multiple`) and an icon-only
-`PopupMenu` (named by `label` rather than visible `text`) show a help tag: a Web
-Awesome `wa-tooltip` in the theme's tooltip palette, below the trigger. It is on
-by default, takes no props, and is installed by the same
-`@kerfjs/ui/select/register` or `@kerfjs/ui/popup-menu/register` import that
-makes the control interactive, so pure `SafeHtml` rendering stays zero-JS.
+HIG convention for toolbar items, three kinds of icon-only control show a help
+tag: a Web Awesome `wa-tooltip` in the theme's tooltip palette, below the
+control.
+
+- an icon-only `Select` (`selectedPresentation="icon-only"`, single or
+  `multiple`);
+- an icon-only `PopupMenu` (named by `label` rather than visible `text`);
+- an icon-only `<button>` or link (`<a href>`) inside a `ToolbarControlGroup`,
+  named by a non-empty `aria-label`, with no visible text, no native `title`,
+  and no Web Awesome tooltip `for` it.
+
+Tags are on by default and take no props. One document-level installer covers
+all three kinds, and any of `@kerfjs/ui/select/register`,
+`@kerfjs/ui/popup-menu/register`, or `@kerfjs/ui/help-tags/register` installs
+it (once per document, however many are imported). An application whose
+toolbars have icon-only buttons but no registered `Select` or `PopupMenu`
+imports `@kerfjs/ui/help-tags/register`, which registers only the tooltip
+element. Pure `SafeHtml` rendering stays zero-JS: without an installer, nothing
+shows a tag.
 
 - **Text.** The tag says what the accessible name says: a filter's name and
   chosen labels ("Filter by label: Bug, Docs", or "Filter by label" when none
   are chosen), a single Select's name and current choice ("Rendering balance:
-  Balanced"), or a menu's `label` ("Sort tickets"). It updates with the
-  selection.
-- **Showing.** It appears after the pointer rests on the trigger for 500ms, at
+  Balanced"), a menu's `label` ("Sort tickets"), or a toolbar button's
+  `aria-label` ("Pin view"). It updates with the selection.
+- **Showing.** It appears after the pointer rests on the control for 500ms, at
   once when a neighboring tag closed moments ago (so scanning along a toolbar
-  stays quick), and immediately on keyboard focus (`:focus-visible`). A
-  pointer press that focuses the trigger and touch input never show it.
+  stays quick, across buttons, Selects, and menus alike), and immediately on
+  keyboard focus (`:focus-visible`). A pointer press that focuses the control
+  and touch input never show it.
 - **Hiding.** It hides when the pointer and keyboard focus have both left the
-  trigger, on a press, on Escape, and whenever the popup opens. It does not
-  come back when the popup closes and focus returns to the trigger; it returns
-  after the pointer moves onto something else or focus leaves and comes back.
+  control, on a press, on Escape, and whenever a popup opens. It does not come
+  back when the popup closes and focus returns to the trigger, or while the
+  pointer stays on a pressed button; it returns after the pointer moves onto
+  something else or focus leaves and comes back.
 - **Assistive technology.** The tag is `aria-hidden` and never joins the
-  combobox's or button's `aria-labelledby` (kerf anchors it directly rather than
-  through `for`), so the accessible name is unchanged and announced once; the
-  accessibility tree is identical with the tag open or closed.
-- **Isolation.** The tag lives in the control's own shadow root, so the morph
-  never touches it and light-DOM `:has([open])` selectors do not see it. Its
-  `wa-show` / `wa-hide` lifecycle events stop at the tag, so a listener on the
-  control (or a delegated one above it) hears only the popup; a document
-  capture-phase listener still observes them. A long tag wraps at the tooltip's
-  maximum width and keeps 8px clear of the viewport edge.
+  control's `aria-labelledby` or `aria-describedby` (kerf anchors it directly
+  rather than through `for`), so the accessible name is unchanged and announced
+  once; the accessibility tree is identical with the tag open or closed.
+- **Isolation.** A Select's or PopupMenu's tag lives in the control's own
+  shadow root, so the morph never touches it and light-DOM `:has([open])`
+  selectors do not see it. A plain button cannot host a shadow root, so its tag
+  lives in one `aria-hidden`, `data-morph-skip` layer at the end of `<body>`
+  (fixed and zero-sized, so it never joins a grid or flex body's flow, and
+  re-attached if a body re-render drops it) and leaves that layer once hidden.
+  It copies the button's `color-scheme`, so it matches a subtree theme, and its
+  popup renders in the browser's top layer, so it shows above a modal dialog
+  that holds the button. Tags' `wa-show` / `wa-hide` lifecycle events stop at
+  the tag, so a listener on the control (or a delegated one above it) hears only
+  the popup; a document capture-phase listener still observes them. A long tag
+  wraps at the tooltip's maximum width and keeps 8px clear of the viewport
+  edge.
 
-A labeled Select and a `PopupMenu` with visible `text` get no tag: their visible
-text already names them. Plain icon `<button>`s in a `ToolbarControlGroup` are
-application markup and keep whatever naming the application gives them.
+A labeled Select, a `PopupMenu` with visible `text`, and a toolbar button with
+visible text get no tag: their visible text already names them. A button that
+carries a native `title`, or that the application has already given a
+`wa-tooltip` `for` its `id`, keeps that and gets no second tag, so nothing is
+shown twice. Zero-JS components that name an icon control with a native `title`
+(the `ListHeader` action, the `AppTab` close button, the `TokenSearchField`
+reveal and clear buttons, and `SegmentedControl` choice titles) keep the
+browser's own tooltip, which needs no script; the installer deliberately skips
+them rather than stacking a second tag on the first. Icon-only buttons outside
+a `ToolbarControlGroup` are application markup and keep whatever naming the
+application gives them.
 `tests/unit/help-tag.test.ts` walks the hover, focus, press, Escape, popup, and
-warm-window transitions; `tests/browser/select-help-tag.spec.ts` checks the real
-elements in Chromium.
+warm-window transitions for every kind; `tests/browser/select-help-tag.spec.ts`
+and `tests/browser/toolbar-help-tag.spec.ts` check the real elements in
+Chromium.
 
 ## PopupMenu
 

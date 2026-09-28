@@ -134,7 +134,11 @@ export function ToolbarControlGroupDemo() {
           />
         </ToolbarControlGroup>
       </CatalogExample>
-      <CatalogExample label="Button group" align="inline-control">
+      <CatalogExample
+        label="Button group"
+        note="Name an icon-only button with aria-label; hover or keyboard focus shows that name as a help tag."
+        align="inline-control"
+      >
         <ToolbarControlGroup label="View actions" shape={shape}>
           <wa-button
             appearance="plain"

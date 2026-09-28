@@ -1370,7 +1370,8 @@
       },
       "accessibility": {
         "obligations": [
-          "Name the group when its relationship is not evident from context."
+          "Name the group when its relationship is not evident from context.",
+          "Name an icon-only button or link with aria-label, not title. Once any help-tag installer is imported (select/register, popup-menu/register, or help-tags/register), it shows an aria-hidden Web Awesome help tag repeating that name after a 500ms hover and at once on keyboard focus, hidden on a press and on Escape, and never joins aria-labelledby. A native title keeps the browser tooltip and gets no second tag."
         ]
       },
       "cssValueProps": [],

@@ -349,6 +349,25 @@ describe('consumer bundle boundaries', () => {
     );
   });
 
+  it('keeps toolbar help tags behind their own registration subpath', async () => {
+    const toolbar = await bundle(
+      "import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group'; console.log(String(ToolbarControlGroup({ children: '' })));",
+    );
+    const toolbarInputs = Object.keys(toolbar.metafile!.inputs).join('\n');
+    expect(toolbarInputs).not.toContain('@awesome.me/webawesome');
+    expect(toolbarInputs).not.toContain('help-tags-register');
+    const registered = await bundle("import '@kerfjs/ui/help-tags/register';");
+    const inputs = Object.keys(registered.metafile!.inputs).join('\n');
+    expect(inputs).toContain('dist/help-tags-register.js');
+    expect(inputs).toContain(
+      '@awesome.me/webawesome/dist/components/tooltip/tooltip.js',
+    );
+    // Only the tooltip: no Select, dropdown, or button registrations.
+    expect(inputs).not.toContain('components/select/select.js');
+    expect(inputs).not.toContain('components/dropdown/dropdown.js');
+    expect(output(registered, '.js')).toContain('kui-help-tag-layer');
+  });
+
   it('ships the Web Awesome theme as one opt-in CSS-only boundary', async () => {
     const themed = await bundle("import '@kerfjs/ui/webawesome.css';");
     const inputs = Object.keys(themed.metafile!.inputs).join('\n');
@@ -466,6 +485,7 @@ describe('consumer bundle boundaries', () => {
       './dist/browser/*.js',
       './dist/select-register.js',
       './dist/popup-menu-register.js',
+      './dist/help-tags-register.js',
     ]);
     expect(pkg.exports['.']).toMatchObject({ import: './dist/index.js' });
     expect(pkg.exports['./toolbar']).toMatchObject({
@@ -489,6 +509,10 @@ describe('consumer bundle boundaries', () => {
       import: './dist/webawesome.js',
     });
     expect(pkg.exports['./select/register']).toBeDefined();
+    expect(pkg.exports['./help-tags/register']).toMatchObject({
+      types: './dist/help-tags-register.d.ts',
+      import: './dist/help-tags-register.js',
+    });
     expect(pkg.exports['./app-tab']).toMatchObject({
       browser: './dist/browser/app-tab.js',
       import: './dist/app-tab.js',

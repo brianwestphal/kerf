@@ -1,4 +1,5 @@
 import '@kerfjs/ui/document.css';
+import '@kerfjs/ui/help-tags/register';
 import '@kerfjs/ui/popup-menu/register';
 import '@kerfjs/ui/select/register';
 import '@kerfjs/ui/layout.css';
