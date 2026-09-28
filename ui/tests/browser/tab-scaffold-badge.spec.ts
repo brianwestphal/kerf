@@ -74,3 +74,86 @@ test('TabScaffold tab badge folds into the name and sits top-trailing on the ico
       path: 'test-results/tab-scaffold-badge-narrow-dark.png',
     });
 });
+
+async function dotGeometry(page: Page) {
+  const tab = page.getByRole('tab', { name: 'Settings, Update available' });
+  await expect(tab).toBeVisible();
+  return tab.evaluate((button) => {
+    const rect = (element: Element | null) => {
+      const box = element!.getBoundingClientRect();
+      return {
+        top: box.top,
+        bottom: box.bottom,
+        left: box.left,
+        right: box.right,
+        width: box.width,
+        height: box.height,
+      };
+    };
+    const icon = button.querySelector('.kui-tab-scaffold__tab-icon svg');
+    const dot = button.querySelector('[data-component="badge"]');
+    return {
+      icon: rect(icon),
+      dot: rect(dot),
+      bar: rect(button.closest('.kui-tab-scaffold__bar')),
+      text: dot?.textContent,
+      size: dot?.getAttribute('data-size'),
+      hidden: dot?.closest('[aria-hidden="true"]') !== null,
+      radius: window.getComputedStyle(dot!).borderRadius,
+      background: window.getComputedStyle(dot!).backgroundColor,
+    };
+  });
+}
+
+function expectDotOnCorner(geometry: Awaited<ReturnType<typeof dotGeometry>>) {
+  const { icon, dot, bar } = geometry;
+  expect(geometry.size).toBe('dot');
+  expect(geometry.text).toBe('');
+  expect(geometry.hidden).toBe(true);
+  expect(geometry.radius).toBe('50%');
+  expect(geometry.background).not.toBe('rgba(0, 0, 0, 0)');
+  // A small circle, far smaller than the 20px compact count badge.
+  expect(dot.width).toBeCloseTo(8, 0);
+  expect(dot.height).toBeCloseTo(8, 0);
+  // Centered near the icon's top-trailing corner: straddling its trailing
+  // and top edges, inside the bar.
+  expect(dot.left).toBeLessThan(icon.right);
+  expect(dot.right).toBeGreaterThan(icon.right);
+  expect(dot.top).toBeLessThan(icon.top);
+  expect(dot.bottom).toBeGreaterThan(icon.top);
+  expect(dot.top).toBeGreaterThanOrEqual(bar.top);
+}
+
+test('TabScaffold dot badge is a small circle on the icon corner with its badgeLabel in the name', async ({
+  page,
+}, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=tab-scaffold');
+  const scaffold = page.locator('#catalog-tab-scaffold');
+  await expect(scaffold).toBeVisible();
+  expectDotOnCorner(await dotGeometry(page));
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(scaffold).toBeVisible();
+  expectDotOnCorner(await dotGeometry(page));
+
+  if (testInfo.project.name === 'chromium') {
+    await scaffold.screenshot({
+      path: 'test-results/tab-scaffold-dot-narrow.png',
+    });
+    await page.emulateMedia({ colorScheme: 'dark' });
+    await scaffold.screenshot({
+      path: 'test-results/tab-scaffold-dot-narrow-dark.png',
+    });
+  }
+});
+
+test('Badge catalog dot is a labeled image', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=badge');
+  const dot = page.getByRole('img', { name: 'New activity' });
+  await expect(dot).toBeVisible();
+  const box = (await dot.boundingBox())!;
+  expect(box.width).toBeCloseTo(8, 0);
+  expect(box.height).toBeCloseTo(8, 0);
+});

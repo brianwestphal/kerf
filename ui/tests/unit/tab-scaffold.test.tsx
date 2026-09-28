@@ -127,6 +127,62 @@ describe('TabScaffold markup', () => {
     }
   });
 
+  it('renders the dot badge form over the icon with the required badgeLabel in the tab name', () => {
+    document.body.innerHTML = String(
+      TabScaffold({
+        id: 'app',
+        label: 'Sections',
+        active: 'search',
+        tabs: [
+          { ...tabs[0]!, badge: true, badgeLabel: ' New activity ' },
+          { ...tabs[1]!, badge: true, badgeLabel: 'New results' },
+        ],
+      }),
+    );
+    const home = document.querySelector('[data-tab-scaffold-tab="home"]')!;
+    expect(home.getAttribute('aria-label')).toBe('Home, New activity');
+    expect(home.getAttribute('data-has-badge')).toBe('true');
+    const anchor = home.querySelector(
+      '.kui-tab-scaffold__tab-icon > .kui-tab-scaffold__tab-badge',
+    )!;
+    expect(anchor.getAttribute('data-badge-kind')).toBe('dot');
+    const dot = anchor.querySelector('[data-component="badge"]')!;
+    expect(dot.getAttribute('data-size')).toBe('dot');
+    expect(dot.getAttribute('data-tone')).toBe('danger');
+    expect(dot.getAttribute('aria-hidden')).toBe('true');
+    expect(dot.textContent).toBe('');
+    // Without an icon the dot renders in flow before the label.
+    const search = document.querySelector('[data-tab-scaffold-tab="search"]')!;
+    expect(search.getAttribute('aria-label')).toBe('Search, New results');
+    expect(search.firstElementChild!.getAttribute('data-badge-kind')).toBe(
+      'dot',
+    );
+    // A text badge's anchor is marked as the text kind.
+    expect(
+      String(
+        TabScaffold({
+          id: 'app',
+          label: 'Sections',
+          active: 'home',
+          tabs: [{ ...tabs[0]!, badge: 2 }],
+        }),
+      ),
+    ).toContain('data-badge-kind="text"');
+  });
+
+  it('keeps the plain tab name for an untyped dot without a usable badgeLabel', () => {
+    const html = String(
+      TabScaffold({
+        id: 'app',
+        label: 'Sections',
+        active: 'home',
+        tabs: [{ ...tabs[0]!, badge: true, badgeLabel: '  ' }],
+      }),
+    );
+    expect(html).toContain('data-badge-kind="dot"');
+    expect(html).not.toContain('aria-label="Home');
+  });
+
   it('applies a custom className', () => {
     expect(
       String(

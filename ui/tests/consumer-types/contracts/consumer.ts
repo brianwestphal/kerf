@@ -475,6 +475,27 @@ ResizableRegion({
 // @ts-expect-error KUI-T014 slot support does not broaden components to arbitrary native attributes.
 UI.Badge({ children: '1', draggable: true });
 
+// A Badge dot is text-free and must state its accessible story: its own
+// label, or ariaHidden because the owning component announces it.
+UI.Badge({ size: 'dot', tone: 'danger', label: 'New activity' });
+UI.Badge({ size: 'dot', ariaHidden: true });
+const badgeDotProps: UI.BadgeDotProps = { size: 'dot', ariaHidden: true };
+const badgeTextProps: UI.BadgeTextProps = { children: '3', size: 'compact' };
+void badgeDotProps;
+void badgeTextProps;
+// @ts-expect-error a dot has no visible text, so it needs a label or ariaHidden.
+UI.Badge({ size: 'dot' });
+// @ts-expect-error a dot renders no children.
+UI.Badge({ size: 'dot', ariaHidden: true, children: '3' });
+// @ts-expect-error a dot is always a solid fill; appearance is a text-badge axis.
+UI.Badge({ size: 'dot', ariaHidden: true, appearance: 'outline' });
+// @ts-expect-error a dot is always a circle; shape is a text-badge axis.
+UI.Badge({ size: 'dot', ariaHidden: true, shape: 'rounded' });
+// @ts-expect-error a labeled dot cannot also be hidden from assistive technology.
+UI.Badge({ size: 'dot', label: 'New', ariaHidden: true });
+// @ts-expect-error a text badge still requires its visible children.
+UI.Badge({ size: 'compact' });
+
 // KUI-T010 positive: every finite presentation axis is available from the
 // convenience root barrel in both source and packed declarations.
 const rootBarrelPresentationTypes: [
@@ -646,12 +667,41 @@ TabScaffold({
     { id: 'updates', label: 'Updates', content: icon, badge: 'New' },
   ],
 });
+// The dot form (new content without a count) requires its localized phrase.
+TabScaffold({
+  id: 'app',
+  label: 'Sections',
+  active: 'feed',
+  tabs: [
+    {
+      id: 'feed',
+      label: 'Feed',
+      content: icon,
+      badge: true,
+      badgeLabel: 'New activity',
+    },
+  ],
+});
 TabScaffold({
   id: 'app',
   label: 'Sections',
   active: 'inbox',
-  // @ts-expect-error a tab badge is text or a number, not markup.
+  // @ts-expect-error a dot badge has no text, so badgeLabel is required.
   tabs: [{ id: 'inbox', label: 'Inbox', content: icon, badge: true }],
+});
+TabScaffold({
+  id: 'app',
+  label: 'Sections',
+  active: 'inbox',
+  // @ts-expect-error a tab badge is text, a number, or the `true` dot — not false.
+  tabs: [{ id: 'inbox', label: 'Inbox', content: icon, badge: false }],
+});
+TabScaffold({
+  id: 'app',
+  label: 'Sections',
+  active: 'inbox',
+  // @ts-expect-error a tab badge is text, a number, or the dot — not markup.
+  tabs: [{ id: 'inbox', label: 'Inbox', content: icon, badge: icon }],
 });
 TabScaffold({
   id: 'app',

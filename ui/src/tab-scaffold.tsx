@@ -3,16 +3,24 @@ import type { SafeHtml } from 'kerfjs';
 import { Badge } from './badge.js';
 import type { KerfUiContent } from './semantic-content.js';
 
-export interface TabScaffoldTab<Id extends string = string> {
+interface TabScaffoldTabBase<Id extends string> {
   id: Id;
   label: string;
   /** Decorative icon shown above the label in the bottom bar. */
   icon?: SafeHtml;
+  /** The tab's content — typically a `NavStack` so each tab keeps its own stack. */
+  content: KerfUiContent;
+}
+
+/** A tab with an optional count or short-status badge. */
+interface TabScaffoldTabCountBadge {
   /**
    * Optional count or short status shown as a solid danger `Badge` at the
    * top-trailing corner of the tab icon (the iOS tab-bar badge). Omitted, `''`,
    * or non-finite numbers render no badge. The visual badge is `aria-hidden`;
    * its meaning reaches assistive technology through `badgeLabel`.
+   *
+   * Pass `true` instead for the text-free dot (new content without a count).
    */
   badge?: string | number;
   /**
@@ -21,9 +29,26 @@ export interface TabScaffoldTab<Id extends string = string> {
    * Defaults to the badge text itself. Ignored when no badge renders.
    */
   badgeLabel?: string;
-  /** The tab's content — typically a `NavStack` so each tab keeps its own stack. */
-  content: KerfUiContent;
 }
+
+/** A tab with the text-free dot badge (new content without a count). */
+interface TabScaffoldTabDotBadge {
+  /**
+   * `true` shows a solid danger dot `Badge` at the top-trailing corner of the
+   * tab icon — the iOS tab-bar dot for new content without a count.
+   */
+  badge: true;
+  /**
+   * Required localized phrase folded into the tab's accessible name as
+   * `"<label>, <badgeLabel>"` (for example `"New activity"` →
+   * `"Feed, New activity"`). A dot has no text, so this is its only meaning.
+   */
+  badgeLabel: string;
+}
+
+/** One bottom-bar destination: its label, optional icon and badge, and content. */
+export type TabScaffoldTab<Id extends string = string> =
+  TabScaffoldTabBase<Id> & (TabScaffoldTabCountBadge | TabScaffoldTabDotBadge);
 
 export interface TabScaffoldProps<Id extends string = string> {
   id: string;
@@ -75,18 +100,33 @@ export function TabScaffold<Id extends string>({
       </div>
       <nav class="kui-tab-scaffold__bar" role="tablist" aria-label={label}>
         {tabs.map((tab) => {
-          const badgeText = normalizeBadge(tab.badge);
-          const badge = badgeText !== undefined && (
-            <span class="kui-tab-scaffold__tab-badge">
-              <Badge tone="danger" appearance="solid" size="compact" ariaHidden>
-                {badgeText}
-              </Badge>
+          const dot = tab.badge === true;
+          const badgeText = dot ? undefined : normalizeBadge(tab.badge);
+          const hasBadge = dot || badgeText !== undefined;
+          const badge = hasBadge && (
+            <span
+              class="kui-tab-scaffold__tab-badge"
+              data-badge-kind={dot ? 'dot' : 'text'}
+            >
+              {badgeText === undefined ? (
+                <Badge tone="danger" size="dot" ariaHidden />
+              ) : (
+                <Badge
+                  tone="danger"
+                  appearance="solid"
+                  size="compact"
+                  ariaHidden
+                >
+                  {badgeText}
+                </Badge>
+              )}
             </span>
           );
-          const badgeLabel =
-            badgeText === undefined
-              ? undefined
-              : tab.badgeLabel?.trim() || badgeText;
+          // A dot has no text fallback: without a usable badgeLabel (reachable
+          // only from untyped callers) the tab keeps its plain accessible name.
+          const badgeLabel = hasBadge
+            ? tab.badgeLabel?.trim() || badgeText
+            : undefined;
           return (
             <button
               type="button"
@@ -100,7 +140,7 @@ export function TabScaffold<Id extends string>({
                   ? undefined
                   : `${tab.label}, ${badgeLabel}`
               }
-              data-has-badge={badgeText === undefined ? undefined : 'true'}
+              data-has-badge={hasBadge ? 'true' : undefined}
             >
               {tab.icon ? (
                 <span class="kui-tab-scaffold__tab-icon" aria-hidden="true">

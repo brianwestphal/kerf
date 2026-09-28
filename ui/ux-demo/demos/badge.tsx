@@ -21,6 +21,13 @@ export function BadgeDemo() {
           12
         </Badge>
       </CatalogExample>
+      <CatalogExample
+        label="Dot"
+        note="A text-free mark for new content without a count; it carries its own label or is hidden when its owner announces it."
+        align="inline-control"
+      >
+        <Badge tone="danger" size="dot" label="New activity" />
+      </CatalogExample>
       <CatalogExample label="Category tag" align="inline-control">
         <Badge tone="pop" appearance="outline" shape="rounded">
           Design

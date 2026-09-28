@@ -70,6 +70,42 @@ describe('production UI primitives', () => {
     expect(duplicate).not.toContain('aria-label');
   });
 
+  it('renders a text-free Badge dot as a labeled image or a decorative mark', () => {
+    const labeled = asHtml(
+      Badge({ size: 'dot', tone: 'danger', label: ' New activity ' }),
+    );
+    expect(labeled).toContain('data-size="dot"');
+    expect(labeled).toContain('data-tone="danger"');
+    // A dot is always a solid fill and has no shape or text box.
+    expect(labeled).toContain('data-appearance="solid"');
+    expect(labeled).not.toContain('data-shape');
+    expect(labeled).toContain('role="img" aria-label="New activity"');
+    expect(labeled).toMatch(/aria-label="New activity"><\/span>$/);
+
+    const decorative = asHtml(
+      Badge({ size: 'dot', ariaHidden: true, className: 'mark', slot: 's' }),
+    );
+    expect(decorative).toContain('class="kui-badge mark"');
+    expect(decorative).toContain('data-tone="neutral"');
+    expect(decorative).toContain('aria-hidden="true"');
+    expect(decorative).toContain('slot="s"');
+    expect(decorative).not.toContain('role=');
+    expect(decorative).not.toContain('aria-label');
+
+    // Untyped callers: a blank label cannot name the dot, so it is decorative,
+    // and stray children never render inside a dot.
+    const untyped = asHtml(
+      Badge({ size: 'dot', label: '  ', children: 'x' } as never),
+    );
+    expect(untyped).toContain('aria-hidden="true"></span>');
+    expect(untyped).not.toContain('role=');
+    const hiddenWins = asHtml(
+      Badge({ size: 'dot', label: 'New', ariaHidden: true } as never),
+    );
+    expect(hiddenWins).toContain('aria-hidden="true"');
+    expect(hiddenWins).not.toContain('aria-label');
+  });
+
   it('configures dialog and popup surface geometry without changing native behavior', () => {
     const dialog = asHtml(
       DialogSurface({

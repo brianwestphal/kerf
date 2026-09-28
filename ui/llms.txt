@@ -310,6 +310,10 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
 - **Use `Badge` for compact non-interactive metadata.** Configure its semantic
   tone, appearance, shape, and size instead of creating badge CSS in an app or
   consuming component. Use a real button or link for interactive content.
+  For new content without a count, use the text-free `size="dot"` form: it
+  takes no children, and needs a `label` (announced as an image) or
+  `ariaHidden` when its owner announces it. A `TabScaffold` tab shows the dot
+  with `badge: true` plus its required `badgeLabel`.
 
 ## Public exports
 

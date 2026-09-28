@@ -149,6 +149,14 @@
   inset-inline-start: calc(50% + remify(3px));
 }
 
+/* The text-free dot never grows, so it centers on the icon's top-trailing
+   corner instead: half over the glyph, half outside it. */
+.kui-tab-scaffold__tab-icon
+  > .kui-tab-scaffold__tab-badge[data-badge-kind="dot"] {
+  inset-block-start: remify(-2px);
+  inset-inline-start: calc(100% - remify(5px));
+}
+
 .kui-tab-scaffold__tab-icon svg {
   width: remify(22px);
   height: remify(22px);

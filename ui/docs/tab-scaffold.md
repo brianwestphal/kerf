@@ -80,3 +80,24 @@ empty string or a non-finite number) renders no badge and leaves the tab's name
 as its label; `0` renders, so pass `undefined` when a count should disappear.
 Keep the text short — clamp large counts (`"99+"`) in the app. The tone follows
 the platform convention and is fixed; do not restyle the badge.
+
+### Dot badges
+
+For new content without a count, pass `badge: true`. The tab shows the iOS
+tab-bar dot — an 8px solid `danger` `Badge` (`size="dot"`) centered on the
+icon's top-trailing corner (above the label without an icon). A dot has no
+text to fall back on, so `badgeLabel` is required by the types:
+
+```tsx
+{
+  id: "feed",
+  label: "Feed",
+  icon: <LucideIcon icon={Rss} name="rss" />,
+  badge: hasNewPosts.value ? true : undefined,
+  badgeLabel: "New activity",
+  content: <FeedStack />,
+}
+```
+
+The tab's accessible name becomes `"Feed, New activity"`. Pass `undefined` to
+clear the dot; `false` is not a badge value.

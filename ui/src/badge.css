@@ -95,3 +95,16 @@
   padding-inline: remify(5.6px);
   font-size: var(--kui-font-2xs);
 }
+
+/* The text-free status dot (the iOS "new content" dot): a small solid circle
+   in the tone's solid fill, without the text box's padding or minimum size. */
+.kui-badge[data-size="dot"] {
+  width: remify(8px);
+  min-width: remify(8px);
+  height: remify(8px);
+  min-height: remify(8px);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--_kui-badge-fill-solid);
+}

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 299000,
-  "measuredLargestJavaScriptGzip": 126039,
-  "measuredTotalJavaScriptGzip": 298982,
+  "totalJavaScriptGzip": 299200,
+  "measuredLargestJavaScriptGzip": 126040,
+  "measuredTotalJavaScriptGzip": 299176,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1043,6 +1043,22 @@
         "measuredTotalJavaScriptGzip": 298982,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 299000
+      }
+    },
+    {
+      "at": "2026-09-28T12:11:12.328Z",
+      "reason": "Badge dot size and TabScaffold dot badge",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126039,
+        "measuredTotalJavaScriptGzip": 298982,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 299000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 299176,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 299200
       }
     }
   ]

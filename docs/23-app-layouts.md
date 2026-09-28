@@ -616,6 +616,11 @@ sub-part component.
   folds the phrase into its accessible name as `"<label>, <badgeLabel>"`
   (defaulting to the badge text). An omitted, empty, or non-finite badge
   renders nothing and leaves the name unchanged.
+- The text-free dot form (new content without a count) is `badge: true`,
+  rendered as an 8px solid `danger` `Badge` with `size="dot"` centered on the
+  icon's top-trailing corner. A dot has no text, so the types require its
+  `badgeLabel` (`TabScaffoldTab` is a discriminated union: a count/text badge
+  with an optional phrase, or `badge: true` with a required phrase).
 
 Shipped shape — controlled; the app owns `active`, and
 `wireTabScaffold(root, { onSelect })` (`@kerfjs/ui/wire-tab-scaffold`) delegates

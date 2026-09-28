@@ -35,6 +35,8 @@ const tabs: readonly TabScaffoldTab<DemoTabId>[] = [
     id: 'settings',
     label: 'Settings',
     icon: <LucideIcon icon={Settings} name="settings" />,
+    badge: true,
+    badgeLabel: 'Update available',
     content: scene(
       'Settings',
       'Promote these destinations to a rail on desktop.',
@@ -61,7 +63,7 @@ export function TabScaffoldDemo() {
     >
       <CatalogExample
         label="Persistent tab scenes"
-        note="The controlled active id changes the visible scene; every tab scene remains mounted so its own stack and scroll position survive. A tab badge sits at the icon's top-trailing corner, and its badgeLabel joins the tab's accessible name."
+        note="The controlled active id changes the visible scene; every tab scene remains mounted so its own stack and scroll position survive. A count badge or a text-free dot sits at the icon's top-trailing corner, and its badgeLabel joins the tab's accessible name."
         viewport={{ layout: 'grid', width: 'compact', height: 'tall' }}
       >
         <TabScaffold

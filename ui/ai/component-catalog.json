@@ -33,11 +33,11 @@
         "neutral, brand, pop, success, warning, or danger tone",
         "quiet, solid, or outline appearance",
         "pill or rounded shape",
-        "compact or default size",
+        "compact or default size, or a text-free dot (size: 'dot')",
         "labeled or decorative duplicate"
       ],
       "accessibility": [
-        "Badge is non-interactive. Supply label when visible content is abbreviated, and ariaHidden when it repeats an accessible name owned by the surrounding component.",
+        "Badge is non-interactive. Supply label when visible content is abbreviated, and ariaHidden when it repeats an accessible name owned by the surrounding component. A text-free dot must take either label (exposed as an image) or ariaHidden, which the types enforce.",
         "Keep meaningful text visible because tone is supplementary."
       ],
       "geometry": {
@@ -880,20 +880,20 @@
       "appOwns": [
         "controlled active tab id",
         "tab labels, icons, and content",
-        "tab badge counts and their localized badgeLabel phrases",
+        "tab badge counts or dots and their localized badgeLabel phrases",
         "routing and persistence",
         "responsive replacement on larger device classes"
       ],
       "variants": [
         "text-only tabs",
         "icon and text tabs",
-        "badged tabs",
+        "badged tabs (count or text-free dot)",
         "one NavStack per tab"
       ],
       "accessibility": [
         "Give the tablist an accessible label and keep exactly the active tab in the sequential focus order.",
         "Wire selection through the controlled active id while leaving inactive scenes mounted and hidden.",
-        "A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes \"<label>, <badgeLabel>\" (it defaults to the badge text)."
+        "A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes \"<label>, <badgeLabel>\" (it defaults to the badge text). The dot form, badge: true, has no text, so its badgeLabel is required."
       ],
       "geometry": {
         "margin": "none",

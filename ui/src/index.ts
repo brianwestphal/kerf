@@ -7,9 +7,11 @@ export {
 export {
   Badge,
   type BadgeAppearance,
+  type BadgeDotProps,
   type BadgeProps,
   type BadgeShape,
   type BadgeSize,
+  type BadgeTextProps,
   type BadgeTone,
 } from './badge.js';
 export {

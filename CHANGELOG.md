@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` `Badge` has a text-free dot, and `TabScaffold` tabs can show
+  it.** `Badge` takes `size="dot"`: an 8px solid circle in the badge's tone,
+  with no children, appearance, or shape. Because a dot has no text, its props
+  require either a `label` (announced as an image, for example
+  `label="New activity"`) or `ariaHidden` when the owning component already
+  announces it. `TabScaffoldTab` accepts `badge: true` for the iOS tab-bar dot
+  (new content without a count), centered on the icon's top-trailing corner;
+  its `badgeLabel` is required and joins the tab's accessible name
+  ("Settings, Update available"). `BadgeTextProps` and `BadgeDotProps` are
+  exported from the root barrel.
+
 - **`@kerfjs/ui` pinned chrome can give way in a short pane.** `Pane` takes
   `chromePlacement="auto"`: its header and footer stay pinned while the pane is
   at least 480px (30rem) tall, and below that the whole pane scrolls as one

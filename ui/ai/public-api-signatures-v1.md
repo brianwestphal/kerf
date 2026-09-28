@@ -1850,16 +1850,23 @@ export { type SidebarStorage, type WireSidebarOptions, type WireSidebarPanel, wi
 import { SafeHtml } from 'kerfjs';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
-interface TabScaffoldTab<Id extends string = string> {
+interface TabScaffoldTabBase<Id extends string> {
     id: Id;
     label: string;
     /** Decorative icon shown above the label in the bottom bar. */
     icon?: SafeHtml;
+    /** The tab's content — typically a `NavStack` so each tab keeps its own stack. */
+    content: KerfUiContent;
+}
+/** A tab with an optional count or short-status badge. */
+interface TabScaffoldTabCountBadge {
     /**
      * Optional count or short status shown as a solid danger `Badge` at the
      * top-trailing corner of the tab icon (the iOS tab-bar badge). Omitted, `''`,
      * or non-finite numbers render no badge. The visual badge is `aria-hidden`;
      * its meaning reaches assistive technology through `badgeLabel`.
+     *
+     * Pass `true` instead for the text-free dot (new content without a count).
      */
     badge?: string | number;
     /**
@@ -1868,9 +1875,23 @@ interface TabScaffoldTab<Id extends string = string> {
      * Defaults to the badge text itself. Ignored when no badge renders.
      */
     badgeLabel?: string;
-    /** The tab's content — typically a `NavStack` so each tab keeps its own stack. */
-    content: KerfUiContent;
 }
+/** A tab with the text-free dot badge (new content without a count). */
+interface TabScaffoldTabDotBadge {
+    /**
+     * `true` shows a solid danger dot `Badge` at the top-trailing corner of the
+     * tab icon — the iOS tab-bar dot for new content without a count.
+     */
+    badge: true;
+    /**
+     * Required localized phrase folded into the tab's accessible name as
+     * `"<label>, <badgeLabel>"` (for example `"New activity"` →
+     * `"Feed, New activity"`). A dot has no text, so this is its only meaning.
+     */
+    badgeLabel: string;
+}
+/** One bottom-bar destination: its label, optional icon and badge, and content. */
+type TabScaffoldTab<Id extends string = string> = TabScaffoldTabBase<Id> & (TabScaffoldTabCountBadge | TabScaffoldTabDotBadge);
 interface TabScaffoldProps<Id extends string = string> {
     id: string;
     /** Accessible name for the tab bar. */
@@ -2839,10 +2860,17 @@ import { SafeHtml } from 'kerfjs';
 type BadgeTone = 'neutral' | 'brand' | 'pop' | 'success' | 'warning' | 'danger';
 type BadgeAppearance = 'quiet' | 'solid' | 'outline';
 type BadgeShape = 'pill' | 'rounded';
+/** Size of a text badge. A text-free dot is the separate `size: 'dot'` form. */
 type BadgeSize = 'compact' | 'default';
-interface BadgeProps {
-    children: SafeHtml | string | number;
+interface BadgeCommonProps {
     tone?: BadgeTone;
+    className?: string;
+    /** Native named-slot assignment when composed inside a web component. */
+    slot?: string;
+}
+/** A badge that shows a short status, count, or category as visible text. */
+interface BadgeTextProps extends BadgeCommonProps {
+    children: SafeHtml | string | number;
     appearance?: BadgeAppearance;
     shape?: BadgeShape;
     size?: BadgeSize;
@@ -2850,14 +2878,35 @@ interface BadgeProps {
     label?: string;
     /** Hide a repeated visual badge from assistive technology. */
     ariaHidden?: boolean;
-    className?: string;
-    /** Native named-slot assignment when composed inside a web component. */
-    slot?: string;
 }
+/** A labeled dot, announced as an image with its own accessible name. */
+interface BadgeDotLabeled {
+    /** Accessible name for the dot, for example `"New activity"`. */
+    label: string;
+    ariaHidden?: false;
+}
+/** A decorative dot whose meaning the owning component already announces. */
+interface BadgeDotDecorative {
+    label?: never;
+    ariaHidden: true;
+}
+/**
+ * A text-free status dot (the iOS "new content" dot): a small solid circle in
+ * the badge's tone. It has no visible text, so it must either carry its own
+ * accessible `label` (exposed as an image) or be `ariaHidden` because the
+ * surrounding component already folds its meaning into an accessible name.
+ */
+type BadgeDotProps = BadgeCommonProps & {
+    size: 'dot';
+    children?: never;
+    appearance?: never;
+    shape?: never;
+} & (BadgeDotLabeled | BadgeDotDecorative);
+type BadgeProps = BadgeTextProps | BadgeDotProps;
 /** Compact, non-interactive metadata whose tone, emphasis, and shape are configured by props. */
-declare function Badge({ children, tone, appearance, shape, size, label, ariaHidden, className, slot, }: BadgeProps): SafeHtml;
+declare function Badge(props: BadgeProps): SafeHtml;
 
-export { Badge, type BadgeAppearance, type BadgeProps, type BadgeShape, type BadgeSize, type BadgeTone };
+export { Badge, type BadgeAppearance, type BadgeDotProps, type BadgeProps, type BadgeShape, type BadgeSize, type BadgeTextProps, type BadgeTone };
 ```
 
 ## `@kerfjs/ui/lucide-icon`

@@ -44,7 +44,7 @@
       },
       "accessibility": {
         "obligations": [
-          "Badge is non-interactive. Supply label when visible content is abbreviated, and ariaHidden when it repeats an accessible name owned by the surrounding component.",
+          "Badge is non-interactive. Supply label when visible content is abbreviated, and ariaHidden when it repeats an accessible name owned by the surrounding component. A text-free dot must take either label (exposed as an image) or ariaHidden, which the types enforce.",
           "Keep meaningful text visible because tone is supplementary."
         ]
       },
@@ -849,7 +849,7 @@
           "required": false
         },
         {
-          "id": "tab badge counts and their localized badgeLabel phrases",
+          "id": "tab badge counts or dots and their localized badgeLabel phrases",
           "owner": "application",
           "required": false
         },
@@ -886,7 +886,7 @@
         "obligations": [
           "Give the tablist an accessible label and keep exactly the active tab in the sequential focus order.",
           "Wire selection through the controlled active id while leaving inactive scenes mounted and hidden.",
-          "A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes \"<label>, <badgeLabel>\" (it defaults to the badge text)."
+          "A tab badge is aria-hidden; supply badgeLabel so the tab's accessible name becomes \"<label>, <badgeLabel>\" (it defaults to the badge text). The dot form, badge: true, has no text, so its badgeLabel is required."
         ]
       },
       "cssValueProps": [],
