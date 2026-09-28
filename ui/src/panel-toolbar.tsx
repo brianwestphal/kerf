@@ -9,6 +9,7 @@ import {
 } from 'lucide';
 
 import { LucideIcon } from './lucide-icon.js';
+import { Pane, type PaneConfig } from './pane.js';
 import type { KerfUiContent } from './semantic-content.js';
 import { Toolbar, type ToolbarConfig } from './toolbar.js';
 import { ToolbarControlGroup } from './toolbar-control-group.js';
@@ -150,6 +151,42 @@ export function composedPanelToolbar(
         </>
       }
     />
+  );
+}
+
+/**
+ * A toolbar panel's body: its content in a `Pane` under its composed toolbar,
+ * with its optional `footer` below. The panel's `pane` configuration forwards
+ * to that `Pane`; an omitted or `undefined` field keeps the `Pane` default.
+ */
+export function composedPanelBody({
+  toolbar,
+  side,
+  collapsed,
+  attributes,
+  pane,
+  footer,
+  content,
+}: {
+  toolbar: PanelToolbar;
+  side: PanelSide;
+  collapsed: boolean;
+  attributes: PanelToggleAttributes;
+  pane: PaneConfig | undefined;
+  footer: KerfUiContent;
+  content: KerfUiContent;
+}): SafeHtml {
+  return (
+    <Pane
+      header={composedPanelToolbar(toolbar, side, collapsed, attributes)}
+      footer={footer}
+      contentElement={pane?.contentElement}
+      contentLabel={pane?.contentLabel}
+      separators={pane?.separators}
+      safeAreaEdges={pane?.safeAreaEdges}
+    >
+      {content}
+    </Pane>
   );
 }
 

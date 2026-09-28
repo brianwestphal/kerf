@@ -219,6 +219,22 @@ example. `responsive: "wrap"` keeps a long title whole and wraps its actions
 below it. `mainBottomToolbar` also takes a `center`. A panel's
 `restorePosition` also places its floating restore controls.
 
+The `Pane`s and `List`s the Workbench composes around your content are
+configurable the same way:
+
+- `mainPane` (`PaneConfig`: `contentElement`, `contentLabel`, `separators`,
+  `safeAreaEdges`) configures the work area's `Pane`, which exists whenever the
+  work area has a toolbar, `mainHeader`, or `mainFooter`;
+- a panel's `pane` configures the `Pane` a `toolbar` panel's `content` renders
+  in — for example `{ contentElement: "nav", contentLabel: "Files" }` for a
+  navigator rail;
+- `mainHeaderList` / `mainFooterList` (`ListConfig`: `gap`, `hAlign`,
+  `vAlign`, `dividerSides`, `textInsets`, `controlInsets`) configure the
+  `List`s holding `mainHeader` / `mainFooter`.
+
+An omitted or `undefined` field keeps today's default, including the header
+and footer dividers described above.
+
 Size a rail so its title and groups fit at its narrowest (a resizable rail's
 `min`); a toolbar that cannot hold them drops the title rather than
 truncating it. `constant` content renders in both places while the panel is

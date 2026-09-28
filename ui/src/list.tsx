@@ -82,6 +82,17 @@ export interface ListProps {
   slot?: string;
 }
 
+/**
+ * A list's configuration, apart from its content and styling hooks: the props a
+ * composite that renders a `List` for the app (the Workbench's `mainHeader` /
+ * `mainFooter` chrome) forwards, so the app configures that list instead of
+ * styling it. An omitted or `undefined` field keeps the composite's default.
+ */
+export type ListConfig = Pick<
+  ListProps,
+  'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'
+>;
+
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
 export function List({
   children,

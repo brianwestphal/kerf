@@ -54,6 +54,7 @@ export {
 export { Grid, type GridProps } from './grid.js';
 export {
   List,
+  type ListConfig,
   type ListProps,
   type ListVerticalAlignment,
   type Sides,
@@ -74,6 +75,7 @@ export {
 } from './lucide-icon.js';
 export {
   Pane,
+  type PaneConfig,
   type PaneContentElement,
   type PaneElement,
   type PaneProps,

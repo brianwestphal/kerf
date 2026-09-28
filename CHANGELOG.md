@@ -14,6 +14,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   `role`, `aria-selected`, and `aria-disabled` from each option's live state,
   in single and `multiple` Selects.
 
+- **`@kerfjs/ui` Workbench and CollapsiblePanel panes and chrome lists are
+  configurable.** The `Pane`s these layouts compose around app content now
+  take the new `PaneConfig` type (`contentElement`, `contentLabel`,
+  `separators`, `safeAreaEdges`): a Workbench panel's or `CollapsiblePanel`'s
+  `pane`, and the Workbench's `mainPane`. The `List`s holding `mainHeader` /
+  `mainFooter` take the new `ListConfig` type (`gap`, `hAlign`, `vAlign`,
+  `dividerSides`, `textInsets`, `controlInsets`) through `mainHeaderList` /
+  `mainFooterList`. Previously this configuration was hard-coded, so, for
+  example, a navigator rail could not render its content as a `nav` landmark
+  without restyling. Omitted or `undefined` fields keep today's defaults, and
+  the default markup is unchanged.
+
 - **`@kerfjs/ui` hides a work area's floating controls under an open side
   overlay.** While a side overlay is open — a Workbench rail (static
   `presentation: "overlay"`, or a responsive overlay whose breakpoint applies),

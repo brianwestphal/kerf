@@ -1,5 +1,7 @@
 import type { SafeHtml } from 'kerfjs';
 
+import type { ListConfig } from './list.js';
+import type { PaneConfig } from './pane.js';
 import {
   clampRegionSize,
   type ResizableRegionAxis,
@@ -71,6 +73,14 @@ export interface WorkbenchPanel {
   toolbar?: WorkbenchPanelToolbar;
   /** Optional bottom toolbar under a `toolbar` panel's content. */
   footer?: KerfUiContent;
+  /**
+   * Configuration for a `toolbar` panel's `Pane` (`contentElement`,
+   * `contentLabel`, `separators`, `safeAreaEdges`) — for example
+   * `{ contentElement: 'nav', contentLabel: 'Sections' }` for a navigation
+   * rail. Omitted or `undefined` fields keep the `Pane` defaults. Ignored
+   * without a `toolbar`, where `content` renders as given.
+   */
+  pane?: PaneConfig;
   /** Whether the panel is currently collapsed (the app owns this). */
   collapsed?: boolean;
   /**
@@ -156,6 +166,25 @@ export interface WorkbenchProps {
   mainHeaderPlacement?: WorkbenchChromePlacement;
   /** The same for `mainFooter` and `mainBottomToolbar` (default `fixed`). */
   mainFooterPlacement?: WorkbenchChromePlacement;
+  /**
+   * Configuration for the work area's `Pane` (`contentElement`,
+   * `contentLabel`, `separators`, `safeAreaEdges`), which it has whenever it
+   * has a toolbar, `mainHeader`, or `mainFooter`; without that chrome, `main`
+   * renders as given and this is ignored. Omitted or `undefined` fields keep
+   * the `Pane` defaults.
+   */
+  mainPane?: PaneConfig;
+  /**
+   * Configuration for the `List` that holds `mainHeader` (`gap`, `hAlign`,
+   * `vAlign`, `dividerSides`, `textInsets`, `controlInsets`). Omitted or
+   * `undefined` fields keep the defaults, including its bottom divider.
+   */
+  mainHeaderList?: ListConfig;
+  /**
+   * The same for the `List` that holds `mainFooter`; by default it draws a
+   * top divider, or none when a `mainBottomToolbar` follows it.
+   */
+  mainFooterList?: ListConfig;
   leftRail?: WorkbenchPanel;
   rightRail?: WorkbenchPanel;
   bottomDrawer?: WorkbenchPanel;
@@ -438,6 +467,9 @@ export function Workbench({
   mainBottomToolbar,
   mainHeaderPlacement,
   mainFooterPlacement,
+  mainPane,
+  mainHeaderList,
+  mainFooterList,
   mainMinSize = WORKBENCH_MAIN_MIN_SIZE,
   mainMinHeight = WORKBENCH_MAIN_MIN_HEIGHT,
   className = '',
@@ -487,6 +519,9 @@ export function Workbench({
             mainBottomToolbar,
             mainHeaderPlacement,
             mainFooterPlacement,
+            mainPane,
+            mainHeaderList,
+            mainFooterList,
             leftRail,
             rightRail,
             bottomDrawer,

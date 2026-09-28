@@ -1,10 +1,10 @@
 import type { SafeHtml } from 'kerfjs';
 
 import { LucideIcon } from './lucide-icon.js';
-import { Pane } from './pane.js';
+import type { PaneConfig } from './pane.js';
 import {
   collapsiblePanelToggleIcon,
-  composedPanelToolbar,
+  composedPanelBody,
   type PanelSide,
   type PanelToggle,
   type PanelToggleAttributes,
@@ -115,6 +115,14 @@ export interface CollapsiblePanelProps {
   toolbar?: CollapsiblePanelToolbar;
   /** Optional bottom toolbar under a `toolbar` panel's content. */
   footer?: KerfUiContent;
+  /**
+   * Configuration for a `toolbar` panel's `Pane` (`contentElement`,
+   * `contentLabel`, `separators`, `safeAreaEdges`) — for example
+   * `{ contentElement: 'nav', contentLabel: 'Sections' }` for a navigation
+   * rail. Omitted or `undefined` fields keep the `Pane` defaults. Ignored
+   * without a `toolbar`, where `children` renders as given.
+   */
+  pane?: PaneConfig;
   separator?: ResizableRegionSeparator;
   collapseMotion?: ResizableRegionCollapseMotion;
   contentOverflow?: ResizableRegionContentOverflow;
@@ -150,6 +158,7 @@ export function CollapsiblePanel({
   children,
   toolbar,
   footer,
+  pane,
   separator = 'auto',
   collapseMotion = 'slide',
   contentOverflow = 'clip',
@@ -182,21 +191,17 @@ export function CollapsiblePanel({
         style={size ? `${sizeVar}: ${size}px` : undefined}
       >
         <div class="kui-collapsible-panel__content">
-          {toolbar ? (
-            <Pane
-              header={composedPanelToolbar(
+          {toolbar
+            ? composedPanelBody({
                 toolbar,
                 side,
                 collapsed,
-                toggleAttributes(id),
-              )}
-              footer={footer}
-            >
-              {children}
-            </Pane>
-          ) : (
-            children
-          )}
+                attributes: toggleAttributes(id),
+                pane,
+                footer,
+                content: children,
+              })
+            : children}
         </div>
       </aside>
       {collapsed && restoreControl && presentation !== 'hidden' && (

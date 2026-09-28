@@ -252,7 +252,15 @@ showLabel?, hideLabel? }`) and the work area a `mainToolbar` /
   `responsiveAt`, `safeAreaEdges`, forwarded with today's dividers as the
   defaults — KF-A29R9B: the dividers were hard-coded, leaving CSS as the only
   way to drop one); the Workbench composes each as a
-  `Toolbar` over a `Pane` (`ui/src/workbench-toolbars.tsx`). Open, a panel's
+  `Toolbar` over a `Pane` (`ui/src/workbench-toolbars.tsx`). Those `Pane`s and
+  the work area's header/footer `List`s forward configuration the same way
+  (KF-SEQV4K: they were hard-coded, so a navigator rail could not make its
+  scrolling slot a `nav` landmark without restyling): a panel's `pane` and the
+  Workbench's `mainPane` take `PaneConfig` (`contentElement`, `contentLabel`,
+  `separators`, `safeAreaEdges`), `mainHeaderList` / `mainFooterList` take
+  `ListConfig` (`gap`, `hAlign`, `vAlign`, `dividerSides`, `textInsets`,
+  `controlInsets`), and a `CollapsiblePanel` takes `pane` too. An omitted or
+  `undefined` field keeps today's value, so the default markup is unchanged. Open, a panel's
   toolbar holds its title and panel-only groups, then its constant groups and
   the standard toggle last. Closed, its panel-only groups stay behind (inert)
   and its constant groups plus toggle move to the work area: a left rail's

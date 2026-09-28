@@ -133,4 +133,58 @@ describe('CollapsiblePanel toolbar', () => {
         .getAttribute('aria-label'),
     ).toBe('Close navigator');
   });
+
+  it('forwards pane configuration to its Pane, keeping the defaults when omitted or undefined', () => {
+    const configured = html(
+      CollapsiblePanel({
+        id: 'nav',
+        side: 'left',
+        toolbar,
+        pane: {
+          contentElement: 'nav',
+          contentLabel: 'Sections',
+          separators: ['block-end'],
+          safeAreaEdges: [],
+        },
+        children: raw('<p data-content>files</p>'),
+      }),
+    );
+    const pane = configured.querySelector('[data-component="pane"]')!;
+    const content = pane.querySelector(':scope > .kui-pane__content')!;
+    expect(content.tagName).toBe('NAV');
+    expect(content.getAttribute('aria-label')).toBe('Sections');
+    expect(pane.getAttribute('data-separator-block-end')).toBe('true');
+    expect(pane.getAttribute('data-safe-area-inline-start')).toBe('false');
+
+    const props = {
+      id: 'nav',
+      side: 'left' as const,
+      toolbar,
+      children: raw('<p data-content>files</p>'),
+    };
+    const plain = html(CollapsiblePanel(props));
+    expect(
+      html(
+        CollapsiblePanel({
+          ...props,
+          pane: { contentElement: undefined, safeAreaEdges: undefined },
+        }),
+      ).innerHTML,
+    ).toBe(plain.innerHTML);
+    expect(
+      plain.querySelector('[data-component="pane"] > .kui-pane__content')!
+        .tagName,
+    ).toBe('DIV');
+
+    // Without a toolbar there is no Pane, so the configuration is ignored.
+    const bare = html(
+      CollapsiblePanel({
+        id: 'nav',
+        side: 'left',
+        pane: { contentElement: 'nav' },
+        children: raw('<p data-content>files</p>'),
+      }),
+    );
+    expect(bare.querySelector('[data-component="pane"]')).toBeNull();
+  });
 });

@@ -2,10 +2,10 @@ import {
   FloatingToolbar,
   type FloatingToolbarPosition,
 } from './floating-toolbar.js';
-import { List } from './list.js';
-import { Pane } from './pane.js';
+import { List, type ListConfig } from './list.js';
+import { Pane, type PaneConfig } from './pane.js';
 import {
-  composedPanelToolbar,
+  composedPanelBody,
   type PanelSide,
   type PanelToggle,
   type PanelToggleAttributes,
@@ -72,6 +72,8 @@ const SIDES: Record<WorkbenchPanelKey, PanelSide> = {
 export interface WorkbenchToolbarPanel {
   toolbar?: WorkbenchPanelToolbar;
   footer?: KerfUiContent;
+  /** Configuration for the `Pane` a `toolbar` panel's content renders in. */
+  pane?: PaneConfig;
   content: KerfUiContent;
   collapsed?: boolean;
   /** The corner a collapsed panel's restore controls float in. */
@@ -119,18 +121,38 @@ export function panelBody(
 ) {
   const toolbar = panel.toolbar;
   if (!toolbar) return panel.content;
+  return composedPanelBody({
+    toolbar,
+    side: SIDES[key],
+    collapsed: Boolean(panel.collapsed),
+    attributes: toggleAttributes(workbenchId, key),
+    pane: panel.pane,
+    footer: panel.footer,
+    content: panel.content,
+  });
+}
+
+/**
+ * The work area's `mainHeader` / `mainFooter` chrome in a `List` carrying the
+ * app's configuration; an omitted or `undefined` field keeps the default,
+ * including the divider the work area places.
+ */
+function chromeList(
+  content: KerfUiContent,
+  config: ListConfig | undefined,
+  dividerSides: ListConfig['dividerSides'],
+) {
   return (
-    <Pane
-      header={composedPanelToolbar(
-        toolbar,
-        SIDES[key],
-        Boolean(panel.collapsed),
-        toggleAttributes(workbenchId, key),
-      )}
-      footer={panel.footer}
+    <List
+      dividerSides={config?.dividerSides ?? dividerSides}
+      gap={config?.gap}
+      hAlign={config?.hAlign}
+      vAlign={config?.vAlign}
+      textInsets={config?.textInsets}
+      controlInsets={config?.controlInsets}
     >
-      {panel.content}
-    </Pane>
+      {content}
+    </List>
   );
 }
 
@@ -154,6 +176,9 @@ export function mainBody({
   mainBottomToolbar,
   mainHeaderPlacement = 'fixed',
   mainFooterPlacement = 'fixed',
+  mainPane,
+  mainHeaderList,
+  mainFooterList,
   leftRail,
   rightRail,
   bottomDrawer,
@@ -166,6 +191,9 @@ export function mainBody({
   mainBottomToolbar?: WorkbenchMainBottomToolbar;
   mainHeaderPlacement?: WorkbenchChromePlacement;
   mainFooterPlacement?: WorkbenchChromePlacement;
+  mainPane?: PaneConfig;
+  mainHeaderList?: ListConfig;
+  mainFooterList?: ListConfig;
   leftRail?: WorkbenchToolbarPanel;
   rightRail?: WorkbenchToolbarPanel;
   bottomDrawer?: WorkbenchToolbarPanel;
@@ -206,15 +234,15 @@ export function mainBody({
             }
           />
         ) : null}
-        {mainHeader ? <List dividerSides="b">{mainHeader}</List> : null}
+        {mainHeader ? chromeList(mainHeader, mainHeaderList, 'b') : null}
       </>
     );
   const footer =
     !mainFooter && !mainBottomToolbar ? undefined : (
       <>
-        {mainFooter ? (
-          <List dividerSides={mainBottomToolbar ? '' : 't'}>{mainFooter}</List>
-        ) : null}
+        {mainFooter
+          ? chromeList(mainFooter, mainFooterList, mainBottomToolbar ? '' : 't')
+          : null}
         {mainBottomToolbar ? (
           <Toolbar
             label={mainBottomToolbar.label}
@@ -243,6 +271,10 @@ export function mainBody({
     <Pane
       header={scrollHeader ? undefined : header}
       footer={scrollFooter ? undefined : footer}
+      contentElement={mainPane?.contentElement}
+      contentLabel={mainPane?.contentLabel}
+      separators={mainPane?.separators}
+      safeAreaEdges={mainPane?.safeAreaEdges}
     >
       {scrollHeader || scrollFooter ? (
         // Chrome that scrolls joins the content in one gapless column that

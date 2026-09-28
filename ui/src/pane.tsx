@@ -83,6 +83,17 @@ export interface PaneProps {
   slot?: string;
 }
 
+/**
+ * A pane's configuration, apart from its content and styling hooks: the props a
+ * composite that renders a `Pane` for the app (a Workbench panel or work area,
+ * or a CollapsiblePanel) forwards, so the app configures that pane instead of
+ * styling it. An omitted or `undefined` field keeps the composite's default.
+ */
+export type PaneConfig = Pick<
+  PaneProps,
+  'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges'
+>;
+
 function paneContent(
   element: PaneContentElement,
   children: KerfUiContent,

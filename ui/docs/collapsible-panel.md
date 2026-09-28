@@ -133,7 +133,12 @@ hideLabel? }` trail it.
 
 The toolbar also takes the `Toolbar`'s configuration (`dividerSides`,
 `centerAlign`, `responsive`, `responsiveAt`, `safeAreaEdges`); it keeps its
-bottom divider unless `dividerSides` says otherwise.
+bottom divider unless `dividerSides` says otherwise. The `Pane` under it takes
+the panel's `pane` (`PaneConfig`: `contentElement`, `contentLabel`,
+`separators`, `safeAreaEdges`) — for example `{ contentElement: "nav",
+contentLabel: "Sections" }` for a navigation rail. An omitted or `undefined`
+field keeps the `Pane` default; without a `toolbar` there is no `Pane`, so
+`pane` is ignored.
 
 A standalone panel does not own the rest of the screen, so the app places a
 `CollapsiblePanelRelocated` in its own work-area toolbar: it renders the panel's

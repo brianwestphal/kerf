@@ -573,10 +573,17 @@ interface ListProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
+/**
+ * A list's configuration, apart from its content and styling hooks: the props a
+ * composite that renders a `List` for the app (the Workbench's `mainHeader` /
+ * `mainFooter` chrome) forwards, so the app configures that list instead of
+ * styling it. An omitted or `undefined` field keeps the composite's default.
+ */
+type ListConfig = Pick<ListProps, 'gap' | 'hAlign' | 'vAlign' | 'dividerSides' | 'textInsets' | 'controlInsets'>;
 /** A stretch-aligned vertical stack with optional gap, flex, fill, scroll, and dividers. */
 declare function List({ children, gap, flex, fill, hAlign, vAlign, scrollable, dividerSides, textInsets, controlInsets, className, rootAttributes, slot, }: ListProps): kerfjs.SafeHtml;
 
-export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListProps, ListVerticalAlignment, Sides, UiSpaceName };
+export { CssFlex, CssFlexKeyword, CssLength, HorizontalAlignment, List, type ListConfig, type ListProps, ListVerticalAlignment, Sides, UiSpaceName };
 ```
 
 ## `@kerfjs/ui/list-action-row`
@@ -1118,6 +1125,13 @@ interface PaneProps {
     slot?: string;
 }
 /**
+ * A pane's configuration, apart from its content and styling hooks: the props a
+ * composite that renders a `Pane` for the app (a Workbench panel or work area,
+ * or a CollapsiblePanel) forwards, so the app configures that pane instead of
+ * styling it. An omitted or `undefined` field keeps the composite's default.
+ */
+type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges'>;
+/**
  * An unpadded application column with optional fixed header/footer slots and one
  * scrolling vertical content owner. Separator lines are independently opt-in on
  * each logical edge, so the same component works as a sidebar, main area,
@@ -1125,21 +1139,24 @@ interface PaneProps {
  */
 declare function Pane({ header, children, footer, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
-export { Pane, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
+export { Pane, type PaneConfig, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
 ```
 
 ## `@kerfjs/ui/workbench`
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { ListConfig } from './list.js';
+import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import { a as PanelToolbar, b as PanelToggle } from './panel-toolbar-C8sF-YZC.js';
 import { ToolbarConfig } from './toolbar.js';
+import './css-values.js';
+import './flex-alignment-4ms8ZbV8.js';
+import './sides-BPSWde0A.js';
 import './lucide-icon.js';
 import 'lucide';
-import './pane.js';
-import './sides-BPSWde0A.js';
 
 /** The standard toggle a Workbench renders for a panel (see {@link PanelToggle}). */
 type WorkbenchPanelToggle = PanelToggle;
@@ -1222,6 +1239,14 @@ interface WorkbenchPanel {
     toolbar?: WorkbenchPanelToolbar;
     /** Optional bottom toolbar under a `toolbar` panel's content. */
     footer?: KerfUiContent;
+    /**
+     * Configuration for a `toolbar` panel's `Pane` (`contentElement`,
+     * `contentLabel`, `separators`, `safeAreaEdges`) — for example
+     * `{ contentElement: 'nav', contentLabel: 'Sections' }` for a navigation
+     * rail. Omitted or `undefined` fields keep the `Pane` defaults. Ignored
+     * without a `toolbar`, where `content` renders as given.
+     */
+    pane?: PaneConfig;
     /** Whether the panel is currently collapsed (the app owns this). */
     collapsed?: boolean;
     /**
@@ -1306,6 +1331,25 @@ interface WorkbenchProps {
     mainHeaderPlacement?: WorkbenchChromePlacement;
     /** The same for `mainFooter` and `mainBottomToolbar` (default `fixed`). */
     mainFooterPlacement?: WorkbenchChromePlacement;
+    /**
+     * Configuration for the work area's `Pane` (`contentElement`,
+     * `contentLabel`, `separators`, `safeAreaEdges`), which it has whenever it
+     * has a toolbar, `mainHeader`, or `mainFooter`; without that chrome, `main`
+     * renders as given and this is ignored. Omitted or `undefined` fields keep
+     * the `Pane` defaults.
+     */
+    mainPane?: PaneConfig;
+    /**
+     * Configuration for the `List` that holds `mainHeader` (`gap`, `hAlign`,
+     * `vAlign`, `dividerSides`, `textInsets`, `controlInsets`). Omitted or
+     * `undefined` fields keep the defaults, including its bottom divider.
+     */
+    mainHeaderList?: ListConfig;
+    /**
+     * The same for the `List` that holds `mainFooter`; by default it draws a
+     * top divider, or none when a `mainBottomToolbar` follows it.
+     */
+    mainFooterList?: ListConfig;
     leftRail?: WorkbenchPanel;
     rightRail?: WorkbenchPanel;
     bottomDrawer?: WorkbenchPanel;
@@ -1342,7 +1386,7 @@ interface WorkbenchProps {
  * lives outside it and stays reachable). A panel may opt in to drag and keyboard resizing with
  * `resizable`, which `wireWorkbench` drives. See `docs/23-app-layouts.md` §3.3.
  */
-declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainHeader, mainFooter, mainBottomToolbar, mainHeaderPlacement, mainFooterPlacement, mainMinSize, mainMinHeight, className, slot, }: WorkbenchProps): SafeHtml;
+declare function Workbench({ id, label, main, leftRail, rightRail, bottomDrawer, mainToolbar, mainHeader, mainFooter, mainBottomToolbar, mainHeaderPlacement, mainFooterPlacement, mainPane, mainHeaderList, mainFooterList, mainMinSize, mainMinHeight, className, slot, }: WorkbenchProps): SafeHtml;
 
 export { Workbench, type WorkbenchChromePlacement, type WorkbenchCompactOverlay, type WorkbenchMainBottomToolbar, type WorkbenchMainToolbar, type WorkbenchPanel, type WorkbenchPanelResizable, type WorkbenchPanelToggle, type WorkbenchPanelToolbar, type WorkbenchProps, type WorkbenchResponsiveOverlayAt };
 ```
@@ -1465,6 +1509,7 @@ export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanel
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { PaneConfig } from './pane.js';
 import { P as PanelSide, a as PanelToolbar, b as PanelToggle } from './panel-toolbar-C8sF-YZC.js';
 export { c as collapsiblePanelToggleIcon } from './panel-toolbar-C8sF-YZC.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
@@ -1472,7 +1517,6 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './lucide-icon.js';
 import 'lucide';
 import './toolbar.js';
-import './pane.js';
 import './sides-BPSWde0A.js';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
@@ -1531,6 +1575,14 @@ interface CollapsiblePanelProps {
     toolbar?: CollapsiblePanelToolbar;
     /** Optional bottom toolbar under a `toolbar` panel's content. */
     footer?: KerfUiContent;
+    /**
+     * Configuration for a `toolbar` panel's `Pane` (`contentElement`,
+     * `contentLabel`, `separators`, `safeAreaEdges`) — for example
+     * `{ contentElement: 'nav', contentLabel: 'Sections' }` for a navigation
+     * rail. Omitted or `undefined` fields keep the `Pane` defaults. Ignored
+     * without a `toolbar`, where `children` renders as given.
+     */
+    pane?: PaneConfig;
     separator?: ResizableRegionSeparator;
     collapseMotion?: ResizableRegionCollapseMotion;
     contentOverflow?: ResizableRegionContentOverflow;
@@ -1556,7 +1608,7 @@ interface CollapsiblePanelProps {
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
  * affordance. See `ui/docs/collapsible-panel.md` and `docs/23-app-layouts.md`.
  */
-declare function CollapsiblePanel({ id, side, collapsed, size, label, children, toolbar, footer, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, className, }: CollapsiblePanelProps): SafeHtml;
+declare function CollapsiblePanel({ id, side, collapsed, size, label, children, toolbar, footer, pane, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, className, }: CollapsiblePanelProps): SafeHtml;
 interface CollapsiblePanelRelocatedProps {
     /** The panel's `id`. */
     panelId: string;
