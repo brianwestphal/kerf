@@ -463,8 +463,16 @@ test.describe('resizable Workbench panels', () => {
     const handle = workbench.getByRole('separator', { name: 'Resize Console' });
     await handle.focus();
     await page.keyboard.press('End');
-    await expect(handle).toHaveAttribute('aria-valuenow', String(room));
-    await expect(handle).toHaveAttribute('aria-valuemax', String(room));
+    // The column height can be fractional, and engines round the remaining
+    // room differently (Firefox lands one pixel above the floored estimate),
+    // so the granted maximum is checked within a pixel and then reused.
+    const valueNow = async () =>
+      Number(await handle.getAttribute('aria-valuenow'));
+    await expect
+      .poll(async () => Math.abs((await valueNow()) - room))
+      .toBeLessThanOrEqual(1);
+    const granted = await valueNow();
+    await expect(handle).toHaveAttribute('aria-valuemax', String(granted));
     expect(Math.abs((await height(main)) - 120)).toBeLessThanOrEqual(1);
 
     // A shorter workbench shrinks the console, never the editor, and the
@@ -474,7 +482,7 @@ test.describe('resizable Workbench panels', () => {
     });
     await expect.poll(async () => Math.round(await height(main))).toBe(120);
     const shown = await height(drawer);
-    expect(shown).toBeLessThan(room);
+    expect(shown).toBeLessThan(granted);
     const content = drawer.locator('.kui-workbench__panel-content');
     expect(Math.abs((await height(content)) - (shown - 1))).toBeLessThanOrEqual(
       1,
@@ -486,7 +494,9 @@ test.describe('resizable Workbench panels', () => {
     await workbench.evaluate((element) => {
       element.style.removeProperty('height');
     });
-    await expect.poll(async () => Math.round(await height(drawer))).toBe(room);
+    await expect
+      .poll(async () => Math.round(await height(drawer)))
+      .toBe(granted);
   });
 
   test('rails present as overlays below the narrow Workbench breakpoint', async ({
