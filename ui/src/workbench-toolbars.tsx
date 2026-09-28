@@ -157,16 +157,19 @@ function chromeList(
 }
 
 /**
- * The work area: the app's `main` under `mainToolbar` (and above
- * `mainBottomToolbar`), with each collapsed panel's groups added to the
- * toolbar on its side. Without either toolbar, `main` renders as given.
- */
-/**
  * Whether the work area's header or footer chrome stays pinned (`fixed`) or
  * scrolls away with the content (`scroll`).
  */
 export type WorkbenchChromePlacement = 'fixed' | 'scroll';
 
+/**
+ * The work area: the app's `main` in a `Pane` (configured by `mainPane`)
+ * under `mainToolbar` and any `mainHeader` list, and above any `mainFooter`
+ * list and `mainBottomToolbar` (the header and footer lists configured by
+ * `mainHeaderList` / `mainFooterList`), with each collapsed panel's groups
+ * added to the toolbar on its side. Without any of that chrome, `main`
+ * renders as given and `mainPane` is ignored.
+ */
 export function mainBody({
   workbenchId,
   main,
