@@ -112,6 +112,61 @@ Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.
 
   Returns a disposer. Retain it and call it on teardown.
 
+## Panel toolbars and relocated controls
+
+Give a panel a `toolbar` (the same roles as a
+[Workbench panel toolbar](workbench.md#panel-toolbars)) and it composes its own
+top toolbar over a `Pane`, with an optional `footer` below its content:
+
+- `title` and `panelOnly` groups lead it and are available only while it is open;
+- `constant` groups and the standard `toggle: { action, name }` trail it.
+
+A standalone panel does not own the rest of the screen, so the app places a
+`CollapsiblePanelRelocated` in its own work-area toolbar: it renders the panel's
+`constant` groups and toggle while the panel is collapsed, and nothing while it
+is open. Put it first in the leading zone for a left rail, last in the trailing
+zone for a right rail, and last in a bottom toolbar for a bottom drawer. With no
+bottom toolbar, pass it inside a `FloatingToolbar` as the drawer's
+`restoreControl`.
+
+```tsx
+const toolbar: CollapsiblePanelToolbar = {
+  label: "Navigator",
+  panelOnly: <NewFileGroup />,
+  constant: <SearchGroup />,
+  toggle: { action: "toggle-nav", name: "navigator" },
+};
+
+<Row fill gap="none">
+  <CollapsiblePanel id="nav" side="left" collapsed={navCollapsed.value} toolbar={toolbar}>
+    <Files />
+  </CollapsiblePanel>
+  <List flex>
+    <Pane
+      header={
+        <Toolbar
+          label="Editor"
+          leading={
+            <>
+              <CollapsiblePanelRelocated panelId="nav" side="left" collapsed={navCollapsed.value} toolbar={toolbar} />
+              <ToolbarText text="Editor" size="xlarge" />
+            </>
+          }
+        />
+      }
+    >
+      <Editor />
+    </Pane>
+  </List>
+</Row>;
+```
+
+Wire it with `wireSidebar` (`toggleAction` is the toggle's `action`): closing the
+panel from its own toggle hands focus to the relocated toggle, even when the app
+renders it a frame later, and opening it moves focus into the panel. Each toggle
+carries a stable `data-key`, so the morph never reuses a focused toggle's button
+for another control as it moves.
+
 ## Compact initial state
 
 A compact overlay is transient chrome the user summons, like a slide-over

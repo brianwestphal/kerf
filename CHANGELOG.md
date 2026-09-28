@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui`'s `CollapsiblePanel` composes a panel toolbar and relocates its
+  controls.** A panel takes the same `toolbar` roles as a `Workbench` panel
+  (`title`, `panelOnly`, `constant`, and a standard `toggle`) plus a `footer`,
+  and the new `CollapsiblePanelRelocated` renders a collapsed panel's constant
+  groups and toggle wherever the app's work-area toolbar holds them.
+  `wireSidebar` hands focus to that relocated toggle when the panel closes, even
+  when the app renders it a frame late. `collapsiblePanelToggleIcon` is
+  unchanged.
+
 - **`@kerfjs/ui`'s `Catalog` is built on `Workbench` and dogfoods the package's
   components.** The sidebar is a Workbench left rail with the standard toggle
   (labels "Show/Hide {brand} catalog"), which moves into the entry toolbar while

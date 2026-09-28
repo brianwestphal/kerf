@@ -594,6 +594,14 @@ NavStack.
 
 ### 3.5 Standalone collapsible panel — `CollapsiblePanel` + `wireSidebar` (`@kerfjs/ui/collapsible-panel`, `@kerfjs/ui/wire-sidebar`)
 
+**Panel toolbars (KF-7MD6HT).** A `CollapsiblePanel` takes the same `toolbar`
+roles as a Workbench panel (shared through `ui/src/panel-toolbar.tsx`) and
+composes its own toolbar over a `Pane`; because a standalone panel does not own
+the work area, the app renders `CollapsiblePanelRelocated` in its work-area
+toolbar to hold the collapsed panel's constant groups and toggle, and
+`wireSidebar` hands focus to it (retrying for a few frames when the app renders
+late).
+
 A single collapsible **side rail or bottom drawer** for apps that want one panel
 outside the full `Workbench` shell. `CollapsiblePanel({ id, side, collapsed?,
 size? })` reuses the §3.3 instant-size/sliding-content collapse for a `'left'` /

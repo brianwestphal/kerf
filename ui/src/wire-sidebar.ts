@@ -224,10 +224,14 @@ export function wireSidebar(
           (focusables(element)[0] ?? element).focus({ preventScroll: true });
         } else if (collapsed && !restoreFocus(panel)) {
           // An app that renders after this effect has not produced its
-          // expand toggle yet; look again once the current batch settles.
-          globalThis.queueMicrotask(() => {
-            if (panel.collapsed.peek()) restoreFocus(panel);
-          });
+          // expand toggle (or relocated it into its work-area toolbar) yet;
+          // look again once the batch settles, then for a few frames.
+          const retry = (frames: number): void => {
+            if (!panel.collapsed.peek() || restoreFocus(panel) || frames === 0)
+              return;
+            globalThis.requestAnimationFrame(() => retry(frames - 1));
+          };
+          globalThis.queueMicrotask(() => retry(3));
         }
       }),
     );

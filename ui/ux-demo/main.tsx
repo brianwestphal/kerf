@@ -62,6 +62,9 @@ import {
   preferredDemoTheme,
 } from './demo-theme.js';
 import {
+  RELOCATION_RAIL_ACTION,
+  RELOCATION_RAIL_ID,
+  relocationRailCollapsed,
   resetCollapsiblePanelDemo,
   RESTORE_DRAWER_ACTION,
   RESTORE_DRAWER_ID,
@@ -898,6 +901,9 @@ const stopActions = delegateActions(app, 'click', {
   'workbench-demo-command': (_event, element) => {
     actionLog.value = `${(element as HTMLElement).getAttribute('aria-label') ?? 'Command'} requested`;
   },
+  'collapsible-panel-demo-command': (_event, element) => {
+    actionLog.value = `${(element as HTMLElement).getAttribute('aria-label') ?? 'Command'} requested`;
+  },
   'toggle-workbench-console': () => {
     actionLog.value = toggleWorkbenchConsole()
       ? 'Console hidden'
@@ -1026,6 +1032,11 @@ const routeWires: Partial<Record<string, RouteWire>> = {
             id: RESTORE_DRAWER_ID,
             collapsed: restoreDrawerCollapsed,
             toggleAction: RESTORE_DRAWER_ACTION,
+          },
+          {
+            id: RELOCATION_RAIL_ID,
+            collapsed: relocationRailCollapsed,
+            toggleAction: RELOCATION_RAIL_ACTION,
           },
         ],
       }),

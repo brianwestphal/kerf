@@ -76,6 +76,41 @@ describe('wireSidebar', () => {
     stop();
   });
 
+  it('keeps looking for a few frames for an expand toggle the app renders a frame late', async () => {
+    const frame = () =>
+      new Promise<void>((resolve) =>
+        globalThis.requestAnimationFrame(() => resolve()),
+      );
+    const root = mount(false);
+    const outside = root.querySelector<HTMLButtonElement>(
+      ':scope > [data-action="toggle-nav"]',
+    )!;
+    outside.remove();
+    const inner = document.createElement('button');
+    inner.dataset.action = 'toggle-nav';
+    root.querySelector('[data-collapsible-panel="nav"]')!.prepend(inner);
+    const collapsed = signal(false);
+    const stop = wireSidebar(root, {
+      panels: [{ id: 'nav', collapsed, toggleAction: 'toggle-nav' }],
+    });
+    inner.focus();
+    inner.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(collapsed.value).toBe(true);
+    // The relocated toggle appears a frame later.
+    globalThis.requestAnimationFrame(() => root.prepend(outside));
+    for (let step = 0; step < 4; step += 1) await frame();
+    expect(document.activeElement).toBe(outside);
+
+    // A toggle that never appears ends the search after a few frames.
+    collapsed.value = false;
+    outside.remove();
+    inner.focus();
+    inner.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    for (let step = 0; step < 5; step += 1) await frame();
+    expect(collapsed.value).toBe(true);
+    stop();
+  });
+
   it('moves focus to the outside toggle when the trigger lives inside the collapsed panel', () => {
     const root = mount(false);
     const inner = document.createElement('button');

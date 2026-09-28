@@ -1,14 +1,16 @@
 import type { SafeHtml } from 'kerfjs';
-import {
-  PanelBottomClose,
-  PanelBottomOpen,
-  PanelLeftClose,
-  PanelLeftOpen,
-  PanelRightClose,
-  PanelRightOpen,
-} from 'lucide';
 
 import { LucideIcon } from './lucide-icon.js';
+import { Pane } from './pane.js';
+import {
+  collapsiblePanelToggleIcon,
+  composedPanelToolbar,
+  type PanelSide,
+  type PanelToggle,
+  type PanelToggleAttributes,
+  type PanelToolbar,
+  relocatedPanelGroups,
+} from './panel-toolbar.js';
 import type {
   ResizableRegionCollapseMotion,
   ResizableRegionContentOverflow,
@@ -18,32 +20,29 @@ import type {
 } from './resizable-region.js';
 import type { KerfUiContent } from './semantic-content.js';
 
+export { collapsiblePanelToggleIcon } from './panel-toolbar.js';
+
 /** Which edge a {@link CollapsiblePanel} docks to. */
-export type CollapsiblePanelSide = 'left' | 'right' | 'bottom';
+export type CollapsiblePanelSide = PanelSide;
+
+/** The standard toggle a panel toolbar renders (see {@link CollapsiblePanelToolbar}). */
+export type CollapsiblePanelToolbarToggle = PanelToggle;
 
 /**
- * The standard collapse/expand icon for a panel `side` and `collapsed` state,
- * so every app's sidebars and drawers use one recognizable convention:
- * `PanelLeft*` for a left rail, `PanelRight*` for a right rail, `PanelBottom*`
- * for a bottom drawer — the `Close` glyph while open, the `Open` glyph while
- * collapsed. Exposed so an app can render its own toggle affordance.
+ * A panel's composed top toolbar. `title` and `panelOnly` groups lead it and
+ * are available only while the panel is open; `constant` groups and the
+ * standard `toggle` trail it while open and move to the app's work-area
+ * toolbar — through {@link CollapsiblePanelRelocated} — while it is collapsed.
  */
-export function collapsiblePanelToggleIcon(
-  side: CollapsiblePanelSide,
-  collapsed: boolean,
-): { icon: Parameters<typeof LucideIcon>[0]['icon']; name: string } {
-  if (side === 'left')
-    return collapsed
-      ? { icon: PanelLeftOpen, name: 'panel-left-open' }
-      : { icon: PanelLeftClose, name: 'panel-left-close' };
-  if (side === 'right')
-    return collapsed
-      ? { icon: PanelRightOpen, name: 'panel-right-open' }
-      : { icon: PanelRightClose, name: 'panel-right-close' };
-  return collapsed
-    ? { icon: PanelBottomOpen, name: 'panel-bottom-open' }
-    : { icon: PanelBottomClose, name: 'panel-bottom-close' };
-}
+export type CollapsiblePanelToolbar = PanelToolbar;
+
+/** A CollapsiblePanel toggle's `wireSidebar` hook. */
+const toggleAttributes = (panelId: string): PanelToggleAttributes => ({
+  'data-collapsible-target': panelId,
+  // Keyed, so the morph never reuses a (possibly focused) toggle's button for
+  // another control as the toggle moves between toolbars.
+  'data-key': `${panelId}-toggle`,
+});
 
 export interface CollapsiblePanelToggleProps {
   /** The panel this toggle controls. */
@@ -107,6 +106,15 @@ export interface CollapsiblePanelProps {
   label?: string;
   /** Panel content. */
   children?: KerfUiContent;
+  /**
+   * The panel's top toolbar, composed so its groups follow the panel's open
+   * state. With it, `children` renders in a `Pane` below the toolbar; render
+   * {@link CollapsiblePanelRelocated} in the app's work-area toolbar so the
+   * `constant` groups and toggle stay reachable while the panel is collapsed.
+   */
+  toolbar?: CollapsiblePanelToolbar;
+  /** Optional bottom toolbar under a `toolbar` panel's content. */
+  footer?: KerfUiContent;
   separator?: ResizableRegionSeparator;
   collapseMotion?: ResizableRegionCollapseMotion;
   contentOverflow?: ResizableRegionContentOverflow;
@@ -140,6 +148,8 @@ export function CollapsiblePanel({
   size,
   label,
   children,
+  toolbar,
+  footer,
   separator = 'auto',
   collapseMotion = 'slide',
   contentOverflow = 'clip',
@@ -171,7 +181,23 @@ export function CollapsiblePanel({
         inert={collapsed}
         style={size ? `${sizeVar}: ${size}px` : undefined}
       >
-        <div class="kui-collapsible-panel__content">{children}</div>
+        <div class="kui-collapsible-panel__content">
+          {toolbar ? (
+            <Pane
+              header={composedPanelToolbar(
+                toolbar,
+                side,
+                collapsed,
+                toggleAttributes(id),
+              )}
+              footer={footer}
+            >
+              {children}
+            </Pane>
+          ) : (
+            children
+          )}
+        </div>
       </aside>
       {collapsed && restoreControl && presentation !== 'hidden' && (
         <div
@@ -181,6 +207,42 @@ export function CollapsiblePanel({
         >
           {restoreControl}
         </div>
+      )}
+    </>
+  );
+}
+
+export interface CollapsiblePanelRelocatedProps {
+  /** The panel's `id`. */
+  panelId: string;
+  side: CollapsiblePanelSide;
+  /** The panel's current collapsed state. */
+  collapsed: boolean;
+  /** The same `toolbar` the panel receives. */
+  toolbar: CollapsiblePanelToolbar;
+}
+
+/**
+ * A collapsed {@link CollapsiblePanel}'s `constant` groups and standard
+ * toggle, for the app's work-area toolbar — nothing while the panel is open.
+ * Put it first in the leading zone for a left rail, last in the trailing zone
+ * for a right rail, and last in a bottom toolbar (or a `FloatingToolbar`
+ * `restoreControl`) for a bottom drawer. `wireSidebar` hands focus to it when
+ * the panel closes from its own toggle.
+ */
+export function CollapsiblePanelRelocated({
+  panelId,
+  side,
+  collapsed,
+  toolbar,
+}: CollapsiblePanelRelocatedProps) {
+  return (
+    <>
+      {relocatedPanelGroups(
+        toolbar,
+        side,
+        collapsed,
+        toggleAttributes(panelId),
       )}
     </>
   );

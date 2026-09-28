@@ -1054,10 +1054,14 @@
       "publicExports": [
         "CollapsiblePanelSide",
         "collapsiblePanelToggleIcon",
+        "CollapsiblePanelToolbarToggle",
+        "CollapsiblePanelToolbar",
         "CollapsiblePanelToggleProps",
         "CollapsiblePanelToggle",
         "CollapsiblePanelProps",
-        "CollapsiblePanel"
+        "CollapsiblePanel",
+        "CollapsiblePanelRelocatedProps",
+        "CollapsiblePanelRelocated"
       ],
       "useWhen": [
         "An application needs one collapsible side rail or bottom drawer outside a full Workbench.",

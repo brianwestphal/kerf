@@ -864,6 +864,7 @@ resource footer in `mainFooter`); `catalog-sidebar.tsx`, `catalog-section-list.t
 component); only `catalog.css`, `catalog-stage.css`, `catalog-example.css`, and
 `catalog-example-stack.css` remain (`ui/tests/unit/catalog-component.test.tsx`,
 `ui/tests/browser/catalog-sidebar-shell.spec.ts`).
+`ui/src/panel-toolbar.tsx` holds the shared panel-toolbar roles (`PanelToolbar`: title, panel-only, constant, and the standard toggle), the per-side toggle icon, and the composition/relocation helpers both `Workbench` and `CollapsiblePanel` (with `CollapsiblePanelRelocated`) use (`ui/tests/unit/collapsible-panel-toolbar.test.tsx`, `ui/tests/browser/collapsible-panel-relocation.spec.ts`).
 `ui/src/workbench-toolbars.tsx` composes a panel's `toolbar` (title,
 panel-only and constant groups, the standard keyed toggle) and the work area's
 `mainToolbar` / `mainBottomToolbar`, moving a closed panel's constant groups

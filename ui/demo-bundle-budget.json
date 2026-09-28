@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 292600,
-  "measuredLargestJavaScriptGzip": 144723,
-  "measuredTotalJavaScriptGzip": 292565,
+  "totalJavaScriptGzip": 293100,
+  "measuredLargestJavaScriptGzip": 145185,
+  "measuredTotalJavaScriptGzip": 293032,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -803,6 +803,22 @@
         "measuredTotalJavaScriptGzip": 292565,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 292600
+      }
+    },
+    {
+      "at": "2026-09-28T05:40:06.350Z",
+      "reason": "KF-7MD6HT CollapsiblePanel panel toolbar composition and relocation demo",
+      "old": {
+        "measuredLargestJavaScriptGzip": 144723,
+        "measuredTotalJavaScriptGzip": 292565,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 292600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 145185,
+        "measuredTotalJavaScriptGzip": 293032,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 293100
       }
     }
   ]

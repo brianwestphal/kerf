@@ -1,54 +1,33 @@
-import { collapsiblePanelToggleIcon } from './collapsible-panel.js';
 import { FloatingToolbar } from './floating-toolbar.js';
 import { List } from './list.js';
-import { LucideIcon } from './lucide-icon.js';
 import { Pane } from './pane.js';
+import {
+  composedPanelToolbar,
+  type PanelSide,
+  type PanelToggle,
+  type PanelToggleAttributes,
+  type PanelToolbar,
+  relocatedPanelGroups,
+} from './panel-toolbar.js';
 import type { KerfUiContent } from './semantic-content.js';
 import { Toolbar, type ToolbarProps } from './toolbar.js';
-import { ToolbarControlGroup } from './toolbar-control-group.js';
 import {
   type WorkbenchPanelKey,
   workbenchRegionId,
 } from './workbench-resize.js';
 
-/**
- * The standard collapse toggle a Workbench renders for a panel. The app
- * handles the button's `data-action` and flips its own `collapsed` flag.
- */
-export interface WorkbenchPanelToggle {
-  /** The `data-action` the toggle button carries. */
-  action: string;
-  /** The panel's short name, for the accessible "Show …" / "Hide …" label. */
-  name: string;
-}
+/** The standard toggle a Workbench renders for a panel (see {@link PanelToggle}). */
+export type WorkbenchPanelToggle = PanelToggle;
 
 /**
  * A Workbench panel's top toolbar, composed by the Workbench so its groups can
- * follow the panel's open state.
- *
- * - `title` (a `ToolbarText`) and `panelOnly` groups lead the toolbar and are
- *   available only while the panel is open.
- * - `constant` groups stay available either way: they trail the panel's
- *   toolbar while it is open and move to the work area's toolbar while it is
- *   collapsed.
- * - `toggle` is always the last group: in the panel's toolbar while it is
- *   open, and right after the `constant` groups in the work area's toolbar
- *   while it is collapsed.
- *
- * A collapsed rail's groups go to the leading edge of `mainToolbar` (left rail)
- * or its trailing edge (right rail); a collapsed drawer's go to the trailing
- * edge of `mainBottomToolbar`, else to a `FloatingToolbar` in the work area's
- * bottom-end corner. `constant` content renders in both places while the panel
- * is collapsed (the panel's copy is inert), so give it no `id`s.
+ * follow the panel's open state (see {@link PanelToolbar} for the roles).
+ * A collapsed rail's `constant` groups and toggle go to the leading edge of
+ * `mainToolbar` (left rail) or its trailing edge (right rail); a collapsed
+ * drawer's go to the trailing edge of `mainBottomToolbar`, else to a
+ * `FloatingToolbar` in the work area's bottom-end corner.
  */
-export interface WorkbenchPanelToolbar {
-  /** Accessible name of the panel's toolbar. */
-  label: string;
-  title?: KerfUiContent;
-  panelOnly?: KerfUiContent;
-  constant?: KerfUiContent;
-  toggle?: WorkbenchPanelToggle;
-}
+export type WorkbenchPanelToolbar = PanelToolbar;
 
 /** The work area's top toolbar; collapsed rails add their groups to it. */
 export interface WorkbenchMainToolbar {
@@ -72,9 +51,7 @@ export interface WorkbenchMainBottomToolbar {
   trailing?: KerfUiContent;
 }
 
-type ToolbarSide = 'left' | 'right' | 'bottom';
-
-const SIDES: Record<WorkbenchPanelKey, ToolbarSide> = {
+const SIDES: Record<WorkbenchPanelKey, PanelSide> = {
   leftRail: 'left',
   rightRail: 'right',
   bottomDrawer: 'bottom',
@@ -88,31 +65,17 @@ export interface WorkbenchToolbarPanel {
   collapsed?: boolean;
 }
 
-function toggleGroup(
+/** A Workbench toggle's wiring hooks: its side, morph key, and panel. */
+const toggleAttributes = (
   workbenchId: string,
   key: WorkbenchPanelKey,
-  toggle: WorkbenchPanelToggle,
-  collapsed: boolean,
-) {
-  const glyph = collapsiblePanelToggleIcon(SIDES[key], collapsed);
+): PanelToggleAttributes => ({
+  'data-workbench-toggle': SIDES[key],
   // Keyed, so the morph removes a toggle that leaves a toolbar instead of
   // reusing its (possibly focused) button for a different control.
-  return (
-    <ToolbarControlGroup label={toggle.name} appearance="borderless" single>
-      <button
-        type="button"
-        data-action={toggle.action}
-        data-workbench-toggle={SIDES[key]}
-        data-key={`${workbenchRegionId(workbenchId, key)}-toggle`}
-        aria-controls={workbenchRegionId(workbenchId, key)}
-        aria-expanded={String(!collapsed)}
-        aria-label={`${collapsed ? 'Show' : 'Hide'} ${toggle.name}`}
-      >
-        <LucideIcon icon={glyph.icon} name={glyph.name} />
-      </button>
-    </ToolbarControlGroup>
-  );
-}
+  'data-key': `${workbenchRegionId(workbenchId, key)}-toggle`,
+  'aria-controls': workbenchRegionId(workbenchId, key),
+});
 
 /**
  * The groups a collapsed panel hands to the work area: its `constant` groups,
@@ -123,12 +86,12 @@ export function relocatedGroups(
   key: WorkbenchPanelKey,
   panel: WorkbenchToolbarPanel | undefined,
 ): KerfUiContent[] {
-  const toolbar = panel?.toolbar;
-  if (!panel?.collapsed || !toolbar) return [];
-  return [
-    toolbar.constant,
-    toolbar.toggle ? toggleGroup(workbenchId, key, toolbar.toggle, true) : null,
-  ].filter((group) => group !== undefined && group !== null && group !== false);
+  return relocatedPanelGroups(
+    panel?.toolbar,
+    SIDES[key],
+    Boolean(panel?.collapsed),
+    toggleAttributes(workbenchId, key),
+  );
 }
 
 /**
@@ -145,31 +108,12 @@ export function panelBody(
   if (!toolbar) return panel.content;
   return (
     <Pane
-      header={
-        <Toolbar
-          label={toolbar.label}
-          dividerSides="b"
-          leading={
-            <>
-              {toolbar.title}
-              {toolbar.panelOnly}
-            </>
-          }
-          trailing={
-            <>
-              {toolbar.constant}
-              {toolbar.toggle
-                ? toggleGroup(
-                    workbenchId,
-                    key,
-                    toolbar.toggle,
-                    Boolean(panel.collapsed),
-                  )
-                : null}
-            </>
-          }
-        />
-      }
+      header={composedPanelToolbar(
+        toolbar,
+        SIDES[key],
+        Boolean(panel.collapsed),
+        toggleAttributes(workbenchId, key),
+      )}
       footer={panel.footer}
     >
       {panel.content}

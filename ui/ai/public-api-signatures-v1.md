@@ -1061,47 +1061,24 @@ export { Pane, type PaneContentElement, type PaneElement, type PaneProps, type P
 import { SafeHtml } from 'kerfjs';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import { a as PanelToolbar, b as PanelToggle } from './panel-toolbar-BFQxFITu.js';
 import { ToolbarProps } from './toolbar.js';
+import './lucide-icon.js';
+import 'lucide';
 import './divider-sides-BzB6rphT.js';
 import './pane.js';
 
-/**
- * The standard collapse toggle a Workbench renders for a panel. The app
- * handles the button's `data-action` and flips its own `collapsed` flag.
- */
-interface WorkbenchPanelToggle {
-    /** The `data-action` the toggle button carries. */
-    action: string;
-    /** The panel's short name, for the accessible "Show …" / "Hide …" label. */
-    name: string;
-}
+/** The standard toggle a Workbench renders for a panel (see {@link PanelToggle}). */
+type WorkbenchPanelToggle = PanelToggle;
 /**
  * A Workbench panel's top toolbar, composed by the Workbench so its groups can
- * follow the panel's open state.
- *
- * - `title` (a `ToolbarText`) and `panelOnly` groups lead the toolbar and are
- *   available only while the panel is open.
- * - `constant` groups stay available either way: they trail the panel's
- *   toolbar while it is open and move to the work area's toolbar while it is
- *   collapsed.
- * - `toggle` is always the last group: in the panel's toolbar while it is
- *   open, and right after the `constant` groups in the work area's toolbar
- *   while it is collapsed.
- *
- * A collapsed rail's groups go to the leading edge of `mainToolbar` (left rail)
- * or its trailing edge (right rail); a collapsed drawer's go to the trailing
- * edge of `mainBottomToolbar`, else to a `FloatingToolbar` in the work area's
- * bottom-end corner. `constant` content renders in both places while the panel
- * is collapsed (the panel's copy is inert), so give it no `id`s.
+ * follow the panel's open state (see {@link PanelToolbar} for the roles).
+ * A collapsed rail's `constant` groups and toggle go to the leading edge of
+ * `mainToolbar` (left rail) or its trailing edge (right rail); a collapsed
+ * drawer's go to the trailing edge of `mainBottomToolbar`, else to a
+ * `FloatingToolbar` in the work area's bottom-end corner.
  */
-interface WorkbenchPanelToolbar {
-    /** Accessible name of the panel's toolbar. */
-    label: string;
-    title?: KerfUiContent;
-    panelOnly?: KerfUiContent;
-    constant?: KerfUiContent;
-    toggle?: WorkbenchPanelToggle;
-}
+type WorkbenchPanelToolbar = PanelToolbar;
 /** The work area's top toolbar; collapsed rails add their groups to it. */
 interface WorkbenchMainToolbar {
     label: string;
@@ -1407,24 +1384,24 @@ export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanel
 
 ```ts
 import { SafeHtml } from 'kerfjs';
-import { LucideIcon } from './lucide-icon.js';
+import { P as PanelSide, a as PanelToolbar, b as PanelToggle } from './panel-toolbar-BFQxFITu.js';
+export { c as collapsiblePanelToggleIcon } from './panel-toolbar-BFQxFITu.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
+import './lucide-icon.js';
 import 'lucide';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
-type CollapsiblePanelSide = 'left' | 'right' | 'bottom';
+type CollapsiblePanelSide = PanelSide;
+/** The standard toggle a panel toolbar renders (see {@link CollapsiblePanelToolbar}). */
+type CollapsiblePanelToolbarToggle = PanelToggle;
 /**
- * The standard collapse/expand icon for a panel `side` and `collapsed` state,
- * so every app's sidebars and drawers use one recognizable convention:
- * `PanelLeft*` for a left rail, `PanelRight*` for a right rail, `PanelBottom*`
- * for a bottom drawer — the `Close` glyph while open, the `Open` glyph while
- * collapsed. Exposed so an app can render its own toggle affordance.
+ * A panel's composed top toolbar. `title` and `panelOnly` groups lead it and
+ * are available only while the panel is open; `constant` groups and the
+ * standard `toggle` trail it while open and move to the app's work-area
+ * toolbar — through {@link CollapsiblePanelRelocated} — while it is collapsed.
  */
-declare function collapsiblePanelToggleIcon(side: CollapsiblePanelSide, collapsed: boolean): {
-    icon: Parameters<typeof LucideIcon>[0]['icon'];
-    name: string;
-};
+type CollapsiblePanelToolbar = PanelToolbar;
 interface CollapsiblePanelToggleProps {
     /** The panel this toggle controls. */
     side: CollapsiblePanelSide;
@@ -1461,6 +1438,15 @@ interface CollapsiblePanelProps {
     label?: string;
     /** Panel content. */
     children?: KerfUiContent;
+    /**
+     * The panel's top toolbar, composed so its groups follow the panel's open
+     * state. With it, `children` renders in a `Pane` below the toolbar; render
+     * {@link CollapsiblePanelRelocated} in the app's work-area toolbar so the
+     * `constant` groups and toggle stay reachable while the panel is collapsed.
+     */
+    toolbar?: CollapsiblePanelToolbar;
+    /** Optional bottom toolbar under a `toolbar` panel's content. */
+    footer?: KerfUiContent;
     separator?: ResizableRegionSeparator;
     collapseMotion?: ResizableRegionCollapseMotion;
     contentOverflow?: ResizableRegionContentOverflow;
@@ -1486,9 +1472,27 @@ interface CollapsiblePanelProps {
  * and persistence semantics, and with `CollapsiblePanelToggle` for the standard
  * affordance. See `ui/docs/collapsible-panel.md` and `docs/23-app-layouts.md`.
  */
-declare function CollapsiblePanel({ id, side, collapsed, size, label, children, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, className, }: CollapsiblePanelProps): SafeHtml;
+declare function CollapsiblePanel({ id, side, collapsed, size, label, children, toolbar, footer, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, className, }: CollapsiblePanelProps): SafeHtml;
+interface CollapsiblePanelRelocatedProps {
+    /** The panel's `id`. */
+    panelId: string;
+    side: CollapsiblePanelSide;
+    /** The panel's current collapsed state. */
+    collapsed: boolean;
+    /** The same `toolbar` the panel receives. */
+    toolbar: CollapsiblePanelToolbar;
+}
+/**
+ * A collapsed {@link CollapsiblePanel}'s `constant` groups and standard
+ * toggle, for the app's work-area toolbar — nothing while the panel is open.
+ * Put it first in the leading zone for a left rail, last in the trailing zone
+ * for a right rail, and last in a bottom toolbar (or a `FloatingToolbar`
+ * `restoreControl`) for a bottom drawer. `wireSidebar` hands focus to it when
+ * the panel closes from its own toggle.
+ */
+declare function CollapsiblePanelRelocated({ panelId, side, collapsed, toolbar, }: CollapsiblePanelRelocatedProps): SafeHtml;
 
-export { CollapsiblePanel, type CollapsiblePanelProps, type CollapsiblePanelSide, CollapsiblePanelToggle, type CollapsiblePanelToggleProps, collapsiblePanelToggleIcon };
+export { CollapsiblePanel, type CollapsiblePanelProps, CollapsiblePanelRelocated, type CollapsiblePanelRelocatedProps, type CollapsiblePanelSide, CollapsiblePanelToggle, type CollapsiblePanelToggleProps, type CollapsiblePanelToolbar, type CollapsiblePanelToolbarToggle };
 ```
 
 ## `@kerfjs/ui/wire-sidebar`

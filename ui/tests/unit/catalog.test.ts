@@ -199,10 +199,14 @@ describe('UX catalog metadata', () => {
         exports: [
           'CollapsiblePanelSide',
           'collapsiblePanelToggleIcon',
+          'CollapsiblePanelToolbarToggle',
+          'CollapsiblePanelToolbar',
           'CollapsiblePanelToggleProps',
           'CollapsiblePanelToggle',
           'CollapsiblePanelProps',
           'CollapsiblePanel',
+          'CollapsiblePanelRelocatedProps',
+          'CollapsiblePanelRelocated',
         ],
       },
     ] as const;
