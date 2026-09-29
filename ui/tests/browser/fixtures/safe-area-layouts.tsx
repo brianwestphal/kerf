@@ -36,7 +36,9 @@ type Scenario =
   | 'pane-bare'
   | 'workbench'
   | 'nav-stack'
+  | 'nav-stack-pane'
   | 'tab-scaffold'
+  | 'tab-scaffold-pane'
   | 'split-view'
   | 'split-view-resizable'
   | 'collapsible'
@@ -152,6 +154,27 @@ function render() {
               bottomToolbar: toolbar('Messages bottom', ''),
             },
           ]}
+        />
+      );
+    case 'nav-stack-pane':
+      // A view whose only child is a Pane: the Pane fills the view and its
+      // slots take the edges the view still reaches.
+      return (
+        <NavStack
+          id="safe-nav-stack"
+          label="Safe stack"
+          views={[
+            { key: 'root', title: 'Messages', content: pane('Messages') },
+          ]}
+        />
+      );
+    case 'tab-scaffold-pane':
+      return (
+        <TabScaffold
+          id="safe-tabs"
+          label="Sections"
+          active="home"
+          tabs={[{ id: 'home', label: 'Home', content: pane('Home') }]}
         />
       );
     case 'tab-scaffold':

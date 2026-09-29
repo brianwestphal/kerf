@@ -37,7 +37,7 @@ import { PanelLeft, Plus } from 'lucide';
  * fitting, and `always` / `none`), a Workbench work area and rail, TabBar
  * strips in each presentation (and right-to-left), a NavStack (plain views
  * that push and pop, and a view that is a Pane), a TabScaffold whose tabs
- * hold a NavStack and short content, and an app-owned `targets` arrangement
+ * hold a NavStack and short content, a TabScaffold scene that is a Pane, and an app-owned `targets` arrangement
  * whose chrome is a Toolbar and a List.
  */
 const items = (count: number) =>
@@ -222,6 +222,31 @@ mount(root, () => (
             ),
           },
           { id: 'about', label: 'About', content: <>{items(2)}</> },
+        ]}
+      />
+    </div>
+    <div data-case="tab-scaffold-pane" style="height: 360px; display: grid">
+      <TabScaffold
+        id="scaffold-pane"
+        label="Scaffold with a pane"
+        active="pane"
+        tabs={[
+          {
+            id: 'pane',
+            label: 'Pane',
+            content: (
+              <Pane
+                header={
+                  <Toolbar
+                    label="Pane scene header"
+                    leading={<ToolbarText text="Filters" size="small" />}
+                  />
+                }
+              >
+                {items(24)}
+              </Pane>
+            ),
+          },
         ]}
       />
     </div>

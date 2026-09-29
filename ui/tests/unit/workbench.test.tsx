@@ -874,7 +874,28 @@ describe('Workbench', () => {
     for (const component of ['pane', 'nav-stack', 'split-view', 'tab-scaffold'])
       expect(await fills(`${component}.css`)).toEqual([
         `:is([data-workbench-main], [data-workbench-panel-content]) > [data-component="${component}"]:only-child`,
+        // A sole Pane fills a NavStack view or TabScaffold scene the same
+        // way, so its content (not the view) owns the scroll and its header
+        // stays pinned.
+        ...(component === 'pane'
+          ? [
+              ':is(.kui-nav-stack__view, .kui-tab-scaffold__scene) > [data-component="pane"]:only-child',
+            ]
+          : []),
       ]);
+    // The layouts never size the Pane from their own stylesheets.
+    for (const component of ['nav-stack', 'tab-scaffold']) {
+      const path = resolve(import.meta.dirname, `../../src/${component}.css`);
+      const css = postcss.parse(await readFile(path, 'utf8'), { from: path });
+      css.walkRules((rule) => {
+        if (/\[data-component="pane"\]:only-child\s*$/.test(rule.selector))
+          expect(
+            rule.nodes.some(
+              (node) => node.type === 'decl' && node.prop === 'height',
+            ),
+          ).toBe(false);
+      });
+    }
     expect(await fills('workbench.css')).toEqual([
       ':is(.kui-workbench__main, .kui-workbench__panel-content) > [data-component="workbench"]:only-child',
     ]);

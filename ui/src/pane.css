@@ -218,3 +218,12 @@
   > [data-component="pane"]:only-child {
   height: 100%;
 }
+
+/* As the only child of a NavStack view or a TabScaffold scene, a Pane fills
+   it too, so its content owns the scroll and its header and footer stay
+   pinned; the view or scene then never scrolls (it hands the Pane its
+   safe-area edge context, which the Pane's slots apply). */
+:is(.kui-nav-stack__view, .kui-tab-scaffold__scene)
+  > [data-component="pane"]:only-child {
+  height: 100%;
+}

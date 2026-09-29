@@ -44,7 +44,9 @@ the layouts handle the insets for you. There is nothing to configure:
   not inset on that edge. Collapse the rail and the center picks up the edge.
 - **No double inset.** Whichever region applies an inset clears it for its
   descendants. A layout region whose only child is a `Pane` or another layout
-  lets that child own the insets. A `Pane` header or footer whose only child is
+  lets that child own the insets. That child fills the region — a `Workbench`
+  area or panel, a `NavStack` view, a `TabScaffold` scene — so a sole `Pane`'s
+  header stays pinned while its own content scrolls. A `Pane` header or footer whose only child is
   a `Toolbar` hands the inline insets to the toolbar, so the toolbar's dividers
   still reach the edge.
 

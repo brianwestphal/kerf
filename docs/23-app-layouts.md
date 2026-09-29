@@ -879,7 +879,17 @@ child can paint through and own scroll-through padding. Such a child also fills 
 stylesheet, keyed on the region markers the Workbench renders
 (`[data-workbench-main]`, `[data-workbench-panel-content]`); `workbench.css`
 fills only a nested Workbench (KF-KSJ7PY: it used to size the other layouts'
-roots itself). The region's padding
+roots itself). A sole `Pane` likewise fills a `NavStack` view or a
+`TabScaffold` scene (`.kui-nav-stack__view` / `.kui-tab-scaffold__scene >
+[data-component="pane"]:only-child`, in `pane.css`), so the view or scene never
+scrolls and the Pane's own content is the scroll owner under a pinned header
+(KF-FVHC15: the Pane sized to its content and the view scrolled it, header
+included). The Pane's slots then apply the edges the region still reaches — a
+view's bottom and sides (none on top, under the chrome, or at the bottom, over
+a bottom toolbar), a scene's top and sides — which is exactly what the region
+itself would have padded; `nav-stack.css` / `tab-scaffold.css` never size the
+Pane. A nested `NavStack` / `TabScaffold` already fills its region with its own
+`height: 100%`. The region's padding
 rule tests that with `region:not(:has(> delegated:only-child))` on the region
 itself, but the reset for its children is written on the child,
 `region > :not(:is(delegated):only-child)`, which has the same specificity and
@@ -933,7 +943,9 @@ screen with simulated insets (via the `--kui-safe-area-*` overrides) and asserts
 edge-to-edge surfaces and separators, touched-side padding, scroll-through
 padding, the center regaining an edge when a rail collapses, an app bar and a
 bottom bar claiming their screen edges with `Toolbar.safeAreaEdges`, and no
-interior or nested inset.
+interior or nested inset, including a sole Pane filling a `NavStack` view and a
+`TabScaffold` scene. `ui/tests/unit/workbench.test.tsx` asserts that the fill
+rules live in the filled component's own stylesheet.
 
 ### 3.7 Scroll dividers — `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`)
 
@@ -986,9 +998,10 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   itself, then, through a sole child that puts no chrome of its own on that
   edge, a `Pane`'s content slot or a nested `NavStack`'s / `TabScaffold`'s
   active region (repeatedly). An element that does not overflow reports
-  nothing, so the chrome keys on whichever actually scrolls: a sole `Pane`
-  sized by its content lets the view scroll (header included), one that fills
-  the view scrolls its own content. A sole child with chrome on that edge (a
+  nothing, so the chrome keys on whichever actually scrolls. A sole `Pane`
+  fills the view or scene (§3.6), so its content scrolls under its pinned
+  header; the walk through the view itself still covers a Pane an app sizes
+  to its content by other means. A sole child with chrome on that edge (a
   `Pane` header or footer, a nested `NavStack`'s top chrome or bottom toolbar,
   a nested `TabScaffold`'s bar) stops the walk, because that chrome draws its
   own divider against its own content — the layout's chrome never doubles it.
@@ -1034,9 +1047,9 @@ out, a sole Pane with and without chrome, cross-fade copies, and a TabScaffold
 bar across tab switches and nested NavStacks).
 `ui/tests/browser/scroll-dividers.spec.ts` asserts the drawn lines by computed
 style and unchanged geometry across Pane, Workbench, all three TabBar
-presentations, right-to-left, NavStack (push / pop, and a sole Pane that is
-sized by its content or fills the view), TabScaffold (tab switches over a
-nested NavStack), and targets in Chromium, Firefox, and WebKit.
+presentations, right-to-left, NavStack (push / pop, and a sole Pane that
+fills the view with its header pinned), TabScaffold (tab switches over a
+nested NavStack, and a scene that is a sole Pane), and targets in Chromium, Firefox, and WebKit.
 
 ## 4. Responsive presentation matrix
 

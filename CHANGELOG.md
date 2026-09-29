@@ -47,6 +47,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   directions and lints the UX demo, recipes, and catalog shell clean;
   `@kerfjs/ui/ai/skill.md` (1.46.0) names the diagnostic.
 
+- **Fix (`@kerfjs/ui`): a `Pane` that is the only content of a `NavStack` view
+  or a `TabScaffold` scene fills it.** It used to size to its content, so the
+  view scrolled the whole Pane and its header scrolled away. Now the Pane's own
+  content scrolls under its pinned header and footer, the Pane's slots take the
+  safe-area edges the view or scene still reaches, and scroll dividers key on
+  the Pane's content. The rule lives in `pane.css`, as the Workbench-region fill
+  does.
+
 - **The `@kerfjs/ui` AI guidance now states every maintainer design rule
   explicitly.** An audit of the package's tickets folded the missing rules into
   `@kerfjs/ui/ai/skill.md` (1.45.0), `llms.txt`, and the design docs: prefer a

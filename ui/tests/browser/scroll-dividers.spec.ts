@@ -363,7 +363,7 @@ test.describe('scroll dividers', () => {
     ).toEqual(['relative', 'absolute']);
   });
 
-  test('a NavStack view that is a Pane keys the chrome on whichever of the view and the Pane content actually scrolls', async ({
+  test('a NavStack view that is a Pane is filled by it, so the Pane content scrolls under a pinned header', async ({
     page,
   }) => {
     await mountFixture(page);
@@ -374,30 +374,81 @@ test.describe('scroll dividers', () => {
     const pane = view.locator(':scope > [data-component="pane"]');
     const content = pane.locator(':scope > .kui-pane__content');
     const header = pane.locator(':scope > .kui-pane__header');
+    const parts = [
+      ':scope > .kui-nav-stack__chrome',
+      '[data-nav-key="pane"] > [data-component="pane"] > .kui-pane__header',
+      '[data-nav-key="pane"] > [data-component="pane"] > .kui-pane__content',
+      ':scope > .kui-nav-stack__bottom',
+    ];
 
-    // A Pane sized by its content: the view scrolls it, header included, so
-    // the stack's chrome draws the line and the Pane's header does not.
-    expect(await edge(bottom)).toBe(true);
-    await scroll(view, 'middle');
-    expect(await view.getAttribute('data-scroll-overflow')).toBe('tb');
-    expect(await shows(chrome, '::after')).toBe(true);
-    expect(await shows(header)).toBe(false);
-    await scroll(view, 'start');
-
-    // A Pane that fills the view owns the scroll: its header draws the line
-    // under itself and the bottom toolbar keys on the Pane's content.
-    await pane.evaluate((element) => {
-      element.style.height = '100%';
-    });
+    // The sole Pane fills the view: the view never scrolls, the Pane's
+    // content does, and its bottom reaches the bottom toolbar.
+    const [viewBox, paneBox] = await Promise.all(
+      [view, pane].map((locator) =>
+        locator.evaluate((element) => {
+          const box = element.getBoundingClientRect();
+          return [box.top, box.bottom].map(Math.round);
+        }),
+      ),
+    );
+    expect(paneBox).toEqual(viewBox);
     await expect(view).not.toHaveAttribute('data-scroll-overflow');
     await expect(content).toHaveAttribute('data-scroll-overflow', 'b');
     expect(await edge(bottom)).toBe(true);
+    expect(await shows(header)).toBe(false);
+    const geometry = await rects(stack, parts);
+
+    // Scrolling the content keeps the header pinned: the header draws the
+    // line under itself, the stack's chrome does not double it, and the
+    // bottom toolbar keys on the Pane's content.
     await scroll(content, 'middle');
     expect(await shows(header)).toBe(true);
     expect(await shows(chrome, '::after')).toBe(false);
     expect(await edge(bottom)).toBe(true);
+    expect(await rects(stack, parts)).toEqual(geometry);
     await scroll(content, 'end');
     expect(await edge(bottom)).toBe(false);
+    expect(await rects(stack, parts)).toEqual(geometry);
+  });
+
+  test('a TabScaffold scene that is a Pane is filled by it, so the bar keys on the Pane content under a pinned header', async ({
+    page,
+  }) => {
+    await mountFixture(page);
+    const scaffold = page.locator('[data-case="tab-scaffold-pane"]');
+    const bar = scaffold.locator('.kui-tab-scaffold__bar');
+    const scene = scaffold.locator('[data-tab-scaffold-scene="pane"]');
+    const pane = scene.locator(':scope > [data-component="pane"]');
+    const content = pane.locator(':scope > .kui-pane__content');
+    const header = pane.locator(':scope > .kui-pane__header');
+    const parts = [
+      '[data-tab-scaffold-scene="pane"] > [data-component="pane"] > .kui-pane__header',
+      '[data-tab-scaffold-scene="pane"] > [data-component="pane"] > .kui-pane__content',
+      '.kui-tab-scaffold__bar',
+    ];
+
+    const [sceneBox, paneBox] = await Promise.all(
+      [scene, pane].map((locator) =>
+        locator.evaluate((element) => {
+          const box = element.getBoundingClientRect();
+          return [box.top, box.bottom].map(Math.round);
+        }),
+      ),
+    );
+    expect(paneBox).toEqual(sceneBox);
+    await expect(scene).not.toHaveAttribute('data-scroll-overflow');
+    await expect(content).toHaveAttribute('data-scroll-overflow', 'b');
+    expect(await edge(bar)).toBe(true);
+    expect(await shows(header)).toBe(false);
+    const geometry = await rects(scaffold, parts);
+
+    await scroll(content, 'middle');
+    expect(await shows(header)).toBe(true);
+    expect(await edge(bar)).toBe(true);
+    expect(await rects(scaffold, parts)).toEqual(geometry);
+    await scroll(content, 'end');
+    expect(await edge(bar)).toBe(false);
+    expect(await rects(scaffold, parts)).toEqual(geometry);
   });
 
   test("a TabScaffold bar shows its divider only while the active scene's content continues below it", async ({

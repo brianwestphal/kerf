@@ -72,7 +72,8 @@ bottom toolbar's top line, around the active view) and every `TabScaffold`
 (the bar's top line, over the active scene). The layout keys on whichever
 element actually scrolls there: the view or scene itself, or, through a sole
 child with no chrome of its own on that edge, a `Pane`'s content or a nested
-`NavStack`'s active view. A sole `Pane` with a header draws the line under that
+`NavStack`'s active view. A sole `Pane` fills its view or scene, so its content
+scrolls under its pinned header; with a header it draws the line under that
 header itself, so the stack's chrome never doubles it. It follows re-renders: panes that appear later are paired, and an
 attribute a morph drops returns before paint.
 

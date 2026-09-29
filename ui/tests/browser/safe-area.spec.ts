@@ -22,7 +22,9 @@ type Scenario =
   | 'pane-bare'
   | 'workbench'
   | 'nav-stack'
+  | 'nav-stack-pane'
   | 'tab-scaffold'
+  | 'tab-scaffold-pane'
   | 'split-view'
   | 'split-view-resizable'
   | 'collapsible'
@@ -362,6 +364,62 @@ test('TabScaffold scenes take the top edge and its bar takes the bottom', async 
     4 + INSETS.bottom,
     INSETS.left,
   ]);
+});
+
+test('a sole Pane fills a NavStack view or TabScaffold scene and takes the edges it still reaches', async ({
+  page,
+}) => {
+  // Below the stack's chrome, with no bottom toolbar: the view reaches the
+  // bottom and both sides, not the top.
+  await mountFixture(page, 'nav-stack-pane');
+  const view = '.kui-nav-stack__view';
+  const stackPane = '[data-safe-pane="Messages"]';
+  expect(await padding(page, view)).toEqual([0, 0, 0, 0]);
+  const viewBox = await box(page, view);
+  expect(await box(page, stackPane)).toEqual(viewBox);
+  expect(viewBox.bottom).toBe(820);
+  expect(await padding(page, `${stackPane} > .kui-pane__header`)).toEqual([
+    0, 0, 0, 0,
+  ]);
+  expect(await padding(page, `${stackPane} > .kui-pane__footer`)).toEqual([
+    0,
+    0,
+    INSETS.bottom,
+    0,
+  ]);
+  expect(
+    await padding(
+      page,
+      `${stackPane} > .kui-pane__header > [data-component="toolbar"]`,
+    ),
+  ).toEqual([8, 8 + INSETS.right, 8, 8 + INSETS.left]);
+  expect(await padding(page, `${stackPane} > .kui-pane__content`)).toEqual([
+    0,
+    INSETS.right,
+    0,
+    INSETS.left,
+  ]);
+
+  // Above the bar: the scene reaches the top and both sides, not the bottom.
+  await mountFixture(page, 'tab-scaffold-pane');
+  const scene = '[data-tab-scaffold-scene="home"]';
+  const scenePane = '[data-safe-pane="Home"]';
+  expect(await padding(page, scene)).toEqual([0, 0, 0, 0]);
+  const sceneBox = await box(page, scene);
+  expect(await box(page, scenePane)).toEqual(sceneBox);
+  expect(sceneBox.top).toBe(0);
+  expect(await padding(page, `${scenePane} > .kui-pane__header`)).toEqual([
+    INSETS.top,
+    0,
+    0,
+    0,
+  ]);
+  expect(await padding(page, `${scenePane} > .kui-pane__footer`)).toEqual([
+    0, 0, 0, 0,
+  ]);
+  expect((await box(page, `${scenePane} > .kui-pane__footer`)).bottom).toBe(
+    (await box(page, '.kui-tab-scaffold__bar')).top,
+  );
 });
 
 test('SplitView pads only the outer edges of each pane', async ({ page }) => {
