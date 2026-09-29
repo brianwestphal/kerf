@@ -371,6 +371,7 @@ function Rail({
     >
       <div
         class="kui-workbench__panel-content"
+        data-workbench-panel-content
         inert={Boolean(panel.collapsed)}
       >
         {panelBody(id, key, panel)}
@@ -407,6 +408,7 @@ function Drawer({ id, panel }: { id: string; panel: WorkbenchPanel }) {
     >
       <div
         class="kui-workbench__panel-content"
+        data-workbench-panel-content
         inert={Boolean(panel.collapsed)}
       >
         {panelBody(id, 'bottomDrawer', panel)}

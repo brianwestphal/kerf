@@ -168,3 +168,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* As the only child of a Workbench region (its main area or a panel's
+   content, which the Workbench marks with `data-workbench-main` /
+   `data-workbench-panel-content`), a TabScaffold fills the region, so a
+   composed toolbar's footer (or the app's own) sits at the region's bottom
+   edge rather than under short content. */
+:is([data-workbench-main], [data-workbench-panel-content])
+  > [data-component="tab-scaffold"]:only-child {
+  height: 100%;
+}

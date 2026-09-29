@@ -191,15 +191,11 @@
 
 /* A region whose only child is a Pane or layout lets it fill the region, so a
    composed toolbar's footer (or the app's own) sits at the region's bottom
-   edge rather than under short content. */
+   edge rather than under short content. Each of those components fills the
+   region from its own stylesheet (pane.css, nav-stack.css, split-view.css,
+   tab-scaffold.css); a nested Workbench fills it here. */
 :is(.kui-workbench__main, .kui-workbench__panel-content)
-  > :is(
-    [data-component="pane"],
-    [data-component="nav-stack"],
-    [data-component="split-view"],
-    [data-component="workbench"],
-    [data-component="tab-scaffold"]
-  ):only-child {
+  > [data-component="workbench"]:only-child {
   height: 100%;
 }
 

@@ -128,3 +128,13 @@
   display: block;
   height: 100%;
 }
+
+/* As the only child of a Workbench region (its main area or a panel's
+   content, which the Workbench marks with `data-workbench-main` /
+   `data-workbench-panel-content`), a SplitView fills the region, so a
+   composed toolbar's footer (or the app's own) sits at the region's bottom
+   edge rather than under short content. */
+:is([data-workbench-main], [data-workbench-panel-content])
+  > [data-component="split-view"]:only-child {
+  height: 100%;
+}

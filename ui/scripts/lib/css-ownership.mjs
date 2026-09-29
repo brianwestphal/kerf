@@ -118,13 +118,6 @@ export const ownershipExceptions = [
     reason:
       'The same edge-inset contract: a Toolbar consumes the edge context for its own padding and clears it for its zones, so a nested group or toolbar does not inset a second time.',
   },
-  {
-    file: 'workbench.css',
-    rule: 'foreign-class',
-    selector: '> :is( [data-component="pane"],',
-    reason:
-      'KF-KSJ7PY: fix pending (each layout should size itself in the Workbench region context from its own stylesheet).',
-  },
 ];
 
 function componentName(filename) {

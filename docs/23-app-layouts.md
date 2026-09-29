@@ -875,7 +875,11 @@ insets structurally, with no per-app configuration. The consumer summary is the
 
 A layout region whose only child is a `Pane`, `NavStack`, `SplitView`,
 `Workbench`, or `TabScaffold` delegates to that child instead of padding, so the
-child can paint through and own scroll-through padding. The region's padding
+child can paint through and own scroll-through padding. Such a child also fills a Workbench region (`height: 100%`) from its own
+stylesheet, keyed on the region markers the Workbench renders
+(`[data-workbench-main]`, `[data-workbench-panel-content]`); `workbench.css`
+fills only a nested Workbench (KF-KSJ7PY: it used to size the other layouts'
+roots itself). The region's padding
 rule tests that with `region:not(:has(> delegated:only-child))` on the region
 itself, but the reset for its children is written on the child,
 `region > :not(:is(delegated):only-child)`, which has the same specificity and

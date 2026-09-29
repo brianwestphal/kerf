@@ -77,6 +77,14 @@ targets? })` reports that state — call it once at the app root and keep its
   `--kui-tab-bar-divider-color` token. To keep a permanent line, set
   `chromeDividers: "always"` on the pane or an explicit `dividerSides`.
 
+- **`@kerfjs/ui`: `Pane`, `NavStack`, `SplitView`, and `TabScaffold` fill a
+  Workbench region from their own stylesheets.** As a Workbench main area's
+  or panel's only child, each sets its own `height: 100%` in that context,
+  which the Workbench marks on its regions (`data-workbench-main`, and the new
+  `data-workbench-panel-content` on each panel's content); `workbench.css` no
+  longer sizes another component's root (it still fills a nested Workbench).
+  Rendering is unchanged.
+
 - **`@kerfjs/ui`: layouts name the covered-floating-controls context after
   themselves, and no longer write `FloatingToolbar`'s inset token.** Workbench,
   CollapsiblePanel, and ResizableRegion each provide their own private

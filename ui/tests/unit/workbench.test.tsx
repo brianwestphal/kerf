@@ -849,6 +849,52 @@ describe('Workbench', () => {
     ).toEqual({ 'inset-inline-end': 'var(--_kui-floating-toolbar-inset)' });
   });
 
+  it("lets a region's sole Pane or layout fill it from its own stylesheet", async () => {
+    const fills = async (file: string) => {
+      const path = resolve(import.meta.dirname, `../../src/${file}`);
+      const css = postcss.parse(await readFile(path, 'utf8'), { from: path });
+      const selectors: string[] = [];
+      css.walkRules((rule) => {
+        if (
+          rule.nodes.some(
+            (node) =>
+              node.type === 'decl' &&
+              node.prop === 'height' &&
+              node.value === '100%',
+          ) &&
+          rule.selector.includes(':only-child')
+        )
+          selectors.push(rule.selector.replace(/\s+/g, ' '));
+      });
+      return selectors;
+    };
+    // Each layout sizes itself in the Workbench region context the Workbench
+    // marks on its regions; the Workbench styles only a nested Workbench,
+    // never another component's root.
+    for (const component of ['pane', 'nav-stack', 'split-view', 'tab-scaffold'])
+      expect(await fills(`${component}.css`)).toEqual([
+        `:is([data-workbench-main], [data-workbench-panel-content]) > [data-component="${component}"]:only-child`,
+      ]);
+    expect(await fills('workbench.css')).toEqual([
+      ':is(.kui-workbench__main, .kui-workbench__panel-content) > [data-component="workbench"]:only-child',
+    ]);
+    const html = String(
+      Workbench({
+        id: 'wb',
+        label: 'Workspace',
+        leftRail: { label: 'Navigator', content: raw('<nav></nav>') },
+        bottomDrawer: { label: 'Console', content: raw('<pre></pre>') },
+        main: raw('<section></section>'),
+      }),
+    );
+    expect(
+      html.match(
+        /class="kui-workbench__panel-content" data-workbench-panel-content/g,
+      ),
+    ).toHaveLength(2);
+    expect(html).toContain('class="kui-workbench__main" data-workbench-main');
+  });
+
   it('gives a static overlay drawer an explicit height instead of collapsing to its border', async () => {
     const file = resolve(import.meta.dirname, '../../src/workbench.css');
     const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
