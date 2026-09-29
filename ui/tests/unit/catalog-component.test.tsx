@@ -658,15 +658,16 @@ describe('wireCatalog', () => {
     };
 
     // Defaults: a fixed 288px rail with no separator handle, a wrapping entry
-    // toolbar, and a divider-free footer toolbar that stacks when narrow.
+    // toolbar, divider-free toolbars (the panes draw scroll dividers), and a
+    // footer toolbar that stacks when narrow.
     const defaults = render({});
     expect(defaults.rail.getAttribute('style')).toContain('288px');
     expect(defaults.rail.querySelector('[role="separator"]')).toBeNull();
     expect(defaults.rail.dataset.responsiveOverlayAt).toBe('narrow');
     expect(defaults.rail.dataset.compactOverlay).toBe('inset');
     expect(
-      defaults.toolbar('X catalog header').getAttribute('divider-sides'),
-    ).toBe('b');
+      defaults.toolbar('X catalog header').hasAttribute('divider-sides'),
+    ).toBe(false);
     expect(defaults.toolbar('Select header').dataset.responsive).toBe('wrap');
     const footer = defaults.toolbar('Select resources');
     expect(footer.hasAttribute('divider-sides')).toBe(false);
@@ -680,7 +681,7 @@ describe('wireCatalog', () => {
         responsiveOverlayAt: 'compact',
         compactOverlay: 'full',
         collapseMotion: 'none',
-        toolbar: { dividerSides: '' },
+        toolbar: { dividerSides: 'b' },
       },
       mainToolbar: { responsive: 'stack', dividerSides: 't' },
       footerToolbar: {
@@ -701,7 +702,7 @@ describe('wireCatalog', () => {
     expect(configured.rail.dataset.collapseMotion).toBe('none');
     // The Catalog keeps its own labels whatever the configuration says.
     const sidebarToolbar = configured.toolbar('X catalog header');
-    expect(sidebarToolbar.hasAttribute('divider-sides')).toBe(false);
+    expect(sidebarToolbar.getAttribute('divider-sides')).toBe('b');
     const main = configured.toolbar('Select header');
     expect(main.dataset.responsive).toBe('stack');
     expect(main.getAttribute('divider-sides')).toBe('t');

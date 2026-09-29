@@ -524,13 +524,31 @@
           "id": "responsive placement and visibility",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "whether the chrome dividers follow the scroll, always show, or never show (chromeDividers)",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
         "required": false,
-        "helpers": [],
+        "helpers": ["wireScrollDividers"],
         "obligations": [],
-        "stateAttributes": []
+        "stateAttributes": [
+          {
+            "name": "data-scroll-overflow",
+            "on": "kui-pane__content",
+            "helper": "wireScrollDividers",
+            "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+          },
+          {
+            "name": "data-scroll-divider",
+            "on": "kui-pane__header and kui-pane__footer",
+            "helper": "wireScrollDividers",
+            "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+          }
+        ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
@@ -967,7 +985,7 @@
       ],
       "wiring": {
         "required": false,
-        "helpers": ["wireWorkbench"],
+        "helpers": ["wireWorkbench", "wireScrollDividers"],
         "obligations": [],
         "stateAttributes": [
           {
@@ -981,6 +999,18 @@
             "on": "kui-workbench__rail",
             "helper": "wireWorkbench",
             "meaning": "Present on a resizable rail or the drawer while a pointer drag resizes it."
+          },
+          {
+            "name": "data-scroll-overflow",
+            "on": "kui-pane__content of each panel and work-area Pane",
+            "helper": "wireScrollDividers",
+            "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+          },
+          {
+            "name": "data-scroll-divider",
+            "on": "kui-pane__header and kui-pane__footer of each panel and work-area Pane",
+            "helper": "wireScrollDividers",
+            "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
           }
         ]
       },
@@ -1075,7 +1105,7 @@
       ],
       "wiring": {
         "required": true,
-        "helpers": ["wireSidebar"],
+        "helpers": ["wireSidebar", "wireScrollDividers"],
         "obligations": ["Use wireSidebar as documented."],
         "stateAttributes": [
           {
@@ -1095,6 +1125,18 @@
             "on": "kui-collapsible-panel__backdrop",
             "helper": "wireSidebar",
             "meaning": "Keeps the injected compact-overlay backdrop through the application's re-render; the helper creates and removes the backdrop itself."
+          },
+          {
+            "name": "data-scroll-overflow",
+            "on": "kui-pane__content of each panel and work-area Pane",
+            "helper": "wireScrollDividers",
+            "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+          },
+          {
+            "name": "data-scroll-divider",
+            "on": "kui-pane__header and kui-pane__footer of each panel and work-area Pane",
+            "helper": "wireScrollDividers",
+            "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
           }
         ]
       },
@@ -1273,9 +1315,22 @@
       ],
       "wiring": {
         "required": false,
-        "helpers": [],
+        "helpers": ["wireScrollDividers"],
         "obligations": [],
-        "stateAttributes": []
+        "stateAttributes": [
+          {
+            "name": "data-scroll-overflow",
+            "on": "the targets scroller",
+            "helper": "wireScrollDividers",
+            "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+          },
+          {
+            "name": "data-scroll-divider",
+            "on": "a Toolbar named as targets chrome",
+            "helper": "wireScrollDividers",
+            "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+          }
+        ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
@@ -2053,9 +2108,22 @@
       ],
       "wiring": {
         "required": false,
-        "helpers": [],
+        "helpers": ["wireScrollDividers"],
         "obligations": [],
-        "stateAttributes": []
+        "stateAttributes": [
+          {
+            "name": "data-scroll-overflow",
+            "on": "the targets scroller",
+            "helper": "wireScrollDividers",
+            "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+          },
+          {
+            "name": "data-scroll-divider",
+            "on": "a List named as targets chrome",
+            "helper": "wireScrollDividers",
+            "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+          }
+        ]
       },
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
@@ -2736,7 +2804,7 @@
       ],
       "wiring": {
         "required": true,
-        "helpers": ["wireTabBars"],
+        "helpers": ["wireTabBars", "wireScrollDividers"],
         "obligations": [
           "Retain and invoke the disposer.",
           "Apply onReorder to application-owned order."
@@ -2759,6 +2827,18 @@
             "on": "kui-tab-bar__tabs",
             "helper": "wireTabBars",
             "meaning": "\"start\" or \"end\" while a drag near that edge auto-scrolls the strip."
+          },
+          {
+            "name": "data-scroll-overflow",
+            "on": "kui-tab-bar__tabs",
+            "helper": "wireScrollDividers",
+            "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+          },
+          {
+            "name": "data-scroll-divider",
+            "on": "chrome named in wireScrollDividers targets (a TabBar strip has none)",
+            "helper": "wireScrollDividers",
+            "meaning": "The sides, in t/r/b/l order, on which that chrome currently draws its scroll divider. Re-applied if a re-render drops it."
           }
         ]
       },
@@ -2790,7 +2870,11 @@
           "kui-tab-bar__trailing",
           "kui-tab-bar__end"
         ],
-        "publicTokens": ["--kui-tab-bar-background", "--kui-tab-bar-border"]
+        "publicTokens": [
+          "--kui-tab-bar-background",
+          "--kui-tab-bar-border",
+          "--kui-tab-bar-divider-color"
+        ]
       },
       "diagnostics": [
         {

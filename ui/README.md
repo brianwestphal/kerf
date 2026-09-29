@@ -214,6 +214,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `AppTab`                                                            | `@kerfjs/ui/app-tab`                    | `@kerfjs/ui/app-tab.css`               |
 | `TabBar`                                                            | `@kerfjs/ui/tab-bar`                    | `@kerfjs/ui/tab-bar.css`               |
 | `wireTabBars`, `reorderTabs`                                        | `@kerfjs/ui/wire-tab-bars`              | —                                      |
+| `wireScrollDividers`                                                | `@kerfjs/ui/wire-scroll-dividers`       | —                                      |
 | `LoadingSpinner`                                                    | `@kerfjs/ui/loading-spinner`            | `@kerfjs/ui/loading-spinner.css`       |
 | `Skeleton`                                                          | `@kerfjs/ui/skeleton`                   | `@kerfjs/ui/skeleton.css`              |
 | `SunkenPanel`                                                       | `@kerfjs/ui/sunken-panel`               | `@kerfjs/ui/sunken-panel.css`          |

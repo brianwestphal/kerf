@@ -110,19 +110,19 @@
   overscroll-behavior-y: contain;
 }
 
-.kui-list[divider-sides*="t"] {
+.kui-list:is([divider-sides*="t"], [data-scroll-divider*="t"]) {
   --_kui-list-divider-top: var(--kui-list-divider-color);
 }
 
-.kui-list[divider-sides*="r"] {
+.kui-list:is([divider-sides*="r"], [data-scroll-divider*="r"]) {
   --_kui-list-divider-right: var(--kui-list-divider-color);
 }
 
-.kui-list[divider-sides*="b"] {
+.kui-list:is([divider-sides*="b"], [data-scroll-divider*="b"]) {
   --_kui-list-divider-bottom: var(--kui-list-divider-color);
 }
 
-.kui-list[divider-sides*="l"] {
+.kui-list:is([divider-sides*="l"], [data-scroll-divider*="l"]) {
   --_kui-list-divider-left: var(--kui-list-divider-color);
 }
 

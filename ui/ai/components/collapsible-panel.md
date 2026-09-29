@@ -28,11 +28,12 @@ Add one independently collapsible peripheral panel without adopting the complete
 - JavaScript: `@kerfjs/ui/collapsible-panel` — exports `CollapsiblePanelSide`, `collapsiblePanelToggleIcon`, `CollapsiblePanelToolbarToggle`, `CollapsiblePanelToolbar`, `CollapsiblePanelToggleProps`, `CollapsiblePanelToggle`, `CollapsiblePanelProps`, `CollapsiblePanel`, `CollapsiblePanelRelocatedProps`, `CollapsiblePanelRelocated`.
 - CSS: import `@kerfjs/ui/collapsible-panel.css` once.
 - Wiring: `wireSidebar` from `@kerfjs/ui/wire-sidebar` (required).
+- Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
 - Declared side effects: manual-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/collapsible-panel`](../public-api-signatures-v1.md#kerfjsuicollapsible-panel), [`@kerfjs/ui/wire-sidebar`](../public-api-signatures-v1.md#kerfjsuiwire-sidebar) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/collapsible-panel`](../public-api-signatures-v1.md#kerfjsuicollapsible-panel), [`@kerfjs/ui/wire-sidebar`](../public-api-signatures-v1.md#kerfjsuiwire-sidebar), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -46,6 +47,7 @@ Exact prop names and types: [`@kerfjs/ui/collapsible-panel`](../public-api-signa
 - slide, fade-slide, or instant content
 - clipped, scrolling, or popup-visible content
 - safe-area restore control
+- chrome dividers only while scrolled (wired by wireScrollDividers)
 
 ## Composition
 
@@ -58,7 +60,7 @@ Exact prop names and types: [`@kerfjs/ui/collapsible-panel`](../public-api-signa
 
 **The app owns:** controlled collapsed state; panel content and size; toggle placement; persistence policy; compact-device policy.
 
-**Wiring:** `wireSidebar` is required.
+**Wiring:** `wireSidebar`, `wireScrollDividers` is required.
 
 - Use wireSidebar as documented.
 
@@ -67,6 +69,8 @@ Exact prop names and types: [`@kerfjs/ui/collapsible-panel`](../public-api-signa
 - `data-collapsible-responsive` on `the root passed to wireSidebar` (`wireSidebar`): With a deviceClass: "inline" on a wide device class, otherwise the compact presentation ("overlay" or "hidden"). Re-applied if a re-render drops it.
 - `data-collapsible-overlay` on `the root passed to wireSidebar` (`wireSidebar`): With a deviceClass on a compact device: "true" for the overlay presentation, "false" for hidden. Absent on a wide device class. Re-applied if a re-render drops it.
 - `data-morph-preserve` on `kui-collapsible-panel__backdrop` (`wireSidebar`): Keeps the injected compact-overlay backdrop through the application's re-render; the helper creates and removes the backdrop itself.
+- `data-scroll-overflow` on `kui-pane__content of each panel and work-area Pane` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
+- `data-scroll-divider` on `kui-pane__header and kui-pane__footer of each panel and work-area Pane` (`wireScrollDividers`): The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it.
 
 ## Geometry
 

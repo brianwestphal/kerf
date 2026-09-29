@@ -413,9 +413,9 @@ describe('Workbench panel toolbars', () => {
     ).not.toBeNull();
   });
 
-  it('forwards toolbar configuration to every toolbar it composes, keeping the divider defaults', () => {
+  it('forwards toolbar configuration to every toolbar it composes, drawing no toolbar dividers by default', () => {
     const config = {
-      dividerSides: '' as const,
+      dividerSides: 'tb' as const,
       centerAlign: 'stretch' as const,
       responsive: 'stack' as const,
       responsiveAt: 'compact' as const,
@@ -453,7 +453,7 @@ describe('Workbench panel toolbars', () => {
       panelToolbar(host, '#studio-left-rail')!,
     ];
     for (const toolbar of toolbars) {
-      expect(toolbar.getAttribute('divider-sides')).toBeNull();
+      expect(toolbar.getAttribute('divider-sides')).toBe('tb');
       expect(toolbar.getAttribute('data-center-align')).toBe('stretch');
       expect(toolbar.getAttribute('data-responsive')).toBe('stack');
       expect(toolbar.getAttribute('data-responsive-at')).toBe('compact');
@@ -487,7 +487,8 @@ describe('Workbench panel toolbars', () => {
         .getAttribute('aria-label'),
     ).toBe('Afficher les fichiers');
 
-    // Without configuration the toolbars keep today's dividers.
+    // Without configuration no toolbar draws a divider: each Pane draws its
+    // chrome dividers from the scroll state instead.
     const defaults = render({
       id: 'studio',
       label: 'Studio',
@@ -496,22 +497,24 @@ describe('Workbench panel toolbars', () => {
       mainBottomToolbar: { label: 'Status' },
       leftRail: rail('Files', false),
     });
-    expect(mainToolbar(defaults)!.getAttribute('divider-sides')).toBe('b');
+    expect(mainToolbar(defaults)!.getAttribute('divider-sides')).toBeNull();
     expect(
       defaults
         .querySelector(
           '[data-workbench-main] > [data-component="pane"] > .kui-pane__footer .kui-toolbar',
         )!
         .getAttribute('divider-sides'),
-    ).toBe('t');
+    ).toBeNull();
     expect(
       panelToolbar(defaults, '#studio-left-rail')!.getAttribute(
         'divider-sides',
       ),
-    ).toBe('b');
+    ).toBeNull();
+    for (const pane of defaults.querySelectorAll('[data-component="pane"]'))
+      expect(pane.hasAttribute('data-chrome-dividers')).toBe(false);
   });
 
-  it('forwards Pane and header/footer List configuration, keeping today’s defaults', () => {
+  it('forwards Pane and header/footer List configuration, keeping the defaults', () => {
     const base = {
       id: 'studio',
       label: 'Studio',
@@ -537,9 +540,10 @@ describe('Workbench panel toolbars', () => {
         contentLabel: 'Document',
         separators: ['inline-start'],
         safeAreaEdges: ['block-end'],
+        chromeDividers: 'always',
       },
       mainHeaderList: {
-        dividerSides: '',
+        dividerSides: 't',
         gap: 's',
         hAlign: 'center',
         vAlign: 'middle',
@@ -549,10 +553,16 @@ describe('Workbench panel toolbars', () => {
       mainFooterList: { dividerSides: 'b', gap: true },
       leftRail: {
         ...rail('Files', false),
-        pane: { contentElement: 'nav', contentLabel: 'Files' },
+        pane: {
+          contentElement: 'nav',
+          contentLabel: 'Files',
+          chromeDividers: 'none',
+        },
       },
     });
     const main = workArea(host);
+    expect(main.getAttribute('data-chrome-dividers')).toBe('always');
+    expect(railPane(host).getAttribute('data-chrome-dividers')).toBe('none');
     const content = main.querySelector(':scope > .kui-pane__content')!;
     expect(content.tagName).toBe('SECTION');
     expect(content.getAttribute('aria-label')).toBe('Document');
@@ -560,7 +570,7 @@ describe('Workbench panel toolbars', () => {
     expect(main.getAttribute('data-safe-area-block-end')).toBe('true');
     expect(main.getAttribute('data-safe-area-block-start')).toBe('false');
     const header = chrome(host, 'header');
-    expect(header.getAttribute('divider-sides')).toBeNull();
+    expect(header.getAttribute('divider-sides')).toBe('t');
     expect(header.getAttribute('data-gap')).toBe('true');
     expect(header.getAttribute('data-h-align')).toBe('center');
     expect(header.getAttribute('data-v-align')).toBe('middle');
@@ -581,6 +591,7 @@ describe('Workbench panel toolbars', () => {
         contentLabel: undefined,
         separators: undefined,
         safeAreaEdges: undefined,
+        chromeDividers: undefined,
       },
       mainHeaderList: { dividerSides: undefined, gap: undefined },
       mainFooterList: {},
@@ -596,8 +607,8 @@ describe('Workbench panel toolbars', () => {
     expect(workArea(plain).getAttribute('data-safe-area-block-start')).toBe(
       'true',
     );
-    expect(chrome(plain, 'header').getAttribute('divider-sides')).toBe('b');
-    expect(chrome(plain, 'footer').getAttribute('divider-sides')).toBe('t');
+    expect(chrome(plain, 'header').getAttribute('divider-sides')).toBeNull();
+    expect(chrome(plain, 'footer').getAttribute('divider-sides')).toBeNull();
     expect(
       railPane(plain).querySelector(':scope > .kui-pane__content')!.tagName,
     ).toBe('DIV');

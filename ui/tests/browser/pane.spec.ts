@@ -7,7 +7,9 @@ test('Pane owns vertical slots, scrolling, and independent separators', async ({
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto('/?component=pane');
 
-  const pane = page.locator('[data-demo="pane"] [data-component="pane"]');
+  const pane = page
+    .locator('[data-demo="pane"] [data-component="pane"]')
+    .first();
   await expect(pane).toBeVisible();
   await expect(pane).toHaveAttribute('data-separator-block-start', 'true');
   await expect(pane).toHaveAttribute('data-separator-block-end', 'true');
@@ -80,7 +82,9 @@ test('Pane and the migrated catalog remain coherent at a narrow viewport', async
   await page.goto('/?component=pane');
 
   const sidebar = page.locator('#kui-catalog-left-rail');
-  const pane = page.locator('[data-demo="pane"] [data-component="pane"]');
+  const pane = page
+    .locator('[data-demo="pane"] [data-component="pane"]')
+    .first();
   await expect(
     pane.locator('.kui-pane__header [data-component="list-inset-text"]'),
   ).toHaveText('Optional secondary header row');

@@ -1684,7 +1684,9 @@ test('applies shared pane and content-item geometry across responsive and 200% z
         fullPage: true,
       });
   }
-  const pane = page.locator('[data-demo="pane"] [data-component="pane"]');
+  const pane = page
+    .locator('[data-demo="pane"] [data-component="pane"]')
+    .first();
   await expect(pane).toHaveClass(/kui-pane/);
   await expect(pane.locator('.kui-pane__content')).toHaveClass(/kui-content/);
 });
@@ -2105,21 +2107,35 @@ test('uses a collapsible pane shell, toolbar page chrome, and opt-in recipe note
     const footer = element(`${pane} > .kui-pane__footer`);
     return {
       headerBackground: surface(header),
-      headerDivider:
-        header.lastElementChild?.getAttribute('divider-sides') ?? '',
+      // The pane draws its chrome dividers from the scroll state; the
+      // toolbars draw none of their own.
+      toolbarDividers: [...header.children, ...footer.children].map(
+        (child) => child.getAttribute('divider-sides') ?? '',
+      ),
+      overflow:
+        element(`${pane} > .kui-pane__content`).getAttribute(
+          'data-scroll-overflow',
+        ) ?? '',
+      headerDivider: header.getAttribute('data-scroll-divider') ?? '',
       previewBackgroundImage: window.getComputedStyle(
         element('.kui-catalog__stage'),
       ).backgroundImage,
       footerBackground: surface(footer),
-      footerDivider:
-        footer.firstElementChild?.getAttribute('divider-sides') ?? '',
+      footerDivider: footer.getAttribute('data-scroll-divider') ?? '',
     };
   });
   expect(shellGeometry.headerBackground).not.toBe('rgba(0, 0, 0, 0)');
-  expect(shellGeometry.headerDivider).toContain('b');
+  expect(shellGeometry.toolbarDividers.every((sides) => sides === '')).toBe(
+    true,
+  );
+  expect(shellGeometry.headerDivider).toBe(
+    shellGeometry.overflow.includes('t') ? 'b' : '',
+  );
   expect(shellGeometry.previewBackgroundImage).toContain('data:image/svg+xml');
   expect(shellGeometry.footerBackground).not.toBe('rgba(0, 0, 0, 0)');
-  expect(shellGeometry.footerDivider).toContain('t');
+  expect(shellGeometry.footerDivider).toBe(
+    shellGeometry.overflow.includes('b') ? 't' : '',
+  );
 
   await page.getByRole('button', { name: 'Show recipe notes' }).click();
   await expect(page.locator('[data-demo-stage-inner]')).toHaveAttribute(
@@ -6974,8 +6990,8 @@ test('separates focused AppTab and TabBar specimens from the application-tabs co
 
   await page.goto('/?component=tab-bar');
   const tabBars = page.locator('[data-demo="tab-bar"]');
-  await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(3);
-  await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(3);
+  await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(4);
+  await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(4);
   const splitBar = tabBars.locator('[data-tab-bar-id="inspector-tab-bar"]');
   const splitTabs = splitBar.locator('[data-kui-tab-list]');
   const adjacentAction = splitBar.getByRole('button', {

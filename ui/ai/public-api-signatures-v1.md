@@ -151,7 +151,14 @@ interface ToolbarProps {
     center?: KerfUiContent;
     trailing?: KerfUiContent;
     label?: string;
-    /** Physical divider edges in canonical top/right/bottom/left order. Defaults to bottom. */
+    /**
+     * Physical divider edges in canonical top/right/bottom/left order, drawn
+     * always. Defaults to none: a toolbar pinned over or under scrolling content
+     * gets its divider from the scroll state instead — a `Pane` draws the line
+     * between its chrome and content while content is scrolled away beneath it,
+     * and `wireScrollDividers` `targets` can name a toolbar as chrome, which
+     * then draws its facing side the same way.
+     */
     dividerSides?: Sides;
     /** Horizontal treatment of the center zone. Defaults to centered content. */
     centerAlign?: 'center' | 'stretch';
@@ -1018,6 +1025,72 @@ declare function wireTabBars(root: HTMLElement | Document, { onReorder, activati
 export { TabActivation, type TabDropPosition, type TabReorder, type TabReorderSource, type WireTabBarsOptions, reorderTabs, wireTabBars };
 ```
 
+## `@kerfjs/ui/wire-scroll-dividers`
+
+```ts
+/**
+ * An app-owned scroll arrangement outside a `Pane`: the `id` of the element
+ * that scrolls and the `id`s of the pinned chrome on each physical side of it.
+ * Each named chrome element shows its divider on the side facing the scroller
+ * while content is scrolled away beyond that side. Ids are resolved below the
+ * wired root on every refresh, so a re-render that replaces an element keeps
+ * the pairing.
+ */
+interface ScrollDividerTarget {
+    /** The `id` of the scrolling element. */
+    scroller: string;
+    /** Chrome above the scroller: shows its bottom divider once scrolled down. */
+    top?: string;
+    /**
+     * Chrome right of the scroller: shows its left divider while content is
+     * hidden beyond the scroller's right edge (never when nothing overflows).
+     */
+    right?: string;
+    /**
+     * Chrome below the scroller: shows its top divider while content is hidden
+     * beyond the scroller's bottom edge (never when nothing overflows).
+     */
+    bottom?: string;
+    /** Chrome left of the scroller: shows its right divider once scrolled right. */
+    left?: string;
+}
+interface WireScrollDividersOptions {
+    /**
+     * App-owned scroll arrangements to pair beyond the ones found by structure
+     * (every `Pane`'s header and footer around its content, and every `TabBar`
+     * strip).
+     */
+    targets?: readonly ScrollDividerTarget[];
+}
+/**
+ * Wire scroll dividers below `root`: a divider between pinned chrome and the
+ * content that scrolls beside it shows only while content is scrolled away
+ * from that edge. Near edges (top, left) hide at the scroll start; far edges
+ * (bottom, right) hide at the scroll end and whenever nothing overflows.
+ *
+ * The wiring only reports scroll state; each component draws its own divider
+ * from it. It writes `data-scroll-overflow` (the edges with hidden content, in
+ * canonical `t`/`r`/`b`/`l` order) on each scroller, and `data-scroll-divider`
+ * (the sides to draw) on each paired chrome element:
+ *
+ * - every `Pane` with a header or footer: its header shows a bottom divider and
+ *   its footer a top divider (drawn by the Pane, per its `chromeDividers`);
+ * - every `TabBar` strip: the bar draws a divider on each side of the strip
+ *   whose tabs are scrolled out of view;
+ * - each app-owned `targets` pairing: a `Toolbar` or `List` named as chrome
+ *   draws the divider on its facing side.
+ *
+ * Structure is re-read after every DOM change below root (a re-render that
+ * drops the attributes gets them back before paint), scroll is tracked with
+ * one capturing listener, and size changes of each scroller and its children
+ * with a `ResizeObserver`. Returns a disposer that removes every attribute it
+ * wrote. See `docs/23-app-layouts.md` §3.7.
+ */
+declare function wireScrollDividers(root: HTMLElement | Document, { targets }?: WireScrollDividersOptions): () => void;
+
+export { type ScrollDividerTarget, type WireScrollDividersOptions, wireScrollDividers };
+```
+
 ## `@kerfjs/ui/nav-stack`
 
 ```ts
@@ -1226,9 +1299,16 @@ type PaneRootAttributes = Readonly<Record<`data-${string}`, string | undefined> 
     'data-safe-area-inline-start'?: never;
     'data-safe-area-inline-end'?: never;
     'data-chrome-placement'?: never;
+    'data-chrome-dividers'?: never;
 }>;
 /** How a Pane's header and footer relate to its scrolling content. */
 type PaneChromePlacement = 'fixed' | 'auto';
+/**
+ * When a Pane draws the divider between its pinned header or footer and its
+ * scrolling content: `scroll` while content is scrolled away beneath that
+ * chrome, as `wireScrollDividers` reports; `always`; or `none`.
+ */
+type PaneChromeDividers = 'scroll' | 'always' | 'none';
 interface PaneProps {
     /** Optional fixed chrome above the scrolling content, arranged vertically. */
     header?: KerfUiContent;
@@ -1244,6 +1324,16 @@ interface PaneProps {
      * squeeze the content to nothing.
      */
     chromePlacement?: PaneChromePlacement;
+    /**
+     * The divider under the header and over the footer, where they meet the
+     * scrolling content. `scroll` (default) shows the header's divider only
+     * while the content is scrolled down, and the footer's only while more
+     * content lies below — never when the content fits — once
+     * `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`) is wired above
+     * the pane; unwired, neither shows. `always` shows both; `none` neither.
+     * The line is drawn inside the chrome, so no state moves the content.
+     */
+    chromeDividers?: PaneChromeDividers;
     /** Root semantics. Defaults to `div`. */
     element?: PaneElement;
     /** Scrolling content semantics. Defaults to `div`. */
@@ -1278,16 +1368,16 @@ interface PaneProps {
  * or a CollapsiblePanel) forwards, so the app configures that pane instead of
  * styling it. An omitted or `undefined` field keeps the composite's default.
  */
-type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges'>;
+type PaneConfig = Pick<PaneProps, 'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges' | 'chromeDividers'>;
 /**
  * An unpadded application column with optional fixed header/footer slots and one
  * scrolling vertical content owner. Separator lines are independently opt-in on
  * each logical edge, so the same component works as a sidebar, main area,
  * inspector, or dialog column.
  */
-declare function Pane({ header, children, footer, chromePlacement, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
+declare function Pane({ header, children, footer, chromePlacement, chromeDividers, element, contentElement, separators, safeAreaEdges, id, label, contentLabel, className, headerClassName, contentClassName, footerClassName, rootAttributes, slot, }: PaneProps): kerfjs.SafeHtml;
 
-export { Pane, type PaneChromePlacement, type PaneConfig, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
+export { Pane, type PaneChromeDividers, type PaneChromePlacement, type PaneConfig, type PaneContentElement, type PaneElement, type PaneProps, type PaneSeparatorSide };
 ```
 
 ## `@kerfjs/ui/workbench`
@@ -1298,7 +1388,7 @@ import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { a as PanelToolbar, b as PanelToggle } from './panel-toolbar-C8sF-YZC.js';
+import { a as PanelToolbar, b as PanelToggle } from './panel-toolbar-BN4x0rth.js';
 import { ToolbarConfig } from './toolbar.js';
 import './css-values.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -1319,9 +1409,9 @@ type WorkbenchPanelToggle = PanelToggle;
 type WorkbenchPanelToolbar = PanelToolbar;
 /**
  * The work area's top toolbar; collapsed rails add their groups to it. Its
- * configuration forwards to its `Toolbar`. By default it draws the divider
- * under the work area's header chrome: its own bottom edge, or none when a
- * `mainHeader` follows (which then carries the divider).
+ * configuration forwards to its `Toolbar`. It draws no divider of its own by
+ * default: the work area's `Pane` draws one under its header chrome, wherever
+ * that chrome ends, while `main` is scrolled (`mainPane.chromeDividers`).
  */
 interface WorkbenchMainToolbar extends ToolbarConfig {
     label: string;
@@ -1335,9 +1425,9 @@ interface WorkbenchMainToolbar extends ToolbarConfig {
 }
 /**
  * The work area's bottom toolbar; a collapsed drawer adds its groups to it.
- * Its configuration forwards to its `Toolbar`. By default it draws the divider
- * over the work area's footer chrome: its own top edge, or none when a
- * `mainFooter` precedes it.
+ * Its configuration forwards to its `Toolbar`. It draws no divider of its own
+ * by default: the work area's `Pane` draws one over its footer chrome while
+ * more of `main` lies below (`mainPane.chromeDividers`).
  */
 interface WorkbenchMainBottomToolbar extends ToolbarConfig {
     label: string;
@@ -1387,7 +1477,7 @@ interface WorkbenchPanel {
     footer?: KerfUiContent;
     /**
      * Configuration for a `toolbar` panel's `Pane` (`contentElement`,
-     * `contentLabel`, `separators`, `safeAreaEdges`) — for example
+     * `contentLabel`, `separators`, `safeAreaEdges`, `chromeDividers`) — for example
      * `{ contentElement: 'nav', contentLabel: 'Sections' }` for a navigation
      * rail. Omitted or `undefined` fields keep the `Pane` defaults. Ignored
      * without a `toolbar`, where `content` renders as given.
@@ -1480,7 +1570,7 @@ interface WorkbenchProps {
     mainFooterPlacement?: WorkbenchChromePlacement;
     /**
      * Configuration for the work area's `Pane` (`contentElement`,
-     * `contentLabel`, `separators`, `safeAreaEdges`), which it has whenever it
+     * `contentLabel`, `separators`, `safeAreaEdges`, `chromeDividers`), which it has whenever it
      * has a toolbar, `mainHeader`, or `mainFooter`; without that chrome, `main`
      * renders as given and this is ignored. Omitted or `undefined` fields keep
      * the `Pane` defaults.
@@ -1489,12 +1579,13 @@ interface WorkbenchProps {
     /**
      * Configuration for the `List` that holds `mainHeader` (`gap`, `hAlign`,
      * `vAlign`, `dividerSides`, `textInsets`, `controlInsets`). Omitted or
-     * `undefined` fields keep the defaults, including its bottom divider.
+     * `undefined` fields keep the defaults (no divider: the work area's
+     * `Pane` draws the line under its header chrome).
      */
     mainHeaderList?: ListConfig;
     /**
-     * The same for the `List` that holds `mainFooter`; by default it draws a
-     * top divider, or none when a `mainBottomToolbar` follows it.
+     * The same for the `List` that holds `mainFooter` (no divider by default:
+     * the work area's `Pane` draws the line over its footer chrome).
      */
     mainFooterList?: ListConfig;
     leftRail?: WorkbenchPanel;
@@ -1657,8 +1748,8 @@ export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanel
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { PaneConfig } from './pane.js';
-import { P as PanelSide, a as PanelToolbar, b as PanelToggle } from './panel-toolbar-C8sF-YZC.js';
-export { c as collapsiblePanelToggleIcon } from './panel-toolbar-C8sF-YZC.js';
+import { P as PanelSide, a as PanelToolbar, b as PanelToggle } from './panel-toolbar-BN4x0rth.js';
+export { c as collapsiblePanelToggleIcon } from './panel-toolbar-BN4x0rth.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './lucide-icon.js';
@@ -1724,7 +1815,7 @@ interface CollapsiblePanelProps {
     footer?: KerfUiContent;
     /**
      * Configuration for a `toolbar` panel's `Pane` (`contentElement`,
-     * `contentLabel`, `separators`, `safeAreaEdges`) — for example
+     * `contentLabel`, `separators`, `safeAreaEdges`, `chromeDividers`) — for example
      * `{ contentElement: 'nav', contentLabel: 'Sections' }` for a navigation
      * rail. Omitted or `undefined` fields keep the `Pane` defaults. Ignored
      * without a `toolbar`, where `children` renders as given.
@@ -2079,8 +2170,8 @@ export { DEFAULT_BREAKPOINTS, type DeviceBreakpoints, type DeviceClass, type Dev
 ```ts
 import * as kerfjs from 'kerfjs';
 import { SafeHtml } from 'kerfjs';
-import { a as CatalogProps } from './types-DXAGogOS.js';
-export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection, g as CatalogStageRootAttributes } from './types-DXAGogOS.js';
+import { a as CatalogProps } from './types-BuHELdXR.js';
+export { b as CatalogBrand, c as CatalogEntry, d as CatalogRelated, C as CatalogResource, e as CatalogSecondaryGroup, f as CatalogSection, g as CatalogStageRootAttributes } from './types-BuHELdXR.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './toolbar.js';
 import './pane.js';
@@ -2090,7 +2181,7 @@ import './list.js';
 import './css-values.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './resizable-region.js';
-import './panel-toolbar-C8sF-YZC.js';
+import './panel-toolbar-BN4x0rth.js';
 import './lucide-icon.js';
 import 'lucide';
 
@@ -2172,7 +2263,7 @@ export { Catalog, CatalogExample, type CatalogExampleAlign, type CatalogExampleP
 ## `@kerfjs/ui/catalog-resources`
 
 ```ts
-import { C as CatalogResource } from './types-DXAGogOS.js';
+import { C as CatalogResource } from './types-BuHELdXR.js';
 import './semantic-content-BbzjvSu9.js';
 import 'kerfjs';
 import './toolbar.js';
@@ -2183,7 +2274,7 @@ import './list.js';
 import './css-values.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './resizable-region.js';
-import './panel-toolbar-C8sF-YZC.js';
+import './panel-toolbar-BN4x0rth.js';
 import './lucide-icon.js';
 import 'lucide';
 
@@ -2298,7 +2389,9 @@ declare function wireCatalogGeometryOverlay(root: HTMLElement): () => void;
  * item selection (and the related-entry popup menu), the sidebar collapse toggle, and
  * the theme toggle. The app owns the `active`/`collapsed`/`theme` signals and updates
  * them in the callbacks; optionally mirror the active id into the URL via `urlParam`.
- * Returns a disposer.
+ * It also wires the scroll dividers below root (`wireScrollDividers`), so the
+ * catalog's panes and every example in it show their chrome dividers only
+ * while scrolled. Returns a disposer.
  */
 declare function wireCatalog(root: HTMLElement, { onSelect, onToggleSidebar, onToggleTheme, onToggleSecondary, urlParam, revealSelection, selectAction, toggleSidebarAction, toggleThemeAction, toggleSecondaryAction, collapsed, sidebarSize, sidebarStorageKey, id: catalogId, }: WireCatalogOptions): () => void;
 

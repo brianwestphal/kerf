@@ -83,6 +83,7 @@ export {
 } from './lucide-icon.js';
 export {
   Pane,
+  type PaneChromeDividers,
   type PaneChromePlacement,
   type PaneConfig,
   type PaneContentElement,
@@ -223,6 +224,11 @@ export {
   wireResizableRegions,
   type WireResizableRegionsOptions,
 } from './wire-resizable-regions.js';
+export {
+  type ScrollDividerTarget,
+  wireScrollDividers,
+  type WireScrollDividersOptions,
+} from './wire-scroll-dividers.js';
 export {
   reorderTabs,
   type TabDropPosition,

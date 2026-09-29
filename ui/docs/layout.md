@@ -42,6 +42,62 @@ each enabled side uses `--kui-pane-separator-width` (1px) and
 `--kui-pane-separator-color` (`--kui-color-neutral-border-normal`). Logical sides keep pane
 boundaries correct in both left-to-right and right-to-left layouts.
 
+### Scroll dividers
+
+Toolbars draw no divider by default. The line between pinned chrome and the
+content that scrolls beside it is scroll state, not decoration: it shows only
+while content is scrolled away from that edge, the way platform navigation bars
+gain a hairline once content moves beneath them.
+
+- A near edge (top, left) hides at the scroll start.
+- A far edge (bottom, right) hides at the scroll end, and whenever the content
+  fits and nothing scrolls.
+
+Call `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` once at the
+application root and keep its disposer:
+
+```ts
+import { wireScrollDividers } from "@kerfjs/ui/wire-scroll-dividers";
+
+const stop = wireScrollDividers(appRoot);
+```
+
+It covers, by structure, every `Pane` below the root (the header's bottom line
+and the footer's top line, whatever the chrome holds — a `Toolbar`, a
+`mainHeader` list, a `TabBar`) and every `TabBar` strip (a line on each side
+whose tabs are scrolled out of view). That includes the panes a `Workbench`,
+`CollapsiblePanel`, or `Catalog` renders; `wireCatalog` installs it for its
+own root. It follows re-renders: panes that appear later are paired, and an
+attribute a morph drops returns before paint.
+
+The wiring only reports state; every component draws its own line. It writes
+`data-scroll-overflow` (the edges with content hidden beyond them, in canonical
+`t`/`r`/`b`/`l` order) on each scroller and `data-scroll-divider` (the sides to
+draw) on each piece of chrome, and the Pane, TabBar, Toolbar, and List
+stylesheets draw from those. The line is an inset shadow or a pseudo-element
+inside the component, so no state ever moves the chrome, the content, or a tab.
+Never write a border onto a component to show one.
+
+Configure a pane with `chromeDividers`: `scroll` (the default) follows the
+scroll state and draws nothing until the wiring runs; `always` keeps both lines;
+`none` drops them. Layouts forward it through `PaneConfig`
+(`mainPane.chromeDividers`, a panel's `pane.chromeDividers`).
+
+For an app-owned arrangement outside a `Pane`, name the scroller and its chrome
+by `id` in `targets`; a `Toolbar` or `List` named as chrome draws the divider
+on its side facing the scroller:
+
+```ts
+wireScrollDividers(appRoot, {
+  targets: [{ scroller: "results", top: "results-toolbar", bottom: "status" }],
+});
+```
+
+A CSS-only version is not used: scroll-driven animations are not available in
+Firefox, scroll-state container queries only in Chromium, and neither lets
+the pinned chrome — a sibling of the scroller — read the scroller's state on
+its own. One wiring keeps the behavior identical in every engine.
+
 A pane is safe-area aware. Its background and separators paint through a
 device's unsafe areas while its header, content, and footer pad for each side
 the pane still reaches; the content's block insets are scroll padding, so its

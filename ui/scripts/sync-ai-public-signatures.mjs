@@ -29,6 +29,7 @@ const curatedEntries = [
   ['@kerfjs/ui/app-tab', 'dist/app-tab.d.ts'],
   ['@kerfjs/ui/tab-bar', 'dist/tab-bar.d.ts'],
   ['@kerfjs/ui/wire-tab-bars', 'dist/wire-tab-bars.d.ts'],
+  ['@kerfjs/ui/wire-scroll-dividers', 'dist/wire-scroll-dividers.d.ts'],
   ['@kerfjs/ui/nav-stack', 'dist/nav-stack.d.ts'],
   ['@kerfjs/ui/wire-nav-stack', 'dist/wire-nav-stack.d.ts'],
   ['@kerfjs/ui/split-view', 'dist/split-view.d.ts'],

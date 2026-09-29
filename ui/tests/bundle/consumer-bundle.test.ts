@@ -288,6 +288,24 @@ describe('consumer bundle boundaries', () => {
     expect(inputs).not.toContain('@awesome.me/webawesome');
   });
 
+  it('keeps the scroll-divider wiring a DOM-only module with no CSS or components', async () => {
+    const result = await bundle(
+      "import { wireScrollDividers } from '@kerfjs/ui/wire-scroll-dividers'; console.log(wireScrollDividers);",
+    );
+    // Nothing but the module (and the shared chunk wireCatalog also imports
+    // it from): no kerf runtime, component, or browser CSS entry.
+    const inputs = Object.keys(result.metafile!.inputs).filter(
+      (input) => input !== 'consumer.ts',
+    );
+    expect(inputs).toContain('dist/wire-scroll-dividers.js');
+    for (const input of inputs)
+      expect(input).toMatch(
+        /^dist\/(wire-scroll-dividers|chunk-[A-Z0-9]+)\.js$/,
+      );
+    expect(output(result, '.css')).toBe('');
+    expect(output(result, '.js')).toContain('data-scroll-overflow');
+  });
+
   it('keeps the TabBar component and opt-in wiring free of Web Awesome registration', async () => {
     const result = await bundle(
       "import { TabBar } from '@kerfjs/ui/tab-bar'; import { reorderTabs, wireTabBars } from '@kerfjs/ui/wire-tab-bars'; console.log(TabBar, reorderTabs, wireTabBars); ",
@@ -612,6 +630,11 @@ describe('consumer bundle boundaries', () => {
       import: './dist/wire-workbench.js',
     });
     expect(pkg.exports['./wire-workbench']).not.toHaveProperty('browser');
+    expect(pkg.exports['./wire-scroll-dividers']).toMatchObject({
+      types: './dist/wire-scroll-dividers.d.ts',
+      import: './dist/wire-scroll-dividers.js',
+    });
+    expect(pkg.exports['./wire-scroll-dividers']).not.toHaveProperty('browser');
     expect(pkg.exports['./toolbar.css']).toBe('./dist/styles/toolbar.css');
     expect(pkg.exports['./list.css']).toBe('./dist/styles/list.css');
     expect(pkg.exports['./row']).toMatchObject({

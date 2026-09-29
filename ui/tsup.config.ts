@@ -33,6 +33,7 @@ const entries = [
   'wire-catalog',
   'tab-bar',
   'wire-tab-bars',
+  'wire-scroll-dividers',
   'nav-stack',
   'wire-nav-stack',
   'split-view',

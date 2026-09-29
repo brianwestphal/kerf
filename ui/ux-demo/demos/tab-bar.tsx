@@ -3,7 +3,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { TabBar } from '@kerfjs/ui/tab-bar';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
-import { Plus, SquarePlus } from 'lucide';
+import { PanelLeft, Plus, SquarePlus } from 'lucide';
 
 const tabs = (presentation: 'pill' | 'segmented' = 'pill') => [
   <AppTab
@@ -37,6 +37,26 @@ const splitTabs = [
     closable={false}
     presentation="segmented"
     size="compact"
+  />
+));
+
+const overflowTabs = [
+  'Overview',
+  'Backlog',
+  'Activity',
+  'Automations',
+  'Settings',
+  'Releases',
+  'Milestones',
+  'Reports',
+  'Integrations',
+  'Members',
+].map((name, index) => (
+  <AppTab
+    id={`overflow-${name.toLowerCase()}`}
+    name={name}
+    selected={index === 0}
+    closable={false}
   />
 ));
 
@@ -80,6 +100,32 @@ export function TabBarDemo() {
           }
         >
           {splitTabs}
+        </TabBar>
+      </CatalogExample>
+      <CatalogExample
+        label="Overflow · scroll dividers"
+        note="When the tabs overflow, a divider marks each side of the strip with tabs scrolled out of view. wireScrollDividers reports the strip's scroll state; the tab bar draws the lines."
+        align="none"
+      >
+        <TabBar
+          id="overflow-tab-bar"
+          label="Overflowing tab bar"
+          leading={
+            <ToolbarControlGroup appearance="borderless" single>
+              <button type="button" aria-label="Show sidebar">
+                <LucideIcon icon={PanelLeft} name="panel-left" />
+              </button>
+            </ToolbarControlGroup>
+          }
+          trailing={
+            <ToolbarControlGroup appearance="borderless" single>
+              <button type="button" aria-label="Add tab">
+                <LucideIcon icon={Plus} name="plus" />
+              </button>
+            </ToolbarControlGroup>
+          }
+        >
+          {overflowTabs}
         </TabBar>
       </CatalogExample>
     </CatalogExampleStack>

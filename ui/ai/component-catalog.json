@@ -508,11 +508,13 @@
       "uses": [],
       "purpose": "Organize a sidebar, main area, inspector, or dialog column into fixed vertical header/footer chrome around one scrolling content owner.",
       "publicExports": [
-        "Pane"
+        "Pane",
+        "wireScrollDividers"
       ],
       "useWhen": [
         "An application column needs shared header, content, and optional footer organization with exactly one scrolling content owner.",
-        "A pane boundary needs an opt-in separator on any combination of logical sides."
+        "A pane boundary needs an opt-in separator on any combination of logical sides.",
+        "Pinned chrome needs a divider from the scrolling content only while content is scrolled beneath it (wireScrollDividers)."
       ],
       "avoidWhen": [
         "Do not use Pane as a padded card or add a competing scroll owner around its content slot.",
@@ -531,7 +533,8 @@
         "header, content, and footer children",
         "which logical boundaries show separators",
         "which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges)",
-        "responsive placement and visibility"
+        "responsive placement and visibility",
+        "whether the chrome dividers follow the scroll, always show, or never show (chromeDividers)"
       ],
       "variants": [
         "content only",
@@ -540,7 +543,9 @@
         "block-start separator",
         "block-end separator",
         "inline-start separator",
-        "inline-end separator"
+        "inline-end separator",
+        "chrome dividers only while scrolled (default, wired by wireScrollDividers)",
+        "always or no chrome dividers"
       ],
       "accessibility": [
         "Choose semantic root and content elements that match the region and provide labels for landmark elements.",
@@ -562,7 +567,25 @@
           "browser-condition-css"
         ]
       },
-      "wiring": [],
+      "wiring": [
+        {
+          "export": "wireScrollDividers",
+          "import": "@kerfjs/ui/wire-scroll-dividers",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-scroll-overflow",
+              "on": "kui-pane__content",
+              "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-scroll-divider",
+              "on": "kui-pane__header and kui-pane__footer",
+              "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+            }
+          ]
+        }
+      ],
       "publicClasses": [
         "kui-pane",
         "kui-pane__content",
@@ -994,7 +1017,8 @@
         "clipped, scrolling, or popup-visible content",
         "inline, overlay, or hidden responsive presentation",
         "narrow or compact single-track responsive fill",
-        "safe-area restore control"
+        "safe-area restore control",
+        "chrome dividers only while scrolled (wired by wireScrollDividers)"
       ],
       "accessibility": [
         "Give the Workbench and each meaningful rail or drawer an accessible label.",
@@ -1033,6 +1057,23 @@
               "name": "data-resizing",
               "on": "kui-workbench__rail",
               "meaning": "Present on a resizable rail or the drawer while a pointer drag resizes it."
+            }
+          ]
+        },
+        {
+          "export": "wireScrollDividers",
+          "import": "@kerfjs/ui/wire-scroll-dividers",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-scroll-overflow",
+              "on": "kui-pane__content of each panel and work-area Pane",
+              "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-scroll-divider",
+              "on": "kui-pane__header and kui-pane__footer of each panel and work-area Pane",
+              "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
             }
           ]
         }
@@ -1127,7 +1168,8 @@
         "hidden separator",
         "slide, fade-slide, or instant content",
         "clipped, scrolling, or popup-visible content",
-        "safe-area restore control"
+        "safe-area restore control",
+        "chrome dividers only while scrolled (wired by wireScrollDividers)"
       ],
       "accessibility": [
         "Give the panel region and every collapse or restore control an accessible label.",
@@ -1168,6 +1210,23 @@
               "name": "data-morph-preserve",
               "on": "kui-collapsible-panel__backdrop",
               "meaning": "Keeps the injected compact-overlay backdrop through the application's re-render; the helper creates and removes the backdrop itself."
+            }
+          ]
+        },
+        {
+          "export": "wireScrollDividers",
+          "import": "@kerfjs/ui/wire-scroll-dividers",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-scroll-overflow",
+              "on": "kui-pane__content of each panel and work-area Pane",
+              "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-scroll-divider",
+              "on": "kui-pane__header and kui-pane__footer of each panel and work-area Pane",
+              "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
             }
           ]
         }
@@ -1299,8 +1358,8 @@
         "which screen edges an app bar or bottom bar outside a Pane header or footer claims for device safe areas (safeAreaEdges)"
       ],
       "variants": [
-        "bottom divider (default)",
-        "no dividers",
+        "no dividers (default)",
+        "scroll dividers when named as wireScrollDividers targets chrome",
         "top/right/bottom/left divider combinations",
         "centered content",
         "stacked zones at compact or narrow widths",
@@ -1328,7 +1387,25 @@
           "browser-condition-css"
         ]
       },
-      "wiring": [],
+      "wiring": [
+        {
+          "export": "wireScrollDividers",
+          "import": "@kerfjs/ui/wire-scroll-dividers",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-scroll-overflow",
+              "on": "the targets scroller",
+              "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-scroll-divider",
+              "on": "a Toolbar named as targets chrome",
+              "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+            }
+          ]
+        }
+      ],
       "publicClasses": [
         "kui-toolbar",
         "kui-toolbar__center",
@@ -2495,7 +2572,8 @@
         "top/right/bottom/left divider combinations",
         "top/right/bottom/left text and control inset combinations",
         "fill: the layout root fills a definite-height parent",
-        "rootAttributes: safe data-* metadata on the root"
+        "rootAttributes: safe data-* metadata on the root",
+        "scroll dividers when named as wireScrollDividers targets chrome"
       ],
       "accessibility": [
         "List adds layout only and no list role; children retain responsibility for their native or ARIA semantics.",
@@ -2516,7 +2594,25 @@
           "browser-condition-css"
         ]
       },
-      "wiring": [],
+      "wiring": [
+        {
+          "export": "wireScrollDividers",
+          "import": "@kerfjs/ui/wire-scroll-dividers",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-scroll-overflow",
+              "on": "the targets scroller",
+              "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-scroll-divider",
+              "on": "a List named as targets chrome",
+              "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+            }
+          ]
+        }
+      ],
       "publicClasses": [
         "kui-list"
       ],
@@ -3281,7 +3377,8 @@
         "rail, segmented, and inspector presentation",
         "intrinsic or fill allocation",
         "separate or adjacent trailing action",
-        "far-edge end action"
+        "far-edge end action",
+        "overflow dividers on each side with tabs scrolled out of view (wired by wireScrollDividers)"
       ],
       "accessibility": [
         "Keep exactly one selected tab at tabindex 0 and preserve the wiring keyboard model."
@@ -3328,6 +3425,23 @@
           "export": "reorderTabs",
           "import": "@kerfjs/ui/wire-tab-bars",
           "required": false
+        },
+        {
+          "export": "wireScrollDividers",
+          "import": "@kerfjs/ui/wire-scroll-dividers",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-scroll-overflow",
+              "on": "kui-tab-bar__tabs",
+              "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-scroll-divider",
+              "on": "chrome named in wireScrollDividers targets (a TabBar strip has none)",
+              "meaning": "The sides, in t/r/b/l order, on which that chrome currently draws its scroll divider. Re-applied if a re-render drops it."
+            }
+          ]
         }
       ],
       "publicClasses": [
@@ -3339,7 +3453,8 @@
       ],
       "publicTokens": [
         "--kui-tab-bar-background",
-        "--kui-tab-bar-border"
+        "--kui-tab-bar-border",
+        "--kui-tab-bar-divider-color"
       ],
       "links": {
         "catalogRoute": "?component=tab-bar",

@@ -73,8 +73,9 @@ export interface PanelToggle {
  * panel's copy is inert), so give it no `id`s.
  *
  * The toolbar's configuration (`dividerSides`, `centerAlign`, `responsive`,
- * `responsiveAt`, `safeAreaEdges`) forwards to its `Toolbar`; it keeps a
- * bottom divider unless `dividerSides` says otherwise.
+ * `responsiveAt`, `safeAreaEdges`) forwards to its `Toolbar`. It draws no
+ * divider of its own: the panel's `Pane` draws the line under it while the
+ * content is scrolled (its `chromeDividers`, wired by `wireScrollDividers`).
  */
 export interface PanelToolbar extends ToolbarConfig {
   /** Accessible name of the panel's toolbar. */
@@ -130,7 +131,7 @@ export function composedPanelToolbar(
   return (
     <Toolbar
       label={toolbar.label}
-      dividerSides={toolbar.dividerSides ?? 'b'}
+      dividerSides={toolbar.dividerSides}
       centerAlign={toolbar.centerAlign}
       responsive={toolbar.responsive}
       responsiveAt={toolbar.responsiveAt}
@@ -184,6 +185,7 @@ export function composedPanelBody({
       contentLabel={pane?.contentLabel}
       separators={pane?.separators}
       safeAreaEdges={pane?.safeAreaEdges}
+      chromeDividers={pane?.chromeDividers}
     >
       {content}
     </Pane>

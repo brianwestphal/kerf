@@ -102,8 +102,14 @@ describe('component composition catalog contract', () => {
       'wireSidebar:data-collapsible-responsive',
       'wireSidebar:data-collapsible-overlay',
       'wireSidebar:data-morph-preserve',
+      'wireScrollDividers:data-scroll-overflow',
+      'wireScrollDividers:data-scroll-divider',
     ]);
-    expect(owned('list')).toEqual([]);
+    // Chrome a List draws from when named in wireScrollDividers targets.
+    expect(owned('list')).toEqual([
+      'wireScrollDividers:data-scroll-overflow',
+      'wireScrollDividers:data-scroll-divider',
+    ]);
   });
 
   it('keeps permissive defaults distinct from authoritative enforceable overrides', async () => {

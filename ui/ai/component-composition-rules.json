@@ -180,7 +180,7 @@
     ],
     "wiring": {
       "required": true,
-      "helpers": ["wireTabBars"],
+      "helpers": ["wireTabBars", "wireScrollDividers"],
       "obligations": [
         "Retain and invoke the disposer.",
         "Apply onReorder to application-owned order."

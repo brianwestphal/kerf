@@ -17,6 +17,7 @@ export type PaneContentElement = 'div' | 'main' | 'nav' | 'section';
 const paneProtectedAttributes = new Set([
   'data-component',
   'data-chrome-placement',
+  'data-chrome-dividers',
   'data-separator-block-start',
   'data-separator-block-end',
   'data-separator-inline-start',
@@ -46,11 +47,19 @@ type PaneRootAttributes = Readonly<
     'data-safe-area-inline-start'?: never;
     'data-safe-area-inline-end'?: never;
     'data-chrome-placement'?: never;
+    'data-chrome-dividers'?: never;
   }
 >;
 
 /** How a Pane's header and footer relate to its scrolling content. */
 export type PaneChromePlacement = 'fixed' | 'auto';
+
+/**
+ * When a Pane draws the divider between its pinned header or footer and its
+ * scrolling content: `scroll` while content is scrolled away beneath that
+ * chrome, as `wireScrollDividers` reports; `always`; or `none`.
+ */
+export type PaneChromeDividers = 'scroll' | 'always' | 'none';
 
 export interface PaneProps {
   /** Optional fixed chrome above the scrolling content, arranged vertically. */
@@ -67,6 +76,16 @@ export interface PaneProps {
    * squeeze the content to nothing.
    */
   chromePlacement?: PaneChromePlacement;
+  /**
+   * The divider under the header and over the footer, where they meet the
+   * scrolling content. `scroll` (default) shows the header's divider only
+   * while the content is scrolled down, and the footer's only while more
+   * content lies below — never when the content fits — once
+   * `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`) is wired above
+   * the pane; unwired, neither shows. `always` shows both; `none` neither.
+   * The line is drawn inside the chrome, so no state moves the content.
+   */
+  chromeDividers?: PaneChromeDividers;
   /** Root semantics. Defaults to `div`. */
   element?: PaneElement;
   /** Scrolling content semantics. Defaults to `div`. */
@@ -104,7 +123,11 @@ export interface PaneProps {
  */
 export type PaneConfig = Pick<
   PaneProps,
-  'contentElement' | 'contentLabel' | 'separators' | 'safeAreaEdges'
+  | 'contentElement'
+  | 'contentLabel'
+  | 'separators'
+  | 'safeAreaEdges'
+  | 'chromeDividers'
 >;
 
 function paneContent(
@@ -135,6 +158,7 @@ export function Pane({
   children,
   footer,
   chromePlacement = 'fixed',
+  chromeDividers = 'scroll',
   element = 'div',
   contentElement = 'div',
   separators = [],
@@ -182,6 +206,10 @@ export function Pane({
     id,
     'data-component': 'pane',
     'data-chrome-placement': chromePlacement === 'auto' ? 'auto' : undefined,
+    'data-chrome-dividers':
+      chromeDividers === 'always' || chromeDividers === 'none'
+        ? chromeDividers
+        : undefined,
     'data-separator-block-start': String(separators.includes('block-start')),
     'data-separator-block-end': String(separators.includes('block-end')),
     'data-separator-inline-start': String(separators.includes('inline-start')),

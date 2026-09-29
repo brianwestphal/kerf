@@ -791,6 +791,18 @@ bar/tab identity after automatic keyboard activation synchronously rerenders a s
 Unit coverage in `ui/tests/unit/wire-tab-bars.test.ts` and the real-browser
 `ui/tests/browser/tab-bar-controlled-focus.spec.ts` cover repeated Arrow/Home/End
 transitions and duplicate tab IDs in independent bars.
+`ui/src/wire-scroll-dividers.ts` (`@kerfjs/ui/wire-scroll-dividers`,
+`wireScrollDividers(root, { targets? })`) makes the divider between pinned chrome
+and scrolling content scroll state: it pairs every `.kui-pane` content slot with
+its header/footer, every `TabBar` strip, and app-owned id `targets`, and writes
+only `data-scroll-overflow` (scroller) / `data-scroll-divider` (chrome); `Pane`
+(`chromeDividers`: `scroll`/`always`/`none`), `TabBar`, `Toolbar`, and `List`
+draw from them in their own CSS. `Toolbar.dividerSides` defaults to `''`, and the
+Workbench / CollapsiblePanel / Catalog toolbars place no dividers of their own;
+`wireCatalog` installs the wiring. Unit transition matrix in
+`ui/tests/unit/wire-scroll-dividers.test.ts`; three-engine geometry and
+computed-style coverage in `ui/tests/browser/scroll-dividers.spec.ts` with the
+fixture `ui/tests/browser/fixtures/scroll-dividers.tsx`. See docs/23 §3.7.
 `wireTokenSearchFields` captures managed clear before app handlers, suppresses the
 transient replacement blur, and restores the current editor at its mutation checkpoint
 before the next input task, without app reopen code or frame-delayed focus.

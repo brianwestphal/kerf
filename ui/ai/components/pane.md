@@ -12,6 +12,7 @@ Organize a sidebar, main area, inspector, or dialog column into fixed vertical h
 
 - An application column needs shared header, content, and optional footer organization with exactly one scrolling content owner.
 - A pane boundary needs an opt-in separator on any combination of logical sides.
+- Pinned chrome needs a divider from the scrolling content only while content is scrolled beneath it (wireScrollDividers).
 
 **Not when:**
 
@@ -24,13 +25,14 @@ Organize a sidebar, main area, inspector, or dialog column into fixed vertical h
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/pane` — exports `Pane`.
+- JavaScript: `@kerfjs/ui/pane` — exports `Pane`, `wireScrollDividers`.
 - CSS: the browser build of `@kerfjs/ui/pane` pulls its CSS automatically; import `@kerfjs/ui/pane.css` manually only without the `browser` export condition.
+- Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/pane`](../public-api-signatures-v1.md#kerfjsuipane) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/pane`](../public-api-signatures-v1.md#kerfjsuipane), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -41,6 +43,8 @@ Exact prop names and types: [`@kerfjs/ui/pane`](../public-api-signatures-v1.md#k
 - block-end separator
 - inline-start separator
 - inline-end separator
+- chrome dividers only while scrolled (default, wired by wireScrollDividers)
+- always or no chrome dividers
 
 ## Composition
 
@@ -56,9 +60,14 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 ## State and wiring
 
-**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility.
+**The app owns:** root and content semantics; accessible labels; header, content, and footer children; which logical boundaries show separators; which sides may compensate for device safe areas in an app-owned arrangement (safeAreaEdges); responsive placement and visibility; whether the chrome dividers follow the scroll, always show, or never show (chromeDividers).
 
-No wiring helper.
+**Wiring:** `wireScrollDividers` is optional.
+
+**Wiring-owned state attributes** — never render, remove, or branch on these as app state:
+
+- `data-scroll-overflow` on `kui-pane__content` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
+- `data-scroll-divider` on `kui-pane__header and kui-pane__footer` (`wireScrollDividers`): The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it.
 
 ## Geometry
 

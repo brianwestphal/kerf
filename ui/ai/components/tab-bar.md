@@ -28,11 +28,12 @@ Controlled tab strips whose tabs shrink and scroll while fixed leading, trailing
 - CSS: the browser build of `@kerfjs/ui/tab-bar` pulls its CSS automatically; import `@kerfjs/ui/tab-bar.css` manually only without the `browser` export condition.
 - Wiring: `wireTabBars` from `@kerfjs/ui/wire-tab-bars` (required).
 - Wiring: `reorderTabs` from `@kerfjs/ui/wire-tab-bars` (optional).
+- Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/tab-bar`](../public-api-signatures-v1.md#kerfjsuitab-bar), [`@kerfjs/ui/wire-tab-bars`](../public-api-signatures-v1.md#kerfjsuiwire-tab-bars) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/tab-bar`](../public-api-signatures-v1.md#kerfjsuitab-bar), [`@kerfjs/ui/wire-tab-bars`](../public-api-signatures-v1.md#kerfjsuiwire-tab-bars), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -44,6 +45,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-bar`](../public-api-signatures-v1.m
 - intrinsic or fill allocation
 - separate or adjacent trailing action
 - far-edge end action
+- overflow dividers on each side with tabs scrolled out of view (wired by wireScrollDividers)
 
 ## Composition
 
@@ -63,7 +65,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 - selected-tab — controlled (required)
 
-**Wiring:** `wireTabBars` is required.
+**Wiring:** `wireTabBars`, `wireScrollDividers` is required.
 
 - Retain and invoke the disposer.
 - Apply onReorder to application-owned order.
@@ -73,6 +75,8 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 - `data-tab-dragging` on `AppTab (data-component="app-tab")` (`wireTabBars`): "true" on the tab being dragged.
 - `data-tab-drop-position` on `AppTab (data-component="app-tab")` (`wireTabBars`): "before" or "after" on the tab under the pointer: where the dragged tab would land.
 - `data-tab-autoscroll` on `kui-tab-bar__tabs` (`wireTabBars`): "start" or "end" while a drag near that edge auto-scrolls the strip.
+- `data-scroll-overflow` on `kui-tab-bar__tabs` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
+- `data-scroll-divider` on `chrome named in wireScrollDividers targets (a TabBar strip has none)` (`wireScrollDividers`): The sides, in t/r/b/l order, on which that chrome currently draws its scroll divider. Re-applied if a re-render drops it.
 
 ## Geometry
 
@@ -91,7 +95,7 @@ The component owns its own styles. Configure it through its props and variants; 
 
 Public class hooks (select for layout placement only, never to change the component's look): `kui-tab-bar`, `kui-tab-bar__leading`, `kui-tab-bar__tabs`, `kui-tab-bar__trailing`, `kui-tab-bar__end`.
 
-Public tokens it reads: `--kui-tab-bar-background`, `--kui-tab-bar-border`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-tab-bar-background`, `--kui-tab-bar-border`, `--kui-tab-bar-divider-color`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and forced component dimensions (`KUI-L005`).
 

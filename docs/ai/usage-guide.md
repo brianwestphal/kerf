@@ -227,7 +227,10 @@ hooks at the mount root, retain every disposer, and let the app own menu/tab
 state, routing, and persistence. `wireResizableRegions(root, { onCommit })` and
 `wireTabBars(root, { onReorder })` add the reusable interaction behavior and
 return disposers. Tab dragging automatically scrolls toward a nearby horizontal
-edge to expose earlier or later drop targets. Apply tab reorder reports with
+edge to expose earlier or later drop targets. Toolbars draw no divider by
+default; `wireScrollDividers(root)` (`@kerfjs/ui/wire-scroll-dividers`) makes
+each `Pane` draw its header/footer divider, and each `TabBar` its overflow
+dividers, only while content is scrolled beneath or beyond them. Apply tab reorder reports with
 `reorderTabs()`. For a tab-local action immediately after the strip plus a
 workspace action at the far edge, set `trailingPlacement="adjacent"`, put the
 local action in `trailing`, and put the workspace action in `end`; TabBar owns

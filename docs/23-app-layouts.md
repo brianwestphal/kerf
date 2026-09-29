@@ -276,15 +276,15 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
 showLabel?, hideLabel? }`) and the work area a `mainToolbar` /
   `mainBottomToolbar`, each also taking the `Toolbar`'s configuration
   (`ToolbarConfig`: `dividerSides`, `centerAlign`, `responsive`,
-  `responsiveAt`, `safeAreaEdges`, forwarded with today's dividers as the
-  defaults — KF-A29R9B: the dividers were hard-coded, leaving CSS as the only
-  way to drop one); the Workbench composes each as a
+  `responsiveAt`, `safeAreaEdges` — KF-A29R9B: the dividers were hard-coded,
+  leaving CSS as the only way to drop one; since KF-YK36YF no toolbar draws a
+  divider by default and the Panes draw scroll dividers, §3.7); the Workbench composes each as a
   `Toolbar` over a `Pane` (`ui/src/workbench-toolbars.tsx`). Those `Pane`s and
   the work area's header/footer `List`s forward configuration the same way
   (KF-SEQV4K: they were hard-coded, so a navigator rail could not make its
   scrolling slot a `nav` landmark without restyling): a panel's `pane` and the
   Workbench's `mainPane` take `PaneConfig` (`contentElement`, `contentLabel`,
-  `separators`, `safeAreaEdges`), `mainHeaderList` / `mainFooterList` take
+  `separators`, `safeAreaEdges`, `chromeDividers`), `mainHeaderList` / `mainFooterList` take
   `ListConfig` (`gap`, `hAlign`, `vAlign`, `dividerSides`, `textInsets`,
   `controlInsets`), and a `CollapsiblePanel` takes `pane` too. An omitted or
   `undefined` field keeps today's value, so the default markup is unchanged. Open, a panel's
@@ -921,6 +921,74 @@ edge-to-edge surfaces and separators, touched-side padding, scroll-through
 padding, the center regaining an edge when a rail collapses, an app bar and a
 bottom bar claiming their screen edges with `Toolbar.safeAreaEdges`, and no
 interior or nested inset.
+
+### 3.7 Scroll dividers — `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`)
+
+**KF-YK36YF: toolbars drew a permanent top/bottom divider by default, so every
+pane showed a line under its header even with nothing scrolled beneath it.**
+The line between pinned chrome and the content scrolling beside it is now
+scroll state. A near edge (top, left) shows its divider only once content is
+scrolled away from the start; a far edge (bottom, right) only while more
+content lies beyond it — never when the content fits.
+
+- **Defaults.** `Toolbar.dividerSides` defaults to `''` (was `'b'`). The
+  Workbench's `mainToolbar`, `mainBottomToolbar`, panel toolbars, and header /
+  footer `List`s, and `CollapsiblePanel`'s toolbar no longer place dividers of
+  their own; `NavStack` already drew none. An explicit `dividerSides` is still
+  honored everywhere and draws always.
+- **Pane owns the chrome boundary.** `Pane` gains `chromeDividers`
+  (`PaneChromeDividers`: `scroll` default, `always`, `none`, also in
+  `PaneConfig`, so `mainPane` / a panel's `pane` / `CollapsiblePanel.pane`
+  forward it). The Pane draws one line under its header and one over its
+  footer — wherever that chrome ends, whatever it holds — as an inset shadow
+  inside the slot, so no state moves the chrome or the content. This replaces
+  the Workbench's old rule of moving the divider between the toolbar and a
+  `mainHeader` list.
+- **The wiring reports; components draw.** `wireScrollDividers(root, {
+targets? })` follows the established wire pattern (one call per root,
+  delegated, returns an idempotent disposer that removes everything it wrote).
+  It pairs, by structure, every `.kui-pane` content slot with its header and
+  footer and every `TabBar` strip, plus app-owned `targets` (`{ scroller, top?,
+right?, bottom?, left? }` element ids, resolved on each refresh). It writes
+  two wiring-owned attributes, declared in the catalog's
+  `wiring.stateAttributes`: `data-scroll-overflow` on each scroller (the
+  physical edges with hidden content, canonical `t`/`r`/`b`/`l` order) and
+  `data-scroll-divider` on each chrome element (the sides to draw). The Pane,
+  TabBar, Toolbar, and List stylesheets draw from them; the wiring never writes
+  a style. Scroll is one capturing `scroll` listener; content and container
+  size changes come from a `ResizeObserver` on each scroller and its children;
+  structure from a `MutationObserver`, which also restores an attribute the
+  morph dropped before paint without re-measuring. Horizontal edges are
+  physical, so a right-to-left scroller (negative `scrollLeft`) reports the
+  same sides. A 1px tolerance absorbs the rounding between whole-pixel
+  `scrollWidth` / `scrollHeight` and fractional scroll positions.
+- **TabBar.** A rail strip has no visible track, so the bar draws a 1px line
+  on each overflowing side with its own `::before` / `::after`, ordered onto
+  the strip's edges and cancelled out of the flex gap by a negative margin (no
+  tab or action moves). A segmented or inspector strip already draws a
+  bordered track, so the overflowing side colors that border instead of
+  crossing its rounded end with a straight line. `--kui-tab-bar-divider-color`
+  themes it.
+- **Why not CSS only.** Scroll-driven animations (`animation-timeline`) are not
+  in Firefox (checked against Firefox 155), scroll-state container queries are
+  Chromium-only, and the chrome is a sibling of the scroller, so it could read
+  the state only through `timeline-scope` on a shared ancestor. A progressive
+  CSS path would give each engine a different unwired default; one wiring keeps
+  every engine identical and testable.
+- **Installation.** Apps call it once at the application root. `wireCatalog`
+  installs it for its own root, since the `Catalog` shell composes its panes
+  itself. Layout wire helpers (`wireWorkbench`, `wireSidebar`, …) do not, so
+  one root call covers every layout without double wiring.
+
+**Verification.** `ui/tests/unit/wire-scroll-dividers.test.ts` walks the
+transition matrix (fits → overflows → middle → end → start → shrinks to fit →
+refills, sub-pixel edges, header-only / footer-only panes, horizontal and
+right-to-left strips, app-owned targets including shared chrome and a
+scroller that is also chrome, re-render restoration, added / removed panes,
+disposal, and a Document root without observers).
+`ui/tests/browser/scroll-dividers.spec.ts` asserts the drawn lines by computed
+style and unchanged geometry across Pane, Workbench, all three TabBar
+presentations, right-to-left, and targets in Chromium, Firefox, and WebKit.
 
 ## 4. Responsive presentation matrix
 

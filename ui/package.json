@@ -200,6 +200,10 @@
       "types": "./dist/wire-tab-bars.d.ts",
       "import": "./dist/wire-tab-bars.js"
     },
+    "./wire-scroll-dividers": {
+      "types": "./dist/wire-scroll-dividers.d.ts",
+      "import": "./dist/wire-scroll-dividers.js"
+    },
     "./nav-stack": {
       "types": "./dist/nav-stack.d.ts",
       "import": "./dist/nav-stack.js"

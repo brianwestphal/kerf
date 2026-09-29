@@ -7,7 +7,14 @@ export interface ToolbarProps {
   center?: KerfUiContent;
   trailing?: KerfUiContent;
   label?: string;
-  /** Physical divider edges in canonical top/right/bottom/left order. Defaults to bottom. */
+  /**
+   * Physical divider edges in canonical top/right/bottom/left order, drawn
+   * always. Defaults to none: a toolbar pinned over or under scrolling content
+   * gets its divider from the scroll state instead — a `Pane` draws the line
+   * between its chrome and content while content is scrolled away beneath it,
+   * and `wireScrollDividers` `targets` can name a toolbar as chrome, which
+   * then draws its facing side the same way.
+   */
   dividerSides?: Sides;
   /** Horizontal treatment of the center zone. Defaults to centered content. */
   centerAlign?: 'center' | 'stretch';
@@ -66,7 +73,7 @@ export function Toolbar({
   center,
   trailing,
   label,
-  dividerSides = 'b',
+  dividerSides = '',
   centerAlign = 'center',
   responsive = 'none',
   responsiveAt = 'narrow',

@@ -117,7 +117,7 @@ export interface CollapsiblePanelProps {
   footer?: KerfUiContent;
   /**
    * Configuration for a `toolbar` panel's `Pane` (`contentElement`,
-   * `contentLabel`, `separators`, `safeAreaEdges`) — for example
+   * `contentLabel`, `separators`, `safeAreaEdges`, `chromeDividers`) — for example
    * `{ contentElement: 'nav', contentLabel: 'Sections' }` for a navigation
    * rail. Omitted or `undefined` fields keep the `Pane` defaults. Ignored
    * without a `toolbar`, where `children` renders as given.

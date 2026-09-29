@@ -272,6 +272,13 @@ slot without mixing authoring rules into the per-entry component catalog.
   restoration after reorder or automatic activation replaces the strip, and a
   disposer. The app applies changes and owns order,
   selection, panels, routing, close policy, and persistence.
+- Dividers between pinned chrome and scrolling content are scroll state:
+  `Toolbar` draws none by default, and `wireScrollDividers`
+  (`@kerfjs/ui/wire-scroll-dividers`) reports each scroller's hidden edges so a
+  `Pane` draws its header/footer divider and a `TabBar` its overflow dividers
+  only while content is scrolled beneath or beyond them (`Pane`
+  `chromeDividers`: `scroll` default, `always`, `none`). See
+  [`23-app-layouts.md`](23-app-layouts.md) §3.7.
 - A `ListItem` is a native button, not an isolated `role="menuitem"`; callers
   should add a full menu widget only when they also implement its complete
   keyboard model. Menu row/header `rootAttributes` accept only domain `data-*`

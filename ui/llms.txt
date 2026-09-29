@@ -289,6 +289,15 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `FloatingToolbar` beside the drawer, near where its effect appears. Align
   text to text and icons to icons across a pane; a border is decoration, never
   the alignment anchor. Keep one scroll owner per region.
+- **Dividers between pinned chrome and scrolling content are scroll state.**
+  Toolbars draw no divider by default. Call `wireScrollDividers(appRoot)`
+  (`@kerfjs/ui/wire-scroll-dividers`) once and keep its disposer: every `Pane`
+  then draws the line under its header only while content is scrolled beneath
+  it and the line over its footer only while more content lies below (never
+  when the content fits), and every `TabBar` marks each side of its strip with
+  tabs scrolled out of view. Configure a pane with `chromeDividers`
+  (`scroll` default, `always`, `none`); name app-owned chrome in `targets`.
+  Never add a border, or a permanent `dividerSides`, to fake one.
   While a side overlay is open (a Workbench rail overlay, a `wireSidebar` compact
   overlay, an overlay `CollapsiblePanel` or horizontal `ResizableRegion`), the
   layout hides the covered work area's `FloatingToolbar`s and restore corners
@@ -307,7 +316,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   (mark a preferred new-view target with `data-nav-focus`), `wireTabBars` the
   overflow autoscroll, drag preview, and
   replacement focus after controlled automatic tab activation,
-  `wireResizableRegions` the live drag preview; they report committed changes via
+  `wireResizableRegions` the live drag preview, `wireScrollDividers` the
+  scroll-state attributes from which a `Pane` draws its chrome dividers and a
+  `TabBar` its overflow dividers; they report committed changes via
   callbacks. For a tab-local action plus a separate far-edge action, set
   `TabBar trailingPlacement="adjacent"`, put the local action in `trailing`, and
   the workspace action in `end`; the component keeps both visible while its tab
@@ -369,6 +380,7 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
 `ListInsetText`, `SegmentedControl`,
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,
 `wireTokenSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
+`wireScrollDividers` (scroll-state dividers for every `Pane` and `TabBar`),
 `ResizableRegion` (+ `wireResizableRegions`), `StateBanner`, `EmptyState`,
 `LoadingSpinner`, `Skeleton`, `ValueTable`, `ValueTableRow`. Whole-screen layouts (opt-in,
 tree-shakeable, declarative with `wire…` helpers, each with a companion CSS import):

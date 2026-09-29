@@ -28,11 +28,12 @@ Arrange a complex tool or editor as a stable central work area with optional per
 - JavaScript: `@kerfjs/ui/workbench` — exports `Workbench`, `WorkbenchChromePlacement`, `WorkbenchCompactOverlay`, `WorkbenchMainBottomToolbar`, `WorkbenchMainToolbar`, `WorkbenchPanel`, `WorkbenchPanelResizable`, `WorkbenchPanelToggle`, `WorkbenchPanelToolbar`, `WorkbenchProps`, `WorkbenchResponsiveOverlayAt`.
 - CSS: import `@kerfjs/ui/workbench.css` once.
 - Wiring: `wireWorkbench` from `@kerfjs/ui/wire-workbench` (optional).
+- Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
 - Declared side effects: manual-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/workbench`](../public-api-signatures-v1.md#kerfjsuiworkbench), [`@kerfjs/ui/wire-workbench`](../public-api-signatures-v1.md#kerfjsuiwire-workbench) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/workbench`](../public-api-signatures-v1.md#kerfjsuiworkbench), [`@kerfjs/ui/wire-workbench`](../public-api-signatures-v1.md#kerfjsuiwire-workbench), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -52,6 +53,7 @@ Exact prop names and types: [`@kerfjs/ui/workbench`](../public-api-signatures-v1
 - inline, overlay, or hidden responsive presentation
 - narrow or compact single-track responsive fill
 - safe-area restore control
+- chrome dividers only while scrolled (wired by wireScrollDividers)
 
 ## Composition
 
@@ -70,12 +72,14 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 **The app owns:** panel presence and content; collapsed state; panel sizes; responsive replacement below desktop; collapse controls and focus policy.
 
-**Wiring:** `wireWorkbench` is optional.
+**Wiring:** `wireWorkbench`, `wireScrollDividers` is optional.
 
 **Wiring-owned state attributes** — never render, remove, or branch on these as app state:
 
 - `data-handle-inset` on `kui-workbench__rail` (`wireWorkbench`): Written by the shared resize wiring when the work-area minimum or a parent clamp holds a rail's maximum near its size. It carries no Workbench styling; the Workbench handle stays at the rail's inner edge.
 - `data-resizing` on `kui-workbench__rail` (`wireWorkbench`): Present on a resizable rail or the drawer while a pointer drag resizes it.
+- `data-scroll-overflow` on `kui-pane__content of each panel and work-area Pane` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
+- `data-scroll-divider` on `kui-pane__header and kui-pane__footer of each panel and work-area Pane` (`wireScrollDividers`): The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it.
 
 ## Geometry
 

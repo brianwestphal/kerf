@@ -411,7 +411,9 @@ revealCatalogEntry(app, initial, { block: "center" });
 - **`mainToolbar` / `footerToolbar`** take the entry toolbar's and the resource
   footer toolbar's `ToolbarConfig` (`dividerSides`, `centerAlign`, `responsive`,
   `responsiveAt`, `safeAreaEdges`). The defaults are a wrapping entry toolbar
-  and a divider-free footer toolbar that stacks at `narrow`; an omitted or
+  and a footer toolbar that stacks at `narrow`, all without dividers of their
+  own: `wireCatalog` wires `wireScrollDividers`, so the shell's panes draw
+  their chrome dividers only while scrolled; an omitted or
   `undefined` field keeps them. Configure these instead of styling the shell.
 - **`theme`** is a global preference — the app's signal; `wireCatalog` only reports
   the toggle, the app applies the theme (the shell reads `theme` to show the toggle's

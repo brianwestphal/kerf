@@ -1,5 +1,6 @@
 import { delegate, type Signal } from 'kerfjs';
 
+import { wireScrollDividers } from './wire-scroll-dividers.js';
 import { wireWorkbench } from './wire-workbench.js';
 
 export interface WireCatalogOptions {
@@ -328,7 +329,9 @@ export function wireCatalogGeometryOverlay(root: HTMLElement): () => void {
  * item selection (and the related-entry popup menu), the sidebar collapse toggle, and
  * the theme toggle. The app owns the `active`/`collapsed`/`theme` signals and updates
  * them in the callbacks; optionally mirror the active id into the URL via `urlParam`.
- * Returns a disposer.
+ * It also wires the scroll dividers below root (`wireScrollDividers`), so the
+ * catalog's panes and every example in it show their chrome dividers only
+ * while scrolled. Returns a disposer.
  */
 export function wireCatalog(
   root: HTMLElement,
@@ -379,6 +382,7 @@ export function wireCatalog(
   };
 
   const disposers: Array<() => void> = [
+    wireScrollDividers(root),
     // Sidebar items AND the footer's related-entry popup-menu items both carry
     // `data-action={selectAction}` + `data-item-id`, so one delegated click covers both.
     delegate(

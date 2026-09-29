@@ -34,9 +34,9 @@ export type WorkbenchPanelToolbar = PanelToolbar;
 
 /**
  * The work area's top toolbar; collapsed rails add their groups to it. Its
- * configuration forwards to its `Toolbar`. By default it draws the divider
- * under the work area's header chrome: its own bottom edge, or none when a
- * `mainHeader` follows (which then carries the divider).
+ * configuration forwards to its `Toolbar`. It draws no divider of its own by
+ * default: the work area's `Pane` draws one under its header chrome, wherever
+ * that chrome ends, while `main` is scrolled (`mainPane.chromeDividers`).
  */
 export interface WorkbenchMainToolbar extends ToolbarConfig {
   label: string;
@@ -51,9 +51,9 @@ export interface WorkbenchMainToolbar extends ToolbarConfig {
 
 /**
  * The work area's bottom toolbar; a collapsed drawer adds its groups to it.
- * Its configuration forwards to its `Toolbar`. By default it draws the divider
- * over the work area's footer chrome: its own top edge, or none when a
- * `mainFooter` precedes it.
+ * Its configuration forwards to its `Toolbar`. It draws no divider of its own
+ * by default: the work area's `Pane` draws one over its footer chrome while
+ * more of `main` lies below (`mainPane.chromeDividers`).
  */
 export interface WorkbenchMainBottomToolbar extends ToolbarConfig {
   label: string;
@@ -134,17 +134,13 @@ export function panelBody(
 
 /**
  * The work area's `mainHeader` / `mainFooter` chrome in a `List` carrying the
- * app's configuration; an omitted or `undefined` field keeps the default,
- * including the divider the work area places.
+ * app's configuration; an omitted or `undefined` field keeps the `List`
+ * default (no divider: the work area's `Pane` draws its chrome dividers).
  */
-function chromeList(
-  content: KerfUiContent,
-  config: ListConfig | undefined,
-  dividerSides: ListConfig['dividerSides'],
-) {
+function chromeList(content: KerfUiContent, config: ListConfig | undefined) {
   return (
     <List
-      dividerSides={config?.dividerSides ?? dividerSides}
+      dividerSides={config?.dividerSides}
       gap={config?.gap}
       hAlign={config?.hAlign}
       vAlign={config?.vAlign}
@@ -211,15 +207,15 @@ export function mainBody({
   const drawer = mainBottomToolbar
     ? relocatedGroups(workbenchId, 'bottomDrawer', bottomDrawer)
     : [];
-  // One divider under the header chrome and one over the footer chrome,
-  // wherever that chrome ends.
+  // The Pane draws one divider under the header chrome and one over the
+  // footer chrome, wherever that chrome ends, from the scroll state.
   const header =
     !mainToolbar && !mainHeader ? undefined : (
       <>
         {mainToolbar ? (
           <Toolbar
             label={mainToolbar.label}
-            dividerSides={mainToolbar.dividerSides ?? (mainHeader ? '' : 'b')}
+            dividerSides={mainToolbar.dividerSides}
             centerAlign={mainToolbar.centerAlign}
             responsive={mainToolbar.responsive}
             responsiveAt={mainToolbar.responsiveAt}
@@ -240,21 +236,17 @@ export function mainBody({
             }
           />
         ) : null}
-        {mainHeader ? chromeList(mainHeader, mainHeaderList, 'b') : null}
+        {mainHeader ? chromeList(mainHeader, mainHeaderList) : null}
       </>
     );
   const footer =
     !mainFooter && !mainBottomToolbar ? undefined : (
       <>
-        {mainFooter
-          ? chromeList(mainFooter, mainFooterList, mainBottomToolbar ? '' : 't')
-          : null}
+        {mainFooter ? chromeList(mainFooter, mainFooterList) : null}
         {mainBottomToolbar ? (
           <Toolbar
             label={mainBottomToolbar.label}
-            dividerSides={
-              mainBottomToolbar.dividerSides ?? (mainFooter ? '' : 't')
-            }
+            dividerSides={mainBottomToolbar.dividerSides}
             centerAlign={mainBottomToolbar.centerAlign}
             responsive={mainBottomToolbar.responsive}
             responsiveAt={mainBottomToolbar.responsiveAt}
@@ -286,6 +278,7 @@ export function mainBody({
       contentLabel={mainPane?.contentLabel}
       separators={mainPane?.separators}
       safeAreaEdges={mainPane?.safeAreaEdges}
+      chromeDividers={mainPane?.chromeDividers}
     >
       {scrollHeader || scrollFooter ? (
         // Chrome that scrolls joins the content in one gapless column that

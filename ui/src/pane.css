@@ -147,6 +147,37 @@
   grid-area: footer;
 }
 
+/* Chrome dividers: one line under the header and one over the footer, where
+   the pinned chrome meets the scrolling content, whatever the chrome holds.
+   `chromeDividers="scroll"` (the default, no attribute) draws each only while
+   `wireScrollDividers` reports content scrolled away beneath it through
+   `data-scroll-divider` on the slot; `always` draws both; `none` neither. The
+   line is an inset shadow inside the slot, so showing or hiding it never
+   moves the chrome or the content. */
+.kui-pane > :is(.kui-pane__header, .kui-pane__toolbar, .kui-pane__footer) {
+  --_kui-pane-chrome-divider: transparent;
+}
+
+.kui-pane > :is(.kui-pane__header, .kui-pane__toolbar) {
+  box-shadow: inset 0 -1px var(--_kui-pane-chrome-divider);
+}
+
+.kui-pane > .kui-pane__footer {
+  box-shadow: inset 0 1px var(--_kui-pane-chrome-divider);
+}
+
+.kui-pane:not([data-chrome-dividers])
+  > :is(.kui-pane__header, .kui-pane__toolbar)[data-scroll-divider*="b"],
+.kui-pane:not([data-chrome-dividers])
+  > .kui-pane__footer[data-scroll-divider*="t"],
+.kui-pane[data-chrome-dividers="always"]
+  > :is(.kui-pane__header, .kui-pane__toolbar, .kui-pane__footer) {
+  --_kui-pane-chrome-divider: var(
+    --kui-pane-separator-color,
+    var(--kui-color-neutral-border-normal)
+  );
+}
+
 /* `chromePlacement="auto"`: the header and footer stay pinned while the pane
    is tall enough; below 480px of height (30rem, so it scales with the text
    size) the whole pane scrolls as one column instead, so tall chrome can never

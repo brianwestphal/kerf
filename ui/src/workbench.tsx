@@ -75,7 +75,7 @@ export interface WorkbenchPanel {
   footer?: KerfUiContent;
   /**
    * Configuration for a `toolbar` panel's `Pane` (`contentElement`,
-   * `contentLabel`, `separators`, `safeAreaEdges`) — for example
+   * `contentLabel`, `separators`, `safeAreaEdges`, `chromeDividers`) — for example
    * `{ contentElement: 'nav', contentLabel: 'Sections' }` for a navigation
    * rail. Omitted or `undefined` fields keep the `Pane` defaults. Ignored
    * without a `toolbar`, where `content` renders as given.
@@ -169,7 +169,7 @@ export interface WorkbenchProps {
   mainFooterPlacement?: WorkbenchChromePlacement;
   /**
    * Configuration for the work area's `Pane` (`contentElement`,
-   * `contentLabel`, `separators`, `safeAreaEdges`), which it has whenever it
+   * `contentLabel`, `separators`, `safeAreaEdges`, `chromeDividers`), which it has whenever it
    * has a toolbar, `mainHeader`, or `mainFooter`; without that chrome, `main`
    * renders as given and this is ignored. Omitted or `undefined` fields keep
    * the `Pane` defaults.
@@ -178,12 +178,13 @@ export interface WorkbenchProps {
   /**
    * Configuration for the `List` that holds `mainHeader` (`gap`, `hAlign`,
    * `vAlign`, `dividerSides`, `textInsets`, `controlInsets`). Omitted or
-   * `undefined` fields keep the defaults, including its bottom divider.
+   * `undefined` fields keep the defaults (no divider: the work area's
+   * `Pane` draws the line under its header chrome).
    */
   mainHeaderList?: ListConfig;
   /**
-   * The same for the `List` that holds `mainFooter`; by default it draws a
-   * top divider, or none when a `mainBottomToolbar` follows it.
+   * The same for the `List` that holds `mainFooter` (no divider by default:
+   * the work area's `Pane` draws the line over its footer chrome).
    */
   mainFooterList?: ListConfig;
   leftRail?: WorkbenchPanel;

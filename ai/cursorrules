@@ -48,7 +48,9 @@ Wire emitted `data-action` hooks at the mount root and retain disposers.
 disposers. Compose `AppTab` inside controlled `TabBar`; `wireTabBars()` supplies
 horizontal edge autoscroll while dragging. Apply reorder reports
 with `reorderTabs()`, and keep order, selection, close policy, routing, panels,
-and persistence in the host. Icons/spinners are decorative unless
+and persistence in the host. Toolbars draw no divider by default; call
+`wireScrollDividers()` once at the app root so panes and tab bars show scroll
+dividers only while content is scrolled beneath or beyond them. Icons/spinners are decorative unless
 labeled, and assertive banners are only for urgent interruption.
 
 Components own their styles; configure, never override. Set how a component

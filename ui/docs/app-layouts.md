@@ -131,6 +131,12 @@ device in tests.
   `content` a `NavStack`. On a tablet/desktop, render the same sections as a
   `Workbench` left rail instead of a bottom bar.
 
+Whatever the layout, call `wireScrollDividers(appRoot)` from
+`@kerfjs/ui/wire-scroll-dividers` once: every `Pane` a layout renders then
+draws the line between its pinned toolbars and its scrolling content only
+while content is scrolled beneath them, and toolbars need no divider of their
+own. See [Scroll dividers](layout.md#scroll-dividers).
+
 ## Dialogs
 
 Pick the dialog's inner layout by the same complexity axis, then apply the device

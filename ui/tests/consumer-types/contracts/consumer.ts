@@ -99,6 +99,10 @@ import {
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import type {} from '@kerfjs/ui/webawesome';
 import type { CatalogRevealOptions } from '@kerfjs/ui/wire-catalog';
+import {
+  type ScrollDividerTarget,
+  wireScrollDividers,
+} from '@kerfjs/ui/wire-scroll-dividers';
 import { wireTokenSearchFields } from '@kerfjs/ui/wire-token-search-fields';
 import { Workbench } from '@kerfjs/ui/workbench';
 
@@ -791,3 +795,30 @@ void invalidActivation;
 // @ts-expect-error KUI-T010 SunkenPanel uses square, not the ambiguous flat surface term.
 const invalidSunkenPanelShape: SunkenPanelShape = 'flat';
 void invalidSunkenPanelShape;
+
+// Scroll dividers: one call per root returns a disposer; app-owned targets
+// name the scroller and chrome by id on physical sides.
+const scrollTargets: ScrollDividerTarget[] = [
+  { scroller: 'results', top: 'results-toolbar', bottom: 'status' },
+];
+const stopScrollDividers: () => void = wireScrollDividers(
+  document.createElement('div'),
+  { targets: scrollTargets },
+);
+stopScrollDividers();
+wireScrollDividers(document);
+// @ts-expect-error A target needs the id of its scrolling element.
+wireScrollDividers(document, { targets: [{ top: 'header' }] });
+// @ts-expect-error Target sides are physical: top, right, bottom, left.
+wireScrollDividers(document, { targets: [{ scroller: 'x', start: 'y' }] });
+UI.Pane({ children: icon, chromeDividers: 'always' });
+UI.Pane({ children: icon, chromeDividers: 'none' });
+const paneChromeDividers: UI.PaneChromeDividers = 'scroll';
+void paneChromeDividers;
+// @ts-expect-error KUI-T010 chrome dividers are scroll, always, or none.
+UI.Pane({ children: icon, chromeDividers: 'hover' });
+UI.Pane({
+  children: icon,
+  // @ts-expect-error Pane protects its chrome-divider attribute.
+  rootAttributes: { 'data-chrome-dividers': 'always' },
+});

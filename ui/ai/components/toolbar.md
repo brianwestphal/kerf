@@ -18,16 +18,17 @@ Leading, centered, and trailing toolbar composition.
 
 - JavaScript: `@kerfjs/ui/toolbar` — exports `Toolbar`.
 - CSS: the browser build of `@kerfjs/ui/toolbar` pulls its CSS automatically; import `@kerfjs/ui/toolbar.css` manually only without the `browser` export condition.
+- Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.md#kerfjsuitoolbar) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.md#kerfjsuitoolbar), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
-- bottom divider (default)
-- no dividers
+- no dividers (default)
+- scroll dividers when named as wireScrollDividers targets chrome
 - top/right/bottom/left divider combinations
 - centered content
 - stacked zones at compact or narrow widths
@@ -53,7 +54,12 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 **The app owns:** actions; command availability; responsive relocation; which screen edges an app bar or bottom bar outside a Pane header or footer claims for device safe areas (safeAreaEdges).
 
-No wiring helper.
+**Wiring:** `wireScrollDividers` is optional.
+
+**Wiring-owned state attributes** — never render, remove, or branch on these as app state:
+
+- `data-scroll-overflow` on `the targets scroller` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
+- `data-scroll-divider` on `a Toolbar named as targets chrome` (`wireScrollDividers`): The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it.
 
 ## Geometry
 

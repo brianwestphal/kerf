@@ -215,10 +215,13 @@ Every toolbar the Workbench composes — `mainToolbar`, `mainBottomToolbar`, and
 each panel's `toolbar` — takes the `Toolbar`'s configuration (`ToolbarConfig`):
 `dividerSides`, `centerAlign`, `responsive`, `responsiveAt`, and
 `safeAreaEdges`. Configure the toolbar through these props rather than styling
-it. By default a panel toolbar keeps its bottom divider, and the work area draws
-one divider under its header chrome and one over its footer chrome, wherever
-that chrome ends; set `dividerSides: ""` to drop a toolbar's divider, for
-example. `responsive: "wrap"` keeps a long title whole and wraps its actions
+it. No toolbar draws a divider by default: each `Pane` draws one line under
+its header chrome and one over its footer chrome, wherever that chrome ends,
+only while its content is scrolled beneath it (see
+[Scroll dividers](./layout.md#scroll-dividers) — call `wireScrollDividers`
+once at the app root). Set `dividerSides` only for a permanent separator edge,
+or `chromeDividers: "always"` on the pane for a line that never hides.
+`responsive: "wrap"` keeps a long title whole and wraps its actions
 below it. `mainBottomToolbar` also takes a `center`. A panel's
 `restorePosition` also places its floating restore controls.
 
@@ -226,7 +229,7 @@ The `Pane`s and `List`s the Workbench composes around your content are
 configurable the same way:
 
 - `mainPane` (`PaneConfig`: `contentElement`, `contentLabel`, `separators`,
-  `safeAreaEdges`) configures the work area's `Pane`, which exists whenever the
+  `safeAreaEdges`, `chromeDividers`) configures the work area's `Pane`, which exists whenever the
   work area has a toolbar, `mainHeader`, or `mainFooter`;
 - a panel's `pane` configures the `Pane` a `toolbar` panel's `content` renders
   in — for example `{ contentElement: "nav", contentLabel: "Files" }` for a
@@ -235,8 +238,8 @@ configurable the same way:
   `vAlign`, `dividerSides`, `textInsets`, `controlInsets`) configure the
   `List`s holding `mainHeader` / `mainFooter`.
 
-An omitted or `undefined` field keeps today's default, including the header
-and footer dividers described above.
+An omitted or `undefined` field keeps the default, including the scroll
+dividers described above.
 
 Size a rail so its title and groups fit at its narrowest (a resizable rail's
 `min`); a toolbar that cannot hold them drops the title rather than

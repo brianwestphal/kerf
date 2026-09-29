@@ -73,7 +73,7 @@ export interface CatalogSidebarConfig extends Pick<
    * `wireCatalog`'s `sidebarSize`, which writes each committed resize to it.
    */
   size?: number;
-  /** The sidebar header toolbar's configuration (default: a bottom divider). */
+  /** The sidebar header toolbar's configuration (default: no divider; its pane draws one while scrolled). */
   toolbar?: ToolbarConfig;
 }
 

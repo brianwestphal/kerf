@@ -55,6 +55,28 @@ className="header" />`) that the application then styles.
   (`kerf-ui-analyze`, from a new `@kerfjs/ui` dev dependency) in
   `prepublishOnly`.
 
+- **Behavior change (`@kerfjs/ui`): toolbars no longer draw a divider by
+  default; dividers between pinned chrome and scrolling content follow the
+  scroll.** `Toolbar`'s `dividerSides` now defaults to `''` (was `'b'`), and
+  the `Workbench` (`mainToolbar`, `mainBottomToolbar`, panel toolbars, and the
+  `mainHeader` / `mainFooter` lists), `CollapsiblePanel`, and `Catalog`
+  toolbars no longer place dividers of their own. Instead a `Pane` draws one
+  line under its header and one over its footer, wherever that chrome ends:
+  the header's only while content is scrolled beneath it, the footer's only
+  while more content lies below, and neither when the content fits. The new
+  `@kerfjs/ui/wire-scroll-dividers` subpath's `wireScrollDividers(root, {
+targets? })` reports that state — call it once at the app root and keep its
+  disposer (`wireCatalog` installs it for its own root). It also marks each
+  side of a `TabBar` strip with tabs scrolled out of view, and lets a
+  `Toolbar` or `List` named as chrome in `targets` draw the divider facing an
+  app-owned scroller. The wiring only writes the `data-scroll-overflow` /
+  `data-scroll-divider` state attributes; each component draws its own line,
+  and no state moves the chrome, the content, or a tab. `Pane` gains
+  `chromeDividers` (`scroll` default, `always`, `none`; also in `PaneConfig`,
+  so `mainPane` and a panel's `pane` forward it) and TabBar the
+  `--kui-tab-bar-divider-color` token. To keep a permanent line, set
+  `chromeDividers: "always"` on the pane or an explicit `dividerSides`.
+
 - **`@kerfjs/ui` ships a markdown component reference for AI assistants.**
   `@kerfjs/ui/ai/components/README.md` indexes every catalog entry in one line,
   and `@kerfjs/ui/ai/components/<id>.md` gives each entry a short page: when to

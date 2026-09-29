@@ -77,3 +77,77 @@
 .kui-tab-bar__end {
   margin-inline-start: auto;
 }
+
+/* Overflow dividers: a line on each side of the tab strip beyond which tabs
+   are scrolled out of view, as `wireScrollDividers` reports through the
+   strip's `data-scroll-overflow` (physical sides). A rail strip has no
+   visible track, so the bar draws the line with its own pseudo-elements,
+   ordered onto the strip's edges: `::before` between the leading zone and the
+   strip, `::after` between the strip and the trailing zone. Each is 1px wide
+   and gives back its width and one gap through a negative margin, so it
+   overlaps the strip's edge and never moves a tab or an action; hidden, it is
+   transparent. A segmented or inspector strip already draws a bordered track,
+   so its overflowing side takes the divider color on that border instead of
+   a straight line across its rounded end. */
+.kui-tab-bar > .kui-tab-bar__leading {
+  order: -2;
+}
+
+.kui-tab-bar > :is(.kui-tab-bar__trailing, .kui-tab-bar__end) {
+  order: 1;
+}
+
+.kui-tab-bar::before,
+.kui-tab-bar::after {
+  content: "";
+  position: relative;
+  z-index: 1;
+  width: 1px;
+  background: transparent;
+  pointer-events: none;
+  align-self: stretch;
+  flex: none;
+}
+
+.kui-tab-bar::before {
+  order: -1;
+  margin-inline-end: calc(-1px - var(--kui-toolbar-gap, remify(8px)));
+}
+
+.kui-tab-bar::after {
+  margin-inline-start: calc(-1px - var(--kui-toolbar-gap, remify(8px)));
+}
+
+.kui-tab-bar[data-presentation="rail"]:dir(ltr):has(
+    > .kui-tab-bar__tabs[data-scroll-overflow*="l"]
+  )::before,
+.kui-tab-bar[data-presentation="rail"]:dir(rtl):has(
+    > .kui-tab-bar__tabs[data-scroll-overflow*="r"]
+  )::before,
+.kui-tab-bar[data-presentation="rail"]:dir(ltr):has(
+    > .kui-tab-bar__tabs[data-scroll-overflow*="r"]
+  )::after,
+.kui-tab-bar[data-presentation="rail"]:dir(rtl):has(
+    > .kui-tab-bar__tabs[data-scroll-overflow*="l"]
+  )::after {
+  background: var(
+    --kui-tab-bar-divider-color,
+    var(--kui-color-neutral-border-normal)
+  );
+}
+
+.kui-tab-bar:not([data-presentation="rail"])
+  > .kui-tab-bar__tabs[data-scroll-overflow*="l"] {
+  border-left-color: var(
+    --kui-tab-bar-divider-color,
+    var(--kui-color-neutral-border-normal)
+  );
+}
+
+.kui-tab-bar:not([data-presentation="rail"])
+  > .kui-tab-bar__tabs[data-scroll-overflow*="r"] {
+  border-right-color: var(
+    --kui-tab-bar-divider-color,
+    var(--kui-color-neutral-border-normal)
+  );
+}

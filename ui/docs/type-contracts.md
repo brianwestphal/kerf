@@ -113,9 +113,10 @@ move errors into casts without making the integration safer.
   `{ keyboard: { removeAdjacentToken: false } }` when only caret navigation is
   wanted.
 - Add `wrap: true` anywhere `ToolbarText.maxLines` is used.
-- Replace `Toolbar({ divider: false })` with `dividerSides: ''`; the default
-  remains a bottom divider, while canonical combinations such as `tr` and
-  `trbl` select more physical edges.
+- Replace `Toolbar({ divider: false })` with `dividerSides: ''`, which is now
+  the default (a toolbar pinned over scrolling content gets its divider from
+  `wireScrollDividers` through its `Pane`); canonical combinations such as `b`,
+  `tr`, and `trbl` select permanent physical edges.
 - Replace raw `List.gap` strings with a direct spacing shorthand (`"xs"`,
   `"m"`) or a complete value from `@kerfjs/ui/css-values`. Replace
   `gap="0.25rem"` with `gap={rem(0.25)}` and wrap sums with `calc(plus(...))`.

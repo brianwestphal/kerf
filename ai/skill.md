@@ -53,6 +53,9 @@ explicit behavioral helpers and return disposers. Compose `AppTab` inside a
 controlled `TabBar`; `wireTabBars()` supplies horizontal edge autoscroll during
 dragging. Apply reorder reports with `reorderTabs()`, and keep order,
 selection, close policy, routing, panels, and persistence in the host.
+Toolbars draw no divider by default: call `wireScrollDividers()` once at the
+app root so each `Pane` draws its header/footer divider, and each `TabBar` its
+overflow divider, only while content is scrolled beneath or beyond it.
 Icons and spinners are decorative unless labeled; use assertive banners only
 for urgent interruption.
 

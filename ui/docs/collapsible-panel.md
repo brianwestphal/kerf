@@ -132,10 +132,12 @@ top toolbar over a `Pane`, with an optional `footer` below its content:
 hideLabel? }` trail it.
 
 The toolbar also takes the `Toolbar`'s configuration (`dividerSides`,
-`centerAlign`, `responsive`, `responsiveAt`, `safeAreaEdges`); it keeps its
-bottom divider unless `dividerSides` says otherwise. The `Pane` under it takes
-the panel's `pane` (`PaneConfig`: `contentElement`, `contentLabel`,
-`separators`, `safeAreaEdges`) — for example `{ contentElement: "nav",
+`centerAlign`, `responsive`, `responsiveAt`, `safeAreaEdges`); it draws no
+divider of its own unless `dividerSides` says so. The `Pane` under it draws
+the line under the toolbar only while its content is scrolled (see
+[Scroll dividers](./layout.md#scroll-dividers)), and takes the panel's `pane`
+(`PaneConfig`: `contentElement`, `contentLabel`, `separators`,
+`safeAreaEdges`, `chromeDividers`) — for example `{ contentElement: "nav",
 contentLabel: "Sections" }` for a navigation rail. An omitted or `undefined`
 field keeps the `Pane` default; without a `toolbar` there is no `Pane`, so
 `pane` is ignored.

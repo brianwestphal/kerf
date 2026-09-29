@@ -27,11 +27,12 @@ Standardize vertical component layout, optional physical-side text/control inset
 
 - JavaScript: `@kerfjs/ui/list` — exports `List`, `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `plus`, `calc`, `flex`.
 - CSS: the browser build of `@kerfjs/ui/list` pulls its CSS automatically; import `@kerfjs/ui/list.css` manually only without the `browser` export condition.
+- Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
 - Declared side effects: browser-condition-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#kerfjsuilist) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#kerfjsuilist), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -47,6 +48,7 @@ Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#k
 - top/right/bottom/left text and control inset combinations
 - fill: the layout root fills a definite-height parent
 - rootAttributes: safe data-\* metadata on the root
+- scroll dividers when named as wireScrollDividers targets chrome
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 
@@ -64,7 +66,12 @@ Exact prop names and types: [`@kerfjs/ui/list`](../public-api-signatures-v1.md#k
 
 **The app owns:** child semantics and content; the bounded height needed for scrolling; typed gap, flex, alignment, and divider choices.
 
-No wiring helper.
+**Wiring:** `wireScrollDividers` is optional.
+
+**Wiring-owned state attributes** — never render, remove, or branch on these as app state:
+
+- `data-scroll-overflow` on `the targets scroller` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
+- `data-scroll-divider` on `a List named as targets chrome` (`wireScrollDividers`): The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it.
 
 ## Geometry
 
