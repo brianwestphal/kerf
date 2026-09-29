@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`@kerfjs/ui` ships a markdown component reference for AI assistants.**
+  `@kerfjs/ui/ai/components/README.md` indexes every catalog entry in one line,
+  and `@kerfjs/ui/ai/components/<id>.md` gives each entry a short page: when to
+  use and avoid it, imports and CSS/registration side effects, a link to its
+  exact props, legal parents and zones (JSX prop and child count), app- and
+  wiring-owned state, geometry, accessibility obligations, its styling boundary
+  (configure through props; do not override internals), and its diagnostics.
+  `llms.txt` and the shipped skill now send assistants there instead of to the
+  263 KB `component-catalog.json` and 221 KB `component-composition.json`,
+  which remain the canonical sources for tools. The pages are generated from
+  those two files and a package check fails when they drift.
+
 - **Breaking (`@kerfjs/ui` and `create-kerf-component`): the composition
   catalog files are renamed so they no longer read as a "v2" of the component
   catalog.** The composition catalog is a generated composition layer beside

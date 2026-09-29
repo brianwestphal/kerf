@@ -335,6 +335,10 @@ if (
   fail('llms.txt must link the consumer catalog extension schema');
 if (!llms.includes('[Composition catalog](./ai/component-composition.json)'))
   fail('llms.txt must link the composition catalog');
+if (!llms.includes('[component reference index](./ai/components/README.md)'))
+  fail('llms.txt must route assistants to the markdown component reference');
+if (!readme.includes('[`ai/components/README.md`](./ai/components/README.md)'))
+  fail('README must link the markdown component reference');
 
 const entries = artifact.entries ?? [];
 const ids = entries.map((entry) => entry.id);

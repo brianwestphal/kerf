@@ -18,6 +18,25 @@ package delivery paths, Web Awesome's installed manifest, AI guidance, and
 documentation links. Nuanced prose in this contract and the selection guide
 remains authored rather than generated.
 
+### Markdown component reference (AI entry point)
+
+[`ai/components/README.md`](../ai/components/README.md) and one
+`ai/components/<id>.md` page per catalog entry are the assistant-facing view of
+both catalogs. An assistant reads the index, then only the pages it uses,
+instead of loading the full JSON. Each page merges the entry's selection facts
+(purpose, use/avoid, alternatives), delivery (JavaScript subpath, CSS,
+registration, wiring helpers), a link into `public-api-signatures-v1.md` for
+exact props, composition (parents, contexts, zones with their JSX prop and
+cardinality, children), state and wiring ownership including wiring-owned
+state attributes, geometry, accessibility obligations, public class and token
+hooks framed as a styling boundary (components own their styles; configure
+through props rather than overriding internals), and `KUI-C###` diagnostics
+with their conditions. `scripts/sync-component-docs.mjs` renders them only from
+`component-catalog.json` and `component-composition.json` (plus the signature
+file's module headings for anchors), sorted and Prettier-formatted;
+`check:catalog` rejects a stale, missing, or orphaned page. The JSON files stay
+the canonical tool-facing sources.
+
 ### Composition catalog
 
 [`component-composition.json`](../ai/component-composition.json) adds a formal,

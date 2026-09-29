@@ -1,13 +1,15 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.42.4
+kerf-ui-skill-version: 1.43.0
 ---
 
 # Building with @kerfjs/ui
 
-Read `../docs/component-selection.md` first, then `./component-catalog.json`,
-`./component-composition.json`,
+Read `../docs/component-selection.md` first, then the component reference index
+`./components/README.md` and the `./components/<id>.md` page of every component
+you use (selection, imports, props link, composition, state and wiring,
+accessibility, styling boundary, diagnostics), then
 `./public-api-signatures-v1.md`, `./compile-time-contracts-v1.json`,
 `./webawesome-jsx-signatures-v1.md`,
 `../docs/recipes.md`, `../README.md`,
@@ -40,9 +42,12 @@ rendered appearance. A `data-*` attribute listed in an entry's
 `wiring.stateAttributes` belongs to the named helper: never render, remove, or
 branch on it as application state.
 
-Use `component-catalog.json` for selection, delivery, and compatibility. Use
-its generated composition layer, `component-composition.json`, when evaluating
-composition. Join catalogs by `key` (`package:id`), never bare `id`. Treat
+The component pages are generated from `component-catalog.json` and its
+composition layer, `component-composition.json`; do not load those large JSON
+files to choose or compose components. They are the tool-facing sources: when a
+tool must mechanically evaluate selection, delivery, compatibility, or
+composition, use `component-catalog.json` for selection, delivery, and
+compatibility and `component-composition.json` for composition. Join catalogs by `key` (`package:id`), never bare `id`. Treat
 `generated-permissive-default` composition provenance as unknown/allowed, not
 as a prohibition. Emit a diagnostic only after mechanically establishing its
 exact `when` condition; subjective guidance stays prose. App entries use the
@@ -111,7 +116,7 @@ form, list-state lifecycle, or mixed-control toolbar, start from the runnable
 reference in [`docs/recipes.md`](../docs/recipes.md). Preserve its production
 primitives and semantic ownership; replace application state, policy, and copy.
 
-The concise human decision matrix is in [`component-selection.md`](../docs/component-selection.md). For exhaustive tool retrieval, load [`component-catalog.json`](./component-catalog.json), the canonical metadata for every public component/helper, composition, and supported Web Awesome entry. Its `geometry` object identifies who owns margin, border, and padding; use that contract to avoid double-insetting or wrapping an already complete surface. Use its linked current recipes instead of inferring behavior from CSS.
+The concise human decision matrix is in [`component-selection.md`](../docs/component-selection.md). Per-component facts are in [`components/README.md`](./components/README.md) and its linked pages. For exhaustive tool retrieval, load [`component-catalog.json`](./component-catalog.json), the canonical metadata for every public component/helper, composition, and supported Web Awesome entry. Its `geometry` object identifies who owns margin, border, and padding; use that contract to avoid double-insetting or wrapping an already complete surface. Use its linked current recipes instead of inferring behavior from CSS.
 
 Before presenting an integration as complete, run `kerf-ui-analyze --root <workspace>`.
 Treat its error diagnostics as required fixes and review each review-level finding

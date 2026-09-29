@@ -271,7 +271,19 @@ action at the logical end. Its visible action glyph defaults to 18px through
 
 ## Machine-readable catalog
 
-AI tools can retrieve the shipped [`ai/component-catalog.json`](./ai/component-catalog.json)
+AI assistants should start from the generated markdown reference,
+[`ai/components/README.md`](./ai/components/README.md): a one-line index of
+every entry grouped like the catalog, plus one short page per entry
+(`ai/components/<id>.md`) covering when to use and avoid it, imports and
+CSS/registration side effects, where its exact props live, legal parents,
+zones with their JSX props and child counts, app- and wiring-owned state,
+geometry ownership, accessibility obligations, the styling boundary
+(configure through props; never override internals), and its composition
+diagnostics. The pages are projected from the two JSON catalogs by
+`scripts/sync-component-docs.mjs` (`npm run catalog:sync`), and
+`npm run check:catalog` fails when any page drifts.
+
+Tools can retrieve the shipped [`ai/component-catalog.json`](./ai/component-catalog.json)
 for the exhaustive component and composition inventory. It is the canonical
 source for ids, public exports, purpose and selection guidance, relationships,
 delivery and side effects, companion wiring, application-owned policy,

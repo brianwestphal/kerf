@@ -545,6 +545,13 @@ bundles `ui/tests/browser/fixtures/tone-text-cases.tsx` with and without the
 bridge and asserts parity for every `--kui-color-*` token it parses from
 `foundation.css` (plus the focus ring) in both schemes, and AA toned text.
 
+`ui/ai/components/` holds the generated assistant-facing markdown reference —
+`README.md` (one-line index) plus one `<id>.md` page per catalog entry — rendered
+by `ui/scripts/sync-component-docs.mjs` over `ui/scripts/lib/component-docs.mjs`
+from the component and composition catalogs; `check:catalog` runs its `--check`
+drift mode and `ui/tests/unit/component-docs.test.ts` covers the renderer
+(fixture sections, stale/missing/orphaned detection, shipped pages in sync).
+
 Within `ui/ai/`, the compatible selection catalog and package-qualified
 composition projection (`component-composition.json`) are joined by `application-ui-profile.*`: shipped
 package defaults, schema/types, asynchronous Node discovery, and synchronous

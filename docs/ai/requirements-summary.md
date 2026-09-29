@@ -29,6 +29,9 @@ versioned `ui/ai/catalog-authoring.json` companion makes that contract, its
 component/composition/recipe taxonomy, its functional-group and importance-first
 ordering (alphabetical ties, recipes last), and its exact API context discoverable
 without adding authoring rules to the per-entry component inventory.
+A generated markdown reference (`ui/ai/components/README.md` plus one short
+page per entry, drift-checked by `check:catalog`) is the assistant entry point
+over both JSON catalogs, which stay the tool-facing sources.
 The package-qualified composition catalog (`component-composition.json`, a
 generated composition layer beside `component-catalog.json`) and versioned application UI profile
 make composition and project policy machine-readable. The profile layers

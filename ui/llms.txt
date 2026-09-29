@@ -25,14 +25,24 @@ the folder modules, and CSS only imports their owner stylesheets.
 2. **Get exact signatures before emitting code** — read
    [public-api-signatures-v1.md](./ai/public-api-signatures-v1.md) (real prop names,
    callback shapes, disposer return types).
-3. **For exhaustive, structured facts** (ids, exports, variants, `publicClasses`,
-   relationships, side effects, and geometry ownership) load the
-   [Machine-readable component catalog](./ai/component-catalog.json) — the
-   canonical checked-in source; its schema is alongside it. Also load the
+3. **Look up each component you use** in the
+   [component reference index](./ai/components/README.md) — one line per
+   entry — then read only those `ai/components/<id>.md` pages (1–7 KB each):
+   use/avoid, imports and side effects, a link to exact props, legal parents,
+   zones with their JSX prop and child count, app- and wiring-owned state,
+   geometry, accessibility, the styling boundary (configure through props;
+   never override internals), and `KUI-C###` diagnostics. Do not load the
+   large JSON catalogs just to choose or compose components; the pages are
+   generated from them.
+   **Tools and mechanical checks** use the JSON sources instead: the
+   [Machine-readable component catalog](./ai/component-catalog.json) (ids,
+   exports, variants, `publicClasses`, relationships, side effects, and
+   geometry ownership) — the canonical checked-in source; its schema is
+   alongside it. Also load the
    consuming application's catalog extension when present; generate one from the
    [Consumer catalog extension schema](./ai/component-catalog-extension.schema.json)
    when app-owned components must participate in selection or alignment.
-   Load the [Composition catalog](./ai/component-composition.json) — a
+   A tool loads the [Composition catalog](./ai/component-composition.json) — a
    generated composition layer beside the component catalog, not a replacement
    for it — to mechanically evaluate parents, contexts, zones/cardinality,
    children, state, wiring (including the wiring-owned `stateAttributes` an app
@@ -359,6 +369,7 @@ shell, `@kerfjs/ui/collapsible-panel` (`CollapsiblePanel`, `CollapsiblePanelTogg
 - [workbench.md](./docs/workbench.md): the `Workbench` multi-panel shell, its collapse policies, and opt-in `resizable` panels driven by `wireWorkbench` (`@kerfjs/ui/wire-workbench`: drag, keyboard, min/max, persistence, compact suspension), the `mainMinSize` / `mainMinHeight` work-area minimums (default 320px wide beside any inline rail, 120px tall above the drawer) that resizable panels stop at and inline panels shrink around, and a panel's `responsiveOverlayAt` (`narrow` / `compact`, rails and the bottom drawer) that presents it as an overlay below a Workbench container breakpoint without a device-class check; a panel given its `collapsed` signal is a transient overlay (collapsed on entering the breakpoint, takes focus and keeps Tab inside while open, closed by Escape or an outside press, focus returned; `dismissOverlays`), and overlays are exclusive by default (opening one closes the others; `exclusiveOverlays: false` opts out).
 - [app-layouts.md](./docs/app-layouts.md): choosing `NavStack`/`SplitView`/`Workbench`/`TabScaffold` by data + interaction + device, and dialog presentation, plus the safe-area model (surfaces paint through unsafe areas; content pads only the edges it reaches; `Pane.safeAreaEdges` for app-owned arrangements, `Toolbar.safeAreaEdges` for an app bar or bottom bar at a screen edge).
 - [webawesome-theme.md](./docs/webawesome-theme.md): the optional Web Awesome theme; catalog coverage means themed-and-supported, not preferred (prefer the Kerf primitive when one exists). The UX sidebar visibly tags superseded and exceptional Web Awesome choices as `Discouraged`; Popup remains an available conditional positioning primitive.
+- [ai/components/README.md](./ai/components/README.md): the generated per-component markdown reference — the assistant entry point over both JSON catalogs.
 - [component-catalog.json](./ai/component-catalog.json) + [component-catalog-extension.schema.json](./ai/component-catalog-extension.schema.json) + [catalog-authoring.json](./ai/catalog-authoring.json) + [public-api-signatures-v1.md](./ai/public-api-signatures-v1.md) + [webawesome-jsx-signatures-v1.md](./ai/webawesome-jsx-signatures-v1.md): machine-readable selection facts, a reusable app-component extension contract, Catalog authoring discovery, and exact signatures.
 - [compile-time-contracts-v1.json](./ai/compile-time-contracts-v1.json) + [type-contracts.md](./docs/type-contracts.md): stable compile diagnostics, packed-declaration proof, migrations, and explicit non-goals.
 - [README.md](./README.md): package overview and the component subpath table.

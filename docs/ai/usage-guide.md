@@ -322,6 +322,10 @@ keep product policy in a thin application adapter, and write custom markup only
 for a genuinely different contract. The exhaustive use/avoid, alternatives,
 wiring, ownership, import, and recipe routing lives in
 [`ui/docs/component-selection.md`](../../ui/docs/component-selection.md).
+To look up one component, read the generated markdown index
+[`ui/ai/components/README.md`](../../ui/ai/components/README.md) and then only
+the `ui/ai/components/<id>.md` pages you use (selection, imports, props link,
+composition, state/wiring, accessibility, styling boundary, diagnostics).
 For exhaustive tool retrieval, load the shipped
 [`ui/ai/component-catalog.json`](../../ui/ai/component-catalog.json); its
 versioned schema and drift gate keep public exports, delivery paths,
