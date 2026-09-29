@@ -161,8 +161,37 @@
   padding-block-end: var(--_kui-nav-stack-safe-block-end);
   padding-inline: var(--_kui-nav-stack-safe-inline-start)
     var(--_kui-nav-stack-safe-inline-end);
-  border-block-start: 1px solid var(--kui-color-neutral-border-normal);
+  border-block-start: 1px solid
+    var(--_kui-nav-stack-bottom-divider, transparent);
   background: var(--kui-color-surface);
+}
+
+/* The live chrome is the containing block of its scroll divider; a
+   cross-fading copy stays absolutely positioned. */
+.kui-nav-stack__chrome:not(.kui-nav-stack__chrome-copy) {
+  position: relative;
+}
+
+/* Scroll dividers: the top chrome draws a line along its bottom edge while
+   the active view's content is scrolled beneath it, and the bottom toolbar
+   colors its 1px top border while more content lies below it — never when
+   the content fits. `wireScrollDividers` reports that state through
+   `data-scroll-divider`. The chrome's line is an overlaid 1px pseudo-element
+   (whatever the chrome holds never covers it) and the bottom's border is
+   always there, so showing either never moves the chrome, the toolbar, or
+   the content. A cross-fading chrome copy keeps the line its snapshot had. */
+.kui-nav-stack__chrome[data-scroll-divider*="b"]::after {
+  position: absolute;
+  block-size: 1px;
+  background: var(--kui-color-neutral-border-normal);
+  content: "";
+  inset-block-end: 0;
+  inset-inline: 0;
+  pointer-events: none;
+}
+
+.kui-nav-stack__bottom[data-scroll-divider*="t"] {
+  --_kui-nav-stack-bottom-divider: var(--kui-color-neutral-border-normal);
 }
 
 @media (prefers-reduced-motion: reduce) {

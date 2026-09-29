@@ -105,6 +105,16 @@ async function stripEdge(bar: Locator, side: 'left' | 'right') {
   return shows(bar, pseudo);
 }
 
+/** Whether a top border is drawn in an opaque color (a scroll divider). */
+const edge = (locator: Locator) =>
+  locator.evaluate((element) => {
+    const style = window.getComputedStyle(element);
+    return (
+      style.borderTopWidth !== '0px' &&
+      !/^rgba\([^)]*,\s*0\)$|^transparent$/.test(style.borderTopColor)
+    );
+  });
+
 const rects = (locator: Locator, selectors: string[]) =>
   locator.evaluate(
     (element, list) =>
@@ -284,6 +294,147 @@ test.describe('scroll dividers', () => {
     expect(await shows(bar, '::before')).toBe(true);
     expect(await shows(bar, '::after')).toBe(false);
     expect(await stripEdge(bar, 'right')).toBe(true);
+  });
+
+  test('a NavStack draws its chrome and bottom-toolbar dividers from the active view, across push and pop, without moving anything', async ({
+    page,
+  }) => {
+    await mountFixture(page);
+    const stack = page.locator('[data-case="nav-stack"] .kui-nav-stack');
+    const chrome = stack.locator(':scope > .kui-nav-stack__chrome');
+    const bottom = stack.locator(':scope > .kui-nav-stack__bottom');
+    const list = stack.locator('[data-nav-key="list"]');
+    const parts = [
+      ':scope > .kui-nav-stack__chrome',
+      ':scope > .kui-nav-stack__viewport',
+      ':scope > .kui-nav-stack__bottom',
+    ];
+    const geometry = await rects(stack, parts);
+
+    expect(await shows(chrome, '::after')).toBe(false);
+    expect(await edge(bottom)).toBe(true);
+
+    await scroll(list, 'middle');
+    expect(await list.getAttribute('data-scroll-overflow')).toBe('tb');
+    expect(await shows(chrome, '::after')).toBe(true);
+    expect(await edge(bottom)).toBe(true);
+    expect(await rects(stack, parts)).toEqual(geometry);
+
+    await scroll(list, 'end');
+    expect(await shows(chrome, '::after')).toBe(true);
+    expect(await edge(bottom)).toBe(false);
+    expect(await rects(stack, parts)).toEqual(geometry);
+
+    // Push a detail that fits: the chrome keys on it, not the list beneath.
+    await page.evaluate(() =>
+      (window as unknown as { pushDetail: () => void }).pushDetail(),
+    );
+    const detail = stack.locator('[data-nav-key="detail"]');
+    await expect(detail).toHaveAttribute('data-nav-active', 'true');
+    await expect(list).not.toHaveAttribute('data-scroll-overflow');
+    expect(await shows(chrome, '::after')).toBe(false);
+    expect(await edge(bottom)).toBe(false);
+
+    // Pop: the list is back, still scrolled to its end.
+    await stack.locator('[data-nav-back]').click();
+    await expect(detail).toHaveCount(0);
+    await expect(list).toHaveAttribute('data-scroll-overflow', 't');
+    expect(await shows(chrome, '::after')).toBe(true);
+    expect(await edge(bottom)).toBe(false);
+    await scroll(list, 'start');
+    expect(await shows(chrome, '::after')).toBe(false);
+    expect(await edge(bottom)).toBe(true);
+
+    // The live chrome positions its line; a cross-fade copy stays absolute.
+    expect(
+      await stack.evaluate((element) => {
+        const copy = element.ownerDocument.createElement('div');
+        copy.className = 'kui-nav-stack__chrome kui-nav-stack__chrome-copy';
+        element.append(copy);
+        const positions = [
+          window.getComputedStyle(
+            element.querySelector('.kui-nav-stack__chrome')!,
+          ).position,
+          window.getComputedStyle(copy).position,
+        ];
+        copy.remove();
+        return positions;
+      }),
+    ).toEqual(['relative', 'absolute']);
+  });
+
+  test('a NavStack view that is a Pane keys the chrome on whichever of the view and the Pane content actually scrolls', async ({
+    page,
+  }) => {
+    await mountFixture(page);
+    const stack = page.locator('[data-case="nav-stack-pane"] .kui-nav-stack');
+    const chrome = stack.locator(':scope > .kui-nav-stack__chrome');
+    const bottom = stack.locator(':scope > .kui-nav-stack__bottom');
+    const view = stack.locator('[data-nav-key="pane"]');
+    const pane = view.locator(':scope > [data-component="pane"]');
+    const content = pane.locator(':scope > .kui-pane__content');
+    const header = pane.locator(':scope > .kui-pane__header');
+
+    // A Pane sized by its content: the view scrolls it, header included, so
+    // the stack's chrome draws the line and the Pane's header does not.
+    expect(await edge(bottom)).toBe(true);
+    await scroll(view, 'middle');
+    expect(await view.getAttribute('data-scroll-overflow')).toBe('tb');
+    expect(await shows(chrome, '::after')).toBe(true);
+    expect(await shows(header)).toBe(false);
+    await scroll(view, 'start');
+
+    // A Pane that fills the view owns the scroll: its header draws the line
+    // under itself and the bottom toolbar keys on the Pane's content.
+    await pane.evaluate((element) => {
+      element.style.height = '100%';
+    });
+    await expect(view).not.toHaveAttribute('data-scroll-overflow');
+    await expect(content).toHaveAttribute('data-scroll-overflow', 'b');
+    expect(await edge(bottom)).toBe(true);
+    await scroll(content, 'middle');
+    expect(await shows(header)).toBe(true);
+    expect(await shows(chrome, '::after')).toBe(false);
+    expect(await edge(bottom)).toBe(true);
+    await scroll(content, 'end');
+    expect(await edge(bottom)).toBe(false);
+  });
+
+  test("a TabScaffold bar shows its divider only while the active scene's content continues below it", async ({
+    page,
+  }) => {
+    await mountFixture(page);
+    const scaffold = page.locator('[data-case="tab-scaffold"]');
+    const bar = scaffold.locator('.kui-tab-scaffold__bar');
+    const view = scaffold.locator('[data-nav-key="feed"]');
+    const nestedChrome = scaffold.locator('.kui-nav-stack__chrome');
+    const box = () =>
+      bar.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return [rect.top, rect.height].map(Math.round);
+      });
+    const barGeometry = await box();
+
+    expect(await edge(bar)).toBe(true);
+    expect(await shows(nestedChrome, '::after')).toBe(false);
+    await scroll(view, 'middle');
+    expect(await edge(bar)).toBe(true);
+    expect(await shows(nestedChrome, '::after')).toBe(true);
+    await scroll(view, 'end');
+    expect(await edge(bar)).toBe(false);
+    expect(await box()).toEqual(barGeometry);
+
+    // The About scene fits; the Feed scene keeps its scroll state.
+    await bar.locator('[data-tab-scaffold-tab="about"]').click();
+    await expect(
+      scaffold.locator('[data-tab-scaffold-scene="about"]'),
+    ).toHaveAttribute('data-active', 'true');
+    expect(await edge(bar)).toBe(false);
+    await bar.locator('[data-tab-scaffold-tab="feed"]').click();
+    await expect(view).toHaveAttribute('data-scroll-overflow', 't');
+    expect(await edge(bar)).toBe(false);
+    await scroll(view, 'start');
+    expect(await edge(bar)).toBe(true);
   });
 
   test('app-owned targets let a Toolbar and a List draw their facing divider, and disposal clears it', async ({

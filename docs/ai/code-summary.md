@@ -794,10 +794,13 @@ transitions and duplicate tab IDs in independent bars.
 `ui/src/wire-scroll-dividers.ts` (`@kerfjs/ui/wire-scroll-dividers`,
 `wireScrollDividers(root, { targets? })`) makes the divider between pinned chrome
 and scrolling content scroll state: it pairs every `.kui-pane` content slot with
-its header/footer, every `TabBar` strip, and app-owned id `targets`, and writes
+its header/footer, each `NavStack`'s top chrome / bottom toolbar and each
+`TabScaffold` bar with whatever scrolls in the active view or scene (the region,
+or through a chrome-free sole child a `Pane` content / nested layout region),
+every `TabBar` strip, and app-owned id `targets`, and writes
 only `data-scroll-overflow` (scroller) / `data-scroll-divider` (chrome); `Pane`
-(`chromeDividers`: `scroll`/`always`/`none`), `TabBar`, `Toolbar`, and `List`
-draw from them in their own CSS. `Toolbar.dividerSides` defaults to `''`, and the
+(`chromeDividers`: `scroll`/`always`/`none`), `NavStack`, `TabScaffold`,
+`TabBar`, `Toolbar`, and `List` draw from them in their own CSS. `Toolbar.dividerSides` defaults to `''`, and the
 Workbench / CollapsiblePanel / Catalog toolbars place no dividers of their own;
 `wireCatalog` installs the wiring. Unit transition matrix in
 `ui/tests/unit/wire-scroll-dividers.test.ts`; three-engine geometry and

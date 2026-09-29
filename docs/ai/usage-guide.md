@@ -229,8 +229,10 @@ state, routing, and persistence. `wireResizableRegions(root, { onCommit })` and
 return disposers. Tab dragging automatically scrolls toward a nearby horizontal
 edge to expose earlier or later drop targets. Toolbars draw no divider by
 default; `wireScrollDividers(root)` (`@kerfjs/ui/wire-scroll-dividers`) makes
-each `Pane` draw its header/footer divider, and each `TabBar` its overflow
-dividers, only while content is scrolled beneath or beyond them. Apply tab reorder reports with
+each `Pane` draw its header/footer divider, each `NavStack` / `TabScaffold` its
+chrome and bottom-bar dividers around the active view or scene, and each
+`TabBar` its overflow dividers, only while content is scrolled beneath or
+beyond them. Apply tab reorder reports with
 `reorderTabs()`. For a tab-local action immediately after the strip plus a
 workspace action at the far edge, set `trailingPlacement="adjacent"`, put the
 local action in `trailing`, and put the workspace action in `end`; TabBar owns

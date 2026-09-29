@@ -2,8 +2,10 @@ import { raw } from 'kerfjs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { AppTab } from '../../src/app-tab.js';
+import { NavStack } from '../../src/nav-stack.js';
 import { Pane } from '../../src/pane.js';
 import { TabBar } from '../../src/tab-bar.js';
+import { TabScaffold } from '../../src/tab-scaffold.js';
 import { Toolbar } from '../../src/toolbar.js';
 import { wireScrollDividers } from '../../src/wire-scroll-dividers.js';
 
@@ -543,5 +545,309 @@ describe('wireScrollDividers — lifecycle', () => {
     } finally {
       window.MutationObserver = originalMutationObserver;
     }
+  });
+});
+
+function navStack(
+  views: { key: string; content?: ReturnType<typeof raw> }[],
+  options: { bottom?: boolean; hideToolbar?: boolean } = {},
+) {
+  return String(
+    NavStack({
+      id: `stack-${String(roots.length)}`,
+      label: 'Stack',
+      views: views.map(({ key, content }) => ({
+        key,
+        title: key,
+        content: content ?? body,
+      })),
+      bottomToolbar:
+        options.bottom === false ? undefined : Toolbar({ label: 'Bottom' }),
+      hideToolbar: options.hideToolbar,
+    }),
+  );
+}
+
+function stackParts(root: ParentNode) {
+  const stack = root.querySelector<HTMLElement>('.kui-nav-stack')!;
+  return {
+    stack,
+    chrome: stack.querySelector<HTMLElement>(':scope > .kui-nav-stack__chrome'),
+    bottom: stack.querySelector<HTMLElement>(':scope > .kui-nav-stack__bottom'),
+    view: (key: string) =>
+      stack.querySelector<HTMLElement>(`[data-nav-key="${key}"]`)!,
+  };
+}
+
+/** What NavStack re-renders on push/pop: the shown view moves by attribute. */
+function activate(views: HTMLElement[], active: HTMLElement) {
+  for (const view of views)
+    view.setAttribute('data-nav-active', String(view === active));
+}
+
+describe('wireScrollDividers — NavStack chrome around the active view', () => {
+  it('walks fits → overflows → middle → end → start → fits for the top chrome and bottom toolbar', () => {
+    const root = mountHtml(navStack([{ key: 'home' }]));
+    const { chrome, bottom, view } = stackParts(root);
+    const scroller = view('home');
+    const state = geometry(scroller);
+    const dispose = wireScrollDividers(root);
+    const observer = FakeResizeObserver.instances[0]!;
+
+    expect(observer.observed.has(scroller)).toBe(true);
+    expect(overflow(scroller)).toBeNull();
+    expect(divider(chrome)).toBeNull();
+    expect(divider(bottom)).toBeNull();
+
+    state.scrollHeight = 500;
+    observer.fire(scroller);
+    expect(overflow(scroller)).toBe('b');
+    expect(divider(chrome)).toBeNull();
+    expect(divider(bottom)).toBe('t');
+
+    scrollTo(scroller, state, { scrollTop: 200 });
+    expect(divider(chrome)).toBe('b');
+    expect(divider(bottom)).toBe('t');
+
+    scrollTo(scroller, state, { scrollTop: 400 });
+    expect(divider(chrome)).toBe('b');
+    expect(divider(bottom)).toBeNull();
+
+    scrollTo(scroller, state, { scrollTop: 0 });
+    expect(divider(chrome)).toBeNull();
+    expect(divider(bottom)).toBe('t');
+
+    state.scrollHeight = 100;
+    observer.fire(scroller.firstElementChild ?? scroller);
+    expect(overflow(scroller)).toBeNull();
+    expect(divider(chrome)).toBeNull();
+    expect(divider(bottom)).toBeNull();
+    dispose();
+  });
+
+  it('swaps the scroller on push and pop, ignoring a view sliding out', async () => {
+    const root = mountHtml(navStack([{ key: 'list' }, { key: 'detail' }]));
+    const { stack, chrome, bottom, view } = stackParts(root);
+    const list = view('list');
+    const detail = view('detail');
+    const listState = geometry(list, { scrollHeight: 600, scrollTop: 250 });
+    const detailState = geometry(detail, { scrollHeight: 100 });
+    const dispose = wireScrollDividers(root);
+
+    // The pushed detail fits even though the list beneath it is scrolled.
+    expect(overflow(list)).toBeNull();
+    expect(overflow(detail)).toBeNull();
+    expect(divider(chrome)).toBeNull();
+    expect(divider(bottom)).toBeNull();
+
+    // Pop: the detail slides out (re-inserted, exiting) over the list.
+    activate([list, detail], list);
+    detail.setAttribute('data-nav-exiting', 'true');
+    await settle();
+    expect(overflow(list)).toBe('tb');
+    expect(overflow(detail)).toBeNull();
+    expect(divider(chrome)).toBe('b');
+    expect(divider(bottom)).toBe('t');
+    detail.remove();
+    await settle();
+    expect(divider(chrome)).toBe('b');
+
+    // Scroll state follows the list while it is shown…
+    scrollTo(list, listState, { scrollTop: 500 });
+    expect(divider(bottom)).toBeNull();
+
+    // …and push a long detail over it: the chrome keys on the detail now.
+    detailState.scrollHeight = 300;
+    detail.removeAttribute('data-nav-exiting');
+    stack.querySelector('.kui-nav-stack__viewport')!.append(detail);
+    activate([list, detail], detail);
+    await settle();
+    expect(overflow(list)).toBeNull();
+    expect(overflow(detail)).toBe('b');
+    expect(divider(chrome)).toBeNull();
+    expect(divider(bottom)).toBe('t');
+    scrollTo(list, listState, { scrollTop: 0 }); // hidden view: no effect
+    expect(divider(bottom)).toBe('t');
+    dispose();
+  });
+
+  it('keys on a sole Pane content where the Pane has no chrome on that edge', () => {
+    const root = mountHtml(
+      navStack([
+        {
+          key: 'pane',
+          content: raw(
+            String(Pane({ header: Toolbar({ label: 'Own' }), children: body })),
+          ),
+        },
+      ]),
+    );
+    const { chrome, bottom, view } = stackParts(root);
+    const scroller = view('pane');
+    geometry(scroller);
+    const content = root.querySelector<HTMLElement>('.kui-pane__content')!;
+    const paneHeader = root.querySelector<HTMLElement>('.kui-pane__header')!;
+    const state = geometry(content, { scrollHeight: 500 });
+    const dispose = wireScrollDividers(root);
+
+    // The Pane's header meets its content, so it draws that line; the stack's
+    // bottom toolbar meets the Pane's content directly.
+    scrollTo(content, state, { scrollTop: 100 });
+    expect(divider(paneHeader)).toBe('b');
+    expect(divider(chrome)).toBeNull();
+    expect(divider(bottom)).toBe('t');
+    scrollTo(content, state, { scrollTop: 400 });
+    expect(divider(bottom)).toBeNull();
+    dispose();
+  });
+
+  it('pairs a Pane without chrome on both edges, and pairs nothing without chrome', () => {
+    const root = mountHtml(
+      navStack([
+        { key: 'bare', content: raw(String(Pane({ children: body }))) },
+      ]),
+    );
+    const { chrome, bottom } = stackParts(root);
+    const content = root.querySelector<HTMLElement>('.kui-pane__content')!;
+    const state = geometry(content, { scrollHeight: 500, scrollTop: 100 });
+    const dispose = wireScrollDividers(root);
+    expect(divider(chrome)).toBe('b');
+    expect(divider(bottom)).toBe('t');
+    scrollTo(content, state, { scrollTop: 0 });
+    expect(divider(chrome)).toBeNull();
+    dispose();
+
+    const bare = mountHtml(
+      navStack([{ key: 'plain' }], { bottom: false, hideToolbar: true }),
+    );
+    const plain = stackParts(bare).view('plain');
+    geometry(plain, { scrollHeight: 500, scrollTop: 100 });
+    const disposeBare = wireScrollDividers(bare);
+    expect(overflow(plain)).toBeNull();
+    disposeBare();
+  });
+
+  it('leaves a cross-fading chrome copy alone', async () => {
+    const root = mountHtml(navStack([{ key: 'home' }]));
+    const { stack, chrome, view } = stackParts(root);
+    geometry(view('home'), { scrollHeight: 500, scrollTop: 100 });
+    const dispose = wireScrollDividers(root);
+    const copy = chrome!.cloneNode(true) as HTMLElement;
+    copy.dataset.navChromeCopy = '';
+    copy.removeAttribute('data-scroll-divider');
+    stack.append(copy);
+    await settle();
+    expect(divider(chrome)).toBe('b');
+    expect(divider(copy)).toBeNull();
+    dispose();
+  });
+});
+
+describe('wireScrollDividers — TabScaffold bar over the active scene', () => {
+  function scaffold(content: (id: string) => string) {
+    const root = mountHtml(
+      String(
+        TabScaffold({
+          id: `tabs-${String(roots.length)}`,
+          label: 'Sections',
+          active: 'one',
+          tabs: ['one', 'two'].map((id) => ({
+            id,
+            label: id,
+            content: raw(content(id)),
+          })),
+        }),
+      ),
+    );
+    const scene = (id: string) =>
+      root.querySelector<HTMLElement>(`[data-tab-scaffold-scene="${id}"]`)!;
+    return {
+      root,
+      bar: root.querySelector<HTMLElement>('.kui-tab-scaffold__bar'),
+      scene,
+      select(id: string) {
+        for (const other of ['one', 'two'])
+          scene(other).setAttribute('data-active', String(other === id));
+      },
+    };
+  }
+
+  it('walks the bar through fits → middle → end → fits and follows the selected scene', async () => {
+    const { root, bar, scene, select } = scaffold(() => '<p>scene</p>');
+    const one = geometry(scene('one'), { scrollHeight: 500 });
+    const two = geometry(scene('two'));
+    const dispose = wireScrollDividers(root);
+    const observer = FakeResizeObserver.instances[0]!;
+
+    expect(divider(bar)).toBe('t');
+    scrollTo(scene('one'), one, { scrollTop: 200 });
+    expect(divider(bar)).toBe('t');
+    scrollTo(scene('one'), one, { scrollTop: 400 });
+    expect(divider(bar)).toBeNull();
+
+    // The second tab fits; switching back restores the first tab's state.
+    select('two');
+    await settle();
+    expect(overflow(scene('one'))).toBeNull();
+    expect(divider(bar)).toBeNull();
+    two.scrollHeight = 300;
+    observer.fire(scene('two'));
+    expect(divider(bar)).toBe('t');
+    select('one');
+    await settle();
+    expect(overflow(scene('one'))).toBe('t');
+    expect(divider(bar)).toBeNull();
+    dispose();
+    expect(overflow(scene('one'))).toBeNull();
+  });
+
+  it('keys on the active view of a nested NavStack, and stops at its bottom toolbar', async () => {
+    const nested = scaffold((id) =>
+      navStack([{ key: `${id}-home` }], { bottom: false }),
+    );
+    const view = nested.root.querySelector<HTMLElement>(
+      '[data-nav-key="one-home"]',
+    )!;
+    geometry(nested.scene('one'));
+    const state = geometry(view, { scrollHeight: 500, scrollTop: 100 });
+    const dispose = wireScrollDividers(nested.root);
+    const chrome = nested.root.querySelector('.kui-nav-stack__chrome');
+    expect(divider(nested.bar)).toBe('t');
+    expect(divider(chrome)).toBe('b');
+    scrollTo(view, state, { scrollTop: 400 });
+    expect(divider(nested.bar)).toBeNull();
+    dispose();
+
+    const withBottom = scaffold((id) => navStack([{ key: `${id}-home` }]));
+    const inner = withBottom.root.querySelector<HTMLElement>(
+      '[data-nav-key="one-home"]',
+    )!;
+    geometry(inner, { scrollHeight: 500, scrollTop: 100 });
+    const disposeBottom = wireScrollDividers(withBottom.root);
+    expect(divider(withBottom.bar)).toBeNull();
+    expect(
+      divider(withBottom.root.querySelector('.kui-nav-stack__bottom')),
+    ).toBe('t');
+    disposeBottom();
+  });
+
+  it('keys an outer NavStack chrome on a nested TabScaffold scene, but not its bar edge', () => {
+    const inner = String(
+      TabScaffold({
+        id: 'inner-tabs',
+        label: 'Inner',
+        active: 'a',
+        tabs: [{ id: 'a', label: 'A', content: body }],
+      }),
+    );
+    const root = mountHtml(navStack([{ key: 'outer', content: raw(inner) }]));
+    const { chrome, bottom } = stackParts(root);
+    const scene = root.querySelector<HTMLElement>('.kui-tab-scaffold__scene')!;
+    geometry(scene, { scrollHeight: 500, scrollTop: 100 });
+    const dispose = wireScrollDividers(root);
+    expect(divider(chrome)).toBe('b');
+    expect(divider(bottom)).toBeNull();
+    expect(divider(root.querySelector('.kui-tab-scaffold__bar'))).toBe('t');
+    dispose();
   });
 });

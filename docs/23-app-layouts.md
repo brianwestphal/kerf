@@ -975,6 +975,36 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   physical, so a right-to-left scroller (negative `scrollLeft`) reports the
   same sides. A 1px tolerance absorbs the rounding between whole-pixel
   `scrollWidth` / `scrollHeight` and fractional scroll positions.
+- **NavStack and TabScaffold (KF-YYYKGH: their chrome kept permanent lines —
+  the NavStack bottom toolbar's and the TabScaffold bar's top borders).** The
+  wiring pairs, by structure, each `.kui-nav-stack`'s live top chrome
+  (`.kui-nav-stack__chrome`) and bottom toolbar (`.kui-nav-stack__bottom`,
+  never a `data-nav-chrome-copy` cross-fade snapshot) with its active view (the
+  last `data-nav-active="true"` view that is not `data-nav-exiting`), and each
+  `.kui-tab-scaffold__bar` with its active scene. **Scroll owner:** the wiring
+  pairs every element that may scroll against that edge — the view or scene
+  itself, then, through a sole child that puts no chrome of its own on that
+  edge, a `Pane`'s content slot or a nested `NavStack`'s / `TabScaffold`'s
+  active region (repeatedly). An element that does not overflow reports
+  nothing, so the chrome keys on whichever actually scrolls: a sole `Pane`
+  sized by its content lets the view scroll (header included), one that fills
+  the view scrolls its own content. A sole child with chrome on that edge (a
+  `Pane` header or footer, a nested `NavStack`'s top chrome or bottom toolbar,
+  a nested `TabScaffold`'s bar) stops the walk, because that chrome draws its
+  own divider against its own content — the layout's chrome never doubles it.
+  A push or pop and a tab switch change `data-nav-active` / `data-active`,
+  which the `MutationObserver` now watches, so the pairing follows the active
+  view without re-wiring; hidden views keep their scroll position and report
+  it again when shown. `nav-stack.css` draws the chrome's line as a 1px `::after`
+  overlaid on the chrome's bottom edge (whatever the chrome holds never covers
+  it; a cross-fade copy stays absolutely positioned), and colors the bottom
+  toolbar's existing 1px top border, which stays in place transparent;
+  `tab-scaffold.css` does the same with the bar's 1px top border. Geometry is
+  therefore identical to the old permanent borders and nothing moves (a
+  removed border shifted the TabScaffold tab badges 1px above the bar). The catalog declares the wiring's two state attributes on both
+  layouts. Without the wiring these edges draw no line (as a `Pane`'s default
+  does); an explicit `toolbarConfig.dividerSides` still draws a permanent
+  Toolbar edge.
 - **TabBar.** A rail strip has no visible track, so the bar draws a 1px line
   on each overflowing side with its own `::before` / `::after`, ordered onto
   the strip's edges and cancelled out of the flex gap by a negative margin (no
@@ -998,10 +1028,15 @@ transition matrix (fits → overflows → middle → end → start → shrinks t
 refills, sub-pixel edges, header-only / footer-only panes, horizontal and
 right-to-left strips, app-owned targets including shared chrome and a
 scroller that is also chrome, re-render restoration, added / removed panes,
-disposal, and a Document root without observers).
+disposal, a Document root without observers, NavStack chrome through fits →
+middle → end → start, push and pop swapping the scroller while a view slides
+out, a sole Pane with and without chrome, cross-fade copies, and a TabScaffold
+bar across tab switches and nested NavStacks).
 `ui/tests/browser/scroll-dividers.spec.ts` asserts the drawn lines by computed
 style and unchanged geometry across Pane, Workbench, all three TabBar
-presentations, right-to-left, and targets in Chromium, Firefox, and WebKit.
+presentations, right-to-left, NavStack (push / pop, and a sole Pane that is
+sized by its content or fills the view), TabScaffold (tab switches over a
+nested NavStack), and targets in Chromium, Firefox, and WebKit.
 
 ## 4. Responsive presentation matrix
 

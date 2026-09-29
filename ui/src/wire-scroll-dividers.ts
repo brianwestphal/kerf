@@ -28,7 +28,8 @@ export interface ScrollDividerTarget {
 export interface WireScrollDividersOptions {
   /**
    * App-owned scroll arrangements to pair beyond the ones found by structure
-   * (every `Pane`'s header and footer around its content, and every `TabBar`
+   * (every `Pane`'s header and footer around its content, every `NavStack`'s
+   * and `TabScaffold`'s chrome around its active region, and every `TabBar`
    * strip).
    */
   targets?: readonly ScrollDividerTarget[];
@@ -86,6 +87,74 @@ const directChild = (parent: Element, selector: string) =>
     child.matches(selector),
   );
 
+const PANE_CHROME = {
+  t: '.kui-pane__header, .kui-pane__toolbar',
+  b: '.kui-pane__footer',
+} as const;
+
+/** A NavStack's live (not cross-fading copy) chrome on `edge`. */
+const NAV_STACK_CHROME = {
+  t: '.kui-nav-stack__chrome:not([data-nav-chrome-copy])',
+  b: '.kui-nav-stack__bottom:not([data-nav-chrome-copy])',
+} as const;
+
+/** A NavStack's active view: the top entry, never one sliding out. */
+function activeView(stack: Element): HTMLElement | undefined {
+  const viewport = directChild(stack, '.kui-nav-stack__viewport');
+  if (!viewport) return undefined;
+  return [...viewport.children]
+    .filter((child): child is HTMLElement =>
+      child.matches(
+        '.kui-nav-stack__view[data-nav-active="true"]:not([data-nav-exiting="true"])',
+      ),
+    )
+    .at(-1);
+}
+
+/** A TabScaffold's shown scene. */
+function activeScene(scaffold: Element): HTMLElement | undefined {
+  const scenes = directChild(scaffold, '.kui-tab-scaffold__scenes');
+  return scenes
+    ? directChild(scenes, '.kui-tab-scaffold__scene[data-active="true"]')
+    : undefined;
+}
+
+/**
+ * The elements that may scroll against a layout region's `edge` (the top or
+ * bottom of a NavStack view or a TabScaffold scene): the region itself, then,
+ * through a sole child that puts no chrome of its own on that edge, a Pane's
+ * content slot or a nested NavStack's or TabScaffold's active region. Every
+ * candidate is paired with the layout's chrome; one that does not overflow
+ * reports nothing, so the chrome keys on whichever element actually scrolls.
+ * A sole child with chrome on that edge (a Pane header, a nested NavStack's
+ * top chrome, a TabScaffold's bar) stops the walk: that chrome draws its own
+ * divider against its own content.
+ */
+function regionScrollers(region: HTMLElement, edge: 't' | 'b'): HTMLElement[] {
+  const found: HTMLElement[] = [];
+  let current: HTMLElement | undefined = region;
+  while (current) {
+    found.push(current);
+    if (current.children.length !== 1) break;
+    const child: Element = current.children[0]!;
+    if (child.matches('.kui-pane')) {
+      current = directChild(child, PANE_CHROME[edge])
+        ? undefined
+        : directChild(child, '.kui-pane__content');
+      if (current) found.push(current);
+      break;
+    }
+    if (child.matches('.kui-nav-stack'))
+      current = directChild(child, NAV_STACK_CHROME[edge])
+        ? undefined
+        : activeView(child);
+    else if (child.matches('.kui-tab-scaffold') && edge === 't')
+      current = activeScene(child);
+    else current = undefined;
+  }
+  return found;
+}
+
 /** Canonical top/right/bottom/left string of the given edges. */
 const sides = (edges: ReadonlySet<Edge>) =>
   EDGES.filter((edge) => edges.has(edge)).join('');
@@ -139,6 +208,13 @@ function write(element: Element, name: StateAttribute, value: string) {
  *
  * - every `Pane` with a header or footer: its header shows a bottom divider and
  *   its footer a top divider (drawn by the Pane, per its `chromeDividers`);
+ * - every `NavStack`'s top chrome and bottom toolbar around its active view,
+ *   and every `TabScaffold`'s bar under its active scene: the chrome shows a
+ *   bottom (top chrome) or top (bottom toolbar, bar) divider. The scroller is
+ *   whichever element actually scrolls there: the view or scene itself, or,
+ *   through a sole child with no chrome of its own on that edge, a `Pane`'s
+ *   content or a nested `NavStack` / `TabScaffold` region (a Pane's own header
+ *   or footer draws that boundary instead);
  * - every `TabBar` strip: the bar draws a divider on each side of the strip
  *   whose tabs are scrolled out of view;
  * - each app-owned `targets` pairing: a `Toolbar` or `List` named as chrome
@@ -174,11 +250,31 @@ export function wireScrollDividers(
     const found: Pairing[] = [];
     for (const pane of within<HTMLElement>(root, '.kui-pane')) {
       const scroller = directChild(pane, '.kui-pane__content');
-      const header = directChild(pane, '.kui-pane__header, .kui-pane__toolbar');
-      const footer = directChild(pane, '.kui-pane__footer');
+      const header = directChild(pane, PANE_CHROME.t);
+      const footer = directChild(pane, PANE_CHROME.b);
       if (scroller && (header || footer))
         found.push({ scroller, chrome: { t: header, b: footer } });
     }
+    const pairRegion = (
+      region: HTMLElement | undefined,
+      edge: 't' | 'b',
+      chrome: HTMLElement | undefined,
+    ) => {
+      if (!region || !chrome) return;
+      for (const scroller of regionScrollers(region, edge))
+        found.push({ scroller, chrome: { [edge]: chrome } });
+    };
+    for (const stack of within<HTMLElement>(root, '.kui-nav-stack')) {
+      const view = activeView(stack);
+      for (const edge of ['t', 'b'] as const)
+        pairRegion(view, edge, directChild(stack, NAV_STACK_CHROME[edge]));
+    }
+    for (const scaffold of within<HTMLElement>(root, '.kui-tab-scaffold'))
+      pairRegion(
+        activeScene(scaffold),
+        'b',
+        directChild(scaffold, '.kui-tab-scaffold__bar'),
+      );
     for (const strip of within<HTMLElement>(root, '[data-kui-tab-list]'))
       found.push({ scroller: strip, chrome: {} });
     for (const target of targets) {
@@ -300,7 +396,16 @@ export function wireScrollDividers(
     subtree: true,
     childList: true,
     attributes: true,
-    attributeFilter: [SCROLL_OVERFLOW, SCROLL_DIVIDER, 'id', 'class'],
+    // The shown NavStack view and TabScaffold scene change by attribute.
+    attributeFilter: [
+      SCROLL_OVERFLOW,
+      SCROLL_DIVIDER,
+      'id',
+      'class',
+      'data-nav-active',
+      'data-nav-exiting',
+      'data-active',
+    ],
   });
 
   return () => {

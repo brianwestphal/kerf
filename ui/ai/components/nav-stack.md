@@ -28,11 +28,12 @@ Present a single linear or drill-down flow while preserving each prior view's st
 - JavaScript: `@kerfjs/ui/nav-stack` — exports `NavStackView`, `NavStackToolbarConfig`, `NavStackProps`, `NavStack`.
 - CSS: import `@kerfjs/ui/nav-stack.css` once.
 - Wiring: `wireNavStack` from `@kerfjs/ui/wire-nav-stack` (required).
+- Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
 - Declared side effects: manual-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1.md#kerfjsuinav-stack), [`@kerfjs/ui/wire-nav-stack`](../public-api-signatures-v1.md#kerfjsuiwire-nav-stack) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1.md#kerfjsuinav-stack), [`@kerfjs/ui/wire-nav-stack`](../public-api-signatures-v1.md#kerfjsuiwire-nav-stack), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -43,6 +44,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 - custom back icon or visible back text
 - per-view bottom toolbar
 - persistent bottom-toolbar fallback
+- chrome and bottom-toolbar dividers only while the active view scrolls beneath them (wired by wireScrollDividers)
 
 ## Composition
 
@@ -55,7 +57,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 
 **The app owns:** ordered view stack and stable keys; view content and titles; push and pop actions; preferred initial focus targets when DOM order is insufficient; per-view bottom toolbar content or a persistent fallback; per-view leading, center, and trailing top-toolbar groups; top-toolbar configuration, title size, and heading level.
 
-**Wiring:** `wireNavStack` is required.
+**Wiring:** `wireNavStack`, `wireScrollDividers` is required.
 
 - Use wireNavStack as documented.
 
@@ -64,12 +66,15 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 - `data-nav-chrome-transition` on `kui-nav-stack` (`wireNavStack`): "true" while the chrome cross-fades between the outgoing and incoming view.
 - `data-nav-chrome-copy` on `kui-nav-stack__chrome-copy` (`wireNavStack`): Marks the inert, aria-hidden snapshot of the outgoing chrome shown during the cross-fade.
 - `data-nav-exiting` on `kui-nav-stack__view` (`wireNavStack`): "true" on a popped view the helper briefly re-inserts to slide it out.
+- `data-scroll-overflow` on `the active kui-nav-stack__view, or the kui-pane__content of a sole Pane in it` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
+- `data-scroll-divider` on `kui-nav-stack__chrome and kui-nav-stack__bottom` (`wireScrollDividers`): The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it.
 
 ## Geometry
 
 Margin: none · border: conditional · padding: child (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
 - The stack owns its full-height chrome and viewport; each view owns its internal content padding and scrollable content.
+- The top chrome's bottom line and the bottom toolbar's top line are scroll state (wireScrollDividers), drawn as an overlaid 1px pseudo-element on the chrome and the bottom toolbar's always-present 1px top border, so neither moves the chrome or the content.
 
 ## Accessibility
 

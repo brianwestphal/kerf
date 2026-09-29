@@ -28,11 +28,12 @@ Switch among two to five co-equal top-level destinations on compact devices whil
 - JavaScript: `@kerfjs/ui/tab-scaffold` — exports `TabScaffoldTab`, `TabScaffoldProps`, `TabScaffold`.
 - CSS: import `@kerfjs/ui/tab-scaffold.css` once.
 - Wiring: `wireTabScaffold` from `@kerfjs/ui/wire-tab-scaffold` (required).
+- Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
 - Declared side effects: manual-css.
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/tab-scaffold`](../public-api-signatures-v1.md#kerfjsuitab-scaffold), [`@kerfjs/ui/wire-tab-scaffold`](../public-api-signatures-v1.md#kerfjsuiwire-tab-scaffold) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/tab-scaffold`](../public-api-signatures-v1.md#kerfjsuitab-scaffold), [`@kerfjs/ui/wire-tab-scaffold`](../public-api-signatures-v1.md#kerfjsuiwire-tab-scaffold), [`@kerfjs/ui/wire-scroll-dividers`](../public-api-signatures-v1.md#kerfjsuiwire-scroll-dividers) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 
@@ -40,6 +41,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-scaffold`](../public-api-signatures
 - icon and text tabs
 - badged tabs (count or text-free dot)
 - one NavStack per tab
+- bar divider only while the active scene continues below it (wired by wireScrollDividers)
 
 ## Composition
 
@@ -52,15 +54,21 @@ Exact prop names and types: [`@kerfjs/ui/tab-scaffold`](../public-api-signatures
 
 **The app owns:** controlled active tab id; tab labels, icons, and content; tab badge counts or dots and their localized badgeLabel phrases; routing and persistence; responsive replacement on larger device classes.
 
-**Wiring:** `wireTabScaffold` is required.
+**Wiring:** `wireTabScaffold`, `wireScrollDividers` is required.
 
 - Use wireTabScaffold as documented.
 
+**Wiring-owned state attributes** — never render, remove, or branch on these as app state:
+
+- `data-scroll-overflow` on `the active kui-tab-scaffold__scene, or what scrolls inside it (a sole NavStack's active view or a sole Pane's content)` (`wireScrollDividers`): The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it.
+- `data-scroll-divider` on `kui-tab-scaffold__bar` (`wireScrollDividers`): The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it.
+
 ## Geometry
 
-Margin: none · border: self · padding: self (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
+Margin: none · border: conditional · padding: self (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
 - The scaffold owns the full-height scene region and safe-area-aware bottom bar; scene content owns its internal geometry.
+- The bar's top line is scroll state (wireScrollDividers): it shows only while the active scene's content continues below the bar, by coloring the bar's always-present 1px top border.
 
 ## Accessibility
 

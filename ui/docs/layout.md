@@ -67,14 +67,20 @@ and the footer's top line, whatever the chrome holds — a `Toolbar`, a
 `mainHeader` list, a `TabBar`) and every `TabBar` strip (a line on each side
 whose tabs are scrolled out of view). That includes the panes a `Workbench`,
 `CollapsiblePanel`, or `Catalog` renders; `wireCatalog` installs it for its
-own root. It follows re-renders: panes that appear later are paired, and an
+own root. It also covers every `NavStack` (the top chrome's bottom line and the
+bottom toolbar's top line, around the active view) and every `TabScaffold`
+(the bar's top line, over the active scene). The layout keys on whichever
+element actually scrolls there: the view or scene itself, or, through a sole
+child with no chrome of its own on that edge, a `Pane`'s content or a nested
+`NavStack`'s active view. A sole `Pane` with a header draws the line under that
+header itself, so the stack's chrome never doubles it. It follows re-renders: panes that appear later are paired, and an
 attribute a morph drops returns before paint.
 
 The wiring only reports state; every component draws its own line. It writes
 `data-scroll-overflow` (the edges with content hidden beyond them, in canonical
 `t`/`r`/`b`/`l` order) on each scroller and `data-scroll-divider` (the sides to
-draw) on each piece of chrome, and the Pane, TabBar, Toolbar, and List
-stylesheets draw from those. The line is an inset shadow or a pseudo-element
+draw) on each piece of chrome, and the Pane, NavStack, TabScaffold, TabBar,
+Toolbar, and List stylesheets draw from those. The line is an inset shadow or a pseudo-element
 inside the component, so no state ever moves the chrome, the content, or a tab.
 Never write a border onto a component to show one.
 

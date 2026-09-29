@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 300600,
+  "totalJavaScriptGzip": 300900,
   "measuredLargestJavaScriptGzip": 126038,
-  "measuredTotalJavaScriptGzip": 300574,
+  "measuredTotalJavaScriptGzip": 300877,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1091,6 +1091,22 @@
         "measuredTotalJavaScriptGzip": 300574,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 300600
+      }
+    },
+    {
+      "at": "2026-09-29T05:11:55.463Z",
+      "reason": "KF-YYYKGH: wireScrollDividers pairs NavStack chrome and TabScaffold bars with the active view or scene",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126038,
+        "measuredTotalJavaScriptGzip": 300574,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 300600
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126038,
+        "measuredTotalJavaScriptGzip": 300877,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 300900
       }
     }
   ]

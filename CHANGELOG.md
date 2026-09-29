@@ -55,6 +55,25 @@ className="header" />`) that the application then styles.
   (`kerf-ui-analyze`, from a new `@kerfjs/ui` dev dependency) in
   `prepublishOnly`.
 
+- **Behavior change (`@kerfjs/ui`): `NavStack` and `TabScaffold` chrome
+  dividers follow the scroll.** The `NavStack` bottom toolbar's and the
+  `TabScaffold` bar's top borders are no longer permanent. With `wireScrollDividers`
+  installed, a `NavStack`'s top chrome draws a line along its bottom edge only
+  while the active view's content is scrolled beneath it, its bottom toolbar a
+  line along its top edge only while more content lies below, and a
+  `TabScaffold` bar a line along its top edge only while the active scene's
+  content continues below it — none when the content fits. The line follows
+  the active view across a push or pop and the active scene across a tab
+  switch, and keys on whichever element actually scrolls: the view or scene
+  itself, or, through a sole child with no chrome of its own on that edge, a
+  `Pane`'s content or a nested `NavStack`'s active view (a sole `Pane`'s own
+  header or footer draws that boundary instead). Each layout draws the line
+  from its own stylesheet (an overlaid pseudo-element on the stack's chrome; the
+  bottom toolbar and bar keep their 1px top border, transparent until shown),
+  so nothing moves; the wiring
+  writes only its `data-scroll-overflow` / `data-scroll-divider` state. Without
+  the wiring those edges draw no line.
+
 - **Behavior change (`@kerfjs/ui`): toolbars no longer draw a divider by
   default; dividers between pinned chrome and scrolling content follow the
   scroll.** `Toolbar`'s `dividerSides` now defaults to `''` (was `'b'`), and

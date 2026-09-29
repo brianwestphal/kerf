@@ -662,7 +662,8 @@
         "configured top toolbar",
         "custom back icon or visible back text",
         "per-view bottom toolbar",
-        "persistent bottom-toolbar fallback"
+        "persistent bottom-toolbar fallback",
+        "chrome and bottom-toolbar dividers only while the active view scrolls beneath them (wired by wireScrollDividers)"
       ],
       "accessibility": [
         "Give the stack region an accessible label and every back control a stable action label; visible backText names the control itself.",
@@ -675,7 +676,8 @@
         "border": "conditional",
         "padding": "child",
         "notes": [
-          "The stack owns its full-height chrome and viewport; each view owns its internal content padding and scrollable content."
+          "The stack owns its full-height chrome and viewport; each view owns its internal content padding and scrollable content.",
+          "The top chrome's bottom line and the bottom toolbar's top line are scroll state (wireScrollDividers), drawn as an overlaid 1px pseudo-element on the chrome and the bottom toolbar's always-present 1px top border, so neither moves the chrome or the content."
         ]
       },
       "delivery": {
@@ -705,6 +707,23 @@
               "name": "data-nav-exiting",
               "on": "kui-nav-stack__view",
               "meaning": "\"true\" on a popped view the helper briefly re-inserts to slide it out."
+            }
+          ]
+        },
+        {
+          "export": "wireScrollDividers",
+          "import": "@kerfjs/ui/wire-scroll-dividers",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-scroll-overflow",
+              "on": "the active kui-nav-stack__view, or the kui-pane__content of a sole Pane in it",
+              "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-scroll-divider",
+              "on": "kui-nav-stack__chrome and kui-nav-stack__bottom",
+              "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
             }
           ]
         }
@@ -909,7 +928,8 @@
         "text-only tabs",
         "icon and text tabs",
         "badged tabs (count or text-free dot)",
-        "one NavStack per tab"
+        "one NavStack per tab",
+        "bar divider only while the active scene continues below it (wired by wireScrollDividers)"
       ],
       "accessibility": [
         "Give the tablist an accessible label and keep exactly the active tab in the sequential focus order.",
@@ -918,10 +938,11 @@
       ],
       "geometry": {
         "margin": "none",
-        "border": "self",
+        "border": "conditional",
         "padding": "self",
         "notes": [
-          "The scaffold owns the full-height scene region and safe-area-aware bottom bar; scene content owns its internal geometry."
+          "The scaffold owns the full-height scene region and safe-area-aware bottom bar; scene content owns its internal geometry.",
+          "The bar's top line is scroll state (wireScrollDividers): it shows only while the active scene's content continues below the bar, by coloring the bar's always-present 1px top border."
         ]
       },
       "delivery": {
@@ -936,6 +957,23 @@
           "export": "wireTabScaffold",
           "import": "@kerfjs/ui/wire-tab-scaffold",
           "required": true
+        },
+        {
+          "export": "wireScrollDividers",
+          "import": "@kerfjs/ui/wire-scroll-dividers",
+          "required": false,
+          "stateAttributes": [
+            {
+              "name": "data-scroll-overflow",
+              "on": "the active kui-tab-scaffold__scene, or what scrolls inside it (a sole NavStack's active view or a sole Pane's content)",
+              "meaning": "The physical edges, in canonical t/r/b/l order, beyond which content is scrolled out of view; absent when nothing is hidden (content that fits never reports its far edges). Re-applied if a re-render drops it."
+            },
+            {
+              "name": "data-scroll-divider",
+              "on": "kui-tab-scaffold__bar",
+              "meaning": "The sides, in t/r/b/l order, on which this chrome currently draws its scroll divider: the side facing the scroller while content is hidden beyond it. Re-applied if a re-render drops it."
+            }
+          ]
         }
       ],
       "publicClasses": [

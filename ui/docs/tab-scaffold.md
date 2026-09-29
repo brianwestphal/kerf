@@ -54,6 +54,18 @@ truncate horizontally with an ellipsis when a destination name exceeds its
 share of the bar. On larger device classes, promote the tab set to a
 `Workbench` rail or a persistent sidebar instead of a bottom bar.
 
+## Scroll divider
+
+The bar has no permanent top border. With `wireScrollDividers(appRoot)`
+installed (see [Layout › Scroll dividers](layout.md#scroll-dividers)), it shows
+a line along its top edge only while the active scene's content continues below
+it — not at the scroll end and not when the content fits. The line keys on
+whatever actually scrolls in the scene: the scene itself or, through a sole
+child, a `NavStack`'s active view or a `Pane`'s content. A `NavStack` with its
+own bottom toolbar sits between them, so that toolbar's line applies instead.
+The line is the bar's always-present 1px top border, colored only while shown,
+so it never moves the bar or a tab.
+
 ## Tab badges
 
 Give a tab a `badge` (a count or short string such as `3`, `"99+"`, or

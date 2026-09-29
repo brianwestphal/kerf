@@ -132,10 +132,10 @@ device in tests.
   `Workbench` left rail instead of a bottom bar.
 
 Whatever the layout, call `wireScrollDividers(appRoot)` from
-`@kerfjs/ui/wire-scroll-dividers` once: every `Pane` a layout renders then
-draws the line between its pinned toolbars and its scrolling content only
-while content is scrolled beneath them, and toolbars need no divider of their
-own. See [Scroll dividers](layout.md#scroll-dividers).
+`@kerfjs/ui/wire-scroll-dividers` once: every `Pane` a layout renders, every
+`NavStack`'s top chrome and bottom toolbar, and every `TabScaffold` bar then
+draw the line between the pinned chrome and the scrolling content only while
+content is scrolled beneath them, and toolbars need no divider of their own. See [Scroll dividers](layout.md#scroll-dividers).
 
 ## Dialogs
 

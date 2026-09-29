@@ -1063,7 +1063,8 @@ interface ScrollDividerTarget {
 interface WireScrollDividersOptions {
     /**
      * App-owned scroll arrangements to pair beyond the ones found by structure
-     * (every `Pane`'s header and footer around its content, and every `TabBar`
+     * (every `Pane`'s header and footer around its content, every `NavStack`'s
+     * and `TabScaffold`'s chrome around its active region, and every `TabBar`
      * strip).
      */
     targets?: readonly ScrollDividerTarget[];
@@ -1081,6 +1082,13 @@ interface WireScrollDividersOptions {
  *
  * - every `Pane` with a header or footer: its header shows a bottom divider and
  *   its footer a top divider (drawn by the Pane, per its `chromeDividers`);
+ * - every `NavStack`'s top chrome and bottom toolbar around its active view,
+ *   and every `TabScaffold`'s bar under its active scene: the chrome shows a
+ *   bottom (top chrome) or top (bottom toolbar, bar) divider. The scroller is
+ *   whichever element actually scrolls there: the view or scene itself, or,
+ *   through a sole child with no chrome of its own on that edge, a `Pane`'s
+ *   content or a nested `NavStack` / `TabScaffold` region (a Pane's own header
+ *   or footer draws that boundary instead);
  * - every `TabBar` strip: the bar draws a divider on each side of the strip
  *   whose tabs are scrolled out of view;
  * - each app-owned `targets` pairing: a `Toolbar` or `List` named as chrome

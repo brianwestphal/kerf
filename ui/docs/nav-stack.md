@@ -109,6 +109,21 @@ When a remembered control was removed during the controlled rerender, the same
 fallback order applies. Disposing the helper stops future transitions and
 cleans up any temporary fallback `tabindex` it added.
 
+## Scroll dividers
+
+The stack draws no permanent line between its chrome and the view. With
+`wireScrollDividers(appRoot)` installed (see
+[Layout › Scroll dividers](layout.md#scroll-dividers)), the top chrome shows a
+line along its bottom edge only while the active view's content is scrolled
+beneath it, and the bottom toolbar a line along its top edge only while more
+content lies below it — neither when the content fits. The line follows the
+active view across a push or pop. The chrome's line is overlaid on its bottom
+edge and the bottom toolbar's is its always-present 1px top border, colored
+only while shown, so neither ever moves the chrome or the content. When the view's only child is a `Pane`,
+the line keys on whichever actually scrolls — the view, or the Pane's content —
+and a Pane header or footer draws its own boundary instead. An explicit
+`toolbarConfig.dividerSides` still draws a permanent Toolbar edge.
+
 ## Safe areas
 
 The stack paints through a device's unsafe areas. Its chrome pads for the top

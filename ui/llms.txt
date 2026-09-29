@@ -294,8 +294,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   (`@kerfjs/ui/wire-scroll-dividers`) once and keep its disposer: every `Pane`
   then draws the line under its header only while content is scrolled beneath
   it and the line over its footer only while more content lies below (never
-  when the content fits), and every `TabBar` marks each side of its strip with
-  tabs scrolled out of view. Configure a pane with `chromeDividers`
+  when the content fits), every `NavStack`'s top chrome and bottom toolbar and
+  every `TabScaffold` bar do the same around the active view or scene, and
+  every `TabBar` marks each side of its strip with tabs scrolled out of view. Configure a pane with `chromeDividers`
   (`scroll` default, `always`, `none`); name app-owned chrome in `targets`.
   Never add a border, or a permanent `dividerSides`, to fake one.
   While a side overlay is open (a Workbench rail overlay, a `wireSidebar` compact
@@ -380,7 +381,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
 `ListInsetText`, `SegmentedControl`,
 `Select`, `TokenSearchField` (+ `readTokenSearchField`, `placeTokenSearchCaret`,
 `wireTokenSearchFields`), `AppTab`, `TabBar` (+ `wireTabBars`, `reorderTabs`),
-`wireScrollDividers` (scroll-state dividers for every `Pane` and `TabBar`),
+`wireScrollDividers` (scroll-state dividers for every `Pane`, `NavStack`,
+`TabScaffold`, and `TabBar`),
 `ResizableRegion` (+ `wireResizableRegions`), `StateBanner`, `EmptyState`,
 `LoadingSpinner`, `Skeleton`, `ValueTable`, `ValueTableRow`. Whole-screen layouts (opt-in,
 tree-shakeable, declarative with `wire…` helpers, each with a companion CSS import):

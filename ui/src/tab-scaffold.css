@@ -96,8 +96,18 @@
   );
   padding-inline: var(--_kui-tab-scaffold-safe-inline-start)
     var(--_kui-tab-scaffold-safe-inline-end);
-  border-block-start: 1px solid var(--kui-color-neutral-border-normal);
+  /* Scroll divider: the bar's 1px top border shows only while the active
+     scene's content continues below it — never at the scroll end or when the
+     content fits. `wireScrollDividers` reports that state through
+     `data-scroll-divider`; the border is always there and only its color
+     changes, so showing it never moves the bar or a tab. */
+  border-block-start: 1px solid
+    var(--_kui-tab-scaffold-bar-divider, transparent);
   background: var(--kui-color-surface);
+}
+
+.kui-tab-scaffold__bar[data-scroll-divider*="t"] {
+  --_kui-tab-scaffold-bar-divider: var(--kui-color-neutral-border-normal);
 }
 
 .kui-tab-scaffold__tab {
