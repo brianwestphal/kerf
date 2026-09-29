@@ -8,6 +8,10 @@ import {
   validateAiRegressionEvidenceV3,
   validateAiRegressionResponseV3,
 } from './ai-regression-contract-v3.mjs';
+import {
+  AI_REGRESSION_GUIDANCE_VARIANTS_V3,
+  aiRegressionV3PolicyTable,
+} from './ai-regression-guidance-variants-v3.mjs';
 import { validateJsonSchemaSubset } from './json-schema-subset.mjs';
 
 const CONDITIONS = {
@@ -145,6 +149,7 @@ export async function loadAiRegressionV3Context(root) {
     compatibility: 'ai-regressions/compatibility-v3.json',
     diagnosticRegistry: 'ai/application-ui-diagnostic-ids-v1.json',
     conditions: 'ai-regressions/conditions-v3.json',
+    guidanceVariants: AI_REGRESSION_GUIDANCE_VARIANTS_V3,
     contract: 'ai-regressions/quality-contract-v3.json',
     corpus: 'ai-regressions/corpus-v3.json',
     requestSchema: 'ai-regressions/request-v3.schema.json',
@@ -160,7 +165,12 @@ export async function loadAiRegressionV3Context(root) {
   );
   const loaded = Object.fromEntries(entries);
   return {
-    conditions: loaded.conditions.value,
+    // Guidance variants ride along as opt-in conditions; the frozen
+    // conditions-v3.json policies stay the required measured matrix.
+    conditions: {
+      ...loaded.conditions.value,
+      guidanceVariants: loaded.guidanceVariants.value.variants,
+    },
     compatibility: loaded.compatibility.value,
     contract: loaded.contract.value,
     corpus: loaded.corpus.value,
@@ -285,11 +295,20 @@ export function validateAiRegressionMeasuredCohortV3(runs, corpus, conditions) {
   }
   if (cellsByIdentity.size < 2)
     errors.push('measured cohort requires two model/version identities');
-  const expectedCells = corpus.cases.flatMap(({ id }) =>
-    conditions.conditions.map(({ id: condition }) => `${id}/${condition}`),
-  );
+  const matrix = (ids) =>
+    corpus.cases.flatMap(({ id }) =>
+      ids.map((condition) => `${id}/${condition}`),
+    );
+  const expectedCells = matrix(conditions.conditions.map(({ id }) => id));
+  const variantIds = (conditions.guidanceVariants ?? []).map(({ id }) => id);
+  const allowedCells = [...expectedCells, ...matrix(variantIds)];
   for (const [identity, cells] of cellsByIdentity) {
-    for (const cell of expectedCells) {
+    // A guidance variant is optional, but once an identity measures it, the
+    // variant needs the same complete case x replicate matrix as a policy.
+    const measuredVariants = variantIds.filter((variant) =>
+      [...cells.keys()].some((cell) => cell.endsWith(`/${variant}`)),
+    );
+    for (const cell of [...expectedCells, ...matrix(measuredVariants)]) {
       const replicates = [...(cells.get(cell) ?? [])].sort();
       if (JSON.stringify(replicates) !== JSON.stringify([1, 2, 3]))
         errors.push(
@@ -297,7 +316,7 @@ export function validateAiRegressionMeasuredCohortV3(runs, corpus, conditions) {
         );
     }
     for (const cell of cells.keys())
-      if (!expectedCells.includes(cell))
+      if (!allowedCells.includes(cell))
         errors.push(`${identity}/${cell} is outside the frozen corpus matrix`);
   }
   return errors;
@@ -306,9 +325,7 @@ export function validateAiRegressionMeasuredCohortV3(runs, corpus, conditions) {
 export function validateAiRegressionRunV3(run, conditions, compatibility) {
   const errors = [];
   if (run?.schemaVersion !== 3) errors.push('run.schemaVersion must be 3');
-  const policyById = new Map(
-    conditions.conditions.map((condition) => [condition.id, condition]),
-  );
+  const policyById = aiRegressionV3PolicyTable(conditions);
   const sessions = new Set();
   const initialHashes = new Map();
   for (const result of run.results ?? []) {
@@ -321,7 +338,11 @@ export function validateAiRegressionRunV3(run, conditions, compatibility) {
     if (sessions.has(result.sessionId))
       errors.push(`${label} reuses session ${result.sessionId}`);
     sessions.add(result.sessionId);
-    const comparisonKey = `${result.caseId}/r${result.replicate}`;
+    // The three policies share one attempt-one input; a guidance variant
+    // differs from them by design, so it is paired only with itself.
+    const comparisonKey = `${result.caseId}/r${result.replicate}${
+      policy.variant ? `/${policy.id}` : ''
+    }`;
     const existingHash = initialHashes.get(comparisonKey);
     if (existingHash && existingHash !== result.initialModelInputSha256)
       errors.push(
@@ -330,7 +351,10 @@ export function validateAiRegressionRunV3(run, conditions, compatibility) {
     initialHashes.set(comparisonKey, result.initialModelInputSha256);
     if (result.attempts.length > conditions.maxAttempts)
       errors.push(`${label} exceeds maxAttempts`);
-    if (result.condition === 'guidance-only' && result.attempts.length !== 1)
+    if (
+      policy.feedbackPolicy === 'guidance-only' &&
+      result.attempts.length !== 1
+    )
       errors.push(`${label} cannot have repair attempts`);
     result.attempts.forEach((attempt, index) => {
       if (attempt.ordinal !== index + 1)

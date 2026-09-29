@@ -104,6 +104,13 @@ alternatives are layered over the unchanged v1 oracle.
 `ui/ai-regressions/suite-v2.json`, `conditions-v2.json`, and
 `run-v2.schema.json` make that selection explicit while legacy manifests keep
 rebuilding through the frozen v1 paths.
+`ui/ai-regressions/guidance-variants-v3.json` adds opt-in suite-v3 guidance
+variants (`scripts/lib/ai-regression-guidance-variants-v3.mjs`): the
+`markdown-reference-guidance-only` condition swaps `ai/component-catalog.json`
+for `ai/components/README.md` plus the pages the case's application files
+reference, inheriting the `guidance-only` feedback policy;
+`measure-ai-regression-context.mjs` reports serialized context bytes per case
+and condition without a model.
 The internal [September 13 Astra repeat findings](../../ui/ai-regressions/results/2026-09-13/findings.md)
 index three additional measured runs, preserved raw responses and the execution
 protocol; frozen structural scores remain separate from compile/runtime quality.

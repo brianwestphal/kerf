@@ -153,6 +153,116 @@ tracks the required measured multi-run, multi-model execution and recording of
 compile, browser, and human-visual artifacts. Until that work exists, do not
 state a v3 improvement or compare conditions using v2 numbers.
 
+### Guidance variant: markdown component reference
+
+`guidance-variants-v3.json` (schema `guidance-variants-v3.schema.json`) layers
+opt-in guidance-representation experiments on suite v3 without touching its
+frozen inputs. A variant replaces exactly one source of the shared
+`conditions-v3.json` guidance and inherits one v3 feedback policy; everything
+else in the attempt-one `modelInput` — prompt, case files, response contract,
+response schema, and every other guidance source byte-for-byte and in order —
+is identical to that policy's request.
+
+`markdown-reference-guidance-only` asks whether assistants do as well with the
+generated markdown reference in `ai/components/` as with the JSON catalog:
+
+- **Replaced source.** `ai/component-catalog.json` is removed and, at the same
+  position in the guidance, replaced by `ai/components/README.md` (the index of
+  one-line purposes) followed by selected component pages.
+- **Page selection: per case, from the case's own application files.** A page
+  is included when a case `contextFiles` source already references its entry:
+  an import of the entry's browser/module/CSS/registration/wiring path, a
+  named `@kerfjs/ui` import of one of its exports or wiring helpers, or a
+  `wa-*` tag or Web Awesome component registration. Pages follow catalog order.
+  Recipe pages are excluded (`docs/recipes.md` is shared by both conditions),
+  and the shared `webawesome.css` theme import selects nothing. Selection never
+  reads the prompt or the scoring oracle, so it cannot leak the intended
+  answer; a component the change needs but the files do not yet use is only
+  discoverable through the index, which is exactly the one-shot limitation
+  this variant measures.
+- **Why not all pages.** The index plus all 124 pages is 750,068 guidance
+  bytes, 16% larger than the JSON condition's 646,250, so it cannot answer the
+  context-saving question.
+- **Feedback policy.** `guidance-only`: one response, no feedback, compared
+  against the `guidance-only` cells of the same case, model, and replicate.
+
+Variants are not part of the default prepare output or the required measured
+matrix. Once a model identity records any variant cell, the audit requires
+that variant's full case × replicate 1,2,3 matrix too, with each cell in a
+fresh session and exactly one attempt. A variant cell's attempt-one digest is
+paired only with the same variant, never with the three policies.
+
+Measured context size without a model (`npm run --silent
+ai:regressions:measure-context`; context bytes are the UTF-8 length of the
+canonical attempt-one `modelInput`, recorded as a run attempt's
+`contextBytes`; tokens are a rough 4-bytes-per-token estimate, so record the
+provider's real usage in the run):
+
+| case                          | condition                        | guidance sources | guidance bytes | context bytes | est. tokens |
+| ----------------------------- | -------------------------------- | ---------------: | -------------: | ------------: | ----------: |
+| extend-application-navigation | guidance-only                    |                7 |        646,250 |       687,884 |     171,971 |
+| extend-application-navigation | markdown-reference-guidance-only |               16 |        439,228 |       459,011 |     114,753 |
+| add-list-selection-actions    | guidance-only                    |                7 |        646,250 |       686,072 |     171,518 |
+| add-list-selection-actions    | markdown-reference-guidance-only |               17 |        441,679 |       459,881 |     114,970 |
+| add-form-draft-status         | guidance-only                    |                7 |        646,250 |       686,111 |     171,528 |
+| add-form-draft-status         | markdown-reference-guidance-only |               20 |        449,322 |       468,176 |     117,044 |
+
+The markdown condition sends 32–33% fewer context bytes per request (about
+218–229 KB, an estimated 55–57K tokens). These figures move whenever the
+catalog, pages, or shared guidance change; re-run the measurement with the
+campaign rather than quoting this table.
+
+Running the comparison (paid and nondeterministic; never in CI):
+
+The audit accepts measured variant cells only inside a complete suite-v3
+campaign: every model identity must also carry the full three-policy matrix.
+Run the variant as a fourth condition of the measured v3 campaign (KF-PX9NKZ)
+rather than as a separate two-condition campaign.
+
+1. Prepare all four conditions for every v3 case and save the requests:
+
+   ```bash
+   mkdir -p requests
+   for c in extend-application-navigation add-list-selection-actions add-form-draft-status; do
+     for k in guidance-only guidance-static guidance-static-browser markdown-reference-guidance-only; do
+       npm --prefix ui run --silent ai:regressions:prepare -- \
+         --suite 3 --case "$c" --condition "$k" > "requests/$c.$k.json"
+     done
+   done
+   npm --prefix ui run --silent ai:regressions:measure-context > context-size.md
+   ```
+
+2. For each case × condition × replicate 1, 2, 3, and for at least two
+   model/version identities, open a fresh isolated session, send that
+   request's `modelInput` unchanged with fixed system instructions and
+   settings, and save the raw provider bytes plus the parsed response JSON.
+   Record provider, model, version, settings, session id, timing, token usage
+   (or an unavailable reason), and `contextBytes`. `guidance-only` and the
+   variant return no feedback, so each of their cells has exactly one
+   attempt; the two feedback policies run their repair loops in the same
+   session as described in [workflow-v3.md](workflow-v3.md).
+3. Produce the static, compile, browser, and named human-visual evidence for
+   every response and lay the campaign out as in
+   [workflow-v3.md](workflow-v3.md), using the condition id as the
+   `<condition>` directory. `npm --prefix ui run ai:regressions:compile --
+--response <response> --out <compile-evidence>` gives an early,
+   non-executing type signal before the full evidence exists.
+4. Record each model's draft manifest, then audit the campaign:
+
+   ```bash
+   npm --prefix ui run ai:regressions:record-v3 -- \
+     --draft ai-regressions/results-v3/<campaign>/<model>/draft.json \
+     --out ai-regressions/results-v3/<campaign>/<model>/run.json
+   npm --prefix ui run check:ai-regressions
+   ```
+
+5. Compare the variant with `guidance-only` per case and model: static and
+   compile hard-pass counts, browser passes, the five visual means, residual
+   diagnostics, context bytes, and real input tokens. Write the findings to
+   `ai-regressions/results-v3/<campaign>/findings.md`, stating whether the
+   markdown reference is non-inferior and what it saves; file a ticket for
+   every page fact whose absence explains a regression.
+
 To add static TypeScript evidence for a saved response without executing any
 generated source:
 

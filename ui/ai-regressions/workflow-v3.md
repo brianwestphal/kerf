@@ -17,6 +17,13 @@ not sent to the model.
 3. `guidance-static-browser` may additionally return normalized browser
    diagnostics.
 
+Opt-in guidance variants in `guidance-variants-v3.json` (see the README's
+"Guidance variant" section) are additional conditions that change exactly one
+guidance source and inherit one of these policies. Their attempt-one input
+intentionally differs from the three policies and is paired only with
+itself; once a model identity measures a variant, its complete
+case × replicate matrix is required.
+
 Each case × condition × replicate uses a fresh session. Repair attempts retain
 only that cell's session and include the current complete editable files plus
 the permitted normalized diagnostics. No condition exceeds `maxAttempts`.

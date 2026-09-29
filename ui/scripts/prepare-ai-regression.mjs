@@ -8,6 +8,10 @@ import {
   AI_REGRESSION_V2_CONTEXT_SNAPSHOTS,
   buildAiRegressionContext,
 } from './lib/ai-regression-context.mjs';
+import {
+  loadAiRegressionGuidanceVariantsV3,
+  resolveAiRegressionVariantGuidanceV3,
+} from './lib/ai-regression-guidance-variants-v3.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const readJson = async (path) =>
@@ -55,13 +59,19 @@ const [corpus, conditions, responseSchema, suite] = await Promise.all([
     ? readJson(`ai-regressions/suite-v${suiteVersion}.json`)
     : Promise.resolve(null),
 ]);
+// Suite-v3 guidance variants are opt-in: they are selectable by --condition
+// but never part of the default all-policies output.
+const guidanceVariants =
+  suiteVersion === 3 ? await loadAiRegressionGuidanceVariantsV3(root) : [];
 const requestedCase = valueAfter('--case');
 const requestedCondition = valueAfter('--condition');
 const selectedCases = requestedCase
   ? corpus.cases.filter(({ id }) => id === requestedCase)
   : corpus.cases;
 const selectedConditions = requestedCondition
-  ? conditions.conditions.filter(({ id }) => id === requestedCondition)
+  ? [...conditions.conditions, ...guidanceVariants].filter(
+      ({ id }) => id === requestedCondition,
+    )
   : conditions.conditions;
 if (!selectedCases.length)
   throw new Error(`Unknown AI regression case: ${requestedCase}`);
@@ -88,8 +98,17 @@ for (const testCase of selectedCases) {
         )
       : null;
   for (const condition of selectedConditions) {
-    const guidanceDefinition =
-      suiteVersion === 3 ? conditions.guidance : condition;
+    const variant = guidanceVariants.find(({ id }) => id === condition.id);
+    const guidanceDefinition = variant
+      ? await resolveAiRegressionVariantGuidanceV3(
+          root,
+          conditions,
+          variant,
+          testCase,
+        )
+      : suiteVersion === 3
+        ? conditions.guidance
+        : condition;
     const context = await buildAiRegressionContext(root, guidanceDefinition, {
       snapshotPath: (suiteVersion === 1
         ? AI_REGRESSION_V1_CONTEXT_SNAPSHOTS

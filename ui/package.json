@@ -402,6 +402,7 @@
     "ai:compatibility:sync": "node scripts/sync-ai-compatibility.mjs --write",
     "ai:regressions:compile": "node scripts/compile-ai-regression-response.mjs",
     "ai:regressions:prepare": "node scripts/prepare-ai-regression.mjs",
+    "ai:regressions:measure-context": "node scripts/measure-ai-regression-context.mjs",
     "ai:regressions:record": "node scripts/record-ai-regression-run.mjs",
     "ai:regressions:record-v3": "node scripts/record-ai-regression-run-v3.mjs",
     "ai:regressions:replay-v3": "node scripts/replay-ai-regression-run-v3.mjs",

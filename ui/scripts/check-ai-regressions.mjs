@@ -14,6 +14,8 @@ import {
   validateAiRegressionEvidenceV3,
   validateAiRegressionResponseV3,
 } from './lib/ai-regression-contract-v3.mjs';
+import { resolveAiRegressionVariantGuidanceV3 } from './lib/ai-regression-guidance-variants-v3.mjs';
+import { validateJsonSchemaSubset } from './lib/json-schema-subset.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const readJson = async (path) =>
@@ -162,6 +164,62 @@ for (const [id, path] of Object.entries(compatibilityArtifacts)) {
 const v3Guidance = await buildAiRegressionContext(root, conditionsV3.guidance);
 if (compatibilityV3.artifactDigests?.guidanceContext !== v3Guidance.sha256)
   fail('suite-v3 compatibility has stale guidance context digest');
+// Guidance-representation variants: opt-in v3 conditions that change exactly
+// one guidance source and inherit one v3 feedback policy.
+const [guidanceVariantsV3, guidanceVariantsV3Schema] = await Promise.all([
+  readJson('ai-regressions/guidance-variants-v3.json'),
+  readJson('ai-regressions/guidance-variants-v3.schema.json'),
+]);
+for (const error of validateJsonSchemaSubset(
+  guidanceVariantsV3Schema,
+  guidanceVariantsV3,
+))
+  fail(`suite-v3 guidance variants: ${error}`);
+const v3PolicyIds = conditionsV3.conditions.map(({ id }) => id);
+const v3ConditionIds = [
+  ...v3PolicyIds,
+  ...guidanceVariantsV3.variants.map(({ id }) => id),
+];
+for (const [label, enumValues] of [
+  ['request', requestV3Schema.$defs?.condition?.enum],
+  ['run', runV3Schema.$defs?.condition?.enum],
+  ['evidence', evidenceV3Schema.properties?.condition?.enum],
+])
+  if (JSON.stringify(enumValues) !== JSON.stringify(v3ConditionIds))
+    fail(
+      `suite-v3 ${label} schema conditions must be the v3 policies followed by the guidance variants`,
+    );
+for (const variant of guidanceVariantsV3.variants) {
+  if (v3PolicyIds.includes(variant.id))
+    fail(`${variant.id} guidance variant shadows a v3 feedback policy`);
+  if (!v3PolicyIds.includes(variant.feedbackPolicy))
+    fail(`${variant.id} inherits an unknown v3 feedback policy`);
+  for (const testCase of corpusV3.cases) {
+    try {
+      const guidance = await resolveAiRegressionVariantGuidanceV3(
+        root,
+        conditionsV3,
+        variant,
+        testCase,
+      );
+      if (guidance.sourcePaths.includes(variant.replaces))
+        fail(`${variant.id}/${testCase.id} still contains ${variant.replaces}`);
+      const unchanged = guidance.sourcePaths.filter(
+        (path) => !path.startsWith(`${variant.with.pageDirectory}/`),
+      );
+      const expected = conditionsV3.guidance.sourcePaths.filter(
+        (path) => path !== variant.replaces,
+      );
+      if (JSON.stringify(unchanged) !== JSON.stringify(expected))
+        fail(
+          `${variant.id}/${testCase.id} must keep every other v3 guidance source in order`,
+        );
+      await buildAiRegressionContext(root, guidance);
+    } catch (error) {
+      fail(`${variant.id}/${testCase.id} guidance: ${error.message}`);
+    }
+  }
+}
 if (compatibilityV3.toolVersions?.['@kerfjs/ui'] !== packageJson.version)
   fail('suite-v3 compatibility has stale @kerfjs/ui version');
 if (

@@ -23,7 +23,12 @@
     "suiteId": { "const": "kerf-ui-authoring-v3" },
     "caseId": { "type": "string" },
     "condition": {
-      "enum": ["guidance-only", "guidance-static", "guidance-static-browser"]
+      "enum": [
+        "guidance-only",
+        "guidance-static",
+        "guidance-static-browser",
+        "markdown-reference-guidance-only"
+      ]
     },
     "attempt": { "type": "integer", "minimum": 1 },
     "requestSha256": { "$ref": "#/$defs/digest" },

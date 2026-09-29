@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Kerf UI AI regression suite-v3 guidance-representation variants",
+  "type": "object",
+  "required": ["schemaVersion", "description", "variants"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 3 },
+    "description": { "type": "string", "minLength": 1 },
+    "variants": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/variant" }
+    }
+  },
+  "$defs": {
+    "variant": {
+      "type": "object",
+      "required": ["id", "description", "feedbackPolicy", "replaces", "with"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "enum": ["markdown-reference-guidance-only"] },
+        "description": { "type": "string", "minLength": 1 },
+        "feedbackPolicy": {
+          "enum": [
+            "guidance-only",
+            "guidance-static",
+            "guidance-static-browser"
+          ]
+        },
+        "replaces": { "type": "string", "minLength": 1 },
+        "with": {
+          "type": "object",
+          "required": ["index", "pageDirectory", "pageSelection"],
+          "additionalProperties": false,
+          "properties": {
+            "index": { "type": "string", "minLength": 1 },
+            "pageDirectory": { "type": "string", "minLength": 1 },
+            "pageSelection": { "enum": ["case-context-references"] }
+          }
+        }
+      }
+    }
+  }
+}

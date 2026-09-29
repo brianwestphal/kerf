@@ -26,7 +26,7 @@
   },
   "$defs": {
     "digest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
-    "condition": { "enum": ["guidance-only", "guidance-static", "guidance-static-browser"] },
+    "condition": { "enum": ["guidance-only", "guidance-static", "guidance-static-browser", "markdown-reference-guidance-only"] },
     "ref": { "type": "object", "required": ["path", "sha256"], "additionalProperties": false, "properties": { "path": { "type": "string", "minLength": 1 }, "sha256": { "$ref": "#/$defs/digest" } } },
     "environment": {
       "type": "object", "required": ["node", "platform", "arch", "typescript", "playwright", "browsers", "lockfileSha256"], "additionalProperties": false,

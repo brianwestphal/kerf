@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "description": "Guidance-representation experiments layered on suite v3. A variant changes exactly one source of the conditions-v3.json guidance and inherits one v3 feedback policy, so its cells are compared against that policy's cells. Variants are opt-in: the default prepare output and the required measured matrix remain the three v3 feedback policies.",
+  "variants": [
+    {
+      "id": "markdown-reference-guidance-only",
+      "description": "The guidance-only policy with ai/component-catalog.json replaced, in place, by the generated markdown component reference: ai/components/README.md plus the pages for the components and elements the case's application files already reference.",
+      "feedbackPolicy": "guidance-only",
+      "replaces": "ai/component-catalog.json",
+      "with": {
+        "index": "ai/components/README.md",
+        "pageDirectory": "ai/components",
+        "pageSelection": "case-context-references"
+      }
+    }
+  ]
+}
