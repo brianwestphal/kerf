@@ -124,6 +124,37 @@
   width: remify(32px);
   min-width: remify(32px);
 }
+/* In a TabBar, the tab styles itself in the context of its parent strip. A
+   segmented strip's outer ends follow the pill track: the first tab's leading
+   corners, and a filled strip's last tab's trailing corners, are pill-rounded
+   so each end is concentric with the track (TabBar insets a compact strip's
+   tabs to match). Only fill allocation carries the last tab to the track's
+   trailing end; an intrinsic strip's last tab stops short of it and keeps the
+   segment radius, as do the corners between tabs. */
+.kui-tab-bar[data-presentation="segmented"]
+  .kui-tab-bar__tabs
+  > .kui-app-tab:first-child {
+  border-start-start-radius: var(--kui-radius-pill);
+  border-end-start-radius: var(--kui-radius-pill);
+}
+.kui-tab-bar[data-presentation="segmented"][data-allocation="fill"]
+  .kui-tab-bar__tabs
+  > .kui-app-tab:last-child {
+  border-start-end-radius: var(--kui-radius-pill);
+  border-end-end-radius: var(--kui-radius-pill);
+}
+/* Fill allocation shares the strip equally and centers each tab's content. */
+.kui-tab-bar[data-allocation="fill"] .kui-tab-bar__tabs > .kui-app-tab {
+  min-width: 0;
+  flex: 1 1 0;
+}
+.kui-tab-bar[data-allocation="fill"]
+  .kui-tab-bar__tabs
+  > .kui-app-tab
+  > .kui-app-tab__select {
+  width: 100%;
+  justify-content: center;
+}
 .kui-app-tab__trailing {
   display: grid;
   min-width: remify(20.4px);

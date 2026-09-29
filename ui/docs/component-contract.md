@@ -239,9 +239,13 @@ class and state appear only in an ancestor compound, the selector's subject is
 the child's own class, and the child reads context values the parent provides
 under the parent's name. `ResizableRegion` widens its edge extent by the
 unsafe inset a split `SplitView` provides, and a `Skeleton` derives its fill
-from a solid `Badge`'s on-solid color, both in their own stylesheets.
+from a solid `Badge`'s on-solid color, both in their own stylesheets; an
+`AppTab` rounds its outer corners in a segmented `TabBar` and shares a
+fill-allocated strip from `app-tab.css`. A parent may still key its own element
+on a child's state through `:has()`, naming the child by its class there, as
+`TabBar` insets a segmented strip that holds compact tabs.
 `npm run check:css-ownership` allows a foreign component class only in such an
-ancestor context.
+ancestor context or `:has()` argument.
 
 The v2 composition catalog additionally requires `boundaries.rootClass` to be
 either one exact member of `publicClasses` or `null` when the entry has no

@@ -233,6 +233,25 @@ function kuiClasses(selector) {
   );
 }
 
+/**
+ * Drop every `:has(...)` argument from a compound. A `:has()` argument names
+ * the state a rule is keyed on, never the element it styles.
+ */
+function withoutHasArguments(compound) {
+  let result = '';
+  let depth = 0;
+  for (let index = 0; index < compound.length; index += 1) {
+    if (depth === 0 && compound.startsWith(':has(', index)) {
+      depth = 1;
+      index += ':has('.length - 1;
+    } else if (depth > 0) {
+      if (compound[index] === '(') depth += 1;
+      else if (compound[index] === ')') depth -= 1;
+    } else result += compound[index];
+  }
+  return result;
+}
+
 const packageStyles = await cssFiles(resolve(root, 'src'));
 for (const file of packageStyles) {
   if (relative(file).startsWith('src/catalog/components/')) continue;
@@ -248,11 +267,13 @@ for (const file of packageStyles) {
     // foreign class may appear only in an ancestor compound, and only when the
     // subject compound selects this stylesheet's own class. The parent
     // provides the context (its state and the values it names after itself);
-    // it never styles or configures the child from its own stylesheet.
+    // it never styles or configures the child from its own stylesheet. A
+    // parent may key its OWN element on a child's state through `:has()`,
+    // naming the child by class there, so `:has()` arguments are context too.
     const foreign = [
       ...new Set(
         complexSelectors(rule.selector).flatMap((compounds) => {
-          const subject = compounds.at(-1) ?? '';
+          const subject = withoutHasArguments(compounds.at(-1) ?? '');
           const subjectClasses = kuiClasses(subject);
           const contextual =
             subjectClasses.length > 0 && subjectClasses.every(owns);
