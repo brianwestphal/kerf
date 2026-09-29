@@ -64,6 +64,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   the Pane's content. The rule lives in `pane.css`, as the Workbench-region fill
   does.
 
+- **The `@kerfjs/ui` suite-v3 AI-regression protocol test runs in every gate
+  again.** `ui/tests/integration/ai-regressions-v3.test.ts` was selected by no
+  package script, so neither `npm --prefix ui run check` nor CI executed it. It
+  now runs as `test:ai-regressions` inside the package's `npm test`, and a new
+  unit guard fails when any file under `ui/tests` is selected by no script
+  reachable from `check` or `test:e2e`.
+
 - **Importing `@kerfjs/ui/catalog` or `@kerfjs/ui/workbench` now ships every
   stylesheet those composites render.** `catalog`, `workbench`, `nav-stack`,
   `split-view`, `tab-scaffold`, and `collapsible-panel` gain a CSS-aware

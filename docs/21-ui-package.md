@@ -594,7 +594,11 @@ compile, browser, and human-visual evidence records and has **no** single
 structural score — `ai:regressions:score -- --suite 3` refuses and says so.
 `ai:regressions:record-v3` and `ai:regressions:replay-v3` record and replay
 campaigns, and `check:ai-regressions` also runs the v3 results audit
-(`scripts/audit-ai-regression-results-v3.mjs`).
+(`scripts/audit-ai-regression-results-v3.mjs`). The executable-protocol
+integration test (`tests/integration/ai-regressions-v3.test.ts`) runs as
+`test:ai-regressions` within the package's `npm test`, and a unit guard fails
+whenever a file under `ui/tests` is selected by no script that `check` or
+`test:e2e` reaches, so a test cannot silently fall out of every gate again.
 
 ## 21.8 Versioning and releases
 
