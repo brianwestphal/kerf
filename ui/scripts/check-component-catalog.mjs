@@ -564,11 +564,16 @@ for (const entry of entries.filter(({ delivery }) => delivery.moduleImport)) {
       fail(`${entry.id} names stale module export ${name} from ${specifier}`);
 }
 
+// The `Catalog` shell is package tooling for building a component catalog,
+// not a catalog entry itself, yet it still ships a CSS-aware browser wrapper so
+// the internal components it renders bring their styles.
+const nonCatalogBrowserImports = new Set(['@kerfjs/ui/catalog']);
 const browserImports = Object.entries(packageJson.exports)
   .filter(
     ([, target]) => target && typeof target === 'object' && 'browser' in target,
   )
   .map(([subpath]) => `@kerfjs/ui/${subpath.slice(2)}`)
+  .filter((specifier) => !nonCatalogBrowserImports.has(specifier))
   .sort();
 const catalogBrowserImports = entries
   .flatMap((entry) =>

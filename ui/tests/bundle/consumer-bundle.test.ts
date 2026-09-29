@@ -1,8 +1,15 @@
 // @vitest-environment node
+import { existsSync } from 'node:fs';
 import { readdir, readFile } from 'node:fs/promises';
+import { posix } from 'node:path';
 
 import { build } from 'esbuild';
 import { describe, expect, it } from 'vitest';
+
+import {
+  browserEntrySubpaths,
+  styledSubpathsMissingBrowser,
+} from '../../scripts/lib/browser-entry-styles.mjs';
 
 async function bundle(contents: string) {
   return build({
@@ -519,6 +526,144 @@ describe('consumer bundle boundaries', () => {
     expect(css).not.toContain('.kui-content-item');
   });
 
+  it('ships every internal component style from a Catalog-only import', async () => {
+    const result = await bundle(
+      "import { Catalog } from '@kerfjs/ui/catalog'; console.log(Catalog);",
+    );
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const subjects = styledClasses(output(result, '.css'));
+    expect(inputs).toContain('dist/browser/catalog.js');
+    // The components the Catalog shell renders internally: its sidebar, stage,
+    // resource footer, and the Workbench (with its Panes) that hosts them.
+    for (const subject of [
+      '.kui-catalog',
+      '.kui-workbench',
+      '.kui-pane',
+      '.kui-toolbar',
+      '.kui-toolbar-text',
+      '.kui-toolbar-control-group',
+      '.kui-floating-toolbar',
+      '.kui-resizable-region',
+      '.kui-list',
+      '.kui-list-item',
+      '.kui-list-header',
+      '.kui-list-inset-text',
+      '.kui-text',
+      '.kui-row',
+      '.kui-popup-menu',
+    ])
+      expect(subjects, subject).toContain(subject);
+    expect(subjects).not.toContain('.kui-tab-bar');
+    expect(subjects).not.toContain('.kui-state-banner');
+  });
+
+  it('ships every internal component style from a Workbench-only import', async () => {
+    const result = await bundle(
+      "import { Workbench } from '@kerfjs/ui/workbench'; console.log(String(Workbench({ main: 'Main' })));",
+    );
+    const inputs = Object.keys(result.metafile!.inputs).join('\n');
+    const subjects = styledClasses(output(result, '.css'));
+    expect(inputs).toContain('dist/browser/workbench.js');
+    for (const subject of [
+      '.kui-workbench',
+      '.kui-pane',
+      '.kui-toolbar',
+      '.kui-toolbar-control-group',
+      '.kui-floating-toolbar',
+      '.kui-resizable-region',
+      '.kui-list',
+    ])
+      expect(subjects, subject).toContain(subject);
+    expect(subjects).not.toContain('.kui-catalog');
+    expect(subjects).not.toContain('.kui-list-item');
+    expect(subjects).not.toContain('.kui-tab-bar');
+  });
+
+  it('keeps composite import entries CSS-free for Node and custom pipelines', async () => {
+    for (const composite of [
+      'catalog',
+      'workbench',
+      'nav-stack',
+      'split-view',
+      'tab-scaffold',
+      'collapsible-panel',
+    ]) {
+      const result = await nodeBundle(
+        `import * as mod from '@kerfjs/ui/${composite}'; console.log(mod);`,
+      );
+      const inputs = Object.keys(result.metafile!.inputs).join('\n');
+      expect(inputs, composite).not.toContain('dist/browser');
+      expect(output(result, '.css'), composite).toBe('');
+    }
+  });
+
+  it('gives every styled subpath a browser wrapper that covers its whole runtime graph', async () => {
+    const pkg = JSON.parse(
+      await readFile(new URL('../../package.json', import.meta.url), 'utf8'),
+    ) as { exports: Record<string, unknown> };
+    // A module subpath that reaches component CSS but lacks a `browser`
+    // condition ships none of the styles it renders.
+    expect(await styledSubpathsMissingBrowser(pkg)).toEqual([]);
+
+    const root = new URL('../../', import.meta.url);
+    const src = new URL('src/', root);
+    for (const subpath of browserEntrySubpaths(pkg)) {
+      const wrapper = await readFile(
+        new URL(`dist/browser/${subpath}.js`, root),
+        'utf8',
+      );
+      const shipped = new Set(
+        [...wrapper.matchAll(/import '\.\.\/styles\/(.+)\.css';/g)].map(
+          (match) => match[1]!,
+        ),
+      );
+      // esbuild's own resolution of the source graph is the independent
+      // witness: every bundled module's stylesheet must be in the wrapper.
+      const graph = await build({
+        entryPoints: [
+          new URL(
+            `${subpath}.${existsSync(new URL(`${subpath}.tsx`, src)) ? 'tsx' : 'ts'}`,
+            src,
+          ).pathname,
+        ],
+        bundle: true,
+        format: 'esm',
+        metafile: true,
+        packages: 'external',
+        platform: 'browser',
+        write: false,
+        tsconfigRaw: {
+          compilerOptions: { jsx: 'react-jsx', jsxImportSource: 'kerfjs' },
+        },
+      });
+      for (const input of Object.keys(graph.metafile.inputs)) {
+        const module = /(?:^|\/)src\/(.+)\.tsx?$/.exec(input)?.[1];
+        if (!module) continue;
+        const stylesheet = new URL(`${module}.css`, src);
+        if (!existsSync(stylesheet)) continue;
+        const css = await readFile(stylesheet, 'utf8');
+        const aggregated = [
+          ...css.matchAll(/@import\s+["']\.\/(.+)\.css["']/g),
+        ].map((match) =>
+          posix.normalize(posix.join(posix.dirname(module), match[1]!)),
+        );
+        // A pure `@import` aggregate is satisfied by its imported files.
+        const required =
+          aggregated.length > 0 &&
+          css
+            .replace(/\/\*[\s\S]*?\*\//g, '')
+            .replace(/@import[^;]+;/g, '')
+            .trim() === ''
+            ? aggregated
+            : [module];
+        for (const style of required)
+          expect(shipped, `${subpath} wrapper misses ${style}.css`).toContain(
+            style,
+          );
+      }
+    }
+  });
+
   it('declares only style delivery and custom-element registration as side effects', async () => {
     const pkg = JSON.parse(
       await readFile(new URL('../../package.json', import.meta.url), 'utf8'),
@@ -583,22 +728,23 @@ describe('consumer bundle boundaries', () => {
     });
     expect(pkg.exports['./device-class']).not.toHaveProperty('browser');
     expect(pkg.exports['./device-class.css']).toBeUndefined();
-    // nav-stack is an opt-in layout subpath: component + companion CSS (manual
-    // import, like layout.css), a logic-only wire helper, and no browser entry.
+    // Layouts are opt-in (non-barrel) subpaths: a CSS-aware browser entry that
+    // brings the layout's and its internal components' styles, a CSS-free
+    // import entry, a manual companion stylesheet, and a logic-only wire helper.
     expect(pkg.exports['./nav-stack']).toMatchObject({
       types: './dist/nav-stack.d.ts',
+      browser: './dist/browser/nav-stack.js',
       import: './dist/nav-stack.js',
     });
-    expect(pkg.exports['./nav-stack']).not.toHaveProperty('browser');
     expect(pkg.exports['./nav-stack.css']).toBe('./dist/styles/nav-stack.css');
     expect(pkg.exports['./wire-nav-stack']).toMatchObject({
       import: './dist/wire-nav-stack.js',
     });
     expect(pkg.exports['./split-view']).toMatchObject({
       types: './dist/split-view.d.ts',
+      browser: './dist/browser/split-view.js',
       import: './dist/split-view.js',
     });
-    expect(pkg.exports['./split-view']).not.toHaveProperty('browser');
     expect(pkg.exports['./split-view.css']).toBe(
       './dist/styles/split-view.css',
     );
@@ -610,15 +756,15 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./pane.css']).toBe('./dist/styles/pane.css');
     expect(pkg.exports['./workbench']).toMatchObject({
       types: './dist/workbench.d.ts',
+      browser: './dist/browser/workbench.js',
       import: './dist/workbench.js',
     });
-    expect(pkg.exports['./workbench']).not.toHaveProperty('browser');
     expect(pkg.exports['./workbench.css']).toBe('./dist/styles/workbench.css');
     expect(pkg.exports['./tab-scaffold']).toMatchObject({
       types: './dist/tab-scaffold.d.ts',
+      browser: './dist/browser/tab-scaffold.js',
       import: './dist/tab-scaffold.js',
     });
-    expect(pkg.exports['./tab-scaffold']).not.toHaveProperty('browser');
     expect(pkg.exports['./tab-scaffold.css']).toBe(
       './dist/styles/tab-scaffold.css',
     );
@@ -677,6 +823,12 @@ describe('consumer bundle boundaries', () => {
     expect(pkg.exports['./content-item.css']).toBe(
       './dist/styles/content-item.css',
     );
+    for (const composite of ['catalog', 'collapsible-panel'])
+      expect(pkg.exports[`./${composite}`]).toMatchObject({
+        types: `./dist/${composite}.d.ts`,
+        browser: `./dist/browser/${composite}.js`,
+        import: `./dist/${composite}.js`,
+      });
     expect(pkg.files).not.toContain('src/*.css');
   });
 

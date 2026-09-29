@@ -1119,11 +1119,16 @@ layout-selection guidance**.
 
 Each layout and the device-class module is its own opt-in subpath, kept out of
 the root barrel so an app importing `@kerfjs/ui/nav-stack` must not pull
-`Workbench` or its CSS. Because the layouts are not barrel components, they
-deliver styling through a **companion CSS import** (`@kerfjs/ui/nav-stack.css`,
-the same manual pattern as `layout.css`) rather than the browser auto-condition —
-so the component's own JS import stays CSS-free and the app opts into the
-stylesheet explicitly. Node/SSR paths stay DOM- and CSS-free (device-class SSR
+`Workbench` or its CSS. Like the component subpaths, each layout (and
+`CollapsiblePanel`) declares a CSS-aware `browser` condition: a CSS-aware
+bundler loads the layout's stylesheet plus those of the components it renders
+internally (`Pane`, `Toolbar`, `List`, …), derived from the source import graph
+so it cannot drift. The `import` condition stays CSS-free, and the companion
+stylesheet subpath (`@kerfjs/ui/nav-stack.css`) remains for pipelines that do
+not honor `browser`. (Layouts originally shipped with only the companion CSS
+import; an app that imported `Workbench` then had to hand-import `pane.css`, and
+internal components' styles depended on unrelated imports.) The `wire…` helpers
+stay CSS-free. Node/SSR paths stay DOM- and CSS-free (device-class SSR
 resolves to the caller default without touching `matchMedia`). The package's
 bundle/CSS tree-shaking gates extend to cover the new subpaths.
 

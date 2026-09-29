@@ -281,7 +281,7 @@ import {
   wireCatalog,
   wireCatalogGeometryOverlay,
 } from "@kerfjs/ui/wire-catalog";
-import "@kerfjs/ui/styles.css"; // or import each primitive's CSS + @kerfjs/ui/catalog.css
+// A CSS-aware (browser-condition) bundler loads the Catalog's CSS with its import.
 
 type DemoKind = "component" | "composition";
 type DemoEntry = CatalogSection["entries"][number] & { kind: DemoKind };
@@ -431,7 +431,10 @@ matching options on `wireCatalog`) if they collide with your own action table.
 `Catalog` composes public components (`Workbench`, `Pane`, `Toolbar`, `List`,
 `ListHeader`, `ListItem`, `ListInsetText`, `Text`, …) and owns only the preview stage
 (the checkerboard and centered canvas), the geometry overlay, the example viewport
-options, and the brand mark's size. Import `@kerfjs/ui/styles.css` for the whole
-layer, or `@kerfjs/ui/catalog.css` plus `@kerfjs/ui/workbench.css` and each composed
-primitive's CSS. Like any Workbench it needs a definite containing height — the
+options, and the brand mark's size. A bundler that honors the `browser` export
+condition loads the Catalog's stylesheets and those of every component it renders
+internally with the `@kerfjs/ui/catalog` import alone — no dependence on which other
+subpaths the app happens to import. Without that condition, import
+`@kerfjs/ui/styles.css` for the whole layer, or `@kerfjs/ui/catalog.css` plus
+`@kerfjs/ui/workbench.css` and each composed primitive's CSS. Like any Workbench it needs a definite containing height — the
 `@kerfjs/ui/document.css` baseline's `.kui-app-root`.

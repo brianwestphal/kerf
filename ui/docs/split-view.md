@@ -8,10 +8,15 @@ on compact ones. One of the opt-in app layouts (see
 ```ts
 import { SplitView } from "@kerfjs/ui/split-view";
 import { deviceClass } from "@kerfjs/ui/device-class";
-import "@kerfjs/ui/split-view.css";
-// plus nav-stack.css when the compact path is reachable, and
-// wireResizableRegions / wireNavStack for the interactive behavior.
+// plus wireResizableRegions / wireNavStack for the interactive behavior.
 ```
+
+In a browser bundler that honors the `browser` export condition (Vite, esbuild, and
+webpack do by default), the import above also
+loads SplitView's stylesheet and those of the components it renders internally
+(its compact `NavStack`, `ResizableRegion`, and the toolbar
+components). Without that condition, import the manual stylesheets instead:
+`@kerfjs/ui/split-view.css` plus those components' CSS, or `@kerfjs/ui/styles.css`.
 
 ## Safe areas
 

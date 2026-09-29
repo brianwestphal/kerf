@@ -26,10 +26,10 @@ Add one independently collapsible peripheral panel without adopting the complete
 ## Imports
 
 - JavaScript: `@kerfjs/ui/collapsible-panel` — exports `CollapsiblePanelSide`, `collapsiblePanelToggleIcon`, `CollapsiblePanelToolbarToggle`, `CollapsiblePanelToolbar`, `CollapsiblePanelToggleProps`, `CollapsiblePanelToggle`, `CollapsiblePanelProps`, `CollapsiblePanel`, `CollapsiblePanelRelocatedProps`, `CollapsiblePanelRelocated`.
-- CSS: import `@kerfjs/ui/collapsible-panel.css` once.
+- CSS: the browser build of `@kerfjs/ui/collapsible-panel` pulls its CSS automatically; import `@kerfjs/ui/collapsible-panel.css` manually only without the `browser` export condition.
 - Wiring: `wireSidebar` from `@kerfjs/ui/wire-sidebar` (required).
 - Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
-- Declared side effects: manual-css.
+- Declared side effects: browser-condition-css.
 
 ## Props
 

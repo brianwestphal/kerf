@@ -165,6 +165,7 @@
     },
     "./catalog": {
       "types": "./dist/catalog.d.ts",
+      "browser": "./dist/browser/catalog.js",
       "import": "./dist/catalog.js"
     },
     "./catalog-resources": {
@@ -206,6 +207,7 @@
     },
     "./nav-stack": {
       "types": "./dist/nav-stack.d.ts",
+      "browser": "./dist/browser/nav-stack.js",
       "import": "./dist/nav-stack.js"
     },
     "./wire-nav-stack": {
@@ -214,6 +216,7 @@
     },
     "./split-view": {
       "types": "./dist/split-view.d.ts",
+      "browser": "./dist/browser/split-view.js",
       "import": "./dist/split-view.js"
     },
     "./pane": {
@@ -223,10 +226,12 @@
     },
     "./workbench": {
       "types": "./dist/workbench.d.ts",
+      "browser": "./dist/browser/workbench.js",
       "import": "./dist/workbench.js"
     },
     "./collapsible-panel": {
       "types": "./dist/collapsible-panel.d.ts",
+      "browser": "./dist/browser/collapsible-panel.js",
       "import": "./dist/collapsible-panel.js"
     },
     "./wire-sidebar": {
@@ -235,6 +240,7 @@
     },
     "./tab-scaffold": {
       "types": "./dist/tab-scaffold.d.ts",
+      "browser": "./dist/browser/tab-scaffold.js",
       "import": "./dist/tab-scaffold.js"
     },
     "./wire-tab-scaffold": {

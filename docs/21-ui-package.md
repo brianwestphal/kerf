@@ -43,7 +43,15 @@ condition to a generated wrapper that imports the foundation, that component's
 CSS, and CSS for the UI subcomponents reachable from its source imports. The
 package derives this graph during its build, so application roots neither list
 transitive styles nor retain stale ones. Unused component CSS stays out of the
-bundle.
+bundle. Composite subpaths — `catalog`, `workbench`, `nav-stack`, `split-view`,
+`tab-scaffold`, and `collapsible-panel` — carry the same condition, so importing
+only `@kerfjs/ui/catalog` or `@kerfjs/ui/workbench` ships the CSS of every
+component they render internally (Pane, Toolbar, List, ListItem,
+ListInsetText, …) without depending on unrelated application imports. The
+bundle suite fails if a module subpath reaches component CSS without a
+`browser` condition, or if a wrapper misses the stylesheet of any module in
+its esbuild-resolved source graph; the `wire-*` helpers and the type-only
+`webawesome` declarations stay CSS-free by design.
 
 The root barrel stays JavaScript-only so its re-exports remain tree-shakable
 without making every stylesheet a side effect. Pair it with `styles.css` only

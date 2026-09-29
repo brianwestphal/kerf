@@ -9,8 +9,13 @@ It is distinct from `TabBar` (document-oriented, reorderable strips).
 ```ts
 import { TabScaffold } from "@kerfjs/ui/tab-scaffold";
 import { wireTabScaffold } from "@kerfjs/ui/wire-tab-scaffold";
-import "@kerfjs/ui/tab-scaffold.css";
 ```
+
+In a browser bundler that honors the `browser` export condition (Vite, esbuild, and
+webpack do by default), the import above also
+loads TabScaffold's stylesheet and those of the components it renders internally
+(the tab `Badge`). Without that condition, import the manual stylesheets instead:
+`@kerfjs/ui/tab-scaffold.css` plus those components' CSS, or `@kerfjs/ui/styles.css`.
 
 ## Controlled selection
 

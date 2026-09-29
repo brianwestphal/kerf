@@ -61,6 +61,7 @@ describe('component integration surface manifest', () => {
         module: 'example',
         specifier: '@kerfjs/ui/example',
         browserCondition: true,
+        rootBarrel: true,
         cssSpecifier: '@kerfjs/ui/example.css',
         publicExports: ['Example', 'ExampleProps'],
         catalogRoute: '?component=example',
@@ -90,6 +91,29 @@ describe('component integration surface manifest', () => {
       'ux-demo registry',
       'AI public signatures',
     ]);
+  });
+
+  it('keeps an opt-in styled subpath with a browser condition out of the root barrel', () => {
+    const optIn = {
+      entries: [
+        {
+          ...catalog.entries[0]!,
+          delivery: {
+            moduleImport: '@kerfjs/ui/example',
+            browserImport: '@kerfjs/ui/example',
+            manualCssImport: '@kerfjs/ui/example.css',
+          },
+        },
+      ],
+    };
+    const surfaces = completeSurfaces();
+    surfaces.barrelExports.clear();
+    const [integration] = deriveComponentIntegrations(optIn);
+    expect(integration).toMatchObject({
+      browserCondition: true,
+      rootBarrel: false,
+    });
+    expect(validateComponentIntegrations([integration!], surfaces)).toEqual([]);
   });
 
   it('accepts a component whose complete integration projections agree', () => {

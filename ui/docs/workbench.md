@@ -9,8 +9,14 @@ desktop-class devices.
 
 ```ts
 import { Workbench } from "@kerfjs/ui/workbench";
-import "@kerfjs/ui/workbench.css";
 ```
+
+In a browser bundler that honors the `browser` export condition (Vite, esbuild, and
+webpack do by default), the import above also
+loads Workbench's stylesheet and those of the components it renders internally
+(`Pane`, `Toolbar`, `ToolbarControlGroup`, `FloatingToolbar`, `ResizableRegion`,
+`List`, `LucideIcon`). Without that condition, import the manual stylesheets instead:
+`@kerfjs/ui/workbench.css` plus those components' CSS, or `@kerfjs/ui/styles.css`.
 
 A top-level `Workbench` needs a definite containing height. Import the opt-in
 `@kerfjs/ui/document.css` baseline and add `.kui-app-root` to the direct mount
@@ -526,7 +532,8 @@ when each policy applies.
 
 ## Public styling boundary
 
-Import `@kerfjs/ui/workbench.css` after the component subpath. Applications may
+The component subpath's browser build loads `workbench.css`; import
+`@kerfjs/ui/workbench.css` manually only without the `browser` condition. Applications may
 set `--kui-workbench-rail-width` and `--kui-workbench-drawer-height` on a
 Workbench instance. The supported composition classes are `.kui-workbench`,
 `.kui-workbench__rail`, `.kui-workbench__rail--left`,

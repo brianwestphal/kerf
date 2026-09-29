@@ -693,9 +693,10 @@
       },
       "delivery": {
         "moduleImport": "@kerfjs/ui/nav-stack",
+        "browserImport": "@kerfjs/ui/nav-stack",
         "manualCssImport": "@kerfjs/ui/nav-stack.css",
         "sideEffects": [
-          "manual-css"
+          "browser-condition-css"
         ]
       },
       "wiring": [
@@ -831,9 +832,10 @@
       },
       "delivery": {
         "moduleImport": "@kerfjs/ui/split-view",
+        "browserImport": "@kerfjs/ui/split-view",
         "manualCssImport": "@kerfjs/ui/split-view.css",
         "sideEffects": [
-          "manual-css"
+          "browser-condition-css"
         ]
       },
       "wiring": [
@@ -960,9 +962,10 @@
       },
       "delivery": {
         "moduleImport": "@kerfjs/ui/tab-scaffold",
+        "browserImport": "@kerfjs/ui/tab-scaffold",
         "manualCssImport": "@kerfjs/ui/tab-scaffold.css",
         "sideEffects": [
-          "manual-css"
+          "browser-condition-css"
         ]
       },
       "wiring": [
@@ -1087,9 +1090,10 @@
       },
       "delivery": {
         "moduleImport": "@kerfjs/ui/workbench",
+        "browserImport": "@kerfjs/ui/workbench",
         "manualCssImport": "@kerfjs/ui/workbench.css",
         "sideEffects": [
-          "manual-css"
+          "browser-condition-css"
         ]
       },
       "wiring": [
@@ -1235,9 +1239,10 @@
       },
       "delivery": {
         "moduleImport": "@kerfjs/ui/collapsible-panel",
+        "browserImport": "@kerfjs/ui/collapsible-panel",
         "manualCssImport": "@kerfjs/ui/collapsible-panel.css",
         "sideEffects": [
-          "manual-css"
+          "browser-condition-css"
         ]
       },
       "wiring": [

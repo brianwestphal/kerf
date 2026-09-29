@@ -26,10 +26,10 @@ Arrange a complex tool or editor as a stable central work area with optional per
 ## Imports
 
 - JavaScript: `@kerfjs/ui/workbench` — exports `Workbench`, `WorkbenchChromePlacement`, `WorkbenchCompactOverlay`, `WorkbenchMainBottomToolbar`, `WorkbenchMainToolbar`, `WorkbenchPanel`, `WorkbenchPanelResizable`, `WorkbenchPanelToggle`, `WorkbenchPanelToolbar`, `WorkbenchProps`, `WorkbenchResponsiveOverlayAt`.
-- CSS: import `@kerfjs/ui/workbench.css` once.
+- CSS: the browser build of `@kerfjs/ui/workbench` pulls its CSS automatically; import `@kerfjs/ui/workbench.css` manually only without the `browser` export condition.
 - Wiring: `wireWorkbench` from `@kerfjs/ui/wire-workbench` (optional).
 - Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
-- Declared side effects: manual-css.
+- Declared side effects: browser-condition-css.
 
 ## Props
 

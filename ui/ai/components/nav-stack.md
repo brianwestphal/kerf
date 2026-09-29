@@ -26,10 +26,10 @@ Present a single linear or drill-down flow while preserving each prior view's st
 ## Imports
 
 - JavaScript: `@kerfjs/ui/nav-stack` — exports `NavStackView`, `NavStackToolbarConfig`, `NavStackProps`, `NavStack`.
-- CSS: import `@kerfjs/ui/nav-stack.css` once.
+- CSS: the browser build of `@kerfjs/ui/nav-stack` pulls its CSS automatically; import `@kerfjs/ui/nav-stack.css` manually only without the `browser` export condition.
 - Wiring: `wireNavStack` from `@kerfjs/ui/wire-nav-stack` (required).
 - Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
-- Declared side effects: manual-css.
+- Declared side effects: browser-condition-css.
 
 ## Props
 

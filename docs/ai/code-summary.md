@@ -745,9 +745,18 @@ Runtime dep (`@preact/signals-core`) is external — consumers' bundlers pick it
 `npm --prefix ui run build` independently emits the ESM/type entry shims for
 `@kerfjs/ui`, compiles pixel-first `remify(<px>)` author CSS into standard
 `dist/styles/*.css`, then derives component-to-component reachability from
-source imports and generates `dist/browser/*.js` wrappers. A browser component
+source imports and generates `dist/browser/*.js` wrappers
+(`ui/scripts/build-browser-entries.mjs` over `ui/scripts/lib/browser-entry-styles.mjs`,
+which walks value imports and re-exports, parent-relative ones included, and expands
+pure `@import` aggregates such as `catalog.css`). A browser component
 subpath imports the foundation, its own compiled CSS, and reachable subcomponent
-CSS; unrelated styles remain unreachable. The root barrel,
+CSS; unrelated styles remain unreachable. Composites (`catalog`, `workbench`,
+`nav-stack`, `split-view`, `tab-scaffold`, `collapsible-panel`) get wrappers too, so
+their internally rendered components (Pane, Toolbar, List, …) bring their styles.
+`ui/tests/bundle/consumer-bundle.test.ts` fails when a module subpath reaches
+component CSS without a `browser` condition (`wire-*` helpers and the type-only
+`webawesome` are exempt) or when a wrapper misses the stylesheet of any module
+esbuild resolves into that subpath's source graph. The root barrel,
 `@kerfjs/ui/unstyled`, and Node/SSR resolution remain CSS-free. `kerfjs` and
 optional Web Awesome stay external; explicit CSS subpaths and the deliberate
 full `styles.css` layer export compiled output, while source styles are not

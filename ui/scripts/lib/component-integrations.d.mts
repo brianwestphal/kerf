@@ -4,6 +4,7 @@ export interface CatalogComponentIntegration {
   module: string;
   specifier: string;
   browserCondition: boolean;
+  rootBarrel: boolean;
   cssSpecifier?: string;
   publicExports: string[];
   catalogRoute?: string;

@@ -1,78 +1,20 @@
-import { access, mkdir, readFile, writeFile } from 'node:fs/promises';
-import { posix } from 'node:path';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+
+import {
+  browserEntrySubpaths,
+  browserWrapperSource,
+} from './lib/browser-entry-styles.mjs';
 
 const packageJson = JSON.parse(
   await readFile(new URL('../package.json', import.meta.url), 'utf8'),
 );
-const components = Object.entries(packageJson.exports)
-  .filter(
-    ([, target]) =>
-      typeof target === 'object' && target !== null && 'browser' in target,
-  )
-  .map(([subpath]) => subpath.slice(2));
-
 const browserDirectory = new URL('../dist/browser/', import.meta.url);
 
 await mkdir(browserDirectory, { recursive: true });
 
-async function sourceFor(moduleName) {
-  for (const extension of ['tsx', 'ts']) {
-    const source = new URL(
-      `../src/${moduleName}.${extension}`,
-      import.meta.url,
-    );
-    try {
-      await access(source);
-      return source;
-    } catch {
-      // Try the other supported source extension.
-    }
-  }
-  throw new Error(`Could not find source for browser component ${moduleName}`);
-}
-
-async function hasStyle(moduleName) {
-  try {
-    await access(new URL(`../src/${moduleName}.css`, import.meta.url));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function reachableStyles(moduleName, seen = new Set()) {
-  if (seen.has(moduleName)) return [];
-  seen.add(moduleName);
-
-  const source = await readFile(await sourceFor(moduleName), 'utf8');
-  // Follow both value imports AND value re-exports (`export { X } from './x.js'`,
-  // `export * from …`) — a re-exported sibling pulls its runtime, so its CSS must be
-  // reachable too. Skip type-only forms (`import type …`, `export type …`), which
-  // erase at build and reference no CSS.
-  const dependencies = [
-    ...source.matchAll(
-      /import\s+(?!type\b)[^'"]*from\s+['"]\.\/([^'"]+)\.js['"]/g,
-    ),
-    ...source.matchAll(
-      /export\s+(?!type\b)(?:\*|\{[^}]*\})\s+from\s+['"]\.\/([^'"]+)\.js['"]/g,
-    ),
-  ].map((match) =>
-    posix.normalize(posix.join(posix.dirname(moduleName), match[1])),
-  );
-  const styles = [];
-  for (const dependency of dependencies) {
-    styles.push(...(await reachableStyles(dependency, seen)));
-  }
-  if (await hasStyle(moduleName)) styles.push(moduleName);
-  return styles;
-}
-
-for (const component of components) {
-  const imports = ['foundation', ...(await reachableStyles(component))]
-    .map((style) => `import '../styles/${style}.css';`)
-    .join('\n');
+for (const component of browserEntrySubpaths(packageJson)) {
   await writeFile(
     new URL(`${component}.js`, browserDirectory),
-    `${imports}\nexport * from '../${component}.js';\n`,
+    await browserWrapperSource(component),
   );
 }

@@ -26,10 +26,10 @@ Switch among two to five co-equal top-level destinations on compact devices whil
 ## Imports
 
 - JavaScript: `@kerfjs/ui/tab-scaffold` — exports `TabScaffoldTab`, `TabScaffoldProps`, `TabScaffold`.
-- CSS: import `@kerfjs/ui/tab-scaffold.css` once.
+- CSS: the browser build of `@kerfjs/ui/tab-scaffold` pulls its CSS automatically; import `@kerfjs/ui/tab-scaffold.css` manually only without the `browser` export condition.
 - Wiring: `wireTabScaffold` from `@kerfjs/ui/wire-tab-scaffold` (required).
 - Wiring: `wireScrollDividers` from `@kerfjs/ui/wire-scroll-dividers` (optional).
-- Declared side effects: manual-css.
+- Declared side effects: browser-condition-css.
 
 ## Props
 

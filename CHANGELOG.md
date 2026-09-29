@@ -64,6 +64,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   the Pane's content. The rule lives in `pane.css`, as the Workbench-region fill
   does.
 
+- **Importing `@kerfjs/ui/catalog` or `@kerfjs/ui/workbench` now ships every
+  stylesheet those composites render.** `catalog`, `workbench`, `nav-stack`,
+  `split-view`, `tab-scaffold`, and `collapsible-panel` gain a CSS-aware
+  `browser` export condition whose generated wrapper imports the foundation, the
+  CSS of each internally rendered component (Pane, Toolbar, ToolbarText, List,
+  ListItem, ListInsetText, Row, PopupMenu, …) in dependency order, and the
+  composite's own CSS. Apps no longer hand-import `pane.css`, and a Catalog
+  sidebar's styling no longer depends on whether the app happens to import
+  `ListInsetText` elsewhere. The list is derived from the source import graph
+  (now following parent-relative imports), the `import` condition stays
+  CSS-free, and the companion `.css` subpaths remain for pipelines without the
+  `browser` condition. `@kerfjs/ui/ai/skill.md` is 1.46.0.
+
 - **The `@kerfjs/ui` AI guidance now states every maintainer design rule
   explicitly.** An audit of the package's tickets folded the missing rules into
   `@kerfjs/ui/ai/skill.md` (1.45.0), `llms.txt`, and the design docs: prefer a

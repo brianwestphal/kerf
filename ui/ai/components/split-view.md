@@ -26,10 +26,10 @@ Present a selectable list and its detail together when space permits, with a one
 ## Imports
 
 - JavaScript: `@kerfjs/ui/split-view` — exports `SplitView`, `SplitViewProps`, `SplitViewResizable`, `SplitViewCompactStack`, `SplitViewCompactViewToolbars`.
-- CSS: import `@kerfjs/ui/split-view.css` once.
+- CSS: the browser build of `@kerfjs/ui/split-view` pulls its CSS automatically; import `@kerfjs/ui/split-view.css` manually only without the `browser` export condition.
 - Wiring: `wireResizableRegions` from `@kerfjs/ui/wire-resizable-regions` (optional).
 - Wiring: `wireNavStack` from `@kerfjs/ui/wire-nav-stack` (required).
-- Declared side effects: manual-css.
+- Declared side effects: browser-condition-css.
 
 ## Props
 

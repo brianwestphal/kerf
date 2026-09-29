@@ -10,7 +10,10 @@ subpath-only, tree-shakeable modules that add nothing to the main barrel.
 npm install @kerfjs/ui # kerfjs is a peer
 ```
 
-Import the panel CSS (`@kerfjs/ui/collapsible-panel.css`) alongside `foundation.css`.
+A browser bundler that honors the `browser` export condition loads the panel's CSS
+and that of the components it renders (`Pane`, `Toolbar`, `ToolbarControlGroup`,
+`LucideIcon`) with `@kerfjs/ui/collapsible-panel`. Without that condition, import
+`@kerfjs/ui/collapsible-panel.css` plus those stylesheets alongside `foundation.css`.
 
 ## The pieces
 
@@ -243,7 +246,6 @@ import {
   CollapsiblePanelToggle,
 } from "@kerfjs/ui/collapsible-panel";
 import { wireSidebar } from "@kerfjs/ui/wire-sidebar";
-import "@kerfjs/ui/collapsible-panel.css";
 
 const device = deviceClass();
 // Start collapsed on a compact device; `inlineCollapsed` keeps the open inline

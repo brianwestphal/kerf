@@ -17,6 +17,9 @@ export function deriveComponentIntegrations(catalog) {
         module,
         specifier,
         browserCondition: Boolean(entry.delivery.browserImport),
+        // Catalog convention: a component with no separate moduleImport lives in
+        // the root barrel; opt-in subpaths (the layouts) name their moduleImport.
+        rootBarrel: !entry.delivery.moduleImport,
         cssSpecifier: entry.delivery.manualCssImport,
         publicExports: entry.publicExports ?? [],
         catalogRoute: entry.links?.catalogRoute,
@@ -37,6 +40,7 @@ export function validateComponentIntegrations(integrations, surfaces) {
       module,
       specifier,
       browserCondition,
+      rootBarrel,
       cssSpecifier,
       publicExports,
       catalogRoute,
@@ -73,7 +77,7 @@ export function validateComponentIntegrations(integrations, surfaces) {
         fail('source stylesheet', `src/${module}.css`, 'missing');
     }
 
-    if (browserCondition)
+    if (rootBarrel)
       for (const name of publicExports) {
         if (!surfaces.barrelExports.has(name))
           fail('src/index.ts root export', name, 'missing');

@@ -5,13 +5,18 @@ and out over one another while the top chrome settles. A **single-pane layout is
 a `NavStack` with one entry**. It is one of the opt-in app layouts (see
 [`../../docs/23-app-layouts.md`](../../docs/23-app-layouts.md)).
 
-Import the component and its companion stylesheet:
+Import the component and its wiring helper:
 
 ```ts
 import { NavStack, type NavStackView } from "@kerfjs/ui/nav-stack";
 import { wireNavStack } from "@kerfjs/ui/wire-nav-stack";
-import "@kerfjs/ui/nav-stack.css";
 ```
+
+In a browser bundler that honors the `browser` export condition (Vite, esbuild, and
+webpack do by default), the import above also
+loads NavStack's stylesheet and those of the components it renders internally
+(`Toolbar`, `ToolbarControlGroup`, `ToolbarText`, `LucideIcon`). Without that condition, import the manual stylesheets instead:
+`@kerfjs/ui/nav-stack.css` plus those components' CSS, or `@kerfjs/ui/styles.css`.
 
 ## State lives in the app
 
