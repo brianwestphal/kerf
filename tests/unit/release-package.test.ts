@@ -9,7 +9,7 @@ import {
   writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { basename, join, resolve } from 'node:path';
+import { basename, delimiter, join, resolve } from 'node:path';
 import process from 'node:process';
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -226,6 +226,21 @@ describe('release package preparation', { timeout: 30_000 }, () => {
       ),
     );
     expect(typescriptPackage.version).toMatch(/^6\./);
+    // The template's prepublishOnly runs `check:styles` (kerf-ui-analyze from
+    // @kerfjs/ui), which the root install does not provide. Put this
+    // repository's analyzer first on PATH so the gate never depends on a bin
+    // some other project happens to leave on the developer's PATH.
+    const binRoot = join(fixtureRoot, 'bin');
+    mkdirSync(binRoot, { recursive: true });
+    symlinkSync(
+      join(repoRoot, 'ui/analyzer/cli.mjs'),
+      join(binRoot, 'kerf-ui-analyze'),
+    );
+    const generatedEnv = {
+      ...process.env,
+      PATH: `${binRoot}${delimiter}${process.env.PATH ?? ''}`,
+      npm_config_cache: join(fixtureRoot, 'npm-cache'),
+    };
 
     expect(() =>
       execFileSync('npm', ['run', 'build'], {
@@ -247,10 +262,7 @@ describe('release package preparation', { timeout: 30_000 }, () => {
       execFileSync('npm', ['publish', '--dry-run', '--offline', '--json'], {
         cwd: generatedRoot,
         stdio: 'pipe',
-        env: {
-          ...process.env,
-          npm_config_cache: join(fixtureRoot, 'npm-cache'),
-        },
+        env: generatedEnv,
       }),
     ).not.toThrow();
     expect(
