@@ -149,13 +149,26 @@
 }
 
 /* The menu insets a composing parent asks for. A PopupMenu applies them to
-   itself; its default is the Select listbox inset above, which a group's
-   `standard` inset keeps. */
+   itself; its default is the Select listbox inset above, which a
+   ToolbarControlGroup's `standard` inset keeps. A PopupSurface's inset follows
+   the group's, so a surface wins when both apply. */
 .kui-toolbar-control-group[data-menu-inset="compact"]
   wa-dropdown.kui-popup-menu::part(menu) {
   padding: remify(4px);
 }
 .kui-toolbar-control-group[data-menu-inset="list-zero"]
   wa-dropdown.kui-popup-menu::part(menu) {
+  padding: 0;
+}
+.kui-popup-surface[data-inset="standard"]
+  > wa-dropdown.kui-popup-menu::part(menu) {
+  padding: var(--kui-wa-surface-inset, remify(8px));
+}
+.kui-popup-surface[data-inset="compact"]
+  > wa-dropdown.kui-popup-menu::part(menu) {
+  padding: remify(4px);
+}
+.kui-popup-surface[data-inset="list-zero"]
+  > wa-dropdown.kui-popup-menu::part(menu) {
   padding: 0;
 }
