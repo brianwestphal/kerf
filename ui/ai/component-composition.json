@@ -1,9 +1,9 @@
 {
   "$schema": "./component-composition.schema.json",
-  "schemaVersion": 2,
+  "schemaVersion": 1,
   "package": "@kerfjs/ui",
   "compatibility": {
-    "v1Catalog": "./component-catalog.json",
+    "componentCatalog": "./component-catalog.json",
     "identity": "package:id"
   },
   "entries": [

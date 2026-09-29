@@ -104,8 +104,8 @@ export interface CatalogCompositionEntry {
 }
 export interface ComponentComposition {
   $schema?: string;
-  schemaVersion: 2;
+  schemaVersion: 1;
   package: string;
-  compatibility: { v1Catalog: string; identity: 'package:id' };
+  compatibility: { componentCatalog: string; identity: 'package:id' };
   entries: CatalogCompositionEntry[];
 }

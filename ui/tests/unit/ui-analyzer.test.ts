@@ -124,7 +124,7 @@ describe('Kerf UI static analyzer', () => {
     await writeFile(
       join(root, 'component-composition.json'),
       JSON.stringify({
-        schemaVersion: 2,
+        schemaVersion: 1,
         package: '@acme/ui',
         entries: [
           {
@@ -164,7 +164,7 @@ describe('Kerf UI static analyzer', () => {
             package: '@acme/ui',
             composition: {
               path: './component-composition.json',
-              schemaVersion: 2,
+              schemaVersion: 1,
             },
           },
         ],

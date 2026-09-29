@@ -801,10 +801,10 @@ export function generateCatalogs(root = process.cwd()) {
     const catalog = {
       $schema:
         'https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-composition-extension.schema.json',
-      schemaVersion: 2,
+      schemaVersion: 1,
       package: packageJson.name,
       compatibility: {
-        v1Catalog: metadata.v1Catalog ?? 'not-applicable',
+        componentCatalog: metadata.componentCatalog ?? 'not-applicable',
         identity: 'package:id',
       },
       entries,

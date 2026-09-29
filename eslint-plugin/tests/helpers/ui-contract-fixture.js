@@ -10,7 +10,7 @@ const component = (id, name, overrides = {}) => ({
 });
 
 export const catalog = {
-  schemaVersion: 2,
+  schemaVersion: 1,
   package: '@kerfjs/ui',
   entries: [
     component('toolbar', 'Toolbar', {

@@ -491,7 +491,7 @@ function profileTemplate(packageName, catalogPath) {
     catalogs: [
       {
         package: packageName,
-        composition: { path: catalogPath, schemaVersion: 2 },
+        composition: { path: catalogPath, schemaVersion: 1 },
       },
     ],
   };
@@ -502,7 +502,7 @@ function metadataTemplate() {
     $schema:
       './node_modules/create-kerf-component/component-metadata.schema.json',
     schemaVersion: 1,
-    v1Catalog: 'not-applicable',
+    componentCatalog: 'not-applicable',
     components: [],
   };
 }

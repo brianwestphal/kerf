@@ -277,7 +277,7 @@ describe('browser evaluator against running downstream fixtures', () => {
         catalogs: [
           {
             package: '@acme/ui',
-            composition: { path: 'catalog.json', schemaVersion: 2 },
+            composition: { path: 'catalog.json', schemaVersion: 1 },
           },
         ],
       }),

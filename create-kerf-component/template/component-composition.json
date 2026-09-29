@@ -1,9 +1,9 @@
 {
   "$schema": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-composition-extension.schema.json",
-  "schemaVersion": 2,
+  "schemaVersion": 1,
   "package": "__PKG_NAME__",
   "compatibility": {
-    "v1Catalog": "not-applicable",
+    "componentCatalog": "not-applicable",
     "identity": "package:id"
   },
   "entries": [

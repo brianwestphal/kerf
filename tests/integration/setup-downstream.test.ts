@@ -408,7 +408,7 @@ describe('packed AI-first setup', { timeout: 30_000 }, () => {
       package: '@acme/ui-app',
       composition: {
         path: './packages/app/component-composition.json',
-        schemaVersion: 2,
+        schemaVersion: 1,
       },
     });
     expect(

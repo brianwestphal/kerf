@@ -1,9 +1,9 @@
 {
   "$schema": "../../ai/component-composition-extension.schema.json",
-  "schemaVersion": 2,
+  "schemaVersion": 1,
   "package": "@acme/ui",
   "compatibility": {
-    "v1Catalog": "./component-catalog-extension.json",
+    "componentCatalog": "./component-catalog-extension.json",
     "identity": "package:id"
   },
   "entries": [

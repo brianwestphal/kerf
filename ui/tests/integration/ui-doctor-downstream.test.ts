@@ -435,7 +435,7 @@ test(
           resolve(root, 'kerf.components.json'),
           JSON.stringify({
             schemaVersion: 1,
-            v1Catalog: 'not-applicable',
+            componentCatalog: 'not-applicable',
             components: [component(rendersAs)],
           }),
         );
@@ -458,7 +458,7 @@ test(
               package: 'karwan-app',
               composition: {
                 path: './component-composition.json',
-                schemaVersion: 2,
+                schemaVersion: 1,
               },
             },
           ],

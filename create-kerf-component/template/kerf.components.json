@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/brianwestphal/kerf/main/create-kerf-component/component-metadata.schema.json",
   "schemaVersion": 1,
-  "v1Catalog": "not-applicable",
+  "componentCatalog": "not-applicable",
   "components": [
     {
       "id": "counter",

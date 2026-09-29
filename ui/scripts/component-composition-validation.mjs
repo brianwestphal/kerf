@@ -7,9 +7,19 @@ const isStringList = (value) =>
 export function validateComposition(catalog, options = {}) {
   const failures = [];
   const fail = (message) => failures.push(message);
-  if (catalog?.schemaVersion !== 2) fail('schemaVersion must equal 2');
+  if (catalog?.schemaVersion !== 1)
+    fail(
+      catalog?.schemaVersion === 2
+        ? 'schemaVersion must equal 1 (a catalog with schemaVersion 2 and compatibility.v1Catalog predates the rename to schemaVersion 1 and compatibility.componentCatalog)'
+        : 'schemaVersion must equal 1',
+    );
   if (typeof catalog?.package !== 'string' || !catalog.package)
     fail('package must be a non-empty string');
+  if (
+    typeof catalog?.compatibility?.componentCatalog !== 'string' ||
+    !catalog.compatibility.componentCatalog
+  )
+    fail('compatibility.componentCatalog must be a non-empty string');
   if (catalog?.compatibility?.identity !== 'package:id')
     fail('compatibility.identity must equal package:id');
   if (!Array.isArray(catalog?.entries))

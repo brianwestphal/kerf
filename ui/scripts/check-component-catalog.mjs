@@ -190,8 +190,8 @@ for (const failure of validateComposition(composition, { v1: artifact }))
   fail(`composition: ${failure}`);
 for (const failure of validateComposition(consumerCompositionExample))
   fail(`consumer composition example: ${failure}`);
-if (compositionSchema.properties?.schemaVersion?.const !== 2)
-  fail('composition schema must require schemaVersion 2');
+if (compositionSchema.properties?.schemaVersion?.const !== 1)
+  fail('composition schema must require schemaVersion 1');
 
 // Wiring-owned state attributes: a `wire*` helper's declarations must name
 // exactly the data-* attributes its source writes, so a new write can't ship

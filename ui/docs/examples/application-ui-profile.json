@@ -11,14 +11,14 @@
       },
       "composition": {
         "path": "../../ai/component-composition.json",
-        "schemaVersion": 2
+        "schemaVersion": 1
       }
     },
     {
       "package": "@acme/ui",
       "composition": {
         "path": "./component-composition-extension.json",
-        "schemaVersion": 2
+        "schemaVersion": 1
       }
     }
   ],

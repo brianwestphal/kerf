@@ -60,6 +60,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   (`catalog:sync` still runs both generators). The file contents and their
   `schemaVersion` are unchanged.
 
+- **Breaking (`@kerfjs/ui`, `create-kerf-component`, and `kerfjs setup`): the
+  composition catalog's own fields no longer read as a "v2" of the component
+  catalog.** In `component-composition.json` (and any consumer composition
+  catalog), `"schemaVersion": 2` is now `"schemaVersion": 1` — the composition
+  format's own first version, independent of `component-catalog.json`'s — and
+  `compatibility.v1Catalog` is now `compatibility.componentCatalog`. A
+  scaffolded package's `kerf.components.json` renames its `v1Catalog` field to
+  `componentCatalog` the same way. Regenerate scaffolded catalogs
+  (`npm run catalog:generate`), and change any `.kerf-ui-profile.json` `composition`
+  location from `"schemaVersion": 2` to `"schemaVersion": 1`; a catalog still
+  carrying the old fields fails validation with a message naming the rename.
+  The `ComponentComposition` type follows (`schemaVersion: 1`,
+  `compatibility.componentCatalog`).
+
 - **`@kerfjs/ui` `NavStack` bars use the standard `Toolbar` padding.** The
   navigation bar dropped its toolbar's block padding to stay 44px tall, so its
   title and controls touched the bar's edges. It now keeps the 8px above and

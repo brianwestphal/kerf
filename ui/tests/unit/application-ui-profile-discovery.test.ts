@@ -87,7 +87,7 @@ describe('application UI profile discovery', { timeout: 30_000 }, () => {
         {
           package: '@acme/ui',
           selection: { path: './missing-v1.json', schemaVersion: 1 },
-          composition: { path: './missing-v2.json', schemaVersion: 2 },
+          composition: { path: './missing-v2.json', schemaVersion: 1 },
         },
       ],
     });
@@ -184,7 +184,7 @@ describe('application UI profile discovery', { timeout: 30_000 }, () => {
           package: 'consumer-widgets',
           composition: {
             path: 'packages/consumer-widgets/component-composition.json',
-            schemaVersion: 2,
+            schemaVersion: 1,
           },
         },
       ],
@@ -315,7 +315,7 @@ describe('application UI profile discovery', { timeout: 30_000 }, () => {
     const packageProfile = resolve(workspace, 'package-default.json');
     const parentCatalog = resolve(workspace, 'parent-catalog.json');
     await writeJson(parentCatalog, {
-      schemaVersion: 2,
+      schemaVersion: 1,
       package: '@acme/ui',
       entries: [{ key: '@acme/ui:available', boundaries: {} }],
     });
@@ -327,12 +327,12 @@ describe('application UI profile discovery', { timeout: 30_000 }, () => {
           package: '@acme/ui',
           composition: {
             path: './parent-catalog.json',
-            schemaVersion: 2,
+            schemaVersion: 1,
           },
         },
         {
           package: '@broken/ui',
-          composition: { path: './missing.json', schemaVersion: 2 },
+          composition: { path: './missing.json', schemaVersion: 1 },
         },
       ],
       preferences: {
@@ -344,12 +344,12 @@ describe('application UI profile discovery', { timeout: 30_000 }, () => {
       APPLICATION_UI_PROFILE_FILENAME,
     );
     await writeJson(resolve(workspace, 'child-acme.json'), {
-      schemaVersion: 2,
+      schemaVersion: 1,
       package: '@acme/ui',
       entries: [{ key: '@acme/ui:missing-in-parent', boundaries: {} }],
     });
     await writeJson(resolve(workspace, 'child-broken.json'), {
-      schemaVersion: 2,
+      schemaVersion: 1,
       package: '@broken/ui',
       entries: [],
     });
@@ -359,11 +359,11 @@ describe('application UI profile discovery', { timeout: 30_000 }, () => {
       catalogs: [
         {
           package: '@acme/ui',
-          composition: { path: './child-acme.json', schemaVersion: 2 },
+          composition: { path: './child-acme.json', schemaVersion: 1 },
         },
         {
           package: '@broken/ui',
-          composition: { path: './child-broken.json', schemaVersion: 2 },
+          composition: { path: './child-broken.json', schemaVersion: 1 },
         },
       ],
     });

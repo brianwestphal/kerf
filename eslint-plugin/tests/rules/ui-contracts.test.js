@@ -28,7 +28,7 @@ const shippedUiSettings = uiSettings({
   ),
 });
 const thirdPartyCatalog = {
-  schemaVersion: 2,
+  schemaVersion: 1,
   package: '@acme/ui',
   entries: [
     {
@@ -248,7 +248,7 @@ mkdirSync(join(appRoot, 'vendor/acme'), { recursive: true });
 writeJson('package.json', { name: 'karwan-app' });
 writeJson('vendor/acme/package.json', { name: '@acme/bits' });
 writeJson('component-composition.json', {
-  schemaVersion: 2,
+  schemaVersion: 1,
   package: 'karwan-app',
   entries: [
     wrapper('demand-segments-control', 'DemandSegmentsControl', [
@@ -273,7 +273,7 @@ writeJson('component-composition.json', {
   ],
 });
 writeJson('vendor/acme/catalog.json', {
-  schemaVersion: 2,
+  schemaVersion: 1,
   package: '@acme/bits',
   entries: [
     {
@@ -292,11 +292,11 @@ writeJson('.kerf-ui-profile.json', {
   catalogs: [
     {
       package: 'karwan-app',
-      composition: { path: './component-composition.json', schemaVersion: 2 },
+      composition: { path: './component-composition.json', schemaVersion: 1 },
     },
     {
       package: '@acme/bits',
-      composition: { path: './vendor/acme/catalog.json', schemaVersion: 2 },
+      composition: { path: './vendor/acme/catalog.json', schemaVersion: 1 },
     },
   ],
 });

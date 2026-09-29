@@ -402,7 +402,7 @@ describe('AI-first setup planner', () => {
       package: '@acme/app',
       composition: {
         path: './component-composition.json',
-        schemaVersion: 2,
+        schemaVersion: 1,
       },
     });
     expect(
@@ -958,7 +958,7 @@ describe('AI-first setup planner', () => {
           catalogs: [
             {
               package: '@acme/ui',
-              composition: { path: './old.json', schemaVersion: 2 },
+              composition: { path: './old.json', schemaVersion: 1 },
               extra: true,
             },
           ],

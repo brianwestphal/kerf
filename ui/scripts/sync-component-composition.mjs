@@ -128,10 +128,10 @@ if (unusedOverrides.length) {
 
 const artifact = {
   $schema: './component-composition.schema.json',
-  schemaVersion: 2,
+  schemaVersion: 1,
   package: v1.package,
   compatibility: {
-    v1Catalog: './component-catalog.json',
+    componentCatalog: './component-catalog.json',
     identity: 'package:id',
   },
   entries,
