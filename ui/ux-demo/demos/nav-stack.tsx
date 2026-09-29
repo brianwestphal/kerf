@@ -51,7 +51,6 @@ const PROJECTS: Project[] = [
 const footer = (text: string) => (
   <Toolbar
     label="View status"
-    dividerSides=""
     leading={<ToolbarText text={text} size="small" />}
   />
 );

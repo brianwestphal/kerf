@@ -21,7 +21,6 @@ export function HeadersDemo() {
         <List gap="none">
           <Toolbar
             label="UI foundations"
-            dividerSides=""
             leading={
               <ToolbarText
                 text="UI foundations"
@@ -40,7 +39,6 @@ export function HeadersDemo() {
           />
           <Toolbar
             label="Package details"
-            dividerSides=""
             leading={
               <>
                 <ToolbarControlGroup appearance="borderless" single>

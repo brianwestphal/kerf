@@ -298,7 +298,6 @@ export function SplitViewDemo() {
               bottomToolbar: (
                 <Toolbar
                   label="Message actions"
-                  dividerSides=""
                   leading={<ToolbarText text="Received today" size="small" />}
                   trailing={iconGroup('Archive', Archive, 'archive')}
                 />

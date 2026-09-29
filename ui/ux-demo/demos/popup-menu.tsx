@@ -68,7 +68,6 @@ export function PopupMenuDemo() {
       <CatalogExample label="Trailing toolbar menu" align="none">
         <Toolbar
           label="Ticket view"
-          dividerSides=""
           leading={<ToolbarText text="Tickets" size="xlarge" />}
           trailing={
             <ToolbarControlGroup single nestedDropdown menuInset="compact">

@@ -36,7 +36,6 @@ export const createRecipe: RecipeFactory = (announce) => ({
           </ListInsetText>
           <Toolbar
             label="Workspace heading"
-            dividerSides=""
             responsive="stack"
             responsiveAt="compact"
             leading={

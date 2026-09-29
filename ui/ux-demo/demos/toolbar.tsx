@@ -153,7 +153,6 @@ export function ToolbarDemo() {
       >
         <Toolbar
           label="Q3 release"
-          dividerSides=""
           responsive="wrap"
           leading={
             <>

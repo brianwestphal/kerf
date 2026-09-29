@@ -21,7 +21,6 @@ export function LayoutDemo() {
           header={
             <Toolbar
               label="Semantic layout"
-              dividerSides=""
               leading={
                 <ToolbarText
                   text="Semantic layout"

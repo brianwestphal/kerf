@@ -134,7 +134,6 @@ export const createRecipe: RecipeFactory = (announce) => {
       header={
         <Toolbar
           label="Current navigation view"
-          dividerSides=""
           leading={
             <>
               <CollapsiblePanelRelocated

@@ -135,7 +135,6 @@ export const createRecipe: RecipeFactory = (announce) => {
       header={
         <Toolbar
           label="Release tasks"
-          dividerSides=""
           responsive="stack"
           responsiveAt="compact"
           leading={

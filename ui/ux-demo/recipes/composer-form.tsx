@@ -64,7 +64,6 @@ export const createRecipe: RecipeFactory = (announce) => {
         <List>
           <Toolbar
             label="Publish workspace update"
-            dividerSides=""
             leading={
               <ToolbarText
                 text="Publish workspace update"

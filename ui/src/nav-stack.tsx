@@ -115,7 +115,7 @@ export function NavStack({
         <div class="kui-nav-stack__chrome" data-nav-stack-chrome>
           <Toolbar
             label={toolbarConfig.label}
-            dividerSides={toolbarConfig.dividerSides ?? ''}
+            dividerSides={toolbarConfig.dividerSides}
             centerAlign={toolbarConfig.centerAlign}
             responsive={toolbarConfig.responsive}
             responsiveAt={toolbarConfig.responsiveAt}

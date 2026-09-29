@@ -114,7 +114,6 @@ export const createRecipe: RecipeFactory = (announce) => {
       header={
         <Toolbar
           label="Recent projects"
-          dividerSides=""
           leading={<ToolbarText text="Recent projects" />}
         />
       }
@@ -131,7 +130,6 @@ export const createRecipe: RecipeFactory = (announce) => {
         header={
           <Toolbar
             label="Project details"
-            dividerSides=""
             leading={
               <ToolbarText
                 text={record.name}

@@ -59,7 +59,6 @@ export const createRecipe: RecipeFactory = (announce) => {
           <>
             <Toolbar
               label="Ticket inspector"
-              dividerSides=""
               responsive="wrap"
               leading={
                 <>

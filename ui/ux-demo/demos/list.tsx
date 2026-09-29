@@ -52,7 +52,6 @@ export function ListDemo() {
             header={
               <Toolbar
                 label="Sidebar toolbar"
-                dividerSides=""
                 leading={<ToolbarText text="Workspace" size="small" />}
                 trailing={
                   <ToolbarControlGroup appearance="borderless" single>
@@ -70,7 +69,6 @@ export function ListDemo() {
             footer={
               <Toolbar
                 label="Sidebar footer"
-                dividerSides=""
                 leading={<ToolbarText text="Ready" size="small" />}
                 trailing={
                   <ToolbarControlGroup appearance="borderless" single>
