@@ -82,6 +82,13 @@ emits `KUI-L013`–`KUI-L017` with a preferred shorthand or helper. It covers JS
 direct component calls, nested catalog paths, and explicitly configured
 third-party catalogs; dynamic values remain governed by TypeScript.
 
+`ui-component-ownership` keeps code out of another package's component
+internals: `KUI-L020` reports a reference to a component's private `--_*`
+variable and `KUI-L021` an assignment to a token a typed prop sets (use the
+prop). Each message ends by routing a real need with no prop to a component-gap
+report instead of an override. `kerf-ui-analyze` reports the same ids, plus the
+stylesheet-only `KUI-L019` / `KUI-L022`, for CSS files.
+
 `KUI-L090` is reserved for catalog/profile loading and configuration failures. The supported-ESLint matrix installs real packed `eslint-plugin-kerfjs` and `@kerfjs/ui` tarballs in a downstream flat-config fixture, ensuring these defaults resolve from the consumer rather than this repository's source tree.
 
 ## Legacy `.eslintrc` configs are not supported
@@ -103,6 +110,7 @@ Use flat config (`eslint.config.js`), shown above. The `legacy-recommended` expo
 | [`no-raw-with-dynamic-arg`](docs/rules/no-raw-with-dynamic-arg.md)               | — (XSS audit trail)                                  | `warn`                 |
 | [`ai-assistant-configs`](docs/rules/ai-assistant-configs.md)                     | — (project hygiene)                                  | `warn`                 |
 | [`ui-public-boundaries`](docs/rules/ui-public-boundaries.md)                     | — (cataloged CSS boundaries)                         | `error`                |
+| [`ui-component-ownership`](docs/rules/ui-component-ownership.md)                 | — (configure components, never override them)        | `error`                |
 | [`ui-composition`](docs/rules/ui-composition.md)                                 | — (cataloged parents and zones)                      | `error`                |
 | [`ui-css-values`](docs/rules/ui-css-values.md)                                   | — (cataloged property-specific value grammar)        | `error`                |
 | [`ui-preferences`](docs/rules/ui-preferences.md)                                 | — (application component choices)                    | `warn`                 |

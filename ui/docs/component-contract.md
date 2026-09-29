@@ -307,6 +307,20 @@ context (`--kui-edge-inset-*` handed to a sole Pane or layout child and cleared
 for any other content, and a Toolbar clearing it for its zones) is the one
 design exception; the others name the open fix ticket.
 
+Applications and component packages built on the package follow the same
+rules, and the downstream tools enforce them against the composition catalog
+instead of package source: `kerf-ui-analyze` / `kerf-ui-doctor` report a rule
+whose subject is another package's component (`KUI-L019`), another
+component's private `--_*` variable (`KUI-L020`), an override of a token a
+typed prop sets (`KUI-L021`), and a hook class on a component's root
+(`KUI-L022`); `eslint-plugin-kerfjs`'s `ui-component-ownership` reports
+`KUI-L020` / `KUI-L021` in script. Both share the selector parsing in
+`analyzer/selectors.mjs` with `check:css-ownership`, and
+`check:css-ownership` fails when a component renders a Web Awesome tag the
+catalog does not list, so `KUI-L019` keeps covering every tag a kerf component
+renders. Each finding names the configuration to use and routes a missing
+prop to a component-gap report (see [the analyzer guide](./ui-analyzer.md#component-ownership-kui-l019kui-l022)).
+
 The composition catalog additionally requires `boundaries.rootClass` to be
 either one exact member of `publicClasses` or `null` when the entry has no
 rendered class root. Runtime geometry tooling uses this explicit field; array

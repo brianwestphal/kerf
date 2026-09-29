@@ -10,6 +10,7 @@ npm install
 npm run build # tsup → dist/ (ESM + .d.ts); kerfjs stays external
 npm run typecheck
 npm run catalog:check # verify component-composition.json is current
+npm run check:styles # each component styles only itself (kerf-ui-analyze)
 ```
 
 ## Use it
@@ -20,11 +21,12 @@ render the component like any local function — there's no extra toolchain:
 ```tsx
 import { mount } from "kerfjs";
 import { Counter, createCounter, wireCounter } from "__PKG_NAME__";
+import "__PKG_NAME__/counter.css";
 
 const counter = createCounter(0); // per-instance state (a factory)
 const root = document.getElementById("app")!;
 
-mount(root, () => <Counter store={counter} label="Clicks" />);
+mount(root, () => <Counter store={counter} label="Clicks" size="compact" />);
 
 const dispose = wireCounter(root, counter); // delegation disposer (call on teardown)
 ```
@@ -44,6 +46,14 @@ have to:
 - **No inline JSX event handlers.** Components are pure `(props) => SafeHtml`
   string-builders; emit `data-action` hooks and let the host wire events with
   `delegate()` (see `wireCounter`), which returns a disposer.
+- **Each component owns its styles; configure, never override.** `counter.css`
+  styles only `.kerf-counter` and its own internals and writes only
+  `--_kerf-counter-*` private variables (context it provides is named after
+  Counter). Consumers configure it through props (`size`) and its public token
+  (`--kerf-counter-gap`); when it must adapt inside a parent, Counter does so
+  in its own stylesheet (`.kui-toolbar .kerf-counter`). A needed variation with
+  no prop is a gap to add here, not an override for consumers.
+  `npm run check:styles` enforces this with `kerf-ui-analyze`.
 - **Build emits ESM + `.d.ts`; `tsconfig` sets `jsxImportSource: "kerfjs"`.**
 - **Never import `kerfjs/dev`.** kerf's dev diagnostics install global hooks, so
   installing them is the consuming _app's_ call, not a library's — the app

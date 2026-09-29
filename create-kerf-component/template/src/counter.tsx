@@ -28,6 +28,11 @@ export type CounterStore = ReturnType<typeof createCounter>;
 export interface CounterProps {
   store: CounterStore;
   label?: string;
+  /**
+   * Control density. A typed prop is how consumers configure the component's
+   * look; they never restyle `.kerf-counter` from their own CSS.
+   */
+  size?: 'standard' | 'compact';
 }
 
 /**
@@ -35,10 +40,17 @@ export interface CounterProps {
  * `data-action` hooks instead of inline event handlers — inline `onClick={...}`
  * handlers don't survive kerf's morph (and the `no-inline-jsx-event-handlers`
  * lint rule flags them). The host wires the events; see `wireCounter` below.
+ *
+ * Its look lives in `counter.css` (the `./counter.css` export), which styles
+ * only Counter; `size` is the configuration consumers use instead of CSS.
  */
-export function Counter({ store, label = 'Count' }: CounterProps): SafeHtml {
+export function Counter({
+  store,
+  label = 'Count',
+  size = 'standard',
+}: CounterProps): SafeHtml {
   return (
-    <div class="kerf-counter">
+    <div class="kerf-counter" data-size={size}>
       <button type="button" data-action="counter:dec" aria-label="Decrement">
         −
       </button>

@@ -12,10 +12,12 @@
     "./counter": {
       "types": "./dist/counter.d.ts",
       "import": "./dist/counter.js"
-    }
+    },
+    "./counter.css": "./src/counter.css"
   },
   "files": [
     "dist",
+    "src/counter.css",
     "component-composition.json",
     "kerf.components.json",
     "README.md",
@@ -25,8 +27,9 @@
     "build": "tsup",
     "catalog:generate": "node scripts/kerf-component-catalog.mjs --write",
     "catalog:check": "node scripts/kerf-component-catalog.mjs --check",
+    "check:styles": "kerf-ui-analyze --root . src",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run catalog:check && npm run build"
+    "prepublishOnly": "npm run catalog:check && npm run check:styles && npm run build"
   },
   "kerfComponentCatalog": {
     "source": "./kerf.components.json",
@@ -37,6 +40,7 @@
   },
   "devDependencies": {
     "kerfjs": "^4.4.1",
+    "@kerfjs/ui": "^4.4.1",
     "tsup": "^8",
     "typescript": "^5 || ^6"
   }

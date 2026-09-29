@@ -130,7 +130,9 @@
         "publicClasses": [
           "kerf-counter"
         ],
-        "publicTokens": []
+        "publicTokens": [
+          "--kerf-counter-gap"
+        ]
       },
       "diagnostics": [],
       "provenance": {

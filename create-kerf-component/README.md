@@ -12,6 +12,7 @@ cd my-widgets
 npm install
 npm run build
 npm run catalog:check
+npm run check:styles
 ```
 
 Run it with **no argument** (`npm create kerf-component`) and it prompts for the
@@ -36,6 +37,16 @@ A ready-to-publish component package that encodes the rules from the kerf docs
   component needs:
   - **per-instance state via a factory + props** (`createCounter` → `<Counter store={…} />`), and
   - **a `wire(root)` delegation disposer** (`wireCounter`) instead of inline event handlers.
+- **A stylesheet that owns only its component** (`src/counter.css`, exported as
+  `./counter.css`): it styles `.kerf-counter` and its own internals, writes only
+  `--_kerf-counter-*` private variables (the context it gives its buttons is
+  named after Counter), exposes a typed `size` prop and one public token
+  (`--kerf-counter-gap`) as its configuration, and adapts itself inside a Kerf
+  UI Toolbar from its own stylesheet (`.kui-toolbar .kerf-counter`). `npm run
+check:styles` runs `kerf-ui-analyze` (from the `@kerfjs/ui` dev dependency)
+  over `src/`, so a rule that restyles another package's component, touches
+  its private variables, overrides a token a typed prop sets, or uses a hook
+  class (`KUI-L019`–`KUI-L022`) fails before `prepublishOnly` publishes.
 - **Author-owned AI metadata** in `kerf.components.json`, with explicit purpose,
   exports, composition, geometry, public `rootClass`, tokens, accessibility,
   and source links. Run
@@ -89,7 +100,8 @@ my-widgets/
 ├── README.md
 └── src/
     ├── index.ts        # public barrel
-    └── counter.tsx     # factory + component + wire() disposer
+    ├── counter.tsx     # factory + component + wire() disposer
+    └── counter.css     # styles only Counter; configured by props and tokens
 ```
 
 This package is part of the kerf repository and releases in lockstep with

@@ -1,0 +1,38 @@
+/*
+ * Counter owns this stylesheet, and this stylesheet styles only Counter.
+ *
+ * - It selects `.kerf-counter` and Counter's own internals, never another
+ *   component's class, `[data-component]` root, `wa-*` element, or `::part()`.
+ * - It writes only Counter's own `--_kerf-counter-*` private variables. The
+ *   context Counter hands its buttons is named after Counter, the provider.
+ * - Consumers configure Counter through its typed props (`size`) and its one
+ *   public theme token (`--kerf-counter-gap`), never by restyling
+ *   `.kerf-counter` from their own CSS. A need with no prop is a gap to add to
+ *   Counter, not an override for the consumer to write.
+ */
+.kerf-counter {
+  --_kerf-counter-gap: var(--kerf-counter-gap, 0.5rem);
+  --_kerf-counter-control-size: 2rem;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--_kerf-counter-gap);
+}
+
+.kerf-counter[data-size="compact"] {
+  --_kerf-counter-control-size: 1.5rem;
+}
+
+.kerf-counter > button {
+  inline-size: var(--_kerf-counter-control-size);
+  block-size: var(--_kerf-counter-control-size);
+}
+
+/*
+ * Parent context: when a Counter sits in a Kerf UI Toolbar, Counter adapts
+ * itself here, in its own stylesheet. The parent appears only as an ancestor
+ * and Counter stays the subject, so the Toolbar never styles Counter and
+ * Counter never styles the Toolbar.
+ */
+.kui-toolbar .kerf-counter {
+  --_kerf-counter-control-size: 1.75rem;
+}

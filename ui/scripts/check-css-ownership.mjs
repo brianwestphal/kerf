@@ -188,6 +188,26 @@ const ownershipModel = buildOwnershipModel({
     })),
   ),
 });
+
+// Downstream stylesheets are checked against the composition catalog
+// (`kerf-ui-analyze` KUI-L019): every Web Awesome tag a kerf component renders
+// must be a cataloged Web Awesome entry, or application CSS could restyle it
+// unreported.
+const composition = JSON.parse(
+  await readFile(resolve(root, 'ai/component-composition.json'), 'utf8'),
+);
+const catalogedTags = new Set(
+  composition.entries
+    .filter((entry) => entry.source === 'webawesome')
+    .map((entry) => entry.id),
+);
+for (const [tag, owners] of ownershipModel.tagOwners) {
+  if (!catalogedTags.has(tag))
+    errors.push(
+      `src/${owners[0].filename.replace(/\.css$/, '.tsx')}: renders <${tag}>, which ai/component-composition.json does not catalog as a Web Awesome entry; catalog it so kerf-ui-analyze (KUI-L019) reports application CSS that restyles it`,
+    );
+}
+
 let excused = 0;
 for (const file of packageStyles) {
   const filename = relative(file).replace(/^src\//, '');

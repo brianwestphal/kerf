@@ -504,3 +504,68 @@ test(
   },
   DOCTOR_TEST_TIMEOUT * 2,
 );
+
+test(
+  'the doctor routes component-ownership overrides to configuration, then passes',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-ownership-'));
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"ownership-consumer","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          stages: { catalog: false, typescript: false, eslint: false },
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/app.css'),
+        '.kui-toolbar { padding: 0; }\n.header { background: red; }\n.app { --_kui-list-gap: 0; --kui-list-gap: 4px; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/app.tsx'),
+        "import './app.css';\nimport { Toolbar } from '@kerfjs/ui/toolbar';\nexport const App = () => <Toolbar className=\"header\" />;\n",
+      );
+      const broken = await doctor(root);
+      expect(broken.status).toBe(1);
+      const findings = broken.report.diagnostics.filter(
+        (item: { stage: string }) => item.stage === 'analyzer',
+      );
+      expect(findings.map((item: { id: string }) => item.id).sort()).toEqual([
+        'KUI-L019',
+        'KUI-L020',
+        'KUI-L021',
+        'KUI-L022',
+      ]);
+      for (const item of findings) {
+        expect(item.documentation).toBe('@kerfjs/ui/docs/ui-analyzer.md');
+        expect(item.message).toContain('report the component gap');
+        expect(item.action).toMatch(/typed prop/);
+      }
+
+      // Configure the component and style an application-owned wrapper.
+      await writeFile(
+        resolve(root, 'src/app.css'),
+        '.header > .title-slot { margin-inline-start: auto; }\n.header { background: red; }\n',
+      );
+      await writeFile(
+        resolve(root, 'src/app.tsx'),
+        "import './app.css';\nimport { List } from '@kerfjs/ui/list';\nimport { Toolbar } from '@kerfjs/ui/toolbar';\nexport const App = () => <div class=\"header\"><Toolbar /><List gap=\"xs\" /></div>;\n",
+      );
+      const clean = await doctor(root);
+      expect(
+        clean.report.diagnostics.filter(
+          (item: { stage: string }) => item.stage === 'analyzer',
+        ),
+      ).toEqual([]);
+      expect(clean.status).toBe(0);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);

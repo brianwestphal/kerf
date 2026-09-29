@@ -60,7 +60,7 @@ before the program runs:
   becomes the permanent acknowledgment), `prefer-attr-selector` (rename-safety
   nudge for `delegate()` literal selectors), and `ai-assistant-configs`
   (project hygiene — checks that the bundled AI configs are installed and
-  current). The `ui-*` rules — `ui-public-boundaries`, `ui-composition`,
+  current). The `ui-*` rules — `ui-public-boundaries`, `ui-component-ownership`, `ui-composition`,
   `ui-css-values`, `ui-preferences`, `ui-wiring` — are enabled only by the
   `recommended-ui` and `strict-ui` configs, which add them on top of the core
   set.

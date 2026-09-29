@@ -95,6 +95,7 @@ if (packageName === 'create-kerf-component') {
   const template = readJson('create-kerf-component/template/package.json');
   template.peerDependencies.kerfjs = kerfPeerRange;
   template.devDependencies.kerfjs = `^${version}`;
+  template.devDependencies['@kerfjs/ui'] = `^${version}`;
   writeJson('create-kerf-component/template/package.json', template);
 }
 

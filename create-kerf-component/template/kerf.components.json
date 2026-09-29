@@ -54,7 +54,7 @@
       "boundaries": {
         "rootClass": "kerf-counter",
         "publicClasses": ["kerf-counter"],
-        "publicTokens": []
+        "publicTokens": ["--kerf-counter-gap"]
       },
       "accessibility": {
         "obligations": [

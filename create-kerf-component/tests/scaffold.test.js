@@ -61,6 +61,7 @@ test('scaffolds the expected file tree', () => {
       '.gitignore',
       'src/index.ts',
       'src/counter.tsx',
+      'src/counter.css',
       'kerf.components.json',
       'component-composition.json',
       'scripts/kerf-component-catalog.mjs',
@@ -126,6 +127,17 @@ test('package.json keeps kerfjs a peerDependency (never bundled), with ESM + sub
       'node scripts/kerf-component-catalog.mjs --check',
     );
     assert.match(pkg.scripts.prepublishOnly, /catalog:check/);
+    // Each component owns its styles; the scaffold's own gate runs the
+    // component-ownership diagnostics over its source and stylesheet.
+    assert.equal(pkg.scripts['check:styles'], 'kerf-ui-analyze --root . src');
+    assert.match(pkg.scripts.prepublishOnly, /check:styles/);
+    assert.equal(
+      pkg.devDependencies['@kerfjs/ui'],
+      pkg.devDependencies.kerfjs,
+      '@kerfjs/ui (kerf-ui-analyze) releases in lockstep with kerfjs',
+    );
+    assert.equal(pkg.exports['./counter.css'], './src/counter.css');
+    assert.ok(pkg.files.includes('src/counter.css'));
     assert.ok(pkg.files.includes('dist'), 'files must ship dist');
     assert.ok(pkg.files.includes('component-composition.json'));
     assert.ok(pkg.files.includes('kerf.components.json'));
@@ -181,6 +193,36 @@ test('example component shows the factory + wire patterns and no inline handlers
   });
 });
 
+test('example stylesheet styles only its own component and is configured by props', () => {
+  withScaffold('my-widgets', ({ read }) => {
+    const counter = read('src/counter.tsx');
+    const css = stripComments(read('src/counter.css'));
+    const catalog = JSON.parse(read('kerf.components.json'));
+    assert.match(counter, /size\?: 'standard' \| 'compact'/);
+    assert.match(counter, /data-size=\{size\}/);
+    // Every rule's subject is Counter itself or Counter's own internals.
+    for (const [, selector] of css.matchAll(/([^{}]+)\{/g)) {
+      const subject = selector
+        .trim()
+        .split(/[\s>+~]+/)
+        .at(-1);
+      assert.match(
+        subject,
+        /^(?:\.kerf-counter|button)/,
+        `${selector.trim()} must style only Counter`,
+      );
+    }
+    // The parent-context rule keeps Counter as the subject.
+    assert.match(css, /\.kui-toolbar \.kerf-counter\s*\{/);
+    // Private variables and the provided context are named after Counter.
+    for (const [variable] of css.matchAll(/--_[a-z0-9-]+/g))
+      assert.match(variable, /^--_kerf-counter-/);
+    assert.deepEqual(catalog.components[0].boundaries.publicTokens, [
+      '--kerf-counter-gap',
+    ]);
+  });
+});
+
 test('.gitignore ignores build + dependency dirs', () => {
   withScaffold('my-widgets', ({ read }) => {
     const gi = read('.gitignore');
@@ -195,6 +237,7 @@ test('prints next-steps guidance on success', () => {
     assert.match(stdout, /npm install/);
     assert.match(stdout, /npm run build/);
     assert.match(stdout, /npm run catalog:check/);
+    assert.match(stdout, /npm run check:styles/);
   });
 });
 

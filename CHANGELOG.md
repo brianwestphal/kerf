@@ -22,6 +22,39 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   points at a hand-written `wa-dropdown` trigger, and the bundled kerf app
   configs (`ai/skill.md` 1.25.0, `ai/cursorrules` 1.23.0) name the List family
   and carry the "components own their styles; configure, never override" rule.
+
+- **Applications and component packages are held to the component-ownership
+  rules `@kerfjs/ui` enforces internally: components own their styles and are
+  configured, never overridden.** `kerf-ui-analyze` and `kerf-ui-doctor` add
+  four error diagnostics (review findings under `--adoption`):
+  - `KUI-L019` — a CSS rule whose subject is another package's cataloged
+    component: a public class (`.kui-toolbar`, `.acme-meter`), its
+    `[data-component]` root, or a Web Awesome tag the package themes
+    (`wa-button`). Your own element in a component's context
+    (`.kui-toolbar > .my-widget`), keying on its state inside `:has()`, and
+    setting its public tokens stay allowed.
+  - `KUI-L020` — reading or writing another component's private `--_*`
+    variable (`--_kui-list-gap`).
+  - `KUI-L021` — overriding a token a typed prop sets (`--kui-list-gap` is
+    `<List gap>`); the message quotes the prop's example.
+  - `KUI-L022` — a class placed on a component's root (`<Toolbar
+className="header" />`) that the application then styles.
+
+  Each message names the component's configuration (typed props, public
+  tokens, variants) and ends by routing a need with no prop to a component-gap
+  report instead of an override. Ownership is per package, from the nearest
+  `package.json`, so a component package styling its own components — including
+  in a Kerf UI parent's context — passes, and third-party catalogs declared in
+  `.kerf-ui-profile.json` get the same protection. `eslint-plugin-kerfjs` adds
+  `ui-component-ownership` (in `recommended-ui` and `strict-ui`, `error`),
+  reporting `KUI-L020` / `KUI-L021` in style strings, style objects, and
+  `style.setProperty()`. The `create-kerf-component` scaffold now ships a
+  `counter.css` that styles only Counter (configured by a typed `size` prop and
+  a `--kerf-counter-gap` token, with context named after Counter and a
+  Toolbar-context rule in its own stylesheet), plus `npm run check:styles`
+  (`kerf-ui-analyze`, from a new `@kerfjs/ui` dev dependency) in
+  `prepublishOnly`.
+
 - **`@kerfjs/ui` ships a markdown component reference for AI assistants.**
   `@kerfjs/ui/ai/components/README.md` indexes every catalog entry in one line,
   and `@kerfjs/ui/ai/components/<id>.md` gives each entry a short page: when to

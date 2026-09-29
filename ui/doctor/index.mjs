@@ -21,7 +21,11 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createRequire } from 'node:module';
 
 import { loadApplicationUiProfile } from '../ai/application-ui-profile.mjs';
-import { analyzeUiProject, UI_ANALYSIS_RULES } from '../analyzer/index.mjs';
+import {
+  analyzeUiProject,
+  UI_ANALYSIS_ACTIONS,
+  UI_ANALYSIS_RULES,
+} from '../analyzer/index.mjs';
 import { evaluateUi, UI_EVALUATION_RULES } from '../evaluator/index.mjs';
 import {
   isForeignRuleDefinitionDiagnostic,
@@ -547,6 +551,7 @@ function normalizeAnalyzer(report) {
         evidence: item.evidence,
         catalogFacts: item.chain,
         action:
+          UI_ANALYSIS_ACTIONS[item.ruleId] ??
           'Apply the catalog-declared composition or geometry boundary at this source location.',
         meaning: UI_ANALYSIS_RULES[item.ruleId]?.title ?? item.ruleId,
       }),

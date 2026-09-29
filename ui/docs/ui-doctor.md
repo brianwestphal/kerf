@@ -30,6 +30,16 @@ that lacks a governing `--wa-color-{tone}-on-loud` (in the same or an ancestor
 scope, in any stylesheet the same entry loads), or whose literal pair measures
 below 4.5:1 (see [the analyzer rule](./ui-analyzer.md#loud-fill--on-loud-pairing-kui-l018)).
 
+Component ownership is part of the same loop. The analyzer stage reports
+application or third-party CSS that restyles another package's component
+(`KUI-L019`), touches its private `--_*` variables (`KUI-L020`), overrides a
+token a typed prop sets (`KUI-L021`), or styles it through a hook class on its
+root (`KUI-L022`); the ESLint stage's `ui-component-ownership` rule reports
+`KUI-L020` / `KUI-L021` in script. Each finding's `action` points at the
+component's configuration, and its message routes a need with no prop to a
+component-gap report instead of an override (see
+[the analyzer rule](./ui-analyzer.md#component-ownership-kui-l019kui-l022)).
+
 The browser evaluator is different: it runs the application and is disabled by default. It only runs when configuration supplies `browser.url` or the command receives `--browser-url`. Start and authorize the target application separately.
 
 An unavailable or failed stage does not prevent independent stages from reporting. Its final exit is still a configuration failure, so a partial run cannot appear clean.

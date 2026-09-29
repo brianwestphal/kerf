@@ -34,6 +34,9 @@ export const UI_ANALYSIS_RULES: Readonly<
   Record<`KUI-L${string}`, { severity: UiAnalysisSeverity; title: string }>
 >;
 
+/** The doctor's repair action for rules whose fix is more specific than the default. */
+export const UI_ANALYSIS_ACTIONS: Readonly<Record<`KUI-L${string}`, string>>;
+
 export function analyzeUiProject(options?: {
   root?: string;
   paths?: string[];

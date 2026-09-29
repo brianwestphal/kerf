@@ -55,6 +55,9 @@ if (write) {
   const template = readJson(templatePath);
   template.peerDependencies.kerfjs = peerRange;
   template.devDependencies.kerfjs = devRange;
+  // The scaffold's `check:styles` runs `kerf-ui-analyze` from @kerfjs/ui,
+  // which releases in lockstep with kerfjs.
+  template.devDependencies['@kerfjs/ui'] = devRange;
   writeFileSync(
     new URL(templatePath, root),
     `${JSON.stringify(template, null, 2)}\n`,
@@ -168,6 +171,11 @@ if (template.peerDependencies?.kerfjs !== peerRange) {
 if (template.devDependencies?.kerfjs !== devRange) {
   errors.push(
     `component template dev range is ${template.devDependencies?.kerfjs}; expected ${devRange}`,
+  );
+}
+if (template.devDependencies?.['@kerfjs/ui'] !== devRange) {
+  errors.push(
+    `component template @kerfjs/ui dev range is ${template.devDependencies?.['@kerfjs/ui']}; expected ${devRange}`,
   );
 }
 

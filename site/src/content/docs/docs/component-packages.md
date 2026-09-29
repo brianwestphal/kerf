@@ -20,13 +20,15 @@ The fastest way to a correctly-configured package is the `create-kerf-component`
 initializer — it generates a package that already follows every rule below
 (`kerfjs` as a peer dependency and `external` in the build, ESM + `.d.ts` output,
 `jsxImportSource: "kerfjs"`, subpath exports) plus an example component that shows
-the per-instance-state and `wire(root)`-disposer patterns:
+the per-instance-state and `wire(root)`-disposer patterns and a stylesheet
+that owns only its component:
 
 ```bash
 npm create kerf-component@latest my-widgets
 cd my-widgets
 npm install
 npm run build # tsup → ESM + .d.ts; kerfjs stays external
+npm run check:styles # each component styles only itself
 ```
 
 Pass `.` to scaffold into the current directory. The rest of this doc explains
@@ -226,6 +228,43 @@ JSX is already lowered to `kerfjs/jsx-runtime` calls. A consumer who already has
 working kerf app (`jsxImportSource: "kerfjs"`) can `import { Button } from 'my-kerf-buttons'`
 and use it immediately — there's no component-specific toolchain to install.
 
+### Styles: each component owns its own
+
+Components own their styles and are configured, never overridden — the rule
+`@kerfjs/ui` follows internally, applied to your package:
+
+- **A component's stylesheet styles only that component.** `counter.css`
+  selects `.kerf-counter` and Counter's own internals, never another
+  component's class, `[data-component]` root, `wa-*` element, or `::part()`.
+- **Configuration, not overrides.** Consumers change a component's look
+  through typed props (the scaffold's `size="compact"` becomes
+  `data-size="compact"`) and documented public tokens (`--kerf-counter-gap`),
+  never by selecting `.kerf-counter` from their own CSS. Private variables are
+  named after their component (`--_kerf-counter-*`) and are nobody else's to
+  write.
+- **A child styles itself in a parent's context.** When a component must adapt
+  inside another one — yours or a Kerf UI component — the child does it in its
+  own stylesheet, with the parent only as an ancestor
+  (`.kui-toolbar .kerf-counter { … }` lives in `counter.css`). A parent never
+  styles a composed child, and never places a hook class on the child's root to
+  restyle it.
+- **Context is named after its provider.** A value a component hands its
+  descendants is a custom property named after the component providing it
+  (Counter gives its buttons `--_kerf-counter-control-size`).
+- **A missing prop is a component gap.** When a consumer needs a variation no
+  prop offers, add the prop (or ask the owning package to); do not document an
+  override.
+
+The scaffold's `npm run check:styles` runs `kerf-ui-analyze` over `src/`, and
+`prepublishOnly` runs it before every publish. It reports a rule whose subject
+is another package's component (`KUI-L019`), another component's private
+`--_*` variable (`KUI-L020`), an override of a token a typed prop sets
+(`KUI-L021`), and a hook class on a component's root (`KUI-L022`), while your
+own component styled in a Kerf UI parent's context passes. Applications that
+list your generated `component-composition.json` in their
+`.kerf-ui-profile.json` get the same diagnostics for your components, pointing
+at your props and at your package for a component-gap report.
+
 ### Never import `kerfjs/dev` from a package
 
 kerf's development diagnostics are installed, not inferred: an app writes
@@ -255,4 +294,5 @@ There is no npm org/scope requirement — publish unscoped.
 - [ ] Events go through `delegate()` at the host root, or a companion `wire(root)` that returns a disposer.
 - [ ] Library-owned subtrees use `data-morph-skip` plus a create/dispose pair.
 - [ ] Build emits ESM + `.d.ts`; `tsconfig` sets `jsxImportSource: "kerfjs"`.
+- [ ] Each stylesheet styles only its own component, consumers configure it through props and public tokens, and `npm run check:styles` (`kerf-ui-analyze`) passes.
 - [ ] `src/` never imports `kerfjs/dev` — installing the diagnostics is the consuming app's call; keep it in your demo/test harness.

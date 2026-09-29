@@ -14,7 +14,22 @@ import ts from 'typescript';
 
 import { loadApplicationUiProfile } from '../ai/application-ui-profile.mjs';
 import { isUiTraversalExcluded } from '../traversal-exclusions.mjs';
+import {
+  componentLabel,
+  componentName,
+  componentOwnershipFacts,
+  configurationFor,
+  privateVariableOwner,
+  reportGap,
+  restyledComponents,
+  typedPropForToken,
+} from './component-ownership.mjs';
 import { collectLoudDeclarations, inspectLoudPairs } from './loud-pairs.mjs';
+import {
+  classNames,
+  complexSelectorParts,
+  withoutRelationalArguments,
+} from './selectors.mjs';
 
 export const UI_ANALYSIS_SCHEMA_VERSION = 1;
 
@@ -46,6 +61,34 @@ export const UI_ANALYSIS_RULES = Object.freeze({
     severity: 'review',
     title: 'Loud fill override without its on-loud pair',
   },
+  'KUI-L019': {
+    severity: 'error',
+    title: 'Application CSS restyles a cataloged component',
+  },
+  'KUI-L020': {
+    severity: 'error',
+    title: "Another component's private variable",
+  },
+  'KUI-L021': {
+    severity: 'error',
+    title: 'Component token overridden where a typed prop exists',
+  },
+  'KUI-L022': {
+    severity: 'error',
+    title: "Hook class restyles a cataloged component's root",
+  },
+});
+
+const ownershipAction =
+  "Configure the component through its typed props, variants, or public tokens; style only your own elements (in the component's context when needed). If no configuration covers the need, report the component gap to its package instead of overriding it.";
+
+/** The doctor's per-rule repair action, where it is more specific than the default. */
+export const UI_ANALYSIS_ACTIONS = Object.freeze({
+  'KUI-L019': ownershipAction,
+  'KUI-L020': ownershipAction,
+  'KUI-L021':
+    'Set the typed prop the diagnostic names on the component instead of overriding its token.',
+  'KUI-L022': ownershipAction,
 });
 
 const adoptionRules = new Set([
@@ -54,6 +97,10 @@ const adoptionRules = new Set([
   'KUI-L010',
   'KUI-L011',
   'KUI-L012',
+  'KUI-L019',
+  'KUI-L020',
+  'KUI-L021',
+  'KUI-L022',
 ]);
 
 const sourceExtensions = new Set(['.js', '.jsx', '.mjs', '.ts', '.tsx']);
@@ -177,6 +224,7 @@ function reachableStyleFacts(file, imports, styleFacts) {
       const current = result.get(className) ?? { scroll: false, inset: false };
       current.scroll ||= facts.scroll;
       current.inset ||= facts.inset;
+      current.styled ??= facts.styled;
       result.set(className, current);
     }
   }
@@ -326,6 +374,7 @@ function catalogFacts(entries) {
     publicParts,
     classEntries,
     exportEntries,
+    ownership: componentOwnershipFacts(entries),
   };
 }
 
@@ -342,6 +391,121 @@ function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+// A declaration that restyles, as opposed to one that only sets a custom
+// property: setting a component's public token on its host is configuration,
+// which the token rules (KUI-L002, KUI-L012, KUI-L020, KUI-L021) judge.
+function restylingDeclarations(rule) {
+  return (rule.nodes ?? []).filter(
+    (node) => node.type === 'decl' && !node.prop.startsWith('--'),
+  );
+}
+
+function inKeyframes(rule) {
+  return rule.parent?.type === 'atrule' && /keyframes$/i.test(rule.parent.name);
+}
+
+// The classes a rule makes its subject (the rightmost compound of each complex
+// selector, outside :has()/:not()).
+function subjectClasses(selector) {
+  return complexSelectorParts(selector).flatMap((parts) => {
+    const subject = parts.at(-1)?.compound;
+    return subject ? classNames(withoutRelationalArguments(subject)) : [];
+  });
+}
+
+function inspectComponentOwnership(
+  file,
+  rule,
+  facts,
+  diagnostics,
+  adoption,
+  isForeign,
+) {
+  if (inKeyframes(rule)) return;
+  const restyling = restylingDeclarations(rule);
+  if (restyling.length === 0) return;
+  const properties = [...new Set(restyling.map((decl) => decl.prop))];
+  for (const { entry, via, name } of restyledComponents(
+    rule.selector,
+    facts.ownership,
+    isForeign,
+  ))
+    diagnostics.push(
+      diagnostic(
+        'KUI-L019',
+        location(file, rule),
+        `\`${name}\` makes ${componentLabel(entry)} the subject of an application rule (${properties.join(', ')}); components own their styles. Configure it through ${configurationFor(entry)}. To place your own content in its context, style your own element (\`${name} > .your-element\`). ${reportGap(entry)}`,
+        {
+          selector: rule.selector,
+          component: entry.key,
+          via,
+          target: name,
+          properties,
+        },
+        undefined,
+        adoption,
+      ),
+    );
+}
+
+function inspectVariableOwnership(
+  file,
+  decl,
+  facts,
+  diagnostics,
+  adoption,
+  isForeign,
+) {
+  const at = location(file, decl);
+  const privates = new Set([
+    ...(decl.prop.match(/--_[a-z0-9_-]+/gi) ?? []),
+    ...(decl.value.match(/--_[a-z0-9_-]+/gi) ?? []),
+  ]);
+  for (const variable of privates) {
+    const owner = privateVariableOwner(variable, facts.ownership);
+    if (owner === undefined || (owner && !isForeign(owner))) continue;
+    const written = decl.prop === variable;
+    diagnostics.push(
+      diagnostic(
+        'KUI-L020',
+        at,
+        `\`${variable}\` is ${owner ? `${componentName(owner)}'s` : "a Kerf component's"} private variable; ${written ? 'writing it overrides' : 'reading it couples to'} that component's implementation. Configure it through ${configurationFor(owner)}. ${reportGap(owner)}`,
+        {
+          property: decl.prop,
+          value: decl.value,
+          variable,
+          ...(owner ? { component: owner.key } : {}),
+          access: written ? 'write' : 'read',
+        },
+        undefined,
+        adoption,
+      ),
+    );
+  }
+  if (!decl.prop.startsWith('--')) return;
+  const typed = typedPropForToken(decl.prop, facts.ownership);
+  if (!typed || !isForeign(typed.entry)) return;
+  const contract = (typed.entry.cssValueProps ?? []).find(
+    ({ path }) => path === typed.path,
+  );
+  const example = contract?.examples?.[0];
+  diagnostics.push(
+    diagnostic(
+      'KUI-L021',
+      at,
+      `\`${decl.prop}\` is what ${typed.entry.name}'s typed \`${typed.path}\` prop sets; set the prop on ${typed.entry.name}${example ? ` (\`<${typed.entry.name} ${example} />\`)` : ''} instead of overriding the token. ${reportGap(typed.entry)}`,
+      {
+        property: decl.prop,
+        value: decl.value,
+        component: typed.entry.key,
+        prop: typed.path,
+      },
+      undefined,
+      adoption,
+    ),
+  );
+}
+
 async function inspectCss(
   file,
   source,
@@ -350,6 +514,7 @@ async function inspectCss(
   cssFacts,
   adoption = false,
   siblingOnLoud = [],
+  isForeign = () => true,
 ) {
   let root;
   try {
@@ -374,6 +539,27 @@ async function inspectCss(
     siblingOnLoud,
   );
   root.walkRules((rule) => {
+    inspectComponentOwnership(
+      file,
+      rule,
+      facts,
+      diagnostics,
+      adoption,
+      isForeign,
+    );
+    if (!inKeyframes(rule) && restylingDeclarations(rule).length > 0)
+      for (const className of subjectClasses(rule.selector)) {
+        const record = cssFacts.get(className) ?? {
+          scroll: false,
+          inset: false,
+        };
+        record.styled ??= {
+          stylesheet: file,
+          line: rule.source?.start?.line ?? 1,
+          selector: rule.selector,
+        };
+        cssFacts.set(className, record);
+      }
     const classes = [
       ...rule.selector.matchAll(/\.([_a-zA-Z]+[_a-zA-Z0-9-]*)/g),
     ].map((match) => match[1]);
@@ -444,6 +630,14 @@ async function inspectCss(
         );
     }
     rule.walkDecls((decl) => {
+      inspectVariableOwnership(
+        file,
+        decl,
+        facts,
+        diagnostics,
+        adoption,
+        isForeign,
+      );
       const at = location(file, decl);
       const tokens = [
         ...(decl.prop.match(/--kui-[a-z0-9-]+/g) ?? []),
@@ -696,7 +890,15 @@ function inspectCssValues(
   }
 }
 
-function inspectTsx(file, sourceText, facts, cssFacts, diagnostics) {
+function inspectTsx(
+  file,
+  sourceText,
+  facts,
+  cssFacts,
+  diagnostics,
+  adoption = false,
+  isForeign = () => true,
+) {
   const source = ts.createSourceFile(
     file,
     sourceText,
@@ -769,6 +971,29 @@ function inspectTsx(file, sourceText, facts, cssFacts, diagnostics) {
           namespaces,
           diagnostics,
         );
+      if (entry && isForeign(entry))
+        for (const className of classes.values) {
+          if (facts.ownership.classOwners.has(className)) continue;
+          const styled = cssFacts.get(className)?.styled;
+          if (!styled) continue;
+          diagnostics.push(
+            diagnostic(
+              'KUI-L022',
+              at,
+              `\`${className}\` is placed on ${entry.name}'s root and styled by ${basename(styled.stylesheet)}:${styled.line} (\`${styled.selector}\`), which restyles ${componentLabel(entry)}; components own their styles. Configure it through ${configurationFor(entry)}, or wrap it in your own element and style that. ${reportGap(entry)}`,
+              {
+                tag,
+                component: entry.key,
+                className,
+                stylesheet: styled.stylesheet,
+                line: styled.line,
+                selector: styled.selector,
+              },
+              undefined,
+              adoption,
+            ),
+          );
+        }
       if (classes.dynamic)
         diagnostics.push(
           diagnostic(
@@ -932,6 +1157,39 @@ export async function analyzeUiProject({
   const imports = new Map(
     files.map((file) => [file, relativeStyleImports(file, contents.get(file))]),
   );
+  // A stylesheet or source file belongs to the package whose manifest is
+  // nearest it; entries of every other catalog package are foreign to it.
+  const packageNames = new Map();
+  const packageNameOf = async (directory) => {
+    if (!packageNames.has(directory))
+      packageNames.set(
+        directory,
+        (async () => {
+          try {
+            const manifest = JSON.parse(
+              await readFile(resolve(directory, 'package.json'), 'utf8'),
+            );
+            if (typeof manifest.name === 'string') return manifest.name;
+          } catch {
+            // No readable manifest here; keep walking up.
+          }
+          const parent = dirname(directory);
+          const inside = relative(root, parent);
+          if (
+            parent === directory ||
+            inside === '..' ||
+            inside.startsWith('../')
+          )
+            return undefined;
+          return packageNameOf(parent);
+        })(),
+      );
+    return packageNames.get(directory);
+  };
+  const foreignTo = async (file) => {
+    const own = await packageNameOf(dirname(file));
+    return (entry) => entry.package !== own;
+  };
   const styleFacts = new Map();
   const recordDiagnostics = (items, context) => {
     for (const item of items) {
@@ -1022,6 +1280,8 @@ export async function analyzeUiProject({
       context.facts,
       reachableStyleFacts(file, imports, styleFacts),
       fileDiagnostics,
+      adoption,
+      await foreignTo(file),
     );
     recordDiagnostics(fileDiagnostics, context);
   }
@@ -1039,6 +1299,7 @@ export async function analyzeUiProject({
         new Map(),
         adoption,
         siblingOnLoud(file),
+        await foreignTo(file),
       );
       recordDiagnostics(fileDiagnostics, context);
     }
@@ -1121,6 +1382,14 @@ export async function analyzeUiProject({
         ...item.location,
         file: portablePath(item.location.file),
       },
+      ...(item.evidence?.stylesheet
+        ? {
+            evidence: {
+              ...item.evidence,
+              stylesheet: portablePath(item.evidence.stylesheet),
+            },
+          }
+        : {}),
     })),
     summary: {
       errors:

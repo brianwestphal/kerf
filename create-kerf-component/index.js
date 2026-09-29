@@ -162,8 +162,9 @@ async function main(argv) {
       '  npm install\n' +
       '  npm run build      # tsup → ESM + .d.ts (kerfjs stays external)\n' +
       '  npm run catalog:check # verify AI metadata and public exports\n' +
+      '  npm run check:styles  # each component styles only itself (kerf-ui-analyze)\n' +
       '  npm run typecheck\n\n' +
-      'Edit src/counter.tsx and kerf.components.json, then publish with `npm publish --access public`.\n',
+      'Edit src/counter.tsx, src/counter.css, and kerf.components.json, then publish with `npm publish --access public`.\n',
   );
 }
 

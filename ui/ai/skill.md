@@ -50,6 +50,14 @@ wa-dropdown.kui-popup-menu { … }` lives with PopupMenu). A parent may key its
   overriding. Your own components follow the same rule: expose configuration,
   and let each component own its styles.
 
+`kerf-ui-analyze` and `kerf-ui-doctor` enforce this downstream: `KUI-L019`
+(a rule whose subject is a cataloged component), `KUI-L020` (another
+component's private `--_*` variable), `KUI-L021` (a token a typed prop sets),
+and `KUI-L022` (a hook class on a component's root) are errors, and
+`eslint-plugin-kerfjs`'s `ui-component-ownership` reports `KUI-L020` /
+`KUI-L021` in script. Repair them with the configuration each message names;
+when none exists, report the component gap rather than suppressing the finding.
+
 Read `../docs/webawesome-theme.md` when using Web Awesome components or changing
 shared theme tokens. When overriding a loud fill
 (`--wa-color-{tone}-fill-loud`), set the matching `--wa-color-{tone}-on-loud`

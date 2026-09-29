@@ -75,6 +75,10 @@ policy, or analysis inputs to the containing application.
 | `KUI-L016` | error  | A removed declaration-list escape hatch is used.                                      |
 | `KUI-L017` | review | A valid but exceptional off-scale shorthand needs justification.                      |
 | `KUI-L018` | review | A loud fill override lacks a governing `on-loud`, or the literal pair is below 4.5:1. |
+| `KUI-L019` | error  | A rule's subject is another package's component (class, `data-component`, or tag).    |
+| `KUI-L020` | error  | CSS reads or writes another component's private `--_*` variable.                      |
+| `KUI-L021` | error  | CSS overrides a component token that a typed prop sets.                               |
+| `KUI-L022` | error  | A class placed on a component's root is styled by the application (a hook class).     |
 
 Errors are provable contract violations and make the command exit 1. Review
 findings are deliberately heuristic and do not fail by default; pass
@@ -92,9 +96,10 @@ CSS extension points. A component catalog may additionally list shadow-part
 names in `boundaries.publicParts`; all other `::part()` targets are private.
 Part names are scoped to that entry's `boundaries.rootClass`, so an extension
 point on one component does not authorize the same-named part on another.
-Parent-owned placement and selectors for application-owned content remain
-allowed because the analyzer only reserves `.kui-*`, `--kui-*`, and cataloged
-shadow boundaries.
+Selectors for application-owned content remain allowed, including in a
+component's context (`.kui-pane > .my-content`): a public class is an
+extension point for naming a context, not for restyling the component itself,
+which `KUI-L019` reports.
 
 Catalog entries may also publish `cssValueProps`. Each path names its grammar,
 finite shorthands, canonical and exceptional scale steps, accepted typed
@@ -102,6 +107,77 @@ helpers, expression-only helpers, raw escape policy, and examples. The analyzer
 uses that same metadata for direct component calls and JSX, including nested
 paths such as `choices[].color`; consumer catalogs receive identical checks.
 Dynamic values remain a type-system responsibility rather than being guessed.
+
+## Component ownership (`KUI-L019`–`KUI-L022`)
+
+Components own their styles and are configured, never overridden. These
+diagnostics apply the package's own `check:css-ownership` rules to
+applications and component packages; the selector parsing is the same module
+(`analyzer/selectors.mjs`), so the package rule and the consumer rule agree on
+which element a selector styles.
+
+- **`KUI-L019` — a rule restyles a cataloged component.** The rule's subject
+  (the rightmost compound of each selector, ignoring `:has()` and `:not()`
+  arguments) names a public class of a cataloged component (`.kui-toolbar`,
+  `.kui-list-item__label`, `.acme-meter`), its `[data-component="…"]` root, or
+  a Web Awesome tag the package themes (`wa-button`, `wa-select`), and the rule
+  sets at least one ordinary property. A `::part()` subject is left to
+  `KUI-L011`; a rule that only sets custom properties is configuration, judged
+  by the token rules.
+- **`KUI-L020` — another component's private variable.** CSS reads or writes a
+  `--_<root>-*` variable of a cataloged component (`--_kui-list-gap`), or any
+  `--_kui-*` variable.
+- **`KUI-L021` — a token a typed prop sets.** CSS assigns `--<root>-<prop>`
+  where the component has that typed prop (`--kui-list-gap` is `List gap`,
+  `--kui-floating-toolbar-inset` is `FloatingToolbar inset`). The message
+  quotes the prop's cataloged example.
+- **`KUI-L022` — a hook class on a component's root.** A literal class on an
+  imported component's JSX (`<Toolbar className="header" />`) is the subject
+  of a rule in a stylesheet that file imports, so the application restyles the
+  component through it. The evidence names the stylesheet, line, and selector.
+
+Every message names the configuration to use (the component's typed props,
+public tokens, and variants from its catalog entry) and ends with the same
+route for a real need that has none: report the component gap to the owning
+package (open a feature request) instead of overriding it.
+
+What stays allowed mirrors the package rule, where a child styles itself in a
+parent's context:
+
+```css
+/* Your own element in a component's context. */
+.kui-toolbar > .my-widget {
+  margin-inline-start: auto;
+}
+/* Keying your own element on a component's state. */
+.shell:has(.kui-select[open]) .my-status {
+  opacity: 0.5;
+}
+/* Configuring a component through a public token with no typed prop. */
+.kui-list {
+  --kui-list-divider-color: var(--kui-color-neutral-border-quiet);
+}
+
+/* KUI-L019, KUI-L020, KUI-L021. */
+.kui-toolbar {
+  padding: 0;
+}
+.app {
+  --_kui-list-gap: 2px;
+  --kui-list-gap: 4px;
+}
+```
+
+Ownership is decided per package: a stylesheet belongs to the package whose
+`package.json` is nearest it, and only other packages' catalog entries are
+foreign to it. A component package built on Kerf UI therefore styles its own
+cataloged components (including `.kui-toolbar > .acme-meter` from its own
+stylesheet) without findings, while an application that restyles
+`.acme-meter` is reported against `@acme/widgets`. All four ids are
+ownership-boundary diagnostics, so `--adoption` reports them as review
+findings. `eslint-plugin-kerfjs`'s `ui-component-ownership` rule reports
+`KUI-L020` and `KUI-L021` in JavaScript and TypeScript (style strings, style
+objects, and `style.setProperty()`), where this analyzer reads only CSS.
 
 ## Loud fill / on-loud pairing (`KUI-L018`)
 
@@ -207,6 +283,7 @@ validator.
 
 Review findings remain visible until explicitly suppressed. Avoid suppressing
 `KUI-L001`, `KUI-L002`, `KUI-L003`, `KUI-L007`, `KUI-L009`, `KUI-L010`,
-`KUI-L011`, `KUI-L012`, `KUI-L013`, `KUI-L014`, `KUI-L015`, or `KUI-L016`:
+`KUI-L011`, `KUI-L012`, `KUI-L013`, `KUI-L014`, `KUI-L015`, `KUI-L016`,
+`KUI-L019`, `KUI-L020`, `KUI-L021`, or `KUI-L022`:
 those indicate a
 definite boundary or parsing failure rather than an aesthetic judgment.

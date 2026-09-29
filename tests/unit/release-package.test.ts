@@ -172,6 +172,7 @@ describe('release package preparation', { timeout: 30_000 }, () => {
     );
     expect(template.peerDependencies.kerfjs).toBe('^5.0.0-0');
     expect(template.devDependencies.kerfjs).toBe(`^${betaVersion}`);
+    expect(template.devDependencies['@kerfjs/ui']).toBe(`^${betaVersion}`);
     expect(packedText(createTarball, 'catalog.js')).toContain(
       'runCatalogCommand',
     );
