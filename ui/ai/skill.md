@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.49.0
+kerf-ui-skill-version: 1.50.0
 ---
 
 # Building with @kerfjs/ui
@@ -78,7 +78,10 @@ no generated extension exists, start from the checked examples and require the
 author to supply missing semantic and geometry decisions; never infer them from
 rendered appearance. A `data-*` attribute listed in an entry's
 `wiring.stateAttributes` belongs to the named helper: never render, remove, or
-branch on it as application state.
+branch on it as application state. A package entry's public classes follow the same rule
+as Kerf UI's: write only its `boundaries.placeableClasses` onto your own
+elements (never on a plain `boundaries.rootElement` tag), and render the
+package's component for every other class (`KUI-L103`).
 
 The component pages are generated from `component-catalog.json` and its
 composition layer, `component-composition.json`; do not load those large JSON

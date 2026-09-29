@@ -359,6 +359,42 @@ parent, child, and zone reference. Never merge by bare `id`. The generated
 `purpose`, `publicExports`, and `sourceLinks` fields answer selection and source
 questions; the composition fields answer whether and how two entries fit.
 
+### Placeable classes: `boundaries.placeableClasses` / `rootElement`
+
+Every class in `boundaries.publicClasses` is, by default, the component's
+rendered anatomy: an application that writes `acme-meter` onto its own `<div>`
+recreates `Meter` by class and inherits (and invites restyling of) its CSS.
+Once an application's `.kerf-ui-profile.json` declares the package's catalog
+under `catalogs`, `eslint-plugin-kerfjs`'s `ui-public-boundaries` reports that
+as `KUI-L103` and names the export to render — the same diagnostic
+`@kerfjs/ui`'s own `kui-*` classes get, and for any class name, not only a
+`kui-` prefix. The package's own element (`<Meter className="acme-meter">`) is
+never reported.
+
+List the subset applications may legitimately write themselves (a layout
+utility, item geometry a non-component carrier may take) under the optional
+`boundaries.placeableClasses`; absent means none. When the component itself
+renders those classes, add `boundaries.rootElement` with the tag it renders
+them on, so a plain element of that tag carrying them is still reported as the
+component recreated while another carrier keeps them:
+
+```json
+{
+  "boundaries": {
+    "rootClass": "acme-card",
+    "publicClasses": ["acme-card", "acme-card--framed"],
+    "placeableClasses": ["acme-card", "acme-card--framed"],
+    "rootElement": "section",
+    "publicTokens": []
+  }
+}
+```
+
+The generator rejects a placeable class that is not public and a `rootElement`
+without placeable classes, and copies both fields into the generated
+`component-composition.json` (`@kerfjs/ui`'s own catalog carries the same
+fields; `content-item` is `rootElement: "div"`).
+
 ### Wrapper components: `rendersAs`
 
 Applications often wrap a cataloged component in their own component so they

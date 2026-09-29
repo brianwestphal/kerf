@@ -494,7 +494,14 @@ writeJson('component-composition.json', {
     wrapper('title-text', 'TitleText', ['@kerfjs/ui:toolbar-text']),
     wrapper('app-toolbar', 'AppToolbar', ['@kerfjs/ui:toolbar']),
     wrapper('status-chip', 'StatusChip', ['@kerfjs/ui:segmented-control']),
-    wrapper('plain-widget', 'PlainWidget'),
+    // An application component with its own cataloged anatomy class.
+    wrapper('plain-widget', 'PlainWidget', undefined, {
+      boundaries: {
+        rootClass: 'karwan-widget',
+        publicClasses: ['karwan-widget'],
+        publicTokens: [],
+      },
+    }),
     // A private, bundled application declares an export by name alone: it
     // resolves through its source file, never through a package subpath.
     wrapper(
@@ -516,6 +523,36 @@ writeJson('vendor/acme/catalog.json', {
       key: '@acme/bits:group-wrap',
       package: '@acme/bits',
       publicExports: [{ name: 'GroupWrap', subpath: './group-wrap' }],
+    },
+    // A third-party component package's own anatomy classes: Meter renders
+    // them all; Card's item geometry is placeable except on the <section>
+    // Card itself renders.
+    {
+      ...wrapper('meter', 'Meter'),
+      key: '@acme/bits:meter',
+      package: '@acme/bits',
+      publicExports: [
+        { name: 'Meter', subpath: './meter' },
+        { name: 'MeterProps', subpath: './meter' },
+      ],
+      boundaries: {
+        rootClass: 'acme-meter',
+        publicClasses: ['acme-meter', 'acme-meter__bar'],
+        publicTokens: [],
+      },
+    },
+    {
+      ...wrapper('card', 'Card'),
+      key: '@acme/bits:card',
+      package: '@acme/bits',
+      publicExports: [{ name: 'Card', subpath: './card' }],
+      boundaries: {
+        rootClass: 'acme-card',
+        publicClasses: ['acme-card', 'acme-card--framed'],
+        placeableClasses: ['acme-card', 'acme-card--framed'],
+        rootElement: 'section',
+        publicTokens: [],
+      },
     },
   ],
 });
@@ -690,6 +727,67 @@ tester.run('ui-composition rendersAs wrappers', composition, {
       "import { DemandSegmentsControl } from './demand-segments-control.js'; <div><DemandSegmentsControl /></div>;",
       { errors: [{ messageId: 'parent' }] },
     ),
+  ],
+});
+
+// A declared component package's anatomy classes on an application-owned
+// element are reported with the component to render, like @kerfjs/ui's.
+tester.run('ui-public-boundaries declared component packages', boundaries, {
+  valid: [
+    // The package's own component element carries its own root class.
+    appCase(
+      'import { Meter } from \'@acme/bits/meter\'; <Meter className="acme-meter" />;',
+    ),
+    // Placeable item geometry on a carrier other than the element Card renders.
+    appCase('<ul class="acme-card acme-card--framed" />;'),
+    // Uncataloged application classes are the application's own.
+    appCase('<div class="acme-meterish app-row" />;'),
+  ],
+  invalid: [
+    appCase('<div class="acme-meter"><span class="acme-meter__bar" /></div>;', {
+      errors: [
+        {
+          messageId: 'component',
+          data: { name: 'acme-meter', component: 'Meter', render: '`Meter`' },
+        },
+        {
+          messageId: 'component',
+          data: {
+            name: 'acme-meter__bar',
+            component: 'Meter',
+            render: '`Meter`',
+          },
+        },
+      ],
+    }),
+    appCase('<section class="acme-card acme-card--framed" />;', {
+      errors: ['acme-card', 'acme-card--framed'].map((name) => ({
+        messageId: 'componentRoot',
+        data: { name, element: 'section', component: 'Card', render: '`Card`' },
+      })),
+    }),
+    // An application catalog's class (no subpath export) names its component.
+    appCase('<div class="karwan-widget" />;', {
+      errors: [
+        {
+          messageId: 'component',
+          data: {
+            name: 'karwan-widget',
+            component: 'PlainWidget',
+            render: '`PlainWidget`',
+          },
+        },
+      ],
+    }),
+    // Another package's anatomy class as a hook on a Kerf UI component.
+    appCase('<Toolbar className="acme-meter" />;', {
+      errors: [
+        {
+          messageId: 'component',
+          data: { name: 'acme-meter', component: 'Meter', render: '`Meter`' },
+        },
+      ],
+    }),
   ],
 });
 

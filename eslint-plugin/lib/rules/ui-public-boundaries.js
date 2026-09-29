@@ -73,14 +73,14 @@ export default {
     };
     const inspect = (node, value, classContext = false, tokens = true) => {
       if (typeof value !== 'string') return;
-      const classes = classContext
-        ? value.split(/\s+/).filter((item) => item.startsWith('kui-'))
-        : [];
+      const names = classContext ? value.split(/\s+/).filter(Boolean) : [];
       if (classContext && !isExcepted(contract, CLASS_CODE, filename))
-        for (const name of classes)
-          if (!contract.publicClasses.has(name))
+        for (const name of names)
+          if (name.startsWith('kui-') && !contract.publicClasses.has(name))
             context.report({ node, messageId: 'class', data: { name } });
-      if (classContext) inspectPlacement(node, classes);
+      // Placement covers every cataloged class, not only `kui-*`: a declared
+      // component package's anatomy (`acme-meter`) is checked the same way.
+      if (classContext) inspectPlacement(node, names);
       if (tokens && !isExcepted(contract, TOKEN_CODE, filename))
         for (const match of value.matchAll(/--kui-[a-z0-9-]+/g))
           if (!contract.publicTokens.has(match[0]))

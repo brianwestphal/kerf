@@ -27,6 +27,10 @@ The catalog marks the classes an application may place with `boundaries.placeabl
 
 A placeable class can still be a component's own root. When a catalog entry names the `boundaries.rootElement` its component renders around its placeable classes, a plain element of that tag carrying them is the component recreated and is reported: `<div class="kui-content-item">` is exactly what `ContentItem` renders. The class stays placeable on any other carrier — a `<ul>`, a `Text`, or a control-cluster `<footer>` that must carry the geometry itself. `@kerfjs/ui`'s own `check:guidance` derives its repository check from the same catalog fields, so the two cannot disagree.
 
+## Component packages
+
+`KUI-L103` is not limited to `kui-*` classes. Every application or third-party composition catalog your `.kerf-ui-profile.json` declares under `catalogs` contributes its entries' public classes the same way: an `acme-meter` class on your own `<div>` is reported with the package's component to render (`Meter`), its `boundaries.placeableClasses` stay allowed, and its `boundaries.rootElement` reports a placeable class on a plain element of the tag the component renders. Component packages declare these fields in `kerf.components.json`; see the component-packages guide (`docs/13-component-packages.md` §13.7). The first catalog to list a class owns it, so `@kerfjs/ui`'s catalog wins over a declared one. `KUI-L101` (private/unknown class) still applies only to `kui-*` names.
+
 String class values are inspected in `class` / `className` literals and in a template literal's static, whitespace-delimited names (``class={`kui-content-item ${extra}`}``); a name an interpolation completes (`` `kui-toolbar-${size}` ``) is not known and is skipped.
 
 The rule reads `@kerfjs/ui/ai/component-composition.json` by default. See the plugin README for alternate catalog settings used by monorepos and package authors.

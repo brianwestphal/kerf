@@ -65,6 +65,13 @@ check:styles` runs `kerf-ui-analyze` (from the `@kerfjs/ui` dev dependency)
   not render, remove, or treat those attributes as their own state. The field
   is optional; names must be unique per component, and the checker rejects a
   helper that is not listed in `wiring.helpers`.
+  `boundaries.placeableClasses` (optional) names the public classes an app may
+  write onto its own elements; every other public class is the component's
+  rendered anatomy, which `eslint-plugin-kerfjs` reports on an app-owned
+  element as `KUI-L103` with the component to render. `boundaries.rootElement`
+  names the element the component itself renders around its placeable classes,
+  so a plain element of that tag carrying them is reported too. Placeable
+  classes must be public; `rootElement` requires them.
   A wrapper that renders a cataloged component declares it under
   `composition.rendersAs` (for example
   `["@kerfjs/ui:toolbar-control-group"]`), so the `ui-composition` lint treats

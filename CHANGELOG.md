@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Component packages declare `placeableClasses`, and `KUI-L103` covers
+  their anatomy classes.** `create-kerf-component`'s `kerf.components.json`
+  accepts optional `boundaries.placeableClasses` (a subset of
+  `publicClasses`) and `boundaries.rootElement`, validates them, and copies
+  them into the generated `component-composition.json`.
+  `eslint-plugin-kerfjs`'s `ui-public-boundaries` now checks every class the
+  application or third-party catalogs in `.kerf-ui-profile.json` declare, not
+  only `kui-*` names: `<div class="acme-meter">` is reported with the
+  package's component to render (`Meter`), while its placeable classes stay
+  allowed. The scaffold template's README explains the field, and
+  `@kerfjs/ui/ai/skill.md` (1.50.0) applies the rule to package entries.
+
 - **`eslint-plugin-kerfjs` `ui-public-boundaries` reports a plain
   `<div class="kui-content-item">` as `ContentItem` recreated (`KUI-L103`).**
   The `kui-content-item` classes stay placeable on another carrier (a `<ul>`, a

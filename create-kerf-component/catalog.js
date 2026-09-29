@@ -619,6 +619,31 @@ function validateComponent(
     diagnostics.push(
       `${at}.boundaries.rootClass: expected null or one publicClasses entry`,
     );
+  // An application may place only the declared subset of public classes on
+  // its own elements; every other public class is the component's rendered
+  // anatomy (eslint-plugin-kerfjs KUI-L103). `rootElement` names the element
+  // the component renders around its placeable classes.
+  if (component.boundaries && 'placeableClasses' in component.boundaries) {
+    validateStringList(
+      component.boundaries.placeableClasses,
+      `${at}.boundaries.placeableClasses`,
+      diagnostics,
+    );
+    for (const className of Array.isArray(component.boundaries.placeableClasses)
+      ? component.boundaries.placeableClasses
+      : [])
+      if (!component.boundaries.publicClasses?.includes(className))
+        diagnostics.push(
+          `${at}.boundaries.placeableClasses: ${className} is not one of publicClasses`,
+        );
+  }
+  if (
+    component.boundaries?.rootElement !== undefined &&
+    !component.boundaries.placeableClasses?.length
+  )
+    diagnostics.push(
+      `${at}.boundaries.rootElement: requires a non-empty placeableClasses`,
+    );
   validateStringList(
     component.boundaries?.publicTokens,
     `${at}.boundaries.publicTokens`,

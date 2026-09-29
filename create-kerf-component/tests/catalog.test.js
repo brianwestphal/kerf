@@ -228,6 +228,71 @@ test('accepts an explicit null root class as a decision, but not an absent one',
   });
 });
 
+test('passes declared placeable classes and their root element through to the composition catalog', () => {
+  withScaffold(({ target }) => {
+    const value = metadata(target);
+    Object.assign(value.components[0].boundaries, {
+      publicClasses: ['kerf-counter', 'kerf-counter-row'],
+      placeableClasses: ['kerf-counter-row'],
+      rootElement: 'div',
+    });
+    writeMetadata(target, value);
+    const [result] = runCatalogCommand({ root: target });
+    const { boundaries } = result.catalog.entries[0];
+    assert.deepEqual(boundaries.placeableClasses, ['kerf-counter-row']);
+    assert.equal(boundaries.rootElement, 'div');
+    assert.deepEqual(validateComposition(result.catalog), []);
+
+    // Absent means none: every public class is rendered anatomy.
+    delete value.components[0].boundaries.placeableClasses;
+    delete value.components[0].boundaries.rootElement;
+    writeMetadata(target, value);
+    const [withoutPlaceable] = generateCatalogs(target);
+    assert.equal(
+      'placeableClasses' in withoutPlaceable.catalog.entries[0].boundaries,
+      false,
+    );
+  });
+});
+
+test('rejects placeable classes outside publicClasses and a root element without them', () => {
+  withScaffold(({ target }) => {
+    const value = metadata(target);
+    value.components[0].boundaries.placeableClasses = ['kerf-counter-private'];
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      '.boundaries.placeableClasses: kerf-counter-private is not one of publicClasses',
+    );
+
+    value.components[0].boundaries.placeableClasses = [
+      'kerf-counter',
+      'kerf-counter',
+    ];
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      '.boundaries.placeableClasses: expected unique items',
+    );
+
+    delete value.components[0].boundaries.placeableClasses;
+    value.components[0].boundaries.rootElement = 'div';
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      '.boundaries.rootElement: requires a non-empty placeableClasses',
+    );
+
+    value.components[0].boundaries.placeableClasses = ['kerf-counter'];
+    value.components[0].boundaries.rootElement = 'Div';
+    writeMetadata(target, value);
+    assertCatalogDiagnostic(
+      target,
+      '.boundaries.rootElement: must match ^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$',
+    );
+  });
+});
+
 test('reports deleted component sources', () => {
   withScaffold(({ target }) => {
     unlinkSync(join(target, 'src/counter.tsx'));

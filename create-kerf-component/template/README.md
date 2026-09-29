@@ -76,7 +76,14 @@ the metadata/catalog pair, the README, and the license.
 public exports, composition rules, geometry ownership, tokens, accessibility,
 and source links. `boundaries.rootClass` explicitly names the public class that
 owns runtime geometry (or is `null` when none does); `publicClasses` order has no
-semantic meaning. Keep decisions explicit: the generator deliberately does not
+semantic meaning. Every public class is the component's rendered anatomy unless
+`boundaries.placeableClasses` lists it: once an app's `.kerf-ui-profile.json`
+declares this package's catalog under `catalogs`, `eslint-plugin-kerfjs`
+reports an app that writes `kerf-counter` onto its own `<div>` (`KUI-L103`) and
+tells it to render `Counter` instead. List a class there only when apps may legitimately
+place it themselves (a layout utility, item geometry on another carrier), and
+add `rootElement` when the component itself renders those classes on that tag.
+Keep decisions explicit: the generator deliberately does not
 derive semantic or geometry ownership from rendered appearance. It validates
 both this source and the generated catalog against the schema copies beside the
 checker, including rejection of unknown fields. Named exports must exist in

@@ -52,6 +52,18 @@ CSS boundaries, diagnostics, and provenance. A wrapper entry may add
 composition checks treat its elements as each root rather than as an unknown
 child.
 
+`boundaries.placeableClasses` names the subset of `publicClasses` an
+application may write onto its own elements (layout utilities, the document
+root, item geometry on another carrier); absent means none, and every other
+public class is the component's rendered anatomy. `boundaries.rootElement`
+names the element a component renders around its own placeable classes
+(`content-item`: `div`), so a plain element of that tag carrying them is still
+the component recreated. `eslint-plugin-kerfjs`'s `ui-public-boundaries`
+reports both as `KUI-L103` with the export to render — for `@kerfjs/ui` and for
+every consumer catalog a `.kerf-ui-profile.json` declares, whatever the class
+prefix. `create-kerf-component` packages declare the same fields in
+`kerf.components.json`.
+
 An entry's optional `cssValueProps` makes CSS-adjacent prop grammar equally
 machine-evaluable. Each path records the property grammar, finite shorthands,
 canonical versus exceptional spacing choices, standalone and expression-only
