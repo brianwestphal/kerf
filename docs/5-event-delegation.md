@@ -120,6 +120,24 @@ Both `delegate()` and `delegateCapture()` use `closest()` by default, for **ever
 
 When you genuinely want direct-match semantics — fire only when the event lands on the exact element the selector identifies, not any descendant — pass `{ match: 'direct' }` as the optional trailing options argument (the fifth parameter, after the handler) to either helper. It switches the internal match from `closest()` to `target.matches()`.
 
+### 5.2.1 Matches are fixed when the event starts dispatching
+
+A delegated handler that writes a signal makes `mount()` re-render **synchronously**, while the same event is still dispatching. The morph may recycle the clicked element in place — same tag, same position — into a different control. Picture a footer `[Delete, Close]` that becomes `[<p>Sure?</p>, Cancel, Confirm]`: the clicked `Delete` button is morphed into `Cancel`.
+
+Every `delegate()` / `delegateCapture()` / `delegateActions()` listener therefore resolves its selector against the DOM **as it stood when the event reached the first kerf delegate listener**, before any delegated handler ran — the same way per-element listeners behave, whose set is fixed when dispatch starts. Concretely:
+
+- A delegate whose selector only matches **after** an earlier handler's re-render does not fire for that event. Clicking `Delete` above no longer also fires the `Cancel` delegate and undoes the state change on the same click. (The next click on the recycled button fires `Cancel` normally.)
+- Every delegate that matched **at dispatch start** still fires, even when an earlier handler has since changed the element's attributes — two delegates on the same selector both fire for one click, and a broad `footer button` tracker still sees the click.
+- `delegateActions()` dispatches by the action value the element carried at dispatch start, not the value it has when its handler runs.
+- A handler that **removes** the matched element from the root still suppresses later delegates for that element, as before.
+- The handler receives the live element. Attributes you read inside the handler are the current ones, so a later handler reading `el.dataset.id` after an earlier handler re-rendered sees the re-rendered value.
+
+This holds across capture and bubble phases, nested roots (a delegate on `document.body` and one on the mount root), `each()` rows, and `stopImmediatePropagation()` (a stopped listener still stops the rest). A nested dispatch — a handler that calls `other.click()` — gets its own snapshot. `mount()` stays synchronous: code after a signal write inside a handler still sees the updated DOM (`editing.value = true; root.querySelector('input')!.focus()` keeps working).
+
+Implementation (KF-HK7WE8 dispatch snapshot: a delegate could re-fire on a morph-recycled target): each root keeps a symbol-keyed registry of its delegates; the first kerf listener to see an event resolves every registered delegate on `event.composedPath()` and stores the results on the event, and each listener consumes its own entry. A missing entry (re-dispatch of the same event object, a delegate added mid-dispatch) takes a fresh snapshot. No module-level state. Cost: about 0.11 KB min+gzip on the main entry.
+
+You no longer need to wrap the new state in a distinct element (for example `<div role="group">`) to force the morph to replace nodes rather than recycle them.
+
 ## 5.3 Disposers
 
 Both helpers return a `() => void` disposer. **Capture it and call it when the delegate's scope ends** — the default rule, with exactly one narrow exception (described at the bottom of this section).

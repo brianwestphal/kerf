@@ -12,14 +12,14 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/kerfjs"><img src="https://img.shields.io/npm/v/kerfjs.svg" alt="npm version" /></a>
-  <img src="https://img.shields.io/badge/min%2Bgzip-~12%20KB-brightgreen.svg" alt="~12 KB minified and gzipped" />
+  <img src="https://img.shields.io/badge/min%2Bgzip-~13%20KB-brightgreen.svg" alt="~13 KB minified and gzipped" />
   <img src="https://img.shields.io/npm/l/kerfjs.svg" alt="MIT license" />
   <img src="https://img.shields.io/badge/types-included-3178c6.svg" alt="TypeScript types included" />
 </p>
 
 ---
 
-> ~12 KB. No virtual DOM. No compiler. No magic.
+> ~13 KB. No virtual DOM. No compiler. No magic.
 > Reactive UI that touches only the bytes that changed.
 
 ```ts
@@ -76,7 +76,7 @@ Write plain `.tsx` and build with your existing esbuild / Vite / tsup — no ext
 
 ## Why Kerf
 
-1. **~12 KB, one dependency.** ~12 KB minified + gzipped including `@preact/signals-core` (~13 KB with `arraySignal`). No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest benchmark](https://krausest.github.io/js-framework-benchmark/current.html) kerf sits in the same cluster as Vue, Lit, and vanjs; Solid's compiler leads the update-path benchmarks, which kerf doesn't try to match by design — no compiler.
+1. **~13 KB, one dependency.** ~13 KB minified + gzipped including `@preact/signals-core` (~13 KB with `arraySignal`). No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest benchmark](https://krausest.github.io/js-framework-benchmark/current.html) kerf sits in the same cluster as Vue, Lit, and vanjs; Solid's compiler leads the update-path benchmarks, which kerf doesn't try to match by design — no compiler.
 
 2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it _is_ the DOM.
 

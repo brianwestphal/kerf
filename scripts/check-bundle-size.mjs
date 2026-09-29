@@ -69,7 +69,10 @@ const SLACK_KB = 0.35;
 const BUDGETS = [
   {
     name: 'main',
-    budgetKb: 12.6,
+    // KF-HK7WE8 (+0.11 KB): delegate()'s per-event dispatch snapshot (per-root
+    // delegate registry + resolve-all-before-any-handler), so a synchronous
+    // re-render cannot redirect a later delegate onto a recycled target.
+    budgetKb: 12.7,
     description: 'realistic app import — the number the docs advertise',
     entry: `
       import { signal, computed, effect, batch, mount, each, delegate } from '${DIST}/index.js';
@@ -80,7 +83,10 @@ const BUDGETS = [
     name: 'barrel',
     // +0.1 for KF-FBHQEP: the overlay host slot is a nested-mount boundary the
     // shared core (mount's nesting check, binding + list-marker scans) honors.
-    budgetKb: 14.4,
+    // KF-HK7WE8 (+0.11 KB): delegate()'s per-event dispatch snapshot (per-root
+    // delegate registry + resolve-all-before-any-handler), so a synchronous
+    // re-render cannot redirect a later delegate onto a recycled target.
+    budgetKb: 14.5,
     description: 'the whole public barrel — worst case for a consumer',
     entry: `
       import * as kerf from '${DIST}/index.js';
@@ -159,7 +165,10 @@ const BUDGETS = [
     // containing block with a transient 1px probe and maps its viewport
     // coordinates into it, so a slot-hosted surface inside a transformed /
     // filtered / contained <dialog> still lands against its anchor.
-    budgetKb: 18.5,
+    // KF-HK7WE8 (+0.11 KB): delegate()'s per-event dispatch snapshot (per-root
+    // delegate registry + resolve-all-before-any-handler), so a synchronous
+    // re-render cannot redirect a later delegate onto a recycled target.
+    budgetKb: 18.6,
     description:
       'the overlay/modal subpath (overlay + confirm + prompt + form + choice + popover + tooltip + positioning + toast) — includes shared core',
     entry: `
@@ -173,7 +182,10 @@ const BUDGETS = [
     // already using kerf is ~1 KB via code-splitting; this guards scope's own
     // growth.
     name: 'scope',
-    budgetKb: 10.9,
+    // KF-HK7WE8 (+0.11 KB): delegate()'s per-event dispatch snapshot (per-root
+    // delegate registry + resolve-all-before-any-handler), so a synchronous
+    // re-render cannot redirect a later delegate onto a recycled target.
+    budgetKb: 11.0,
     description:
       'the dispose-scope subpath (disposeScope + disposeSubtree + observeRemovals) — includes shared core',
     entry: `
@@ -218,7 +230,10 @@ const BUDGETS = [
     // (link interception), and signals; no mount (the app mounts). Shares those
     // with the barrel via code-splitting, so the marginal cost is smaller.
     name: 'router',
-    budgetKb: 6.7, // dominated by the shared jsx-runtime chunk (the outlet builds jsx) + signals; the router's own code is ~2.7 KB pre-gzip. Marginal cost for an app already using kerf is small.
+    // KF-HK7WE8 (+0.11 KB): delegate()'s per-event dispatch snapshot (per-root
+    // delegate registry + resolve-all-before-any-handler), so a synchronous
+    // re-render cannot redirect a later delegate onto a recycled target.
+    budgetKb: 6.8, // dominated by the shared jsx-runtime chunk (the outlet builds jsx) + signals; the router's own code is ~2.7 KB pre-gzip. Marginal cost for an app already using kerf is small.
     description:
       'the router subpath (createRouter — the postcard router) — signals + jsx + delegate, no mount',
     entry: `
@@ -270,7 +285,8 @@ const BUDGETS = [
     // dev-warning code may appear in a production bundle. The size budget
     // above would catch a large regression; this catches any at all.
     name: 'main-no-dev-code',
-    budgetKb: 12.6,
+    // Same figure as `main` (see its KF-HK7WE8 dispatch-snapshot note).
+    budgetKb: 12.7,
     description:
       'same as `main`, and asserts zero dev-diagnostic code leaked in',
     forbid: [

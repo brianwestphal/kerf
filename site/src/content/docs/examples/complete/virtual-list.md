@@ -10,7 +10,7 @@ description: A 10,000-row virtualized list built from kerf's companion subpaths 
 
 [![Animated preview: scrolling a 10,000-row virtualized list, filtering to one row, then deleting it via a confirm dialog and toast](/kerf/demos/virtual-list.svg)](/kerf/run/virtual-list/)
 
-A list of **10,000 rows** where only a screenful is ever in the DOM. It's built entirely from kerf's optional, tree-shakeable **companion subpaths** — none of which touch the ~12 KB core until you import them:
+A list of **10,000 rows** where only a screenful is ever in the DOM. It's built entirely from kerf's optional, tree-shakeable **companion subpaths** — none of which touch the ~13 KB core until you import them:
 
 - **`kerfjs/list` — virtualization.** `bindList(scrollEl, source, { virtualize: { rowHeight } })` renders only the rows in the scroll window (plus a small `overscan`) into an inner sizer, with padding that keeps the scrollbar honest. Scroll through 10,000 items and the DOM never holds more than a screenful.
 - **`kerfjs/timing` — debounced search.** The search box drives a `signal`, and `debouncedSignal(query, 200)` trails it by 200 ms. The filtered list is a `computed()` over the debounced query, so the filter recomputes only after typing settles — not on every keystroke.

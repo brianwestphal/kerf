@@ -12,8 +12,8 @@ The kerf side is the exact code shipping at [`site/src/examples/complete/todomvc
 |                          | Min + gz, runtime only |
 | ------------------------ | ---------------------- |
 | `vanjs-core` 1.5         | ~1.6 KB                |
-| `kerfjs` (incl. signals) | ~12 KB                 |
-| **Delta**                | **~10 KB heavier**     |
+| `kerfjs` (incl. signals) | ~13 KB                 |
+| **Delta**                | **~11 KB heavier**     |
 
 Kerf is bigger. What the extra ~9 KB buys you:
 

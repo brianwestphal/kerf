@@ -16,6 +16,7 @@
           "kerfjs/list": "/dist/list.js",
           "kerfjs/router": "/dist/router.js",
           "kerfjs/attach": "/dist/attach.js",
+          "kerfjs/actions": "/dist/actions.js",
           "@preact/signals-core": "/node_modules/@preact/signals-core/dist/signals-core.mjs"
         }
       }
@@ -28,6 +29,7 @@
       import * as list from "kerfjs/list";
       import * as router from "kerfjs/router";
       import * as attach from "kerfjs/attach";
+      import * as actions from "kerfjs/actions";
       // Expose for `page.evaluate` tests.
       window.kerf = kerf;
       window.jsxRuntime = jsxRuntime;
@@ -36,6 +38,7 @@
       window.kerfList = list;
       window.kerfRouter = router;
       window.kerfAttach = attach;
+      window.kerfActions = actions;
       window.kerfReady = true;
     </script>
   </body>

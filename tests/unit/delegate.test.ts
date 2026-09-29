@@ -308,33 +308,25 @@ describe("delegate() — { match: 'direct' } symmetry", () => {
 });
 
 describe('non-Element event targets', () => {
+  // A real dispatch on a Text node: the event reaches the root listener with
+  // a non-Element target (no `closest()`/`matches()` to call).
   it('delegate ignores events whose target is not an Element', () => {
     const handler = vi.fn();
-    let captured: ((e: Event) => void) | null = null;
-    const orig = root.addEventListener.bind(root);
-    vi.spyOn(root, 'addEventListener').mockImplementation((type, fn, opts) => {
-      captured = fn as (e: Event) => void;
-      return orig(type, fn, opts);
-    });
+    const text = document.createTextNode('t');
+    root.appendChild(text);
     delegate(root, 'click', '*', handler);
 
-    const fakeEvent = { target: null } as unknown as Event;
-    captured!(fakeEvent);
+    text.dispatchEvent(new Event('click', { bubbles: true }));
     expect(handler).not.toHaveBeenCalled();
   });
 
   it('delegateCapture ignores events whose target is not an Element', () => {
     const handler = vi.fn();
-    let captured: ((e: Event) => void) | null = null;
-    const orig = root.addEventListener.bind(root);
-    vi.spyOn(root, 'addEventListener').mockImplementation((type, fn, opts) => {
-      captured = fn as (e: Event) => void;
-      return orig(type, fn, opts);
-    });
+    const text = document.createTextNode('t');
+    root.appendChild(text);
     delegateCapture(root, 'focus', '*', handler);
 
-    const fakeEvent = { target: null } as unknown as Event;
-    captured!(fakeEvent);
+    text.dispatchEvent(new Event('focus'));
     expect(handler).not.toHaveBeenCalled();
   });
 });

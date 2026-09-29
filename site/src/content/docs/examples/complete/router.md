@@ -12,7 +12,7 @@ description: A whole client-side router in one createRouter — URL-driven pages
 
 A small single-page app driven by [`kerfjs/router`](/kerf/api/#router--kerfjsrouter-subpath) — the "postcard router", shown inside a **fake browser window** so you can watch the address bar. Navigate between Home, a guides list, an individual guide (a `/guides/:slug` param route), and About; the window's Back button drives real history. The active nav tab follows the URL, the address bar updates on every step, and **nothing ever reloads** — links are intercepted and the outlet swaps the page.
 
-The kerf **core stays router-free**: `kerfjs/router` is an opt-in, tree-shakeable subpath, so an app that doesn't route ships the same ~12 KB core.
+The kerf **core stays router-free**: `kerfjs/router` is an opt-in, tree-shakeable subpath, so an app that doesn't route ships the same ~13 KB core.
 
 **What to look at:**
 

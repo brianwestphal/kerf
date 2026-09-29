@@ -14,7 +14,7 @@ ships the router as a _separate, opt-in subpath_, on the exact footing as
 `kerfjs/list` / `kerfjs/overlay` / `kerfjs/async`: it lives in the `kerfjs`
 package, but tree-shakes away entirely unless imported, so the core stays minimal
 and the "Not a router" positioning holds. An app that never imports
-`kerfjs/router` pays nothing and ships the same ~12 KB core.
+`kerfjs/router` pays nothing and ships the same ~13 KB core.
 
 The router is worth blessing because it is the single most-reinvented companion,
 and because kerf already has every primitive it needs — a router in userland is

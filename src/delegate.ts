@@ -45,7 +45,7 @@ import { devHooks } from './dev-hooks.js';
  * (custom events, less-common DOM events) the explicit `delegateCapture()`
  * remains the escape hatch.
  */
-const NON_BUBBLING = new Set<string>([
+export const NON_BUBBLING = new Set<string>([
   'focus',
   'blur',
   'scroll',
@@ -86,29 +86,111 @@ function assertValidSelector(selector: string, fn: string): void {
 }
 
 /**
- * Build the shared root-level listener used by both helpers. Resolves the
- * event's target to a matched element (walk-up `closest()` or strict
- * `matches()`, per `match`), requires the match to be inside `rootEl`, then
- * fires `handler(event, matched)`.
+ * Per-root registry of the delegates installed on that root, and the per-event
+ * dispatch snapshot. Both live ON the DOM objects, under one symbol key (a
+ * root and an event are never the same object), rather than in module-level
+ * maps — so they are collected with the root / event and add no module-level
+ * mutable state (Design rule 5).
  */
-function makeListener<T extends Element>(
+const KEY = Symbol();
+
+/**
+ * Resolves one delegate's selector against an event's target: the bound
+ * handler call for a match, `undefined` otherwise.
+ */
+type Resolve = (event: Event) => (() => void) | undefined;
+
+interface Registered {
+  [KEY]?: Set<Resolve>;
+}
+
+interface Snapshotted {
+  [KEY]?: Map<Resolve, (() => void) | undefined>;
+}
+
+/**
+ * Install one root-level delegate — the shared core of `delegate()`,
+ * `delegateCapture()`, and `kerfjs/actions`' `delegateActions()`.
+ *
+ * The listener resolves the event's target to a matched element (walk-up
+ * `closest()` or strict `matches()`, per `options.match`) that must lie inside
+ * `rootEl`, then runs the call `bind(event, matched)` prepared. `bind` runs at
+ * RESOLUTION time, so a caller can read matched-element state there (such as
+ * `delegateActions`' action attribute) before any handler has mutated it.
+ *
+ * **Dispatch snapshot.** A handler that writes a signal makes `mount()` morph
+ * synchronously, inside the same dispatch, and the morph can recycle the
+ * clicked element in place into a control with a different selector identity
+ * (same tag, same position, new `data-action`). Resolving later delegates
+ * against that live DOM would fire one the user never clicked — typically one
+ * that immediately undoes the first handler's state change. So the FIRST kerf
+ * delegate listener to see an event resolves every kerf delegate on the
+ * event's propagation path (fixed at dispatch start, per the DOM spec, and
+ * listed by `composedPath()`) before any delegated handler runs, and stores
+ * the results on the event; each listener then consumes its own entry. The
+ * set of delegates an event reaches is fixed when it starts dispatching, like
+ * per-element listeners. The matched element must also still be inside
+ * `rootEl` when the listener runs: a handler that removed the target still
+ * suppresses the later delegates, as before.
+ *
+ * A missing entry (a re-dispatch of the same event object, a delegate added
+ * mid-dispatch, or a root hidden from the first listener inside a closed
+ * shadow tree) takes a fresh snapshot. Accepted residual: re-dispatching one
+ * event object whose first dispatch was stopped before some listener ran can
+ * hand that listener its stale entry. Internal — exported for
+ * `kerfjs/actions`.
+ */
+export function _delegate(
   rootEl: HTMLElement,
+  type: string,
   selector: string,
-  handler: (event: Event, target: T) => void,
-  match: 'closest' | 'direct',
-): (event: Event) => void {
-  return (event: Event): void => {
+  bind: (event: Event, matched: Element) => () => void,
+  options: DelegateOptions | undefined,
+  capture: boolean,
+  fn: 'delegate' | 'delegateCapture',
+): () => void {
+  assertValidSelector(selector, fn);
+  devHooks.delegateInEffect?.(fn);
+  const direct = options?.match === 'direct';
+  const resolve: Resolve = (event) => {
     const target = event.target;
-    if (!(target instanceof Element)) return;
-    const matched =
-      match === 'direct'
+    if (event.type === type && target instanceof Element) {
+      const matched = direct
         ? target.matches(selector)
           ? target
           : null
         : target.closest(selector);
-    if (matched !== null && rootEl.contains(matched)) {
-      handler(event, matched as T);
+      if (matched !== null) {
+        const run = bind(event, matched);
+        // Checked when the handler would run, not at resolution: a match
+        // outside `rootEl` never fires, and neither does one an earlier
+        // handler removed from `rootEl`.
+        return () => {
+          if (rootEl.contains(matched)) run();
+        };
+      }
     }
+    return undefined;
+  };
+  const listener = (event: Event): void => {
+    let snap = (event as Snapshotted)[KEY];
+    if (!snap?.has(resolve)) {
+      snap = (event as Snapshotted)[KEY] = new Map();
+      for (const node of event.composedPath()) {
+        for (const other of (node as Registered)[KEY] ?? []) {
+          snap.set(other, other(event));
+        }
+      }
+    }
+    const run = snap.get(resolve);
+    snap.delete(resolve);
+    run?.();
+  };
+  const registry = ((rootEl as Registered)[KEY] ??= new Set()).add(resolve);
+  rootEl.addEventListener(type, listener, capture);
+  return () => {
+    registry.delete(resolve);
+    rootEl.removeEventListener(type, listener, capture);
   };
 }
 
@@ -140,19 +222,15 @@ export function delegate<T extends Element = Element>(
   handler: (event: Event, target: T) => void,
   options?: DelegateOptions,
 ): () => void {
-  assertValidSelector(selector, 'delegate');
-  devHooks.delegateInEffect?.('delegate');
-  const listener = makeListener(
+  return _delegate(
     rootEl,
+    type,
     selector,
-    handler,
-    options?.match ?? 'closest',
+    (event, matched) => () => handler(event, matched as T),
+    options,
+    NON_BUBBLING.has(type),
+    'delegate',
   );
-  const capture = NON_BUBBLING.has(type);
-  rootEl.addEventListener(type, listener, capture);
-  return () => {
-    rootEl.removeEventListener(type, listener, capture);
-  };
 }
 
 /**
@@ -183,16 +261,13 @@ export function delegateCapture<T extends Element = Element>(
   handler: (event: Event, target: T) => void,
   options?: DelegateOptions,
 ): () => void {
-  assertValidSelector(selector, 'delegateCapture');
-  devHooks.delegateInEffect?.('delegateCapture');
-  const listener = makeListener(
+  return _delegate(
     rootEl,
+    type,
     selector,
-    handler,
-    options?.match ?? 'closest',
+    (event, matched) => () => handler(event, matched as T),
+    options,
+    true,
+    'delegateCapture',
   );
-  rootEl.addEventListener(type, listener, true);
-  return () => {
-    rootEl.removeEventListener(type, listener, true);
-  };
 }

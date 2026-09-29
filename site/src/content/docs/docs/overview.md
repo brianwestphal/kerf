@@ -5,7 +5,7 @@ description: "What Kerf is, why it exists, when to use it."
 
 ## What kerf is
 
-A tiny reactive UI framework. Roughly 12 KB minified + gzipped including its sole runtime dependency (`@preact/signals-core`); ~13 KB if you also import `arraySignal` from the optional `kerfjs/array-signal` subpath. Four primitives:
+A tiny reactive UI framework. Roughly 13 KB minified + gzipped including its sole runtime dependency (`@preact/signals-core`); still ~13 KB if you also import `arraySignal` from the optional `kerfjs/array-signal` subpath. Four primitives:
 
 - **Signals** — fine-grained reactive values. `signal()`, `computed()`, `effect()`, `batch()`.
 - **Stores** — composable testable units of state. `defineStore()`, `resetAllStores()`.

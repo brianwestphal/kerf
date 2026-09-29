@@ -27,6 +27,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   hold `component-class-owners.cjs`; an `@kerfjs/ui` without it reports
   `KUI-L090`.
 
+- **A delegated click no longer re-fires on a target the re-render recycled.**
+  A delegated handler that writes a signal makes `mount()` re-render
+  synchronously, inside the same event dispatch; when the morph recycled the
+  clicked element in place into a control with a different `data-action`,
+  delegates registered later for the same event matched the recycled element
+  and fired too (a `request` click immediately ran `cancel` and undid itself).
+  `delegate()`, `delegateCapture()`, and `kerfjs/actions`' `delegateActions()`
+  now resolve every delegate's match against the DOM as it stood when the
+  event reached the first kerf delegate listener, like per-element listeners:
+  a delegate that matched at dispatch start still fires (unless an earlier
+  handler removed its element), one that matches only after a re-render does
+  not, and `delegateActions()` dispatches by the action value the element
+  carried at dispatch start. `mount()` stays synchronous. The
+  wrap-it-in-a-distinct-element workaround is no longer needed. Cost: about
+  0.11 KB min+gzip, which moves the advertised core size from ~12 KB to
+  ~13 KB.
+
 - **Component packages declare `placeableClasses`, and `KUI-L103` covers
   their anatomy classes.** `create-kerf-component`'s `kerf.components.json`
   accepts optional `boundaries.placeableClasses` (a subset of

@@ -30,7 +30,7 @@
  * `delegate()`; collect the disposers for a root that needs several.
  */
 import { attr, type AttrSpec } from './attr.js';
-import { delegate, type DelegateOptions } from './delegate.js';
+import { _delegate, type DelegateOptions, NON_BUBBLING } from './delegate.js';
 
 /** The attribute an action table keys on by default. */
 const DEFAULT_ACTION_ATTR = 'data-action';
@@ -84,7 +84,11 @@ export function delegateActions<E extends Element = Element>(
   options?: DelegateActionsOptions,
 ): () => void {
   const attrName = options?.attr ?? DEFAULT_ACTION_ATTR;
-  return delegate<E>(
+  // The action value is read when the event STARTS dispatching (with the
+  // match itself — see `_delegate`), not from the live element when the
+  // handler runs: an earlier handler's synchronous re-render may have
+  // recycled the matched element into a different action by then.
+  return _delegate(
     root,
     eventType,
     `[${attrName}]`,
@@ -95,8 +99,12 @@ export function delegateActions<E extends Element = Element>(
       // `table[value]` would resolve Object.prototype names (`__proto__`,
       // `constructor`, `toString`, `hasOwnProperty`, …) and dispatch or throw
       // on markup that names no action in the table.
-      if (Object.hasOwn(table, value)) table[value](event, el);
+      return () => {
+        if (Object.hasOwn(table, value)) table[value](event, el as E);
+      };
     },
     options,
+    NON_BUBBLING.has(eventType),
+    'delegate',
   );
 }

@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 300900,
-  "measuredLargestJavaScriptGzip": 126038,
-  "measuredTotalJavaScriptGzip": 300877,
+  "totalJavaScriptGzip": 301100,
+  "measuredLargestJavaScriptGzip": 126039,
+  "measuredTotalJavaScriptGzip": 301004,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1107,6 +1107,22 @@
         "measuredTotalJavaScriptGzip": 300877,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 300900
+      }
+    },
+    {
+      "at": "2026-09-29T06:30:27.586Z",
+      "reason": "KF-HK7WE8: kerf core delegate() gained a per-event dispatch snapshot (~0.11 KB min+gzip) so a synchronous re-render cannot redirect a later delegate onto a morph-recycled target",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126038,
+        "measuredTotalJavaScriptGzip": 300877,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 300900
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126039,
+        "measuredTotalJavaScriptGzip": 301004,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 301100
       }
     }
   ]

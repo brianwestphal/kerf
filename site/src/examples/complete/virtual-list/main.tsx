@@ -1,6 +1,6 @@
 // Companion-utilities showcase — a 10,000-row VIRTUALIZED list with a debounced
 // search and confirm-to-delete, built entirely from kerf's optional companion
-// subpaths (none of which touch the ~12 KB core until imported):
+// subpaths (none of which touch the ~13 KB core until imported):
 //
 //   • kerfjs/list    — `bindList` with viewport virtualization: only the rows in
 //                      the scroll window are ever in the DOM (10,000 items, a

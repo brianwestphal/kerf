@@ -106,7 +106,7 @@ The original v0.1–v0.3 runtime design is shipped (`each` / native diff / list 
 
 ### §1 Overview
 
-States kerf's positioning: tiny reactive UI framework, ~12 KB (~13 KB with `arraySignal`), no virtual DOM, no compiler, no component lifecycle, no third-party DOM-diff dependency. Four primitives (signals / stores / render / delegation) plus a JSX runtime and an SVG-aware `toElement`. Rules out routing in the core (an optional `kerfjs/router` subpath ships separately), full SSR, styling opinions, and a framework ecosystem.
+States kerf's positioning: tiny reactive UI framework, ~13 KB (still ~13 KB with `arraySignal`), no virtual DOM, no compiler, no component lifecycle, no third-party DOM-diff dependency. Four primitives (signals / stores / render / delegation) plus a JSX runtime and an SVG-aware `toElement`. Rules out routing in the core (an optional `kerfjs/router` subpath ships separately), full SSR, styling opinions, and a framework ecosystem.
 
 ### §2 Reactivity
 
@@ -145,6 +145,7 @@ Three-tier model:
 - **Tier 1** (`delegate()`) — bubbling events plus the well-known non-bubblers (`focus`, `blur`, `scroll`, `load`, `error`, `mouseenter`, `mouseleave`) auto-promoted to capture phase under the hood. Walk-up via `closest()` for every event type.
 - **Tier 2** (`delegateCapture()`) — explicit-capture escape hatch. Use when the auto-promotion list doesn't cover your event type (custom non-bubbling events) or when you want capture-phase interception. Matches via `closest()` walk-up by default (unified with `delegate()`, passing the matched ancestor); pass `{ match: 'direct' }` for strict `target.matches()` matching. Both helpers accept the `{ match?: 'closest' | 'direct' }` options argument (`DelegateOptions`).
 - **Tier 3** (library-owned subtrees) → `data-morph-skip` + manual lifecycle.
+- **Dispatch snapshot** (§5.2.1, shipped) — every `delegate()` / `delegateCapture()` / `delegateActions()` listener resolves its match against the DOM as of the first kerf delegate listener to see the event, so a synchronous `mount()` re-render in an earlier handler that recycles the target in place cannot fire a later delegate (or dispatch a recycled action); every delegate that matched at dispatch start still fires unless its element was removed. `mount()` stays synchronous.
 
 `kerfjs/attach` provides that single-node lifecycle seam. Setup runs immediately even when a widget node is prepared while disconnected; document observation plus a temporary animation-frame watch detects its first connection, including direct insertion into an already-connected shadow root. Automatic teardown then fires once on direct removal, ancestor removal, or removal of its containing shadow host. The returned idempotent disposer remains the explicit teardown path; a node abandoned before connecting must be disposed to cancel its connection watch.
 
