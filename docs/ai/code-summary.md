@@ -891,6 +891,16 @@ resource footer in `mainFooter`); `catalog-sidebar.tsx`, `catalog-section-list.t
 component); only `catalog.css`, `catalog-stage.css`, `catalog-example.css`, and
 `catalog-example-stack.css` remain (`ui/tests/unit/catalog-component.test.tsx`,
 `ui/tests/browser/catalog-sidebar-shell.spec.ts`).
+`ui/scripts/lib/css-ownership.mjs` holds the package-stylesheet ownership rules
+`check:css-ownership` applies to every component stylesheet (a `src/*.css` with
+a same-basename `.tsx`): foreign classes / `[data-component]` only as ancestor
+context or inside `:has()`/`:not()`, no `wa-*` tag another component renders
+unless scoped to or excluded from it by class, only the stylesheet's own
+`--_kui-<self>-*` privates and no other component's read public token, no
+custom properties written onto any child, and no hook class placed on a
+composed child's root. Component names, rendered Web Awesome tags, and
+composed children are derived from `ui/src/*.tsx`; its documented exception
+list fails when an entry goes stale (`ui/tests/unit/css-ownership.test.ts`).
 `ui/src/panel-toolbar.tsx` holds the shared panel-toolbar roles (`PanelToolbar`: title, panel-only, constant, and the standard toggle), the per-side toggle icon, and the composition/relocation helpers both `Workbench` and `CollapsiblePanel` (with `CollapsiblePanelRelocated`) use (`ui/tests/unit/collapsible-panel-toolbar.test.tsx`, `ui/tests/browser/collapsible-panel-relocation.spec.ts`).
 `ui/src/workbench-toolbars.tsx` composes a panel's `toolbar` (title,
 panel-only and constant groups, the standard keyed toggle) and the work area's

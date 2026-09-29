@@ -106,6 +106,19 @@ toolbar (use Toolbar zones + groups), or making a region look contained (use a
 `height`/`border` on kerf elements, treat it as a smell and re-derive from the
 primitives.
 
+## Components never style other components
+
+Inside the package, a child styles itself in a parent's context from its own
+stylesheet (`.kui-parent[…] > .kui-child …` lives in `child.css`). A parent may
+key its own styles on a child's state (`:has(> .kui-select[open])`) and style
+raw native or raw Web Awesome children, excluding kerf children by class
+(`wa-dropdown:not(.kui-popup-menu)`). Name kerf components by class, never by
+a `wa-*` tag they render; write only your own `--_kui-<self>-*` variables and
+name the context you provide after yourself; never put a hook class on a
+composed child's root to restyle it. `npm run check:css-ownership` enforces
+all of this (see `docs/component-contract.md`); fix a finding rather than
+adding an exception to `scripts/lib/css-ownership.mjs`.
+
 ## Demos and recipes are the proof
 
 The catalog renders the same exports and CSS consumers get, so a demo that needs

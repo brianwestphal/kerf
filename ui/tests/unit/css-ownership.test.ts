@@ -7,6 +7,13 @@ import { promisify } from 'node:util';
 import postcss from 'postcss';
 import { describe, expect, it } from 'vitest';
 
+import {
+  applyExceptions,
+  buildOwnershipModel,
+  checkPackageStylesheet,
+  ownershipExceptions,
+} from '../../scripts/lib/css-ownership.mjs';
+
 const execFileAsync = promisify(execFile);
 const uiRoot = resolve(import.meta.dirname, '../..');
 
@@ -190,6 +197,253 @@ describe('CSS ownership gate', { timeout: 30_000 }, () => {
           [...allowedRoots].some((rootClass) => ownsClass(rootClass, name)),
         ),
       ).toBe(true);
+    }
+  });
+});
+
+describe('CSS ownership rules', () => {
+  const sources = [
+    {
+      filename: 'popup-menu.tsx',
+      source: `export function PopupMenu() {
+  return (
+    <wa-dropdown class="kui-popup-menu" data-component="popup-menu">
+      <wa-button slot="trigger">x</wa-button>
+      <wa-dropdown-item>y</wa-dropdown-item>
+    </wa-dropdown>
+  );
+}`,
+    },
+    {
+      filename: 'select.tsx',
+      source: `import { Badge } from './badge.js';
+export function Select() {
+  return (
+    <wa-select class={\`kui-select \${className}\`.trim()} data-component="select">
+      <Badge text="2" className="kui-select__count" />
+      <wa-option value="a">A</wa-option>
+    </wa-select>
+  );
+}`,
+    },
+    {
+      filename: 'badge.tsx',
+      source: `export function Badge() { return <span class="kui-badge" />; }`,
+    },
+    {
+      filename: 'toolbar-control-group.tsx',
+      source: `export function ToolbarControlGroup() {
+  return <div class="kui-toolbar-control-group" data-component="toolbar-control-group" />;
+}`,
+    },
+    {
+      filename: 'toolbar-text.tsx',
+      source: `export function ToolbarText() { return <span class="kui-toolbar-text" />; }`,
+    },
+    {
+      filename: 'nav-stack.tsx',
+      source: `import { ToolbarText } from './toolbar-text.js';
+export function NavStack() {
+  return (
+    <section class="kui-nav-stack">
+      <div class="kui-nav-stack__chrome">
+        <ToolbarText text={title} className="kui-nav-stack__title" />
+      </div>
+    </section>
+  );
+}`,
+    },
+  ];
+  const stylesheets = [
+    { filename: 'popup-menu.css', source: '' },
+    {
+      filename: 'select.css',
+      source: '.kui-select { width: var(--kui-select-width, auto); }',
+    },
+    { filename: 'badge.css', source: '' },
+    { filename: 'toolbar-control-group.css', source: '' },
+    { filename: 'toolbar-text.css', source: '' },
+    { filename: 'nav-stack.css', source: '' },
+    { filename: 'webawesome.css', source: '' },
+  ];
+  const model = buildOwnershipModel({ stylesheets, sources });
+  const rules = (filename: string, css: string) =>
+    checkPackageStylesheet(model, filename, css).map(({ rule }) => rule);
+
+  it.each([
+    [
+      'a descendant wa-button a PopupMenu renders as its trigger',
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group wa-button { line-height: 0; }',
+      'owned-wa-tag',
+    ],
+    [
+      'a PopupMenu host by its wa-dropdown tag alone',
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group > wa-dropdown { display: inline-flex; }',
+      'owned-wa-tag',
+    ],
+    [
+      "a Select's host part by its wa-select tag",
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group wa-select::part(combobox) { padding: 0; }',
+      'owned-wa-tag',
+    ],
+    [
+      "a Select's internal wa-option",
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group wa-option { padding: 0; }',
+      'owned-wa-tag',
+    ],
+    [
+      "a PopupMenu trigger's slotted icon, reached through its wa-button",
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group wa-button > svg { width: 16px; }',
+      'owned-wa-tag',
+    ],
+    [
+      'another component by its class',
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group > .kui-popup-menu { margin: 0; }',
+      'foreign-class',
+    ],
+    [
+      'another component by its data-component',
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group > [data-component="select"] { margin: 0; }',
+      'foreign-class',
+    ],
+    [
+      "another component's private variable",
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group { --_kui-select-slot-height: 40px; }',
+      'foreign-variable',
+    ],
+    [
+      'a private variable not named after this component',
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group { --_kui-floating-covered: hidden; }',
+      'foreign-variable',
+    ],
+    [
+      "another component's public token that it reads",
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group { --kui-select-width: 10rem; }',
+      'foreign-variable',
+    ],
+    [
+      'context written onto any child',
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group > * { --kui-edge-inset-inline-start: 0px; }',
+      'context-on-child',
+    ],
+    [
+      'a hook class on a composed child root',
+      'nav-stack.css',
+      '.kui-nav-stack__title { flex: 1 1 auto; }',
+      'hook-class',
+    ],
+    [
+      'a hook class used as context for the child internals',
+      'select.css',
+      '.kui-select__count > span { margin: 0; }',
+      'hook-class',
+    ],
+  ])('rejects %s', (_name, filename, css, rule) => {
+    expect(rules(filename, css)).toContain(rule);
+  });
+
+  it.each([
+    [
+      'raw wa-dropdown children, excluding a PopupMenu by class',
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group > wa-dropdown:not(.kui-popup-menu) > wa-button::part(base) { min-width: 40px; }',
+    ],
+    [
+      'raw wa-button descendants, excluding a PopupMenu trigger',
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group wa-button:not(:where(.kui-popup-menu > *))::part(label) { gap: 4px; }',
+    ],
+    [
+      'direct raw children, which cannot be a PopupMenu trigger',
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group > :is(button, wa-button):hover, .kui-toolbar-control-group > wa-button::part(base) { color: red; }',
+    ],
+    [
+      'Web Awesome elements no kerf component renders',
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group > wa-tooltip { display: contents; }',
+    ],
+    [
+      "its own element keyed on a composed child's state",
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group:has(> .kui-select[open]) { outline: none; }',
+    ],
+    [
+      'its own private, public, and shared foundation variables',
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group { --_kui-toolbar-control-group-slot-height: 40px; --kui-toolbar-control-color: red; --kui-layout-item-padding: 5px; }',
+    ],
+    [
+      'a child styling itself in the parent context',
+      'popup-menu.css',
+      '.kui-toolbar-control-group :where(wa-dropdown.kui-popup-menu) > wa-button::part(base) { min-width: 40px; } .kui-toolbar-control-group > wa-dropdown.kui-popup-menu { flex: none; }',
+    ],
+    [
+      'its own unclassed internals',
+      'select.css',
+      '.kui-select wa-option::part(base) { padding: 0; }',
+    ],
+    [
+      'its own trigger caret',
+      'popup-menu.css',
+      '.kui-popup-menu > wa-button::part(caret) { rotate: 0deg; }',
+    ],
+    [
+      'a context value named after the parent that provides it',
+      'select.css',
+      '.kui-toolbar-control-group[data-size="compact"] > .kui-select { height: var(--_kui-toolbar-control-group-slot-height); }',
+    ],
+    [
+      'its own element inside a composed child',
+      'nav-stack.css',
+      '.kui-nav-stack__chrome { background: white; }',
+    ],
+    [
+      'Web Awesome tags in a non-component theme stylesheet',
+      'webawesome.css',
+      'wa-select { --wa-form-control-height: 44px; }',
+    ],
+  ])('allows %s', (_name, filename, css) => {
+    expect(checkPackageStylesheet(model, filename, css)).toEqual([]);
+  });
+
+  it('excuses a finding only through a matching documented exception and reports stale ones', () => {
+    const findings = checkPackageStylesheet(
+      model,
+      'toolbar-control-group.css',
+      '.kui-toolbar-control-group > * { --kui-edge-inset-block-start: 0px; }',
+    );
+    const exception = {
+      file: 'toolbar-control-group.css',
+      rule: 'context-on-child' as const,
+      selector: '.kui-toolbar-control-group > *',
+      property: '--kui-edge-inset-',
+      reason: 'test',
+    };
+    const stale = { ...exception, selector: '.kui-toolbar-control-group > p' };
+    expect(
+      applyExceptions('toolbar-control-group.css', findings, [exception]),
+    ).toEqual({ violations: [], stale: [] });
+    expect(
+      applyExceptions('toolbar-control-group.css', findings, [stale]),
+    ).toEqual({ violations: findings, stale: [stale] });
+  });
+
+  it('documents a reason for every package exception', () => {
+    for (const exception of ownershipExceptions) {
+      expect(exception.reason.length).toBeGreaterThan(20);
+      expect(exception.selector ?? exception.property).toBeTruthy();
     }
   });
 });

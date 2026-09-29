@@ -274,9 +274,38 @@ elements keyed on a child's state, naming the child by class inside `:has()`
 (`:has(> .kui-select[open])`, or `TabBar` insetting a segmented strip that
 holds compact tabs), and it keeps styling raw native and raw Web
 Awesome children no kerf component owns, excluding kerf children by class
-(`wa-dropdown:not(.kui-popup-menu)`). `npm run check:css-ownership` allows a
-foreign component class only in such an ancestor context or inside `:has()` /
-`:not()`.
+(`wa-dropdown:not(.kui-popup-menu)`). `npm run check:css-ownership` enforces
+this in every component stylesheet (a `src/*.css` with a same-basename
+component), deriving the component names, the Web Awesome tags each component
+renders, and its composed children from `src/*.tsx`:
+
+- **Foreign classes.** Another component's class or `[data-component]` may
+  appear only in an ancestor compound or inside `:has()` / `:not()`; the
+  styled compound is the stylesheet's own class.
+- **Owned Web Awesome tags.** Kerf components are named by class, never by a
+  `wa-*` tag they render. A tag another component renders (`wa-dropdown`,
+  `wa-select`, `wa-option`, a `PopupMenu`'s trigger `wa-button`) — as the
+  subject, or as an ancestor whose internals the rule reaches — must be scoped
+  to that component by its class or excluded with `:not()`. A direct child
+  that cannot be the owner's internal
+  (`.kui-toolbar-control-group > wa-button`) needs no exclusion.
+- **Variables.** A stylesheet writes only its own `--_kui-<self>-*` private
+  variables, and never overrides a public `--kui-<other>-*` token that another
+  component reads. Shared foundation tokens (`--kui-layout-*`,
+  `--kui-color-*`, …) are not any one component's. Context a parent provides
+  is named after the parent.
+- **Context on any child.** Custom properties set on a subject that can be any
+  element (`.kui-x > *`, `> :not(…)`) also land on composed components' roots.
+- **Hook classes.** A class the component places on a composed kerf child's
+  root (`<ToolbarText className="kui-nav-stack__title">`) may not be styled;
+  the child styles itself in that context instead.
+
+The documented exceptions live with their reasons in
+`scripts/lib/css-ownership.mjs`, and an exception that stops matching fails the
+check, so the list only shrinks. The layout regions' inherited edge-inset
+context (`--kui-edge-inset-*` handed to a sole Pane or layout child and cleared
+for any other content, and a Toolbar clearing it for its zones) is the one
+design exception; the others name the open fix ticket.
 
 The composition catalog additionally requires `boundaries.rootClass` to be
 either one exact member of `publicClasses` or `null` when the entry has no

@@ -449,7 +449,10 @@ file.
 
 `npm run check:css-ownership` keeps that boundary honest: application CSS may
 style only application-owned structure, never package component classes or
-Web Awesome descendants. The UX catalog's `style.css` contains document-shell
+Web Awesome descendants, and a package component's stylesheet styles only
+itself (in a composing parent's context when needed) — never another kerf
+component's root, the `wa-*` tags it renders, its variables, or a hook class on
+its root. The UX catalog's `style.css` contains document-shell
 mechanics only, recipes ship no stylesheets (`npm run check:recipes` rejects
 route stylesheets, inline styles, and styling-only classes), and `catalog.css`
 remains a

@@ -5,6 +5,14 @@ import process from 'node:process';
 
 import postcss from 'postcss';
 
+import {
+  applyExceptions,
+  buildOwnershipModel,
+  checkPackageStylesheet,
+  ownershipExceptions,
+  ownsClass,
+} from './lib/css-ownership.mjs';
+
 const root = resolve(import.meta.dirname, '..');
 
 async function exists(file) {
@@ -122,34 +130,6 @@ for (const file of await sourceFiles(resolve(root, 'ux-demo'))) {
   }
 }
 
-const packageClassRoots = new Map([
-  ['document.css', ['kui-app-root']],
-  [
-    'layout.css',
-    [
-      'kui-content',
-      'kui-control-cluster',
-      'kui-inline-metadata',
-      'kui-scroll-owner',
-    ],
-  ],
-  ['skeleton.css', ['kui-skeleton', 'kui-skeleton-lines']],
-  ['surface-scaffold.css', ['kui-dialog-surface', 'kui-popup-surface']],
-  [
-    'toolbar-control-group.css',
-    ['kui-toolbar-control-group', 'kui-toolbar-action-link'],
-  ],
-  ['token-search-field.css', ['kui-token-search']],
-]);
-
-function ownsClass(rootClass, candidate) {
-  return (
-    candidate === rootClass ||
-    candidate.startsWith(`${rootClass}__`) ||
-    candidate.startsWith(`${rootClass}--`)
-  );
-}
-
 function ownedMarkupClasses(source) {
   const owned = new Set();
   for (const match of source.matchAll(
@@ -186,124 +166,54 @@ function ownedAppMarkupClasses(source) {
   return owned;
 }
 
-/**
- * Split a selector list into its complex selectors, and each complex selector
- * into its compound selectors, ignoring commas and combinators nested inside
- * parentheses, attribute brackets, or quotes.
- */
-function complexSelectors(selectorList) {
-  const selectors = [];
-  let compounds = [];
-  let current = '';
-  let depth = 0;
-  let quote = null;
-  const endCompound = () => {
-    if (current.trim()) compounds.push(current.trim());
-    current = '';
-  };
-  for (const char of selectorList) {
-    if (quote) {
-      current += char;
-      if (char === quote) quote = null;
-    } else if (char === '"' || char === "'") {
-      quote = char;
-      current += char;
-    } else if (char === '(' || char === '[') {
-      depth += 1;
-      current += char;
-    } else if (char === ')' || char === ']') {
-      depth -= 1;
-      current += char;
-    } else if (depth === 0 && char === ',') {
-      endCompound();
-      selectors.push(compounds);
-      compounds = [];
-    } else if (depth === 0 && /[\s>+~]/.test(char)) {
-      endCompound();
-    } else current += char;
-  }
-  endCompound();
-  selectors.push(compounds);
-  return selectors;
-}
-
-function kuiClasses(selector) {
-  return [...selector.matchAll(/\.((?:kui)-[a-z0-9_-]+)/gi)].map(
-    ([, name]) => name,
-  );
-}
-
-/**
- * Remove the arguments of every `:has()` and `:not()` in a compound. A parent
- * may key its own styles on a composed child's state
- * (`:has(> .kui-select[open])`) or exclude a kerf child it does not own
- * (`wa-dropdown:not(.kui-popup-menu)`): neither styles that child.
- */
-function withoutRelationalArguments(compound) {
-  let result = '';
-  let skipDepth = 0;
-  for (let index = 0; index < compound.length; index += 1) {
-    if (skipDepth === 0) {
-      const opener = /^:(?:has|not)\(/i.exec(compound.slice(index));
-      if (opener) {
-        result += opener[0];
-        skipDepth = 1;
-        index += opener[0].length - 1;
-      } else result += compound[index];
-    } else if (compound[index] === '(') skipDepth += 1;
-    else if (compound[index] === ')') {
-      skipDepth -= 1;
-      if (skipDepth === 0) result += ')';
-    }
-  }
-  return result;
-}
-
-const packageStyles = await cssFiles(resolve(root, 'src'));
+const packageStyles = (await cssFiles(resolve(root, 'src'))).filter(
+  (file) => !relative(file).startsWith('src/catalog/components/'),
+);
+const componentSources = (
+  await readdir(resolve(root, 'src'), { withFileTypes: true })
+)
+  .filter((entry) => entry.isFile() && /\.tsx?$/.test(entry.name))
+  .map((entry) => entry.name);
+const ownershipModel = buildOwnershipModel({
+  stylesheets: await Promise.all(
+    packageStyles.map(async (file) => ({
+      filename: relative(file).replace(/^src\//, ''),
+      source: await readFile(file, 'utf8'),
+    })),
+  ),
+  sources: await Promise.all(
+    componentSources.map(async (filename) => ({
+      filename,
+      source: await readFile(resolve(root, 'src', filename), 'utf8'),
+    })),
+  ),
+});
+let excused = 0;
 for (const file of packageStyles) {
-  if (relative(file).startsWith('src/catalog/components/')) continue;
-  const filename = file.slice(file.lastIndexOf('/') + 1);
-  const defaultRoot = `kui-${filename.replace(/\.css$/, '')}`;
-  const ownedRoots = packageClassRoots.get(filename) ?? [defaultRoot];
-  const owns = (name) =>
-    ownedRoots.some((rootClass) => ownsClass(rootClass, name));
-  const source = await readFile(file, 'utf8');
-  const sheet = postcss.parse(source, { from: file });
-  sheet.walkRules((rule) => {
-    // A component may style itself in the context of a composing parent: a
-    // foreign class may appear only in an ancestor compound, and only when the
-    // styled compound selects this stylesheet's own class. The styled
-    // compound is the rightmost one naming a kui class, so a component may
-    // also style its own unclassed internals (a PopupMenu's trigger
-    // `wa-button`) in that context. The parent provides the context (its
-    // state and the values it names after itself); it never styles or
-    // configures the child from its own stylesheet, though it may key its own
-    // styles on a child inside `:has()` or exclude one inside `:not()`.
-    const foreign = [
-      ...new Set(
-        complexSelectors(rule.selector).flatMap((selector) => {
-          const compounds = selector.map(withoutRelationalArguments);
-          const ownerIndex = compounds.findLastIndex(
-            (compound) => kuiClasses(compound).length > 0,
-          );
-          const ownerClasses =
-            ownerIndex === -1 ? [] : kuiClasses(compounds[ownerIndex]);
-          const contextual =
-            ownerClasses.length > 0 && ownerClasses.every(owns);
-          const checked = contextual ? [compounds[ownerIndex]] : compounds;
-          return checked.flatMap(kuiClasses).filter((name) => !owns(name));
-        }),
-      ),
-    ];
-    if (foreign.length > 0) {
-      reportRule(
-        errors,
-        file,
-        rule,
-        `package CSS reaches into foreign component classes (${foreign.map((name) => `.${name}`).join(', ')})`,
-      );
-    }
-  });
+  const filename = relative(file).replace(/^src\//, '');
+  const findings = checkPackageStylesheet(
+    ownershipModel,
+    filename,
+    await readFile(file, 'utf8'),
+  );
+  const { violations, stale } = applyExceptions(filename, findings);
+  excused += findings.length - violations.length;
+  for (const finding of violations) {
+    errors.push(
+      `${relative(file)}:${finding.line}: ${finding.reason}: ${finding.selector}`,
+    );
+  }
+  for (const exception of stale) {
+    errors.push(
+      `${relative(file)}: ownership exception for ${exception.rule} (${exception.selector ?? exception.property}) no longer matches a finding; remove it from scripts/lib/css-ownership.mjs`,
+    );
+  }
+}
+for (const exception of ownershipExceptions) {
+  if (!packageStyles.some((file) => relative(file) === `src/${exception.file}`))
+    errors.push(
+      `ownership exception names missing stylesheet src/${exception.file}`,
+    );
 }
 
 const catalogEntrypoint = resolve(root, 'src/catalog.tsx');
@@ -542,6 +452,6 @@ if (errors.length > 0) {
   process.exitCode = 1;
 } else {
   console.log(
-    `[check-css-ownership] OK — ${packageStyles.length} package stylesheets stay within their owned class roots; ${appStyles.length} app stylesheets contain no package-component or Web Awesome descendant overrides; shell and catalog entrypoints stay minimal.`,
+    `[check-css-ownership] OK — ${packageStyles.length} package stylesheets stay within their owned class roots, Web Awesome tags, and variables, and style no hook class on a composed child (${excused} findings excused by ${ownershipExceptions.length} documented exceptions); ${appStyles.length} app stylesheets contain no package-component or Web Awesome descendant overrides; shell and catalog entrypoints stay minimal.`,
   );
 }
