@@ -17,6 +17,17 @@ component per source file and one owned stylesheet per visual component. Keep it
 compatibility entrypoints implementation-free: JavaScript/TypeScript only re-exports
 the folder modules, and CSS only imports their owner stylesheets.
 
+## The rule: components own their styles
+
+Configure components through their typed props (size, density, inset,
+presentation, `ToolbarConfig`, `PaneConfig`, …); never restyle one from outside.
+No application or parent CSS may select a `.kui-*` class, a `[data-component]`
+root, a `wa-*` element a Kerf component renders, or its `::part()`s, and no
+writing another component's `--_kui-*` / `--kui-*` variables where a prop
+exists. When a component adapts inside another, it styles itself in that
+context in its own stylesheet. A missing prop is a component gap to report,
+not a reason to override — and your own components follow the same rule.
+
 ## How to build a screen (retrieval order)
 
 1. **Pick the component from the interface need**, not by appearance — read

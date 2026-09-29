@@ -76,8 +76,17 @@ the foundation and CSS for reachable UI subcomponents while excluding unrelated
 styles. The app shell does not maintain a transitive style list. The root barrel
 and `@kerfjs/ui/unstyled` are CSS-free; pair the root with `styles.css` only when
 the complete layer is intentional. Manual CSS subpaths remain available for
-custom pipelines. App overrides belong later in the cascade or on a scoped
-`--kui-*` owner.
+custom pipelines.
+
+**Components own their styles; configure, never override.** Change how a Kerf UI
+component looks or sits through its typed props (size, density, inset,
+presentation, `ToolbarConfig`, `PaneConfig`, …). Application CSS must not select
+a `.kui-*` class, a `[data-component]` root, a `wa-*` element a Kerf component
+renders, or its `::part()`s, and must not write another component's `--_kui-*` /
+`--kui-*` variables where a prop exists; theme tokens are for theming only. A
+missing prop is a component gap to report upstream, not a reason to override,
+and your own components should expose configuration the same way. See
+`ui/ai/skill.md` and `ui/docs/design-philosophy.md`.
 
 When a Kerf UI component is a light-DOM child of a custom element, pass the
 explicit native `slot="name"` prop. Every stable single-root visual component

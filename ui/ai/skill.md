@@ -1,7 +1,7 @@
 ---
 name: kerf-ui
 description: Build interfaces with kerfjs and the @kerfjs/ui production component package. Use whenever code imports @kerfjs/ui or a task asks for Kerf UI components.
-kerf-ui-skill-version: 1.43.0
+kerf-ui-skill-version: 1.44.0
 ---
 
 # Building with @kerfjs/ui
@@ -20,6 +20,36 @@ Treat each `KUI-T###` contract as an exact declaration guarantee, including its
 documented dynamic-data widening. Do not extend those diagnostics to child
 markup, live DOM relationships, disposer invocation, or other conditions that
 TypeScript cannot prove from one call.
+
+## Components own their styles; configure, never override
+
+This is the rule every Kerf UI surface follows, and applications and
+component packages built on Kerf UI must follow it too:
+
+- **A component styles only itself.** Change how a component looks or sits
+  through its typed props and data attributes (size, density, inset,
+  presentation, tone, `dividerSides`, `ToolbarConfig`, `PaneConfig`, …). Never
+  restyle a component from outside it: no application or parent CSS that
+  selects a `.kui-*` class, a `[data-component]` root, a `wa-*` element a Kerf
+  component renders, or its `::part()`s, and no hook class added to a
+  component's root so that it can be restyled.
+- **Configuration, not overrides.** Do not write another component's private
+  `--_kui-*` variables or reach for its `--kui-*` tokens to change layout,
+  size, padding, or framing when a prop exists. Theme tokens are for theming
+  (the semantic color ramps, the spacing scale); layout and geometry come from
+  props.
+- **Compose, then let the child adapt.** When a component needs to look
+  different inside another one, the child styles itself in that context, in
+  its own stylesheet (`.kui-toolbar-control-group[data-size="compact"] >
+wa-dropdown.kui-popup-menu { … }` lives with PopupMenu). A parent may key its
+  own styles on a child's state (`:has(> .kui-select[open])`) and name the
+  child by class, never by bare `wa-*` tag. Values a parent provides to its
+  children are custom properties named after the parent.
+- **Missing configuration is a component gap.** When no prop gives you what
+  you need, report it (open an upstream feature request) instead of
+  overriding. Your own components follow the same rule: expose configuration,
+  and let each component own its styles.
+
 Read `../docs/webawesome-theme.md` when using Web Awesome components or changing
 shared theme tokens. When overriding a loud fill
 (`--wa-color-{tone}-fill-loud`), set the matching `--wa-color-{tone}-on-loud`
@@ -147,7 +177,7 @@ Hard rules:
 2. Components return Kerf `SafeHtml`. Never pass DOM nodes as children or use inline JSX event handlers.
 3. Keep state, product copy, persistence, and domain mappings in the application. Do not add product-specific actions or fields to a generic component. Put ListItem/ListActionRow/ListHeader/AppTab domain `data-*` metadata in `rootAttributes`; use ListActionRow `trailingActionAttributes` and ListHeader `triggerAttributes` only for domain `data-*` or native popover target/action and `aria-controls`/`aria-haspopup`. These slots do not replace component-owned action, item/tab identity, selection, disclosure, naming, disabled, icon, or role semantics.
 4. Wire `data-action` hooks from one stable root with `delegate()` or `delegateActions()` and retain disposers.
-5. Use the opinionated `--kui-color-*` semantic ramps and component-level override properties. Use `pop` only for attractive non-status emphasis such as featured, novel, or celebratory content; never substitute it for info, success, warning, or danger. Override tokens at the narrowest useful scope and prefer equivalent props/tokens. `publicClasses` exist for diagnostics, tooling, tests, and package-owned composition, not application styling. Never target a Kerf or Web Awesome component from application CSS; add missing configuration to the owner.
+5. Configure components through their typed props; components own their own styles (see "Components own their styles; configure, never override" above). Use the opinionated `--kui-color-*` semantic ramps for theming, not to reshape a component. Use `pop` only for attractive non-status emphasis such as featured, novel, or celebratory content; never substitute it for info, success, warning, or danger. Set a theme token only at the narrowest useful scope, and never where an equivalent prop exists. `publicClasses` exist for diagnostics, tooling, tests, and package-owned composition, not application styling. Never target a Kerf or Web Awesome component from application CSS; add missing configuration to the owner.
 6. `Select` is pure until the app explicitly imports `@kerfjs/ui/select/register`; once registered, an icon-only `Select` (and, via `@kerfjs/ui/popup-menu/register`, an icon-only `PopupMenu`) shows an `aria-hidden` help tag repeating its accessible name (and a Select's current choice) on hover and keyboard focus, hidden while its popup is open — never add a `title` or your own tooltip to these triggers. The same installer tags an icon-only `<button>` or link in a `ToolbarControlGroup` named by `aria-label` (no visible text, no `title`); a toolbar with such buttons but no registered Select or PopupMenu imports `@kerfjs/ui/help-tags/register` once. Name those buttons with `aria-label`, not `title`: a `title` keeps the browser tooltip and skips the tag. Do not import Web Awesome's full registration bundle. When an app writes direct `wa-*` JSX, add `import type {} from '@kerfjs/ui/webawesome'` for the catalog-supported intrinsic-element declarations, import the CSS-only `@kerfjs/ui/webawesome.css` theme once, and keep importing individual Web Awesome component modules so their JavaScript remains tree-shakeable. The type boundary emits no code and registers nothing. Pass icon-bearing `choices` and `renderSelected` content normally: `Select` preserves its slotted option icons across Kerf rerenders and keys selected content by the controlled value, so app wrappers must not add competing morph-control attributes. Give it a visible `label` or an `ariaLabel` for a visually hidden name; the nonempty visible label takes precedence and the package names the actual shadow combobox, including `renderSelected`, without adding label geometry. Use `hint` for persistent supporting text below the control and `placeholderText` only for the empty value inside the closed control; loading placeholders retain the hint. For any number of choices set `multiple` with an array `value`: the popup stays open while choices toggle and closes on an outside press or Escape, the closed control summarizes the chosen labels, and `change` reports the value array; do not add app code to keep it open or to render tags. For a toolbar filter menu, add `selectedPresentation="icon-only"` plus a fixed `triggerIcon` (such as a funnel `LucideIcon`): the trigger shows that icon, a count badge while any choice is chosen, and ends its accessible name with the chosen labels ("Filter by label: Bug, Docs"); do not render your own count badge or rewrite the name. When testing name or description, target the element with the `combobox` role rather than the `wa-select` wrapper. Web Awesome's hint attribute and explicit hint slot both describe that shadow combobox across supported engines; do not add an `aria-description` mirror or application shadow-DOM patch.
 7. Decorative icons are hidden; controls are named; focus is visible; state never relies on color alone; reduced motion and increased contrast remain usable. `DisclosureArrow` defaults to an 18px root-scaled visual; size it with its typed `size` prop (`size={remify(24)}`); it never becomes the interaction or accessible-name owner. Put it in an owning native control with a stable accessible name and controlled `aria-expanded`. `ListHeader` toggle mode supplies it when `actionIcon` is omitted, but the app must reveal matching content; a custom icon replaces it. Author replacement icon content facing right before its configured direction transform is applied. Direction changes take the shortest rotation path, with counterclockwise chosen for a 180-degree closed-to-open tie. Kerf `Select` separately keeps its intrinsic Web Awesome expand glyph at `--kui-disclosure-icon-scale: .5`.
 8. `ResizableRegion` uses `wireResizableRegions()` for Arrow, Shift+Arrow, Home/End, and pointer behavior. The app owns size persistence. `handleIcon` replaces decorative dormant glyph content only. Set `responsiveFillAt="narrow"` or `"compact"` when a responsive composition exposes the pane as its only inline track; the component fills that track and hides its dormant separator. For compact overlays, set `presentation="overlay"` and the overlay maximum variables. A lone child (normally a `Pane`) fills the region and owns scrolling; several children stack at natural height. Do not add descendant width/height overrides.

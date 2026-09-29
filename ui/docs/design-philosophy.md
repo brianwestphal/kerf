@@ -40,6 +40,25 @@ configure those children through props and documented tokens instead. Never size
 space, or re-skin a primitive by hand, and never build a heading, toolbar, card,
 or pane geometry that a primitive provides.
 
+### Components own their styles; configure, never override
+
+Every component styles only itself. How it looks and sits is configuration —
+typed props and data attributes such as size, density, inset, presentation,
+tone, `dividerSides`, `ToolbarConfig`, and `PaneConfig` — never a stylesheet
+somewhere else reaching into it. When a component must adapt inside another
+(a `PopupMenu` inside a compact `ToolbarControlGroup`, an `AppTab` in a
+segmented `TabBar`), the **child** styles itself in that context, in its own
+stylesheet; the parent keys only its own elements on a child's state
+(`:has(> .kui-select[open])`) and names kerf children by class, not by `wa-*`
+tag. Values a parent provides to its children are custom properties named after
+the parent. A component never writes another component's private variables and
+never puts a hook class on a child's root to restyle it.
+
+The same holds for applications and component packages built on Kerf UI: expose
+configuration on your own components, configure kerf components through their
+props, and treat a missing prop as a component gap to report, not a reason to
+override. `npm run check:css-ownership` enforces this inside the package.
+
 ### Panes share one child-owned geometry
 
 Sidebars, main areas, inspectors, and dialogs use the same unpadded pane. Their
