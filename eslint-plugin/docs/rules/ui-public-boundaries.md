@@ -4,4 +4,4 @@ Rejects `kui-*` classes and `--kui-*` custom properties that are not listed in t
 
 Diagnostics are stable: `KUI-L101` identifies a private/unknown class and `KUI-L102` an unknown token. Exact profile exceptions can name either id. The rule deliberately does not rewrite selectors or tokens because there is no generally safe replacement.
 
-The rule reads `@kerfjs/ui/ai/component-catalog-v2.json` by default. See the plugin README for alternate catalog settings used by monorepos and package authors.
+The rule reads `@kerfjs/ui/ai/component-composition.json` by default. See the plugin README for alternate catalog settings used by monorepos and package authors.

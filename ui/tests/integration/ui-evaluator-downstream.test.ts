@@ -254,7 +254,7 @@ describe('browser evaluator against running downstream fixtures', () => {
     await mkdir(workspaceRoot, { recursive: true });
     const catalog = JSON.parse(
       await readFile(
-        resolve('docs/examples/component-catalog-extension-v2.json'),
+        resolve('docs/examples/component-composition-extension.json'),
         'utf8',
       ),
     );

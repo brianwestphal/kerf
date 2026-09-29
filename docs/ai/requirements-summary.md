@@ -29,7 +29,8 @@ versioned `ui/ai/catalog-authoring.json` companion makes that contract, its
 component/composition/recipe taxonomy, its functional-group and importance-first
 ordering (alphabetical ties, recipes last), and its exact API context discoverable
 without adding authoring rules to the per-entry component inventory.
-The package-qualified component catalog v2 and versioned application UI profile
+The package-qualified composition catalog (`component-composition.json`, a
+generated composition layer beside `component-catalog.json`) and versioned application UI profile
 make composition and project policy machine-readable. The profile layers
 package defaults, workspace policy, and parent-to-child directory overrides;
 it records catalog locations, concept preferences, theme/density constraints,

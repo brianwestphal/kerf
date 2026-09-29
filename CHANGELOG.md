@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **Breaking (`@kerfjs/ui` and `create-kerf-component`): the composition
+  catalog files are renamed so they no longer read as a "v2" of the component
+  catalog.** The composition catalog is a generated composition layer beside
+  `component-catalog.json`, not a newer version of it. Update any import,
+  `$schema`, `$ref`, or `.kerf-ui-profile.json` catalog location that names an
+  old path:
+
+  | Old path                                                       | New path                                                        |
+  | -------------------------------------------------------------- | --------------------------------------------------------------- |
+  | `@kerfjs/ui/ai/component-catalog-v2.json`                      | `@kerfjs/ui/ai/component-composition.json`                      |
+  | `@kerfjs/ui/ai/component-catalog-v2.schema.json`               | `@kerfjs/ui/ai/component-composition.schema.json`               |
+  | `@kerfjs/ui/ai/component-catalog-v2.d.ts`                      | `@kerfjs/ui/ai/component-composition.d.ts`                      |
+  | `@kerfjs/ui/ai/component-catalog-v2-overrides.json`            | `@kerfjs/ui/ai/component-composition-rules.json`                |
+  | `@kerfjs/ui/ai/component-catalog-extension-v2.schema.json`     | `@kerfjs/ui/ai/component-composition-extension.schema.json`     |
+  | `@kerfjs/ui/ai/component-catalog-extension-v2.d.ts`            | `@kerfjs/ui/ai/component-composition-extension.d.ts`            |
+  | `@kerfjs/ui/docs/examples/component-catalog-extension-v2.json` | `@kerfjs/ui/docs/examples/component-composition-extension.json` |
+  | scaffolded package `component-catalog-v2.json`                 | scaffolded package `component-composition.json`                 |
+
+  The exported types follow: `ComponentCatalogV2` → `ComponentComposition`,
+  `CatalogCompositionEntryV2` → `CatalogCompositionEntry`,
+  `ConsumerComponentCatalogV2` → `ConsumerComponentComposition`, and
+  `ConsumerCatalogEntryV2` → `ConsumerCompositionEntry`. In the repository,
+  `npm run catalog:v2:sync` is now `npm run composition:sync`
+  (`catalog:sync` still runs both generators). The file contents and their
+  `schemaVersion` are unchanged.
+
 - **`@kerfjs/ui` `NavStack` bars use the standard `Toolbar` padding.** The
   navigation bar dropped its toolbar's block padding to stay 44px tall, so its
   title and controls touched the bar's edges. It now keeps the 8px above and

@@ -23,7 +23,7 @@ import {
   runCatalogCommand,
   validateDocumentAgainstSchema,
 } from '../catalog.js';
-import { validateCatalogV2 } from '../../ui/scripts/component-catalog-v2-validation.mjs';
+import { validateComposition } from '../../ui/scripts/component-composition-validation.mjs';
 
 const packageRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 const cli = join(packageRoot, 'index.js');
@@ -55,11 +55,11 @@ function writeMetadata(target, value) {
   );
 }
 
-test('generates deterministic schema-valid v2 metadata and checks drift', () => {
+test('generates deterministic schema-valid composition metadata and checks drift', () => {
   withScaffold(({ target }) => {
     const [first] = runCatalogCommand({ root: target });
     const firstOutput = readFileSync(first.outputPath, 'utf8');
-    assert.deepEqual(validateCatalogV2(first.catalog), []);
+    assert.deepEqual(validateComposition(first.catalog), []);
     assert.equal(first.catalog.package, 'my-widgets');
     assert.equal(first.catalog.entries[0].purpose.includes('counter'), true);
     assert.deepEqual(first.catalog.entries[0].publicExports[0], {
@@ -108,7 +108,7 @@ test('generates a valid empty catalog for a newly initialized consumer app', () 
     writeMetadata(target, value);
     const [result] = runCatalogCommand({ root: target });
     assert.deepEqual(result.catalog.entries, []);
-    assert.deepEqual(validateCatalogV2(result.catalog), []);
+    assert.deepEqual(validateComposition(result.catalog), []);
     assert.doesNotThrow(() => runCatalogCommand({ root: target, check: true }));
   });
 });
@@ -160,7 +160,7 @@ test('a private application declares exports by source without an exports map', 
       { name: 'Counter' },
     ]);
     assert.equal(result.catalog.entries[0].source, 'src/counter.tsx');
-    assert.deepEqual(validateCatalogV2(result.catalog), []);
+    assert.deepEqual(validateComposition(result.catalog), []);
 
     // The name is still verified, against the component's source file.
     withPublicExports(target, [{ name: 'RenamedCounter' }]);
@@ -346,14 +346,14 @@ const pressedAttribute = {
   meaning: 'Present while the pointer holds a step button down.',
 };
 
-test('passes declared wiring-owned state attributes through to the v2 catalog', () => {
+test('passes declared wiring-owned state attributes through to the composition catalog', () => {
   withScaffold(({ target }) => {
     withStateAttributes(target, [pressedAttribute]);
     const [result] = runCatalogCommand({ root: target });
     assert.deepEqual(result.catalog.entries[0].wiring.stateAttributes, [
       pressedAttribute,
     ]);
-    assert.deepEqual(validateCatalogV2(result.catalog), []);
+    assert.deepEqual(validateComposition(result.catalog), []);
     assert.deepEqual(
       JSON.parse(readFileSync(result.outputPath, 'utf8')).entries[0].wiring
         .stateAttributes,
@@ -433,7 +433,7 @@ function installCatalog(target, name, keys, manifest = {}) {
   );
   const catalogPath = manifest.kerfComponentCatalog
     ? join(root, manifest.kerfComponentCatalog.output)
-    : join(root, 'ai', 'component-catalog-v2.json');
+    : join(root, 'ai', 'component-composition.json');
   writeFileSync(
     catalogPath,
     JSON.stringify({
@@ -443,7 +443,7 @@ function installCatalog(target, name, keys, manifest = {}) {
   );
 }
 
-test('passes a resolvable rendersAs declaration through to the v2 catalog', () => {
+test('passes a resolvable rendersAs declaration through to the composition catalog', () => {
   withScaffold(({ target }) => {
     installCatalog(target, '@kerfjs/ui', [
       'toolbar-control-group',
@@ -466,7 +466,7 @@ test('passes a resolvable rendersAs declaration through to the v2 catalog', () =
       '@kerfjs/ui:toolbar-text',
       '@acme/widgets:picker',
     ]);
-    assert.deepEqual(validateCatalogV2(result.catalog), []);
+    assert.deepEqual(validateComposition(result.catalog), []);
 
     // Undeclared, the entry carries no rendersAs at all.
     withRendersAs(target, undefined);
@@ -514,12 +514,12 @@ test('rejects a rendersAs root that does not resolve to a cataloged entry', () =
   });
 });
 
-test('validates emitted catalogs against the shipped v2 schema', () => {
+test('validates emitted catalogs against the shipped composition schema', () => {
   withScaffold(({ target }) => {
     const [result] = generateCatalogs(target);
     const schema = JSON.parse(
       readFileSync(
-        join(packageRoot, 'component-catalog-v2.schema.json'),
+        join(packageRoot, 'component-composition.schema.json'),
         'utf8',
       ),
     );
@@ -528,10 +528,10 @@ test('validates emitted catalogs against the shipped v2 schema', () => {
       validateDocumentAgainstSchema(
         result.catalog,
         schema,
-        'component-catalog-v2.json',
+        'component-composition.json',
       ),
       [
-        'component-catalog-v2.json.entries[0].layout.geometry.shadowOwner: additional property is not allowed',
+        'component-composition.json.entries[0].layout.geometry.shadowOwner: additional property is not allowed',
       ],
     );
     assert.deepEqual(
@@ -543,7 +543,7 @@ test('validates emitted catalogs against the shipped v2 schema', () => {
             '..',
             'ui',
             'ai',
-            'component-catalog-v2.schema.json',
+            'component-composition.schema.json',
           ),
           'utf8',
         ),
@@ -635,7 +635,7 @@ test('generates each configured package in a multi-package workspace', () => {
       ['alpha-widgets', 'beta-widgets'],
     );
     for (const result of results)
-      assert.deepEqual(validateCatalogV2(result.catalog), []);
+      assert.deepEqual(validateComposition(result.catalog), []);
   } finally {
     rmSync(temporaryRoot, { recursive: true, force: true });
   }
@@ -659,7 +659,7 @@ test('published-package dry run includes source metadata and generated catalog',
     const [{ files }] = JSON.parse(output);
     const paths = files.map((file) => file.path);
     assert.ok(paths.includes('kerf.components.json'));
-    assert.ok(paths.includes('component-catalog-v2.json'));
+    assert.ok(paths.includes('component-composition.json'));
   });
 });
 
@@ -686,7 +686,7 @@ test('the published generator package includes its bin and both schemas', () => 
     const paths = files.map((file) => file.path);
     assert.ok(paths.includes('catalog.js'));
     assert.ok(paths.includes('component-metadata.schema.json'));
-    assert.ok(paths.includes('component-catalog-v2.schema.json'));
+    assert.ok(paths.includes('component-composition.schema.json'));
   } finally {
     rmSync(temporaryRoot, { recursive: true, force: true });
   }

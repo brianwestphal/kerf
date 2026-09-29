@@ -5,10 +5,10 @@ import prettier from 'prettier';
 const check = process.argv.includes('--check');
 const v1Url = new URL('../ai/component-catalog.json', import.meta.url);
 const overrideUrl = new URL(
-  '../ai/component-catalog-v2-overrides.json',
+  '../ai/component-composition-rules.json',
   import.meta.url,
 );
-const outputUrl = new URL('../ai/component-catalog-v2.json', import.meta.url);
+const outputUrl = new URL('../ai/component-composition.json', import.meta.url);
 
 const [v1, overrides] = await Promise.all(
   [v1Url, overrideUrl].map(async (url) =>
@@ -24,7 +24,7 @@ const defaultGeometry = {
 };
 
 // Wiring-owned state attributes are declared per helper in v1, where the
-// helper is named; v2 flattens them with the helper that writes each one.
+// helper is named; the composition catalog flattens them with the helper that writes each one.
 const stateAttributesOf = (entry) =>
   (entry.wiring ?? []).flatMap((item) =>
     (item.stateAttributes ?? []).map(({ name, on, meaning }) => ({
@@ -121,11 +121,13 @@ const unusedOverrides = Object.keys(overrides).filter(
   (key) => !entries.some((entry) => entry.key === key),
 );
 if (unusedOverrides.length) {
-  throw new Error(`Unknown v2 override keys: ${unusedOverrides.join(', ')}`);
+  throw new Error(
+    `Unknown composition rule keys: ${unusedOverrides.join(', ')}`,
+  );
 }
 
 const artifact = {
-  $schema: './component-catalog-v2.schema.json',
+  $schema: './component-composition.schema.json',
   schemaVersion: 2,
   package: v1.package,
   compatibility: {
@@ -147,17 +149,17 @@ if (check) {
   }
   if (current !== generated) {
     console.error(
-      '[sync-component-catalog-v2] ai/component-catalog-v2.json is stale; run npm run catalog:v2:sync.',
+      '[sync-component-composition] ai/component-composition.json is stale; run npm run composition:sync.',
     );
     process.exitCode = 1;
   } else {
     console.log(
-      `[sync-component-catalog-v2] OK — ${entries.length} package-qualified entries are synchronized with v1.`,
+      `[sync-component-composition] OK — ${entries.length} package-qualified entries are synchronized with component-catalog.json.`,
     );
   }
 } else {
   await writeFile(outputUrl, generated);
   console.log(
-    `[sync-component-catalog-v2] wrote ${entries.length} entries to ai/component-catalog-v2.json.`,
+    `[sync-component-composition] wrote ${entries.length} entries to ai/component-composition.json.`,
   );
 }

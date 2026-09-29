@@ -9,7 +9,7 @@ scaffolded with `create-kerf-component`.
 npm install
 npm run build # tsup → dist/ (ESM + .d.ts); kerfjs stays external
 npm run typecheck
-npm run catalog:check # verify component-catalog-v2.json is current
+npm run catalog:check # verify component-composition.json is current
 ```
 
 ## Use it
@@ -75,7 +75,7 @@ are not exports. The checker uses this package's installed TypeScript compiler,
 so run `npm install` before the first local catalog command.
 
 ```bash
-npm run catalog:generate # write component-catalog-v2.json
+npm run catalog:generate # write component-composition.json
 npm run catalog:check    # no writes; fail when metadata, source, or output drift
 ```
 

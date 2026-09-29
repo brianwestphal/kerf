@@ -3,9 +3,9 @@ import { resolve } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import type { ConsumerComponentCatalogV2 } from '../../ai/component-catalog-extension-v2.js';
-import type { ComponentCatalogV2 } from '../../ai/component-catalog-v2.js';
-import { validateCatalogV2 } from '../../scripts/component-catalog-v2-validation.mjs';
+import type { ComponentComposition } from '../../ai/component-composition.js';
+import type { ConsumerComponentComposition } from '../../ai/component-composition-extension.js';
+import { validateComposition } from '../../scripts/component-composition-validation.mjs';
 
 type InvalidFixture = {
   name: string;
@@ -39,21 +39,23 @@ const assignPath = (
 const readPath = (target: Record<string, unknown>, path: string) =>
   path.split('.').reduce<unknown>(childAt, target);
 
-describe('component catalog v2 composition contract', () => {
+describe('component composition catalog contract', () => {
   it('projects every live v1 entry with package-qualified identity and complete boundaries', async () => {
-    const [v1, v2] = await Promise.all([
+    const [v1, composition] = await Promise.all([
       readJson<{ package: string; entries: Array<{ id: string }> }>(
         '../../ai/component-catalog.json',
       ),
-      readJson<ComponentCatalogV2>('../../ai/component-catalog-v2.json'),
+      readJson<ComponentComposition>('../../ai/component-composition.json'),
     ]);
-    expect(validateCatalogV2(v2, { v1 })).toEqual([]);
-    expect(v2.entries).toHaveLength(v1.entries.length);
+    expect(validateComposition(composition, { v1 })).toEqual([]);
+    expect(composition.entries).toHaveLength(v1.entries.length);
     expect(
-      v2.entries.every((entry) => entry.key === `${entry.package}:${entry.id}`),
+      composition.entries.every(
+        (entry) => entry.key === `${entry.package}:${entry.id}`,
+      ),
     ).toBe(true);
     expect(
-      v2.entries.every(
+      composition.entries.every(
         (entry) =>
           entry.parents &&
           entry.children &&
@@ -73,14 +75,16 @@ describe('component catalog v2 composition contract', () => {
   });
 
   it('declares wiring-owned state attributes on every entry, flattened with their helper', async () => {
-    const v2 = await readJson<ComponentCatalogV2>(
-      '../../ai/component-catalog-v2.json',
+    const composition = await readJson<ComponentComposition>(
+      '../../ai/component-composition.json',
     );
     expect(
-      v2.entries.every((entry) => Array.isArray(entry.wiring.stateAttributes)),
+      composition.entries.every((entry) =>
+        Array.isArray(entry.wiring.stateAttributes),
+      ),
     ).toBe(true);
     const owned = (id: string) =>
-      v2.entries
+      composition.entries
         .find((entry) => entry.id === id)!
         .wiring.stateAttributes!.map(({ name, helper }) => `${helper}:${name}`);
     expect(owned('resize')).toEqual([
@@ -103,11 +107,15 @@ describe('component catalog v2 composition contract', () => {
   });
 
   it('keeps permissive defaults distinct from authoritative enforceable overrides', async () => {
-    const v2 = await readJson<ComponentCatalogV2>(
-      '../../ai/component-catalog-v2.json',
+    const composition = await readJson<ComponentComposition>(
+      '../../ai/component-composition.json',
     );
-    const toolbar = v2.entries.find((entry) => entry.id === 'toolbar')!;
-    const icon = v2.entries.find((entry) => entry.id === 'lucide-icon')!;
+    const toolbar = composition.entries.find(
+      (entry) => entry.id === 'toolbar',
+    )!;
+    const icon = composition.entries.find(
+      (entry) => entry.id === 'lucide-icon',
+    )!;
     expect(toolbar).toMatchObject({
       zones: expect.arrayContaining([
         expect.objectContaining({
@@ -131,7 +139,7 @@ describe('component catalog v2 composition contract', () => {
     expect(icon.diagnostics).toEqual([]);
 
     expect(
-      v2.entries.find((entry) => entry.id === 'wa-details')?.boundaries
+      composition.entries.find((entry) => entry.id === 'wa-details')?.boundaries
         .publicTokens,
     ).toEqual([
       '--kui-wa-surface-margin',
@@ -140,9 +148,11 @@ describe('component catalog v2 composition contract', () => {
       '--kui-wa-sunken-radius',
     ]);
 
-    const pane = v2.entries.find((entry) => entry.id === 'pane')!;
-    const tabBar = v2.entries.find((entry) => entry.id === 'tab-bar')!;
-    const workbench = v2.entries.find((entry) => entry.id === 'workbench')!;
+    const pane = composition.entries.find((entry) => entry.id === 'pane')!;
+    const tabBar = composition.entries.find((entry) => entry.id === 'tab-bar')!;
+    const workbench = composition.entries.find(
+      (entry) => entry.id === 'workbench',
+    )!;
     expect(pane.zones.map(({ id, jsx }) => [id, jsx?.prop])).toEqual([
       ['header', 'header'],
       ['content', 'children'],
@@ -169,7 +179,7 @@ describe('component catalog v2 composition contract', () => {
       false,
     );
     expect(
-      v2.entries.find((entry) => entry.id === 'list')?.cssValueProps,
+      composition.entries.find((entry) => entry.id === 'list')?.cssValueProps,
     ).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
@@ -185,12 +195,12 @@ describe('component catalog v2 composition contract', () => {
   });
 
   it('rejects contradictory CSS value classifications', async () => {
-    const v2 = await readJson<ComponentCatalogV2>(
-      '../../ai/component-catalog-v2.json',
+    const composition = await readJson<ComponentComposition>(
+      '../../ai/component-composition.json',
     );
-    const list = v2.entries.find((entry) => entry.id === 'list')!;
+    const list = composition.entries.find((entry) => entry.id === 'list')!;
     list.cssValueProps![0]!.exceptionalShorthands.push('xs');
-    expect(validateCatalogV2(v2)).toEqual(
+    expect(validateComposition(composition)).toEqual(
       expect.arrayContaining([
         expect.stringContaining('canonical and exceptional shorthands overlap'),
       ]),
@@ -198,14 +208,16 @@ describe('component catalog v2 composition contract', () => {
   });
 
   it('rejects adversarial invalid fixtures with stable actionable findings', async () => {
-    const [v2, fixtures] = await Promise.all([
-      readJson<ComponentCatalogV2>('../../ai/component-catalog-v2.json'),
+    const [composition, fixtures] = await Promise.all([
+      readJson<ComponentComposition>('../../ai/component-composition.json'),
       readJson<InvalidFixture[]>(
-        '../fixtures/component-catalog-v2-invalid.json',
+        '../fixtures/component-composition-invalid.json',
       ),
     ]);
     for (const fixture of fixtures) {
-      const invalid = JSON.parse(JSON.stringify(v2)) as ComponentCatalogV2;
+      const invalid = JSON.parse(
+        JSON.stringify(composition),
+      ) as ComponentComposition;
       const value = fixture.copyFrom
         ? readPath(
             invalid as unknown as Record<string, unknown>,
@@ -217,37 +229,37 @@ describe('component catalog v2 composition contract', () => {
         fixture.path,
         value,
       );
-      expect(validateCatalogV2(invalid), fixture.name).toEqual(
+      expect(validateComposition(invalid), fixture.name).toEqual(
         expect.arrayContaining([expect.stringContaining(fixture.message)]),
       );
     }
   });
 
-  it('provides a package-qualified consumer v2 example without weakening Kerf identity', async () => {
-    const consumer = await readJson<ComponentCatalogV2>(
-      '../../docs/examples/component-catalog-extension-v2.json',
+  it('provides a package-qualified consumer composition example without weakening Kerf identity', async () => {
+    const consumer = await readJson<ComponentComposition>(
+      '../../docs/examples/component-composition-extension.json',
     );
-    const typedConsumer: ConsumerComponentCatalogV2 = consumer;
-    expect(validateCatalogV2(consumer)).toEqual([]);
+    const typedConsumer: ConsumerComponentComposition = consumer;
+    expect(validateComposition(consumer)).toEqual([]);
     expect(typedConsumer.package).toBe('@acme/ui');
     expect(consumer.entries[0].key).toBe('@acme/ui:inspector');
     expect(consumer.entries[0].parents.entries).toContain('@kerfjs/ui:layout');
   });
 
   it('validates generated consumer selection and source metadata when present', async () => {
-    const consumer = await readJson<ComponentCatalogV2>(
-      '../../docs/examples/component-catalog-extension-v2.json',
+    const consumer = await readJson<ComponentComposition>(
+      '../../docs/examples/component-composition-extension.json',
     );
     const entry = consumer.entries[0];
     entry.purpose = 'Compose the record inspector.';
     entry.publicExports = [{ name: 'Inspector', subpath: './inspector' }];
     entry.sourceLinks = ['docs/inspector.md'];
-    expect(validateCatalogV2(consumer)).toEqual([]);
+    expect(validateComposition(consumer)).toEqual([]);
 
     entry.purpose = '';
     entry.publicExports.push({ name: 'Inspector', subpath: './inspector' });
     entry.sourceLinks.push('docs/inspector.md');
-    expect(validateCatalogV2(consumer)).toEqual(
+    expect(validateComposition(consumer)).toEqual(
       expect.arrayContaining([
         expect.stringContaining('purpose must be a non-empty string'),
         expect.stringContaining('public exports must be unique'),

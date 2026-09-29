@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-catalog-v2.schema.json",
-  "title": "Kerf UI composition catalog v2",
+  "$id": "https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-composition.schema.json",
+  "title": "Kerf UI composition catalog",
   "type": "object",
   "required": ["schemaVersion", "package", "compatibility", "entries"],
   "properties": {

@@ -136,7 +136,7 @@ async function main(argv) {
   );
   for (const schema of [
     'component-metadata.schema.json',
-    'component-catalog-v2.schema.json',
+    'component-composition.schema.json',
   ])
     copyFileSync(
       join(dirname(fileURLToPath(import.meta.url)), schema),

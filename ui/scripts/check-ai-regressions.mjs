@@ -150,7 +150,7 @@ if (
   fail('suite-v3 contracts and schemas must pin version 3');
 const compatibilityArtifacts = {
   selectionCatalog: 'ai/component-catalog.json',
-  behaviorCatalog: 'ai/component-catalog-v2.json',
+  behaviorCatalog: 'ai/component-composition.json',
   diagnosticRegistry: 'ai/application-ui-diagnostic-ids-v1.json',
   qualityContract: 'ai-regressions/quality-contract-v3.json',
 };

@@ -10,14 +10,14 @@
         "schemaVersion": 1
       },
       "composition": {
-        "path": "../../ai/component-catalog-v2.json",
+        "path": "../../ai/component-composition.json",
         "schemaVersion": 2
       }
     },
     {
       "package": "@acme/ui",
       "composition": {
-        "path": "./component-catalog-extension-v2.json",
+        "path": "./component-composition-extension.json",
         "schemaVersion": 2
       }
     }

@@ -18,7 +18,7 @@ const paths = {
   schema: resolve(root, 'ai/application-ui-profile.schema.json'),
   types: resolve(root, 'ai/application-ui-profile.d.ts'),
   example: resolve(root, 'docs/examples/application-ui-profile.json'),
-  catalog: resolve(root, 'ai/component-catalog-v2.json'),
+  catalog: resolve(root, 'ai/component-composition.json'),
   diagnostics: resolve(root, 'ai/application-ui-diagnostic-ids-v1.json'),
   syncContract: resolve(root, 'ai/application-ui-profile-sync.cjs'),
   readme: resolve(root, 'README.md'),

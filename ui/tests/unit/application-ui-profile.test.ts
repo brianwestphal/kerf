@@ -60,7 +60,7 @@ describe('application UI profile policy', () => {
         {
           package: '@acme/ui',
           composition: {
-            path: './component-catalog-v2.json',
+            path: './component-composition.json',
             schemaVersion: 2,
           },
         },
@@ -74,7 +74,7 @@ describe('application UI profile policy', () => {
           {
             package: '@kerfjs/ui',
             composition: {
-              path: './component-catalog-v2.json',
+              path: './component-composition.json',
               schemaVersion: 2,
             },
           },

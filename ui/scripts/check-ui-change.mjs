@@ -13,7 +13,7 @@ import {
 const root = fileURLToPath(new URL('..', import.meta.url));
 const generated = [
   'ux-demo/catalog.generated.ts',
-  'ai/component-catalog-v2.json',
+  'ai/component-composition.json',
   'ai/public-api-signatures-v1.md',
   'ai/webawesome-jsx-signatures-v1.md',
   'ai-regressions/compatibility-v3.json',

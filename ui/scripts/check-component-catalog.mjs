@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import ts from 'typescript';
 
-import { validateCatalogV2 } from './component-catalog-v2-validation.mjs';
+import { validateComposition } from './component-composition-validation.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const [
@@ -21,10 +21,10 @@ const [
   extensionExampleSource,
   catalogAuthoringSource,
   catalogAuthoringSchemaSource,
-  catalogV2Source,
-  catalogV2SchemaSource,
-  consumerV2SchemaSource,
-  consumerV2ExampleSource,
+  compositionSource,
+  compositionSchemaSource,
+  consumerCompositionSchemaSource,
+  consumerCompositionExampleSource,
   compileTimeContractsSource,
   compileTimeContractsSchemaSource,
   compileTimeFixtureSource,
@@ -53,14 +53,14 @@ const [
   ),
   readFile(resolve(root, 'ai/catalog-authoring.json'), 'utf8'),
   readFile(resolve(root, 'ai/catalog-authoring.schema.json'), 'utf8'),
-  readFile(resolve(root, 'ai/component-catalog-v2.json'), 'utf8'),
-  readFile(resolve(root, 'ai/component-catalog-v2.schema.json'), 'utf8'),
+  readFile(resolve(root, 'ai/component-composition.json'), 'utf8'),
+  readFile(resolve(root, 'ai/component-composition.schema.json'), 'utf8'),
   readFile(
-    resolve(root, 'ai/component-catalog-extension-v2.schema.json'),
+    resolve(root, 'ai/component-composition-extension.schema.json'),
     'utf8',
   ),
   readFile(
-    resolve(root, 'docs/examples/component-catalog-extension-v2.json'),
+    resolve(root, 'docs/examples/component-composition-extension.json'),
     'utf8',
   ),
   readFile(resolve(root, 'ai/compile-time-contracts-v1.json'), 'utf8'),
@@ -77,10 +77,10 @@ const extensionSchema = JSON.parse(extensionSchemaSource);
 const extensionExample = JSON.parse(extensionExampleSource);
 const catalogAuthoring = JSON.parse(catalogAuthoringSource);
 const catalogAuthoringSchema = JSON.parse(catalogAuthoringSchemaSource);
-const catalogV2 = JSON.parse(catalogV2Source);
-const catalogV2Schema = JSON.parse(catalogV2SchemaSource);
-const consumerV2Schema = JSON.parse(consumerV2SchemaSource);
-const consumerV2Example = JSON.parse(consumerV2ExampleSource);
+const composition = JSON.parse(compositionSource);
+const compositionSchema = JSON.parse(compositionSchemaSource);
+const consumerCompositionSchema = JSON.parse(consumerCompositionSchemaSource);
+const consumerCompositionExample = JSON.parse(consumerCompositionExampleSource);
 const compileTimeContracts = JSON.parse(compileTimeContractsSource);
 const compileTimeContractsSchema = JSON.parse(compileTimeContractsSchemaSource);
 const failures = [];
@@ -168,12 +168,17 @@ validateSchema(
   '$extension',
   extensionSchema,
 );
-validateSchema(catalogV2, catalogV2Schema, '$v2', catalogV2Schema);
 validateSchema(
-  consumerV2Example,
-  catalogV2Schema,
-  '$consumerV2',
-  catalogV2Schema,
+  composition,
+  compositionSchema,
+  '$composition',
+  compositionSchema,
+);
+validateSchema(
+  consumerCompositionExample,
+  compositionSchema,
+  '$consumerComposition',
+  compositionSchema,
 );
 validateSchema(
   compileTimeContracts,
@@ -181,16 +186,16 @@ validateSchema(
   '$compileTimeContracts',
   compileTimeContractsSchema,
 );
-for (const failure of validateCatalogV2(catalogV2, { v1: artifact }))
-  fail(`v2: ${failure}`);
-for (const failure of validateCatalogV2(consumerV2Example))
-  fail(`consumer v2 example: ${failure}`);
-if (catalogV2Schema.properties?.schemaVersion?.const !== 2)
-  fail('v2 schema must require schemaVersion 2');
+for (const failure of validateComposition(composition, { v1: artifact }))
+  fail(`composition: ${failure}`);
+for (const failure of validateComposition(consumerCompositionExample))
+  fail(`consumer composition example: ${failure}`);
+if (compositionSchema.properties?.schemaVersion?.const !== 2)
+  fail('composition schema must require schemaVersion 2');
 
 // Wiring-owned state attributes: a `wire*` helper's declarations must name
 // exactly the data-* attributes its source writes, so a new write can't ship
-// undeclared and a removed one can't linger. First-party v2 entries always
+// undeclared and a removed one can't linger. First-party composition entries always
 // carry the list (empty when their helpers write none).
 function writtenDataAttributes(source) {
   const kebab = (camel) =>
@@ -257,11 +262,16 @@ for (const entry of artifact.entries) {
         );
   }
 }
-for (const entry of catalogV2.entries)
+for (const entry of composition.entries)
   if (!Array.isArray(entry.wiring.stateAttributes))
     fail(`${entry.key} must list wiring.stateAttributes (empty when none)`);
-if (consumerV2Schema.allOf?.[0]?.$ref !== './component-catalog-v2.schema.json')
-  fail('consumer v2 schema must reuse the shipped v2 composition contract');
+if (
+  consumerCompositionSchema.allOf?.[0]?.$ref !==
+  './component-composition.schema.json'
+)
+  fail(
+    'consumer composition schema must reuse the shipped composition contract',
+  );
 validateSchema(
   catalogAuthoring,
   catalogAuthoringSchema,
@@ -307,10 +317,10 @@ if (!readme.includes('[`catalog-authoring.json`](./ai/catalog-authoring.json)'))
   fail('README must link the Catalog authoring discovery artifact');
 if (
   !readme.includes(
-    '[`component-catalog-v2.json`](./ai/component-catalog-v2.json)',
+    '[`component-composition.json`](./ai/component-composition.json)',
   )
 )
-  fail('README must link the v2 composition catalog');
+  fail('README must link the composition catalog');
 if (
   !llms.includes(
     '[Machine-readable component catalog](./ai/component-catalog.json)',
@@ -323,8 +333,8 @@ if (
   )
 )
   fail('llms.txt must link the consumer catalog extension schema');
-if (!llms.includes('[Composition catalog v2](./ai/component-catalog-v2.json)'))
-  fail('llms.txt must link the v2 composition catalog');
+if (!llms.includes('[Composition catalog](./ai/component-composition.json)'))
+  fail('llms.txt must link the composition catalog');
 
 const entries = artifact.entries ?? [];
 const ids = entries.map((entry) => entry.id);
@@ -577,7 +587,7 @@ if (
 for (const contract of compileTimeContracts.contracts) {
   if (
     contract.catalogKey &&
-    !catalogV2.entries.some(({ key }) => key === contract.catalogKey)
+    !composition.entries.some(({ key }) => key === contract.catalogKey)
   )
     fail(
       `${contract.id} references missing catalog entry ${contract.catalogKey}`,
@@ -709,7 +719,7 @@ for (const entry of entries) {
     await validateDocumentLink(entry.id, key, entry.links[key]);
   }
 }
-for (const entry of catalogV2.entries) {
+for (const entry of composition.entries) {
   if (entry.provenance.composition !== 'generated-permissive-default')
     await validateDocumentLink(
       entry.key,

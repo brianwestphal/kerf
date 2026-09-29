@@ -183,7 +183,7 @@ describe('application UI profile discovery', { timeout: 30_000 }, () => {
         {
           package: 'consumer-widgets',
           composition: {
-            path: 'packages/consumer-widgets/component-catalog-v2.json',
+            path: 'packages/consumer-widgets/component-composition.json',
             schemaVersion: 2,
           },
         },

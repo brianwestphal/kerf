@@ -401,7 +401,7 @@ describe('AI-first setup planner', () => {
     expect(profile.catalogs).toContainEqual({
       package: '@acme/app',
       composition: {
-        path: './component-catalog-v2.json',
+        path: './component-composition.json',
         schemaVersion: 2,
       },
     });
@@ -1016,7 +1016,7 @@ describe('AI-first setup planner', () => {
       packageManager: 'yarn@4.6.0',
       dependencies: { kerfjs: '4.4.1', '@kerfjs/ui': '4.4.1' },
     });
-    const outputPath = join(root, 'component-catalog-v2.json');
+    const outputPath = join(root, 'component-composition.json');
     const outside = await fixture({ name: 'outside' });
     const outsidePath = join(outside, 'catalog.json');
     await writeFile(outsidePath, 'outside catalog\n');
@@ -1076,7 +1076,7 @@ describe('AI-first setup planner', () => {
     const outside = await fixture({ name: 'outside' });
     const outsidePath = join(outside, 'catalog.json');
     await writeFile(outsidePath, 'outside catalog\n');
-    await symlink(outsidePath, join(root, 'component-catalog-v2.json'));
+    await symlink(outsidePath, join(root, 'component-composition.json'));
     const originalManifest = await readFile(join(root, 'package.json'), 'utf8');
 
     await expect(

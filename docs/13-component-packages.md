@@ -254,7 +254,7 @@ environment. A third-party component package follows the same shape: build with
 requirement — `@kerfjs/ui` is scoped; the other three publish unscoped. See
 [`21-ui-package.md`](21-ui-package.md) for the first-party component contract.
 
-The repository treats `ui/ai/component-catalog-v2.schema.json` as the canonical
+The repository treats `ui/ai/component-composition.schema.json` as the canonical
 composition contract and generates `create-kerf-component`'s bundled copy with
 `npm run sync:scaffold-catalog-schema`. The root check and interactive release
 flow run the matching check command, so schema drift fails before a release tag
@@ -284,7 +284,7 @@ source manifest and these scripts:
   },
   "kerfComponentCatalog": {
     "source": "./kerf.components.json",
-    "output": "./component-catalog-v2.json"
+    "output": "./component-composition.json"
   }
 }
 ```
@@ -317,7 +317,7 @@ full `package:id` key, reject duplicate full keys, search the consuming package'
 entries before the generic Kerf catalog, and preserve package identity on every
 parent, child, and zone reference. Never merge by bare `id`. The generated
 `purpose`, `publicExports`, and `sourceLinks` fields answer selection and source
-questions; the v2 composition fields answer whether and how two entries fit.
+questions; the composition fields answer whether and how two entries fit.
 
 ### Wrapper components: `rendersAs`
 
@@ -359,7 +359,7 @@ empty render is always allowed. `kerf-component-catalog` copies it into the
 generated entry and fails unless every key resolves: to an entry generated in
 the same run, or to an installed package's shipped catalog (its
 `package.json#kerfComponentCatalog.output`, or `@kerfjs/ui`'s
-`ai/component-catalog-v2.json`).
+`ai/component-composition.json`).
 
 `eslint-plugin-kerfjs`'s `ui-composition` rule, and so `kerf-ui-doctor`, reads
 the catalogs your `.kerf-ui-profile.json` declares under `catalogs` and resolves

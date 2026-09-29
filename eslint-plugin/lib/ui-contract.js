@@ -135,7 +135,7 @@ export function loadUiContract(context) {
     const catalog =
       settings.catalog ??
       readJson(
-        settings.catalogPath ?? packageAsset(cwd, 'component-catalog-v2.json'),
+        settings.catalogPath ?? packageAsset(cwd, 'component-composition.json'),
       );
     const selection =
       settings.selectionCatalog ??

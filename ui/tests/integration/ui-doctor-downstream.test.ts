@@ -60,7 +60,7 @@ test(
       await mkdir(resolve(root, 'src'), { recursive: true });
       await writeFile(
         resolve(root, 'package.json'),
-        '{"name":"doctor-consumer","private":true,"type":"module","kerfComponentCatalog":{"source":"kerf.components.json","output":"component-catalog-v2.json"}}\n',
+        '{"name":"doctor-consumer","private":true,"type":"module","kerfComponentCatalog":{"source":"kerf.components.json","output":"component-composition.json"}}\n',
       );
       await writeFile(
         resolve(root, 'tsconfig.json'),
@@ -329,7 +329,7 @@ test(
           },
           kerfComponentCatalog: {
             source: 'kerf.components.json',
-            output: 'component-catalog-v2.json',
+            output: 'component-composition.json',
           },
         }),
       );
@@ -457,7 +457,7 @@ test(
             {
               package: 'karwan-app',
               composition: {
-                path: './component-catalog-v2.json',
+                path: './component-composition.json',
                 schemaVersion: 2,
               },
             },

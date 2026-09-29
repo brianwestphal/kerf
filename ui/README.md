@@ -97,7 +97,7 @@ primary region, while semantic positions and replacement content use explicit
 named `SafeHtml` props such as `header`, `footer`, `leading`, `trailing`,
 `icon`, and `action`. These named `SafeHtml` prop slots are ordinary typed
 function-component props—not native `<slot>` elements, wrapper slot
-components, or a generic `slots` object. The v2 composition catalog publishes
+components, or a generic `slots` object. The composition catalog publishes
 sound prop bindings as `zone.jsx.prop`, allowing ESLint to validate statically
 visible content and cardinality without guessing from zone names.
 
@@ -291,14 +291,16 @@ Keeping this as a companion artifact prevents per-entry selection facts from
 duplicating presentation rules.
 
 Tools that evaluate composition may additionally load
-[`component-catalog-v2.json`](./ai/component-catalog-v2.json). It is a
-deterministic, package-qualified projection of every v1 entry with formal
-parent/context, zone/cardinality, child, state ownership, wiring, responsive,
-layout, accessibility, public-boundary, and stable-diagnostic fields. V1
-remains the selection and delivery compatibility surface. V2 defaults are
+[`component-composition.json`](./ai/component-composition.json). It is a
+generated composition layer beside `component-catalog.json`, not a newer
+version of it: a deterministic, package-qualified projection of every
+component-catalog entry with formal parent/context, zone/cardinality, child,
+state ownership, wiring, responsive, layout, accessibility, public-boundary,
+and stable-diagnostic fields. `component-catalog.json` remains the selection
+and delivery surface. Composition defaults are
 deliberately permissive; only documented objective rules receive an
 authoritative override and enforceable diagnostic. The adjacent schema and
-[`component-catalog-v2.d.ts`](./ai/component-catalog-v2.d.ts) types describe
+[`component-composition.d.ts`](./ai/component-composition.d.ts) types describe
 the same contract.
 
 Applications and downstream design systems should publish the same facts for
@@ -314,9 +316,9 @@ tool reason about both sides of a composition using one vocabulary without
 pretending app-local components are `@kerfjs/ui` exports.
 
 Composition-aware consumers use
-[`component-catalog-extension-v2.schema.json`](./ai/component-catalog-extension-v2.schema.json),
+[`component-composition-extension.schema.json`](./ai/component-composition-extension.schema.json),
 its shipped TypeScript types, and the checked
-[`component-catalog-extension-v2.json`](./docs/examples/component-catalog-extension-v2.json)
+[`component-composition-extension.json`](./docs/examples/component-composition-extension.json)
 example. Preserve each catalog's package and qualify every identity and
 cross-catalog reference as `package:id`; never merge entries by bare id.
 
@@ -327,7 +329,7 @@ rejects. The package gate compiles one positive/negative consumer fixture agains
 both source and declarations extracted from the real packed tarball. The
 [compile-time contract guide](./docs/type-contracts.md) documents migrations and
 the dynamic DOM/children relationships that remain runtime or catalog checks.
-Packages scaffolded by `create-kerf-component` maintain this v2 input from
+Packages scaffolded by `create-kerf-component` maintain this composition input from
 `kerf.components.json`: `npm run catalog:generate` emits the catalog and
 `npm run catalog:check` verifies source files, named public exports, explicit
 author decisions, and byte-for-byte drift. Tools index the generated consumer
@@ -350,9 +352,9 @@ token overrides, layout/responsive conventions, and narrow rule exceptions.
 Profiles contain policy only—never product records, user data, or broad styling
 waivers.
 
-Catalog declarations always provide a v2 `composition` location. Consumer
+Catalog declarations always provide a `composition` location. Consumer
 packages generated with composition-only metadata omit `selection`;
-`@kerfjs/ui` continues to require its v1 selection catalog.
+`@kerfjs/ui` continues to require its `component-catalog.json` selection catalog.
 
 Node-based AI and static-analysis tools may import the shipped discovery API
 from `@kerfjs/ui/ai/application-ui-profile.mjs`. It discovers package defaults,

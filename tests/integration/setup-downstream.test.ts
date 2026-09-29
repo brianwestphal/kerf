@@ -407,13 +407,13 @@ describe('packed AI-first setup', { timeout: 30_000 }, () => {
     expect(profile.catalogs).toContainEqual({
       package: '@acme/ui-app',
       composition: {
-        path: './packages/app/component-catalog-v2.json',
+        path: './packages/app/component-composition.json',
         schemaVersion: 2,
       },
     });
     expect(
       JSON.parse(
-        await readFile(resolve(app, 'component-catalog-v2.json'), 'utf8'),
+        await readFile(resolve(app, 'component-composition.json'), 'utf8'),
       ).entries,
     ).toEqual([]);
   }, 60_000);

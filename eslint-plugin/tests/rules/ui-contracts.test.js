@@ -20,7 +20,7 @@ const shippedUiSettings = uiSettings({
   selectionCatalog: undefined,
   catalogPath: join(
     import.meta.dirname,
-    '../../../ui/ai/component-catalog-v2.json',
+    '../../../ui/ai/component-composition.json',
   ),
   selectionCatalogPath: join(
     import.meta.dirname,
@@ -247,7 +247,7 @@ mkdirSync(join(appRoot, 'src'), { recursive: true });
 mkdirSync(join(appRoot, 'vendor/acme'), { recursive: true });
 writeJson('package.json', { name: 'karwan-app' });
 writeJson('vendor/acme/package.json', { name: '@acme/bits' });
-writeJson('component-catalog-v2.json', {
+writeJson('component-composition.json', {
   schemaVersion: 2,
   package: 'karwan-app',
   entries: [
@@ -292,7 +292,7 @@ writeJson('.kerf-ui-profile.json', {
   catalogs: [
     {
       package: 'karwan-app',
-      composition: { path: './component-catalog-v2.json', schemaVersion: 2 },
+      composition: { path: './component-composition.json', schemaVersion: 2 },
     },
     {
       package: '@acme/bits',

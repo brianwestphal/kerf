@@ -122,7 +122,7 @@ describe('Kerf UI static analyzer', () => {
     const root = await mkdtemp(join(tmpdir(), 'kerf-ui-analyzer-parts-'));
     await mkdir(join(root, 'src'));
     await writeFile(
-      join(root, 'component-catalog-v2.json'),
+      join(root, 'component-composition.json'),
       JSON.stringify({
         schemaVersion: 2,
         package: '@acme/ui',
@@ -163,7 +163,7 @@ describe('Kerf UI static analyzer', () => {
           {
             package: '@acme/ui',
             composition: {
-              path: './component-catalog-v2.json',
+              path: './component-composition.json',
               schemaVersion: 2,
             },
           },

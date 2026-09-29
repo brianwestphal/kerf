@@ -19,7 +19,10 @@ export const DEMO_BUNDLE_COMMAND = 'npm run demo:bundle';
 export const DEMO_CHECK_COMMAND = 'node scripts/check-demo-bundle.mjs';
 
 export const uiChangeSyncSteps = () => [
-  { label: 'synchronize v1/v2 catalogs', command: 'npm run catalog:sync' },
+  {
+    label: 'synchronize component and composition catalogs',
+    command: 'npm run catalog:sync',
+  },
   {
     label: 'build declarations and browser/CSS entries',
     command: 'npm run build',

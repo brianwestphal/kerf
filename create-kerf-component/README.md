@@ -40,7 +40,7 @@ A ready-to-publish component package that encodes the rules from the kerf docs
   exports, composition, geometry, public `rootClass`, tokens, accessibility,
   and source links. Run
   `npm run catalog:generate` to emit the package-qualified
-  `component-catalog-v2.json`; `npm run catalog:check` fails on drift, deleted
+  `component-composition.json`; `npm run catalog:check` fails on drift, deleted
   sources, renamed exports, duplicate ids, an omitted author decision, or any
   source/output field that violates the shipped schemas. Export verification
   uses the TypeScript/TSX syntax tree, so JSX text, nested scopes, comments, and
@@ -79,11 +79,11 @@ my-widgets/
 ├── tsconfig.json       # jsxImportSource: "kerfjs"
 ├── tsup.config.ts      # external: ['kerfjs'], format esm, dts
 ├── kerf.components.json # explicit source metadata (never inferred from pixels)
-├── component-catalog-v2.json # deterministic generated AI catalog
+├── component-composition.json # deterministic generated AI catalog
 ├── scripts/
 │   ├── kerf-component-catalog.mjs # local generator + check mode
 │   ├── component-metadata.schema.json # author-source schema used by the checker
-│   └── component-catalog-v2.schema.json # emitted-catalog schema used by the checker
+│   └── component-composition.schema.json # emitted-catalog schema used by the checker
 ├── LICENSE             # MIT license with the package contributor notice
 ├── .gitignore
 ├── README.md

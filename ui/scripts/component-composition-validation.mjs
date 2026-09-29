@@ -4,7 +4,7 @@ const isStringList = (value) =>
   value.every((item) => typeof item === 'string' && item.length > 0) &&
   new Set(value).size === value.length;
 
-export function validateCatalogV2(catalog, options = {}) {
+export function validateComposition(catalog, options = {}) {
   const failures = [];
   const fail = (message) => failures.push(message);
   if (catalog?.schemaVersion !== 2) fail('schemaVersion must equal 2');
@@ -275,7 +275,9 @@ export function validateCatalogV2(catalog, options = {}) {
     );
     const actual = catalog.entries.map((entry) => entry.key);
     if (JSON.stringify(actual) !== JSON.stringify(expected))
-      fail('v2 entries must project every v1 entry once and in order');
+      fail(
+        'composition entries must project every component-catalog entry once and in order',
+      );
   }
   return failures;
 }

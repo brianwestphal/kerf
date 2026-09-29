@@ -7,7 +7,7 @@ kerf-ui-skill-version: 1.42.4
 # Building with @kerfjs/ui
 
 Read `../docs/component-selection.md` first, then `./component-catalog.json`,
-`./component-catalog-v2.json`,
+`./component-composition.json`,
 `./public-api-signatures-v1.md`, `./compile-time-contracts-v1.json`,
 `./webawesome-jsx-signatures-v1.md`,
 `../docs/recipes.md`, `../README.md`,
@@ -31,7 +31,7 @@ conforms to `./component-catalog-extension.schema.json`. Treat its entries as a
 second, package-qualified input beside `./component-catalog.json`: search both,
 preserve their source identity, and use the shared `geometry` vocabulary across
 their composition boundary. When a consuming project has reusable visual
-components, prefer its generated `component-catalog-v2.json`. A package
+components, prefer its generated `component-composition.json`. A package
 scaffolded by `create-kerf-component` owns the decisions in
 `kerf.components.json`; run `npm run catalog:check` before using its output. If
 no generated extension exists, start from the checked examples and require the
@@ -40,12 +40,13 @@ rendered appearance. A `data-*` attribute listed in an entry's
 `wiring.stateAttributes` belongs to the named helper: never render, remove, or
 branch on it as application state.
 
-Use v1 for selection, delivery, and compatibility. Use v2 when evaluating
+Use `component-catalog.json` for selection, delivery, and compatibility. Use
+its generated composition layer, `component-composition.json`, when evaluating
 composition. Join catalogs by `key` (`package:id`), never bare `id`. Treat
 `generated-permissive-default` composition provenance as unknown/allowed, not
 as a prohibition. Emit a diagnostic only after mechanically establishing its
 exact `when` condition; subjective guidance stays prose. App entries use the
-v2 extension schema and retain their own package identity across Kerf edges.
+composition extension schema and retain their own package identity across Kerf edges.
 Treat a zone's optional `jsx.prop` as its only authoritative JSX binding; never
 assume the zone id itself is a prop. `children` carries one homogeneous primary
 region. Semantic positions and replacement content use explicit named content

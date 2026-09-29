@@ -62,10 +62,10 @@ test('scaffolds the expected file tree', () => {
       'src/index.ts',
       'src/counter.tsx',
       'kerf.components.json',
-      'component-catalog-v2.json',
+      'component-composition.json',
       'scripts/kerf-component-catalog.mjs',
       'scripts/component-metadata.schema.json',
-      'scripts/component-catalog-v2.schema.json',
+      'scripts/component-composition.schema.json',
     ]) {
       assert.ok(existsSync(join(target, f)), `missing ${f}`);
     }
@@ -115,7 +115,7 @@ test('package.json keeps kerfjs a peerDependency (never bundled), with ESM + sub
     assert.ok(pkg.exports['./counter'], 'subpath export missing');
     assert.deepEqual(pkg.kerfComponentCatalog, {
       source: './kerf.components.json',
-      output: './component-catalog-v2.json',
+      output: './component-composition.json',
     });
     assert.equal(
       pkg.scripts['catalog:generate'],
@@ -127,7 +127,7 @@ test('package.json keeps kerfjs a peerDependency (never bundled), with ESM + sub
     );
     assert.match(pkg.scripts.prepublishOnly, /catalog:check/);
     assert.ok(pkg.files.includes('dist'), 'files must ship dist');
-    assert.ok(pkg.files.includes('component-catalog-v2.json'));
+    assert.ok(pkg.files.includes('component-composition.json'));
     assert.ok(pkg.files.includes('kerf.components.json'));
     assert.ok(pkg.files.includes('LICENSE'), 'files must ship LICENSE');
   });
@@ -225,7 +225,7 @@ test('scaffolded local catalog script verifies generated metadata end to end', (
       [join(target, 'scripts/kerf-component-catalog.mjs'), '--check'],
       { cwd: target, encoding: 'utf8' },
     );
-    assert.match(output, /verified component-catalog-v2\.json/);
+    assert.match(output, /verified component-composition\.json/);
   });
 });
 

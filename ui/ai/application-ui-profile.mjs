@@ -289,7 +289,7 @@ export function validateApplicationUiProfile(
       add(
         'KUI-P005',
         `${path}.selection`,
-        'The @kerfjs/ui catalog requires its v1 selection location.',
+        'The @kerfjs/ui catalog requires its component-catalog.json selection location.',
       );
     for (const kind of ['selection', 'composition']) {
       if (kind === 'selection' && !catalog?.selection) continue;

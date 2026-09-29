@@ -59,14 +59,14 @@ export default [
 ];
 ```
 
-The UI rules resolve the installed `@kerfjs/ui` v1 selection catalog, v2 composition catalog, and application profile defaults. They then merge `.kerf-ui-profile.json` files from the workspace root toward the linted file. Package authors and monorepos can provide explicit artifacts without duplicating their facts:
+The UI rules resolve the installed `@kerfjs/ui` selection catalog (`component-catalog.json`), composition catalog (`component-composition.json`), and application profile defaults. They then merge `.kerf-ui-profile.json` files from the workspace root toward the linted file. Package authors and monorepos can provide explicit artifacts without duplicating their facts:
 
 ```js
 settings: {
   kerfjs: {
     ui: {
       workspaceRoot: import.meta.dirname,
-      catalogPath: './vendor/component-catalog-v2.json',
+      catalogPath: './vendor/component-composition.json',
       selectionCatalogPath: './vendor/component-catalog.json',
       profileDefaultsPath: './vendor/application-ui-profile.defaults.json',
       profileContractPath: './vendor/application-ui-profile-sync.cjs',

@@ -820,7 +820,7 @@ export async function planKerfSetup({
       key: 'kerfComponentCatalog',
       value: {
         source: './kerf.components.json',
-        output: './component-catalog-v2.json',
+        output: './component-composition.json',
       },
       id: 'package.json#kerfComponentCatalog',
       ...context,
@@ -1011,7 +1011,7 @@ export async function planKerfSetup({
         : JSON.parse(currentProfileSource);
     const catalogRelative = portable(
       root,
-      resolve(selected.directory, 'component-catalog-v2.json'),
+      resolve(selected.directory, 'component-composition.json'),
     );
     const profile = mergeProfile(
       currentProfile,

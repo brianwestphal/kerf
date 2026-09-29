@@ -39,7 +39,7 @@ export type CatalogCssValueProp = {
   unsafeHelper?: string;
   examples: string[];
 };
-export interface CatalogCompositionEntryV2 {
+export interface CatalogCompositionEntry {
   key: CatalogQualifiedKey;
   package: string;
   id: string;
@@ -102,10 +102,10 @@ export interface CatalogCompositionEntryV2 {
   diagnostics: CatalogDiagnostic[];
   provenance: { selection: string; composition: string };
 }
-export interface ComponentCatalogV2 {
+export interface ComponentComposition {
   $schema?: string;
   schemaVersion: 2;
   package: string;
   compatibility: { v1Catalog: string; identity: 'package:id' };
-  entries: CatalogCompositionEntryV2[];
+  entries: CatalogCompositionEntry[];
 }

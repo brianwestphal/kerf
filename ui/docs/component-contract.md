@@ -18,12 +18,14 @@ package delivery paths, Web Awesome's installed manifest, AI guidance, and
 documentation links. Nuanced prose in this contract and the selection guide
 remains authored rather than generated.
 
-### Composition catalog v2
+### Composition catalog
 
-[`component-catalog-v2.json`](../ai/component-catalog-v2.json) adds a formal,
-machine-evaluable composition layer without changing the v1 selection and
-delivery contract. Every v1 entry projects once, in order, under the stable
-qualified key `package:id`. Each v2 entry explicitly covers parents/contexts,
+[`component-composition.json`](../ai/component-composition.json) adds a formal,
+machine-evaluable composition layer beside `component-catalog.json` without
+changing its selection and delivery contract; it is a generated companion, not
+a newer version of that catalog. Every component-catalog entry projects once,
+in order, under the stable qualified key `package:id`. Each composition entry
+explicitly covers parents/contexts,
 named zones and cardinality, optional explicit JSX prop bindings, child concepts, state ownership, required wiring,
 responsive ownership, layout and geometry, accessibility obligations, public
 CSS boundaries, diagnostics, and provenance. A wrapper entry may add
@@ -46,7 +48,8 @@ ESLint, `kerf-ui-analyze`, and `kerf-ui-doctor` then issue the same stable
 (`on`), the `helper` that writes it, and what it means. An application must not
 render, remove, or treat these attributes as its own state; tools use the list
 to tell them apart from app-authored attributes. They are declared once, on the
-helper's wiring item in the v1 catalog, and v2 flattens them. `check:catalog`
+helper's wiring item in the component catalog, and the composition catalog
+flattens them. `check:catalog`
 reads each `wire*` helper's source and fails when its declarations differ from
 the `data-*` attributes it actually writes. First-party entries always carry
 the list, empty when their helpers write none; it is optional in extension
@@ -55,7 +58,7 @@ catalogs.
 The generator starts with permissive defaults. An `any` mode records that the
 catalog has no defensible prohibition; it does not claim every composition is
 recommended. Objective rules live in
-`component-catalog-v2-overrides.json` and may carry stable `KUI-C###`
+`component-composition-rules.json` and may carry stable `KUI-C###`
 diagnostics. A tool reports a diagnostic only after proving its exact `when`
 condition. Subjective choice, product policy, and visual taste remain prose.
 
@@ -64,7 +67,7 @@ Use `children` for one homogeneous primary region; use explicit named
 `SafeHtml` props for semantic positions or replacement content such as
 `header`, `footer`, `leading`, `trailing`, `icon`, and `action`. These are typed
 function-component props, not native web-component `<slot>` elements and not a
-generic `slots={{...}}` object. A v2 zone declares `jsx.prop` only when tooling
+generic `slots={{...}}` object. A composition zone declares `jsx.prop` only when tooling
 can soundly bind that zone to one public JSX prop; `children` is spelled
 explicitly. Zones without that binding remain guidance and are never guessed
 from their ids. Static tools inspect only visible JSX structure and leave
@@ -85,13 +88,14 @@ can return a region plus a sibling restore control, leaving no single root that
 can truthfully own native slot assignment. Their single-root controls and all
 alternate-root branches of supported components retain the contract.
 
-V1 consumers continue unchanged. V2 consumers read v1 for selection/delivery
-and v2 for composition. `npm run catalog:sync` projects every new component,
+Component-catalog consumers continue unchanged. Composition-aware consumers
+read `component-catalog.json` for selection/delivery and
+`component-composition.json` for composition. `npm run catalog:sync` projects every new component,
 recipe, and supported Web Awesome entry, and the completeness gate prevents
-silent omissions. Downstream catalogs use the v2 extension schema and types,
+silent omissions. Downstream catalogs use the composition extension schema and types,
 retain their own package identity, and qualify cross-catalog references. See
 the checked
-[`component-catalog-extension-v2.json`](./examples/component-catalog-extension-v2.json)
+[`component-composition-extension.json`](./examples/component-composition-extension.json)
 application-owned example.
 
 ### Compile-time contract boundary
@@ -117,10 +121,11 @@ layout/responsive conventions, and narrow rule exceptions there. Product
 records, copy, permissions, user preferences, and transport state do not belong
 in this policy file.
 
-Every catalog location names a v2 composition artifact. `selection` is optional
-for consumer packages whose generated metadata declares v1 selection guidance
-not applicable; `@kerfjs/ui` retains its required v1 selection artifact. This
-lets a generated `component-catalog-v2.json` participate directly without a
+Every catalog location names a composition artifact. `selection` is optional
+for consumer packages whose generated metadata declares component-catalog
+selection guidance not applicable; `@kerfjs/ui` retains its required
+`component-catalog.json` selection artifact. This
+lets a generated `component-composition.json` participate directly without a
 fabricated compatibility file.
 
 Discovery and precedence are deterministic:
@@ -247,7 +252,7 @@ on a child's state through `:has()`, naming the child by its class there, as
 `npm run check:css-ownership` allows a foreign component class only in such an
 ancestor context or `:has()` argument.
 
-The v2 composition catalog additionally requires `boundaries.rootClass` to be
+The composition catalog additionally requires `boundaries.rootClass` to be
 either one exact member of `publicClasses` or `null` when the entry has no
 rendered class root. Runtime geometry tooling uses this explicit field; array
 order never implies root ownership.

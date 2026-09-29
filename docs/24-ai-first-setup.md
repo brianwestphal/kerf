@@ -91,7 +91,7 @@ the Kerf ESLint preset, and `kerf:check`. UI setup additionally adds doctor and
 catalog scripts, an empty schema-valid `kerf.components.json`, and a
 package-qualified generated catalog in `.kerf-ui-profile.json`. The empty
 metadata source is deliberate: app components are added as authored while its
-empty v2 catalog is already valid for discovery.
+empty composition catalog is already valid for discovery.
 
 What gets written (each value is merged, never silently overwritten — an
 authored difference becomes a conflict):
@@ -114,7 +114,7 @@ authored difference becomes a conflict):
   existing entry in `devDependencies` / `peerDependencies` stays in that
   section.
 - **`package.json#kerfComponentCatalog`** (UI mode) —
-  `{ "source": "./kerf.components.json", "output": "./component-catalog-v2.json" }`;
+  `{ "source": "./kerf.components.json", "output": "./component-composition.json" }`;
   both paths must stay inside the selected package.
 - **`tsconfig.json`** — `target: ES2022`, `module: ESNext`,
   `moduleResolution: Bundler`, `strict: true`, `jsx: react-jsx`,

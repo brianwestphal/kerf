@@ -327,7 +327,7 @@ For exhaustive tool retrieval, load the shipped
 versioned schema and drift gate keep public exports, delivery paths,
 relationships, catalog routes, and current documentation links synchronized.
 Load
-[`ui/ai/component-catalog-v2.json`](../../ui/ai/component-catalog-v2.json)
+[`ui/ai/component-composition.json`](../../ui/ai/component-composition.json)
 when mechanically evaluating composition. Before choosing for a specific app,
 use the shipped `ui/ai/application-ui-profile.mjs` discovery API to resolve
 package defaults, workspace `.kerf-ui-profile.json`, and parent-to-child

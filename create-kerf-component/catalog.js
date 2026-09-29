@@ -20,7 +20,7 @@ const metadataSchema = JSON.parse(
   readFileSync(join(scriptRoot, 'component-metadata.schema.json'), 'utf8'),
 );
 const catalogSchema = JSON.parse(
-  readFileSync(join(scriptRoot, 'component-catalog-v2.schema.json'), 'utf8'),
+  readFileSync(join(scriptRoot, 'component-composition.schema.json'), 'utf8'),
 );
 
 export class CatalogError extends Error {
@@ -697,7 +697,7 @@ function dependencyCatalogKeys(packageRoot, packageName, cache) {
       } catch {
         // An unreadable manifest leaves the package unresolved below.
       }
-      catalogPath ??= join(dependencyRoot, 'ai', 'component-catalog-v2.json');
+      catalogPath ??= join(dependencyRoot, 'ai', 'component-composition.json');
       try {
         const catalog = JSON.parse(readFileSync(catalogPath, 'utf8'));
         keys = new Set(
@@ -800,7 +800,7 @@ export function generateCatalogs(root = process.cwd()) {
       .map((component) => toEntry(packageJson.name, component));
     const catalog = {
       $schema:
-        'https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-catalog-extension-v2.schema.json',
+        'https://raw.githubusercontent.com/brianwestphal/kerf/main/ui/ai/component-composition-extension.schema.json',
       schemaVersion: 2,
       package: packageJson.name,
       compatibility: {

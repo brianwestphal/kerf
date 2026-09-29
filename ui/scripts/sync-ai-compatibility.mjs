@@ -15,7 +15,7 @@ const compatibility = await readJson('ai-regressions/compatibility-v3.json');
 const conditions = await readJson('ai-regressions/conditions-v3.json');
 const artifacts = {
   selectionCatalog: 'ai/component-catalog.json',
-  behaviorCatalog: 'ai/component-catalog-v2.json',
+  behaviorCatalog: 'ai/component-composition.json',
   diagnosticRegistry: 'ai/application-ui-diagnostic-ids-v1.json',
   qualityContract: 'ai-regressions/quality-contract-v3.json',
 };

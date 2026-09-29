@@ -51,12 +51,12 @@ beforeAll(() => {
     'create-kerf-component/index.js',
     'create-kerf-component/catalog.js',
     'create-kerf-component/component-metadata.schema.json',
-    'create-kerf-component/component-catalog-v2.schema.json',
+    'create-kerf-component/component-composition.schema.json',
     'create-kerf-component/template',
     'ui/package.json',
     'ui/ai/public-api-signatures-v1.md',
     'ui/ai/webawesome-jsx-signatures-v1.md',
-    'ui/ai/component-catalog-v2.schema.json',
+    'ui/ai/component-composition.schema.json',
   ])
     copy(relative);
 
@@ -109,11 +109,11 @@ describe('release package preparation', { timeout: 30_000 }, () => {
     );
     const scaffoldSchema = join(
       fixtureRoot,
-      'create-kerf-component/component-catalog-v2.schema.json',
+      'create-kerf-component/component-composition.schema.json',
     );
     const canonicalSchema = join(
       fixtureRoot,
-      'ui/ai/component-catalog-v2.schema.json',
+      'ui/ai/component-composition.schema.json',
     );
     writeFileSync(scaffoldSchema, '{}\n');
 
@@ -180,9 +180,9 @@ describe('release package preparation', { timeout: 30_000 }, () => {
         .title,
     ).toBe('Kerf consumer component metadata source');
     expect(
-      JSON.parse(packedText(createTarball, 'component-catalog-v2.schema.json'))
+      JSON.parse(packedText(createTarball, 'component-composition.schema.json'))
         .title,
-    ).toBe('Kerf UI composition catalog v2');
+    ).toBe('Kerf UI composition catalog');
 
     const uiTarball = tarballs.get('@kerfjs/ui')!;
     const uiManifest = JSON.parse(packedText(uiTarball, 'package.json'));

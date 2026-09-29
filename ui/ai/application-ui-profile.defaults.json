@@ -7,7 +7,7 @@
       "package": "@kerfjs/ui",
       "selection": { "path": "./component-catalog.json", "schemaVersion": 1 },
       "composition": {
-        "path": "./component-catalog-v2.json",
+        "path": "./component-composition.json",
         "schemaVersion": 2
       }
     }

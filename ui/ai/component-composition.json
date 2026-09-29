@@ -1,5 +1,5 @@
 {
-  "$schema": "./component-catalog-v2.schema.json",
+  "$schema": "./component-composition.schema.json",
   "schemaVersion": 2,
   "package": "@kerfjs/ui",
   "compatibility": {

@@ -16,7 +16,7 @@
   },
   "files": [
     "dist",
-    "component-catalog-v2.json",
+    "component-composition.json",
     "kerf.components.json",
     "README.md",
     "LICENSE"
@@ -30,7 +30,7 @@
   },
   "kerfComponentCatalog": {
     "source": "./kerf.components.json",
-    "output": "./component-catalog-v2.json"
+    "output": "./component-composition.json"
   },
   "peerDependencies": {
     "kerfjs": "^4.0.0"

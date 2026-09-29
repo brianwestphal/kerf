@@ -24,10 +24,10 @@ for (let index = 0; index < args.length; index += 1) {
   throw new Error(`Unknown argument: ${arg}`);
 }
 
-const source = resolve(root, 'ui/ai/component-catalog-v2.schema.json');
+const source = resolve(root, 'ui/ai/component-composition.schema.json');
 const target = resolve(
   root,
-  'create-kerf-component/component-catalog-v2.schema.json',
+  'create-kerf-component/component-composition.schema.json',
 );
 const canonical = await readFile(source, 'utf8');
 
