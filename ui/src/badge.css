@@ -64,17 +64,6 @@
 }
 
 .kui-badge[data-appearance="solid"] {
-  /* A placeholder's skeleton inside a solid badge: the generic text-color tint
-     is nearly invisible on the saturated fill, so derive it from the badge's
-     own foreground instead, which contrasts with the fill in every tone and
-     color scheme. Quiet and outline badges sit on a pale fill and keep the
-     generic tint. */
-  --_kui-skeleton-fill: color-mix(
-    in srgb,
-    var(--_kui-badge-on-solid) 45%,
-    transparent
-  );
-
   color: var(--_kui-badge-on-solid);
   background: var(--_kui-badge-fill-solid);
 }

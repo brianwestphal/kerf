@@ -186,23 +186,79 @@ function ownedAppMarkupClasses(source) {
   return owned;
 }
 
+/**
+ * Split a selector list into its complex selectors, and each complex selector
+ * into its compound selectors, ignoring commas and combinators nested inside
+ * parentheses, attribute brackets, or quotes.
+ */
+function complexSelectors(selectorList) {
+  const selectors = [];
+  let compounds = [];
+  let current = '';
+  let depth = 0;
+  let quote = null;
+  const endCompound = () => {
+    if (current.trim()) compounds.push(current.trim());
+    current = '';
+  };
+  for (const char of selectorList) {
+    if (quote) {
+      current += char;
+      if (char === quote) quote = null;
+    } else if (char === '"' || char === "'") {
+      quote = char;
+      current += char;
+    } else if (char === '(' || char === '[') {
+      depth += 1;
+      current += char;
+    } else if (char === ')' || char === ']') {
+      depth -= 1;
+      current += char;
+    } else if (depth === 0 && char === ',') {
+      endCompound();
+      selectors.push(compounds);
+      compounds = [];
+    } else if (depth === 0 && /[\s>+~]/.test(char)) {
+      endCompound();
+    } else current += char;
+  }
+  endCompound();
+  selectors.push(compounds);
+  return selectors;
+}
+
+function kuiClasses(selector) {
+  return [...selector.matchAll(/\.((?:kui)-[a-z0-9_-]+)/gi)].map(
+    ([, name]) => name,
+  );
+}
+
 const packageStyles = await cssFiles(resolve(root, 'src'));
 for (const file of packageStyles) {
   if (relative(file).startsWith('src/catalog/components/')) continue;
   const filename = file.slice(file.lastIndexOf('/') + 1);
   const defaultRoot = `kui-${filename.replace(/\.css$/, '')}`;
   const ownedRoots = packageClassRoots.get(filename) ?? [defaultRoot];
+  const owns = (name) =>
+    ownedRoots.some((rootClass) => ownsClass(rootClass, name));
   const source = await readFile(file, 'utf8');
   const sheet = postcss.parse(source, { from: file });
   sheet.walkRules((rule) => {
+    // A component may style itself in the context of a composing parent: a
+    // foreign class may appear only in an ancestor compound, and only when the
+    // subject compound selects this stylesheet's own class. The parent
+    // provides the context (its state and the values it names after itself);
+    // it never styles or configures the child from its own stylesheet.
     const foreign = [
       ...new Set(
-        [...rule.selector.matchAll(/\.((?:kui)-[a-z0-9_-]+)/gi)]
-          .map(([, name]) => name)
-          .filter(
-            (name) =>
-              !ownedRoots.some((rootClass) => ownsClass(rootClass, name)),
-          ),
+        complexSelectors(rule.selector).flatMap((compounds) => {
+          const subject = compounds.at(-1) ?? '';
+          const subjectClasses = kuiClasses(subject);
+          const contextual =
+            subjectClasses.length > 0 && subjectClasses.every(owns);
+          const checked = contextual ? [subject] : compounds;
+          return checked.flatMap(kuiClasses).filter((name) => !owns(name));
+        }),
       ),
     ];
     if (foreign.length > 0) {

@@ -51,13 +51,6 @@
   min-height: 0;
 }
 
-/* A resizable list keeps its committed size as content width; its region's
-   track grows by the unsafe inset it reaches. A collapsed region stays shut. */
-.kui-split-view[data-split-mode="split"]
-  > [data-component="resizable-region"]:not([data-collapsed="true"]) {
-  --kui-resizable-region-edge-extent: var(--_kui-split-view-safe-inline-start);
-}
-
 .kui-split-view__list,
 .kui-split-view__detail {
   --kui-edge-inset-block-start: var(--_kui-split-view-safe-block-start);

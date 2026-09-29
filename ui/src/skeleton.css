@@ -7,14 +7,28 @@
   height: 1em;
   border-radius: var(--kui-skeleton-radius);
   /* Deliberately unanimated: a flat, subtle fill that reads as "not yet loaded"
-     without drawing the eye or implying progress. A host with its own solid
-     fill (a solid Badge) supplies `--_kui-skeleton-fill` derived from its
-     foreground, since a text-color tint vanishes on a saturated fill. */
+     without drawing the eye or implying progress. On a host with its own
+     solid fill (a solid Badge) the skeleton derives `--_kui-skeleton-fill`
+     from the host's foreground, since a text-color tint vanishes on a
+     saturated fill. */
   background: var(
     --_kui-skeleton-fill,
     color-mix(in srgb, var(--kui-color-text) 12%, transparent)
   );
   vertical-align: middle;
+}
+
+/* A placeholder's skeleton inside a solid badge: the generic text-color tint is
+   nearly invisible on the saturated fill, so derive it from the on-solid
+   foreground the badge provides, which contrasts with the fill in every tone
+   and color scheme. Quiet and outline badges sit on a pale fill and keep the
+   generic tint. */
+.kui-badge[data-appearance="solid"] .kui-skeleton {
+  --_kui-skeleton-fill: color-mix(
+    in srgb,
+    var(--_kui-badge-on-solid) 45%,
+    transparent
+  );
 }
 
 .kui-skeleton[data-block="true"] {

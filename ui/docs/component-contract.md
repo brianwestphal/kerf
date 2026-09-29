@@ -232,6 +232,17 @@ documented props and tokens; package components may compose other components
 only through those public contracts, never by styling a child's classes from a
 parent stylesheet.
 
+Inside the package, a component never styles another component or writes
+another component's variables. When a child must adapt to a composing parent,
+the child styles itself in that context from its own stylesheet: the parent's
+class and state appear only in an ancestor compound, the selector's subject is
+the child's own class, and the child reads context values the parent provides
+under the parent's name. `ResizableRegion` widens its edge extent by the
+unsafe inset a split `SplitView` provides, and a `Skeleton` derives its fill
+from a solid `Badge`'s on-solid color, both in their own stylesheets.
+`npm run check:css-ownership` allows a foreign component class only in such an
+ancestor context.
+
 The v2 composition catalog additionally requires `boundaries.rootClass` to be
 either one exact member of `publicClasses` or `null` when the entry has no
 rendered class root. Runtime geometry tooling uses this explicit field; array

@@ -6,13 +6,21 @@
   --kui-resizable-region-handle-active-color: var(--kui-color-text-link);
   /* Extra track a horizontal region adds when it reaches an unsafe screen edge,
      so its surface paints through the unsafe area while its committed size
-     stays the content width. A composing layout sets it on the region (a
-     SplitView list does); it never inherits into a nested region. */
+     stays the content width. The region sets it itself from the context of a
+     layout that places it at an edge (a SplitView list); it never inherits
+     into a nested region. */
   --kui-resizable-region-edge-extent: 0px;
   position: relative;
   display: flex;
   min-width: 0;
   min-height: 0;
+}
+/* As a split SplitView's list, the region's track grows by the unsafe
+   inline-start inset the SplitView provides, while its committed size stays
+   the content width. A collapsed region stays shut. */
+.kui-split-view[data-split-mode="split"]
+  > .kui-resizable-region:not([data-collapsed="true"]) {
+  --kui-resizable-region-edge-extent: var(--_kui-split-view-safe-inline-start);
 }
 .kui-resizable-region[data-axis="horizontal"] {
   width: calc(
