@@ -31,7 +31,9 @@ import {
 import { scoreAiRegression } from '../../scripts/lib/ai-regression-score.mjs';
 import { scoreAiRegressionV2 } from '../../scripts/lib/ai-regression-score-v2.mjs';
 
-const compileTestTimeout = 15_000;
+// These cases run tsc over generated fixtures; 15s timed out under heavy
+// machine load while passing alone, so budget for a loaded pre-push gate.
+const compileTestTimeout = 60_000;
 const root = resolve(import.meta.dirname, '../..');
 const readJson = async (path: string) =>
   JSON.parse(await readFile(resolve(root, path), 'utf8'));
