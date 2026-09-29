@@ -92,11 +92,16 @@ you are unsure whether a customization matters.**
 ## When custom CSS is legitimate
 
 Custom CSS is for **genuinely new structure the package does not provide** — a
-recipe-specific grid, a product arrangement of panes — and even then it may only:
+recipe-specific grid, a product arrangement of panes — and even then it styles
+only that new structure:
 
-- join classes listed in a component's `publicClasses` (the catalog is the
-  authority), never reach in by tag/id/attribute or an unlisted class; and
-- override documented `--kui-*` tokens at the narrowest real composition boundary.
+- it never selects a kerf component (no `.kui-*` class, `[data-component]`, a
+  `wa-*` element a kerf component renders, or its `::part()`s) — configure
+  those through their props, and treat a missing prop as a component gap
+  (ticket it) rather than overriding; and
+- it sets `--kui-*` theme tokens only for theming (color ramps, the spacing
+  scale), never to resize, re-inset, or re-frame a component that has a prop
+  for it.
 
 It is **not** for spacing (use the scale / content-item), sizing a component (use
 its props/tokens), giving something a heading (use the standard Toolbar +
@@ -117,7 +122,10 @@ a `wa-*` tag they render; write only your own `--_kui-<self>-*` variables and
 name the context you provide after yourself; never put a hook class on a
 composed child's root to restyle it. `npm run check:css-ownership` enforces
 all of this (see `docs/component-contract.md`); fix a finding rather than
-adding an exception to `scripts/lib/css-ownership.mjs`.
+adding an exception to `scripts/lib/css-ownership.mjs`. The same rule is the
+guidance for applications and component packages built on kerf ui
+(`ai/skill.md`, `docs/design-philosophy.md`): components own their styles and
+are configured, never overridden.
 
 ## Demos and recipes are the proof
 
