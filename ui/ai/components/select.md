@@ -90,6 +90,8 @@ The component owns its own styles. Configure it through its props and variants; 
 
 Public class hooks (select for layout placement only, never to change the component's look): `kui-select`, `kui-select--custom-selected`, `kui-select--fit-menu`, `kui-select--label-hidden`, `kui-select__custom-selected`, `kui-select__group`, `kui-select__group--separated`, `kui-select__group-title`, `kui-select__icon`.
 
+Never put `kui-select`, `kui-select--custom-selected`, `kui-select--fit-menu`, `kui-select--label-hidden`, `kui-select__custom-selected`, `kui-select__group`, `kui-select__group--separated`, `kui-select__group-title`, `kui-select__icon` on an element you write; render `Select` instead (`KUI-L103`).
+
 Public tokens it reads: `--kui-color-neutral-border-quiet`, `--kui-color-neutral-on-quiet`, `--kui-disclosure-icon-scale`, `--kui-font-2xs`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).

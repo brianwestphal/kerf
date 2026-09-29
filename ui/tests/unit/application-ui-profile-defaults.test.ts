@@ -53,7 +53,7 @@ describe('package default application UI profile', () => {
     }
   });
 
-  it('keeps the UX demo, recipes, and catalog shell free of directly rendered Discouraged elements', async () => {
+  it('keeps the UX demo, recipes, and catalog shell free of directly rendered Discouraged elements and recreated component anatomy', async () => {
     const eslint = new ESLint({
       cwd: uiRoot,
       overrideConfigFile: true,
@@ -78,7 +78,17 @@ describe('package default application UI profile', () => {
               },
             },
           },
-          rules: { 'kerfjs/ui-preferences': 'error' },
+          rules: {
+            'kerfjs/ui-preferences': 'error',
+            // KUI-L101..L103: private anatomy, unknown tokens, and a
+            // component's class written onto an element the app owns.
+            'kerfjs/ui-public-boundaries': 'error',
+          },
+        },
+        // The catalog shell is package source: it owns its private anatomy.
+        {
+          files: ['src/**'],
+          rules: { 'kerfjs/ui-public-boundaries': 'off' },
         },
       ],
       // The Web Awesome catalog specimens render each Discouraged element on

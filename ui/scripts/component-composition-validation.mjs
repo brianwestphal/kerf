@@ -214,6 +214,16 @@ export function validateComposition(catalog, options = {}) {
         !entry.boundaries.publicClasses.includes(entry.boundaries.rootClass))
     )
       fail(`${at} rootClass must be null or name one publicClasses entry`);
+    if ('placeableClasses' in (entry?.boundaries ?? {})) {
+      if (!isStringList(entry.boundaries.placeableClasses))
+        fail(`${at} placeableClasses must be a unique string list`);
+      else
+        for (const className of entry.boundaries.placeableClasses)
+          if (!entry.boundaries.publicClasses?.includes(className))
+            fail(
+              `${at} placeableClasses names ${className}, which is not one of its publicClasses`,
+            );
+    }
     if ('cssValueProps' in (entry ?? {}) && !Array.isArray(entry.cssValueProps))
       fail(`${at} cssValueProps must be an array when present`);
     const cssPaths = new Set();

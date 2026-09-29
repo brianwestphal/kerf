@@ -265,6 +265,35 @@ for (const entry of artifact.entries) {
 for (const entry of composition.entries)
   if (!Array.isArray(entry.wiring.stateAttributes))
     fail(`${entry.key} must list wiring.stateAttributes (empty when none)`);
+// A public class is either component anatomy (render the component) or
+// placeable on an application's own element. An entry that renders nothing —
+// a class-only contract such as layout utilities or the document root — has
+// no component to render, so every public class it declares is placeable.
+const componentExport = /^[A-Z][A-Za-z0-9]*$/;
+for (const entry of artifact.entries) {
+  const placeable = entry.placeableClasses ?? [];
+  const projected =
+    composition.entries.find(({ id }) => id === entry.id)?.boundaries
+      .placeableClasses ?? [];
+  if (JSON.stringify(projected) !== JSON.stringify(placeable))
+    fail(
+      `${entry.id}: composition placeableClasses must equal the selection catalog's`,
+    );
+  for (const className of placeable)
+    if (!(entry.publicClasses ?? []).includes(className))
+      fail(
+        `${entry.id}: placeableClasses names ${className}, which is not one of its publicClasses`,
+      );
+  const rendersComponent = (entry.publicExports ?? []).some((name) =>
+    componentExport.test(name),
+  );
+  if (!rendersComponent)
+    for (const className of entry.publicClasses ?? [])
+      if (!placeable.includes(className))
+        fail(
+          `${entry.id}: ${className} has no component that renders it; list it in placeableClasses`,
+        );
+}
 if (
   consumerCompositionSchema.allOf?.[0]?.$ref !==
   './component-composition.schema.json'

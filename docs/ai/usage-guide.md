@@ -202,7 +202,10 @@ Prefer an equivalent component prop or semantic token before writing an
 anatomy selector. When composition-specific layout still needs one, the
 machine catalog's `publicClasses` arrays are the exact supported boundary:
 public classes may be joined, but descendant tags, ids, attribute-only targets,
-and unlisted `kui-` classes are private.
+and unlisted `kui-` classes are private. Never write a component's anatomy
+class onto your own element to recreate it (`<aside class="kui-pane">`):
+render the component (`Pane`). Only an entry's `placeableClasses` belong on
+elements you write (`KUI-L103`).
 
 For application spacing, import `@kerfjs/ui/layout.css`, put `.kui-layout` on
 the composition root, and choose exactly one semantic owner for each page

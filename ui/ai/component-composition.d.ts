@@ -95,6 +95,8 @@ export interface CatalogCompositionEntry {
   boundaries: {
     rootClass: string | null;
     publicClasses: string[];
+    /** Public classes an application may place on its own elements; absent means none. */
+    placeableClasses?: string[];
     publicTokens: string[];
     publicParts?: string[];
   };

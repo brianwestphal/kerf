@@ -73,7 +73,46 @@ const thirdPartySettings = uiSettings({
 
 tester.run('ui-public-boundaries', boundaries, {
   valid: [
-    { code: '<div class="kui-toolbar" />;', settings },
+    // A component's own root class on that component is not a recreation.
+    {
+      code: 'import { Toolbar } from \'@kerfjs/ui\'; <Toolbar className="kui-toolbar" />;',
+      settings,
+    },
+    // Placeable classes: layout utilities, the document root, item geometry
+    // on a non-div carrier, and a Web Awesome modifier class.
+    {
+      code: '<main class="kui-content kui-scroll-owner"><p class="kui-inline-metadata" /></main>;',
+      settings: shippedUiSettings,
+    },
+    {
+      code: '<section class="app-palette kui-content"><ul class="kui-content-item" /><footer class="kui-control-cluster kui-content-item kui-content-item--framed" /></section>;',
+      settings: shippedUiSettings,
+    },
+    {
+      code: 'import { Text } from \'@kerfjs/ui/text\'; <Text class="kui-content-item" />;',
+      settings: shippedUiSettings,
+    },
+    {
+      code: '<wa-dialog class="hide-actions" />;',
+      settings: shippedUiSettings,
+    },
+    {
+      code: '<div class="kui-toolbar" />;',
+      filename: `${process.cwd()}/legacy/view.tsx`,
+      settings: uiSettings({
+        profile: {
+          ...profile,
+          exceptions: [
+            {
+              id: 'legacy-toolbar',
+              rules: ['KUI-L103'],
+              target: 'legacy',
+              rationale: 'Migration boundary.',
+            },
+          ],
+        },
+      }),
+    },
     // The documented @kerfjs/ui/document.css mount container (ui/README.md,
     // ui/docs/document-baseline.md), in the exact downstream shape.
     {
@@ -83,10 +122,6 @@ tester.run('ui-public-boundaries', boundaries, {
     {
       code: '<div id="app" className="kui-app-root" />;',
       settings: shippedUiSettings,
-    },
-    {
-      code: '<div class="kui-workbench kui-workbench__rail kui-workbench__rail--left kui-workbench__rail--right kui-workbench__center kui-workbench__main kui-workbench__drawer kui-workbench__panel-content" />;',
-      settings,
     },
     { code: "const css = 'color: var(--kui-color-border)';", settings },
     {
@@ -112,6 +147,106 @@ tester.run('ui-public-boundaries', boundaries, {
     },
   ],
   invalid: [
+    // Recreating a component by its anatomy classes instead of rendering it.
+    {
+      code: '<div class="kui-toolbar" />;',
+      settings,
+      errors: [
+        {
+          messageId: 'component',
+          data: {
+            name: 'kui-toolbar',
+            component: 'Toolbar',
+            render: '`Toolbar`',
+          },
+        },
+      ],
+    },
+    {
+      code: '<div class="kui-workbench kui-workbench__rail kui-workbench__main" />;',
+      settings,
+      errors: [
+        {
+          messageId: 'component',
+          data: {
+            name: 'kui-workbench',
+            component: 'Workbench',
+            render: '`Workbench`',
+          },
+        },
+        {
+          messageId: 'component',
+          data: {
+            name: 'kui-workbench__rail',
+            component: 'Workbench',
+            render: '`Workbench`',
+          },
+        },
+        {
+          messageId: 'component',
+          data: {
+            name: 'kui-workbench__main',
+            component: 'Workbench',
+            render: '`Workbench`',
+          },
+        },
+      ],
+    },
+    {
+      code: '<aside class="kui-pane"><nav className={"kui-pane__content kui-content"} /></aside>;',
+      settings: shippedUiSettings,
+      errors: [
+        {
+          messageId: 'component',
+          data: { name: 'kui-pane', component: 'Pane', render: '`Pane`' },
+        },
+        {
+          messageId: 'component',
+          data: {
+            name: 'kui-pane__content',
+            component: 'Pane',
+            render: '`Pane`',
+          },
+        },
+      ],
+    },
+    {
+      code: '<wa-dropdown class="kui-popup-menu"><a class="kui-toolbar-action-link" /></wa-dropdown>;',
+      settings: shippedUiSettings,
+      errors: [
+        {
+          messageId: 'component',
+          data: {
+            name: 'kui-popup-menu',
+            component: 'PopupMenu',
+            render: '`PopupMenu`',
+          },
+        },
+        {
+          messageId: 'component',
+          data: {
+            name: 'kui-toolbar-action-link',
+            component: 'ToolbarActionLink',
+            render: '`ToolbarActionLink`',
+          },
+        },
+      ],
+    },
+    // Another component's anatomy class as a hook on a component's root.
+    {
+      code: 'import { Text } from \'@kerfjs/ui/text\'; <Text class="kui-toolbar-text" />;',
+      settings: shippedUiSettings,
+      errors: [
+        {
+          messageId: 'component',
+          data: {
+            name: 'kui-toolbar-text',
+            component: 'ToolbarText',
+            render: '`ToolbarText`',
+          },
+        },
+      ],
+    },
     {
       code: '<div className="kui-private" />;',
       settings,

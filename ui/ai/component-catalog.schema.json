@@ -39,6 +39,7 @@
         "variants": { "type": "array", "items": { "type": "string" } },
         "accessibility": { "type": "array", "items": { "type": "string" } },
         "publicClasses": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "placeableClasses": { "description": "Public classes an application may place on its own elements (layout utilities, a document root, or item geometry on a non-div carrier). Every other public class is component anatomy: render the component instead.", "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "publicTokens": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "cssValueProps": { "type": "array", "items": { "$ref": "#/$defs/cssValueProp" }, "uniqueItems": true },
         "geometry": { "$ref": "#/$defs/geometry" },

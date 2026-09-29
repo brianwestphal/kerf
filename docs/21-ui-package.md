@@ -503,7 +503,12 @@ Each catalog entry's `publicClasses` array is the exact stable CSS-anatomy
 boundary. Applications should prefer an equivalent component prop or semantic
 token; composition-specific selectors may join cataloged public classes, but
 must not depend on descendant tags, ids, attribute-only targets, or unlisted
-implementation classes.
+implementation classes. Only the subset an entry lists in `placeableClasses`
+(layout utilities, `kui-app-root`, `kui-content-item` on a non-div carrier,
+Web Awesome `hide-actions`) may be written onto an application-owned element;
+every other public class is a component's rendered anatomy, so
+`eslint-plugin-kerfjs` reports it there as `KUI-L103` and names the component
+to render.
 
 ## 21.6 Production composition recipes
 

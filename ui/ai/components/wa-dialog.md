@@ -50,6 +50,8 @@ Theme it only through `@kerfjs/ui/webawesome.css` and cataloged tokens. Do not r
 
 Public class hooks (select for layout placement only, never to change the component's look): `hide-actions`.
 
+Classes an application may place on its own elements: `hide-actions`.
+
 ## Related
 
 - Components: [Button](./wa-button.md).

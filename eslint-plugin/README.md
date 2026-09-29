@@ -99,22 +99,22 @@ Use flat config (`eslint.config.js`), shown above. The `legacy-recommended` expo
 
 ## Rules
 
-| Rule                                                                             | Hard Rule                                            | Severity (recommended) |
-| -------------------------------------------------------------------------------- | ---------------------------------------------------- | ---------------------- |
-| [`no-inline-jsx-event-handlers`](docs/rules/no-inline-jsx-event-handlers.md)     | 10 — use `data-action` + `delegate()`                | `error`                |
-| [`require-data-key-in-each`](docs/rules/require-data-key-in-each.md)             | 2 — `data-key` per item                              | `error`                |
-| [`require-delegate-disposer`](docs/rules/require-delegate-disposer.md)           | 5 — capture `delegate()` disposers when scope < page | `warn`                 |
-| [`no-nested-mount`](docs/rules/no-nested-mount.md)                               | 6 — one `mount()` per root                           | `error`                |
-| [`prefer-module-jsx-augmentation`](docs/rules/prefer-module-jsx-augmentation.md) | 12 — augment `kerfjs/jsx-runtime`, not global        | `error`                |
-| [`prefer-attr-selector`](docs/rules/prefer-attr-selector.md)                     | — (rename-safety nudge for `delegate()` selectors)   | `warn`                 |
-| [`no-raw-with-dynamic-arg`](docs/rules/no-raw-with-dynamic-arg.md)               | — (XSS audit trail)                                  | `warn`                 |
-| [`ai-assistant-configs`](docs/rules/ai-assistant-configs.md)                     | — (project hygiene)                                  | `warn`                 |
-| [`ui-public-boundaries`](docs/rules/ui-public-boundaries.md)                     | — (cataloged CSS boundaries)                         | `error`                |
-| [`ui-component-ownership`](docs/rules/ui-component-ownership.md)                 | — (configure components, never override them)        | `error`                |
-| [`ui-composition`](docs/rules/ui-composition.md)                                 | — (cataloged parents and zones)                      | `error`                |
-| [`ui-css-values`](docs/rules/ui-css-values.md)                                   | — (cataloged property-specific value grammar)        | `error`                |
-| [`ui-preferences`](docs/rules/ui-preferences.md)                                 | — (application component choices)                    | `warn`                 |
-| [`ui-wiring`](docs/rules/ui-wiring.md)                                           | — (required setup and cleanup)                       | `warn`                 |
+| Rule                                                                             | Hard Rule                                                       | Severity (recommended) |
+| -------------------------------------------------------------------------------- | --------------------------------------------------------------- | ---------------------- |
+| [`no-inline-jsx-event-handlers`](docs/rules/no-inline-jsx-event-handlers.md)     | 10 — use `data-action` + `delegate()`                           | `error`                |
+| [`require-data-key-in-each`](docs/rules/require-data-key-in-each.md)             | 2 — `data-key` per item                                         | `error`                |
+| [`require-delegate-disposer`](docs/rules/require-delegate-disposer.md)           | 5 — capture `delegate()` disposers when scope < page            | `warn`                 |
+| [`no-nested-mount`](docs/rules/no-nested-mount.md)                               | 6 — one `mount()` per root                                      | `error`                |
+| [`prefer-module-jsx-augmentation`](docs/rules/prefer-module-jsx-augmentation.md) | 12 — augment `kerfjs/jsx-runtime`, not global                   | `error`                |
+| [`prefer-attr-selector`](docs/rules/prefer-attr-selector.md)                     | — (rename-safety nudge for `delegate()` selectors)              | `warn`                 |
+| [`no-raw-with-dynamic-arg`](docs/rules/no-raw-with-dynamic-arg.md)               | — (XSS audit trail)                                             | `warn`                 |
+| [`ai-assistant-configs`](docs/rules/ai-assistant-configs.md)                     | — (project hygiene)                                             | `warn`                 |
+| [`ui-public-boundaries`](docs/rules/ui-public-boundaries.md)                     | — (cataloged classes/tokens; component anatomy on app elements) | `error`                |
+| [`ui-component-ownership`](docs/rules/ui-component-ownership.md)                 | — (configure components, never override them)                   | `error`                |
+| [`ui-composition`](docs/rules/ui-composition.md)                                 | — (cataloged parents and zones)                                 | `error`                |
+| [`ui-css-values`](docs/rules/ui-css-values.md)                                   | — (cataloged property-specific value grammar)                   | `error`                |
+| [`ui-preferences`](docs/rules/ui-preferences.md)                                 | — (application component choices)                               | `warn`                 |
+| [`ui-wiring`](docs/rules/ui-wiring.md)                                           | — (required setup and cleanup)                                  | `warn`                 |
 
 The "Hard Rule" column refers to the numbered rules in [`docs/ai/usage-guide.md`](../docs/ai/usage-guide.md) on the main kerf repo. `no-raw-with-dynamic-arg` and `ai-assistant-configs` don't map to numbered Hard Rules — the former creates an audit trail for every dynamic `raw()` call site (potential XSS); the latter checks that the bundled AI-assistant configs are installed and current. See [`docs/12-ai-assistant-configs.md`](../docs/12-ai-assistant-configs.md) on the main kerf repo for the AI-configs design.
 

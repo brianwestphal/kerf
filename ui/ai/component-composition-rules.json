@@ -435,6 +435,7 @@
     "boundaries": {
       "rootClass": null,
       "publicClasses": ["hide-actions"],
+      "placeableClasses": ["hide-actions"],
       "publicTokens": []
     }
   },

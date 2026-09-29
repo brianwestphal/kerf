@@ -213,6 +213,53 @@ describe('component composition catalog contract', () => {
     );
   });
 
+  it("keeps placeableClasses a subset of each entry's public classes", async () => {
+    const composition = await readJson<ComponentComposition>(
+      '../../ai/component-composition.json',
+    );
+    const placeable = Object.fromEntries(
+      composition.entries
+        .filter((entry) => entry.boundaries.placeableClasses)
+        .map((entry) => [entry.id, entry.boundaries.placeableClasses]),
+    );
+    // Only class-only contracts, item geometry, and Web Awesome modifiers
+    // are the application's to place; everything else is rendered anatomy.
+    expect(placeable).toEqual({
+      'document-baseline': ['kui-app-root'],
+      layout: [
+        'kui-content',
+        'kui-control-cluster',
+        'kui-inline-metadata',
+        'kui-scroll-owner',
+      ],
+      'content-item': [
+        'kui-content-item',
+        'kui-content-item--pill',
+        'kui-content-item--framed',
+      ],
+      'wa-dialog': ['hide-actions'],
+    });
+    const toolbar = composition.entries.find(
+      (entry) => entry.id === 'toolbar',
+    )!;
+    toolbar.boundaries.placeableClasses = ['kui-toolbar', 'kui-not-public'];
+    expect(validateComposition(composition)).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining(
+          'placeableClasses names kui-not-public, which is not one of its publicClasses',
+        ),
+      ]),
+    );
+    toolbar.boundaries.placeableClasses = ['kui-toolbar', 'kui-toolbar'];
+    expect(validateComposition(composition)).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining(
+          'placeableClasses must be a unique string list',
+        ),
+      ]),
+    );
+  });
+
   it('rejects adversarial invalid fixtures with stable actionable findings', async () => {
     const [composition, fixtures] = await Promise.all([
       readJson<ComponentComposition>('../../ai/component-composition.json'),

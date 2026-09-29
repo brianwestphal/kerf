@@ -78,6 +78,8 @@ The component owns its own styles. Configure it through its props and variants; 
 
 Public class hooks (select for layout placement only, never to change the component's look): `kui-toolbar`, `kui-toolbar__center`, `kui-toolbar__leading`, `kui-toolbar__trailing`.
 
+Never put `kui-toolbar`, `kui-toolbar__center`, `kui-toolbar__leading`, `kui-toolbar__trailing` on an element you write; render `Toolbar` instead (`KUI-L103`).
+
 Public tokens it reads: `--kui-color-neutral-border-normal`, `--kui-font-sans`, `--kui-toolbar-divider-color`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).

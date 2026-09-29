@@ -640,3 +640,73 @@ test(
   },
   DOCTOR_TEST_TIMEOUT,
 );
+
+test(
+  'the doctor reports a component recreated by its anatomy classes, then passes once the app renders the component',
+  async () => {
+    const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-anatomy-'));
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"anatomy-consumer","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, 'tsconfig.json'),
+        JSON.stringify({
+          compilerOptions: { jsx: 'preserve', noEmit: true },
+          include: ['src'],
+        }),
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          stages: { catalog: false, typescript: false, analyzer: false },
+        }),
+      );
+      for (const name of [
+        'eslint',
+        '@typescript-eslint/eslint-plugin',
+        '@typescript-eslint/parser',
+      ])
+        await link(root, name, resolve(uiRoot, 'node_modules', name));
+      await link(
+        root,
+        'eslint-plugin-kerfjs',
+        resolve(repositoryRoot, 'eslint-plugin'),
+      );
+      await link(root, '@kerfjs/ui', uiRoot);
+
+      await writeFile(
+        resolve(root, 'src/sidebar.tsx'),
+        'export const Sidebar = () => (\n  <aside class="kui-pane">\n    <nav class="kui-pane__content kui-content">Inbox</nav>\n  </aside>\n);\n',
+      );
+      const broken = await doctor(root);
+      const findings = broken.report.diagnostics.filter(
+        (item: { stage: string }) => item.stage === 'eslint',
+      );
+      expect(findings.map((item: { id: string }) => item.id)).toEqual([
+        'KUI-L103',
+        'KUI-L103',
+      ]);
+      for (const item of findings) expect(item.message).toContain('`Pane`');
+      expect(broken.status).toBe(1);
+
+      await writeFile(
+        resolve(root, 'src/sidebar.tsx'),
+        'import { Pane } from \'@kerfjs/ui/pane\';\nexport const Sidebar = () => (\n  <Pane element="aside" label="Mail" contentElement="nav">\n    Inbox\n  </Pane>\n);\n',
+      );
+      const clean = await doctor(root);
+      expect(
+        clean.report.diagnostics.filter(
+          (item: { stage: string }) => item.stage === 'eslint',
+        ),
+      ).toEqual([]);
+      expect(clean.status).toBe(0);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);

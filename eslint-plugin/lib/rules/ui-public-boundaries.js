@@ -1,5 +1,7 @@
 import {
+  importRegistry,
   isExcepted,
+  jsxKey,
   loadUiContract,
   UI_CONTRACT_LOAD_CODE,
   UI_RULE_SCHEMA,
@@ -7,6 +9,7 @@ import {
 
 const CLASS_CODE = 'KUI-L101';
 const TOKEN_CODE = 'KUI-L102';
+const PLACEMENT_CODE = 'KUI-L103';
 
 export default {
   meta: {
@@ -23,20 +26,49 @@ export default {
         'KUI-L101: `{{name}}` is private or uncataloged Kerf UI anatomy. Use a cataloged public class, prop, token, or component instead.',
       token:
         'KUI-L102: `{{name}}` is not a cataloged public Kerf UI token. Use a public semantic/component token.',
+      component:
+        "KUI-L103: `{{name}}` is {{component}}'s rendered anatomy, not a class to place on your own element. Render {{render}} and configure it through its props; components own their styles.",
     },
   },
   create(context) {
     const contract = loadUiContract(context);
     const filename = context.filename ?? context.getFilename();
     let configured = false;
+    let registry;
+    // A cataloged component's anatomy class on an element the application
+    // writes recreates the component by class instead of rendering it. The
+    // component's own element (`<Toolbar className="kui-toolbar">`) is exempt.
+    const inspectPlacement = (node, names) => {
+      if (isExcepted(contract, PLACEMENT_CODE, filename)) return;
+      const element = node.parent;
+      const renderedKey =
+        registry && element?.type === 'JSXOpeningElement'
+          ? jsxKey(element.name, registry, contract)
+          : undefined;
+      for (const name of names) {
+        const owner = contract.componentClasses?.get(name);
+        if (!owner || owner.key === renderedKey) continue;
+        context.report({
+          node,
+          messageId: 'component',
+          data: {
+            name,
+            component: owner.render.join(' / '),
+            render: owner.render.map((item) => `\`${item}\``).join(' or '),
+          },
+        });
+      }
+    };
     const inspect = (node, value, classContext = false) => {
       if (typeof value !== 'string') return;
+      const classes = classContext
+        ? value.split(/\s+/).filter((item) => item.startsWith('kui-'))
+        : [];
       if (classContext && !isExcepted(contract, CLASS_CODE, filename))
-        for (const name of value
-          .split(/\s+/)
-          .filter((item) => item.startsWith('kui-')))
+        for (const name of classes)
           if (!contract.publicClasses.has(name))
             context.report({ node, messageId: 'class', data: { name } });
+      if (classContext) inspectPlacement(node, classes);
       if (!isExcepted(contract, TOKEN_CODE, filename))
         for (const match of value.matchAll(/--kui-[a-z0-9-]+/g))
           if (!contract.publicTokens.has(match[0]))
@@ -56,6 +88,8 @@ export default {
             data: { error: contract.error },
           });
         }
+        if (!contract.error)
+          registry = importRegistry(node, contract, filename);
       },
       JSXAttribute(node) {
         if (contract.error || !['class', 'className'].includes(node.name?.name))

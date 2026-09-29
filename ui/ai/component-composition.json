@@ -379,6 +379,7 @@
       "boundaries": {
         "rootClass": "kui-app-root",
         "publicClasses": ["kui-app-root"],
+        "placeableClasses": ["kui-app-root"],
         "publicTokens": []
       },
       "diagnostics": [],
@@ -433,6 +434,12 @@
       "boundaries": {
         "rootClass": "kui-content",
         "publicClasses": [
+          "kui-content",
+          "kui-control-cluster",
+          "kui-inline-metadata",
+          "kui-scroll-owner"
+        ],
+        "placeableClasses": [
           "kui-content",
           "kui-control-cluster",
           "kui-inline-metadata",
@@ -2612,6 +2619,11 @@
           "kui-content-item--pill",
           "kui-content-item--framed"
         ],
+        "placeableClasses": [
+          "kui-content-item",
+          "kui-content-item--pill",
+          "kui-content-item--framed"
+        ],
         "publicTokens": [
           "--kui-content-item-border",
           "--kui-content-item-radius",
@@ -4693,6 +4705,7 @@
       "boundaries": {
         "rootClass": null,
         "publicClasses": ["hide-actions"],
+        "placeableClasses": ["hide-actions"],
         "publicTokens": []
       },
       "diagnostics": [],

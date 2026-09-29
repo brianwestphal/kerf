@@ -82,6 +82,9 @@ function defaultEntry(entry) {
     boundaries: {
       rootClass: entry.publicClasses?.[0] ?? null,
       publicClasses: entry.publicClasses ?? [],
+      ...(entry.placeableClasses?.length
+        ? { placeableClasses: entry.placeableClasses }
+        : {}),
       publicTokens: entry.publicTokens ?? [],
     },
     diagnostics: [],

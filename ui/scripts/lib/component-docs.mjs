@@ -306,8 +306,26 @@ function accessibilitySection(contract) {
   ].join('\n');
 }
 
+// The component export that renders a public class: the export named after
+// the class's block (`kui-toolbar-action-link` → `ToolbarActionLink`,
+// `kui-pane__content` → `Pane`), else the export named after the entry, else
+// every PascalCase runtime export.
+function renderedBy(entry, className) {
+  const exports = (entry.publicExports ?? []).filter(
+    (name) => /^[A-Z]/.test(name) && !name.endsWith('Props'),
+  );
+  const block = className
+    .replace(/^kui-/, '')
+    .replace(/(?:__|--).*$/, '')
+    .replace(/(?:^|-)([a-z0-9])/g, (_, letter) => letter.toUpperCase());
+  if (exports.includes(block)) return [block];
+  return exports.includes(entry.name) ? [entry.name] : exports;
+}
+
 function stylingSection(entry, contract) {
   const { publicClasses, publicTokens } = contract.boundaries;
+  const placeable = new Set(contract.boundaries.placeableClasses ?? []);
+  const anatomy = publicClasses.filter((name) => !placeable.has(name));
   const parts = [
     '## Styling boundary',
     '',
@@ -323,6 +341,26 @@ function stylingSection(entry, contract) {
       '',
       `Public class hooks (select for layout placement only, never to change the component's look): ${publicClasses.map(code).join(', ')}.`,
     );
+  if (placeable.size)
+    parts.push(
+      '',
+      `Classes an application may place on its own elements: ${[...placeable].map(code).join(', ')}.`,
+    );
+  if (entry.source === 'kerf') {
+    const byRenderer = new Map();
+    for (const className of anatomy) {
+      const renderer = renderedBy(entry, className).map(code).join(' or ');
+      byRenderer.set(renderer, [
+        ...(byRenderer.get(renderer) ?? []),
+        className,
+      ]);
+    }
+    for (const [renderer, classes] of byRenderer)
+      parts.push(
+        '',
+        `Never put ${classes.map(code).join(', ')} on an element you write; render ${renderer} instead (\`KUI-L103\`).`,
+      );
+  }
   if (publicTokens.length)
     parts.push(
       '',

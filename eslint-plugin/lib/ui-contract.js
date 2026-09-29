@@ -259,6 +259,7 @@ export function loadUiContract(context) {
       publicClasses: new Set(
         catalog.entries.flatMap((entry) => entry.boundaries.publicClasses),
       ),
+      componentClasses: componentClassOwners(catalog, selection),
       publicTokens: new Set(
         catalog.entries.flatMap((entry) => entry.boundaries.publicTokens),
       ),
@@ -271,6 +272,43 @@ export function loadUiContract(context) {
     cache.set(key, value);
     return value;
   }
+}
+
+// Public `kui-*` classes that are a component's rendered anatomy, mapped to
+// the entry and the export that renders it. A class the catalog lists in
+// `boundaries.placeableClasses` (layout utilities, the document root, item
+// geometry on a non-div carrier) is the application's to place and is absent.
+function componentClassOwners(catalog, selection) {
+  const exportsById = new Map(
+    selection.entries.map((entry) => [
+      entry.id,
+      (entry.publicExports ?? []).filter(
+        (name) => /^[A-Z]/.test(name) && !name.endsWith('Props'),
+      ),
+    ]),
+  );
+  const owners = new Map();
+  for (const entry of catalog.entries) {
+    const placeable = new Set(entry.boundaries?.placeableClasses ?? []);
+    const exports = exportsById.get(entry.id) ?? [];
+    for (const className of entry.boundaries?.publicClasses ?? []) {
+      if (!className.startsWith('kui-') || placeable.has(className)) continue;
+      if (owners.has(className) || exports.length === 0) continue;
+      // The export named after the class's block (`kui-toolbar-action-link`
+      // is ToolbarActionLink, `kui-pane__content` is Pane), else the entry's.
+      const block = className
+        .replace(/^kui-/, '')
+        .replace(/(?:__|--).*$/, '')
+        .replace(/(?:^|-)([a-z0-9])/g, (_, letter) => letter.toUpperCase());
+      const render = exports.includes(block)
+        ? [block]
+        : exports.includes(entry.name)
+          ? [entry.name]
+          : exports;
+      owners.set(className, { key: entry.key, render });
+    }
+  }
+  return owners;
 }
 
 export function importRegistry(program, contract, filename) {

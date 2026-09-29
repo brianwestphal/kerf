@@ -482,23 +482,29 @@ component browser imports. See [Document baseline](./docs/document-baseline.md).
 
 ## Pane and content geometry
 
-Import `@kerfjs/ui/layout.css` and use the same structural vocabulary for a
-sidebar, main area, inspector, or dialog. `.kui-pane` is unpadded and contains
-an optional toolbar, one scrolling `.kui-pane__content`, and an optional footer.
-Add `.kui-content` to make its major children a vertical stack with 24px gaps.
+Render `Pane` (`@kerfjs/ui/pane`) for a sidebar, main area, inspector, or
+dialog: the same structural vocabulary everywhere. Its `.kui-pane` root is
+unpadded and contains an optional header, one scrolling `.kui-pane__content`,
+and an optional footer; the content slot already carries `.kui-content`, which
+makes its major children a vertical stack with 24px gaps. Choose landmark
+semantics with `element` / `contentElement` rather than writing the pane
+classes onto your own elements — `eslint-plugin-kerfjs` reports a component's
+anatomy class on an application-owned element as `KUI-L103`.
 
 ```tsx
-<aside class="kui-pane">
-  <div class="kui-pane__toolbar"><Toolbar label="Workspace" ... /></div>
-  <nav class="kui-pane__content kui-content">
-    <section>
-      <ListHeader label="Workspace" count={3} countLabel="3 workspaces" />
-      <ListItem action="open" label="Inbox" icon={inboxIcon} />
-      <ListItem action="open" label="Drafts" />
-    </section>
-    <ContentItem>Workspace details</ContentItem>
-  </nav>
-</aside>
+<Pane
+  element="aside"
+  label="Workspace"
+  contentElement="nav"
+  header={<Toolbar label="Workspace" ... />}
+>
+  <section>
+    <ListHeader label="Workspace" count={3} countLabel="3 workspaces" />
+    <ListItem action="open" label="Inbox" icon={inboxIcon} />
+    <ListItem action="open" label="Drafts" />
+  </section>
+  <ContentItem>Workspace details</ContentItem>
+</Pane>
 ```
 
 Ordinary children use `ContentItem` (`@kerfjs/ui/content-item`): 8px inline
@@ -574,6 +580,10 @@ arrays support diagnostics, tooling, browser assertions, and package-owned
 composition; they are not an application styling API. Application-owned CSS may
 style new structure rendered by its own component, but it must not select a
 nested Kerf or Web Awesome component. Add missing configuration to the owner.
+Markup follows the same rule: write only an entry's `placeableClasses` (layout
+utilities, `kui-app-root`, `kui-content-item` on a non-div carrier) onto your
+own elements; any other public class recreates a component by class, which
+`eslint-plugin-kerfjs` reports as `KUI-L103` with the component to render.
 
 `StateBanner` has opinionated `neutral`, `info`, `pop`, `success`, `warning`,
 and `danger` palettes. Override an individual banner with

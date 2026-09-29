@@ -281,8 +281,11 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   radius minus `--kui-layout-highlight-inset`. Do not give an inner highlight an
   unrelated radius.
 - **Panes share one child-owned geometry.** Sidebars, main areas, inspectors, and
-  dialogs all use an unpadded `.kui-pane` (optional `.kui-pane__toolbar`, one
-  scrolling `.kui-pane__content`, optional `.kui-pane__footer`). A visible pane owns
+  dialogs all render `Pane`: an unpadded `.kui-pane` (optional header, one
+  scrolling `.kui-pane__content`, optional footer). Never write a component's
+  anatomy classes onto your own element to recreate it (`KUI-L103`); only
+  the catalog's `placeableClasses` (layout utilities, `.kui-app-root`,
+  `.kui-content-item` on a non-div carrier) belong there. A visible pane owns
   its collapse control (the last control of its last group); a hidden pane's
   restore moves to the adjacent main toolbar's matching edge — no icon-only
   rail — and a collapsed drawer's restore sits in the bottom toolbar or a

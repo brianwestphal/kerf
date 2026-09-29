@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`eslint-plugin-kerfjs` `ui-public-boundaries` reports a component's
+  anatomy class written onto an application-owned element (`KUI-L103`).**
+  `<div class="kui-toolbar">`, `<aside class="kui-pane">`, or
+  `<wa-dropdown class="kui-popup-menu">` recreates a component by class and
+  inherits (and invites restyling of) its CSS; the diagnostic names the
+  component to render instead (`Toolbar`, `Pane`, `PopupMenu`). The
+  `@kerfjs/ui` catalogs gain `placeableClasses` (selection entry field and
+  composition `boundaries.placeableClasses`) naming the public classes an
+  application may place itself — the layout utilities, `kui-app-root`, the
+  `kui-content-item` geometry on a non-div carrier, and Web Awesome
+  `hide-actions` — and `check:catalog` requires every class-only entry to list
+  its classes there. A component's own element (`<Toolbar className="kui-toolbar">`)
+  is not reported. The README pane example and `@kerfjs/ui/ai/skill.md`
+  (1.47.0) now render `Pane` instead of writing its classes, and each generated
+  `ai/components/*.md` page states which classes are placeable and which
+  component renders the rest.
+
 - **`kerf-ui-analyze` retires `KUI-L005` ("forced component dimension").**
   `KUI-L019` already reports any application rule whose subject is a cataloged
   component, dimensions included, so `.kui-pane { width: 300px }` was reported

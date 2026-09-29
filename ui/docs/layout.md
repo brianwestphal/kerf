@@ -173,6 +173,16 @@ choice is typed. `npm run check:guidance` rejects a plain
 `<div class="kui-content-item">` in the package's examples, browser fixtures,
 and UX catalog, since that div is exactly what `ContentItem` renders.
 
+These classes, the layout utilities (`.kui-content`, `.kui-scroll-owner`,
+`.kui-control-cluster`, `.kui-inline-metadata`), and `.kui-app-root` are the
+catalog's `boundaries.placeableClasses`: the only public classes an application
+writes onto its own elements. Every other public class is a component's
+rendered anatomy — render `Pane` rather than writing `.kui-pane` /
+`.kui-pane__content` onto an `<aside>` — and `eslint-plugin-kerfjs`'s
+`ui-public-boundaries` reports it on an application-owned element as
+`KUI-L103`. Selecting those classes in CSS to place your own content in a
+component's context stays allowed (see `KUI-L019`).
+
 ## Public roles and tokens
 
 | Need                                     | Class                        | Token / default                                                    |
