@@ -252,9 +252,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   avatar control, set `content="avatar"` and `avatarImage` on the group instead of
   inserting an `img`; a lone control paints the group and a multi-button group
   paints only its pressed highlight. Dividers earn their place: a `Toolbar`
-  draws a bottom divider by default, so set `dividerSides=""` when the content
-  beneath spaces itself or the line would only separate a pane's header from its
-  list; never pad below a divider to make it look right.
+  draws none by default and pinned chrome gets its line from scroll state (see
+  the scroll-divider rule below); never fake one with a border or pad below a
+  divider to make it look right.
 - **Use one direct toolbar composition for panel/dialog/page headings.** Put an
   optional icon in a `ToolbarControlGroup`, an extra-large `ToolbarText` directly
   in the leading zone, and actions in a trailing group. Supporting copy is

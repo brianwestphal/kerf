@@ -102,10 +102,11 @@ matters, and ask rather than guess when a design brief is ambiguous.**
   `responsive` policy relocates whole groups. A `ToolbarText` is one ellipsized
   line unless `wrap`/`maxLines` is set deliberately; a wrapped title keeps the
   trailing groups beside its first line, in the toolbar's top 44px band.
-- **Dividers earn their place.** Drop a toolbar's default bottom divider
-  (`dividerSides=""`) when the content beneath already spaces itself or the
-  line would only separate a pane's own header from its list (a sidebar header,
-  a `NavStack` bar); never pad below a divider to make it look right.
+- **Dividers earn their place.** Toolbars draw no divider by default; the line
+  between pinned chrome and scrolling content is scroll state
+  (`wireScrollDividers`, a `Pane`'s `chromeDividers`). Use `dividerSides` only
+  for a permanent separator edge, and never fake a divider with a border or pad
+  below one to make it look right.
 - **Controls sit near their effect.** A collapsed drawer's restore goes in the
   bottom toolbar or a `FloatingToolbar` beside the drawer, not a distant top
   toolbar; a panel's toggle is the last control of its last group, and exactly
