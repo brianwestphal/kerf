@@ -234,20 +234,27 @@ function kuiClasses(selector) {
 }
 
 /**
- * Drop every `:has(...)` argument from a compound. A `:has()` argument names
- * the state a rule is keyed on, never the element it styles.
+ * Remove the arguments of every `:has()` and `:not()` in a compound. A parent
+ * may key its own styles on a composed child's state
+ * (`:has(> .kui-select[open])`) or exclude a kerf child it does not own
+ * (`wa-dropdown:not(.kui-popup-menu)`): neither styles that child.
  */
-function withoutHasArguments(compound) {
+function withoutRelationalArguments(compound) {
   let result = '';
-  let depth = 0;
+  let skipDepth = 0;
   for (let index = 0; index < compound.length; index += 1) {
-    if (depth === 0 && compound.startsWith(':has(', index)) {
-      depth = 1;
-      index += ':has('.length - 1;
-    } else if (depth > 0) {
-      if (compound[index] === '(') depth += 1;
-      else if (compound[index] === ')') depth -= 1;
-    } else result += compound[index];
+    if (skipDepth === 0) {
+      const opener = /^:(?:has|not)\(/i.exec(compound.slice(index));
+      if (opener) {
+        result += opener[0];
+        skipDepth = 1;
+        index += opener[0].length - 1;
+      } else result += compound[index];
+    } else if (compound[index] === '(') skipDepth += 1;
+    else if (compound[index] === ')') {
+      skipDepth -= 1;
+      if (skipDepth === 0) result += ')';
+    }
   }
   return result;
 }
@@ -265,19 +272,25 @@ for (const file of packageStyles) {
   sheet.walkRules((rule) => {
     // A component may style itself in the context of a composing parent: a
     // foreign class may appear only in an ancestor compound, and only when the
-    // subject compound selects this stylesheet's own class. The parent
-    // provides the context (its state and the values it names after itself);
-    // it never styles or configures the child from its own stylesheet. A
-    // parent may key its OWN element on a child's state through `:has()`,
-    // naming the child by class there, so `:has()` arguments are context too.
+    // styled compound selects this stylesheet's own class. The styled
+    // compound is the rightmost one naming a kui class, so a component may
+    // also style its own unclassed internals (a PopupMenu's trigger
+    // `wa-button`) in that context. The parent provides the context (its
+    // state and the values it names after itself); it never styles or
+    // configures the child from its own stylesheet, though it may key its own
+    // styles on a child inside `:has()` or exclude one inside `:not()`.
     const foreign = [
       ...new Set(
-        complexSelectors(rule.selector).flatMap((compounds) => {
-          const subject = withoutHasArguments(compounds.at(-1) ?? '');
-          const subjectClasses = kuiClasses(subject);
+        complexSelectors(rule.selector).flatMap((selector) => {
+          const compounds = selector.map(withoutRelationalArguments);
+          const ownerIndex = compounds.findLastIndex(
+            (compound) => kuiClasses(compound).length > 0,
+          );
+          const ownerClasses =
+            ownerIndex === -1 ? [] : kuiClasses(compounds[ownerIndex]);
           const contextual =
-            subjectClasses.length > 0 && subjectClasses.every(owns);
-          const checked = contextual ? [subject] : compounds;
+            ownerClasses.length > 0 && ownerClasses.every(owns);
+          const checked = contextual ? [compounds[ownerIndex]] : compounds;
           return checked.flatMap(kuiClasses).filter((name) => !owns(name));
         }),
       ),

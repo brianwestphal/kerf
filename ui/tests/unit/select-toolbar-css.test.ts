@@ -64,7 +64,7 @@ describe('Select toolbar composition CSS', () => {
       (node) =>
         node.type === 'rule' &&
         node.selector.replace(/\s+/g, ' ') ===
-          '.kui-toolbar-control-group[data-focus-ring="outline"]:focus-within:not( :where(:has(wa-select[open], wa-dropdown[open])) )',
+          '.kui-toolbar-control-group[data-focus-ring="outline"]:focus-within:not( :where( :has( .kui-select[open], .kui-popup-menu[open], wa-dropdown:not(.kui-popup-menu)[open] ) ) )',
     );
     if (!rule || rule.type !== 'rule')
       throw new Error('Missing delegated Select focus rule');

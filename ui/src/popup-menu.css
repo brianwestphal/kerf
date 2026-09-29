@@ -88,3 +88,74 @@
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
+
+/* In a ToolbarControlGroup a PopupMenu sizes itself in the group's context:
+   the group lays out its own native and raw Web Awesome children and names a
+   PopupMenu only to key its own state on it. The trigger takes the group's
+   control height (40px, or 32px in a compact group). A mixed-content trigger
+   in a nested-dropdown group grows for its label plus the caret; a fixed 32px
+   base would center both outside its host, painting the label across the
+   separator and the caret beyond the group border. */
+.kui-toolbar-control-group > wa-dropdown.kui-popup-menu {
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+.kui-toolbar-control-group > wa-dropdown.kui-popup-menu,
+.kui-toolbar-control-group > wa-dropdown.kui-popup-menu > wa-button,
+.kui-toolbar-control-group
+  > wa-dropdown.kui-popup-menu
+  > wa-button::part(base) {
+  min-width: remify(40px);
+  height: remify(40px);
+}
+.kui-toolbar-control-group[data-size="compact"] > wa-dropdown.kui-popup-menu,
+.kui-toolbar-control-group[data-size="compact"]
+  > wa-dropdown.kui-popup-menu
+  > wa-button,
+.kui-toolbar-control-group[data-size="compact"]
+  > wa-dropdown.kui-popup-menu
+  > wa-button::part(base),
+.kui-toolbar-control-group[data-size="compact"][data-nested-dropdown="true"]
+  wa-dropdown.kui-popup-menu
+  wa-button,
+.kui-toolbar-control-group[data-size="compact"][data-nested-dropdown="true"]
+  wa-dropdown.kui-popup-menu
+  wa-button::part(base) {
+  min-width: remify(32px);
+  height: remify(32px);
+  min-height: remify(32px);
+}
+.kui-toolbar-control-group[data-size="compact"][data-content="mixed"]
+  > wa-dropdown.kui-popup-menu {
+  margin: -2px;
+}
+.kui-toolbar-control-group[data-content="mixed"][data-nested-dropdown="true"]
+  > wa-dropdown.kui-popup-menu
+  > wa-button,
+.kui-toolbar-control-group[data-content="mixed"][data-nested-dropdown="true"]
+  > wa-dropdown.kui-popup-menu
+  > wa-button::part(base) {
+  min-width: max-content;
+}
+.kui-toolbar-control-group[data-content="mixed"][data-nested-dropdown="true"]
+  > wa-dropdown.kui-popup-menu
+  > wa-button::part(base) {
+  width: max-content;
+}
+.kui-toolbar-control-group[data-single="true"]
+  > wa-dropdown.kui-popup-menu
+  > wa-button::part(base) {
+  width: max-content;
+}
+
+/* The menu insets a composing parent asks for. A PopupMenu applies them to
+   itself; its default is the Select listbox inset above, which a group's
+   `standard` inset keeps. */
+.kui-toolbar-control-group[data-menu-inset="compact"]
+  wa-dropdown.kui-popup-menu::part(menu) {
+  padding: remify(4px);
+}
+.kui-toolbar-control-group[data-menu-inset="list-zero"]
+  wa-dropdown.kui-popup-menu::part(menu) {
+  padding: 0;
+}

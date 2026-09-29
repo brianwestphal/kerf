@@ -49,10 +49,10 @@
    caret wa-button): symmetric 8px inline padding, 12px from the icon to the
    caret's 20px box, the caret glyph size, and the control height, so the icon
    sits left of center to balance the caret. Inside a ToolbarControlGroup the
-   trigger takes the group's control-slot height, overlap, and radius
-   (`--_kui-toolbar-slot-*`) so it is inset evenly on every side, the group
-   sizes to the trigger (wider than tall), and the group-owned focus ring
-   stays concentric with it. */
+   trigger takes the control-slot height, overlap, and radius the group
+   provides (`--_kui-toolbar-control-group-slot-*`) so it is inset evenly on
+   every side, the group sizes to the trigger (wider than tall), and the
+   group-owned focus ring stays concentric with it. */
 .kui-select[data-selected-presentation="icon-only"] {
   --_kui-select-height: remify(44px);
   width: max-content;
@@ -61,7 +61,10 @@
   --_kui-select-height: remify(32px);
 }
 .kui-select[data-selected-presentation="icon-only"]::part(combobox) {
-  min-height: var(--_kui-toolbar-slot-height, var(--_kui-select-height));
+  min-height: var(
+    --_kui-toolbar-control-group-slot-height,
+    var(--_kui-select-height)
+  );
   padding-inline: remify(8px);
   border-radius: var(
     --kui-toolbar-item-radius,
@@ -72,13 +75,31 @@
    sibling controls it keeps the group's gap, end insets, and item radius, as
    they do. */
 .kui-select[data-selected-presentation="icon-only"]:only-child {
-  margin-inline: calc(var(--_kui-toolbar-slot-overlap, 0px) * -1);
+  margin-inline: calc(var(--_kui-toolbar-control-group-slot-overlap, 0px) * -1);
 }
 .kui-select[data-selected-presentation="icon-only"]:only-child::part(combobox) {
   border-radius: var(
-    --_kui-toolbar-slot-radius,
+    --_kui-toolbar-control-group-slot-radius,
     var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
   );
+}
+/* In a ToolbarControlGroup, a Select beside other controls highlights its own
+   pill on hover, like its button and dropdown siblings; a lone Select instead
+   lifts the whole group (toolbar-control-group.css). */
+.kui-toolbar-control-group:not([data-single="true"])
+  > .kui-select:not(:only-child):hover::part(combobox) {
+  border-color: var(--kui-toolbar-control-border);
+  background: var(--kui-toolbar-control-hover-background);
+}
+/* With the group's per-control rings, a composed Select paints its own ring
+   even when it was told the group owns it: nothing else would show focus. It
+   matches the sibling controls' ring and offset. While its listbox is open the
+   popup shows focus instead, so the trigger ring stays off, as a PopupMenu
+   trigger's does. */
+.kui-toolbar-control-group[data-focus-ring="control"]
+  > .kui-select:not([open]):focus-within::part(combobox) {
+  outline: var(--kui-focus-ring);
+  outline-offset: 1px;
 }
 /* The popup-menu wa-button draws the same chevron glyph at 0.875em inside a
    20px box; match its box, spacing, and glyph size rather than the smaller

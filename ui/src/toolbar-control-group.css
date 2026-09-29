@@ -21,15 +21,17 @@
     )
   );
   --kui-toolbar-item-radius: var(--kui-control-highlight-radius);
-  /* Internal group-to-child contract: the control slot a composed child (an
-     icon-only Select) fills so it is inset evenly on every side and the
-     group-owned focus ring stays concentric with the visible control. The
-     group sizes to the child's width. A default slot is 40px tall inside the
-     2px inset; a compact slot is the full 32px padding box, and a lone
-     compact child also overlaps the 1px inline padding. */
-  --_kui-toolbar-slot-height: remify(40px);
-  --_kui-toolbar-slot-overlap: 0px;
-  --_kui-toolbar-slot-radius: var(--kui-toolbar-item-radius);
+  /* Context the group provides to a composed child (an icon-only Select, in
+     select.css): the control slot the child fills so it is inset evenly on
+     every side and the group-owned focus ring stays concentric with the
+     visible control. The group sizes to the child's width. A default slot is
+     40px tall inside the 2px inset; a compact slot is the full 32px padding
+     box, and a lone compact child also overlaps the 1px inline padding. The
+     values are named after the group that provides them; the child reads
+     them from its own stylesheet. */
+  --_kui-toolbar-control-group-slot-height: remify(40px);
+  --_kui-toolbar-control-group-slot-overlap: 0px;
+  --_kui-toolbar-control-group-slot-radius: var(--kui-toolbar-item-radius);
   display: inline-flex;
   height: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
   min-width: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
@@ -80,9 +82,9 @@
 }
 .kui-toolbar-control-group[data-size="compact"] {
   --kui-toolbar-group-size: remify(34px);
-  --_kui-toolbar-slot-height: remify(32px);
-  --_kui-toolbar-slot-overlap: 1px;
-  --_kui-toolbar-slot-radius: max(
+  --_kui-toolbar-control-group-slot-height: remify(32px);
+  --_kui-toolbar-control-group-slot-overlap: 1px;
+  --_kui-toolbar-control-group-slot-radius: max(
     0px,
     calc(var(--kui-toolbar-group-radius) - 1px)
   );
@@ -183,11 +185,15 @@
   background: transparent;
 }
 
-.kui-toolbar-control-group
-  > :is(button, wa-button, wa-dropdown, .kui-toolbar-action-link) {
+/* The group lays out its own native and raw Web Awesome children. A composed
+   PopupMenu (`wa-dropdown.kui-popup-menu`) or Select sizes itself in the
+   group's context from its own stylesheet (popup-menu.css, select.css); the
+   group names those children by class only to key its own state on them. */
+.kui-toolbar-control-group > :is(button, wa-button, .kui-toolbar-action-link),
+.kui-toolbar-control-group > wa-dropdown:not(.kui-popup-menu) {
   flex: 0 0 auto;
 }
-.kui-toolbar-control-group > wa-dropdown {
+.kui-toolbar-control-group > wa-dropdown:not(.kui-popup-menu) {
   display: inline-flex;
 }
 
@@ -285,25 +291,30 @@
 }
 
 .kui-toolbar-control-group > wa-button,
-.kui-toolbar-control-group > wa-dropdown,
-.kui-toolbar-control-group > wa-dropdown > wa-button,
-.kui-toolbar-control-group > wa-dropdown > wa-button::part(base) {
+.kui-toolbar-control-group > wa-dropdown:not(.kui-popup-menu),
+.kui-toolbar-control-group > wa-dropdown:not(.kui-popup-menu) > wa-button,
+.kui-toolbar-control-group
+  > wa-dropdown:not(.kui-popup-menu)
+  > wa-button::part(base) {
   min-width: remify(40px);
   height: remify(40px);
 }
 .kui-toolbar-control-group[data-size="compact"] > button,
 .kui-toolbar-control-group[data-size="compact"] > .kui-toolbar-action-link,
 .kui-toolbar-control-group[data-size="compact"] > wa-button,
-.kui-toolbar-control-group[data-size="compact"] > wa-dropdown,
-.kui-toolbar-control-group[data-size="compact"] > wa-dropdown > wa-button,
 .kui-toolbar-control-group[data-size="compact"]
-  > wa-dropdown
+  > wa-dropdown:not(.kui-popup-menu),
+.kui-toolbar-control-group[data-size="compact"]
+  > wa-dropdown:not(.kui-popup-menu)
+  > wa-button,
+.kui-toolbar-control-group[data-size="compact"]
+  > wa-dropdown:not(.kui-popup-menu)
   > wa-button::part(base),
 .kui-toolbar-control-group[data-size="compact"][data-nested-dropdown="true"]
-  wa-dropdown
+  wa-dropdown:not(.kui-popup-menu)
   wa-button,
 .kui-toolbar-control-group[data-size="compact"][data-nested-dropdown="true"]
-  wa-dropdown
+  wa-dropdown:not(.kui-popup-menu)
   wa-button::part(base) {
   min-width: remify(32px);
   height: remify(32px);
@@ -320,16 +331,17 @@
 /* `standard` keeps each menu's own standard inset: a raw wa-dropdown takes the
    8px surface inset, while a PopupMenu keeps the Select listbox inset it
    shares (popup-menu.css). The explicit compact and list-zero choices apply to
-   every nested menu. */
+   every nested menu; a PopupMenu applies them to itself (popup-menu.css). */
 .kui-toolbar-control-group[data-menu-inset="standard"]
-  wa-dropdown:not([data-component="popup-menu"])::part(menu) {
+  wa-dropdown:not(.kui-popup-menu)::part(menu) {
   padding: var(--kui-wa-surface-inset, remify(8px));
 }
-.kui-toolbar-control-group[data-menu-inset="compact"] wa-dropdown::part(menu) {
+.kui-toolbar-control-group[data-menu-inset="compact"]
+  wa-dropdown:not(.kui-popup-menu)::part(menu) {
   padding: remify(4px);
 }
 .kui-toolbar-control-group[data-menu-inset="list-zero"]
-  wa-dropdown::part(menu) {
+  wa-dropdown:not(.kui-popup-menu)::part(menu) {
   padding: 0;
 }
 
@@ -350,7 +362,7 @@
 }
 
 .kui-toolbar-control-group[data-size="compact"][data-content="mixed"]
-  > wa-dropdown,
+  > wa-dropdown:not(.kui-popup-menu),
 .kui-toolbar-control-group[data-size="compact"][data-content="mixed"]
   > wa-button {
   margin: -2px;
@@ -361,21 +373,21 @@
    the fixed 32px base centers both outside its host, painting the label across
    the separator and the caret beyond the group border. */
 .kui-toolbar-control-group[data-content="mixed"][data-nested-dropdown="true"]
-  > wa-dropdown
+  > wa-dropdown:not(.kui-popup-menu)
   > wa-button,
 .kui-toolbar-control-group[data-content="mixed"][data-nested-dropdown="true"]
-  > wa-dropdown
+  > wa-dropdown:not(.kui-popup-menu)
   > wa-button::part(base) {
   min-width: max-content;
 }
 .kui-toolbar-control-group[data-content="mixed"][data-nested-dropdown="true"]
-  > wa-dropdown
+  > wa-dropdown:not(.kui-popup-menu)
   > wa-button::part(base) {
   width: max-content;
 }
 
 .kui-toolbar-control-group[data-single="true"]
-  > wa-dropdown
+  > wa-dropdown:not(.kui-popup-menu)
   > wa-button::part(base) {
   width: max-content;
 }
@@ -408,7 +420,14 @@
 }
 
 .kui-toolbar-control-group[data-single="true"]:has(
-    > :is(button, wa-button, wa-dropdown, wa-select, .kui-toolbar-action-link)
+    > :is(
+      button,
+      wa-button,
+      .kui-popup-menu,
+      wa-dropdown:not(.kui-popup-menu),
+      .kui-select,
+      .kui-toolbar-action-link
+    )
   ):hover {
   background-color: var(--kui-toolbar-control-hover-background);
 }
@@ -425,7 +444,7 @@
    inner layer inset from the border (KF-J9P1ZD — a heading toolbar's lone Close/
    Done action). */
 .kui-toolbar-control-group:not([data-single="true"]):has(
-    > :is(button, wa-button, wa-select, .kui-toolbar-action-link):only-child
+    > :is(button, wa-button, .kui-select, .kui-toolbar-action-link):only-child
   ):hover {
   background-color: var(--kui-toolbar-control-hover-background);
 }
@@ -442,14 +461,8 @@
   background: transparent;
 }
 
-/* A toolbar Select beside other controls highlights its own pill on hover,
-   like its button and dropdown siblings; a lone Select instead lifts the whole
-   group (above). */
-.kui-toolbar-control-group:not([data-single="true"])
-  > wa-select:not(:only-child):hover::part(combobox) {
-  border-color: var(--kui-toolbar-control-border);
-  background: var(--kui-toolbar-control-hover-background);
-}
+/* A toolbar Select beside other controls highlights its own pill on hover
+   (select.css); a lone Select instead lifts the whole group (above). */
 
 /* A plain <button> child paints its own box for the selected state. */
 .kui-toolbar-control-group[data-single="false"] > button[aria-pressed="true"] {
@@ -481,25 +494,29 @@
   outline-offset: 1px;
 }
 
-/* With per-control rings, a composed Select paints its own ring even when it
-   was told the group owns it: nothing else would show focus. It matches the
-   sibling controls' ring and offset. While its listbox is open the popup shows
-   focus instead, so the trigger ring stays off, as a PopupMenu trigger's does. */
-.kui-toolbar-control-group[data-focus-ring="control"]
-  > wa-select:not([open]):focus-within::part(combobox) {
-  outline: var(--kui-focus-ring);
-  outline-offset: 1px;
-}
+/* With per-control rings, a composed Select paints its own ring (select.css). */
 
 .kui-toolbar-control-group[data-focus-ring="outline"]:focus-within:not(
-    :where(:has(wa-select[open], wa-dropdown[open]))
+    :where(
+      :has(
+        .kui-select[open],
+        .kui-popup-menu[open],
+        wa-dropdown:not(.kui-popup-menu)[open]
+      )
+    )
   ) {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
 
 .kui-toolbar-control-group[data-focus-ring="halo"]:focus-within:not(
-    :where(:has(wa-select[open], wa-dropdown[open]))
+    :where(
+      :has(
+        .kui-select[open],
+        .kui-popup-menu[open],
+        wa-dropdown:not(.kui-popup-menu)[open]
+      )
+    )
   ) {
   border-color: var(--kui-color-text-link);
   box-shadow: 0 0 0 3px
@@ -517,14 +534,26 @@
    descendant also owns the group ring. Kept as separate rules so an engine
    without :has() keeps the :focus-within ring. */
 .kui-toolbar-control-group[data-focus-ring="outline"]:has(:focus):not(
-    :where(:has(wa-select[open], wa-dropdown[open]))
+    :where(
+      :has(
+        .kui-select[open],
+        .kui-popup-menu[open],
+        wa-dropdown:not(.kui-popup-menu)[open]
+      )
+    )
   ) {
   outline: var(--kui-focus-ring);
   outline-offset: 1px;
 }
 
 .kui-toolbar-control-group[data-focus-ring="halo"]:has(:focus):not(
-    :where(:has(wa-select[open], wa-dropdown[open]))
+    :where(
+      :has(
+        .kui-select[open],
+        .kui-popup-menu[open],
+        wa-dropdown:not(.kui-popup-menu)[open]
+      )
+    )
   ) {
   border-color: var(--kui-color-text-link);
   box-shadow: 0 0 0 3px

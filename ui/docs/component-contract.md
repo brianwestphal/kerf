@@ -259,17 +259,24 @@ parent stylesheet.
 Inside the package, a component never styles another component or writes
 another component's variables. When a child must adapt to a composing parent,
 the child styles itself in that context from its own stylesheet: the parent's
-class and state appear only in an ancestor compound, the selector's subject is
-the child's own class, and the child reads context values the parent provides
-under the parent's name. `ResizableRegion` widens its edge extent by the
-unsafe inset a split `SplitView` provides, and a `Skeleton` derives its fill
-from a solid `Badge`'s on-solid color, both in their own stylesheets; an
-`AppTab` rounds its outer corners in a segmented `TabBar` and shares a
-fill-allocated strip from `app-tab.css`. A parent may still key its own element
-on a child's state through `:has()`, naming the child by its class there, as
-`TabBar` insets a segmented strip that holds compact tabs.
-`npm run check:css-ownership` allows a foreign component class only in such an
-ancestor context or `:has()` argument.
+class and state appear only in an ancestor compound, the styled compound is
+the child's own class (or one of the child's own unclassed internals below
+it), and the child reads context values the parent provides under the
+parent's name. `ResizableRegion` widens its edge extent by the unsafe inset a
+split `SplitView` provides, and a `Skeleton` derives its fill from a solid
+`Badge`'s on-solid color, both in their own stylesheets; an `AppTab` rounds its
+outer corners in a segmented `TabBar` and shares a fill-allocated strip from
+`app-tab.css`. A `PopupMenu` sizes
+its trigger and applies a group's `menuInset` in its own stylesheet, and an
+icon-only `Select` reads the control slot a `ToolbarControlGroup` provides
+(`--_kui-toolbar-control-group-slot-*`). A parent may still style its own
+elements keyed on a child's state, naming the child by class inside `:has()`
+(`:has(> .kui-select[open])`, or `TabBar` insetting a segmented strip that
+holds compact tabs), and it keeps styling raw native and raw Web
+Awesome children no kerf component owns, excluding kerf children by class
+(`wa-dropdown:not(.kui-popup-menu)`). `npm run check:css-ownership` allows a
+foreign component class only in such an ancestor context or inside `:has()` /
+`:not()`.
 
 The composition catalog additionally requires `boundaries.rootClass` to be
 either one exact member of `publicClasses` or `null` when the entry has no
