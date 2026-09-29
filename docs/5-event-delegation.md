@@ -136,6 +136,8 @@ This holds across capture and bubble phases, nested roots (a delegate on `docume
 
 Implementation (KF-HK7WE8 dispatch snapshot: a delegate could re-fire on a morph-recycled target): each root keeps a symbol-keyed registry of its delegates; the first kerf listener to see an event resolves every registered delegate on `event.composedPath()` and stores the results on the event, and each listener consumes its own entry. A missing entry (re-dispatch of the same event object, a delegate added mid-dispatch) takes a fresh snapshot. No module-level state. Cost: about 0.11 KB min+gzip on the main entry.
 
+Two narrow limits remain. If code stops a dispatch, disposes every earlier kerf listener that consumed an entry, and then re-dispatches the **same `Event` object on the same path**, a later listener can consume its unspent entry from the first dispatch. The event API exposes no dispatch identity to distinguish that situation from an in-progress dispatch; invalidating snapshots when a listener is disposed would also lose dispatch-start matching for other listeners in that dispatch. Use a new `Event` object for each programmatic dispatch. Across a **closed shadow root**, listeners on the two sides can see different `composedPath()` and `target` views. A delegate missing from the first listener's visible path resolves when reached, so the dispatch-start guarantee may not cross that boundary. Closed shadow encapsulation prevents an outer listener from inspecting the inner target; put delegates that must share a snapshot on the same side of the boundary.
+
 You no longer need to wrap the new state in a distinct element (for example `<div role="group">`) to force the morph to replace nodes rather than recycle them.
 
 ## 5.3 Disposers

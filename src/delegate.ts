@@ -134,11 +134,12 @@ interface Snapshotted {
  * suppresses the later delegates, as before.
  *
  * A missing entry (a re-dispatch of the same event object, a delegate added
- * mid-dispatch, or a root hidden from the first listener inside a closed
- * shadow tree) takes a fresh snapshot. Accepted residual: re-dispatching one
- * event object whose first dispatch was stopped before some listener ran can
- * hand that listener its stale entry. Internal — exported for
- * `kerfjs/actions`.
+ * mid-dispatch, or a root hidden from the first listener by a closed shadow
+ * boundary) takes a fresh snapshot. Accepted residuals: a same-path
+ * re-dispatch after a stopped dispatch can reuse an unconsumed entry if all
+ * earlier kerf listeners were disposed, and a closed shadow boundary can
+ * hide delegates from the first listener's path view. See docs/5 §5.2.1.
+ * Internal — exported for `kerfjs/actions`.
  */
 export function _delegate(
   rootEl: HTMLElement,
