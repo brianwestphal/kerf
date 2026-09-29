@@ -82,7 +82,7 @@ Margin: none · border: conditional · padding: child (layout role: structure). 
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-nav-stack`, `kui-nav-stack__chrome`, `kui-nav-stack__bottom`, `kui-nav-stack__chrome--entering`, `kui-nav-stack__chrome-copy`, `kui-nav-stack__chrome-copy--bottom`, `kui-nav-stack__chrome-copy--exiting`, `kui-nav-stack__title`, `kui-nav-stack__viewport`, `kui-nav-stack__view`, `kui-nav-stack__view--entering`, `kui-nav-stack__view--exiting`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-nav-stack`, `kui-nav-stack__chrome`, `kui-nav-stack__bottom`, `kui-nav-stack__chrome--entering`, `kui-nav-stack__chrome-copy`, `kui-nav-stack__chrome-copy--bottom`, `kui-nav-stack__chrome-copy--exiting`, `kui-nav-stack__viewport`, `kui-nav-stack__view`, `kui-nav-stack__view--entering`, `kui-nav-stack__view--exiting`.
 
 Public tokens it reads: `--kui-nav-stack-transition-duration`. Set a token only where its public contract allows; prefer a prop.
 

@@ -30,3 +30,19 @@ span.kui-text {
   border: 0;
   padding: 0;
 }
+
+/* A ListHeader's label: the title's single text child, set as a compact,
+   uppercase, single-line label that truncates with an ellipsis. The title is
+   a div around a heading or, for a toggle header, the toggle button around
+   an inline span. */
+.kui-list-header__title > .kui-text {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  font-size: var(--kui-font-xs);
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}

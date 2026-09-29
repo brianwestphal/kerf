@@ -97,3 +97,22 @@
   border-radius: 50%;
   background: var(--_kui-badge-fill-solid);
 }
+
+/* A multiple icon-only Select's count badge, in the trigger's end slot after
+   its fixed icon, sits 4px from the icon (the caret keeps its 12px after it).
+   The summary that ends the Select's label (and accessible name) stays inline
+   text, so a visible label reads "Labels: Bug, Docs" in place of the hidden
+   value. */
+.kui-select > .kui-badge[slot="end"] {
+  margin-inline-start: remify(4px);
+}
+
+/* A StateBanner's badge follows its title inline and is taller than the
+   title's line. Negative block margins keep it out of the line-height
+   calculation, so a wrapped title's lines stay evenly spaced whichever line
+   the badge lands on. */
+.kui-state-banner__copy > .kui-badge {
+  margin-block: -0.5em;
+  margin-inline-end: var(--kui-layout-item-gap, remify(8px));
+  vertical-align: baseline;
+}

@@ -153,7 +153,7 @@ export function NavStack({
                   text={top?.title ?? ''}
                   size={toolbarConfig.titleSize ?? 'large'}
                   headingLevel={toolbarConfig.headingLevel}
-                  className="kui-nav-stack__title"
+                  fill
                 />
               </>
             }

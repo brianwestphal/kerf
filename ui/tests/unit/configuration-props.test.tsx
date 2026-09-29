@@ -45,10 +45,10 @@ describe('props that replace raw token overrides', () => {
 
   it('renders ListHeader labels at the requested heading level', () => {
     expect(asHtml(ListHeader({ label: 'Recent' }))).toMatch(
-      /<h2 class="kui-text kui-list-header__label"/,
+      /<h2 class="kui-text"/,
     );
     expect(asHtml(ListHeader({ label: 'Recent', headingLevel: 3 }))).toMatch(
-      /<h3 class="kui-text kui-list-header__label"[^>]*>Recent<\/h3>/,
+      /<h3 class="kui-text"[^>]*>Recent<\/h3>/,
     );
     expect(
       asHtml(
@@ -60,7 +60,7 @@ describe('props that replace raw token overrides', () => {
           actionIcon: icon,
         }),
       ),
-    ).toMatch(/<h4 class="kui-text kui-list-header__label"/);
+    ).toMatch(/<h4 class="kui-text"/);
     // A toggle header's label is its button text, not a heading.
     const toggle = asHtml(
       ListHeader({

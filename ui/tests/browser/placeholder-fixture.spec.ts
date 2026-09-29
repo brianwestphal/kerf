@@ -376,7 +376,7 @@ for (const width of [1280, 390]) {
             '.kui-state-banner__copy > strong',
           )!;
           const badge = wrapper
-            .querySelector('.kui-state-banner__badge')!
+            .querySelector('.kui-state-banner__copy > .kui-badge')!
             .getBoundingClientRect();
           return {
             copyHeight: copy.getBoundingClientRect().height,

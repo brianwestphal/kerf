@@ -77,3 +77,16 @@
     background: GrayText;
   }
 }
+
+/* A placeholder StateBanner's badge holds this skeleton instead of text. With
+   no text, the skeleton's baseline would be synthesized from its bottom edge,
+   sitting the badge higher than the live one by a font-dependent amount. A
+   zero-width character gives it a text baseline in the badge's own font and
+   line height, exactly where the live badge's text baseline falls on every
+   platform. */
+.kui-state-banner[data-placeholder="true"]
+  .kui-state-banner__copy
+  > .kui-badge
+  > .kui-skeleton::before {
+  content: "\200b";
+}

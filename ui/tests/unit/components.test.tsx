@@ -903,7 +903,7 @@ describe('production UI primitives', () => {
       }),
     );
     expect(header).toContain(
-      '<h2 aria-label="Workspace, 0 workspaces" class="kui-text kui-list-header__label" data-component="text" data-tone="default" data-size="default" data-font="default" data-border="none">Workspace</h2>',
+      '<h2 aria-label="Workspace, 0 workspaces" class="kui-text" data-component="text" data-tone="default" data-size="default" data-font="default" data-border="none">Workspace</h2>',
     );
     expect(header).toContain(
       'data-component="badge" data-tone="neutral" data-appearance="quiet" data-shape="pill" data-size="compact" aria-hidden="true">0</span>',
@@ -1563,6 +1563,12 @@ describe('production UI primitives', () => {
     expect(defaultOverflow).not.toContain('data-wrap');
     expect(defaultOverflow).not.toContain('data-ellipsis');
     expect(defaultOverflow).not.toContain('data-max-lines');
+    expect(defaultOverflow).not.toContain('data-fill');
+
+    // fill: true emits the grow-into-free-space hook.
+    expect(asHtml(ToolbarText({ text: 'Fill me', fill: true }))).toContain(
+      'data-fill="true"',
+    );
 
     // ellipsis: false emits the hard-clip hook; wrap: true emits the wrap hook.
     expect(asHtml(ToolbarText({ text: 'Clip me', ellipsis: false }))).toContain(

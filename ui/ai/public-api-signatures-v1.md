@@ -231,6 +231,12 @@ interface ToolbarTextBaseProps {
      * instead. Default true.
      */
     ellipsis?: boolean;
+    /**
+     * Grow to fill the free space of the flex row it sits in (a Toolbar zone),
+     * truncating at the space left by its siblings instead of taking only its
+     * text's width. Default false.
+     */
+    fill?: boolean;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
@@ -243,7 +249,7 @@ type ToolbarTextWrappingProps = {
     maxLines?: never;
 };
 type ToolbarTextProps = ToolbarTextBaseProps & ToolbarTextWrappingProps;
-declare function ToolbarText({ text, size, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, slot, }: ToolbarTextProps): kerfjs.SafeHtml;
+declare function ToolbarText({ text, size, className, id, headingLevel, placeholder, wrap, ellipsis, maxLines, fill, slot, }: ToolbarTextProps): kerfjs.SafeHtml;
 
 export { type HeadingLevel, ToolbarText, type ToolbarTextProps, type ToolbarTextSize };
 ```

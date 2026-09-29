@@ -48,7 +48,7 @@ describe('NavStack markup', () => {
     expect(html).not.toContain('data-nav-back');
     expect(html).toContain('data-nav-active="true"');
     expect(html).toContain(
-      'kui-nav-stack__title" data-component="toolbar-text" data-size="large"><span class="kui-toolbar-text__text">Home</span></span>',
+      '<span class="kui-toolbar-text" data-component="toolbar-text" data-size="large" data-fill="true"><span class="kui-toolbar-text__text">Home</span></span>',
     );
   });
 
@@ -63,7 +63,7 @@ describe('NavStack markup', () => {
     expect(html).toContain('data-nav-back');
     expect(html).toContain('aria-label="Back"');
     expect(html).toContain(
-      'kui-nav-stack__title" data-component="toolbar-text" data-size="large"><span class="kui-toolbar-text__text">Detail</span></span>',
+      '<span class="kui-toolbar-text" data-component="toolbar-text" data-size="large" data-fill="true"><span class="kui-toolbar-text__text">Detail</span></span>',
     );
     // Non-top views are hidden but kept mounted.
     expect(html).toContain(
@@ -148,7 +148,9 @@ describe('NavStack markup', () => {
     expect(toolbar.dataset.responsiveAt).toBe('compact');
     expect(toolbar.dataset.safeAreaBlockStart).toBe('true');
     expect(toolbar.dataset.safeAreaInlineStart).toBeUndefined();
-    const title = toolbar.querySelector<HTMLElement>('.kui-nav-stack__title')!;
+    const title = toolbar.querySelector<HTMLElement>(
+      '.kui-toolbar-text[data-fill="true"]',
+    )!;
     expect(title.dataset.size).toBe('xlarge');
     expect(title.getAttribute('role')).toBe('heading');
     expect(title.getAttribute('aria-level')).toBe('1');
@@ -173,7 +175,7 @@ describe('NavStack markup', () => {
     expect(leading).toEqual([
       'kui-toolbar-control-group',
       'lead-group',
-      'kui-toolbar-text kui-nav-stack__title',
+      'kui-toolbar-text',
     ]);
     expect(
       toolbar.querySelector('.kui-toolbar__center .center-group'),
@@ -219,7 +221,7 @@ describe('NavStack markup', () => {
     expect(html).not.toContain('data-nav-back');
     expect(html).not.toContain('kui-nav-stack__actions');
     expect(html).toContain(
-      'kui-nav-stack__title" data-component="toolbar-text" data-size="large"><span class="kui-toolbar-text__text"></span></span>',
+      '<span class="kui-toolbar-text" data-component="toolbar-text" data-size="large" data-fill="true"><span class="kui-toolbar-text__text"></span></span>',
     );
   });
 

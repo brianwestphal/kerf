@@ -257,7 +257,7 @@ test('drills through the navigation-stack recipe with animated push/pop and redu
   await expect(nav.locator('[data-nav-back]')).toBeVisible();
   await expect(
     nav.locator(
-      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-nav-stack__title',
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-toolbar-text[data-fill="true"]',
     ),
   ).toHaveText('App layouts');
   await expect(nav).not.toHaveAttribute('data-nav-chrome-transition', 'true');
@@ -274,7 +274,7 @@ test('drills through the navigation-stack recipe with animated push/pop and redu
   await expect(nav.locator('[data-nav-back]')).toHaveCount(0);
   await expect(
     nav.locator(
-      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-nav-stack__title',
+      ':scope > [data-nav-stack-chrome]:not([data-nav-chrome-copy]) .kui-toolbar-text[data-fill="true"]',
     ),
   ).toHaveText('Library');
   await expect(nav).not.toHaveAttribute('data-nav-chrome-transition', 'true');
@@ -711,7 +711,7 @@ test('presents the LucideIcon modes as labeled examples that differ only in sema
         );
       };
       return {
-        label: contentLeft('.kui-list-header__label'),
+        label: contentLeft('.kui-list-header__title > .kui-text'),
         note: contentLeft('.kui-catalog-example__note'),
       };
     }),
@@ -6171,7 +6171,7 @@ test('matches shared menu, content-item, and toolbar geometry', async ({
       page.evaluate(() => customElements.get('wa-dropdown') !== undefined),
     )
     .toBe(true);
-  await expect(demo.locator('.kui-list-header__label')).toHaveText([
+  await expect(demo.locator('.kui-list-header__title > .kui-text')).toHaveText([
     'Shape',
     'Segmented choices',
     'Popup menu',
@@ -7131,7 +7131,7 @@ test('renders controlled toolbar, rounded, and pill SegmentedControl variants', 
     '[data-component="segmented-control"]:not([data-placeholder="true"])',
   );
   await expect(controls).toHaveCount(3);
-  await expect(demo.locator('.kui-list-header__label')).toHaveText([
+  await expect(demo.locator('.kui-list-header__title > .kui-text')).toHaveText([
     'Toolbar',
     'Rounded rectangle',
     'Pill',
@@ -7263,7 +7263,7 @@ test('ships semantic banner palettes with scoped overrides', async ({
     articles.evaluateAll((nodes) =>
       nodes.map((node) => {
         const label = node.querySelector<HTMLElement>(
-          '.kui-list-header__label',
+          '.kui-list-header__title > .kui-text',
         )!;
         const icon = node.querySelector<HTMLElement>(
           '.kui-state-banner__icon',

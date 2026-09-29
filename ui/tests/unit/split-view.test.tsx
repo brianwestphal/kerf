@@ -92,7 +92,7 @@ describe('SplitView', () => {
     expect(html).toContain('data-nav-back');
     expect(html).toContain('aria-label="Threads"');
     expect(html).toContain(
-      'kui-nav-stack__title" data-component="toolbar-text" data-size="large"><span class="kui-toolbar-text__text">Message</span></span>',
+      '<span class="kui-toolbar-text" data-component="toolbar-text" data-size="large" data-fill="true"><span class="kui-toolbar-text__text">Message</span></span>',
     );
   });
 
@@ -195,7 +195,7 @@ describe('SplitView', () => {
     expect(toolbar.getAttribute('divider-sides')).toBe('b');
     expect(
       toolbar
-        .querySelector('.kui-nav-stack__title')!
+        .querySelector('.kui-toolbar-text[data-fill="true"]')!
         .getAttribute('aria-level'),
     ).toBe('2');
     const back = toolbar.querySelector<HTMLElement>('[data-nav-back]')!;

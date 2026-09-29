@@ -70,9 +70,9 @@ Margin: self · border: self · padding: self (layout role: navigation). `self` 
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-list-header`, `kui-list-header__action`, `kui-list-header__action-layer`, `kui-list-header__label`, `kui-list-header__title`, `kui-list-header__toggle`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-list-header`, `kui-list-header__action`, `kui-list-header__action-layer`, `kui-list-header__title`, `kui-list-header__toggle`.
 
-Public tokens it reads: `--kui-color-neutral-border-quiet`, `--kui-focus-ring`, `--kui-font-xs`, `--kui-list-header-action-icon-size`, `--kui-list-header-color`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-list-header-hover-background`, `--kui-list-group-divider-color`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-neutral-border-quiet`, `--kui-focus-ring`, `--kui-list-header-action-icon-size`, `--kui-list-header-color`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-list-header-hover-background`, `--kui-list-group-divider-color`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and forced component dimensions (`KUI-L005`).
 

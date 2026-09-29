@@ -119,34 +119,6 @@ export const ownershipExceptions = [
       'The same edge-inset contract: a Toolbar consumes the edge context for its own padding and clears it for its zones, so a nested group or toolbar does not inset a second time.',
   },
   {
-    file: 'list-header.css',
-    rule: 'hook-class',
-    selector: '.kui-list-header__label',
-    reason:
-      'KF-BEP2P5: fix pending (the child should style itself in this context from its own stylesheet).',
-  },
-  {
-    file: 'nav-stack.css',
-    rule: 'hook-class',
-    selector: '.kui-nav-stack__title',
-    reason:
-      'KF-BEP2P5: fix pending (the child should style itself in this context from its own stylesheet).',
-  },
-  {
-    file: 'select.css',
-    rule: 'hook-class',
-    selector: '.kui-select__count',
-    reason:
-      'KF-BEP2P5: fix pending (the child should style itself in this context from its own stylesheet).',
-  },
-  {
-    file: 'state-banner.css',
-    rule: 'hook-class',
-    selector: '.kui-state-banner__badge',
-    reason:
-      'KF-BEP2P5: fix pending (the child should style itself in this context from its own stylesheet).',
-  },
-  {
     file: 'collapsible-panel.css',
     rule: 'foreign-variable',
     property: '--_kui-floating-covered',

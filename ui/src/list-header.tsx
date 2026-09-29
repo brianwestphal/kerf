@@ -224,7 +224,7 @@ export function ListHeader({
           aria-label={accessibleLabel}
           aria-expanded={String(Boolean(expanded))}
         >
-          <span class="kui-list-header__label">{label}</span>
+          <Text variant="span">{label}</Text>
           {indicator}
           {renderedActionIcon && (
             <span class="kui-list-header__action-layer">
@@ -255,7 +255,6 @@ export function ListHeader({
       <div class="kui-list-header__title">
         <Text
           variant={`h${headingLevel}`}
-          class="kui-list-header__label"
           border="none"
           aria-label={accessibleLabel}
         >

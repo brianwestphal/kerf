@@ -698,7 +698,6 @@
           "kui-nav-stack__chrome-copy",
           "kui-nav-stack__chrome-copy--bottom",
           "kui-nav-stack__chrome-copy--exiting",
-          "kui-nav-stack__title",
           "kui-nav-stack__viewport",
           "kui-nav-stack__view",
           "kui-nav-stack__view--entering",
@@ -2222,14 +2221,12 @@
           "kui-list-header",
           "kui-list-header__action",
           "kui-list-header__action-layer",
-          "kui-list-header__label",
           "kui-list-header__title",
           "kui-list-header__toggle"
         ],
         "publicTokens": [
           "--kui-color-neutral-border-quiet",
           "--kui-focus-ring",
-          "--kui-font-xs",
           "--kui-list-header-action-icon-size",
           "--kui-list-header-color",
           "--kui-layout-inline-margin",

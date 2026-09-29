@@ -77,6 +77,18 @@ targets? })` reports that state — call it once at the app root and keep its
   `--kui-tab-bar-divider-color` token. To keep a permanent line, set
   `chromeDividers: "always"` on the pane or an explicit `dividerSides`.
 
+- **`@kerfjs/ui`: `ListHeader`, `NavStack`, `Select`, and `StateBanner` no
+  longer restyle a composed child through a class on its root.** Each child
+  now styles itself: `Text` sets a `ListHeader` label from `text.css`, `Badge`
+  spaces a `Select` count and a `StateBanner` badge from `badge.css`, and a
+  `NavStack` title uses `ToolbarText`'s new `fill` option. Rendering is
+  unchanged. `ToolbarText` gains `fill` (grow into the free space of its
+  toolbar zone and truncate there). The `kui-list-header__label`,
+  `kui-nav-stack__title`, `kui-select__count`, and `kui-state-banner__badge`
+  classes are removed; select a ListHeader label with
+  `.kui-list-header__title > .kui-text` and a NavStack title with
+  `.kui-toolbar-text[data-fill="true"]` if a test needs to find them.
+
 - **`@kerfjs/ui` ships a markdown component reference for AI assistants.**
   `@kerfjs/ui/ai/components/README.md` indexes every catalog entry in one line,
   and `@kerfjs/ui/ai/components/<id>.md` gives each entry a short page: when to

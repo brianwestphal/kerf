@@ -25,7 +25,7 @@ function trigger(select: Locator) {
     const icon = host.querySelector(
       '.kui-select__trigger-icon, .kui-select__icon--selected',
     )!;
-    const count = host.querySelector('.kui-select__count');
+    const count = host.querySelector(':scope > .kui-badge[slot="end"]');
     return {
       display: host.shadowRoot!.querySelector<HTMLInputElement>(
         '[part~="display-input"]',

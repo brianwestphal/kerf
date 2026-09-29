@@ -297,7 +297,7 @@ renders, and its composed children from `src/*.tsx`:
 - **Context on any child.** Custom properties set on a subject that can be any
   element (`.kui-x > *`, `> :not(…)`) also land on composed components' roots.
 - **Hook classes.** A class the component places on a composed kerf child's
-  root (`<ToolbarText className="kui-nav-stack__title">`) may not be styled;
+  root (`<ToolbarText className="kui-nav-stack__title">`, a class NavStack once styled) may not be styled;
   the child styles itself in that context instead.
 
 The documented exceptions live with their reasons in

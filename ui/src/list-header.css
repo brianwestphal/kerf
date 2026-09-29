@@ -88,18 +88,6 @@
   text-align: start;
 }
 
-.kui-list-header__label {
-  min-width: 0;
-  margin: 0;
-  overflow: hidden;
-  font-size: var(--kui-font-xs);
-  font-weight: 650;
-  letter-spacing: 0.04em;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
 .kui-list-header__action,
 .kui-list-header__action-layer {
   display: grid;

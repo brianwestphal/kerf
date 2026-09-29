@@ -53,12 +53,7 @@ export function StateBanner({
       <div class="kui-state-banner__copy">
         <strong>{placeholder ? <Skeleton width={em(10)} /> : title}</strong>
         {badge && (
-          <Badge
-            appearance="solid"
-            size="compact"
-            tone={badgeTone}
-            className="kui-state-banner__badge"
-          >
+          <Badge appearance="solid" size="compact" tone={badgeTone}>
             {placeholder ? <Skeleton width={em(1.75)} /> : badge}
           </Badge>
         )}

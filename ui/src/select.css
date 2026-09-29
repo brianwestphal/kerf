@@ -120,13 +120,6 @@
   .kui-select__icon[slot="start"] {
   margin-inline-end: 0 !important;
 }
-/* A multiple icon-only trigger: its fixed icon, then a count badge while any
-   choice is chosen, 4px from the icon (the caret keeps its 12px after it).
-   The summary that ends its label (and accessible name) stays inline text, so
-   a visible label reads "Labels: Bug, Docs" in place of the hidden value. */
-.kui-select__count {
-  margin-inline-start: remify(4px);
-}
 .kui-select::part(start),
 .kui-select::part(end),
 .kui-select::part(expand-icon) {

@@ -26,6 +26,12 @@ interface ToolbarTextBaseProps {
    * instead. Default true.
    */
   ellipsis?: boolean;
+  /**
+   * Grow to fill the free space of the flex row it sits in (a Toolbar zone),
+   * truncating at the space left by its siblings instead of taking only its
+   * text's width. Default false.
+   */
+  fill?: boolean;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
   /**
@@ -54,6 +60,7 @@ export function ToolbarText({
   wrap = false,
   ellipsis = true,
   maxLines = null,
+  fill = false,
   slot,
 }: ToolbarTextProps) {
   const capped = wrap && maxLines != null && maxLines > 0;
@@ -62,6 +69,7 @@ export function ToolbarText({
       class={`kui-toolbar-text ${className}`.trim()}
       data-component="toolbar-text"
       data-size={size}
+      data-fill={fill ? 'true' : undefined}
       data-wrap={wrap ? 'true' : undefined}
       data-ellipsis={ellipsis ? undefined : 'false'}
       data-max-lines={capped ? String(maxLines) : undefined}
