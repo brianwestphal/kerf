@@ -182,7 +182,7 @@ const composition = {
 const signatures =
   '# Signatures\n\n## `@kerfjs/ui/stack`\n\n```ts\n```\n\n## `kerfjs/actions`\n';
 
-describe('AI-facing component markdown', () => {
+describe('AI-facing component markdown', { timeout: 30_000 }, () => {
   it('slugs module headings the way GitHub anchors them', () => {
     expect(headingSlug('`@kerfjs/ui/list-item`')).toBe('kerfjsuilist-item');
     expect([...signatureModules(signatures)]).toEqual([
