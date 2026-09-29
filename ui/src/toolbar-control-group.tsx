@@ -1,3 +1,4 @@
+import { markRelocatableGroup } from './panel-toolbar-group.js';
 import type { KerfUiContent } from './semantic-content.js';
 
 export type ToolbarControlGroupAppearance = 'contained' | 'borderless';
@@ -87,6 +88,8 @@ export interface ToolbarControlGroupProps {
   overflow?: ToolbarControlGroupOverflow;
   /** Responsive visibility owned by the enclosing Toolbar container. */
   visibility?: ToolbarControlGroupVisibility;
+  /** Move this group into the work-area toolbar when its panel collapses. */
+  relocateOnCollapse?: boolean;
   /** Add contrast behind photo-backed avatar content. */
   scrim?: boolean;
   /**
@@ -118,11 +121,12 @@ export function ToolbarControlGroup({
   menuInset = 'standard',
   overflow = 'visible',
   visibility = 'always',
+  relocateOnCollapse = false,
   scrim = false,
   avatarImage,
   slot,
 }: ToolbarControlGroupProps) {
-  return (
+  const group = (
     <div
       class={`kui-toolbar-control-group ${className}`.trim()}
       data-component="toolbar-control-group"
@@ -155,4 +159,5 @@ export function ToolbarControlGroup({
       {children}
     </div>
   );
+  return relocateOnCollapse ? markRelocatableGroup(group) : group;
 }

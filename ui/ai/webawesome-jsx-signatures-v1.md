@@ -1,6 +1,6 @@
 # Web Awesome JSX signatures for the UI authoring corpus
 
-Generated from the emitted `@kerfjs/ui@4.4.1` declaration boundary. Import `@kerfjs/ui/webawesome` for type effects when authoring direct `wa-*` JSX. The module emits no runtime behavior and does not register custom elements.
+Generated from the emitted `@kerfjs/ui@5.0.0` declaration boundary. Import `@kerfjs/ui/webawesome` for type effects when authoring direct `wa-*` JSX. The module emits no runtime behavior and does not register custom elements.
 
 ```ts
 import { KerfCustomElement } from 'kerfjs/jsx-runtime';

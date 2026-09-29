@@ -36,11 +36,11 @@
     "output": "./component-composition.json"
   },
   "peerDependencies": {
-    "kerfjs": "^4.0.0"
+    "kerfjs": "^5.0.0"
   },
   "devDependencies": {
-    "kerfjs": "^4.4.1",
-    "@kerfjs/ui": "^4.4.1",
+    "kerfjs": "^5.0.0",
+    "@kerfjs/ui": "^5.0.0",
     "tsup": "^8",
     "typescript": "^5 || ^6"
   }

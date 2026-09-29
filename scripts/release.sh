@@ -272,9 +272,9 @@ ${generated}"
 - "
   fi
 
-  # Surface any hand-curated `## [Unreleased]` bullets into the editor seed so
-  # they're carried into the curated notes — step_update_changelog resets
-  # [Unreleased] to empty on release, so anything left only there would be lost.
+  # Surface hand-curated `## [Unreleased]` bullets in the editor for context.
+  # step_update_changelog preserves the full section in the stable entry even
+  # if these bullets are omitted from the curated release notes.
   local carried
   carried=$(node -e "
     const fs = require('fs');
@@ -302,32 +302,8 @@ step_update_changelog() {
 
   info "Updating CHANGELOG.md..."
 
-  local entry="## [${version}] - ${date}\n\n${notes}"
-
-  node -e "
-    const fs = require('fs');
-    let c = fs.readFileSync('CHANGELOG.md', 'utf8');
-    const entry = process.argv[1];
-    // Keep '## [Unreleased]' pinned at the top and reset it to empty, inserting
-    // the new version block immediately below it. (Its accumulated entries were
-    // surfaced into the release-notes editor seed, so they live on in the curated
-    // notes — see step_release_notes.) Without this, inserting before the first
-    // '## [' heading would strand [Unreleased] below each new release. Falls back
-    // to the first release heading / header end when there's no [Unreleased].
-    const unrel = /## \[Unreleased\][\s\S]*?(?=\n## \[)/;
-    if (unrel.test(c)) {
-      c = c.replace(unrel, '## [Unreleased]\n\n' + entry + '\n');
-    } else {
-      const marker = c.indexOf('\n## [');
-      if (marker === -1) {
-        const headerEnd = c.lastIndexOf('\n\n') + 2;
-        c = c.slice(0, headerEnd) + entry + '\n\n';
-      } else {
-        c = c.slice(0, marker) + '\n' + entry + '\n' + c.slice(marker);
-      }
-    }
-    fs.writeFileSync('CHANGELOG.md', c);
-  " "$(echo -e "$entry")"
+  node scripts/update-release-changelog.mjs "$version" "$notes" "$date"
+  npx prettier --write CHANGELOG.md
 
   success "CHANGELOG.md updated"
 }
@@ -365,6 +341,9 @@ step_local_checks() {
   echo ""
   info "UI package..."
   (cd ui && npm run check)
+  echo ""
+  info "ESLint plugin..."
+  (cd eslint-plugin && npm test)
   echo ""
   info "Component scaffold..."
   npm run check:scaffold-catalog-schema

@@ -158,22 +158,23 @@ A panel's controls follow it open and closed when the Workbench composes the
 toolbars. Give a panel a `toolbar` and the work area a `mainToolbar` (and, for
 a drawer, optionally a `mainBottomToolbar`); the Workbench renders each as a
 standard `Toolbar` over a `Pane`, and moves groups between them as panels open
-and close. A panel's `toolbar` has four parts:
+and close. A panel's `toolbar` has these parts:
 
 - `title` — the panel's `ToolbarText` (the quiet default size in a rail).
-- `panelOnly` — groups that make sense only while the panel is open. They lead
-  its toolbar, after the title, and are unavailable while it is closed.
-- `constant` — groups that stay available either way. They trail the panel's
-  toolbar while it is open and move to the work area's toolbar while it is
-  closed.
+- `leading`, `center`, and `trailing` — the open panel's toolbar zones. Put
+  `ToolbarControlGroup`s in any order in these zones. Mark a group with
+  `relocateOnCollapse` to make it available in the work area while the panel
+  is closed; unmarked groups remain in the inert panel. Pass marked groups
+  directly or in arrays, including nested arrays, rather than JSX fragments
+  so their render-time annotation remains available.
 - `toggle: { action, name, showLabel?, hideLabel? }` — the standard collapse
   toggle, which the Workbench renders: the per-side panel glyph,
   `aria-controls` naming the panel, `aria-expanded`, a "Show …"/"Hide …"
   label (or your localized `showLabel` / `hideLabel`), and the `data-action`
   the app handles. It is always the last group.
-- `center` — optional panel-only center content.
 
-While a panel is closed, its `constant` groups and then its toggle go to:
+While a panel is closed, marked groups follow their open-panel zone order
+(`leading`, `center`, `trailing`), followed by its toggle:
 
 | Panel         | Where they go                                                                                                   |
 | ------------- | --------------------------------------------------------------------------------------------------------------- |
@@ -197,8 +198,8 @@ toggle, so it never depends on a control it covers. An app's own
     toolbar: {
       label: "Navigator",
       title: <ToolbarText text="Navigator" />,
-      panelOnly: <NewFileGroup />,
-      constant: <SearchGroup />,
+      leading: <NewFileGroup />,
+      trailing: <ToolbarControlGroup relocateOnCollapse label="Search files"><SearchButton /></ToolbarControlGroup>,
       toggle: { action: "toggle-navigator", name: "navigator" },
     },
     content: <Files />,
@@ -249,7 +250,7 @@ dividers described above.
 
 Size a rail so its title and groups fit at its narrowest (a resizable rail's
 `min`); a toolbar that cannot hold them drops the title rather than
-truncating it. `constant` content renders in both places while the panel is
+truncating it. Relocated content renders in both places while the panel is
 closed (the panel's copy is inert), so give it no `id`s. With `wireWorkbench`
 given the panel's `collapsed` signal, focus follows the toggle: closing a
 panel from its own toggle focuses the relocated toggle in the work area, and

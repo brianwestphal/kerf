@@ -1,6 +1,6 @@
 ---
 title: ESLint plugin
-description: eslint-plugin-kerfjs — AST-only rules enforcing kerf's hard rules and rename-safety patterns at edit time.
+description: eslint-plugin-kerfjs — core and optional UI rules for kerf applications.
 ---
 
 `eslint-plugin-kerfjs` is a companion ESLint plugin that catches kerf hard-rule violations at edit time, before they reach `tsc` or the runtime dev-warns. It sits alongside two earlier defense layers shipped by kerf:
@@ -11,7 +11,10 @@ description: eslint-plugin-kerfjs — AST-only rules enforcing kerf's hard rules
 | Opt-in dev-warns (`KERF_DEV_WARN_*`) | Rebuilt listeners, untracked signals, narrow set                                   | Runtime       |
 | **`eslint-plugin-kerfjs`**           | Inline JSX handlers, missing `data-key`, nested `mount()`, global JSX augmentation | **Edit time** |
 
-The rules are AST-only — no `@typescript-eslint/parser` _service_ dependency is required by the plugin (consumers configure their own parser). This keeps consumer setup trivial and the plugin's release cadence independent of TypeScript-ESLint major upgrades.
+The core syntax rules analyze the AST without TypeScript parser services. The
+AI-config rule reads the filesystem, and the optional UI rules also resolve
+catalog and profile artifacts. Consumers configure their own parser; no
+TypeScript parser service is required.
 
 ## Install
 
@@ -38,15 +41,13 @@ export default [
 ];
 ```
 
-## Configure — legacy `.eslintrc`
-
-```json
-{
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": { "ecmaFeatures": { "jsx": true } },
-  "extends": ["plugin:kerfjs/legacy-recommended"]
-}
-```
+The package is ESM-only and supports flat config. Legacy `.eslintrc` plugin
+loading is not supported. For UI components, install `@kerfjs/ui` and add
+`kerfjs.configs['recommended-ui']` or `kerfjs.configs['strict-ui']`; these
+presets add six catalog, ownership, composition, CSS-value, preference, and
+wiring rules to the eight core rules. See the
+[package README](https://github.com/brianwestphal/kerf/blob/main/eslint-plugin/README.md)
+for their configuration and complete rule table.
 
 ## Rules
 

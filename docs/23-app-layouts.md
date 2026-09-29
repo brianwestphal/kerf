@@ -272,7 +272,7 @@ vocabulary, and avoids the PWA-loaded "app shell" term.
 - **Panel toolbars follow the panel (KF-6GVPW7: toggles were hand-placed, so
   the catalog showed each rail toggle twice while the rails were open and
   put toggles where the guidance does not).** A panel may take a `toolbar`
-  (`title`, `panelOnly`, `center`, `constant`, `toggle: { action, name,
+  (`title`, `leading`, `center`, `trailing`, `toggle: { action, name,
 showLabel?, hideLabel? }`) and the work area a `mainToolbar` /
   `mainBottomToolbar`, each also taking the `Toolbar`'s configuration
   (`ToolbarConfig`: `dividerSides`, `centerAlign`, `responsive`,
@@ -287,10 +287,12 @@ showLabel?, hideLabel? }`) and the work area a `mainToolbar` /
   `separators`, `safeAreaEdges`, `chromeDividers`), `mainHeaderList` / `mainFooterList` take
   `ListConfig` (`gap`, `hAlign`, `vAlign`, `dividerSides`, `textInsets`,
   `controlInsets`), and a `CollapsiblePanel` takes `pane` too. An omitted or
-  `undefined` field keeps today's value, so the default markup is unchanged. Open, a panel's
-  toolbar holds its title and panel-only groups, then its constant groups and
-  the standard toggle last. Closed, its panel-only groups stay behind (inert)
-  and its constant groups plus toggle move to the work area: a left rail's
+  `undefined` field keeps today's value. Open, a panel's toolbar places its
+  groups in leading, center, and trailing zones, with the standard toggle last.
+  Mark a `ToolbarControlGroup` with `relocateOnCollapse` to keep it available
+  when closed; pass marked groups directly or in arrays, so the render-time
+  marker remains visible. Closed, unmarked groups stay behind (inert) and
+  marked groups follow zone order into the work area before the toggle: a left rail's
   lead `mainToolbar` before its title, a right rail's end it, and a drawer's
   trail `mainBottomToolbar`, else float in a `FloatingToolbar` in the work
   area's corner (a rail without a `mainToolbar` floats its groups the same
@@ -652,7 +654,7 @@ NavStack.
 roles as a Workbench panel (shared through `ui/src/panel-toolbar.tsx`) and
 composes its own toolbar over a `Pane`; because a standalone panel does not own
 the work area, the app renders `CollapsiblePanelRelocated` in its work-area
-toolbar to hold the collapsed panel's constant groups and toggle, and
+toolbar to hold the collapsed panel's marked groups and toggle, and
 `wireSidebar` hands focus to it (retrying for a few frames when the app renders
 late).
 

@@ -85,9 +85,19 @@ export function toggleWorkbenchConsole(): boolean {
 }
 
 /** A borderless single-button group with an icon action. */
-function iconGroup(label: string, icon: typeof Search, name: string) {
+function iconGroup(
+  label: string,
+  icon: typeof Search,
+  name: string,
+  relocateOnCollapse = false,
+) {
   return (
-    <ToolbarControlGroup label={label} appearance="borderless" single>
+    <ToolbarControlGroup
+      label={label}
+      appearance="borderless"
+      single
+      relocateOnCollapse={relocateOnCollapse}
+    >
       <button
         type="button"
         aria-label={label}
@@ -242,7 +252,7 @@ export function WorkbenchDemo() {
       </CatalogExample>
       <CatalogExample
         label="Controlled collapsed panels"
-        note="Collapsed tracks snap to zero while their fixed-size content slides out. A closed rail's constant groups and toggle lead the editor toolbar, and its panel-only groups wait in the closed panel. With no editor bottom toolbar, a closed drawer's toggle floats in the editor's corner."
+        note="Collapsed tracks snap to zero while their fixed-size content slides out. A closed rail's marked groups and toggle lead the editor toolbar, and its unmarked groups wait in the closed panel. With no editor bottom toolbar, a closed drawer's toggle floats in the editor's corner."
         align="none"
         compactFallback="Collapsed tracks preserve desktop workspace state; they are not a compact-layout substitute."
         viewport={{
@@ -266,8 +276,8 @@ export function WorkbenchDemo() {
             label: 'Navigator',
             toolbar: {
               label: 'Navigator',
-              panelOnly: iconGroup('New file', FilePlus, 'file-plus'),
-              constant: iconGroup('Search files', Search, 'search'),
+              leading: iconGroup('New file', FilePlus, 'file-plus'),
+              trailing: iconGroup('Search files', Search, 'search', true),
               toggle: {
                 action: 'toggle-workbench-collapsed-navigator',
                 name: 'navigator',

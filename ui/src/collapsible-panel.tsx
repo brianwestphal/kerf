@@ -29,10 +29,10 @@ export type CollapsiblePanelSide = PanelSide;
 export type CollapsiblePanelToolbarToggle = PanelToggle;
 
 /**
- * A panel's composed top toolbar. `title` and `panelOnly` groups lead it and
- * are available only while the panel is open; `constant` groups and the
- * standard `toggle` trail it while open and move to the app's work-area
- * toolbar — through {@link CollapsiblePanelRelocated} — while it is collapsed.
+ * A panel's composed top toolbar. Its groups occupy `leading`, `center`, and
+ * `trailing` while open; groups marked `relocateOnCollapse` and the standard
+ * toggle move to the work-area toolbar through
+ * {@link CollapsiblePanelRelocated} while it is collapsed.
  */
 export type CollapsiblePanelToolbar = PanelToolbar;
 
@@ -110,7 +110,7 @@ export interface CollapsiblePanelProps {
    * The panel's top toolbar, composed so its groups follow the panel's open
    * state. With it, `children` renders in a `Pane` below the toolbar; render
    * {@link CollapsiblePanelRelocated} in the app's work-area toolbar so the
-   * `constant` groups and toggle stay reachable while the panel is collapsed.
+   * marked groups and toggle stay reachable while the panel is collapsed.
    */
   toolbar?: CollapsiblePanelToolbar;
   /** Optional bottom toolbar under a `toolbar` panel's content. */
@@ -228,7 +228,7 @@ export interface CollapsiblePanelRelocatedProps {
 }
 
 /**
- * A collapsed {@link CollapsiblePanel}'s `constant` groups and standard
+ * A collapsed {@link CollapsiblePanel}'s marked groups and standard
  * toggle, for the app's work-area toolbar — nothing while the panel is open.
  * Put it first in the leading zone for a left rail, last in the trailing zone
  * for a right rail, and last in a bottom toolbar (or a `FloatingToolbar`

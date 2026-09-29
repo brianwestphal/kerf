@@ -191,9 +191,10 @@ an upstream component or recipe request.
   on the component instead of adding application descendant width/height fixes.
   It paints `--kui-color-surface` itself (an inline region stays transparent),
   so do not add a background to make an overlay opaque.
-- Give `Workbench` panels a `toolbar` (title, panel-only groups, constant
+- Give `Workbench` panels a `toolbar` (title, `leading` / `center` / `trailing`
   groups, and a standard `toggle`) and the work area a `mainToolbar` /
-  `mainBottomToolbar`: the Workbench moves a closed panel's constant groups
+  `mainBottomToolbar`: the Workbench moves a closed panel's groups marked
+  `relocateOnCollapse`
   and toggle into the work area's toolbar, so never hand-place or duplicate
   panel toggles. See [Workbench panel toolbars](workbench.md#panel-toolbars).
 - Configure application panels through the shared `separator`, `collapseMotion`,

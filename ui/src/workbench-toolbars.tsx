@@ -25,7 +25,7 @@ export type WorkbenchPanelToggle = PanelToggle;
 /**
  * A Workbench panel's top toolbar, composed by the Workbench so its groups can
  * follow the panel's open state (see {@link PanelToolbar} for the roles).
- * A collapsed rail's `constant` groups and toggle go to the leading edge of
+ * A collapsed rail's marked groups and toggle go to the leading edge of
  * `mainToolbar` (left rail) or its trailing edge (right rail); a collapsed
  * drawer's go to the trailing edge of `mainBottomToolbar`, else to a
  * `FloatingToolbar` in the work area's bottom-end corner.
@@ -93,7 +93,7 @@ const toggleAttributes = (
 });
 
 /**
- * The groups a collapsed panel hands to the work area: its `constant` groups,
+ * The groups a collapsed panel hands to the work area: its marked groups,
  * then its toggle. Empty while the panel is open or has no toolbar.
  */
 export function relocatedGroups(

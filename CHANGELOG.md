@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [5.0.0] - 2026-09-29
+
 - **`ui-public-boundaries` inspects `kerfjs/html` tagged templates.** The
   no-build `html` template writes the same markup as JSX, so its static
   `class` attributes now carry `KUI-L101` (private `kui-*` anatomy) and
@@ -2464,6 +2466,8 @@ font="monospace"` and Web Awesome code text match.
 - Repaired lockstep version metadata for the ESLint plugin and component scaffold, and added a release-time sync plus repository gate so package manifests, locks, plugin metadata, and published examples cannot drift again.
 - Added the lockstep `@kerfjs/ui` package: accessible toolbar, menu, tab, header, resize, select, and feedback primitives; semantic CSS tokens and browser component subpaths that automatically include only reachable component styles; CSS-free root/SSR entries and an optional complete stylesheet; opt-in Web Awesome registration; AI-oriented docs; a production-backed UX catalog; bundle/unit/three-engine browser gates; and a least-privilege release workflow.
 - The virtual-list demo animation opens on the full app again (header, the "N in the DOM" badge, and the list) before the scroll; the list now scrolls inside its own box while the header stays put (previously the whole frame was a full-bleed list strip), holds at row 0 before gliding instead of starting a few rows down, and the loop stays in phase on every pass. Captured with domotion-svg 0.28.2.
+
+- @kerfjs/ui panel toolbars now place groups in leading, center, and trailing zones; relocateOnCollapse keeps chosen groups available when a panel closes.
 
 ## [4.4.1] - 2026-08-26
 

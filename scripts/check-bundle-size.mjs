@@ -364,7 +364,7 @@ const DOC_CLAIMS = [
   {
     file: 'README.md',
     pattern:
-      /\*\*~[\d.]+ KB, one dependency\.\*\* ~([\d.]+) KB minified \+ gzipped/,
+      /\*\*~[\d.]+ KB in the browser\.\*\* ~([\d.]+) KB minified \+ gzipped/,
     figure: 'main',
   },
   {

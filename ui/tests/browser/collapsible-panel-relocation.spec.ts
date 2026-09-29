@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
 
 /**
- * A CollapsiblePanel's composed toolbar keeps its constant groups and standard
+ * A CollapsiblePanel's composed toolbar keeps its marked groups and standard
  * toggle reachable while it is collapsed: CollapsiblePanelRelocated puts them
  * at the start of the app's editor toolbar, and wireSidebar hands focus
  * between the two toggle positions.
  */
-test('relocates a collapsed rail’s constant groups and toggle into the editor toolbar and keeps focus with the toggle', async ({
+test('relocates a collapsed rail’s marked groups and toggle into the editor toolbar and keeps focus with the toggle', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 1200, height: 900 });

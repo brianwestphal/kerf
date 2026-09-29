@@ -464,6 +464,12 @@ npm run release:beta # tag-only: tags v{ver}-beta.{N}, publishes with --tag beta
 
 The release scripts mirror Hot Sheet's flow and keep all four packages (`kerfjs`, `eslint-plugin-kerfjs`, `create-kerf-component`, and `@kerfjs/ui`) on one version/tag. `scripts/sync-lockstep-versions.mjs` also derives the plugin-reported version and component-scaffold/docs ranges; its `--check` mode runs in `npm run check`. Beta releases skip the version-file bump and changelog write. In CI, `scripts/prepare-release-package.mjs` applies the tag version plus package-specific embedded metadata (AI manifests/signatures, plugin-reported version, and Kerf peer/scaffold ranges), then a tokenless job creates the final tarball. The OIDC-token job only downloads and publishes those already-packed bytes; it never checks out or executes repository code.
 
+Stable changelog generation moves the complete `[Unreleased]` body into the
+new version entry, followed by any distinct release-note draft. A “no changes
+since beta” draft does not replace hand-curated history. The release step
+formats `CHANGELOG.md` before lint, and lockstep version sync writes the
+ESLint plugin metadata in its formatted quote style.
+
 `ui/ai/component-composition.schema.json` is also the canonical schema bundled
 by `create-kerf-component`. Run `npm run sync:scaffold-catalog-schema` after
 changing it. `npm run check` and the interactive release flow run

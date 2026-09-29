@@ -18,15 +18,15 @@
     "evaluatorReport": 1
   },
   "toolVersions": {
-    "@kerfjs/ui": "4.4.1",
-    "eslint-plugin-kerfjs": "4.4.1"
+    "@kerfjs/ui": "5.0.0",
+    "eslint-plugin-kerfjs": "5.0.0"
   },
   "artifactDigests": {
-    "selectionCatalog": "abfe7a45174b3a2fa82b008d9acc7cb5455cacdee11c1b44508e46b826515db9",
+    "selectionCatalog": "6495c7648c9cc86946af54778f9bb7a2039e4cdd1218285cef8b193857fd17e2",
     "behaviorCatalog": "f70dd963c98626606dd9789a8ec5ab5c83c090d04f7c46e0e547148e0628fc74",
     "diagnosticRegistry": "7a734fadc944eb5392f06b74b6c484c14fc5003e186d333233cba999139c6b89",
     "qualityContract": "826cab70c896a6fd685ff5d5cc0707400d88a7632991de261dfb6237710ce5dc",
-    "guidanceContext": "82a6c5985e861da9a53a939d8669d086f3bca1492ba1f9ebd703523d11cfb2bb"
+    "guidanceContext": "a6a7a98221933ed97cd55a87c8f3dc7055eaed1a43ec3c1561d653f5a7bf613d"
   },
   "browserContexts": [
     {

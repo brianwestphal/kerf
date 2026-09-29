@@ -76,7 +76,7 @@ Write plain `.tsx` and build with your existing esbuild / Vite / tsup — no ext
 
 ## Why Kerf
 
-1. **~13 KB, one dependency.** ~13 KB minified + gzipped including `@preact/signals-core` (~13 KB with `arraySignal`). No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest benchmark](https://krausest.github.io/js-framework-benchmark/current.html) kerf sits in the same cluster as Vue, Lit, and vanjs; Solid's compiler leads the update-path benchmarks, which kerf doesn't try to match by design — no compiler.
+1. **~13 KB in the browser.** ~13 KB minified + gzipped including `@preact/signals-core` (~13 KB with `arraySignal`). The optional setup CLI has its own npm dependencies; they stay out of the browser bundle. No virtual DOM, no scheduler, no concurrent-mode machinery. On the official [krausest benchmark](https://krausest.github.io/js-framework-benchmark/current.html) kerf sits in the same cluster as Vue, Lit, and vanjs; Solid's compiler leads the update-path benchmarks, which kerf doesn't try to match by design — no compiler.
 
 2. **No virtual DOM, no compiler.** JSX → HTML strings → native diff. DevTools shows the real DOM because it _is_ the DOM.
 
@@ -88,7 +88,7 @@ Write plain `.tsx` and build with your existing esbuild / Vite / tsup — no ext
 
 6. **Safe by default.** Text and attributes are HTML-escaped automatically, URL attributes are scheme-screened (`javascript:` dropped), and inline `on*` handlers are rejected outright — so untrusted data stays inert. `raw()` is the explicit, auditable opt-out.
 
-**Plus, nothing you don't ask for:** JSX typed against the HTML standard (not React's props) · a ~18-export API with no hooks, lifecycle, or per-instance state · **nine** tree-shakeable companion subpaths (`router`, `list`, `overlay`, `async`, …) that stay out of the core until imported · an [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) + opt-in dev warnings + `create-kerf-component` scaffold · plain TS/JSX/ESM that drops into esbuild / Vite / tsup — or **no** build at all via the `html` tagged template.
+**Plus, nothing you don't ask for:** JSX typed against the HTML standard (not React's props) · a small public API with no hooks, lifecycle, or per-instance state · tree-shakeable companion subpaths (`router`, `list`, `overlay`, `async`, …) that stay out of the core until imported · an [ESLint plugin](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) + opt-in dev warnings + `create-kerf-component` scaffold · plain TS/JSX/ESM that drops into esbuild / Vite / tsup — or **no** build at all via the `html` tagged template.
 
 ## When to use Kerf
 
@@ -223,8 +223,8 @@ Same algorithm `mount()` uses internally — `data-morph-skip`, `data-morph-skip
 
 ```html
 <script type="module">
-  import { signal, mount, each } from "https://esm.sh/kerfjs@4";
-  import { html } from "https://esm.sh/kerfjs@4/html";
+  import { signal, mount, each } from "https://esm.sh/kerfjs@5";
+  import { html } from "https://esm.sh/kerfjs@5/html";
 
   const items = signal([{ id: 1, label: "no build step" }]);
 
@@ -239,7 +239,7 @@ Same algorithm `mount()` uses internally — `data-morph-skip`, `data-morph-skip
 </script>
 ```
 
-Nothing is self-hosted — `kerfjs` is on npm, so every ESM CDN (esm.sh, jsDelivr, unpkg) mirrors it automatically. esm.sh works with a direct import as shown; jsDelivr / unpkg want an importmap so the internal `@preact/signals-core` import resolves. Pin to a major (`@4`, as shown — the latest `4.x`) rather than floating on `latest`, or an exact version (`@4.1.0`) for full reproducibility. Attribute names are written verbatim (`class`, not `className`), and holes are only legal in text positions or as a complete attribute value — anything ambiguous throws with an actionable message. See [`docs/6-jsx-runtime.md`](./docs/6-jsx-runtime.md) §6.11 (§6.11.1 for the full CDN / importmap recipes) — or the [live-poll example](https://brianwestphal.github.io/kerf/examples/complete/live-poll/), a complete app served exactly as authored: no bundler ever touches it.
+Nothing is self-hosted — `kerfjs` is on npm, so every ESM CDN (esm.sh, jsDelivr, unpkg) mirrors it automatically. esm.sh works with a direct import as shown; jsDelivr / unpkg want an importmap so the internal `@preact/signals-core` import resolves. Pin to a major (`@5`, as shown) rather than floating on `latest`, or an exact version (`@5.0.0`) for full reproducibility. Attribute names are written verbatim (`class`, not `className`), and holes are only legal in text positions or as a complete attribute value — anything ambiguous throws with an actionable message. See [`docs/6-jsx-runtime.md`](./docs/6-jsx-runtime.md) §6.11 (§6.11.1 for the full CDN / importmap recipes) — or the [live-poll example](https://brianwestphal.github.io/kerf/examples/complete/live-poll/), a complete app served exactly as authored: no bundler ever touches it.
 
 ### Batteries when you need them: the companion subpaths
 
@@ -322,7 +322,7 @@ Install and JSX setup are in [Quick start](#quick-start) above. These companion 
 
 ### Optional: `eslint-plugin-kerfjs`
 
-A companion ESLint plugin enforces kerf's hard rules at edit time. Eight rules total: four `error`-level AST rules catch hard-rule violations — inline JSX event handlers, missing `data-key` in `each()`, nested `mount()`, and global `JSX.IntrinsicElements` augmentation — and four `warn`-level rules cover delegate-disposer capture, `attr()` selector rename-safety, `raw()` XSS audit trails, and AI-assistant config hygiene. The plugin is AST-only (no parser-services dependency), so it works with any TypeScript-ESLint setup.
+A companion ESLint plugin enforces kerf's hard rules at edit time. Its eight core rules cover inline JSX event handlers, missing `data-key` in `each()`, nested `mount()`, delegate-disposer capture, `attr()` selector rename-safety, `raw()` XSS audit trails, JSX augmentation, and AI-assistant config hygiene. Six additional UI rules check component ownership, composition, CSS values, application preferences, wiring, and public boundaries when you opt into the UI preset. The plugin requires no TypeScript parser service.
 
 ```bash
 npm install --save-dev eslint-plugin-kerfjs
@@ -334,7 +334,7 @@ import kerfjs from "eslint-plugin-kerfjs";
 export default [kerfjs.configs.recommended];
 ```
 
-Full docs at [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — legacy `.eslintrc` config, per-rule examples, and the rationale for which violations get lint rules vs. dev-warns vs. strict TS.
+Full docs at [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — flat config, per-rule examples, and the rationale for which violations get lint rules vs. dev-warns vs. strict TS.
 
 ### Optional: `create-kerf-component`
 
@@ -353,7 +353,7 @@ See [`docs/13-component-packages.md`](./docs/13-component-packages.md) for the f
 - **Migrating:** [coming from another framework?](https://brianwestphal.github.io/kerf/migrating/) — side-by-side TodoMVC translations + per-framework gotchas
 - **AI guide:** [`docs/ai/usage-guide.md`](./docs/ai/usage-guide.md) — reference for AI tools fetching kerf docs (linked from `llms.txt`)
 - **UI package:** [`@kerfjs/ui`](./ui/README.md) — accessible components, responsive app layouts, typed CSS values, Web Awesome adapters, and checked AI-facing component metadata
-- **ESLint plugin:** [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — `eslint-plugin-kerfjs`; eight rules (four hard-rule errors + four warns: `require-delegate-disposer`, `prefer-attr-selector`, `no-raw-with-dynamic-arg`, `ai-assistant-configs`) at edit time (source: [`eslint-plugin/`](./eslint-plugin/))
+- **ESLint plugin:** [brianwestphal.github.io/kerf/docs/eslint-plugin/](https://brianwestphal.github.io/kerf/docs/eslint-plugin/) — `eslint-plugin-kerfjs`; eight core rules plus six opt-in UI rules at edit time (source: [`eslint-plugin/`](./eslint-plugin/))
 - **Component scaffold:** `npm create kerf-component@latest <dir>` — `create-kerf-component`; generates a publishable component package with packaging rules plus deterministic, drift-checked AI metadata pre-wired (source: [`create-kerf-component/`](./create-kerf-component/))
 - **Demo:** [live demo](https://brianwestphal.github.io/kerf/demo/) — nine sections exercising every primitive (counter, store-backed cart, focus survival, keyed list, morph-skip, SVG render, Tier-2 capture, `arraySignal` patches, fine-grained signal bindings)
 - **Repo:** [github.com/brianwestphal/kerf](https://github.com/brianwestphal/kerf)

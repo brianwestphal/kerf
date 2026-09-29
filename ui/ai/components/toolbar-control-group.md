@@ -14,6 +14,7 @@ Provide complete toolbar action geometry through configuration, including semant
 - Use ToolbarActionLink for navigation or external resources that must retain native anchor semantics inside a group.
 - Fill it with plain \<button> controls (the group styles > button fully); use wa-button only for a Web Awesome feature. A popup menu is a PopupMenu in a single group with nestedDropdown; it renders its own trigger, so never hand-write wa-dropdown markup. Nothing wraps inside a group: an icon sits beside its label on one row and no trigger gets a fixed width.
 - For an avatar control, set content=avatar and avatarImage instead of inserting an img; one button paints the group and multiple buttons paint only the pressed highlight.
+- In a Workbench or CollapsiblePanel toolbar, mark a group relocateOnCollapse to keep it available in the work-area toolbar when the panel closes; place it directly or in an array in any toolbar zone.
 
 **Not when:**
 
@@ -50,6 +51,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-control-group`](../public-api-s
 - standard, compact, or list-zero dropdown menu inset
 - visible or horizontally scrollable overflow
 - always visible or compact-only responsive visibility
+- relocate on panel collapse
 - avatar scrim
 - contained avatar background on a single group or selected multi-button highlight
 

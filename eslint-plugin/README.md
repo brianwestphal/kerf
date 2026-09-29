@@ -13,14 +13,16 @@ This plugin sits alongside two other defense layers shipped by [`kerfjs`](https:
 | Opt-in dev-warns (`KERF_DEV_WARN_*`) | Hard Rules 4 (rebuilt listeners), 7 (untracked signals), 8 (narrow set)                                                                                          | Runtime       |
 | **This plugin**                      | Hard Rules 2, 5, 6, 10, 12 — AST-shaped antipatterns; plus rename-safety / `raw()`-audit nudges and a project-hygiene check for the bundled AI-assistant configs | **Edit time** |
 
-All but one rule are AST-only — no `@typescript-eslint/parser` _service_ dependency is required by the plugin (consumers configure their own parser). The exception, `ai-assistant-configs`, reads the filesystem instead of the AST and runs once per lint pass.
+The core syntax rules analyze the AST without TypeScript parser services. `ai-assistant-configs` reads the filesystem, and the optional UI rules also resolve catalog and profile artifacts. Consumers configure their own parser; no `@typescript-eslint/parser` _service_ is required.
 
 ## Install
 
 ```bash
 npm install --save-dev eslint-plugin-kerfjs
-npm install @kerfjs/ui
 ```
+
+Install `@kerfjs/ui` as well when using `recommended-ui` or `strict-ui`; the
+core `recommended` preset does not require it.
 
 ### Supported ESLint versions
 
@@ -129,6 +131,7 @@ When a real bug ships that the existing defense stack misses AND a new lint rule
 ```bash
 npm install
 npm test
+npm run test:eslint-matrix # real packed-plugin loading on every supported ESLint major
 ```
 
 The AST rules' test suites use ESLint's `RuleTester` with `@typescript-eslint/parser`. The `ai-assistant-configs` tests are filesystem-driven — they build temp project roots with fixture `node_modules/kerfjs/ai/` bundles, drive the classifier directly, and use the real ESLint API to prove plain lint is read-only while explicit `--fix` performs the external write.

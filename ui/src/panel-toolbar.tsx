@@ -10,6 +10,7 @@ import {
 
 import { LucideIcon } from './lucide-icon.js';
 import { Pane, type PaneConfig } from './pane.js';
+import { isRelocatableGroup } from './panel-toolbar-group.js';
 import type { KerfUiContent } from './semantic-content.js';
 import { Toolbar, type ToolbarConfig } from './toolbar.js';
 import { ToolbarControlGroup } from './toolbar-control-group.js';
@@ -60,17 +61,17 @@ export interface PanelToggle {
  * A collapsible panel's top toolbar, composed so its groups follow the
  * panel's open state.
  *
- * - `title` (a `ToolbarText`) and `panelOnly` groups lead the toolbar and are
- *   available only while the panel is open.
- * - `constant` groups stay available either way: they trail the panel's
- *   toolbar while it is open and move to the work area's toolbar while it is
- *   collapsed.
+ * - `title` precedes the `leading` zone. Groups may appear in any of the
+ *   `leading`, `center`, and `trailing` zones while the panel is open.
+ * - Groups marked `relocateOnCollapse` move to the work area's toolbar while
+ *   the panel is collapsed, preserving their order across the three zones.
  * - `toggle` is always the last group: in the panel's toolbar while it is
- *   open, and right after the `constant` groups in the work area's toolbar
+ *   open, and right after the relocated groups in the work area's toolbar
  *   while it is collapsed.
  *
- * `constant` content renders in both places while the panel is collapsed (the
- * panel's copy is inert), so give it no `id`s.
+ * Relocated content renders in both places while the panel is collapsed (the
+ * panel's copy is inert), so give it no `id`s. Pass groups directly or in
+ * arrays so their render-time annotation remains available to the panel.
  *
  * The toolbar's configuration (`dividerSides`, `centerAlign`, `responsive`,
  * `responsiveAt`, `safeAreaEdges`) forwards to its `Toolbar`. It draws no
@@ -81,10 +82,9 @@ export interface PanelToolbar extends ToolbarConfig {
   /** Accessible name of the panel's toolbar. */
   label: string;
   title?: KerfUiContent;
-  panelOnly?: KerfUiContent;
-  /** Panel-only center content, available only while the panel is open. */
+  leading?: KerfUiContent;
   center?: KerfUiContent;
-  constant?: KerfUiContent;
+  trailing?: KerfUiContent;
   toggle?: PanelToggle;
 }
 
@@ -119,8 +119,7 @@ export function panelToggleGroup(
 }
 
 /**
- * The panel's own toolbar: title and panel-only groups lead, constant groups
- * and the toggle trail.
+ * The panel's own toolbar: content keeps its chosen zones and the toggle trails.
  */
 export function composedPanelToolbar(
   toolbar: PanelToolbar,
@@ -140,12 +139,12 @@ export function composedPanelToolbar(
       leading={
         <>
           {toolbar.title}
-          {toolbar.panelOnly}
+          {toolbar.leading}
         </>
       }
       trailing={
         <>
-          {toolbar.constant}
+          {toolbar.trailing}
           {toolbar.toggle
             ? panelToggleGroup(side, toolbar.toggle, collapsed, attributes)
             : null}
@@ -193,8 +192,8 @@ export function composedPanelBody({
 }
 
 /**
- * The groups a collapsed panel hands to the work area: its `constant` groups,
- * then its toggle. Empty while the panel is open or has no toolbar.
+ * The groups a collapsed panel hands to the work area, in zone order, then its
+ * toggle. Empty while the panel is open or has no toolbar.
  */
 export function relocatedPanelGroups(
   toolbar: PanelToolbar | undefined,
@@ -203,8 +202,19 @@ export function relocatedPanelGroups(
   attributes: PanelToggleAttributes,
 ): KerfUiContent[] {
   if (!collapsed || !toolbar) return [];
+  const groups: KerfUiContent[] = [];
+  const collect = (content: KerfUiContent): void => {
+    if (Array.isArray(content)) {
+      for (const item of content) collect(item);
+    } else if (isRelocatableGroup(content)) {
+      groups.push(content);
+    }
+  };
+  collect(toolbar.leading);
+  collect(toolbar.center);
+  collect(toolbar.trailing);
   return [
-    toolbar.constant,
+    ...groups,
     toolbar.toggle
       ? panelToggleGroup(side, toolbar.toggle, true, attributes)
       : null,

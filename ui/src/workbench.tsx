@@ -66,7 +66,7 @@ export interface WorkbenchPanelResizable {
 export interface WorkbenchPanel {
   content: KerfUiContent;
   /**
-   * The panel's top toolbar, composed by the Workbench: its `constant` groups
+   * The panel's top toolbar, composed by the Workbench: its marked groups
    * and standard `toggle` move to the work area's toolbar while the panel is
    * collapsed. With it, `content` renders in a `Pane` below the toolbar.
    */
@@ -138,7 +138,7 @@ export interface WorkbenchProps {
   /** The central work area. */
   main: KerfUiContent;
   /**
-   * The work area's top toolbar. A collapsed left rail's `constant` groups
+   * The work area's top toolbar. A collapsed left rail's marked groups
    * and toggle lead it; a collapsed right rail's trail it. With it, `main`
    * renders in a `Pane` below the toolbar.
    */
@@ -154,7 +154,7 @@ export interface WorkbenchProps {
    */
   mainFooter?: KerfUiContent;
   /**
-   * The work area's bottom toolbar. A collapsed drawer's `constant` groups and
+   * The work area's bottom toolbar. A collapsed drawer's marked groups and
    * toggle trail it; without it they float in the work area's corner.
    */
   mainBottomToolbar?: WorkbenchMainBottomToolbar;

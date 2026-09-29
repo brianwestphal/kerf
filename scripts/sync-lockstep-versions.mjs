@@ -48,7 +48,7 @@ if (write) {
   replace(
     'eslint-plugin/index.js',
     /meta:\s*\{\s*name:\s*["']eslint-plugin-kerfjs["'],\s*version:\s*["'][^"']+["']\s*\}/,
-    `meta: { name: "eslint-plugin-kerfjs", version: "${version}" }`,
+    `meta: { name: 'eslint-plugin-kerfjs', version: '${version}' }`,
   );
 
   const templatePath = 'create-kerf-component/template/package.json';

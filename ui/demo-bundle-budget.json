@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 301100,
-  "measuredLargestJavaScriptGzip": 126039,
-  "measuredTotalJavaScriptGzip": 301004,
+  "totalJavaScriptGzip": 301400,
+  "measuredLargestJavaScriptGzip": 126040,
+  "measuredTotalJavaScriptGzip": 301325,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1123,6 +1123,22 @@
         "measuredTotalJavaScriptGzip": 301004,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 301100
+      }
+    },
+    {
+      "at": "2026-09-29T09:08:41.715Z",
+      "reason": "Panel toolbar groups can relocate from any zone when a panel collapses",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126039,
+        "measuredTotalJavaScriptGzip": 301004,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 301100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 301325,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 301400
       }
     }
   ]

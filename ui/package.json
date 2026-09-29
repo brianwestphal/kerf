@@ -1,6 +1,6 @@
 {
   "name": "@kerfjs/ui",
-  "version": "4.4.1",
+  "version": "5.0.0",
   "description": "Accessible, composable UI primitives for kerf applications.",
   "type": "module",
   "license": "MIT",

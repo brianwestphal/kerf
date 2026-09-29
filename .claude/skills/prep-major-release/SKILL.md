@@ -1,15 +1,16 @@
 ---
 name: prep-major-release
-description: Prepare kerf for a major release — refresh the README so it stays compelling and current, and review the animated demo captures so the maintainer knows which screenshots to re-capture.
+description: Prepare all four lockstep kerf packages for a major release — refresh their READMEs, verify cross-package contracts, and review demo captures for the maintainer.
 allowed-tools: Read, Grep, Glob, Bash, Edit, Write, Agent
 ---
 
 # prep-major-release — get kerf ready to ship a major release
 
-A lot changes between major releases. This skill does the two release-prep jobs
-that are easy to forget and need human taste: **(1)** make the `README.md`
-compelling and accurate again, and **(2)** review the animated demo captures and
-hand the maintainer a precise list of which screenshots to re-capture.
+A lot changes between major releases. Prepare **all four packages released from
+the same tag**: `kerfjs`, `eslint-plugin-kerfjs`, `create-kerf-component`, and
+`@kerfjs/ui`. Review their published READMEs and cross-package contracts, then
+review the animated demo captures and hand the maintainer a precise list of
+which screenshots to re-capture.
 
 Work both parts in order. Don't capture screenshots yourself — that's the
 maintainer's step (see Part 2). When you finish, leave a clear handoff.
@@ -19,7 +20,11 @@ maintainer's step (see Part 2). When you finish, leave a clear handoff.
 Before touching anything, build an accurate picture of what actually changed:
 
 1. **What shipped** — read `CHANGELOG.md` (the `[Unreleased]` section plus recent
-   releases) for the user-visible changes since the last major.
+   releases) for the user-visible changes since the last major. Read the package
+   manifests and their current READMEs under `eslint-plugin/`,
+   `create-kerf-component/`, and `ui/`; do not infer their state from the core
+   changelog alone. If a release script has already moved `[Unreleased]`, inspect
+   the pre-release committed changelog too.
 2. **Current public API** — read `docs/8-api-reference.md` and the exports in
    `src/index.ts` (+ the subpath barrels: `kerfjs/array-signal`, `kerfjs/testing`,
    `kerfjs/jsx-runtime`). The README's "small API / N exports" claims must match.
@@ -34,10 +39,39 @@ Before touching anything, build an accurate picture of what actually changed:
    as Vue / Lit / vanjs; Solid wins the compiler-driven benchmarks") rather than
    inventing figures. See the **Performance comparison numbers** rules in `CLAUDE.md`.
 
-## Part 1 — README
+## Part 1 — all package READMEs
 
-Make `README.md` compelling, accurate, and current. The README is the single most
-important marketing surface; treat it like a landing page, not a changelog.
+Make the root `README.md` compelling, accurate, and current. It is the main
+landing page; treat it like one, not a changelog. Then review and update each
+published package README independently:
+
+| Package | Published README | Check against |
+| --- | --- | --- |
+| `kerfjs` | `README.md` | Core exports, subpaths, setup CLI, bundle-size gate, CDN major pins, examples |
+| `eslint-plugin-kerfjs` | `eslint-plugin/README.md` | Rule and config exports, ESLint peer matrix, UI catalog/profile contracts, install and usage examples |
+| `create-kerf-component` | `create-kerf-component/README.md` and the generated `create-kerf-component/template/README.md` | CLI behavior, template manifest, generated commands, peer ranges, catalog schemas and sample code |
+| `@kerfjs/ui` | `ui/README.md` | Component and CSS subpath exports, required registration/wiring, catalog and doctor commands, current layouts, recipes and copyable examples |
+
+For each package, compare its README with its own manifest, public exports,
+tests, and package-specific docs. Run or compile copyable examples where the
+repository has a suitable gate. Update stale claims, links, versions, counts,
+and command names; record explicitly when a README needs no edit. Do not skip a
+package just because its README changed recently.
+
+Check the cross-package story as one release: all four versions, Kerf peer
+ranges in the **prepared publish artifacts** (the UI source manifest may retain
+the last published core major so `npm ci` works before core 5.0.0 is published),
+generated component scaffold ranges, UI AI compatibility and signature
+artifacts, UI catalog artifacts consumed by the ESLint plugin, and install
+snippets must agree. The root README's companion
+package descriptions must match those packages' own READMEs. Run the lockstep
+version and CDN pin checks after changing major-version references. Run the
+root `npm run check`, `npm --prefix eslint-plugin test`,
+`npm --prefix create-kerf-component test`, and `npm --prefix ui run check` so
+each package is exercised even when the root gate would skip an unchanged
+sibling package. Report any package gate you could not run in the handoff.
+
+For the root README, review and update as needed:
 
 Review and update as needed:
 
@@ -65,7 +99,7 @@ English throughout (`behavior`, `optimize`, `gray`…). **Never put a `KF-NN`
 ticket marker in the README** — it's a published surface; readers don't have Hot
 Sheet. Write self-contained prose instead.
 
-When the README change touches an API claim, make sure the corresponding
+When any README change touches an API claim, make sure the corresponding
 `docs/` page and `docs/ai/` summaries still agree — flag drift you can't fix
 in scope as a follow-up Hot Sheet ticket rather than fixing it silently.
 
@@ -154,7 +188,8 @@ Make the config edits. Then **do not capture** — hand off to the maintainer.
 
 When Parts 1 and 2 are done, finish with an explicit handoff that lists, precisely:
 
-1. **README** — a one-paragraph summary of what you changed and why.
+1. **READMEs** — state the result for each of the four packages, naming every
+   README changed and every package reviewed without an edit.
 2. **domotion-svg** — whether you bumped it, and from/to which version (so the
    maintainer knows the re-capture will exercise a new renderer, and can eyeball
    the SVGs for any cut/optimize regression the version-check step flagged).
@@ -189,7 +224,9 @@ When Parts 1 and 2 are done, finish with an explicit handoff that lists, precise
 
 ## Reference
 
-- README: `README.md` (repo root)
+- READMEs: `README.md`, `eslint-plugin/README.md`,
+  `create-kerf-component/README.md`,
+  `create-kerf-component/template/README.md`, and `ui/README.md`
 - Demo capture mechanism + per-app flow table: `site/scripts/demo-captures/README.md`
 - Capture configs: `site/scripts/demo-captures/<name>.json`
 - Capture script: `site/scripts/demo-captures/capture-demos.sh`

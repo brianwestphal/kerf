@@ -39,12 +39,14 @@ npm install kerfjs @kerfjs/ui
 ```
 
 ```tsx
+import { mount } from "kerfjs";
 import { ListItem } from "@kerfjs/ui/list-item";
 import { ListHeader } from "@kerfjs/ui/list-header";
 import { ListActionRow } from "@kerfjs/ui/list-action-row";
 import { Toolbar } from "@kerfjs/ui/toolbar";
-import { ToolbarControlGroup } from "@kerfjs/ui/toolbar-control-group";
 import { ToolbarText } from "@kerfjs/ui/toolbar-text";
+
+const root = document.getElementById("app")!;
 
 mount(root, () => (
   <>
@@ -80,7 +82,7 @@ mount(root, () => (
         label="src/main.ts"
         trailingAction="open-file-actions"
         trailingActionLabel="Actions for src/main.ts"
-        trailingActionIcon={moreIcon}
+        trailingActionIcon={<span aria-hidden="true">⋯</span>}
       />
       <div id="workspace-actions" popover="auto">
         Application-owned actions
@@ -226,13 +228,24 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `EmptyState`                                                        | `@kerfjs/ui/empty-state`                | `@kerfjs/ui/empty-state.css`           |
 | `ValueTable`, `ValueTableRow`                                       | `@kerfjs/ui/value-table`                | `@kerfjs/ui/value-table.css`           |
 
-Opt-in application layouts keep JavaScript and CSS explicit. Import each
-layout from its component subpath, load the matching manual CSS export, and
-add its wire subpath when the layout has interactive behavior. The catalog
+Application layouts are separate component subpaths. Browser-condition imports
+include their reachable CSS; use the matching manual CSS export when your
+bundler does not select the browser condition. Add a wire subpath when the
+layout has interactive behavior. The catalog
 entries for `nav-stack`, `split-view`, `tab-scaffold`, `workbench`, and
 `collapsible-panel` document their selection rules, ownership boundaries,
 public classes, tokens, and focused demos. See
 [`docs/app-layouts.md`](./docs/app-layouts.md) for the layout decision matrix.
+`NavStack` and `TabScaffold` expose `chromeDividers="scroll" | "always" |
+"none"` for their chrome lines; `SplitView` forwards the setting to its
+compact stack. A sole `Pane` in a view or scene fills it, keeping the Pane's
+header in place while its own content scrolls.
+
+For a `Workbench` or `CollapsiblePanel`, place panel toolbar groups in its
+`leading`, `center`, and `trailing` zones. Add `relocateOnCollapse` to each
+`ToolbarControlGroup` that should remain available in the work-area toolbar
+while the panel is closed. The panel collects marked groups in zone order;
+its toggle follows them. See [Workbench panel toolbars](./docs/workbench.md#panel-toolbars).
 
 Compose panel, dialog, and page headings directly with `Toolbar`: put an optional
 icon in a `ToolbarControlGroup`, use a direct extra-large `ToolbarText` for the

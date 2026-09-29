@@ -204,8 +204,8 @@ A minimal `package.json`, mirroring `eslint-plugin/package.json`:
   "version": "0.1.0",
   "type": "module",
   "license": "MIT",
-  "peerDependencies": { "kerfjs": "^4.0.0" },
-  "devDependencies": { "kerfjs": "^4.4.1", "tsup": "^8", "typescript": "^5" },
+  "peerDependencies": { "kerfjs": "^5.0.0" },
+  "devDependencies": { "kerfjs": "^5.0.0", "tsup": "^8", "typescript": "^5" },
   "exports": {
     ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
   },

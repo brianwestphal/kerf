@@ -129,10 +129,11 @@ Give a panel a `toolbar` (the same roles as a
 [Workbench panel toolbar](workbench.md#panel-toolbars)) and it composes its own
 top toolbar over a `Pane`, with an optional `footer` below its content:
 
-- `title` and `panelOnly` groups lead it and are available only while it is open,
-  as is optional `center` content;
-- `constant` groups and the standard `toggle: { action, name, showLabel?,
-hideLabel? }` trail it.
+- `title` precedes the `leading` zone; `leading`, `center`, and `trailing`
+  place groups wherever the open panel needs them;
+- a `ToolbarControlGroup` marked `relocateOnCollapse` stays available in the
+  work area when the panel closes; the standard `toggle: { action, name,
+showLabel?, hideLabel? }` is always the final group.
 
 The toolbar also takes the `Toolbar`'s configuration (`dividerSides`,
 `centerAlign`, `responsive`, `responsiveAt`, `safeAreaEdges`); it draws no
@@ -147,17 +148,21 @@ field keeps the `Pane` default; without a `toolbar` there is no `Pane`, so
 
 A standalone panel does not own the rest of the screen, so the app places a
 `CollapsiblePanelRelocated` in its own work-area toolbar: it renders the panel's
-`constant` groups and toggle while the panel is collapsed, and nothing while it
+marked groups and toggle while the panel is collapsed, and nothing while it
 is open. Put it first in the leading zone for a left rail, last in the trailing
 zone for a right rail, and last in a bottom toolbar for a bottom drawer. With no
 bottom toolbar, pass it inside a `FloatingToolbar` as the drawer's
 `restoreControl`.
+Marked groups move in `leading`, `center`, `trailing` order. Pass each marked
+group directly or in an array rather than wrapping it in a JSX fragment, so
+the panel can read its render-time annotation. Its copy in the closed panel is
+inert; avoid duplicate `id` attributes on marked groups.
 
 ```tsx
 const toolbar: CollapsiblePanelToolbar = {
   label: "Navigator",
-  panelOnly: <NewFileGroup />,
-  constant: <SearchGroup />,
+  leading: <NewFileGroup />,
+  trailing: <ToolbarControlGroup relocateOnCollapse label="Search files"><SearchButton /></ToolbarControlGroup>,
   toggle: { action: "toggle-nav", name: "navigator" },
 };
 

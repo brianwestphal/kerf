@@ -472,8 +472,8 @@ kerf is published to npm as `kerfjs`, so it is automatically mirrored by every n
 
 ```html
 <script type="module">
-  import { signal, mount, each } from "https://esm.sh/kerfjs@4";
-  import { html } from "https://esm.sh/kerfjs@4/html";
+  import { signal, mount, each } from "https://esm.sh/kerfjs@5";
+  import { html } from "https://esm.sh/kerfjs@5/html";
 
   const items = signal([{ id: 1, label: "no build step" }]);
 
@@ -494,9 +494,9 @@ kerf is published to npm as `kerfjs`, so it is automatically mirrored by every n
 <script type="importmap">
   {
     "imports": {
-      "kerfjs": "https://cdn.jsdelivr.net/npm/kerfjs@4/+esm",
-      "kerfjs/html": "https://cdn.jsdelivr.net/npm/kerfjs@4/html/+esm",
-      "kerfjs/array-signal": "https://cdn.jsdelivr.net/npm/kerfjs@4/array-signal/+esm",
+      "kerfjs": "https://cdn.jsdelivr.net/npm/kerfjs@5/+esm",
+      "kerfjs/html": "https://cdn.jsdelivr.net/npm/kerfjs@5/html/+esm",
+      "kerfjs/array-signal": "https://cdn.jsdelivr.net/npm/kerfjs@5/array-signal/+esm",
       "@preact/signals-core": "https://cdn.jsdelivr.net/npm/@preact/signals-core@1/+esm"
     }
   }
@@ -510,6 +510,6 @@ kerf is published to npm as `kerfjs`, so it is automatically mirrored by every n
 
 Every subpath is available the same way — `kerfjs/jsx-runtime`, `kerfjs/dev`, `kerfjs/testing`. Add a map entry only for the ones you actually import.
 
-**The trap to avoid: a raw file path.** `https://cdn.jsdelivr.net/npm/kerfjs@4/dist/index.js` (or the unpkg equivalent _without_ `?module`) serves the file byte-for-byte — so the bare `@preact/signals-core` import inside it reaches the browser unrewritten and the module fails to load. Use `+esm` / `?module` / esm.sh, or map the specifier in an importmap; don't link the raw `dist/*.js` path directly.
+**The trap to avoid: a raw file path.** `https://cdn.jsdelivr.net/npm/kerfjs@5/dist/index.js` (or the unpkg equivalent _without_ `?module`) serves the file byte-for-byte — so the bare `@preact/signals-core` import inside it reaches the browser unrewritten and the module fails to load. Use `+esm` / `?module` / esm.sh, or map the specifier in an importmap; don't link the raw `dist/*.js` path directly.
 
-**Pin the version.** The examples pin to a major (`kerfjs@4`), which resolves to the latest `4.x` — you get minor/patch fixes automatically and only revisit the URL at a major bump. An unpinned `https://esm.sh/kerfjs` instead floats on `latest` and will silently jump across a major on the next release — fine for a scratch prototype, wrong for anything you ship. For maximum reproducibility pin an exact version (`kerfjs@4.1.0`), or vendor `dist/` yourself the way the [live-poll example](/kerf/examples/complete/live-poll/) does, which removes the CDN from your runtime critical path entirely.
+**Pin the version.** The examples pin to a major (`kerfjs@5`), which resolves to the latest `5.x` — you get minor/patch fixes automatically and only revisit the URL at a major bump. An unpinned `https://esm.sh/kerfjs` instead floats on `latest` and will silently jump across a major on the next release — fine for a scratch prototype, wrong for anything you ship. For maximum reproducibility pin an exact version (`kerfjs@5.0.0`), or vendor `dist/` yourself the way the [live-poll example](/kerf/examples/complete/live-poll/) does, which removes the CDN from your runtime critical path entirely.

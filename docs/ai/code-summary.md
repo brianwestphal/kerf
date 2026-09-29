@@ -289,6 +289,7 @@ kerf/
 │   │   ├── site-config.test.ts ← guards the dependency-free redirect contract and its Astro wiring, including a clean-environment import regression with no site/node_modules
 │   │   ├── site-build-output.test.ts ← exercises the PR site's captured-output gate through its real stdin/exit-code CLI boundary, proving clean or unrelated-warning builds pass while static routes, dynamic SSR routes, and Astro's future-hard-error collision warning fail
 │   │   ├── release-package.test.ts ← packs all four packages at a synthetic beta version and inspects the tarballs for synchronized manifests, core AI metadata, plugin-reported version, scaffold/UI prerelease-compatible Kerf ranges, and UI AI signature versions; also guards that preparation/packing precede the OIDC jobs, which only download and publish tarballs
+│   │   ├── release-changelog.test.ts ← keeps the full Unreleased history in a stable entry, merges distinct notes, and exercises the release.sh changelog writer through its CLI
 │   │   ├── release-beta-plan.test.ts ← beta target matrix: follows the highest active prerelease line, rejects stale lines below the stable fallback, increments the maximum beta across gaps, and preserves explicit version overrides
 │   │   ├── spawn-test-budgets.test.ts ← guard: every test file that imports `child_process` declares an explicit vitest timeout, so process-spawning suites cannot flake the loaded pre-push gate on the 5s default
 │   │   ├── workflow-actions.test.ts ← inventories every SHA-pinned GitHub Action used by the workflows, requires exact release comments, rejects unknown actions, and prevents deprecated action runtimes from returning unnoticed
@@ -964,10 +965,10 @@ custom properties written onto any child, and no hook class placed on a
 composed child's root. Component names, rendered Web Awesome tags, and
 composed children are derived from `ui/src/*.tsx`; its documented exception
 list fails when an entry goes stale (`ui/tests/unit/css-ownership.test.ts`).
-`ui/src/panel-toolbar.tsx` holds the shared panel-toolbar roles (`PanelToolbar`: title, panel-only, constant, and the standard toggle), the per-side toggle icon, and the composition/relocation helpers both `Workbench` and `CollapsiblePanel` (with `CollapsiblePanelRelocated`) use (`ui/tests/unit/collapsible-panel-toolbar.test.tsx`, `ui/tests/browser/collapsible-panel-relocation.spec.ts`).
+`ui/src/panel-toolbar.tsx` holds the shared panel-toolbar roles (`PanelToolbar`: title, leading/center/trailing zones, and the standard toggle), the per-side toggle icon, and the composition/relocation helpers both `Workbench` and `CollapsiblePanel` (with `CollapsiblePanelRelocated`) use (`ui/tests/unit/collapsible-panel-toolbar.test.tsx`, `ui/tests/browser/collapsible-panel-relocation.spec.ts`). `ui/src/panel-toolbar-group.ts` recognizes `ToolbarControlGroup`s marked `relocateOnCollapse`.
 `ui/src/workbench-toolbars.tsx` composes a panel's `toolbar` (title,
-panel-only and constant groups, the standard keyed toggle) and the work area's
-`mainToolbar` / `mainBottomToolbar`, moving a closed panel's constant groups
+zone groups, the standard keyed toggle) and the work area's
+`mainToolbar` / `mainBottomToolbar`, moving a closed panel's marked groups
 and toggle into the work area or a corner `FloatingToolbar`
 (`ui/tests/unit/workbench-toolbars.test.tsx`).
 `ui/src/workbench-resize.ts` holds the shared panel

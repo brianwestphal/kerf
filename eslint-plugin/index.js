@@ -14,7 +14,7 @@ import uiPublicBoundaries from './lib/rules/ui-public-boundaries.js';
 import uiWiring from './lib/rules/ui-wiring.js';
 
 const plugin = {
-  meta: { name: 'eslint-plugin-kerfjs', version: '4.4.1' },
+  meta: { name: 'eslint-plugin-kerfjs', version: '5.0.0' },
   rules: {
     'no-inline-jsx-event-handlers': noInlineJsxEventHandlers,
     'no-raw-with-dynamic-arg': noRawWithDynamicArg,

@@ -2,6 +2,41 @@ import { expect, test } from '@playwright/test';
 
 import { waitForScrollSettled } from './scroll-settle.js';
 
+test('panel group marked for collapse moves to the main toolbar and returns when reopened', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=workbench');
+
+  const workbench = page.locator('#catalog-workbench-collapsed');
+  const mainToolbar = workbench.locator(
+    '[data-workbench-main] > [data-component="pane"] .kui-toolbar',
+  );
+  const rail = workbench.locator('[data-workbench-rail="left"]');
+  await expect(
+    mainToolbar.getByRole('button', { name: 'Search files' }),
+  ).toBeVisible();
+  await expect(
+    mainToolbar.getByRole('button', { name: 'New file' }),
+  ).toHaveCount(0);
+
+  await mainToolbar.getByRole('button', { name: 'Show navigator' }).click();
+  await expect(rail).toHaveAttribute('data-collapsed', 'false');
+  await expect(
+    rail.getByRole('button', { name: 'Search files' }),
+  ).toBeVisible();
+  await expect(rail.getByRole('button', { name: 'New file' })).toBeVisible();
+  await expect(
+    mainToolbar.getByRole('button', { name: 'Search files' }),
+  ).toHaveCount(0);
+
+  await rail.getByRole('button', { name: 'Hide navigator' }).click();
+  await expect(rail).toHaveAttribute('data-collapsed', 'true');
+  await expect(
+    mainToolbar.getByRole('button', { name: 'Search files' }),
+  ).toBeVisible();
+});
+
 test('catalogs Workbench public geometry and controlled collapse', async ({
   page,
 }, testInfo) => {

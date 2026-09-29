@@ -1,6 +1,6 @@
 # Public API signatures for the UI authoring corpus
 
-Generated from emitted declarations for `@kerfjs/ui@4.4.1` and `kerfjs@4.4.1`. This bounded reference covers only APIs used by the seven-task corpus. It is interface evidence, not an implementation or runtime guarantee.
+Generated from emitted declarations for `@kerfjs/ui@5.0.0` and `kerfjs@4.4.1`. This bounded reference covers only APIs used by the seven-task corpus. It is interface evidence, not an implementation or runtime guarantee.
 
 ## `@kerfjs/ui/css-values`
 
@@ -315,6 +315,8 @@ interface ToolbarControlGroupProps {
     overflow?: ToolbarControlGroupOverflow;
     /** Responsive visibility owned by the enclosing Toolbar container. */
     visibility?: ToolbarControlGroupVisibility;
+    /** Move this group into the work-area toolbar when its panel collapses. */
+    relocateOnCollapse?: boolean;
     /** Add contrast behind photo-backed avatar content. */
     scrim?: boolean;
     /**
@@ -325,7 +327,7 @@ interface ToolbarControlGroupProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, visibility, scrim, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
+declare function ToolbarControlGroup({ children, label, className, expanded, single, appearance, tone, buttonAppearance, shape, size, density, content, focusRing, selectedChrome, selectedTone, nestedDropdown, menuInset, overflow, visibility, relocateOnCollapse, scrim, avatarImage, slot, }: ToolbarControlGroupProps): kerfjs.SafeHtml;
 
 export { ToolbarActionLink, type ToolbarActionLinkProps, ToolbarControlGroup, type ToolbarControlGroupAppearance, type ToolbarControlGroupButtonAppearance, type ToolbarControlGroupContent, type ToolbarControlGroupDensity, type ToolbarControlGroupFocusRing, type ToolbarControlGroupMenuInset, type ToolbarControlGroupOverflow, type ToolbarControlGroupProps, type ToolbarControlGroupSelectedChrome, type ToolbarControlGroupSelectedTone, type ToolbarControlGroupShape, type ToolbarControlGroupSize, type ToolbarControlGroupTone, type ToolbarControlGroupVisibility };
 ```
@@ -1414,7 +1416,7 @@ import { ListConfig } from './list.js';
 import { PaneConfig } from './pane.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-import { a as PanelToolbar, b as PanelToggle } from './panel-toolbar-BN4x0rth.js';
+import { a as PanelToolbar, b as PanelToggle } from './panel-toolbar-DqwtBxQL.js';
 import { ToolbarConfig } from './toolbar.js';
 import './css-values.js';
 import './flex-alignment-4ms8ZbV8.js';
@@ -1427,7 +1429,7 @@ type WorkbenchPanelToggle = PanelToggle;
 /**
  * A Workbench panel's top toolbar, composed by the Workbench so its groups can
  * follow the panel's open state (see {@link PanelToolbar} for the roles).
- * A collapsed rail's `constant` groups and toggle go to the leading edge of
+ * A collapsed rail's marked groups and toggle go to the leading edge of
  * `mainToolbar` (left rail) or its trailing edge (right rail); a collapsed
  * drawer's go to the trailing edge of `mainBottomToolbar`, else to a
  * `FloatingToolbar` in the work area's bottom-end corner.
@@ -1494,7 +1496,7 @@ interface WorkbenchPanelResizable {
 interface WorkbenchPanel {
     content: KerfUiContent;
     /**
-     * The panel's top toolbar, composed by the Workbench: its `constant` groups
+     * The panel's top toolbar, composed by the Workbench: its marked groups
      * and standard `toggle` move to the work area's toolbar while the panel is
      * collapsed. With it, `content` renders in a `Pane` below the toolbar.
      */
@@ -1565,7 +1567,7 @@ interface WorkbenchProps {
     /** The central work area. */
     main: KerfUiContent;
     /**
-     * The work area's top toolbar. A collapsed left rail's `constant` groups
+     * The work area's top toolbar. A collapsed left rail's marked groups
      * and toggle lead it; a collapsed right rail's trail it. With it, `main`
      * renders in a `Pane` below the toolbar.
      */
@@ -1581,7 +1583,7 @@ interface WorkbenchProps {
      */
     mainFooter?: KerfUiContent;
     /**
-     * The work area's bottom toolbar. A collapsed drawer's `constant` groups and
+     * The work area's bottom toolbar. A collapsed drawer's marked groups and
      * toggle trail it; without it they float in the work area's corner.
      */
     mainBottomToolbar?: WorkbenchMainBottomToolbar;
@@ -1774,8 +1776,8 @@ export { type WireWorkbenchOptions, type WireWorkbenchPanel, type WorkbenchPanel
 ```ts
 import { SafeHtml } from 'kerfjs';
 import { PaneConfig } from './pane.js';
-import { P as PanelSide, a as PanelToolbar, b as PanelToggle } from './panel-toolbar-BN4x0rth.js';
-export { c as collapsiblePanelToggleIcon } from './panel-toolbar-BN4x0rth.js';
+import { P as PanelSide, a as PanelToolbar, b as PanelToggle } from './panel-toolbar-DqwtBxQL.js';
+export { c as collapsiblePanelToggleIcon } from './panel-toolbar-DqwtBxQL.js';
 import { ResizableRegionSeparator, ResizableRegionCollapseMotion, ResizableRegionContentOverflow, ResizableRegionPresentation, ResizableRegionRestorePosition } from './resizable-region.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 import './lucide-icon.js';
@@ -1788,10 +1790,10 @@ type CollapsiblePanelSide = PanelSide;
 /** The standard toggle a panel toolbar renders (see {@link CollapsiblePanelToolbar}). */
 type CollapsiblePanelToolbarToggle = PanelToggle;
 /**
- * A panel's composed top toolbar. `title` and `panelOnly` groups lead it and
- * are available only while the panel is open; `constant` groups and the
- * standard `toggle` trail it while open and move to the app's work-area
- * toolbar — through {@link CollapsiblePanelRelocated} — while it is collapsed.
+ * A panel's composed top toolbar. Its groups occupy `leading`, `center`, and
+ * `trailing` while open; groups marked `relocateOnCollapse` and the standard
+ * toggle move to the work-area toolbar through
+ * {@link CollapsiblePanelRelocated} while it is collapsed.
  */
 type CollapsiblePanelToolbar = PanelToolbar;
 interface CollapsiblePanelToggleProps {
@@ -1834,7 +1836,7 @@ interface CollapsiblePanelProps {
      * The panel's top toolbar, composed so its groups follow the panel's open
      * state. With it, `children` renders in a `Pane` below the toolbar; render
      * {@link CollapsiblePanelRelocated} in the app's work-area toolbar so the
-     * `constant` groups and toggle stay reachable while the panel is collapsed.
+     * marked groups and toggle stay reachable while the panel is collapsed.
      */
     toolbar?: CollapsiblePanelToolbar;
     /** Optional bottom toolbar under a `toolbar` panel's content. */
@@ -1883,7 +1885,7 @@ interface CollapsiblePanelRelocatedProps {
     toolbar: CollapsiblePanelToolbar;
 }
 /**
- * A collapsed {@link CollapsiblePanel}'s `constant` groups and standard
+ * A collapsed {@link CollapsiblePanel}'s marked groups and standard
  * toggle, for the app's work-area toolbar — nothing while the panel is open.
  * Put it first in the leading zone for a left rail, last in the trailing zone
  * for a right rail, and last in a bottom toolbar (or a `FloatingToolbar`
@@ -2217,7 +2219,7 @@ import './list.js';
 import './css-values.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './resizable-region.js';
-import './panel-toolbar-BN4x0rth.js';
+import './panel-toolbar-DqwtBxQL.js';
 import './lucide-icon.js';
 import 'lucide';
 
@@ -2310,7 +2312,7 @@ import './list.js';
 import './css-values.js';
 import './flex-alignment-4ms8ZbV8.js';
 import './resizable-region.js';
-import './panel-toolbar-BN4x0rth.js';
+import './panel-toolbar-DqwtBxQL.js';
 import './lucide-icon.js';
 import 'lucide';
 

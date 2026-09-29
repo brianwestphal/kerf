@@ -1,4 +1,5 @@
 import { execFile, execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import {
   chmod,
   copyFile,
@@ -19,13 +20,16 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 const exec = promisify(execFile);
 const repositoryRoot = resolve(import.meta.dirname, '../..');
+const releaseVersion = JSON.parse(
+  readFileSync(resolve(repositoryRoot, 'package.json'), 'utf8'),
+).version as string;
 let temporaryRoot: string;
 let packedModules: string;
 let offlineTarballs: Record<string, string>;
 
 const offlinePackages = {
-  kerfjs: { range: '4.4.1', version: '4.4.1' },
-  'eslint-plugin-kerfjs': { range: '4.4.1', version: '4.4.1' },
+  kerfjs: { range: releaseVersion, version: releaseVersion },
+  'eslint-plugin-kerfjs': { range: releaseVersion, version: releaseVersion },
   '@typescript-eslint/parser': { range: '^8.0.0', version: '8.0.0' },
   eslint: { range: '^9.0.0', version: '9.0.0' },
   typescript: { range: '^5.0.0 || ^6.0.0', version: '5.0.0' },
@@ -243,8 +247,8 @@ beforeAll(async () => {
   offlineTarballs = Object.fromEntries(
     await Promise.all(
       [
-        ['kerfjs', '4.4.1'],
-        ['eslint-plugin-kerfjs', '4.4.1'],
+        ['kerfjs', releaseVersion],
+        ['eslint-plugin-kerfjs', releaseVersion],
         ['@typescript-eslint/parser', '8.0.0'],
         ['eslint', '9.0.0'],
         ['typescript', '5.0.0'],
@@ -359,7 +363,7 @@ describe('packed AI-first setup', { timeout: 30_000 }, () => {
     );
     await writeFile(
       resolve(app, 'package.json'),
-      `${JSON.stringify({ name: '@acme/ui-app', private: true, type: 'module', dependencies: { '@kerfjs/ui': '4.4.1', kerfjs: '4.4.1' }, scripts: { build: 'tsc --noEmit' } })}\n`,
+      `${JSON.stringify({ name: '@acme/ui-app', private: true, type: 'module', dependencies: { '@kerfjs/ui': releaseVersion, kerfjs: releaseVersion }, scripts: { build: 'tsc --noEmit' } })}\n`,
     );
     await writeFile(
       resolve(app, 'src/index.ts'),

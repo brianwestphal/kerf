@@ -46,9 +46,19 @@ export function resetCollapsiblePanelDemo(): void {
 }
 
 /** A borderless single-button group with an icon action. */
-function iconGroup(label: string, icon: typeof Search, name: string) {
+function iconGroup(
+  label: string,
+  icon: typeof Search,
+  name: string,
+  relocateOnCollapse = false,
+) {
   return (
-    <ToolbarControlGroup label={label} appearance="borderless" single>
+    <ToolbarControlGroup
+      label={label}
+      appearance="borderless"
+      single
+      relocateOnCollapse={relocateOnCollapse}
+    >
       <button
         type="button"
         aria-label={label}
@@ -68,8 +78,8 @@ const consoleToolbar: CollapsiblePanelToolbar = {
 
 const navigatorToolbar: CollapsiblePanelToolbar = {
   label: 'Navigator',
-  panelOnly: iconGroup('New file', FilePlus, 'file-plus'),
-  constant: iconGroup('Search files', Search, 'search'),
+  leading: iconGroup('New file', FilePlus, 'file-plus'),
+  trailing: iconGroup('Search files', Search, 'search', true),
   toggle: { action: RELOCATION_RAIL_ACTION, name: 'navigator' },
 };
 
@@ -131,7 +141,7 @@ export function CollapsiblePanelDemo() {
       </CatalogExample>
       <CatalogExample
         label="Toolbar relocation"
-        note="The rail composes its toolbar: panel-only groups lead, constant groups and the standard toggle trail. While it is collapsed, CollapsiblePanelRelocated puts the constant groups and toggle at the start of the editor toolbar."
+        note="The rail composes its toolbar: groups use leading, center, and trailing zones, with the standard toggle last. While it is collapsed, CollapsiblePanelRelocated puts groups marked relocateOnCollapse and the toggle at the start of the editor toolbar."
         viewport={{
           layout: 'grid',
           width: 'full',

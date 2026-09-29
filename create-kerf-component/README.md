@@ -112,7 +112,9 @@ my-widgets/
 ```
 
 This package is part of the kerf repository and releases in lockstep with
-`kerfjs`.
+`kerfjs`. The 5.0.0 template targets `kerfjs` and `@kerfjs/ui` on the 5.x
+line; the generated package keeps Kerf as a peer dependency and uses UI only
+for its authoring checks.
 
 The package also exposes `kerf-component-catalog`. It accepts `--write` (the
 default), `--check`, and `--root <path>`. A root package with npm `workspaces`

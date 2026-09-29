@@ -6,17 +6,21 @@ import {
   CollapsiblePanelRelocated,
   type CollapsiblePanelToolbar,
 } from '../../src/collapsible-panel.js';
+import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
 
-const group = (name: string) =>
-  raw(
-    `<div data-component="toolbar-control-group" data-group="${name}"><button type="button">${name}</button></div>`,
-  );
+const group = (name: string, relocateOnCollapse = false) => (
+  <ToolbarControlGroup relocateOnCollapse={relocateOnCollapse}>
+    <button type="button" data-group={name}>
+      {name}
+    </button>
+  </ToolbarControlGroup>
+);
 
 const toolbar: CollapsiblePanelToolbar = {
   label: 'Navigator',
   title: raw('<h2 data-component="toolbar-text">Navigator</h2>'),
-  panelOnly: group('only'),
-  constant: group('constant'),
+  leading: group('only'),
+  trailing: group('constant', true),
   toggle: { action: 'toggle-nav', name: 'navigator' },
 };
 
@@ -77,7 +81,7 @@ describe('CollapsiblePanel toolbar', () => {
     ).not.toBeNull();
   });
 
-  it('relocates constant groups and the toggle only while collapsed', () => {
+  it('relocates marked groups and the toggle only while collapsed', () => {
     expect(
       String(
         CollapsiblePanelRelocated({
@@ -104,6 +108,43 @@ describe('CollapsiblePanel toolbar', () => {
     expect(toggle.querySelector('svg')!.getAttribute('data-lucide')).toBe(
       'panel-right-open',
     );
+  });
+
+  it('collects marked groups from every zone without moving unmarked groups', () => {
+    const configured = {
+      label: 'Navigator',
+      leading: [group('first', true), group('local')],
+      center: [false, [group('middle', true)]],
+      trailing: [group('last', true), group('other-local')],
+      toggle: { action: 'toggle-nav', name: 'navigator' },
+    };
+    const open = html(
+      CollapsiblePanel({
+        id: 'nav',
+        side: 'left',
+        toolbar: configured,
+        children: raw('<p>files</p>'),
+      }),
+    );
+    expect(
+      [...open.querySelectorAll('.kui-toolbar [data-group]')].map((node) =>
+        node.getAttribute('data-group'),
+      ),
+    ).toEqual(['first', 'local', 'middle', 'last', 'other-local']);
+    const closed = html(
+      CollapsiblePanelRelocated({
+        panelId: 'nav',
+        side: 'left',
+        collapsed: true,
+        toolbar: configured,
+      }),
+    );
+    expect(
+      [...closed.querySelectorAll('[data-group]')].map((node) =>
+        node.getAttribute('data-group'),
+      ),
+    ).toEqual(['first', 'middle', 'last']);
+    expect(closed.querySelector('[data-action="toggle-nav"]')).not.toBeNull();
   });
 
   it('forwards toolbar configuration and toggle labels to its Toolbar', () => {

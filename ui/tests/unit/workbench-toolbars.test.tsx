@@ -1,12 +1,16 @@
 import { raw } from 'kerfjs';
 import { describe, expect, it } from 'vitest';
 
+import { ToolbarControlGroup } from '../../src/toolbar-control-group.js';
 import { Workbench, type WorkbenchPanel } from '../../src/workbench.js';
 
-const group = (name: string) =>
-  raw(
-    `<div data-component="toolbar-control-group" data-group="${name}"><button type="button">${name}</button></div>`,
-  );
+const group = (name: string, relocateOnCollapse = false) => (
+  <ToolbarControlGroup relocateOnCollapse={relocateOnCollapse}>
+    <button type="button" data-group={name}>
+      {name}
+    </button>
+  </ToolbarControlGroup>
+);
 const title = (text: string) =>
   raw(`<h2 data-component="toolbar-text" data-title="${text}">${text}</h2>`);
 
@@ -21,8 +25,8 @@ const rail = (
   toolbar: {
     label: name,
     title: title(name),
-    panelOnly: group(`${name}-only`),
-    constant: group(`${name}-constant`),
+    leading: group(`${name}-only`),
+    trailing: group(`${name}-constant`, true),
     toggle: { action: `toggle-${name}`, name },
   },
   ...extra,
@@ -52,13 +56,13 @@ const mainToolbar = (host: Element) =>
   host.querySelector(
     '[data-workbench-main] > [data-component="pane"] .kui-toolbar',
   );
-const mainZone = (host: Element, zone: 'leading' | 'trailing') =>
+const mainZone = (host: Element, zone: 'leading' | 'center' | 'trailing') =>
   mainToolbar(host)!.querySelector(`.kui-toolbar__${zone}`);
 const panelToolbar = (host: Element, selector: string) =>
   host.querySelector(`${selector} .kui-toolbar`);
 
 describe('Workbench panel toolbars', () => {
-  it('composes an open panel toolbar: title and panel-only groups lead; constant groups and the toggle trail', () => {
+  it('composes an open panel toolbar: title and unmarked groups lead; marked groups and the toggle trail', () => {
     const host = render({
       id: 'wb',
       label: 'Studio',
@@ -91,7 +95,7 @@ describe('Workbench panel toolbars', () => {
     expect(order(mainToolbar(host))).toEqual(['Editor']);
   });
 
-  it("leads the work-area toolbar with a collapsed left rail's constant groups and toggle, before the title", () => {
+  it("leads the work-area toolbar with a collapsed left rail's marked groups and toggle, before the title", () => {
     const host = render({
       id: 'wb',
       label: 'Studio',
@@ -124,7 +128,7 @@ describe('Workbench panel toolbars', () => {
     ).toContain('navigator-only');
   });
 
-  it("ends the work-area toolbar with a collapsed right rail's constant groups and then its toggle", () => {
+  it("ends the work-area toolbar with a collapsed right rail's marked groups and then its toggle", () => {
     const host = render({
       id: 'wb',
       label: 'Studio',
@@ -141,6 +145,75 @@ describe('Workbench panel toolbars', () => {
       'editor-trailing',
       'inspector-constant',
       'toggle:Show inspector',
+    ]);
+  });
+
+  it('keeps mixed groups in their chosen open zones and relocates only marked groups in zone order', () => {
+    const toolbar = {
+      label: 'Navigator',
+      title: title('Navigator'),
+      leading: [group('leading-persistent', true), group('leading-local')],
+      center: [group('center-local'), [group('center-persistent', true)]],
+      trailing: [group('trailing-persistent', true), group('trailing-local')],
+      toggle: { action: 'toggle-navigator', name: 'navigator' },
+    };
+    const props = (collapsed: boolean, side: 'left' | 'right') => ({
+      id: 'wb',
+      label: 'Studio',
+      main: raw('<p>main</p>'),
+      mainToolbar: {
+        label: 'Editor',
+        title: title('Editor'),
+        trailing: group('editor-trailing'),
+      },
+      [side === 'left' ? 'leftRail' : 'rightRail']: {
+        label: 'Navigator',
+        content: raw('<p>files</p>'),
+        collapsed,
+        toolbar,
+      },
+    });
+
+    const open = render(props(false, 'left'));
+    const panel = panelToolbar(open, '[data-workbench-rail="left"]')!;
+    expect(order(panel.querySelector('.kui-toolbar__leading'))).toEqual([
+      'Navigator',
+      'leading-persistent',
+      'leading-local',
+    ]);
+    expect(order(panel.querySelector('.kui-toolbar__center'))).toEqual([
+      'center-local',
+      'center-persistent',
+    ]);
+    expect(order(panel.querySelector('.kui-toolbar__trailing'))).toEqual([
+      'trailing-persistent',
+      'trailing-local',
+      'toggle:Hide navigator',
+    ]);
+    expect(order(mainToolbar(open))).toEqual(['Editor', 'editor-trailing']);
+
+    const leftClosed = render(props(true, 'left'));
+    expect(order(mainZone(leftClosed, 'leading'))).toEqual([
+      'leading-persistent',
+      'center-persistent',
+      'trailing-persistent',
+      'toggle:Show navigator',
+      'Editor',
+    ]);
+    expect(order(mainZone(leftClosed, 'trailing'))).toEqual([
+      'editor-trailing',
+    ]);
+    const rightClosed = render(props(true, 'right'));
+    expect(order(mainZone(rightClosed, 'trailing'))).toEqual([
+      'editor-trailing',
+      'leading-persistent',
+      'center-persistent',
+      'trailing-persistent',
+      'toggle:Show navigator',
+    ]);
+    expect(order(mainToolbar(render(props(false, 'right'))))).toEqual([
+      'Editor',
+      'editor-trailing',
     ]);
   });
 
@@ -282,10 +355,10 @@ describe('Workbench panel toolbars', () => {
     expect(host.querySelector('.kui-workbench__restore')).toBeNull();
   });
 
-  it('relocates constant groups alone for a panel toolbar without a toggle', () => {
+  it('relocates marked groups alone for a panel toolbar without a toggle', () => {
     const toolbar = {
       label: 'Navigator',
-      constant: group('navigator-constant'),
+      trailing: group('navigator-constant', true),
     };
     const closed = render({
       id: 'wb',
