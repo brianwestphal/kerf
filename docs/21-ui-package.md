@@ -441,7 +441,7 @@ failures to `KUI-L090`.
 resolved profile with Kerf and consumer catalog boundaries, parses CSS and
 TSX/JSX without executing application code, and emits stable `KUI-L###`
 diagnostics for private selectors, unknown tokens, competing geometry owners,
-repeated insets, forced component dimensions, off-scale literal spacing,
+repeated insets, off-scale literal spacing,
 nested scroll owners, and dynamic class expressions needing human review.
 Catalog `cssValueProps` also drive exact diagnostics for raw or unknown
 shorthands, wrong-dimension helpers, uncomposed expressions, forbidden
@@ -454,7 +454,10 @@ private `--_*` variable (`KUI-L020`), an override of a token a typed prop sets
 that name the configuration to use and route a missing prop to a component-gap
 report. Ownership is per package, so a component package styling its own
 components in a Kerf UI parent's context passes; `eslint-plugin-kerfjs`'s
-`ui-component-ownership` reports `KUI-L020` / `KUI-L021` in script.
+`ui-component-ownership` reports `KUI-L020` / `KUI-L021` in script. A forced
+component dimension is one such `KUI-L019` restyle; the former review-only
+`KUI-L005` duplicate is retired (its id stays registered so existing
+exceptions load).
 Each source resolves its own parent-to-child directory profile and only receives
 facts from its reachable relative CSS import graph, so sibling monorepo apps do
 not leak policy or same-named class behavior into one another. Shared stylesheet

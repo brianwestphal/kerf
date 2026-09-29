@@ -215,6 +215,62 @@ export const App = () => (
     expect(report.summary.errors).toBe(0);
   });
 
+  it('reports a forced component dimension once, as KUI-L019, and never for an ancestor', async () => {
+    // KUI-L005 ('Forced component dimension') is retired: the component
+    // subject reports once through KUI-L019, and a public class that is only
+    // an ancestor sizes the application's own element, which is allowed.
+    const root = await project({
+      'src/app.css': [
+        '.kui-pane { width: 300px; }',
+        '.kui-state-banner { min-height: 44px; max-width: 40rem; }',
+        '.kui-pane .app-sidebar { width: 240px; }',
+        '.kui-toolbar > .my-widget { height: 32px; }',
+        '',
+      ].join('\n'),
+    });
+    const report = await analyzeUiProject({ root });
+
+    expect(ids(report)).toEqual([
+      'KUI-L019 src/app.css:1',
+      'KUI-L019 src/app.css:2',
+    ]);
+    expect(report.diagnostics[1].evidence).toMatchObject({
+      properties: ['min-height', 'max-width'],
+    });
+    expect(report.diagnostics.some(({ ruleId }) => ruleId === 'KUI-L005')).toBe(
+      false,
+    );
+
+    const adoption = await analyzeUiProject({ root, adoption: true });
+    expect(
+      adoption.diagnostics.map(({ ruleId, severity }) => [ruleId, severity]),
+    ).toEqual([
+      ['KUI-L019', 'review'],
+      ['KUI-L019', 'review'],
+    ]);
+  });
+
+  it('still loads a profile exception that names the retired KUI-L005', async () => {
+    const root = await project({
+      '.kerf-ui-profile.json': JSON.stringify({
+        schemaVersion: 1,
+        scope: 'workspace',
+        exceptions: [
+          {
+            id: 'legacy-sizing',
+            rules: ['KUI-L005'],
+            target: 'src/app.css',
+            rationale: 'Written before KUI-L005 was folded into KUI-L019.',
+          },
+        ],
+      }),
+      'src/app.css': '.app { color: red; }\n',
+    });
+    const report = await analyzeUiProject({ root });
+
+    expect(report.diagnostics).toEqual([]);
+  });
+
   it('lets a component package style its own components in a kerf parent context', async () => {
     const acmeCatalog = {
       schemaVersion: 2,

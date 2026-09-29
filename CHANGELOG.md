@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`kerf-ui-analyze` retires `KUI-L005` ("forced component dimension").**
+  `KUI-L019` already reports any application rule whose subject is a cataloged
+  component, dimensions included, so `.kui-pane { width: 300px }` was reported
+  twice (an error and a review finding). L005's only other shape, a public
+  class as an ancestor (`.kui-pane .app-sidebar { width: 240px }`), sizes the
+  application's own element and is allowed. The analyzer no longer emits it;
+  the id stays in the diagnostic registry (now listing it under `retired`) so
+  existing profile exceptions that name it still load.
+
 - **`KUI-L301` now reports every `Discouraged` Web Awesome element rendered
   directly.** The `@kerfjs/ui` package-default application profile avoids all
   fifteen Discouraged entries (Dropdown/Dropdown Item → `PopupMenu`,

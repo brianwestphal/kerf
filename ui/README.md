@@ -394,9 +394,9 @@ scroll owners, and cataloged CSS-value violations in JavaScript/TypeScript
 component calls and JSX, plus component-ownership overrides: CSS that makes
 another package's component its subject, touches its private variables,
 overrides a token its typed prop sets, or styles it through a hook class on
-its root (`KUI-L019`–`KUI-L022`). It reports forced dimensions, repeated insets,
-exceptional spacing shorthands, and dynamic classes separately as review
-findings. Text, versioned JSON,
+its root (`KUI-L019`–`KUI-L022`; forcing a component's dimensions is one such
+restyle). It reports repeated insets, exceptional spacing shorthands, and
+dynamic classes separately as review findings. Text, versioned JSON,
 and SARIF outputs carry stable `KUI-L###` ids, repository-relative locations,
 evidence, and ownership chains. See the [analyzer guide](./docs/ui-analyzer.md).
 

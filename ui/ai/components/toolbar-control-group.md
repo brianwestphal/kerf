@@ -87,7 +87,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Public tokens it reads: `--kui-color-brand-on-quiet`, `--kui-color-pop-border-normal`, `--kui-color-pop-fill-normal`, `--kui-color-pop-on-normal`, `--kui-color-pop-on-quiet`, `--kui-color-neutral-border-loud`, `--kui-color-neutral-border-normal`, `--kui-color-neutral-fill-loud`, `--kui-color-neutral-fill-normal`, `--kui-color-neutral-on-loud`, `--kui-color-neutral-on-quiet`, `--kui-color-surface`, `--kui-focus-ring`, `--kui-shadow-s`, `--kui-toolbar-control-background`, `--kui-toolbar-control-border`, `--kui-toolbar-control-color`, `--kui-toolbar-control-dark-border`, `--kui-toolbar-control-hover-background`, `--kui-toolbar-control-pressed-background`, `--kui-toolbar-control-pressed-border`, `--kui-toolbar-control-pressed-color`, `--kui-toolbar-control-selected-background`, `--kui-toolbar-control-selected-color`, `--kui-toolbar-control-selected-shadow`. Set a token only where its public contract allows; prefer a prop.
 
-Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and forced component dimensions (`KUI-L005`).
+Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 
 ## Related
 

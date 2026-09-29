@@ -38,7 +38,10 @@ export const UI_ANALYSIS_RULES = Object.freeze({
   'KUI-L002': { severity: 'error', title: 'Unknown Kerf token' },
   'KUI-L003': { severity: 'error', title: 'Competing geometry owners' },
   'KUI-L004': { severity: 'review', title: 'Repeated content inset' },
-  'KUI-L005': { severity: 'review', title: 'Forced component dimension' },
+  // KUI-L005 ('Forced component dimension') is retired: KUI-L019 reports any
+  // restyle of a cataloged component, dimensions included, and L005's only
+  // other shape (a public class as an ancestor) sizes an application element.
+  // The id stays in the diagnostic registry so existing exceptions still load.
   'KUI-L006': {
     severity: 'review',
     title: 'Hard-coded spacing outside the approved scale',
@@ -105,8 +108,6 @@ const adoptionRules = new Set([
 
 const sourceExtensions = new Set(['.js', '.jsx', '.mjs', '.ts', '.tsx']);
 const spacingProperties = /^(?:margin|padding|gap|inset)(?:-|$)/;
-const dimensionProperties =
-  /^(?:width|height|min-width|max-width|min-height|max-height)$/;
 const approvedSpacing = new Set([0, 4, 8, 16, 24]);
 async function collectFiles(root, paths) {
   const files = [];
@@ -690,22 +691,6 @@ async function inspectCss(
         if (/^padding(?:-|$)/.test(decl.prop) && decl.value !== '0')
           record.inset = true;
         cssFacts.set(className, record);
-        if (
-          facts.publicClasses.has(className) &&
-          dimensionProperties.test(decl.prop)
-        )
-          diagnostics.push(
-            diagnostic(
-              'KUI-L005',
-              at,
-              `.${className} forces ${decl.prop}; prefer the component's public sizing contract.`,
-              {
-                selector: rule.selector,
-                property: decl.prop,
-                value: decl.value,
-              },
-            ),
-          );
       }
     });
   });

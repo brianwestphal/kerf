@@ -101,5 +101,8 @@
     "KUI-T009",
     "KUI-T010",
     "KUI-T011"
-  ]
+  ],
+  "retired": {
+    "KUI-L005": "Folded into KUI-L019: any application rule whose subject is a cataloged component, forced dimensions included. Kept in ids so existing profile exceptions that name it still load."
+  }
 }

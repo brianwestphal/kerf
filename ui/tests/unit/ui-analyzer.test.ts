@@ -83,17 +83,18 @@ describe('Kerf UI static analyzer', () => {
         'KUI-L002',
         'KUI-L003',
         'KUI-L004',
-        'KUI-L005',
         'KUI-L006',
         'KUI-L007',
         'KUI-L008',
         'KUI-L010',
         'KUI-L011',
         'KUI-L012',
+        'KUI-L019',
       ]),
     );
     expect(report.summary.errors).toBeGreaterThanOrEqual(4);
-    expect(report.summary.review).toBeGreaterThanOrEqual(4);
+    // `.kui-state-banner { width }` is a KUI-L019 error, not a review finding.
+    expect(report.summary.review).toBeGreaterThanOrEqual(3);
     expect(report.root).toBe('.');
     expect(JSON.stringify(report)).not.toContain(tmpdir());
     expect(

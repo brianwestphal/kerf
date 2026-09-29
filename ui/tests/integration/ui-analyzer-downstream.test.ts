@@ -132,6 +132,10 @@ describe('kerf-ui-analyze downstream command', { timeout: 30_000 }, () => {
         'wa-button { border-radius: 0; }',
         '.app { --_kui-toolbar-inset: 0; --kui-floating-toolbar-inset: 0; }',
         '.panel-header { background: red; }',
+        // A forced dimension reports once (KUI-L019); an ancestor-only public
+        // class sizes the app's own element and reports nothing.
+        '.kui-pane { width: 300px; }',
+        '.kui-pane .app-sidebar { width: 240px; }',
         '',
       ].join('\n'),
     );
@@ -170,9 +174,10 @@ export const App = () => <Toolbar className="panel-header" />;
       'KUI-L019:3',
       'KUI-L020:4',
       'KUI-L021:4',
+      'KUI-L019:6',
       'KUI-L022:3',
     ]);
-    expect(report.summary).toMatchObject({ errors: 5, review: 0 });
+    expect(report.summary).toMatchObject({ errors: 6, review: 0 });
 
     await expect(run('sarif', 'report.sarif')).rejects.toMatchObject({
       code: 1,
@@ -186,6 +191,7 @@ export const App = () => <Toolbar className="panel-header" />;
     expect(driverRules).toEqual(
       expect.arrayContaining(['KUI-L019', 'KUI-L020', 'KUI-L021', 'KUI-L022']),
     );
+    expect(driverRules).not.toContain('KUI-L005');
     for (const result of sarif.runs[0].results)
       expect(result.message.text).toContain('report the component gap');
   });

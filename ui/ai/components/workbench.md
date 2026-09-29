@@ -103,7 +103,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Public tokens it reads: `--kui-workbench-rail-width`, `--kui-workbench-drawer-height`, `--kui-workbench-popup-z`, `--kui-workbench-overlay-z`, `--kui-workbench-overlay-max-width`, `--kui-workbench-overlay-max-height`, `--kui-workbench-restore-inset`, `--kui-workbench-restore-z`, `--kui-workbench-overlay-dismiss-margin`. Set a token only where its public contract allows; prefer a prop.
 
-Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and forced component dimensions (`KUI-L005`).
+Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 
 ## Related
 

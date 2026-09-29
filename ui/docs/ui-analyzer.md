@@ -61,7 +61,7 @@ policy, or analysis inputs to the containing application.
 | `KUI-L002` | error  | A stylesheet references an unknown or private `--kui-*` token.                        |
 | `KUI-L003` | error  | One element combines public classes that claim the same geometry.                     |
 | `KUI-L004` | review | Nested literal classes both add a content inset.                                      |
-| `KUI-L005` | review | Consumer CSS forces a public component's dimensions.                                  |
+| `KUI-L005` | —      | Retired; folded into `KUI-L019` (see below).                                          |
 | `KUI-L006` | review | Literal spacing falls outside Kerf's approved scale.                                  |
 | `KUI-L007` | error  | A declared scroll owner is nested inside another scroll owner.                        |
 | `KUI-L008` | review | A dynamic class expression cannot be classified soundly.                              |
@@ -123,7 +123,8 @@ which element a selector styles.
   a Web Awesome tag the package themes (`wa-button`, `wa-select`), and the rule
   sets at least one ordinary property. A `::part()` subject is left to
   `KUI-L011`; a rule that only sets custom properties is configuration, judged
-  by the token rules.
+  by the token rules. Forcing a component's dimensions is one such restyle
+  and reports here once: `.kui-pane { width: 300px }`.
 - **`KUI-L020` — another component's private variable.** CSS reads or writes a
   `--_<root>-*` variable of a cataloged component (`--_kui-list-gap`), or any
   `--_kui-*` variable.
@@ -178,6 +179,22 @@ ownership-boundary diagnostics, so `--adoption` reports them as review
 findings. `eslint-plugin-kerfjs`'s `ui-component-ownership` rule reports
 `KUI-L020` and `KUI-L021` in JavaScript and TypeScript (style strings, style
 objects, and `style.setProperty()`), where this analyzer reads only CSS.
+
+### Retired: `KUI-L005` (forced component dimension)
+
+`KUI-L005` used to report, as a review finding, any `width`/`height`/`min-*`/
+`max-*` declaration in a rule that mentioned a public component class
+anywhere in its selector. `KUI-L019` now reports every restyle whose subject is
+a cataloged component — dimensions included — so the subject case was
+double-reported (an error and a review finding for one declaration). Its only
+other shape, a public class as an ancestor
+(`.kui-pane .app-sidebar { width: 240px }`), sizes the application's own
+element in the component's context, which the ownership rules explicitly
+allow. With no unique true positive left,
+the rule was retired rather than narrowed. The analyzer no longer emits it;
+the id stays in `ai/application-ui-diagnostic-ids-v1.json` (listed under
+`retired`) so a profile exception that already names it still loads. Remove
+such exceptions at your convenience.
 
 ## Loud fill / on-loud pairing (`KUI-L018`)
 

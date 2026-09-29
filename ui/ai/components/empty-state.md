@@ -69,7 +69,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Public tokens it reads: `--kui-color-neutral-on-quiet`, `--kui-color-text`, `--kui-empty-state-foreground`, `--kui-empty-state-title`, `--kui-font-l`, `--kui-font-s`, `--kui-space-xl`, `--kui-space-xs`. Set a token only where its public contract allows; prefer a prop.
 
-Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and forced component dimensions (`KUI-L005`).
+Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 
 ## Related
 
