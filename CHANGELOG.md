@@ -6,6 +6,21 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`KUI-L301` now reports every `Discouraged` Web Awesome element rendered
+  directly.** The `@kerfjs/ui` package-default application profile avoids all
+  fifteen Discouraged entries (Dropdown/Dropdown Item → `PopupMenu`,
+  Select/Option → `Select`, Tab Group/Tab/Tab Panel → `TabBar`, Icon →
+  `LucideIcon`, Split Panel → `ResizableRegion`, Button Group →
+  `SegmentedControl`, Tree/Tree Item → `List`, and Animated Image, Comparison,
+  and Zoomable Frame → `ContentItem`), each with a rationale, and
+  `eslint-plugin-kerfjs` `ui-preferences` (and `kerf-ui-doctor`, which runs it)
+  now resolves a custom-element JSX tag such as `<wa-dropdown>` to its catalog
+  entry, not only an imported component. A declared component's own source
+  stays exempt because it is the wrapper that owns the element. A test keeps
+  the profile's avoid set equal to the catalog's Discouraged set in both
+  directions and lints the UX demo, recipes, and catalog shell clean;
+  `@kerfjs/ui/ai/skill.md` (1.46.0) names the diagnostic.
+
 - **The `@kerfjs/ui` AI guidance now states every maintainer design rule
   explicitly.** An audit of the package's tickets folded the missing rules into
   `@kerfjs/ui/ai/skill.md` (1.45.0), `llms.txt`, and the design docs: prefer a

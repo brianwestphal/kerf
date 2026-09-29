@@ -569,3 +569,74 @@ test(
   },
   DOCTOR_TEST_TIMEOUT,
 );
+
+test(
+  'the doctor reports a directly rendered Discouraged Web Awesome element, then passes once the Kerf wrapper replaces it',
+  async () => {
+    const root = await mkdtemp(
+      resolve(tmpdir(), 'kerf-ui-doctor-discouraged-'),
+    );
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"discouraged-consumer","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, 'tsconfig.json'),
+        JSON.stringify({
+          compilerOptions: { jsx: 'preserve', noEmit: true },
+          include: ['src'],
+        }),
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          stages: { catalog: false, typescript: false, analyzer: false },
+        }),
+      );
+      for (const name of [
+        'eslint',
+        '@typescript-eslint/eslint-plugin',
+        '@typescript-eslint/parser',
+      ])
+        await link(root, name, resolve(uiRoot, 'node_modules', name));
+      await link(
+        root,
+        'eslint-plugin-kerfjs',
+        resolve(repositoryRoot, 'eslint-plugin'),
+      );
+      await link(root, '@kerfjs/ui', uiRoot);
+
+      await writeFile(
+        resolve(root, 'src/menu.tsx'),
+        'export const Menu = () => (\n  <wa-dropdown>\n    <wa-dropdown-item value="open">Open</wa-dropdown-item>\n  </wa-dropdown>\n);\n',
+      );
+      const broken = await doctor(root);
+      const findings = broken.report.diagnostics.filter(
+        (item: { stage: string }) => item.stage === 'eslint',
+      );
+      expect(findings.map((item: { id: string }) => item.id)).toEqual([
+        'KUI-L301',
+        'KUI-L301',
+      ]);
+      for (const item of findings)
+        expect(item.message).toContain('@kerfjs/ui:popup-menu');
+
+      await writeFile(
+        resolve(root, 'src/menu.tsx'),
+        "import { PopupMenu } from '@kerfjs/ui/popup-menu';\nexport const Menu = () => <PopupMenu label=\"Actions\" items={[{ value: 'open', label: 'Open' }]} />;\n",
+      );
+      const clean = await doctor(root);
+      expect(
+        clean.report.diagnostics.filter(
+          (item: { stage: string }) => item.stage === 'eslint',
+        ),
+      ).toEqual([]);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);

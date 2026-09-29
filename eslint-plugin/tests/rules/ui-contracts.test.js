@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 
@@ -483,6 +483,99 @@ tester.run('ui-preferences', preferences, {
       errors: [{ messageId: 'preferred' }],
     },
   ],
+});
+
+// The shipped catalogs plus the shipped package-default profile: every
+// Discouraged Web Awesome element authored directly as a JSX tag reports
+// KUI-L301, while a declared wrapper's own source may render what it wraps.
+const shippedDefaultsSettings = uiSettings({
+  catalog: undefined,
+  selectionCatalog: undefined,
+  catalogPath: join(
+    import.meta.dirname,
+    '../../../ui/ai/component-composition.json',
+  ),
+  selectionCatalogPath: join(
+    import.meta.dirname,
+    '../../../ui/ai/component-catalog.json',
+  ),
+  profile: undefined,
+  workspaceRoot: appRoot,
+  profileDefaultsPath: join(
+    import.meta.dirname,
+    '../../../ui/ai/application-ui-profile.defaults.json',
+  ),
+});
+const shippedDefaults = JSON.parse(
+  readFileSync(
+    join(
+      import.meta.dirname,
+      '../../../ui/ai/application-ui-profile.defaults.json',
+    ),
+    'utf8',
+  ),
+);
+const discouragedTags = [
+  ['wa-button-group', 'segmented-control'],
+  ['wa-dropdown', 'popup-menu'],
+  ['wa-dropdown-item', 'popup-menu'],
+  ['wa-option', 'select'],
+  ['wa-select', 'select'],
+  ['wa-split-panel', 'resize'],
+  ['wa-tab', 'tab-bar'],
+  ['wa-tab-group', 'tab-bar'],
+  ['wa-tab-panel', 'tab-bar'],
+  ['wa-tree', 'list'],
+  ['wa-tree-item', 'list'],
+  ['wa-animated-image', 'content-item'],
+  ['wa-comparison', 'content-item'],
+  ['wa-icon', 'lucide-icon'],
+  ['wa-zoomable-frame', 'content-item'],
+];
+
+tester.run('ui-preferences discouraged Web Awesome tags', preferences, {
+  valid: [
+    // Supported Web Awesome elements and the one encouraged conditional
+    // primitive stay allowed.
+    ...['wa-button', 'wa-popup', 'wa-dialog', 'wa-input'].map((tag) => ({
+      code: `<div><${tag} /></div>;`,
+      filename: appFile,
+      settings: shippedDefaultsSettings,
+    })),
+    // Unknown custom elements and plain HTML are application-owned.
+    {
+      code: '<my-widget><div /></my-widget>;',
+      filename: appFile,
+      settings: shippedDefaultsSettings,
+    },
+    // A declared wrapper's own source renders the element it wraps.
+    {
+      code: 'export const StatusChip = () => <wa-button-group />;',
+      filename: join(appRoot, 'src/status-chip.tsx'),
+      settings: shippedDefaultsSettings,
+    },
+  ],
+  invalid: discouragedTags.map(([tag, preferred]) => {
+    const [concept, preference] = Object.entries(
+      shippedDefaults.preferences,
+    ).find(([, entry]) => entry.avoid?.includes(`@kerfjs/ui:${tag}`));
+    return {
+      code: `<div><${tag} /></div>;`,
+      filename: appFile,
+      settings: shippedDefaultsSettings,
+      errors: [
+        {
+          messageId: 'preferred',
+          data: {
+            actual: `@kerfjs/ui:${tag}`,
+            concept,
+            preferred: `@kerfjs/ui:${preferred}`,
+            rationale: preference.rationale,
+          },
+        },
+      ],
+    };
+  }),
 });
 
 tester.run('ui-wiring', wiring, {

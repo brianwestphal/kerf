@@ -171,6 +171,22 @@ I/O.
 See the
 [`application-ui-profile.json`](./examples/application-ui-profile.json) example.
 
+The package defaults avoid every `Discouraged` Web Awesome entry — each
+`webawesome` catalog entry whose `recommendation` is not `supported`, except the
+encouraged `wa-popup` primitive — under a concept whose `preferred` value is the
+Kerf component that wraps or replaces it (`command-menu` → `PopupMenu`,
+`value-selection` → `Select`, `application-tabs` → `TabBar`, `icon` →
+`LucideIcon`, `resizable-pane` → `ResizableRegion`, `exclusive-choice` →
+`SegmentedControl`, `hierarchy-navigation` → `List`, `embedded-media` →
+`ContentItem`). `eslint-plugin-kerfjs` `ui-preferences` (`KUI-L301`, also run by
+`kerf-ui-doctor`) therefore reports a Discouraged element written directly as a
+JSX tag (`<wa-dropdown>`) as well as through an imported component. A declared
+component's own source file is exempt, because that wrapper is the sanctioned
+owner of the element it renders. A unit test holds the avoid set and the
+catalog's Discouraged set equal in both directions, so neither can drift. A
+product that genuinely needs one of these elements records a narrow `KUI-L301`
+profile exception for the file that renders it.
+
 Catalog detail footers use one standard resource vocabulary and order. Build
 them with `catalogResources()` from `@kerfjs/ui/catalog-resources`: `Demo source`
 first, optional `Component source` and `Design template`, then `Guidance`.

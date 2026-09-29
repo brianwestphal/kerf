@@ -5,7 +5,10 @@
   "catalogs": [
     {
       "package": "@kerfjs/ui",
-      "selection": { "path": "./component-catalog.json", "schemaVersion": 1 },
+      "selection": {
+        "path": "./component-catalog.json",
+        "schemaVersion": 1
+      },
       "composition": {
         "path": "./component-composition.json",
         "schemaVersion": 1
@@ -13,14 +16,66 @@
     }
   ],
   "preferences": {
-    "application-shell": { "preferred": "@kerfjs/ui:recipe-app-shell" },
+    "application-shell": {
+      "preferred": "@kerfjs/ui:recipe-app-shell"
+    },
+    "application-tabs": {
+      "preferred": "@kerfjs/ui:tab-bar",
+      "avoid": [
+        "@kerfjs/ui:wa-tab-group",
+        "@kerfjs/ui:wa-tab",
+        "@kerfjs/ui:wa-tab-panel"
+      ],
+      "rationale": "Render TabBar (or SegmentedControl for a view switch) instead of composing Web Awesome tabs directly."
+    },
+    "command-menu": {
+      "preferred": "@kerfjs/ui:popup-menu",
+      "avoid": ["@kerfjs/ui:wa-dropdown", "@kerfjs/ui:wa-dropdown-item"],
+      "rationale": "Render PopupMenu, which wraps wa-dropdown with the shared popup contract; use Select when choosing a value."
+    },
+    "embedded-media": {
+      "preferred": "@kerfjs/ui:content-item",
+      "avoid": [
+        "@kerfjs/ui:wa-animated-image",
+        "@kerfjs/ui:wa-comparison",
+        "@kerfjs/ui:wa-zoomable-frame"
+      ],
+      "rationale": "Keep media behavior application-owned: place a native img, video, or iframe in a ContentItem. Record a narrow KUI-L301 profile exception only when a concrete product requirement needs this Web Awesome element."
+    },
     "exclusive-choice": {
       "preferred": "@kerfjs/ui:segmented-control",
-      "avoid": ["@kerfjs/ui:wa-button-group"]
+      "avoid": ["@kerfjs/ui:wa-button-group"],
+      "rationale": "Render SegmentedControl for one-of-N choices instead of a Web Awesome button group."
     },
-    "navigation-row": { "preferred": "@kerfjs/ui:list-item" },
-    "panel-heading": { "preferred": "@kerfjs/ui:toolbar" },
-    "structured-search": { "preferred": "@kerfjs/ui:token-search-field" }
+    "hierarchy-navigation": {
+      "preferred": "@kerfjs/ui:list",
+      "avoid": ["@kerfjs/ui:wa-tree", "@kerfjs/ui:wa-tree-item"],
+      "rationale": "Present hierarchy as List rows (or NavStack drill-in levels). Record a narrow KUI-L301 profile exception only when the product requires tree behavior."
+    },
+    "icon": {
+      "preferred": "@kerfjs/ui:lucide-icon",
+      "avoid": ["@kerfjs/ui:wa-icon"],
+      "rationale": "Render LucideIcon; Web Awesome icons are not part of the Kerf icon contract."
+    },
+    "navigation-row": {
+      "preferred": "@kerfjs/ui:list-item"
+    },
+    "panel-heading": {
+      "preferred": "@kerfjs/ui:toolbar"
+    },
+    "resizable-pane": {
+      "preferred": "@kerfjs/ui:resize",
+      "avoid": ["@kerfjs/ui:wa-split-panel"],
+      "rationale": "Render ResizableRegion for application panes instead of a Web Awesome split panel."
+    },
+    "structured-search": {
+      "preferred": "@kerfjs/ui:token-search-field"
+    },
+    "value-selection": {
+      "preferred": "@kerfjs/ui:select",
+      "avoid": ["@kerfjs/ui:wa-select", "@kerfjs/ui:wa-option"],
+      "rationale": "Render Select, which wraps wa-select and wa-option with Kerf's popup and spacing contract."
+    }
   },
   "theme": {
     "colorScheme": "light",

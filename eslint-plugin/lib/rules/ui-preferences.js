@@ -1,4 +1,7 @@
+import { resolve } from 'node:path';
+
 import {
+  customElementKey,
   importRegistry,
   isExcepted,
   jsxKey,
@@ -39,7 +42,12 @@ export default {
       },
       JSXOpeningElement(node) {
         if (!registry || isExcepted(contract, CODE, filename)) return;
-        const actual = jsxKey(node.name, registry, contract);
+        // A declared component's own source is the wrapper that owns the
+        // element it renders; the preference governs its callers.
+        if (contract.componentSources.has(resolve(filename))) return;
+        const actual =
+          jsxKey(node.name, registry, contract) ??
+          customElementKey(node.name, contract);
         if (!actual) return;
         for (const [concept, preference] of Object.entries(
           contract.profile.preferences ?? {},

@@ -190,6 +190,9 @@ export function loadUiContract(context) {
     // `<absolute source file>\0<Export>` to the entry key.
     const packageExports = new Map();
     const sourceExports = new Map();
+    // Source files of declared components: a wrapper's own source may render
+    // the element it wraps (Kerf's PopupMenu renders `wa-dropdown`).
+    const componentSources = new Set();
     for (const { artifact, root } of profileCatalogs(
       loadedProfile,
       selection.package,
@@ -210,12 +213,17 @@ export function loadUiContract(context) {
                 : (entry.package ?? artifact.package);
             packageExports.set(`${specifier}\0${name}`, key);
           }
-          if (entry.source)
+          if (entry.source) {
             sourceExports.set(`${resolve(root, entry.source)}\0${name}`, key);
+            componentSources.add(resolve(root, entry.source));
+          }
         }
       }
     const imports = new Map();
     const exports = new Map();
+    // Custom-element tag -> entry key, for elements authored directly in JSX
+    // (`<wa-dropdown>`) rather than through an imported component.
+    const customElements = new Map();
     const helperSources = new Map();
     const addHelperSource = (name, source) => {
       const sources = helperSources.get(name) ?? new Set();
@@ -224,6 +232,7 @@ export function loadUiContract(context) {
     };
     for (const entry of selection.entries) {
       const key = `${selection.package}:${entry.id}`;
+      if (entry.customElement) customElements.set(entry.customElement, key);
       if (entry.delivery?.browserImport)
         imports.set(entry.delivery.browserImport, key);
       if (entry.delivery?.moduleImport)
@@ -242,6 +251,8 @@ export function loadUiContract(context) {
       exports,
       packageExports,
       sourceExports,
+      componentSources,
+      customElements,
       helperSources,
       profile,
       cwd,
@@ -403,6 +414,14 @@ export function jsxKey(name, registry, contract) {
     if (contract.imports.get(source) === exportedKey) return exportedKey;
   }
   return undefined;
+}
+
+// A custom element authored directly as a lowercase JSX tag resolves to its
+// selection-catalog entry. Kept separate from `jsxKey` so composition rules
+// keep treating raw elements as application-owned markup.
+export function customElementKey(name, contract) {
+  if (name.type !== 'JSXIdentifier' || !name.name.includes('-')) return;
+  return contract.customElements?.get(name.name);
 }
 
 export function helperCall(callee, registry, contract) {
