@@ -7,10 +7,21 @@ import { expect, type Locator, test } from '@playwright/test';
 // one application value, so toggling one re-renders the other.
 
 function trigger(select: Locator) {
-  return select.evaluate((host) => {
+  return select.evaluate(async (host) => {
     const box = (element: Element) => element.getBoundingClientRect();
     const combobox = host.shadowRoot!.querySelector('[part~="combobox"]')!;
     const caret = host.shadowRoot!.querySelector('[part~="expand-icon"]')!;
+    // The caret rotates while the popup opens or closes, and a mid-rotation
+    // bounding box is wider than the settled glyph's box. How far the
+    // transition has run when the test measures differs by engine (Firefox
+    // and WebKit start it sooner), so wait for it to settle and measure the
+    // layout rather than the moment. A cancelled transition rejects its
+    // `finished` promise; that is not a failure here.
+    await Promise.all(
+      caret
+        .getAnimations()
+        .map((animation) => animation.finished.catch(() => undefined)),
+    );
     const icon = host.querySelector(
       '.kui-select__trigger-icon, .kui-select__icon--selected',
     )!;
