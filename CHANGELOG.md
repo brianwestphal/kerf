@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`KUI-L103`'s "render X instead" answer has one implementation.**
+  `@kerfjs/ui` ships `ai/component-class-owners.cjs`, the rule that decides
+  which cataloged classes are a component's anatomy and which export renders
+  each. `eslint-plugin-kerfjs`'s `ui-public-boundaries` loads it beside
+  `application-ui-profile-sync.cjs`, and the generated `ai/components/*.md`
+  pages use it too, so the lint message and the component reference can no
+  longer name different components (a test pins their agreement over the whole
+  shipped catalog). A vendored `profileContractPath` directory must now also
+  hold `component-class-owners.cjs`; an `@kerfjs/ui` without it reports
+  `KUI-L090`.
+
 - **Component packages declare `placeableClasses`, and `KUI-L103` covers
   their anatomy classes.** `create-kerf-component`'s `kerf.components.json`
   accepts optional `boundaries.placeableClasses` (a subset of

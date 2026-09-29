@@ -5,7 +5,15 @@
 // fact: every line is either fixed template prose or a catalog/composition
 // value.
 
+import { createRequire } from 'node:module';
+
 import prettier from 'prettier';
+
+// The class-to-component rule is shared with eslint-plugin-kerfjs's KUI-L103,
+// so a page's "render X instead" line always names what the lint names.
+const { componentClassOwnership } = createRequire(import.meta.url)(
+  '../../ai/component-class-owners.cjs',
+);
 
 export const COMPONENT_DOCS_DIR = 'ai/components';
 export const COMPONENT_DOCS_INDEX = 'README.md';
@@ -306,26 +314,9 @@ function accessibilitySection(contract) {
   ].join('\n');
 }
 
-// The component export that renders a public class: the export named after
-// the class's block (`kui-toolbar-action-link` → `ToolbarActionLink`,
-// `kui-pane__content` → `Pane`), else the export named after the entry, else
-// every PascalCase runtime export.
-function renderedBy(entry, className) {
-  const exports = (entry.publicExports ?? []).filter(
-    (name) => /^[A-Z]/.test(name) && !name.endsWith('Props'),
-  );
-  const block = className
-    .replace(/^kui-/, '')
-    .replace(/(?:__|--).*$/, '')
-    .replace(/(?:^|-)([a-z0-9])/g, (_, letter) => letter.toUpperCase());
-  if (exports.includes(block)) return [block];
-  return exports.includes(entry.name) ? [entry.name] : exports;
-}
-
 function stylingSection(entry, contract) {
   const { publicClasses, publicTokens } = contract.boundaries;
   const placeable = new Set(contract.boundaries.placeableClasses ?? []);
-  const anatomy = publicClasses.filter((name) => !placeable.has(name));
   const parts = [
     '## Styling boundary',
     '',
@@ -347,15 +338,28 @@ function stylingSection(entry, contract) {
       `Classes an application may place on its own elements: ${[...placeable].map(code).join(', ')}.`,
     );
   const { rootElement } = contract.boundaries;
-  if (placeable.size && rootElement)
+  const owned = componentClassOwnership({
+    name: entry.name,
+    exports: entry.publicExports,
+    publicClasses,
+    placeableClasses: contract.boundaries.placeableClasses,
+    rootElement,
+  });
+  const rootRenderers = [
+    ...new Set(
+      owned.filter(({ element }) => element).flatMap(({ render }) => render),
+    ),
+  ];
+  if (placeable.size && rootElement && rootRenderers.length)
     parts.push(
       '',
-      `A plain \`<${rootElement}>\` carrying them is exactly what ${code(entry.name)} renders: render ${code(entry.name)} instead (\`KUI-L103\`), and place the classes only on another carrier element.`,
+      `A plain \`<${rootElement}>\` carrying them is exactly what ${rootRenderers.map(code).join(' / ')} renders: render ${rootRenderers.map(code).join(' or ')} instead (\`KUI-L103\`), and place the classes only on another carrier element.`,
     );
   if (entry.source === 'kerf') {
     const byRenderer = new Map();
-    for (const className of anatomy) {
-      const renderer = renderedBy(entry, className).map(code).join(' or ');
+    for (const { className, render, element } of owned) {
+      if (element) continue;
+      const renderer = render.map(code).join(' or ');
       byRenderer.set(renderer, [
         ...(byRenderer.get(renderer) ?? []),
         className,

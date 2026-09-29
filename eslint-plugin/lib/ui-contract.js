@@ -125,6 +125,24 @@ function discoveredProfiles(cwd, filename, settings) {
   return layers;
 }
 
+// `@kerfjs/ui`'s class-to-component rule ships beside its profile contract.
+// An older `@kerfjs/ui` without it cannot report KUI-L103 consistently, so it
+// fails the contract load instead of guessing.
+function loadClassOwnership(profileContractPath) {
+  const path = resolve(
+    dirname(profileContractPath),
+    'component-class-owners.cjs',
+  );
+  if (!existsSync(path))
+    throw new Error(
+      `Cannot find ${path}; install an @kerfjs/ui release that matches eslint-plugin-kerfjs.`,
+    );
+  const { componentClassOwnership } = loadCommonJs(path);
+  if (typeof componentClassOwnership !== 'function')
+    throw new Error(`${path} does not export componentClassOwnership.`);
+  return componentClassOwnership;
+}
+
 export function loadUiContract(context) {
   const settings = context.settings?.kerfjs?.ui ?? {};
   const cwd = settings.workspaceRoot ?? context.cwd ?? process.cwd();
@@ -276,7 +294,10 @@ export function loadUiContract(context) {
       publicClasses: new Set(
         catalog.entries.flatMap((entry) => entry.boundaries.publicClasses),
       ),
-      componentClasses: componentClassOwners(classOwnerEntries),
+      componentClasses: componentClassOwners(
+        classOwnerEntries,
+        loadClassOwnership(profileContractPath),
+      ),
       publicTokens: new Set(
         catalog.entries.flatMap((entry) => entry.boundaries.publicTokens),
       ),
@@ -293,52 +314,28 @@ export function loadUiContract(context) {
 
 // Public classes that are a component's rendered anatomy — `@kerfjs/ui`'s
 // `kui-*` classes and any class a declared application or third-party catalog
-// lists (`acme-meter`) — mapped to the entry and the export that renders it. A
-// class the catalog lists in `boundaries.placeableClasses` (layout utilities,
-// the document root, item geometry on a non-div carrier) is the application's
-// to place and is absent — unless the entry names the `rootElement` its
-// component renders around those classes: then the class maps with that
-// `element`, because a plain `<div class="kui-content-item">` is exactly what
-// `ContentItem` renders, while a `<ul>` or `<footer>` carrying the geometry
-// stays the application's. The first catalog to claim a class owns it, so the
-// base catalog wins over a declared one.
-function componentClassOwners(classOwnerEntries) {
+// lists (`acme-meter`) — mapped to the entry and the export that renders it.
+// Which classes an entry owns, and which export renders each, is
+// `@kerfjs/ui`'s shared rule (`ai/component-class-owners.cjs`), the same one
+// its generated component reference pages use. The first catalog to claim a
+// class owns it, so the base catalog wins over a declared one.
+function componentClassOwners(classOwnerEntries, componentClassOwnership) {
   const owners = new Map();
-  for (const entry of classOwnerEntries) {
-    const placeable = new Set(entry.boundaries?.placeableClasses ?? []);
-    const rootElement = entry.boundaries?.rootElement;
-    const exports = entry.exports.filter(
-      (name) => name && /^[A-Z]/.test(name) && !name.endsWith('Props'),
-    );
-    if (exports.length === 0) continue;
-    for (const className of entry.boundaries?.publicClasses ?? []) {
-      if (placeable.has(className) && !rootElement) continue;
-      if (owners.has(className)) continue;
-      owners.set(className, {
-        key: entry.key,
-        render: rendererOf(className, entry.name, exports),
-        ...(placeable.has(className) ? { element: rootElement } : {}),
-      });
-    }
-  }
+  for (const entry of classOwnerEntries)
+    for (const { className, render, element } of componentClassOwnership({
+      name: entry.name,
+      exports: entry.exports,
+      publicClasses: entry.boundaries?.publicClasses,
+      placeableClasses: entry.boundaries?.placeableClasses,
+      rootElement: entry.boundaries?.rootElement,
+    }))
+      if (!owners.has(className))
+        owners.set(className, {
+          key: entry.key,
+          render,
+          ...(element ? { element } : {}),
+        });
   return owners;
-}
-
-// The export named after the class's block, tried from the whole block down to
-// its last word (`kui-toolbar-action-link` is ToolbarActionLink,
-// `kui-pane__content` is Pane, `acme-meter__bar` is Meter), else the entry's
-// own export, else every component export the entry lists.
-function rendererOf(className, entryName, exports) {
-  const words = className.replace(/(?:__|--).*$/, '').split('-');
-  for (let start = 0; start < words.length; start += 1) {
-    const candidate = words
-      .slice(start)
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join('');
-    if (exports.includes(candidate)) return [candidate];
-  }
-  if (exports.includes(entryName)) return [entryName];
-  return [...new Set(exports)];
 }
 
 export function importRegistry(program, contract, filename) {
