@@ -5,7 +5,7 @@ Use the shipped [`component-catalog.json`](../ai/component-catalog.json) when a
 tool needs exhaustive structured facts; this page remains the concise human
 decision procedure.
 
-1. Search the [Kerf UX catalog](./ux-demo.md) and the supported Web Awesome set.
+1. Search the [Kerf UX catalog](./ux-demo.md) and the supported Web Awesome set. Prefer a Kerf UI component over a Web Awesome component over a raw HTML tag, using each naturally for what it is good at.
 2. Reuse a primitive when its purpose, anatomy, state, and interaction match.
 3. Compose primitives for recurring layout through public props and tokens. Do not select one component from another component's stylesheet.
 4. Add a thin application adapter for product copy, domain mapping, actions, routing, persistence, permissions, and transport.
@@ -224,10 +224,17 @@ copy below as app-owned content. Size the title to its track: a narrow
 peripheral rail or drawer (a navigator, inspector, or console beside a work
 area that carries the extra-large title, often with its own close control in
 the header) labels itself with the default size, because extra-large truncates
-there — "Inspector" becomes "Ins…" in a 160px rail. A bottom divider is
-enabled by default. Set `dividerSides=""` for none, or
+there — "Inspector" becomes "Ins…" in a 160px rail. Nothing wraps inside a
+`ToolbarControlGroup`: an icon sits beside its label on one row and the group
+sizes to its content, so a row that does not fit relocates whole groups
+through the toolbar's `responsive` policy rather than breaking a group. A
+bottom divider is enabled by default. Set `dividerSides=""` for none, or
 use the canonical physical-edge combinations (`t`, `r`, `b`, `l`, in that
 order—for example `tr` or `trbl`) when the toolbar owns other separator edges.
+Dividers earn their place: drop the divider when the content beneath already
+spaces itself (a `ValueTable`, a list of content items) or when it would only
+separate a pane's own header from its list (a sidebar's header toolbar, a
+`NavStack` bar); never add a margin below a divider to make it look right.
 
 Common toolbar patterns:
 
@@ -317,7 +324,10 @@ Web Awesome catalog coverage means supported and themed, not preferred. Import
 registration, and the CSS-only `@kerfjs/ui/webawesome.css` theme. The UX catalog
 marks the superseded or exceptional choices below with a visible `Discouraged`
 tag; Popup remains untagged because low-level anchored positioning can be the
-right primitive.
+right primitive. Never render a `Discouraged` element directly in application,
+demo, or recipe markup: reach it only through the Kerf component that wraps or
+replaces it (`PopupMenu` renders `wa-dropdown`; `Select` renders `wa-select` /
+`wa-option`), and file a component gap rather than dropping to the raw tag.
 
 | Web Awesome choice                                                 | Kerf decision                                                                                                                                         |
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |

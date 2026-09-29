@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **The `@kerfjs/ui` AI guidance now states every maintainer design rule
+  explicitly.** An audit of the package's tickets folded the missing rules into
+  `@kerfjs/ui/ai/skill.md` (1.45.0), `llms.txt`, and the design docs: prefer a
+  Kerf UI component over a Web Awesome component over a raw tag and never render
+  a `Discouraged` Web Awesome element directly (only through the Kerf component
+  that wraps it); nothing wraps inside a `ToolbarControlGroup` and a
+  `ToolbarText` is one ellipsized line unless `wrap`/`maxLines` is set; a
+  `Select` or `PopupMenu` trigger drops its focus ring while its popup is open
+  and the ring follows the control's shape (never add ring CSS); dividers earn
+  their place (`dividerSides=""` over self-spacing content or between a pane's
+  header and its list, never padded around); a control sits near where its
+  effect appears; and text aligns to text and icons to icons — a border is
+  never the alignment anchor. The ToolbarControlGroup catalog entry no longer
+  points at a hand-written `wa-dropdown` trigger, and the bundled kerf app
+  configs (`ai/skill.md` 1.25.0, `ai/cursorrules` 1.23.0) name the List family
+  and carry the "components own their styles; configure, never override" rule.
 - **`@kerfjs/ui` ships a markdown component reference for AI assistants.**
   `@kerfjs/ui/ai/components/README.md` indexes every catalog entry in one line,
   and `@kerfjs/ui/ai/components/<id>.md` gives each entry a short page: when to

@@ -387,7 +387,9 @@ inset. `ToolbarControlGroup` publishes its derived radius to nested toolbar
 highlights concentric when the group switches between pill and rounded shapes.
 
 `ResizableRegion` owns the Hot Sheet 2 split treatment: a persistent 1px
-separator with a compact grip that appears on hover or keyboard focus. Override
+separator with a compact grip that appears on hover or keyboard focus. The grip
+is drawn centered on the separator line even though the pointer target is wider
+than the line, so the handle never reads as offset into a pane. Override
 `--kui-resizable-region-separator-color`,
 `--kui-resizable-region-handle-color`, or
 `--kui-resizable-region-handle-active-color` on a region when its containing
@@ -441,7 +443,10 @@ group that replaces wider toolbar controls below the Toolbar's compact container
 breakpoint; do not hide the group with an application class. Reach for
 `wa-button` only when you need
 a Web Awesome feature; a popup menu is a `PopupMenu`, which renders its own
-trigger. For a compact mixed-content group, set `nestedDropdown`; a
+trigger. Nothing wraps inside a group: an icon sits beside its label on one
+row, and a group's controls never break onto a second line — the group sizes
+to its content and the enclosing `Toolbar`'s responsive policy relocates whole
+groups. For a compact mixed-content group, set `nestedDropdown`; a
 text-and-caret trigger grows to its intrinsic width while an icon-only trigger
 can remain square. A compact icon `<button>` is a 32px circle, so a selected
 compact segment never becomes an oval. An icon-only `Select` joins a group as

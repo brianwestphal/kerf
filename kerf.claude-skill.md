@@ -1,7 +1,7 @@
 ---
 name: kerf-app
 description: Build UIs in the kerf reactive framework and its @kerfjs/ui component package (https://github.com/brianwestphal/kerf). Use this skill whenever the user is writing or modifying code that imports `kerfjs` or `@kerfjs/ui`, asks to add a feature to a kerf app, or asks "how do I do X in kerf?". Use it proactively the moment you spot a kerf import in the file you're editing.
-kerf-skill-version: 1.24.0
+kerf-skill-version: 1.25.0
 ---
 
 # Building apps with kerf
@@ -56,10 +56,17 @@ selection, close policy, routing, panels, and persistence in the host.
 Icons and spinners are decorative unless labeled; use assertive banners only
 for urgent interruption.
 
-The opinionated semantic ramps match Hot Sheet 2 and Web Awesome. Override
-`--kui-color-*` globally or component properties such as
-`--kui-state-banner-background` at a tone or instance boundary; do not replace
-private descendant selectors.
+Components own their styles; configure, never override. Set how a component
+looks and sits through its typed props (size, density, inset, presentation,
+`dividerSides`, `ToolbarConfig`, `PaneConfig`, …); never write application
+CSS that selects a `.kui-*` class, a `[data-component]` root, a `wa-*` element
+a Kerf component renders, or its `::part()`s, and never add padding, margin,
+width, or height around a component to size or space it (it owns its 8px
+inset — adding more double-insets). A missing prop is a component gap to
+report upstream, not a reason to override. The opinionated semantic ramps
+match Hot Sheet 2 and Web Awesome: override `--kui-color-*` globally or
+component properties such as `--kui-state-banner-background` at a tone or
+instance boundary, for theming only.
 
 For Web Awesome's broader free component set, import the CSS-only
 `@kerfjs/ui/webawesome.css` theme once, then import only each Web Awesome

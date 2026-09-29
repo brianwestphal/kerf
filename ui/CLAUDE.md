@@ -46,13 +46,28 @@ shells, `Toolbar` + `ToolbarText` for headings, and `List`/`ListItem`/
 `ListHeader` for navigation and grouped content, instead of hand-rolled markup
 with its own CSS.
 
+The order of preference is **Kerf UI component, then Web Awesome component,
+then raw HTML tag** — using each naturally for what it is good at. Never
+render a `Discouraged` Web Awesome element (`wa-dropdown`, `wa-button-group`,
+`wa-select`, `wa-tab-group`, `wa-icon`, …) directly, in a demo, recipe, or the
+catalog shell; reach it only through the Kerf component that wraps or replaces
+it (`PopupMenu`, `SegmentedControl`, `Select`, `TabBar`, `LucideIcon`). When a
+Web Awesome component needs Kerf's look, prefer a theme override that reaches
+parity; wrap it as a Kerf component only when Kerf must own its spacing or
+behavior contract (`Select`, `PopupMenu`). Catalog-only helpers are fine when
+they are clearly not part of the public component set; nominate any that
+deserve promotion to real components rather than promoting them yourself.
+
 When you touch such code, evaluate every CSS rule and every raw tag: is this
 customization genuinely important, or is it re-implementing (or quietly
 diverging from) something a component already does? Delete the unnecessary
-ones. If a component lacks a capability the surface really needs, improve the
-component rather than working around it. Never invent behavior nobody asked
-for (the catalog once grew an unrequested two-column phone layout). **Ask when
-you are unsure whether a customization matters.**
+ones. Demos have no CSS files at all — only individual components do, and a
+component's CSS never styles another component; when a demo seems to need
+styling, flag it as the component gap it is. If a component lacks a capability
+the surface really needs, improve the component rather than working around it.
+Never invent behavior nobody asked for (the catalog once grew an unrequested
+two-column phone layout). **Ask when you are unsure whether a customization
+matters, and ask rather than guess when a design brief is ambiguous.**
 
 ## Pre-flight checklist (the mistakes to not repeat)
 
@@ -81,6 +96,28 @@ you are unsure whether a customization matters.**
 - **Toolbars hold only `ToolbarText` and `ToolbarControlGroup`.** Never a bare
   button, input, link, or loose markup in a zone. A title is `ToolbarText`, not an
   `<h2>`. (Popup menu = a `PopupMenu` in a `single` ToolbarControlGroup with `nestedDropdown`.)
+- **Nothing wraps inside a `ToolbarControlGroup`.** An icon sits beside its
+  label on one row; a group's controls never break onto a second line, and no
+  trigger gets a fixed width — the group sizes to its content and the toolbar's
+  `responsive` policy relocates whole groups. A `ToolbarText` is one ellipsized
+  line unless `wrap`/`maxLines` is set deliberately; a wrapped title keeps the
+  trailing groups beside its first line, in the toolbar's top 44px band.
+- **Dividers earn their place.** Drop a toolbar's default bottom divider
+  (`dividerSides=""`) when the content beneath already spaces itself or the
+  line would only separate a pane's own header from its list (a sidebar header,
+  a `NavStack` bar); never pad below a divider to make it look right.
+- **Controls sit near their effect.** A collapsed drawer's restore goes in the
+  bottom toolbar or a `FloatingToolbar` beside the drawer, not a distant top
+  toolbar; a panel's toggle is the last control of its last group, and exactly
+  one control owns each collapse/expand action.
+- **Align text to text, icons to icons.** A border is decoration, never the
+  alignment anchor: a bordered surface extends to the pane gutter instead of
+  being indented to line its border up with a heading's text, and bare prose
+  goes on the shared text column via `ListInsetText`.
+- **Select and PopupMenu are one popup.** They share the caret, rows, check
+  column, and group titles from one contract; a `Select` in a group uses
+  `focusRingOwner="group"`, and a trigger drops its ring while its popup is
+  open. Never restyle one to match the other or add ring CSS.
 - **Every element earns its place.** Delete chrome, labels, and readouts that do
   not help a person decide or act (a live "device class: xl-desktop" readout aids
   nothing — cut it). Prefer directness over decoration.
@@ -136,17 +173,30 @@ fix that, don't dress the demo. Single-component demos sit directly on the grid
 vertically stacked. Recipes compose public primitives and show ownership
 boundaries; they are reference compositions, not new styled components.
 
+A demo is a specimen of the rules, so it also: demonstrates the component
+_working_ — interactive elements respond when clicked, not a static sketch of
+the concept; renders every default at its real value (a `LucideIcon` at 24px);
+gives every trigger an icon and/or text (never a bare caret pill); places
+toggles and restore controls only where the guidance recommends; resets any
+page-altering state (a toggled floating toolbar) when the viewer leaves it;
+composes `LucideIcon`s and native buttons directly instead of through demo
+helper indirection that saves nothing; and is not duplicated by a second demo
+of the same thing — make one the direct demonstration or drop it.
+
 ## Always look at it
 
 Every visual change gets a real-browser QA pass (Playwright) at wide and narrow
 widths — not just DOM assertions. Most of the mistakes above are invisible to a
 passing test and obvious in a screenshot. Capture before/after when a ticket shows
-a target or a defect. See the root `CLAUDE.md` "Visual UI validation".
+a target or a defect. Toolbar and trigger geometry differs across engines
+(Safari clips what Chrome fits), so check Firefox and WebKit too when a change
+touches it. See the root `CLAUDE.md` "Visual UI validation".
 
 ## Keep the guidance surfaces in sync
 
 Any component/API/behavior change updates, in the same diff: the component +
 its CSS, `tests/`, `ai/component-catalog.json` (run `npm run catalog:sync`),
-`ai/skill.md` + `llms.txt`, the affected `docs/*.md`, and the repo AI summaries
+`ai/skill.md` + `llms.txt`, the affected `docs/*.md`, the component's SVG
+design templates (`npm run check:design-templates`), and the repo AI summaries
 (`../docs/ai/*`). The `check:catalog` / `check:guidance` / `check:ai-signatures`
 gates enforce most of this; run `npm run check` before handing work back.

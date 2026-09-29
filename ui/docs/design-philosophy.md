@@ -22,13 +22,17 @@ Unrelated updates must not close controls, move focus, reset a draft, replace a 
 
 ### Hierarchy precedes decoration
 
-Establish one reading order and one dominant action per decision point. Group first with alignment, spacing, typography, and shared surfaces. A border, fill, badge, or nested card must communicate a real distinction.
+Establish one reading order and one dominant action per decision point. Group first with alignment, spacing, typography, and shared surfaces. A border, fill, badge, or nested card must communicate a real distinction. A divider is chrome too: a line between a pane's own header and its list, or under a toolbar whose content already spaces itself, marks nothing and is dropped (`dividerSides=""`), never padded around. Put a control near where its effect appears — a collapsed drawer's restore beside the drawer, not in a distant top toolbar.
 
 ### Reach for the primitive, not for CSS
 
 The package is designed to look right _unstyled_. A screen built from the
 primitives, their props, and the semantic tokens should already read well, so
-applications do not carry a component-customization stylesheet. Before adding any `padding`, `margin`, `width`,
+applications do not carry a component-customization stylesheet. Prefer a Kerf
+UI component over a Web Awesome component over a raw HTML tag, using each for
+what it is good at; a `Discouraged` Web Awesome element is reached only through
+the Kerf component that wraps it (`PopupMenu`, `Select`), never rendered
+directly. Before adding any `padding`, `margin`, `width`,
 `height`, `border`, `background`, wrapper card, or decoration, check whether the
 component, the pane, or the content-item already owns it — it almost always does,
 and adding more usually **double-insets** or fights the component (the most common
@@ -65,7 +69,11 @@ Sidebars, main areas, inspectors, and dialogs use the same unpadded pane. Their
 children own margin, border, background, padding, and radius, so a transparent
 surface occupies exactly the same geometry as a visible one. Major content
 groups use 24px vertical separation; the inside of an item and the gap between
-toolbar groups use 8px. Rows and actions keep 44px targets.
+toolbar groups use 8px. Rows and actions keep 44px targets. Align text to text
+and icons to icons: a title, a row label, and bare prose share one text column,
+and a border is decoration, never the alignment anchor — a bordered surface
+extends to the pane gutter rather than being indented so its border lines up
+with a heading's text.
 
 Use the package composition so the geometry has one owner:
 

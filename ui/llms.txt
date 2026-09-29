@@ -121,6 +121,12 @@ not a reason to override — and your own components follow the same rule.
 
 ## Core rules (do the right thing)
 
+- **Prefer a Kerf UI component over a Web Awesome component over a raw HTML
+  tag**, using each for what it is good at. Never render a `Discouraged` Web
+  Awesome element (`wa-dropdown`, `wa-button-group`, `wa-select`, `wa-tab-group`,
+  `wa-icon`, …) directly; reach it only through the Kerf component that wraps or
+  replaces it (`PopupMenu`, `SegmentedControl`, `Select`, `TabBar`,
+  `LucideIcon`), and file a component gap rather than dropping to the raw tag.
 - **Reach for the primitive, not for CSS.** The package is built to look right
   without an application customization layer. Before adding `padding`, `margin`,
   `width`, `height`, `border`, `background`, a wrapper card, or a decoration,
@@ -233,12 +239,19 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   (`@kerfjs/ui/popup-menu`, registered once via `@kerfjs/ui/popup-menu/register`)
   in a `single` `ToolbarControlGroup` with `nestedDropdown`; never hand-write
   `wa-dropdown` markup for a menu. Let the group size the trigger from its icon,
-  localized text, and caret; do not force a dropdown or button width. Compact
+  localized text, and caret; do not force a dropdown or button width. Nothing
+  wraps inside a group: an icon sits beside its label on one row, and a
+  `ToolbarText` is one ellipsized line unless you opt into `wrap`/`maxLines`. A
+  Select or PopupMenu trigger drops its focus ring while its popup is open and
+  the ring follows the control's shape; never add ring CSS. Compact
   mixed groups keep standard item padding and raised selected chrome without an
   internal separator; the selected item paints over the outer border. For an
   avatar control, set `content="avatar"` and `avatarImage` on the group instead of
   inserting an `img`; a lone control paints the group and a multi-button group
-  paints only its pressed highlight.
+  paints only its pressed highlight. Dividers earn their place: a `Toolbar`
+  draws a bottom divider by default, so set `dividerSides=""` when the content
+  beneath spaces itself or the line would only separate a pane's header from its
+  list; never pad below a divider to make it look right.
 - **Use one direct toolbar composition for panel/dialog/page headings.** Put an
   optional icon in a `ToolbarControlGroup`, an extra-large `ToolbarText` directly
   in the leading zone, and actions in a trailing group. Supporting copy is
@@ -267,8 +280,12 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
 - **Panes share one child-owned geometry.** Sidebars, main areas, inspectors, and
   dialogs all use an unpadded `.kui-pane` (optional `.kui-pane__toolbar`, one
   scrolling `.kui-pane__content`, optional `.kui-pane__footer`). A visible pane owns
-  its collapse control; a hidden pane's restore moves to the adjacent main
-  toolbar's matching edge — no icon-only rail. Keep one scroll owner per region.
+  its collapse control (the last control of its last group); a hidden pane's
+  restore moves to the adjacent main toolbar's matching edge — no icon-only
+  rail — and a collapsed drawer's restore sits in the bottom toolbar or a
+  `FloatingToolbar` beside the drawer, near where its effect appears. Align
+  text to text and icons to icons across a pane; a border is decoration, never
+  the alignment anchor. Keep one scroll owner per region.
   While a side overlay is open (a Workbench rail overlay, a `wireSidebar` compact
   overlay, an overlay `CollapsiblePanel` or horizontal `ResizableRegion`), the
   layout hides the covered work area's `FloatingToolbar`s and restore corners
