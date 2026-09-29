@@ -732,6 +732,131 @@ tester.run('ui-composition rendersAs wrappers', composition, {
 
 // A declared component package's anatomy classes on an application-owned
 // element are reported with the component to render, like @kerfjs/ui's.
+// `kerfjs/html` tagged templates write the same markup without JSX; their
+// static class attributes carry the same KUI-L101 / KUI-L103 contract.
+const htmlCase = (code, extra = {}) => ({
+  code: `import { html } from 'kerfjs/html';\n${code}`,
+  settings: shippedUiSettings,
+  ...extra,
+});
+const contentItemRoot = (name = 'kui-content-item') => ({
+  messageId: 'componentRoot',
+  data: {
+    name,
+    element: 'div',
+    component: 'ContentItem',
+    render: '`ContentItem`',
+  },
+});
+const paneAnatomy = (name) => ({
+  messageId: 'component',
+  data: { name, component: 'Pane', render: '`Pane`' },
+});
+tester.run('ui-public-boundaries kerfjs/html templates', boundaries, {
+  valid: [
+    // Placeable classes, and item geometry on a non-div carrier.
+    htmlCase(
+      'html`<main class="kui-content kui-scroll-owner"><ul class="kui-content-item"></ul></main>`;',
+    ),
+    // A hole is a whole class value: unknown, so never reported.
+    htmlCase('const cls = "kui-pane"; html`<aside class=${cls}></aside>`;'),
+    htmlCase('const cls = "kui-pane"; html`<aside class="${cls}"></aside>`;'),
+    // A name a hole completes is not known.
+    htmlCase('const s = "x"; html`<div class="kui-toolbar-${s}"></div>`;'),
+    // Comments, text, other attributes, and closing tags are not class values.
+    htmlCase(
+      'html`<!-- <div class="kui-pane"> --><p title="class=kui-pane">class="kui-pane"</p></div>`;',
+    ),
+    // `className` is not an HTML attribute name; html writes names verbatim.
+    htmlCase('html`<div data-class="kui-pane" classname-x="kui-pane"></div>`;'),
+    // Only the kerfjs/html tag: another `html` tag is not kerf markup.
+    {
+      code: 'const html = String.raw; html`<aside class="kui-pane"></aside>`;',
+      settings: shippedUiSettings,
+    },
+    {
+      code: 'import { html } from \'lit\'; html`<aside class="kui-pane"></aside>`;',
+      settings: shippedUiSettings,
+    },
+    // A profile exception for KUI-L103 covers the template too.
+    htmlCase('html`<aside class="kui-pane"></aside>`;', {
+      filename: `${process.cwd()}/legacy/view.ts`,
+      settings: uiSettings({
+        ...shippedUiSettings.kerfjs.ui,
+        profile: {
+          ...profile,
+          exceptions: [
+            {
+              id: 'legacy-pane',
+              rules: ['KUI-L103'],
+              target: 'legacy',
+              rationale: 'Migration boundary.',
+            },
+          ],
+        },
+      }),
+    }),
+  ],
+  invalid: [
+    // The ContentItem root-element case: a plain <div> is ContentItem.
+    htmlCase(
+      'html`<section class="kui-content"><div class="kui-content-item">Unread</div></section>`;',
+      { errors: [contentItemRoot()] },
+    ),
+    // Tag and attribute names are case-insensitive; single quotes and
+    // unquoted static values count.
+    htmlCase(
+      "html`<DIV CLASS='kui-content-item kui-content-item--framed'></DIV><aside class=kui-pane></aside>`;",
+      {
+        errors: [
+          contentItemRoot(),
+          contentItemRoot('kui-content-item--framed'),
+          paneAnatomy('kui-pane'),
+        ],
+      },
+    ),
+    htmlCase(
+      'html`<aside class="kui-pane">\n  <nav class="kui-pane__content kui-content">Inbox</nav>\n</aside>`;',
+      { errors: [paneAnatomy('kui-pane'), paneAnatomy('kui-pane__content')] },
+    ),
+    // Classes in later static parts, after holes, and in nested templates.
+    htmlCase(
+      'const label = "Mail"; const open = true; html`<p>${label}</p><aside aria-label=${label} class="kui-pane">${open ? html`<div class="kui-content-item"></div>` : ""}</aside>`;',
+      { errors: [paneAnatomy('kui-pane'), contentItemRoot()] },
+    ),
+    // Complete static names before a hole count (the runtime rejects this
+    // partial value, but the names are known).
+    htmlCase(
+      'const extra = "x"; html`<aside class="kui-pane ${extra}"></aside>`;',
+      {
+        errors: [paneAnatomy('kui-pane')],
+      },
+    ),
+    // A namespace import of kerfjs/html.
+    {
+      code: 'import * as k from \'kerfjs/html\'; k.html`<aside class="kui-pane"></aside>`;',
+      settings: shippedUiSettings,
+      errors: [paneAnatomy('kui-pane')],
+    },
+    // An aliased import, and KUI-L101 private anatomy.
+    {
+      code: 'import { html as h } from \'kerfjs/html\'; h`<div class="kui-private"></div>`;',
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'class', data: { name: 'kui-private' } }],
+    },
+    // Tokens in the template are reported once (by TemplateElement).
+    htmlCase(
+      'html`<div style="color: var(--kui-private-token)" class="kui-pane"></div>`;',
+      {
+        errors: [
+          paneAnatomy('kui-pane'),
+          { messageId: 'token', data: { name: '--kui-private-token' } },
+        ],
+      },
+    ),
+  ],
+});
+
 tester.run('ui-public-boundaries declared component packages', boundaries, {
   valid: [
     // The package's own component element carries its own root class.

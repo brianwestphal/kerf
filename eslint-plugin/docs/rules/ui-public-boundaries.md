@@ -35,4 +35,14 @@ The component a diagnostic names is the export named after the class's block, tr
 
 String class values are inspected in `class` / `className` literals and in a template literal's static, whitespace-delimited names (``class={`kui-content-item ${extra}`}``); a name an interpolation completes (`` `kui-toolbar-${size}` ``) is not known and is skipped.
 
+The no-build `kerfjs/html` tagged template writes the same markup without JSX, so its `class` attributes carry the same `KUI-L101` / `KUI-L103` contract. The rule reads the template's static parts by the runtime's own rules: a complete static value (`class="kui-pane"`, `class='…'`, or unquoted) counts, tag and attribute names are case-insensitive, and the element is the tag the markup names, so a plain `<div class="kui-content-item">` is `ContentItem` recreated there too. A hole is a whole attribute value (`class=${cls}`), so the class it supplies is unknown and skipped; comments, text, and tags or attributes whose name is a hole are not inspected. Only the `html` tag imported from `kerfjs/html` (by name, alias, or namespace) is read.
+
+```ts
+import { html } from 'kerfjs/html';
+html`<aside class="kui-pane">…</aside>`;          // KUI-L103: render `Pane`
+html`<div class="kui-content-item">…</div>`;      // KUI-L103: render `ContentItem`
+html`<ul class="kui-content-item">…</ul>`;        // allowed: placeable on a <ul>
+html`<aside class=${paneClass}>…</aside>`;        // not inspected: the value is a hole
+```
+
 The rule reads `@kerfjs/ui/ai/component-composition.json` by default. See the plugin README for alternate catalog settings used by monorepos and package authors.

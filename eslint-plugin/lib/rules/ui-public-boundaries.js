@@ -6,10 +6,32 @@ import {
   UI_CONTRACT_LOAD_CODE,
   UI_RULE_SCHEMA,
 } from '../ui-contract.js';
+import {
+  htmlTemplateClassAttributes,
+  staticClassNames,
+} from '../html-template-classes.js';
 
 const CLASS_CODE = 'KUI-L101';
 const TOKEN_CODE = 'KUI-L102';
 const PLACEMENT_CODE = 'KUI-L103';
+
+const HTML_SOURCE = 'kerfjs/html';
+
+// The `html` tag imported from `kerfjs/html`, by name or through a namespace.
+function isHtmlTag(tag, registry) {
+  if (tag.type === 'Identifier') {
+    const helper = registry.helpers.get(tag.name);
+    return helper?.imported === 'html' && helper.source === HTML_SOURCE;
+  }
+  return (
+    tag.type === 'MemberExpression' &&
+    !tag.computed &&
+    tag.object.type === 'Identifier' &&
+    tag.property.type === 'Identifier' &&
+    tag.property.name === 'html' &&
+    registry.namespaces.get(tag.object.name) === HTML_SOURCE
+  );
+}
 
 export default {
   meta: {
@@ -43,18 +65,20 @@ export default {
     // A placeable class whose entry names a `rootElement` is reported only on
     // a plain element of that tag (`<div class="kui-content-item">` is
     // ContentItem); another carrier element keeps it.
-    const inspectPlacement = (node, names) => {
+    // `element` is the JSX opening element (or `{ tag }` for markup a
+    // `kerfjs/html` template writes) that carries the class.
+    const inspectPlacement = (node, names, element) => {
       if (isExcepted(contract, PLACEMENT_CODE, filename)) return;
-      const element = node.parent;
       const opening = element?.type === 'JSXOpeningElement';
       const renderedKey =
         registry && opening
           ? jsxKey(element.name, registry, contract)
           : undefined;
-      const intrinsicTag =
-        opening && element.name.type === 'JSXIdentifier'
+      const intrinsicTag = opening
+        ? element.name.type === 'JSXIdentifier'
           ? element.name.name
-          : undefined;
+          : undefined
+        : element?.tag;
       for (const name of names) {
         const owner = contract.componentClasses?.get(name);
         if (!owner || owner.key === renderedKey) continue;
@@ -71,7 +95,13 @@ export default {
         });
       }
     };
-    const inspect = (node, value, classContext = false, tokens = true) => {
+    const inspect = (
+      node,
+      value,
+      classContext = false,
+      tokens = true,
+      element = node.parent,
+    ) => {
       if (typeof value !== 'string') return;
       const names = classContext ? value.split(/\s+/).filter(Boolean) : [];
       if (classContext && !isExcepted(contract, CLASS_CODE, filename))
@@ -80,7 +110,7 @@ export default {
             context.report({ node, messageId: 'class', data: { name } });
       // Placement covers every cataloged class, not only `kui-*`: a declared
       // component package's anatomy (`acme-meter`) is checked the same way.
-      if (classContext) inspectPlacement(node, names);
+      if (classContext) inspectPlacement(node, names, element);
       if (tokens && !isExcepted(contract, TOKEN_CODE, filename))
         for (const match of value.matchAll(/--kui-[a-z0-9-]+/g))
           if (!contract.publicTokens.has(match[0]))
@@ -122,15 +152,33 @@ export default {
         )
           inspect(
             node,
-            node.value.expression.quasis
-              .map((quasi) => quasi.value.cooked ?? quasi.value.raw)
-              .join('\0')
-              .split(/\s+/)
-              .filter((name) => name && !name.includes('\0'))
-              .join(' '),
+            staticClassNames(
+              node.value.expression.quasis
+                .map((quasi) => quasi.value.cooked ?? quasi.value.raw)
+                .join('\0'),
+            ).join(' '),
             true,
             // Its tokens are inspected once, by TemplateElement below.
             false,
+          );
+      },
+      // `kerfjs/html` tagged templates write the same markup without JSX:
+      // their static `class` attributes are inspected like JSX `class`
+      // values, on the plain element that carries them. Tokens are left to
+      // TemplateElement below.
+      TaggedTemplateExpression(node) {
+        if (contract.error || !registry || !isHtmlTag(node.tag, registry))
+          return;
+        const { quasis } = node.quasi;
+        for (const { quasi, tag, value } of htmlTemplateClassAttributes(
+          quasis.map((item) => item.value.cooked ?? item.value.raw),
+        ))
+          inspect(
+            quasis[quasi],
+            staticClassNames(value).join(' '),
+            true,
+            false,
+            { tag },
           );
       },
       Literal(node) {

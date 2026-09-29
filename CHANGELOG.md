@@ -6,6 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`ui-public-boundaries` inspects `kerfjs/html` tagged templates.** The
+  no-build `html` template writes the same markup as JSX, so its static
+  `class` attributes now carry `KUI-L101` (private `kui-*` anatomy) and
+  `KUI-L103` (a component's anatomy on your own element):
+  ``html`<aside class="kui-pane">` `` is reported with `Pane` to render, and a
+  plain ``html`<div class="kui-content-item">` `` with `ContentItem`, while a
+  `<ul>` carrier keeps the placeable class. The template's static parts are
+  read by the runtime's own rules; a class a hole supplies (`class=${cls}`)
+  is unknown and skipped.
+
 - **`KUI-L103`'s "render X instead" answer has one implementation.**
   `@kerfjs/ui` ships `ai/component-class-owners.cjs`, the rule that decides
   which cataloged classes are a component's anatomy and which export renders
