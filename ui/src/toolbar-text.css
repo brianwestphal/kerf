@@ -12,6 +12,22 @@
   align-items: center;
 }
 
+/* In a Toolbar zone, a title fills the toolbar's control band (the
+   `--_kui-toolbar-band` the Toolbar provides) and centers its first line in
+   it; further lines of a wrapped title continue below the band. These rules
+   precede the size and wrap rules below, which keep their own minimum
+   heights. */
+:is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
+  > .kui-toolbar-text {
+  height: auto;
+  min-height: var(--_kui-toolbar-band);
+}
+
+:is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
+  > .kui-toolbar-text[data-wrap="true"] {
+  padding-block: max(0px, calc((var(--_kui-toolbar-band) - 1.25em) / 2));
+}
+
 /* The text lives in a block child, not directly in the flex box, so
    `text-overflow: ellipsis` actually applies (it is a no-op on a flex item). */
 .kui-toolbar-text__text {

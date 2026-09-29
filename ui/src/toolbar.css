@@ -140,7 +140,10 @@
    down. A growing item therefore never moves the other items or its own top.
    Centering the zones in the toolbar row instead dropped every control to the
    middle of a two-line title. The band is resolved here, on the toolbar, so a
-   compact group's own smaller group size never redefines it. */
+   compact group's own smaller group size never redefines it.
+   `--_kui-toolbar-band` is context the toolbar provides: a ToolbarControlGroup
+   and a ToolbarText each center themselves in it from their own stylesheets
+   (toolbar-control-group.css, toolbar-text.css). */
 .kui-toolbar {
   --_kui-toolbar-band: var(--kui-toolbar-group-size, calc(2px + remify(42px)));
 }
@@ -153,33 +156,6 @@
   min-height: var(--_kui-toolbar-band);
   align-items: flex-start;
   gap: var(--kui-toolbar-gap, remify(8px));
-}
-
-:is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
-  > [data-component="toolbar-control-group"] {
-  margin-block-start: max(
-    0px,
-    calc(
-      (
-          var(--_kui-toolbar-band) -
-            var(--kui-toolbar-group-size, calc(2px + remify(42px)))
-        ) /
-        2
-    )
-  );
-}
-
-/* A title fills the band and centers its first line in it; further lines of a
-   wrapped title continue below the band. */
-:is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
-  > [data-component="toolbar-text"] {
-  height: auto;
-  min-height: var(--_kui-toolbar-band);
-}
-
-:is(.kui-toolbar__leading, .kui-toolbar__center, .kui-toolbar__trailing)
-  > [data-component="toolbar-text"][data-wrap="true"] {
-  padding-block: max(0px, calc((var(--_kui-toolbar-band) - 1.25em) / 2));
 }
 
 /* Pin each zone to its column so a display:none (empty) leading or center zone
