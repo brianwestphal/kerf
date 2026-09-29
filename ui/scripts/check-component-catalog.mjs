@@ -287,6 +287,23 @@ for (const entry of artifact.entries) {
   const rendersComponent = (entry.publicExports ?? []).some((name) =>
     componentExport.test(name),
   );
+  // A component that renders its own placeable classes names the element it
+  // renders, so a plain element of that tag carrying them (`<div
+  // class="kui-content-item">`) is reported as the component recreated.
+  const projectedRoot = composition.entries.find(({ id }) => id === entry.id)
+    ?.boundaries.rootElement;
+  if (projectedRoot !== entry.rootElement)
+    fail(
+      `${entry.id}: composition rootElement must equal the selection catalog's`,
+    );
+  if (entry.rootElement && (!rendersComponent || placeable.length === 0))
+    fail(
+      `${entry.id}: rootElement names the element a component renders around its placeableClasses; drop it from an entry with no component or no placeableClasses`,
+    );
+  if (rendersComponent && placeable.length && !entry.rootElement)
+    fail(
+      `${entry.id}: a component with placeableClasses must declare the rootElement it renders`,
+    );
   if (!rendersComponent)
     for (const className of entry.publicClasses ?? [])
       if (!placeable.includes(className))

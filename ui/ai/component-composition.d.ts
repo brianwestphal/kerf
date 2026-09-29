@@ -97,6 +97,8 @@ export interface CatalogCompositionEntry {
     publicClasses: string[];
     /** Public classes an application may place on its own elements; absent means none. */
     placeableClasses?: string[];
+    /** The intrinsic element the component renders at its root; a placeable class on a plain element of this tag recreates the component. */
+    rootElement?: string;
     publicTokens: string[];
     publicParts?: string[];
   };

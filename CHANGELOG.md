@@ -6,6 +6,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+- **`eslint-plugin-kerfjs` `ui-public-boundaries` reports a plain
+  `<div class="kui-content-item">` as `ContentItem` recreated (`KUI-L103`).**
+  The `kui-content-item` classes stay placeable on another carrier (a `<ul>`, a
+  `Text`, a control-cluster `<footer>`), but a plain `<div>` carrying them is
+  exactly what `ContentItem` renders; the diagnostic now says to render
+  `ContentItem`. The `@kerfjs/ui` catalogs gain an additive `rootElement`
+  field (selection entry and composition `boundaries.rootElement`) naming the
+  element a component renders around its own placeable classes, and
+  `check:guidance` derives its repository check from the same fields, so the
+  package check and the downstream diagnostic cannot drift. The rule also
+  inspects the static class names of a template-literal `class` /
+  `className` value.
+
 - **`eslint-plugin-kerfjs` `ui-public-boundaries` reports a component's
   anatomy class written onto an application-owned element (`KUI-L103`).**
   `<div class="kui-toolbar">`, `<aside class="kui-pane">`, or

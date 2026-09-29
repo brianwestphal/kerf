@@ -13,6 +13,7 @@ A public class such as `kui-toolbar` or `kui-pane__content` is the rendered anat
 <aside class="kui-pane"><nav class="kui-pane__content"> // KUI-L103: render `Pane`
 <wa-dropdown class="kui-popup-menu">…</wa-dropdown>     // KUI-L103: render `PopupMenu`
 <Text class="kui-toolbar-text" />                       // KUI-L103: render `ToolbarText`
+<div class="kui-content-item">…</div>                   // KUI-L103: render `ContentItem`
 ```
 
 The catalog marks the classes an application may place with `boundaries.placeableClasses`; these stay allowed:
@@ -24,6 +25,8 @@ The catalog marks the classes an application may place with `boundaries.placeabl
 <Toolbar className="kui-toolbar" />                     // a component's own element
 ```
 
-Prefer `ContentItem` over a plain `<div class="kui-content-item">`; the class stays placeable for a `<ul>`, a `Text`, or a control-cluster `<footer>` that must carry the geometry itself.
+A placeable class can still be a component's own root. When a catalog entry names the `boundaries.rootElement` its component renders around its placeable classes, a plain element of that tag carrying them is the component recreated and is reported: `<div class="kui-content-item">` is exactly what `ContentItem` renders. The class stays placeable on any other carrier — a `<ul>`, a `Text`, or a control-cluster `<footer>` that must carry the geometry itself. `@kerfjs/ui`'s own `check:guidance` derives its repository check from the same catalog fields, so the two cannot disagree.
+
+String class values are inspected in `class` / `className` literals and in a template literal's static, whitespace-delimited names (``class={`kui-content-item ${extra}`}``); a name an interpolation completes (`` `kui-toolbar-${size}` ``) is not known and is skipped.
 
 The rule reads `@kerfjs/ui/ai/component-composition.json` by default. See the plugin README for alternate catalog settings used by monorepos and package authors.

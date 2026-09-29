@@ -96,6 +96,20 @@ tester.run('ui-public-boundaries', boundaries, {
       code: '<wa-dialog class="hide-actions" />;',
       settings: shippedUiSettings,
     },
+    // ContentItem itself (its own element), a class only an interpolation
+    // completes, and item geometry in a template literal on a non-div carrier.
+    {
+      code: 'import { ContentItem } from \'@kerfjs/ui/content-item\'; <ContentItem className="kui-content-item" />;',
+      settings: shippedUiSettings,
+    },
+    {
+      code: 'const size = "x"; <div class={`kui-toolbar-${size} app-row`} />;',
+      settings,
+    },
+    {
+      code: 'const extra = "x"; <ul class={`kui-content-item ${extra}`} />;',
+      settings: shippedUiSettings,
+    },
     {
       code: '<div class="kui-toolbar" />;',
       filename: `${process.cwd()}/legacy/view.tsx`,
@@ -231,6 +245,90 @@ tester.run('ui-public-boundaries', boundaries, {
           },
         },
       ],
+    },
+    // A plain div carrying item geometry is exactly what ContentItem renders.
+    {
+      code: '<section class="kui-content"><div class="kui-content-item">Summary</div></section>;',
+      settings: shippedUiSettings,
+      errors: [
+        {
+          messageId: 'componentRoot',
+          data: {
+            name: 'kui-content-item',
+            element: 'div',
+            component: 'ContentItem',
+            render: '`ContentItem`',
+          },
+        },
+      ],
+    },
+    {
+      code: 'const extra = "x"; <div className={`kui-content-item kui-content-item--framed ${extra}`} />;',
+      settings: shippedUiSettings,
+      errors: [
+        {
+          messageId: 'componentRoot',
+          data: {
+            name: 'kui-content-item',
+            element: 'div',
+            component: 'ContentItem',
+            render: '`ContentItem`',
+          },
+        },
+        {
+          messageId: 'componentRoot',
+          data: {
+            name: 'kui-content-item--framed',
+            element: 'div',
+            component: 'ContentItem',
+            render: '`ContentItem`',
+          },
+        },
+      ],
+    },
+    {
+      code: '<div class="kui-content-item--pill" />;',
+      filename: `${process.cwd()}/legacy/view.tsx`,
+      settings: {
+        ...shippedUiSettings,
+        kerfjs: {
+          ui: {
+            ...shippedUiSettings.kerfjs.ui,
+            profile: {
+              ...profile,
+              exceptions: [
+                {
+                  id: 'legacy-class',
+                  rules: ['KUI-L101'],
+                  target: 'legacy',
+                  rationale: 'An L101 exception does not excuse L103.',
+                },
+              ],
+            },
+          },
+        },
+      },
+      errors: [{ messageId: 'componentRoot' }],
+    },
+    // Anatomy classes in a template literal are recreated anatomy too.
+    {
+      code: 'const extra = "x"; <div class={`kui-toolbar ${extra}`} />;',
+      settings,
+      errors: [
+        {
+          messageId: 'component',
+          data: {
+            name: 'kui-toolbar',
+            component: 'Toolbar',
+            render: '`Toolbar`',
+          },
+        },
+      ],
+    },
+    {
+      code: 'const extra = "x"; <div class={`kui-private ${extra}`} />;',
+      settings,
+      errors: [{ messageId: 'class', data: { name: 'kui-private' } }],
     },
     // Another component's anatomy class as a hook on a component's root.
     {

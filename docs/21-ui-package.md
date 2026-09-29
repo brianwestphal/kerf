@@ -516,7 +516,11 @@ implementation classes. Only the subset an entry lists in `placeableClasses`
 Web Awesome `hide-actions`) may be written onto an application-owned element;
 every other public class is a component's rendered anatomy, so
 `eslint-plugin-kerfjs` reports it there as `KUI-L103` and names the component
-to render.
+to render. An entry whose component renders its own placeable classes also
+names that `rootElement` (`content-item`: `div`), so a plain
+`<div class="kui-content-item">` is reported as `ContentItem` recreated while a
+`<ul>` or `<footer>` carrier keeps the class; `check:guidance` derives its
+repository check from the same fields.
 
 ## 21.6 Production composition recipes
 

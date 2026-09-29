@@ -277,7 +277,11 @@ export function loadUiContract(context) {
 // Public `kui-*` classes that are a component's rendered anatomy, mapped to
 // the entry and the export that renders it. A class the catalog lists in
 // `boundaries.placeableClasses` (layout utilities, the document root, item
-// geometry on a non-div carrier) is the application's to place and is absent.
+// geometry on a non-div carrier) is the application's to place and is absent
+// — unless the entry names the `rootElement` its component renders around
+// those classes: then the class maps with that `element`, because a plain
+// `<div class="kui-content-item">` is exactly what `ContentItem` renders, while
+// a `<ul>` or `<footer>` carrying the geometry stays the application's.
 function componentClassOwners(catalog, selection) {
   const exportsById = new Map(
     selection.entries.map((entry) => [
@@ -290,9 +294,11 @@ function componentClassOwners(catalog, selection) {
   const owners = new Map();
   for (const entry of catalog.entries) {
     const placeable = new Set(entry.boundaries?.placeableClasses ?? []);
+    const rootElement = entry.boundaries?.rootElement;
     const exports = exportsById.get(entry.id) ?? [];
     for (const className of entry.boundaries?.publicClasses ?? []) {
-      if (!className.startsWith('kui-') || placeable.has(className)) continue;
+      if (!className.startsWith('kui-')) continue;
+      if (placeable.has(className) && !rootElement) continue;
       if (owners.has(className) || exports.length === 0) continue;
       // The export named after the class's block (`kui-toolbar-action-link`
       // is ToolbarActionLink, `kui-pane__content` is Pane), else the entry's.
@@ -305,7 +311,11 @@ function componentClassOwners(catalog, selection) {
         : exports.includes(entry.name)
           ? [entry.name]
           : exports;
-      owners.set(className, { key: entry.key, render });
+      owners.set(className, {
+        key: entry.key,
+        render,
+        ...(placeable.has(className) ? { element: rootElement } : {}),
+      });
     }
   }
   return owners;

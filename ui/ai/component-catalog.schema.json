@@ -40,6 +40,7 @@
         "accessibility": { "type": "array", "items": { "type": "string" } },
         "publicClasses": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "placeableClasses": { "description": "Public classes an application may place on its own elements (layout utilities, a document root, or item geometry on a non-div carrier). Every other public class is component anatomy: render the component instead.", "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "rootElement": { "description": "The intrinsic element the component renders at its root. Required for a component whose placeableClasses it renders itself: a placeable class on a plain element of this tag is the component recreated, so render the component instead; another carrier element may keep the class.", "type": "string", "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$" },
         "publicTokens": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
         "cssValueProps": { "type": "array", "items": { "$ref": "#/$defs/cssValueProp" }, "uniqueItems": true },
         "geometry": { "$ref": "#/$defs/geometry" },

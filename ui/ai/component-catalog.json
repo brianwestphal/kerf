@@ -3215,6 +3215,7 @@
         "kui-content-item--pill",
         "kui-content-item--framed"
       ],
+      "rootElement": "div",
       "publicTokens": [
         "--kui-content-item-border",
         "--kui-content-item-radius",

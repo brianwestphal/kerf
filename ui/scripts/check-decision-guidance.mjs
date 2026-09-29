@@ -231,9 +231,24 @@ if (contentItems.length < 3)
 
 // A hand-written `<div class="kui-content-item">` re-implements ContentItem.
 // The public class stays legitimate on non-div carriers (a `<ul>`, a `Text`,
-// a control-cluster `<footer>`), so only a plain div carrying it is rejected.
-const handWrittenContentItem =
-  /<div\b[^>]*\bclass=(?:"[^"]*|'[^']*|\{`[^`]*)\bkui-content-item\b/;
+// a control-cluster `<footer>`), so only a plain element of the tag the
+// component renders is rejected. The boundary is the catalog's — an entry's
+// `placeableClasses` plus the `rootElement` its component renders — which is
+// the same definition eslint-plugin-kerfjs's `ui-public-boundaries` reports
+// downstream as KUI-L103, so this repository check cannot drift from it.
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const recreatedRoots = componentCatalog.entries
+  .filter((entry) => entry.rootElement && entry.placeableClasses?.length)
+  .map((entry) => ({
+    entry,
+    pattern: new RegExp(
+      `<${escapeRegExp(entry.rootElement)}(?![\\w-])[^>]*(?<![\\w-])class(?:Name)?=(?:"[^"]*|'[^']*|\\{\`[^\`]*|\\{"[^"]*|\\{'[^']*)(?<![\\w-])(?:${entry.placeableClasses.map(escapeRegExp).join('|')})(?![\\w-])`,
+    ),
+  }));
+if (!recreatedRoots.some(({ entry }) => entry.id === 'content-item'))
+  fail(
+    'content-item catalog entry must declare the rootElement ContentItem renders',
+  );
 async function tsxFilesUnder(directory) {
   const found = [];
   for (const entry of await readdir(resolve(root, directory), {
@@ -251,10 +266,12 @@ for (const directory of [
   'ux-demo',
 ]) {
   for (const file of await tsxFilesUnder(directory)) {
-    if (handWrittenContentItem.test(await readFile(file, 'utf8')))
-      fail(
-        `${relative(root, file)} hand-writes a kui-content-item div; render it with ContentItem from @kerfjs/ui/content-item`,
-      );
+    const source = await readFile(file, 'utf8');
+    for (const { entry, pattern } of recreatedRoots)
+      if (pattern.test(source))
+        fail(
+          `${relative(root, file)} hand-writes a <${entry.rootElement}> carrying ${entry.placeableClasses.join(' / ')}; render it with ${entry.name} from ${entry.delivery.moduleImport ?? entry.delivery.browserImport}`,
+        );
   }
 }
 if (/from ['"]@kerfjs\/ui\/command-palette/.test(missingConcept))

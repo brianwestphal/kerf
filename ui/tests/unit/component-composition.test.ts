@@ -260,6 +260,35 @@ describe('component composition catalog contract', () => {
     );
   });
 
+  it('names the element a component renders around its own placeable classes', async () => {
+    const composition = await readJson<ComponentComposition>(
+      '../../ai/component-composition.json',
+    );
+    const roots = Object.fromEntries(
+      composition.entries
+        .filter((entry) => entry.boundaries.rootElement)
+        .map((entry) => [entry.id, entry.boundaries.rootElement]),
+    );
+    // A plain <div class="kui-content-item"> is exactly ContentItem, so
+    // KUI-L103 reports it there while a <ul> or <footer> carrier keeps it.
+    expect(roots).toEqual({ 'content-item': 'div' });
+    const { ContentItem } = await import('../../src/content-item.js');
+    expect(ContentItem({}).toString()).toMatch(
+      new RegExp(`^<${roots['content-item']}[\\s>]`),
+    );
+    const item = composition.entries.find(
+      (entry) => entry.id === 'content-item',
+    )!;
+    item.boundaries.rootElement = 'Div';
+    expect(validateComposition(composition)).toEqual(
+      expect.arrayContaining([
+        expect.stringContaining(
+          'rootElement must be a lowercase element tag name',
+        ),
+      ]),
+    );
+  });
+
   it('rejects adversarial invalid fixtures with stable actionable findings', async () => {
     const [composition, fixtures] = await Promise.all([
       readJson<ComponentComposition>('../../ai/component-composition.json'),

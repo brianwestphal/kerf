@@ -285,6 +285,11 @@
               "$ref": "#/$defs/stringList",
               "description": "The subset of publicClasses an application may place on its own elements. Absent means none: every public class is the component's rendered anatomy, reached by rendering the component."
             },
+            "rootElement": {
+              "type": "string",
+              "pattern": "^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$",
+              "description": "The intrinsic element the component renders at its root. A placeableClasses class on a plain element of this tag recreates the component; the class stays placeable on any other carrier element."
+            },
             "publicTokens": { "$ref": "#/$defs/stringList" },
             "publicParts": { "$ref": "#/$defs/stringList" }
           },

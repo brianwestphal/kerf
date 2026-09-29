@@ -173,9 +173,12 @@ The rendered classes — `.kui-content-item`, `.kui-content-item--framed`, and
 `.kui-content-item--pill` — stay public for the rare element that must carry the
 geometry itself (for example a `<ul>` list or a `Text` paragraph in an
 application-owned adapter). Prefer `ContentItem` everywhere else so the framing
-choice is typed. `npm run check:guidance` rejects a plain
-`<div class="kui-content-item">` in the package's examples, browser fixtures,
-and UX catalog, since that div is exactly what `ContentItem` renders.
+choice is typed. A plain `<div class="kui-content-item">` is exactly what
+`ContentItem` renders, so the catalog records that element
+(`rootElement: "div"`): `eslint-plugin-kerfjs`'s `ui-public-boundaries` reports
+it in application code as `KUI-L103` ("render `ContentItem`"), and
+`npm run check:guidance` derives the same boundary from the catalog to reject it
+in the package's examples, browser fixtures, and UX catalog.
 
 These classes, the layout utilities (`.kui-content`, `.kui-scroll-owner`,
 `.kui-control-cluster`, `.kui-inline-metadata`), and `.kui-app-root` are the

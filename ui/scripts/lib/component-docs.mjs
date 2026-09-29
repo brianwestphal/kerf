@@ -346,6 +346,12 @@ function stylingSection(entry, contract) {
       '',
       `Classes an application may place on its own elements: ${[...placeable].map(code).join(', ')}.`,
     );
+  const { rootElement } = contract.boundaries;
+  if (placeable.size && rootElement)
+    parts.push(
+      '',
+      `A plain \`<${rootElement}>\` carrying them is exactly what ${code(entry.name)} renders: render ${code(entry.name)} instead (\`KUI-L103\`), and place the classes only on another carrier element.`,
+    );
   if (entry.source === 'kerf') {
     const byRenderer = new Map();
     for (const className of anatomy) {

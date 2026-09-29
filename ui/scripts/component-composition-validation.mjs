@@ -224,6 +224,12 @@ export function validateComposition(catalog, options = {}) {
               `${at} placeableClasses names ${className}, which is not one of its publicClasses`,
             );
     }
+    if (
+      'rootElement' in (entry?.boundaries ?? {}) &&
+      (typeof entry.boundaries.rootElement !== 'string' ||
+        !/^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(entry.boundaries.rootElement))
+    )
+      fail(`${at} rootElement must be a lowercase element tag name`);
     if ('cssValueProps' in (entry ?? {}) && !Array.isArray(entry.cssValueProps))
       fail(`${at} cssValueProps must be an array when present`);
     const cssPaths = new Set();

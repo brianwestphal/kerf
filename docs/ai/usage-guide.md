@@ -221,7 +221,8 @@ Compose a dialog body as a `List` by default. Give a list-owned dialog
 text then own one shared gutter instead of stacking dialog and child padding.
 
 Render an ordinary surface-like pane child as `ContentItem` rather than a
-hand-written `<div class="kui-content-item">`: pass `frame="framed"` only when
+hand-written `<div class="kui-content-item">` (`KUI-L103` reports that div; the
+class stays for a `<ul>` or `<footer>` carrier): pass `frame="framed"` only when
 the item marks a real distinction and `shape="pill"` for the 22px radius. It
 owns its whole 8/1/8 geometry, so never pad around it.
 

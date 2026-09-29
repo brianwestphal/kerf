@@ -682,6 +682,12 @@ test(
         resolve(root, 'src/sidebar.tsx'),
         'export const Sidebar = () => (\n  <aside class="kui-pane">\n    <nav class="kui-pane__content kui-content">Inbox</nav>\n  </aside>\n);\n',
       );
+      // A plain div carrying item geometry is ContentItem recreated; the
+      // <ul> carrier keeps the placeable class.
+      await writeFile(
+        resolve(root, 'src/summary.tsx'),
+        'export const Summary = () => (\n  <section class="kui-content">\n    <div class="kui-content-item">Unread</div>\n    <ul class="kui-content-item" />\n  </section>\n);\n',
+      );
       const broken = await doctor(root);
       const findings = broken.report.diagnostics.filter(
         (item: { stage: string }) => item.stage === 'eslint',
@@ -689,13 +695,20 @@ test(
       expect(findings.map((item: { id: string }) => item.id)).toEqual([
         'KUI-L103',
         'KUI-L103',
+        'KUI-L103',
       ]);
-      for (const item of findings) expect(item.message).toContain('`Pane`');
+      for (const item of findings.slice(0, 2))
+        expect(item.message).toContain('`Pane`');
+      expect(findings[2].message).toContain('`ContentItem`');
       expect(broken.status).toBe(1);
 
       await writeFile(
         resolve(root, 'src/sidebar.tsx'),
         'import { Pane } from \'@kerfjs/ui/pane\';\nexport const Sidebar = () => (\n  <Pane element="aside" label="Mail" contentElement="nav">\n    Inbox\n  </Pane>\n);\n',
+      );
+      await writeFile(
+        resolve(root, 'src/summary.tsx'),
+        'import { ContentItem } from \'@kerfjs/ui/content-item\';\nexport const Summary = () => (\n  <section class="kui-content">\n    <ContentItem>Unread</ContentItem>\n    <ul class="kui-content-item" />\n  </section>\n);\n',
       );
       const clean = await doctor(root);
       expect(

@@ -85,6 +85,7 @@ function defaultEntry(entry) {
       ...(entry.placeableClasses?.length
         ? { placeableClasses: entry.placeableClasses }
         : {}),
+      ...(entry.rootElement ? { rootElement: entry.rootElement } : {}),
       publicTokens: entry.publicTokens ?? [],
     },
     diagnostics: [],
