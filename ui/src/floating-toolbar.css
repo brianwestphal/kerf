@@ -1,8 +1,7 @@
 .kui-floating-toolbar {
   /* Inset from the container edges: a top toolbar sits 8px in, so this floats an
      extra 8px past that (--kui-space-m = 16px). Override the token to reposition,
-     on the toolbar or on an ancestor composition boundary: a Workbench restore
-     corner sets it to 0 because the corner already owns the inset. */
+     on the toolbar or on an ancestor composition boundary. */
   --_kui-floating-toolbar-inset: var(
     --kui-floating-toolbar-inset,
     var(--kui-space-m, remify(16px))
@@ -14,14 +13,34 @@
   position: absolute;
   z-index: 4;
   /* A layout whose open side overlay covers this toolbar's region (a
-     Workbench rail, a CollapsiblePanel, a ResizableRegion) flags that region,
-     and the toolbar hides — out of the tab order and the accessibility tree —
-     rather than risk painting over the overlay. */
-  visibility: var(--_kui-floating-covered, inherit);
+     Workbench rail, a CollapsiblePanel, a ResizableRegion) provides its own
+     covered context to that region, and the toolbar hides — out of the tab
+     order and the accessibility tree — rather than risk painting over the
+     overlay. Any enclosing layout's covered context hides it. */
+  visibility: var(
+    --_kui-workbench-covered,
+    var(
+      --_kui-collapsible-panel-covered,
+      var(--_kui-resizable-region-covered, inherit)
+    )
+  );
   display: flex;
   color-scheme: dark;
   align-items: center;
   gap: var(--kui-space-xs, remify(8px));
+}
+
+/* In a layout's restore corner the corner already owns the inset, so the
+   toolbar floats from the corner itself. Zero specificity: the toolbar's own
+   `inset` (or an app rule on the toolbar) still wins, while a token inherited
+   from outside the corner does not. */
+:where(
+    .kui-workbench__restore,
+    .kui-collapsible-panel__restore,
+    .kui-resizable-region__restore
+  )
+  :where(.kui-floating-toolbar) {
+  --kui-floating-toolbar-inset: 0px;
 }
 
 .kui-floating-toolbar[data-position^="bottom"] {

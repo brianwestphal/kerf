@@ -866,8 +866,10 @@ overlay drawer, and ignores a nested Workbench's drawer
 (a Workbench rail overlay, static or responsive; a `wireSidebar` compact or
 static overlay `CollapsiblePanel`; a horizontal overlay `ResizableRegion`), the
 covered work area's `FloatingToolbar`s and restore corners are hidden through
-the private inherited `--_kui-floating-covered` flag the layout CSS sets on the
-overlay's siblings — unfocusable and out of the accessibility tree — and return
+each layout's own private inherited covered context
+(`--_kui-workbench-covered` / `--_kui-collapsible-panel-covered` /
+`--_kui-resizable-region-covered`, all read by FloatingToolbar and the restore
+corners) the layout CSS sets on the overlay's siblings — unfocusable and out of the accessibility tree — and return
 as it closes, while the overlay's own floating controls stay and bottom
 overlays hide nothing (`ui/tests/browser/covered-floating-toolbar.spec.ts`
 with `ui/tests/browser/fixtures/covered-floating.tsx`, plus a CSS unit test in

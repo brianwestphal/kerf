@@ -793,7 +793,6 @@ describe('Workbench', () => {
     });
     expect(declsIn(workbench, '.kui-workbench__restore')).toMatchObject({
       position: 'absolute',
-      '--kui-floating-toolbar-inset': '0px',
       'inset-block-end':
         'calc( var(--_kui-workbench-restore-inset) + var(--_kui-workbench-safe-block-end) )',
     });
@@ -827,9 +826,19 @@ describe('Workbench', () => {
       )['inset-inline-start'],
     ).toContain('var(--kui-edge-inset-inline-start)');
 
-    // A FloatingToolbar resolves its inset from the inheritable token, so the
-    // corner's 0 reaches it instead of being shadowed by its own default.
+    expect(declsIn(workbench, '.kui-workbench__restore')).not.toHaveProperty(
+      '--kui-floating-toolbar-inset',
+    );
+    // A FloatingToolbar resolves its inset from its token, and zeroes that
+    // token itself in a restore corner, at zero specificity so its own inset
+    // still wins.
     const floating = await parse('floating-toolbar.css');
+    expect(
+      declsIn(
+        floating,
+        ':where( .kui-workbench__restore, .kui-collapsible-panel__restore, .kui-resizable-region__restore ) :where(.kui-floating-toolbar)',
+      ),
+    ).toEqual({ '--kui-floating-toolbar-inset': '0px' });
     const own = declsIn(floating, '.kui-floating-toolbar');
     expect(own).not.toHaveProperty('--kui-floating-toolbar-inset');
     expect(own['--_kui-floating-toolbar-inset']).toBe(

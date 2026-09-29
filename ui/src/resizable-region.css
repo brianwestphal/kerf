@@ -226,8 +226,9 @@
    hidden, not merely stacked beneath it: they never paint over the overlay
    whatever stacking context an app puts them in, and hidden they leave the
    tab order and the accessibility tree. They come back as the overlay
-   closes. The flag is read by FloatingToolbar and the layouts' restore
-   corners. It is set on the overlay's container and cleared again on the
+   closes. The ResizableRegion's own covered context,
+   `--_kui-resizable-region-covered`, is read by FloatingToolbar and the
+   layouts' restore corners. It is set on the overlay's container and cleared again on the
    overlay regions in it, so it reaches the overlay's siblings only. It is
    never set by a universal selector below the :has() container (`:has(…) >
    :not(…)`): Chromium then restyles every child of every ancestor of a DOM
@@ -239,7 +240,7 @@
       )
   )
 ) {
-  --_kui-floating-covered: hidden;
+  --_kui-resizable-region-covered: hidden;
 }
 :where(
     :has(
@@ -249,7 +250,7 @@
     )
   )
   > .kui-resizable-region[data-presentation="overlay"] {
-  --_kui-floating-covered: initial;
+  --_kui-resizable-region-covered: initial;
 }
 
 @container (max-width: remify(704px)) {
@@ -319,12 +320,15 @@
     --kui-resizable-region-restore-inset,
     remify(16px)
   );
-  /* The corner owns the inset, so a FloatingToolbar composed here floats
-     from this point instead of adding its own inset on top. */
-  --kui-floating-toolbar-inset: 0px;
   position: absolute;
   /* Hidden while an open side overlay covers the content (see above). */
-  visibility: var(--_kui-floating-covered, inherit);
+  visibility: var(
+    --_kui-workbench-covered,
+    var(
+      --_kui-collapsible-panel-covered,
+      var(--_kui-resizable-region-covered, inherit)
+    )
+  );
   z-index: var(
     --kui-resizable-region-restore-z,
     calc(var(--kui-resizable-region-overlay-z, 41) - 2)

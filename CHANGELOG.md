@@ -77,6 +77,19 @@ targets? })` reports that state — call it once at the app root and keep its
   `--kui-tab-bar-divider-color` token. To keep a permanent line, set
   `chromeDividers: "always"` on the pane or an explicit `dividerSides`.
 
+- **`@kerfjs/ui`: layouts name the covered-floating-controls context after
+  themselves, and no longer write `FloatingToolbar`'s inset token.** Workbench,
+  CollapsiblePanel, and ResizableRegion each provide their own private
+  `--_kui-<layout>-covered` context in place of the shared
+  `--_kui-floating-covered` flag; `FloatingToolbar` and every restore corner
+  read all three. A restore corner no longer sets
+  `--kui-floating-toolbar-inset: 0px`; `FloatingToolbar` zeroes its own inset
+  inside a restore corner (a toolbar's own `inset` still wins). Rendering is
+  unchanged. One edge case changes: a floating control inside an open overlay
+  of one layout type that is itself covered by another layout type's open
+  overlay (for example, a ResizableRegion overlay in a Workbench work area
+  under an open rail overlay) now stays hidden.
+
 - **`@kerfjs/ui`: `ListHeader`, `NavStack`, `Select`, and `StateBanner` no
   longer restyle a composed child through a class on its root.** Each child
   now styles itself: `Text` sets a `ListHeader` label from `text.css`, `Badge`

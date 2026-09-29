@@ -2131,7 +2131,7 @@ describe('production UI primitives', () => {
     const corner = rule('.kui-resizable-region__restore');
     expect(corner).toContain('position: absolute;');
     expect(corner).not.toContain('position: fixed');
-    expect(corner).toContain('--kui-floating-toolbar-inset: 0px;');
+    expect(corner).not.toContain('--kui-floating-toolbar-inset');
     expect(corner).toContain(
       'var(--_kui-resizable-region-restore-inset) + var( --kui-edge-inset-block-end,',
     );
@@ -2175,16 +2175,27 @@ describe('production UI primitives', () => {
       readFileSync(resolve(import.meta.dirname, `../../src/${file}`), 'utf8')
         .replace(/\/\*[\s\S]*?\*\//g, '')
         .replace(/\s+/g, ' ');
-    // The rules that raise the covered flag, by the selector text leading up
-    // to each `--_kui-floating-covered: hidden;` declaration.
-    const flags = (css: string) =>
-      [...css.matchAll(/([^{}]+)\{\s*--_kui-floating-covered: hidden;/g)].map(
-        (match) => match[1]!.trim(),
-      );
-    const READ = 'visibility: var(--_kui-floating-covered, inherit);';
+    // The rules that raise a layout's covered context, by the selector text
+    // leading up to each `--_kui-<layout>-covered: hidden;` declaration. Each
+    // layout names the context after itself.
+    const flags = (css: string, layout: string) =>
+      [
+        ...css.matchAll(
+          new RegExp(`([^{}]+)\\{\\s*--_kui-${layout}-covered: hidden;`, 'g'),
+        ),
+      ].map((match) => match[1]!.trim());
+    const READ =
+      'visibility: var( --_kui-workbench-covered, var( --_kui-collapsible-panel-covered, var(--_kui-resizable-region-covered, inherit) ) );';
+    for (const file of [
+      'workbench.css',
+      'collapsible-panel.css',
+      'resizable-region.css',
+      'floating-toolbar.css',
+    ])
+      expect(source(file)).not.toContain('--_kui-floating-covered');
 
-    // The floating toolbar and every restore corner read the flag, and fall
-    // back to plain inheritance when no layout raises it.
+    // The floating toolbar and every restore corner read every layout's
+    // covered context, and fall back to plain inheritance when none is raised.
     expect(source('floating-toolbar.css')).toContain(READ);
     for (const [file, corner] of [
       ['workbench.css', '.kui-workbench__restore {'],
@@ -2200,7 +2211,7 @@ describe('production UI primitives', () => {
     // Workbench: an open static rail overlay, or an open inline rail whose
     // responsive breakpoint applies (each inside its container query), flags
     // the rail's siblings only: the work area and the restore corners.
-    const workbench = flags(source('workbench.css'));
+    const workbench = flags(source('workbench.css'), 'workbench');
     expect(workbench).toHaveLength(3);
     expect(workbench[0]).toContain(
       '.kui-workbench__rail[data-presentation="overlay"]:not( [data-collapsed="true"] )',
@@ -2229,7 +2240,7 @@ describe('production UI primitives', () => {
     // (its panels reset the flag), and a static overlay's siblings. Bottom
     // panels are not side overlays.
     const panel = source('collapsible-panel.css');
-    const panelFlags = flags(panel);
+    const panelFlags = flags(panel, 'collapsible-panel');
     expect(panelFlags).toHaveLength(2);
     expect(panelFlags[0]).toMatch(/^\[data-collapsible-overlay="true"\]:has\(/);
     // The static overlay flags its container and its overlay panels clear
@@ -2241,7 +2252,7 @@ describe('production UI primitives', () => {
     );
     expect(panelFlags[1]).toMatch(/\) \)$/);
     expect(panel).toMatch(
-      /\) \) > \.kui-collapsible-panel\[data-presentation="overlay"\] \{ --_kui-floating-covered: initial; \}/,
+      /\) \) > \.kui-collapsible-panel\[data-presentation="overlay"\] \{ --_kui-collapsible-panel-covered: initial; \}/,
     );
     for (const selector of panelFlags) {
       expect(selector).toContain('.kui-collapsible-panel--left');
@@ -2249,11 +2260,11 @@ describe('production UI primitives', () => {
       expect(selector).not.toContain('--bottom');
     }
     expect(panel).toContain(
-      '[data-collapsible-overlay="true"] .kui-collapsible-panel { --_kui-floating-covered: initial; }',
+      '[data-collapsible-overlay="true"] .kui-collapsible-panel { --_kui-collapsible-panel-covered: initial; }',
     );
 
     // ResizableRegion: only a horizontal (side) overlay flags its siblings.
-    const region = flags(source('resizable-region.css'));
+    const region = flags(source('resizable-region.css'), 'resizable-region');
     expect(region).toHaveLength(1);
     expect(region[0]).toContain(
       '.kui-resizable-region[data-presentation="overlay"][data-axis="horizontal"]:not( [data-collapsed="true"] )',
@@ -2261,7 +2272,7 @@ describe('production UI primitives', () => {
     expect(region[0]).toMatch(/^:where\( :has\( > \.kui-resizable-region/);
     expect(region[0]).toMatch(/\) \)$/);
     expect(source('resizable-region.css')).toMatch(
-      /\) \) > \.kui-resizable-region\[data-presentation="overlay"\] \{ --_kui-floating-covered: initial; \}/,
+      /\) \) > \.kui-resizable-region\[data-presentation="overlay"\] \{ --_kui-resizable-region-covered: initial; \}/,
     );
   });
 

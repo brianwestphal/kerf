@@ -354,11 +354,12 @@ anchor(--kui-restore-drawer top, <safe-area fallback>))` with
   nested Workbench in the work area is scoped to that Workbench, so it moves
   only its own rails' controls. The drawer's own control never anchors. A
   `FloatingToolbar` may host the control: the
-  corner sets `--kui-floating-toolbar-inset: 0px`, and `FloatingToolbar` now
-  resolves its inset from that inheritable token (a private
-  `--_kui-floating-toolbar-inset` instead of redeclaring the public token on
-  itself), so the toolbar floats from the corner's point instead of doubling
-  the inset; its `position` should match `restorePosition`.
+  `FloatingToolbar` resolves its inset from its `--kui-floating-toolbar-inset`
+  token (a private `--_kui-floating-toolbar-inset`), and in a restore corner
+  it zeroes that token itself at zero specificity (KF-02AZVQ: the corner no
+  longer writes the toolbar's public token), so the toolbar floats from the
+  corner's point instead of doubling the inset while its own `inset` still
+  wins; its `position` should match `restorePosition`.
 - **Resizing is opt-in and configurable per panel (KF-2FG7VB: drag-resizable
   Workbench rails).** `resizable: true | { min, max }` (defaults: rails
   180–480px, drawer 120–480px) gives the panel a separator on its inner edge
@@ -709,9 +710,9 @@ The corner is inset by `--kui-collapsible-panel-restore-inset` /
 `--kui-resizable-region-restore-inset` plus the container's
 `--kui-edge-inset-*` edges (falling back to the device safe area), so a
 full-viewport shell still places it clear of the unsafe areas. Like the
-Workbench corner, it sets `--kui-floating-toolbar-inset: 0px`, so a
-`FloatingToolbar` hosting the control floats from the corner instead of
-doubling the inset.
+Workbench corner, a `FloatingToolbar` hosting the control floats from the
+corner instead of doubling the inset: FloatingToolbar zeroes its own
+`--kui-floating-toolbar-inset` inside any layout's restore corner.
 
 The corner also routes around an expanded bottom drawer beside the collapsed
 component (KF-S5VYVM: a collapsed rail's control used to float over an open
@@ -800,11 +801,19 @@ nested inside a region another open overlay already covers: its own controls
 now show rather than inheriting the outer cover, the same as the `wireSidebar`
 host's existing reset.
 
-CSS only: the layout sets a private inherited custom property,
-`--_kui-floating-covered: hidden`, and `.kui-floating-toolbar`,
-`.kui-workbench__restore`, `.kui-collapsible-panel__restore`, and
-`.kui-resizable-region__restore` read it as
-`visibility: var(--_kui-floating-covered, inherit)`. A property rather than a
+CSS only: each layout provides its own private inherited covered context,
+named after itself (KF-02AZVQ) — `--_kui-workbench-covered`,
+`--_kui-collapsible-panel-covered`, `--_kui-resizable-region-covered` — set to
+`hidden` (and reset to `initial` on a layout's own overlay children), and
+`.kui-floating-toolbar`, `.kui-workbench__restore`,
+`.kui-collapsible-panel__restore`, and `.kui-resizable-region__restore` read
+all three as `visibility: var(--_kui-workbench-covered,
+var(--_kui-collapsible-panel-covered, var(--_kui-resizable-region-covered,
+inherit)))`. Any enclosing layout's cover therefore hides a control; the
+"nested overlay shows its own controls" reset above applies within one layout
+type only (a ResizableRegion overlay nested in a region a Workbench rail
+overlay covers now stays hidden, where the former single shared
+`--_kui-floating-covered` flag let the nearer reset win). A property rather than a
 descendant selector because a Workbench's responsive state lives in a
 container query that must resolve against that Workbench, not a nested one —
 the flag is set on the Workbench's direct children, and inheritance carries

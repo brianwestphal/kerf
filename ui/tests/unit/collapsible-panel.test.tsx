@@ -132,10 +132,10 @@ describe('CollapsiblePanel', () => {
       'anchor-scope': '--kui-restore-drawer',
     });
     const corner = declarations('.kui-collapsible-panel__restore');
-    expect(corner).toMatchObject({
-      position: 'absolute',
-      '--kui-floating-toolbar-inset': '0px',
-    });
+    expect(corner).toMatchObject({ position: 'absolute' });
+    // The corner never writes FloatingToolbar's token; the toolbar zeroes its
+    // own inset in the restore-corner context (floating-toolbar.css).
+    expect(corner).not.toHaveProperty('--kui-floating-toolbar-inset');
     // Without anchor positioning, the first inset-block-end (the container's
     // bottom edge) is the one that applies.
     const cornerRule = root.nodes.find(

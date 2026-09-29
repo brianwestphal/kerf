@@ -777,12 +777,15 @@
     --kui-workbench-restore-inset,
     remify(16px)
   );
-  /* The corner owns the inset, so a FloatingToolbar composed here floats
-     from this point instead of adding its own inset on top. */
-  --kui-floating-toolbar-inset: 0px;
   position: absolute;
   /* Hidden while an open rail overlay covers the work area (see below). */
-  visibility: var(--_kui-floating-covered, inherit);
+  visibility: var(
+    --_kui-workbench-covered,
+    var(
+      --_kui-collapsible-panel-covered,
+      var(--_kui-resizable-region-covered, inherit)
+    )
+  );
   z-index: var(
     --kui-workbench-restore-z,
     calc(var(--kui-workbench-overlay-z, 41) - 2)
@@ -856,9 +859,10 @@
    restore corner) are hidden, not merely stacked beneath it: they never paint
    over the overlay whatever stacking context an app puts them in, and hidden
    they leave the tab order and the accessibility tree. They come back as the
-   overlay closes. The flag is set on the rail's siblings only (never on the
-   open rail), so the overlay's own floating controls stay, and it is read by
-   FloatingToolbar and the layouts' restore corners. A direct child
+   overlay closes. The Workbench's own covered context,
+   `--_kui-workbench-covered`, is set on the rail's siblings only (never on
+   the open rail), so the overlay's own floating controls stay; FloatingToolbar
+   and the layouts' restore corners read it. A direct child
    resolves the Workbench's own container query, never a nested one's. */
 .kui-workbench:has(
     > .kui-workbench__rail[data-presentation="overlay"]:not(
@@ -866,7 +870,7 @@
       )
   )
   > :is(.kui-workbench__center, .kui-workbench__restore) {
-  --_kui-floating-covered: hidden;
+  --_kui-workbench-covered: hidden;
 }
 
 @container kui-workbench (max-width: remify(704px)) {
@@ -876,7 +880,7 @@
         )
     )
     > :is(.kui-workbench__center, .kui-workbench__restore) {
-    --_kui-floating-covered: hidden;
+    --_kui-workbench-covered: hidden;
   }
 }
 
@@ -887,7 +891,7 @@
         )
     )
     > :is(.kui-workbench__center, .kui-workbench__restore) {
-    --_kui-floating-covered: hidden;
+    --_kui-workbench-covered: hidden;
   }
 }
 

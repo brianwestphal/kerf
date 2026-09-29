@@ -119,48 +119,6 @@ export const ownershipExceptions = [
       'The same edge-inset contract: a Toolbar consumes the edge context for its own padding and clears it for its zones, so a nested group or toolbar does not inset a second time.',
   },
   {
-    file: 'collapsible-panel.css',
-    rule: 'foreign-variable',
-    property: '--_kui-floating-covered',
-    reason:
-      'KF-02AZVQ: fix pending (name the covered context after each provider; FloatingToolbar reads the restore-corner context from its own stylesheet).',
-  },
-  {
-    file: 'collapsible-panel.css',
-    rule: 'foreign-variable',
-    property: '--kui-floating-toolbar-inset',
-    reason:
-      'KF-02AZVQ: fix pending (name the covered context after each provider; FloatingToolbar reads the restore-corner context from its own stylesheet).',
-  },
-  {
-    file: 'resizable-region.css',
-    rule: 'foreign-variable',
-    property: '--_kui-floating-covered',
-    reason:
-      'KF-02AZVQ: fix pending (name the covered context after each provider; FloatingToolbar reads the restore-corner context from its own stylesheet).',
-  },
-  {
-    file: 'resizable-region.css',
-    rule: 'foreign-variable',
-    property: '--kui-floating-toolbar-inset',
-    reason:
-      'KF-02AZVQ: fix pending (name the covered context after each provider; FloatingToolbar reads the restore-corner context from its own stylesheet).',
-  },
-  {
-    file: 'workbench.css',
-    rule: 'foreign-variable',
-    property: '--_kui-floating-covered',
-    reason:
-      'KF-02AZVQ: fix pending (name the covered context after each provider; FloatingToolbar reads the restore-corner context from its own stylesheet).',
-  },
-  {
-    file: 'workbench.css',
-    rule: 'foreign-variable',
-    property: '--kui-floating-toolbar-inset',
-    reason:
-      'KF-02AZVQ: fix pending (name the covered context after each provider; FloatingToolbar reads the restore-corner context from its own stylesheet).',
-  },
-  {
     file: 'workbench.css',
     rule: 'foreign-class',
     selector: '> :is( [data-component="pane"],',

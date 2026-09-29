@@ -413,12 +413,15 @@
     --kui-collapsible-panel-restore-inset,
     remify(16px)
   );
-  /* The corner owns the inset, so a FloatingToolbar composed here floats
-     from this point instead of adding its own inset on top. */
-  --kui-floating-toolbar-inset: 0px;
   position: absolute;
   /* Hidden while an open side overlay covers the content (see below). */
-  visibility: var(--_kui-floating-covered, inherit);
+  visibility: var(
+    --_kui-workbench-covered,
+    var(
+      --_kui-collapsible-panel-covered,
+      var(--_kui-resizable-region-covered, inherit)
+    )
+  );
   z-index: var(
     --kui-collapsible-panel-restore-z,
     calc(var(--kui-collapsible-panel-overlay-z, 40) - 2)
@@ -470,7 +473,8 @@
    corner) are hidden, not merely stacked beneath it: they never paint over
    the overlay whatever stacking context an app puts them in, and hidden they
    leave the tab order and the accessibility tree. They come back as the
-   overlay closes. The flag is read by FloatingToolbar and the
+   overlay closes. The CollapsiblePanel's own covered context,
+   `--_kui-collapsible-panel-covered`, is read by FloatingToolbar and the
    layouts' restore corners; the overlay panels themselves are exempt, so
    their own floating controls stay. */
 [data-collapsible-overlay="true"]:has(
@@ -479,11 +483,11 @@
       .kui-collapsible-panel--right
     ):not([data-collapsed="true"])
 ) {
-  --_kui-floating-covered: hidden;
+  --_kui-collapsible-panel-covered: hidden;
 }
 
 [data-collapsible-overlay="true"] .kui-collapsible-panel {
-  --_kui-floating-covered: initial;
+  --_kui-collapsible-panel-covered: initial;
 }
 
 /* A static overlay panel sets the flag on its container and clears it again
@@ -499,7 +503,7 @@
       )[data-presentation="overlay"]:not([data-collapsed="true"])
   )
 ) {
-  --_kui-floating-covered: hidden;
+  --_kui-collapsible-panel-covered: hidden;
 }
 
 :where(
@@ -511,7 +515,7 @@
     )
   )
   > .kui-collapsible-panel[data-presentation="overlay"] {
-  --_kui-floating-covered: initial;
+  --_kui-collapsible-panel-covered: initial;
 }
 
 /* A button does not stretch between its insets the way a div does, so the
