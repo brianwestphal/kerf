@@ -124,6 +124,16 @@ the line keys on whichever actually scrolls — the view, or the Pane's content 
 and a Pane header or footer draws its own boundary instead. An explicit
 `toolbarConfig.dividerSides` still draws a permanent Toolbar edge.
 
+`chromeDividers` configures both lines, with the same values as a `Pane`'s:
+`scroll` (the default) follows the scroll state above and draws nothing until
+the wiring runs; `always` keeps both lines, with or without the wiring; `none`
+drops them even when the wiring reports scroll state. It does not change the
+top Toolbar's own `dividerSides`.
+
+```tsx
+<NavStack id="settings" label="Settings" views={views.value} chromeDividers="always" />
+```
+
 ## Safe areas
 
 The stack paints through a device's unsafe areas. Its chrome pads for the top

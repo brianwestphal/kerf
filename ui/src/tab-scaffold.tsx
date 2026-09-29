@@ -57,6 +57,16 @@ export interface TabScaffoldProps<Id extends string = string> {
   tabs: readonly TabScaffoldTab<Id>[];
   /** The controlled active tab id (the app owns selection). */
   active: NoInfer<Id>;
+  /**
+   * The line over the tab bar, where it meets the active scene. `scroll`
+   * (default) shows it only while more of the scene's content lies below —
+   * never at the scroll end or when the content fits — once
+   * `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`) is wired above
+   * the scaffold; unwired, it does not show. `always` shows it without the
+   * wiring; `none` never, even when wired. The line is the bar's own 1px top
+   * border, so no state moves the bar or a tab.
+   */
+  chromeDividers?: 'scroll' | 'always' | 'none';
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -75,6 +85,7 @@ export function TabScaffold<Id extends string>({
   label,
   tabs,
   active,
+  chromeDividers = 'scroll',
   className = '',
   slot,
 }: TabScaffoldProps<Id>) {
@@ -84,6 +95,11 @@ export function TabScaffold<Id extends string>({
       id={id}
       data-component="tab-scaffold"
       data-tab-scaffold-id={id}
+      data-chrome-dividers={
+        chromeDividers === 'always' || chromeDividers === 'none'
+          ? chromeDividers
+          : undefined
+      }
       slot={slot}
     >
       <div class="kui-tab-scaffold__scenes">

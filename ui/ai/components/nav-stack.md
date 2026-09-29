@@ -45,6 +45,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 - per-view bottom toolbar
 - persistent bottom-toolbar fallback
 - chrome and bottom-toolbar dividers only while the active view scrolls beneath them (wired by wireScrollDividers)
+- permanent or no chrome dividers (chromeDividers always or none)
 
 ## Composition
 
@@ -55,7 +56,7 @@ Exact prop names and types: [`@kerfjs/ui/nav-stack`](../public-api-signatures-v1
 
 ## State and wiring
 
-**The app owns:** ordered view stack and stable keys; view content and titles; push and pop actions; preferred initial focus targets when DOM order is insufficient; per-view bottom toolbar content or a persistent fallback; per-view leading, center, and trailing top-toolbar groups; top-toolbar configuration, title size, and heading level.
+**The app owns:** ordered view stack and stable keys; view content and titles; push and pop actions; preferred initial focus targets when DOM order is insufficient; per-view bottom toolbar content or a persistent fallback; per-view leading, center, and trailing top-toolbar groups; top-toolbar configuration, title size, and heading level; whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers).
 
 **Wiring:** `wireNavStack`, `wireScrollDividers` is required.
 

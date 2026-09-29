@@ -799,8 +799,9 @@ its header/footer, each `NavStack`'s top chrome / bottom toolbar and each
 or through a chrome-free sole child a `Pane` content / nested layout region),
 every `TabBar` strip, and app-owned id `targets`, and writes
 only `data-scroll-overflow` (scroller) / `data-scroll-divider` (chrome); `Pane`
-(`chromeDividers`: `scroll`/`always`/`none`), `NavStack`, `TabScaffold`,
-`TabBar`, `Toolbar`, and `List` draw from them in their own CSS. `Toolbar.dividerSides` defaults to `''`, and the
+(`chromeDividers`: `scroll`/`always`/`none`), `NavStack` and `TabScaffold`
+(the same `chromeDividers`, rendered as `data-chrome-dividers` on the layout
+root; `SplitView` forwards it via `compactStack`), `TabBar`, `Toolbar`, and `List` draw from them in their own CSS. `Toolbar.dividerSides` defaults to `''`, and the
 Workbench / CollapsiblePanel / Catalog toolbars place no dividers of their own;
 `wireCatalog` installs the wiring. Unit transition matrix in
 `ui/tests/unit/wire-scroll-dividers.test.ts`; three-engine geometry and

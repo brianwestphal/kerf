@@ -88,7 +88,10 @@ Never write a border onto a component to show one.
 Configure a pane with `chromeDividers`: `scroll` (the default) follows the
 scroll state and draws nothing until the wiring runs; `always` keeps both lines;
 `none` drops them. Layouts forward it through `PaneConfig`
-(`mainPane.chromeDividers`, a panel's `pane.chromeDividers`).
+(`mainPane.chromeDividers`, a panel's `pane.chromeDividers`). A `NavStack` and a
+`TabScaffold` take the same `chromeDividers` for their own chrome (the stack's
+top chrome and bottom toolbar, the scaffold's bar), and a `SplitView` forwards
+it to its compact stack through `compactStack`.
 
 For an app-owned arrangement outside a `Pane`, name the scroller and its chrome
 by `id` in `targets`; a `Toolbar` or `List` named as chrome draws the divider

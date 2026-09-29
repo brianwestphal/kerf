@@ -1169,6 +1169,18 @@ interface NavStackProps {
     hideToolbar?: boolean;
     /** Optional persistent bottom toolbar used when the active view does not provide one. */
     bottomToolbar?: KerfUiContent;
+    /**
+     * The line under the top chrome and over the bottom toolbar, where they
+     * meet the active view. `scroll` (default) shows the chrome's line only
+     * while the view's content is scrolled beneath it, and the bottom
+     * toolbar's only while more content lies below — never when the content
+     * fits — once `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`) is
+     * wired above the stack; unwired, neither shows. `always` shows both
+     * without the wiring; `none` neither, even when wired. The line is drawn
+     * inside the chrome, so no state moves the chrome or the content. A
+     * `toolbarConfig.dividerSides` edge is the Toolbar's own and is unaffected.
+     */
+    chromeDividers?: 'scroll' | 'always' | 'none';
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -1181,7 +1193,7 @@ interface NavStackProps {
  * content fills the zones, and `toolbarConfig` configures it. A single-pane
  * layout is a `NavStack` with one entry. See `docs/23-app-layouts.md` §3.1.
  */
-declare function NavStack({ id, label, views, backLabel, backIcon, backText, toolbarConfig, hideToolbar, bottomToolbar, className, slot, }: NavStackProps): kerfjs.SafeHtml;
+declare function NavStack({ id, label, views, backLabel, backIcon, backText, toolbarConfig, hideToolbar, bottomToolbar, chromeDividers, className, slot, }: NavStackProps): kerfjs.SafeHtml;
 
 export { NavStack, type NavStackProps, type NavStackToolbarConfig, type NavStackView };
 ```
@@ -1237,10 +1249,10 @@ interface SplitViewResizable extends Pick<ResizableRegionProps, 'separator' | 'h
 type SplitViewCompactViewToolbars = Pick<NavStackView, 'leading' | 'center' | 'toolbar' | 'bottomToolbar'>;
 /**
  * The compact `NavStack`'s configuration: its toolbar configuration, back
- * control, and persistent bottom toolbar forward to the stack, and `list` /
- * `detail` give each view its own toolbar groups.
+ * control, persistent bottom toolbar, and chrome dividers forward to the
+ * stack, and `list` / `detail` give each view its own toolbar groups.
  */
-interface SplitViewCompactStack extends Pick<NavStackProps, 'toolbarConfig' | 'backIcon' | 'backText' | 'hideToolbar' | 'bottomToolbar'> {
+interface SplitViewCompactStack extends Pick<NavStackProps, 'toolbarConfig' | 'backIcon' | 'backText' | 'hideToolbar' | 'bottomToolbar' | 'chromeDividers'> {
     /** Toolbar content for the list (root) view. */
     list?: SplitViewCompactViewToolbars;
     /** Toolbar content for the pushed detail view. */
@@ -2006,6 +2018,16 @@ interface TabScaffoldProps<Id extends string = string> {
     tabs: readonly TabScaffoldTab<Id>[];
     /** The controlled active tab id (the app owns selection). */
     active: NoInfer<Id>;
+    /**
+     * The line over the tab bar, where it meets the active scene. `scroll`
+     * (default) shows it only while more of the scene's content lies below —
+     * never at the scroll end or when the content fits — once
+     * `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`) is wired above
+     * the scaffold; unwired, it does not show. `always` shows it without the
+     * wiring; `none` never, even when wired. The line is the bar's own 1px top
+     * border, so no state moves the bar or a tab.
+     */
+    chromeDividers?: 'scroll' | 'always' | 'none';
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -2018,7 +2040,7 @@ interface TabScaffoldProps<Id extends string = string> {
  * On larger classes, promote the tabs to a `Workbench` rail or sidebar instead of
  * a bottom bar. See `docs/23-app-layouts.md` §3.4.
  */
-declare function TabScaffold<Id extends string>({ id, label, tabs, active, className, slot, }: TabScaffoldProps<Id>): SafeHtml;
+declare function TabScaffold<Id extends string>({ id, label, tabs, active, chromeDividers, className, slot, }: TabScaffoldProps<Id>): SafeHtml;
 
 export { TabScaffold, type TabScaffoldProps, type TabScaffoldTab };
 ```

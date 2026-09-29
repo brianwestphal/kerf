@@ -278,8 +278,8 @@ slot without mixing authoring rules into the per-entry component catalog.
   `Pane` draws its header/footer divider, a `NavStack` its chrome / bottom-toolbar
   dividers and a `TabScaffold` its bar divider around the active view or scene,
   and a `TabBar` its overflow dividers, only while content is scrolled beneath
-  or beyond them (`Pane`
-  `chromeDividers`: `scroll` default, `always`, `none`). See
+  or beyond them (`Pane`, `NavStack`, and `TabScaffold` `chromeDividers`:
+  `scroll` default, `always`, `none`). See
   [`23-app-layouts.md`](23-app-layouts.md) §3.7.
 - A `ListItem` is a native button, not an isolated `role="menuitem"`; callers
   should add a full menu widget only when they also implement its complete

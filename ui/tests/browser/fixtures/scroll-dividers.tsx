@@ -37,7 +37,8 @@ import { PanelLeft, Plus } from 'lucide';
  * fitting, and `always` / `none`), a Workbench work area and rail, TabBar
  * strips in each presentation (and right-to-left), a NavStack (plain views
  * that push and pop, and a view that is a Pane), a TabScaffold whose tabs
- * hold a NavStack and short content, a TabScaffold scene that is a Pane, and an app-owned `targets` arrangement
+ * hold a NavStack and short content, a TabScaffold scene that is a Pane,
+ * NavStacks and TabScaffolds with `always` / `none` chrome dividers, and an app-owned `targets` arrangement
  * whose chrome is a Toolbar and a List.
  */
 const items = (count: number) =>
@@ -250,6 +251,47 @@ mount(root, () => (
         ]}
       />
     </div>
+    {(['always', 'none'] as const).map((chromeDividers) => (
+      <div
+        data-case={`nav-stack-${chromeDividers}`}
+        style="height: 300px; display: grid"
+      >
+        <NavStack
+          id={`stack-${chromeDividers}`}
+          label={`Stack ${chromeDividers}`}
+          chromeDividers={chromeDividers}
+          views={[
+            {
+              key: 'root',
+              title: 'Root',
+              // `always` fits (a line with nothing scrolled), `none` overflows.
+              content: <>{items(chromeDividers === 'always' ? 1 : 24)}</>,
+            },
+          ]}
+          bottomToolbar={bottomBar(`Stack ${chromeDividers}`)}
+        />
+      </div>
+    ))}
+    {(['always', 'none'] as const).map((chromeDividers) => (
+      <div
+        data-case={`tab-scaffold-${chromeDividers}`}
+        style="height: 300px; display: grid"
+      >
+        <TabScaffold
+          id={`scaffold-${chromeDividers}`}
+          label={`Sections ${chromeDividers}`}
+          active="only"
+          chromeDividers={chromeDividers}
+          tabs={[
+            {
+              id: 'only',
+              label: 'Only',
+              content: <>{items(chromeDividers === 'always' ? 1 : 24)}</>,
+            },
+          ]}
+        />
+      </div>
+    ))}
     {tabBar('tabs-rail', 'rail')}
     {tabBar('tabs-segmented', 'segmented')}
     {tabBar('tabs-inspector', 'inspector')}

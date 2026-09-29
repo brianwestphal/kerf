@@ -647,6 +647,11 @@
           "id": "top-toolbar configuration, title size, and heading level",
           "owner": "application",
           "required": false
+        },
+        {
+          "id": "whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers)",
+          "owner": "application",
+          "required": false
         }
       ],
       "wiring": {
@@ -784,7 +789,7 @@
           "required": false
         },
         {
-          "id": "compact list and detail toolbar groups and toolbar configuration",
+          "id": "compact list and detail toolbar groups, toolbar configuration, and chrome dividers",
           "owner": "application",
           "required": false
         },
@@ -896,6 +901,11 @@
         },
         {
           "id": "responsive replacement on larger device classes",
+          "owner": "application",
+          "required": false
+        },
+        {
+          "id": "whether the bar divider follows the scroll, always shows, or never shows (chromeDividers)",
           "owner": "application",
           "required": false
         }

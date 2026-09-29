@@ -42,6 +42,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-scaffold`](../public-api-signatures
 - badged tabs (count or text-free dot)
 - one NavStack per tab
 - bar divider only while the active scene continues below it (wired by wireScrollDividers)
+- permanent or no bar divider (chromeDividers always or none)
 
 ## Composition
 
@@ -52,7 +53,7 @@ Exact prop names and types: [`@kerfjs/ui/tab-scaffold`](../public-api-signatures
 
 ## State and wiring
 
-**The app owns:** controlled active tab id; tab labels, icons, and content; tab badge counts or dots and their localized badgeLabel phrases; routing and persistence; responsive replacement on larger device classes.
+**The app owns:** controlled active tab id; tab labels, icons, and content; tab badge counts or dots and their localized badgeLabel phrases; routing and persistence; responsive replacement on larger device classes; whether the bar divider follows the scroll, always shows, or never shows (chromeDividers).
 
 **Wiring:** `wireTabScaffold`, `wireScrollDividers` is required.
 

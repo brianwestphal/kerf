@@ -47,6 +47,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   directions and lints the UX demo, recipes, and catalog shell clean;
   `@kerfjs/ui/ai/skill.md` (1.46.0) names the diagnostic.
 
+- **New (`@kerfjs/ui`): `NavStack` and `TabScaffold` take `chromeDividers`
+  (`'scroll' | 'always' | 'none'`), like `Pane`.** `scroll` (the default) keeps
+  today's behavior: the stack's top-chrome and bottom-toolbar lines and the
+  scaffold's bar line follow the scroll once `wireScrollDividers` is installed.
+  `always` draws them permanently without the wiring; `none` never draws them,
+  even when wired. The top `Toolbar`'s own `toolbarConfig.dividerSides` is
+  unaffected. `SplitView` forwards it to its compact stack through
+  `compactStack.chromeDividers`.
+
 - **Fix (`@kerfjs/ui`): a `Pane` that is the only content of a `NavStack` view
   or a `TabScaffold` scene fills it.** It used to size to its content, so the
   view scrolled the whole Pane and its header scrolled away. Now the Pane's own

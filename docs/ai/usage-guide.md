@@ -233,7 +233,8 @@ return disposers. Tab dragging automatically scrolls toward a nearby horizontal
 edge to expose earlier or later drop targets. Toolbars draw no divider by
 default; `wireScrollDividers(root)` (`@kerfjs/ui/wire-scroll-dividers`) makes
 each `Pane` draw its header/footer divider, each `NavStack` / `TabScaffold` its
-chrome and bottom-bar dividers around the active view or scene, and each
+chrome and bottom-bar dividers around the active view or scene (each layout,
+like a `Pane`, takes `chromeDividers: 'scroll' | 'always' | 'none'`), and each
 `TabBar` its overflow dividers, only while content is scrolled beneath or
 beyond them. Apply tab reorder reports with
 `reorderTabs()`. For a tab-local action immediately after the strip plus a

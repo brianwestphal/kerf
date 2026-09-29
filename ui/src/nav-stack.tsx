@@ -66,6 +66,18 @@ export interface NavStackProps {
   hideToolbar?: boolean;
   /** Optional persistent bottom toolbar used when the active view does not provide one. */
   bottomToolbar?: KerfUiContent;
+  /**
+   * The line under the top chrome and over the bottom toolbar, where they
+   * meet the active view. `scroll` (default) shows the chrome's line only
+   * while the view's content is scrolled beneath it, and the bottom
+   * toolbar's only while more content lies below — never when the content
+   * fits — once `wireScrollDividers` (`@kerfjs/ui/wire-scroll-dividers`) is
+   * wired above the stack; unwired, neither shows. `always` shows both
+   * without the wiring; `none` neither, even when wired. The line is drawn
+   * inside the chrome, so no state moves the chrome or the content. A
+   * `toolbarConfig.dividerSides` edge is the Toolbar's own and is unaffected.
+   */
+  chromeDividers?: 'scroll' | 'always' | 'none';
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -95,6 +107,7 @@ export function NavStack({
   toolbarConfig = {},
   hideToolbar = false,
   bottomToolbar,
+  chromeDividers = 'scroll',
   className = '',
   slot,
 }: NavStackProps) {
@@ -108,6 +121,11 @@ export function NavStack({
       data-component="nav-stack"
       data-nav-stack-id={id}
       data-depth={String(views.length)}
+      data-chrome-dividers={
+        chromeDividers === 'always' || chromeDividers === 'none'
+          ? chromeDividers
+          : undefined
+      }
       aria-label={label}
       slot={slot}
     >

@@ -172,15 +172,19 @@
   position: relative;
 }
 
-/* Scroll dividers: the top chrome draws a line along its bottom edge while
-   the active view's content is scrolled beneath it, and the bottom toolbar
+/* Chrome dividers: with `chromeDividers="scroll"` (the default, no
+   attribute) the top chrome draws a line along its bottom edge while the
+   active view's content is scrolled beneath it, and the bottom toolbar
    colors its 1px top border while more content lies below it — never when
    the content fits. `wireScrollDividers` reports that state through
-   `data-scroll-divider`. The chrome's line is an overlaid 1px pseudo-element
+   `data-scroll-divider`; `always` draws both lines without it, and `none`
+   neither, whatever it reports. The chrome's line is an overlaid 1px pseudo-element
    (whatever the chrome holds never covers it) and the bottom's border is
    always there, so showing either never moves the chrome, the toolbar, or
    the content. A cross-fading chrome copy keeps the line its snapshot had. */
-.kui-nav-stack__chrome[data-scroll-divider*="b"]::after {
+.kui-nav-stack:not([data-chrome-dividers])
+  > .kui-nav-stack__chrome[data-scroll-divider*="b"]::after,
+.kui-nav-stack[data-chrome-dividers="always"] > .kui-nav-stack__chrome::after {
   position: absolute;
   block-size: 1px;
   background: var(--kui-color-neutral-border-normal);
@@ -190,7 +194,9 @@
   pointer-events: none;
 }
 
-.kui-nav-stack__bottom[data-scroll-divider*="t"] {
+.kui-nav-stack:not([data-chrome-dividers])
+  > .kui-nav-stack__bottom[data-scroll-divider*="t"],
+.kui-nav-stack[data-chrome-dividers="always"] > .kui-nav-stack__bottom {
   --_kui-nav-stack-bottom-divider: var(--kui-color-neutral-border-normal);
 }
 

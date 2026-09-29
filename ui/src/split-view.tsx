@@ -40,12 +40,17 @@ export type SplitViewCompactViewToolbars = Pick<
 
 /**
  * The compact `NavStack`'s configuration: its toolbar configuration, back
- * control, and persistent bottom toolbar forward to the stack, and `list` /
- * `detail` give each view its own toolbar groups.
+ * control, persistent bottom toolbar, and chrome dividers forward to the
+ * stack, and `list` / `detail` give each view its own toolbar groups.
  */
 export interface SplitViewCompactStack extends Pick<
   NavStackProps,
-  'toolbarConfig' | 'backIcon' | 'backText' | 'hideToolbar' | 'bottomToolbar'
+  | 'toolbarConfig'
+  | 'backIcon'
+  | 'backText'
+  | 'hideToolbar'
+  | 'bottomToolbar'
+  | 'chromeDividers'
 > {
   /** Toolbar content for the list (root) view. */
   list?: SplitViewCompactViewToolbars;
@@ -141,6 +146,7 @@ export function SplitView({
           toolbarConfig={compactStack.toolbarConfig}
           hideToolbar={compactStack.hideToolbar}
           bottomToolbar={compactStack.bottomToolbar}
+          chromeDividers={compactStack.chromeDividers}
         />
       </div>
     );

@@ -75,8 +75,8 @@ resizable={{
 ```
 
 `compactStack` configures the compact `NavStack`: `toolbarConfig`, `backIcon`,
-`backText`, `hideToolbar`, and the persistent `bottomToolbar` forward to the
-stack, and `list` / `detail` give each view its own top-toolbar groups
+`backText`, `hideToolbar`, the persistent `bottomToolbar`, and `chromeDividers`
+forward to the stack, and `list` / `detail` give each view its own top-toolbar groups
 (`leading`, `center`, trailing `toolbar`) and `bottomToolbar`:
 
 ```tsx

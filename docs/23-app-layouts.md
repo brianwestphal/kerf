@@ -233,7 +233,7 @@ option defaulting to the component's own default:
   `responsiveFillAt` are fixed by the split's geometry and not forwarded.
 - `compactStack` (`SplitViewCompactStack`) forwards the compact `NavStack`'s
   `toolbarConfig`, `backIcon`, `backText`, `hideToolbar`, and persistent
-  `bottomToolbar`, and its `list` / `detail` entries
+  `bottomToolbar`, and `chromeDividers`, and its `list` / `detail` entries
   (`SplitViewCompactViewToolbars`) give each view `leading`, `center`,
   trailing `toolbar`, and `bottomToolbar` content.
 
@@ -1018,6 +1018,23 @@ right?, bottom?, left? }` element ids, resolved on each refresh). It writes
   layouts. Without the wiring these edges draw no line (as a `Pane`'s default
   does); an explicit `toolbarConfig.dividerSides` still draws a permanent
   Toolbar edge.
+- **`chromeDividers` on NavStack and TabScaffold (KF-985SV1: without the
+  wiring those edges could never show a line, and nothing could suppress
+  one).** Both layouts take `chromeDividers?: 'scroll' | 'always' | 'none'`
+  with `Pane.chromeDividers` semantics exactly (an inline union, so no new
+  exported type). `scroll` (default) renders no attribute and draws from
+  `data-scroll-divider` as above; `always` and `none` render
+  `data-chrome-dividers` on the layout root. `nav-stack.css` /
+  `tab-scaffold.css` gate every drawing selector on it with a child
+  combinator — `root:not([data-chrome-dividers]) > chrome[data-scroll-divider*=…]`
+  for the scroll state, `root[data-chrome-dividers="always"] > chrome`
+  unconditionally — so `always` needs no wiring and `none` ignores what the
+  wiring still reports (the wiring is unchanged, as for a Pane), and a nested
+  layout keeps its own setting. It governs the NavStack top chrome's overlaid
+  line and bottom toolbar's top border (including a cross-fade copy, which is
+  a child of the same root) and the TabScaffold bar's top border; the top
+  `Toolbar`'s own `toolbarConfig.dividerSides` is unaffected. `SplitView`
+  forwards it through `compactStack.chromeDividers`.
 - **TabBar.** A rail strip has no visible track, so the bar draws a 1px line
   on each overflowing side with its own `::before` / `::after`, ordered onto
   the strip's edges and cancelled out of the flex gap by a negative margin (no
@@ -1044,12 +1061,17 @@ scroller that is also chrome, re-render restoration, added / removed panes,
 disposal, a Document root without observers, NavStack chrome through fits →
 middle → end → start, push and pop swapping the scroller while a view slides
 out, a sole Pane with and without chrome, cross-fade copies, and a TabScaffold
-bar across tab switches and nested NavStacks).
+bar across tab switches and nested NavStacks), plus the NavStack /
+TabScaffold / SplitView `chromeDividers` attribute, its CSS gating, and the
+wiring still reporting under `none`.
 `ui/tests/browser/scroll-dividers.spec.ts` asserts the drawn lines by computed
 style and unchanged geometry across Pane, Workbench, all three TabBar
 presentations, right-to-left, NavStack (push / pop, and a sole Pane that
 fills the view with its header pinned), TabScaffold (tab switches over a
-nested NavStack, and a scene that is a sole Pane), and targets in Chromium, Firefox, and WebKit.
+nested NavStack, and a scene that is a sole Pane), NavStack and TabScaffold
+`chromeDividers` (`always` with fitting content and after the wiring is
+disposed, `none` with the wiring reporting dividers), and targets in Chromium,
+Firefox, and WebKit.
 
 ## 4. Responsive presentation matrix
 

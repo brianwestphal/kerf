@@ -488,6 +488,66 @@ test.describe('scroll dividers', () => {
     expect(await edge(bar)).toBe(true);
   });
 
+  test('NavStack and TabScaffold chromeDividers: always draws without scroll state or wiring, none never draws', async ({
+    page,
+  }) => {
+    await mountFixture(page);
+    const stack = (value: string) =>
+      page.locator(`[data-case="nav-stack-${value}"] .kui-nav-stack`);
+    const bar = (value: string) =>
+      page.locator(
+        `[data-case="tab-scaffold-${value}"] .kui-tab-scaffold__bar`,
+      );
+    const chrome = (value: string) =>
+      stack(value).locator(':scope > .kui-nav-stack__chrome');
+    const bottom = (value: string) =>
+      stack(value).locator(':scope > .kui-nav-stack__bottom');
+
+    // always: the content fits, so the wiring reports nothing, yet every line
+    // shows.
+    await expect(
+      stack('always').locator('.kui-nav-stack__view'),
+    ).not.toHaveAttribute('data-scroll-overflow');
+    expect(await shows(chrome('always'), '::after')).toBe(true);
+    expect(await edge(bottom('always'))).toBe(true);
+    expect(await edge(bar('always'))).toBe(true);
+
+    // none: the content is scrolled to the middle and the wiring reports
+    // dividers on both sides, yet no line shows and nothing moves.
+    const view = stack('none').locator('.kui-nav-stack__view');
+    const scene = page.locator(
+      '[data-case="tab-scaffold-none"] .kui-tab-scaffold__scene',
+    );
+    const parts = [
+      ':scope > .kui-nav-stack__chrome',
+      ':scope > .kui-nav-stack__viewport',
+      ':scope > .kui-nav-stack__bottom',
+    ];
+    const geometry = await rects(stack('none'), parts);
+    await scroll(view, 'middle');
+    await scroll(scene, 'middle');
+    await expect(chrome('none')).toHaveAttribute('data-scroll-divider', 'b');
+    await expect(bottom('none')).toHaveAttribute('data-scroll-divider', 't');
+    await expect(bar('none')).toHaveAttribute('data-scroll-divider', 't');
+    expect(await shows(chrome('none'), '::after')).toBe(false);
+    expect(await edge(bottom('none'))).toBe(false);
+    expect(await edge(bar('none'))).toBe(false);
+    expect(await rects(stack('none'), parts)).toEqual(geometry);
+
+    // always needs no wiring at all.
+    await page.evaluate(() =>
+      (
+        window as unknown as { disposeScrollDividers: () => void }
+      ).disposeScrollDividers(),
+    );
+    await expect(chrome('always')).not.toHaveAttribute('data-scroll-divider');
+    expect(await shows(chrome('always'), '::after')).toBe(true);
+    expect(await edge(bottom('always'))).toBe(true);
+    expect(await edge(bar('always'))).toBe(true);
+    expect(await shows(chrome('none'), '::after')).toBe(false);
+    expect(await edge(bar('none'))).toBe(false);
+  });
+
   test('app-owned targets let a Toolbar and a List draw their facing divider, and disposal clears it', async ({
     page,
   }) => {

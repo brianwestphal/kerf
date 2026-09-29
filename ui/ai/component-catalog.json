@@ -662,7 +662,8 @@
         "preferred initial focus targets when DOM order is insufficient",
         "per-view bottom toolbar content or a persistent fallback",
         "per-view leading, center, and trailing top-toolbar groups",
-        "top-toolbar configuration, title size, and heading level"
+        "top-toolbar configuration, title size, and heading level",
+        "whether the chrome and bottom-toolbar dividers follow the scroll, always show, or never show (chromeDividers)"
       ],
       "variants": [
         "single root view",
@@ -672,7 +673,8 @@
         "custom back icon or visible back text",
         "per-view bottom toolbar",
         "persistent bottom-toolbar fallback",
-        "chrome and bottom-toolbar dividers only while the active view scrolls beneath them (wired by wireScrollDividers)"
+        "chrome and bottom-toolbar dividers only while the active view scrolls beneath them (wired by wireScrollDividers)",
+        "permanent or no chrome dividers (chromeDividers always or none)"
       ],
       "accessibility": [
         "Give the stack region an accessible label and every back control a stable action label; visible backText names the control itself.",
@@ -804,7 +806,7 @@
         "list and detail content",
         "optional list width and persistence",
         "optional list collapse state and its restore control",
-        "compact list and detail toolbar groups and toolbar configuration",
+        "compact list and detail toolbar groups, toolbar configuration, and chrome dividers",
         "back action"
       ],
       "variants": [
@@ -931,14 +933,16 @@
         "tab labels, icons, and content",
         "tab badge counts or dots and their localized badgeLabel phrases",
         "routing and persistence",
-        "responsive replacement on larger device classes"
+        "responsive replacement on larger device classes",
+        "whether the bar divider follows the scroll, always shows, or never shows (chromeDividers)"
       ],
       "variants": [
         "text-only tabs",
         "icon and text tabs",
         "badged tabs (count or text-free dot)",
         "one NavStack per tab",
-        "bar divider only while the active scene continues below it (wired by wireScrollDividers)"
+        "bar divider only while the active scene continues below it (wired by wireScrollDividers)",
+        "permanent or no bar divider (chromeDividers always or none)"
       ],
       "accessibility": [
         "Give the tablist an accessible label and keep exactly the active tab in the sequential focus order.",

@@ -1,9 +1,14 @@
+import { readFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+
 import { raw } from 'kerfjs';
+import postcss from 'postcss';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { AppTab } from '../../src/app-tab.js';
 import { NavStack } from '../../src/nav-stack.js';
 import { Pane } from '../../src/pane.js';
+import { SplitView } from '../../src/split-view.js';
 import { TabBar } from '../../src/tab-bar.js';
 import { TabScaffold } from '../../src/tab-scaffold.js';
 import { Toolbar } from '../../src/toolbar.js';
@@ -156,6 +161,146 @@ describe('scroll-divider components', () => {
         }),
       ),
     ).not.toContain('data-chrome-dividers');
+  });
+});
+
+describe('NavStack and TabScaffold chromeDividers', () => {
+  const stack = (chromeDividers?: 'scroll' | 'always' | 'none') =>
+    String(
+      NavStack({
+        id: 'stack',
+        label: 'Stack',
+        views: [{ key: 'root', title: 'Root', content: body }],
+        bottomToolbar: Toolbar({ label: 'Actions' }),
+        chromeDividers,
+      }),
+    );
+  const scaffold = (chromeDividers?: 'scroll' | 'always' | 'none') =>
+    String(
+      TabScaffold({
+        id: 'tabs',
+        label: 'Sections',
+        active: 'a',
+        tabs: [{ id: 'a', label: 'A', content: body }],
+        chromeDividers,
+      }),
+    );
+
+  it('renders the attribute on the layout root only when it departs from the scroll default', () => {
+    for (const render of [stack, scaffold]) {
+      expect(render()).not.toContain('data-chrome-dividers');
+      expect(render('scroll')).not.toContain('data-chrome-dividers');
+      expect(render('always')).toContain('data-chrome-dividers="always"');
+      expect(render('none')).toContain('data-chrome-dividers="none"');
+      expect(render('always').match(/data-chrome-dividers/g)).toHaveLength(1);
+    }
+    expect(stack('always')).toMatch(
+      /<section class="kui-nav-stack"[^>]*data-chrome-dividers="always"/,
+    );
+    expect(scaffold('none')).toMatch(
+      /<section class="kui-tab-scaffold"[^>]*data-chrome-dividers="none"/,
+    );
+  });
+
+  it("leaves the top Toolbar's own dividerSides alone", () => {
+    for (const chromeDividers of ['always', 'none'] as const) {
+      const html = String(
+        NavStack({
+          id: 'stack',
+          label: 'Stack',
+          views: [{ key: 'root', title: 'Root', content: body }],
+          chromeDividers,
+        }),
+      );
+      expect(html).not.toContain('divider-sides');
+    }
+    expect(
+      String(
+        NavStack({
+          id: 'stack',
+          label: 'Stack',
+          views: [{ key: 'root', title: 'Root', content: body }],
+          toolbarConfig: { dividerSides: 'b' },
+          chromeDividers: 'none',
+        }),
+      ),
+    ).toContain('divider-sides="b"');
+  });
+
+  it('SplitView forwards compactStack.chromeDividers to its compact NavStack', () => {
+    const html = String(
+      SplitView({
+        id: 'split',
+        label: 'Mail',
+        list: body,
+        detail: body,
+        compact: true,
+        listTitle: 'Inbox',
+        detailTitle: 'Message',
+        compactStack: { chromeDividers: 'always' },
+      }),
+    );
+    expect(html).toMatch(
+      /<section class="kui-nav-stack"[^>]*data-chrome-dividers="always"/,
+    );
+  });
+
+  it('draws the scroll state only without the attribute, and always without the wiring', async () => {
+    const drawing = async (file: string, marker: RegExp) => {
+      const path = resolve(import.meta.dirname, `../../src/${file}`);
+      const css = postcss.parse(await readFile(path, 'utf8'), { from: path });
+      const selectors: string[] = [];
+      css.walkRules((rule) => {
+        for (const selector of rule.selectors)
+          if (marker.test(selector))
+            selectors.push(selector.replace(/\s+/g, ' '));
+      });
+      return selectors;
+    };
+    // Every selector that draws a layout chrome divider is gated on the
+    // layout root's chromeDividers: the scroll state only for the default,
+    // `always` unconditionally, and never for `none`.
+    expect(
+      await drawing(
+        'nav-stack.css',
+        /data-scroll-divider|data-chrome-dividers/,
+      ),
+    ).toEqual([
+      '.kui-nav-stack:not([data-chrome-dividers]) > .kui-nav-stack__chrome[data-scroll-divider*="b"]::after',
+      '.kui-nav-stack[data-chrome-dividers="always"] > .kui-nav-stack__chrome::after',
+      '.kui-nav-stack:not([data-chrome-dividers]) > .kui-nav-stack__bottom[data-scroll-divider*="t"]',
+      '.kui-nav-stack[data-chrome-dividers="always"] > .kui-nav-stack__bottom',
+    ]);
+    expect(
+      await drawing(
+        'tab-scaffold.css',
+        /data-scroll-divider|data-chrome-dividers/,
+      ),
+    ).toEqual([
+      '.kui-tab-scaffold:not([data-chrome-dividers]) > .kui-tab-scaffold__bar[data-scroll-divider*="t"]',
+      '.kui-tab-scaffold[data-chrome-dividers="always"] > .kui-tab-scaffold__bar',
+    ]);
+  });
+
+  it('still reports scroll state under none, which the layout does not draw', () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    roots.push(root);
+    root.innerHTML = stack('none');
+    const view = root.querySelector<HTMLElement>('.kui-nav-stack__view')!;
+    geometry(view, { scrollHeight: 300, clientHeight: 100, scrollTop: 50 });
+    const dispose = wireScrollDividers(root);
+    expect(
+      root
+        .querySelector('.kui-nav-stack__chrome')!
+        .getAttribute('data-scroll-divider'),
+    ).toBe('b');
+    expect(
+      root
+        .querySelector('.kui-nav-stack__bottom')!
+        .getAttribute('data-scroll-divider'),
+    ).toBe('t');
+    dispose();
   });
 });
 

@@ -66,6 +66,11 @@ own bottom toolbar sits between them, so that toolbar's line applies instead.
 The line is the bar's always-present 1px top border, colored only while shown,
 so it never moves the bar or a tab.
 
+`chromeDividers` configures it, with the same values as a `Pane`'s: `scroll`
+(the default) follows the scroll state and draws nothing until the wiring runs;
+`always` keeps the line, with or without the wiring; `none` drops it even when
+the wiring reports content below.
+
 ## Tab badges
 
 Give a tab a `badge` (a count or short string such as `3`, `"99+"`, or

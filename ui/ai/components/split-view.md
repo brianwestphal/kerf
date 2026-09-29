@@ -58,7 +58,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 ## State and wiring
 
-**The app owns:** device-class policy; selected item and detail-active state; list and detail content; optional list width and persistence; optional list collapse state and its restore control; compact list and detail toolbar groups and toolbar configuration; back action.
+**The app owns:** device-class policy; selected item and detail-active state; list and detail content; optional list width and persistence; optional list collapse state and its restore control; compact list and detail toolbar groups, toolbar configuration, and chrome dividers; back action.
 
 **Wiring:** `wireResizableRegions`, `wireNavStack` is required.
 
