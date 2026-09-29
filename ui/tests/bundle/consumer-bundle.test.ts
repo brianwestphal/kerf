@@ -51,6 +51,31 @@ function output(
   );
 }
 
+/**
+ * The `kui-*` classes a stylesheet's rules actually style: the rightmost
+ * compound of each selector, ignoring `:has()` / `:not()` / `:is()` arguments.
+ * A component may name a parent as context (`.kui-tab-bar … > .kui-app-tab`) or
+ * a child as a condition (`:has(> .kui-app-tab)`); only the subject says whose
+ * styles a bundle ships.
+ */
+function styledClasses(css: string): Set<string> {
+  const subjects = new Set<string>();
+  const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  for (const match of withoutComments.matchAll(/([^{}@;]+)\{/g)) {
+    for (const selector of match[1]!.split(',')) {
+      let flat = selector;
+      // Drop functional pseudo-class arguments, innermost first.
+      while (/:(?:has|not|is|where)\([^()]*\)/.test(flat))
+        flat = flat.replace(/:(?:has|not|is|where)\([^()]*\)/g, '');
+      const compounds = flat.trim().split(/\s*[>+~]\s*|\s+/);
+      const subject = compounds[compounds.length - 1] ?? '';
+      for (const name of subject.match(/\.kui-[a-z0-9-]+/g) ?? [])
+        subjects.add(name.replace(/(__|--).*$/, ''));
+    }
+  }
+  return subjects;
+}
+
 describe('consumer bundle boundaries', () => {
   it('ships the static analyzer as an explicit Node-only subpath', async () => {
     const result = await nodeBundle(
@@ -274,7 +299,9 @@ describe('consumer bundle boundaries', () => {
     expect(javascript).toContain('kui-tab-bar');
     expect(javascript).toContain('application/x-kerf-tab');
     expect(css).toContain('.kui-tab-bar');
-    expect(css).not.toContain('.kui-app-tab');
+    // TabBar may name AppTab as a condition, but ships no AppTab rules.
+    expect(styledClasses(css).has('.kui-tab-bar')).toBe(true);
+    expect(styledClasses(css).has('.kui-app-tab')).toBe(false);
     expect(css).not.toContain('.kui-toolbar');
     expect(inputs).not.toContain('select-register');
     expect(inputs).not.toContain('@awesome.me/webawesome');
@@ -288,7 +315,9 @@ describe('consumer bundle boundaries', () => {
     const tabCss = output(tabs, '.css');
     expect(tabInputs).toContain('dist/browser/app-tab.js');
     expect(tabCss).toContain('.kui-app-tab');
-    expect(tabCss).not.toContain('.kui-tab-bar');
+    // AppTab styles itself in TabBar context but ships no TabBar rules.
+    expect(styledClasses(tabCss).has('.kui-app-tab')).toBe(true);
+    expect(styledClasses(tabCss).has('.kui-tab-bar')).toBe(false);
     expect(tabCss).not.toContain('.kui-resizable-region');
 
     const resize = await bundle(
