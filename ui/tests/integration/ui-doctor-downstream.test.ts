@@ -723,3 +723,97 @@ test(
   },
   DOCTOR_TEST_TIMEOUT,
 );
+
+test(
+  'the doctor reports anatomy classes a kerfjs/html template writes, then passes once the template renders the components',
+  async () => {
+    const root = await mkdtemp(
+      resolve(tmpdir(), 'kerf-ui-doctor-html-anatomy-'),
+    );
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"html-anatomy-consumer","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, 'tsconfig.json'),
+        JSON.stringify({ compilerOptions: { noEmit: true }, include: ['src'] }),
+      );
+      await writeFile(
+        resolve(root, '.kerf-ui-doctor.json'),
+        JSON.stringify({
+          schemaVersion: 1,
+          stages: { catalog: false, typescript: false, analyzer: false },
+        }),
+      );
+      for (const name of [
+        'eslint',
+        '@typescript-eslint/eslint-plugin',
+        '@typescript-eslint/parser',
+      ])
+        await link(root, name, resolve(uiRoot, 'node_modules', name));
+      await link(
+        root,
+        'eslint-plugin-kerfjs',
+        resolve(repositoryRoot, 'eslint-plugin'),
+      );
+      await link(root, '@kerfjs/ui', uiRoot);
+
+      // The no-build path: no JSX transform, so the markup lives in
+      // `kerfjs/html` tagged templates — one TypeScript file and one plain
+      // JavaScript file, so both of the doctor's parser configurations run.
+      await writeFile(
+        resolve(root, 'src/sidebar.ts'),
+        'import { html } from \'kerfjs/html\';\nexport const sidebar = (unread: number) => html`\n  <aside class="kui-pane">\n    <nav class="kui-pane__content kui-content">Inbox (${unread})</nav>\n  </aside>\n`;\n',
+      );
+      // A plain div carrying item geometry is ContentItem recreated; the
+      // <ul> carrier keeps the placeable class. `kui-summary-shell` is not a
+      // cataloged class at all.
+      await writeFile(
+        resolve(root, 'src/summary.js'),
+        'import { html } from \'kerfjs/html\';\nexport const summary = (label) => html`\n  <section class="kui-content kui-summary-shell">\n    <div class="kui-content-item">${label}</div>\n    <ul class="kui-content-item"></ul>\n  </section>\n`;\n',
+      );
+      const broken = await doctor(root);
+      const findings = broken.report.diagnostics.filter(
+        (item: { stage: string }) => item.stage === 'eslint',
+      );
+      expect(
+        findings.map((item: { id: string; location: { file: string } }) => [
+          item.location.file,
+          item.id,
+        ]),
+      ).toEqual([
+        ['src/sidebar.ts', 'KUI-L103'],
+        ['src/sidebar.ts', 'KUI-L103'],
+        ['src/summary.js', 'KUI-L101'],
+        ['src/summary.js', 'KUI-L103'],
+      ]);
+      for (const item of findings.slice(0, 2))
+        expect(item.message).toContain('`Pane`');
+      expect(findings[2].message).toContain('`kui-summary-shell`');
+      expect(findings[3].message).toContain('`ContentItem`');
+      expect(findings[3].message).toContain('<div>');
+      expect(broken.status).toBe(1);
+
+      await writeFile(
+        resolve(root, 'src/sidebar.ts'),
+        "import { Pane } from '@kerfjs/ui/pane';\nimport { html } from 'kerfjs/html';\nexport const sidebar = (unread: number) =>\n  html`${Pane({ element: 'aside', label: 'Mail', contentElement: 'nav', children: `Inbox (${unread})` })}`;\n",
+      );
+      await writeFile(
+        resolve(root, 'src/summary.js'),
+        'import { ContentItem } from \'@kerfjs/ui/content-item\';\nimport { html } from \'kerfjs/html\';\nexport const summary = (label) => html`\n  <section class="kui-content">\n    ${ContentItem({ children: label })}\n    <ul class="kui-content-item"></ul>\n  </section>\n`;\n',
+      );
+      const clean = await doctor(root);
+      expect(
+        clean.report.diagnostics.filter(
+          (item: { stage: string }) => item.stage === 'eslint',
+        ),
+      ).toEqual([]);
+      expect(clean.status).toBe(0);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
