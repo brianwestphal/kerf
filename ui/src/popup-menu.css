@@ -96,6 +96,73 @@
    in a nested-dropdown group grows for its label plus the caret; a fixed 32px
    base would center both outside its host, painting the label across the
    separator and the caret beyond the group border. */
+/* The trigger button takes the group's control metrics, as the group's own
+   raw wa-button children do (toolbar-control-group.css excludes this
+   trigger). The PopupMenu ancestor sits in `:where()` so each rule keeps the
+   specificity of the group's matching raw-child rule and resolves against the
+   group's attribute-keyed variants exactly as they do. */
+.kui-toolbar-control-group :where(wa-dropdown.kui-popup-menu) > wa-button {
+  --wa-form-control-height: remify(40px);
+  display: inline-flex;
+  line-height: 0;
+  align-items: center;
+  justify-content: center;
+  --wa-color-fill-quiet: transparent;
+}
+.kui-toolbar-control-group[data-size="compact"]
+  :where(wa-dropdown.kui-popup-menu)
+  > wa-button {
+  --wa-form-control-height: remify(32px);
+}
+.kui-toolbar-control-group[data-content="mixed"]
+  :where(wa-dropdown.kui-popup-menu)
+  > wa-button {
+  line-height: normal;
+}
+.kui-toolbar-control-group
+  :where(wa-dropdown.kui-popup-menu)
+  > wa-button
+  > svg {
+  display: block;
+  width: remify(16px);
+  height: remify(16px);
+}
+/* Toolbar controls never wrap: a slotted icon and its label share one row. */
+.kui-toolbar-control-group
+  :where(wa-dropdown.kui-popup-menu)
+  > wa-button::part(label) {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--kui-space-xs);
+  white-space: nowrap;
+}
+/* At least a circle around an icon-only trigger, with the group's item radius;
+   hover lifts the trigger like a group button, except in a `single` group,
+   whose whole surface shows the hover (toolbar-control-group.css). */
+.kui-toolbar-control-group
+  :where(wa-dropdown.kui-popup-menu)
+  > wa-button::part(base) {
+  min-width: remify(40px);
+  min-height: remify(40px);
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  border-radius: var(
+    --kui-toolbar-item-radius,
+    var(--kui-layout-pill-radius, calc(1px + remify(21px)))
+  );
+}
+.kui-toolbar-control-group
+  :where(wa-dropdown.kui-popup-menu)
+  > wa-button:hover::part(base) {
+  border-color: var(--kui-toolbar-control-border);
+  background-color: var(--kui-toolbar-control-hover-background);
+}
+.kui-toolbar-control-group[data-single="true"]
+  :where(wa-dropdown.kui-popup-menu)
+  > wa-button:hover::part(base) {
+  border-color: transparent;
+  background: transparent;
+}
 .kui-toolbar-control-group > wa-dropdown.kui-popup-menu {
   display: inline-flex;
   flex: 0 0 auto;

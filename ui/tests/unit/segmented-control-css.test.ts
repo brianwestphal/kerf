@@ -162,19 +162,36 @@ describe('SegmentedControl corner geometry', () => {
     );
     expect(fixedHostWidth).toBeUndefined();
 
-    const mixedTextRule = root.nodes.find(
-      (node) =>
-        node.type === 'rule' &&
-        node.selector ===
-          '.kui-toolbar-control-group[data-content="mixed"] wa-button',
-    );
-    if (!mixedTextRule || mixedTextRule.type !== 'rule')
-      throw new Error('Missing mixed dropdown text line-height rule');
-    const lineHeight = mixedTextRule.nodes.find(
-      (node) => node.type === 'decl' && node.prop === 'line-height',
-    );
-    if (!lineHeight || lineHeight.type !== 'decl')
-      throw new Error('Missing mixed dropdown text line height');
-    expect(lineHeight.value).toBe('normal');
+    // A mixed group's raw wa-buttons keep a normal text line height in the
+    // group's stylesheet; a composed PopupMenu's trigger gets the same value
+    // from popup-menu.css, since the group never styles another component.
+    const popupFile = resolve(import.meta.dirname, '../../src/popup-menu.css');
+    const popupRoot = postcss.parse(await readFile(popupFile, 'utf8'), {
+      from: popupFile,
+    });
+    for (const [sheet, selector] of [
+      [
+        root,
+        '.kui-toolbar-control-group[data-content="mixed"] wa-button:not(:where(.kui-popup-menu > *))',
+      ],
+      [
+        popupRoot,
+        '.kui-toolbar-control-group[data-content="mixed"] :where(wa-dropdown.kui-popup-menu) > wa-button',
+      ],
+    ] as const) {
+      const mixedTextRule = sheet.nodes.find(
+        (node) =>
+          node.type === 'rule' &&
+          node.selector.replace(/\s+/g, ' ') === selector,
+      );
+      if (!mixedTextRule || mixedTextRule.type !== 'rule')
+        throw new Error(`Missing mixed text line-height rule: ${selector}`);
+      const lineHeight = mixedTextRule.nodes.find(
+        (node) => node.type === 'decl' && node.prop === 'line-height',
+      );
+      if (!lineHeight || lineHeight.type !== 'decl')
+        throw new Error(`Missing mixed text line height: ${selector}`);
+      expect(lineHeight.value).toBe('normal');
+    }
   });
 });
