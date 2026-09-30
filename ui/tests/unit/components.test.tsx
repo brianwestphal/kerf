@@ -1582,6 +1582,8 @@ describe('production UI primitives', () => {
       'data-Component': 'unsafe-component',
       'data-Selected': 'false',
       'data-Attention': 'false',
+      'data-Drop-Target': 'false',
+      'data-Name-Overflow': 'ellipsis',
       'data-Tab-Dragging': 'true',
       'data-Tab-Drop-Position': 'before',
       role: 'menuitem',
@@ -1592,6 +1594,7 @@ describe('production UI primitives', () => {
         name: 'First',
         selected: true,
         attention: true,
+        dropTarget: true,
         leading: icon,
         trailing: icon,
         closeIcon: <span data-custom-close-icon>×</span>,
@@ -1602,11 +1605,14 @@ describe('production UI primitives', () => {
         presentation: 'segmented',
         size: 'compact',
         labelMaxWidth: 144,
+        nameOverflow: 'visible',
         rootAttributes: widenedRootAttributes,
       }),
     );
     expect(selected).toContain('data-selected="true"');
     expect(selected).toContain('data-attention="true"');
+    expect(selected).toContain('data-drop-target="true"');
+    expect(selected).toContain('data-name-overflow="visible"');
     expect(selected).toContain('draggable="true"');
     expect(selected).toContain(
       'data-presentation="segmented" data-size="compact"',
@@ -1615,6 +1621,8 @@ describe('production UI primitives', () => {
     expect(selected).toContain('data-project-id="project-one"');
     expect(selected).toContain('data-tab-id="first"');
     expect(selected).not.toContain('ignored-case-variant');
+    expect(selected).not.toContain('data-drop-target="false"');
+    expect(selected).not.toContain('data-name-overflow="ellipsis"');
     expect(selected).not.toContain('unsafe-root-action');
     expect(selected).not.toContain('unsafe-component');
     expect(selected).not.toContain('data-tab-dragging');
@@ -1633,6 +1641,8 @@ describe('production UI primitives', () => {
     expect(selectedRoot.dataset.tabId).toBe('first');
     expect(selectedRoot.dataset.selected).toBe('true');
     expect(selectedRoot.dataset.attention).toBe('true');
+    expect(selectedRoot.dataset.dropTarget).toBe('true');
+    expect(selectedRoot.dataset.nameOverflow).toBe('visible');
     expect(selectedRoot.dataset.projectId).toBe('project-one');
     expect(selectedRoot.hasAttribute('data-action')).toBe(false);
     expect(selectedRoot.hasAttribute('role')).toBe(false);

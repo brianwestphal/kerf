@@ -2844,6 +2844,11 @@
       "state": [
         { "id": "tab identity", "owner": "application", "required": false },
         { "id": "selection", "owner": "application", "required": false },
+        {
+          "id": "drop-target state",
+          "owner": "application",
+          "required": false
+        },
         { "id": "close policy", "owner": "application", "required": false },
         { "id": "content", "owner": "application", "required": false },
         {
@@ -2886,6 +2891,9 @@
           "--kui-app-tab-attention-color",
           "--kui-app-tab-color",
           "--kui-app-tab-drop-indicator",
+          "--kui-app-tab-drop-target-background",
+          "--kui-app-tab-drop-target-color",
+          "--kui-app-tab-drop-target-ring",
           "--kui-app-tab-hover-background",
           "--kui-app-tab-selected-background",
           "--kui-app-tab-selected-border",

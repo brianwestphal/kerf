@@ -808,7 +808,10 @@ wire-owned drag/drop markers case-insensitively. `AppTab.closeIcon` and
 moving interaction or lifecycle ownership out of their existing controls and
 disposer-returning wiring. `TabBar.end` provides a separately pinned far-edge
 action while an adjacent `trailing` action follows its shrinkable, horizontally
-scrolling tabs; the component owns that split geometry. `wireTabBars` resolves replacement focus by logical
+scrolling tabs; the component owns that split geometry. `AppTab.dropTarget`
+paints its highlight through public tokens independently of `aria-selected`,
+while `nameOverflow="visible"` removes the label width cap and ellipsis.
+`wireTabBars` resolves replacement focus by logical
 bar/tab identity after automatic keyboard activation synchronously rerenders a strip.
 Unit coverage in `ui/tests/unit/wire-tab-bars.test.ts` and the real-browser
 `ui/tests/browser/tab-bar-controlled-focus.spec.ts` cover repeated Arrow/Home/End

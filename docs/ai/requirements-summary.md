@@ -400,6 +400,9 @@ slots, leaving close, reorder, resize, persistence, and disposal ownership on
 the existing controls, wiring, and application state. Automatic TabBar
 activation preserves logical tab focus when controlled selection replaces the
 strip.
+The app can set `AppTab.dropTarget` during content drag-over to show a themed
+highlight independently of selection, and `nameOverflow="visible"` to display
+the full name during inline loading instead of the default ellipsis.
 
 The optional `createTokenSearchModel` grammar now gives rule suggestion callbacks
 both the unfinished value and the current committed token state, enabling

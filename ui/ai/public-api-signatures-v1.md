@@ -958,15 +958,20 @@ type AppTabRootAttributes = Readonly<Record<`data-${string}`, string | undefined
     'data-tab-dragging'?: never;
     'data-tab-drop-position'?: never;
     'data-attention'?: never;
+    'data-drop-target'?: never;
+    'data-name-overflow'?: never;
 }>;
 type AppTabPresentation = 'pill' | 'segmented' | 'icon-only';
 type AppTabSize = 'default' | 'compact';
+type AppTabNameOverflow = 'ellipsis' | 'visible';
 interface AppTabProps {
     id: string;
     name: string;
     selected?: boolean;
     /** Emphasize the visible tab name with the attention color token. */
     attention?: boolean;
+    /** Highlight this tab as the target of a drag over its content. */
+    dropTarget?: boolean;
     closable?: boolean;
     draggable?: boolean;
     leading?: KerfUiContent;
@@ -977,6 +982,8 @@ interface AppTabProps {
     size?: AppTabSize;
     /** Maximum visible label width in CSS pixels before ellipsis. */
     labelMaxWidth?: number;
+    /** Keep the full name visible for an inline loading treatment. */
+    nameOverflow?: AppTabNameOverflow;
     /** Decorative dormant content for the close button. Must not contain interactive descendants. */
     closeIcon?: SafeHtml;
     selectAction?: string;
@@ -999,9 +1006,9 @@ interface AppTabProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function AppTab({ id, name, selected, attention, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: AppTabProps): SafeHtml;
+declare function AppTab({ id, name, selected, attention, dropTarget, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, nameOverflow, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: AppTabProps): SafeHtml;
 
-export { AppTab, type AppTabPresentation, type AppTabProps, type AppTabSize };
+export { AppTab, type AppTabNameOverflow, type AppTabPresentation, type AppTabProps, type AppTabSize };
 ```
 
 ## `@kerfjs/ui/tab-bar`

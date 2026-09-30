@@ -47,7 +47,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [ListActionRow](./list-action-row.md) — Keep a selectable primary row action and an independently named trailing action as sibling native controls inside one noninteractive visual row.
 - [ListItem](./list-item.md) — Selectable, disabled, trailing, and multiline action or link rows.
 - [Application tabs](./application-tabs.md) — Show AppTab and TabBar in a complete controlled composition.
-- [AppTab](./tabs.md) — Roving-tabindex-ready tabs with typed compact, segmented, icon-only, and truncating-label presentations.
+- [AppTab](./tabs.md) — Render a controlled application tab with compact or icon-only presentation, a visible drop target, and optional full-name display.
 - [TabBar](./tab-bar.md) — Controlled tab strips whose tabs shrink and scroll while fixed leading, trailing, and far-edge end actions remain visible.
 
 ## Kerf UI — Controls

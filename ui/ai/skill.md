@@ -215,6 +215,8 @@ tokens; plain text ellipsizes in a narrow trigger.
 
 For application tabs, `AppTab presentation="icon-only"` retains its accessible `name`, `labelMaxWidth` truncates the visible name, and `attention` colors it through `--kui-app-tab-attention-color`. Configure TabBar strip geometry through public `--kui-tab-bar-strip-*` tokens.
 
+Set `AppTab dropTarget` while content is dragged over a tab to highlight the target without changing selection. Use `nameOverflow="visible"` for an inline loading treatment that needs the full visible name; the default is an ellipsis.
+
 Use `--kui-resizable-region-background` for a region surface and `contentOverflow="visible"` while its anchored popup needs to escape. Choose a top or bottom `restorePosition`, typed `restoreInset`, or `restorePlacement="inline"` for its collapsed restore control. `FloatingToolbar placement="inline"` stays in normal flow; its per-edge inset tokens and `safeAreaInsets` configure floating placement.
 
 Use `ListItem density="spacious"` for larger option rows, `multiline` plus `multilineIconAlign="center"` when its icon should center on wrapped copy, `divider` for row separators, and `state="drag-target"` for the drop target treatment. Public `--kui-list-item-*` tokens adjust row, icon, label, and trailing geometry and color; ListHeader height, title padding, and border tokens adjust section density.

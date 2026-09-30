@@ -1,5 +1,6 @@
 export {
   AppTab,
+  type AppTabNameOverflow,
   type AppTabPresentation,
   type AppTabProps,
   type AppTabSize,

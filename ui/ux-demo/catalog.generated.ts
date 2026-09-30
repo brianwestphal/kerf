@@ -458,7 +458,7 @@ export const generatedKerfCatalog = [
     "category": "Navigation",
     "kind": "component",
     "source": "kerf",
-    "description": "Roving-tabindex-ready tabs with typed compact, segmented, icon-only, and truncating-label presentations.",
+    "description": "Render a controlled application tab with compact or icon-only presentation, a visible drop target, and optional full-name display.",
     "uses": [
       "lucide-icon"
     ],

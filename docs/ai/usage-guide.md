@@ -150,6 +150,10 @@ AppTab additionally protects tab identity plus transient drag/drop markers at
 runtime. Its `closeIcon` and ResizableRegion's `handleIcon` replace decorative,
 noninteractive content only; the existing named controls and wiring retain
 their lifecycle ownership.
+Use AppTab's `dropTarget` while content is dragged over a tab; it highlights the
+target independently of selection. For an inline loading treatment that needs
+an untruncated label, use `nameOverflow="visible"` instead of changing the
+tab's accessible name.
 `ListItem.trailing` is dormant content. When the trailing region must be a
 separate native control, use `ListActionRow`; its noninteractive root contains
 primary and trailing sibling buttons with independent action, name, disabled,

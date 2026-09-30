@@ -326,7 +326,11 @@ trailing, and end actions remain visible and do not shrink. The component owns
 that geometry; applications must not override its anatomy to create the split.
 `AppTab` provides compact 32px, segmented, truncating-label, and icon-only
 presentations. Icon-only tabs keep the required `name` as the tab button's
-accessible name while visually hiding the duplicate label. A `pending` tab (known,
+accessible name while visually hiding the duplicate label. The default name
+overflow is an ellipsis; `nameOverflow="visible"` lets an inline loading
+treatment show the whole name, without changing the accessible name. The app
+sets `dropTarget` during a content drag-over to paint a brand highlight;
+selection and tab focus stay independent of that visual state. A `pending` tab (known,
 still opening) keeps its visible name as the tab button's accessible name, so a
 trailing spinner's own label is not folded into it. It is `aria-busy` and stays
 selectable (in the roving tab order like a live tab), so the application can

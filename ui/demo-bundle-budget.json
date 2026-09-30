@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 307300,
-  "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 307270,
+  "totalJavaScriptGzip": 307500,
+  "measuredLargestJavaScriptGzip": 126041,
+  "measuredTotalJavaScriptGzip": 307452,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1443,6 +1443,22 @@
         "measuredTotalJavaScriptGzip": 307270,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 307300
+      }
+    },
+    {
+      "at": "2026-09-30T11:06:45.853Z",
+      "reason": "AppTab drop-target and visible-name catalog example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 307270,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 307300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 307452,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 307500
       }
     }
   ]

@@ -13,6 +13,9 @@
     transparent
   );
   --kui-app-tab-drop-indicator: var(--kui-color-brand-border-normal);
+  --kui-app-tab-drop-target-background: var(--kui-color-brand-fill-quiet);
+  --kui-app-tab-drop-target-ring: var(--kui-color-brand-border-normal);
+  --kui-app-tab-drop-target-color: var(--kui-color-brand-on-quiet);
   position: relative;
   display: flex;
   width: max-content;
@@ -42,6 +45,11 @@
   color: var(--kui-app-tab-selected-color);
   background: var(--kui-app-tab-selected-background);
   box-shadow: var(--kui-shadow-s);
+}
+.kui-app-tab[data-drop-target="true"] {
+  color: var(--kui-app-tab-drop-target-color);
+  background: var(--kui-app-tab-drop-target-background);
+  box-shadow: inset 0 0 0 2px var(--kui-app-tab-drop-target-ring);
 }
 .kui-app-tab[data-tab-dragging="true"] {
   opacity: 0.55;
@@ -105,6 +113,11 @@
   font-weight: 650;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.kui-app-tab[data-name-overflow="visible"] .kui-app-tab__name {
+  max-width: none;
+  overflow: visible;
+  text-overflow: clip;
 }
 .kui-app-tab[data-attention="true"] .kui-app-tab__name {
   color: var(--kui-app-tab-attention-color, var(--kui-color-warning-on-quiet));

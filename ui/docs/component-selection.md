@@ -224,7 +224,11 @@ required.
 
 Use `AppTab presentation="icon-only"` with its `name` kept as the accessible
 tab name, and `labelMaxWidth` for an ellipsized visible name. Set `attention`
-to color a tab's name with `--kui-app-tab-attention-color`. A `TabBar` owns its
+to color a tab's name with `--kui-app-tab-attention-color`. Set `dropTarget`
+while an app drag is over a tab's content; the tab keeps its selection semantics
+and uses the `--kui-app-tab-drop-target-*` tokens for its highlight. Set
+`nameOverflow="visible"` when an inline loading treatment needs the full name
+instead of the default ellipsis. A `TabBar` owns its
 scrolling strip; its public `--kui-tab-bar-strip-*` tokens configure strip
 height, spacing, border, radius, background, and scroll inset without styling
 its internal classes. `--kui-tab-bar-trailing-flex` controls the trailing zone.

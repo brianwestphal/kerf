@@ -64,6 +64,28 @@ export function TabsDemo() {
           />
         </TabBar>
       </CatalogExample>
+      <CatalogExample
+        label="Drop target and visible name"
+        note="The drop-target state paints a brand ring. A visible name expands instead of clipping an inline loading treatment."
+        align="none"
+      >
+        <TabBar id="app-tab-drop-target" label="Drop-target AppTab specimen">
+          <AppTab
+            id="project-grid"
+            name="Project grid"
+            selected
+            closable={false}
+          />
+          <AppTab
+            id="accounting"
+            name="Accounting project"
+            closable={false}
+            dropTarget
+            labelMaxWidth={80}
+            nameOverflow="visible"
+          />
+        </TabBar>
+      </CatalogExample>
       <CatalogExample label="Placeholder" align="none">
         <TabBar id="app-tab-placeholder" label="Loading AppTab specimen">
           <AppTab id="loading" name="" placeholder />

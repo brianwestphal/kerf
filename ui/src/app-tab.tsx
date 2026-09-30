@@ -13,6 +13,8 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-tab-dragging',
   'data-tab-drop-position',
   'data-attention',
+  'data-drop-target',
+  'data-name-overflow',
 ]);
 
 type AppTabRootAttributes = Readonly<
@@ -24,11 +26,14 @@ type AppTabRootAttributes = Readonly<
     'data-tab-dragging'?: never;
     'data-tab-drop-position'?: never;
     'data-attention'?: never;
+    'data-drop-target'?: never;
+    'data-name-overflow'?: never;
   }
 >;
 
 export type AppTabPresentation = 'pill' | 'segmented' | 'icon-only';
 export type AppTabSize = 'default' | 'compact';
+export type AppTabNameOverflow = 'ellipsis' | 'visible';
 
 export interface AppTabProps {
   id: string;
@@ -36,6 +41,8 @@ export interface AppTabProps {
   selected?: boolean;
   /** Emphasize the visible tab name with the attention color token. */
   attention?: boolean;
+  /** Highlight this tab as the target of a drag over its content. */
+  dropTarget?: boolean;
   closable?: boolean;
   draggable?: boolean;
   leading?: KerfUiContent;
@@ -46,6 +53,8 @@ export interface AppTabProps {
   size?: AppTabSize;
   /** Maximum visible label width in CSS pixels before ellipsis. */
   labelMaxWidth?: number;
+  /** Keep the full name visible for an inline loading treatment. */
+  nameOverflow?: AppTabNameOverflow;
   /** Decorative dormant content for the close button. Must not contain interactive descendants. */
   closeIcon?: SafeHtml;
   selectAction?: string;
@@ -90,6 +99,7 @@ export function AppTab({
   name,
   selected = false,
   attention = false,
+  dropTarget = false,
   closable = true,
   draggable = false,
   leading,
@@ -97,6 +107,7 @@ export function AppTab({
   presentation = 'pill',
   size = 'default',
   labelMaxWidth,
+  nameOverflow = 'ellipsis',
   closeIcon,
   selectAction = 'select-tab',
   closeAction = 'close-tab',
@@ -129,6 +140,8 @@ export function AppTab({
       data-tab-id={id}
       data-selected={String(selected)}
       data-attention={attention ? 'true' : undefined}
+      data-drop-target={dropTarget ? 'true' : undefined}
+      data-name-overflow={nameOverflow}
       data-presentation={presentation}
       data-size={size}
       data-placeholder={placeholder ? 'true' : undefined}

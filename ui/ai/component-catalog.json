@@ -3405,11 +3405,11 @@
       "category": "Navigation",
       "kind": "component",
       "source": "kerf",
-      "description": "Roving-tabindex-ready tabs with typed compact, segmented, icon-only, and truncating-label presentations.",
+      "description": "Roving-tabindex-ready tabs with typed compact, segmented, icon-only, drop-target, and name-overflow presentations.",
       "uses": [
         "lucide-icon"
       ],
-      "purpose": "Roving-tabindex-ready tabs with typed compact, segmented, icon-only, and truncating-label presentations.",
+      "purpose": "Render a controlled application tab with compact or icon-only presentation, a visible drop target, and optional full-name display.",
       "publicExports": [
         "AppTab"
       ],
@@ -3428,6 +3428,7 @@
       "appOwns": [
         "tab identity",
         "selection",
+        "drop-target state",
         "close policy",
         "content",
         "application data attribute values",
@@ -3444,7 +3445,8 @@
         "compact size",
         "segmented presentation",
         "icon-only accessible presentation",
-        "label maximum width and truncation",
+        "label maximum width and ellipsis or visible name overflow",
+        "drop-target highlight",
         "attention name color"
       ],
       "accessibility": [
@@ -3477,6 +3479,9 @@
         "--kui-app-tab-attention-color",
         "--kui-app-tab-color",
         "--kui-app-tab-drop-indicator",
+        "--kui-app-tab-drop-target-background",
+        "--kui-app-tab-drop-target-color",
+        "--kui-app-tab-drop-target-ring",
         "--kui-app-tab-hover-background",
         "--kui-app-tab-selected-background",
         "--kui-app-tab-selected-border",
