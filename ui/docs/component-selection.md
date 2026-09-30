@@ -174,6 +174,15 @@ an upstream component or recipe request.
 
 ## Ambiguous choices
 
+For a larger option row, use `ListItem density="spacious"`; `compact` and
+`standard` remain available. `multiline` wraps its label and aligns its icon
+to the first line; `multilineIconAlign="center"` centers the icon against the
+whole label. `divider` owns a before or after separator. Set
+`state="drag-target"` for the component's drop outline and background. Public
+`--kui-list-item-*` tokens control its row, icon, label, and trailing geometry
+and color. `ListHeader` exposes `--kui-list-header-min-height`, title padding,
+title minimum height, and border-width tokens for section density.
+
 Use `Toolbar responsive="trailing-priority"` for a collapsible search in the
 trailing zone that should take a full second row when expanded. `responsiveAt`
 chooses the compact or narrow container breakpoint. The leading identity stays

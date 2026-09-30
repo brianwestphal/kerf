@@ -40,27 +40,31 @@ describe('menu row icon alignment contract', () => {
         'list-item.css',
         '.kui-list-item[data-has-description="true"]',
       ),
-    ).resolves.toEqual({ 'min-height': 'remify(52px)' });
+    ).resolves.toEqual({
+      'min-height': 'var(--kui-list-item-min-height, remify(52px))',
+    });
     await expect(
       declarationsFor(
         'list-item.css',
         '.kui-list-item[data-density="compact"][data-has-description="true"]',
       ),
-    ).resolves.toEqual({ 'min-height': 'remify(44px)' });
+    ).resolves.toEqual({
+      'min-height': 'var(--kui-list-item-min-height, remify(44px))',
+    });
   });
 
   it('sizes the ListItem leading icon and its SVG to 18px', async () => {
     await expect(
       declarationsFor('list-item.css', '.kui-list-item__icon'),
     ).resolves.toMatchObject({
-      width: 'remify(18px)',
-      height: 'remify(18px)',
+      width: 'var(--kui-list-item-icon-size, remify(18px))',
+      height: 'var(--kui-list-item-icon-size, remify(18px))',
     });
     await expect(
       declarationsFor('list-item.css', '.kui-list-item__icon svg'),
     ).resolves.toMatchObject({
-      width: 'remify(18px)',
-      height: 'remify(18px)',
+      width: 'var(--kui-list-item-icon-size, remify(18px))',
+      height: 'var(--kui-list-item-icon-size, remify(18px))',
     });
   });
 
@@ -72,7 +76,8 @@ describe('menu row icon alignment contract', () => {
       ),
     ).resolves.toEqual({
       'align-self': 'start',
-      'margin-block-start': 'calc((1lh - remify(18px)) / 2)',
+      'margin-block-start':
+        'calc( (1lh - var(--kui-list-item-icon-size, remify(18px))) / 2 )',
     });
   });
 

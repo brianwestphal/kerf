@@ -74,7 +74,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-list-header`, `kui-list-header__action`, `kui-list-header__action-layer`, `kui-list-header__title`, `kui-list-header__toggle` on an element you write; render `ListHeader` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-neutral-border-quiet`, `--kui-focus-ring`, `--kui-list-header-action-icon-size`, `--kui-list-header-color`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-list-header-hover-background`, `--kui-list-group-divider-color`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-neutral-border-quiet`, `--kui-focus-ring`, `--kui-list-header-action-icon-size`, `--kui-list-header-border-width`, `--kui-list-header-color`, `--kui-list-header-min-height`, `--kui-list-header-title-min-height`, `--kui-list-header-title-padding-block`, `--kui-list-header-title-padding-inline`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-list-header-hover-background`, `--kui-list-group-divider-color`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

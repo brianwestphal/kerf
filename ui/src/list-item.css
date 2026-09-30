@@ -10,34 +10,50 @@
   --kui-list-item-selected-background: var(--kui-color-brand-fill-normal);
   display: grid;
   width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
-  min-height: remify(44px);
+  min-height: var(--kui-list-item-min-height, remify(44px));
   overflow: hidden;
   margin-inline: var(--kui-layout-inline-margin, remify(8px));
-  padding: var(--kui-layout-item-padding, remify(8px));
+  padding-block: var(
+    --kui-list-item-padding-block,
+    var(--kui-layout-item-padding, remify(8px))
+  );
+  padding-inline: var(
+    --kui-list-item-padding-inline,
+    var(--kui-layout-item-padding, remify(8px))
+  );
   box-sizing: border-box;
-  border: 1px solid var(--kui-list-item-border);
-  border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
+  border: var(--kui-list-item-border-width, 1px) solid
+    var(--kui-list-item-border);
+  border-radius: var(
+    --kui-list-item-radius,
+    var(--kui-layout-rounded-radius, calc(1px + remify(11px)))
+  );
   color: var(--kui-list-item-color);
   background: var(--kui-list-item-background);
   cursor: pointer;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  column-gap: var(--kui-layout-item-gap, remify(8px));
+  grid-template-columns: var(--kui-list-item-columns, minmax(0, 1fr) auto);
+  align-items: var(--kui-list-item-align-items, center);
+  column-gap: var(--kui-list-item-gap, var(--kui-layout-item-gap, remify(8px)));
   font: inherit;
   text-align: start;
 }
 
 .kui-list-item[data-density="compact"] {
-  min-height: remify(36px);
-  padding-block: remify(4px);
+  min-height: var(--kui-list-item-min-height, remify(36px));
+  padding-block: var(--kui-list-item-padding-block, remify(4px));
+}
+
+.kui-list-item[data-density="spacious"] {
+  min-height: var(--kui-list-item-min-height, remify(52px));
+  padding-block: var(--kui-list-item-padding-block, remify(12px));
 }
 
 .kui-list-item[data-has-description="true"] {
-  min-height: remify(52px);
+  min-height: var(--kui-list-item-min-height, remify(52px));
 }
 
 .kui-list-item[data-density="compact"][data-has-description="true"] {
-  min-height: remify(44px);
+  min-height: var(--kui-list-item-min-height, remify(44px));
 }
 
 .kui-list-item[data-divider="before"],
@@ -55,7 +71,10 @@
 }
 
 .kui-list-item[data-has-icon="true"] {
-  grid-template-columns: remify(18px) minmax(0, 1fr) auto;
+  grid-template-columns: var(
+    --kui-list-item-columns,
+    var(--kui-list-item-icon-size, remify(18px)) minmax(0, 1fr) auto
+  );
 }
 
 .kui-list-item[data-has-icon="true"] .kui-list-item__icon {
@@ -112,22 +131,24 @@
 
 .kui-list-item__icon {
   display: grid;
-  width: remify(18px);
-  height: remify(18px);
-  color: currentColor;
+  width: var(--kui-list-item-icon-size, remify(18px));
+  height: var(--kui-list-item-icon-size, remify(18px));
+  color: var(--kui-list-item-icon-color, currentColor);
   place-items: center;
 }
 
 .kui-list-item__icon svg {
   display: block;
-  width: remify(18px);
-  height: remify(18px);
+  width: var(--kui-list-item-icon-size, remify(18px));
+  height: var(--kui-list-item-icon-size, remify(18px));
 }
 
 .kui-list-item__label {
   display: grid;
   min-width: 0;
+  max-width: var(--kui-list-item-label-max-width, none);
   overflow: hidden;
+  font-weight: var(--kui-list-item-label-weight, inherit);
   white-space: nowrap;
 }
 
@@ -175,15 +196,36 @@
 
 .kui-list-item[data-multiline="true"] .kui-list-item__icon {
   align-self: start;
-  margin-block-start: calc((1lh - remify(18px)) / 2);
+  margin-block-start: calc(
+    (1lh - var(--kui-list-item-icon-size, remify(18px))) / 2
+  );
+}
+
+.kui-list-item[data-multiline="true"][data-icon-align="center"]
+  .kui-list-item__icon {
+  align-self: center;
+  margin-block-start: 0;
 }
 
 .kui-list-item__trailing {
   display: inline-flex;
   min-width: 0;
+  color: var(--kui-list-item-trailing-color, inherit);
   align-items: center;
   justify-content: flex-end;
   gap: var(--kui-layout-item-gap, remify(8px));
+}
+
+.kui-list-item[data-state="drag-target"] {
+  outline: var(
+    --kui-list-item-drag-target-outline,
+    2px solid var(--kui-color-brand-border-normal)
+  );
+  outline-offset: var(--kui-list-item-drag-target-outline-offset, -2px);
+  background: var(
+    --kui-list-item-drag-target-background,
+    var(--kui-color-brand-fill-quiet)
+  );
 }
 
 .kui-list-item__status {

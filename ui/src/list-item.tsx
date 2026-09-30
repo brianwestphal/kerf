@@ -19,6 +19,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-busy',
   'data-state',
   'data-kui-disabled',
+  'data-icon-align',
 ]);
 
 type ListItemRootAttributes = Readonly<
@@ -34,6 +35,7 @@ type ListItemRootAttributes = Readonly<
     'data-busy'?: never;
     'data-state'?: never;
     'data-kui-disabled'?: never;
+    'data-icon-align'?: never;
   }
 >;
 
@@ -48,7 +50,7 @@ export interface ListItemProps {
   status?: string | SafeHtml;
   /** Show a progress indicator and expose the row as busy without replacing its content; a placeholder keeps the indicator. */
   busy?: boolean;
-  density?: 'standard' | 'compact';
+  density?: 'standard' | 'compact' | 'spacious';
   divider?: 'none' | 'before' | 'after' | 'both';
   selected?: boolean;
   action: string;
@@ -58,6 +60,8 @@ export interface ListItemProps {
   accessibleLabel?: string;
   title?: string;
   multiline?: boolean;
+  /** Alignment of an icon beside a wrapped label. Defaults to its first line. */
+  multilineIconAlign?: 'first-line' | 'center';
   state?: string;
   disabled?: boolean;
   tabIndex?: number;
@@ -85,6 +89,7 @@ export function ListItem({
   accessibleLabel,
   title,
   multiline = false,
+  multilineIconAlign = 'first-line',
   state,
   disabled = false,
   tabIndex,
@@ -110,6 +115,7 @@ export function ListItem({
       data-has-icon={String(Boolean(icon))}
       data-has-description={String(Boolean(description))}
       data-multiline={multiline ? 'true' : undefined}
+      data-icon-align={multiline ? multilineIconAlign : undefined}
       data-density={density}
       data-divider={divider}
       data-busy={busy ? 'true' : undefined}

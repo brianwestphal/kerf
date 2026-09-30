@@ -40,6 +40,9 @@ Exact prop names and types: [`@kerfjs/ui/list-item`](../public-api-signatures-v1
 - multiline
 - placeholder (loading)
 - compact density
+- spacious density
+- centered icon beside a multiline label
+- drag-target state
 - description and status
 - busy while retaining content
 - before, after, or paired group divider
@@ -77,7 +80,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-list-item`, `kui-list-item__icon`, `kui-list-item__label`, `kui-list-item__primary-label`, `kui-list-item__description`, `kui-list-item__status`, `kui-list-item__trailing` on an element you write; render `ListItem` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-brand-fill-normal`, `--kui-color-neutral-fill-quiet`, `--kui-color-neutral-on-normal`, `--kui-color-neutral-on-quiet`, `--kui-color-neutral-border-quiet`, `--kui-focus-ring`, `--kui-list-item-color`, `--kui-list-item-hover-background`, `--kui-list-item-selected-background`, `--kui-list-item-selected-color`, `--kui-list-group-divider-color`, `--kui-font-xs`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-layout-rounded-radius`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-brand-border-normal`, `--kui-color-brand-fill-quiet`, `--kui-color-brand-fill-normal`, `--kui-color-neutral-fill-quiet`, `--kui-color-neutral-on-normal`, `--kui-color-neutral-on-quiet`, `--kui-color-neutral-border-quiet`, `--kui-focus-ring`, `--kui-list-item-color`, `--kui-list-item-align-items`, `--kui-list-item-border-width`, `--kui-list-item-columns`, `--kui-list-item-drag-target-background`, `--kui-list-item-drag-target-outline`, `--kui-list-item-drag-target-outline-offset`, `--kui-list-item-gap`, `--kui-list-item-hover-background`, `--kui-list-item-icon-color`, `--kui-list-item-icon-size`, `--kui-list-item-label-max-width`, `--kui-list-item-label-weight`, `--kui-list-item-min-height`, `--kui-list-item-padding-block`, `--kui-list-item-padding-inline`, `--kui-list-item-radius`, `--kui-list-item-selected-background`, `--kui-list-item-selected-color`, `--kui-list-item-trailing-color`, `--kui-list-group-divider-color`, `--kui-font-xs`, `--kui-layout-inline-margin`, `--kui-layout-item-gap`, `--kui-layout-item-padding`, `--kui-layout-rounded-radius`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

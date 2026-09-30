@@ -54,6 +54,27 @@ export function ListItemDemo() {
           multiline
         />
       </CatalogExample>
+      <CatalogExample label="Spacious option and centered icon" align="none">
+        <ListItem
+          action="log-settings"
+          itemId="spacious"
+          label="Create a project from an existing repository with a longer name"
+          icon={<LucideIcon icon={Wrench} name="wrench" />}
+          trailing={<span>Open</span>}
+          density="spacious"
+          divider="after"
+          multiline
+          multilineIconAlign="center"
+        />
+      </CatalogExample>
+      <CatalogExample label="Drop target" align="none">
+        <ListItem
+          action="log-projects"
+          itemId="drag-target"
+          label="Move ticket here"
+          state="drag-target"
+        />
+      </CatalogExample>
       <CatalogExample align="none">
         <ListItem
           action="disabled"

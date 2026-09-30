@@ -743,6 +743,7 @@ type ListItemRootAttributes = Readonly<Record<`data-${string}`, string | undefin
     'data-busy'?: never;
     'data-state'?: never;
     'data-kui-disabled'?: never;
+    'data-icon-align'?: never;
 }>;
 interface ListItemProps {
     label: string | SafeHtml;
@@ -755,7 +756,7 @@ interface ListItemProps {
     status?: string | SafeHtml;
     /** Show a progress indicator and expose the row as busy without replacing its content; a placeholder keeps the indicator. */
     busy?: boolean;
-    density?: 'standard' | 'compact';
+    density?: 'standard' | 'compact' | 'spacious';
     divider?: 'none' | 'before' | 'after' | 'both';
     selected?: boolean;
     action: string;
@@ -765,6 +766,8 @@ interface ListItemProps {
     accessibleLabel?: string;
     title?: string;
     multiline?: boolean;
+    /** Alignment of an icon beside a wrapped label. Defaults to its first line. */
+    multilineIconAlign?: 'first-line' | 'center';
     state?: string;
     disabled?: boolean;
     tabIndex?: number;
@@ -774,7 +777,7 @@ interface ListItemProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function ListItem({ label, description, icon, trailing, status, busy, density, divider, selected, action, itemId, className, pressed, accessibleLabel, title, multiline, state, disabled, tabIndex, placeholder, rootAttributes, slot, }: ListItemProps): SafeHtml;
+declare function ListItem({ label, description, icon, trailing, status, busy, density, divider, selected, action, itemId, className, pressed, accessibleLabel, title, multiline, multilineIconAlign, state, disabled, tabIndex, placeholder, rootAttributes, slot, }: ListItemProps): SafeHtml;
 
 export { ListItem, type ListItemProps };
 ```

@@ -161,6 +161,12 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   expanded trailing control to a full second row at `responsiveAt`; the leading
   title remains above it. Public leading-min-width, trailing-gap/justify, and
   per-zone inline-padding tokens cover app-specific toolbar geometry.
+- **Configure list rows through their APIs.** `ListItem density="spacious"`
+  gives option rows more room. `multiline` wraps labels, with
+  `multilineIconAlign="center"` when the icon should center on the whole copy.
+  `divider` owns row separators and `state="drag-target"` paints the drop
+  target. Public ListItem tokens set row, icon, label, and trailing geometry;
+  ListHeader height, title padding, and border tokens tune section density.
 - **Use `Row` for horizontal and `List` for vertical layout.** Both expose
   physical `hAlign`/`vAlign` props and typed gaps. Row defaults to left/full,
   an `xs` gap, and no wrapping; List retains full/top and zero-gap defaults.

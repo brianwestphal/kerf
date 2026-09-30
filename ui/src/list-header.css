@@ -9,7 +9,7 @@
   display: flex;
   width: calc(100% - (2 * var(--kui-layout-inline-margin, remify(8px))));
   min-width: 0;
-  min-height: remify(44px);
+  min-height: var(--kui-list-header-min-height, remify(44px));
   margin-inline: var(--kui-layout-inline-margin, remify(8px));
   box-sizing: border-box;
   color: var(--kui-list-header-color);
@@ -18,13 +18,16 @@
   gap: var(--kui-layout-item-gap, remify(8px));
 }
 
-.kui-list-header[data-density="compact"],
-.kui-list-header[data-density="compact"] .kui-list-header__title {
-  min-height: remify(36px);
+.kui-list-header[data-density="compact"] {
+  min-height: var(--kui-list-header-min-height, remify(36px));
 }
 
 .kui-list-header[data-density="compact"] .kui-list-header__title {
-  padding-block: remify(4px);
+  min-height: var(
+    --kui-list-header-title-min-height,
+    var(--kui-list-header-min-height, remify(36px))
+  );
+  padding-block: var(--kui-list-header-title-padding-block, remify(4px));
 }
 
 .kui-list-header[data-divider="before"],
@@ -71,7 +74,7 @@
 .kui-list-header__title,
 .kui-list-header__action {
   box-sizing: border-box;
-  border: 1px solid transparent;
+  border: var(--kui-list-header-border-width, 1px) solid transparent;
   border-radius: var(--kui-layout-rounded-radius, calc(1px + remify(11px)));
   color: inherit;
   background: transparent;
@@ -80,7 +83,12 @@
 .kui-list-header__title {
   display: flex;
   min-width: 0;
-  min-height: remify(44px);
+  min-height: var(
+    --kui-list-header-title-min-height,
+    var(--kui-list-header-min-height, remify(44px))
+  );
+  padding-block: var(--kui-list-header-title-padding-block, 0px);
+  padding-inline: var(--kui-list-header-title-padding-inline, 0px);
   align-items: center;
   flex: 1 1 auto;
   gap: var(--kui-layout-item-gap, remify(8px));

@@ -822,6 +822,7 @@ describe('production UI primitives', () => {
     expect(item).toContain('data-has-icon="true"');
     expect(item).toContain('data-has-description="true"');
     expect(item).toContain('data-multiline="true"');
+    expect(item).toContain('data-icon-align="first-line"');
     expect(item).toContain('data-density="compact"');
     expect(item).toContain('data-divider="both"');
     expect(item).toContain('data-busy="true"');
@@ -842,6 +843,19 @@ describe('production UI primitives', () => {
     expect(iconless).toContain('data-has-icon="false"');
     expect(iconless).toContain('data-has-description="false"');
     expect(iconless).toContain('disabled');
+    const spacious = asHtml(
+      ListItem({
+        label: 'Long option',
+        action: 'open',
+        density: 'spacious',
+        multiline: true,
+        multilineIconAlign: 'center',
+        state: 'drag-target',
+      }),
+    );
+    expect(spacious).toContain('data-density="spacious"');
+    expect(spacious).toContain('data-icon-align="center"');
+    expect(spacious).toContain('data-state="drag-target"');
     const toggle = asHtml(
       ListHeader({
         label: 'Tools',
