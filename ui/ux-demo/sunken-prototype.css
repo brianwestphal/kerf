@@ -1,0 +1,82 @@
+/* Research-only opt-in scope for KF-1HDSZF. Component defaults stay opaque. */
+.demo-sunken-prototype {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.demo-sunken-prototype__backdrop {
+  min-width: 0;
+  padding: 12px;
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface);
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: 12px;
+}
+
+.demo-sunken-prototype__backdrop[data-backdrop="lowered"] {
+  background: var(--kui-color-surface-lowered);
+}
+
+.demo-sunken-prototype__backdrop[data-backdrop="warm"] {
+  background: light-dark(#eee7dc, #332c25);
+}
+
+.demo-sunken-prototype__backdrop[data-backdrop="textured"] {
+  background: repeating-linear-gradient(
+    135deg,
+    light-dark(#faf6ee, #29282a) 0 8px,
+    light-dark(#e7e4de, #222124) 8px 16px
+  );
+}
+
+.demo-sunken-prototype__backdrop > strong {
+  display: block;
+  margin-block-end: 8px;
+}
+
+.demo-sunken-prototype__first {
+  --kui-sunken-panel-background: light-dark(
+    rgb(0 0 0 / 0.055),
+    rgb(0 0 0 / 0.12)
+  );
+  --kui-wa-sunken-background: var(--kui-sunken-panel-background);
+}
+
+.demo-sunken-prototype__second {
+  --kui-sunken-panel-background: light-dark(
+    rgb(0 0 0 / 0.035),
+    rgb(0 0 0 / 0.05)
+  );
+  --kui-wa-sunken-background: var(--kui-sunken-panel-background);
+}
+
+.demo-sunken-prototype__third {
+  --kui-sunken-panel-background: transparent;
+  --kui-wa-sunken-background: transparent;
+}
+
+.demo-sunken-prototype__first,
+.demo-sunken-prototype__second,
+.demo-sunken-prototype__third {
+  margin-inline: 0;
+}
+
+.demo-sunken-prototype__pane {
+  display: grid;
+  height: 130px;
+  margin-block-start: 8px;
+}
+
+.demo-sunken-prototype button {
+  padding: 8px 12px;
+  color: var(--kui-color-text);
+  background: var(--kui-color-surface-raised);
+  border: 1px solid var(--kui-color-neutral-border-normal);
+  border-radius: 6px;
+}
+
+.demo-sunken-prototype button:focus {
+  outline: var(--kui-focus-ring);
+  outline-offset: 2px;
+}

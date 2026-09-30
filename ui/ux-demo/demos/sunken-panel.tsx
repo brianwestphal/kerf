@@ -3,6 +3,8 @@ import { StateBanner } from '@kerfjs/ui/state-banner';
 import { SunkenPanel } from '@kerfjs/ui/sunken-panel';
 import { ValueTable, ValueTableRow } from '@kerfjs/ui/value-table';
 
+import { SunkenPrototype } from '../sunken-prototype.js';
+
 export function SunkenPanelDemo() {
   return (
     <CatalogExampleStack rootAttributes={{ 'data-demo': 'sunken-panel' }}>
@@ -27,6 +29,13 @@ export function SunkenPanelDemo() {
           <span>Three checks completed.</span>
           <span>One beta is ready to publish.</span>
         </SunkenPanel>
+      </CatalogExample>
+      <CatalogExample
+        label="Backdrop-aware prototype"
+        note="Research-only opt-in: lighter second tint and a transparent third layer bound nesting without changing semantic color defaults. Compare the Kerf panel, Pane scroller, and Web Awesome sunken card/details across backdrops and themes."
+        viewport={{ layout: 'grid', width: 'full', height: 'app' }}
+      >
+        <SunkenPrototype />
       </CatalogExample>
     </CatalogExampleStack>
   );

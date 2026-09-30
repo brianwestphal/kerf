@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 309100,
-  "measuredLargestJavaScriptGzip": 126041,
-  "measuredTotalJavaScriptGzip": 309082,
+  "totalJavaScriptGzip": 309600,
+  "measuredLargestJavaScriptGzip": 126040,
+  "measuredTotalJavaScriptGzip": 309522,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1571,6 +1571,22 @@
         "measuredTotalJavaScriptGzip": 309082,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 309100
+      }
+    },
+    {
+      "at": "2026-09-30T16:35:28.105Z",
+      "reason": "Opt-in contextual sunken surface prototype and contrast matrix",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 309082,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 309100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 309522,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 309600
       }
     }
   ]

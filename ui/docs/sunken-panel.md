@@ -55,7 +55,10 @@ Override the public properties at the composition boundary:
 `--kui-sunken-panel-background` can be overridden for a known backdrop. Keep
 the default lowered surface opaque; a translucent override compounds when
 sunken panels nest. See [Contextual transparency](./webawesome-theme.md#contextual-transparency)
-for the color and contrast evaluation.
+for the color and contrast evaluation and its opt-in bounded prototype. The
+prototype also compares Pane and Web Awesome sunken surfaces. Assign its
+first, second, and transparent deeper tints on application-owned wrappers;
+a single translucent override on every nested surface has no depth cap.
 
 The public root class is `.kui-sunken-panel`. Prefer the properties above over
 styling descendants. The `square` shape deliberately overrides the radius

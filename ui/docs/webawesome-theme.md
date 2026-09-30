@@ -156,12 +156,42 @@ opaque `--kui-color-surface-lowered` remains appropriate for page backgrounds.
 | Quiet or disabled text and icons      | Keep normal and quiet text/foreground tokens opaque; alpha changes their contrast with every backdrop. Disabled controls may use component-owned opacity, as they do now, without weakening shared foreground tokens.                                                                                                                                                                                                                 |
 | Dividers and borders                  | Decorative separators can use scoped alpha over a known surface. Control boundaries and focus indicators need reliable contrast; do not replace the shared border or focus tokens with alpha globally.                                                                                                                                                                                                                                |
 
-The numeric examples are sRGB compositing estimates, not a browser acceptance
-test. Before changing a default, inspect one and two sunken levels on default,
-lowered, warm, and textured backdrops in light and dark; verify text and control
-contrast, forced contrast, and Web Awesome parity. The opt-in sunken prototype
-is tracked by `KF-1HDSZF` and should include Pane once `KF-RGNS18` establishes
-its sunken appearance.
+### Bounded translucent prototype
+
+The opt-in catalog prototype (`SunkenPanel` → Backdrop-aware prototype) uses
+the existing public background overrides on `SunkenPanel`, `Pane`, and Web
+Awesome sunken Card/Details. It does not change shared semantic tokens or
+component defaults. The application assigns a depth class to each
+application-owned wrapper; the component inside inherits its public color
+override:
+
+| Depth            | Light tint  | Dark tint   | Treatment                                       |
+| ---------------- | ----------- | ----------- | ----------------------------------------------- |
+| First            | 5.5% black  | 12% black   | Shows the backdrop through the lowered surface. |
+| Second           | 3.5% black  | 5% black    | Adds a smaller inset step.                      |
+| Third and deeper | transparent | transparent | Caps accumulated darkening.                     |
+
+Over default white, the light levels approximate `#f1f1f1` then `#e9e9e9`;
+over dark default `#1c1c1e`, they approximate `#19191a` then `#171719`.
+The dark lowered backdrop reaches roughly `#0f0f11` then `#0e0e10`, which is
+still visually close to black. Warm and textured backdrops retain their tone
+and pattern; the first and second layers remain discernible in light mode but
+are subtle in dark mode. These values are sRGB estimates; actual rendering
+depends on backdrop and browser.
+
+The browser matrix covers one and two layers on default, lowered, warm, and
+two textured stripe colors in light and dark, across Chromium, Firefox, and
+WebKit. It composites computed text and control colors with each tint and
+requires at least 4.5:1 for panel text, an opaque button, Card text, and
+Details text. It also checks a visible focus outline with forced colors and
+the third layer's transparent cap. Theme colors must finish transitioning
+before contrast is measured. The prototype keeps controls on opaque semantic
+surfaces for predictable contrast.
+
+Keep this treatment opt-in. It needs explicit depth assignment, and the dark
+lowered case has too little separation to replace the opaque default. A
+future default would need a stronger depth and contrast rule for arbitrary
+backdrops, especially dark textures and nested mixed components.
 
 Add `class="hide-actions"` to a `wa-dialog` when the dialog supplies its own
 dismissal affordance and should omit Web Awesome's header action region. The
