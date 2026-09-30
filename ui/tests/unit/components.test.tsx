@@ -1584,6 +1584,7 @@ describe('production UI primitives', () => {
       'data-Attention': 'false',
       'data-Drop-Target': 'false',
       'data-Name-Overflow': 'ellipsis',
+      'data-Pinned': 'false',
       'data-Tab-Dragging': 'true',
       'data-Tab-Drop-Position': 'before',
       role: 'menuitem',
@@ -1595,6 +1596,7 @@ describe('production UI primitives', () => {
         selected: true,
         attention: true,
         dropTarget: true,
+        pinned: true,
         leading: icon,
         trailing: icon,
         closeIcon: <span data-custom-close-icon>×</span>,
@@ -1612,6 +1614,7 @@ describe('production UI primitives', () => {
     expect(selected).toContain('data-selected="true"');
     expect(selected).toContain('data-attention="true"');
     expect(selected).toContain('data-drop-target="true"');
+    expect(selected).toContain('data-pinned="true"');
     expect(selected).toContain('data-name-overflow="visible"');
     expect(selected).toContain('draggable="true"');
     expect(selected).toContain(
@@ -1622,6 +1625,7 @@ describe('production UI primitives', () => {
     expect(selected).toContain('data-tab-id="first"');
     expect(selected).not.toContain('ignored-case-variant');
     expect(selected).not.toContain('data-drop-target="false"');
+    expect(selected).not.toContain('data-pinned="false"');
     expect(selected).not.toContain('data-name-overflow="ellipsis"');
     expect(selected).not.toContain('unsafe-root-action');
     expect(selected).not.toContain('unsafe-component');
@@ -1642,6 +1646,7 @@ describe('production UI primitives', () => {
     expect(selectedRoot.dataset.selected).toBe('true');
     expect(selectedRoot.dataset.attention).toBe('true');
     expect(selectedRoot.dataset.dropTarget).toBe('true');
+    expect(selectedRoot.dataset.pinned).toBe('true');
     expect(selectedRoot.dataset.nameOverflow).toBe('visible');
     expect(selectedRoot.dataset.projectId).toBe('project-one');
     expect(selectedRoot.hasAttribute('data-action')).toBe(false);

@@ -658,6 +658,73 @@ describe('TabBar wiring', () => {
       stop();
     });
 
+    it('reveals a selected peer beyond a pinned leading tab', async () => {
+      const root = bar();
+      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+      const pinned = root.querySelector<HTMLElement>(
+        '.kui-app-tab[data-tab-id="one"]',
+      )!;
+      pinned.dataset.pinned = 'true';
+      Object.defineProperty(strip, 'scrollWidth', { value: 300 });
+      Object.defineProperty(strip, 'clientWidth', { value: 180 });
+      const rect = (left: number, width: number) =>
+        ({ left, right: left + width, width }) as DOMRect;
+      vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 180));
+      vi.spyOn(pinned, 'getBoundingClientRect').mockReturnValue(rect(0, 60));
+      root
+        .querySelectorAll<HTMLElement>('[role="tab"]')
+        .forEach((tab, index) =>
+          vi
+            .spyOn(tab, 'getBoundingClientRect')
+            .mockImplementation(() => rect(index * 60 - strip.scrollLeft, 60)),
+        );
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      strip.scrollLeft = 100;
+      select(root, 'two');
+      await settle();
+      expect(strip.scrollLeft).toBe(0);
+      select(root, 'three');
+      await settle();
+      expect(strip.scrollLeft).toBe(0);
+      select(root, 'one');
+      await settle();
+      expect(strip.scrollLeft).toBe(0);
+      stop();
+    });
+
+    it('reveals both edges of a right-to-left strip behind a pinned tab', async () => {
+      const root = bar();
+      const strip = root.querySelector<HTMLElement>('[data-kui-tab-list]')!;
+      const pinned = root.querySelector<HTMLElement>(
+        '.kui-app-tab[data-tab-id="one"]',
+      )!;
+      const second = root.querySelector<HTMLElement>(
+        '.kui-app-tab[data-tab-id="two"] [role="tab"]',
+      )!;
+      const third = root.querySelector<HTMLElement>(
+        '.kui-app-tab[data-tab-id="three"] [role="tab"]',
+      )!;
+      strip.style.direction = 'rtl';
+      pinned.dataset.pinned = 'true';
+      Object.defineProperty(strip, 'scrollWidth', { value: 300 });
+      Object.defineProperty(strip, 'clientWidth', { value: 180 });
+      const rect = (left: number, width: number) =>
+        ({ left, right: left + width, width }) as DOMRect;
+      vi.spyOn(strip, 'getBoundingClientRect').mockReturnValue(rect(0, 180));
+      vi.spyOn(pinned, 'getBoundingClientRect').mockReturnValue(rect(120, 60));
+      vi.spyOn(second, 'getBoundingClientRect').mockReturnValue(rect(130, 60));
+      vi.spyOn(third, 'getBoundingClientRect').mockReturnValue(rect(-30, 60));
+      const stop = wireTabBars(root, { onReorder: vi.fn() });
+      strip.scrollLeft = -100;
+      select(root, 'two');
+      await settle();
+      expect(strip.scrollLeft).toBe(-30);
+      select(root, 'three');
+      await settle();
+      expect(strip.scrollLeft).toBe(-60);
+      stop();
+    });
+
     it('leaves a strip the user scrolled alone when the selection is unchanged', async () => {
       const root = bar();
       const strip = layout(root);

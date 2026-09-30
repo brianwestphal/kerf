@@ -163,6 +163,37 @@ export function TabBarDemo() {
           {overflowTabs}
         </TabBar>
       </CatalogExample>
+      <CatalogExample
+        label="Pinned leading tab"
+        note="Project grid remains in the tablist and stays visible while other tabs scroll beneath it."
+        align="none"
+        viewport={{ width: 'compact' }}
+      >
+        <TabBar id="pinned-tab-bar" label="Pinned project tabs">
+          <AppTab
+            id="project-grid"
+            name="Project grid"
+            pinned
+            selected
+            closable={false}
+          />
+          {[
+            'Backlog',
+            'Activity',
+            'Automations',
+            'Settings',
+            'Releases',
+            'Milestones',
+            'Reports',
+          ].map((name) => (
+            <AppTab
+              id={`pinned-${name.toLowerCase()}`}
+              name={name}
+              closable={false}
+            />
+          ))}
+        </TabBar>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

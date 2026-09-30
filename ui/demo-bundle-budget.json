@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 307500,
-  "measuredLargestJavaScriptGzip": 126041,
-  "measuredTotalJavaScriptGzip": 307452,
+  "totalJavaScriptGzip": 307800,
+  "measuredLargestJavaScriptGzip": 126038,
+  "measuredTotalJavaScriptGzip": 307751,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1459,6 +1459,22 @@
         "measuredTotalJavaScriptGzip": 307452,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 307500
+      }
+    },
+    {
+      "at": "2026-09-30T11:37:36.375Z",
+      "reason": "Pinned AppTab catalog example and scroll reveal",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 307452,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 307500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126038,
+        "measuredTotalJavaScriptGzip": 307751,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 307800
       }
     }
   ]

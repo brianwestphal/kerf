@@ -86,6 +86,12 @@ function tabsIn(bar: TabBarRoot): HTMLButtonElement[] {
 
 function reveal(tab: HTMLElement | null | undefined): void {
   tab?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  if (
+    tab
+      ?.closest('[data-kui-tab-list]')
+      ?.querySelector(':scope > .kui-app-tab[data-pinned="true"]')
+  )
+    revealInStrip(tab);
 }
 
 /**
@@ -99,12 +105,26 @@ function revealInStrip(tab: HTMLElement): void {
   if (!strip || strip.scrollWidth <= strip.clientWidth) return;
   const bounds = strip.getBoundingClientRect();
   const box = tab.getBoundingClientRect();
-  if (box.left < bounds.left) strip.scrollLeft -= bounds.left - box.left;
+  const pinned = strip.querySelector<HTMLElement>(
+    ':scope > .kui-app-tab[data-pinned="true"]',
+  );
+  if (pinned?.contains(tab)) return;
+  const pinnedBox = pinned?.getBoundingClientRect();
+  if (
+    strip.ownerDocument.defaultView?.getComputedStyle(strip).direction === 'rtl'
+  ) {
+    const right = pinnedBox
+      ? Math.min(bounds.right, pinnedBox.left)
+      : bounds.right;
+    if (box.right > right) strip.scrollLeft += box.right - right;
+    else if (box.left < bounds.left)
+      strip.scrollLeft -= Math.min(bounds.left - box.left, right - box.right);
+    return;
+  }
+  const left = pinnedBox ? Math.max(bounds.left, pinnedBox.right) : bounds.left;
+  if (box.left < left) strip.scrollLeft -= left - box.left;
   else if (box.right > bounds.right)
-    strip.scrollLeft += Math.min(
-      box.right - bounds.right,
-      box.left - bounds.left,
-    );
+    strip.scrollLeft += Math.min(box.right - bounds.right, box.left - left);
 }
 
 /** The selected tab button of every bar below root, keyed by bar. */

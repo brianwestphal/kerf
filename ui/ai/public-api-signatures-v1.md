@@ -960,6 +960,7 @@ type AppTabRootAttributes = Readonly<Record<`data-${string}`, string | undefined
     'data-attention'?: never;
     'data-drop-target'?: never;
     'data-name-overflow'?: never;
+    'data-pinned'?: never;
 }>;
 type AppTabPresentation = 'pill' | 'segmented' | 'icon-only';
 type AppTabSize = 'default' | 'compact';
@@ -972,6 +973,8 @@ interface AppTabProps {
     attention?: boolean;
     /** Highlight this tab as the target of a drag over its content. */
     dropTarget?: boolean;
+    /** Keep the leading tab visible within its TabBar tablist while peers scroll. */
+    pinned?: boolean;
     closable?: boolean;
     draggable?: boolean;
     leading?: KerfUiContent;
@@ -1006,7 +1009,7 @@ interface AppTabProps {
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function AppTab({ id, name, selected, attention, dropTarget, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, nameOverflow, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: AppTabProps): SafeHtml;
+declare function AppTab({ id, name, selected, attention, dropTarget, pinned, closable, draggable, leading, trailing, presentation, size, labelMaxWidth, nameOverflow, closeIcon, selectAction, closeAction, className, placeholder, pending, rootAttributes, slot, }: AppTabProps): SafeHtml;
 
 export { AppTab, type AppTabNameOverflow, type AppTabPresentation, type AppTabProps, type AppTabSize };
 ```

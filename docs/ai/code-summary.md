@@ -811,6 +811,9 @@ action while an adjacent `trailing` action follows its shrinkable, horizontally
 scrolling tabs; the component owns that split geometry. `AppTab.dropTarget`
 paints its highlight through public tokens independently of `aria-selected`,
 while `nameOverflow="visible"` removes the label width cap and ellipsis.
+`AppTab.pinned` uses sticky positioning and an opaque surface token within the
+scroll strip. `wireTabBars` accounts for its width when revealing focused or
+selected peers, including in right-to-left strips.
 `wireTabBars` resolves replacement focus by logical
 bar/tab identity after automatic keyboard activation synchronously rerenders a strip.
 Unit coverage in `ui/tests/unit/wire-tab-bars.test.ts` and the real-browser

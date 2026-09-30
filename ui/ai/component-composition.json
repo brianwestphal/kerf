@@ -2895,6 +2895,8 @@
           "--kui-app-tab-drop-target-color",
           "--kui-app-tab-drop-target-ring",
           "--kui-app-tab-hover-background",
+          "--kui-app-tab-pinned-background",
+          "--kui-app-tab-pinned-hover-background",
           "--kui-app-tab-selected-background",
           "--kui-app-tab-selected-border",
           "--kui-app-tab-selected-color",

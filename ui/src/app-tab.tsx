@@ -15,6 +15,7 @@ const PROTECTED_ROOT_DATA_ATTRIBUTES = new Set([
   'data-attention',
   'data-drop-target',
   'data-name-overflow',
+  'data-pinned',
 ]);
 
 type AppTabRootAttributes = Readonly<
@@ -28,6 +29,7 @@ type AppTabRootAttributes = Readonly<
     'data-attention'?: never;
     'data-drop-target'?: never;
     'data-name-overflow'?: never;
+    'data-pinned'?: never;
   }
 >;
 
@@ -43,6 +45,8 @@ export interface AppTabProps {
   attention?: boolean;
   /** Highlight this tab as the target of a drag over its content. */
   dropTarget?: boolean;
+  /** Keep the leading tab visible within its TabBar tablist while peers scroll. */
+  pinned?: boolean;
   closable?: boolean;
   draggable?: boolean;
   leading?: KerfUiContent;
@@ -100,6 +104,7 @@ export function AppTab({
   selected = false,
   attention = false,
   dropTarget = false,
+  pinned = false,
   closable = true,
   draggable = false,
   leading,
@@ -141,6 +146,7 @@ export function AppTab({
       data-selected={String(selected)}
       data-attention={attention ? 'true' : undefined}
       data-drop-target={dropTarget ? 'true' : undefined}
+      data-pinned={pinned ? 'true' : undefined}
       data-name-overflow={nameOverflow}
       data-presentation={presentation}
       data-size={size}

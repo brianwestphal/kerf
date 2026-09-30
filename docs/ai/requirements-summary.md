@@ -403,6 +403,9 @@ strip.
 The app can set `AppTab.dropTarget` during content drag-over to show a themed
 highlight independently of selection, and `nameOverflow="visible"` to display
 the full name during inline loading instead of the default ellipsis.
+`AppTab.pinned` keeps the leading tab visible inside the scrolling TabBar
+tablist, including its keyboard and selection semantics. Focus and controlled
+selection reveal peers beyond the pinned tab.
 
 The optional `createTokenSearchModel` grammar now gives rule suggestion callbacks
 both the unfinished value and the current committed token state, enabling

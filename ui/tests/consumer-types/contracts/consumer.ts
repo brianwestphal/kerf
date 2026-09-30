@@ -397,6 +397,7 @@ UI.AppTab({
   id: 'drop',
   name: 'Drop target',
   dropTarget: true,
+  pinned: true,
   nameOverflow: appTabNameOverflow,
 });
 // @ts-expect-error AppTab name overflow has a finite public vocabulary.

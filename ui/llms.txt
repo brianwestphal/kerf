@@ -421,6 +421,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   `dropTarget` highlights a drag-over without changing selection. `attention`
   uses `--kui-app-tab-attention-color`. TabBar's public
   `--kui-tab-bar-strip-*` tokens set compact strip geometry.
+  Set `pinned` on the first AppTab to keep it visible within a scrolling
+  tablist; it remains in keyboard order. Use `--kui-app-tab-pinned-background`
+  for the surrounding surface and keep that backdrop opaque.
 - **Use `Badge` for compact non-interactive metadata.** Configure its semantic
   tone, appearance, shape, and size instead of creating badge CSS in an app or
   consuming component. Use a real button or link for interactive content.

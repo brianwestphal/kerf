@@ -29,6 +29,28 @@
   align-items: center;
   flex: none;
 }
+.kui-app-tab[data-pinned="true"] {
+  position: sticky;
+  z-index: 1;
+  inset-inline-start: 0;
+  background: var(
+    --kui-app-tab-pinned-background,
+    var(--_kui-app-tab-pinned-default-background, var(--kui-color-surface))
+  );
+}
+.kui-tab-bar[data-presentation="segmented"] .kui-app-tab[data-pinned="true"],
+.kui-tab-bar[data-presentation="inspector"] .kui-app-tab[data-pinned="true"] {
+  --_kui-app-tab-pinned-default-background: var(
+    --kui-tab-bar-strip-background,
+    var(--kui-color-neutral-fill-quiet)
+  );
+}
+.kui-app-tab[data-pinned="true"]:not([data-selected="true"]):hover {
+  background: var(
+    --kui-app-tab-pinned-hover-background,
+    var(--kui-color-neutral-fill-quiet)
+  );
+}
 .kui-app-tab[data-size="compact"] {
   height: remify(32px);
 }
