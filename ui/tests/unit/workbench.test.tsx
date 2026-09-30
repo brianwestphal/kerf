@@ -82,6 +82,58 @@ describe('Workbench', () => {
     expect(html).toContain('<section id="wb-bottom-drawer"');
   });
 
+  it('projects panel transitions onto local selector state', () => {
+    const render = (collapsed: boolean, presentation: 'inline' | 'overlay') => {
+      const host = document.createElement('div');
+      host.innerHTML = String(
+        Workbench({
+          id: 'wb',
+          label: 'Studio',
+          main,
+          leftRail: {
+            content: panel('nav'),
+            collapsed,
+            presentation,
+            responsiveOverlayAt: 'compact',
+          },
+          bottomDrawer: {
+            content: panel('console'),
+            collapsed,
+            responsiveOverlayAt: 'narrow',
+          },
+        }),
+      );
+      return {
+        root: host.querySelector<HTMLElement>('.kui-workbench')!,
+        main: host.querySelector<HTMLElement>('[data-workbench-main]')!,
+      };
+    };
+    const open = render(false, 'inline');
+    expect(open.root.dataset).toMatchObject({
+      leftInlineExpanded: 'true',
+      leftResponsiveInline: 'compact',
+      leftResponsiveExpanded: 'compact',
+      responsiveOverlay: 'true',
+    });
+    expect(open.main.dataset).toMatchObject({
+      drawerInlineExpanded: 'true',
+      drawerResponsiveInline: 'narrow',
+    });
+    const closed = render(true, 'inline');
+    expect(closed.root.hasAttribute('data-left-inline-expanded')).toBe(false);
+    expect(closed.root.hasAttribute('data-left-responsive-expanded')).toBe(
+      false,
+    );
+    expect(closed.root.dataset.leftResponsiveInline).toBe('compact');
+    expect(closed.main.hasAttribute('data-drawer-inline-expanded')).toBe(false);
+    const overlay = render(false, 'overlay');
+    expect(overlay.root.dataset.railOverlayExpanded).toBe('true');
+    expect(overlay.root.hasAttribute('data-left-responsive-inline')).toBe(
+      false,
+    );
+    expect(overlay.root.hasAttribute('data-left-inline-expanded')).toBe(false);
+  });
+
   it('hides a collapsed panel, content and landmark, and leaves its restore control reachable', () => {
     const render = (collapsed: boolean) => {
       const root = document.createElement('div');
@@ -596,7 +648,7 @@ describe('Workbench', () => {
       (node) =>
         node.type === 'rule' &&
         normalize(node.selector) ===
-          '.kui-workbench:has(> .kui-workbench__rail[data-responsive-overlay-at], > .kui-workbench__center > .kui-workbench__drawer[data-responsive-overlay-at])',
+          '.kui-workbench[data-responsive-overlay="true"]',
     );
     expect(container?.type === 'rule' && container.toString()).toContain(
       'container: kui-workbench / inline-size',
@@ -672,12 +724,40 @@ describe('Workbench', () => {
       });
       // The work area keeps its bottom safe-area inset under the overlay.
       expect(
-        decls(
-          `.kui-workbench__main:has(~ .kui-workbench__drawer[data-responsive-overlay-at="${at}"][data-presentation="inline"])`,
-        ),
+        decls(`.kui-workbench__main[data-drawer-responsive-inline="${at}"]`),
       ).toEqual({
-        '--kui-edge-inset-block-end': 'var(--_kui-workbench-safe-block-end)',
+        '--_kui-workbench-content-edge-block-end':
+          'var( --_kui-workbench-safe-block-end )',
       });
+    }
+  });
+
+  it('limits edge-context matching to region and known component roots', async () => {
+    const file = resolve(import.meta.dirname, '../../src/workbench.css');
+    const css = postcss.parse(await readFile(file, 'utf8'), { from: file });
+    const selectors: string[] = [];
+    css.walkRules((rule) => {
+      selectors.push(rule.selector);
+    });
+    expect(selectors.join('\n')).not.toMatch(
+      /\.kui-workbench__(?:main|panel-content)\s*>\s*:not\(/,
+    );
+    expect(
+      selectors.filter((selector) => selector.includes(':has(')),
+    ).toHaveLength(1);
+    expect(selectors.join('\n')).toContain('[data-component="workbench"]');
+    for (const component of [
+      'pane',
+      'nav-stack',
+      'split-view',
+      'tab-scaffold',
+    ]) {
+      const own = await readFile(
+        resolve(import.meta.dirname, `../../src/${component}.css`),
+        'utf8',
+      );
+      expect(own).toContain(`> [data-component="${component}"]:only-child`);
+      expect(own).toContain('--_kui-workbench-content-edge-block-start');
     }
   });
 

@@ -224,4 +224,10 @@
 :is([data-workbench-main], [data-workbench-panel-content])
   > [data-component="nav-stack"]:only-child {
   height: 100%;
+  --kui-edge-inset-block-start: var(--_kui-workbench-content-edge-block-start);
+  --kui-edge-inset-block-end: var(--_kui-workbench-content-edge-block-end);
+  --kui-edge-inset-inline-start: var(
+    --_kui-workbench-content-edge-inline-start
+  );
+  --kui-edge-inset-inline-end: var(--_kui-workbench-content-edge-inline-end);
 }

@@ -338,6 +338,18 @@ function hiddenFromAccessibility(panel: WorkbenchPanel) {
 const responsiveAt = (at: WorkbenchResponsiveOverlayAt | undefined) =>
   at === 'never' ? undefined : at;
 
+const inline = (panel: WorkbenchPanel | undefined) =>
+  Boolean(panel && (panel.presentation ?? 'inline') === 'inline');
+
+const expanded = (panel: WorkbenchPanel | undefined) =>
+  Boolean(panel && !panel.collapsed);
+
+const responsiveRail = (panel: WorkbenchPanel | undefined) =>
+  panel ? responsiveAt(panel.responsiveOverlayAt ?? 'narrow') : undefined;
+
+const responsiveDrawer = (panel: WorkbenchPanel | undefined) =>
+  panel ? responsiveAt(panel.responsiveOverlayAt) : undefined;
+
 function Rail({
   id,
   side,
@@ -511,6 +523,41 @@ export function Workbench({
       data-main-min-height={
         mainMinBlock === undefined ? undefined : String(mainMinBlock)
       }
+      data-left-inline-expanded={
+        inline(leftRail) && expanded(leftRail) ? 'true' : undefined
+      }
+      data-right-inline-expanded={
+        inline(rightRail) && expanded(rightRail) ? 'true' : undefined
+      }
+      data-left-responsive-inline={
+        inline(leftRail) ? responsiveRail(leftRail) : undefined
+      }
+      data-right-responsive-inline={
+        inline(rightRail) ? responsiveRail(rightRail) : undefined
+      }
+      data-left-responsive-expanded={
+        inline(leftRail) && expanded(leftRail)
+          ? responsiveRail(leftRail)
+          : undefined
+      }
+      data-right-responsive-expanded={
+        inline(rightRail) && expanded(rightRail)
+          ? responsiveRail(rightRail)
+          : undefined
+      }
+      data-rail-overlay-expanded={
+        (leftRail?.presentation === 'overlay' && expanded(leftRail)) ||
+        (rightRail?.presentation === 'overlay' && expanded(rightRail))
+          ? 'true'
+          : undefined
+      }
+      data-responsive-overlay={
+        responsiveRail(leftRail) ||
+        responsiveRail(rightRail) ||
+        responsiveDrawer(bottomDrawer)
+          ? 'true'
+          : undefined
+      }
       style={style || undefined}
       aria-label={label}
       slot={slot}
@@ -526,6 +573,12 @@ export function Workbench({
         <div
           class="kui-workbench__main"
           data-workbench-main
+          data-drawer-inline-expanded={
+            inline(bottomDrawer) && expanded(bottomDrawer) ? 'true' : undefined
+          }
+          data-drawer-responsive-inline={
+            inline(bottomDrawer) ? responsiveDrawer(bottomDrawer) : undefined
+          }
           data-appearance={
             !mainToolbar &&
             !mainBottomToolbar &&

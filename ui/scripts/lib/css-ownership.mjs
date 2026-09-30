@@ -104,13 +104,6 @@ export const ownershipExceptions = [
     reason: EDGE_INSET_CONTEXT,
   },
   {
-    file: 'workbench.css',
-    rule: 'context-on-child',
-    selector: '.kui-workbench__main > :not(',
-    property: '--kui-edge-inset-',
-    reason: EDGE_INSET_CONTEXT,
-  },
-  {
     file: 'toolbar.css',
     rule: 'context-on-child',
     selector: '.kui-toolbar > *',

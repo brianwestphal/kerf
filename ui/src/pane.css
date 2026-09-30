@@ -244,6 +244,12 @@
 :is([data-workbench-main], [data-workbench-panel-content])
   > [data-component="pane"]:only-child {
   height: 100%;
+  --kui-edge-inset-block-start: var(--_kui-workbench-content-edge-block-start);
+  --kui-edge-inset-block-end: var(--_kui-workbench-content-edge-block-end);
+  --kui-edge-inset-inline-start: var(
+    --_kui-workbench-content-edge-inline-start
+  );
+  --kui-edge-inset-inline-end: var(--_kui-workbench-content-edge-inline-end);
 }
 
 /* As the only child of a NavStack view or a TabScaffold scene, a Pane fills

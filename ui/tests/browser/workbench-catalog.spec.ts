@@ -121,6 +121,48 @@ test('catalogs Workbench public geometry and controlled collapse', async ({
     });
 });
 
+test('raw regions consume safe-area context while a sole Pane receives it', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/?component=workbench');
+  const raw = page.locator('#catalog-workbench-full');
+  const composed = page.locator('#catalog-workbench-collapsed');
+  for (const workbench of [raw, composed])
+    await workbench.evaluate((element) => {
+      element.style.setProperty('--kui-edge-inset-block-start', '14px');
+    });
+  const rawMain = raw.locator('[data-workbench-main]');
+  await expect(rawMain).toHaveCSS('padding-top', '14px');
+  expect(
+    await rawMain
+      .locator(':scope > *')
+      .first()
+      .evaluate((element) =>
+        window
+          .getComputedStyle(element)
+          .getPropertyValue('--kui-edge-inset-block-start')
+          .trim(),
+      ),
+  ).toBe('0px');
+  const rawPanel = raw.locator(
+    '[data-workbench-rail="left"] > [data-workbench-panel-content]',
+  );
+  await expect(rawPanel).toHaveCSS('padding-top', '14px');
+  const paneMain = composed.locator('[data-workbench-main]');
+  await expect(paneMain).toHaveCSS('padding-top', '0px');
+  expect(
+    await paneMain
+      .locator(':scope > [data-component="pane"]')
+      .evaluate((element) =>
+        window
+          .getComputedStyle(element)
+          .getPropertyValue('--kui-edge-inset-block-start')
+          .trim(),
+      ),
+  ).toBe('14px');
+});
+
 test('bottom drawer opens and closes monotonically from one bottom anchor', async ({
   page,
 }) => {
@@ -948,6 +990,9 @@ test.describe('resizable Workbench panels', () => {
     // restore control floats.
     await inspector.evaluate((element) => {
       element.dataset.presentation = 'overlay';
+      element
+        .closest('.kui-workbench')!
+        .setAttribute('data-rail-overlay-expanded', 'true');
     });
     await expect(inspector).toHaveCSS('position', 'absolute');
     const topmost = () =>
@@ -976,6 +1021,9 @@ test.describe('resizable Workbench panels', () => {
     // control beneath it is visible and usable again.
     await inspector.evaluate((element) => {
       element.dataset.collapsed = 'true';
+      element
+        .closest('.kui-workbench')!
+        .removeAttribute('data-rail-overlay-expanded');
     });
     await expect.poll(topmost).toBe('restore');
     await restore.click();

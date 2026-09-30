@@ -91,21 +91,11 @@
   flex-direction: column;
 }
 
-.kui-workbench:has(
-    > .kui-workbench__rail--left[data-presentation="inline"]:not(
-        [data-collapsed="true"]
-      )
-  )
-  > .kui-workbench__center {
+.kui-workbench[data-left-inline-expanded="true"] > .kui-workbench__center {
   --kui-edge-inset-inline-start: 0px;
 }
 
-.kui-workbench:has(
-    > .kui-workbench__rail--right[data-presentation="inline"]:not(
-        [data-collapsed="true"]
-      )
-  )
-  > .kui-workbench__center {
+.kui-workbench[data-right-inline-expanded="true"] > .kui-workbench__center {
   --kui-edge-inset-inline-end: 0px;
 }
 
@@ -144,18 +134,35 @@
   );
 }
 
-.kui-workbench__main:has(
-  ~ .kui-workbench__drawer[data-presentation="inline"]:not(
-      [data-collapsed="true"]
-    )
-) {
-  --kui-edge-inset-block-end: 0px;
+.kui-workbench__main[data-drawer-inline-expanded="true"] {
+  --_kui-workbench-content-edge-block-end: 0px;
 }
 
 /* The main area and each panel's content are the consumers: they pad for the
    edges their region still touches, the main area inside its scroller so
    content scrolls under an unsafe edge but can always be scrolled clear. A
    region whose only child is a Pane or layout lets that child own the insets. */
+.kui-workbench__center,
+.kui-workbench__rail,
+.kui-workbench__drawer {
+  --_kui-workbench-content-edge-block-start: var(--kui-edge-inset-block-start);
+  --_kui-workbench-content-edge-block-end: var(--kui-edge-inset-block-end);
+  --_kui-workbench-content-edge-inline-start: var(
+    --kui-edge-inset-inline-start
+  );
+  --_kui-workbench-content-edge-inline-end: var(--kui-edge-inset-inline-end);
+}
+
+.kui-workbench__main,
+.kui-workbench__panel-content {
+  /* Clear the public context at the region, so arbitrary app children inherit
+     zero without a selector whose subject is every child in the document. */
+  --kui-edge-inset-block-start: 0px;
+  --kui-edge-inset-block-end: 0px;
+  --kui-edge-inset-inline-start: 0px;
+  --kui-edge-inset-inline-end: 0px;
+}
+
 .kui-workbench__main:not(
   :has(
     > :is(
@@ -178,44 +185,24 @@
       ):only-child
   )
 ) {
-  padding-block: var(--kui-edge-inset-block-start)
-    var(--kui-edge-inset-block-end);
-  padding-inline: var(--kui-edge-inset-inline-start)
-    var(--kui-edge-inset-inline-end);
-  scroll-padding-block: var(--kui-edge-inset-block-start)
-    var(--kui-edge-inset-block-end);
+  padding-block: var(--_kui-workbench-content-edge-block-start)
+    var(--_kui-workbench-content-edge-block-end);
+  padding-inline: var(--_kui-workbench-content-edge-inline-start)
+    var(--_kui-workbench-content-edge-inline-end);
+  scroll-padding-block: var(--_kui-workbench-content-edge-block-start)
+    var(--_kui-workbench-content-edge-block-end);
 }
 
-/* Every other child sees a cleared context. The exemption is tested on the
-   child itself, never as `region:not(:has(…)) > *`: a `:has()` before a
-   universal child makes each child of the region re-check the region's
-   `:has()` on every DOM change (~46ms per restyle for 1000 rows in Chromium).
-   SplitView, NavStack, TabScaffold, and CollapsiblePanel content use the same
-   shape. */
-.kui-workbench__main
-  > :not(
-    :is(
-      [data-component="pane"],
-      [data-component="nav-stack"],
-      [data-component="split-view"],
-      [data-component="workbench"],
-      [data-component="tab-scaffold"]
-    ):only-child
-  ),
-.kui-workbench__panel-content
-  > :not(
-    :is(
-      [data-component="pane"],
-      [data-component="nav-stack"],
-      [data-component="split-view"],
-      [data-component="workbench"],
-      [data-component="tab-scaffold"]
-    ):only-child
-  ) {
-  --kui-edge-inset-block-start: 0px;
-  --kui-edge-inset-block-end: 0px;
-  --kui-edge-inset-inline-start: 0px;
-  --kui-edge-inset-inline-end: 0px;
+/* A nested Workbench owns its safe-area insets. Other sole layout children
+   restore this context from their own stylesheets. */
+:is(.kui-workbench__main, .kui-workbench__panel-content)
+  > [data-component="workbench"]:only-child {
+  --kui-edge-inset-block-start: var(--_kui-workbench-content-edge-block-start);
+  --kui-edge-inset-block-end: var(--_kui-workbench-content-edge-block-end);
+  --kui-edge-inset-inline-start: var(
+    --_kui-workbench-content-edge-inline-start
+  );
+  --kui-edge-inset-inline-end: var(--_kui-workbench-content-edge-inline-end);
 }
 
 /* A region whose only child is a Pane or layout lets it fill the region, so a
@@ -613,10 +600,7 @@
    `responsiveFillAt`), and inline above it. The Workbench becomes a named
    inline-size container only when a panel opts in. The work area keeps its
    safe-area inset under an overlay panel. */
-.kui-workbench:has(
-  > .kui-workbench__rail[data-responsive-overlay-at],
-  > .kui-workbench__center > .kui-workbench__drawer[data-responsive-overlay-at]
-) {
+.kui-workbench[data-responsive-overlay="true"] {
   container: kui-workbench / inline-size;
 }
 
@@ -656,16 +640,12 @@
     display: none;
   }
 
-  .kui-workbench:has(
-      > .kui-workbench__rail--left[data-responsive-overlay-at="narrow"][data-presentation="inline"]
-    )
+  .kui-workbench[data-left-responsive-inline="narrow"]
     > .kui-workbench__center {
     --kui-edge-inset-inline-start: var(--_kui-workbench-safe-inline-start);
   }
 
-  .kui-workbench:has(
-      > .kui-workbench__rail--right[data-responsive-overlay-at="narrow"][data-presentation="inline"]
-    )
+  .kui-workbench[data-right-responsive-inline="narrow"]
     > .kui-workbench__center {
     --kui-edge-inset-inline-end: var(--_kui-workbench-safe-inline-end);
   }
@@ -699,10 +679,10 @@
     display: none;
   }
 
-  .kui-workbench__main:has(
-    ~ .kui-workbench__drawer[data-responsive-overlay-at="narrow"][data-presentation="inline"]
-  ) {
-    --kui-edge-inset-block-end: var(--_kui-workbench-safe-block-end);
+  .kui-workbench__main[data-drawer-responsive-inline="narrow"] {
+    --_kui-workbench-content-edge-block-end: var(
+      --_kui-workbench-safe-block-end
+    );
   }
 }
 
@@ -742,16 +722,12 @@
     display: none;
   }
 
-  .kui-workbench:has(
-      > .kui-workbench__rail--left[data-responsive-overlay-at="compact"][data-presentation="inline"]
-    )
+  .kui-workbench[data-left-responsive-inline="compact"]
     > .kui-workbench__center {
     --kui-edge-inset-inline-start: var(--_kui-workbench-safe-inline-start);
   }
 
-  .kui-workbench:has(
-      > .kui-workbench__rail--right[data-responsive-overlay-at="compact"][data-presentation="inline"]
-    )
+  .kui-workbench[data-right-responsive-inline="compact"]
     > .kui-workbench__center {
     --kui-edge-inset-inline-end: var(--_kui-workbench-safe-inline-end);
   }
@@ -785,10 +761,10 @@
     display: none;
   }
 
-  .kui-workbench__main:has(
-    ~ .kui-workbench__drawer[data-responsive-overlay-at="compact"][data-presentation="inline"]
-  ) {
-    --kui-edge-inset-block-end: var(--_kui-workbench-safe-block-end);
+  .kui-workbench__main[data-drawer-responsive-inline="compact"] {
+    --_kui-workbench-content-edge-block-end: var(
+      --_kui-workbench-safe-block-end
+    );
   }
 }
 
@@ -894,20 +870,15 @@
    the open rail), so the overlay's own floating controls stay; FloatingToolbar
    and the layouts' restore corners read it. A direct child
    resolves the Workbench's own container query, never a nested one's. */
-.kui-workbench:has(
-    > .kui-workbench__rail[data-presentation="overlay"]:not(
-        [data-collapsed="true"]
-      )
-  )
+.kui-workbench[data-rail-overlay-expanded="true"]
   > :is(.kui-workbench__center, .kui-workbench__restore) {
   --_kui-workbench-covered: hidden;
 }
 
 @container kui-workbench (max-width: remify(704px)) {
-  .kui-workbench:has(
-      > .kui-workbench__rail[data-responsive-overlay-at="narrow"][data-presentation="inline"]:not(
-          [data-collapsed="true"]
-        )
+  .kui-workbench:is(
+      [data-left-responsive-expanded="narrow"],
+      [data-right-responsive-expanded="narrow"]
     )
     > :is(.kui-workbench__center, .kui-workbench__restore) {
     --_kui-workbench-covered: hidden;
@@ -915,10 +886,9 @@
 }
 
 @container kui-workbench (max-width: remify(448px)) {
-  .kui-workbench:has(
-      > .kui-workbench__rail[data-responsive-overlay-at="compact"][data-presentation="inline"]:not(
-          [data-collapsed="true"]
-        )
+  .kui-workbench:is(
+      [data-left-responsive-expanded="compact"],
+      [data-right-responsive-expanded="compact"]
     )
     > :is(.kui-workbench__center, .kui-workbench__restore) {
     --_kui-workbench-covered: hidden;

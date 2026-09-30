@@ -559,6 +559,13 @@ takes that edge away, and collapsing it (or presenting it as an overlay) hands
 the edge back. A region whose only child is a `Pane` or layout lets that child
 own the insets. See [Choosing an app layout › Safe areas](app-layouts.md#safe-areas).
 
+Workbench projects panel presentation, collapse, and responsive breakpoint
+state onto its own region attributes. Its stylesheet then matches those local
+attributes instead of searching descendants during list updates. It clears the
+edge context on each region, while a sole Pane or layout child receives the
+insets it owns. Applications still pass arbitrary `main` and panel content;
+they need no marker classes or extra wrappers.
+
 ## How the collapse animates
 
 Collapsing snaps the panel's flex track to zero in a single reflow (so the work

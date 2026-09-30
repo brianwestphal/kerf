@@ -2551,11 +2551,13 @@ describe('production UI primitives', () => {
     // the rail's siblings only: the work area and the restore corners.
     const workbench = flags(source('workbench.css'), 'workbench');
     expect(workbench).toHaveLength(3);
-    expect(workbench[0]).toContain(
-      '.kui-workbench__rail[data-presentation="overlay"]:not( [data-collapsed="true"] )',
+    expect(workbench[0]).toContain('[data-rail-overlay-expanded="true"]');
+    expect(workbench[1]).toContain('[data-left-responsive-expanded="narrow"]');
+    expect(workbench[1]).toContain('[data-right-responsive-expanded="narrow"]');
+    expect(workbench[2]).toContain('[data-left-responsive-expanded="compact"]');
+    expect(workbench[2]).toContain(
+      '[data-right-responsive-expanded="compact"]',
     );
-    expect(workbench[1]).toContain('[data-responsive-overlay-at="narrow"]');
-    expect(workbench[2]).toContain('[data-responsive-overlay-at="compact"]');
     for (const selector of workbench)
       expect(selector).toMatch(
         /> :is\(\.kui-workbench__center, \.kui-workbench__restore\)$/,
@@ -2566,7 +2568,7 @@ describe('production UI primitives', () => {
       ['@container kui-workbench (max-width: remify(448px))', 'compact'],
     ]) {
       const flagged = container.indexOf(
-        `[data-responsive-overlay-at="${at}"][data-presentation="inline"]:not( [data-collapsed="true"] ) ) > :is(`,
+        `[data-right-responsive-expanded="${at}"] ) > :is(`,
       );
       expect(flagged).toBeGreaterThan(0);
       // The nearest enclosing at-rule is that breakpoint's container query.
