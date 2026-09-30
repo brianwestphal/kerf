@@ -19,7 +19,10 @@
   position: relative;
   display: grid;
   min-height: remify(40.8px);
-  padding-block: remify(8px);
+  padding-block: var(
+    --kui-value-table-row-padding-block,
+    var(--_kui-value-table-density-padding-block, remify(8px))
+  );
   padding-inline: var(--_kui-value-table-inline-padding);
   box-sizing: border-box;
   /* Two content-sized tracks share the free space equally, and each stops
@@ -29,9 +32,19 @@
      when both are long they split the row. A `1fr` value track would get
      nothing until the label reached its full width, starving the value to 0px
      beside a long single-word label. */
-  grid-template-columns: minmax(0, auto) minmax(0, auto);
+  grid-template-columns: var(
+    --kui-value-table-row-columns,
+    minmax(0, auto) minmax(0, auto)
+  );
   align-items: center;
-  gap: var(--kui-layout-item-gap, remify(8px));
+  gap: var(
+    --kui-value-table-row-gap,
+    var(--_kui-value-table-density-gap, var(--kui-layout-item-gap, remify(8px)))
+  );
+}
+.kui-value-table[data-density="compact"] .kui-value-table__row {
+  --_kui-value-table-density-padding-block: remify(4px);
+  --_kui-value-table-density-gap: remify(4px);
 }
 .kui-value-table__row[data-has-icon="true"] {
   --_kui-value-table-separator-start: calc(

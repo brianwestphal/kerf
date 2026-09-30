@@ -38,6 +38,7 @@ Exact prop names and types: [`@kerfjs/ui/text`](../public-api-signatures-v1.md#k
 - default, quiet, or danger tone
 - compact, default, large, or xlarge size
 - default or monospace font
+- flush item geometry and tight line height
 
 ## Composition
 
@@ -55,7 +56,7 @@ No wiring helper.
 
 Margin: none · border: self · padding: self (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; span has no margin, border, or padding.
+- Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; flush removes the border and padding. Tight line height is available for compact copy. Span has no margin, border, or padding.
 
 ## Accessibility
 

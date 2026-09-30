@@ -50,6 +50,11 @@ export function TextDemo() {
         <Text size="large">Large body copy</Text>
         <Text size="xlarge">Extra large body copy</Text>
       </CatalogExample>
+      <CatalogExample label="Flush dialog copy" align="none">
+        <Text flush lineHeight="tight" data-demo-copy="flush">
+          Compact supporting copy inside a dialog body.
+        </Text>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

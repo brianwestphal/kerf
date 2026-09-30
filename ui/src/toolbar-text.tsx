@@ -1,7 +1,8 @@
 import { em } from './css-values.js';
 import { Skeleton } from './skeleton.js';
 
-export type ToolbarTextSize = 'xlarge' | 'large' | 'default' | 'small';
+export type ToolbarTextSize =
+  'xlarge' | 'large' | 'default' | 'small' | 'xsmall';
 
 /** ARIA heading level for a title exposed as a heading landmark. */
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;

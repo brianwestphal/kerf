@@ -718,6 +718,9 @@ describe('production UI primitives', () => {
     ).toContain(
       '<h2 class="kui-text" data-component="text" data-tone="default" data-size="xlarge"',
     );
+    expect(
+      asHtml(Text({ flush: true, lineHeight: 'tight', children: 'Copy' })),
+    ).toContain('data-flush="true" data-line-height="tight"');
   });
 
   it('renders nullable and recursively nested semantic children without a Fragment', () => {
@@ -1548,6 +1551,16 @@ describe('production UI primitives', () => {
     );
     expect(values).toContain('class="kui-value-table dense"');
     expect(values).toContain('aria-label="Metadata"');
+    expect(values).toContain('data-density="default"');
+    expect(
+      asHtml(
+        ValueTable({
+          label: 'Compact',
+          density: 'compact',
+          children: plainRow,
+        }),
+      ),
+    ).toContain('data-density="compact"');
     expect(asHtml(plainRow)).toContain('data-has-icon="false"');
     expect(asHtml(plainRow)).not.toContain('kui-value-table__icon');
     expect(iconRow).toContain(
@@ -1562,6 +1575,9 @@ describe('production UI primitives', () => {
   it('exposes optional heading semantics for page/section titles', () => {
     // ToolbarText opts into role="heading" + aria-level via headingLevel.
     const plainText = asHtml(ToolbarText({ text: 'Section' }));
+    expect(asHtml(ToolbarText({ text: 'Rail', size: 'xsmall' }))).toContain(
+      'data-size="xsmall"',
+    );
     expect(plainText).not.toContain('role="heading"');
     expect(plainText).not.toContain('aria-level');
     const heading = asHtml(

@@ -8,6 +8,7 @@ export type TextTone = 'default' | 'quiet' | 'danger';
 export type TextSize = 'compact' | 'default' | 'large' | 'xlarge';
 export type TextFont = 'default' | 'monospace';
 export type TextBorder = 'transparent' | 'none';
+export type TextLineHeight = 'default' | 'tight';
 
 export type TextContent =
   KerfUiContent | string | number | readonly TextContent[];
@@ -26,6 +27,10 @@ export type TextProps = Omit<
   font?: TextFont;
   /** Transparent alignment border or no border when embedded in owner chrome. */
   border?: TextBorder;
+  /** Remove the block variant's item padding and border in compact content. */
+  flush?: boolean;
+  /** Use compact leading for short dialog or metadata copy. */
+  lineHeight?: TextLineHeight;
   children: TextContent;
   class?: string;
   className?: string;
@@ -42,6 +47,8 @@ export function Text({
   size = 'default',
   font = 'default',
   border = 'transparent',
+  flush = false,
+  lineHeight = 'default',
   children,
   class: classValue = '',
   className = '',
@@ -57,6 +64,8 @@ export function Text({
       data-size={size}
       data-font={font}
       data-border={border}
+      data-flush={flush ? 'true' : undefined}
+      data-line-height={lineHeight === 'tight' ? 'tight' : undefined}
     >
       {children}
     </Variant>

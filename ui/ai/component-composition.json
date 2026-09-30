@@ -1665,6 +1665,7 @@
         "publicTokens": [
           "--kui-color-neutral-on-quiet",
           "--kui-color-text",
+          "--kui-font-2xs",
           "--kui-font-2xl",
           "--kui-font-l",
           "--kui-font-m",
@@ -1715,7 +1716,7 @@
           "border": "self",
           "padding": "self",
           "notes": [
-            "Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; span has no margin, border, or padding."
+            "Block Text variants reset native margins and add a 1px transparent border plus the standard 8px item padding; flush removes the border and padding. Tight line height is available for compact copy. Span has no margin, border, or padding."
           ]
         }
       },
@@ -1843,7 +1844,10 @@
           "--kui-space-2xs",
           "--kui-value-table-background",
           "--kui-value-table-border",
-          "--kui-value-table-icon-size"
+          "--kui-value-table-icon-size",
+          "--kui-value-table-row-columns",
+          "--kui-value-table-row-padding-block",
+          "--kui-value-table-row-gap"
         ]
       },
       "diagnostics": [],
@@ -3116,6 +3120,7 @@
           "--kui-radius-pill",
           "--kui-token-search-background",
           "--kui-token-search-border",
+          "--kui-token-search-editor-min-width",
           "--kui-token-search-line-size",
           "--kui-token-search-token-background",
           "--kui-token-search-token-foreground",

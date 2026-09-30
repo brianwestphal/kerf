@@ -208,7 +208,7 @@ export { Sides, Toolbar, type ToolbarConfig, type ToolbarProps };
 ```ts
 import * as kerfjs from 'kerfjs';
 
-type ToolbarTextSize = 'xlarge' | 'large' | 'default' | 'small';
+type ToolbarTextSize = 'xlarge' | 'large' | 'default' | 'small' | 'xsmall';
 /** ARIA heading level for a title exposed as a heading landmark. */
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 interface ToolbarTextBaseProps {
@@ -911,12 +911,14 @@ declare function ValueTableRow({ label, value, icon, className, placeholder, slo
 
 interface ValueTableProps {
     label: string;
+    /** Compact row spacing for metadata-dense surfaces. */
+    density?: 'default' | 'compact';
     className?: string;
     children: KerfUiContent;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
-declare function ValueTable({ label, className, children, slot, }: ValueTableProps): kerfjs.SafeHtml;
+declare function ValueTable({ label, density, className, children, slot, }: ValueTableProps): kerfjs.SafeHtml;
 
 export { ValueTable, type ValueTableProps, ValueTableRow, type ValueTableRowProps };
 ```
@@ -3082,6 +3084,7 @@ type TextTone = 'default' | 'quiet' | 'danger';
 type TextSize = 'compact' | 'default' | 'large' | 'xlarge';
 type TextFont = 'default' | 'monospace';
 type TextBorder = 'transparent' | 'none';
+type TextLineHeight = 'default' | 'tight';
 type TextContent = KerfUiContent | string | number | readonly TextContent[];
 type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
     /** Native heading, paragraph, or inline span element to render. Defaults to `p`. */
@@ -3094,6 +3097,10 @@ type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
     font?: TextFont;
     /** Transparent alignment border or no border when embedded in owner chrome. */
     border?: TextBorder;
+    /** Remove the block variant's item padding and border in compact content. */
+    flush?: boolean;
+    /** Use compact leading for short dialog or metadata copy. */
+    lineHeight?: TextLineHeight;
     children: TextContent;
     class?: string;
     className?: string;
@@ -3103,9 +3110,9 @@ type TextProps = Omit<KerfBaseAttrs, 'children' | 'class' | 'className'> & {
  * content-item padding; `span` adds no box geometry.
  * All ordinary native heading/paragraph attributes pass through to the element.
  */
-declare function Text({ variant: Variant, tone, size, font, border, children, class: classValue, className, ...attributes }: TextProps): kerfjs.SafeHtml;
+declare function Text({ variant: Variant, tone, size, font, border, flush, lineHeight, children, class: classValue, className, ...attributes }: TextProps): kerfjs.SafeHtml;
 
-export { Text, type TextBorder, type TextContent, type TextFont, type TextProps, type TextSize, type TextTone, type TextVariant };
+export { Text, type TextBorder, type TextContent, type TextFont, type TextLineHeight, type TextProps, type TextSize, type TextTone, type TextVariant };
 ```
 
 ## `@kerfjs/ui/row`

@@ -24,6 +24,9 @@ whose child is a `Workbench`, `SplitView`, `NavStack`, or another percentage-
 height shell. Ordinary document-flow pages can import the baseline without the
 class. Do not put `.kui-app-root` on several sibling containers: each requests
 the full available document height.
+The class sets `height: 100%`, not a viewport minimum; the direct child shell
+must also fill its parent (for example with its `fill` prop). If the host page
+already supplies a definite height, use that host geometry instead.
 
 `kui-app-root` is the public class of the component catalog's
 `document-baseline` entry, so `kerf-ui-doctor` and the

@@ -17,6 +17,12 @@ export function ValueTableDemo() {
           <ValueTableRow label="Styles" value="Explicit CSS subpaths" />
         </ValueTable>
       </CatalogExample>
+      <CatalogExample label="Compact metadata" align="none">
+        <ValueTable label="Connection metadata" density="compact">
+          <ValueTableRow label="Host" value="localhost" />
+          <ValueTableRow label="Port" value="5432" />
+        </ValueTable>
+      </CatalogExample>
       <CatalogExample
         label="Placeholder"
         note={

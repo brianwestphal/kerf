@@ -48,7 +48,7 @@
 
 .kui-token-search__editor {
   grid-column: 2;
-  min-width: remify(80px);
+  min-width: var(--kui-token-search-editor-min-width, 0px);
   min-height: var(--kui-token-search-line-size);
   padding-block: calc((var(--kui-token-search-line-size) - 1.35em) / 2) 0;
   box-sizing: border-box;

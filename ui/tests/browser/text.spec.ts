@@ -194,7 +194,8 @@ test('Text font="monospace" resolves to the Kerf code stack with Web Awesome loa
   const mono = page.locator('.kui-text[data-font="monospace"]').first();
   await expect(mono).toBeVisible();
   // WebKit serializes family names without quotes; compare unquoted.
-  const unquote = (value: string) => value.replaceAll('"', '').trim();
+  const unquote = (value: string) =>
+    value.replaceAll('"', '').replace(/\s+/g, ' ').trim();
   const stack =
     'ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace';
   // Web Awesome's own `ui-monospace, monospace` must not replace the stack,

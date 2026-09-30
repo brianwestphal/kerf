@@ -174,6 +174,15 @@ an upstream component or recipe request.
 
 ## Ambiguous choices
 
+For compact dialog copy, use `Text flush lineHeight="tight"`; block Text still
+resets native margins. `ValueTable density="compact"` reduces row padding and
+gap. Its `--kui-value-table-row-columns`, `--kui-value-table-row-padding-block`,
+and `--kui-value-table-row-gap` tokens support a specific metadata layout.
+Use `ToolbarText size="xsmall"` for a dense rail heading. A
+`TokenSearchField` editor can shrink to zero minimum width inside a narrow
+group; set `--kui-token-search-editor-min-width` only when a wider editor is
+required.
+
 - `Toolbar` serves persistent app chrome and headings; the zone contents and accessible naming distinguish the purpose.
 - `TabBar` changes tabpanels and supports overflow/reorder; `SegmentedControl` chooses among a few compact views; `Select` handles a longer value list.
 

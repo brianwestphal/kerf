@@ -75,6 +75,10 @@
   font-size: var(--kui-font-xs);
 }
 
+.kui-toolbar-text[data-size="xsmall"] {
+  font-size: var(--kui-font-2xs);
+}
+
 /* Single line, no ellipsis: hard-clip the overflow instead of showing …. */
 .kui-toolbar-text[data-ellipsis="false"] .kui-toolbar-text__text {
   text-overflow: clip;

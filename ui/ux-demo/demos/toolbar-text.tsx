@@ -19,6 +19,9 @@ export function ToolbarTextDemo() {
       <CatalogExample label="Small" align="inline-control">
         <ToolbarText text="read-only" size="small" />
       </CatalogExample>
+      <CatalogExample label="Extra small" align="inline-control">
+        <ToolbarText text="rail heading" size="xsmall" />
+      </CatalogExample>
       <CatalogExample
         label="Placeholder"
         note="A loading label skeletons its text while keeping its type slot."

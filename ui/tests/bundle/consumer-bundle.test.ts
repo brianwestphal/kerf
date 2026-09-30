@@ -901,8 +901,10 @@ describe('consumer bundle boundaries', () => {
     expect(selectBuilt).toContain(
       'scale(var(--kui-disclosure-icon-scale, 0.5))',
     );
-    expect(valueTableSource).toContain('padding-block: remify(8px)');
-    expect(valueTableBuilt).toContain('padding-block: 0.5rem');
+    expect(valueTableSource).toContain('--kui-value-table-row-padding-block,');
+    expect(valueTableSource).toContain('remify(8px)');
+    expect(valueTableBuilt).toContain('--kui-value-table-row-padding-block,');
+    expect(valueTableBuilt).toContain('0.5rem');
     expect(valueTableBuilt).not.toContain('remify(');
   });
 });

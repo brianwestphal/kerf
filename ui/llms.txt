@@ -151,6 +151,12 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   margin. Put `.kui-app-root` on the one direct mount container only when a
   percentage-height shell needs the provided `html` → `body` → app-root height
   chain. The baseline is not part of `styles.css` or component browser imports.
+- **Use compact layout options where needed.** `Text flush lineHeight="tight"`
+  fits short dialog copy; `ValueTable density="compact"` reduces row spacing,
+  with public row column, padding, and gap tokens for specific metadata layouts.
+  `ToolbarText size="xsmall"` suits a dense rail heading. The
+  `TokenSearchField` editor shrinks in narrow groups; its minimum width can be
+  set with `--kui-token-search-editor-min-width`.
 - **Use `Row` for horizontal and `List` for vertical layout.** Both expose
   physical `hAlign`/`vAlign` props and typed gaps. Row defaults to left/full,
   an `xs` gap, and no wrapping; List retains full/top and zero-gap defaults.

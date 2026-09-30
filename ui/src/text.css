@@ -33,6 +33,15 @@
   border: 0;
 }
 
+.kui-text[data-flush="true"] {
+  padding: 0;
+  border: 0;
+}
+
+.kui-text[data-line-height="tight"] {
+  line-height: 1.2;
+}
+
 span.kui-text {
   margin: 0;
   border: 0;

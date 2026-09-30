@@ -234,7 +234,7 @@ export const generatedKerfCatalog = [
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
-    "description": "Large, default, and compact toolbar identity text.",
+    "description": "Extra-large through extra-small toolbar identity text.",
     "uses": [],
     "demoSource": "ui/ux-demo/demos/toolbar-text.tsx",
     "componentSource": "ui/src/toolbar-text.tsx",
