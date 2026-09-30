@@ -145,6 +145,35 @@
   grid-column: 4;
 }
 
+.kui-token-search__suggestions {
+  display: grid;
+  grid-column: 2 / -1;
+  min-width: 0;
+  padding: remify(4px);
+  border: 1px solid var(--kui-token-search-border);
+  border-radius: var(--kui-radius-pill);
+  background: var(--kui-token-search-background);
+  gap: remify(2px);
+}
+
+.kui-token-search__suggestion {
+  width: 100%;
+  padding: remify(6px) remify(8px);
+  border: 0;
+  border-radius: var(--kui-radius-pill);
+  color: var(--kui-color-text);
+  background: transparent;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.kui-token-search__suggestion:hover,
+.kui-token-search__suggestion:focus-visible {
+  background: var(--kui-color-surface-lowered);
+  outline: var(--kui-focus-ring);
+}
+
 .kui-token-search[data-has-trailing="false"] .kui-token-search__clear {
   grid-column: 4;
 }

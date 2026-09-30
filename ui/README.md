@@ -224,6 +224,7 @@ interchangeable. `ListItem` and `ListActionRow` deliberately expose no raw
 | `SegmentedControl`                                                  | `@kerfjs/ui/segmented-control`          | `@kerfjs/ui/segmented-control.css`     |
 | `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret` | `@kerfjs/ui/token-search-field`         | `@kerfjs/ui/token-search-field.css`    |
 | `wireTokenSearchFields`                                             | `@kerfjs/ui/wire-token-search-fields`   | —                                      |
+| `createTokenSearchModel`                                            | `@kerfjs/ui/token-search-model`         | —                                      |
 | `StateBanner`                                                       | `@kerfjs/ui/state-banner`               | `@kerfjs/ui/state-banner.css`          |
 | `EmptyState`                                                        | `@kerfjs/ui/empty-state`                | `@kerfjs/ui/empty-state.css`           |
 | `ValueTable`, `ValueTableRow`                                       | `@kerfjs/ui/value-table`                | `@kerfjs/ui/value-table.css`           |
@@ -638,7 +639,14 @@ value through `data-segment-value`. Override an instance through
 free text and ordered filter chips in one field. Its editable text stays
 DOM-owned between token changes so typing does not replace the caret. Tokens
 expose stable edit/remove actions and remain atomic during editing; the app owns
-parsing, suggestions, query execution, and state. Use `readTokenSearchField()`
+parsing, suggestions, query execution, and state in manual mode. For automatic
+handling, create a model with `createTokenSearchModel({ rules, evaluate })`,
+pass it as the field's `model`, and register it under the field id in
+`wireTokenSearchFields(root, { models })`. Rules parse `name:value` expressions;
+their optional `suggest` function supplies selectable completions. The model
+commits valid expressions on whitespace or Enter, owns chips and clear/edit/
+remove actions, and exposes `state`, `suggestions`, and the latest `result` as
+signals. Omit the model to retain full manual control. Use `readTokenSearchField()`
 after browser input to recover text plus token offsets, and
 `placeTokenSearchCaret()` when restoring focus after a controlled update.
 Call `wireTokenSearchFields()` once at a stable root to make Enter submit through

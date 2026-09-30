@@ -102,6 +102,7 @@ import {
   disclosureOpen,
   displayDensity,
   floatingToolbarOpen,
+  grammarSearchModel,
   inspectorSection,
   menuActionCurrent,
   menuActionPressed,
@@ -1259,6 +1260,7 @@ const stopToolbarFind = delegate(
 // default). The app only adopts each field's open signal so the render reflects it;
 // the standalone collapsible field tracks no query — the helper reads live DOM.
 const stopTokenSearchSubmits = wireTokenSearchFields(app, {
+  models: { 'grammar-search': grammarSearchModel },
   onSubmit: ({ id }) => {
     actionLog.value =
       id === 'toolbar-find' ? 'Find submitted' : 'Search submitted';

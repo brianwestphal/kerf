@@ -4,6 +4,7 @@ import {
   placeTokenSearchCaret,
   readTokenSearchField,
 } from './token-search-field.js';
+import type { TokenSearchModel } from './token-search-model.js';
 
 export interface TokenSearchSubmit {
   id: string;
@@ -89,6 +90,8 @@ export interface TokenSearchCollapsibleOptions {
 }
 
 export interface WireTokenSearchFieldsOptions {
+  /** Optional automatic grammar/suggestion models, keyed by TokenSearchField id. */
+  models?: Readonly<Record<string, TokenSearchModel>>;
   onSubmit?: (submission: TokenSearchSubmit) => void;
   /** Fired on every editor `input`, after the browser mutates it, so a caller can drop its own `input` listener. */
   onEdit?: (edit: TokenSearchEdit) => void;
@@ -321,6 +324,7 @@ function placeCaretAfterToken(editor: HTMLElement, chip: HTMLElement): void {
 export function wireTokenSearchFields(
   root: HTMLElement,
   {
+    models = {},
     onSubmit,
     onEdit,
     collapsible = true,
@@ -334,7 +338,7 @@ export function wireTokenSearchFields(
   const collapseOnEscape = managed && (config.collapseOnEscape ?? true);
   const manageFocus = managed && (config.manageFocus ?? true);
   const keepOpenOn = config.keepOpenOn;
-  const keyboardOn = keyboard !== false;
+  const keyboardOn = keyboard !== false || Object.keys(models).length > 0;
   const keyboardConfig = typeof keyboard === 'object' ? keyboard : undefined;
   const removeAdjacentToken =
     keyboardOn && (keyboardConfig?.removeAdjacentToken ?? true);
@@ -490,13 +494,24 @@ export function wireTokenSearchFields(
       )
         setExpanded(editorId, true);
     }
-    if (onEdit) {
-      const field = editor.closest<HTMLElement>(
-        '[data-component="token-search-field"]',
-      );
-      const id = field?.dataset.tokenSearchId;
-      if (id && field?.dataset.disabled !== 'true')
-        onEdit({ id, editor, event: event as InputEvent });
+    const field = editor.closest<HTMLElement>(
+      '[data-component="token-search-field"]',
+    );
+    const id = field?.dataset.tokenSearchId;
+    if (id && field?.dataset.disabled !== 'true') {
+      const model = models[id];
+      if (model) {
+        const before = editor.querySelectorAll(TOKEN_SELECTOR).length;
+        const current = readTokenSearchField(editor, model.state.value.tokens);
+        const input = event as InputEvent;
+        const commit =
+          (typeof input.data === 'string' && /\s$/.test(input.data)) ||
+          (input.inputType === 'insertFromPaste' && /\s$/.test(current.query));
+        model.edit(current, commit);
+        if (model.state.value.tokens.length > before)
+          focusAfterRender(id, '[data-token-search-editor]');
+      }
+      if (onEdit) onEdit({ id, editor, event: event as InputEvent });
     }
     pending.delete(editorId);
   };
@@ -582,9 +597,25 @@ export function wireTokenSearchFields(
         if (!id || field?.dataset.disabled === 'true') return;
         if (keyboardEvent.key === 'Enter') {
           keyboardEvent.preventDefault();
+          const model = models[id];
+          if (model)
+            model.submit(
+              readTokenSearchField(editor, model.state.value.tokens),
+            );
           onSubmit?.({ id, editor });
           return;
         }
+        if (models[id] && keyboardEvent.key === 'ArrowDown') {
+          const first = field.querySelector<HTMLButtonElement>(
+            '[data-token-search-suggestion]',
+          );
+          if (first) {
+            keyboardEvent.preventDefault();
+            first.focus();
+            return;
+          }
+        }
+        if (models[id] && keyboardEvent.key === 'Escape') models[id].dismiss();
         if (
           removeAdjacentToken &&
           (keyboardEvent.key === 'Backspace' || keyboardEvent.key === 'Delete')
@@ -594,12 +625,14 @@ export function wireTokenSearchFields(
           const chip = adjacentToken(editor, direction);
           if (chip) {
             keyboardEvent.preventDefault();
-            onRemoveToken?.({
+            const removal: TokenSearchTokenRemoval = {
               id,
               value: chip.dataset.tokenValue ?? '',
               editor,
               direction,
-            });
+            };
+            models[id]?.remove(removal.value);
+            onRemoveToken?.(removal);
             return;
           }
         }
@@ -623,6 +656,100 @@ export function wireTokenSearchFields(
       },
     ),
   );
+
+  if (Object.keys(models).length > 0) {
+    disposers.push(
+      delegate(
+        root,
+        'keydown',
+        '[data-token-search-suggestion]',
+        (event, element) => {
+          const keyboard = event as KeyboardEvent;
+          const button = element as HTMLButtonElement;
+          const buttons = [
+            ...button.parentElement!.querySelectorAll<HTMLButtonElement>(
+              '[data-token-search-suggestion]',
+            ),
+          ];
+          const index = buttons.indexOf(button);
+          if (keyboard.key === 'Escape') {
+            keyboard.preventDefault();
+            button
+              .closest<HTMLElement>('[data-component="token-search-field"]')
+              ?.querySelector<HTMLElement>('[data-token-search-editor]')
+              ?.focus();
+          } else if (
+            keyboard.key === 'ArrowDown' ||
+            keyboard.key === 'ArrowUp'
+          ) {
+            keyboard.preventDefault();
+            buttons[
+              (index +
+                (keyboard.key === 'ArrowDown' ? 1 : buttons.length - 1)) %
+                buttons.length
+            ]?.focus();
+          }
+        },
+      ),
+      delegate(
+        root,
+        'click',
+        '[data-token-search-suggestion]',
+        (_event, element) => {
+          const field = element.closest<HTMLElement>(
+            '[data-component="token-search-field"]',
+          );
+          const id = field?.dataset.tokenSearchId;
+          const value = (element as HTMLElement).dataset.tokenSearchSuggestion;
+          if (!id || !value || field?.dataset.disabled === 'true') return;
+          models[id]?.choose(value);
+          focusAfterRender(id, '[data-token-search-editor]');
+        },
+      ),
+      delegate(
+        root,
+        'click',
+        '.kui-token-search__token-edit',
+        (_event, element) => {
+          const field = element.closest<HTMLElement>(
+            '[data-component="token-search-field"]',
+          );
+          const id = field?.dataset.tokenSearchId;
+          const value = (element as HTMLElement).dataset.tokenValue;
+          if (
+            !id ||
+            !value ||
+            field?.dataset.disabled === 'true' ||
+            !models[id]
+          )
+            return;
+          models[id].expandToken(value);
+          focusAfterRender(id, '[data-token-search-editor]');
+        },
+      ),
+      delegate(
+        root,
+        'click',
+        '.kui-token-search__token-remove',
+        (_event, element) => {
+          const field = element.closest<HTMLElement>(
+            '[data-component="token-search-field"]',
+          );
+          const id = field?.dataset.tokenSearchId;
+          const value = (element as HTMLElement).dataset.tokenValue;
+          if (id && value && field?.dataset.disabled !== 'true')
+            models[id]?.remove(value);
+        },
+      ),
+      delegate(root, 'click', '.kui-token-search__clear', (_event, element) => {
+        const field = element.closest<HTMLElement>(
+          '[data-component="token-search-field"]',
+        );
+        const id = field?.dataset.tokenSearchId;
+        if (id && field?.dataset.disabled !== 'true') models[id]?.clear();
+      }),
+    );
+  }
 
   if (expandOnActivate) {
     disposers.push(

@@ -3,6 +3,7 @@ import { Search, X } from 'lucide';
 
 import { LucideIcon } from './lucide-icon.js';
 import type { KerfUiContent } from './semantic-content.js';
+import type { TokenSearchModel } from './token-search-model.js';
 
 export interface TokenSearchToken {
   value: string;
@@ -27,6 +28,8 @@ interface TokenSearchFieldBaseProps {
   label: string;
   query?: string;
   tokens?: readonly TokenSearchToken[];
+  /** Opt-in grammar, suggestion, and evaluation state. Overrides `query` and `tokens`. */
+  model?: TokenSearchModel;
   /**
    * Editor identity for a programmatic text replacement. The editor's text is
    * DOM-owned between token changes, so a new `query` with the same tokens
@@ -116,6 +119,7 @@ export function TokenSearchField({
   label,
   query = '',
   tokens = [],
+  model,
   revision,
   placeholder = 'Search',
   tokenPlaceholder = 'Add search…',
@@ -137,10 +141,16 @@ export function TokenSearchField({
   editorAttributes = {},
   slot,
 }: TokenSearchFieldProps) {
+  if (model) {
+    query = model.state.value.query;
+    tokens = model.state.value.tokens;
+  }
+  const suggestions = model?.suggestions.value ?? [];
   const parts = orderedParts(query, tokens);
   const tokenKey = tokens.map((token) => token.value).join('|');
-  const key =
-    revision === undefined
+  const key = model
+    ? `${id}@${String(revision ?? '')}:${model.editorRevision.value}:${tokenKey}`
+    : revision === undefined
       ? `${id}:${tokenKey}`
       : `${id}@${String(revision)}:${tokenKey}`;
   const resolvedExpanded =
@@ -241,6 +251,22 @@ export function TokenSearchField({
           )}
           {trailing && (
             <span class="kui-token-search__trailing">{trailing}</span>
+          )}
+          {!disabled && suggestions.length > 0 && (
+            <div
+              class="kui-token-search__suggestions"
+              data-token-search-keep-open
+            >
+              {suggestions.map((suggestion) => (
+                <button
+                  type="button"
+                  class="kui-token-search__suggestion"
+                  data-token-search-suggestion={suggestion.value}
+                >
+                  {suggestion.label}
+                </button>
+              ))}
+            </div>
           )}
         </>
       )}

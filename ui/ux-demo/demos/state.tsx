@@ -1,4 +1,5 @@
 import type { TokenSearchToken } from '@kerfjs/ui/token-search-field';
+import { createTokenSearchModel } from '@kerfjs/ui/token-search-model';
 import { signal } from 'kerfjs';
 
 export const regionSize = signal(276);
@@ -33,6 +34,30 @@ export const tokenSearchTokens = signal<TokenSearchToken[]>([
   },
   { value: 'is:active', label: 'is:active', offset: 4 },
 ]);
+export const grammarSearchModel = createTokenSearchModel({
+  rules: [
+    {
+      name: 'tag',
+      suggest: (input: string) =>
+        ['client', 'design system', 'urgent'].filter((value) =>
+          value.startsWith(input.toLowerCase()),
+        ),
+    },
+    {
+      name: 'is',
+      parse: (input: string) =>
+        ['open', 'closed'].includes(input.toLowerCase())
+          ? input.toLowerCase()
+          : undefined,
+      suggest: (input: string) =>
+        ['open', 'closed'].filter((value) =>
+          value.startsWith(input.toLowerCase()),
+        ),
+    },
+  ],
+  evaluate: ({ query, tokens }) =>
+    `${query.trim() || 'No free text'} · ${tokens.length} filters`,
+});
 export const bannerTone = signal<
   'neutral' | 'info' | 'pop' | 'success' | 'warning' | 'danger'
 >('info');

@@ -330,6 +330,7 @@ describe('UX catalog metadata', () => {
       'readTokenSearchField',
       'placeTokenSearchCaret',
       'wireTokenSearchFields',
+      'createTokenSearchModel',
     ]);
     expect(
       artifact.entries.find(({ id }) => id === 'select')?.delivery

@@ -188,6 +188,15 @@ export {
   type TokenSearchFieldValue,
   type TokenSearchToken,
 } from './token-search-field.js';
+export {
+  createTokenSearchModel,
+  type TokenSearchModel,
+  type TokenSearchModelOptions,
+  type TokenSearchResolvedToken,
+  type TokenSearchRule,
+  type TokenSearchState,
+  type TokenSearchSuggestion,
+} from './token-search-model.js';
 export { Toolbar, type ToolbarConfig, type ToolbarProps } from './toolbar.js';
 export {
   ToolbarActionLink,

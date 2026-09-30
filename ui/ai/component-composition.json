@@ -3084,6 +3084,8 @@
           "kui-token-search__token",
           "kui-token-search__token-edit",
           "kui-token-search__token-remove",
+          "kui-token-search__suggestions",
+          "kui-token-search__suggestion",
           "kui-token-search__trailing"
         ],
         "publicTokens": [

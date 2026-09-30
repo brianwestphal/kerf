@@ -281,6 +281,10 @@
       "browser": "./dist/browser/token-search-field.js",
       "import": "./dist/token-search-field.js"
     },
+    "./token-search-model": {
+      "types": "./dist/token-search-model.d.ts",
+      "import": "./dist/token-search-model.js"
+    },
     "./wire-token-search-fields": {
       "types": "./dist/wire-token-search-fields.d.ts",
       "import": "./dist/wire-token-search-fields.js"

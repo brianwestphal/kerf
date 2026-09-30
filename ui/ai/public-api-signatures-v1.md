@@ -2715,87 +2715,17 @@ export { SunkenPanel, type SunkenPanelProps, type SunkenPanelShape };
 ## `@kerfjs/ui/token-search-field`
 
 ```ts
-import { SafeHtml } from 'kerfjs';
-import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
-
-interface TokenSearchToken {
-    value: string;
-    label: string;
-    offset?: number;
-    accessibleLabel?: string;
-}
-type TokenSearchEditorAttributes = Readonly<Record<`data-${string}`, string | undefined> & {
-    'data-component'?: never;
-    'data-key'?: never;
-    'data-morph-skip'?: never;
-    'data-token-search-editor'?: never;
-    'data-token-count'?: never;
-    'data-placeholder'?: never;
-}>;
-interface TokenSearchFieldBaseProps {
-    id: string;
-    label: string;
-    query?: string;
-    tokens?: readonly TokenSearchToken[];
-    /**
-     * Editor identity for a programmatic text replacement. The editor's text is
-     * DOM-owned between token changes, so a new `query` with the same tokens
-     * does not re-render it (that would reset the caret on every keystroke).
-     * Change `revision` when the app replaces the text itself — reseeding a
-     * persistent dialog's field on reopen, applying a saved search — and the
-     * editor is rebuilt from `query` and `tokens`.
-     */
-    revision?: string | number;
-    placeholder?: string;
-    tokenPlaceholder?: string;
-    disabled?: boolean;
-    autofocus?: boolean;
-    leading?: KerfUiContent;
-    trailing?: KerfUiContent;
-    /** Standalone field chrome or the inset visual layer of a configured toolbar group. */
-    presentation?: 'standalone' | 'toolbar-group';
-    editAction?: string;
-    removeAction?: string;
-    clearAction?: string;
-    clearLabel?: string;
-    /** Icon for the clear button. Default: the Lucide `x` glyph token chips also use. */
-    clearIcon?: SafeHtml;
-    className?: string;
-    editorAttributes?: TokenSearchEditorAttributes;
-    /** Native named-slot assignment when composed inside a web component. */
-    slot?: string;
-}
-type TokenSearchCollapsibleProps = {
-    /** Allow an empty field to render as one iconic action. */
-    collapsible: true;
-    /** Keep an empty collapsible field open while the application owns focus. */
-    expanded?: boolean;
-    expandAction?: string;
-    expandLabel?: string;
-} | {
-    collapsible?: false;
-    expanded?: never;
-    expandAction?: never;
-    expandLabel?: never;
-};
-type TokenSearchFieldProps = TokenSearchFieldBaseProps & TokenSearchCollapsibleProps;
-interface TokenSearchFieldValue {
-    query: string;
-    tokens: TokenSearchToken[];
-}
-declare function TokenSearchField({ id, label, query, tokens, revision, placeholder, tokenPlaceholder, disabled, autofocus, collapsible, expanded, expandAction, expandLabel, leading, trailing, presentation, editAction, removeAction, clearAction, clearLabel, clearIcon, className, editorAttributes, slot, }: TokenSearchFieldProps): SafeHtml;
-/** Read editable text and ordered token offsets from a rendered TokenSearchField editor. */
-declare function readTokenSearchField(editor: HTMLElement, knownTokens?: readonly TokenSearchToken[]): TokenSearchFieldValue;
-/** Focus an editor and place its caret at a text offset, skipping atomic token chips. */
-declare function placeTokenSearchCaret(editor: HTMLElement, offset?: number): void;
-
-export { type TokenSearchEditorAttributes, TokenSearchField, type TokenSearchFieldProps, type TokenSearchFieldValue, type TokenSearchToken, placeTokenSearchCaret, readTokenSearchField };
+import 'kerfjs';
+import './semantic-content-BbzjvSu9.js';
+export { T as TokenSearchEditorAttributes, a as TokenSearchField, b as TokenSearchFieldProps, c as TokenSearchFieldValue, j as TokenSearchToken, p as placeTokenSearchCaret, r as readTokenSearchField } from './token-search-field-CCke1yvQ.js';
 ```
 
 ## `@kerfjs/ui/wire-token-search-fields`
 
 ```ts
 import { Signal } from 'kerfjs';
+import { d as TokenSearchModel } from './token-search-field-CCke1yvQ.js';
+import './semantic-content-BbzjvSu9.js';
 
 interface TokenSearchSubmit {
     id: string;
@@ -2873,6 +2803,8 @@ interface TokenSearchCollapsibleOptions {
     signals?: Readonly<Record<string, Signal<boolean>>>;
 }
 interface WireTokenSearchFieldsOptions {
+    /** Optional automatic grammar/suggestion models, keyed by TokenSearchField id. */
+    models?: Readonly<Record<string, TokenSearchModel>>;
     onSubmit?: (submission: TokenSearchSubmit) => void;
     /** Fired on every editor `input`, after the browser mutates it, so a caller can drop its own `input` listener. */
     onEdit?: (edit: TokenSearchEdit) => void;
@@ -2903,7 +2835,7 @@ interface TokenSearchFieldsHandle {
  * expand/collapse/focus. Returns a {@link TokenSearchFieldsHandle} — a disposer that also
  * exposes the managed `expanded` state per field id.
  */
-declare function wireTokenSearchFields(root: HTMLElement, { onSubmit, onEdit, collapsible, keyboard, }?: WireTokenSearchFieldsOptions): TokenSearchFieldsHandle;
+declare function wireTokenSearchFields(root: HTMLElement, { models, onSubmit, onEdit, collapsible, keyboard, }?: WireTokenSearchFieldsOptions): TokenSearchFieldsHandle;
 
 export { type TokenSearchCollapsibleOptions, type TokenSearchEdit, type TokenSearchFieldsHandle, type TokenSearchKeyboardOptions, type TokenSearchSubmit, type TokenSearchTokenRemoval, type WireTokenSearchFieldsOptions, wireTokenSearchFields };
 ```

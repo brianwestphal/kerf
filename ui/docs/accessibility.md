@@ -405,6 +405,14 @@ originating `InputEvent` so a caller can gate on `inputType`/`data` — fires on
 `input`, letting a caller drop its own `input` listener; the application still
 owns query parsing and result-count/loading announcements.
 
+With a `createTokenSearchModel` passed to the field and registered in
+`wireTokenSearchFields(root, { models })`, grammar parsing, chips, clear/edit/
+remove actions, and suggestions are managed. Arrow Down moves from the editor
+to suggestions, arrow keys move between suggestions, Enter selects one, and
+Escape returns focus to the editor. The application still announces results
+when needed and can supply an `evaluate` callback to compute them. Omitting the
+model leaves the manual behavior above intact.
+
 Managed clear captures the action before application handlers run, keeps the adopted
 expanded signal open during editor replacement, and restores focus at the actual
 mutation checkpoint before the next input task. It also returns keyboard activation

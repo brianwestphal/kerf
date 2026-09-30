@@ -6,6 +6,7 @@ import {
   TokenSearchField,
   type TokenSearchToken,
 } from '../../src/token-search-field.js';
+import { createTokenSearchModel } from '../../src/token-search-model.js';
 import {
   type TokenSearchCollapsibleOptions,
   type TokenSearchKeyboardOptions,
@@ -33,6 +34,74 @@ describe('wireTokenSearchFields', () => {
   afterEach(() => {
     document.body.replaceChildren();
     document.getSelection()?.removeAllRanges();
+  });
+
+  it('routes managed suggestions, submit, chip actions, and clear through the model', () => {
+    const model = createTokenSearchModel({
+      rules: [{ name: 'tag', suggest: () => ['client', 'design'] }],
+      initial: { query: 'tag:cl', tokens: [] },
+    });
+    const root = document.createElement('div');
+    document.body.append(root);
+    const stopMount = mount(root, () =>
+      TokenSearchField({ id: 'tickets', label: 'Search', model }),
+    );
+    const stop = wireTokenSearchFields(root, { models: { tickets: model } });
+    const editor = () =>
+      root.querySelector<HTMLElement>('[data-token-search-editor]')!;
+    const suggestions = () => [
+      ...root.querySelectorAll<HTMLButtonElement>(
+        '[data-token-search-suggestion]',
+      ),
+    ];
+
+    editor().dispatchEvent(keydown('ArrowDown'));
+    expect(document.activeElement).toBe(suggestions()[0]);
+    suggestions()[0].dispatchEvent(keydown('ArrowDown'));
+    expect(document.activeElement).toBe(suggestions()[1]);
+    suggestions()[1].dispatchEvent(keydown('ArrowUp'));
+    expect(document.activeElement).toBe(suggestions()[0]);
+    suggestions()[0].dispatchEvent(keydown('Escape'));
+    expect(document.activeElement).toBe(editor());
+    suggestions()[0].click();
+    expect(model.state.value.tokens.map(({ value }) => value)).toEqual([
+      'tag:client',
+    ]);
+
+    root
+      .querySelector<HTMLButtonElement>('.kui-token-search__token-edit')!
+      .click();
+    expect(model.state.value).toEqual({ query: 'tag:client ', tokens: [] });
+    editor().dispatchEvent(keydown('Enter'));
+    expect(model.state.value.tokens).toHaveLength(1);
+    root
+      .querySelector<HTMLButtonElement>('.kui-token-search__token-remove')!
+      .click();
+    expect(model.state.value.tokens).toHaveLength(0);
+    model.edit({ query: 'plain', tokens: [] });
+    root.querySelector<HTMLButtonElement>('.kui-token-search__clear')!.click();
+    expect(model.state.value).toEqual({ query: '', tokens: [] });
+    editor().textContent = 'tag:client ';
+    editor().dispatchEvent(
+      new InputEvent('input', {
+        bubbles: true,
+        inputType: 'insertText',
+        data: ' ',
+      }),
+    );
+    expect(model.state.value.tokens.map(({ value }) => value)).toEqual([
+      'tag:client',
+    ]);
+    const disabled = document.createElement('div');
+    disabled.innerHTML =
+      '<div data-component="token-search-field" data-token-search-id="tickets" data-disabled="true"><button class="kui-token-search__token-edit" data-token-value="tag:client">Edit</button><button class="kui-token-search__token-remove" data-token-value="tag:client">Remove</button><button class="kui-token-search__clear">Clear</button><button data-token-search-suggestion="tag:client">Client</button></div>';
+    root.append(disabled);
+    for (const button of disabled.querySelectorAll<HTMLButtonElement>('button'))
+      button.click();
+    expect(model.state.value.tokens).toHaveLength(1);
+
+    stop();
+    stopMount();
   });
 
   it('submits Enter without inserting a contenteditable line break', () => {

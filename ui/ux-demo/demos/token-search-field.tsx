@@ -15,6 +15,7 @@ import {
   adoptionReadout,
   adoptionTokens,
   collapsibleSearchOpen,
+  grammarSearchModel,
   tokenSearchQuery,
   tokenSearchTokens,
 } from './state.js';
@@ -48,6 +49,27 @@ export function TokenSearchFieldDemo() {
           >
             {tokenSearchTokens.value.length} filters ·{' '}
             {tokenSearchQuery.value || 'No free text'}
+          </Text>
+        </List>
+      </CatalogExample>
+      <CatalogExample
+        label="Grammar assisted search"
+        note="Type tag: or is: for suggestions. Whitespace commits valid filters as chips; the model evaluates every edit."
+        align="inline-control"
+      >
+        <List gap="xs">
+          <TokenSearchField
+            id="grammar-search"
+            label="Search with filters"
+            model={grammarSearchModel}
+          />
+          <Text
+            variant="span"
+            tone="quiet"
+            size="compact"
+            data-demo-grammar-result
+          >
+            {grammarSearchModel.result.value}
           </Text>
         </List>
       </CatalogExample>

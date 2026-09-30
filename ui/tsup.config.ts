@@ -50,6 +50,7 @@ const entries = [
   'select',
   'segmented-control',
   'token-search-field',
+  'token-search-model',
   'wire-token-search-fields',
   'select-register',
   'help-tags-register',
@@ -62,7 +63,7 @@ const entries = [
 export default defineConfig({
   entry: entries.map(
     (entry) =>
-      `src/${entry}.${entry === 'index' || entry === 'css-values' || entry === 'select-register' || entry === 'popup-menu-register' || entry === 'help-tags-register' || entry === 'webawesome' || entry === 'device-class' || entry === 'catalog-resources' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
+      `src/${entry}.${entry === 'index' || entry === 'css-values' || entry === 'select-register' || entry === 'popup-menu-register' || entry === 'help-tags-register' || entry === 'webawesome' || entry === 'device-class' || entry === 'catalog-resources' || entry === 'token-search-model' || entry.startsWith('wire-') ? 'ts' : 'tsx'}`,
   ),
   format: ['esm'],
   outDir: 'dist',

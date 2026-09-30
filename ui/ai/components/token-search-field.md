@@ -21,7 +21,7 @@ Token-controlled, optionally collapsible search editor with ordered, editable, r
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/token-search-field` — exports `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `wireTokenSearchFields`.
+- JavaScript: `@kerfjs/ui/token-search-field` — exports `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `wireTokenSearchFields`, `createTokenSearchModel`.
 - CSS: the browser build of `@kerfjs/ui/token-search-field` pulls its CSS automatically; import `@kerfjs/ui/token-search-field.css` manually only without the `browser` export condition.
 - Wiring: `readTokenSearchField` from `@kerfjs/ui/token-search-field` (required).
 - Wiring: `placeTokenSearchCaret` from `@kerfjs/ui/token-search-field` (optional).
@@ -82,9 +82,9 @@ Margin: none · border: self · padding: self (layout role: controls). `self` me
 
 The component owns its own styles. Configure it through its props and variants; do not override its internals.
 
-Public class hooks (select for layout placement only, never to change the component's look): `kui-token-search`, `kui-token-search__clear`, `kui-token-search__editor`, `kui-token-search__expand`, `kui-token-search__leading`, `kui-token-search__token`, `kui-token-search__token-edit`, `kui-token-search__token-remove`, `kui-token-search__trailing`.
+Public class hooks (select for layout placement only, never to change the component's look): `kui-token-search`, `kui-token-search__clear`, `kui-token-search__editor`, `kui-token-search__expand`, `kui-token-search__leading`, `kui-token-search__token`, `kui-token-search__token-edit`, `kui-token-search__token-remove`, `kui-token-search__suggestions`, `kui-token-search__suggestion`, `kui-token-search__trailing`.
 
-Never put `kui-token-search`, `kui-token-search__clear`, `kui-token-search__editor`, `kui-token-search__expand`, `kui-token-search__leading`, `kui-token-search__token`, `kui-token-search__token-edit`, `kui-token-search__token-remove`, `kui-token-search__trailing` on an element you write; render `TokenSearchField` instead (`KUI-L103`).
+Never put `kui-token-search`, `kui-token-search__clear`, `kui-token-search__editor`, `kui-token-search__expand`, `kui-token-search__leading`, `kui-token-search__token`, `kui-token-search__token-edit`, `kui-token-search__token-remove`, `kui-token-search__suggestions`, `kui-token-search__suggestion`, `kui-token-search__trailing` on an element you write; render `TokenSearchField` instead (`KUI-L103`).
 
 Public tokens it reads: `--kui-color-brand-fill-normal`, `--kui-color-brand-on-quiet`, `--kui-color-neutral-border-normal`, `--kui-color-text-link`, `--kui-color-surface`, `--kui-color-text`, `--kui-color-text-quiet`, `--kui-focus-ring`, `--kui-font-s`, `--kui-font-xs`, `--kui-radius-pill`, `--kui-token-search-background`, `--kui-token-search-border`, `--kui-token-search-line-size`, `--kui-token-search-token-background`, `--kui-token-search-token-foreground`, `--kui-token-search-expanded-width`. Set a token only where its public contract allows; prefer a prop.
 

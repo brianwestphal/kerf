@@ -210,6 +210,8 @@ an upstream component or recipe request.
   hidden compact replacement and keeps compact overlays exclusive by default.
 - `TokenSearchField` is a structured editor. A native input or `wa-input` is the right answer for ordinary text.
 
+For common structured search, use `createTokenSearchModel` from `@kerfjs/ui/token-search-model`, pass the model to `TokenSearchField`, and register it under the field id in `wireTokenSearchFields(root, { models })`. Rules parse `name:value` expressions and provide suggestions; the model owns chips, selection, removal, clear, and an optional evaluation result. Omit `model` and `models` for full manual control.
+
 ## Toolbar composition
 
 A `Toolbar` has three zones — `leading`, `center`, and `trailing`. In almost
