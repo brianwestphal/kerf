@@ -68,15 +68,18 @@ const kerfPackage = JSON.parse(
 );
 const componentEntries = catalog.entries
   .filter((entry) => entry.source === 'kerf' && entry.kind === 'component')
-  .map((entry) => {
-    const specifier =
-      entry.delivery.browserImport ?? entry.delivery.moduleImport;
-    const packageExport =
-      uiPackage.exports?.[`./${specifier.slice('@kerfjs/ui/'.length)}`];
-    if (!packageExport?.types)
-      throw new Error(`${specifier} has no typed package export`);
-    return [specifier, packageExport.types.replace(/^\.\//, '')];
-  });
+  .flatMap((entry) =>
+    [
+      entry.delivery.browserImport ?? entry.delivery.moduleImport,
+      ...Object.values(entry.publicExportImports ?? {}),
+    ].map((specifier) => {
+      const packageExport =
+        uiPackage.exports?.[`./${specifier.slice('@kerfjs/ui/'.length)}`];
+      if (!packageExport?.types)
+        throw new Error(`${specifier} has no typed package export`);
+      return [specifier, packageExport.types.replace(/^\.\//, '')];
+    }),
+  );
 const entries = [...curatedEntries];
 for (const entry of componentEntries)
   if (!entries.some(([specifier]) => specifier === entry[0]))

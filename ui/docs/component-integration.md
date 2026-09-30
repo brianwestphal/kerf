@@ -33,7 +33,14 @@ For each catalog component, the validator checks:
 The existing catalog sync and compatibility gates remain responsible for the
 typed catalog projections, catalog count/order, and artifact digests. Public
 API signatures derive component subpaths from the catalog, so a newly cataloged
-component can no longer be silently omitted from that corpus.
+component can no longer be silently omitted from that corpus. Overrides in
+`publicExportImports` also add their subpaths to the signature reference.
+
+Generated component pages group `publicExports` by import subpath. Exports use
+the component `delivery.browserImport` or `delivery.moduleImport` by default;
+set `publicExportImports` for helpers shipped from a different subpath. The
+catalog check verifies each override names a public export and a package
+subpath, and the generated Props section links each relevant signature.
 
 Non-component helpers, wiring modules, compositions, recipes, and development
 tools remain explicit package surfaces. They do not masquerade as visual

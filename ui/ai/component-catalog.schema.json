@@ -29,6 +29,11 @@
         "purpose": { "type": "string", "minLength": 1 },
         "customElement": { "type": "string" },
         "publicExports": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "publicExportImports": {
+          "description": "Subpath overrides for public exports that do not live in the component delivery import.",
+          "type": "object",
+          "additionalProperties": { "type": "string", "minLength": 1 }
+        },
         "useWhen": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
         "avoidWhen": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
         "recommendation": { "enum": ["supported", "conditional", "exceptional", "underlying", "avoid"] },

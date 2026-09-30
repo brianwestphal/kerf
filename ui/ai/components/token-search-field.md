@@ -21,7 +21,9 @@ Token-controlled, optionally collapsible search editor with ordered, editable, r
 
 ## Imports
 
-- JavaScript: `@kerfjs/ui/token-search-field` — exports `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`, `wireTokenSearchFields`, `createTokenSearchModel`.
+- JavaScript: `@kerfjs/ui/token-search-field` — exports `TokenSearchField`, `readTokenSearchField`, `placeTokenSearchCaret`.
+- JavaScript: `@kerfjs/ui/wire-token-search-fields` — exports `wireTokenSearchFields`.
+- JavaScript: `@kerfjs/ui/token-search-model` — exports `createTokenSearchModel`.
 - CSS: the browser build of `@kerfjs/ui/token-search-field` pulls its CSS automatically; import `@kerfjs/ui/token-search-field.css` manually only without the `browser` export condition.
 - Wiring: `readTokenSearchField` from `@kerfjs/ui/token-search-field` (required).
 - Wiring: `placeTokenSearchCaret` from `@kerfjs/ui/token-search-field` (optional).
@@ -30,7 +32,7 @@ Token-controlled, optionally collapsible search editor with ordered, editable, r
 
 ## Props
 
-Exact prop names and types: [`@kerfjs/ui/token-search-field`](../public-api-signatures-v1.md#kerfjsuitoken-search-field), [`@kerfjs/ui/wire-token-search-fields`](../public-api-signatures-v1.md#kerfjsuiwire-token-search-fields) in `public-api-signatures-v1.md`. Do not infer props from examples.
+Exact prop names and types: [`@kerfjs/ui/token-search-field`](../public-api-signatures-v1.md#kerfjsuitoken-search-field), [`@kerfjs/ui/wire-token-search-fields`](../public-api-signatures-v1.md#kerfjsuiwire-token-search-fields), [`@kerfjs/ui/token-search-model`](../public-api-signatures-v1.md#kerfjsuitoken-search-model) in `public-api-signatures-v1.md`. Do not infer props from examples.
 
 **Variants (configure, do not restyle):**
 

@@ -25,7 +25,10 @@ const catalog = {
       description: 'A fixture stack.',
       uses: ['item'],
       purpose: 'Show one view at a time.',
-      publicExports: ['Stack'],
+      publicExports: ['Stack', 'createStackModel'],
+      publicExportImports: {
+        createStackModel: '@kerfjs/ui/stack-model',
+      },
       useWhen: ['A compact surface drills into details.'],
       avoidWhen: ['Do not use it for side-by-side <panes>.'],
       alternatives: [
@@ -216,6 +219,10 @@ describe('AI-facing component markdown', { timeout: 30_000 }, () => {
     ])
       expect(page).toContain(`${heading}\n`);
     expect(page).toContain('### Open a detail\n\n```tsx\n<Stack />\n```');
+    expect(page).toContain('JavaScript: `@kerfjs/ui/stack` — exports `Stack`.');
+    expect(page).toContain(
+      'JavaScript: `@kerfjs/ui/stack-model` — exports `createStackModel`.',
+    );
     expect(page).toContain('side-by-side \\<panes>');
     expect(page).toContain(
       '[`@kerfjs/ui/stack`](../public-api-signatures-v1.md#kerfjsuistack)',

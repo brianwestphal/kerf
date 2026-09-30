@@ -426,6 +426,14 @@ for (const entry of entries) {
     fail(`${entry.id} is missing avoidWhen guidance`);
   if (!entry.delivery || !Array.isArray(entry.delivery.sideEffects))
     fail(`${entry.id} is missing delivery side-effect metadata`);
+  for (const [name, specifier] of Object.entries(
+    entry.publicExportImports ?? {},
+  )) {
+    if (!(entry.publicExports ?? []).includes(name))
+      fail(`${entry.id} maps an unknown public export ${name}`);
+    if (!(packageSubpath(specifier) in packageJson.exports))
+      fail(`${entry.id} maps ${name} to an unknown import ${specifier}`);
+  }
   if (entry.kind !== 'recipe') {
     if (!entry.geometry) fail(`${entry.id} is missing geometry ownership`);
     for (const dimension of ['margin', 'border', 'padding']) {

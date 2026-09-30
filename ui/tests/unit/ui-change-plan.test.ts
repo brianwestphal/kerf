@@ -17,6 +17,14 @@ const packageJson = JSON.parse(
 ) as { scripts: Record<string, string> };
 
 describe('check:change demo-bundle measurement', () => {
+  it('refreshes generated component pages after public signatures change', () => {
+    const commands = uiChangeSyncSteps().map((step) => step.command);
+    expect(
+      commands.indexOf('node scripts/sync-component-docs.mjs'),
+    ).toBeGreaterThan(
+      commands.indexOf('node scripts/sync-ai-public-signatures.mjs'),
+    );
+  });
   it('measures the demo with exactly the command sequence demo:build runs', () => {
     const gates = uiChangeGateSteps();
     const demoSteps = gates.slice(-2).map((step) => step.command);

@@ -3644,6 +3644,10 @@
         "wireTokenSearchFields",
         "createTokenSearchModel"
       ],
+      "publicExportImports": {
+        "wireTokenSearchFields": "@kerfjs/ui/wire-token-search-fields",
+        "createTokenSearchModel": "@kerfjs/ui/token-search-model"
+      },
       "useWhen": [
         "Combine DOM-owned free text with ordered editable/removable filter tokens in one searchbox.",
         "Enable collapsible mode when an empty, unfocused search should reduce to one iconic action, standalone or inside a toolbar group."

@@ -3210,3 +3210,11 @@ declare function Spacer({ flex, width, height, className, slot, }: SpacerProps):
 
 export { CssLength, Spacer, type SpacerProps, UiSpaceName };
 ```
+
+## `@kerfjs/ui/token-search-model`
+
+```ts
+import 'kerfjs';
+export { d as TokenSearchModel, e as TokenSearchModelOptions, f as TokenSearchResolvedToken, g as TokenSearchRule, h as TokenSearchState, i as TokenSearchSuggestion, k as createTokenSearchModel } from './token-search-field-CCke1yvQ.js';
+import './semantic-content-BbzjvSu9.js';
+```

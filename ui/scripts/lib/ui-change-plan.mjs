@@ -32,6 +32,10 @@ export const uiChangeSyncSteps = () => [
     command: 'node scripts/sync-ai-public-signatures.mjs',
   },
   {
+    label: 'refresh component pages against the emitted signatures',
+    command: 'node scripts/sync-component-docs.mjs',
+  },
+  {
     label: 'synchronize reviewed AI compatibility digests',
     command: 'node scripts/sync-ai-compatibility.mjs --write',
   },

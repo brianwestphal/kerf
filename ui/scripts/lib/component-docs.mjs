@@ -69,6 +69,7 @@ function modulesOf(entry) {
   const specifiers = [
     entry.delivery.browserImport,
     entry.delivery.moduleImport,
+    ...Object.values(entry.publicExportImports ?? {}),
     ...(entry.wiring ?? []).map((item) => item.import),
   ].filter(Boolean);
   return [...new Set(specifiers)];
@@ -101,11 +102,18 @@ function importsSection(entry) {
   const lines = [];
   const exports = entry.publicExports ?? [];
   const jsImport = delivery.browserImport ?? delivery.moduleImport;
-  if (jsImport) {
-    lines.push(
-      `JavaScript: ${code(jsImport)}${exports.length ? ` — exports ${exports.map(code).join(', ')}` : ''}.`,
-    );
+  const exportsByImport = new Map();
+  if (jsImport) exportsByImport.set(jsImport, []);
+  for (const name of exports) {
+    const specifier = entry.publicExportImports?.[name] ?? jsImport;
+    if (!specifier) continue;
+    if (!exportsByImport.has(specifier)) exportsByImport.set(specifier, []);
+    exportsByImport.get(specifier).push(name);
   }
+  for (const [specifier, names] of exportsByImport)
+    lines.push(
+      `JavaScript: ${code(specifier)}${names.length ? ` — exports ${names.map(code).join(', ')}` : ''}.`,
+    );
   if (delivery.browserImport && delivery.manualCssImport)
     lines.push(
       `CSS: the browser build of ${code(delivery.browserImport)} pulls its CSS automatically; import ${code(delivery.manualCssImport)} manually only without the \`browser\` export condition.`,
