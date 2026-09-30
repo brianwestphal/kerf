@@ -4482,7 +4482,7 @@ test('catalog routes every production component family and supports its stateful
   );
   await expect(
     page.locator('[data-demo="tabs"] [data-catalog-example]'),
-  ).toHaveCount(5);
+  ).toHaveCount(6);
   if (browserName === 'chromium')
     await page
       .locator('[data-demo="tabs"]')
@@ -7008,15 +7008,15 @@ test('separates focused AppTab and TabBar specimens from the application-tabs co
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=tabs');
   const appTabs = page.locator('[data-demo="tabs"]');
-  await expect(appTabs.locator('[data-catalog-example]')).toHaveCount(5);
-  await expect(appTabs.locator('[data-component="app-tab"]')).toHaveCount(8);
+  await expect(appTabs.locator('[data-catalog-example]')).toHaveCount(6);
+  await expect(appTabs.locator('[data-component="app-tab"]')).toHaveCount(10);
   if (browserName === 'chromium')
     await appTabs.screenshot({ path: 'test-results/app-tab-focused-wide.png' });
 
   await page.goto('/?component=tab-bar');
   const tabBars = page.locator('[data-demo="tab-bar"]');
-  await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(5);
-  await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(5);
+  await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(6);
+  await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(6);
   const splitBar = tabBars.locator('[data-tab-bar-id="inspector-tab-bar"]');
   const splitTabs = splitBar.locator('[data-kui-tab-list]');
   const adjacentAction = splitBar.getByRole('button', {

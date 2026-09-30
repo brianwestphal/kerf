@@ -270,9 +270,7 @@ test('a placeholder AppTab keeps the live pill tone; only the name is a skeleton
   // Web Awesome's native `button:disabled` used to dim the placeholder pill
   // to 50% with a not-allowed cursor.
   const placeholder = await read('.kui-app-tab[data-placeholder="true"]');
-  const live = await read(
-    '.kui-app-tab[data-selected="false"][data-presentation="pill"][data-size="default"]:not([data-placeholder]):not([data-pending])',
-  );
+  const live = await read('.kui-app-tab[data-tab-id="beta"]');
   expect(placeholder.root).toEqual(live.root);
   expect(placeholder.select).toEqual(live.select);
   expect(placeholder.cursor).toBe('default');
