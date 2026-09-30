@@ -293,6 +293,7 @@ test.describe('resizable Workbench panels', () => {
   }) => {
     const workbench = page.locator('#catalog-workbench-resizable');
     const rail = workbench.locator('[data-workbench-rail="left"]');
+    const railContent = rail.locator('> .kui-workbench__panel-content');
     const handle = rail.locator('[data-kui-resize-handle]');
     await workbench.scrollIntoViewIfNeeded();
     const railBox = (await rail.boundingBox())!;
@@ -309,9 +310,11 @@ test.describe('resizable Workbench panels', () => {
     await page.mouse.down();
     await page.mouse.move(x + 50, y, { steps: 5 });
     await expect(rail).toHaveAttribute('data-resizing', 'true');
+    await expect(railContent).toHaveCSS('transition-duration', '0s');
     await expect(rail).toHaveCSS('width', '290px');
     await page.mouse.up();
     await expect(rail).not.toHaveAttribute('data-resizing', 'true');
+    await expect(railContent).toHaveCSS('transition-duration', '0.2s');
     await expect(rail).toHaveCSS('width', '290px');
     await expect(handle).toHaveAttribute('aria-valuenow', '290');
 
@@ -322,6 +325,7 @@ test.describe('resizable Workbench panels', () => {
     await expect(rail).toHaveCSS('width', '400px');
 
     const drawer = workbench.locator('[data-workbench-drawer]');
+    const drawerContent = drawer.locator('> .kui-workbench__panel-content');
     const drawerBox = (await drawer
       .locator('[data-kui-resize-handle]')
       .boundingBox())!;
@@ -330,7 +334,10 @@ test.describe('resizable Workbench panels', () => {
     await page.mouse.move(dx, dy);
     await page.mouse.down();
     await page.mouse.move(dx, dy - 40, { steps: 4 });
+    await expect(drawer).toHaveAttribute('data-resizing', 'true');
+    await expect(drawerContent).toHaveCSS('transition-duration', '0s');
     await page.mouse.up();
+    await expect(drawerContent).toHaveCSS('transition-duration', '0.2s');
     await expect(drawer).toHaveCSS('height', '200px');
   });
 

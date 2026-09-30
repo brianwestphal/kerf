@@ -310,8 +310,8 @@ const stop = wireWorkbench(root, {
 ```
 
 - **Pointer:** dragging the separator resizes the panel live (the wire marks
-  it `data-resizing` and suppresses content motion) and commits the final
-  size to the signal on release.
+  the rail or drawer `data-resizing` and suppresses its content transform
+  transition) and commits the final size to the signal on release.
 - **Keyboard:** focus the separator; arrow keys resize by `step` (16px),
   Shift+arrow by `largeStep` (64px), Home/End jump to `min`/`max`. The
   separator's `aria-valuenow`/`aria-valuemin`/`aria-valuemax` report the size

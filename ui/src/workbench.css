@@ -254,6 +254,11 @@
   transition: none;
 }
 
+:is(.kui-workbench__rail, .kui-workbench__drawer)[data-resizing="true"]
+  > .kui-workbench__panel-content {
+  transition: none;
+}
+
 .kui-workbench__rail[data-collapse-motion="fade-slide"][data-collapsed="true"]
   .kui-workbench__panel-content,
 .kui-workbench__drawer[data-collapse-motion="fade-slide"][data-collapsed="true"]
