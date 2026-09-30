@@ -2450,6 +2450,33 @@ describe('production UI primitives', () => {
     );
   });
 
+  it('releases both clipping ancestors for an open dropdown without changing props', () => {
+    const region = readFileSync(
+      resolve(import.meta.dirname, '../../src/resizable-region.css'),
+      'utf8',
+    ).replace(/\s+/g, ' ');
+    const workbench = readFileSync(
+      resolve(import.meta.dirname, '../../src/workbench.css'),
+      'utf8',
+    ).replace(/\s+/g, ' ');
+    expect(region).toContain(
+      '.kui-resizable-region:has(wa-dropdown[open]) { z-index: var(--kui-resizable-region-popup-z, 5); overflow: visible;',
+    );
+    expect(region).toContain(
+      '.kui-resizable-region:has(wa-dropdown[open]) > .kui-resizable-region__content { overflow: visible;',
+    );
+    expect(workbench).toMatch(
+      /\.kui-workbench__rail:not\(\s*\[data-collapsed="true"\]\s*\):has\(wa-dropdown\[open\]\)/,
+    );
+    expect(workbench).toMatch(
+      /\.kui-workbench__drawer:not\(\s*\[data-collapsed="true"\]\s*\):has\(wa-dropdown\[open\]\)/,
+    );
+    expect(workbench).toContain('overflow: visible; clip-path: none;');
+    expect(workbench).toContain(
+      ':has(wa-dropdown[open]) > .kui-workbench__panel-content',
+    );
+  });
+
   it('anchors the restore control to the region container, inset once even around a FloatingToolbar', () => {
     const css = readFileSync(
       resolve(import.meta.dirname, '../../src/resizable-region.css'),

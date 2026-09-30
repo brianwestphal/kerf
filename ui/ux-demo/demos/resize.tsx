@@ -4,6 +4,7 @@ import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
+import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { GripVertical, PanelLeftOpen } from 'lucide';
@@ -50,6 +51,37 @@ export function ResizeDemo() {
               }
             />
           </Pane>
+        </ResizableRegion>
+      </CatalogExample>
+      <CatalogExample
+        label="Popup from a clipped drawer"
+        note="Opening a menu releases the drawer's clipping and raises its popup layer without changing contentOverflow or rerendering the region."
+        viewport={{
+          layout: 'flex',
+          width: 'wide',
+          height: 'medium',
+          frame: 'solid',
+        }}
+      >
+        <ResizableRegion
+          id="catalog-menu-drawer"
+          label="Menu drawer"
+          axis="vertical"
+          edge="start"
+          size={120}
+          min={120}
+          max={240}
+        >
+          <div class="kui-content">
+            <PopupMenu
+              text="Create item"
+              placement="top-start"
+              items={[
+                { label: 'New terminal', action: 'create-terminal' },
+                { label: 'New task', action: 'create-task' },
+              ]}
+            />
+          </div>
         </ResizableRegion>
       </CatalogExample>
       <CatalogExample

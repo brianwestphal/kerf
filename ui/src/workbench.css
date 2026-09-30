@@ -247,6 +247,11 @@
   overflow: visible;
 }
 
+.kui-workbench__rail:has(wa-dropdown[open]),
+.kui-workbench__drawer:has(wa-dropdown[open]) {
+  z-index: var(--kui-workbench-popup-z, 5);
+}
+
 /* The fixed-size sliding content. The rail/drawer keeps a definite size on its
    content so the transform reads as a slide, not a squeeze. */
 .kui-workbench__rail .kui-workbench__panel-content {
@@ -766,6 +771,21 @@
       --_kui-workbench-safe-block-end
     );
   }
+}
+
+/* Release the panel and its sliding/scrolling content while a PopupMenu or
+   Web Awesome dropdown is open. This comes after resize clipping and keeps
+   the popup in place through wa-show/wa-after-hide without a prop change. */
+.kui-workbench__rail:not([data-collapsed="true"]):has(wa-dropdown[open]),
+.kui-workbench__drawer:not([data-collapsed="true"]):has(wa-dropdown[open]) {
+  overflow: visible;
+  clip-path: none;
+}
+.kui-workbench__rail:not([data-collapsed="true"]):has(wa-dropdown[open])
+  > .kui-workbench__panel-content,
+.kui-workbench__drawer:not([data-collapsed="true"]):has(wa-dropdown[open])
+  > .kui-workbench__panel-content {
+  overflow: visible;
 }
 
 /* A collapsed panel's restore control floats in a corner of the Workbench

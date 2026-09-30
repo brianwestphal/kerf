@@ -4,6 +4,7 @@ import '@kerfjs/ui/workbench.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
+import { PopupMenu } from '@kerfjs/ui/popup-menu';
 import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
 import { ToolbarText } from '@kerfjs/ui/toolbar-text';
 import { Workbench } from '@kerfjs/ui/workbench';
@@ -203,9 +204,22 @@ export function WorkbenchDemo() {
           }}
           bottomDrawer={{
             label: 'Console',
-            content: region('Console', '120–320 px tall'),
+            content: (
+              <div class="kui-content">
+                <DemoContentItem title="Console" detail="120–320 px tall" />
+                <PopupMenu
+                  text="Create item"
+                  placement="top-start"
+                  items={[
+                    { label: 'New terminal', action: 'create-terminal' },
+                    { label: 'New task', action: 'create-task' },
+                  ]}
+                />
+              </div>
+            ),
             size: workbenchConsoleSize.value,
             resizable: { min: 120, max: 320 },
+            contentOverflow: 'auto',
           }}
         />
       </CatalogExample>

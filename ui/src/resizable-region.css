@@ -73,6 +73,15 @@
   > .kui-resizable-region__content {
   overflow: visible;
 }
+/* An open Web Awesome dropdown (including PopupMenu) releases both clipping
+   ancestors without rerendering the region during the dropdown lifecycle. */
+.kui-resizable-region:has(wa-dropdown[open]) {
+  z-index: var(--kui-resizable-region-popup-z, 5);
+  overflow: visible;
+}
+.kui-resizable-region:has(wa-dropdown[open]) > .kui-resizable-region__content {
+  overflow: visible;
+}
 .kui-resizable-region[data-separator="hidden"] {
   --kui-resizable-region-separator-color: transparent;
 }

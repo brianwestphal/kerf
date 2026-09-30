@@ -80,8 +80,9 @@ an optional `label`. Common shell behavior is configured rather than restyled:
 - `separator: "auto" | "hidden"` controls the owned dock-edge separator;
 - `collapseMotion: "slide" | "fade-slide" | "none"` keeps the track change
   instant while choosing composited content motion;
-- `contentOverflow: "clip" | "auto" | "visible"` lets a drawer temporarily
-  expose an open popup without a descendant override;
+- `contentOverflow: "clip" | "auto" | "visible"` chooses the resting overflow
+  policy. An open descendant `PopupMenu` or Web Awesome dropdown temporarily
+  releases rail/drawer clipping and raises its popup layer automatically;
 - `presentation: "inline" | "overlay" | "hidden"` supports compact overlays
   or a responsive replacement. An overlay rail spans the Workbench height at
   its side and an overlay drawer spans the work-area column at the bottom,
@@ -509,7 +510,6 @@ with state-derived props:
   collapsed={!drawerVisible.value}
   separator={magnified.value ? "hidden" : "auto"}
   collapseMotion="fade-slide"
-  contentOverflow={createMenuOpen.value ? "visible" : "clip"}
   presentation={mobile.value ? "overlay" : "inline"}
   restoreControl={
     <ToolbarControlGroup label="Terminals" single>
@@ -531,8 +531,10 @@ collapse slides it out at the resized width. A collapsed,
 overlay, or hidden region is not resizeable. Together these policies replace
 app CSS for separator suppression, instant-track/composited-content collapse,
 popup overflow, mobile overlay/hidden replacement, resize-transition guards,
-and safe-area restore placement. The app still owns the signals and decides
-when each policy applies.
+and safe-area restore placement. A descendant `PopupMenu` or Web Awesome
+dropdown with `open` releases clipping for its lifecycle, so menu events need
+not rerender the region. The app still owns the other signals and decides when
+each policy applies.
 
 ## Public styling boundary
 

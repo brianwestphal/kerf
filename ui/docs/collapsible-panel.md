@@ -80,9 +80,10 @@ and that of the components it renders (`Pane`, `Toolbar`, `ToolbarControlGroup`,
   corners, with typed `restoreInset` for the corner distance. Set
   `restorePlacement="inline"` when the container should place the control in
   normal flow. An inline region's surface uses
-  `--kui-resizable-region-background`; set `contentOverflow="visible"` while
-  an anchored popup must escape the region's content box, then return to the
-  normal overflow policy when it closes.
+  `--kui-resizable-region-background`; an open descendant `PopupMenu` or Web
+  Awesome dropdown releases clipping and raises the popup layer for its
+  lifecycle. Set `contentOverflow="visible"` for other anchored content that
+  must escape the region's content box.
   Overlay presentation also clamps fixed-size animated content to the configured
   responsive overlay maximum, so a remembered desktop size cannot escape a narrow
   viewport.

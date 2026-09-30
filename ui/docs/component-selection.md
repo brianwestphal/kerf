@@ -182,9 +182,10 @@ the scroll viewport. Use `SunkenPanel` for a padded content group that does
 not introduce scrolling. See [Lowered work surfaces](./layout.md#lowered-work-surfaces).
 
 Set `ResizableRegion`'s `--kui-resizable-region-background` for an inline
-surface. Use `contentOverflow="visible"` while an anchored popup must escape
-the region; this also raises the region on its public popup layer. A collapsed
-region can place `restoreControl` in a top or bottom corner with
+surface. An open descendant `PopupMenu` or Web Awesome dropdown automatically
+releases clipping and raises the region on its public popup layer. Set
+`contentOverflow="visible"` for other anchored content that must escape the
+region. A collapsed region can place `restoreControl` in a top or bottom corner with
 `restorePosition`, set its typed `restoreInset`, or use
 `restorePlacement="inline"` for a control in normal flow.
 

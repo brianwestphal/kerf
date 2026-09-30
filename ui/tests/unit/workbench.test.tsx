@@ -743,7 +743,10 @@ describe('Workbench', () => {
       /\.kui-workbench__(?:main|panel-content)\s*>\s*:not\(/,
     );
     expect(
-      selectors.filter((selector) => selector.includes(':has(')),
+      selectors.filter(
+        (selector) =>
+          selector.includes(':has(') && !selector.includes('wa-dropdown[open]'),
+      ),
     ).toHaveLength(1);
     expect(selectors.join('\n')).toContain('[data-component="workbench"]');
     for (const component of [
