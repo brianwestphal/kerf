@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 310000,
-  "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 309927,
+  "totalJavaScriptGzip": 310100,
+  "measuredLargestJavaScriptGzip": 126041,
+  "measuredTotalJavaScriptGzip": 310063,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1619,6 +1619,22 @@
         "measuredTotalJavaScriptGzip": 309927,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 310000
+      }
+    },
+    {
+      "at": "2026-09-30T18:42:38.424Z",
+      "reason": "Container-responsive segmented AppTab icon-only presentation",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 309927,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 310000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 310063,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 310100
       }
     }
   ]

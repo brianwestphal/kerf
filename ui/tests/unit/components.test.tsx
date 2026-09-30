@@ -1709,6 +1709,27 @@ describe('production UI primitives', () => {
     expect(bar).toContain(
       'class="kui-tab-bar__end"><span data-end-action>End</span>',
     );
+    const responsiveBar = asHtml(
+      TabBar({
+        id: 'reader',
+        label: 'Reader tabs',
+        presentation: 'segmented',
+        iconOnlyAt: 'wide',
+        children: [
+          AppTab({
+            id: 'overview',
+            name: 'Overview',
+            closable: false,
+            presentation: 'segmented',
+            leading: icon,
+          }),
+        ],
+      }),
+    );
+    expect(responsiveBar).toContain('data-icon-only-at="wide"');
+    expect(responsiveBar).toContain(
+      'class="kui-app-tab__name">Overview</span>',
+    );
     const iconOnly = asHtml(
       AppTab({
         id: 'icon',

@@ -45,6 +45,9 @@
   scroll-padding-inline: var(--kui-tab-bar-strip-scroll-padding-inline, 0);
   overscroll-behavior-inline: contain;
 }
+.kui-tab-bar[data-icon-only-at] .kui-tab-bar__tabs {
+  container: kui-tab-bar-tabs / inline-size;
+}
 .kui-tab-bar[data-presentation="segmented"],
 .kui-tab-bar[data-presentation="inspector"] {
   --kui-tab-bar-background: var(--kui-color-neutral-fill-quiet);

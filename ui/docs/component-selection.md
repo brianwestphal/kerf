@@ -242,7 +242,11 @@ required.
 - `TabBar` changes tabpanels and supports overflow/reorder; `SegmentedControl` chooses among a few compact views; `Select` handles a longer value list.
 
 Use `AppTab presentation="icon-only"` with its `name` kept as the accessible
-tab name, and `labelMaxWidth` for an ellipsized visible name. Set `attention`
+tab name. For segmented tabs that should show names in a wide reader and icons
+in a narrower container, set `TabBar iconOnlyAt="wide"` (832px), `"narrow"`
+(704px), or `"compact"` (448px), and give each segmented `AppTab` a leading
+icon. The tablist's own width controls the switch; the visually hidden name
+remains its accessible name. Use `labelMaxWidth` for an ellipsized visible name. Set `attention`
 to color a tab's name with `--kui-app-tab-attention-color`. Set `dropTarget`
 while an app drag is over a tab's content; the tab keeps its selection semantics
 and uses the `--kui-app-tab-drop-target-*` tokens for its highlight. Set

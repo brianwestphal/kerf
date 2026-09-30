@@ -4,6 +4,8 @@ export type TabActivation = 'automatic' | 'manual';
 export type TabBarAllocation = 'intrinsic' | 'fill';
 export type TabBarPresentation = 'rail' | 'segmented' | 'inspector';
 export type TabBarTrailingPlacement = 'separate' | 'adjacent';
+/** Tablist width where segmented AppTabs switch to icon-only. */
+export type TabBarIconOnlyAt = 'wide' | 'narrow' | 'compact';
 
 export interface TabBarProps {
   id: string;
@@ -28,6 +30,8 @@ export interface TabBarProps {
   allocation?: TabBarAllocation;
   /** Named strip chrome for application rails, segmented tabs, or inspectors. */
   presentation?: TabBarPresentation;
+  /** Switch segmented AppTabs to icon-only at tablist widths of 832, 704, or 448px. Each tab needs a leading icon. */
+  iconOnlyAt?: TabBarIconOnlyAt;
   /** Keep a trailing action beside the final tab or at the far edge of the bar. */
   trailingPlacement?: TabBarTrailingPlacement;
   /** Native named-slot assignment when composed inside a web component. */
@@ -46,6 +50,7 @@ export function TabBar({
   activation,
   allocation = 'intrinsic',
   presentation = 'rail',
+  iconOnlyAt,
   trailingPlacement = 'separate',
   slot,
 }: TabBarProps) {
@@ -57,6 +62,7 @@ export function TabBar({
       data-tab-activation={activation}
       data-allocation={allocation}
       data-presentation={presentation}
+      data-icon-only-at={iconOnlyAt}
       data-trailing-placement={trailingPlacement}
       aria-label={label}
       slot={slot}

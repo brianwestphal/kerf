@@ -1024,6 +1024,8 @@ type TabActivation = 'automatic' | 'manual';
 type TabBarAllocation = 'intrinsic' | 'fill';
 type TabBarPresentation = 'rail' | 'segmented' | 'inspector';
 type TabBarTrailingPlacement = 'separate' | 'adjacent';
+/** Tablist width where segmented AppTabs switch to icon-only. */
+type TabBarIconOnlyAt = 'wide' | 'narrow' | 'compact';
 interface TabBarProps {
     id: string;
     label: string;
@@ -1047,15 +1049,17 @@ interface TabBarProps {
     allocation?: TabBarAllocation;
     /** Named strip chrome for application rails, segmented tabs, or inspectors. */
     presentation?: TabBarPresentation;
+    /** Switch segmented AppTabs to icon-only at tablist widths of 832, 704, or 448px. Each tab needs a leading icon. */
+    iconOnlyAt?: TabBarIconOnlyAt;
     /** Keep a trailing action beside the final tab or at the far edge of the bar. */
     trailingPlacement?: TabBarTrailingPlacement;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
 }
 /** Render a controlled tab strip. The application owns selection, order, and persistence. */
-declare function TabBar({ id, label, children, leading, trailing, end, className, activation, allocation, presentation, trailingPlacement, slot, }: TabBarProps): kerfjs.SafeHtml;
+declare function TabBar({ id, label, children, leading, trailing, end, className, activation, allocation, presentation, iconOnlyAt, trailingPlacement, slot, }: TabBarProps): kerfjs.SafeHtml;
 
-export { type TabActivation, TabBar, type TabBarAllocation, type TabBarPresentation, type TabBarProps, type TabBarTrailingPlacement };
+export { type TabActivation, TabBar, type TabBarAllocation, type TabBarIconOnlyAt, type TabBarPresentation, type TabBarProps, type TabBarTrailingPlacement };
 ```
 
 ## `@kerfjs/ui/wire-tab-bars`

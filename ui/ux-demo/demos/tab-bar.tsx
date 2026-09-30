@@ -78,6 +78,36 @@ export function TabBarDemo() {
           {tabs('segmented')}
         </TabBar>
       </CatalogExample>
+      <CatalogExample
+        label="Responsive icon-only segmented tabs"
+        note="The tablist switches at 832px of its own width; each tab keeps its accessible name when its visible name hides."
+        align="none"
+      >
+        <TabBar
+          id="responsive-icon-tab-bar"
+          label="Responsive project tabs"
+          presentation="segmented"
+          iconOnlyAt="wide"
+        >
+          <AppTab
+            id="responsive-overview"
+            name="Overview"
+            selected
+            closable={false}
+            presentation="segmented"
+            size="compact"
+            leading={<LucideIcon icon={PanelLeft} name="panel-left" />}
+          />
+          <AppTab
+            id="responsive-activity"
+            name="Activity"
+            closable={false}
+            presentation="segmented"
+            size="compact"
+            leading={<LucideIcon icon={SquarePlus} name="square-plus" />}
+          />
+        </TabBar>
+      </CatalogExample>
       <CatalogExample label="Inspector · adjacent and end actions" align="none">
         <TabBar
           id="inspector-tab-bar"
