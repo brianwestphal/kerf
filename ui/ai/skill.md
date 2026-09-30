@@ -265,7 +265,7 @@ Common mistakes:
 
 For prominent content text, use `Text size="large"`; use `size="xlarge"` for display copy. Both sizes work with semantic `variant`, `tone`, and `font`, so keep heading levels based on the document outline.
 
-For nested action menus, use `PopupMenuItem.submenu` and its `checked`, `icon`, `details`, `disabledReason`, and `tone` options. The app owns choice state. For a right-click menu, use `PopupMenu` with `context: true` and call `openPopupMenuAt` from the app's `contextmenu` handler; the package positions and opens the menu. Call `closePopupMenu` for programmatic dismissal.
+For nested action menus, use `PopupMenuItem.submenu` with item, heading, and divider entries; headings and dividers do not enter keyboard navigation. Items support `checked`, `icon`, `details`, `disabledReason`, and `tone`. The app owns choice state. For a right-click menu, use `PopupMenu` with `context: true` and call `openPopupMenuAt` from the app's `contextmenu` handler; the package positions and opens the menu. Call `closePopupMenu` for programmatic dismissal.
 
 ## Select lifecycle ownership
 

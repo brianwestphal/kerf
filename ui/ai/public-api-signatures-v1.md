@@ -424,8 +424,8 @@ interface PopupMenuItem {
     disabledReason?: string;
     /** Application `data-*` metadata such as a record id. */
     attributes?: PopupMenuDataAttributes;
-    /** Child commands opened by hover or keyboard navigation. */
-    submenu?: readonly PopupMenuItem[];
+    /** Child commands, headings, and dividers opened by hover or keyboard navigation. */
+    submenu?: readonly PopupMenuEntry[];
 }
 /** A labeled group heading; items that follow it belong to the group. */
 interface PopupMenuHeading {

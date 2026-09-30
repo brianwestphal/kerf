@@ -348,7 +348,8 @@ menu.
 
 Nested decisions use an item with `submenu`. Children keep their own actions,
 `attributes` metadata, icons, `checked` state, disabled state and
-`disabledReason` tooltip. `tone: 'danger'` maps to the Web Awesome destructive
+`disabledReason` tooltip. Nested `heading` and `divider` entries group those
+commands without entering keyboard navigation. `tone: 'danger'` maps to the Web Awesome destructive
 variant. A parent can sit among ordinary commands and dividers, so the same
 items shape covers single-line and batch actions; compute each batch child's
 `disabled` state from the current selection.
@@ -359,8 +360,11 @@ items shape covers single-line and batch actions; compute each batch child's
   items={[
     { label: 'Copy reference', action: 'copy-reference', attributes: { 'data-item-id': lineId } },
     { label: 'Decide', submenu: [
+      { kind: 'heading', label: 'Review' },
       { label: 'Approve', action: 'decide', checked: current === 'approve', attributes: { 'data-item-id': lineId, 'data-decision': 'approve' } },
       { label: 'Reject', action: 'decide', tone: 'danger', disabled: needsPrice, disabledReason: needsPrice ? 'Add a price first' : undefined, attributes: { 'data-item-id': lineId, 'data-decision': 'reject' } },
+      { kind: 'divider' },
+      { label: 'Other…', action: 'choose-other' },
     ] },
     { kind: 'divider' },
     { label: 'Remove', action: 'remove', tone: 'danger' },

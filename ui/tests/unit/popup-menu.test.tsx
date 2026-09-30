@@ -31,12 +31,14 @@ describe('PopupMenu', () => {
             {
               label: 'Decide',
               submenu: [
+                { kind: 'heading', label: 'Review' },
                 {
                   label: 'Approve',
                   action: 'decide',
                   checked: true,
                   attributes: { 'data-decision': 'approve' },
                 },
+                { kind: 'divider' },
                 {
                   label: 'Reject',
                   action: 'decide',
@@ -65,6 +67,15 @@ describe('PopupMenu', () => {
     const children = parent.querySelectorAll<HTMLElement>(
       ':scope > wa-dropdown-item[slot="submenu"]',
     );
+    expect(
+      [...parent.querySelectorAll(':scope > [slot="submenu"]')].map(
+        (child) => child.localName,
+      ),
+    ).toEqual(['div', 'wa-dropdown-item', 'wa-divider', 'wa-dropdown-item']);
+    expect(
+      parent.querySelector('.kui-popup-menu__heading[slot="submenu"]')
+        ?.textContent,
+    ).toBe('Review');
     expect(children).toHaveLength(2);
     expect(children[0].getAttribute('type')).toBe('checkbox');
     expect(children[0].hasAttribute('checked')).toBe(true);

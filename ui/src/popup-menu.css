@@ -54,7 +54,8 @@
   color: var(--_kui-popup-row-current-color);
   background-color: var(--_kui-popup-row-current-background);
 }
-.kui-popup-menu > wa-divider {
+.kui-popup-menu > wa-divider,
+.kui-popup-menu wa-divider[slot="submenu"] {
   --spacing: 0.5em;
 }
 

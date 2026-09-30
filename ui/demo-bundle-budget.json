@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 306100,
+  "totalJavaScriptGzip": 306200,
   "measuredLargestJavaScriptGzip": 126039,
-  "measuredTotalJavaScriptGzip": 306096,
+  "measuredTotalJavaScriptGzip": 306161,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1395,6 +1395,22 @@
         "measuredTotalJavaScriptGzip": 306096,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 306100
+      }
+    },
+    {
+      "at": "2026-09-30T09:30:30.471Z",
+      "reason": "Nested PopupMenu headings and dividers in the catalog example",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126039,
+        "measuredTotalJavaScriptGzip": 306096,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 306100
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126039,
+        "measuredTotalJavaScriptGzip": 306161,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 306200
       }
     }
   ]

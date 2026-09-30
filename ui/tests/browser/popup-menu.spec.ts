@@ -91,8 +91,11 @@ test('nested choices, selected details, disabled commands, and context opening w
   const parent = nested.locator(
     'wa-dropdown-item:has(> wa-dropdown-item[slot="submenu"])',
   );
-  const approve = parent.locator('wa-dropdown-item[slot="submenu"]').first();
-  const reject = parent.locator('wa-dropdown-item[slot="submenu"]').last();
+  const approve = parent.locator('[data-decision="approve"]');
+  const reject = parent.locator('[data-decision="reject"]');
+  const other = parent.locator('[data-decision="other"]');
+  const headings = parent.locator('.kui-popup-menu__heading[slot="submenu"]');
+  const divider = parent.locator('wa-divider[slot="submenu"]');
   await expect(parent).toHaveJSProperty('hasSubmenu', true);
   await expect(parent).toHaveJSProperty('submenuOpen', false);
   await page.keyboard.press('Home');
@@ -101,6 +104,10 @@ test('nested choices, selected details, disabled commands, and context opening w
   await expect(parent).toBeFocused();
   await page.keyboard.press('ArrowRight');
   await expect(parent).toHaveJSProperty('submenuOpen', true);
+  await expect(approve).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await expect(other).toBeFocused();
+  await page.keyboard.press('ArrowUp');
   await expect(approve).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(page.locator('.catalog-log')).toHaveText('Decision: approve');
@@ -115,6 +122,9 @@ test('nested choices, selected details, disabled commands, and context opening w
   await expect(approve).toHaveAttribute('checked', '');
   await expect(reject).toHaveAttribute('aria-disabled', 'true');
   await expect(reject).toHaveAttribute('title', 'A price is required');
+  await expect(headings).toHaveText(['Review', 'More']);
+  await expect(divider).toBeVisible();
+  await expect(other).toBeVisible();
   if (browserName === 'chromium')
     await page.screenshot({ path: 'test-results/popup-menu-nested-wide.png' });
   await approve.click();
@@ -123,6 +133,16 @@ test('nested choices, selected details, disabled commands, and context opening w
     'data-test-select-count',
     '2',
   );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await trigger.click();
+  await parent.hover();
+  await expect(other).toBeVisible();
+  if (browserName === 'chromium')
+    await page.screenshot({
+      path: 'test-results/popup-menu-nested-narrow.png',
+    });
+  await other.click();
+  await expect(page.locator('.catalog-log')).toHaveText('Decision: other');
 
   const context = demo.locator('[data-popup-context-menu]');
   const row = demo.locator('[data-popup-menu-context-target]');

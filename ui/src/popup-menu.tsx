@@ -35,8 +35,8 @@ export interface PopupMenuItem {
   disabledReason?: string;
   /** Application `data-*` metadata such as a record id. */
   attributes?: PopupMenuDataAttributes;
-  /** Child commands opened by hover or keyboard navigation. */
-  submenu?: readonly PopupMenuItem[];
+  /** Child commands, headings, and dividers opened by hover or keyboard navigation. */
+  submenu?: readonly PopupMenuEntry[];
 }
 
 /** A labeled group heading; items that follow it belong to the group. */
@@ -123,11 +123,19 @@ function entryKey(entry: PopupMenuEntry): string {
 }
 
 function renderEntry(entry: PopupMenuEntry, nested = false) {
-  if (entry.kind === 'divider') return <wa-divider></wa-divider>;
+  if (entry.kind === 'divider')
+    return <wa-divider slot={nested ? 'submenu' : undefined}></wa-divider>;
   // A group title styled like the Select's group title. It is not a slotted
   // h1-h6, whose Web Awesome group-label metrics are !important.
   if (entry.kind === 'heading')
-    return <div class="kui-popup-menu__heading">{entry.label}</div>;
+    return (
+      <div
+        class="kui-popup-menu__heading"
+        slot={nested ? 'submenu' : undefined}
+      >
+        {entry.label}
+      </div>
+    );
   return (
     <wa-dropdown-item
       {...(entry.attributes ?? {})}

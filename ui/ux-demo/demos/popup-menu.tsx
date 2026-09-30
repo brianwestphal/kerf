@@ -112,6 +112,7 @@ export function PopupMenuDemo() {
               label: 'Decide',
               icon: <LucideIcon icon={Gavel} name="decide" />,
               submenu: [
+                { kind: 'heading', label: 'Review' },
                 {
                   label: 'Approve',
                   action: 'log-decision',
@@ -125,6 +126,13 @@ export function PopupMenuDemo() {
                   disabled: true,
                   disabledReason: 'A price is required',
                   attributes: { 'data-decision': 'reject' },
+                },
+                { kind: 'divider' },
+                { kind: 'heading', label: 'More' },
+                {
+                  label: 'Other…',
+                  action: 'log-decision',
+                  attributes: { 'data-decision': 'other' },
                 },
               ],
             },

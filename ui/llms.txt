@@ -264,7 +264,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   in a `single` `ToolbarControlGroup` with `nestedDropdown`; never hand-write
   `wa-dropdown` markup for a menu. Let the group size the trigger from its icon,
   localized text, and caret. `PopupMenu` items also support nested `submenu`
-  actions, checked or trailing choice marks, danger tone, and disabled reasons;
+  actions, headings, dividers, checked or trailing choice marks, danger tone,
+  and disabled reasons; nested headings/dividers stay out of keyboard choices;
   use `context` with `openPopupMenuAt`/`closePopupMenu` for pointer-anchored row
   menus. Do not force a dropdown or button width. Nothing
   wraps inside a group: an icon sits beside its label on one row, and a

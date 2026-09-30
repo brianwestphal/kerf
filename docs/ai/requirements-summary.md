@@ -411,6 +411,8 @@ and missing prefixes leave state intact.
 Programmatic saved-search replacement uses a model action that publishes parsed
 state and advances the editor revision, so an unchanged chip set cannot leave
 stale DOM-owned query text visible.
+PopupMenu nested menus accept action items, headings, and dividers; the latter
+two separate groups visually while keyboard navigation remains on commands.
 
 The UX catalog detail projects visible, repository-relative `View demo source`
 and existing guidance links for every canonical entry, adds `View component

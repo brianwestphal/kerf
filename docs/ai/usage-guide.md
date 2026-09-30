@@ -167,6 +167,7 @@ a delayed animation-frame caret reset. The editor's text is DOM-owned, so a new
 `query` with unchanged tokens does not replace it: change the field's
 `revision` when the app sets the text itself (reseeding a dialog on reopen,
 applying a saved search).
+
 For a model-managed field, use `model.replace({ query, tokens })` instead: it
 publishes parsed state and advances the editor revision even without a chip
 change.
@@ -176,6 +177,10 @@ exclude selected values; existing one-argument callbacks remain valid.
 An application date picker or other helper can call `model.commit(value)` to
 commit a parsed value for the active `name:` prefix outside the suggestion list.
 It leaves invalid values or queries without an active prefix unchanged.
+
+For nested `PopupMenu` actions, put item, heading, and divider entries in
+`submenu`. The heading and divider remain visual group boundaries while the
+menu's keyboard navigation moves among actionable items.
 
 Compose a panel, dialog, or page heading with a plain `Toolbar`: the leading zone
 holds an optional icon `ToolbarControlGroup` and a direct extra-large
