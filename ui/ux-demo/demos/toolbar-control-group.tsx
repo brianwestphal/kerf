@@ -325,6 +325,7 @@ export function ToolbarControlGroupDemo() {
           </>
         }
         align="inline-control"
+        viewport={{ width: 'compact' }}
       >
         <div data-demo-section="toolbar-group-search">
           <ToolbarControlGroup

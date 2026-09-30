@@ -520,7 +520,7 @@ test('every ToolbarText size renders in the UI sans stack, never a monospace fal
   await page.goto('/?component=toolbar-text');
   const catalog = await families();
   expect(new Set(catalog.texts.map(({ size }) => size))).toEqual(
-    new Set(['xlarge', 'large', 'default', 'small']),
+    new Set(['xlarge', 'large', 'default', 'small', 'xsmall']),
   );
   expect(catalog.sans).not.toMatch(/mono/i);
   for (const { family } of catalog.texts) expect(family).toBe(catalog.sans);
@@ -602,7 +602,9 @@ test('the FloatingToolbar demo toggles a dark floating toolbar and auto-hides on
   page,
 }) => {
   await page.goto('/?component=floating-toolbar');
-  const floating = page.locator('.kui-floating-toolbar');
+  const floating = page.locator(
+    '[data-demo-floating-toolbar-stage] .kui-floating-toolbar',
+  );
   await expect(floating).toHaveCount(0);
 
   await page.getByRole('button', { name: 'Show floating toolbar' }).click();
@@ -619,7 +621,9 @@ test('the FloatingToolbar demo toggles a dark floating toolbar and auto-hides on
       )!
       .getBoundingClientRect();
     const floater = document
-      .querySelector('.kui-floating-toolbar')!
+      .querySelector(
+        '[data-demo-floating-toolbar-stage] .kui-floating-toolbar',
+      )!
       .getBoundingClientRect();
     return {
       right: Math.round(stage.right - floater.right),
@@ -2396,7 +2400,7 @@ test('keeps ValueTableRow block padding root-scaled and separators aligned', asy
       });
     }
     const rows = demo.locator(
-      '.kui-value-table__row:not([data-placeholder="true"])',
+      '[data-component="value-table"][aria-label="Package metadata"] .kui-value-table__row:not([data-placeholder="true"])',
     );
     await expect(rows).toHaveCount(3);
 
@@ -4498,7 +4502,9 @@ test('catalog routes every production component family and supports its stateful
   }
 
   await page.goto('/?component=resize');
-  const handle = page.locator('[data-kui-resize-handle]');
+  const handle = page.locator(
+    '[data-region-id="catalog-panel"] [data-kui-resize-handle]',
+  );
   await handle.focus();
   await handle.press('ArrowRight');
   await expect(page.locator('[data-region-size]')).toHaveText('292px');
@@ -6390,6 +6396,23 @@ test('expands and collapses the ToolbarControlGroup collapsible search without s
     await group.screenshot({
       path: 'test-results/toolbar-control-group-rounded-search.png',
     });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(group.locator('.kui-token-search__editor')).toBeVisible();
+  await expect
+    .poll(() =>
+      group.evaluate((node) => {
+        const bounds = node.getBoundingClientRect();
+        return bounds.left >= 0 && bounds.right <= window.innerWidth;
+      }),
+    )
+    .toBe(true);
+  if (browserName === 'chromium')
+    await group.screenshot({
+      path: 'test-results/toolbar-control-group-search-narrow.png',
+    });
+  await group.locator('.kui-token-search__editor').blur();
+  await expect(field).toHaveAttribute('data-expanded', 'false');
+  await expect(group.locator('.kui-token-search__editor')).toBeHidden();
 });
 
 test('intrinsically sizes popup, compact mixed, and catalog dropdown content across group shapes', async ({
@@ -6543,7 +6566,7 @@ test('keeps slide-motion ResizableRegion content at the live width during a poin
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=resize');
   const region = page.locator(
-    '[data-demo="resize"] [data-component="resizable-region"]',
+    '[data-demo="resize"] [data-component="resizable-region"][data-region-id="catalog-panel"]',
   );
   const handle = region.locator('[data-kui-resize-handle]');
   const size = page.locator('[data-region-size]');
@@ -6637,9 +6660,11 @@ test('renders the Hot Sheet split treatment on ResizableRegion', async ({
   await page.setViewportSize({ width: 1100, height: 760 });
   await page.goto('/?component=resize');
   const shell = page.locator(
-    '[data-demo="resize"] [data-catalog-example-viewport]',
+    '[data-demo="resize"] [data-catalog-example-viewport]:has([data-region-id="catalog-panel"])',
   );
-  const region = page.locator('[data-component="resizable-region"]');
+  const region = page.locator(
+    '[data-component="resizable-region"][data-region-id="catalog-panel"]',
+  );
   const handle = region.locator('[data-kui-resize-handle]');
   const iconLayer = handle.locator('.kui-resizable-region__handle-icon');
   const grip = iconLayer.locator('svg');
@@ -6990,8 +7015,8 @@ test('separates focused AppTab and TabBar specimens from the application-tabs co
 
   await page.goto('/?component=tab-bar');
   const tabBars = page.locator('[data-demo="tab-bar"]');
-  await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(4);
-  await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(4);
+  await expect(tabBars.locator('[data-catalog-example]')).toHaveCount(5);
+  await expect(tabBars.locator('[data-component="tab-bar"]')).toHaveCount(5);
   const splitBar = tabBars.locator('[data-tab-bar-id="inspector-tab-bar"]');
   const splitTabs = splitBar.locator('[data-kui-tab-list]');
   const adjacentAction = splitBar.getByRole('button', {
@@ -7249,10 +7274,10 @@ test('ships semantic banner palettes with scoped overrides', async ({
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=state-banner');
   const banners = page.locator(
-    '[data-demo="state-banner"] [data-component="state-banner"]:not([data-placeholder="true"])',
+    '[data-demo="state-banner"] [data-component="state-banner"]:not([data-placeholder="true"]):not([data-copy-layout="stacked"])',
   );
   const articles = page.locator(
-    '[data-demo="state-banner"] .kui-catalog-example:not(:has([data-placeholder="true"]))',
+    '[data-demo="state-banner"] .kui-catalog-example:not(:has([data-placeholder="true"], [data-copy-layout="stacked"]))',
   );
   const badges = banners.locator('[data-component="badge"]');
   await expect(banners).toHaveCount(7);

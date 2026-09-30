@@ -135,7 +135,7 @@ test('the catalog region demo resizes only to the 390px stage and reports the sh
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/?component=resize');
   const region = page.locator(
-    '[data-demo="resize"] [data-component="resizable-region"]',
+    '[data-demo="resize"] [data-component="resizable-region"][data-region-id="catalog-panel"]',
   );
   const handle = region.locator('[data-kui-resize-handle]');
   await handle.focus();
@@ -210,7 +210,7 @@ test('a size committed on a wide stage reports the clamped size when focused on 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=resize');
   const region = page.locator(
-    '[data-demo="resize"] [data-component="resizable-region"]',
+    '[data-demo="resize"] [data-component="resizable-region"][data-region-id="catalog-panel"]',
   );
   const handle = region.locator('[data-kui-resize-handle]');
   await handle.focus();
@@ -249,7 +249,7 @@ for (const width of [390, 1440])
     await page.setViewportSize({ width, height: 844 });
     await page.goto('/?component=resize');
     const region = page.locator(
-      '[data-demo="resize"] [data-component="resizable-region"]',
+      '[data-demo="resize"] [data-component="resizable-region"][data-region-id="catalog-panel"]',
     );
     const handle = region.locator('[data-kui-resize-handle]');
     await handle.focus();
@@ -308,7 +308,7 @@ test('a straddling handle draws its grip on the separator line', async ({
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=resize');
   const region = page.locator(
-    '[data-demo="resize"] [data-component="resizable-region"]',
+    '[data-demo="resize"] [data-component="resizable-region"][data-region-id="catalog-panel"]',
   );
   const handle = region.locator('[data-kui-resize-handle]');
   const box = (await handle.boundingBox())!;
@@ -332,7 +332,7 @@ test('the reported size stays clamped at rest through a resize and an unrelated 
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/?component=resize');
   const region = page.locator(
-    '[data-demo="resize"] [data-component="resizable-region"]',
+    '[data-demo="resize"] [data-component="resizable-region"][data-region-id="catalog-panel"]',
   );
   const handle = region.locator('[data-kui-resize-handle]');
   await handle.focus();
