@@ -228,6 +228,8 @@ Use `--kui-resizable-region-background` for a region surface and `contentOverflo
 
 Use `ListItem density="spacious"` for larger option rows, `multiline` plus `multilineIconAlign="center"` when its icon should center on wrapped copy, `divider` for row separators, and `state="drag-target"` for the drop target treatment. Public `--kui-list-item-*` tokens adjust row, icon, label, and trailing geometry and color; ListHeader height, title padding, and border tokens adjust section density.
 
+For a filled command list, scope `--kui-list-item-background`, `--kui-list-item-border`, `--kui-list-item-hover-border`, and `--kui-list-item-selected-border` at the List or ListItem boundary. Keep global neutral and brand border colors semantic.
+
 Use `Toolbar responsive="trailing-priority"` when an expanded trailing search needs a full second row below its heading at `responsiveAt`. Configure a leading minimum width, trailing gap and justification, or zone inline padding with the public `--kui-toolbar-*` tokens rather than selectors into toolbar zones.
 
 Set `--kui-toolbar-inset: 0px` on an embedded Toolbar to remove its outer padding while retaining `--kui-toolbar-gap` between zones. The same inset token controls the minimum-height allowance; safe-area padding still applies at claimed edges.

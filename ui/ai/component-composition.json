@@ -2526,7 +2526,14 @@
       "responsive": { "owner": "not-applicable", "behaviors": [] },
       "layout": {
         "roles": ["navigation"],
-        "geometry": { "margin": "self", "border": "self", "padding": "self" }
+        "geometry": {
+          "margin": "self",
+          "border": "self",
+          "padding": "self",
+          "notes": [
+            "Public resting background and border, hover border, and selected border tokens can be scoped to a row or its containing list without changing the default tones."
+          ]
+        }
       },
       "accessibility": {
         "obligations": [
@@ -2558,22 +2565,27 @@
         ],
         "publicTokens": [
           "--kui-color-brand-border-normal",
+          "--kui-color-brand-border-quiet",
           "--kui-color-brand-fill-quiet",
           "--kui-color-brand-fill-normal",
           "--kui-color-neutral-fill-quiet",
           "--kui-color-neutral-on-normal",
           "--kui-color-neutral-on-quiet",
           "--kui-color-neutral-border-quiet",
+          "--kui-color-neutral-border-normal",
           "--kui-focus-ring",
           "--kui-list-item-color",
+          "--kui-list-item-background",
           "--kui-list-item-align-items",
           "--kui-list-item-border-width",
+          "--kui-list-item-border",
           "--kui-list-item-columns",
           "--kui-list-item-drag-target-background",
           "--kui-list-item-drag-target-outline",
           "--kui-list-item-drag-target-outline-offset",
           "--kui-list-item-gap",
           "--kui-list-item-hover-background",
+          "--kui-list-item-hover-border",
           "--kui-list-item-icon-color",
           "--kui-list-item-icon-size",
           "--kui-list-item-label-max-width",
@@ -2583,6 +2595,7 @@
           "--kui-list-item-padding-inline",
           "--kui-list-item-radius",
           "--kui-list-item-selected-background",
+          "--kui-list-item-selected-border",
           "--kui-list-item-selected-color",
           "--kui-list-item-trailing-color",
           "--kui-list-group-divider-color",

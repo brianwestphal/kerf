@@ -166,6 +166,10 @@ popover or context-menu lifecycle. Its `label`, `icon`, and
 `trailingActionIcon` SafeHtml slots are dormant and must not contain controls.
 `ListItem` clips descendant painting to its rounded row boundary; set
 `multiline` when its primary label should wrap instead of truncate.
+For filled command rows, scope `--kui-list-item-background`,
+`--kui-list-item-border`, `--kui-list-item-hover-border`, and
+`--kui-list-item-selected-border` to the list or row. Keep the global neutral
+and brand border colors available for other components.
 
 Use `wireTokenSearchFields` for managed search focus, including controlled clear
 and Select All deletion. Persist both query and tokens from `readTokenSearchField`

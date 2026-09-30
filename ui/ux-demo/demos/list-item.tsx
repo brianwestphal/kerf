@@ -1,4 +1,5 @@
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { List } from '@kerfjs/ui/list';
 import { ListItem, ListItemLink } from '@kerfjs/ui/list-item';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { CircleHelp, Folder, Inbox, Wrench } from 'lucide';
@@ -16,6 +17,36 @@ export function ListItemDemo() {
           density="compact"
           divider="before"
         />
+      </CatalogExample>
+      <CatalogExample
+        label="Filled command rows"
+        note="Public resting, hover, and selected border tokens let a list carry its own fill without a background wrapper."
+        align="none"
+        viewport={{
+          width: 'medium',
+          tokens: {
+            '--kui-list-item-background': 'var(--kui-color-neutral-fill-quiet)',
+            '--kui-list-item-border': 'var(--kui-color-neutral-border-quiet)',
+            '--kui-list-item-hover-border':
+              'var(--kui-color-brand-border-normal)',
+            '--kui-list-item-selected-border':
+              'var(--kui-color-brand-border-normal)',
+          },
+        }}
+      >
+        <List>
+          <ListItem
+            action="log-projects"
+            itemId="tone-rest"
+            label="New project"
+          />
+          <ListItem
+            action="log-projects"
+            itemId="tone-selected"
+            label="Current project"
+            selected
+          />
+        </List>
       </CatalogExample>
       <CatalogExample align="none">
         <ListItem

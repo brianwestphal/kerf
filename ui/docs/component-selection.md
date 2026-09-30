@@ -196,6 +196,11 @@ whole label. `divider` owns a before or after separator. Set
 `--kui-list-item-*` tokens control its row, icon, label, and trailing geometry
 and color. `ListHeader` exposes `--kui-list-header-min-height`, title padding,
 title minimum height, and border-width tokens for section density.
+For a filled command list, set `--kui-list-item-background` and
+`--kui-list-item-border` on the list or row. The matching
+`--kui-list-item-hover-border` and `--kui-list-item-selected-border` tokens
+set state outlines without replacing ListItem CSS or neutralizing global
+semantic border colors.
 
 Use `ListItemLink` from `@kerfjs/ui/list-item` for a navigation row with a
 real `href`. It shares `ListItem` content slots, density, selection, and row
