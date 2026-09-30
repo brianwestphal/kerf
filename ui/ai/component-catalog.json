@@ -1840,7 +1840,7 @@
       "source": "kerf",
       "description": "Semantic native paragraph text by default, with heading and inline-span variants plus composable semantic presentation roles.",
       "uses": [],
-      "purpose": "Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact size, or monospace font.",
+      "purpose": "Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact through extra-large size, or monospace font.",
       "publicExports": [
         "Text"
       ],
@@ -1872,7 +1872,7 @@
       "variants": [
         "p, h1 through h6, or inline span semantic variant",
         "default, quiet, or danger tone",
-        "default or compact size",
+        "compact, default, large, or xlarge size",
         "default or monospace font"
       ],
       "accessibility": [
@@ -1902,6 +1902,8 @@
       "publicTokens": [
         "--kui-color-danger-on-quiet",
         "--kui-color-text-quiet",
+        "--kui-font-2xl",
+        "--kui-font-l",
         "--kui-font-mono",
         "--kui-font-xs",
         "--kui-layout-item-padding"

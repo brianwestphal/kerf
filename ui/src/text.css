@@ -17,6 +17,14 @@
   font-size: var(--kui-font-xs);
 }
 
+.kui-text[data-size="large"] {
+  font-size: var(--kui-font-l);
+}
+
+.kui-text[data-size="xlarge"] {
+  font-size: var(--kui-font-2xl);
+}
+
 .kui-text[data-font="monospace"] {
   font-family: var(--kui-font-mono);
 }

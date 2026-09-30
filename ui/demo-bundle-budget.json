@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 304300,
-  "measuredLargestJavaScriptGzip": 126041,
-  "measuredTotalJavaScriptGzip": 304279,
+  "totalJavaScriptGzip": 304400,
+  "measuredLargestJavaScriptGzip": 126040,
+  "measuredTotalJavaScriptGzip": 304320,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1203,6 +1203,22 @@
         "measuredTotalJavaScriptGzip": 304279,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 304300
+      }
+    },
+    {
+      "at": "2026-09-30T01:58:40.836Z",
+      "reason": "KF-2RSZ80: large and xlarge Text specimens",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 304279,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 304300
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 304320,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 304400
       }
     }
   ]

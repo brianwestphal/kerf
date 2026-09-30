@@ -28,7 +28,7 @@ export function TextDemo() {
       </CatalogExample>
       <CatalogExample
         label="Presentation roles"
-        note="Tone, size, and font are independent of the native semantic element, so applications can express supporting copy, errors, compact metadata, and code without global utility classes."
+        note="Tone, size, and font are independent of the native semantic element, so applications can express supporting copy, errors, compact metadata, prominent copy, and code without global utility classes."
         align="none"
         rootAttributes={{ 'data-demo-section': 'presentation-roles' }}
       >
@@ -47,6 +47,8 @@ export function TextDemo() {
             </Text>
           </strong>
         </Text>
+        <Text size="large">Large body copy</Text>
+        <Text size="xlarge">Extra large body copy</Text>
       </CatalogExample>
     </CatalogExampleStack>
   );

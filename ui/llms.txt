@@ -268,8 +268,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   text outside toolbar title zones.** Omit `variant` for the default `p`, pass
   `h1`–`h6` based on the document outline, or use `variant="span"` inside a row,
   label, or table cell without adding box geometry. Independently compose `tone="quiet|danger"`,
-  `size="compact"`, and `font="monospace"` for supporting, error, compact, and
-  code roles instead of global utility classes. It passes native attributes
+  `size="compact|large|xlarge"`, and `font="monospace"` for supporting, error,
+  compact, prominent, display, and code roles instead of global utility classes. It passes native attributes
   through; block variants own the standard transparent border plus item padding, while `span` owns none. Keep
   toolbar titles on `ToolbarText` and list-aligned bare prose on `ListInsetText`.
 - **Space by the five-step scale, by relationship not by eye.** `0`

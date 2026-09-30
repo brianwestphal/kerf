@@ -29,7 +29,7 @@ Exact prop and callback types live in [`public-api-signatures-v1.md`](../public-
 - [Surface scaffolds](./surface-scaffold.md) — Configure recurring dialog and popup geometry without consumer ::part() overrides.
 - [FloatingToolbar](./floating-toolbar.md) — A transparent, forced-dark toolbar that floats over its container's content.
 - [ToolbarText](./toolbar-text.md) — Large, default, and compact toolbar identity text.
-- [Text](./text.md) — Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact size, or monospace font.
+- [Text](./text.md) — Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact through extra-large size, or monospace font.
 - [Headers](./headers.md) — Page, dialog, and definition-list hierarchy.
 - [ValueTable](./value-table.md) — Key/value rows with optional icons and aligned separators.
 - [Row](./row.md) — Arrange related content horizontally with consistent spacing, optional physical-side text/control insets, and explicit left/center/right/full plus top/middle/bottom/full/baseline alignment instead of application-owned flex wrappers.

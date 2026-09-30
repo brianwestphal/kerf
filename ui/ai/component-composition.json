@@ -1733,6 +1733,8 @@
         "publicTokens": [
           "--kui-color-danger-on-quiet",
           "--kui-color-text-quiet",
+          "--kui-font-2xl",
+          "--kui-font-l",
           "--kui-font-mono",
           "--kui-font-xs",
           "--kui-layout-item-padding"

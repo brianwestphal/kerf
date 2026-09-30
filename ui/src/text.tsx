@@ -5,7 +5,7 @@ import type { KerfUiContent } from './semantic-content.js';
 export type TextVariant =
   'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
 export type TextTone = 'default' | 'quiet' | 'danger';
-export type TextSize = 'default' | 'compact';
+export type TextSize = 'compact' | 'default' | 'large' | 'xlarge';
 export type TextFont = 'default' | 'monospace';
 export type TextBorder = 'transparent' | 'none';
 

@@ -285,7 +285,8 @@ rail) and pane identity should stay quiet.
 
 Presentation is independent of the native element: use `tone="quiet"` for
 supporting copy, `tone="danger"` for error or validation copy, `size="compact"`
-for compact metadata, and `font="monospace"` for code or identifiers (the
+for compact metadata, `size="large"` for prominent copy, `size="xlarge"` for
+display copy, and `font="monospace"` for code or identifiers (the
 `--kui-font-mono` stack, which Kerf owns even with Web Awesome loaded). These
 finite props compose with each other and with every semantic `variant`; omit
 them to inherit the surrounding color, size, and font.
@@ -297,6 +298,8 @@ import { Text } from "@kerfjs/ui/text";
 <Text variant="h3">Notifications</Text>; // normal-color subsection title
 <Text aria-describedby="details-title">Supporting copy</Text>;
 <Text tone="quiet" size="compact">Updated yesterday</Text>;
+<Text size="large">A prominent summary</Text>;
+<Text variant="h2" size="xlarge">A display-sized section title</Text>;
 <strong>Inbox<Text variant="span" tone="quiet" size="compact"> · 3 msg</Text></strong>;
 <Text tone="danger" font="monospace">ERR_INVALID_ID</Text>;
 ```

@@ -45,7 +45,7 @@ test('Text renders semantic variants with standard padded geometry', async ({
   const roles = page.locator(
     ':is([data-demo-section="presentation-roles"] > .kui-text, [data-demo-section="presentation-roles"] > .kui-text .kui-text)',
   );
-  await expect(roles).toHaveCount(7);
+  await expect(roles).toHaveCount(9);
   await expect(roles.nth(0)).toHaveAttribute('data-tone', 'quiet');
   await expect(roles.nth(1)).toHaveAttribute('data-tone', 'danger');
   await expect(roles.nth(2)).toHaveAttribute('data-size', 'compact');
@@ -60,6 +60,17 @@ test('Text renders semantic variants with standard padded geometry', async ({
   await expect(roles.nth(6)).toHaveJSProperty('tagName', 'SPAN');
   await expect(roles.nth(6)).toHaveAttribute('data-tone', 'quiet');
   await expect(roles.nth(6)).toHaveAttribute('data-size', 'compact');
+  await expect(roles.nth(7)).toHaveAttribute('data-size', 'large');
+  await expect(roles.nth(8)).toHaveAttribute('data-size', 'xlarge');
+  await expect
+    .poll(() =>
+      roles.evaluateAll((elements) =>
+        elements
+          .slice(7)
+          .map((element) => globalThis.getComputedStyle(element).fontSize),
+      ),
+    )
+    .toEqual(['20px', '32px']);
   await expect
     .poll(() =>
       roles.nth(6).evaluate((element) => {
@@ -147,6 +158,15 @@ test('Text renders semantic variants with standard padded geometry', async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await expect
     .poll(() =>
+      roles.evaluateAll((elements) =>
+        elements
+          .slice(7)
+          .map((element) => globalThis.getComputedStyle(element).fontSize),
+      ),
+    )
+    .toEqual(['20px', '32px']);
+  await expect
+    .poll(() =>
       page.evaluate(
         () =>
           document.documentElement.scrollWidth -
@@ -161,6 +181,9 @@ test('Text renders semantic variants with standard padded geometry', async ({
     path: 'test-results/text-narrow.png',
     fullPage: true,
   });
+  await roles.nth(8).scrollIntoViewIfNeeded();
+  await expect(roles.nth(8)).toBeVisible();
+  await page.screenshot({ path: 'test-results/text-size-narrow.png' });
 });
 
 test('Text font="monospace" resolves to the Kerf code stack with Web Awesome loaded', async ({

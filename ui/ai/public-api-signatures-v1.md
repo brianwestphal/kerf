@@ -3067,7 +3067,7 @@ import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type TextVariant = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span';
 type TextTone = 'default' | 'quiet' | 'danger';
-type TextSize = 'default' | 'compact';
+type TextSize = 'compact' | 'default' | 'large' | 'xlarge';
 type TextFont = 'default' | 'monospace';
 type TextBorder = 'transparent' | 'none';
 type TextContent = KerfUiContent | string | number | readonly TextContent[];

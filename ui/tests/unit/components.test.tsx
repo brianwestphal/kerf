@@ -708,6 +708,16 @@ describe('production UI primitives', () => {
         }),
       ),
     ).toContain('data-tone="danger" data-size="compact" data-font="monospace"');
+    expect(
+      asHtml(Text({ variant: 'span', size: 'large', children: 'Prominent' })),
+    ).toContain(
+      '<span class="kui-text" data-component="text" data-tone="default" data-size="large"',
+    );
+    expect(
+      asHtml(Text({ variant: 'h2', size: 'xlarge', children: 'Display' })),
+    ).toContain(
+      '<h2 class="kui-text" data-component="text" data-tone="default" data-size="xlarge"',
+    );
   });
 
   it('renders nullable and recursively nested semantic children without a Fragment', () => {

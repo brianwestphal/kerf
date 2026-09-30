@@ -247,7 +247,7 @@ export const generatedKerfCatalog = [
     "category": "Structure",
     "kind": "component",
     "source": "kerf",
-    "description": "Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact size, or monospace font.",
+    "description": "Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact through extra-large size, or monospace font.",
     "uses": [],
     "demoSource": "ui/ux-demo/demos/text.tsx",
     "componentSource": "ui/src/text.tsx",

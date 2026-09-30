@@ -8,7 +8,7 @@ Semantic native paragraph text by default, with heading and inline-span variants
 
 ## When to use
 
-Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact size, or monospace font.
+Render paragraph semantics by default, h1 through h6 when selected, or geometry-free inline secondary text as a span while independently configuring quiet or danger tone, compact through extra-large size, or monospace font.
 
 - Render ordinary application headings or paragraphs with native document semantics, or inline secondary text inside rows, labels, and table cells.
 
@@ -36,7 +36,7 @@ Exact prop names and types: [`@kerfjs/ui/text`](../public-api-signatures-v1.md#k
 
 - p, h1 through h6, or inline span semantic variant
 - default, quiet, or danger tone
-- default or compact size
+- compact, default, large, or xlarge size
 - default or monospace font
 
 ## Composition
@@ -71,7 +71,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-text` on an element you write; render `Text` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-danger-on-quiet`, `--kui-color-text-quiet`, `--kui-font-mono`, `--kui-font-xs`, `--kui-layout-item-padding`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-danger-on-quiet`, `--kui-color-text-quiet`, `--kui-font-2xl`, `--kui-font-l`, `--kui-font-mono`, `--kui-font-xs`, `--kui-layout-item-padding`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 
