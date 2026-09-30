@@ -392,6 +392,12 @@ trailing controls share the first text line's fixed vertical center and remain
 there as the editor wraps. In `collapsible` mode, the closed state is one named
 iconic search button and the open state is the same named searchbox, whether
 the field stands alone or is composed inside `ToolbarControlGroup`.
+
+For an app-driven query replacement with an unmanaged field, change its
+`revision` along with `query` so the editor text rebuilds. For a model-managed
+field, call `model.replace({ query, tokens })`: it parses the supplied state and
+advances `editorRevision` even when the tokens did not change.
+
 Applications set `expanded` while the field is focused, move focus from the
 trigger into the revealed editor, and clear `expanded` only after focus leaves
 the complete component. Text or tokens keep the field expanded even when that

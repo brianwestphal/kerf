@@ -95,6 +95,30 @@ describe('createTokenSearchModel', () => {
     expect(model.state.value).toEqual({ query: '', tokens: [] });
   });
 
+  it('replaces programmatic search state and advances the editor revision even without chip changes', () => {
+    const model = createTokenSearchModel({ rules });
+    model.edit({ query: 'draft', tokens: [] });
+    model.replace({ query: 'roadmap', tokens: [] });
+    expect(model.state.value).toEqual({ query: 'roadmap', tokens: [] });
+    expect(model.editorRevision.value).toBe(1);
+
+    model.replace({ query: 'roadmap', tokens: [] });
+    expect(model.editorRevision.value).toBe(2);
+    model.replace({ query: 'tag:cl', tokens: [] });
+    expect(model.state.value).toEqual({ query: 'tag:cl', tokens: [] });
+    expect(model.suggestions.value).toEqual([
+      { value: 'tag:client', label: 'tag:client' },
+    ]);
+    model.replace({ query: 'tag:client ', tokens: [] });
+    expect(model.state.value).toMatchObject({
+      query: '',
+      tokens: [{ value: 'tag:client' }],
+    });
+    expect(model.editorRevision.value).toBe(4);
+    model.clear();
+    expect(model.editorRevision.value).toBe(5);
+  });
+
   it('keeps existing chip positions correct when committing text around them', () => {
     const model = createTokenSearchModel({ rules });
     model.edit({

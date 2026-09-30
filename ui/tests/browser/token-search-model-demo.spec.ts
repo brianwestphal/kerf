@@ -106,3 +106,39 @@ test('an app helper commits an active grammar value outside suggestions', async 
     await expect(chips).toHaveCount(0);
   }
 });
+
+test('an app helper replaces DOM-owned draft text from saved search state', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=token-search-field');
+  const demo = page
+    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: 'Grammar assisted search',
+      }),
+    });
+  const field = demo.locator('[data-component="token-search-field"]');
+  const editor = field.getByRole('searchbox', { name: 'Search with filters' });
+  const helper = demo.getByRole('button', { name: 'Load saved search' });
+
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await editor.fill('draft');
+    await expect(editor).toHaveText('draft');
+    await helper.click();
+    await expect(editor).toHaveText('roadmap');
+    await expect(demo.locator('[data-demo-grammar-result]')).toHaveText(
+      'roadmap · 0 filters',
+    );
+    await demo.screenshot({
+      path: testInfo.outputPath(`grammar-replaced-${width}.png`),
+    });
+    await editor.fill('roadmap next');
+    await expect(editor).toHaveText('roadmap next');
+    await helper.click();
+    await expect(editor).toHaveText('roadmap');
+    await field.getByRole('button', { name: 'Clear search' }).click();
+    await expect(editor).toHaveText('');
+  }
+});

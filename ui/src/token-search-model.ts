@@ -41,6 +41,8 @@ export interface TokenSearchModel<Result = unknown> {
   suggestions: Signal<readonly TokenSearchSuggestion[]>;
   result: Signal<Result | undefined>;
   edit(value: TokenSearchFieldValue, commit?: boolean): void;
+  /** Replace app-owned search state and rebuild the DOM-owned editor text. */
+  replace(value: TokenSearchFieldValue): void;
   submit(value: TokenSearchFieldValue): void;
   choose(value: string): void;
   /** Commit a value for the active `name:` prefix, even when it is not suggested. */
@@ -242,6 +244,10 @@ export function createTokenSearchModel<Result = unknown>({
     suggestions,
     result,
     edit,
+    replace(value) {
+      edit(value);
+      editorRevision.value++;
+    },
     submit(value) {
       edit(value, true);
       onSubmit?.(state.value, result.value);

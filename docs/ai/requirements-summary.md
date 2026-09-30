@@ -408,6 +408,9 @@ callbacks.
 The model also commits a parsed value from a sibling application helper for the
 active `name:` prefix, even when the value was not suggested. Invalid values
 and missing prefixes leave state intact.
+Programmatic saved-search replacement uses a model action that publishes parsed
+state and advances the editor revision, so an unchanged chip set cannot leave
+stale DOM-owned query text visible.
 
 The UX catalog detail projects visible, repository-relative `View demo source`
 and existing guidance links for every canonical entry, adds `View component

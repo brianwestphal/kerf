@@ -358,7 +358,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   Select All deletion does the same; deletion
   restoration finishes before the next keystroke rather than on a delayed frame.
   Persist both query and remaining tokens read from an edited field; change
-  `revision` to replace its DOM-owned text programmatically. In grammar-assisted
+  `revision` to replace unmanaged DOM-owned text programmatically, or call
+  `model.replace({ query, tokens })` for a model-managed field. In grammar-assisted
   search, a model rule's `suggest(input, state)` receives current committed tokens
   so suggestions can omit selected values; one-argument callbacks still work.
   A sibling helper can call `model.commit(value)` for the active `name:` prefix

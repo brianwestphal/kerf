@@ -54,7 +54,7 @@ export function TokenSearchFieldDemo() {
       </CatalogExample>
       <CatalogExample
         label="Grammar assisted search"
-        note="Type tag: or is: for suggestions. Committed tags leave the suggestion list; whitespace commits valid filters as chips. Type tag:rel, then use Add release tag to commit a value outside suggestions."
+        note="Type tag: or is: for suggestions. Committed tags leave the list; whitespace commits filters. Type tag:rel and use Add release tag for a value outside suggestions. Load saved search replaces the current draft."
         align="inline-control"
       >
         <List gap="xs">
@@ -69,6 +69,13 @@ export function TokenSearchFieldDemo() {
             data-action="commit-grammar-release"
           >
             Add release tag
+          </wa-button>
+          <wa-button
+            size="small"
+            appearance="outlined"
+            data-action="replace-grammar-search"
+          >
+            Load saved search
           </wa-button>
           <Text
             variant="span"

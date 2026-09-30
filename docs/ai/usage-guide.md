@@ -167,6 +167,9 @@ a delayed animation-frame caret reset. The editor's text is DOM-owned, so a new
 `query` with unchanged tokens does not replace it: change the field's
 `revision` when the app sets the text itself (reseeding a dialog on reopen,
 applying a saved search).
+For a model-managed field, use `model.replace({ query, tokens })` instead: it
+publishes parsed state and advances the editor revision even without a chip
+change.
 For grammar-assisted search, `createTokenSearchModel` calls each rule's
 `suggest(input, state)` with the current committed tokens. Use that state to
 exclude selected values; existing one-argument callbacks remain valid.
