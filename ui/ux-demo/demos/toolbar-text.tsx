@@ -10,6 +10,13 @@ export function ToolbarTextDemo() {
       <CatalogExample label="Extra large" align="inline-control">
         <ToolbarText text="Workspace settings" size="xlarge" />
       </CatalogExample>
+      <CatalogExample label="Fixed extra large" align="inline-control">
+        <ToolbarText
+          text="Terminal tickets"
+          size="xlarge-fixed"
+          headingLevel={2}
+        />
+      </CatalogExample>
       <CatalogExample label="Large" align="inline-control">
         <ToolbarText text="Component library" size="large" />
       </CatalogExample>

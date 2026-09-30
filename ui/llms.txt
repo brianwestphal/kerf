@@ -299,6 +299,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   app-owned content below. Do not create a private heading wrapper or restyle the
   toolbar. A narrow peripheral rail or drawer, where extra-large would truncate
   at its minimum size, names itself with the default `ToolbarText` size.
+  `ToolbarText size="xlarge-fixed"` keeps the 20px `--kui-font-l` heading step;
+  `xlarge` retains the responsive page-title clamp.
 - **Use `Text` for ordinary semantic headings, paragraphs, and inline secondary
   text outside toolbar title zones.** Omit `variant` for the default `p`, pass
   `h1`–`h6` based on the document outline, or use `variant="span"` inside a row,

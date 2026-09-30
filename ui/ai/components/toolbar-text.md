@@ -13,7 +13,7 @@ Extra-large through extra-small toolbar identity text.
 **Not when:**
 
 - Do not omit headingLevel when the text is the page or section heading.
-- Do not use a size below xlarge as a normal-color subsection title: large, default, and small are intentionally quiet toolbar identity text and have no tone option. Use Text with an h2-h6 variant for a content subsection title, or ListHeader for a list or menu section.
+- Large, default, and small are intentionally quiet toolbar identity text and have no tone option. Use xlarge-fixed for a normal-color toolbar heading at the fixed font-l step; use Text with an h2-h6 variant for a content subsection title, or ListHeader for a list or menu section.
 
 **Alternatives:**
 
@@ -33,6 +33,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar-text`](../public-api-signatures
 **Variants (configure, do not restyle):**
 
 - xlarge
+- xlarge-fixed (fixed font-l heading)
 - large
 - default
 - small

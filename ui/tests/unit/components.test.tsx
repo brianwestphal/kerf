@@ -1798,6 +1798,11 @@ describe('production UI primitives', () => {
     );
     expect(heading).toContain('role="heading"');
     expect(heading).toContain('aria-level="2"');
+    expect(
+      asHtml(
+        ToolbarText({ text: 'Tickets', size: 'xlarge-fixed', headingLevel: 2 }),
+      ),
+    ).toContain('data-size="xlarge-fixed"');
 
     // Overflow: default is single-line + ellipsis (no wrap/ellipsis/max-lines attrs).
     const defaultOverflow = asHtml(

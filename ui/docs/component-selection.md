@@ -225,8 +225,10 @@ For compact dialog copy, use `Text flush lineHeight="tight"`; block Text still
 resets native margins. `ValueTable density="compact"` reduces row padding and
 gap. Its `--kui-value-table-row-columns`, `--kui-value-table-row-padding-block`,
 and `--kui-value-table-row-gap` tokens support a specific metadata layout.
-Use `ToolbarText size="xsmall"` for a dense rail heading. A
-`TokenSearchField` editor can shrink to zero minimum width inside a narrow
+Use `ToolbarText size="xsmall"` for a dense rail heading. Use
+`size="xlarge-fixed"` for a toolbar heading at the fixed 20px step; `xlarge`
+retains the responsive page-title clamp. Pass `headingLevel` when the text is
+a section landmark. A `TokenSearchField` editor can shrink to zero minimum width inside a narrow
 group; set `--kui-token-search-editor-min-width` only when a wider editor is
 required.
 

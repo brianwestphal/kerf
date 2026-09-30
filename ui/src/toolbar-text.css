@@ -47,15 +47,21 @@
   text-overflow: ellipsis;
 }
 
-.kui-toolbar-text[data-size="xlarge"] {
-  /* Matches page/panel titles: the same responsive clamp so a heading toolbar
-     title reads at the page-title scale without a bespoke override. Height grows
-     to the larger text (the fixed 40px would clip its ascenders). */
+.kui-toolbar-text:is([data-size="xlarge"], [data-size="xlarge-fixed"]) {
+  /* Both title sizes keep page/panel title color and geometry. Height grows to
+     their text instead of clipping ascenders in the default 40px box. */
   height: auto;
   min-height: remify(44px);
   color: var(--kui-color-text);
-  font-size: clamp(var(--kui-font-l), 2.3vw, var(--kui-font-2xl));
   letter-spacing: -0.025em;
+}
+
+.kui-toolbar-text[data-size="xlarge"] {
+  font-size: clamp(var(--kui-font-l), 2.3vw, var(--kui-font-2xl));
+}
+
+.kui-toolbar-text[data-size="xlarge-fixed"] {
+  font-size: var(--kui-font-l);
 }
 
 .kui-toolbar-text[data-size="large"] {
@@ -93,7 +99,10 @@
   min-height: remify(40px);
 }
 
-.kui-toolbar-text[data-size="xlarge"][data-wrap="true"] {
+.kui-toolbar-text:is(
+    [data-size="xlarge"],
+    [data-size="xlarge-fixed"]
+  )[data-wrap="true"] {
   min-height: remify(44px);
 }
 

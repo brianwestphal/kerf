@@ -3,7 +3,7 @@
   "largestJavaScriptGzip": 150000,
   "totalJavaScriptGzip": 308400,
   "measuredLargestJavaScriptGzip": 126041,
-  "measuredTotalJavaScriptGzip": 308317,
+  "measuredTotalJavaScriptGzip": 308364,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1521,6 +1521,22 @@
       "next": {
         "measuredLargestJavaScriptGzip": 126041,
         "measuredTotalJavaScriptGzip": 308317,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 308400
+      }
+    },
+    {
+      "at": "2026-09-30T14:12:16.290Z",
+      "reason": "Fixed ToolbarText size catalog specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 308317,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 308400
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 308364,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 308400
       }

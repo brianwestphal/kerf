@@ -210,7 +210,7 @@ export { Sides, Toolbar, type ToolbarConfig, type ToolbarProps };
 ```ts
 import * as kerfjs from 'kerfjs';
 
-type ToolbarTextSize = 'xlarge' | 'large' | 'default' | 'small' | 'xsmall';
+type ToolbarTextSize = 'xlarge' | 'xlarge-fixed' | 'large' | 'default' | 'small' | 'xsmall';
 /** ARIA heading level for a title exposed as a heading landmark. */
 type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 interface ToolbarTextBaseProps {

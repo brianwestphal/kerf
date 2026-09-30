@@ -520,7 +520,7 @@ test('every ToolbarText size renders in the UI sans stack, never a monospace fal
   await page.goto('/?component=toolbar-text');
   const catalog = await families();
   expect(new Set(catalog.texts.map(({ size }) => size))).toEqual(
-    new Set(['xlarge', 'large', 'default', 'small', 'xsmall']),
+    new Set(['xlarge', 'xlarge-fixed', 'large', 'default', 'small', 'xsmall']),
   );
   expect(catalog.sans).not.toMatch(/mono/i);
   for (const { family } of catalog.texts) expect(family).toBe(catalog.sans);
@@ -531,6 +531,39 @@ test('every ToolbarText size renders in the UI sans stack, never a monospace fal
   const small = list.texts.filter(({ size }) => size === 'small');
   expect(small.length).toBeGreaterThanOrEqual(2);
   for (const { family } of small) expect(family).toBe(list.sans);
+});
+
+test('fixed extra-large ToolbarText keeps the font-l step across viewport widths', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 760 });
+    await page.goto('/?component=toolbar-text');
+    const fixed = page.locator(
+      '[data-demo="toolbar-text"] .kui-toolbar-text[data-size="xlarge-fixed"]',
+    );
+    await expect(fixed).toHaveAttribute('role', 'heading');
+    await expect(fixed).toHaveAttribute('aria-level', '2');
+    const sizes = await page.evaluate(() => ({
+      fixed: Number.parseFloat(
+        window.getComputedStyle(
+          document.querySelector(
+            '.kui-toolbar-text[data-size="xlarge-fixed"]',
+          )!,
+        ).fontSize,
+      ),
+      responsive: Number.parseFloat(
+        window.getComputedStyle(
+          document.querySelector('.kui-toolbar-text[data-size="xlarge"]')!,
+        ).fontSize,
+      ),
+    }));
+    expect(sizes.fixed).toBe(20);
+    if (width === 1100) expect(sizes.responsive).toBeGreaterThan(sizes.fixed);
+    await fixed.screenshot({
+      path: testInfo.outputPath(`toolbar-text-fixed-${width}.png`),
+    });
+  }
 });
 
 test('ToolbarText overflow modes: single-line ellipsis, wrap, and capped line-clamp', async ({

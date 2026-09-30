@@ -216,6 +216,9 @@ host's `aria-labelledby`/`aria-describedby`. The icon may use a normal bordered
 on `ToolbarText` for page or section landmarks; omit it for a dialog title named
 through `aria-labelledby`. The app owns modal focus, dismissal, command policy,
 ids, supporting copy, and action handling.
+
+For a fixed 20px toolbar heading, use `size="xlarge-fixed"`; `xlarge` retains its
+responsive title clamp.
 On an embedded Toolbar, set `--kui-toolbar-inset: 0px` to remove outer padding
 and its minimum-height allowance while keeping the independent
 `--kui-toolbar-gap` between zones. Safe-area padding still applies where the
