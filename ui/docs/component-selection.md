@@ -184,6 +184,13 @@ action needs a separate trailing row. The default values keep both inline;
 `--kui-state-banner-copy-gap` and `--kui-state-banner-copy-row-gap` adjust the
 stacked copy's spacing at an instance boundary.
 
+For a compact `Select`, set `triggerWidth` to `"fit-content"`, `"max-content"`,
+or `"fill"` and cap it with `--kui-select-trigger-max-width` when needed.
+Custom `renderSelected` text inherits the control color by default; the
+`--kui-select-selected-color`, `--kui-select-selected-font-size`, and
+`--kui-select-selected-font-weight` tokens configure its typography. Plain
+selected text stays on one ellipsized line when the trigger narrows.
+
 - `ResizableRegion` is an interactive controlled pane. `Grid` is the right answer for static equal-width columns; application CSS grid remains the answer for asymmetric or intrinsic tracks.
 - A `ResizableRegion`'s content spans the whole region, like its separator. Give
   it one child — normally a `Pane` — and that child fills the region, so the

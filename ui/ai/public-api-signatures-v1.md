@@ -2543,6 +2543,7 @@ type SelectPresentation = 'form' | 'toolbar-borderless' | 'navigation';
 type SelectSize = 'default' | 'compact';
 type SelectSelectedPresentation = 'label' | 'icon-only';
 type SelectFocusRingOwner = 'select' | 'group';
+type SelectTriggerWidth = 'fit-content' | 'max-content' | 'fill';
 interface SelectBaseProps<Value extends string = string> {
     name: string;
     choices: readonly SelectChoice<Value>[];
@@ -2558,6 +2559,8 @@ interface SelectBaseProps<Value extends string = string> {
     /** Form (default), borderless toolbar, or intrinsic navigation chrome. */
     presentation?: SelectPresentation;
     size?: SelectSize;
+    /** Closed trigger width; omit to keep the presentation's default. */
+    triggerWidth?: SelectTriggerWidth;
     /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */
     focusRingOwner?: SelectFocusRingOwner;
     /** Maximum closed-control label width in CSS pixels before ellipsis. */
@@ -2608,7 +2611,7 @@ type SelectMultipleValueProps<Value extends string = string> = SelectMultipleLab
 type SelectProps<Value extends string = string> = SelectBaseProps<Value> & SelectAccessibleName & (SelectSingleValueProps<Value> | SelectMultipleValueProps<Value>);
 declare function Select<Value extends string>(props: SelectProps<Value>): SafeHtml;
 
-export { Select, type SelectChoice, type SelectFocusRingOwner, type SelectMultipleIconProps, type SelectMultipleLabelProps, type SelectMultipleValueProps, type SelectPresentation, type SelectProps, type SelectSelectedPresentation, type SelectSingleValueProps, type SelectSize };
+export { Select, type SelectChoice, type SelectFocusRingOwner, type SelectMultipleIconProps, type SelectMultipleLabelProps, type SelectMultipleValueProps, type SelectPresentation, type SelectProps, type SelectSelectedPresentation, type SelectSingleValueProps, type SelectSize, type SelectTriggerWidth };
 ```
 
 ## `@kerfjs/ui/state-banner`

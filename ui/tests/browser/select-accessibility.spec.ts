@@ -37,6 +37,9 @@ test('names plain and custom Select comboboxes without adding visible label geom
   const navigationHost = demo.locator(
     'wa-select[name="navigation-rendering-balance"]',
   );
+  const customSelected = demo.locator(
+    'wa-select[name="rendering-balance"] .kui-select__custom-selected',
+  );
   expect(
     await toolbarHost.evaluate((element) => ({
       width: Math.round(element.getBoundingClientRect().width),
@@ -141,18 +144,14 @@ test('names plain and custom Select comboboxes without adding visible label geom
     await page.keyboard.press('Home');
     await page.keyboard.press('Enter');
     await expect(control).toHaveValue('Quiet');
-    await expect(demo.locator('.kui-select__custom-selected')).toHaveText(
-      'Quiet',
-    );
+    await expect(customSelected).toHaveText('Quiet');
     await expect(control).toBeFocused();
     await page.keyboard.press('Enter');
     await expect(control).toHaveAttribute('aria-expanded', 'true');
     await page.keyboard.press('End');
     await page.keyboard.press('Enter');
     await expect(control).toHaveValue('Explicit');
-    await expect(demo.locator('.kui-select__custom-selected')).toHaveText(
-      'Explicit',
-    );
+    await expect(customSelected).toHaveText('Explicit');
   }
   await page.locator('[data-action="toggle-theme"]').click();
   await expect(custom).toHaveValue('Explicit');

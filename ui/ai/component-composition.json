@@ -3274,6 +3274,7 @@
           "kui-select--fit-menu",
           "kui-select--label-hidden",
           "kui-select__custom-selected",
+          "kui-select__custom-selected-content",
           "kui-select__group",
           "kui-select__group--separated",
           "kui-select__group-title",
@@ -3283,7 +3284,11 @@
           "--kui-color-neutral-border-quiet",
           "--kui-color-neutral-on-quiet",
           "--kui-disclosure-icon-scale",
-          "--kui-font-2xs"
+          "--kui-font-2xs",
+          "--kui-select-selected-color",
+          "--kui-select-selected-font-size",
+          "--kui-select-selected-font-weight",
+          "--kui-select-trigger-max-width"
         ]
       },
       "diagnostics": [

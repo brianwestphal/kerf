@@ -35,6 +35,7 @@ export type SelectPresentation = 'form' | 'toolbar-borderless' | 'navigation';
 export type SelectSize = 'default' | 'compact';
 export type SelectSelectedPresentation = 'label' | 'icon-only';
 export type SelectFocusRingOwner = 'select' | 'group';
+export type SelectTriggerWidth = 'fit-content' | 'max-content' | 'fill';
 
 interface SelectBaseProps<Value extends string = string> {
   name: string;
@@ -51,6 +52,8 @@ interface SelectBaseProps<Value extends string = string> {
   /** Form (default), borderless toolbar, or intrinsic navigation chrome. */
   presentation?: SelectPresentation;
   size?: SelectSize;
+  /** Closed trigger width; omit to keep the presentation's default. */
+  triggerWidth?: SelectTriggerWidth;
   /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */
   focusRingOwner?: SelectFocusRingOwner;
   /** Maximum closed-control label width in CSS pixels before ellipsis. */
@@ -136,6 +139,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
     placeholder = false,
     presentation = 'form',
     size = 'default',
+    triggerWidth,
     focusRingOwner = 'select',
     labelMaxWidth,
     slot,
@@ -158,6 +162,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
         data-placeholder="true"
         data-presentation={presentation}
         data-size={size}
+        data-trigger-width={triggerWidth}
         data-selected-presentation={selectedPresentation}
         data-focus-ring-owner={focusRingOwner}
         aria-busy="true"
@@ -255,6 +260,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
       data-component="select"
       data-presentation={presentation}
       data-size={size}
+      data-trigger-width={triggerWidth}
       data-selected-presentation={selectedPresentation}
       data-focus-ring-owner={focusRingOwner}
       name={name}
@@ -301,7 +307,9 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
             slot="start"
             class="kui-select__custom-selected"
           >
-            {renderSelected(selected)}
+            <span class="kui-select__custom-selected-content">
+              {renderSelected(selected)}
+            </span>
           </span>
         ) : selected.icon ? (
           icon(selected, true)

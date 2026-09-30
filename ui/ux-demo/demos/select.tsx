@@ -171,12 +171,36 @@ export function SelectDemo() {
           name="labeled-rendering-balance"
           value={selectedChoice.value}
           label="Rendering preference"
+          triggerWidth="fill"
           hint="Controls how much rendering detail is shown."
           choices={[
             { value: 'quiet', label: 'Quiet' },
             { value: 'balanced', label: 'Balanced' },
             { value: 'explicit', label: 'Explicit' },
           ]}
+        />
+      </CatalogExample>
+      <CatalogExample
+        label="Compact selected text"
+        align="inline-control"
+        viewport={{
+          tokens: {
+            '--kui-select-trigger-max-width': '160px',
+            '--kui-select-selected-color': 'var(--kui-color-text-quiet)',
+            '--kui-select-selected-font-size': 'var(--kui-font-2xs)',
+            '--kui-select-selected-font-weight': '650',
+          },
+        }}
+      >
+        <Select<string>
+          name="compact-workspace"
+          value="long"
+          ariaLabel="Workspace"
+          presentation="toolbar-borderless"
+          size="compact"
+          triggerWidth="fit-content"
+          choices={[{ value: 'long', label: 'A very long workspace name' }]}
+          renderSelected={(choice) => <span>{choice.label}</span>}
         />
       </CatalogExample>
       <CatalogExample
@@ -227,6 +251,7 @@ export function SelectDemo() {
           value={selectedChoice.value}
           ariaLabel="Navigation rendering balance"
           presentation="navigation"
+          triggerWidth="max-content"
           size="compact"
           labelMaxWidth={120}
           choices={[

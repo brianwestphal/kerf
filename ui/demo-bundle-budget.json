@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 304500,
+  "totalJavaScriptGzip": 304700,
   "measuredLargestJavaScriptGzip": 126040,
-  "measuredTotalJavaScriptGzip": 304440,
+  "measuredTotalJavaScriptGzip": 304618,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1235,6 +1235,22 @@
         "measuredTotalJavaScriptGzip": 304440,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 304500
+      }
+    },
+    {
+      "at": "2026-09-30T04:06:33.006Z",
+      "reason": "Select width policy and custom-selected typography add a reviewed catalog specimen",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 304440,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 304500
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126040,
+        "measuredTotalJavaScriptGzip": 304618,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 304700
       }
     }
   ]

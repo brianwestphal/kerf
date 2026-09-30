@@ -191,6 +191,17 @@
   display: inline-flex;
   min-width: 0;
   align-items: center;
+  overflow: hidden;
+  color: var(--kui-select-selected-color, inherit);
+  font-size: var(--kui-select-selected-font-size, inherit);
+  font-weight: var(--kui-select-selected-font-weight, inherit);
+}
+.kui-select__custom-selected-content {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .kui-select--custom-selected::part(start) {
   min-width: 0;
@@ -290,4 +301,19 @@
   width: auto;
   height: 100%;
   fill: currentColor;
+}
+
+/* Explicit width policy applies to both the live control and its loading
+   placeholder; the presentation keeps its existing width when omitted. */
+.kui-select[data-trigger-width="fill"] {
+  width: 100%;
+  max-width: var(--kui-select-trigger-max-width, 100%);
+}
+.kui-select[data-trigger-width="fit-content"] {
+  width: fit-content;
+  max-width: var(--kui-select-trigger-max-width, 100%);
+}
+.kui-select[data-trigger-width="max-content"] {
+  width: max-content;
+  max-width: var(--kui-select-trigger-max-width, 100%);
 }

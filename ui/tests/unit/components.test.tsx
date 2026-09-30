@@ -1705,6 +1705,7 @@ describe('production UI primitives', () => {
         fitMenu: true,
         presentation: 'toolbar-borderless',
         size: 'compact',
+        triggerWidth: 'fit-content',
         selectedPresentation: 'icon-only',
         focusRingOwner: 'group',
         labelMaxWidth: 120,
@@ -1715,7 +1716,7 @@ describe('production UI primitives', () => {
       'kui-select--custom-selected kui-select--fit-menu',
     );
     expect(grouped).toContain(
-      'data-presentation="toolbar-borderless" data-size="compact" data-selected-presentation="icon-only" data-focus-ring-owner="group"',
+      'data-presentation="toolbar-borderless" data-size="compact" data-trigger-width="fit-content" data-selected-presentation="icon-only" data-focus-ring-owner="group"',
     );
     expect(grouped).toContain('style="--kui-select-label-max-width:120px"');
     expect(grouped).toContain('role="group" aria-label="Recommended"');
@@ -1751,6 +1752,7 @@ describe('production UI primitives', () => {
       /^<wa-select size="m" appearance="outlined" placement="bottom" /,
     );
     expect(grouped).toContain('<strong>Balanced</strong>');
+    expect(grouped).toContain('class="kui-select__custom-selected-content"');
     expect(grouped).toContain(
       'data-key="mode:balanced:custom-selected" slot="start" class="kui-select__custom-selected"',
     );
@@ -1800,6 +1802,18 @@ describe('production UI primitives', () => {
       }),
     );
     expect(onlyGrouped).toContain('class="kui-select__group" role="group"');
+    expect(
+      asHtml(
+        Select({
+          name: 'loading',
+          value: 'one',
+          ariaLabel: 'Loading choice',
+          choices: [{ value: 'one', label: 'One' }],
+          placeholder: true,
+          triggerWidth: 'fill',
+        }),
+      ),
+    ).toContain('data-trigger-width="fill"');
   });
 
   it('renders a multiple Select as selected options without a single value or selected icon', () => {
