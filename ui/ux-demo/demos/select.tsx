@@ -256,6 +256,30 @@ export function SelectDemo() {
           />
         </ToolbarControlGroup>
       </CatalogExample>
+      <CatalogExample
+        label="Round toolbar icon"
+        note="An icon-only Select can omit its caret to match a round action trigger. The accessible name and current choice remain available on hover and focus."
+        align="inline-control"
+      >
+        <ToolbarControlGroup
+          label="Workspace sort"
+          content="icon"
+          focusRing="outline"
+          shape="pill"
+          single
+        >
+          <Select<string>
+            name="toolbar-round-rendering-balance"
+            value={selectedChoice.value}
+            ariaLabel="Workspace sort"
+            presentation="toolbar-borderless"
+            selectedPresentation="icon-only"
+            caret={false}
+            focusRingOwner="group"
+            choices={toolbarChoices}
+          />
+        </ToolbarControlGroup>
+      </CatalogExample>
       <CatalogExample label="Compact toolbar icon" align="inline-control">
         <ToolbarControlGroup
           label="Rendering mode"

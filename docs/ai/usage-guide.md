@@ -204,6 +204,8 @@ For an unavailable Select value, set `SelectChoice.disabled` and optionally
 to show localized bulk actions. Listen for its ordinary `change` event and
 write the reported value array back to the controlled `value`; select-all
 includes only enabled choices.
+An icon-only toolbar Select may set `caret={false}` for a round trigger. Its
+accessible name, current choice help tag, and keyboard listbox remain available.
 
 Compose a panel, dialog, or page heading with a plain `Toolbar`: the leading zone
 holds an optional icon `ToolbarControlGroup` and a direct extra-large

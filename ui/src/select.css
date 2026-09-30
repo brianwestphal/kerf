@@ -108,6 +108,21 @@
   margin-inline-start: remify(12px);
   transform: scale(0.875);
 }
+.kui-select[data-caret="false"]::part(expand-icon) {
+  display: none;
+}
+.kui-select[data-selected-presentation="icon-only"][data-caret="false"]::part(
+    combobox
+  ) {
+  width: var(
+    --_kui-toolbar-control-group-slot-height,
+    var(--_kui-select-height)
+  );
+  justify-content: center;
+}
+.kui-select[data-caret="false"] .kui-select__placeholder-chevron {
+  display: none;
+}
 .kui-select[data-selected-presentation="icon-only"]::part(display-input) {
   position: absolute;
   width: 1px;

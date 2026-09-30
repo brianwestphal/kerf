@@ -46,6 +46,7 @@ Exact prop names and types: [`@kerfjs/ui/select`](../public-api-signatures-v1.md
 - form, toolbar-borderless, or navigation presentation
 - default or compact size
 - label or icon-only selected presentation
+- optional caret-free round icon-only trigger
 - select- or group-owned focus ring
 - label maximum width and truncation
 - fit-content, max-content, or fill trigger width

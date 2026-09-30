@@ -282,6 +282,61 @@ test('icon-only toolbar Select is a caret pill matching the popup-menu dropdown 
   }
 });
 
+test('caret-free icon-only Select is a round value trigger with keyboard access', async ({
+  page,
+}, testInfo) => {
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 760 });
+    await page.goto('/?component=select');
+    const select = page.locator(
+      '[data-demo="select"] [name="toolbar-round-rendering-balance"]',
+    );
+    const group = select.locator('xpath=..');
+    await expect(select).toHaveAttribute('data-caret', 'false');
+    const geometry = await select.evaluate((host) => {
+      const combobox =
+        host.shadowRoot!.querySelector<HTMLElement>('[part~="combobox"]')!;
+      const caret = host.shadowRoot!.querySelector<HTMLElement>(
+        '[part~="expand-icon"]',
+      )!;
+      const icon = host.querySelector('.kui-select__icon--selected')!;
+      const box = combobox.getBoundingClientRect();
+      const iconBox = icon.getBoundingClientRect();
+      return {
+        width: box.width,
+        height: box.height,
+        iconOffset:
+          iconBox.left + iconBox.width / 2 - (box.left + box.width / 2),
+        caretDisplay: window.getComputedStyle(caret).display,
+      };
+    });
+    expect(geometry.caretDisplay).toBe('none');
+    expect(geometry.width).toBe(geometry.height);
+    expect(Math.abs(geometry.iconOffset)).toBeLessThanOrEqual(1);
+    const groupShape = await group.evaluate((element) => ({
+      size: element.getBoundingClientRect().width,
+      radius: Number.parseFloat(
+        window.getComputedStyle(element).borderTopLeftRadius,
+      ),
+    }));
+    expect(groupShape.size).toBe(44);
+    expect(groupShape.radius).toBeGreaterThanOrEqual(21);
+    await group.screenshot({
+      path: testInfo.outputPath(`select-round-${width}.png`),
+    });
+
+    await select.hover();
+    await expect(select.locator('wa-tooltip.kui-help-tag')).toHaveText(
+      'Workspace sort: Balanced',
+    );
+    await select.getByRole('combobox').focus();
+    await page.keyboard.press('Enter');
+    await expect(select).toHaveAttribute('open');
+    await page.keyboard.press('Escape');
+    await expect(select).not.toHaveAttribute('open');
+  }
+});
+
 // A choice icon colored with a foreground token must stay legible in the open
 // menu. The demo's Quiet icon was colored with the success *fill* alias (a 14%
 // tint of the surface), which rendered at about 1.2:1 against the listbox.

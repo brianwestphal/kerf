@@ -1953,6 +1953,17 @@ describe('production UI primitives', () => {
     );
     expect(grouped).toContain('style="--kui-select-label-max-width:120px"');
     expect(grouped).toContain('role="group" aria-label="Recommended"');
+    const roundIcon = asHtml(
+      Select({
+        name: 'round-icon',
+        value: 'quiet',
+        ariaLabel: 'Workspace sort',
+        selectedPresentation: 'icon-only',
+        caret: false,
+        choices: [{ value: 'quiet', label: 'Quiet', icon: Check }],
+      }),
+    );
+    expect(roundIcon).toContain('data-caret="false"');
     // "Manual" opens the separated "Other" group, whose border is already the
     // separator, so its separatorBefore must not add a second divider.
     expect(grouped).not.toContain('<wa-divider');

@@ -2608,6 +2608,8 @@ interface SelectBaseProps<Value extends string = string> {
     size?: SelectSize;
     /** Closed trigger width; omit to keep the presentation's default. */
     triggerWidth?: SelectTriggerWidth;
+    /** Show the disclosure caret (default); omit it for a compact icon-only trigger. */
+    caret?: boolean;
     /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */
     focusRingOwner?: SelectFocusRingOwner;
     /** Maximum closed-control label width in CSS pixels before ellipsis. */

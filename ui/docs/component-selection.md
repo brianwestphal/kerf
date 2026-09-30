@@ -258,6 +258,9 @@ stacked copy's spacing at an instance boundary.
 
 For a compact `Select`, set `triggerWidth` to `"fit-content"`, `"max-content"`,
 or `"fill"` and cap it with `--kui-select-trigger-max-width` when needed.
+For a round icon-only toolbar trigger, set `selectedPresentation="icon-only"`
+and `caret={false}`. The control keeps its accessible name, current choice help
+tag, and keyboard-operated listbox; the default keeps the visible caret.
 Custom `renderSelected` text inherits the control color by default; the
 `--kui-select-selected-color`, `--kui-select-selected-font-size`, and
 `--kui-select-selected-font-weight` tokens configure its typography. Plain

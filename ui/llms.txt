@@ -240,6 +240,8 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   toolbar filter menu adds `selectedPresentation="icon-only"` and a fixed
   `triggerIcon`: the trigger shows that icon plus a count badge while any
   choice is chosen, and its accessible name ends with the chosen labels.
+  Set `caret={false}` on an icon-only toolbar Select to make a round trigger;
+  the default keeps the visible caret.
   `SelectChoice.disabled` keeps an unavailable option visible but unselectable;
   `disabledReason` adds its tooltip. For multiple selects, opt in to
   `selectAllLabel` and `clearLabel` footer buttons to select enabled choices

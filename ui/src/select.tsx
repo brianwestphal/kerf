@@ -58,6 +58,8 @@ interface SelectBaseProps<Value extends string = string> {
   size?: SelectSize;
   /** Closed trigger width; omit to keep the presentation's default. */
   triggerWidth?: SelectTriggerWidth;
+  /** Show the disclosure caret (default); omit it for a compact icon-only trigger. */
+  caret?: boolean;
   /** Let an enclosing ToolbarControlGroup paint the composed focus ring. */
   focusRingOwner?: SelectFocusRingOwner;
   /** Maximum closed-control label width in CSS pixels before ellipsis. */
@@ -154,6 +156,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
     presentation = 'form',
     size = 'default',
     triggerWidth,
+    caret = true,
     focusRingOwner = 'select',
     labelMaxWidth,
     slot,
@@ -177,6 +180,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
         data-presentation={presentation}
         data-size={size}
         data-trigger-width={triggerWidth}
+        data-caret={caret ? undefined : 'false'}
         data-selected-presentation={selectedPresentation}
         data-focus-ring-owner={focusRingOwner}
         aria-busy="true"
@@ -279,6 +283,7 @@ export function Select<Value extends string>(props: SelectProps<Value>) {
       data-presentation={presentation}
       data-size={size}
       data-trigger-width={triggerWidth}
+      data-caret={caret ? undefined : 'false'}
       data-selected-presentation={selectedPresentation}
       data-focus-ring-owner={focusRingOwner}
       name={name}
