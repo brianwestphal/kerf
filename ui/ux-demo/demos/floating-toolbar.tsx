@@ -83,6 +83,15 @@ export function FloatingToolbarDemo() {
           </FloatingToolbar>
         ) : null}
       </CatalogExample>
+      <CatalogExample label="Inline restore cluster" align="none">
+        <FloatingToolbar label="Inline drawer restore" placement="inline">
+          <ToolbarControlGroup label="Restore drawer" single>
+            <button type="button" aria-label="Restore drawer">
+              <LucideIcon icon={Terminal} name="terminal" />
+            </button>
+          </ToolbarControlGroup>
+        </FloatingToolbar>
+      </CatalogExample>
     </CatalogExampleStack>
   );
 }

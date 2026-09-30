@@ -844,9 +844,13 @@ describe('Workbench', () => {
     expect(own['--_kui-floating-toolbar-inset']).toBe(
       'var( --kui-floating-toolbar-inset, var(--kui-space-m, remify(16px)) )',
     );
-    expect(
-      declsIn(floating, '.kui-floating-toolbar[data-position$="-end"]'),
-    ).toEqual({ 'inset-inline-end': 'var(--_kui-floating-toolbar-inset)' });
+    const inlineEnd = declsIn(
+      floating,
+      '.kui-floating-toolbar[data-position$="-end"]',
+    )['inset-inline-end'];
+    expect(inlineEnd).toContain('--kui-floating-toolbar-inset-inline-end');
+    expect(inlineEnd).toContain('--_kui-floating-toolbar-inset');
+    expect(inlineEnd).toContain('--_kui-floating-toolbar-safe-inline-end');
   });
 
   it("lets a region's sole Pane or layout fill it from its own stylesheet", async () => {

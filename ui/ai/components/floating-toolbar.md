@@ -36,6 +36,8 @@ Exact prop names and types: [`@kerfjs/ui/floating-toolbar`](../public-api-signat
 - top-end
 - top-start
 - top
+- inline placement
+- safe-area-aware per-edge inset
 
 **CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
 
@@ -69,7 +71,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-floating-toolbar` on an element you write; render `FloatingToolbar` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-floating-toolbar-inset`, `--kui-space-m`, `--kui-space-xs`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-floating-toolbar-inset`, `--kui-floating-toolbar-inset-block-start`, `--kui-floating-toolbar-inset-block-end`, `--kui-floating-toolbar-inset-inline-start`, `--kui-floating-toolbar-inset-inline-end`, `--kui-space-m`, `--kui-space-xs`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

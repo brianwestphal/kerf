@@ -15,6 +15,8 @@ export interface FloatingToolbarProps {
    * Default: `'bottom-end'`.
    */
   position?: FloatingToolbarPosition;
+  /** Keep the toolbar in normal document flow instead of floating over content. */
+  placement?: 'floating' | 'inline';
   /**
    * Distance from the container edges named by `position`. Default:
    * `space('m')` (16px, 8px past a top toolbar's own inset). Omit it inside a
@@ -22,6 +24,8 @@ export interface FloatingToolbarProps {
    * corner owns the inset there and sets it to zero.
    */
   inset?: CssLength;
+  /** Add device or layout-routed safe-area insets to the positioned edges. */
+  safeAreaInsets?: boolean;
   className?: string;
   /** Native named-slot assignment when composed inside a web component. */
   slot?: string;
@@ -40,13 +44,17 @@ export interface FloatingToolbarProps {
  * `wireSidebar` compact overlay, an overlay `CollapsiblePanel` or horizontal
  * `ResizableRegion`), the toolbar is hidden — unfocusable and out of the
  * accessibility tree — until the overlay closes. The app owns the controls
- * and their behavior — wire them with `delegate()` as usual.
+ * and their behavior — wire them with `delegate()` as usual. Set
+ * `placement="inline"` for normal flow when an owner already positions the
+ * control; floating placement can add safe-area insets to its per-edge tokens.
  */
 export function FloatingToolbar({
   children,
   label,
   position = 'bottom-end',
+  placement = 'floating',
   inset,
+  safeAreaInsets = false,
   className = '',
   slot,
 }: FloatingToolbarProps) {
@@ -55,6 +63,8 @@ export function FloatingToolbar({
       class={`kui-floating-toolbar ${className}`.trim()}
       data-component="floating-toolbar"
       data-position={position}
+      data-placement={placement}
+      data-safe-area-insets={safeAreaInsets ? 'true' : undefined}
       role="toolbar"
       aria-label={label}
       style={inset ? `--kui-floating-toolbar-inset:${inset}` : undefined}

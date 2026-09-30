@@ -174,6 +174,18 @@ an upstream component or recipe request.
 
 ## Ambiguous choices
 
+Set `ResizableRegion`'s `--kui-resizable-region-background` for an inline
+surface. Use `contentOverflow="visible"` while an anchored popup must escape
+the region; this also raises the region on its public popup layer. A collapsed
+region can place `restoreControl` in a top or bottom corner with
+`restorePosition`, set its typed `restoreInset`, or use
+`restorePlacement="inline"` for a control in normal flow.
+
+Use `FloatingToolbar placement="inline"` when a restore owner supplies the
+position. Floating placement supports per-edge `--kui-floating-toolbar-inset-*`
+tokens; `safeAreaInsets` adds the layout-routed or device safe-area inset to
+the positioned edges.
+
 For a larger option row, use `ListItem density="spacious"`; `compact` and
 `standard` remain available. `multiline` wraps its label and aligns its icon
 to the first line; `multilineIconAlign="center"` centers the icon against the

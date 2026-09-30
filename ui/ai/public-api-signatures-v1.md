@@ -353,6 +353,8 @@ interface FloatingToolbarProps {
      * Default: `'bottom-end'`.
      */
     position?: FloatingToolbarPosition;
+    /** Keep the toolbar in normal document flow instead of floating over content. */
+    placement?: 'floating' | 'inline';
     /**
      * Distance from the container edges named by `position`. Default:
      * `space('m')` (16px, 8px past a top toolbar's own inset). Omit it inside a
@@ -360,6 +362,8 @@ interface FloatingToolbarProps {
      * corner owns the inset there and sets it to zero.
      */
     inset?: CssLength;
+    /** Add device or layout-routed safe-area insets to the positioned edges. */
+    safeAreaInsets?: boolean;
     className?: string;
     /** Native named-slot assignment when composed inside a web component. */
     slot?: string;
@@ -377,9 +381,11 @@ interface FloatingToolbarProps {
  * `wireSidebar` compact overlay, an overlay `CollapsiblePanel` or horizontal
  * `ResizableRegion`), the toolbar is hidden — unfocusable and out of the
  * accessibility tree — until the overlay closes. The app owns the controls
- * and their behavior — wire them with `delegate()` as usual.
+ * and their behavior — wire them with `delegate()` as usual. Set
+ * `placement="inline"` for normal flow when an owner already positions the
+ * control; floating placement can add safe-area insets to its per-edge tokens.
  */
-declare function FloatingToolbar({ children, label, position, inset, className, slot, }: FloatingToolbarProps): kerfjs.SafeHtml;
+declare function FloatingToolbar({ children, label, position, placement, inset, safeAreaInsets, className, slot, }: FloatingToolbarProps): kerfjs.SafeHtml;
 
 export { FloatingToolbar, type FloatingToolbarPosition, type FloatingToolbarProps };
 ```
@@ -1272,6 +1278,7 @@ import './toolbar.js';
 import './pane.js';
 import './sides-BPSWde0A.js';
 import './toolbar-text.js';
+import './css-values.js';
 
 /**
  * The roomy list pane's `ResizableRegion`: its committed `size` and `min` /
@@ -1822,6 +1829,7 @@ import './lucide-icon.js';
 import 'lucide';
 import './toolbar.js';
 import './sides-BPSWde0A.js';
+import './css-values.js';
 
 /** Which edge a {@link CollapsiblePanel} docks to. */
 type CollapsiblePanelSide = PanelSide;
@@ -2105,6 +2113,7 @@ export { type WireTabScaffoldOptions, wireTabScaffold };
 
 ```ts
 import { SafeHtml } from 'kerfjs';
+import { CssLength } from './css-values.js';
 import { K as KerfUiContent } from './semantic-content-BbzjvSu9.js';
 
 type ResizableRegionAxis = 'horizontal' | 'vertical';
@@ -2113,7 +2122,7 @@ type ResizableRegionSeparator = 'auto' | 'hidden';
 type ResizableRegionCollapseMotion = 'none' | 'slide' | 'fade-slide';
 type ResizableRegionContentOverflow = 'clip' | 'auto' | 'visible';
 type ResizableRegionPresentation = 'inline' | 'overlay' | 'hidden';
-type ResizableRegionRestorePosition = 'bottom-start' | 'bottom-end';
+type ResizableRegionRestorePosition = 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
 type ResizableRegionResponsiveFillAt = 'compact' | 'narrow';
 interface ResizableRegionProps {
     id: string;
@@ -2132,7 +2141,7 @@ interface ResizableRegionProps {
     separator?: ResizableRegionSeparator;
     /** Keep the track change instant while optionally sliding the fixed-size content. */
     collapseMotion?: ResizableRegionCollapseMotion;
-    /** Overflow policy for content such as an open popup inside a bottom drawer. */
+    /** Use `visible` while an anchored popup must escape the content box; it raises the region to the popup layer. */
     contentOverflow?: ResizableRegionContentOverflow;
     /** Inline layout, an edge overlay, or a responsive replacement that removes the region. */
     presentation?: ResizableRegionPresentation;
@@ -2140,6 +2149,10 @@ interface ResizableRegionProps {
     restoreControl?: SafeHtml;
     /** Safe-area-aware corner of the region's container (not the viewport) for `restoreControl`. */
     restorePosition?: ResizableRegionRestorePosition;
+    /** Position a restore control in its container corner or leave it in normal flow. */
+    restorePlacement?: 'corner' | 'inline';
+    /** Corner distance before the container's safe-area inset. */
+    restoreInset?: CssLength;
     /** Fill the available inline track and hide the separator below a container breakpoint. */
     responsiveFillAt?: ResizableRegionResponsiveFillAt;
     /** Decorative dormant content for the separator handle. Must not contain interactive descendants. */
@@ -2148,7 +2161,7 @@ interface ResizableRegionProps {
 }
 declare const clampRegionSize: (size: number, min: number, max: number) => number;
 declare const resizeRegionFromPointer: (startSize: number, delta: number, edge: ResizableRegionEdge) => number;
-declare function ResizableRegion({ id, label, size, min, max, axis, edge, collapsed, transitioning, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, responsiveFillAt, handleIcon, children, }: ResizableRegionProps): SafeHtml;
+declare function ResizableRegion({ id, label, size, min, max, axis, edge, collapsed, transitioning, separator, collapseMotion, contentOverflow, presentation, restoreControl, restorePosition, restorePlacement, restoreInset, responsiveFillAt, handleIcon, children, }: ResizableRegionProps): SafeHtml;
 
 export { ResizableRegion, type ResizableRegionAxis, type ResizableRegionCollapseMotion, type ResizableRegionContentOverflow, type ResizableRegionEdge, type ResizableRegionPresentation, type ResizableRegionProps, type ResizableRegionResponsiveFillAt, type ResizableRegionRestorePosition, type ResizableRegionSeparator, clampRegionSize, resizeRegionFromPointer };
 ```

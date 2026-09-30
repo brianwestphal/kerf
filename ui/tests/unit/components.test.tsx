@@ -774,7 +774,7 @@ describe('production UI primitives', () => {
     );
     expect(floating).toContain('class="kui-floating-toolbar"');
     expect(floating).toContain(
-      'data-component="floating-toolbar" data-position="bottom-end" role="toolbar" aria-label="Drawer"',
+      'data-component="floating-toolbar" data-position="bottom-end" data-placement="floating" role="toolbar" aria-label="Drawer"',
     );
     expect(
       asHtml(
@@ -788,6 +788,16 @@ describe('production UI primitives', () => {
     ).toContain(
       'class="kui-floating-toolbar extra" data-component="floating-toolbar" data-position="top-start"',
     );
+    expect(
+      asHtml(
+        FloatingToolbar({
+          children: icon,
+          label: 'Inline restore',
+          placement: 'inline',
+          safeAreaInsets: true,
+        }),
+      ),
+    ).toContain('data-placement="inline" data-safe-area-insets="true"');
   });
 
   it('renders menu navigation, toggle, action, disabled, and multiline states', () => {
@@ -2135,8 +2145,24 @@ describe('production UI primitives', () => {
     expect(vertical).toContain('data-content-overflow="visible"');
     expect(vertical).toContain('data-presentation="overlay"');
     expect(vertical).toContain(
-      'class="kui-resizable-region__restore" data-region-restore="drawer" data-position="bottom-end"',
+      'class="kui-resizable-region__restore" data-region-restore="drawer" data-position="bottom-end" data-placement="corner"',
     );
+    expect(
+      asHtml(
+        ResizableRegion({
+          id: 'inline-drawer',
+          label: 'Inline drawer',
+          size: 220,
+          min: 120,
+          max: 500,
+          collapsed: true,
+          restoreControl: <button>Restore</button>,
+          restorePlacement: 'inline',
+          restorePosition: 'top-end',
+          children: icon,
+        }),
+      ),
+    ).toContain('data-position="top-end" data-placement="inline"');
     expect(vertical).toContain('tabindex="-1"');
     // A collapsed region leaves the accessibility tree whole: the labeled
     // region is inert and aria-hidden (no empty landmark stays behind), its

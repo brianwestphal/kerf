@@ -161,6 +161,11 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   expanded trailing control to a full second row at `responsiveAt`; the leading
   title remains above it. Public leading-min-width, trailing-gap/justify, and
   per-zone inline-padding tokens cover app-specific toolbar geometry.
+- **Position region restore controls declaratively.** A ResizableRegion has a
+  background token, `contentOverflow="visible"` for an anchored popup,
+  top/bottom `restorePosition`, typed `restoreInset`, and
+  `restorePlacement="inline"` for normal flow. FloatingToolbar also has
+  `placement="inline"`, per-edge inset tokens, and `safeAreaInsets`.
 - **Configure list rows through their APIs.** `ListItem density="spacious"`
   gives option rows more room. `multiline` wraps labels, with
   `multilineIconAlign="center"` when the icon should center on the whole copy.

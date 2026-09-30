@@ -1734,7 +1734,9 @@
         "bottom",
         "top-end",
         "top-start",
-        "top"
+        "top",
+        "inline placement",
+        "safe-area-aware per-edge inset"
       ],
       "accessibility": [
         "Give the toolbar an accessible name (label is required — it exposes role=\"toolbar\")."
@@ -1757,6 +1759,10 @@
       ],
       "publicTokens": [
         "--kui-floating-toolbar-inset",
+        "--kui-floating-toolbar-inset-block-start",
+        "--kui-floating-toolbar-inset-block-end",
+        "--kui-floating-toolbar-inset-inline-start",
+        "--kui-floating-toolbar-inset-inline-end",
         "--kui-space-m",
         "--kui-space-xs"
       ],
@@ -3834,6 +3840,19 @@
         "resizeRegionFromPointer",
         "wireResizableRegions"
       ],
+      "cssValueProps": [
+        {
+          "path": "restoreInset",
+          "grammar": "length",
+          "helpers": ["px", "rem", "em", "pct", "space", "lengthVar", "calc"],
+          "nonStandaloneHelpers": ["plus"],
+          "shorthands": [],
+          "canonicalShorthands": [],
+          "exceptionalShorthands": [],
+          "rawPolicy": "forbid",
+          "examples": ["restoreInset={space(\"xs\")}"]
+        }
+      ],
       "useWhen": [
         "Provide a controlled user-resizable application pane."
       ],
@@ -3868,6 +3887,7 @@
         "clipped, scrolling, or popup-visible content",
         "inline, overlay, or hidden responsive presentation",
         "safe-area restore control"
+        ,"top-corner or inline restore placement"
       ],
       "accessibility": [
         "Preserve separator naming, value ARIA, and keyboard behavior.",
@@ -3931,6 +3951,7 @@
         "--kui-focus-ring",
         "--kui-radius-s",
         "--kui-resizable-region-edge-extent",
+        "--kui-resizable-region-background",
         "--kui-resizable-region-handle-active-color",
         "--kui-resizable-region-handle-color",
         "--kui-resizable-region-overlay-z",

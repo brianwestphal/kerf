@@ -6,6 +6,10 @@
     --kui-floating-toolbar-inset,
     var(--kui-space-m, remify(16px))
   );
+  --_kui-floating-toolbar-safe-block-start: 0px;
+  --_kui-floating-toolbar-safe-block-end: 0px;
+  --_kui-floating-toolbar-safe-inline-start: 0px;
+  --_kui-floating-toolbar-safe-inline-end: 0px;
 
   /* Floats above the main content of its nearest positioned ancestor. z-index
      stays low so it never covers dialogs/overlays (it is not top-layer). Forced
@@ -30,6 +34,25 @@
   gap: var(--kui-space-xs, remify(8px));
 }
 
+.kui-floating-toolbar[data-safe-area-insets="true"] {
+  --_kui-floating-toolbar-safe-block-start: var(
+    --kui-edge-inset-block-start,
+    var(--kui-safe-area-block-start, env(safe-area-inset-top, 0px))
+  );
+  --_kui-floating-toolbar-safe-block-end: var(
+    --kui-edge-inset-block-end,
+    var(--kui-safe-area-block-end, env(safe-area-inset-bottom, 0px))
+  );
+  --_kui-floating-toolbar-safe-inline-start: var(
+    --kui-edge-inset-inline-start,
+    var(--kui-safe-area-inline-start, env(safe-area-inset-left, 0px))
+  );
+  --_kui-floating-toolbar-safe-inline-end: var(
+    --kui-edge-inset-inline-end,
+    var(--kui-safe-area-inline-end, env(safe-area-inset-right, 0px))
+  );
+}
+
 /* In a layout's restore corner the corner already owns the inset, so the
    toolbar floats from the corner itself. Zero specificity: the toolbar's own
    `inset` (or an app rule on the toolbar) still wins, while a token inherited
@@ -44,19 +67,43 @@
 }
 
 .kui-floating-toolbar[data-position^="bottom"] {
-  inset-block-end: var(--_kui-floating-toolbar-inset);
+  inset-block-end: calc(
+    var(
+        --kui-floating-toolbar-inset-block-end,
+        var(--_kui-floating-toolbar-inset)
+      ) +
+      var(--_kui-floating-toolbar-safe-block-end)
+  );
 }
 
 .kui-floating-toolbar[data-position^="top"] {
-  inset-block-start: var(--_kui-floating-toolbar-inset);
+  inset-block-start: calc(
+    var(
+        --kui-floating-toolbar-inset-block-start,
+        var(--_kui-floating-toolbar-inset)
+      ) +
+      var(--_kui-floating-toolbar-safe-block-start)
+  );
 }
 
 .kui-floating-toolbar[data-position$="-end"] {
-  inset-inline-end: var(--_kui-floating-toolbar-inset);
+  inset-inline-end: calc(
+    var(
+        --kui-floating-toolbar-inset-inline-end,
+        var(--_kui-floating-toolbar-inset)
+      ) +
+      var(--_kui-floating-toolbar-safe-inline-end)
+  );
 }
 
 .kui-floating-toolbar[data-position$="-start"] {
-  inset-inline-start: var(--_kui-floating-toolbar-inset);
+  inset-inline-start: calc(
+    var(
+        --kui-floating-toolbar-inset-inline-start,
+        var(--_kui-floating-toolbar-inset)
+      ) +
+      var(--_kui-floating-toolbar-safe-inline-start)
+  );
 }
 
 /* The centered edges span from the middle rather than an inline edge. */
@@ -64,4 +111,9 @@
 .kui-floating-toolbar[data-position="top"] {
   inset-inline-start: 50%;
   transform: translateX(-50%);
+}
+
+.kui-floating-toolbar[data-placement="inline"] {
+  position: static;
+  transform: none;
 }

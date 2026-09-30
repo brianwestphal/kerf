@@ -45,6 +45,11 @@ Exact prop names and types: [`@kerfjs/ui/resizable-region`](../public-api-signat
 - clipped, scrolling, or popup-visible content
 - inline, overlay, or hidden responsive presentation
 - safe-area restore control
+- top-corner or inline restore placement
+
+**CSS-value props** (typed builders from `@kerfjs/ui/css-values`; raw CSS strings are rejected):
+
+- `restoreInset`: length grammar; raw values: forbid; helpers `px`, `rem`, `em`, `pct`, `space`, `lengthVar`, `calc` — e.g. `restoreInset={space("xs")}`
 
 ## Composition
 
@@ -86,7 +91,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-resizable-region`, `kui-resizable-region__content`, `kui-resizable-region__handle`, `kui-resizable-region__handle-icon`, `kui-resizable-region__restore` on an element you write; render `ResizableRegion` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-neutral-border-normal`, `--kui-color-neutral-on-quiet`, `--kui-color-text-link`, `--kui-focus-ring`, `--kui-radius-s`, `--kui-resizable-region-edge-extent`, `--kui-resizable-region-handle-active-color`, `--kui-resizable-region-handle-color`, `--kui-resizable-region-overlay-z`, `--kui-resizable-region-popup-z`, `--kui-resizable-region-restore-inset`, `--kui-resizable-region-restore-z`, `--kui-resizable-region-separator-color`, `--kui-resizable-region-size`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-neutral-border-normal`, `--kui-color-neutral-on-quiet`, `--kui-color-text-link`, `--kui-focus-ring`, `--kui-radius-s`, `--kui-resizable-region-edge-extent`, `--kui-resizable-region-background`, `--kui-resizable-region-handle-active-color`, `--kui-resizable-region-handle-color`, `--kui-resizable-region-overlay-z`, `--kui-resizable-region-popup-z`, `--kui-resizable-region-restore-inset`, `--kui-resizable-region-restore-z`, `--kui-resizable-region-separator-color`, `--kui-resizable-region-size`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

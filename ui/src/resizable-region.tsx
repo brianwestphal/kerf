@@ -1,5 +1,6 @@
 import type { SafeHtml } from 'kerfjs';
 
+import type { CssLength } from './css-values.js';
 import { ResizeGrip } from './resize-grip.js';
 import type { KerfUiContent } from './semantic-content.js';
 
@@ -9,7 +10,8 @@ export type ResizableRegionSeparator = 'auto' | 'hidden';
 export type ResizableRegionCollapseMotion = 'none' | 'slide' | 'fade-slide';
 export type ResizableRegionContentOverflow = 'clip' | 'auto' | 'visible';
 export type ResizableRegionPresentation = 'inline' | 'overlay' | 'hidden';
-export type ResizableRegionRestorePosition = 'bottom-start' | 'bottom-end';
+export type ResizableRegionRestorePosition =
+  'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
 export type ResizableRegionResponsiveFillAt = 'compact' | 'narrow';
 
 export interface ResizableRegionProps {
@@ -29,7 +31,7 @@ export interface ResizableRegionProps {
   separator?: ResizableRegionSeparator;
   /** Keep the track change instant while optionally sliding the fixed-size content. */
   collapseMotion?: ResizableRegionCollapseMotion;
-  /** Overflow policy for content such as an open popup inside a bottom drawer. */
+  /** Use `visible` while an anchored popup must escape the content box; it raises the region to the popup layer. */
   contentOverflow?: ResizableRegionContentOverflow;
   /** Inline layout, an edge overlay, or a responsive replacement that removes the region. */
   presentation?: ResizableRegionPresentation;
@@ -37,6 +39,10 @@ export interface ResizableRegionProps {
   restoreControl?: SafeHtml;
   /** Safe-area-aware corner of the region's container (not the viewport) for `restoreControl`. */
   restorePosition?: ResizableRegionRestorePosition;
+  /** Position a restore control in its container corner or leave it in normal flow. */
+  restorePlacement?: 'corner' | 'inline';
+  /** Corner distance before the container's safe-area inset. */
+  restoreInset?: CssLength;
   /** Fill the available inline track and hide the separator below a container breakpoint. */
   responsiveFillAt?: ResizableRegionResponsiveFillAt;
   /** Decorative dormant content for the separator handle. Must not contain interactive descendants. */
@@ -70,6 +76,8 @@ export function ResizableRegion({
   restorePosition = axis === 'horizontal' && edge === 'end'
     ? 'bottom-start'
     : 'bottom-end',
+  restorePlacement = 'corner',
+  restoreInset,
   responsiveFillAt,
   handleIcon,
   children,
@@ -130,6 +138,12 @@ export function ResizableRegion({
           class="kui-resizable-region__restore"
           data-region-restore={id}
           data-position={restorePosition}
+          data-placement={restorePlacement}
+          style={
+            restoreInset
+              ? `--kui-resizable-region-restore-inset:${restoreInset}`
+              : undefined
+          }
         >
           {restoreControl}
         </div>

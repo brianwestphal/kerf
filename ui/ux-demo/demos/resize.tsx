@@ -1,10 +1,12 @@
 import '@kerfjs/ui/lucide-icon.css';
 
 import { CatalogExample, CatalogExampleStack } from '@kerfjs/ui/catalog';
+import { FloatingToolbar } from '@kerfjs/ui/floating-toolbar';
 import { LucideIcon } from '@kerfjs/ui/lucide-icon';
 import { Pane } from '@kerfjs/ui/pane';
 import { ResizableRegion } from '@kerfjs/ui/resizable-region';
-import { GripVertical } from 'lucide';
+import { ToolbarControlGroup } from '@kerfjs/ui/toolbar-control-group';
+import { GripVertical, PanelLeftOpen } from 'lucide';
 
 import { DemoContentItem } from './demo-content-item.js';
 import { regionSize } from './state.js';
@@ -48,6 +50,38 @@ export function ResizeDemo() {
               }
             />
           </Pane>
+        </ResizableRegion>
+      </CatalogExample>
+      <CatalogExample
+        label="Collapsed region restore"
+        note="The region places its restore control in a safe-area-aware top corner."
+        viewport={{
+          layout: 'flex',
+          width: 'text',
+          height: 'medium',
+          frame: 'solid',
+        }}
+        rootAttributes={{ 'data-demo-region-restore': '' }}
+      >
+        <ResizableRegion
+          id="catalog-collapsed-panel"
+          label="Collapsed panel"
+          size={240}
+          min={180}
+          max={420}
+          collapsed
+          restorePosition="top-end"
+          restoreControl={
+            <FloatingToolbar label="Restore collapsed panel" placement="inline">
+              <ToolbarControlGroup label="Restore panel" single>
+                <button type="button" aria-label="Restore panel">
+                  <LucideIcon icon={PanelLeftOpen} name="panel-left-open" />
+                </button>
+              </ToolbarControlGroup>
+            </FloatingToolbar>
+          }
+        >
+          <Pane />
         </ResizableRegion>
       </CatalogExample>
     </CatalogExampleStack>

@@ -76,7 +76,13 @@ and that of the components it renders (`Pane`, `Toolbar`, `ToolbarControlGroup`,
   the region itself (and `inert` on its `.kui-resizable-region__content`
   wrapper), so its label leaves the accessibility tree with its content; its
   separator is already hidden while collapsed, and the restore control stays
-  outside the region.
+  outside the region. Its `restorePosition` accepts top or bottom start/end
+  corners, with typed `restoreInset` for the corner distance. Set
+  `restorePlacement="inline"` when the container should place the control in
+  normal flow. An inline region's surface uses
+  `--kui-resizable-region-background`; set `contentOverflow="visible"` while
+  an anchored popup must escape the region's content box, then return to the
+  normal overflow policy when it closes.
   Overlay presentation also clamps fixed-size animated content to the configured
   responsive overlay maximum, so a remembered desktop size cannot escape a narrow
   viewport.
