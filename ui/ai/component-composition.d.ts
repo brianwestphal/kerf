@@ -52,6 +52,16 @@ export interface CatalogCompositionEntry {
   /** For a wrapper component: the cataloged roots it renders (any one of
    *  them, or nothing). Composition checks treat its elements as each root. */
   rendersAs?: CatalogQualifiedKey[];
+  /** Additional JSX exports in this selection entry with their own placement. */
+  jsxExports?: Record<
+    string,
+    {
+      parents: {
+        mode: 'any' | 'root' | 'listed';
+        entries: CatalogQualifiedKey[];
+      };
+    }
+  >;
   parents: { mode: 'any' | 'root' | 'listed'; entries: CatalogQualifiedKey[] };
   contexts: string[];
   zones: Array<{

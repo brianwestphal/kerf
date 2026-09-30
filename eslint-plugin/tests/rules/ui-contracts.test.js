@@ -366,6 +366,14 @@ tester.run('ui-public-boundaries', boundaries, {
 tester.run('ui-composition', composition, {
   valid: [
     {
+      code: "import { Toolbar, ToolbarControlGroup, ToolbarActionLink as Link } from '@kerfjs/ui'; <Toolbar trailing={<ToolbarControlGroup><Link href='/report' label='Report' /></ToolbarControlGroup>} />;",
+      settings: shippedUiSettings,
+    },
+    {
+      code: "import * as UI from '@kerfjs/ui'; <UI.Toolbar trailing={<UI.ToolbarControlGroup><UI.ToolbarActionLink href='/report' label='Report' /></UI.ToolbarControlGroup>} />;",
+      settings: shippedUiSettings,
+    },
+    {
       code: "import { Toolbar, ToolbarControlGroup as Group } from '@kerfjs/ui'; <Toolbar leading={<Group />} />;",
       settings,
     },
@@ -399,6 +407,16 @@ tester.run('ui-composition', composition, {
     },
   ],
   invalid: [
+    {
+      code: "import { Toolbar, ToolbarActionLink } from '@kerfjs/ui'; <Toolbar trailing={<ToolbarActionLink href='/report' label='Report' />} />;",
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'zone' }],
+    },
+    {
+      code: "import { Toolbar, ToolbarActionLink } from '@kerfjs/ui'; <Toolbar><ToolbarActionLink href='/report' label='Report' /></Toolbar>;",
+      settings: shippedUiSettings,
+      errors: [{ messageId: 'parent' }],
+    },
     {
       code: "import { Toolbar, SegmentedControl } from '@kerfjs/ui'; <Toolbar leading={<SegmentedControl />} />;",
       settings,

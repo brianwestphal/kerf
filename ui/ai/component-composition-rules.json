@@ -79,6 +79,14 @@
   },
   "@kerfjs/ui:toolbar-control-group": {
     "_source": "docs/component-selection.md#toolbar-composition",
+    "jsxExports": {
+      "ToolbarActionLink": {
+        "parents": {
+          "mode": "listed",
+          "entries": ["@kerfjs/ui:toolbar-control-group"]
+        }
+      }
+    },
     "parents": {
       "mode": "listed",
       "entries": ["@kerfjs/ui:toolbar"]

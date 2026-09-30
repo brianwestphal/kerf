@@ -79,6 +79,28 @@ export function validateComposition(catalog, options = {}) {
       fail(`${at} parents.entries must be a unique string list`);
     if (entry?.parents?.mode === 'listed' && !entry.parents.entries.length)
       fail(`${at} listed parents require at least one entry`);
+    if ('jsxExports' in entry) {
+      if (
+        !entry.jsxExports ||
+        typeof entry.jsxExports !== 'object' ||
+        Array.isArray(entry.jsxExports)
+      )
+        fail(`${at} jsxExports must be an object`);
+      else
+        for (const [name, placement] of Object.entries(entry.jsxExports)) {
+          if (!/^[A-Z][A-Za-z0-9]*$/.test(name))
+            fail(`${at} has invalid jsxExports name ${name}`);
+          if (!['any', 'root', 'listed'].includes(placement?.parents?.mode))
+            fail(`${at}:${name} has invalid parents.mode`);
+          if (!isStringList(placement?.parents?.entries))
+            fail(`${at}:${name} parents.entries must be a unique string list`);
+          if (
+            placement?.parents?.mode === 'listed' &&
+            !placement.parents.entries.length
+          )
+            fail(`${at}:${name} listed parents require at least one entry`);
+        }
+    }
     if (!isStringList(entry?.contexts))
       fail(`${at} contexts must be a unique string list`);
     if (!Array.isArray(entry?.zones)) fail(`${at} zones must be an array`);
@@ -304,6 +326,19 @@ export function validateComposition(catalog, options = {}) {
       fail(
         'composition entries must project every component-catalog entry once and in order',
       );
+    for (const entry of catalog.entries) {
+      const source = options.v1.entries.find((item) => item.id === entry.id);
+      for (const name of Object.keys(entry.jsxExports ?? {}))
+        if (
+          name === source?.name ||
+          !source?.publicExports?.some((item) =>
+            typeof item === 'string' ? item === name : item.name === name,
+          )
+        )
+          fail(
+            `${entry.key} jsxExports.${name} must name an additional public JSX export`,
+          );
+    }
   }
   return failures;
 }

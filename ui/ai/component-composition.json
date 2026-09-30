@@ -1518,6 +1518,14 @@
       "provenance": {
         "selection": "ai/component-catalog.json",
         "composition": "docs/component-selection.md#toolbar-composition"
+      },
+      "jsxExports": {
+        "ToolbarActionLink": {
+          "parents": {
+            "mode": "listed",
+            "entries": ["@kerfjs/ui:toolbar-control-group"]
+          }
+        }
       }
     },
     {

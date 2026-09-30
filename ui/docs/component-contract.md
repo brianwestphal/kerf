@@ -52,6 +52,9 @@ CSS boundaries, diagnostics, and provenance. A wrapper entry may add
 composition checks treat its elements as each root rather than as an unknown
 child. A placement with listed parent constraints produces one `KUI-L201`
 diagnostic even when both the wrapper and a rendered root reject that parent.
+When one catalog entry exports another JSX component with different placement,
+`jsxExports` gives that export its own parent contract. The extra export does
+not stand for the entry's root when a parent zone is checked.
 
 `boundaries.placeableClasses` names the subset of `publicClasses` an
 application may write onto its own elements (layout utilities, the document

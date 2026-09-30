@@ -138,6 +138,15 @@ describe('component composition catalog contract', () => {
       },
     });
     expect(toolbar.diagnostics[0].id).toBe('KUI-C101');
+    expect(
+      composition.entries.find((entry) => entry.id === 'toolbar-control-group')
+        ?.jsxExports?.ToolbarActionLink,
+    ).toEqual({
+      parents: {
+        mode: 'listed',
+        entries: ['@kerfjs/ui:toolbar-control-group'],
+      },
+    });
     expect(icon).toMatchObject({
       parents: { mode: 'any', entries: [] },
       provenance: { composition: 'generated-permissive-default' },

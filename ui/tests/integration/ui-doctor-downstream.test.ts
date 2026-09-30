@@ -313,6 +313,72 @@ test(
 );
 
 test(
+  'the doctor accepts ToolbarActionLink inside ToolbarControlGroup',
+  async () => {
+    const root = await mkdtemp(
+      resolve(tmpdir(), 'kerf-ui-doctor-toolbar-link-'),
+    );
+    try {
+      await mkdir(resolve(root, 'src'), { recursive: true });
+      await writeFile(
+        resolve(root, 'package.json'),
+        '{"name":"toolbar-link-consumer","private":true,"type":"module"}\n',
+      );
+      await writeFile(
+        resolve(root, 'tsconfig.json'),
+        JSON.stringify({
+          compilerOptions: {
+            jsx: 'react-jsx',
+            jsxImportSource: 'kerfjs',
+            noEmit: true,
+            module: 'esnext',
+            moduleResolution: 'bundler',
+            target: 'es2022',
+            skipLibCheck: true,
+          },
+          include: ['src'],
+        }),
+      );
+      await writeFile(
+        resolve(root, 'src/view.tsx'),
+        [
+          "import { Toolbar } from '@kerfjs/ui/toolbar';",
+          "import { ToolbarControlGroup, ToolbarActionLink } from '@kerfjs/ui/toolbar-control-group';",
+          'export const view = () => (',
+          '  <Toolbar label="Report" trailing={',
+          '    <ToolbarControlGroup label="Actions">',
+          '      <ToolbarActionLink href="/report" label="Report" />',
+          '    </ToolbarControlGroup>',
+          '  } />',
+          ');',
+          '',
+        ].join('\n'),
+      );
+      for (const name of ['typescript', 'eslint', 'kerfjs'])
+        await link(root, name, resolve(uiRoot, 'node_modules', name));
+      for (const name of [
+        '@typescript-eslint/eslint-plugin',
+        '@typescript-eslint/parser',
+      ])
+        await link(root, name, resolve(uiRoot, 'node_modules', name));
+      await link(
+        root,
+        'eslint-plugin-kerfjs',
+        resolve(repositoryRoot, 'eslint-plugin'),
+      );
+      await link(root, '@kerfjs/ui', uiRoot);
+
+      const result = await doctor(root);
+      expect(result.report.diagnostics).toEqual([]);
+      expect(result.status).toBe(0);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  },
+  DOCTOR_TEST_TIMEOUT,
+);
+
+test(
   'the doctor accepts an app wrapper that declares the cataloged root it renders',
   async () => {
     const root = await mkdtemp(resolve(tmpdir(), 'kerf-ui-doctor-renders-as-'));

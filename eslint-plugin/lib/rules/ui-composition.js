@@ -1,6 +1,7 @@
 import {
   importRegistry,
   isExcepted,
+  jsxExportName,
   jsxKey,
   loadUiContract,
   UI_CONTRACT_LOAD_CODE,
@@ -35,7 +36,17 @@ function zoneShape(node, registry, contract) {
   if (!node || node.type === 'JSXEmptyExpression') return emptyShape();
   if (node.type === 'JSXElement') {
     const key = jsxKey(node.openingElement.name, registry, contract);
-    const roots = contract.entries.get(key)?.rendersAs;
+    const entry = contract.entries.get(key);
+    const exportName = jsxExportName(node.openingElement.name, registry);
+    // A second JSX export from one package entry may have its own element
+    // shape. It must not impersonate the entry's root in a parent's zone.
+    if (entry?.jsxExports?.[exportName])
+      return {
+        min: 1,
+        max: 1,
+        items: [{ label: `${key}:${exportName}` }],
+      };
+    const roots = entry?.rendersAs;
     // A declared wrapper renders one of its roots, or nothing.
     if (roots?.length)
       return {
@@ -166,23 +177,36 @@ export default {
         const key = jsxKey(node.name, registry, contract);
         const entry = contract.entries.get(key);
         if (!entry) return;
+        const exportName = jsxExportName(node.name, registry);
+        const exportContract = entry.jsxExports?.[exportName];
         // A wrapper answers to its own parent contract and to each root's.
         // Report one violated requirement per placement, with roots first.
-        const placed = [
-          ...(entry.rendersAs ?? []).flatMap((root) => {
-            const rootEntry = contract.entries.get(root);
-            return rootEntry
-              ? [{ entry: rootEntry, child: `${key} (renders ${root})` }]
-              : [];
-          }),
-          { entry, child: key },
-        ].filter(
+        const placed = exportContract
+          ? [
+              {
+                entry: { ...entry, parents: exportContract.parents },
+                child: `${key}:${exportName}`,
+              },
+            ]
+          : [
+              ...(entry.rendersAs ?? []).flatMap((root) => {
+                const rootEntry = contract.entries.get(root);
+                return rootEntry
+                  ? [{ entry: rootEntry, child: `${key} (renders ${root})` }]
+                  : [];
+              }),
+              { entry, child: key },
+            ];
+        const constrained = placed.filter(
           ({ entry: placedEntry }) => placedEntry.parents?.mode === 'listed',
         );
-        if (placed.length && !isExcepted(contract, PARENT_CODE, filename)) {
+        if (
+          constrained.length &&
+          !isExcepted(contract, PARENT_CODE, filename)
+        ) {
           const parent = directParentKey(node, registry, contract);
           if (parent) {
-            const violation = placed.find(
+            const violation = constrained.find(
               ({ entry: placedEntry }) =>
                 !rootsOf(parent.key, contract).every((root) =>
                   placedEntry.parents.entries.includes(root),
@@ -199,7 +223,7 @@ export default {
               });
           }
         }
-        for (const zone of entry.zones ?? []) {
+        for (const zone of exportContract ? [] : (entry.zones ?? [])) {
           const bound = boundZone(node, zone, registry, contract);
           if (!bound) continue;
           const { node: reportNode, shape } = bound;

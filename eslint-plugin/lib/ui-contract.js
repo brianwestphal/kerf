@@ -481,6 +481,19 @@ export function jsxKey(name, registry, contract) {
   return undefined;
 }
 
+/** Imported export name behind a JSX tag, including aliases and namespaces. */
+export function jsxExportName(name, registry) {
+  if (name.type === 'JSXIdentifier')
+    return registry.helpers.get(name.name)?.imported;
+  if (
+    name.type === 'JSXMemberExpression' &&
+    name.object.type === 'JSXIdentifier' &&
+    name.property.type === 'JSXIdentifier'
+  )
+    return name.property.name;
+  return undefined;
+}
+
 // A custom element authored directly as a lowercase JSX tag resolves to its
 // selection-catalog entry. Kept separate from `jsxKey` so composition rules
 // keep treating raw elements as application-owned markup.
