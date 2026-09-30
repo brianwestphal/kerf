@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "largestJavaScriptGzip": 150000,
-  "totalJavaScriptGzip": 306000,
-  "measuredLargestJavaScriptGzip": 126041,
-  "measuredTotalJavaScriptGzip": 305936,
+  "totalJavaScriptGzip": 306100,
+  "measuredLargestJavaScriptGzip": 126039,
+  "measuredTotalJavaScriptGzip": 306053,
   "history": [
     {
       "at": "2026-09-23T10:37:37.924Z",
@@ -1363,6 +1363,22 @@
         "measuredTotalJavaScriptGzip": 305936,
         "largestJavaScriptGzip": 150000,
         "totalJavaScriptGzip": 306000
+      }
+    },
+    {
+      "at": "2026-09-30T08:48:04.730Z",
+      "reason": "Catalog helper demonstrates committing a computed grammar value outside suggestions",
+      "old": {
+        "measuredLargestJavaScriptGzip": 126041,
+        "measuredTotalJavaScriptGzip": 305936,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 306000
+      },
+      "next": {
+        "measuredLargestJavaScriptGzip": 126039,
+        "measuredTotalJavaScriptGzip": 306053,
+        "largestJavaScriptGzip": 150000,
+        "totalJavaScriptGzip": 306100
       }
     }
   ]

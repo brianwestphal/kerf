@@ -280,4 +280,39 @@ describe('createTokenSearchModel', () => {
       { value: 'tag:client', label: 'tag:client' },
     ]);
   });
+
+  it('commits a computed value for the active prefix outside suggestions', () => {
+    const model = createTokenSearchModel({ rules });
+    model.commit('release');
+    expect(model.state.value).toEqual({ query: '', tokens: [] });
+
+    model.edit({ query: 'owner tag:rel', tokens: [] });
+    expect(model.suggestions.value).toEqual([]);
+    model.dismiss();
+    model.commit('release');
+    expect(model.state.value).toMatchObject({
+      query: 'owner ',
+      tokens: [{ kind: 'tag', value: 'tag:release', offset: 6 }],
+    });
+
+    model.edit({ query: 'is:other', tokens: model.state.value.tokens });
+    model.commit('invalid');
+    expect(model.state.value.query).toBe('is:other');
+    model.commit('open');
+    expect(model.state.value).toMatchObject({
+      query: '',
+      tokens: [
+        { value: 'tag:release', offset: 6 },
+        { value: 'is:open', parsedValue: 'open', offset: 0 },
+      ],
+    });
+    model.clear();
+    model.commit('release');
+    expect(model.state.value).toEqual({ query: '', tokens: [] });
+    model.edit({ query: 'tag:', tokens: [] });
+    model.commit('design system');
+    expect(model.state.value.tokens).toMatchObject([
+      { value: 'tag:"design system"', parsedValue: 'design system', offset: 0 },
+    ]);
+  });
 });

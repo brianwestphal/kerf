@@ -713,6 +713,9 @@ const stopActions = delegateActions(app, 'click', {
     toolbarAvatarChoice.value = value;
     actionLog.value = `Selected ${value} profile`;
   },
+  'commit-grammar-release': () => {
+    grammarSearchModel.commit('release');
+  },
   'edit-search-token': (_event, element) => {
     const value = element.getAttribute('data-token-value');
     const token = tokenSearchTokens.value.find(

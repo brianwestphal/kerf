@@ -64,3 +64,45 @@ test('grammar model suggests, commits, edits, removes, and clears in the real ca
     await expect(editor).toHaveText('');
   }
 });
+
+test('an app helper commits an active grammar value outside suggestions', async ({
+  page,
+}, testInfo) => {
+  await page.goto('/?component=token-search-field');
+  const demo = page
+    .locator('[data-demo="token-search-field"] [data-catalog-example]')
+    .filter({
+      has: page.locator('[data-catalog-example-label]', {
+        hasText: 'Grammar assisted search',
+      }),
+    });
+  const field = demo.locator('[data-component="token-search-field"]');
+  const editor = field.getByRole('searchbox', { name: 'Search with filters' });
+  const chips = field.locator('[data-component="token-search-token"]');
+  const helper = demo.getByRole('button', { name: 'Add release tag' });
+
+  for (const width of [1100, 390]) {
+    await page.setViewportSize({ width, height: 844 });
+    await editor.click();
+    await editor.pressSequentially('tag:rel');
+    await expect(field.locator('[data-token-search-suggestion]')).toHaveCount(
+      0,
+    );
+    await helper.click();
+    await expect(chips).toHaveCount(1);
+    await expect(chips.first()).toHaveAttribute(
+      'data-token-value',
+      'tag:release',
+    );
+    await expect(demo.locator('[data-demo-grammar-result]')).toHaveText(
+      'No free text · 1 filters',
+    );
+    await demo.screenshot({
+      path: testInfo.outputPath(`grammar-helper-${width}.png`),
+    });
+    await helper.click();
+    await expect(chips).toHaveCount(1);
+    await field.getByRole('button', { name: 'Clear search' }).click();
+    await expect(chips).toHaveCount(0);
+  }
+});

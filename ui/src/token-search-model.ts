@@ -43,6 +43,8 @@ export interface TokenSearchModel<Result = unknown> {
   edit(value: TokenSearchFieldValue, commit?: boolean): void;
   submit(value: TokenSearchFieldValue): void;
   choose(value: string): void;
+  /** Commit a value for the active `name:` prefix, even when it is not suggested. */
+  commit(value: string): void;
   expandToken(value: string): void;
   remove(value: string): void;
   clear(): void;
@@ -134,6 +136,7 @@ export function createTokenSearchModel<Result = unknown>({
   const suggestions = signal<readonly TokenSearchSuggestion[]>([]);
   const result = signal<Result | undefined>(evaluate?.(state.value));
   let activeStart: number | undefined;
+  let activeRule: TokenSearchRule | undefined;
 
   const refreshSuggestions = () => {
     const match = activePattern?.exec(state.value.query);
@@ -143,6 +146,7 @@ export function createTokenSearchModel<Result = unknown>({
       separator < 0
         ? undefined
         : byName.get(raw!.slice(0, separator).toLowerCase());
+    activeRule = rule;
     const input = separator < 0 ? '' : unquote(raw!.slice(separator + 1));
     activeStart =
       match && raw ? match.index + match[0].lastIndexOf(raw) : undefined;
@@ -214,16 +218,22 @@ export function createTokenSearchModel<Result = unknown>({
     publish({ query, tokens });
   };
 
-  const choose = (value: string) => {
-    if (
-      !suggestions.value.some((suggestion) => suggestion.value === value) ||
-      activeStart === undefined
-    )
-      return;
-    const token = resolve(value, activeStart);
-    if (!token) return;
+  const commitResolved = (token: TokenSearchResolvedToken | undefined) => {
+    if (!token || activeStart === undefined) return;
     const query = state.value.query.slice(0, activeStart);
     publish({ query, tokens: [...state.value.tokens, token] });
+  };
+  const choose = (value: string) => {
+    if (
+      activeStart === undefined ||
+      !suggestions.value.some((suggestion) => suggestion.value === value)
+    )
+      return;
+    commitResolved(resolve(value, activeStart));
+  };
+  const commit = (value: string) => {
+    if (!activeRule || activeStart === undefined) return;
+    commitResolved(resolve(`${activeRule.name}:${quote(value)}`, activeStart));
   };
 
   return {
@@ -237,6 +247,7 @@ export function createTokenSearchModel<Result = unknown>({
       onSubmit?.(state.value, result.value);
     },
     choose,
+    commit,
     expandToken(value) {
       const index = state.value.tokens.findIndex(
         (token) => token.value === value,

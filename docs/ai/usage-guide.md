@@ -170,6 +170,9 @@ applying a saved search).
 For grammar-assisted search, `createTokenSearchModel` calls each rule's
 `suggest(input, state)` with the current committed tokens. Use that state to
 exclude selected values; existing one-argument callbacks remain valid.
+An application date picker or other helper can call `model.commit(value)` to
+commit a parsed value for the active `name:` prefix outside the suggestion list.
+It leaves invalid values or queries without an active prefix unchanged.
 
 Compose a panel, dialog, or page heading with a plain `Toolbar`: the leading zone
 holds an optional icon `ToolbarControlGroup` and a direct extra-large

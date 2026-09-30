@@ -405,6 +405,9 @@ The optional `createTokenSearchModel` grammar now gives rule suggestion callback
 both the unfinished value and the current committed token state, enabling
 selected values to disappear from suggestions while preserving one-argument
 callbacks.
+The model also commits a parsed value from a sibling application helper for the
+active `name:` prefix, even when the value was not suggested. Invalid values
+and missing prefixes leave state intact.
 
 The UX catalog detail projects visible, repository-relative `View demo source`
 and existing guidance links for every canonical entry, adds `View component
