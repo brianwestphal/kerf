@@ -35,21 +35,24 @@
      column shrinks still keeps a whole control row clear of the unsafe area. */
   min-height: calc(
     var(--kui-toolbar-group-size, calc(2px + remify(42px))) +
-      (2 * var(--kui-toolbar-gap, remify(8px))) +
+      (2 * var(--kui-toolbar-inset, var(--kui-toolbar-gap, remify(8px)))) +
       var(--_kui-toolbar-safe-block-start) + var(--_kui-toolbar-safe-block-end)
   );
   padding-block: calc(
-      var(--kui-toolbar-gap, remify(8px)) + var(--_kui-toolbar-safe-block-start)
+      var(--kui-toolbar-inset, var(--kui-toolbar-gap, remify(8px))) +
+        var(--_kui-toolbar-safe-block-start)
     )
     calc(
-      var(--kui-toolbar-gap, remify(8px)) + var(--_kui-toolbar-safe-block-end)
+      var(--kui-toolbar-inset, var(--kui-toolbar-gap, remify(8px))) +
+        var(--_kui-toolbar-safe-block-end)
     );
   padding-inline: calc(
-      var(--kui-toolbar-gap, remify(8px)) +
+      var(--kui-toolbar-inset, var(--kui-toolbar-gap, remify(8px))) +
         var(--_kui-toolbar-safe-inline-start)
     )
     calc(
-      var(--kui-toolbar-gap, remify(8px)) + var(--_kui-toolbar-safe-inline-end)
+      var(--kui-toolbar-inset, var(--kui-toolbar-gap, remify(8px))) +
+        var(--_kui-toolbar-safe-inline-end)
     );
 }
 

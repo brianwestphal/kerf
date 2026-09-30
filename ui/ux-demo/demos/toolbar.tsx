@@ -98,6 +98,32 @@ export function ToolbarDemo() {
         </List>
       </CatalogExample>
       <CatalogExample
+        label="Gap without outer inset"
+        note="An embedded toolbar can keep the 8px zone gap while its own padding is zero."
+        viewport={{
+          width: 'medium',
+          tokens: { '--kui-toolbar-inset': '0px' },
+        }}
+      >
+        <Toolbar
+          label="Inset-free toolbar"
+          leading={
+            <ToolbarControlGroup appearance="borderless" single>
+              <button type="button" aria-label="Filters">
+                <LucideIcon icon={Filter} name="filter" />
+              </button>
+            </ToolbarControlGroup>
+          }
+          trailing={
+            <ToolbarControlGroup appearance="borderless" single>
+              <button type="button" aria-label="Refresh">
+                <LucideIcon icon={RefreshCw} name="refresh-cw" />
+              </button>
+            </ToolbarControlGroup>
+          }
+        />
+      </CatalogExample>
+      <CatalogExample
         label="Stacked actions wrap"
         note="A stacked control zone moves whole groups to another row instead of clipping them."
         viewport={{ width: 'text', frame: 'solid' }}

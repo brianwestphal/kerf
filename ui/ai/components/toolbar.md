@@ -36,6 +36,7 @@ Exact prop names and types: [`@kerfjs/ui/toolbar`](../public-api-signatures-v1.m
 - center priority for an expanded center control
 - trailing priority for an expanded trailing control at compact or narrow widths
 - trailing groups wrap instead of clipping
+- outer inset independently configurable from zone gap
 - app bar or bottom bar claiming its screen edges (safeAreaEdges)
 
 ## Composition
@@ -66,7 +67,7 @@ Zones (a zone is bound to JSX only through its listed prop; never assume the zon
 
 Margin: none · border: conditional · padding: self (layout role: structure). `self` means the component already owns it — do not add wrapper padding, margin, or borders around it.
 
-- Padding belongs to the toolbar; dividerSides selects any canonical combination of its physical top, right, bottom, and left edges.
+- Padding belongs to the toolbar; --kui-toolbar-inset controls outer padding and minimum height independently of --kui-toolbar-gap. dividerSides selects any canonical combination of its physical top, right, bottom, and left edges.
 - Safe areas: a Pane header or footer hands a sole Toolbar its inline edges; an app bar or bottom bar at a screen edge claims its sides with safeAreaEdges and pads each claimed side by the --kui-edge-inset-\* context or the full device inset, while its box and dividers paint through.
 
 ## Accessibility
@@ -81,7 +82,7 @@ Public class hooks (select for layout placement only, never to change the compon
 
 Never put `kui-toolbar`, `kui-toolbar__center`, `kui-toolbar__leading`, `kui-toolbar__trailing` on an element you write; render `Toolbar` instead (`KUI-L103`).
 
-Public tokens it reads: `--kui-color-neutral-border-normal`, `--kui-font-sans`, `--kui-toolbar-center-padding-inline`, `--kui-toolbar-divider-color`, `--kui-toolbar-leading-min-width`, `--kui-toolbar-leading-padding-inline`, `--kui-toolbar-trailing-gap`, `--kui-toolbar-trailing-justify`, `--kui-toolbar-trailing-justify-self`, `--kui-toolbar-trailing-padding-inline`, `--kui-toolbar-zone-padding-inline`. Set a token only where its public contract allows; prefer a prop.
+Public tokens it reads: `--kui-color-neutral-border-normal`, `--kui-font-sans`, `--kui-toolbar-center-padding-inline`, `--kui-toolbar-divider-color`, `--kui-toolbar-inset`, `--kui-toolbar-leading-min-width`, `--kui-toolbar-leading-padding-inline`, `--kui-toolbar-trailing-gap`, `--kui-toolbar-trailing-justify`, `--kui-toolbar-trailing-justify-self`, `--kui-toolbar-trailing-padding-inline`, `--kui-toolbar-zone-padding-inline`. Set a token only where its public contract allows; prefer a prop.
 
 Everything else is internal: `kerf-ui-analyze` reports private or unknown `.kui-*` selectors (`KUI-L001`, `KUI-L010`), unknown or private tokens (`KUI-L002`, `KUI-L012`), and any application rule that restyles the component, forced dimensions included (`KUI-L019`).
 

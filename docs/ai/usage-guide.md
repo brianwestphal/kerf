@@ -210,6 +210,10 @@ host's `aria-labelledby`/`aria-describedby`. The icon may use a normal bordered
 on `ToolbarText` for page or section landmarks; omit it for a dialog title named
 through `aria-labelledby`. The app owns modal focus, dismissal, command policy,
 ids, supporting copy, and action handling.
+On an embedded Toolbar, set `--kui-toolbar-inset: 0px` to remove outer padding
+and its minimum-height allowance while keeping the independent
+`--kui-toolbar-gap` between zones. Safe-area padding still applies where the
+Toolbar claims a screen edge.
 
 Use `Text` from `@kerfjs/ui/text` for ordinary headings, paragraphs, and inline
 secondary copy outside toolbar title zones. It renders `p` by default; set

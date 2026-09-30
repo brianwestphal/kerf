@@ -161,6 +161,9 @@ headingLevel`, `TokenSearchField clearIcon`, `ContentItem frame="framed"` for a
   expanded trailing control to a full second row at `responsiveAt`; the leading
   title remains above it. Public leading-min-width, trailing-gap/justify, and
   per-zone inline-padding tokens cover app-specific toolbar geometry.
+  `--kui-toolbar-inset: 0px` removes an embedded Toolbar's outer padding and
+  corresponding minimum-height allowance while preserving its zone gap and
+  safe-area compensation.
 - **Position region restore controls declaratively.** A ResizableRegion has a
   background token, `contentOverflow="visible"` for an anchored popup,
   top/bottom `restorePosition`, typed `restoreInset`, and

@@ -211,6 +211,10 @@ in the first row. `--kui-toolbar-leading-min-width`,
 `--kui-toolbar-trailing-gap`, `--kui-toolbar-trailing-justify`, and the
 `--kui-toolbar-*-padding-inline` zone tokens adjust local geometry without
 selecting toolbar anatomy from application CSS.
+Set `--kui-toolbar-inset: 0px` on an embedded Toolbar that should have no outer
+padding while keeping its `--kui-toolbar-gap` between control zones. The token
+also reduces its minimum height by the removed inset; safe-area compensation
+still adds to the chosen inset on claimed edges.
 
 For compact dialog copy, use `Text flush lineHeight="tight"`; block Text still
 resets native margins. `ValueTable density="compact"` reduces row padding and

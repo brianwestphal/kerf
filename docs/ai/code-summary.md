@@ -872,6 +872,9 @@ from `ui/tests/browser/fixtures/safe-area-layouts.tsx` with simulated insets.
 `Toolbar.safeAreaEdges` lets an app bar or bottom bar outside a Pane header or
 footer claim its screen edges (the `app-bars` / `app-bar-in-header` fixture
 scenarios).
+`--kui-toolbar-inset` now controls Toolbar outer padding and the matching
+minimum-height allowance independently of `--kui-toolbar-gap`, while claimed
+safe-area insets add to that chosen outer inset.
 `ui/src/toolbar.css` never clips an action: every trailing zone, and stacked
 center/trailing zones, wrap whole control groups (stacked zones span every grid
 track, because a toolbar cannot container-query itself; an expanded

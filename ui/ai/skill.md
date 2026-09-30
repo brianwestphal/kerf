@@ -230,6 +230,8 @@ Use `ListItem density="spacious"` for larger option rows, `multiline` plus `mult
 
 Use `Toolbar responsive="trailing-priority"` when an expanded trailing search needs a full second row below its heading at `responsiveAt`. Configure a leading minimum width, trailing gap and justification, or zone inline padding with the public `--kui-toolbar-*` tokens rather than selectors into toolbar zones.
 
+Set `--kui-toolbar-inset: 0px` on an embedded Toolbar to remove its outer padding while retaining `--kui-toolbar-gap` between zones. The same inset token controls the minimum-height allowance; safe-area padding still applies at claimed edges.
+
 For compact dialog copy, use `Text flush lineHeight="tight"`; for compact metadata, use `ValueTable density="compact"` and its public row columns/padding/gap tokens. `ToolbarText size="xsmall"` fits a dense rail heading. A `TokenSearchField` editor shrinks inside a narrow group by default; set `--kui-token-search-editor-min-width` when a minimum is needed. A full-height shell uses the one `.kui-app-root` mount container documented in `docs/document-baseline.md`.
 
 Common mistakes:
